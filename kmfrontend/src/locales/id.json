@@ -219,7 +219,6 @@
 			"SONGS_BY_USER": "Jumlah lagu per pengguna",
 			"SONGS_BY_USER_TOOLTIP": "Jumlah lagu yang pengguna bisa minta secara bersamaan. Sebuah lagu yang dirilis atau yang baru saja diputar tidak dihitung terhadap kuota",
 			"FREE_AUTO_TIME_TOOLTIP": "Setelah X menit, lagu tidak akan dihitung terhadap kuota pengguna. Sesuaikan ini dengan jumlah tamu yang berpartisipasi",
-			"ENABLE_SMARTINSERT": "Aktifkan penyisipan lagu pintar untuk menghindari monopoli pengguna",
 			"MINUTES_BEFORE_SESSION_ENDS_WARNING": "Tampilkan peringatan X menit sebelum akhir daftar putar",
 			"ADDED_SONG_VISIBILITY_MYSTERY_OPTION": "Lagu misterius",
 			"MINUTES_BEFORE_SESSION_ENDS_WARNING_TOOLTIP": "Sebuah notifikasi akan mengingatkan kamu X menit sebelum akhir dari sesi terencana kamu",
@@ -1522,22 +1521,11 @@
 		"Terlalu tenang, saya tidak suka ini…",
 		"Persiapan sedang berlangsung!"
 	],
-	"JINGLE_TAGLINES": [
-		"Kami akan segera kembali!"
-	],
+	"JINGLE_TAGLINES": ["Kami akan segera kembali!"],
 	"INTRO_TIME": "Introduksi daftar putar",
-	"INTRO_TAGLINES": [
-		"Ayo!",
-		"Memulai…",
-		"Inisialisasi…",
-		"Siapkan mikrofon kamu!",
-		"*bersihkan tenggorokan*"
-	],
+	"INTRO_TAGLINES": ["Ayo!", "Memulai…", "Inisialisasi…", "Siapkan mikrofon kamu!", "*bersihkan tenggorokan*"],
 	"OUTRO_TIME": "Penutup daftar putar",
-	"OUTRO_TAGLINES": [
-		"Tamat :(",
-		"Terima kasih semuanya!"
-	],
+	"OUTRO_TAGLINES": ["Tamat :(", "Terima kasih semuanya!"],
 	"ENCORES_TIME": "Ekstra! Ekstra!",
 	"ENCORES_TAGLINES": [
 		"Yah, bukan karena aku menyukaimu atau apa gitu…",
@@ -1545,9 +1533,7 @@
 		"Lagu terakhir, berikan yang terbaik!"
 	],
 	"SPONSOR_TIME": "IKLAN!",
-	"SPONSOR_TAGLINES": [
-		"Dan terima kasih atas duitnya."
-	],
+	"SPONSOR_TAGLINES": ["Dan terima kasih atas duitnya."],
 	"QUOTA_AVAILABLE": "Kamu sekarang bisa menambahkan lagu lagi!",
 	"SERIE_NAME_MODE": "Mode bahasa serial",
 	"SERIE_NAME_MODE_TOOLTIP": "Ubah bagaimana nama serial ditampilkan di daftar lagu. Mungkin diabaikan oleh preferensi pengguna",
@@ -1562,14 +1548,8 @@
 		"CONNECTED": "Tersambung"
 	},
 	"REMOTE_TOKEN": "Token akses jarak jauh",
-	"PAUSE_TAGLINES": [
-		"Beristirahatlah!",
-		"Saatnya minum!",
-		"Kami akan segera kembali!"
-	],
-	"POLL_TAGLINES": [
-		"Pilihan ada padamu."
-	],
+	"PAUSE_TAGLINES": ["Beristirahatlah!", "Saatnya minum!", "Kami akan segera kembali!"],
+	"POLL_TAGLINES": ["Pilihan ada padamu."],
 	"REMOTE_URL": "URL akses jarak jauh",
 	"DATABASE": {
 		"REGENERATE_DB": "Membuat kembali basis data kamu",

@@ -6,7 +6,6 @@ import { APIMessage } from '../controllers/common';
 import { insertKaraToRequests } from '../dao/kara';
 // DAO
 import {
-	countPlaylistUsers,
 	deleteKaraFromPlaylist,
 	deletePlaylist,
 	insertKaraIntoPlaylist,
@@ -14,7 +13,6 @@ import {
 	reorderPlaylist as reorderPL,
 	replacePlaylist,
 	selectMaxPosInPlaylist,
-	selectMaxPosInPlaylistForUser,
 	selectPlaylistContents,
 	selectPlaylistContentsMicro,
 	selectPlaylistContentsMini,
@@ -568,11 +566,7 @@ export async function addKaraToPlaylist(
 
 		profile('addKaraToPL-determinePos');
 		profile('addKaraToPL-determinePos-queries');
-		const [userMaxPosition, numUsersInPlaylist, playlistMaxPos] = await Promise.all([
-			selectMaxPosInPlaylistForUser(plaid, user.login),
-			countPlaylistUsers(plaid),
-			selectMaxPosInPlaylist(plaid),
-		]);
+		const [playlistMaxPos] = await Promise.all([selectMaxPosInPlaylist(plaid)]);
 		profile('addKaraToPL-determinePos-queries');
 		const plContents = await selectPlaylistContentsMicro(plaid);
 		// Making a unique ID depending on if we're in public playlist or something else.
@@ -601,25 +595,6 @@ export async function addKaraToPlaylist(
 		if (karaList.length === 0) {
 			errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED';
 			throw { code: 409 };
-		}
-		/*
-		If pos is provided, we need to update all karas above that and add karas.length to the position
-		If pos is not provided, we need to get the maximum position in the PL
-		And use that +1 to set our song's playlist position.
-		If pos is -1, we must add it after the currently flag_playing karaoke.
-		Position management here :
-		*/
-		if (conf.Karaoke.SmartInsert && user.type !== 0) {
-			if (userMaxPosition === null) {
-				// No songs yet from that user, they go first.
-				pos = -1;
-			} else if (userMaxPosition < playingPos) {
-				// No songs enqueued in the future, they go first.
-				pos = -1;
-			} else {
-				// Everyone is in the queue, we will leave an empty spot for each user and place ourselves next.
-				pos = Math.min(playlistMaxPos + 1, userMaxPosition + numUsersInPlaylist);
-			}
 		}
 		// Find out position of currently playing karaoke
 		// If no flag_playing is found, we'll add songs at the end of playlist.

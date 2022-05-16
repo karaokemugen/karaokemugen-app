@@ -274,21 +274,6 @@ function KaraokeOptions(props: IProps) {
 				</div>
 				<div className="settings-group">
 					<div className="settings-line">
-						<label htmlFor="Karaoke.SmartInsert">
-							<span className="title">{i18next.t('SETTINGS.KARAOKE.ENABLE_SMARTINSERT')}</span>
-							<br />
-							<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.ENABLE_SMARTINSERT_TOOLTIP')}</span>
-						</label>
-						<div>
-							<Switch
-								idInput="Karaoke.SmartInsert"
-								handleChange={onChange}
-								isChecked={config['Karaoke.SmartInsert']}
-							/>
-						</div>
-					</div>
-
-					<div className="settings-line">
 						<label htmlFor="Karaoke.AutoBalance">
 							<span className="title">{i18next.t('SETTINGS.KARAOKE.ENABLE_AUTOBALANCE')}</span>
 							<br />

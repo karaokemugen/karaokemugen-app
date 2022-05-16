@@ -435,8 +435,6 @@
 			"ADDED_SONG_VISIBILITY_MYSTERY_OPTION": "Mystery song",
 			"MINUTES_BEFORE_SESSION_ENDS_WARNING": "Display warning X minutes before end of playlist",
 			"MINUTES_BEFORE_SESSION_ENDS_WARNING_TOOLTIP": "A notification will warn you X minutes before the end of your planned session",
-			"ENABLE_SMARTINSERT": "Enable smart insert of songs to avoid user monopolies",
-			"ENABLE_SMARTINSERT_TOOLTIP": "When a song is added by the audience, it will be placed in a way that allows those who have not requested many songs to go earlier",
 			"ENABLE_AUTOBALANCE": "Enable playlist auto balancing",
 			"ENABLE_AUTOBALANCE_TOOLTIP": "The playlist will be reorganized regularly so that user requests take turns.",
 			"ONLINE_SETTINGS": "Online",

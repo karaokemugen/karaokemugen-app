@@ -524,19 +524,6 @@ FROM playlist_content
 WHERE pk_id_playlist = $2;
 `;
 
-export const sqlcountPlaylistUsers = `
-SELECT COUNT(DISTINCT fk_login)::integer AS NumberOfUsers
-FROM playlist_content
-WHERE fk_id_playlist = $1;
-`;
-
-export const sqlgetMaxPosInPlaylistForUser = `
-SELECT MAX(pos) AS maxpos
-FROM playlist_content
-WHERE fk_id_playlist = :plaid
-	AND fk_login = :username;
-`;
-
 export const sqltrimPlaylist = `
 DELETE FROM playlist_content
 WHERE fk_id_playlist = :plaid

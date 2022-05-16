@@ -70,7 +70,6 @@ export interface Config {
 		};
 		MinutesBeforeEndOfSessionWarning?: number;
 		Autoplay?: boolean;
-		SmartInsert?: boolean;
 		AutoBalance?: boolean;
 		Poll: {
 			Enabled?: boolean;

@@ -12,7 +12,6 @@ import { getState } from '../utils/state';
 import {
 	sqladdCriteria,
 	sqladdKaraToPlaylist,
-	sqlcountPlaylistUsers,
 	sqlcreatePlaylist,
 	sqldeleteCriteria,
 	sqldeleteCriteriaForPlaylist,
@@ -21,7 +20,6 @@ import {
 	sqlemptyPlaylist,
 	sqlgetCriterias,
 	sqlgetMaxPosInPlaylist,
-	sqlgetMaxPosInPlaylistForUser,
 	sqlgetPlaylist,
 	sqlgetPlaylistContents,
 	sqlgetPlaylistContentsMicro,
@@ -275,21 +273,6 @@ export async function selectPlaylists(visibleOnly?: boolean, singlePlaylist?: st
 
 export async function updatePlaying(plc_id: number, plaid: string) {
 	await db().query(sqlsetPlaying, [plc_id, plaid]);
-}
-
-export async function countPlaylistUsers(plaid: string): Promise<number> {
-	const res = await db().query(sqlcountPlaylistUsers, [plaid]);
-	return res.rows[0]?.NumberOfUsers;
-}
-
-export async function selectMaxPosInPlaylistForUser(plaid: string, username: string): Promise<number> {
-	const res = await db().query(
-		yesql(sqlgetMaxPosInPlaylistForUser)({
-			plaid,
-			username,
-		})
-	);
-	return res.rows[0]?.maxpos;
 }
 
 export function insertCriteria(cList: Criteria[]) {

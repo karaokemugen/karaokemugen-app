@@ -72,7 +72,6 @@ export const defaults: Config = {
 		},
 		Autoplay: false,
 		ClassicMode: false,
-		SmartInsert: false,
 		MinutesBeforeEndOfSessionWarning: 15,
 		Poll: {
 			Choices: 4,
@@ -278,7 +277,6 @@ export const configConstraints = {
 	'Karaoke.StreamerMode.Enabled': { inclusion: bools },
 	'Karaoke.StreamerMode.PauseDuration': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0 } },
 	'Karaoke.StreamerMode.Twitch.Enabled': { inclusion: bools },
-	'Karaoke.SmartInsert': { inclusion: bools },
 	'Karaoke.Poll.Choices': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 1 } },
 	'Karaoke.Poll.Timeout': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 1 } },
 	'Karaoke.Poll.Enabled': { inclusion: bools },
