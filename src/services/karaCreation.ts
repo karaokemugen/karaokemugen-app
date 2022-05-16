@@ -74,7 +74,7 @@ export async function editKara(editedKara: EditedKara) {
 		const subDest = filenames.lyricsfile
 			? resolve(resolvedPathRepos('Lyrics', kara.data.repository)[0], filenames.lyricsfile)
 			: undefined;
-		// Retesting modified media because we needed original media in place for toyunda stuff.
+		// Retesting modified media because we needed original media in place for toyunda stuff. Now that toyunda is gone...
 		// Maybe we could actually refactor this somehow.
 		if (editedKara.modifiedMedia) {
 			kara.medias[0].filename = filenames.mediafile;
@@ -92,7 +92,7 @@ export async function editKara(editedKara: EditedKara) {
 		if (editedKara.modifiedLyrics) {
 			if (kara.medias[0].lyrics[0]) {
 				const subPath = resolve(resolvedPath('Temp'), kara.medias[0].lyrics[0].filename);
-				await processSubfile(subPath, mediaPath);
+				await processSubfile(subPath);
 				if (oldKara.subfile) {
 					const oldSubPath = (
 						await resolveFileInDirs(oldKara.subfile, resolvedPathRepos('Lyrics', oldKara.repository))
@@ -167,7 +167,7 @@ export async function createKara(kara: KaraFileV4) {
 		if (kara.medias[0].lyrics[0]) {
 			const subPath = resolve(resolvedPath('Temp'), kara.medias[0].lyrics[0].filename);
 			const subDest = resolve(resolvedPathRepos('Lyrics', kara.data.repository)[0], filenames.lyricsfile);
-			await processSubfile(subPath, mediaPath);
+			await processSubfile(subPath);
 			await smartMove(subPath, subDest, { overwrite: true });
 			kara.medias[0].lyrics[0].filename = filenames.lyricsfile;
 		}
