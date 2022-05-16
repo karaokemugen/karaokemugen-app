@@ -4,8 +4,6 @@ App:
   FirstRun: true
   # JWT secret used to salt passwords (uuid)
   JwtSecret: Change me
-  # Application quick start (like --noBaseCheck)
-  QuickStart: false
   # Instance ID
   #InstanceID: uuid here
 Online:
@@ -43,9 +41,6 @@ Frontend:
   # 1 : Current playlist/song only (restricted)
   # 2 : Opened (all features available)
   Mode: 2
-  Permissions:
-    # Permissions for users
-    AllowNicknameChange: true
   ShowAvatarsOnPlaylist: true
 GUI:
   # Should window shortcuts be opened in electron or in a browser?

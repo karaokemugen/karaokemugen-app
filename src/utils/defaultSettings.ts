@@ -51,9 +51,6 @@ export const defaults: Config = {
 	Frontend: {
 		AllowGuestLogin: true,
 		Mode: 2,
-		Permissions: {
-			AllowNicknameChange: true,
-		},
 		ShowAvatarsOnPlaylist: true,
 	},
 	GUI: {
@@ -273,7 +270,6 @@ export const configConstraints = {
 	'Online.Updates.Medias.Encores': { inclusion: bools },
 	'Online.Updates.Medias.Intros': { inclusion: bools },
 	'Online.Updates.App': { inclusion: bools },
-	'Frontend.Permissions.AllowNicknameChange': { inclusion: bools },
 	'Frontend.Mode': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 2 } },
 	'System.FrontendPort': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0 } },
 	'Frontend.ShowAvatarsOnPlaylist': { inclusion: bools },

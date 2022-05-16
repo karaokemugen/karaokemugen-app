@@ -39,9 +39,6 @@ export interface Config {
 	Frontend: {
 		AllowGuestLogin?: boolean;
 		Mode?: number;
-		Permissions?: {
-			AllowNicknameChange?: boolean;
-		};
 		ShowAvatarsOnPlaylist?: boolean;
 	};
 	GUI: {
