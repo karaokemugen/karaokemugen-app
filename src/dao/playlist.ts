@@ -333,6 +333,8 @@ export async function selectKarasFromCriterias(
 	if (criterias.length === 0) return [];
 	if (smartPlaylistType === 'UNION') {
 		for (const c of criterias) {
+			// Ignore if criteria is not found
+			if (!sqlselectKarasFromCriterias[c.type]) continue;
 			if (c.type > 0 && c.type < 1000) {
 				queryArr.push(sqlselectKarasFromCriterias.tagTypes(`= ${c.type}`, c.value));
 			} else if (c.type === 1001) {
@@ -350,6 +352,8 @@ export async function selectKarasFromCriterias(
 		let uniqueKIDsSQL = '';
 		let i = 0;
 		for (const c of criterias) {
+			// Ignore if criteria is not found
+			if (!sqlselectKarasFromCriterias[c.type]) continue;
 			i += 1;
 			if (c.type > 0 && c.type < 1000) {
 				queryArr.push(
