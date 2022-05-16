@@ -9,7 +9,6 @@ import {
 	sqldeleteUser,
 	sqleditUser,
 	sqleditUserPassword,
-	sqlLowercaseAllUsers,
 	sqlMergeUserDataPlaylist,
 	sqlMergeUserDataPlaylistContent,
 	sqlMergeUserDataRequested,
@@ -138,10 +137,6 @@ export function updateUserPassword(username: string, password: string) {
 export async function selectAllDupeUsers() {
 	const result = await db().query(sqlSelectAllDupeUsers);
 	return result.rows;
-}
-
-export async function lowercaseAllUsers() {
-	await db().query(sqlLowercaseAllUsers);
 }
 
 export async function mergeUserData(oldUser: string, newUser: string): Promise<any> {

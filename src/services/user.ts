@@ -29,7 +29,6 @@ import { emitWS } from '../lib/utils/ws';
 import { Config } from '../types/config';
 import { UserOpts } from '../types/user';
 import { defaultGuestNames } from '../utils/constants';
-import { lowercaseMigration } from '../utils/hokutoNoCode';
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
 import { stopSub } from '../utils/userPubSub';
@@ -533,7 +532,6 @@ async function userChecks() {
 	await checkGuestAvatars();
 	await checkUserAvatars();
 	await cleanupAvatars();
-	await lowercaseMigration();
 }
 
 /** Verifies that all avatars are > 0 bytes or exist. If they don't, recopy the blank avatar over them */
