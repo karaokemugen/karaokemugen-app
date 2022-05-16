@@ -23,7 +23,6 @@ export const defaults: Config = {
 	App: {
 		FirstRun: true,
 		JwtSecret: 'Change me',
-		QuickStart: false,
 	},
 	Online: {
 		Host: 'kara.moe',
@@ -262,7 +261,6 @@ const endOfPlaylistActions = ['random', 'repeat', 'none'];
 /** Config constraints. */
 export const configConstraints = {
 	'App.FirstRun': { inclusion: bools },
-	'App.QuickStart': { inclusion: bools },
 	// 'App.InstanceID': {presence: true, format: uuidRegexp}, // Broken on regular installations since InstanceID is stored in database
 	'Online.Stats': { boolUndefinedValidator: true },
 	'Online.ErrorTracking': { boolUndefinedValidator: true },

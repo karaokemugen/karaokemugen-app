@@ -303,9 +303,8 @@ export function shutdown() {
 
 async function preFlightCheck(): Promise<boolean> {
 	const state = getState();
-	const conf = getConfig();
 	let doGenerate = false;
-	if (!state.opt.noBaseCheck && !conf.App.QuickStart) {
+	if (!state.opt.noBaseCheck) {
 		const filesChanged = await compareKarasChecksum();
 		if (filesChanged === true) {
 			logger.info('Data files have changed: database generation triggered', { service });

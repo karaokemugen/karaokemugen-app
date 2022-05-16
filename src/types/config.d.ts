@@ -10,7 +10,6 @@ export interface Config {
 		JwtSecret?: string;
 		InstanceID?: string;
 		FirstRun?: boolean;
-		QuickStart?: boolean;
 		Language?: string;
 	};
 	Online: {
