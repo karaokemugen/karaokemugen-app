@@ -17,7 +17,6 @@ import { editRepo } from '../services/repo';
 import { Config } from '../types/config';
 import { initConfig } from '../utils/config';
 import { logo } from '../utils/constants';
-import { migrateReposToZip } from '../utils/hokutoNoCode';
 import Sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
 import { parseArgs, setupFromCommandLineArgs } from './args';
@@ -85,7 +84,6 @@ export async function init() {
 	console.log('================================================================================');
 	logger.debug('Initial state', { service, obj: state });
 
-	await migrateReposToZip();
 	// Checking paths, create them if needed.
 	await checkPaths(getConfig());
 	// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel

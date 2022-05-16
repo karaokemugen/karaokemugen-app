@@ -4,66 +4,12 @@
 // When removing code here, remember to go see if all functions called are still useful.
 
 import i18next from 'i18next';
-import { cloneDeep } from 'lodash';
-import { resolve } from 'path';
 
 import { insertCriteria, insertKaraIntoPlaylist, insertPlaylist } from '../dao/playlist';
-import { updateRepo } from '../dao/repo';
 import { db } from '../lib/dao/database';
-import { relativePath } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
-import { addSystemMessage } from '../services/proxyFeeds';
-import { editRepo, getRepos } from '../services/repo';
 import { updateAllSmartPlaylists } from '../services/smartPlaylist';
-import { Repository } from '../types/config';
-import { OldRepository } from '../types/repo';
-import { backupConfig } from './config';
 import Sentry from './sentry';
-import { getState } from './state';
-
-/** Migrate from old repos to zip/git repos with maintainer mode. Remove in KM 7.0 */
-export async function migrateReposToZip() {
-	// Find unmigrated repositories
-	const repos: OldRepository[] = cloneDeep(
-		(getRepos() as any as OldRepository[]).filter(r => r.Path.Karas?.length > 0)
-	);
-	if (repos.length > 0) {
-		// Create a config backup, just in case
-		await backupConfig();
-	}
-	for (const oldRepo of repos) {
-		// Determine basedir by going up one folder
-		const dir = resolve(getState().dataPath, oldRepo.Path.Karas[0], '..');
-		const newRepo: Repository = {
-			Name: oldRepo.Name,
-			Online: oldRepo.Online,
-			Enabled: oldRepo.Enabled,
-			SendStats: oldRepo.SendStats || true,
-			Path: {
-				Medias: oldRepo.Path.Medias,
-			},
-			MaintainerMode: false,
-			AutoMediaDownloads: 'updateOnly',
-			BaseDir: dir,
-		};
-		const extraPath = newRepo.Online && !newRepo.MaintainerMode ? './json' : '';
-		newRepo.BaseDir = relativePath(getState().dataPath, resolve(getState().dataPath, dir, extraPath));
-		await editRepo(newRepo.Name, newRepo, false).catch(err => {
-			logger.error(`Unable to migrate repo ${oldRepo.Name} to zip-based: ${err}`, { service: 'Repo', obj: err });
-			Sentry.error(err);
-			addSystemMessage({
-				type: 'system_error',
-				date: new Date().toString(),
-				dateStr: new Date().toLocaleDateString(),
-				link: '#',
-				html: `<p>${i18next.t('SYSTEM_MESSAGES.ZIP_MIGRATION_FAILED.BODY', { repo: oldRepo.Name })}</p>`,
-				title: i18next.t('SYSTEM_MESSAGES.ZIP_MIGRATION_FAILED.TITLE'),
-			});
-			// Disable the repo and bypass stealth checks
-			updateRepo({ ...oldRepo, Enabled: false } as any, oldRepo.Name);
-		});
-	}
-}
 
 /** Remove this in KM 7.0 */
 export async function migrateFromDBMigrate() {
