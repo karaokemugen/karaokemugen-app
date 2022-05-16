@@ -17,7 +17,7 @@ import { editRepo } from '../services/repo';
 import { Config } from '../types/config';
 import { initConfig } from '../utils/config';
 import { logo } from '../utils/constants';
-import { migrateReposToZip, renameConfigKeys } from '../utils/hokutoNoCode';
+import { migrateReposToZip } from '../utils/hokutoNoCode';
 import Sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
 import { parseArgs, setupFromCommandLineArgs } from './args';
@@ -65,7 +65,6 @@ export async function preInit() {
 	logger.debug(`argv: ${JSON.stringify(process.argv)}`, { service });
 	logger.debug(`Locale : ${state.defaultLocale}`, { service });
 	logger.debug(`OS : ${state.os}`, { service });
-	await renameConfigKeys(argv).catch(() => {});
 	await initConfig(argv);
 	// Using system temp directory instead of our own.
 	// This is kind of an ugly fix for issue #1252 but since temp is stored in config and not state and we're *always* using the electron runtime, this seems like a good solution.
