@@ -42,7 +42,6 @@ export interface Config {
 		ShowAvatarsOnPlaylist?: boolean;
 	};
 	GUI: {
-		OpenInElectron?: boolean;
 		ChibiPlayer?: {
 			Enabled?: boolean;
 			AlwaysOnTop?: boolean;

@@ -43,8 +43,6 @@ Frontend:
   Mode: 2
   ShowAvatarsOnPlaylist: true
 GUI:
-  # Should window shortcuts be opened in electron or in a browser?
-  OpenInElectron: true
   # Enable or disable chibi player
   ChibiPlayer:
     Enabled: false

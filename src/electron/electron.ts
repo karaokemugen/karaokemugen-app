@@ -328,7 +328,7 @@ async function createWindow() {
 }
 
 function openLink(url: string) {
-	getConfig().GUI.OpenInElectron && url.indexOf('//localhost') !== -1 ? win?.loadURL(url) : open(url);
+	win?.loadURL(url);
 }
 
 export function setProgressBar(number: number) {

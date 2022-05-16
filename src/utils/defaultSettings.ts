@@ -54,7 +54,6 @@ export const defaults: Config = {
 		ShowAvatarsOnPlaylist: true,
 	},
 	GUI: {
-		OpenInElectron: true,
 		ChibiPlayer: {
 			Enabled: false,
 			AlwaysOnTop: true,
@@ -273,7 +272,6 @@ export const configConstraints = {
 	'Frontend.Mode': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 2 } },
 	'System.FrontendPort': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0 } },
 	'Frontend.ShowAvatarsOnPlaylist': { inclusion: bools },
-	'GUI.OpenInElectron': { inclusion: bools },
 	'Karaoke.Autoplay': { inclusion: bools },
 	'Karaoke.ClassicMode': { inclusion: bools },
 	'Karaoke.MinutesBeforeEndOfSessionWarning': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0 } },

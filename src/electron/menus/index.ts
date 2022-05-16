@@ -2,7 +2,6 @@ import { dialog } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import open from 'open';
 
-import { getConfig } from '../../lib/utils/config';
 import logger from '../../lib/utils/logger';
 import { getState } from '../../utils/state';
 import { handleFile, win } from '../electron';
@@ -40,7 +39,7 @@ export function openURL(url: string) {
 	const base = 'http://localhost';
 	const port = getState().frontendPort;
 	const fullUrl = `${base}:${port}${url}`;
-	getConfig().GUI.OpenInElectron ? win?.loadURL(fullUrl) : open(fullUrl);
+	win?.loadURL(fullUrl);
 }
 
 export async function checkForUpdates() {
