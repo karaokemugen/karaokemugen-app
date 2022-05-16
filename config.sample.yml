@@ -129,10 +129,6 @@ Player:
   Monitor: false
   # Should the player window have borders ?
   Borders: true
-  # No progress bar
-  NoBar: true
-  # No HUD
-  NoHud: true
   # Which screen to display on (0 is first)
   Screen: 0
   # Stay on top

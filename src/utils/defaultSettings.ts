@@ -113,8 +113,6 @@ export const defaults: Config = {
 		Borders: true,
 		ExtraCommandLine: '',
 		mpvVideoOutput: '',
-		NoBar: true,
-		NoHud: true,
 		Screen: 0,
 		StayOnTop: true,
 		PIP: {
@@ -295,8 +293,6 @@ export const configConstraints = {
 	'Player.Display.ConnectionInfo.Message': { presence: { allowEmpty: true } },
 	'Player.FullScreen': { inclusion: bools },
 	'Player.Monitor': { inclusion: bools },
-	'Player.NoBar': { inclusion: bools },
-	'Player.NoHud': { inclusion: bools },
 	'Player.StayOnTop': { inclusion: bools },
 	'Player.Screen': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0 } },
 	'Player.PIP.PositionX': { inclusion: horizontalPosArray },

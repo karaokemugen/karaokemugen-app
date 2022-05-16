@@ -104,8 +104,6 @@ export interface Config {
 		Screen?: number;
 		AudioDevice?: string;
 		Monitor?: boolean;
-		NoHud?: boolean;
-		NoBar?: boolean;
 		mpvVideoOutput?: string;
 		PIP: {
 			Size?: number;

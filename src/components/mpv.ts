@@ -393,6 +393,8 @@ class Player {
 			`--audio-device=${conf.Player.AudioDevice}`,
 			`--screenshot-directory=${resolve(state.dataPath)}`,
 			'--screenshot-format=png',
+			'--no-osc',
+			'--no-osd-bar',
 		];
 
 		if (options.monitor) {
@@ -448,9 +450,6 @@ class Player {
 				positionY > 0 ? `+${positionY}` : positionY
 			}%`
 		);
-
-		if (conf.Player.NoHud) mpvArgs.push('--no-osc');
-		if (conf.Player.NoBar) mpvArgs.push('--no-osd-bar');
 
 		if (conf.Player.mpvVideoOutput) {
 			mpvArgs.push(`--vo=${conf.Player.mpvVideoOutput}`);
