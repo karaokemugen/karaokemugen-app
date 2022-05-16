@@ -393,15 +393,12 @@ async function updateGuestAvatar(user: DBUser) {
 	const bundledAvatarStats = await fs.stat(bundledAvatarPath);
 	if (avatarStats.size !== bundledAvatarStats.size) {
 		// bundledAvatar is different from the current guest Avatar, replacing it.
-		// Since pkg is fucking up with copy(), we're going to read/write file in order to save it to a temporary directory
-		const tempFile = resolve(resolvedPath('Temp'), bundledAvatarFile);
-		await copy(bundledAvatarPath, tempFile);
 		editUser(
 			user.login,
 			user,
 			{
 				fieldname: null,
-				path: tempFile,
+				path: bundledAvatarPath,
 				originalname: null,
 				encoding: null,
 				mimetype: null,
