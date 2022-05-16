@@ -132,17 +132,14 @@ export interface Config {
 			};
 			Intros: {
 				Enabled: boolean;
-				File: string;
 				Message?: string;
 			};
 			Outros: {
 				Enabled: boolean;
-				File: string;
 				Message?: string;
 			};
 			Encores: {
 				Enabled: boolean;
-				File: string;
 				Message?: string;
 			};
 		};

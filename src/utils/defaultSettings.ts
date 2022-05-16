@@ -140,17 +140,14 @@ export const defaults: Config = {
 			},
 			Intros: {
 				Enabled: true,
-				File: null,
 				Message: null,
 			},
 			Encores: {
 				Enabled: true,
-				File: null,
 				Message: null,
 			},
 			Outros: {
 				Enabled: true,
-				File: null,
 				Message: null,
 			},
 		},

@@ -177,15 +177,12 @@ Playlist:
       Interval: 50
     Intros:
       Enabled: true
-      File: PS1-Nanami.mp4
       Message: "Let's Karaoke!"
     Outros:
       Enabled: false
-      File: Byebye.mp4
       Message: "That's all folks!"
     Encores:
       Enabled: false
-      File: encoru.mp4
       Message: 'This is the last song!'
   MysterySongs:
     # Invisible songs are not hidden (they appear as a slot in playlist)
