@@ -13,7 +13,6 @@ import { uuidRegexp } from '../lib/utils/constants';
 import logger from '../lib/utils/logger';
 import { updateAllSmartPlaylists } from '../services/smartPlaylist';
 import { DBStats } from '../types/database/database';
-import { migrateFromDBMigrate } from '../utils/hokutoNoCode';
 import { initPG, isShutdownPG, restorePG } from '../utils/postgresql';
 import sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
@@ -69,8 +68,6 @@ export async function initDB() {
 
 async function migrateDB(): Promise<Postgrator.Migration[]> {
 	logger.info('Running migrations if needed', { service });
-	// First check if database still has db-migrate and determine at which we're at.
-	await migrateFromDBMigrate();
 	const conf = getConfig();
 	const migrationDir = resolve(getState().resourcePath, 'migrations/');
 	const migrator = new Postgrator({
