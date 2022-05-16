@@ -12,8 +12,6 @@ import logger from '../lib/utils/logger';
 import { testJSON } from '../lib/utils/validators';
 import { emitWS } from '../lib/utils/ws';
 import { importFavorites } from '../services/favorites';
-import { isAllKaras } from '../services/kara';
-import { playSingleSong } from '../services/karaEngine';
 import { importPlaylist, playlistImported } from '../services/playlist';
 import { addRepo, getRepo } from '../services/repo';
 import { generateAdminPassword } from '../services/user';
@@ -259,12 +257,6 @@ export async function handleFile(file: string, username?: string, onlineToken?: 
 				} else {
 					emitWS('favoritesUpdated', username);
 				}
-				break;
-			case 'Karaoke Mugen Karaoke Data File':
-				const kara = await isAllKaras([data.data.kid]);
-				if (kara.length > 0) throw 'Song unknown in database';
-				await playSingleSong(data.data.kid);
-				if (win && !win.webContents.getURL().includes('/admin')) win.loadURL(url);
 				break;
 			case 'Karaoke Mugen Playlist File':
 				if (!username) throw 'Unable to find a user to import the file to';
