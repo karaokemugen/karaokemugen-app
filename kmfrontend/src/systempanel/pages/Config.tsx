@@ -35,12 +35,6 @@ interface Record {
 // Transforms object to dot notation
 // Transforms dot notation to object and value
 
-const configWithSelectFileInFolder = [
-	'Playlist.Medias.Intros.File',
-	'Playlist.Medias.Encores.File',
-	'Playlist.Medias.Outros.File',
-];
-
 class Config extends Component<ConfigProps, ConfigState> {
 	constructor(props) {
 		super(props);
@@ -59,9 +53,6 @@ class Config extends Component<ConfigProps, ConfigState> {
 	async componentDidMount() {
 		await this.refresh();
 		const files = this.state.files;
-		for (const elem of configWithSelectFileInFolder) {
-			files[elem] = await this.getListFiles(elem);
-		}
 		this.setState({ files: files });
 	}
 
@@ -229,22 +220,6 @@ class Config extends Component<ConfigProps, ConfigState> {
 							onChange={value => this.saveSetting(record.key, value)}
 						/>
 					)
-				) : configWithSelectFileInFolder.includes(record.key) ? (
-					<Select
-						style={{ width: '100%' }}
-						value={record.value}
-						allowClear={true}
-						onChange={value => this.saveSetting(record.key, value ? value : null)}
-					>
-						{this.state.files[record.key] &&
-							this.state.files[record.key].map(value => {
-								return (
-									<Select.Option key={Math.random()} value={value}>
-										{value}
-									</Select.Option>
-								);
-							})}
-					</Select>
 				) : (
 					<Input
 						style={{ maxWidth: '700px' }}
