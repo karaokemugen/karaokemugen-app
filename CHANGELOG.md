@@ -1,3 +1,37 @@
+# v6.1.9 - 22/05/2022
+
+## Deprecations
+
+-       Toyunda v1-3 subtitle support has been deprecated. We don't normally deprecate features but this one has been a thorn in our foot for some time, making the karaoke creation process overly complicated as we needed the original video with the sub to convert its frame data to correct time.
+
+## New Features
+
+-   Karaoke Mugen now comes with its own mpv/ffmpeg/postgres in Linux, making installation much easier for .dev, .tar.gz and now AppImage format.
+    -   AppImage is the recommended installation method as it supports auto-updates.
+
+## Improvements
+
+-   Karaoke add/creation form and tag form now warn you about adding a non-latin language to a list of title/descriptions
+-   Prevent user from removing backgrounds currently in use by the player
+
+## Fixes
+
+-   Fixed years view in public interface. It now displays the correct years and number of songs according to your enabled collections.
+-   Fixed stop player function not reporting the right status (pause instead of stop)
+-   Fixed playing karaoke not updating correctly in playlist in operator mode
+-   Fixed editPLC's profiling
+-   Fixed deleting songs in inbox not closing issues for maintainers
+-   Fixed karaoke integration, which should make base updates smoother.
+-   Fixed guests we forgot to remove completely when we updated them last version
+-   Fixed links to the documentation
+-   Fixed karabundle import from File menu in app. This didn't work anyway.
+-
+
+## Misc
+
+-   Upgraded dependencies
+-   Updated indonesian translation
+
 # v6.1.8 - 02/05/2022
 
 ## Improvements
