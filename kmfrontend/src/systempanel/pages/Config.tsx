@@ -15,14 +15,6 @@ interface ConfigProps {
 interface ConfigState {
 	config: any[];
 	error: string;
-	appPath: string;
-	dataPath: string;
-	os: string;
-	recordModal?: Record;
-	indexModal?: number;
-	newValueModal?: string | string[];
-	visibleModal: boolean;
-	files: string[];
 	filter: string;
 }
 
@@ -41,19 +33,12 @@ class Config extends Component<ConfigProps, ConfigState> {
 		this.state = {
 			config: [],
 			error: '',
-			dataPath: '',
-			appPath: '',
-			os: '',
-			visibleModal: false,
-			files: [],
 			filter: '',
 		};
 	}
 
 	async componentDidMount() {
 		await this.refresh();
-		const files = this.state.files;
-		this.setState({ files: files });
 	}
 
 	refresh = async () => {
@@ -62,9 +47,6 @@ class Config extends Component<ConfigProps, ConfigState> {
 			this.setState({
 				config: this.configKeyValue(res.config),
 				error: '',
-				appPath: res.state.appPath,
-				dataPath: res.state.dataPath,
-				os: res.state.os,
 			});
 		} catch (e) {
 			//already display
@@ -85,51 +67,6 @@ class Config extends Component<ConfigProps, ConfigState> {
 		});
 		this.saveSetting(name, value);
 	};
-
-	openFileSystemModal(record: Record, index?: number) {
-		this.setState({ recordModal: record, indexModal: index, visibleModal: true });
-	}
-
-	getConfigToSearch(key) {
-		if (key === 'Playlist.Medias.Intros.File') {
-			return 'System.MediaPath.Intros';
-		} else if (key === 'Playlist.Medias.Encores.File') {
-			return 'System.MediaPath.Encores';
-		} else if (key === 'Playlist.Medias.Outros.File') {
-			return 'System.MediaPath.Outros';
-		}
-	}
-
-	getRecord(key): Record {
-		const configToSearch = this.getConfigToSearch(key);
-		let record;
-		for (const elem of this.state.config) {
-			if (elem.key === configToSearch) {
-				record = elem;
-				return elem;
-			}
-		}
-		return record;
-	}
-
-	async getListFiles(key) {
-		const record = this.getRecord(key);
-		let files = [];
-		if (record) {
-			for (const element of record.value) {
-				try {
-					const response = await commandBackend('getFS', {
-						path: `${this.getPathForFileSystem(record.value)}${element}`,
-						onlyMedias: true,
-					});
-					files = files.concat(response.contents.filter(elem => !elem.isDirectory).map(elem => elem.name));
-				} catch (error) {
-					// Folder don't exist so skip
-				}
-			}
-		}
-		return files;
-	}
 
 	columns = [
 		{
@@ -251,15 +188,6 @@ class Config extends Component<ConfigProps, ConfigState> {
 	configBackup = async () => {
 		await commandBackend('backupSettings');
 	};
-
-	getPathForFileSystem(value: string) {
-		const regexp = this.state.os === 'win32' ? '^[a-zA-Z]:' : '^/';
-		if (value.match(regexp) === null) {
-			return `${this.state.dataPath}${this.state.os === 'win32' ? '\\' : '/'}`;
-		} else {
-			return '';
-		}
-	}
 
 	render() {
 		return (
