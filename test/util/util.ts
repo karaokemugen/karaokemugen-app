@@ -23,6 +23,7 @@ allLangs.push('zxx');
 allLangs.push('und');
 allLangs.push('mul');
 allLangs.push('qjr');
+allLangs.push('qro');
 export const allKIDs = testSongs;
 const tokens = new Map();
 
