@@ -328,7 +328,7 @@ async function createWindow() {
 }
 
 function openLink(url: string) {
-	win?.loadURL(url);
+	url.indexOf('//localhost') !== -1 ? win?.loadURL(url) : open(url);
 }
 
 export function setProgressBar(number: number) {
