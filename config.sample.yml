@@ -111,7 +111,7 @@ Player:
     # Show song information at the beginning and end of song
     SongInfo: true
     # Which language to display song information in
-    SongInfoLanguage: qjr
+    SongInfoLanguage: qro
     # Show nickname of the person who requested a song
     Nickname: true
     ConnectionInfo:
