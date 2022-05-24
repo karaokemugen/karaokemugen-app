@@ -211,7 +211,7 @@
         "name": "Karaoke Mugen Favorites",
         "description": "Karaoke Mugen Favorites",
         "role": "Editor"
-      }      
+      }
     ],
     "nsis": {
       "warningsAsErrors": false,

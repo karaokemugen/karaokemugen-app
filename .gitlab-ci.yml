@@ -136,7 +136,7 @@ test:
     - node util/extUnaccent.js
     - export DISPLAY=':99.0'
     - Xvfb :99 -screen 0 1920x1080x24 > /dev/null 2>&1 &
-    - yarn testCI --debug
+    - yarn testCI --verbose
   rules:
     - if: $SCHEDULED_RELEASES == "true"
       when: never
