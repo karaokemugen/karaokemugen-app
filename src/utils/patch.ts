@@ -2,6 +2,7 @@ import { execa } from 'execa';
 import extract from 'extract-zip';
 import { promises as fs } from 'fs';
 import { move, remove } from 'fs-extra';
+import parallel from 'p-map';
 import { resolve } from 'path';
 
 import { initHooks, stopWatchingHooks } from '../lib/dao/hook';
@@ -70,6 +71,7 @@ export async function writeFullPatchedFiles(fullFiles: DiffChanges[], repo: Repo
 		unlinked: 0,
 		written: 0,
 	};
+	const changes = [];
 	for (const change of fullFiles) {
 		const file = resolve(path, change.path);
 		if (change.type === 'delete') {
@@ -80,11 +82,21 @@ export async function writeFullPatchedFiles(fullFiles: DiffChanges[], repo: Repo
 			);
 			filesModified.unlinked += 1;
 		} else {
-			filePromises.push(fs.writeFile(file, change.contents, 'utf-8'));
+			changes.push({
+				file,
+				contents: change.contents,
+			});
 			filesModified.written += 1;
 		}
 	}
 	await Promise.all(filePromises);
+	const mapper = async (data: { file: string; contents: string }) => {
+		return fs.writeFile(data.file, data.contents, 'utf-8');
+	};
+	await parallel(changes, mapper, {
+		stopOnError: true,
+		concurrency: 32,
+	});
 	logger.info(`Wrote ${filesModified.written} and deleted ${filesModified.unlinked} files`, { service });
 }
 
