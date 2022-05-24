@@ -132,7 +132,8 @@
 		"CRITERIA_TYPE_1006": "lagu yang disembunyikan tidak tersedia secara luring",
 		"ADD_PLACEHOLDER": "Tambahkan nilai ke kriteria",
 		"EXPL": "Daftar putar pintar dibuat dari <1>kriteria</1>, kamu juga bisa menambahkan secara manual karaoke ke daftar ini.",
-		"PLAYLIST_DURATION": "<1/> Limit to <2/> <3/> (<4/> order)"
+		"PLAYLIST_DURATION": "<1/> Limit to <2/> <3/> (<4/> order)",
+		"ADD": "Tambahkan kriteria"
 	},
 	"PROFILE": "Profil",
 	"MENU": {
@@ -525,7 +526,8 @@
 		},
 		"REPOSITORIES": {
 			"TITLE": "Pengelolaan repositori",
-			"DESCRIPTION": "Repositori merupakan sumber dari karaoke. Tambah, aktifkan, atau hapus repositori dari halaman ini."
+			"DESCRIPTION": "Repositori merupakan sumber dari karaoke. Tambah, aktifkan, atau hapus repositori dari halaman ini.",
+			"DESCRIPTION_COLLECTION": "Koleksi Lagu ditujukan untuk audiens berbeda. Pilih koleksi yang kamu ingin lihat di basis data karaoke."
 		},
 		"REPOSITORIES_NEW": {
 			"TITLE": "Tambah repositori",
@@ -823,7 +825,9 @@
 		"ONLINE_ACCOUNT_INSTANCE_DESC": "Peladen adalah layanan daring yang memberikan beberapa layanan terkait Karaoke Mugen. Jika kamu tidak yakin, biarkan peladen baku ({{instance}}), atau jika kamu tahu apa yang kamu lakukan, ubah ke peladen pilihanmu.",
 		"SECURITY_CODE_DESC_CONSOLE": "Mohon untuk memasukkan juga kode keamanan 6 digit yang bisa kamu temukan dengan mencari \"SECURITY CODE FOR THIS SESSION\" di berkas log Karaoke Mugen atau di konsol.",
 		"SECURITY_CODE_USE": "Kode ini memastikan bahwa kamu benar-benar yang melakukan tindakan ini. Ini berganti setelah setiap penggunaan.",
-		"CONNECTED_MESSAGE": "Selamat, kamu telah masuk ke Karaoke Mugen, {{user}}!"
+		"CONNECTED_MESSAGE": "Selamat, kamu telah masuk ke Karaoke Mugen, {{user}}!",
+		"COLLECTIONS_CHOICE_DESC_1": "Koleksi Lagu ditujukan untuk audiens berbeda. Pilih koleksi yang kamu ingin lihat di basis data karaoke.",
+		"COLLECTIONS_CHOICE_DESC_2": "Kamu bisa mengganti koleksimu kapan pun dari bilah sistem."
 	},
 	"CONFIG": {
 		"SAVE": "Simpan",
@@ -963,7 +967,8 @@
 			"PUBLIC_DESC": "Daftar publik adalah yang mengumpulkan saran dari publik",
 			"SMART": "Pintar",
 			"BLACKLIST_DESC": "Lagu pada daftar ini akan disembunyikan dari pengguna (kecuali mereka diputihkan)",
-			"BLACKLIST": "Daftar Hitam"
+			"BLACKLIST": "Daftar Hitam",
+			"SMART_DESC": "Tentukan kriteria yang akan menentukan lagu apa yang secara otomatis akan ditambahkan ke daftar putar"
 		},
 		"TUTORIAL": {
 			"WELCOME": "Selamat datang di Karaoke Mugen! Ini adalah apa yang perlu kamu ketahui.",

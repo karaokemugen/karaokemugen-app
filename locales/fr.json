@@ -35,7 +35,6 @@
 	"MENU_FILE_IMPORT": "&Importer un fichier",
 	"MENU_FILE_IMPORT_PLAYLIST": "&Liste de lecture…",
 	"MENU_FILE_IMPORT_FAVORITES": "&Liste de favoris…",
-	"MENU_FILE_IMPORT_KARABUNDLE": "&Karaoké…",
 	"MENU_FILE_QUIT": "&Quitter",
 	"MENU_FILE_QUIT_OSX": "Quitter Karaoke Mugen",
 	"MENU_FILE_UPDATE": "&Rechercher une mise à jour…",

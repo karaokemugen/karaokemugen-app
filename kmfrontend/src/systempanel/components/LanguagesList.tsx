@@ -1,9 +1,9 @@
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import { Col, Form, Input, Row, Select, Tag, Tooltip } from 'antd';
+import { Alert, Col, Form, Input, Row, Select, Tag, Tooltip } from 'antd';
 import i18next from 'i18next';
 import { useEffect, useState } from 'react';
 
-import { getLanguagesInLocaleFromCode, getListLanguagesInLocale } from '../../utils/isoLanguages';
+import { getLanguagesInLocaleFromCode, getListLanguagesInLocale, langWithRomanization } from '../../utils/isoLanguages';
 
 interface IProps {
 	value: Record<string, string>;
@@ -94,6 +94,15 @@ export default function LanguagesList(props: IProps) {
 					</Col>
 				</Row>
 			))}
+			{!Object.keys(i18n).includes('qro') && langWithRomanization.some(v => Object.keys(i18n).includes(v)) ? (
+				<Form.Item wrapperCol={{ span: 8, offset: 4 }} style={{ textAlign: 'right' }}>
+					<Alert
+						style={{ textAlign: 'left', marginTop: '20px' }}
+						description={i18next.t('TAGS.ROMANIZATION_WARNING')}
+						type="warning"
+					/>
+				</Form.Item>
+			) : null}
 			<Form.Item label={i18next.t('TAGS.I18N_SELECT')} labelCol={{ flex: '0 1 300px' }}>
 				{selectVisible ? (
 					<Select

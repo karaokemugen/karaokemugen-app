@@ -31,6 +31,16 @@ export function isShutdownPG(): boolean {
 	return shutdownInProgress;
 }
 
+function determineEnv() {
+	const env = { ...process.env };
+	const state = getState();
+	if (process.platform === 'linux') {
+		env.LD_LIBRARY_PATH = resolve(state.appPath, state.binPath.postgres, '../lib/');
+		env.LC_ALL = 'en_US.UTF-8';
+	}
+	return env;
+}
+
 /** Kill ALL pg process - windows only - handle with care */
 async function killPG() {
 	const state = getState();
@@ -47,6 +57,7 @@ async function killPG() {
 			try {
 				await execa(binPath, options, {
 					cwd: state.binPath.postgres,
+					env: determineEnv(),
 				});
 				logger.debug(`Killed PID ${PID}`, { service });
 			} catch (err) {
@@ -77,6 +88,7 @@ export async function stopPG() {
 	const options = ['-D', pgDataDir, '-w', 'stop'];
 	await execa(binPath, options, {
 		cwd: state.binPath.postgres,
+		env: determineEnv(),
 	});
 }
 
@@ -90,7 +102,9 @@ async function getPGVersion(): Promise<PGVersion> {
 		const state = getState();
 		await detectPGBinPath();
 		const pgctlPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl);
-		const output = await execa(pgctlPath, ['--version']);
+		const output = await execa(pgctlPath, ['--version'], {
+			env: determineEnv(),
+		});
 		logger.debug(`pg_ctl stdout: ${output.stdout}`, { service });
 		const binVersion = pgctlRegex.exec(output.stdout)[1].split('.')[0];
 		return {
@@ -145,6 +159,7 @@ export async function dumpPG() {
 		await execa(binPath, options, {
 			cwd: resolve(state.appPath, state.binPath.postgres),
 			stdio: 'inherit',
+			env: determineEnv(),
 		});
 		logger.info('Database dumped to file', { service });
 	} catch (err) {
@@ -180,6 +195,7 @@ export async function restorePG() {
 		await execa(binPath, options, {
 			cwd: resolve(state.appPath, state.binPath.postgres),
 			stdio: 'inherit',
+			env: determineEnv(),
 		});
 		logger.info('Database restored from file', { service });
 	} catch (err) {
@@ -249,9 +265,11 @@ export async function initPGData() {
 			resolve(state.dataPath, conf.System.Path.DB, 'postgres/'),
 		];
 		if (state.os === 'win32') binPath = `"${binPath}"`;
+		logger.info('ENV', { service, obj: determineEnv() });
 		await execa(binPath, options, {
 			cwd: resolve(state.appPath, state.binPath.postgres),
 			stdio: 'inherit',
+			env: determineEnv(),
 		});
 	} catch (err) {
 		if (err.stdout) sentry.addErrorInfo('stdout', err.stdout);
@@ -293,6 +311,7 @@ export async function checkPG(): Promise<boolean> {
 		if (state.os === 'win32') binPath = `"${binPath}"`;
 		await execa(binPath, options, {
 			cwd: resolve(state.appPath, state.binPath.postgres),
+			env: determineEnv(),
 		});
 		logger.debug('Postgresql is running', { service });
 		return true;
@@ -312,7 +331,7 @@ export async function initPG(relaunch = true) {
 	if (state.os === 'win32') await checkAndInstallVCRedist();
 	const pgDataDir = resolve(state.dataPath, conf.System.Path.DB, 'postgres');
 	// If no data dir is present, we're going to init one
-	if (!(await fileExists(pgDataDir))) {
+	if (!(await fileExists(resolve(pgDataDir, 'PG_VERSION')))) {
 		// Simple, beautiful.
 		await initPGData();
 	} else {
@@ -358,6 +377,7 @@ export async function initPG(relaunch = true) {
 		await execa(binPath, options, {
 			cwd: pgBinDir,
 			stdio: 'ignore',
+			env: determineEnv(),
 		});
 		return true;
 	} catch (err) {
@@ -380,6 +400,7 @@ export async function initPG(relaunch = true) {
 			await execa(pgBinPath, pgBinOptions, {
 				cwd: pgBinDir,
 				encoding: null,
+				env: determineEnv(),
 			});
 		} catch (err2) {
 			// Postgres usually sends its content in non-unicode format under Windows. Go figure.

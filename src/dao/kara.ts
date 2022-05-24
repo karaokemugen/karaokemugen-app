@@ -2,7 +2,7 @@ import { pg as yesql } from 'yesql';
 
 import { buildClauses, buildTypeClauses, copyFromData, db, transaction } from '../lib/dao/database';
 import { WhereClause } from '../lib/types/database';
-import { DBKara, DBKaraBase, DBYear } from '../lib/types/database/kara';
+import { DBKara, DBKaraBase, DBYear, KaraOldData } from '../lib/types/database/kara';
 import { Kara, KaraFileV4, KaraParams } from '../lib/types/kara';
 import { getConfig } from '../lib/utils/config';
 import { tagTypes } from '../lib/utils/constants';
@@ -20,40 +20,21 @@ import {
 	sqlinsertKara,
 	sqlselectAllKIDs,
 	sqlTruncateOnlineRequested,
-	sqlupdateKara,
 } from './sql/kara';
 
 export async function selectYears(): Promise<DBYear[]> {
-	const res = await db().query(sqlgetYears);
+	const collectionsClauses = [];
+	const collections = getConfig().Karaoke.Collections;
+	for (const collection of Object.keys(collections)) {
+		if (collections[collection] === true)
+			collectionsClauses.push(`'${collection}~${tagTypes.collections}' = ANY(ak.tid)`);
+	}
+	const res = await db().query(sqlgetYears(collectionsClauses));
 	return res.rows;
 }
 
-export async function updateKara(kara: KaraFileV4) {
-	await db().query(
-		yesql(sqlupdateKara)({
-			karafile: kara.meta.karaFile,
-			mediafile: kara.medias[0].filename,
-			mediasize: kara.medias[0].filesize,
-			subfile: kara.medias[0].lyrics[0]?.filename,
-			titles: kara.data.titles,
-			titles_aliases: JSON.stringify(kara.data.titles_aliases || []),
-			titles_default_language: kara.data.titles_default_language || 'eng',
-			year: kara.data.year,
-			songorder: kara.data.songorder || null,
-			duration: kara.medias[0].duration,
-			gain: kara.medias[0].audiogain,
-			loudnorm: kara.medias[0].loudnorm,
-			created_at: new Date(kara.data.created_at),
-			modified_at: new Date(kara.data.modified_at),
-			kid: kara.data.kid,
-			comment: kara.data.comment,
-			ignoreHooks: kara.data.ignoreHooks || false,
-		})
-	);
-}
-
-export async function insertKara(kara: KaraFileV4) {
-	await db().query(
+export async function insertKara(kara: KaraFileV4): Promise<KaraOldData> {
+	const data = await db().query(
 		yesql(sqlinsertKara)({
 			karafile: kara.meta.karaFile,
 			mediafile: kara.medias[0].filename,
@@ -71,11 +52,12 @@ export async function insertKara(kara: KaraFileV4) {
 			kid: kara.data.kid,
 			repository: kara.data.repository,
 			mediasize: kara.medias[0].filesize,
-			download_status: 'DOWNLOADED',
+			download_status: 'DOWNLOADED', // Default
 			comment: kara.data.comment,
 			ignoreHooks: kara.data.ignoreHooks || false,
 		})
 	);
+	return data.rows[0];
 }
 
 export async function deleteKara(kids: string[]) {

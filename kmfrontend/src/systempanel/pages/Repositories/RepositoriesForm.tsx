@@ -26,6 +26,7 @@ interface RepositoriesFormState {
 	compareRepo?: string;
 	repositoriesValue: string[];
 	zipUpdateInProgress: boolean;
+	maintainerMode: boolean;
 }
 
 class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormState> {
@@ -42,6 +43,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 			movingMediaPath: undefined,
 			repositoriesValue: null,
 			zipUpdateInProgress: false,
+			maintainerMode: props.repository?.MaintainerMode,
 		};
 	}
 
@@ -237,7 +239,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 					valuePropName="checked"
 					name="MaintainerMode"
 				>
-					<Checkbox />
+					<Checkbox onChange={e => this.setState({ maintainerMode: e.target.checked })} />
 				</Form.Item>
 				<Form.Item
 					label={i18next.t('REPOSITORIES.BASE_DIR')}
@@ -275,7 +277,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 						onChange={value => this.formRef.current?.setFieldsValue({ PathMedias: value })}
 					/>
 				</Form.Item>
-				{this.formRef.current?.getFieldValue('MaintainerMode') ? (
+				{this.state.maintainerMode ? (
 					<>
 						<Form.Item
 							label={i18next.t('REPOSITORIES.GIT.URL')}

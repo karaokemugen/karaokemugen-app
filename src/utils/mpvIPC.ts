@@ -2,6 +2,7 @@ import { ChildProcess, spawn } from 'child_process';
 import { EventEmitter } from 'events';
 import { Socket } from 'net';
 
+import { defineMPVEnv } from '../components/mpv';
 import { MpvCommand } from '../types/mpvIPC';
 
 class Mpv extends EventEmitter {
@@ -44,7 +45,7 @@ class Mpv extends EventEmitter {
 		return new Promise<void>((resolve, reject) => {
 			setTimeout(reject, 10000, new Error('Timeout')); // Set timeout to avoid hangs
 			const command = this.genCommand();
-			const program = spawn(...command, { stdio: ['ignore', 'pipe', 'pipe'] });
+			const program = spawn(...command, { stdio: ['ignore', 'pipe', 'pipe'], env: defineMPVEnv() });
 			program.once('error', err => {
 				reject(err);
 			});

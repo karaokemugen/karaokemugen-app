@@ -87,18 +87,6 @@ gemnasium-dependency_scanning:
       when: never
     - if: $CI_COMMIT_BRANCH == "next"
     - when: never
-retire-js-dependency_scanning:
-  interruptible: true
-  stage: scan
-  rules:
-    - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
-      when: never
-    - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
-      when: never
-    - if: $SCHEDULED_RELEASES == "true"
-      when: never
-    - if: $CI_COMMIT_BRANCH == "next"
-    - when: never
 nodejs-scan-sast:
   interruptible: true
   stage: scan
@@ -229,11 +217,14 @@ pkg_linux:
     - rm -Rf release_linux
     - npm install -g electron-builder
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
+    - wget -qO- http://mugen.karaokes.moe/downloads/dist_linux-6.x.tar.gz | tar xvz
     - bash util/electronBuilder.sh -l
     - ls -la packages/
     - mkdir release_linux
     - mv packages/*.deb release_linux/
     - mv packages/*.tar.gz release_linux/
+    - mv packages/*.yml release_linux/
+    - mv packages/*.AppImage release_linux/
     - ls -la release_linux/*
   rules:
     - if: $SCHEDULED_RELEASES == "true"

@@ -59,10 +59,6 @@ const builder: MenuItemBuilderFunction = options => {
 						label: i18next.t('MENU_FILE_IMPORT_FAVORITES'),
 						click: importFile,
 					},
-					{
-						label: i18next.t('MENU_FILE_IMPORT_KARABUNDLE'),
-						click: importFile,
-					},
 				],
 			},
 			{ type: 'separator', visible: !isReduced },

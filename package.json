@@ -1,6 +1,6 @@
 {
   "name": "karaokemugen-app",
-  "version": "6.1.8",
+  "version": "6.1.9",
   "versionName": "Quintuplées Qualitatives",
   "description": "Karaoke playlist manager / player",
   "bin": {
@@ -91,19 +91,19 @@
     "cors": "^2.8.5",
     "csv-writer": "^1.6.0",
     "discord-rpc": "^4.0.1",
-    "dotenv": "^16.0.0",
+    "dotenv": "^16.0.1",
     "electron-updater": "^5.0.1",
     "execa": "^6.1.0",
-    "express": "^4.18.0",
+    "express": "^4.18.1",
     "extract-zip": "^2.0.1",
     "fastq": "^1.13.0",
     "file-type": "^17.1.1",
     "form-data": "^4.0.0",
     "fs-extra": "^10.1.0",
-    "i18next": "^21.6.16",
+    "i18next": "^21.8.3",
     "i18next-fs-backend": "^1.1.4",
     "internet-available": "^1.0.0",
-    "ip": "^1.1.5",
+    "ip": "^1.1.8",
     "js-yaml": "^4.1.0",
     "jwt-simple": "^0.5.6",
     "kar-to-ass": "^1.0.10",
@@ -115,7 +115,7 @@
     "node-id3": "^0.2.3",
     "open": "^8.4.0",
     "os-locale": "^6.0.2",
-    "p-map": "^5.3.0",
+    "p-map": "^5.4.0",
     "p-retry": "^5.1.1",
     "pg": "^8.7.3",
     "pg-copy-streams": "^6.0.2",
@@ -127,18 +127,17 @@
     "semver": "^7.3.7",
     "simple-git": "^3.7.1",
     "slug": "^5.3.0",
-    "socket.io": "^4.5.0",
-    "socket.io-client": "^4.5.0",
+    "socket.io": "^4.5.1",
+    "socket.io-client": "^4.5.1",
     "source-map-support": "^0.5.21",
-    "systeminformation": "^5.11.14",
+    "systeminformation": "^5.11.15",
     "tasklist": "^5.0.0",
     "tmi.js": "^1.8.5",
     "topological-sort": "^0.3.0",
-    "toyunda2ass": "^1.0.12",
-    "ultrastar2ass": "^1.0.22",
+    "ultrastar2ass": "^1.0.23",
     "uuid": "^8.3.2",
     "validate.js": "^0.13.1",
-    "webdav": "^4.9.0",
+    "webdav": "^4.10.0",
     "which": "^2.0.2",
     "winston": "^3.7.2",
     "winston-daily-rotate-file": "^4.6.1",
@@ -153,7 +152,7 @@
     "@types/chai": "^4.3.1",
     "@types/compression": "^1.7.2",
     "@types/cors": "^2.8.12",
-    "@types/discord-rpc": "4.0.2",
+    "@types/discord-rpc": "4.0.3",
     "@types/fs-extra": "^9.0.13",
     "@types/i18next-fs-backend": "^1.1.2",
     "@types/ip": "^1.1.0",
@@ -162,7 +161,7 @@
     "@types/lodash": "^4.14.182",
     "@types/mocha": "^9.1.1",
     "@types/multer": "^1.4.7",
-    "@types/node": "^17.0.30",
+    "@types/node": "^17.0.34",
     "@types/pg": "^8.6.5",
     "@types/pg-copy-streams": "^1.2.1",
     "@types/randomstring": "^1.1.8",
@@ -176,10 +175,10 @@
     "@typescript-eslint/eslint-plugin": "5",
     "@typescript-eslint/parser": "5",
     "chai": "^4.3.6",
-    "electron": "^18.2.0",
+    "electron": "^18.2.4",
     "electron-notarize": "^1.2.1",
-    "esbuild": "^0.14.38",
-    "eslint": "^8.14.0",
+    "esbuild": "^0.14.39",
+    "eslint": "^8.15.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-typescript": "^17.0.0",
     "eslint-config-prettier": "^8.5.0",
@@ -187,10 +186,10 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-security": "^1.5.0",
     "eslint-plugin-simple-import-sort": "^7.0.0",
-    "husky": "^7.0.4",
+    "husky": "^8.0.1",
     "i18next-scanner": "^3.1.0",
     "lint-staged": "^12.4.1",
-    "mocha": "^9.2.2",
+    "mocha": "^10.0.0",
     "postgrator-cli": "^6.0.0",
     "prettier": "2.6.2",
     "rimraf": "^3.0.2",
@@ -214,12 +213,6 @@
         "role": "Editor"
       },
       {
-        "ext": "karabundle",
-        "name": "Karaoke Mugen Karaoke Bundle",
-        "description": "Karaoke Mugen Karaoke Bundle",
-        "role": "Viewer"
-      },
-      {
         "ext": "kara.json",
         "name": "Karaoke Mugen Karaoke File",
         "description": "Karaoke Mugen Karaoke File",
@@ -235,10 +228,6 @@
     },
     "deb": {
       "depends": [
-        "postgresql",
-        "postgresql-contrib",
-        "mpv",
-        "ffmpeg",
         "gconf2",
         "gconf-service",
         "libnotify4",
@@ -290,7 +279,7 @@
           "arch": [
             "x64"
           ]
-        }  
+        }
       ],
       "publish": {
         "provider": "generic",
@@ -307,7 +296,8 @@
     "linux": {
       "target": [
         "deb",
-        "tar.gz"
+        "tar.gz",
+		"appImage"
       ],
       "vendor": "Karaoke Mugen Team",
       "executableName": "karaokemugen",

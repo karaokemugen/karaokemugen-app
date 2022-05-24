@@ -49,7 +49,6 @@ export async function next() {
 		const curr = await getCurrentSongPLCID();
 		await updatePLCVisible([curr]);
 		updatePlaylistLastEditTime(currentPlaid);
-		emitWS('playlistContentsUpdated', currentPlaid);
 		emitWS('playlistInfoUpdated', currentPlaid);
 		// Now fetch the next song
 		const song = await getNextSong();
@@ -177,7 +176,7 @@ export async function stopPlayer(now = true, endOfPlaylist = false) {
 	if (now || getState().stopping || getState().streamerPause) {
 		logger.info('Karaoke stopping NOW', { service });
 		// No need to stop in streamerPause, we're already stopped, but we'll disable the pause anyway.
-		if (!getState().streamerPause) await mpv.stop('pause');
+		if (!getState().streamerPause) await mpv.stop('stop');
 		setState({ streamerPause: false, randomPlaying: false, stopping: false });
 		stopAddASongMessage();
 		if (!endOfPlaylist && getConfig().Karaoke.ClassicMode) {

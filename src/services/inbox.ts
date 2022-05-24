@@ -152,9 +152,12 @@ export async function deleteKaraInInbox(inid: string, repoName: string, token: s
 			throw err;
 		}
 	}
-	await closeIssue(+inboxItem.gitlab_issue, repoName).catch(err => {
+	try {
+		const numberIssue = +inboxItem.gitlab_issue.split('/')[inboxItem.gitlab_issue.split('/').length - 1];
+		await closeIssue(numberIssue, repoName);
+	} catch (err) {
 		logger.warn(`Unable to close issue : ${err}`, { service, obj: err });
-	});
+	}
 }
 
 export async function markKaraAsDownloadedInInbox(inid: string, repoName: string, token: string) {

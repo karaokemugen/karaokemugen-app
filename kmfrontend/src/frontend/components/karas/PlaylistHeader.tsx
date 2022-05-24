@@ -318,7 +318,10 @@ function PlaylistHeader(props: IProps) {
 					<SelectWithIcon
 						list={getListToSelect()}
 						value={playlist?.plaid?.toString()}
-						onChange={(value: any) => setPlaylistInfo(props.side, context, value)}
+						onChange={(value: any) => {
+							if (props.searchMenuOpen) props.toggleSearchMenu();
+							setPlaylistInfo(props.side, context, value);
+						}}
 					/>
 
 					<div className="btn-group">
