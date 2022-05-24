@@ -211,12 +211,6 @@
         "name": "Karaoke Mugen Favorites",
         "description": "Karaoke Mugen Favorites",
         "role": "Editor"
-      },
-      {
-        "ext": "kara.json",
-        "name": "Karaoke Mugen Karaoke File",
-        "description": "Karaoke Mugen Karaoke File",
-        "role": "Viewer"
       }
     ],
     "nsis": {
