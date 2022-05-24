@@ -197,12 +197,6 @@
 	"INTERFACE_RESTRICTED": "Tidak ada saran",
 	"INTERFACE_CLOSED": "Tutup",
 	"PROBLEMATIC_SONGS": "Lagu Bermasalah",
-	"SYSTEM_MESSAGES": {
-		"ZIP_MIGRATION_FAILED": {
-			"TITLE": "Masalah migrasi",
-			"BODY": "Repositori {{repo}} tidak dapat dimigrasikan ke sistem pengelolaan repositori yang baru. Repositori tersebut dinonaktifkan, kamu bisa mengaktifkannya lagi dengan pergi ke bilah sistem dan mengaturnya dengan benar. Kamu bisa menggunakan tombol Hubungi kami jika kamu perlu bantuan."
-		}
-	},
 	"GIT": {
 		"CURRENT_ACTION": "Aksi Git",
 		"METHODS": {

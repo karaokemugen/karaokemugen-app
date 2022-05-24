@@ -136,8 +136,6 @@
 		"CRITERIA_TYPE_1001": "Chanson",
 		"CRITERIA_TYPE_1002": "Plus long que (mm:ss)",
 		"CRITERIA_TYPE_1003": "Plus court que (mm:ss)",
-		"CRITERIA_TYPE_1004": "Titre contenant",
-		"CRITERIA_TYPE_1005": "Tag contenant",
 		"CRITERIA_TYPE_1006": "Cacher les chansons indisponibles hors ligne",
 		"LABEL": {
 			"TAG": "Les karaokés {{verb}} {{tag}} sont sur liste noire.",
@@ -160,9 +158,7 @@
 			"YEAR": "Les karaokés de l'année {{year}} sont dans la liste.",
 			"KID": "Ce karaoké est dans la liste.",
 			"LONGER": "Les karaokés de plus de {{time}} secondes sont dans la liste.",
-			"SHORTER": "Les karaokés de moins de {{time}} secondes sont dans la liste.",
-			"TITLE": "Les karaokés contenant {{title}} dans le titre sont dans la liste.",
-			"TAG_NAME": "Les karaokés avec un tag contenant {{title}} sont dans la liste."
+			"SHORTER": "Les karaokés de moins de {{time}} secondes sont dans la liste."
 		},
 		"EXPL": "La liste intelligente est créée à partir des <1>critères</1>, vous pouvez également en ajouter manuellement à cette liste."
 	},

@@ -215,12 +215,6 @@
 	"INTERFACE_RESTRICTED": "No suggestions",
 	"INTERFACE_CLOSED": "Closed",
 	"PROBLEMATIC_SONGS": "Problematic Songs",
-	"SYSTEM_MESSAGES": {
-		"ZIP_MIGRATION_FAILED": {
-			"TITLE": "Migration problem",
-			"BODY": "The {{repo}} repository wasn't able to be migrated to the new repositories management system. The repository was disabled, you can enable it again by going into the system panel and configure it correctly. You can use the Contact us button if you need help."
-		}
-	},
 	"GIT": {
 		"CURRENT_ACTION": "Git action",
 		"METHODS": {

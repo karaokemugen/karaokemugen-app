@@ -229,14 +229,6 @@ export async function decodeCriteriaReason(settings: SettingsStoreData, criteria
 			args[0] = 'SHORTER';
 			args[1] = { time: criteria.value };
 			break;
-		case 1004:
-			args[0] = 'TITLE';
-			args[1] = { title: criteria.value };
-			break;
-		case 1005:
-			args[0] = 'TAG_NAME';
-			args[1] = { title: criteria.value };
-			break;
 		default:
 			const tag = await commandBackend('getTag', { tid: criteria.value });
 			args[1] = {

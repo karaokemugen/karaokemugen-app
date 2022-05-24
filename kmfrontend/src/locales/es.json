@@ -28,8 +28,6 @@
 		"CRITERIA_DESC": "Seleccionar y añadir criterios para incluir canciones específicas automáticamente.",
 		"EXPL": "La playlist inteligente se crea de <1>los criterios</1>, también puedes añadir canciones manualmente a la lista.",
 		"LABEL": {
-			"TAG_NAME": "Las canciones con una etiqueta que contiene {{title}} están en la lista.",
-			"TITLE": "Las canciones que contienen {{title}} en el título están en la lista.",
 			"SHORTER": "Las canciones de menos de {{time}} segundos están en la lista.",
 			"LONGER": "Las canciones de más de {{time}} segundos están en la lista.",
 			"KID": "Esta canción está en la lista.",
@@ -53,8 +51,6 @@
 			"TAG": "{{verb}} {{tag}} de esta canción está en la lista negra."
 		},
 		"CRITERIA_TYPE_1006": "Ocultar canciones no disponibles offline",
-		"CRITERIA_TYPE_1005": "Etiqueta contiene",
-		"CRITERIA_TYPE_1004": "Título contiene",
 		"CRITERIA_TYPE_1003": "Más corto que (mm:ss)",
 		"CRITERIA_TYPE_1002": "Más largo que (mm:ss)",
 		"CRITERIA_TYPE_1001": "Canción",

@@ -94,9 +94,7 @@
 	"CRITERIA": {
 		"OR": "ATAU",
 		"PLAYLIST_DURATION_ORDER_MORE_RECENT": "terbaru",
-		"CRITERIA_TYPE_1005": "Tanda mengandung",
 		"LABEL": {
-			"TAG_NAME": "Karaoke dengan tanda yang mengandung {{title}} ada di daftar.",
 			"TAG_VERBS": {
 				"1": "dari",
 				"2": "dinyanyikan oleh",
@@ -114,7 +112,6 @@
 			"KID": "Karaoke ini ada di daftar.",
 			"LONGER": "Karaoke yang lebih panjang dari {{time}} detik ada di daftar.",
 			"SHORTER": "Karaoke yang lebih pendek dari {{time}} detik ada di daftar.",
-			"TITLE": "Karaoke yang mengandung {{title}} di judul ada di daftar.",
 			"TAG": "Karaoke {{verb}} {{tag}} ada dalam daftar hitam."
 		},
 		"AND": "DAN",
@@ -128,7 +125,6 @@
 		"CRITERIA_TYPE_1001": "Lagu",
 		"CRITERIA_TYPE_1002": "Lebih panjang dari (mm:ss)",
 		"CRITERIA_TYPE_1003": "Lebih pendek dari (mm:ss)",
-		"CRITERIA_TYPE_1004": "Judul mengandung",
 		"CRITERIA_TYPE_1006": "lagu yang disembunyikan tidak tersedia secara luring",
 		"ADD_PLACEHOLDER": "Tambahkan nilai ke kriteria",
 		"EXPL": "Daftar putar pintar dibuat dari <1>kriteria</1>, kamu juga bisa menambahkan secara manual karaoke ke daftar ini.",

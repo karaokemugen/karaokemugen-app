@@ -215,12 +215,6 @@
 	"INTERFACE_RESTRICTED": "Pas de suggestions",
 	"INTERFACE_CLOSED": "Fermée",
 	"PROBLEMATIC_SONGS": "Chansons problématiques",
-	"SYSTEM_MESSAGES": {
-		"ZIP_MIGRATION_FAILED": {
-			"TITLE": "Problème de migration",
-			"BODY": "Le dépôt {{repo}} n'a pas pu être migré vers le nouveau système de gestion des dépôts. Le dépôt a ainsi été désactivé, vous pouvez le restaurer en le configurant correctement dans le panneau système. Vous pouvez nous contacter pour de l'aide avec le bouton en haut."
-		}
-	},
 	"GIT": {
 		"CURRENT_ACTION": "Action Git en cours",
 		"METHODS": {

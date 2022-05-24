@@ -135,8 +135,6 @@
 		"CRITERIA_TYPE_1001": "Song",
 		"CRITERIA_TYPE_1002": "Longer than (mm:ss)",
 		"CRITERIA_TYPE_1003": "Shorter than (mm:ss)",
-		"CRITERIA_TYPE_1004": "Title contains",
-		"CRITERIA_TYPE_1005": "Tag contains",
 		"CRITERIA_TYPE_1006": "Hide songs not available offline",
 		"LABEL": {
 			"TAG": "The karaokes {{verb}} {{tag}} are on the blacklist.",
@@ -159,9 +157,7 @@
 			"YEAR": "The karaokes from year {{year}} are on the list.",
 			"KID": "This karaokes is on the list.",
 			"LONGER": "The karaokes longer than {{time}} seconds are on the list.",
-			"SHORTER": "The karaokes shorter than {{time}} seconds are on the list.",
-			"TITLE": "The karaoke containing {{title}} in the title are on the list.",
-			"TAG_NAME": "The karaoke with a tag containing {{title}} are on the list."
+			"SHORTER": "The karaokes shorter than {{time}} seconds are on the list."
 		},
 		"EXPL": "The smart playlist is created from <1>the criteria</1>, you can also add manually karaokes to this list."
 	},
