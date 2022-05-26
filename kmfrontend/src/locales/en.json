@@ -139,7 +139,7 @@
 		"CRITERIA_TYPE_1005": "Tag contains",
 		"CRITERIA_TYPE_1006": "Hide songs not available offline",
 		"LABEL": {
-			"TAG": "The karaokes {{verb}} {{tag}} are on the blacklist.",
+			"TAG": "The karaokes {{verb}} {{tag}} are on the list.",
 			"TAG_VERBS": {
 				"1": "from",
 				"2": "sung by",
@@ -154,7 +154,9 @@
 				"11": "that originated from",
 				"12": "attached to the genre",
 				"13": "attached to the platform",
-				"14": "that are"
+				"14": "that are",
+				"15": "with the warning",
+				"16": "included in the collection"
 			},
 			"YEAR": "The karaokes from year {{year}} are on the list.",
 			"KID": "This karaokes is on the list.",

@@ -140,7 +140,7 @@
 		"CRITERIA_TYPE_1005": "Tag contenant",
 		"CRITERIA_TYPE_1006": "Cacher les chansons indisponibles hors ligne",
 		"LABEL": {
-			"TAG": "Les karaokés {{verb}} {{tag}} sont sur liste noire.",
+			"TAG": "Les karaokés {{verb}} {{tag}} sont dans la liste.",
 			"TAG_VERBS": {
 				"1": "de la série",
 				"2": "chantés par",
@@ -155,7 +155,9 @@
 				"11": "originaires de",
 				"12": "attachés au thème",
 				"13": "attachés à la plateforme",
-				"14": "qui sont une version"
+				"14": "qui sont une version",
+				"15": "avec le warning",
+				"16": "inclus dans la collection"
 			},
 			"YEAR": "Les karaokés de l'année {{year}} sont dans la liste.",
 			"KID": "Ce karaoké est dans la liste.",

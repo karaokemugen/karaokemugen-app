@@ -238,6 +238,7 @@ export async function decodeCriteriaReason(settings: SettingsStoreData, criteria
 			args[1] = { title: criteria.value };
 			break;
 		default:
+			args[0] = 'TAG';
 			const tag = await commandBackend('getTag', { tid: criteria.value });
 			args[1] = {
 				tag: getTagInLocale(settings, tag),
