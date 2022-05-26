@@ -51,7 +51,7 @@ async function getAppCommitSHA(): Promise<string> {
 export async function preInit() {
 	const state = getState();
 	await configureLocale();
-	await configureLogger(state.dataPath, argv.opts().debug || app?.commandLine.hasSwitch('debug'), true);
+	await configureLogger(state.dataPath, argv.opts().verbose || app?.commandLine.hasSwitch('verbose'), true);
 	resetSecurityCode();
 	setState({ os: process.platform });
 	setupFromCommandLineArgs(argv, app ? app.commandLine : null);
