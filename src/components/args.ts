@@ -50,7 +50,7 @@ export function setupFromCommandLineArgs(argv: any, cmdline: CommandLine) {
 		logger.info('CLI mode activated', { service });
 		setState({ opt: { cli: true } });
 	}
-	if (argv.opts().debug) {
+	if (argv.opts().verbose) {
 		logger.info('Debug messages enabled on console', { service });
 		setState({ opt: { debug: true } });
 		process.env.NODE_ENV = 'development';
