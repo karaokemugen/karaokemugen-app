@@ -112,7 +112,7 @@
 			"KID": "Karaoke ini ada di daftar.",
 			"LONGER": "Karaoke yang lebih panjang dari {{time}} detik ada di daftar.",
 			"SHORTER": "Karaoke yang lebih pendek dari {{time}} detik ada di daftar.",
-			"TAG": "Karaoke {{verb}} {{tag}} ada dalam daftar hitam."
+			"TAG": "Karaoke {{verb}} {{tag}} ada di daftar."
 		},
 		"AND": "DAN",
 		"TYPE_SMART": "Jenis daftar putar pintar",

@@ -48,7 +48,7 @@
 				"1": "de",
 				"2": "cantado por"
 			},
-			"TAG": "{{verb}} {{tag}} de esta canción está en la lista negra."
+			"TAG": "{{verb}} {{tag}} de esta canción está en la lista."
 		},
 		"CRITERIA_TYPE_1006": "Ocultar canciones no disponibles offline",
 		"CRITERIA_TYPE_1003": "Más corto que (mm:ss)",

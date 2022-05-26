@@ -21,7 +21,7 @@
 				"14": "die sind",
 				"3": "vom Typ"
 			},
-			"TAG": "Die Karaokes {{verb}} {{tag}} sind auf der Blacklist.",
+			"TAG": "Die Karaokes {{verb}} {{tag}} sind auf der Liste.",
 			"YEAR": "Karaokes vom Jahr {{year}} sind auf der liste.",
 			"LONGER": "Karaokes länger als {{time}} Sekunden sind auf der Liste.",
 			"KID": "Dieses Karaoke ist auf der Liste.",
