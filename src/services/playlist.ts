@@ -502,7 +502,8 @@ export async function addKaraToPlaylist(
 	pos?: number,
 	ignoreQuota?: boolean,
 	refresh = true,
-	criterias?: AggregatedCriteria[]
+	criterias?: AggregatedCriteria[],
+	throwOnMissingKara = true
 ) {
 	requester = requester.toLowerCase();
 	let errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR';
@@ -524,7 +525,8 @@ export async function addKaraToPlaylist(
 		kids.forEach(kid => {
 			if (!allKaras.has(kid)) karasUnknown.push(kid);
 		});
-		if (karasUnknown.length > 0) throw { code: 404, msg: 'One of the karaokes does not exist' };
+		if (karasUnknown.length > 0 && throwOnMissingKara)
+			throw { code: 404, msg: 'One of the karaokes does not exist' };
 		profile('addKaraToPL-checkKIDExistence');
 		// Sort karas from our database by the list that was provided to this function, so songs are added in the correct order
 		profile('addKaraToPL-sort');
