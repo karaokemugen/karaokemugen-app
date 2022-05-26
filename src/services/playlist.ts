@@ -502,7 +502,6 @@ export async function addKaraToPlaylist(
 	refresh = true,
 	criterias?: AggregatedCriteria[]
 ) {
-	logger.debug(`Trying to add ${kids.join(', ')}`, { service });
 	requester = requester.toLowerCase();
 	let errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR';
 	const conf = getConfig();
