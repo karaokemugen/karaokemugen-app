@@ -27,6 +27,7 @@ interface RepositoriesFormState {
 	repositoriesValue: string[];
 	zipUpdateInProgress: boolean;
 	maintainerMode: boolean;
+	onlineMode: boolean;
 }
 
 class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormState> {
@@ -44,6 +45,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 			repositoriesValue: null,
 			zipUpdateInProgress: false,
 			maintainerMode: props.repository?.MaintainerMode,
+			onlineMode: props.repository?.Online,
 		};
 	}
 
@@ -179,7 +181,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 					valuePropName="checked"
 					name="Online"
 				>
-					<Checkbox />
+					<Checkbox onChange={e => this.setState({ onlineMode: e.target.checked })} />
 				</Form.Item>
 				<Form.Item
 					label={i18next.t('REPOSITORIES.ENABLED')}
@@ -277,7 +279,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 						onChange={value => this.formRef.current?.setFieldsValue({ PathMedias: value })}
 					/>
 				</Form.Item>
-				{this.state.maintainerMode ? (
+				{this.state.maintainerMode && this.state.onlineMode ? (
 					<>
 						<Form.Item
 							label={i18next.t('REPOSITORIES.GIT.URL')}
