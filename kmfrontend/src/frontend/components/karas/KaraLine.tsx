@@ -164,15 +164,8 @@ function KaraLine(props: IProps) {
 				};
 			}
 		} else {
-			if (props.kara.children?.length > 0) {
-				props.openKara(props.kara);
-				return;
-			}
-			url = 'addKaraToPublicPlaylist';
-			data = {
-				requestedby: context.globalState.auth.data.username,
-				kids: [props.kara.kid],
-			};
+			props.openKara(props.kara);
+			return;
 		}
 		try {
 			const response = await commandBackend(url, data);
