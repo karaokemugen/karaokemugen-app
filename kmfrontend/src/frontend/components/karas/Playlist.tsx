@@ -327,7 +327,7 @@ function Playlist(props: IProps) {
 								{value.Name}
 							</a>
 						))}
-						<a href="https://suggest.karaokes.moe">suggest.karaokes.moe</a>
+						<a href="https://kara.moe/suggest">kara.moe/suggest</a>
 					</div>
 				) : null}
 			</>
