@@ -1,5 +1,5 @@
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Checkbox, Divider, Layout, Modal, Table } from 'antd';
+import { Button, Checkbox, Divider, Input, Layout, Modal, Table } from 'antd';
 import i18next from 'i18next';
 import { Component } from 'react';
 import { Link } from 'react-router-dom';
@@ -12,6 +12,7 @@ interface UserListState {
 	users: User[];
 	deleteModal: boolean;
 	user: User;
+	filter: string;
 }
 
 class UserList extends Component<unknown, UserListState> {
@@ -21,11 +22,16 @@ class UserList extends Component<unknown, UserListState> {
 			users: [],
 			deleteModal: false,
 			user: {},
+			filter: '',
 		};
 	}
 
 	componentDidMount() {
 		this.refresh();
+	}
+
+	changeFilter(event) {
+		this.setState({ filter: event.target.value });
 	}
 
 	refresh = async () => {
@@ -53,7 +59,19 @@ class UserList extends Component<unknown, UserListState> {
 							<PlusOutlined />
 						</Button>
 					</Link>
-					<Table dataSource={this.state.users} columns={this.columns} rowKey="nickname" />
+					<Input.Search
+						style={{ marginBottom: '0.75em' }}
+						placeholder={i18next.t('SEARCH_FILTER')}
+						value={this.state.filter}
+						onChange={event => this.changeFilter(event)}
+					/>
+					<Table
+						dataSource={this.state.users.filter(
+							user => user.login.includes(this.state.filter) || user.nickname.includes(this.state.filter)
+						)}
+						columns={this.columns}
+						rowKey="nickname"
+					/>
 					<Modal
 						title={i18next.t('USERS.USER_DELETED_CONFIRM')}
 						visible={this.state.deleteModal}
