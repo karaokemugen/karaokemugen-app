@@ -667,7 +667,7 @@ class Player {
 			}
 		).catch(err => {
 			logger.error('Cannot start MPV', { service, obj: err });
-			sentry.error(err, 'Fatal');
+			sentry.error(err, 'fatal');
 			throw err;
 		});
 		return true;
@@ -949,7 +949,7 @@ class Players {
 		} catch (err) {
 			errorStep(i18n.t('ERROR_START_PLAYER'));
 			logger.error('Unable to start player', { service, obj: err });
-			sentry.error(err, 'Fatal');
+			sentry.error(err, 'fatal');
 			throw err;
 		}
 	}

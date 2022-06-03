@@ -63,7 +63,7 @@ export async function playSingleSong(kid?: string, randomPlaying = false) {
 		logger.error('Error during song playback', { service, obj: err });
 		emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYER_PLAY', err));
 		// Not sending to sentry when media source couldn't be found
-		if (!err.message.includes('No media source')) sentry.error(err, 'Warning');
+		if (!err.message.includes('No media source')) sentry.error(err, 'warning');
 		stopPlayer(true);
 		throw err;
 	}
@@ -165,7 +165,7 @@ export async function playCurrentSong(now: boolean) {
 			if (conf.Karaoke.Poll.Enabled && !conf.Karaoke.StreamerMode.Enabled) startPoll();
 		} catch (err) {
 			logger.error('Error during song playback', { service, obj: err });
-			if (!err.message.includes('No media source')) sentry.error(err, 'Warning');
+			if (!err.message.includes('No media source')) sentry.error(err, 'warning');
 			emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYER_PLAY', err));
 			if (getState().player.playerStatus !== 'stop') {
 				logger.warn('Skipping playback for this song', { service });

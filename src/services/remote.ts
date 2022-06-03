@@ -52,7 +52,7 @@ async function startRemote(): Promise<RemoteSuccess> {
 				{ service, obj: err }
 			);
 		} else {
-			sentry.error(err, 'Warning');
+			sentry.error(err, 'warning');
 		}
 		throw err;
 	}

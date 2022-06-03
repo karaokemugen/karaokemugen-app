@@ -159,7 +159,7 @@ export async function initEngine() {
 			} catch (err) {
 				// Non-blocking
 				logger.error('Failed to init online system', { service, obj: err });
-				sentry.error(err, 'Warning');
+				sentry.error(err, 'warning');
 			}
 		}
 		try {
