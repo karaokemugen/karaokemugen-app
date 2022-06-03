@@ -61,7 +61,7 @@ export async function postMigrationTasks(migrations: Postgrator.Migration[], did
 					world.Enabled = false;
 					editRepo('world.karaokes.moe', world, false).catch(err => {
 						logger.warn('Unable to edit repository world following migration', { service, obj: err });
-						Sentry.error(err, 'Warning');
+						Sentry.error(err, 'warning');
 					});
 				}
 				break;

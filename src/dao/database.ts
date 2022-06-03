@@ -125,7 +125,7 @@ export async function initDBSystem(): Promise<Postgrator.Migration[]> {
 		}
 		logger.error('Database system initialization failed', { service, obj: err });
 		errorStep(i18next.t('ERROR_CONNECT_PG'));
-		if (!isShutdownPG()) sentry.error(err, 'Fatal');
+		if (!isShutdownPG()) sentry.error(err, 'fatal');
 		throw err;
 	}
 	if (!(await getInstanceID())) {

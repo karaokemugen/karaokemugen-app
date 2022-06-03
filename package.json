@@ -78,7 +78,7 @@
   "private": true,
   "dependencies": {
     "@sentry/electron": "^3.0.7",
-    "@sentry/node": "^6.19.7",
+    "@sentry/node": "^7.0.0",
     "agentkeepalive": "^4.2.1",
     "ass-compiler": "^0.1.4",
     "async-await-parallel": "^1.0.0",
@@ -265,7 +265,7 @@
         {
           "target": "dmg",
           "arch": [
-              "x64"
+            "x64"
           ]
         },
         {
@@ -291,7 +291,7 @@
       "target": [
         "deb",
         "tar.gz",
-		"appImage"
+        "appImage"
       ],
       "vendor": "Karaoke Mugen Team",
       "executableName": "karaokemugen",

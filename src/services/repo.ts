@@ -254,7 +254,7 @@ export async function updateZipRepo(name: string) {
 			});
 			sentry.addErrorInfo('initialCommit', LocalCommit);
 			sentry.addErrorInfo('toCommit', LatestCommit);
-			sentry.error(err, 'Warning');
+			sentry.error(err, 'warning');
 			await saveSetting(`commit-${repo.Name}`, null);
 			updateRunning = false;
 			await updateZipRepo(name);

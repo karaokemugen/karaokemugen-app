@@ -80,7 +80,7 @@ async function savePayload(payload: any, host: string) {
 	} catch (err) {
 		// Non-fatal
 		logger.warn('Could not save payload', { service, obj: err });
-		sentry.error(err, 'Warning');
+		sentry.error(err, 'warning');
 	}
 }
 
