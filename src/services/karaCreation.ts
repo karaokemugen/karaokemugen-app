@@ -17,7 +17,7 @@ import { consolidateTagsInRepo } from './tag';
 
 const service = 'KaraCreation';
 
-export async function editKara(editedKara: EditedKara) {
+export async function editKara(editedKara: EditedKara, refresh = true) {
 	const task = new Task({
 		text: 'EDITING_SONG',
 		subtext: editedKara.kara.data.titles[editedKara.kara.data.titles_default_language],
@@ -123,7 +123,7 @@ export async function editKara(editedKara: EditedKara) {
 		const karaDest = resolve(resolvedPathRepos('Karaokes', kara.data.repository)[0], `${karaFile}.kara.json`);
 		await fs.unlink(karaPath);
 		await writeKara(karaDest, kara);
-		await integrateKaraFile(karaDest, kara, false, true);
+		await integrateKaraFile(karaDest, kara, false, refresh);
 		await consolidateTagsInRepo(kara);
 	} catch (err) {
 		logger.error('Error while editing kara', { service, obj: err });
