@@ -19,7 +19,7 @@ import { Tag } from '../lib/types/tag';
 import { resolvedPathRepos } from '../lib/utils/config';
 import { audioFileRegexp, getTagTypeName } from '../lib/utils/constants';
 import { fileExists, resolveFileInDirs } from '../lib/utils/files';
-import logger from '../lib/utils/logger';
+import logger, { profile } from '../lib/utils/logger';
 import { createImagePreviews } from '../lib/utils/previews';
 import Task from '../lib/utils/taskManager';
 import { adminToken } from '../utils/constants';
@@ -202,7 +202,9 @@ export async function batchEditKaras(plaid: string, action: 'add' | 'remove', ti
 			service,
 		});
 		for (const plc of pl) {
+			profile('getKaraBatch');
 			const kara = await getKara(plc.kid, adminToken);
+			profile('getKaraBatch');
 			if (!kara) {
 				logger.warn(`Batch tag edit : kara ${plc.kid} unknown. Ignoring.`, { service });
 				continue;
@@ -220,15 +222,22 @@ export async function batchEditKaras(plaid: string, action: 'add' | 'remove', ti
 				kara[tagType].push(tag);
 			}
 			if (modified) {
-				await editKara({
-					kara: formatKaraV4(kara),
-				});
+				profile('editKaraBatch');
+				await editKara(
+					{
+						kara: formatKaraV4(kara),
+					},
+					false
+				);
+				profile('editKaraBatch');
 			} else {
 				logger.info(`Batch edit tag : skipping ${kara.karafile} since no actions taken`, { service });
 			}
 			task.incr();
 		}
 		logger.info('Batch tag edit finished', { service });
+		await refreshKarasAfterDBChange('ALL');
+		updateAllSmartPlaylists();
 	} catch (err) {
 		logger.info('Batch tag edit failed', { service, obj: err });
 	} finally {
