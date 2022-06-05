@@ -1,8 +1,8 @@
-# v6.1.9 - 22/05/2022
+# v6.1.9 - 24/05/2022
 
 ## Deprecations
 
--       Toyunda v1-3 subtitle support has been deprecated. We don't normally deprecate features but this one has been a thorn in our foot for some time, making the karaoke creation process overly complicated as we needed the original video with the sub to convert its frame data to correct time.
+-   Toyunda v1-3 subtitle support has been deprecated. We don't normally deprecate features but this one has been a thorn in our foot for some time, making the karaoke creation process overly complicated as we needed the original video with the sub to convert its frame data to correct time.
 
 ## New Features
 
@@ -25,7 +25,6 @@
 -   Fixed guests we forgot to remove completely when we updated them last version
 -   Fixed links to the documentation
 -   Fixed karabundle import from File menu in app. This didn't work anyway.
--
 
 ## Misc
 
