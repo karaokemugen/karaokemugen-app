@@ -83,7 +83,7 @@ export function commandBackend(name: string, body?: any, loading = false, timeou
 				} else if (err && data?.message?.code && typeof data.data !== 'object') {
 					displayMessage('error', i18next.t(`ERROR_CODES.${data.message.code}`, { data: data.data }));
 				}
-				err ? reject(data) : resolve(data);
+				err ? reject(new Error(JSON.stringify(data))) : resolve(data);
 			}
 		);
 	});
