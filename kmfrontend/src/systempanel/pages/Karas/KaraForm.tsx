@@ -205,7 +205,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		const mediaVersion =
 			mediaVersionArr.length > 1 ? mediaVersionArr[mediaVersionArr.length - 1].replace(' Vers', '') : 'Default';
 		// Convert Kara to KaraFileV4
-		const KaraFile: KaraFileV4 = {
+		const karaFile: KaraFileV4 = {
 			header: {
 				version: 4,
 				description: 'Karaoke Mugen Karaoke Data File',
@@ -264,16 +264,11 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 			},
 			meta: {},
 		};
-		if (this.props.kara) {
-			// If it's an edit
-			return {
-				kara: KaraFile,
-				modifiedLyrics: this.state.subfileIsTouched,
-				modifiedMedia: this.state.mediafileIsTouched,
-			};
-		} else {
-			return KaraFile;
-		}
+		return {
+			kara: karaFile,
+			modifiedLyrics: this.state.subfileIsTouched,
+			modifiedMedia: this.state.mediafileIsTouched,
+		};
 	};
 
 	handleSubmitFailed = ({ values, errorFields }) => {

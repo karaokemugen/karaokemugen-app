@@ -4,7 +4,7 @@ import { basename, extname, resolve } from 'path';
 import { applyKaraHooks } from '../lib/dao/hook';
 import { extractVideoSubtitles, verifyKaraData, writeKara } from '../lib/dao/karafile';
 import { defineFilename, determineMediaAndLyricsFilenames, processSubfile } from '../lib/services/karaCreation';
-import { EditedKara, KaraFileV4 } from '../lib/types/kara.d';
+import { EditedKara } from '../lib/types/kara.d';
 import { resolvedPath, resolvedPathRepos } from '../lib/utils/config';
 import { resolveFileInDirs, smartMove } from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
@@ -137,7 +137,8 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 	}
 }
 
-export async function createKara(kara: KaraFileV4) {
+export async function createKara(editedKara: EditedKara) {
+	const kara = editedKara.kara;
 	const task = new Task({
 		text: 'CREATING_SONG',
 		subtext: kara.data.titles[kara.data.titles_default_language],
