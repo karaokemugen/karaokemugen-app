@@ -4,7 +4,7 @@
 	"MY_PLAYLIST": "Daftar putar saya",
 	"CURRENT_PLAYLIST": "Daftar putar",
 	"PUBLIC_PLAYLIST": "Saran publik",
-	"GO_TO": "Pergi ke",
+	"GO_TO": "Pergi ke $url",
 	"VOTE_MESSAGE_SCREEN_WINNER": "Kita punya pemenang!",
 	"NEXT_SONG": "Lagu selanjutnya",
 	"INIT_DUMPDB": "Menyimpan basis data…",

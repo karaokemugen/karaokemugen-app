@@ -180,7 +180,7 @@
 			"DISPLAY_CONNECTION_INFO_TOOLTIP": "Es el \"Ve a https://xxx !\"",
 			"DISPLAY_NICKNAME_TOOLTIP": "Muestra al pie de la pantalla al principio y final de una canción",
 			"LIVE_COMMENTS_TOOLTIP": "Los mensajes del chat se mostrarán en el reproductor (Cuidado, configurar correctamente AutoMod).",
-			"DISPLAY_CONNECTION_INFO_MESSAGE_TOOLTIP": "Personalizar el mensaje antes del link de acceso, para motivar a tu audiencia o darles más direcciones.",
+			"DISPLAY_CONNECTION_INFO_MESSAGE_TOOLTIP": "Personalizar el mensaje antes del link de acceso, para motivar a tu audiencia o darles más direcciones. Usa $url para indicar la URL para acceder a tu karaoke. Así: \"¡Ir a $url!\"",
 			"DISPLAY_AVATAR": "Mostrar avatar en karaokes",
 			"LIVE_COMMENTS": "Comentarios en vivo",
 			"DISPLAY_CONNECTION_INFO": "Mostrar información de conexión",

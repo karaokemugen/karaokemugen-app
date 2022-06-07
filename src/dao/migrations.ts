@@ -4,6 +4,7 @@ import Postgrator from 'postgrator';
 
 import { win } from '../electron/electron';
 import { refreshTags } from '../lib/dao/tag';
+import { setConfig } from '../lib/utils/config';
 import logger from '../lib/utils/logger';
 import { editRepo, getRepo } from '../services/repo';
 import { migrateBLWLToSmartPLs } from '../utils/hokutoNoCode';
@@ -67,6 +68,18 @@ export async function postMigrationTasks(migrations: Postgrator.Migration[], did
 				break;
 			case 'reworkTagViewCollections':
 				await refreshTags();
+				break;
+			// 7.0 migrations
+			case 'aBarrelRoll':
+				setConfig({
+					Player: {
+						Display: {
+							ConnectionInfo: {
+								Message: i18next.t('GO_TO'),
+							},
+						},
+					},
+				});
 				break;
 			default:
 		}

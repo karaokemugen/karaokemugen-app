@@ -115,10 +115,9 @@ Player:
     # Show nickname of the person who requested a song
     Nickname: true
     ConnectionInfo:
-      # Enable display of connection messages
       Enabled: true
-      # Additional message prepended to the connection URL
-      #Message: 'Connect to Wifi xxx'
+      # Message to display to invite people to connect (or not)
+      Message: 'Log in at $url to add songs!'
       # Override host/IP address
       Host: '192.168.0.1'
   # Override mpv's video output driver

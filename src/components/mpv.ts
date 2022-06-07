@@ -1469,8 +1469,8 @@ class Players {
 				playerState.mediaType !== 'song' && conf.Player.Display.RandomQuotes
 					? sample(initializationCatchphrases)
 					: '';
-			if (ci.Enabled) text = `${ci.Message} ${i18n.t('GO_TO')} ${state.osURL} !`; // TODO: internationalize the exclamation mark
-			const version = `Karaoke Mugen ${state.version.number} (${state.version.name}) - http://karaokes.moe`;
+			if (ci.Enabled) text = ci.Message.replaceAll('$url', state.osURL);
+			const version = `Karaoke Mugen ${state.version.number} (${state.version.name}) - https://karaokes.moe`;
 			const message = `{\\an1}{\\fscx80}{\\fscy80}${text}\\N{\\fscx60}{\\fscy60}{\\i1}${version}{\\i0}\\N{\\fscx40}{\\fscy40}${catchphrase}`;
 			this.messages?.addMessage('DI', message, duration === -1 ? 'infinite' : duration);
 		} catch (err) {

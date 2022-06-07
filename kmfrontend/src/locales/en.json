@@ -344,7 +344,7 @@
 			"DISPLAY_CONNECTION_INFO_HOST": "Force hostname or IP",
 			"DISPLAY_CONNECTION_INFO_HOST_TOOLTIP": "If your IP address is incorrectly detected by Karaoke Mugen, you can force it here.",
 			"DISPLAY_CONNECTION_INFO_MESSAGE": "Message displayed before URL",
-			"DISPLAY_CONNECTION_INFO_MESSAGE_TOOLTIP": "Personalize the message just before the access URL, to encourage your audience or give them more direction.",
+			"DISPLAY_CONNECTION_INFO_MESSAGE_TOOLTIP": "Customize the message displayed on screen, to encourage your audience or give them more information. Use $url to display this karaoke's URL. Like this: \"Go to $url!\"",
 			"DISPLAY_CONNECTION_INFO": "Show connection information",
 			"DISPLAY_CONNECTION_INFO_TOOLTIP": "It's the \"Go to http://xxx !\"",
 			"DISPLAY_NICKNAME": "Display nicknames in karaokes",
@@ -491,22 +491,11 @@
 		"Preparations are ongoing!"
 	],
 	"JINGLE_TIME": "Jingle time!",
-	"JINGLE_TAGLINES": [
-		"We'll be right back!"
-	],
+	"JINGLE_TAGLINES": ["We'll be right back!"],
 	"INTRO_TIME": "Playlist intro",
-	"INTRO_TAGLINES": [
-		"Let's go!",
-		"Starting…",
-		"Initialization…",
-		"Prepare your mic!",
-		"*clears throat*"
-	],
+	"INTRO_TAGLINES": ["Let's go!", "Starting…", "Initialization…", "Prepare your mic!", "*clears throat*"],
 	"OUTRO_TIME": "Playlist ending",
-	"OUTRO_TAGLINES": [
-		"The End :(",
-		"Thanks everyone!"
-	],
+	"OUTRO_TAGLINES": ["The End :(", "Thanks everyone!"],
 	"ENCORES_TIME": "Encore! Encore!",
 	"ENCORES_TAGLINES": [
 		"Well, it's not because I like you or anything…",
@@ -514,21 +503,11 @@
 		"Last song, let's give it our all!"
 	],
 	"SPONSOR_TIME": "COMMERCIAL TIME!",
-	"SPONSOR_TAGLINES": [
-		"Kono bangumi wa…",
-		"And thanks for the money."
-	],
+	"SPONSOR_TAGLINES": ["Kono bangumi wa…", "And thanks for the money."],
 	"PAUSE_TIME": "Pause",
-	"PAUSE_TAGLINES": [
-		"Take a break!",
-		"Time to drink!",
-		"We'll be right back!"
-	],
+	"PAUSE_TAGLINES": ["Take a break!", "Time to drink!", "We'll be right back!"],
 	"POLL_TIME": "Vote",
-	"POLL_TAGLINES": [
-		"Vote! Vote!",
-		"The choice is yours."
-	],
+	"POLL_TAGLINES": ["Vote! Vote!", "The choice is yours."],
 	"QUOTA_AVAILABLE": "You can add songs again now!",
 	"SERIE_NAME_MODE": "Series language mode",
 	"SERIE_NAME_MODE_TOOLTIP": "Changes the way series names are displayed on the song list. Might be ignored by user preferences",

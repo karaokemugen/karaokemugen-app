@@ -5,7 +5,7 @@
 	"BLACKLIST": "Liste noire",
 	"CURRENT_PLAYLIST": "Liste de lecture",
 	"PUBLIC_PLAYLIST": "Suggestions du public",
-	"GO_TO": "Allez sur",
+	"GO_TO": "Allez sur $url pour suggérer des chansons !",
 	"VOTE_MESSAGE_SCREEN": "Votez pour la prochaine chanson !",
 	"VOTE_MESSAGE_SCREEN_WINNER": "Nous avons un gagnant !",
 	"NEXT_SONG": "Chanson suivante",
