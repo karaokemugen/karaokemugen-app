@@ -6,7 +6,7 @@
 
 ## New Features
 
--   Karaoke Mugen now comes with its own mpv/ffmpeg/postgres in Linux, making installation much easier for .dev, .tar.gz and now AppImage format.
+-   Karaoke Mugen now comes with its own mpv/ffmpeg/postgres in Linux, making installation much easier for .deb, .tar.gz and now AppImage format.
     -   AppImage is the recommended installation method as it supports auto-updates.
 
 ## Improvements
