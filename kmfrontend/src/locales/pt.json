@@ -1,1 +1,70 @@
-{}
+{
+	"SEARCH": "Procurar",
+	"SUBMIT": "Gravar",
+	"CANCEL": "Cancelar",
+	"NOT_FOUND_PAGE": {
+		"404": "Perdido no Karaoke Mugen?",
+		"404_2": "Não entres em pânico, nós podemos te ajudar.",
+		"404_3": "Tu estás aqui"
+	},
+	"LOGIN_MANDATORY": "O login é obrigatório",
+	"PASSWORD_MANDATORY": "A palavra-passe é obrigatória",
+	"PASSWORD_DIFFERENT": "As palavras-passe não coincidem",
+	"SHUTDOWN": "Encerrar o Karaoke Mugen",
+	"SHUTDOWN_POPUP": "Ligação com o Karaoke Mugen foi perdida",
+	"CHANGE_INTERFACE": "Mudar a interface",
+	"MUTE_UNMUTE": "Desativar o som/Ativar o som",
+	"SHOW_SUBS": "Mostrar letras no ecrã",
+	"HIDE_SUBS": "Ocultar as letras no ecrã",
+	"OPTIONS": "Opções",
+	"STOP_AFTER": "Parar após a música atual",
+	"STOP_NOW": "Parar AGORA (Isto é perigoso!)",
+	"REWIND": "Rebobina a fita",
+	"PLAY_PAUSE": "Reproduzir/Pausa",
+	"NEXT_SONG": "Próxima música",
+	"PASSWORD": "Palavra-passe (Mínimo de 8 caracteres)",
+	"PASSWORDCONF": "Confirmação de palavra-passe",
+	"NEW_PASSWORD": "Nova palavra-passe",
+	"VOLUME_LEVEL": "Definir volume",
+	"PLAYLISTS": {
+		"LIBRARY": "Biblioteca",
+		"FAVORITES": "Favoritos"
+	},
+	"INLINE_TAG": {
+		"COUNT_one": "{{count}} karaokê",
+		"COUNT_other": "{{count}} karaokês",
+		"SEARCH": "Karaokês com {{tag}}"
+	},
+	"ADMIN_HEADER": {
+		"QUICK_ACCESS": "Acesso rápido"
+	},
+	"PLAYLIST_HEADER": {
+		"FILTERS": "Filtros",
+		"ACTIVE_FILTER": "Filtro activo",
+		"EDIT_CRITERIAS": "Editar critérios"
+	},
+	"ADVANCED": {
+		"ADD_ALL": "Adicionar todas as músicas à outra lista",
+		"ADD_RANDOM": "Adicionar músicas aleatórias",
+		"SELECT_ALL": "Seleccionar todos os elementos visíveis",
+		"EMPTY_LIST": "Playlist vazia",
+		"DELETE": "Eliminar playlist",
+		"EDIT": "Editar playlist",
+		"ADD": "Adicionar uma nova playlist",
+		"AUTOMIX": "Crie um automix",
+		"IMPORT": "Importar playlist",
+		"EXPORT": "Exportar playlist"
+	},
+	"SELECT_PLACEHOLDER": "Selecione uma playlist",
+	"YES": "Sim",
+	"NO": "Não",
+	"AND": "e",
+	"DETAILS": {
+		"DURATION": "Duração",
+		"YEAR": "Ano"
+	},
+	"DURATION_REMAINING": "restante",
+	"VERSION": "Versão",
+	"WEBAPPMODE_CLOSED_MESSAGE": "A interface está fechada, por favor aguarde.",
+	"MESSAGE": "Mensagem"
+}
