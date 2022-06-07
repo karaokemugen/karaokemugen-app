@@ -108,7 +108,10 @@
 				"11": "yang berasal dari",
 				"4": "dibuat oleh",
 				"6": "ditulis oleh",
-				"7": "itu adalah"
+				"7": "yang",
+				"14": "yang",
+				"16": "termasuk dalam koleksi",
+				"15": "dengan peringatan"
 			},
 			"YEAR": "Karaoke dari tahun {{year}} ada di daftar.",
 			"KID": "Karaoke ini ada di daftar.",
@@ -482,7 +485,8 @@
 		"APP_UPDATE": "Versi baru",
 		"ACTIVE_SESSION": "Sesi Aktif: ",
 		"EDIT_SESSION": "Sunting sesi",
-		"ADMINISTRATION": "BILAH SISTEM"
+		"ADMINISTRATION": "BILAH SISTEM",
+		"COLLECTIONS": "KOLEKSI"
 	},
 	"LOGOUT": "Keluar",
 	"QUOTA_TIME": "Waktu tersisa",
@@ -1624,5 +1628,6 @@
 	"TOOLTIP_ACCEPT_KARA": "Terima lagu (bebaskan lagu dan salin ke daftar saat ini)",
 	"TOOLTIP_REFUSE_KARA": "Tolak lagu (bebaskan lagu)",
 	"CHECKED": "Dipilih:",
-	"POLL_TIME": "Pilih"
+	"POLL_TIME": "Pilih",
+	"TOOLTIP_ADD_SELECT_KARA": "Tambahkan lagu yang dipilih ke daftar putar - klik kanan untuk menambahkannya ke setelah lagu yang sedang diputar"
 }
