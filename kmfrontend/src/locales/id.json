@@ -106,7 +106,10 @@
 				"11": "yang berasal dari",
 				"4": "dibuat oleh",
 				"6": "ditulis oleh",
-				"7": "itu adalah"
+				"7": "yang",
+				"14": "yang",
+				"16": "termasuk dalam koleksi",
+				"15": "dengan peringatan"
 			},
 			"YEAR": "Karaoke dari tahun {{year}} ada di daftar.",
 			"KID": "Karaoke ini ada di daftar.",
@@ -477,7 +480,8 @@
 		"APP_UPDATE": "Versi baru",
 		"ACTIVE_SESSION": "Sesi Aktif: ",
 		"EDIT_SESSION": "Sunting sesi",
-		"ADMINISTRATION": "BILAH SISTEM"
+		"ADMINISTRATION": "BILAH SISTEM",
+		"COLLECTIONS": "KOLEKSI"
 	},
 	"LOGOUT": "Keluar",
 	"QUOTA_TIME": "Waktu tersisa",
@@ -1517,11 +1521,22 @@
 		"Terlalu tenang, saya tidak suka ini…",
 		"Persiapan sedang berlangsung!"
 	],
-	"JINGLE_TAGLINES": ["Kami akan segera kembali!"],
+	"JINGLE_TAGLINES": [
+		"Kami akan segera kembali!"
+	],
 	"INTRO_TIME": "Introduksi daftar putar",
-	"INTRO_TAGLINES": ["Ayo!", "Memulai…", "Inisialisasi…", "Siapkan mikrofon kamu!", "*bersihkan tenggorokan*"],
+	"INTRO_TAGLINES": [
+		"Ayo!",
+		"Memulai…",
+		"Inisialisasi…",
+		"Siapkan mikrofon kamu!",
+		"*bersihkan tenggorokan*"
+	],
 	"OUTRO_TIME": "Penutup daftar putar",
-	"OUTRO_TAGLINES": ["Tamat :(", "Terima kasih semuanya!"],
+	"OUTRO_TAGLINES": [
+		"Tamat :(",
+		"Terima kasih semuanya!"
+	],
 	"ENCORES_TIME": "Ekstra! Ekstra!",
 	"ENCORES_TAGLINES": [
 		"Yah, bukan karena aku menyukaimu atau apa gitu…",
@@ -1529,7 +1544,9 @@
 		"Lagu terakhir, berikan yang terbaik!"
 	],
 	"SPONSOR_TIME": "IKLAN!",
-	"SPONSOR_TAGLINES": ["Dan terima kasih atas duitnya."],
+	"SPONSOR_TAGLINES": [
+		"Dan terima kasih atas duitnya."
+	],
 	"QUOTA_AVAILABLE": "Kamu sekarang bisa menambahkan lagu lagi!",
 	"SERIE_NAME_MODE": "Mode bahasa serial",
 	"SERIE_NAME_MODE_TOOLTIP": "Ubah bagaimana nama serial ditampilkan di daftar lagu. Mungkin diabaikan oleh preferensi pengguna",
@@ -1544,8 +1561,14 @@
 		"CONNECTED": "Tersambung"
 	},
 	"REMOTE_TOKEN": "Token akses jarak jauh",
-	"PAUSE_TAGLINES": ["Beristirahatlah!", "Saatnya minum!", "Kami akan segera kembali!"],
-	"POLL_TAGLINES": ["Pilihan ada padamu."],
+	"PAUSE_TAGLINES": [
+		"Beristirahatlah!",
+		"Saatnya minum!",
+		"Kami akan segera kembali!"
+	],
+	"POLL_TAGLINES": [
+		"Pilihan ada padamu."
+	],
 	"REMOTE_URL": "URL akses jarak jauh",
 	"DATABASE": {
 		"REGENERATE_DB": "Membuat kembali basis data kamu",
@@ -1600,5 +1623,6 @@
 	"TOOLTIP_ACCEPT_KARA": "Terima lagu (bebaskan lagu dan salin ke daftar saat ini)",
 	"TOOLTIP_REFUSE_KARA": "Tolak lagu (bebaskan lagu)",
 	"CHECKED": "Dipilih:",
-	"POLL_TIME": "Pilih"
+	"POLL_TIME": "Pilih",
+	"TOOLTIP_ADD_SELECT_KARA": "Tambahkan lagu yang dipilih ke daftar putar - klik kanan untuk menambahkannya ke setelah lagu yang sedang diputar"
 }
