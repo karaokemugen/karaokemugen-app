@@ -6,9 +6,11 @@ import { win } from '../electron/electron';
 import { refreshTags } from '../lib/dao/tag';
 import { setConfig } from '../lib/utils/config';
 import logger from '../lib/utils/logger';
+import { displayInfo } from '../services/player';
 import { editRepo, getRepo } from '../services/repo';
 import { migrateBLWLToSmartPLs } from '../utils/hokutoNoCode';
 import Sentry from '../utils/sentry';
+import { getState } from '../utils/state';
 import { compareKarasChecksum, generateDB } from './database';
 
 const service = 'DBMigration';
@@ -80,6 +82,7 @@ export async function postMigrationTasks(migrations: Postgrator.Migration[], did
 						},
 					},
 				});
+				if (getState().player?.mediaType === 'stop' || getState().player?.mediaType === 'pause') displayInfo();
 				break;
 			default:
 		}
