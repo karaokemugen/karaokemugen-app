@@ -1,7 +1,8 @@
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { Alert, Col, Form, Input, Row, Select, Tag, Tooltip } from 'antd';
 import i18next from 'i18next';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
+import GlobalContext from '../../store/context';
 
 import { getLanguagesInLocaleFromCode, getListLanguagesInLocale, langWithRomanization } from '../../utils/isoLanguages';
 
@@ -18,7 +19,8 @@ export default function LanguagesList(props: IProps) {
 	const [i18n, setI18n] = useState<Record<string, string>>(props.value);
 	const [inputToFocus, setInputToFocus] = useState<string>();
 	const [isFieldsTouched, setIsFieldsTouched] = useState<boolean>();
-	const languages = getListLanguagesInLocale();
+	const context = useContext(GlobalContext);
+	const languages = getListLanguagesInLocale(context.globalState.settings.data.user.language);
 
 	useEffect(() => {
 		// Update all language fields if nothing has been touched yet
@@ -65,7 +67,10 @@ export default function LanguagesList(props: IProps) {
 				<Row key={langKey} style={{ maxWidth: '65%', minWidth: '150px' }}>
 					<Col style={{ width: '80%' }}>
 						<Form.Item
-							label={getLanguagesInLocaleFromCode(langKey)}
+							label={getLanguagesInLocaleFromCode(
+								langKey,
+								context.globalState.settings.data.user.language
+							)}
 							labelCol={{ flex: '0 1 300px' }}
 							rules={[
 								{
