@@ -4,13 +4,15 @@ import en from '@karaokemugen/i18n-iso-languages/langs/en.json';
 import es from '@karaokemugen/i18n-iso-languages/langs/es.json';
 import fr from '@karaokemugen/i18n-iso-languages/langs/fr.json';
 import id from '@karaokemugen/i18n-iso-languages/langs/id.json';
+import pt from '@karaokemugen/i18n-iso-languages/langs/pt.json';
 
 registerLocale(fr);
 registerLocale(en);
 registerLocale(es);
 registerLocale(id);
+registerLocale(pt);
 
-export const languagesSupport = ['en', 'fr', 'es', 'id'];
+export const languagesSupport = ['en', 'fr', 'es', 'id', 'pt'];
 const navigatorLanguage: string = navigator.languages[0].substring(0, 2);
 export const langSupport = languagesSupport.includes(navigatorLanguage) ? navigatorLanguage : 'en';
 

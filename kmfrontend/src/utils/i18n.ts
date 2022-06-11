@@ -5,6 +5,7 @@ import en from '../locales/en.json';
 import es from '../locales/es.json';
 import fr from '../locales/fr.json';
 import id from '../locales/id.json';
+import pt from '../locales/pt.json';
 
 i18n
 	// use react-i18next
@@ -31,6 +32,9 @@ i18n
 			},
 			id: {
 				translation: id,
+			},
+			pt: {
+				translation: pt,
 			},
 		},
 	});
