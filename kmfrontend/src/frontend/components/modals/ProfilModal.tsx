@@ -217,11 +217,17 @@ function ProfilModal(props: IProps) {
 
 	const logInfos = context?.globalState.auth.data;
 
-	const countries = useMemo(listCountries, []);
+	const countries = useMemo(
+		() => listCountries(context.globalState.settings.data.user.language),
+		[context.globalState.settings.data.user.language]
+	);
 	const [countryQuery, setCountryQuery] = useState('');
 	const queriedCountries = useLocalSearch(countries, countryQuery);
 
-	const languages = useMemo(getListLanguagesInLocale, []);
+	const languages = useMemo(
+		() => getListLanguagesInLocale(context.globalState.settings.data.user.language),
+		[context.globalState.settings.data.user.language]
+	);
 	const [mainLanguageQuery, setMainLanguageQuery] = useState('');
 	const [fallbackLanguageQuery, setFallbackLanguageQuery] = useState('');
 	const queriedMainLanguages = useLocalSearch(languages, mainLanguageQuery);

@@ -111,7 +111,10 @@ function UsersModal(props: IProps) {
 										{userDetails?.location ? (
 											<div>
 												<i className="fas fa-fw fa-globe" />
-												{getCountryName(userDetails.location)}
+												{getCountryName(
+													userDetails.location,
+													context.globalState.settings.data.user.language
+												)}
 											</div>
 										) : null}
 										{userDetails?.social_networks.discord ? (
