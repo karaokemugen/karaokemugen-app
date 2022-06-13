@@ -590,6 +590,7 @@
 			"INTERFACE_LANGUAGE": "Interface language",
 			"MAIN_SONG_NAME_LANG": "Song name display preference",
 			"FALLBACK_SONG_NAME_LANG": "Fallback song name display preference",
+			"SONG_NAME_DISPLAY_EXAMPLE": "Display example",
 			"FLAG_PARENTSONLY": "Group songs by version",
 			"FLAG_PUBLIC": "Share your profile",
 			"FLAG_DISPLAYFAVORITES": "Share your favorites",
