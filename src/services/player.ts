@@ -230,6 +230,12 @@ async function setVolumePlayer(volume: number) {
 	// Save the volume in configuration
 	setConfig({ Player: { Volume: volume } });
 }
+async function setPitchPlayer(pitch: number) {
+	await mpv.setModifiers({ pitch });
+}
+async function setSpeedPlayer(speed: number) {
+	await mpv.setModifiers({ speed });
+}
 
 async function setAudioDevicePlayer(device: string) {
 	await mpv.setAudioDevice(device);
@@ -331,6 +337,14 @@ export async function sendCommand(command: string, options: any): Promise<APIMes
 		} else if (command === 'setVolume') {
 			if (isNaN(options)) throw 'Command setVolume must have a numeric option value';
 			await setVolumePlayer(options);
+		} else if (command === 'setPitch') {
+			if (isNaN(options)) throw 'Command setPitch must have a numeric option value';
+			if (options > 3 || options < -3) throw 'Pitch range has to be between -3 and +3';
+			await setPitchPlayer(options);
+		} else if (command === 'setSpeed') {
+			if (isNaN(options)) throw 'Command setSpeed must have a numeric option value';
+			if (options > 200 || options < 25) throw 'Speed range has to be between 0.25 and 2';
+			await setSpeedPlayer(options);
 		} else {
 			throw `Unknown command ${command}`;
 		}

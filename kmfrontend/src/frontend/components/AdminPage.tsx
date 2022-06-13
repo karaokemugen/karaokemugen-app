@@ -70,7 +70,7 @@ function AdminPage(props: IProps) {
 
 	const putPlayerCommando = (event: any) => {
 		const namecommand = event.currentTarget.getAttribute('data-namecommand');
-		let data;
+		let data: { command: string; options?: any };
 		if (namecommand === 'setVolume') {
 			let volume = parseInt(event.currentTarget.value);
 			const base = 100;
@@ -80,6 +80,11 @@ function AdminPage(props: IProps) {
 			data = {
 				command: namecommand,
 				options: volume,
+			};
+		} else if (namecommand === 'setPitch' || namecommand === 'setSpeed') {
+			data = {
+				command: namecommand,
+				options: parseInt(event.currentTarget.value),
 			};
 		} else if (namecommand === 'goTo') {
 			data = {

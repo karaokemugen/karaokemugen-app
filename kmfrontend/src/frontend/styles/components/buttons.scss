@@ -162,6 +162,60 @@ h5 > a {
 	}
 }
 
+.splitValueButton {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	flex-wrap: nowrap;
+	cursor: default;
+
+	&:hover {
+		background-color: #1e2124;
+	}
+
+	.modifier-buttons {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		padding: 0 4px;
+		padding-top: 8px;
+		width: 100%;
+
+		button {
+			height: 100%;
+			background-color: transparent;
+			color: white;
+			cursor: pointer;
+			border: none;
+		}
+
+		.button-filled {
+			background-color: #25292c;
+			min-width: 15px;
+			border-radius: 3px;
+			flex-grow: 1;
+		}
+	}
+
+	.mirrored-horiz {
+		// Mirror the icon instead of using the pro-icon
+		-moz-transform: scale(-1, 1);
+		-webkit-transform: scale(-1, 1);
+		-o-transform: scale(-1, 1);
+		-ms-transform: scale(-1, 1);
+		transform: scale(-1, 1);
+	}
+	.mirrored-vert {
+		// Mirror the icon instead of using the pro-icon
+		-moz-transform: scale(1, -1);
+		-webkit-transform: scale(1, -1);
+		-o-transform: scale(1, -1);
+		-ms-transform: scale(1, -1);
+		transform: scale(1, -1);
+	}
+}
+
 .buttonsMobileMenu,
 .buttonsMobileMenuSmaller {
 	display: none;
@@ -171,7 +225,9 @@ h5 > a {
 	.KmAppWrapperDecorator:not(.chibi) {
 		.messageButton,
 		.subtitleButton,
-		.rewindButton {
+		.rewindButton,
+		.pitchControl,
+		.speedControl {
 			display: none;
 		}
 

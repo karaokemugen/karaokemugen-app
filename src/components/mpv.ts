@@ -63,6 +63,10 @@ const playerState: PlayerState = {
 	songNearEnd: false,
 	nextSongNotifSent: false,
 	isOperating: false,
+
+	// Experimental modifiers
+	pitch: 0,
+	speed: 100,
 };
 
 async function resolveMediaURL(file: string, repo: string): Promise<string> {
@@ -1315,6 +1319,37 @@ class Players {
 			return playerState;
 		} catch (err) {
 			logger.error('Unable to set volume', { service, obj: err });
+			sentry.error(err);
+			throw err;
+		}
+	}
+
+	async setModifiers(options: { speed?: number; pitch?: number }) {
+		try {
+			if (options.speed && options.pitch) {
+				throw new Error("Pitch and speed can't currently be set at the same time");
+			}
+
+			if (typeof options.pitch !== 'undefined') {
+				const paramSpeed = 1.0 + options.pitch / 16.0;
+				await this.exec({ command: ['set_property', 'audio-pitch-correction', 'no'] });
+				await this.exec({ command: ['set_property', 'af', `scaletempo:scale=1/${paramSpeed}`] });
+				await this.exec({ command: ['set_property', 'speed', paramSpeed] });
+				options.speed = 100; // Reset speed
+			} else if (typeof options.speed !== 'undefined') {
+				await this.exec({ command: ['set_property', 'audio-pitch-correction', 'yes'] });
+				await this.exec({ command: ['set_property', 'af', 'loudnorm'] });
+				await this.exec({ command: ['set_property', 'speed', options.speed / 100] });
+				options.pitch = 0; // Reset pitch
+			}
+
+			playerState.pitch = options.pitch;
+			playerState.speed = options.speed;
+			logger.info(`Set modifiers to: pitch ${playerState.pitch}, speed ${playerState.speed}`, { service });
+			emitPlayerState();
+			return playerState;
+		} catch (err) {
+			logger.error('Unable to set pitch', { service, obj: err });
 			sentry.error(err);
 			throw err;
 		}

@@ -21,6 +21,10 @@ export interface PlayerState {
 	songNearEnd?: boolean;
 	nextSongNotifSent?: boolean;
 	isOperating?: boolean;
+
+	// Experimental modifiers
+	pitch?: number;
+	speed?: number;
 }
 
 export interface mpvStatus {
