@@ -6,13 +6,14 @@ import {
 	PlusOutlined,
 	QuestionCircleOutlined,
 } from '@ant-design/icons';
-import { Button, Checkbox, Divider, Layout, Table, Tooltip } from 'antd';
+import { Button, Checkbox, Col, Divider, Layout, Row, Table, Tooltip } from 'antd';
 import i18next from 'i18next';
 import { Component } from 'react';
 import { Link } from 'react-router-dom';
 
 import { Repository } from '../../../../../src/types/config';
 import { commandBackend } from '../../../utils/socket';
+import { displayMessage } from '../../../utils/tools';
 import CollectionsActivation from './CollectionsActivation';
 
 interface RepositoryListState {
@@ -64,6 +65,12 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 		}
 	};
 
+	updateRepos = async () => {
+		commandBackend('updateAllRepos')
+			.then(() => displayMessage('success', i18next.t('DATABASE.UPDATING_REPOS')))
+			.catch(() => {});
+	};
+
 	render() {
 		return (
 			<>
@@ -80,6 +87,16 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 							<PlusOutlined />
 						</Button>
 					</Link>
+					<Row justify="space-between" style={{ margin: '0.75em', flexWrap: 'nowrap' }}>
+						<Col flex="15em">
+							<Button type="primary" onClick={this.updateRepos}>
+								{i18next.t('DATABASE.UPDATE_REPOS')}
+							</Button>
+						</Col>
+						<Col flex="auto" style={{ marginTop: '0.25em' }}>
+							{i18next.t('DATABASE.UPDATE_REPOS_DESCRIPTION')}
+						</Col>
+					</Row>
 					<Table dataSource={this.state.repositories} columns={this.columns} rowKey="Name" />
 				</Layout.Content>
 			</>

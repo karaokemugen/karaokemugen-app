@@ -977,7 +977,7 @@
 		"DUMP_DATABASE_DESCRIPTION": "Creates a karaokemugen.sql backup file in your data folder. This file can be used to create a restore point or to send your database to the devs if they ask you to do so.",
 		"RESTORE_DATABASE": "Restore database",
 		"RESTORE_DATABASE_DESCRIPTION": "Restores your database from the file karaokemugen.sql if it's present in your data folder. <2>**WARNING : This will overwrite ALL non-saved data in your database : playlists, sessions, etc.)</2>",
-		"UPDATE_REPOS": "Update repositories",
+		"UPDATE_REPOS": "Update all repositories",
 		"UPDATE_REPOS_DESCRIPTION": "Forces a repository update, this can be useful if one of the repositories is in abnormal state.",
 		"UPDATING_REPOS": "Updating repositories",
 		"CONFIRM_UPDATE": "Confirm update"

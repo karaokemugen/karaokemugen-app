@@ -4,7 +4,6 @@ import { Component } from 'react';
 import { Trans } from 'react-i18next';
 
 import { commandBackend } from '../../utils/socket';
-import { displayMessage } from '../../utils/tools';
 
 class Database extends Component<unknown, unknown> {
 	dbregen = async () => {
@@ -21,12 +20,6 @@ class Database extends Component<unknown, unknown> {
 
 	dbrestore = async () => {
 		commandBackend('restoreDatabase', undefined, true, 300000).catch(() => {});
-	};
-
-	updateRepos = async () => {
-		commandBackend('updateAllRepos')
-			.then(() => displayMessage('success', i18next.t('DATABASE.UPDATING_REPOS')))
-			.catch(() => {});
 	};
 
 	render() {
@@ -53,14 +46,6 @@ class Database extends Component<unknown, unknown> {
 								}}
 							/>
 						</Col>
-					</Row>
-					<Row justify="space-between" style={{ marginTop: '1.5em', flexWrap: 'nowrap' }}>
-						<Col flex="22em">
-							<Button type="primary" onClick={this.updateRepos} style={{ width: '19em' }}>
-								{i18next.t('DATABASE.UPDATE_REPOS')}
-							</Button>
-						</Col>
-						<Col flex="auto">{i18next.t('DATABASE.UPDATE_REPOS_DESCRIPTION')}</Col>
 					</Row>
 					<Row justify="space-between" style={{ marginTop: '1.5em', flexWrap: 'nowrap' }}>
 						<Col flex="22em">
