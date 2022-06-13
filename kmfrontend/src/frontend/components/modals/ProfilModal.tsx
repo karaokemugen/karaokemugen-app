@@ -22,6 +22,8 @@ import { callModal, displayMessage } from '../../../utils/tools';
 import Autocomplete from '../generic/Autocomplete';
 import CropAvatarModal from './CropAvatarModal';
 import OnlineProfileModal from './OnlineProfileModal';
+import { getTagInLanguage, sortAndHideTags } from '../../../utils/kara';
+import { DBKara } from '../../../../../src/lib/types/database/kara';
 interface IProps {
 	scope?: 'public' | 'admin';
 	closeProfileModal?: () => void;
@@ -39,6 +41,7 @@ function ProfilModal(props: IProps) {
 	const [user, setUser] = useState<UserProfile>();
 	const [cropAvatarModalOpen, setCropAvatarModalOpen] = useState(false);
 	const [dangerousActions, setDangerousActions] = useState(false);
+	const [exampleForLinguisticsPreference, setExampleForLinguisticsPreference] = useState('');
 
 	const onChange = (event: any) => {
 		if (event.target.name.includes('.')) {
@@ -202,6 +205,55 @@ function ProfilModal(props: IProps) {
 		await updateUser();
 		await getUser();
 	};
+
+	useEffect(() => {
+		const buildKaraTitleFuture = (data: DBKara) => {
+			const isMulti = data?.langs.find(e => e.name.indexOf('mul') > -1);
+			if (data?.langs && isMulti) {
+				data.langs = [isMulti];
+			}
+			const serieText =
+				data?.series?.length > 0
+					? data.series
+							.map(e => getTagInLanguage(e, user.main_series_lang, user.fallback_series_lang))
+							.join(', ') + (data.series.length > 3 ? '...' : '')
+					: data?.singers
+					? data.singers
+							.slice(0, 3)
+							.map(e => e.name)
+							.join(', ') + (data.singers.length > 3 ? '...' : '')
+					: '';
+			const langsText = data?.langs
+				.map(e => e.name)
+				.join(', ')
+				.toUpperCase();
+			const songtypeText = sortAndHideTags(data?.songtypes)
+				.map(e => (e.short ? +e.short : e.name))
+				.join(' ');
+			const songorderText = data?.songorder > 0 ? ' ' + data.songorder : '';
+			const versions = sortAndHideTags(data?.versions).map(
+				t => `[${getTagInLanguage(t, user.main_series_lang, user.fallback_series_lang)}]`
+			);
+			const version = versions?.length > 0 ? ` ${versions.join(' ')}` : '';
+			return `${langsText} - ${serieText} - ${songtypeText} ${songorderText} - ${
+				data.titles[user.main_series_lang]
+					? data.titles[user.main_series_lang]
+					: data.titles[user.fallback_series_lang]
+					? data.titles[user.fallback_series_lang]
+					: data.titles[data.titles_default_language]
+			} ${version}`;
+		};
+		const getExampleForLinguisticsPreference = async () => {
+			try {
+				const data = await commandBackend('getKara', { kid: 'ed57440b-0410-4fd4-8fc0-b87eee2df9a0' });
+				console.log(buildKaraTitleFuture(data));
+				setExampleForLinguisticsPreference(buildKaraTitleFuture(data));
+			} catch (err) {
+				// ignore error
+			}
+		};
+		getExampleForLinguisticsPreference();
+	}, [user?.main_series_lang, user?.fallback_series_lang]);
 
 	useEffect(() => {
 		if (user) updateAvatar();
@@ -535,6 +587,16 @@ function ProfilModal(props: IProps) {
 									/>
 								</div>
 							</div>
+							{exampleForLinguisticsPreference ? (
+								<div className="profileLine row">
+									<div className="profileLabel">
+										<label>{i18next.t('MODAL.PROFILE_MODAL.SONG_NAME_DISPLAY_EXAMPLE')}</label>
+									</div>
+									<div>
+										<label>{exampleForLinguisticsPreference}</label>
+									</div>
+								</div>
+							) : null}
 							<div className="profileLine">
 								<div className="profileLabel">
 									<input

@@ -609,6 +609,7 @@
 			"INTERFACE_LANGUAGE": "Langue de l'interface",
 			"MAIN_SONG_NAME_LANG": "Préférence d'affichage du nom des chansons",
 			"FALLBACK_SONG_NAME_LANG": "Préférence alternative d'affichage du nom des chansons",
+			"SONG_NAME_DISPLAY_EXAMPLE": "Example d'affichage",
 			"FLAG_PARENTSONLY": "Regrouper les chansons par versions",
 			"FLAG_PUBLIC": "Partager son profil",
 			"FLAG_DISPLAYFAVORITES": "Partager ses favoris",
