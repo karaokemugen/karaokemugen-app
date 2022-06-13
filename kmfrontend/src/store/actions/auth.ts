@@ -14,13 +14,15 @@ export async function login(
 	username: string,
 	password: string,
 	dispatch: Dispatch<LoginSuccess | LoginFailure | SettingsSuccess | SettingsFailure | PlaylistInfo>,
-	securityCode?: number
+	securityCode?: number,
+	guestName?: string
 ): Promise<string> {
 	try {
 		const info: IAuthentifactionInformation = await commandBackend(username ? 'login' : 'loginGuest', {
 			username,
 			password,
 			securityCode,
+			name: guestName,
 		});
 
 		// Store data, should be managed in a service and item should be enum and not string

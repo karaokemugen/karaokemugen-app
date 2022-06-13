@@ -1,9 +1,10 @@
+import { DBUserBase } from '../lib/types/database/user';
 import { getConfig } from '../lib/utils/config';
 import logger from '../lib/utils/logger';
 import { SocketIOApp } from '../lib/utils/ws';
 import { checkLogin, resetSecurityCode } from '../services/auth';
 import { fetchAndAddFavorites } from '../services/favorites';
-import { editUser, getAvailableGuest, updateLastLoginName } from '../services/user';
+import { createTemporaryGuest, editUser, getAvailableGuest, updateLastLoginName } from '../services/user';
 import { fetchAndUpdateRemoteUser, remoteCheckAuth } from '../services/userOnline';
 import { getState } from '../utils/state';
 import { APIMessage } from './common';
@@ -44,19 +45,25 @@ export default function authController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('loginGuest', async () => {
+	router.route('loginGuest', async (_, req) => {
+		const conf = getConfig();
+		if (!conf.Frontend.AllowGuestLogin) throw { code: 403, message: APIMessage('GUESTS_NOT_ALLOWED') };
 		try {
-			if (!getConfig().Frontend.AllowGuestLogin) throw { code: 403, message: APIMessage('GUESTS_NOT_ALLOWED') };
-			const guest = await getAvailableGuest();
+			let guest: DBUserBase;
+			if (req.body?.name && conf.Frontend.AllowCustomTemporaryGuests) {
+				guest = await createTemporaryGuest(req.body.name);
+			} else {
+				guest = await getAvailableGuest();
+			}
 			if (guest) {
 				const token = await checkLogin(guest.login, null);
 				updateLastLoginName(guest.login);
 				return token;
 			}
-			throw { code: 500, message: APIMessage('NO_MORE_GUESTS_AVAILABLE') };
 		} catch (err) {
 			throw { code: 401, message: APIMessage('LOG_ERROR') };
 		}
+		throw { code: 500, message: APIMessage('NO_MORE_GUESTS_AVAILABLE') };
 	});
 
 	router.route('checkAuth', async (socket, req) => {
