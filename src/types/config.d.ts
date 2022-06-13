@@ -38,6 +38,7 @@ export interface Config {
 	};
 	Frontend: {
 		AllowGuestLogin?: boolean;
+		AllowCustomTemporaryGuests?: boolean;
 		Mode?: number;
 		ShowAvatarsOnPlaylist?: boolean;
 	};

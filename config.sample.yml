@@ -36,6 +36,7 @@ Online:
   AllowDownloads: true
 Frontend:
   AllowGuestLogin: true
+  AllowCustomTemporaryGuests: false
   # Webapp mode :
   # 0 : closed
   # 1 : Current playlist/song only (restricted)

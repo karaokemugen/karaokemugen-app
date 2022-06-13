@@ -16,6 +16,7 @@ SELECT
 	u.nickname,
 	u.avatar_file,
 	u.last_login_at,
+	u.flag_temporary,
 	${
 		params.full
 			? `
@@ -45,7 +46,7 @@ FROM users AS u
 WHERE 1 = 1
 ${params.singleUser ? ' AND u.pk_login = :username' : ''}
 ${params.singleNickname ? ' AND u.nickname = :nickname' : ''}
-${params.guestOnly || params.randomGuest ? ' AND u.type = 2' : ''}
+${params.guestOnly || params.randomGuest ? ' AND u.type = 2 AND flag_temporary != TRUE' : ''}
 ${params.randomGuest ? ' AND (:last_login_time_limit > u.last_login_at)' : ''}
 ${params.randomGuest ? ' ORDER BY RANDOM() LIMIT 1' : ''}
 `;
@@ -64,7 +65,8 @@ INSERT INTO users(
 	last_login_at,
 	flag_tutorial_done,
 	flag_sendstats,
-	language
+	language,
+	flag_temporary
 )
 VALUES (
 	:type,
@@ -74,7 +76,8 @@ VALUES (
 	:last_login_at,
 	:flag_tutorial_done,
 	:flag_sendstats,
-	:language
+	:language,
+	:flag_temporary
 );
 `;
 
@@ -112,6 +115,11 @@ export const sqleditUserPassword = `
 UPDATE users SET
 	password = :password
 WHERE pk_login = :username
+`;
+
+export const sqldeleteTempUsers = `
+DELETE FROM users
+WHERE flag_temporary = TRUE;
 `;
 
 export const sqlSelectAllDupeUsers = `
