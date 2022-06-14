@@ -30,6 +30,14 @@ export async function setSettings(
 					favoritesSet.add(kara.kid);
 				}
 				i18next.changeLanguage(user.language ? user.language : langSupport);
+				if (!user.language) {
+					user.language = langSupport;
+					try {
+						await commandBackend('editMyAccount', user);
+					} catch (e) {
+						// already display
+					}
+				}
 				if (!res.state.sentrytest) setSentry(res.state.environment, res.version, res.config, user);
 				dispatch({
 					type: Settings.SETTINGS_SUCCESS,
