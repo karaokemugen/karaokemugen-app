@@ -527,9 +527,9 @@ export async function initUserSystem() {
 			);
 		}
 	} else {
-		if (users.find(u => u.login === 'adminTest')) deleteUser('adminTest');
-		if (users.find(u => u.login === 'publicTest')) deleteUser('publicTest');
-		if (users.find(u => u.login === 'adminTest2')) deleteUser('adminTest2');
+		if (users.find(u => u.login === 'admintest')) deleteUser('adminTest');
+		if (users.find(u => u.login === 'publictest')) deleteUser('publicTest');
+		if (users.find(u => u.login === 'admintest2')) deleteUser('adminTest2');
 	}
 
 	userChecks();
