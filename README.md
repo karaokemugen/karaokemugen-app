@@ -39,14 +39,14 @@ This is a mature product, battle-tested during anime conventions like [Jonetsu](
 -   **Complete metadata structure for songs**: Singers, songwriters, creators, authors, languages, categorization tags...
     -   Complete **filter system** and **search engine** based on the aforementionned metadata.
 -   **System Panel** to configure Karaoke Mugen:
-    -   **Multi-karaoke repositories support**: You can add as many repositories you want. Karaoke Mugen has 2 "official repositories": the [otaku base](https://gitlab.com/karaokemugen/bases/karaokebase) and the [world base](https://gitlab.com/karaokemugen/bases/karaokebase-world)
+    -   **Multi-karaoke repositories support**: You can add as many repositories you want. Karaoke Mugen comes up with [its own](https://gitlab.com/karaokemugen/bases/karaokebase) of course.
     -   **Configure** application behaviour and **view logs**
     -   **Manage** your song library (add, remove, edit...)
     -   **View stats** like most played or requested songs
 -   **User profiles** with access rights, favorites list, and preferences
--   **Web interface** for smartphone/tablet/PC ~~IE6 compatible~~
-    -   Public interface is for public and can be set to _restricted mode_ to prevent adding songs or in _closed mode_ to prevent access while you prepare your karaoke.
-    -   Users can **add songs** they want from the library.
+-   **Web interface** for smartphone/tablet/desktop ~~IE6 compatible~~
+    -   Public interface can be set to _restricted mode_ to prevent adding songs or in _closed mode_ to prevent access while you prepare your karaoke.
+    -   Users can **add songs** they want from the library or their own favorites, follow the current playlist, see lyrics in realtime from where they are (great for near-sighted people who want to sing along!)
     -   Operators can **organize playlists** and control the player through the operator interface.
 -   **Highly customizable experience** to tailor the app to your specific needs (for twitch streams, in front of a crowd, between friends, for karaoke contests, etc.)
 -   **Display karaoke information** or operator announcements during song playback
