@@ -113,7 +113,15 @@ LEFT OUTER JOIN favorites AS f ON f.fk_login = :username AND f.fk_kid = ak.pk_ki
 ${joinClauses.join('')}
 ${additionalFrom.join('')}
 WHERE true
-${collectionClauses.length > 0 ? `AND (${collectionClauses.map(clause => `(${clause})`).join(' OR ')})` : ''}
+${
+	collectionClauses.length > 0
+		? `AND ((${collectionClauses
+				.map(clause => `(${clause})`)
+				.join(
+					' OR '
+				)}) OR jsonb_array_length(jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 16)')) = 0)`
+		: ''
+}
 ${filterClauses.map(clause => `AND (${clause})`).reduce((a, b) => `${a} ${b}`, '')}
 ${whereClauses}
 ${blacklistClauses}
