@@ -32,6 +32,7 @@ import { getState, setState } from '../utils/state';
 import { exit } from './engine';
 import Timeout = NodeJS.Timeout;
 import { DBKaraTag } from '../lib/types/database/kara';
+import { supportedFiles } from '../lib/utils/constants';
 import HTTP from '../lib/utils/http';
 import { convert1LangTo2B } from '../lib/utils/langs';
 import logger, { profile } from '../lib/utils/logger';
@@ -1123,6 +1124,14 @@ class Players {
 		}
 	}
 
+	private async findSubfile(mediaFile: string): Promise<string> {
+		for (const ext of supportedFiles.mpvlyrics) {
+			const subfile = replaceExt(mediaFile, `.${ext}`);
+			if (await fileExists(subfile)) return subfile;
+		}
+		return null;
+	}
+
 	async playMedia(mediaType: MediaType): Promise<PlayerState> {
 		const conf = getConfig();
 		const media = getSingleMedia(mediaType);
@@ -1132,9 +1141,9 @@ class Players {
 				'force-media-title': mediaType,
 				af: 'loudnorm',
 			};
-			const subFile = replaceExt(media.filename, '.ass');
+			const subFile = await this.findSubfile(media.filename);
 			logger.debug(`Searching for ${subFile}`, { service });
-			if (await fileExists(subFile)) {
+			if (subFile) {
 				options['sub-file'] = subFile;
 				options.sid = '1';
 				logger.debug(`Loading ${subFile}`, { service });

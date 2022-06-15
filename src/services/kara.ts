@@ -1,4 +1,6 @@
+import { convertToASS as srt2ass } from 'convert-srt-to-ass';
 import internet from 'internet-available';
+import { parse } from 'path';
 
 import { getStats } from '../dao/database';
 import {
@@ -10,7 +12,7 @@ import {
 	selectYears,
 	truncateOnlineRequested,
 } from '../dao/kara';
-import { getASS } from '../lib/dao/karafile';
+import { getLyrics } from '../lib/dao/karafile';
 import { consolidateData, removeUnusedTagData } from '../lib/services/kara';
 import { ASSLine } from '../lib/types/ass';
 import { DBKara } from '../lib/types/database/kara';
@@ -65,8 +67,14 @@ export async function getKaraLyrics(kid: string): Promise<ASSLine[]> {
 	const kara = await getKara(kid, adminToken);
 	if (!kara) throw { code: 404, msg: `Kara ${kid} unknown` };
 	if (!kara.subfile) return;
-	const ASS = await getASS(kara.subfile, kara.repository);
-	if (ASS) return ASSToLyrics(ASS);
+	// FIXME: add support for converting lrc/vtt on the fly here
+	const ext = parse(kara.subfile).ext;
+	let lyrics = await getLyrics(kara.subfile, kara.repository);
+	// If any other format we return.
+	if (ext === '.srt') {
+		lyrics = srt2ass(lyrics);
+	}
+	return ASSToLyrics(lyrics);
 }
 
 export async function addPlayedKara(kid: string) {

@@ -88,6 +88,7 @@
     "chokidar": "^3.5.3",
     "commander": "^9.3.0",
     "compression": "^1.7.4",
+    "convert-srt-to-ass": "^1.0.3",
     "cors": "^2.8.5",
     "csv-writer": "^1.6.0",
     "discord-rpc": "^4.0.1",
