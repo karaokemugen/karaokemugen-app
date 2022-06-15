@@ -1,6 +1,6 @@
 import { promises as fs } from 'fs';
 import { copy, remove } from 'fs-extra';
-import { basename, resolve } from 'path';
+import { basename, parse, resolve } from 'path';
 import { TopologicalSort } from 'topological-sort';
 
 import { compareKarasChecksum, generateDB } from '../dao/database';
@@ -881,9 +881,9 @@ export async function generateCommits(repoName: string) {
 		const modifiedSongs = status.modified.filter(f => f.endsWith('kara.json'));
 		let addedTags = status.not_added.filter(f => f.endsWith('tag.json'));
 		let modifiedTags = status.modified.filter(f => f.endsWith('tag.json'));
-		let modifiedLyrics = status.modified.filter(f => f.endsWith('.ass'));
-		let deletedLyrics = status.deleted.filter(f => f.endsWith('.ass'));
-		let addedLyrics = status.not_added.filter(f => f.endsWith('.ass'));
+		let modifiedLyrics = status.modified;
+		let deletedLyrics = status.deleted;
+		let addedLyrics = status.not_added;
 		let commits: Commit[] = [];
 		// These are to keep track of if files have been renamed or not
 		const deletedTIDFiles = new Map<string, string>();
@@ -915,7 +915,7 @@ export async function generateCommits(repoName: string) {
 				message: `🔥 🎤 Delete ${song}`,
 			};
 			// Find out if we have a deleted lyrics as well (we should have one but you never know, it could be a zxx song!)
-			const lyricsFile = deletedLyrics.find(f => basename(f) === `${song}.ass`);
+			const lyricsFile = deletedLyrics.find(f => parse(basename(f)).name === song);
 			if (lyricsFile) {
 				commit.removedFiles.push(lyricsFile);
 			}
@@ -991,9 +991,9 @@ export async function generateCommits(repoName: string) {
 					// We need to remove from modifiedMedias our delete
 					modifiedMedias = modifiedMedias.filter(m => m.new !== null && m.old !== oldMediaFile);
 					// We need to do the same with lyrics
-					// Problems is that lyrics have already been deleted so we're going to pick the ass from the status itself
+					// Problems is that lyrics have already been deleted so we're going to pick the lyrics from the status itself
 					const oldSong = basename(oldKaraFile, '.kara.json');
-					const lyricsFile = status.deleted.find(f => f.includes(`${oldSong}.ass`));
+					const lyricsFile = status.deleted.find(f => parse(basename(f)).name === oldSong);
 					if (lyricsFile) {
 						commit.removedFiles.push(lyricsFile);
 					}
@@ -1124,7 +1124,7 @@ export async function generateCommits(repoName: string) {
 		}
 		// Modified lyrics (they don't trigger modified songs)
 		for (const file of modifiedLyrics) {
-			const lyrics = basename(file, '.ass');
+			const lyrics = parse(file).name;
 			const commit: Commit = {
 				addedFiles: [file],
 				removedFiles: [],
@@ -1135,7 +1135,7 @@ export async function generateCommits(repoName: string) {
 		}
 		// Deleted lyrics (you never know)
 		for (const file of deletedLyrics) {
-			const lyrics = basename(file, '.ass');
+			const lyrics = parse(file).name;
 			const commit: Commit = {
 				addedFiles: [],
 				removedFiles: [file],

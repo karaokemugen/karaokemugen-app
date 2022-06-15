@@ -25,7 +25,8 @@ This is a mature product, battle-tested during anime conventions like [Jonetsu](
 
 -   **Accepted formats**:
     -   **Video**: AVI, MP4, MKV (anything supported by [mpv](http://mpv.io) really)
-    -   **Subtitles**: ASS, Karafun, KAR, Ultrastar .txt files (if not ASS, they will be converted to ASS upon importation, and cannot be used directly)
+    -   **Subtitles**: ASS, SRT, Karafun, KAR, Ultrastar
+        -   Apart from ASS and SRT, subtitles will get converted for use with mpv as it can't read them directly.
     -   **Music**: MP3, M4A, OGG (anything supported by [mpv](http://mpv.io) really)
 -   **Streamer-friendly options**: Twitch chat triggers, Nico Nico Douga-style comments, text files with refreshed information for your layouts, and more.
 -   **Complete player controls**: Skip, pause, play, stop, rewind playback, hide/show lyrics, mute/unmute and volume control.
