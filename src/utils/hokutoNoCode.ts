@@ -126,7 +126,7 @@ export async function lowercaseMigration() {
 		await lowercaseAllUsers();
 	} catch (err) {
 		logger.error('Unable to lowercase all users', { service: 'User', obj: err });
-		Sentry.error(err, 'Warning');
+		Sentry.error(err, 'warning');
 	}
 }
 
