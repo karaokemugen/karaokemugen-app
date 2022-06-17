@@ -2,6 +2,7 @@
 
 .start-page .wrapper.welcome {
 	min-height: 100vh;
+	max-height: 100vh;
 
 	grid-template-areas:
 		'logo tasks aside'
