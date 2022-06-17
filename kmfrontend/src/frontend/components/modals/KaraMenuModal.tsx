@@ -26,6 +26,7 @@ function KaraMenuModal(props: IProps) {
 	const [effectWhitelist, setEffectWhitelist] = useState(false);
 	const [effectFree, setEffectFree] = useState(false);
 	const [effectVisibility, setEffectVisibility] = useState(false);
+	const [effectShuffle, setEffectShuffle] = useState(false);
 
 	const getKaraDetail = async () => {
 		try {
@@ -124,6 +125,18 @@ function KaraMenuModal(props: IProps) {
 			setTimeout(props.closeKaraMenu, 350);
 		} catch (e) {
 			// already display
+		}
+	};
+
+	const shuffleSongs = () => {
+		try {
+			commandBackend('randomizePLC', {
+				plc_ids: [kara?.plcid],
+			});
+			setEffectShuffle(true);
+			setTimeout(props.closeKaraMenu, 350);
+		} catch (e) {
+			//already display
 		}
 	};
 
@@ -290,6 +303,20 @@ function KaraMenuModal(props: IProps) {
 						<i className="fas fa-fw fa-check-square" />
 						&nbsp;
 						{i18next.t('KARA_MENU.WHITELISTED')}
+					</div>
+				</li>
+			) : null}
+			{!isNonStandardPlaylist(playlist.plaid) ? (
+				<li className="animate-button-container">
+					<div onClick={shuffleSongs}>
+						<i className="fas fa-fw fa-arrows-turn-to-dots" />
+						&nbsp;
+						{i18next.t('KARA_MENU.SHUFFLE')}
+					</div>
+					<div className={`animate-button-success${effectShuffle ? ' activate' : ''}`}>
+						<i className="fas fa-fw fa-check-square" />
+						&nbsp;
+						{i18next.t('KARA_MENU.SHUFFLED')}
 					</div>
 				</li>
 			) : null}

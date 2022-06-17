@@ -105,7 +105,9 @@
 		"WHITELISTED": "Ajouté !",
 		"TRANSFER_KARA": "Transférer cette chanson en face",
 		"TRANSFER_KARA_AFTER_PLAYING": "Transférer en face après la chanson en cours",
-		"MOVE_KARA": "Déplacer après la chanson en cours"
+		"MOVE_KARA": "Déplacer après la chanson en cours",
+		"SHUFFLE": "Mélanger les chansons",
+		"SHUFFLED": "Chansons mélangées !"
 	},
 	"KAROULETTE": {
 		"START": "Passer en revue les suggestions du public",

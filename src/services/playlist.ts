@@ -938,6 +938,26 @@ export async function resetAllAcceptedPLCs() {
 	);
 }
 
+/** Randomize songs in playlist */
+export async function randomizePLC(plc_ids: number[]) {
+	profile('randomizPLC');
+	const plcs = await getPLCInfoMini(plc_ids);
+	const pls_in_plcs = new Set();
+	for (const plc of plcs) {
+		pls_in_plcs.add(plc.plaid);
+	}
+	if (pls_in_plcs.size > 1) throw { code: 400, msg: 'RANDOMIZE_PLC_ERROR_NO_MORE_THAN_ONE_PLAYLIST' };
+	const pl = await getPlaylistContentsMini(plcs[0].plaid);
+	// Determine where the flag_playing is in our PL and what's the latest position
+	const playingPos = pl.find(plc => plc.flag_playing)?.pos || 0;
+	const maxPos = Math.max(...pl.map(plc => plc.pos));
+	for (const plc of plcs) {
+		const randomPos = Math.floor(Math.random() * (maxPos - playingPos) + playingPos);
+		await editPLC([plc.plcid], { pos: randomPos });
+	}
+	profile('randomizPLC');
+}
+
 /** Edit PLC's properties in a playlist */
 export async function editPLC(plc_ids: number[], params: PLCEditParams, refresh = true) {
 	profile('editPLC');

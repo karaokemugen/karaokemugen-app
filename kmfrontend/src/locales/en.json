@@ -104,7 +104,9 @@
 		"WHITELISTED": "Whitelisted!",
 		"TRANSFER_KARA": "Transfer this song",
 		"TRANSFER_KARA_AFTER_PLAYING": "Transfer it after the currently playing song",
-		"MOVE_KARA": "Move after current song"
+		"MOVE_KARA": "Move after current song",
+		"SHUFFLE": "Mix the songs",
+		"SHUFFLED": "Songs mixed !"
 	},
 	"KAROULETTE": {
 		"START": "Review suggestions from the public",
