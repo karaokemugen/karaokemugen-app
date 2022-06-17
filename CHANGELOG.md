@@ -1,3 +1,35 @@
+# v6.1.10 - 19/06/2022
+
+## Changes
+
+-   Display git and ftp only if maintainer and online are enabled in repository form
+-   The `--debug` flag is now `--verbose` since debug is reserved by node now
+-   Updated suggest link
+-   Added search textbox in user list in system panel
+-   Optimized mass edit of karaokes
+-   Added Asia as a default collection
+-   Moved update repositories button from Database page to Repositories page in system panel
+-   Added an example song in profile page so the user can see what his linguistic preferences will do.
+-   Optimized users initialization a bit
+-   Added language to user if null on login
+
+## Fixes
+
+-   Fixed the "Too many files open" issue when patching repository after an update
+-   Fixed display of smart criteria for tags in karaoke detail
+-   Fixed errors when adding songs that are not present because of collections in smart playlists
+-   Removed nulls in songorder in .kara.json files when they're created
+-   Fixed karaoke list display with an unknown repository
+-   Fixed previewing hooks for a new karaoke
+-   Fixed language detection for users (now using browser)
+-
+
+## Misc
+
+-   Updated backend and frontend dependencies
+-   Updated indonesian translation
+-   Added portugese translation
+
 # v6.1.9 - 24/05/2022
 
 ## Deprecations
