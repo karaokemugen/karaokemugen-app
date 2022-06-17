@@ -490,26 +490,25 @@ function AdminHeader(props: IProps) {
 							</a>
 						</li>
 						<li>
-							<a href="#" onClick={toggleProfileModal}>
+							<div onClick={toggleProfileModal}>
 								<i className="fas fa-fw fa-user" />
 								&nbsp;{i18next.t('ACCOUNT')}
-							</a>
+							</div>
 						</li>
 						<li>
-							<a href="#" onClick={toggleUsersModal}>
+							<div onClick={toggleUsersModal}>
 								<i className="fas fa-fw fa-users" />
 								&nbsp;{i18next.t('USERLIST')}
-							</a>
+							</div>
 						</li>
 						<li>
-							<a href="#" onClick={() => logout(context.globalDispatch)}>
+							<div onClick={() => logout(context.globalDispatch)}>
 								<i className="fas fa-fw fa-sign-out-alt" />
 								&nbsp;{i18next.t('LOGOUT')}
-							</a>
+							</div>
 						</li>
 						<li>
-							<a
-								href="#"
+							<div
 								onClick={() => {
 									render(<Tutorial />, document.getElementById('tuto'));
 									setDropDownMenu(!dropDownMenu);
@@ -517,7 +516,7 @@ function AdminHeader(props: IProps) {
 							>
 								<i className="fas fa-fw fa-question-circle" />
 								&nbsp;{i18next.t('MODAL.TUTORIAL.TITLE')}
-							</a>
+							</div>
 						</li>
 						<li>
 							<a href="/welcome">
@@ -527,15 +526,14 @@ function AdminHeader(props: IProps) {
 						</li>
 						{props.powerOff ? (
 							<li>
-								<a href="#" onClick={props.powerOff}>
+								<div onClick={props.powerOff}>
 									<i className="fas fa-fw fa-power-off" />
 									&nbsp;{i18next.t('SHUTDOWN')}
-								</a>
+								</div>
 							</li>
 						) : null}
 						<li className="buttonsMobileMenu">
-							<a
-								href="#"
+							<div
 								onClick={() => {
 									props.adminMessage();
 									setDropDownMenu(!dropDownMenu);
@@ -543,11 +541,10 @@ function AdminHeader(props: IProps) {
 							>
 								<i className="fas fa-fw fa-comment" />
 								&nbsp;{i18next.t('MESSAGE')}
-							</a>
+							</div>
 						</li>
 						<li className="buttonsMobileMenu">
-							<a
-								href="#"
+							<div
 								onClick={event => {
 									props.putPlayerCommando(event);
 									setDropDownMenu(!dropDownMenu);
@@ -557,11 +554,10 @@ function AdminHeader(props: IProps) {
 							>
 								<i className="fas fa-fw fa-closed-captioning" />
 								&nbsp;{i18next.t(statusPlayer?.showSubs ? 'HIDE_SUBS' : 'SHOW_SUBS')}
-							</a>
+							</div>
 						</li>
 						<li className="buttonsMobileMenu">
-							<a
-								href="#"
+							<div
 								onClick={event => {
 									props.putPlayerCommando(event);
 									setDropDownMenu(!dropDownMenu);
@@ -571,11 +567,10 @@ function AdminHeader(props: IProps) {
 							>
 								<i className="fas fa-fw fa-undo-alt" />
 								&nbsp;{i18next.t('REWIND')}
-							</a>
+							</div>
 						</li>
 						<li className="buttonsMobileMenuSmaller">
-							<a
-								href="#"
+							<div
 								onClick={event => {
 									props.putPlayerCommando(event);
 									setDropDownMenu(!dropDownMenu);
@@ -593,12 +588,11 @@ function AdminHeader(props: IProps) {
 									<i className="fas fa-fw fa-volume-off" />
 								)}
 								&nbsp;{i18next.t('MUTE_UNMUTE')}
-							</a>
+							</div>
 						</li>
 						<li className="buttonsMobileMenuSmaller">
 							{statusPlayer?.stopping || statusPlayer?.streamerPause ? (
-								<a
-									href="#"
+								<div
 									onClick={event => {
 										props.putPlayerCommando(event);
 										setDropDownMenu(!dropDownMenu);
@@ -608,10 +602,9 @@ function AdminHeader(props: IProps) {
 								>
 									<i className="fas fa-fw fa-stop" />
 									&nbsp;{i18next.t('STOP_NOW')}
-								</a>
+								</div>
 							) : (
-								<a
-									href="#"
+								<div
 									onClick={event => {
 										props.putPlayerCommando(event);
 										setDropDownMenu(!dropDownMenu);
@@ -621,7 +614,7 @@ function AdminHeader(props: IProps) {
 								>
 									<i className="fas fa-fw fa-stop" />
 									&nbsp;{i18next.t('STOP_AFTER')}
-								</a>
+								</div>
 							)}
 						</li>
 					</ul>

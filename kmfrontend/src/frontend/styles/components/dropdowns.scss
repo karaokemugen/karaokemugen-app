@@ -3,13 +3,15 @@
 .dropdown-menu {
 	background-color: $mugen-select-background;
 	border: $mugen-select-border;
+	cursor: pointer;
 	position: absolute;
 	list-style: none;
 	padding: 0;
 	z-index: 60;
 }
 
-.dropdown-menu > li > a {
+.dropdown-menu > li > a,
+.dropdown-menu > li > div {
 	display: inline-block;
 	width: 100%;
 	padding: 0.2rem 0.5rem;
@@ -19,9 +21,11 @@
 	text-decoration: none;
 }
 
-.dropdown-menu > li > a i {
+.dropdown-menu > li > a i,
+.dropdown-menu > li > div i {
 	margin-right: 0.5em;
 }
-.dropdown-menu > li:hover > a {
+.dropdown-menu > li:hover > a,
+.dropdown-menu > li:hover > div {
 	background-color: $mugen-select-focus;
 }
