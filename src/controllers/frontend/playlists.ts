@@ -19,6 +19,7 @@ import {
 	getPlaylistInfo,
 	getPlaylists,
 	importPlaylist,
+	randomizePLC,
 	removeKaraFromPlaylist,
 	removePlaylist,
 	shufflePlaylist,
@@ -256,6 +257,15 @@ export default function playlistsController(router: SocketIOApp) {
 			// Errors detected
 			// Sending BAD REQUEST HTTP code and error object.
 			throw { code: 400, message: validationErrors };
+		}
+	});
+	router.route('randomizePLC', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req);
+		try {
+			return await randomizePLC(req.body?.plc_ids);
+		} catch (err) {
+			errMessage(err.msg);
+			throw { code: err?.code || 500, message: APIMessage(err.msg) };
 		}
 	});
 	router.route('votePLC', async (socket: Socket, req: APIData) => {
