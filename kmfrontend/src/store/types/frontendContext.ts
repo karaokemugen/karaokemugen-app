@@ -1,4 +1,4 @@
-import { DBPL } from '../../../../src/lib/types/database/playlist';
+import { DBPL, DBPLCBase } from '../../../../src/lib/types/database/playlist';
 
 // Action name
 export enum FrontendContextAction {
@@ -29,7 +29,9 @@ export interface BackgroundImage {
 export interface PlaylistInfo {
 	type: FrontendContextAction.PLAYLIST_INFO_LEFT | FrontendContextAction.PLAYLIST_INFO_RIGHT;
 	payload: {
-		playlist: DBPL;
+		playlist: DBPL & {
+			content: DBPLCBase[];
+		};
 	};
 }
 
@@ -47,6 +49,10 @@ export interface FrontendContextStore {
 	filterValue2: string;
 	backgroundImg: string;
 	indexKaraDetail: number;
-	playlistInfoLeft: DBPL;
-	playlistInfoRight: DBPL;
+	playlistInfoLeft: DBPL & {
+		content: DBPLCBase[];
+	};
+	playlistInfoRight: DBPL & {
+		content: DBPLCBase[];
+	};
 }

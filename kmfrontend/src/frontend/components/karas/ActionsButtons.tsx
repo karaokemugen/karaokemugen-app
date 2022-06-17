@@ -36,6 +36,11 @@ function ActionsButtons(props: IProps) {
 	const playlist = getPlaylistInfo(props.side, context);
 	const oppositePlaylist = getOppositePlaylistInfo(props.side, context);
 	const classValue = props.isHeader ? 'btn btn-default karaLineButton' : 'btn btn-action karaLineButton';
+	const addingIsForbidden =
+		!props.isHeader &&
+		!context.globalState.settings.data.config.Playlist.AllowDuplicates &&
+		oppositePlaylist.content.findIndex(k => k.kid === props.kara.kid) !== -1 &&
+		props.scope === 'admin';
 	return (
 		<>
 			{props.scope === 'admin' &&
@@ -111,7 +116,9 @@ function ActionsButtons(props: IProps) {
 				].includes(playlist?.plaid)) ? (
 				<button
 					title={
-						props.isHeader
+						addingIsForbidden
+							? i18next.t('TOOLTIP_KARA_ALREADY_ADDED')
+							: props.isHeader
 							? i18next.t('TOOLTIP_ADD_SELECT_KARA')
 							: `${i18next.t('TOOLTIP_ADDKARA')}${
 									props.scope === 'admin' ? ' - ' + i18next.t('TOOLTIP_ADDKARA_ADMIN') : ''
@@ -120,7 +127,7 @@ function ActionsButtons(props: IProps) {
 					className={classValue}
 					onContextMenu={onRightClickAdd}
 					onClick={props.addKara}
-					disabled={props?.checkedKaras === 0}
+					disabled={props?.checkedKaras === 0 || addingIsForbidden}
 				>
 					<i className="fas fa-fw fa-plus" />
 				</button>
