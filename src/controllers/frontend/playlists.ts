@@ -15,6 +15,7 @@ import {
 	findPlaying,
 	getKaraFromPlaylist,
 	getPlaylistContents,
+	getPlaylistContentsMicro,
 	getPlaylistInfo,
 	getPlaylists,
 	importPlaylist,
@@ -140,6 +141,16 @@ export default function playlistsController(router: SocketIOApp) {
 				req.body?.random || 0,
 				req.body?.orderByLikes
 			);
+		} catch (err) {
+			const code = 'PL_VIEW_SONGS_ERROR';
+			errMessage(code, err);
+			throw { code: err?.code || 500, message: APIMessage(code) };
+		}
+	});
+	router.route('getPlaylistContentsMicro', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'guest', 'limited');
+		try {
+			return await getPlaylistContentsMicro(req.body?.plaid);
 		} catch (err) {
 			const code = 'PL_VIEW_SONGS_ERROR';
 			errMessage(code, err);

@@ -1,6 +1,6 @@
 import { Dispatch } from 'react';
 
-import { DBPL } from '../../../../src/lib/types/database/playlist';
+import { DBPL, DBPLCBase } from '../../../../src/lib/types/database/playlist';
 import { commandBackend } from '../../utils/socket';
 import { isNonStandardPlaylist, nonStandardPlaylists } from '../../utils/tools';
 import {
@@ -83,14 +83,16 @@ export function setIndexKaraDetail(dispatch: Dispatch<IndexKaraDetail>, indexKar
 
 async function getPlaylistInfo(plaid: string) {
 	let playlist: DBPL;
+	let content: DBPLCBase[] = [];
 	if (!isNonStandardPlaylist(plaid)) {
 		try {
 			playlist = await commandBackend('getPlaylist', { plaid });
+			content = await commandBackend('getPlaylistContentsMicro', { plaid });
 		} catch (e) {
 			// already display
 		}
 	} else {
 		playlist = { plaid: plaid, name: '', flag_visible: true };
 	}
-	return playlist;
+	return { ...playlist, content };
 }

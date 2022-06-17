@@ -431,6 +431,13 @@ export function getPlaylistContentsMini(plaid: string) {
 	return selectPlaylistContentsMini(plaid);
 }
 
+/** Get a tiny amount of data from a PLC
+ * After Mini-PL, Micro-PL, we need the PL-C format.
+ */
+export function getPlaylistContentsMicro(plaid: string) {
+	return selectPlaylistContentsMicro(plaid);
+}
+
 /** Get playlist contents */
 export async function getPlaylistContents(
 	plaid: string,

@@ -31,6 +31,17 @@ h5 > a {
 	padding: 0.5em;
 }
 
+.btn:disabled {
+	background-color: scale-color($mugen-btn-background, $lightness: +20%);
+	color: gray;
+	cursor: not-allowed;
+	&:hover {
+		background-color: scale-color($mugen-btn-background, $lightness: +20%);
+		color: gray;
+		cursor: not-allowed;
+	}
+}
+
 .btn-default {
 	background-color: $mugen-btn-background;
 	color: #eee;
