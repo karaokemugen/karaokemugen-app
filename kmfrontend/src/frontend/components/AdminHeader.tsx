@@ -263,6 +263,88 @@ function AdminHeader(props: IProps) {
 					</ul>
 				) : null}
 			</div>
+
+			<div className={`btn btn-dark splitValueButton speedControl`} id="speedControl">
+				{statusPlayer?.speed === 100 && <i className={'icon fa-solid fa-gauge'}></i>}
+				{statusPlayer?.speed > 100 && <i className={'icon fa-solid fa-gauge-high'}></i>}
+				{statusPlayer?.speed < 100 && <i className={'icon fa-solid fa-gauge-high mirrored-horiz'}></i>}
+				<div className={'modifier-buttons'}>
+					<button
+						title={i18next.t('SPEED_DOWN')}
+						id="speedDown"
+						className={'button-filled'}
+						onMouseDown={_ => changeSpeed(-25)}
+						data-namecommand="setSpeed"
+						value={statusPlayer?.speed}
+						onClick={props.putPlayerCommando}
+					>
+						-
+					</button>
+					<button
+						title={i18next.t('SPEED_RESET')}
+						id="speedReset"
+						onMouseDown={_ => changeSpeed(null)}
+						data-namecommand="setSpeed"
+						value={statusPlayer?.speed}
+						onClick={props.putPlayerCommando}
+					>
+						{(statusPlayer?.speed / 100).toFixed(2)}x
+					</button>
+					<button
+						title={i18next.t('SPEED_UP')}
+						id="speedUp"
+						className={'button-filled'}
+						onMouseDown={_ => changeSpeed(+25)}
+						data-namecommand="setSpeed"
+						value={statusPlayer?.speed}
+						onClick={props.putPlayerCommando}
+					>
+						+
+					</button>
+				</div>
+			</div>
+
+			<div className={`btn btn-dark splitValueButton pitchControl`} id="pitchControl">
+				{statusPlayer?.pitch === 0 && <i className={'icon fa-solid fa-braille'}></i>}
+				{statusPlayer?.pitch > 0 && <i className={'icon fa-solid fa-arrow-up-right-dots'}></i>}
+				{statusPlayer?.pitch < 0 && <i className={'icon fa-solid fa-arrow-up-right-dots mirrored-vert'}></i>}
+
+				<div className={'modifier-buttons'}>
+					<button
+						title={i18next.t('PITCH_DOWN')}
+						id="pitchDown"
+						className={'button-filled'}
+						onMouseDown={_ => changePitch(-1)}
+						data-namecommand="setPitch"
+						value={statusPlayer?.pitch}
+						onClick={props.putPlayerCommando}
+					>
+						-
+					</button>
+					<button
+						title={i18next.t('PITCH_RESET')}
+						id="pitchReset"
+						onMouseDown={_ => changePitch(null)}
+						data-namecommand="setPitch"
+						value={statusPlayer?.pitch}
+						onClick={props.putPlayerCommando}
+					>
+						{statusPlayer?.pitch}
+					</button>
+					<button
+						title={i18next.t('PITCH_UP')}
+						id="pitchUp"
+						className={'button-filled'}
+						onMouseDown={_ => changePitch(+1)}
+						data-namecommand="setPitch"
+						value={statusPlayer?.pitch}
+						onClick={props.putPlayerCommando}
+					>
+						+
+					</button>
+				</div>
+			</div>
+
 			<div className="header-group controls">
 				{statusPlayer?.stopping || statusPlayer?.streamerPause ? (
 					<button
@@ -328,87 +410,6 @@ function AdminHeader(props: IProps) {
 				>
 					<i className="fas fa-fw fa-undo-alt" />
 				</button>
-			</div>
-
-			<div className={`btn btn-dark splitValueButton pitchControl`} id="pitchControl">
-				{statusPlayer?.pitch === 0 && <i className={'icon fa-solid fa-braille'}></i>}
-				{statusPlayer?.pitch > 0 && <i className={'icon fa-solid fa-arrow-up-right-dots'}></i>}
-				{statusPlayer?.pitch < 0 && <i className={'icon fa-solid fa-arrow-up-right-dots mirrored-vert'}></i>}
-
-				<div className={'modifier-buttons'}>
-					<button
-						title={i18next.t('PITCH_DOWN')}
-						id="pitchDown"
-						className={'button-filled'}
-						onMouseDown={_ => changePitch(-1)}
-						data-namecommand="setPitch"
-						value={statusPlayer?.pitch}
-						onClick={props.putPlayerCommando}
-					>
-						-
-					</button>
-					<button
-						title={i18next.t('PITCH_RESET')}
-						id="pitchReset"
-						onMouseDown={_ => changePitch(null)}
-						data-namecommand="setPitch"
-						value={statusPlayer?.pitch}
-						onClick={props.putPlayerCommando}
-					>
-						{statusPlayer?.pitch}
-					</button>
-					<button
-						title={i18next.t('PITCH_UP')}
-						id="pitchUp"
-						className={'button-filled'}
-						onMouseDown={_ => changePitch(+1)}
-						data-namecommand="setPitch"
-						value={statusPlayer?.pitch}
-						onClick={props.putPlayerCommando}
-					>
-						+
-					</button>
-				</div>
-			</div>
-
-			<div className={`btn btn-dark splitValueButton speedControl`} id="speedControl">
-				{statusPlayer?.speed === 100 && <i className={'icon fa-solid fa-gauge'}></i>}
-				{statusPlayer?.speed > 100 && <i className={'icon fa-solid fa-gauge-high'}></i>}
-				{statusPlayer?.speed < 100 && <i className={'icon fa-solid fa-gauge-high mirrored-horiz'}></i>}
-				<div className={'modifier-buttons'}>
-					<button
-						title={i18next.t('SPEED_DOWN')}
-						id="speedDown"
-						className={'button-filled'}
-						onMouseDown={_ => changeSpeed(-25)}
-						data-namecommand="setSpeed"
-						value={statusPlayer?.speed}
-						onClick={props.putPlayerCommando}
-					>
-						-
-					</button>
-					<button
-						title={i18next.t('SPEED_RESET')}
-						id="speedReset"
-						onMouseDown={_ => changeSpeed(null)}
-						data-namecommand="setSpeed"
-						value={statusPlayer?.speed}
-						onClick={props.putPlayerCommando}
-					>
-						{(statusPlayer?.speed / 100).toFixed(2)}x
-					</button>
-					<button
-						title={i18next.t('SPEED_UP')}
-						id="speedUp"
-						className={'button-filled'}
-						onMouseDown={_ => changeSpeed(+25)}
-						data-namecommand="setSpeed"
-						value={statusPlayer?.speed}
-						onClick={props.putPlayerCommando}
-					>
-						+
-					</button>
-				</div>
 			</div>
 
 			<button

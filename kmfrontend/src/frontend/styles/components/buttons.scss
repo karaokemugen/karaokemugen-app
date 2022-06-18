@@ -236,14 +236,21 @@ h5 > a {
 	.KmAppWrapperDecorator:not(.chibi) {
 		.messageButton,
 		.subtitleButton,
-		.rewindButton,
-		.pitchControl,
-		.speedControl {
+		.rewindButton {
 			display: none;
 		}
 
 		.buttonsMobileMenu {
 			display: block;
+		}
+	}
+}
+
+@media (max-width: $mugen-breakpoint-medium) {
+	.KmAppWrapperDecorator:not(.chibi) {
+		.pitchControl,
+		.speedControl {
+			display: none;
 		}
 	}
 }
