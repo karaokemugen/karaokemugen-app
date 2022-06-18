@@ -11,7 +11,7 @@
 }
 
 .dropdown-menu > li > a,
-.dropdown-menu > li > div {
+.dropdown-menu > li > div:not(.radiobutton-ui) {
 	display: inline-block;
 	width: 100%;
 	padding: 0.2rem 0.5rem;
@@ -22,10 +22,10 @@
 }
 
 .dropdown-menu > li > a i,
-.dropdown-menu > li > div i {
+.dropdown-menu > li > div:not(.radiobutton-ui) i {
 	margin-right: 0.5em;
 }
 .dropdown-menu > li:hover > a,
-.dropdown-menu > li:hover > div {
+.dropdown-menu > li:hover > div:not(.radiobutton-ui) {
 	background-color: $mugen-select-focus;
 }
