@@ -139,8 +139,8 @@ function PlayerOptions(props: IProps) {
 							<input
 								type="range"
 								id="Player.PIP.Size"
-								onChange={onChange}
-								value={config['Player.PIP.Size']}
+								onBlur={onChange}
+								defaultValue={config['Player.PIP.Size']}
 							/>
 						</div>
 					</div>
@@ -297,8 +297,8 @@ function PlayerOptions(props: IProps) {
 						<div>
 							<input
 								id="Player.Display.ConnectionInfo.Host"
-								onChange={onChange}
-								value={config['Player.Display.ConnectionInfo.Host']}
+								onBlur={onChange}
+								defaultValue={config['Player.Display.ConnectionInfo.Host']}
 							/>
 						</div>
 					</div>
@@ -316,8 +316,8 @@ function PlayerOptions(props: IProps) {
 						<div>
 							<input
 								id="Player.Display.ConnectionInfo.Message"
-								onChange={onChange}
-								value={config['Player.Display.ConnectionInfo.Message']}
+								onBlur={onChange}
+								defaultValue={config['Player.Display.ConnectionInfo.Message']}
 							/>
 						</div>
 					</div>
