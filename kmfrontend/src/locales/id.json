@@ -1509,7 +1509,6 @@
 		"DOWNLOADING": "Mengunduh…",
 		"RESOLVING_DELTAS": "Menyelesaikan delta",
 		"ANALYZING_WORKDIR": "Menganalisis direktori kerja",
-		"UPDATING_GIT_REPO": "Memperbarui repositori {{data}}",
 		"DOWNLOADING_ZIP": "Mengunduh basis data",
 		"EXTRACTING_ZIP": "Mengekstrak basis data",
 		"PREPARING_CHANGES": "Menyiapkan perubahan",
