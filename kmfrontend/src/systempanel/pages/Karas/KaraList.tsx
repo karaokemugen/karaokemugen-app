@@ -5,8 +5,11 @@ import {
 	FontColorsOutlined,
 	UploadOutlined,
 	DownloadOutlined,
+	DownOutlined,
+	PlayCircleOutlined,
 } from '@ant-design/icons';
-import { Alert, Button, Cascader, Col, Input, Layout, Modal, Row, Table } from 'antd';
+import { Alert, Button, Cascader, Col, Dropdown, Input, Layout, Menu, Modal, Row, Table } from 'antd';
+import { ItemType } from 'antd/lib/menu/hooks/useItems';
 import i18next from 'i18next';
 import { Component } from 'react';
 import { Link } from 'react-router-dom';
@@ -88,7 +91,7 @@ class KaraList extends Component<unknown, KaraListState> {
 
 	confirmDeleteKara = kara => {
 		Modal.confirm({
-			title: i18next.t('KARA.DELETE_KARA'),
+			title: i18next.t('KARA.DELETE_KARA_MODAL'),
 			okText: i18next.t('YES'),
 			cancelText: i18next.t('NO'),
 			onOk: close => {
@@ -182,6 +185,37 @@ class KaraList extends Component<unknown, KaraListState> {
 			repository: kara.repository,
 		};
 		commandBackend('addDownloads', { downloads: [downloadObject] }).catch(() => {});
+	};
+
+	getMenu = record => {
+		const menu: ItemType[] = [];
+		const deleteButton = {
+			key: '1',
+			label: i18next.t('KARA.DELETE_KARA'),
+			icon: <DeleteOutlined />,
+			danger: true,
+			onClick: () => this.confirmDeleteKara(record),
+		};
+
+		const deleteMediaButton = {
+			key: '2',
+			label: i18next.t('KARA.DELETE_MEDIA_TOOLTIP'),
+			icon: <ClearOutlined />,
+			danger: true,
+			onClick: () => commandBackend('deleteMedias', { kids: [record.kid] }, true),
+		};
+		const uploadMediaButton = {
+			key: '3',
+			label: i18next.t('KARA.UPLOAD_MEDIA_TOOLTIP'),
+			icon: <UploadOutlined />,
+			onClick: () => commandBackend('uploadMedia', { kid: record.kid }),
+		};
+		if (record.download_status === 'DOWNLOADED') {
+			menu.push(uploadMediaButton);
+			menu.push(deleteMediaButton);
+		}
+		menu.push(deleteButton);
+		return menu;
 	};
 
 	render() {
@@ -346,53 +380,13 @@ class KaraList extends Component<unknown, KaraListState> {
 			),
 			key: 'action',
 			render: (_text, record: DBKara) => {
-				let deleteMediaButton: JSX.Element = (
-					<Button
-						type="primary"
-						danger
-						title={i18next.t('KARA.DELETE_MEDIA_TOOLTIP')}
-						icon={<ClearOutlined />}
-						onClick={() => commandBackend('deleteMedias', { kids: [record.kid] }, true)}
-						style={{ marginRight: '0.75em' }}
-					/>
-				);
-				let uploadMediaButton: JSX.Element = (
-					<Button
-						type="primary"
-						danger
-						title={i18next.t('KARA.UPLOAD_MEDIA_TOOLTIP')}
-						icon={<UploadOutlined />}
-						onClick={() => commandBackend('uploadMedia', { kid: record.kid })}
-						style={{ marginRight: '0.75em' }}
-					/>
-				);
-				let downloadVideoButton: JSX.Element = (
-					<Button
-						type="primary"
-						onClick={() => this.downloadMedia(record)}
-						icon={<DownloadOutlined />}
-						title={i18next.t('KARA_DETAIL.DOWNLOAD_MEDIA')}
-						style={{ marginRight: '0.75em' }}
-					/>
-				);
 				if (isModifiable(this.context, record.repository)) {
 					const editLink: JSX.Element = (
 						<Link to={`/system/karas/${record.kid}`} style={{ marginRight: '0.75em' }}>
 							<Button type="primary" icon={<EditOutlined />} title={i18next.t('KARA.EDIT_KARA')} />
 						</Link>
 					);
-					const deleteButton: JSX.Element = (
-						<Button
-							type="primary"
-							danger
-							loading={this.state.karasRemoving.indexOf(record.kid) >= 0}
-							icon={<DeleteOutlined />}
-							title={i18next.t('KARA.DELETE_KARA')}
-							onClick={() => this.confirmDeleteKara(record)}
-							style={{ marginRight: '0.75em' }}
-						/>
-					);
-					const LyricsButton: JSX.Element = (
+					const lyricsButton: JSX.Element = (
 						<Button
 							type="primary"
 							icon={<FontColorsOutlined />}
@@ -401,31 +395,73 @@ class KaraList extends Component<unknown, KaraListState> {
 							style={{ marginRight: '0.75em' }}
 						/>
 					);
-					if (record.download_status !== 'DOWNLOADED') {
-						uploadMediaButton = null;
-						deleteMediaButton = null;
-					}
+
+					let downloadVideoButton: JSX.Element = (
+						<Button
+							type="primary"
+							onClick={() => this.downloadMedia(record)}
+							icon={<DownloadOutlined />}
+							title={i18next.t('KARA_DETAIL.DOWNLOAD_MEDIA')}
+							style={{ marginRight: '0.75em' }}
+						/>
+					);
+
+					let playVideoButton: JSX.Element = (
+						<Button
+							onClick={() => commandBackend('playKara', { kid: record.kid }).catch(() => {})}
+							icon={<PlayCircleOutlined />}
+							title={i18next.t('KARA.PLAY_KARAOKE')}
+							style={{ marginRight: '0.75em' }}
+						/>
+					);
+
 					if (record.download_status !== 'MISSING') {
 						downloadVideoButton = null;
+					}
+					if (record.download_status !== 'DOWNLOADED') {
+						playVideoButton = null;
 					}
 					return (
 						<div style={{ display: 'flex' }}>
 							{editLink}
-							{LyricsButton}
+							{lyricsButton}
+							{playVideoButton}
 							{downloadVideoButton}
-							{uploadMediaButton}
-							{deleteMediaButton}
-							{deleteButton}
+							<Dropdown overlay={<Menu items={this.getMenu(record)} />}>
+								<Button
+									icon={<DownOutlined />}
+									loading={this.state.karasRemoving.indexOf(record.kid) >= 0}
+								/>
+							</Dropdown>
+						</div>
+					);
+				} else if (record.download_status === 'DOWNLOADED') {
+					return (
+						<div style={{ display: 'flex' }}>
+							<Button
+								type="primary"
+								danger
+								title={i18next.t('KARA.DELETE_MEDIA_TOOLTIP')}
+								icon={<ClearOutlined />}
+								onClick={() => commandBackend('deleteMedias', { kids: [record.kid] }, true)}
+								style={{ marginRight: '0.75em' }}
+							/>
+						</div>
+					);
+				} else if (record.download_status === 'MISSING') {
+					return (
+						<div style={{ display: 'flex' }}>
+							<Button
+								type="primary"
+								onClick={() => this.downloadMedia(record)}
+								icon={<DownloadOutlined />}
+								title={i18next.t('KARA_DETAIL.DOWNLOAD_MEDIA')}
+								style={{ marginRight: '0.75em' }}
+							/>
 						</div>
 					);
 				} else {
-					if (record.download_status === 'DOWNLOADED') {
-						return <div style={{ display: 'flex' }}>{deleteMediaButton}</div>;
-					} else if (record.download_status === 'MISSING') {
-						return <div style={{ display: 'flex' }}>{downloadVideoButton}</div>;
-					} else {
-						return null;
-					}
+					return null;
 				}
 			},
 		},
