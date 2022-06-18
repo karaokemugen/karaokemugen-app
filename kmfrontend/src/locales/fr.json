@@ -194,6 +194,7 @@
 			"CURRENT": "La ligne affichée en gras représente celle qui est actuellement chantée."
 		},
 		"OPEN_POLL": "Voter pour la prochaine chanson",
+		"CURRENT": "Voir la liste de lecture courante",
 		"PUBLIC_SUGGESTIONS": "Suggestions du public",
 		"PUBLIC_SUGGESTIONS_SHORT": "Suggestions",
 		"FAVORITES": "Favoris",
