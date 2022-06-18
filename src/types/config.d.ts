@@ -41,6 +41,7 @@ export interface Config {
 		AllowCustomTemporaryGuests?: boolean;
 		Mode?: number;
 		ShowAvatarsOnPlaylist?: boolean;
+		WelcomeMessage?: string;
 	};
 	GUI: {
 		ChibiPlayer?: {

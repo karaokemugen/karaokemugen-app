@@ -208,8 +208,13 @@ function Login() {
 				<div className="loginImage">
 					<img src={logo} alt="Logo KM" />
 				</div>
-				<p className="loginSlogan">
-					{isAdminPath ? i18next.t('LOGIN_SLOGAN_ADMIN') : i18next.t('LOGIN_SLOGAN')}
+				<p>
+					<div className="loginWelcomeMessage">
+						{context.globalState.settings.data.config?.Frontend.WelcomeMessage}
+					</div>
+					<div className="loginSlogan">
+						{isAdminPath ? i18next.t('LOGIN_SLOGAN_ADMIN') : i18next.t('LOGIN_SLOGAN')}
+					</div>
 				</p>
 			</div>
 			<div className="loginBox">

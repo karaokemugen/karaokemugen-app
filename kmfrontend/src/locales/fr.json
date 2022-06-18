@@ -491,7 +491,9 @@
 			"WEBAPPMODE_LIMITED": "Restreint : affichage du karaoké en cours et liste de lecture",
 			"WEBAPPMODE_OPEN": "Ouvert (par défaut) : Ajouts possibles",
 			"SHOW_AVATARS_ON_PLAYLIST": "Afficher les avatars sur les listes de lecture",
-			"SHOW_AVATARS_ON_PLAYLIST_TOOLTIP": "Pour savoir qui a ajouté quoi d'un coup d'oeil."
+			"SHOW_AVATARS_ON_PLAYLIST_TOOLTIP": "Pour savoir qui a ajouté quoi d'un coup d'oeil.",
+			"DISPLAY_WELCOME_MESSAGE": "Afficher un message de bienvenue",
+			"DISPLAY_WELCOME_MESSAGE_TOOLTIP": "Ce message sera affiché sur la page de connexion de votre session de karaoké"
 		}
 	},
 	"KARA_PAUSED_WAITING": "Pas de lecture en cours",

@@ -43,6 +43,8 @@ Frontend:
   # 2 : Opened (all features available)
   Mode: 2
   ShowAvatarsOnPlaylist: true
+  # This message will be shown on the login page for your karaoke session
+  WelcomeMessage: ''
 GUI:
   # Enable or disable chibi player
   ChibiPlayer:

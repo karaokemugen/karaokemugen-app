@@ -53,6 +53,7 @@ export const defaults: Config = {
 		AllowCustomTemporaryGuests: false,
 		Mode: 2,
 		ShowAvatarsOnPlaylist: true,
+		WelcomeMessage: '',
 	},
 	GUI: {
 		ChibiPlayer: {

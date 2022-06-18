@@ -96,6 +96,17 @@ function InterfaceOptions(props: IProps) {
 					/>
 				</div>
 			</div>
+
+			<div className="settings-line">
+				<label htmlFor="Frontend.WelcomeMessage">
+					<span className="title">{i18next.t('SETTINGS.INTERFACE.DISPLAY_WELCOME_MESSAGE')}</span>
+					<br />
+					<span className="tooltip">{i18next.t('SETTINGS.INTERFACE.DISPLAY_WELCOME_MESSAGE_TOOLTIP')}</span>
+				</label>
+				<div>
+					<input id="Frontend.WelcomeMessage" onChange={onChange} value={config['Frontend.WelcomeMessage']} />
+				</div>
+			</div>
 		</>
 	);
 }

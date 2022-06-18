@@ -491,7 +491,9 @@
 			"WEBAPPMODE_LIMITED": "Restricted: Read-only",
 			"WEBAPPMODE_OPEN": "Open (default): Users can add songs",
 			"SHOW_AVATARS_ON_PLAYLIST": "Show avatars on playlist",
-			"SHOW_AVATARS_ON_PLAYLIST_TOOLTIP": "To know who added what at a glance."
+			"SHOW_AVATARS_ON_PLAYLIST_TOOLTIP": "To know who added what at a glance.",
+			"DISPLAY_WELCOME_MESSAGE": "Display welcome message",
+			"DISPLAY_WELCOME_MESSAGE_TOOLTIP": "This message will be shown on the login page for your karaoke session"
 		}
 	},
 	"KARA_PAUSED_WAITING": "No song playing yet",
