@@ -1252,7 +1252,6 @@
 		"RESOLVING_DELTAS": "Résolution des deltas",
 		"DECOMPRESSING": "Compression d'objets",
 		"ANALYZING_WORKDIR": "Analyse du répertoire de travail",
-		"UPDATING_GIT_REPO": "Mise à jour du dépôt {{data}}",
 		"DOWNLOADING_ZIP": "Téléchargement de la base de données",
 		"EXTRACTING_ZIP": "Extraction de la base de données",
 		"COMMITING_CHANGES": "Réalisation des modifications",

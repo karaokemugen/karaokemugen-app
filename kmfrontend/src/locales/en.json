@@ -1250,7 +1250,6 @@
 		"RESOLVING_DELTAS": "Resolving deltas",
 		"DECOMPRESSING": "Compressing objects",
 		"ANALYZING_WORKDIR": "Analyzing workdir",
-		"UPDATING_GIT_REPO": "Updating repository {{data}}",
 		"DOWNLOADING_ZIP": "Downloading database",
 		"EXTRACTING_ZIP": "Extracting database",
 		"COMMITING_CHANGES": "Committing changes",
