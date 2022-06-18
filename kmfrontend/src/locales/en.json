@@ -183,6 +183,7 @@
 			"CURRENT": "The bold line represents the currently sung line."
 		},
 		"OPEN_POLL": "Vote for the next song",
+		"CURRENT": "See the current playlist",
 		"PUBLIC_SUGGESTIONS": "Public suggestions",
 		"PUBLIC_SUGGESTIONS_SHORT": "Suggestions",
 		"FAVORITES": "Favorites",
