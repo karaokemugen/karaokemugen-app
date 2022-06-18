@@ -104,7 +104,11 @@ function InterfaceOptions(props: IProps) {
 					<span className="tooltip">{i18next.t('SETTINGS.INTERFACE.DISPLAY_WELCOME_MESSAGE_TOOLTIP')}</span>
 				</label>
 				<div>
-					<input id="Frontend.WelcomeMessage" onChange={onChange} value={config['Frontend.WelcomeMessage']} />
+					<input
+						id="Frontend.WelcomeMessage"
+						onBlur={onChange}
+						defaultValue={config['Frontend.WelcomeMessage']}
+					/>
 				</div>
 			</div>
 		</>
