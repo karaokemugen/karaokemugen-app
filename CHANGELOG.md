@@ -8,14 +8,11 @@
 -   Added search textbox in user list in system panel
 -   Optimized mass edit of karaokes
 -   Added Asia as a default collection
--   Moved update repositories button from Database page to Repositories page in system panel
--   Added an example song in profile page so the user can see what his linguistic preferences will do.
+-   Moved update repositories button from Database page to Repositories page in system panel (#1223)
+-   Added an example song in profile page so the user can see what his linguistic preferences will do (#1180)
 -   Optimized users initialization a bit
 -   Added language to user if null on login
--   Fixed users hitting play with no song to play throwing errors
--   Fixed trouble with input boxes on options page
 -   Added link to current playlist on public welcome page
--   Fixed setup loading when updating repos is in progress
 
 ## Fixes
 
@@ -26,7 +23,9 @@
 -   Fixed karaoke list display with an unknown repository
 -   Fixed previewing hooks for a new karaoke
 -   Fixed language detection for users (now using browser)
--
+-   Fixed setup loading when updating repos is in progress
+-   Fixed users hitting play with no song to play throwing errors (#1255)
+-   Fixed trouble with input boxes on options page (#1250)
 
 ## Misc
 
