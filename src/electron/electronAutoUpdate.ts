@@ -82,7 +82,7 @@ export function initAutoUpdate() {
 			autoUpdater.checkForUpdatesAndNotify();
 		} catch (err) {
 			// Non fatal, just report it
-			sentry.error(err, 'Warning');
+			sentry.error(err, 'warning');
 			logger.warn('Unable to check for app updates', { service, obj: err });
 		}
 	}

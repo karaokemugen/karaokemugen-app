@@ -140,7 +140,7 @@
 		"CRITERIA_TYPE_1005": "Tag contenant",
 		"CRITERIA_TYPE_1006": "Cacher les chansons indisponibles hors ligne",
 		"LABEL": {
-			"TAG": "Les karaokés {{verb}} {{tag}} sont sur liste noire.",
+			"TAG": "Les karaokés {{verb}} {{tag}} sont dans la liste.",
 			"TAG_VERBS": {
 				"1": "de la série",
 				"2": "chantés par",
@@ -155,7 +155,9 @@
 				"11": "originaires de",
 				"12": "attachés au thème",
 				"13": "attachés à la plateforme",
-				"14": "qui sont une version"
+				"14": "qui sont une version",
+				"15": "avec le warning",
+				"16": "inclus dans la collection"
 			},
 			"YEAR": "Les karaokés de l'année {{year}} sont dans la liste.",
 			"KID": "Ce karaoké est dans la liste.",
@@ -188,6 +190,7 @@
 			"CURRENT": "La ligne affichée en gras représente celle qui est actuellement chantée."
 		},
 		"OPEN_POLL": "Voter pour la prochaine chanson",
+		"CURRENT": "Voir la liste de lecture courante",
 		"PUBLIC_SUGGESTIONS": "Suggestions du public",
 		"PUBLIC_SUGGESTIONS_SHORT": "Suggestions",
 		"FAVORITES": "Favoris",
@@ -588,6 +591,7 @@
 			"INTERFACE_LANGUAGE": "Langue de l'interface",
 			"MAIN_SONG_NAME_LANG": "Préférence d'affichage du nom des chansons",
 			"FALLBACK_SONG_NAME_LANG": "Préférence alternative d'affichage du nom des chansons",
+			"SONG_NAME_DISPLAY_EXAMPLE": "Example d'affichage",
 			"FLAG_PARENTSONLY": "Regrouper les chansons par versions",
 			"FLAG_PUBLIC": "Partager son profil",
 			"FLAG_DISPLAYFAVORITES": "Partager ses favoris",
@@ -956,7 +960,7 @@
 		"DUMP_DATABASE_DESCRIPTION": "Crée un fichier de sauvegarde karaokemugen.sql dans votre répertoire de données. Ce fichier peut servir de point de restauration ou pour envoyer votre base de données aux développeurs s'ils vous le demande.",
 		"RESTORE_DATABASE": "Restaurer la base de données",
 		"RESTORE_DATABASE_DESCRIPTION": "Restaure votre base de données à partir du fichier karaokemugen.sql dans votre répertoire de données, s'il est présent. <2>ATTENTION : cela écrasera toute donnée non sauvegardée dans votre base de données : listes de lecture, sessions, etc.</2>",
-		"UPDATE_REPOS": "Mettre à jour les dépôts",
+		"UPDATE_REPOS": "Mettre à jour tous les dépôts",
 		"UPDATE_REPOS_DESCRIPTION": "Force une mise à jour des dépôts, cela peut s'avérer utile si un des dépôts est défaillant.",
 		"UPDATING_REPOS": "Mise à jour des dépôts",
 		"CONFIRM_UPDATE": "Confirmer la mise à jour"
@@ -1242,7 +1246,6 @@
 		"RESOLVING_DELTAS": "Résolution des deltas",
 		"DECOMPRESSING": "Compression d'objets",
 		"ANALYZING_WORKDIR": "Analyse du répertoire de travail",
-		"UPDATING_GIT_REPO": "Mise à jour du dépôt {{data}}",
 		"DOWNLOADING_ZIP": "Téléchargement de la base de données",
 		"EXTRACTING_ZIP": "Extraction de la base de données",
 		"COMMITING_CHANGES": "Réalisation des modifications",
@@ -1290,8 +1293,8 @@
 		"KARA_PLAYED_ERROR": "Erreur lors de la récupération des chansons triés par les plus joués",
 		"SONG_VIEW_ERROR": "Erreur lors de la récupération d'une chanson",
 		"KARA_DELETED_ERROR": "Erreur lors de la suppression d'une chanson",
-		"KARA_EDIT_ERROR_UNMOVABLE_LYRICS": "Impossible de renommer les paroles. Le fichier est-il utilisé par une autre application?",
-		"KARA_EDIT_ERROR_UNMOVABLE_MEDIA": "Impossible de renommer le média. Le fichier est-il utilisé par une autre application?",
+		"KARA_EDIT_ERROR_UNMOVABLE_LYRICS": "Impossible de renommer les paroles. Le fichier est-il utilisé par une autre application ?",
+		"KARA_EDIT_ERROR_UNMOVABLE_MEDIA": "Impossible de renommer le média. Le fichier est-il utilisé par une autre application ?",
 		"KARA_EDITED_ERROR": "Erreur lors de l'édition d'une chanson",
 		"PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED": "Cette chanson a déjà été ajoutée.",
 		"PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED": "Ajout de chanson impossible, quota atteint",

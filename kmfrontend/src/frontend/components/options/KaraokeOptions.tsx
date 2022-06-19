@@ -149,11 +149,11 @@ function KaraokeOptions(props: IProps) {
 									data-exclude="true"
 									id="Karaoke.Quota.Time"
 									placeholder="1000"
-									onChange={(e: any) => {
+									onBlur={(e: any) => {
 										if (!e.target.value) e.target.value = 1;
 										onChange(e);
 									}}
-									value={config['Karaoke.Quota.Time']}
+									defaultValue={config['Karaoke.Quota.Time']}
 								/>
 							</div>
 						</div>
@@ -172,8 +172,8 @@ function KaraokeOptions(props: IProps) {
 									data-exclude="true"
 									id="Karaoke.Quota.Songs"
 									placeholder="1000"
-									onChange={onChange}
-									value={config['Karaoke.Quota.Songs']}
+									onBlur={onChange}
+									defaultValue={config['Karaoke.Quota.Songs']}
 								/>
 							</div>
 						</div>
@@ -192,8 +192,8 @@ function KaraokeOptions(props: IProps) {
 									data-exclude="true"
 									id="Karaoke.Quota.FreeAutoTime"
 									placeholder="1000"
-									onChange={onChange}
-									value={config['Karaoke.Quota.FreeAutoTime']}
+									onBlur={onChange}
+									defaultValue={config['Karaoke.Quota.FreeAutoTime']}
 								/>
 							</div>
 						</div>
@@ -227,11 +227,15 @@ function KaraokeOptions(props: IProps) {
 								</label>
 								<div>
 									<input
+										min={1}
 										type="number"
 										data-exclude="true"
 										id="Karaoke.Quota.FreeUpVotesRequiredMin"
-										onChange={onChange}
-										value={config['Karaoke.Quota.FreeUpVotesRequiredMin']}
+										onBlur={(e: any) => {
+											if (!e.target.value) e.target.value = 1;
+											onChange(e);
+										}}
+										defaultValue={config['Karaoke.Quota.FreeUpVotesRequiredMin']}
 									/>
 								</div>
 							</div>
@@ -250,8 +254,8 @@ function KaraokeOptions(props: IProps) {
 										type="number"
 										data-exclude="true"
 										id="Karaoke.Quota.FreeUpVotesRequiredPercent"
-										onChange={onChange}
-										value={config['Karaoke.Quota.FreeUpVotesRequiredPercent']}
+										onBlur={onChange}
+										defaultValue={config['Karaoke.Quota.FreeUpVotesRequiredPercent']}
 									/>
 								</div>
 							</div>
@@ -400,8 +404,8 @@ function KaraokeOptions(props: IProps) {
 								data-exclude="true"
 								id="Karaoke.MinutesBeforeSessionEndsWarning"
 								placeholder="15"
-								onChange={onChange}
-								value={config['Karaoke.MinutesBeforeSessionEndsWarning']}
+								onBlur={onChange}
+								defaultValue={config['Karaoke.MinutesBeforeSessionEndsWarning']}
 							/>
 						</div>
 					</div>
@@ -444,8 +448,8 @@ function KaraokeOptions(props: IProps) {
 										className="input-number-options"
 										id="Playlist.Medias.Jingles.Interval"
 										placeholder="20"
-										onChange={onChange}
-										value={config['Playlist.Medias.Jingles.Interval']}
+										onBlur={onChange}
+										defaultValue={config['Playlist.Medias.Jingles.Interval']}
 									/>
 									<label className="label-input-options">{i18next.t('SETTINGS.KARAOKE.SONGS')}</label>
 								</>
@@ -476,8 +480,8 @@ function KaraokeOptions(props: IProps) {
 										className="input-number-options"
 										id="Playlist.Medias.Sponsors.Interval"
 										placeholder="50"
-										onChange={onChange}
-										value={config['Playlist.Medias.Sponsors.Interval']}
+										onBlur={onChange}
+										defaultValue={config['Playlist.Medias.Sponsors.Interval']}
 									/>
 									<label className="label-input-options">{i18next.t('SETTINGS.KARAOKE.SONGS')}</label>
 								</>
@@ -505,8 +509,8 @@ function KaraokeOptions(props: IProps) {
 									<input
 										className="input-options"
 										id="Playlist.Medias.Intros.Message"
-										onChange={onChange}
-										value={config['Playlist.Medias.Intros.Message'] || ''}
+										onBlur={onChange}
+										defaultValue={config['Playlist.Medias.Intros.Message'] || ''}
 									/>
 									<label className="label-input-options">
 										{i18next.t('SETTINGS.KARAOKE.MESSAGE')}
@@ -536,8 +540,8 @@ function KaraokeOptions(props: IProps) {
 									<input
 										className="input-options"
 										id="Playlist.Medias.Outros.Message"
-										onChange={onChange}
-										value={config['Playlist.Medias.Outros.Message'] || ''}
+										onBlur={onChange}
+										defaultValue={config['Playlist.Medias.Outros.Message'] || ''}
 									/>
 									<label className="label-input-options">
 										{i18next.t('SETTINGS.KARAOKE.MESSAGE')}
@@ -567,8 +571,8 @@ function KaraokeOptions(props: IProps) {
 									<input
 										className="input-options"
 										id="Playlist.Medias.Encores.Message"
-										onChange={onChange}
-										value={config['Playlist.Medias.Encores.Message'] || ''}
+										onBlur={onChange}
+										defaultValue={config['Playlist.Medias.Encores.Message'] || ''}
 									/>
 									<label className="label-input-options">
 										{i18next.t('SETTINGS.KARAOKE.MESSAGE')}
@@ -639,8 +643,8 @@ function KaraokeOptions(props: IProps) {
 										type="number"
 										data-exclude="true"
 										id="Karaoke.Poll.Choices"
-										onChange={onChange}
-										value={config['Karaoke.Poll.Choices']}
+										onBlur={onChange}
+										defaultValue={config['Karaoke.Poll.Choices']}
 									/>
 								</div>
 							</div>
@@ -657,8 +661,8 @@ function KaraokeOptions(props: IProps) {
 										type="number"
 										data-exclude="true"
 										id="Karaoke.Poll.Timeout"
-										onChange={onChange}
-										value={config['Karaoke.Poll.Timeout']}
+										onBlur={onChange}
+										defaultValue={config['Karaoke.Poll.Timeout']}
 									/>
 								</div>
 							</div>
@@ -729,11 +733,11 @@ function KaraokeOptions(props: IProps) {
 										data-exclude="true"
 										id="Karaoke.StreamerMode.PauseDuration"
 										placeholder="20"
-										onChange={(e: any) => {
+										onBlur={(e: any) => {
 											if (!e.target.value) e.target.value = 0;
 											onChange(e);
 										}}
-										value={config['Karaoke.StreamerMode.PauseDuration']}
+										defaultValue={config['Karaoke.StreamerMode.PauseDuration']}
 									/>
 								</div>
 							</div>
@@ -954,7 +958,10 @@ function KaraokeOptions(props: IProps) {
 								);
 							})}
 							<div>
-								<input value={mysterySongLabel} onChange={e => setMysterySongLabel(e.target.value)} />
+								<input
+									defaultValue={mysterySongLabel}
+									onBlur={e => setMysterySongLabel(e.target.value)}
+								/>
 								<button type="button" className="btn btn-default" onClick={addMysterySongLabel}>
 									{i18next.t('SETTINGS.KARAOKE.LABELS_MYSTERY_SONGS_ADD')}
 								</button>

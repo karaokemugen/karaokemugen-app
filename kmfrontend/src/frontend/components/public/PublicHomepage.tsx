@@ -84,10 +84,13 @@ function PublicHomepage(props: IProps) {
 								<i className="fas fa-fw fa-chart-line" /> {i18next.t('PUBLIC_HOMEPAGE.OPEN_POLL')}
 							</button>
 						) : null}
+						<Link className="action green" to="/public/playlist/current">
+							<i className="fas fa-fw fa-play-circle" /> {i18next.t('PUBLIC_HOMEPAGE.CURRENT')}
+						</Link>
 						{props.publicVisible &&
 						context.globalState.settings.data.state.currentPlaid !==
 							context.globalState.settings.data.state.publicPlaid ? (
-							<Link className="action green" to="/public/playlist/public">
+							<Link className="action orange" to="/public/playlist/public">
 								<i className="fas fa-fw fa-tasks" /> {i18next.t('PUBLIC_HOMEPAGE.PUBLIC_SUGGESTIONS')}
 							</Link>
 						) : null}

@@ -4,7 +4,7 @@ import { basename, extname, resolve } from 'path';
 import { applyKaraHooks } from '../lib/dao/hook';
 import { extractVideoSubtitles, verifyKaraData, writeKara } from '../lib/dao/karafile';
 import { defineFilename, determineMediaAndLyricsFilenames, processSubfile } from '../lib/services/karaCreation';
-import { EditedKara, KaraFileV4 } from '../lib/types/kara.d';
+import { EditedKara } from '../lib/types/kara.d';
 import { resolvedPath, resolvedPathRepos } from '../lib/utils/config';
 import { resolveFileInDirs, smartMove } from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
@@ -17,7 +17,7 @@ import { consolidateTagsInRepo } from './tag';
 
 const service = 'KaraCreation';
 
-export async function editKara(editedKara: EditedKara) {
+export async function editKara(editedKara: EditedKara, refresh = true) {
 	const task = new Task({
 		text: 'EDITING_SONG',
 		subtext: editedKara.kara.data.titles[editedKara.kara.data.titles_default_language],
@@ -123,7 +123,7 @@ export async function editKara(editedKara: EditedKara) {
 		const karaDest = resolve(resolvedPathRepos('Karaokes', kara.data.repository)[0], `${karaFile}.kara.json`);
 		await fs.unlink(karaPath);
 		await writeKara(karaDest, kara);
-		await integrateKaraFile(karaDest, kara, false, true);
+		await integrateKaraFile(karaDest, kara, false, refresh);
 		await consolidateTagsInRepo(kara);
 	} catch (err) {
 		logger.error('Error while editing kara', { service, obj: err });
@@ -137,7 +137,8 @@ export async function editKara(editedKara: EditedKara) {
 	}
 }
 
-export async function createKara(kara: KaraFileV4) {
+export async function createKara(editedKara: EditedKara) {
+	const kara = editedKara.kara;
 	const task = new Task({
 		text: 'CREATING_SONG',
 		subtext: kara.data.titles[kara.data.titles_default_language],

@@ -131,6 +131,6 @@ export async function writeStreamFiles(only?: StreamFileType): Promise<void> {
 		}
 	} catch (err) {
 		logger.warn('Cannot write stream files', { service, obj: err });
-		sentry.error(err, 'Warning');
+		sentry.error(err, 'warning');
 	}
 }

@@ -65,7 +65,7 @@ export async function editSetting(part: RecursivePartial<Config>) {
 		emitWS('settingsUpdated', part);
 		return config;
 	} catch (err) {
-		sentry.error(err, 'Warning');
+		sentry.error(err, 'warning');
 		throw err;
 	}
 }

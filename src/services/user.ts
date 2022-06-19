@@ -461,7 +461,8 @@ async function createDefaultGuests() {
 /** Initializing user auth module */
 export async function initUserSystem() {
 	// Check if a admin user exists just in case. If not create it with a random password.
-	if (!(await getUser('admin'))) {
+	let users = await getUsers();
+	if (!users.find(u => u.login === 'admin')) {
 		await createUser(
 			{
 				login: 'admin',
@@ -475,7 +476,7 @@ export async function initUserSystem() {
 	}
 
 	if (getState().isTest) {
-		if (!(await getUser('adminTest'))) {
+		if (!users.find(u => u.login === 'admintest')) {
 			await createUser(
 				{
 					login: 'adminTest',
@@ -486,7 +487,7 @@ export async function initUserSystem() {
 				}
 			);
 		}
-		if (!(await getUser('adminTest2'))) {
+		if (!users.find(u => u.login === 'admintest2')) {
 			await createUser(
 				{
 					login: 'adminTest2',
@@ -497,7 +498,7 @@ export async function initUserSystem() {
 				}
 			);
 		}
-		if (!(await getUser('publicTest'))) {
+		if (!users.find(u => u.login === 'publictest')) {
 			await createUser(
 				{
 					login: 'publicTest',
@@ -510,15 +511,16 @@ export async function initUserSystem() {
 			);
 		}
 	} else {
-		if (await getUser('adminTest')) deleteUser('adminTest');
-		if (await getUser('publicTest')) deleteUser('publicTest');
-		if (await getUser('adminTest2')) deleteUser('adminTest2');
+		if (users.find(u => u.login === 'adminTest')) deleteUser('adminTest');
+		if (users.find(u => u.login === 'publicTest')) deleteUser('publicTest');
+		if (users.find(u => u.login === 'adminTest2')) deleteUser('adminTest2');
 	}
 
 	userChecks();
 	if (getState().opt.forceAdminPassword) await generateAdminPassword();
 	// Find admin users.
-	const users = await getUsers();
+	// We are querying again to be sure to have all users listed
+	users = await getUsers();
 	const adminUsers = users
 		.filter(u => u.type === 0 && u.login !== 'admin')
 		// Sort by last login at in descending order.

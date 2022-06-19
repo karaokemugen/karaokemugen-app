@@ -110,7 +110,7 @@ export async function baseChecksum(): Promise<string> {
 		return storeSum;
 	} catch (err) {
 		logger.warn('Unable to browse through your data files', { service, obj: err });
-		sentry.error(err, 'Warning');
+		sentry.error(err, 'warning');
 	} finally {
 		profile('baseChecksum');
 	}

@@ -127,7 +127,7 @@ function AdminPage(props: IProps) {
 		}
 		showModal(
 			context.globalDispatch,
-			<KaraDetail kid={kara.kid} playlistcontentId={kara.plcid} scope="admin" criteriaLabel={reason.join(', ')} />
+			<KaraDetail kid={kara.kid} playlistcontentId={kara.plcid} scope="admin" criteriaLabel={reason.join(' ')} />
 		);
 	};
 

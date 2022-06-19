@@ -1,4 +1,4 @@
-import { addBreadcrumb, Severity } from '@sentry/react';
+import { addBreadcrumb } from '@sentry/react';
 import i18next from 'i18next';
 import { io, Socket } from 'socket.io-client';
 
@@ -33,7 +33,7 @@ export function commandBackend(name: string, body?: any, loading = false, timeou
 	const bodyWithoutpwd = { ...body };
 	if (bodyWithoutpwd.password) bodyWithoutpwd.password = undefined;
 	addBreadcrumb({
-		level: Severity.Info,
+		level: 'info',
 		category: 'commandBackend',
 		message: name,
 		data: bodyWithoutpwd,
@@ -42,7 +42,7 @@ export function commandBackend(name: string, body?: any, loading = false, timeou
 		if (loading) eventEmitter.emitChange('loading', true);
 		const nodeTimeout = setTimeout(() => {
 			addBreadcrumb({
-				level: Severity.Warning,
+				level: 'warning',
 				category: 'commandBackend',
 				message: `${name} timeout`,
 				data: bodyWithoutpwd,
@@ -57,14 +57,14 @@ export function commandBackend(name: string, body?: any, loading = false, timeou
 				if (loading) eventEmitter.emitChange('loading', false);
 				if (err) {
 					addBreadcrumb({
-						level: Severity.Warning,
+						level: 'warning',
 						category: 'commandBackend',
 						message: name,
 						data: data,
 					});
 				} else {
 					addBreadcrumb({
-						level: Severity.Info,
+						level: 'info',
 						category: 'commandBackend',
 						message: name,
 						data: data?.message?.code || data?.code,
@@ -83,7 +83,7 @@ export function commandBackend(name: string, body?: any, loading = false, timeou
 				} else if (err && data?.message?.code && typeof data.data !== 'object') {
 					displayMessage('error', i18next.t(`ERROR_CODES.${data.message.code}`, { data: data.data }));
 				}
-				err ? reject(data) : resolve(data);
+				err ? reject(new Error(JSON.stringify(data))) : resolve(data);
 			}
 		);
 	});

@@ -187,7 +187,12 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		this.setState({ errors: [] });
 		if (this.state.mediafileIsTouched && !this.state.mediaInfo?.filename) {
 			message.error(i18next.t('KARA.MEDIA_IN_PROCESS'));
-		} else if (!this.state.defaultLanguage || !this.state.titles || Object.keys(this.state.titles).length === 0) {
+		} else if (
+			!this.state.defaultLanguage ||
+			!this.state.titles ||
+			Object.keys(this.state.titles).length === 0 ||
+			!this.state.titles[this.state.defaultLanguage]
+		) {
 			message.error(i18next.t('KARA.TITLE_REQUIRED'));
 		} else {
 			this.props.save(this.getKaraToSend(values));
@@ -200,7 +205,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		const mediaVersion =
 			mediaVersionArr.length > 1 ? mediaVersionArr[mediaVersionArr.length - 1].replace(' Vers', '') : 'Default';
 		// Convert Kara to KaraFileV4
-		const KaraFile: KaraFileV4 = {
+		const karaFile: KaraFileV4 = {
 			header: {
 				version: 4,
 				description: 'Karaoke Mugen Karaoke Data File',
@@ -259,16 +264,11 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 			},
 			meta: {},
 		};
-		if (this.props.kara) {
-			// If it's an edit
-			return {
-				kara: KaraFile,
-				modifiedLyrics: this.state.subfileIsTouched,
-				modifiedMedia: this.state.mediafileIsTouched,
-			};
-		} else {
-			return KaraFile;
-		}
+		return {
+			kara: karaFile,
+			modifiedLyrics: this.state.subfileIsTouched,
+			modifiedMedia: this.state.mediafileIsTouched,
+		};
 	};
 
 	handleSubmitFailed = ({ values, errorFields }) => {

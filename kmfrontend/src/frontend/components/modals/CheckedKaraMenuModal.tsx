@@ -44,6 +44,10 @@ function CheckedKaraMenuModal(props: IProps) {
 	};
 
 	const changeVisibilityKaraOn = () => {
+		if (props.checkedKaras.length === 0) {
+			displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
+			return;
+		}
 		try {
 			commandBackend('editPLC', {
 				plc_ids: props.checkedKaras.map(a => a.plcid),
@@ -57,6 +61,10 @@ function CheckedKaraMenuModal(props: IProps) {
 	};
 
 	const changeVisibilityKaraOff = () => {
+		if (props.checkedKaras.length === 0) {
+			displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
+			return;
+		}
 		try {
 			commandBackend('editPLC', {
 				plc_ids: props.checkedKaras.map(a => a.plcid),
@@ -70,6 +78,10 @@ function CheckedKaraMenuModal(props: IProps) {
 	};
 
 	const makeFavorite = () => {
+		if (props.checkedKaras.length === 0) {
+			displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
+			return;
+		}
 		try {
 			commandBackend('addFavorites', {
 				kids: props.checkedKaras.map(a => a.kid),
@@ -82,6 +94,10 @@ function CheckedKaraMenuModal(props: IProps) {
 	};
 
 	const addToBlacklist = () => {
+		if (props.checkedKaras.length === 0) {
+			displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
+			return;
+		}
 		try {
 			commandBackend('addCriterias', {
 				criterias: props.checkedKaras.map(a => {
@@ -96,6 +112,10 @@ function CheckedKaraMenuModal(props: IProps) {
 	};
 
 	const addToWhitelist = () => {
+		if (props.checkedKaras.length === 0) {
+			displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
+			return;
+		}
 		try {
 			commandBackend('addCriterias', {
 				criterias: props.checkedKaras.map(a => {

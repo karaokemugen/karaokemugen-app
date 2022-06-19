@@ -29,7 +29,7 @@ function SetupLoading() {
 
 	const isGitUpdateInProgress = (tasks: TaskItem[]) => {
 		for (const task of tasks) {
-			if (task.text === 'UPDATING_GIT_REPO') {
+			if (task.text === 'UPDATING_REPO') {
 				setTasks(tasks);
 				clearTimeout(timeout);
 				timeout = setTimeout(async () => endSetup(), 5000);

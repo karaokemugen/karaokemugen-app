@@ -76,7 +76,7 @@
 	"MENU_OPTIONS_CHIBIPLAYLIST": "Perlihatkan daftar putar terpisah",
 	"MENU_OPTIONS_CHIBIPLAYLIST_LINK": "Salin tautan ke daftar putar terpisah",
 	"MENU_OPTIONS_OPERATORCONFIG_OSX": "Preferensi…",
-	"ERROR": "Error",
+	"ERROR": "Galat",
 	"YES": "Ya",
 	"NO": "Tidak",
 	"UPDATE_FOUND": "Pembaharuan tersedia",
@@ -105,7 +105,7 @@
 			"Kamu bisa menggunakan tombol multimedia di papan ketikmu untuk mengendalikan karaoke!",
 			"Jangan lupa untuk memasang sabuk pengaman sebelum melakukan karaoke. Nyanyilah dengan aman dan hati-hati pengeras suara jatuh!",
 			"Jangan lupa untuk menyinkronkan basis data sewaktu-waktu; kamu mungkin menemukan beberapa lagu karaoke baru!",
-			"Tidak dapat menemukan sebuah lagu di basis data? Jangan ragu untuk mengunjungi https://suggest.karaokes.moe/, mungkin saja ada di sana!",
+			"Tidak dapat menemukan sebuah lagu di basis data? Jangan ragu untuk mengunjungi https://kara.moe/suggest/, mungkin saja ada di sana!",
 			"Karaoke Mugen merupakan 100% proyek kolaboratif dengan sumber terbuka, semuanya dapat berpartisipasi!",
 			"kamu dapat mengimpor berkas melalui menu berkas -> impor, menarik dan meletakannya atau mengasosiasikannya dengan program Karaoke Mugen untuk memperbolehkan KM untuk membuka dan menggunakannya pada: daftar putarm favorit…",
 			"Aku Nanamin, maskot Karaoke Mugen, dan aku dibuat oleh si hebat, Sedeto! http://www.sedeto.fr",
@@ -230,5 +230,13 @@
 	"MENU_VIEW_RESETZOOM": "Mengembalikan perspektif",
 	"MENU_VIEW_ZOOMIN": "&Perbesar",
 	"MENU_EDIT_SPEECH": "Kata-kata",
-	"MENU_TOOLS_DATABASE": "Basis&data"
+	"MENU_TOOLS_DATABASE": "Basis&data",
+	"WORLD_REPOSITORY_DISABLED": {
+		"MESSAGE": "Dikarenakan penambahan Koleksi, repositori World dan kara.moe telah digabung. Dengan begitu, repositori World tidak dibutuhkan lagi. Itu telah dimatikan dan kami menyarankan kamu untuk menghapus seluruhnya di Bilah Sistem.",
+		"TITLE": "Repositori World telah dimatikan"
+	},
+	"PERMISSIONS_KEYBOARD_INFO_MACOS": {
+		"TITLE": "Permintaan izin",
+		"MESSAGE": "macOS akan meminta kamu untuk menambahkan Karaoke Mugen ke perizinan aksesibilitas sistem. Izin ini memperbolehkan kamu untuk menggunakan kunci media papan tik kamu untuk mengontrol pemutar video. Kamu bisa menolak untuk menambahkan izini ini, tapi kunci media tidak akan bekerja."
+	}
 }

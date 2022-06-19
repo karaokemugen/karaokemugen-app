@@ -14,7 +14,6 @@ export function parseArgs() {
 		.version(`${version.number} "${version.name}" (commit ${version.sha})`)
 		.option('--cli', 'Start in CLI mode, without spawning a window')
 		.option('-c, --config [file]', 'Specify a config file to use (default is config.yml)')
-		.option('-d, --debug', 'Displays additional debug messages')
 		.option('--dumpDB', 'Dumps database and exits')
 		.option('--forceAdminPassword [password]', "Set admin account's password")
 		.option('-g, --generate', 'Generates a new database then exits')
@@ -36,6 +35,7 @@ export function parseArgs() {
 		.option('-u, --updateBase', 'Update karaoke base files')
 		.option('--updateMediasAll', 'Update karaoke media files only (no other data files)')
 		.option('--validate', 'Validates kara files and modify them if needed (no generation)')
+		.option('--verbose', 'Displays additional debug messages')
 		.option('-v, --version', 'Display version information')
 		.allowUnknownOption()
 		.parse();
@@ -50,7 +50,7 @@ export function setupFromCommandLineArgs(argv: any, cmdline: CommandLine) {
 		logger.info('CLI mode activated', { service });
 		setState({ opt: { cli: true } });
 	}
-	if (argv.opts().debug) {
+	if (argv.opts().verbose) {
 		logger.info('Debug messages enabled on console', { service });
 		setState({ opt: { debug: true } });
 		process.env.NODE_ENV = 'development';

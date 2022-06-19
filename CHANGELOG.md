@@ -1,12 +1,43 @@
-# v6.1.9 - 22/05/2022
+# v6.1.10 - 19/06/2022
+
+## Changes
+
+-   Display git and ftp only if maintainer and online are enabled in repository form
+-   The `--debug` flag is now `--verbose` since debug is reserved by node now
+-   Updated suggest link
+-   Added search textbox in user list in system panel
+-   Optimized mass edit of karaokes
+-   Added Asia as a default collection
+-   Moved update repositories button from Database page to Repositories page in system panel
+-   Added an example song in profile page so the user can see what his linguistic preferences will do.
+-   Optimized users initialization a bit
+-   Added language to user if null on login
+
+## Fixes
+
+-   Fixed the "Too many files open" issue when patching repository after an update
+-   Fixed display of smart criteria for tags in karaoke detail
+-   Fixed errors when adding songs that are not present because of collections in smart playlists
+-   Removed nulls in songorder in .kara.json files when they're created
+-   Fixed karaoke list display with an unknown repository
+-   Fixed previewing hooks for a new karaoke
+-   Fixed language detection for users (now using browser)
+
+## Misc
+
+-   Updated backend and frontend dependencies
+-   Updated indonesian translation
+-   Added portugese translation
+
+# v6.1.9 - 24/05/2022
 
 ## Deprecations
 
--         Toyunda v1-3 subtitle support has been deprecated. We don't normally deprecate features but this one has been a thorn in our foot for some time, making the karaoke creation process overly complicated as we needed the original video with the sub to convert its frame data to correct time.
+-   Toyunda v1-3 subtitle support has been deprecated. We don't normally deprecate features but this one has been a thorn in our foot for some time, making the karaoke creation process overly complicated as we needed the original video with the sub to convert its frame data to correct time.
 
 ## New Features
 
--   Karaoke Mugen now comes with its own mpv/ffmpeg/postgres in Linux, making installation much easier for .dev, .tar.gz and now AppImage format.
+-   Karaoke Mugen now comes with its own mpv/ffmpeg/postgres in Linux, making installation much easier for .deb, .tar.gz and now AppImage format.
     -   AppImage is the recommended installation method as it supports auto-updates.
 
 ## Improvements
@@ -25,7 +56,6 @@
 -   Fixed guests we forgot to remove completely when we updated them last version
 -   Fixed links to the documentation
 -   Fixed karabundle import from File menu in app. This didn't work anyway.
--
 
 ## Misc
 

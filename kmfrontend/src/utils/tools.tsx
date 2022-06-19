@@ -203,7 +203,7 @@ export function isNonStandardPlaylist(plaid: string) {
 
 export function isModifiable(context: GlobalContextInterface, repoName: string): boolean {
 	const repo = context.globalState.settings.data.config.System.Repositories.find(r => r.Name === repoName);
-	return repo.MaintainerMode || !repo.Online;
+	return repo && (repo.MaintainerMode || !repo.Online);
 }
 
 export function isRepoOnline(context: GlobalContextInterface, repoName: string): boolean {
@@ -238,6 +238,7 @@ export async function decodeCriteriaReason(settings: SettingsStoreData, criteria
 			args[1] = { title: criteria.value };
 			break;
 		default:
+			args[0] = 'TAG';
 			const tag = await commandBackend('getTag', { tid: criteria.value });
 			args[1] = {
 				tag: getTagInLocale(settings, tag),

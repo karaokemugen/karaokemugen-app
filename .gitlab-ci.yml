@@ -136,7 +136,7 @@ test:
     - node util/extUnaccent.js
     - export DISPLAY=':99.0'
     - Xvfb :99 -screen 0 1920x1080x24 > /dev/null 2>&1 &
-    - yarn testCI --debug
+    - yarn testCI --verbose
   rules:
     - if: $SCHEDULED_RELEASES == "true"
       when: never
@@ -306,6 +306,7 @@ pkg_mac:
     ARTIFACT_DOWNLOAD_ATTEMPTS: 10
     RESTORE_CACHE_ATTEMPTS: 10
   script:
+    - source ~/.zshrc
     - yarn install
     - rm -Rf release_mac
     - wget -qO- http://mugen.karaokes.moe/downloads/dist_mac-6.x.tar.gz | tar xvz

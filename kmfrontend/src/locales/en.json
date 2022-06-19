@@ -139,7 +139,7 @@
 		"CRITERIA_TYPE_1005": "Tag contains",
 		"CRITERIA_TYPE_1006": "Hide songs not available offline",
 		"LABEL": {
-			"TAG": "The karaokes {{verb}} {{tag}} are on the blacklist.",
+			"TAG": "The karaokes {{verb}} {{tag}} are on the list.",
 			"TAG_VERBS": {
 				"1": "from",
 				"2": "sung by",
@@ -154,7 +154,9 @@
 				"11": "that originated from",
 				"12": "attached to the genre",
 				"13": "attached to the platform",
-				"14": "that are"
+				"14": "that are",
+				"15": "with the warning",
+				"16": "included in the collection"
 			},
 			"YEAR": "The karaokes from year {{year}} are on the list.",
 			"KID": "This karaokes is on the list.",
@@ -181,6 +183,7 @@
 			"CURRENT": "The bold line represents the currently sung line."
 		},
 		"OPEN_POLL": "Vote for the next song",
+		"CURRENT": "See the current playlist",
 		"PUBLIC_SUGGESTIONS": "Public suggestions",
 		"PUBLIC_SUGGESTIONS_SHORT": "Suggestions",
 		"FAVORITES": "Favorites",
@@ -586,6 +589,7 @@
 			"INTERFACE_LANGUAGE": "Interface language",
 			"MAIN_SONG_NAME_LANG": "Song name display preference",
 			"FALLBACK_SONG_NAME_LANG": "Fallback song name display preference",
+			"SONG_NAME_DISPLAY_EXAMPLE": "Display example",
 			"FLAG_PARENTSONLY": "Group songs by version",
 			"FLAG_PUBLIC": "Share your profile",
 			"FLAG_DISPLAYFAVORITES": "Share your favorites",
@@ -954,7 +958,7 @@
 		"DUMP_DATABASE_DESCRIPTION": "Creates a karaokemugen.sql backup file in your data folder. This file can be used to create a restore point or to send your database to the devs if they ask you to do so.",
 		"RESTORE_DATABASE": "Restore database",
 		"RESTORE_DATABASE_DESCRIPTION": "Restores your database from the file karaokemugen.sql if it's present in your data folder. <2>**WARNING : This will overwrite ALL non-saved data in your database : playlists, sessions, etc.)</2>",
-		"UPDATE_REPOS": "Update repositories",
+		"UPDATE_REPOS": "Update all repositories",
 		"UPDATE_REPOS_DESCRIPTION": "Forces a repository update, this can be useful if one of the repositories is in abnormal state.",
 		"UPDATING_REPOS": "Updating repositories",
 		"CONFIRM_UPDATE": "Confirm update"
@@ -978,7 +982,7 @@
 		"I18N_NAME": "Name in that language",
 		"I18N_DELETE": "Remove name",
 		"I18N_SELECT": "Add a language",
-		"ROMANIZATION_WARNING": "This title/tag contains a non-Latin alphabet language. You must add the language “Latin Alphabet (Romanization)” in addition",
+		"ROMANIZATION_WARNING": "This title/tag contains a non-Latin alphabet language. You must add the language “Latin Alphabet (Romanization)” in addition.",
 		"MERGE_WITH": "Merge with",
 		"MERGE_WITH_TOOLTIP": "Merge the current tag with another one",
 		"MERGE_WITH_SELECT": "Select a tag",
@@ -1240,7 +1244,6 @@
 		"RESOLVING_DELTAS": "Resolving deltas",
 		"DECOMPRESSING": "Compressing objects",
 		"ANALYZING_WORKDIR": "Analyzing workdir",
-		"UPDATING_GIT_REPO": "Updating repository {{data}}",
 		"DOWNLOADING_ZIP": "Downloading database",
 		"EXTRACTING_ZIP": "Extracting database",
 		"COMMITING_CHANGES": "Committing changes",
