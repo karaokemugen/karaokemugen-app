@@ -12,6 +12,10 @@
 -   Added an example song in profile page so the user can see what his linguistic preferences will do.
 -   Optimized users initialization a bit
 -   Added language to user if null on login
+-   Fixed users hitting play with no song to play throwing errors
+-   Fixed trouble with input boxes on options page
+-   Added link to current playlist on public welcome page
+-   Fixed setup loading when updating repos is in progress
 
 ## Fixes
 
