@@ -93,7 +93,7 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 								{i18next.t('DATABASE.UPDATE_REPOS')}
 							</Button>
 						</Col>
-						<Col flex="auto" style={{ marginTop: '0.25em' }}>
+						<Col flex="auto" style={{ marginTop: '0.25em', marginLeft: '0.5em' }}>
 							{i18next.t('DATABASE.UPDATE_REPOS_DESCRIPTION')}
 						</Col>
 					</Row>
