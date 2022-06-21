@@ -881,7 +881,7 @@ export async function generateCommits(repoName: string) {
 	});
 	try {
 		const repo = getRepo(repoName);
-		const git = await setupGit(repo);
+		const git = await setupGit(repo, true);
 		const status = await git.status();
 		const deletedSongs = status.deleted.filter(f => f.endsWith('kara.json'));
 		const deletedTags = status.deleted.filter(f => f.endsWith('tag.json'));
