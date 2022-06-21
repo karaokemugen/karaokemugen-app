@@ -208,9 +208,9 @@ export async function updateZipRepo(name: string) {
 		updateRunning = false;
 		throw 'Repository is not online, disabled or is in Maintainer Mode!';
 	}
-	const LocalCommit = await getLocalRepoLastCommit(repo);
-	logger.info(`Updating repository from ${name}, our commit is ${LocalCommit}`, { service });
-	if (!LocalCommit) {
+	const localCommit = await getLocalRepoLastCommit(repo);
+	logger.info(`Updating repository from ${name}, our commit is ${localCommit}`, { service });
+	if (!localCommit) {
 		// If local commit doesn't exist, we have to start by retrieving one
 		const LatestCommit = await newZipRepo(repo);
 		// Once this is done, we store the last commit in settings DB
@@ -221,11 +221,11 @@ export async function updateZipRepo(name: string) {
 	}
 	// Check if update is necessary by fetching the remote last commit sha
 	const { LatestCommit } = await getRepoMetadata(repo.Name);
-	logger.debug(`Update ${repo.Name}: ours is ${LocalCommit}, theirs is ${LatestCommit}`, { service });
-	if (LatestCommit !== LocalCommit) {
+	logger.debug(`Update ${repo.Name}: ours is ${localCommit}, theirs is ${LatestCommit}`, { service });
+	if (LatestCommit !== localCommit) {
 		try {
 			const patch = await HTTP.get(
-				`https://${repo.Name}/api/karas/repository/diff?commit=${encodeURIComponent(LocalCommit)}`,
+				`https://${repo.Name}/api/karas/repository/diff?commit=${encodeURIComponent(localCommit)}`,
 				{
 					responseType: 'text',
 				}
@@ -239,7 +239,7 @@ export async function updateZipRepo(name: string) {
 				await cleanFailedPatch(repo);
 				logger.info('Trying to download full files instead', { service });
 				const fullFiles = await HTTP.get(
-					`https://${repo.Name}/api/karas/repository/diff/full?commit=${encodeURIComponent(LocalCommit)}`
+					`https://${repo.Name}/api/karas/repository/diff/full?commit=${encodeURIComponent(localCommit)}`
 				);
 				await writeFullPatchedFiles(fullFiles.data as DiffChanges[], repo);
 				changes = computeFileChanges(patch.data as string);
@@ -252,7 +252,7 @@ export async function updateZipRepo(name: string) {
 			logger.warn('Cannot use patch method to update repository, downloading full zip again.', {
 				service,
 			});
-			sentry.addErrorInfo('initialCommit', LocalCommit);
+			sentry.addErrorInfo('initialCommit', localCommit);
 			sentry.addErrorInfo('toCommit', LatestCommit);
 			sentry.error(err, 'warning');
 			await saveSetting(`commit-${repo.Name}`, null);
