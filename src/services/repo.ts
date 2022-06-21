@@ -208,7 +208,15 @@ export async function updateZipRepo(name: string) {
 		updateRunning = false;
 		throw 'Repository is not online, disabled or is in Maintainer Mode!';
 	}
-	const localCommit = await getLocalRepoLastCommit(repo);
+	// Checking if folder is empty. This can happen if someone moved their repo elsewhere or deleted everything. In this case the local commit
+	let localCommit = await getLocalRepoLastCommit(repo);
+	const baseDir = resolve(getState().dataPath, repo.BaseDir);
+	const dir = await fs.readdir(baseDir);
+	if (dir.length === 0) {
+		// Folder is empty.
+		logger.info('Folder is empty, resetting local commit to null', { service });
+		localCommit = null;
+	}
 	logger.info(`Updating repository from ${name}, our commit is ${localCommit}`, { service });
 	if (!localCommit) {
 		// If local commit doesn't exist, we have to start by retrieving one
