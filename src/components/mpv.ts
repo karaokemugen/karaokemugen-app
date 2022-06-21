@@ -492,7 +492,6 @@ class Player {
 		// Returns the position in seconds in the current song
 		if (playerState.mediaType === 'song' && playerState.currentSong?.duration) {
 			playerState.timeposition = position;
-			emitPlayerState();
 			const conf = getConfig();
 			if (conf.Player.ProgressBarDock) {
 				playerState.mediaType === 'song'
@@ -540,6 +539,7 @@ class Player {
 				playerState.songNearEnd = true;
 				endPoll();
 			}
+			emitPlayerState();
 		}
 	}
 
@@ -562,6 +562,7 @@ class Player {
 						this.control.messages.removeMessage('fsTip');
 					}
 				}
+				emitPlayerState();
 				// If we're displaying an image, it means it's the pause inbetween songs
 				if (
 					!playerState.isOperating &&
@@ -1302,6 +1303,7 @@ class Players {
 	async setMute(mute: boolean): Promise<PlayerState> {
 		try {
 			await this.exec({ command: ['set_property', 'mute', mute] });
+			// Mute property is observed, so we don't have to handle playerState
 			return playerState;
 		} catch (err) {
 			logger.error('Unable to toggle mute', { service, obj: err });
@@ -1323,8 +1325,7 @@ class Players {
 	async setVolume(volume: number): Promise<PlayerState> {
 		try {
 			await this.exec({ command: ['set_property', 'volume', volume] });
-			playerState.volume = volume;
-			emitPlayerState();
+			// Volume property is observed, so we don't have to handle playerState
 			return playerState;
 		} catch (err) {
 			logger.error('Unable to set volume', { service, obj: err });
