@@ -428,7 +428,7 @@ export async function updateGitRepo(name: string) {
 			await saveSetting('baseChecksum', await baseChecksum());
 			return true;
 		}
-		const git = await setupGit(repo);
+		const git = await setupGit(repo, true);
 		logger.info(`Update ${repo.Name}: is a git repo, pulling`, { service });
 		await git.fetch();
 		const originalCommit = await git.getCurrentCommit();
@@ -621,7 +621,7 @@ export async function checkGitRepoStatus(repoName: string) {
 
 export async function stashGitRepo(repoName: string) {
 	const repo = getRepo(repoName);
-	const git = await setupGit(repo);
+	const git = await setupGit(repo, true);
 	await git.abortPull();
 	return git.stash();
 }
@@ -1179,7 +1179,7 @@ export async function uploadMedia(kid: string) {
 export async function pushCommits(repoName: string, push: Push, ignoreFTP?: boolean) {
 	try {
 		const repo = getRepo(repoName);
-		const git = await setupGit(repo);
+		const git = await setupGit(repo, true);
 		if (!ignoreFTP && push.modifiedMedias.length > 0) {
 			// Before making any commits, we have to send stuff via FTP
 			const ftp = new FTP({ repoName });
