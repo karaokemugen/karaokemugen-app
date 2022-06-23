@@ -36,7 +36,10 @@ export default function LanguagesList(props: IProps) {
 	}
 
 	function addLang(lang: string) {
-		if ((Object.keys(i18n).length === 0 && props.onDefaultLanguageSelect) || lang === romanizationLanguage) {
+		if (
+			typeof props.onDefaultLanguageSelect === 'function' &&
+			(Object.keys(i18n).length === 0 || lang === romanizationLanguage)
+		) {
 			props.onDefaultLanguageSelect(lang);
 		}
 		const newI18n = i18n;
