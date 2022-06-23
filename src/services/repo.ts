@@ -320,7 +320,7 @@ export async function editRepo(
 
 async function hookEditedRepo(oldRepo: Repository, repo: Repository, refresh = false, onlineCheck = true) {
 	let doGenerate = false;
-	if (!oldRepo.SendStats && repo.SendStats && getState().DBReady && onlineCheck) {
+	if (!oldRepo.SendStats && repo.Online && repo.Enabled && repo.SendStats && getState().DBReady && onlineCheck) {
 		sendPayload(repo.Name, repo.Name === getConfig().Online.Host).catch();
 	}
 	if (
