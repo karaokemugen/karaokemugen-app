@@ -1490,7 +1490,7 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 		const plcid = await getCurrentSongPLCID();
 		const plaid = getState().currentPlaid;
 		const kara = await getPLCInfo(plcid, false, 'admin');
-		if (!kara?.pos) throw `No current song available : PLCID ${plcid} with kara ${JSON.stringify(kara)}`;
+		if (!kara) throw `No current song available : PLCID ${plcid} with kara ${JSON.stringify(kara)}`;
 		// Let's add details to our object so the player knows what to do with it.
 		kara.plaid = plaid;
 		const songInfos = await getSongInfosForPlayer(kara);
