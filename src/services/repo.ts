@@ -323,30 +323,33 @@ async function hookEditedRepo(oldRepo: Repository, repo: Repository, refresh = f
 	if (!oldRepo.SendStats && repo.Online && repo.Enabled && repo.SendStats && getState().DBReady && onlineCheck) {
 		sendPayload(repo.Name, repo.Name === getConfig().Online.Host).catch();
 	}
-	if (
-		repo.Enabled &&
-		repo.Online &&
-		!oldRepo.MaintainerMode &&
-		repo.MaintainerMode &&
-		repo.Git?.URL &&
-		getState().DBReady
-	) {
-		saveSetting(`commit-${repo.Name}`, null);
-		try {
-			await updateGitRepo(repo.Name);
-		} catch (err) {
-			logger.warn('Repository was edited, but updating it failed', { service });
+	// Repo is online so we have stuff to do
+	if (repo.Enabled && repo.Online) {
+		// Maintainer mode got enabled
+		if (!oldRepo.MaintainerMode && repo.MaintainerMode) {
+			// Git URL exists so we're trying to update git repo
+			if (repo.Git?.URL && getState().DBReady) {
+				saveSetting(`commit-${repo.Name}`, null);
+				try {
+					await updateGitRepo(repo.Name);
+				} catch (err) {
+					logger.warn('Repository was edited, but updating it failed', { service });
+				}
+				if (refresh) doGenerate = true;
+			}
 		}
-		if (refresh) doGenerate = true;
-	}
-	if (repo.Enabled && repo.Online && oldRepo.MaintainerMode && !repo.MaintainerMode && getState().DBReady) {
-		try {
-			await updateZipRepo(repo.Name);
-			if (refresh) doGenerate = true;
-		} catch (err) {
-			logger.warn('Repository was edited, but updating it failed', { service });
+		// Maintainer mode got DISABLED
+		if (oldRepo.MaintainerMode && !repo.MaintainerMode && getState().DBReady) {
+			// We turn the repository back into a zip repository
+			try {
+				await updateZipRepo(repo.Name);
+				if (refresh) doGenerate = true;
+			} catch (err) {
+				logger.warn('Repository was edited, but updating it failed', { service });
+			}
 		}
 	}
+	// Repo is git but has only been modified
 	if (repo.Enabled && repo.MaintainerMode && repo.Git) {
 		try {
 			await setupGit(repo, true);
@@ -629,7 +632,8 @@ export async function stashGitRepo(repoName: string) {
 /** Helper function to setup git in other functions */
 async function setupGit(repo: Repository, configChanged = false) {
 	const baseDir = resolve(getState().dataPath, repo.BaseDir);
-	if (!repo.MaintainerMode) throw 'Git not configured for this repository';
+	if (!repo.MaintainerMode) throw 'Maintainer mode disabled for this repository';
+	if (!(await isGit(repo))) throw 'Not a git repository. Has it been cloned properly?';
 	const git = new Git({
 		baseDir,
 		url: repo.Git.URL,
