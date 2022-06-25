@@ -229,7 +229,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 			});
 	};
 
-	FilterTagCascaderFilter = function (inputValue, path) {
+	filterTagCascaderFilter = function (inputValue, path) {
 		return path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1);
 	};
 
@@ -255,8 +255,8 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 		return karaLocal.download_status === 'DOWNLOADED';
 	};
 
-	isQueuedKara = kara => {
-		return this.state.karasQueue.find(item => item.name === kara.name);
+	isQueuedKara = (kara: DBKara) => {
+		return this.state.karasQueue.find(item => item.mediafile === kara.mediafile);
 	};
 
 	showPreview = kara => {
@@ -343,7 +343,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 								<Cascader
 									style={{ width: '90%' }}
 									options={this.state.tagOptions}
-									showSearch={{ filter: this.FilterTagCascaderFilter, matchInputWidth: false }}
+									showSearch={{ filter: this.filterTagCascaderFilter, matchInputWidth: false }}
 									onChange={this.handleFilterTagSelection}
 									placeholder={i18next.t('KARA.TAG_FILTER')}
 								/>

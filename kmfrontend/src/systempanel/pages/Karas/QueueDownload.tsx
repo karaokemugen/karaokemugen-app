@@ -1,6 +1,7 @@
 import { ClockCircleTwoTone, InfoCircleTwoTone, SyncOutlined, WarningTwoTone } from '@ant-design/icons';
 import { Button, Cascader, Col, Input, Layout, Row, Select, Table } from 'antd';
 import i18next from 'i18next';
+import prettyBytes from 'pretty-bytes';
 import { Component } from 'react';
 
 import { DBKara, DBKaraTag } from '../../../../../src/lib/types/database/kara';
@@ -15,14 +16,16 @@ import { tagTypes } from '../../../utils/tagTypes';
 interface KaraDownloadState {
 	karas: DBKara[];
 	i18nTag: any;
+	karasCount: number;
 	karasQueue: DBDownload[];
-	kara: any;
+
 	currentPage: number;
 	currentPageSize: number;
 	filter: string;
 	tagFilter: string;
 	tags: DBTag[];
 	tagOptions: any[];
+	preview: string;
 }
 
 class QueueDownload extends Component<unknown, KaraDownloadState> {
@@ -34,20 +37,22 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 		this.state = {
 			karas: [],
 			i18nTag: {},
+			karasCount: 0,
 			karasQueue: [],
-			kara: {},
+
 			currentPage: 1,
 			currentPageSize: 100,
 			filter: '',
 			tagFilter: '',
 			tags: [],
 			tagOptions: [],
+			preview: '',
 		};
 	}
 
 	componentDidMount() {
-		this.getKaras();
 		this.readKaraQueue();
+		this.getKaras();
 		this.getTags();
 		getSocket().on('downloadQueueStatus', this.downloadQueueStatus);
 	}
@@ -63,7 +68,7 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 	async getTags() {
 		try {
 			const res = await commandBackend('getTags', undefined, false, 300000);
-			this.setState({ tags: res.content }, this.filterTagCascaderOption);
+			this.setState({ tags: res.content }, () => this.filterTagCascaderOption());
 		} catch (e) {
 			// already display
 		}
@@ -85,25 +90,30 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 	};
 
 	getKaras = async () => {
-		const p = Math.max(0, this.state.currentPage - 1);
-		const psz = this.state.currentPageSize;
-		const pfrom = p * psz;
-		const res = await commandBackend(
-			'getKaras',
-			{
-				filter: this.state.filter,
-				q: this.state.tagFilter,
-				from: pfrom,
-				size: psz,
-				ignoreCollections: true,
-			},
-			false,
-			300000
-		);
-		this.setState({
-			karas: res.content,
-			i18nTag: res.i18n,
-		});
+		try {
+			const p = Math.max(0, this.state.currentPage - 1);
+			const psz = this.state.currentPageSize;
+			const pfrom = p * psz;
+			const res = await commandBackend(
+				'getKaras',
+				{
+					filter: this.state.filter,
+					q: `${this.state.tagFilter}!m:DOWNLOADING`,
+					from: pfrom,
+					size: psz,
+				},
+				false,
+				300000
+			);
+
+			this.setState({
+				karas: res.content,
+				karasCount: res.infos.count || 0,
+				i18nTag: res.i18n,
+			});
+		} catch (e) {
+			// already display
+		}
 	};
 
 	readKaraQueue = async () => {
@@ -169,21 +179,36 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 	};
 
 	// START karas download queue
-	putToDownloadQueueStart() {
+	putToDownloadQueueStart = () => {
 		commandBackend('startDownloadQueue').catch(() => {});
-	}
+	};
 
 	// PAUSE karas download queue
-	putToDownloadQueuePause() {
+	putToDownloadQueuePause = () => {
 		commandBackend('pauseDownloads').catch(() => {});
-	}
+	};
 
 	// POST (add) items to download queue
-	postToDownloadQueue(downloads: KaraDownloadRequest[]) {
+	postToDownloadQueue = (downloads: KaraDownloadRequest[]) => {
 		commandBackend('addDownloads', {
 			downloads,
 		}).catch(() => {});
-	}
+	};
+
+	isQueuedKara = (kara: DBKara) => {
+		return this.state.karasQueue.find(item => item.mediafile === kara.mediafile);
+	};
+	showPreview = kara => {
+		this.setState({ preview: `https://${kara.repository}/downloads/medias/${encodeURIComponent(kara.mediafile)}` });
+		document.addEventListener('keyup', this.closeVideo);
+	};
+
+	closeVideo = (e: KeyboardEvent) => {
+		if (e.key === 'Escape') {
+			this.setState({ preview: undefined });
+			document.removeEventListener('keyup', this.closeVideo);
+		}
+	};
 
 	render() {
 		return (
@@ -263,7 +288,7 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 					</Row>
 					<Table
 						onChange={this.handleTableChange}
-						dataSource={this.state.karas.filter(kara => this.isQueuedKara(kara))}
+						dataSource={this.state.karas}
 						columns={this.columns}
 						rowKey="kid"
 						pagination={{
@@ -277,18 +302,25 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 								const from = range[0];
 								return i18next.t('KARA.SHOWING', { from: from, to: to, total: total });
 							},
-							total: this.state.karas.filter(kara => this.isQueuedKara(kara)).length,
+							total: this.state.karasCount,
 							showQuickJumper: true,
 						}}
 						childrenColumnName="childrenColumnName"
 					/>
 				</Layout.Content>
+				{this.state.preview ? (
+					<div
+						className="overlay"
+						onClick={() => {
+							this.setState({ preview: undefined });
+							document.removeEventListener('keyup', this.closeVideo);
+						}}
+					>
+						<video id="video" autoPlay src={this.state.preview} />
+					</div>
+				) : null}
 			</>
 		);
-	}
-
-	isQueuedKara(kara) {
-		return this.state.karasQueue.find(item => item.name === kara.name && item.status !== 'DL_DONE');
 	}
 
 	columns = [
@@ -367,19 +399,9 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 			key: 'preview',
 			render: (_text, record) => {
 				return (
-					<div>
-						<Button type="default" href={`https://${record.repository}/kara/${record.kid}`}>
-							<InfoCircleTwoTone />
-						</Button>
-						<video
-							src={`https://${record.repository}/downloads/medias/${record.mediafile}`}
-							controls={true}
-							autoPlay={true}
-							loop={true}
-							playsInline={true}
-							className="modal-video"
-						/>
-					</div>
+					<Button type="default" onClick={() => this.showPreview(record)}>
+						<InfoCircleTwoTone />
+					</Button>
 				);
 			},
 		},
@@ -413,8 +435,8 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 					);
 				}
 				return (
-					<span>
-						{button} {Math.round(record.mediasize / (1024 * 1024))}Mb
+					<span style={{ whiteSpace: 'nowrap' }}>
+						{button} {prettyBytes(Number(record.mediasize))}
 					</span>
 				);
 			},
