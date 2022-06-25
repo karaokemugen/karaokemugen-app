@@ -411,7 +411,7 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 			render: (_text, record) => {
 				let button = null;
 				const queue = this.isQueuedKara(record);
-				if (queue.status === 'DL_RUNNING') {
+				if (queue?.status === 'DL_RUNNING') {
 					button = (
 						<span>
 							<Button disabled type="default">
@@ -419,13 +419,13 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 							</Button>
 						</span>
 					);
-				} else if (queue.status === 'DL_PLANNED') {
+				} else if (queue?.status === 'DL_PLANNED') {
 					button = (
 						<Button disabled type="default">
 							<ClockCircleTwoTone twoToneColor="#dc4e41" />
 						</Button>
 					);
-				} else if (queue.status === 'DL_FAILED') {
+				} else if (queue?.status === 'DL_FAILED') {
 					button = (
 						<span>
 							<Button type="default" onClick={() => this.downloadKara(record)}>
