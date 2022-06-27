@@ -8,6 +8,7 @@ image: axelterizaki/karaokemugen-ci:node-16-phppg
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
   ELECTRON_CACHE: '.cache/electron'
+  DS_INCLUDE_DEV_DEPENDENCIES: 'false'
 sast:
   variables:
     SAST_EXCLUDED_PATHS: spec, test, tests, tmp, assets, build, img, util, packages
