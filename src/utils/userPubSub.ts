@@ -15,8 +15,8 @@ const ioMap: Map<string, Socket> = new Map();
 const debounceMap: Map<string, (login: string, payload: any) => Promise<void>> = new Map();
 
 async function listRemoteUsers() {
-	const users = await getUsers({ onlineOnly: true });
-	return users.map(u => u.login);
+	const users = await getUsers();
+	return users.filter(u => u.login.includes('@')).map(u => u.login);
 }
 
 async function updateUser(login: string, payload: any) {
