@@ -5,11 +5,11 @@
 ![presentation](img/presentation.png)
 
 Master branch: [![pipeline status](https://gitlab.com/karaokemugen/karaokemugen-app/badges/master/pipeline.svg)](https://gitlab.com/karaokemugen/karaokemugen-app/commits/master) -
-Next branch: [![pipeline status](https://gitlab.com/karaokemugen/karaokemugen-app/badges/next/pipeline.svg)](https://gitlab.com/karaokemugen/karaokemugen-app/commits/next) [![Requirements Status](https://requires.io/github/AxelTerizaki/karaokemugen-app/requirements.svg?branch=master)](https://requires.io/github/AxelTerizaki/karaokemugen-app/requirements/?branch=master)
+Next branch: [![pipeline status](https://gitlab.com/karaokemugen/karaokemugen-app/badges/next/pipeline.svg)](https://gitlab.com/karaokemugen/karaokemugen-app/commits/next)
 
-Project: ![Last commit](https://img.shields.io/github/last-commit/AxelTerizaki/karaokemugen-app.svg) ![Latest version](https://img.shields.io/github/tag/karaoke-mugen/karaokemugen-app.svg) ![License](https://img.shields.io/github/license/karaoke-mugen/karaokemugen-app.svg) ![Size](https://img.shields.io/github/repo-size/karaoke-mugen/karaokemugen-app.svg) ![Commits since release on next](https://img.shields.io/github/commits-since/axelterizaki/karaokemugen-app/release/next)
+Project: ![Last commit](https://img.shields.io/github/last-commit/karaokemugen/karaokemugen-app.svg) ![Latest version](https://img.shields.io/gitlab/v/tag/karaokemugen/karaokemugen-app?sort=date) ![License](https://img.shields.io/github/license/karaoke-mugen/karaokemugen-app.svg) ![Size](https://img.shields.io/github/repo-size/karaokemugen/karaokemugen-app.svg) ![Commits since release on next](https://img.shields.io/github/commits-since/karaokemugen/karaokemugen-app/release/next) [![Weblate](https://img.shields.io/weblate/progress/karaoke-mugen)](https://hosted.weblate.org/projects/karaoke-mugen/)
 
-Social: [![Discord](https://img.shields.io/discord/84245347336982528.svg)](http://karaokes.moe/discord) Twitter [![Social](https://img.shields.io/twitter/follow/KaraokeMugen?label=Follow)](https://twitter.com/KaraokeMugen)
+Social: [![Discord](https://img.shields.io/discord/84245347336982528.svg)](http://karaokes.moe/discord) [![Discourse](https://img.shields.io/discourse/posts?server=https%3A%2F%2Fdiscourse.karaokes.moe)](https://discourse.karaokes.moe) [![Twitter](https://img.shields.io/twitter/follow/KaraokeMugen?label=Follow)](https://twitter.com/KaraokeMugen) [![Mastodon](https://img.shields.io/mastodon/follow/36233?domain=https%3A%2F%2Fshelter.moe&style=social)](https://shelter.moe/@KaraokeMugen)
 
 Karaoke Mugen is a playlist manager and player for video and audio karaoke. It's made of a webapp and an engine. The webapp allows users to search for and add songs and admins to manage the karaoke session and playlists. The engine plays those songs on the computer used to display the video.
 
