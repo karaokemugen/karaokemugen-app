@@ -85,7 +85,7 @@ export default class Git {
 			// Set email and stuff
 			// This is done on each setup because when these are modified in the repo setting, git might not be ready yet.
 			const repo = getRepo(this.opts.repoName) as RepositoryMaintainerSettings;
-			this.configUser(repo.Git.Author, repo.Git.Email);
+			await this.configUser(repo.Git.Author, repo.Git.Email);
 			// Avoid crlf conflicts
 			await this.git.addConfig('core.autocrlf', 'true');
 			// Check if Remote is correctly configured
