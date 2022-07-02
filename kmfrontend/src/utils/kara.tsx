@@ -94,7 +94,7 @@ export function buildKaraTitle(
 	onlyText?: boolean,
 	i18nParam?: any
 ): string | ReactFragment {
-	const isMulti = data?.langs.find(e => e.name.indexOf('mul') > -1);
+	const isMulti = data?.langs?.find(e => e.name.indexOf('mul') > -1);
 	if (data?.langs && isMulti) {
 		data.langs = [isMulti];
 	}
