@@ -6,7 +6,7 @@ import { DBPL, DBPLC, DBPLCBase, PLCInsert, SmartPlaylistType } from '../lib/typ
 import { Criteria, PLCParams, UnaggregatedCriteria } from '../lib/types/playlist';
 import { getConfig } from '../lib/utils/config';
 import { now } from '../lib/utils/date';
-import { profile } from '../lib/utils/logger';
+import logger, { profile } from '../lib/utils/logger';
 import { DBPLCInfo } from '../types/database/playlist';
 import { getState } from '../utils/state';
 import {
@@ -48,6 +48,8 @@ import {
 	sqlupdatePLCCriterias,
 	sqlupdatePLCSetPos,
 } from './sql/playlist';
+
+const service = 'PlaylistDB';
 
 export function updatePLCCriterias(plcs: number[], criterias: Criteria[]) {
 	return db().query(sqlupdatePLCCriterias, [plcs, criterias]);
@@ -314,6 +316,7 @@ export async function selectKarasFromCriterias(
 	let sql = '';
 	const criterias = await selectCriterias(plaid);
 	if (criterias.length === 0) return [];
+	logger.debug(`Criterias selected for playlist ${plaid}: ${JSON.stringify(criterias)}`, { service, obj: criterias });
 	if (smartPlaylistType === 'UNION') {
 		for (const c of criterias) {
 			// Ignore if criteria is not found
@@ -366,6 +369,7 @@ export async function selectKarasFromCriterias(
 				  }`
 				: uniqueKIDsSQL;
 	}
+	logger.debug(`SQL for Smart playlist: "${sql}" with params ${params}`, { service, obj: { sql, params } });
 	const res = await db().query(sql, params);
 	// When INTERSECT, we add all criterias to the songs.
 	if (smartPlaylistType === 'INTERSECT') {
