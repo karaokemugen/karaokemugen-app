@@ -234,7 +234,7 @@ function Playlist(props: IProps) {
 		orderByLikes,
 		getFilterValue(props.side),
 		is_touch_device(),
-		getPlaylistInfo(props.side, context).plaid,
+		getPlaylistInfo(props.side, context)?.plaid,
 	]);
 
 	const HeightPreservingItem = ({ children, ...props }: PropsWithChildren<ItemProps>) => {
