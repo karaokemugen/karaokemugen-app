@@ -108,8 +108,8 @@ export async function editUser(
 		if (user.type && +user.type !== currentUser.type && role !== 'admin') {
 			throw { code: 403, msg: 'USER_CANNOT_CHANGE_TYPE' };
 		}
-		// If we're renaming a user, user.login is going to be set to something different than username
-		user.old_login = username;
+		// If we're renaming a user, mergedUser.login is going to be set to something different than username
+		mergedUser.old_login = username;
 		// Check if login already exists.
 		if (user.nickname && currentUser.nickname !== user.nickname && (await checkNicknameExists(user.nickname))) {
 			throw { code: 409 };

@@ -208,7 +208,7 @@ function ProfilModal(props: IProps) {
 
 	useEffect(() => {
 		const buildKaraTitleFuture = (data: DBKara) => {
-			const isMulti = data?.langs.find(e => e.name.indexOf('mul') > -1);
+			const isMulti = data?.langs?.find(e => e.name.indexOf('mul') > -1);
 			if (data?.langs && isMulti) {
 				data.langs = [isMulti];
 			}

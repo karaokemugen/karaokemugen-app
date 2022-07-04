@@ -253,10 +253,7 @@ export async function fetchAndUpdateRemoteUser(
 			);
 			user = response.user;
 		}
-		user = {
-			...user,
-			onlineToken,
-		};
+		user.onlineToken = onlineToken;
 		return user;
 	}
 	// Online token was not provided : KM Server might be offline
@@ -268,17 +265,17 @@ export async function fetchAndUpdateRemoteUser(
 
 /** Converts a online user to a local one by removing its online account from KM Server */
 export async function removeRemoteUser(token: OldJWTToken, password: string): Promise<SingleToken> {
-	token.username = token.username.toLowerCase();
-	const instance = token.username.split('@')[1];
-	const username = token.username.split('@')[0];
+	const [username, instance] = token.username.split('@');
 	// Verify that no local user exists with the name we're going to rename it to
-	if (await getUser(username)) throw { code: 409, msg: 'User already exists locally, delete it first.' };
+	const user = await getUser(username, true);
+	if (user) throw { code: 409, msg: 'User already exists locally, delete it first.' };
+	const onlineUser = await getUser(token.username, true);
 	// Verify that password matches with online before proceeding
 	const onlineToken = await remoteLogin(token.username, password);
+	if (!onlineToken) throw { code: 500, msg: 'Unable to verify your online account.' };
 	// Renaming user locally
-	const user = await getUser(token.username);
-	user.login = username;
-	await editUser(token.username, user, null, 'admin', {
+	onlineUser.login = username;
+	await editUser(token.username, onlineUser, null, 'admin', {
 		editRemote: false,
 		renameUser: true,
 	});
@@ -290,7 +287,7 @@ export async function removeRemoteUser(token: OldJWTToken, password: string): Pr
 	});
 	emitWS('userUpdated', token.username);
 	return {
-		token: createJwtToken(user.login, token.role),
+		token: createJwtToken(onlineUser.login, token.role),
 	};
 }
 

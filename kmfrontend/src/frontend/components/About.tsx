@@ -71,12 +71,9 @@ export default function About() {
 					i18nKey="ABOUT.CONTRIBUTORS"
 					components={{
 						contrib: (
-							<TextTransition
-								text={contributors[index % contributors.length]}
-								springConfig={presets.slow}
-								className="awesome-person"
-								inline={true}
-							/>
+							<TextTransition springConfig={presets.slow} className="awesome-person" inline={true}>
+								{contributors[index % contributors.length]}
+							</TextTransition>
 						),
 					}}
 				/>
@@ -102,12 +99,9 @@ export default function About() {
 								))}
 							</>
 						) : (
-							<TextTransition
-								text={donators[index % donators.length]}
-								springConfig={presets.slow}
-								className="awesome-person"
-								inline={true}
-							/>
+							<TextTransition springConfig={presets.slow} className="awesome-person" inline={true}>
+								{donators[index % donators.length]}
+							</TextTransition>
 						),
 					}}
 				/>{' '}

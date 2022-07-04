@@ -82,6 +82,12 @@ export default class Git {
 		});
 		if (configChanged) {
 			logger.info('Setting up git repository settings', { service });
+			// Set email and stuff
+			// This is done on each setup because when these are modified in the repo setting, git might not be ready yet.
+			const repo = getRepo(this.opts.repoName) as RepositoryMaintainerSettings;
+			await this.configUser(repo.Git.Author, repo.Git.Email);
+			// Avoid crlf conflicts
+			await this.git.addConfig('core.autocrlf', 'true');
 			// Check if Remote is correctly configured
 			const remotes = await this.git.getRemotes(true);
 			const origin = remotes.find(r => r.name === 'origin');
@@ -92,12 +98,6 @@ export default class Git {
 				await this.setRemote();
 				await this.git.branch(['--set-upstream-to=origin/master', 'master']);
 			}
-			// Set email and stuff
-			// This is done on each setup because when these are modified in the repo setting, git might not be ready yet.
-			const repo = getRepo(this.opts.repoName) as RepositoryMaintainerSettings;
-			this.configUser(repo.Git.Author, repo.Git.Email);
-			// Avoid crlf conflicts
-			await this.git.addConfig('core.autocrlf', 'true');
 		}
 	}
 

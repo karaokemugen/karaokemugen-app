@@ -1,3 +1,22 @@
+# v6.1.11 - 04/07/2022
+
+## Misc
+
+-   Upgraded backend and frontend dependencies
+-   Added logs to track issues with smart playlist creation
+-   Removed HTTP breadcrumbs in Sentry reports if they're about socket.io
+
+## Fixes
+
+-   Fixed multi language karaoke handling
+-   Fixed getting playlist IDs for frontend in some rare cases
+-   Fixed setting up git config for maintainers
+-   Fixed download queue display
+-   Fixed repo editing issues
+-   Fixed remote to local user conversion losing data on its way
+-   Fixed state emission errors from backend to frontend
+-   Fixed base zip download if basedir isn't emptied properly
+
 # v6.1.10 - 19/06/2022
 
 ## Changes
@@ -8,8 +27,8 @@
 -   Added search textbox in user list in system panel
 -   Optimized mass edit of karaokes
 -   Added Asia as a default collection
--   Moved update repositories button from Database page to Repositories page in system panel
--   Added an example song in profile page so the user can see what his linguistic preferences will do.
+-   Moved update repositories button from Database page to Repositories page in system panel (#1223)
+-   Added an example song in profile page so the user can see what his linguistic preferences will do (#1180)
 -   Optimized users initialization a bit
 -   Added language to user if null on login
 -   Fixed users hitting play with no song to play throwing errors
@@ -26,6 +45,9 @@
 -   Fixed karaoke list display with an unknown repository
 -   Fixed previewing hooks for a new karaoke
 -   Fixed language detection for users (now using browser)
+-   Fixed setup loading when updating repos is in progress
+-   Fixed users hitting play with no song to play throwing errors (#1255)
+-   Fixed trouble with input boxes on options page (#1250)
 
 ## Misc
 
