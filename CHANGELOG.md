@@ -1,11 +1,5 @@
 # v6.1.12 - 04/07/2022
 
-## Misc
-
--   Upgraded backend and frontend dependencies
--   Added logs to track issues with smart playlist creation
--   Removed HTTP breadcrumbs in Sentry reports if they're about socket.io
-
 ## Fixes
 
 -   Fixed multi language karaoke handling
@@ -16,6 +10,12 @@
 -   Fixed remote to local user conversion losing data on its way
 -   Fixed state emission errors from backend to frontend
 -   Fixed base zip download if basedir isn't emptied properly
+
+## Misc
+
+-   Upgraded backend and frontend dependencies
+-   Added logs to track issues with smart playlist creation
+-   Removed HTTP breadcrumbs in Sentry reports if they're about socket.io
 
 # v6.1.10 - 19/06/2022
 
