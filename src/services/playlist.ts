@@ -311,9 +311,7 @@ export async function emptyPlaylist(plaid: string): Promise<string> {
 /** Download all song media files from a playlist */
 async function downloadMediasInPlaylist(plaid: string) {
 	const plcs = await getPlaylistContentsMini(plaid);
-	for (const plc of plcs) {
-		checkMediaAndDownload(plc.kid, plc.mediafile, plc.repository, plc.mediasize);
-	}
+	await checkMediaAndDownload(plcs);
 }
 
 // Actions took when a new current playlist is set
@@ -676,9 +674,7 @@ export async function addKaraToPlaylist(
 		profile('addKaraToPL-updateCountAndSongsLeft');
 		const plc = await getPLCInfo(PLCsInserted[0].plcid, true, requester);
 		if (plaid === state.currentPlaid) {
-			for (const kara of karas) {
-				checkMediaAndDownload(kara.kid, kara.mediafile, kara.repository, kara.mediasize);
-			}
+			checkMediaAndDownload(karas);
 			writeStreamFiles('current_kara_count');
 			writeStreamFiles('time_remaining_in_current_playlist');
 			if (conf.Karaoke.Autoplay && (state.player.playerStatus === 'stop' || state.randomPlaying)) {
@@ -795,9 +791,9 @@ export async function copyKaraToPlaylist(plc_ids: number[], plaid: string, pos?:
 		// If we're adding to the current playlist ID and KM's mode is public, we have to notify users that their song has been added and will be playing in xxx minutes
 		// Also for current playlist we check if medias are present
 		if (plaid === state.currentPlaid) {
-			for (const plc of plcs) {
-				checkMediaAndDownload(plc.kid, plc.mediafile, plc.repository, plc.mediasize);
-				if (plaid !== state.publicPlaid) {
+			checkMediaAndDownload(plcs);
+			if (plaid !== state.publicPlaid) {
+				for (const plc of plcs) {
 					notifyUserOfSongPlayTime(plc.plcid, plc.username);
 				}
 			}

@@ -301,10 +301,14 @@ export async function integrateKaraFile(
 	}
 	if (mediaDownload !== 'none') {
 		checkMediaAndDownload(
-			karaData.data.kid,
-			karaData.medias[0].filename,
-			karaData.data.repository,
-			karaData.medias[0].filesize,
+			[
+				{
+					kid: karaData.data.kid,
+					mediafile: karaData.medias[0].filename,
+					repository: karaData.data.repository,
+					mediasize: karaData.medias[0].filesize,
+				},
+			],
 			mediaDownload === 'updateOnly'
 		);
 	}

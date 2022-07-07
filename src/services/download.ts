@@ -1,6 +1,7 @@
 import { promise as fastq, queueAsPromised } from 'fastq';
 import { promises as fs } from 'fs';
 import internet from 'internet-available';
+import parallel from 'p-map';
 import { resolve } from 'path';
 import { v4 as uuidV4 } from 'uuid';
 
@@ -21,7 +22,7 @@ import { createImagePreviews } from '../lib/utils/previews';
 import { emit } from '../lib/utils/pubsub';
 import Task from '../lib/utils/taskManager';
 import { emitWS } from '../lib/utils/ws';
-import { KaraDownload, KaraDownloadRequest, QueueStatus } from '../types/download';
+import { KaraDownload, KaraDownloadRequest, MediaDownloadCheck, QueueStatus } from '../types/download';
 import { getState } from '../utils/state';
 import { getKaras } from './kara';
 import { getRepoFreeSpace } from './repo';
@@ -151,17 +152,21 @@ export function resumeQueue() {
 	return dq.resume();
 }
 
-export async function checkMediaAndDownload(
-	kid: string,
-	mediafile: string,
-	repo: string,
-	mediasize: number,
-	updateOnly = false
-) {
+export async function checkMediaAndDownload(plcs: MediaDownloadCheck[], updateOnly = false) {
+	const mapper = async (plc: MediaDownloadCheck) => {
+		return checkMediaAndDownloadSingleKara(plc, updateOnly);
+	};
+	await parallel(plcs, mapper, {
+		stopOnError: false,
+		concurrency: 32,
+	});
+}
+
+export async function checkMediaAndDownloadSingleKara(kara: MediaDownloadCheck, updateOnly = false) {
 	let downloadMedia = false;
 	let mediaPath: string;
 	try {
-		mediaPath = (await resolveFileInDirs(mediafile, resolvedPathRepos('Medias', repo)))[0];
+		mediaPath = (await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', kara.repository)))[0];
 	} catch {
 		// We're checking only to update files. If the file was never found, we won't try to download it. Else we do.
 		if (updateOnly) return;
@@ -170,17 +175,17 @@ export async function checkMediaAndDownload(
 	if (mediaPath) {
 		// File exists so we're checking for its stats to check if we need to redownload it or not (different sizes)
 		const mediaStats = await fs.stat(mediaPath);
-		downloadMedia = mediaStats.size !== mediasize;
+		downloadMedia = mediaStats.size !== kara.mediasize;
 	}
 	if (downloadMedia && getConfig().Online.AllowDownloads && !getState().isTest) {
 		try {
 			await addDownloads([
 				{
-					mediafile,
-					name: mediafile,
-					size: mediasize,
-					repository: repo,
-					kid,
+					mediafile: kara.mediafile,
+					name: kara.mediafile,
+					size: kara.mediasize,
+					repository: kara.repository,
+					kid: kara.kid,
 				},
 			]);
 		} catch (err) {
