@@ -109,7 +109,7 @@ export function buildKaraTitle(
 					.join(', ') + (data.singers.length > 3 ? '...' : '')
 			: '';
 	const langsText = data?.langs
-		.map(e => e.name)
+		?.map(e => e.name)
 		.join(', ')
 		.toUpperCase();
 	const songtypeText = sortAndHideTags(data?.songtypes)
