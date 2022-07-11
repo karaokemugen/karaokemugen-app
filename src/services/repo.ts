@@ -630,10 +630,10 @@ export async function stashGitRepo(repoName: string) {
 }
 
 /** Helper function to setup git in other functions */
-async function setupGit(repo: Repository, configChanged = false) {
+async function setupGit(repo: Repository, configChanged = false, clone = false) {
 	const baseDir = resolve(getState().dataPath, repo.BaseDir);
 	if (!repo.MaintainerMode) throw 'Maintainer mode disabled for this repository';
-	if (!(await isGit(repo))) throw 'Not a git repository. Has it been cloned properly?';
+	if (!clone && !(await isGit(repo))) throw 'Not a git repository. Has it been cloned properly?';
 	const git = new Git({
 		baseDir,
 		url: repo.Git.URL,
@@ -656,7 +656,7 @@ export async function newGitRepo(repo: Repository) {
 	await stopWatchingHooks();
 	await remove(baseDir);
 	await asyncCheckOrMkdir(baseDir);
-	const git = await setupGit(repo);
+	const git = await setupGit(repo, true, true);
 	await git.clone();
 	git.setRemote().catch();
 	if (repo.AutoMediaDownloads === 'all') {
