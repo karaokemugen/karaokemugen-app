@@ -631,6 +631,7 @@ export async function stashGitRepo(repoName: string) {
 
 /** Helper function to setup git in other functions */
 async function setupGit(repo: Repository, configChanged = false, clone = false) {
+	if (!repo.BaseDir) throw 'BaseDir is empty! This could be trouble!';
 	const baseDir = resolve(getState().dataPath, repo.BaseDir);
 	if (!repo.MaintainerMode) throw 'Maintainer mode disabled for this repository';
 	if (!clone && !(await isGit(repo))) throw 'Not a git repository. Has it been cloned properly?';
