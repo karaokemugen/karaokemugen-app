@@ -96,7 +96,7 @@ export default function karaController(router: SocketIOApp) {
 		return null;
 	});
 	router.route('addKaraToPublicPlaylist', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'guest', 'limited');
+		await runChecklist(socket, req, 'guest', 'open');
 		// Add Kara to the playlist currently used depending on mode
 		if (!isUUID(req.body.kids)) throw { code: 400 };
 		try {
