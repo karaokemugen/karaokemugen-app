@@ -27,12 +27,6 @@ class ElectronSentryLogger extends SentryLogger {
 			environment: process.env.SENTRY_ENVIRONMENT || 'release',
 			release: getState().version.number,
 			ignoreErrors: ['Maximum call stack size exceeded', 'No karaoke found in playlist object'],
-			beforeBreadcrumb: (breadcrumb, _hint) => {
-				// Disabling socket.io HTTP breadcrumbs for sentry errors
-				if (breadcrumb.data?.url?.includes('socket.io')) {
-					return null;
-				}
-			},
 			beforeSend: (event, _hint) => {
 				// Testing for precise falseness. If errortracking is undefined or if getconfig doesn't return anything, errors are not sent.
 				if (getConfig()?.Online?.ErrorTracking !== true || !this.SentryInitialized) return null;

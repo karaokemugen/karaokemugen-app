@@ -1,4 +1,21 @@
+# v6.1.14 - 13/07/2022
+
+Us? Releasing a new version before a major event like Japan Expo? Perish the thought!
+
+## Fixes
+
+-   Fixed addKaraToPlaylist API being open even when UI is in restricted mode
+-   Prevent basedir from being empty during git setup for maintainer mode
+-   Reverted HTTP breadcrumb removal since it wasn't doing what we wanted.
+-   Fixed switch from zip to git repo for maintainers
+
 # v6.1.12 - 04/07/2022
+
+## Misc
+
+-   Upgraded backend and frontend dependencies
+-   Added logs to track issues with smart playlist creation
+-   Removed HTTP breadcrumbs in Sentry reports if they're about socket.io
 
 ## Fixes
 

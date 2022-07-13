@@ -46,6 +46,7 @@ export async function runChecklist(
 }
 
 function checkWebAppMode(data: APIData, webappModeNeeded: WebappModes) {
+	// Admins get a bypass.
 	if (data.user?.type === 0) return;
 	if (+getConfig().Frontend.Mode < webappModes[webappModeNeeded]) {
 		throw { code: 503, message: APIMessage('WEBAPPMODE_CLOSED_API_MESSAGE') };
