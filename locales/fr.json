@@ -13,6 +13,7 @@
 	"INIT_DUMPDB": "Sauvegarde de la base de données…",
 	"INIT_RESTOREDB": "Restauration de la base de données…",
 	"INIT_DB": "Initialisation de la base de données…",
+	"INIT_MIGRATION": "Mise à jour de la structure de la base de données, veuillez patienter…",
 	"INIT_VALIDATION": "Validation de vos fichiers…",
 	"INIT_GEN": "Génération de la base de données, veuillez patienter…",
 	"INIT_UPDATEMEDIAS": "Mise à jour des médias…",

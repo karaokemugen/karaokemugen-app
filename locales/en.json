@@ -14,6 +14,7 @@
 	"INIT_RESTOREDB": "Restoring database…",
 	"INIT_DB": "Initializing database…",
 	"INIT_VALIDATION": "Validating your files…",
+	"INIT_MIGRATION": "Updating database structure, please wait…",
 	"INIT_GEN": "Generating database, please wait…",
 	"INIT_UPDATEMEDIAS": "Updating medias…",
 	"INIT_BASEUPDATE": "Updating songs…",

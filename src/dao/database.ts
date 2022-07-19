@@ -5,7 +5,7 @@ import { resolve } from 'path';
 import Postgrator from 'postgrator';
 import { v4 as uuidV4 } from 'uuid';
 
-import { errorStep } from '../electron/electronLogger';
+import { errorStep, initStep } from '../electron/electronLogger';
 import { connectDB, db, getInstanceID, getSettings, saveSetting, setInstanceID } from '../lib/dao/database';
 import { generateDatabase } from '../lib/services/generation';
 import { getConfig } from '../lib/utils/config';
@@ -68,6 +68,7 @@ export async function initDB() {
 
 async function migrateDB(): Promise<Postgrator.Migration[]> {
 	logger.info('Running migrations if needed', { service });
+	initStep(i18next.t('INIT_MIGRATION'));
 	const conf = getConfig();
 	const migrationDir = resolve(getState().resourcePath, 'migrations/');
 	const migrator = new Postgrator({
