@@ -31,6 +31,7 @@ export function isShutdownPG(): boolean {
 	return shutdownInProgress;
 }
 
+/** Determines some env values, especially for Linux where we need to add the PG library path when running our own Postgres binaries. */
 function determineEnv() {
 	const env = { ...process.env };
 	const state = getState();
