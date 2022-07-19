@@ -121,7 +121,7 @@ function ActionsButtons(props: IProps) {
 							: props.isHeader
 							? i18next.t('TOOLTIP_ADD_SELECT_KARA')
 							: `${i18next.t('TOOLTIP_ADDKARA')}${
-									props.scope === 'admin' ? ' - ' + i18next.t('TOOLTIP_ADDKARA_ADMIN') : ''
+									props.scope === 'admin' ? i18next.t('TOOLTIP_ADDKARA_ADMIN') : ''
 							  }`
 					}
 					className={classValue}
