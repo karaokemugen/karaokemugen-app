@@ -260,7 +260,13 @@ export async function exit(rc = 0, update = false) {
 		logger.warn('mpv error', { service, obj: err });
 		// Non fatal.
 	}
-	if (getState().DBReady && getConfig().System.Database.bundledPostgresBinary) await dumpPG().catch();
+	if (
+		getState().DBReady &&
+		getConfig().System.Database.bundledPostgresBinary &&
+		!getState().opt.dumpDB &&
+		!getState().opt.restoreDB
+	)
+		await dumpPG().catch();
 	try {
 		await closeDB();
 	} catch (err) {
