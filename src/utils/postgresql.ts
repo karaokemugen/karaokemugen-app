@@ -14,7 +14,7 @@ import { getConfig, resolvedPath } from '../lib/utils/config';
 import { asciiRegexp } from '../lib/utils/constants';
 import { downloadFile } from '../lib/utils/downloader';
 // KM Imports
-import { fileExists, smartMove } from '../lib/utils/files';
+import { compressGzipFile, decompressGzipFile, fileExists, smartMove } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import { PGVersion } from '../types/database';
 import { checkBinaries, editSetting } from './config';
@@ -140,6 +140,8 @@ export async function dumpPG() {
 		logger.warn(err, { service });
 		throw err;
 	}
+	logger.info('Dumping database...', { service });
+	const dumpFile = resolve(state.dataPath, 'karaokemugen.sql');
 	try {
 		const options = [
 			'-c',
@@ -151,16 +153,17 @@ export async function dumpPG() {
 			'-p',
 			`${conf.System.Database.port}`,
 			'-f',
-			resolve(state.dataPath, 'karaokemugen.sql'),
+			dumpFile,
 			conf.System.Database.database,
 		];
 		let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_dump);
 		if (state.os === 'win32') binPath = `"${binPath}"`;
 		await execa(binPath, options, {
 			cwd: resolve(state.appPath, state.binPath.postgres),
-			stdio: 'inherit',
 			env: determineEnv(),
 		});
+		await compressGzipFile(dumpFile);
+		await fs.unlink(dumpFile);
 		logger.info('Database dumped to file', { service });
 	} catch (err) {
 		if (err.stdout) sentry.addErrorInfo('stdout', err.stdout);
@@ -175,28 +178,31 @@ export async function dumpPG() {
 export async function restorePG() {
 	const conf = getConfig();
 	const state = getState();
+	const compressedDumpFile = resolve(state.dataPath, 'karaokemugen.sql.gz');
 	if (!conf.System.Database.bundledPostgresBinary) {
 		const err = 'Restore not available with hosted PostgreSQL servers';
 		logger.warn(err, { service });
 		throw err;
 	}
 	try {
+		const dumpFile = await decompressGzipFile(compressedDumpFile);
 		const options = [
 			'-U',
 			conf.System.Database.username,
 			'-p',
 			`${conf.System.Database.port}`,
 			'-f',
-			resolve(state.dataPath, 'karaokemugen.sql'),
+			dumpFile,
 			conf.System.Database.database,
 		];
 		let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_client);
 		if (state.os === 'win32') binPath = `"${binPath}"`;
+		logger.info('Restoring dump to database...', { service });
 		await execa(binPath, options, {
 			cwd: resolve(state.appPath, state.binPath.postgres),
-			stdio: 'inherit',
 			env: determineEnv(),
 		});
+		await fs.unlink(dumpFile);
 		logger.info('Database restored from file', { service });
 	} catch (err) {
 		if (err.stdout) sentry.addErrorInfo('stdout', err.stdout);
