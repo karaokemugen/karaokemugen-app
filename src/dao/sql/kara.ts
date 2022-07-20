@@ -103,8 +103,12 @@ array_remove(array_agg(DISTINCT krp.fk_kid_child), null) AS children,
 array_remove((SELECT array_agg(DISTINCT fk_kid_child) FROM kara_relation WHERE fk_kid_parent = ANY (array_remove(array_agg(DISTINCT krc.fk_kid_parent), null))), ak.pk_kid) AS siblings
 FROM all_karas AS ak
 LEFT OUTER JOIN kara k ON k.pk_kid = ak.pk_kid
-LEFT OUTER JOIN kara_relation krp ON krp.fk_kid_parent = ak.pk_kid
-LEFT OUTER JOIN kara_relation krc ON krc.fk_kid_child = ak.pk_kid
+LEFT OUTER JOIN kara_relation krp ON krp.fk_kid_parent = ak.pk_kid ${
+	blacklistClauses ? ' AND krp.fk_kid_child NOT IN (SELECT * FROM blacklist)' : ''
+}
+LEFT OUTER JOIN kara_relation krc ON krc.fk_kid_child = ak.pk_kid ${
+	blacklistClauses ? ' AND krc.fk_kid_parent NOT IN (SELECT * FROM blacklist)' : ''
+}
 LEFT OUTER JOIN played AS p ON p.fk_kid = ak.pk_kid
 LEFT OUTER JOIN playlist_content AS pc ON pc.fk_kid = ak.pk_kid AND pc.fk_id_playlist = :publicPlaylist_id
 LEFT OUTER JOIN playlist_content AS pc_self on pc_self.fk_kid = ak.pk_kid AND pc_self.fk_id_playlist = :publicPlaylist_id AND pc_self.fk_login = :username
