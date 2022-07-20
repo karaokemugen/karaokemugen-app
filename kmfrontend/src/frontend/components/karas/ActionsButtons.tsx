@@ -39,7 +39,7 @@ function ActionsButtons(props: IProps) {
 	const addingIsForbidden =
 		!props.isHeader &&
 		!context.globalState.settings.data.config.Playlist.AllowDuplicates &&
-		oppositePlaylist.content.findIndex(k => k.kid === props.kara.kid) !== -1 &&
+		oppositePlaylist?.content.findIndex(k => k.kid === props.kara.kid) !== -1 &&
 		props.scope === 'admin';
 	return (
 		<>
