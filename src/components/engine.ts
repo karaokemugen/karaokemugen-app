@@ -18,7 +18,7 @@ import { generateDatabase as generateKaraBase } from '../lib/services/generation
 // Utils
 import { getConfig, setConfig } from '../lib/utils/config';
 import { duration } from '../lib/utils/date';
-import logger, { enableWSLogging, profile } from '../lib/utils/logger';
+import logger, { archiveOldLogs, enableWSLogging, profile } from '../lib/utils/logger';
 import { createImagePreviews } from '../lib/utils/previews';
 import { initDownloader, wipeDownloadQueue, wipeDownloads } from '../services/download';
 import { updateAllMedias } from '../services/downloadMedias';
@@ -216,6 +216,7 @@ export async function initEngine() {
 			initStep(i18next.t('INIT_DONE'), true);
 			postInit();
 			initHooks();
+			archiveOldLogs();
 			logger.info(`Karaoke Mugen is ${ready}`, { service });
 		} catch (err) {
 			logger.error('Karaoke Mugen IS NOT READY', { service, obj: err });

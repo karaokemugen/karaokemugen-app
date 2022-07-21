@@ -33,6 +33,7 @@ import { exit } from './engine';
 import Timeout = NodeJS.Timeout;
 import { DBKaraTag } from '../lib/types/database/kara';
 import { supportedFiles } from '../lib/utils/constants';
+import { date } from '../lib/utils/date';
 import HTTP from '../lib/utils/http';
 import { convert1LangTo2B } from '../lib/utils/langs';
 import logger, { profile } from '../lib/utils/logger';
@@ -380,11 +381,12 @@ class Player {
 	private async genConf(options: MpvOptions) {
 		const conf = getConfig();
 		const state = getState();
+		const today = date();
 
 		const mpvArgs = [
 			'--keep-open=always',
 			'--osd-level=0',
-			`--log-file=${resolve(state.dataPath, 'logs/', 'mpv.log')}`,
+			`--log-file=${resolve(state.dataPath, 'logs/', `mpv.${today}.log`)}`,
 			`--hwdec=${conf.Player.HardwareDecoding}`,
 			`--volume=${+conf.Player.Volume}`,
 			'--no-config',
@@ -1553,7 +1555,8 @@ class Players {
 /** Get last 100 lines of log */
 async function getMpvLog() {
 	try {
-		const logFile = resolve(getState().dataPath, 'logs/', 'mpv.log');
+		const today = date();
+		const logFile = resolve(getState().dataPath, 'logs/', `mpv.${today}.log`);
 		const logData = await fs.readFile(logFile, 'utf-8');
 		return logData.split('\n').slice(-100);
 	} catch (err) {
