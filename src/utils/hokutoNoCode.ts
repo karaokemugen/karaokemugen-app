@@ -3,11 +3,14 @@
 //
 // When removing code here, remember to go see if all functions called are still useful.
 
+import { remove } from 'fs-extra';
 import i18next from 'i18next';
+import { resolve } from 'path';
 
 import { insertCriteria, insertKaraIntoPlaylist, insertPlaylist } from '../dao/playlist';
 import { db } from '../lib/dao/database';
 import { updateAllSmartPlaylists } from '../services/smartPlaylist';
+import { getState } from './state';
 
 /** Remove in KM 8.0 */
 export async function migrateBLWLToSmartPLs() {
@@ -72,4 +75,10 @@ export async function migrateBLWLToSmartPLs() {
 	} catch (err) {
 		// Everything is daijokay
 	}
+}
+
+// Remove in KM 9.0
+/* Remove old temp folder */
+export async function removeOldTempFolder() {
+	remove(resolve(getState().dataPath, 'temp')).catch();
 }
