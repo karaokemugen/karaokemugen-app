@@ -227,7 +227,20 @@ System:
     - Name: kara.moe
       Online: true
       Enabled: true
-      Git: 'http://xxx'
+      Update: true
+      Git:
+        URL: https://gitlab.com/karaokemugen/bases/karaokebase.git
+        Username: username
+        Password: pass
+        Author: Nanamin
+        Email: nanamin@eternity.ln
+        ProjectID: 32123952
+      FTP:
+        Host: ftphost
+        Port: 21
+        Username: nanamin
+        Password: pass
+        BaseDir: storage/medias-otaku
       SendStats: true
       AutoMediaDownloads: updateOnly
       # AutoMediaDownloads determines when a song should be downloaded

@@ -81,7 +81,7 @@ export async function addRepo(repo: Repository) {
 	await checkRepoPaths(repo);
 	insertRepo(repo);
 	// Let's download zip if it's an online repository
-	if (repo.Online) {
+	if (repo.Online && repo.Update) {
 		if (repo.MaintainerMode) {
 			if (repo.Git?.URL) {
 				updateGitRepo(repo.Name)
@@ -102,7 +102,7 @@ export async function addRepo(repo: Repository) {
 }
 
 export async function updateAllRepos() {
-	const repos = getRepos().filter(r => r.Online && r.Enabled);
+	const repos = getRepos().filter(r => r.Online && r.Enabled && r.Update);
 	let doGenerate = false;
 	logger.info('Updating all repositories', { service });
 	for (const repo of repos) {
@@ -204,69 +204,74 @@ export async function updateZipRepo(name: string) {
 	if (updateRunning) throw 'An update is already on the way, wait for it to finish.';
 	updateRunning = true;
 	const repo = getRepo(name);
-	if (!repo.Online || repo.MaintainerMode || !repo.Enabled) {
+	if (!repo.Online || repo.MaintainerMode || !repo.Enabled || !repo.Update) {
 		updateRunning = false;
-		throw 'Repository is not online, disabled or is in Maintainer Mode!';
+		throw 'Repository is not online, disabled, is in Maintainer Mode, or updates are disabled!';
 	}
 	// Checking if folder is empty. This can happen if someone moved their repo elsewhere or deleted everything. In this case the local commit
-	let localCommit = await getLocalRepoLastCommit(repo);
-	const baseDir = resolve(getState().dataPath, repo.BaseDir);
-	const dir = await fs.readdir(baseDir);
-	if (dir.length === 0) {
-		// Folder is empty.
-		logger.info('Folder is empty, resetting local commit to null', { service });
-		localCommit = null;
-	}
-	logger.info(`Updating repository from ${name}, our commit is ${localCommit}`, { service });
-	if (!localCommit) {
-		// If local commit doesn't exist, we have to start by retrieving one
-		const LatestCommit = await newZipRepo(repo);
-		// Once this is done, we store the last commit in settings DB
-		await saveSetting(`commit-${name}`, LatestCommit);
-		await saveSetting('baseChecksum', await baseChecksum());
-		updateRunning = false;
-		return true;
-	}
-	// Check if update is necessary by fetching the remote last commit sha
-	const { LatestCommit } = await getRepoMetadata(repo.Name);
-	logger.debug(`Update ${repo.Name}: ours is ${localCommit}, theirs is ${LatestCommit}`, { service });
-	if (LatestCommit !== localCommit) {
-		try {
-			const patch = await HTTP.get(
-				`https://${repo.Name}/api/karas/repository/diff?commit=${encodeURIComponent(localCommit)}`,
-				{
-					responseType: 'text',
-				}
-			);
-			let changes: DiffChanges[];
-			try {
-				changes = await applyPatch(patch.data as string, repo.BaseDir);
-			} catch (err) {
-				// If patch fails, we need to try the other way around and get all modified files
-				// Need to remove .orig files if any
-				await cleanFailedPatch(repo);
-				logger.info('Trying to download full files instead', { service });
-				const fullFiles = await HTTP.get(
-					`https://${repo.Name}/api/karas/repository/diff/full?commit=${encodeURIComponent(localCommit)}`
-				);
-				await writeFullPatchedFiles(fullFiles.data as DiffChanges[], repo);
-				changes = computeFileChanges(patch.data as string);
-			}
-			logger.debug('Applying changes', { service, obj: changes });
-			await applyChanges(changes, repo);
-			await saveSetting(`commit-${repo.Name}`, LatestCommit);
-			return false;
-		} catch (err) {
-			logger.warn('Cannot use patch method to update repository, downloading full zip again.', {
-				service,
-			});
-			sentry.addErrorInfo('initialCommit', localCommit);
-			sentry.addErrorInfo('toCommit', LatestCommit);
-			sentry.error(err, 'warning');
-			await saveSetting(`commit-${repo.Name}`, null);
-			updateRunning = false;
-			await updateZipRepo(name);
+	try {
+		let localCommit = await getLocalRepoLastCommit(repo);
+		const baseDir = resolve(getState().dataPath, repo.BaseDir);
+		const dir = await fs.readdir(baseDir);
+		if (dir.length === 0) {
+			// Folder is empty.
+			logger.info('Folder is empty, resetting local commit to null', { service });
+			localCommit = null;
 		}
+		logger.info(`Updating repository from ${name}, our commit is ${localCommit}`, { service });
+		if (!localCommit) {
+			// If local commit doesn't exist, we have to start by retrieving one
+			const LatestCommit = await newZipRepo(repo);
+			// Once this is done, we store the last commit in settings DB
+			await saveSetting(`commit-${name}`, LatestCommit);
+			await saveSetting('baseChecksum', await baseChecksum());
+			updateRunning = false;
+			return true;
+		}
+		// Check if update is necessary by fetching the remote last commit sha
+		const { LatestCommit } = await getRepoMetadata(repo.Name);
+		logger.debug(`Update ${repo.Name}: ours is ${localCommit}, theirs is ${LatestCommit}`, { service });
+		if (LatestCommit !== localCommit) {
+			try {
+				const patch = await HTTP.get(
+					`https://${repo.Name}/api/karas/repository/diff?commit=${encodeURIComponent(localCommit)}`,
+					{
+						responseType: 'text',
+					}
+				);
+				let changes: DiffChanges[];
+				try {
+					changes = await applyPatch(patch.data as string, repo.BaseDir);
+				} catch (err) {
+					// If patch fails, we need to try the other way around and get all modified files
+					// Need to remove .orig files if any
+					await cleanFailedPatch(repo);
+					logger.info('Trying to download full files instead', { service });
+					const fullFiles = await HTTP.get(
+						`https://${repo.Name}/api/karas/repository/diff/full?commit=${encodeURIComponent(localCommit)}`
+					);
+					await writeFullPatchedFiles(fullFiles.data as DiffChanges[], repo);
+					changes = computeFileChanges(patch.data as string);
+				}
+				logger.debug('Applying changes', { service, obj: changes });
+				await applyChanges(changes, repo);
+				await saveSetting(`commit-${repo.Name}`, LatestCommit);
+				return false;
+			} catch (err) {
+				logger.warn('Cannot use patch method to update repository, downloading full zip again.', {
+					service,
+				});
+				sentry.addErrorInfo('initialCommit', localCommit);
+				sentry.addErrorInfo('toCommit', LatestCommit);
+				sentry.error(err, 'warning');
+				await saveSetting(`commit-${repo.Name}`, null);
+				await updateZipRepo(name);
+			}
+		}
+	} catch (err) {
+		throw err;
+	} finally {
+		updateRunning = false;
 	}
 }
 
@@ -324,7 +329,7 @@ async function hookEditedRepo(oldRepo: Repository, repo: Repository, refresh = f
 		sendPayload(repo.Name, repo.Name === getConfig().Online.Host).catch();
 	}
 	// Repo is online so we have stuff to do
-	if (repo.Enabled && repo.Online) {
+	if (repo.Enabled && repo.Online && repo.Update) {
 		// Maintainer mode got enabled
 		if (!oldRepo.MaintainerMode && repo.MaintainerMode) {
 			// Git URL exists so we're trying to update git repo
@@ -419,9 +424,9 @@ export async function updateGitRepo(name: string) {
 	if (updateRunning) throw 'An update is already on the way, wait for it to finish.';
 	updateRunning = true;
 	const repo = getRepo(name);
-	if (!repo.Online || !repo.MaintainerMode) {
+	if (!repo.Online || !repo.Enabled || !repo.MaintainerMode || !repo.Update) {
 		updateRunning = false;
-		throw 'Repository is not online or is not in Maintainer Mode!';
+		throw 'Repository is not online, disabled, not in Maintainer mode, or updates are disabled!';
 	}
 	logger.info(`Update ${repo.Name}: Starting`, { service });
 	try {

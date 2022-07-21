@@ -134,6 +134,12 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 			render: (_text, record) => <Checkbox disabled={true} checked={record.Online} />,
 		},
 		{
+			title: i18next.t('REPOSITORIES.UPDATE'),
+			dataIndex: 'Update',
+			key: 'update',
+			render: (_text, record) => <Checkbox disabled={true} checked={record.Update} />,
+		},
+		{
 			title: i18next.t('REPOSITORIES.ENABLED'),
 			dataIndex: 'Enabled',
 			key: 'enabled',

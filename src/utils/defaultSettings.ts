@@ -194,6 +194,7 @@ export const defaults: Config = {
 			{
 				Name: 'kara.moe',
 				Online: true,
+				Update: true,
 				Enabled: true,
 				SendStats: true,
 				AutoMediaDownloads: 'updateOnly',

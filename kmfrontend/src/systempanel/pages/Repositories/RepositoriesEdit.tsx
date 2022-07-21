@@ -18,6 +18,7 @@ const newrepository: Repository = {
 	Online: false,
 	Enabled: true,
 	SendStats: false,
+	Update: true,
 	AutoMediaDownloads: 'updateOnly',
 	// @ts-ignore: omg just shut up
 	MaintainerMode: false,
