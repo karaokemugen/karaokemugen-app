@@ -1,3 +1,10 @@
+# v6.1.15 - 21/07/2022
+
+## Fixes
+
+-   Fixed repository updates when there's a song with Unicode characters in its filename (thanks to the Japanese who put these everywhere)
+-   Fixed blacklist not working when listing children of a song in public interface
+
 # v6.1.14 - 13/07/2022
 
 Us? Releasing a new version before a major event like Japan Expo? Perish the thought!
