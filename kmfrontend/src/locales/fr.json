@@ -1148,7 +1148,7 @@
 		"FOLDERS_REQUIRED": "Un dossier de {{name}} est obligatoire.",
 		"MOVE": "Définir la priorité des dépôts",
 		"MOVE_TOOLTIP": "Cela vous permet de définir quels dépôts ont priorité lors de la création de votre base de données : les dépôts le plus en haut seront pris en compte d'abord si jamais deux dépôts ont le même karaoké",
-		"MOVING_MEDIA": "Opérations sur le dépôt",
+		"MOVING_MEDIA": "Destination des médias",
 		"MOVING_MEDIA_BUTTON": "Déplacer les médias…",
 		"MOVING_MEDIA_PANEL": "Déplacement des médias du dépôt",
 		"WARNING": "Attention !",
