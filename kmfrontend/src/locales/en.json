@@ -1138,7 +1138,7 @@
 		"FOLDERS_REQUIRED": "A folder of {{name}} is required.",
 		"MOVE": "Define the priority of repositories",
 		"MOVE_TOOLTIP": "This allows you to define which repositories take priority when creating your database: the highest repositories will be taken into account first if two repositories have the same karaoke",
-		"MOVING_MEDIA": "Repository operations",
+		"MOVING_MEDIA": "Destination where to move medias",
 		"MOVING_MEDIA_BUTTON": "Move medias…",
 		"MOVING_MEDIA_PANEL": "Move medias",
 		"WARNING": "Warning!",
