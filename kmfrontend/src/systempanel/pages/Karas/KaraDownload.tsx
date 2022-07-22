@@ -14,6 +14,7 @@ import { Link } from 'react-router-dom';
 
 import { DBKara, DBKaraTag } from '../../../../../src/lib/types/database/kara';
 import { DBTag } from '../../../../../src/lib/types/database/tag';
+import { DBStats } from '../../../../../src/types/database/database';
 import { DBDownload } from '../../../../../src/types/database/download';
 import { KaraDownloadRequest } from '../../../../../src/types/download';
 import GlobalContext from '../../../store/context';
@@ -158,12 +159,8 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 
 	getTotalMediaSize = async () => {
 		try {
-			const res = await commandBackend('getKaras', undefined, false, 300000);
-			const totalMediaSize = res.content.reduce(
-				(accumulator, currentValue) => accumulator + currentValue.mediasize,
-				0
-			);
-			this.setState({ totalMediaSize: prettyBytes(totalMediaSize) });
+			const res: DBStats = await commandBackend('getStats', undefined, false, 300000);
+			this.setState({ totalMediaSize: prettyBytes(res.total_media_size) });
 		} catch (e) {
 			// already display
 		}

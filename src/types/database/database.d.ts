@@ -12,6 +12,7 @@ export interface DBStats {
 	blacklist: number;
 	whitelist: number;
 	tags: number;
+	total_media_size: number;
 }
 
 export interface DBSetting {

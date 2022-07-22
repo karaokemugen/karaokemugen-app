@@ -12,7 +12,8 @@ SELECT
 (SELECT COUNT(pk_tid) FROM tag WHERE types @> ARRAY[1])::integer AS series,
 (SELECT COUNT(*) FROM played)::integer AS played,
 (SELECT COUNT(pk_id_playlist) FROM playlist)::integer AS playlists,
-(SELECT SUM(duration) FROM kara)::integer AS duration;
+(SELECT SUM(duration) FROM kara)::integer AS duration,
+(SELECT SUM(mediasize) FROM kara) AS total_media_size;
 `;
 
 export const sqlResetUserData = `

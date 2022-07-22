@@ -149,7 +149,8 @@ export async function resetUserData() {
 
 export async function getStats(): Promise<DBStats> {
 	const res = await db().query(sqlGetStats);
-	return res.rows[0];
+	const stats: DBStats = res.rows[0];
+	return { ...stats, total_media_size: +stats.total_media_size };
 }
 
 let generationInProgress = false;
