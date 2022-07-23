@@ -1428,7 +1428,8 @@
 		"GUESTS_CANNOT_EDIT": "Les invités ne peuvent pas modifier leur compte",
 		"PREVIEW_HOOKS_ERROR": "Erreur lors de la prévisialisation des hooks",
 		"LYRICS_FILE_OPEN_ERROR": "Erreur lors de l'ouverture du fichier",
-		"COLLECTIONS_GET_ERROR": "Erreur lors de la récupération des collections"
+		"COLLECTIONS_GET_ERROR": "Erreur lors de la récupération des collections",
+		"UPLOADED_MEDIA_ERROR": "Erreur lors de l'envoi du média"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Ajout de {{data}} téléchargements à la file d'attente",
