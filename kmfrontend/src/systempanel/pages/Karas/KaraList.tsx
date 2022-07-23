@@ -421,6 +421,9 @@ class KaraList extends Component<unknown, KaraListState> {
 					if (record.download_status !== 'DOWNLOADED') {
 						playVideoButton = null;
 					}
+					if (record.subfile === null) {
+						lyricsButton = null;
+					}
 					return (
 						<div style={{ display: 'flex' }}>
 							{editLink}
