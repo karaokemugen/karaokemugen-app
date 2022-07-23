@@ -69,7 +69,8 @@
     "leonekmi <git+km@leonekmi.fr>",
     "Pierre CAMILLI <camillipierre@gmail.com> (@Shueisha64)",
     "Pierre Ellul <pierreellul.epi@gmail.com> (@Snak)",
-    "Themio <themio@protonmail.ch>"
+    "Themio <themio@protonmail.ch>",
+    "Damien HERBERT <dherbert98@gmail.com> (Dragicafit)"
   ],
   "engines": {
     "node": ">=14"
