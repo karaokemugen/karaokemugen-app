@@ -200,7 +200,10 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		...yesqlPayload.params,
 	};
 	const res = await db().query(yesql(query)(queryParams));
-	return res.rows;
+	return res.rows.map(row => {
+		const { tags, ...rowWithoutTags } = row;
+		return rowWithoutTags;
+	});
 }
 
 export async function selectAllKarasMicro(params: KaraParams): Promise<DBKaraBase[]> {
