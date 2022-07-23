@@ -217,7 +217,10 @@ export async function selectPlaylistContents(params: PLCParams): Promise<DBPLC[]
 			...filterClauses.params,
 		})
 	);
-	return res.rows;
+	return res.rows.map(row => {
+		const { tags, ...rowWithoutTags } = row;
+		return rowWithoutTags;
+	});
 }
 
 export async function selectPlaylistContentsMicro(id: string): Promise<DBPLCBase[]> {
