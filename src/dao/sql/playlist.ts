@@ -152,17 +152,11 @@ export const sqlgetPlaylistContents = (
 	additionalFrom: string
 ) => `
 SELECT
-  ak.pk_kid AS kid,
-  ak.titles AS titles,
-  ak.titles_aliases AS titles_aliases,
-  ak.titles_default_language AS titles_default_language,
-  ak.songorder AS songorder,
-  ak.subfile AS subfile,
+  *,
   jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 2)') AS singers,
   jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 3)') AS songtypes,
   jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 4)') AS creators,
   jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 8)') AS songwriters,
-  ak.year AS year,
   jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 5)') AS langs,
   jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 6)') AS authors,
   jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 9)') AS groups,
@@ -174,74 +168,85 @@ SELECT
   jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 1)') AS series,
   jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 14)') AS versions,
   jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 15)') AS warnings,
-  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 16)') AS collections,
-  ak.mediafile AS mediafile,
-  ak.karafile AS karafile,
-  ak.duration AS duration,
-  pc.created_at AS added_at,
-  ak.mediasize AS mediasize,
-  ak.download_status AS download_status,
-  COUNT(p.played_at)::integer AS played,
-  COUNT(rq.requested_at)::integer AS requested,
-  (CASE WHEN :dejavu_time < max(p.played_at)
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 16)') AS collections
+FROM (
+	SELECT
+	  ak.tags AS tags,
+	  ak.pk_kid AS kid,
+	  ak.titles AS titles,
+	  ak.titles_aliases AS titles_aliases,
+	  ak.titles_default_language AS titles_default_language,
+	  ak.songorder AS songorder,
+	  ak.subfile AS subfile,
+	  ak.year AS year,
+	  ak.mediafile AS mediafile,
+	  ak.karafile AS karafile,
+	  ak.duration AS duration,
+	  pc.created_at AS added_at,
+	  ak.mediasize AS mediasize,
+	  ak.download_status AS download_status,
+	  COUNT(p.played_at)::integer AS played,
+	  COUNT(rq.requested_at)::integer AS requested,
+	  (CASE WHEN :dejavu_time < max(p.played_at)
+			THEN TRUE
+			ELSE FALSE
+	  END) AS flag_dejavu,
+	  MAX(p.played_at) AS lastplayed_at,
+	  (CASE WHEN f.fk_kid IS NULL
+			THEN FALSE
+			ELSE TRUE
+	  END) as flag_favorites,
+	  pc.nickname AS nickname,
+	  pc.fk_login AS username,
+	  u.avatar_file AS avatar_file,
+	  u.type AS user_type,
+	  pc.pos AS pos,
+	  pc.pk_id_plcontent AS plcid,
+	  (CASE WHEN pl.fk_id_plcontent_playing = pc.pk_id_plcontent
 		THEN TRUE
 		ELSE FALSE
-  END) AS flag_dejavu,
-  MAX(p.played_at) AS lastplayed_at,
-  (CASE WHEN f.fk_kid IS NULL
-		THEN FALSE
-		ELSE TRUE
-  END) as flag_favorites,
-  pc.nickname AS nickname,
-  pc.fk_login AS username,
-  u.avatar_file AS avatar_file,
-  u.type AS user_type,
-  pc.pos AS pos,
-  pc.pk_id_plcontent AS plcid,
-  (CASE WHEN pl.fk_id_plcontent_playing = pc.pk_id_plcontent
-	THEN TRUE
-	ELSE FALSE
-  END) AS flag_playing,
-  (CASE WHEN wl.fk_kid = ak.pk_kid
-	THEN TRUE
-	ELSE FALSE
-  END) AS flag_whitelisted,
-  (CASE WHEN bl.fk_kid = ak.pk_kid
-	THEN TRUE
-	ELSE FALSE
-  END) AS flag_blacklisted,
-  (SELECT COUNT(up.fk_id_plcontent)::integer FROM upvote up WHERE up.fk_id_plcontent = pc.pk_id_plcontent) AS upvotes,
-  (CASE WHEN COUNT(up.*) > 0 THEN TRUE ELSE FALSE END) as flag_upvoted,
-  pc.flag_visible AS flag_visible,
-  pc.flag_free AS flag_free,
-  pc.flag_refused AS flag_refused,
-  pc.flag_accepted AS flag_accepted,
-  COUNT(pc.pk_id_plcontent) OVER()::integer AS count,
-  ak.repository AS repository,
-  array_remove(array_agg(DISTINCT pc_pub.pk_id_plcontent), null) AS public_plc_id,
-  array_remove(array_agg(DISTINCT pc_self.pk_id_plcontent), null) AS my_public_plc_id,
-  pc.criterias
-FROM all_karas AS ak
-LEFT OUTER JOIN kara k ON k.pk_kid = ak.pk_kid
-INNER JOIN playlist_content AS pc ON pc.fk_kid = ak.pk_kid
-LEFT OUTER JOIN users AS u ON u.pk_login = pc.fk_login
-LEFT OUTER JOIN playlist_content AS bl ON ak.pk_kid = bl.fk_kid AND bl.fk_id_playlist = :blacklist_plaid
-LEFT OUTER JOIN playlist_content AS wl ON ak.pk_kid = wl.fk_kid AND wl.fk_id_playlist = :whitelist_plaid
-LEFT OUTER JOIN upvote up ON up.fk_id_plcontent = pc.pk_id_plcontent AND up.fk_login = :username
-LEFT OUTER JOIN favorites f ON f.fk_kid = ak.pk_kid AND f.fk_login = :username
-LEFT OUTER JOIN played AS p ON p.fk_kid = ak.pk_kid
-LEFT OUTER JOIN requested AS rq ON rq.fk_kid = ak.pk_kid
-LEFT OUTER JOIN playlist AS pl ON pl.pk_id_playlist = pc.fk_id_playlist
-LEFT OUTER JOIN playlist_content AS pc_pub ON pc_pub.fk_kid = pc.fk_kid AND pc_pub.fk_id_playlist = :public_plaid
-LEFT OUTER JOIN playlist_content AS pc_self on pc_self.fk_kid = pc.fk_kid AND pc_self.fk_id_playlist = :public_plaid AND pc_self.fk_login = :username
-${additionalFrom}
-WHERE pc.fk_id_playlist = :plaid
-  ${filterClauses.map(clause => `AND (${clause})`).join(' ')}
-  ${whereClause}
-GROUP BY pl.fk_id_plcontent_playing, ak.pk_kid, ak.titles, ak.titles_aliases, ak.titles_default_language, ak.songorder, ak.tags, ak.subfile, ak.year, ak.mediafile, ak.karafile, ak.duration, ak.mediasize, pc.created_at, pc.nickname, ak.download_status, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, u.type, ak.repository, pc.criterias
-ORDER BY ${orderClause}
-${limitClause}
-${offsetClause}
+	  END) AS flag_playing,
+	  (CASE WHEN wl.fk_kid = ak.pk_kid
+		THEN TRUE
+		ELSE FALSE
+	  END) AS flag_whitelisted,
+	  (CASE WHEN bl.fk_kid = ak.pk_kid
+		THEN TRUE
+		ELSE FALSE
+	  END) AS flag_blacklisted,
+	  (SELECT COUNT(up.fk_id_plcontent)::integer FROM upvote up WHERE up.fk_id_plcontent = pc.pk_id_plcontent) AS upvotes,
+	  (CASE WHEN COUNT(up.*) > 0 THEN TRUE ELSE FALSE END) as flag_upvoted,
+	  pc.flag_visible AS flag_visible,
+	  pc.flag_free AS flag_free,
+	  pc.flag_refused AS flag_refused,
+	  pc.flag_accepted AS flag_accepted,
+	  COUNT(pc.pk_id_plcontent) OVER()::integer AS count,
+	  ak.repository AS repository,
+	  array_remove(array_agg(DISTINCT pc_pub.pk_id_plcontent), null) AS public_plc_id,
+	  array_remove(array_agg(DISTINCT pc_self.pk_id_plcontent), null) AS my_public_plc_id,
+	  pc.criterias
+	FROM all_karas AS ak
+	LEFT OUTER JOIN kara k ON k.pk_kid = ak.pk_kid
+	INNER JOIN playlist_content AS pc ON pc.fk_kid = ak.pk_kid
+	LEFT OUTER JOIN users AS u ON u.pk_login = pc.fk_login
+	LEFT OUTER JOIN playlist_content AS bl ON ak.pk_kid = bl.fk_kid AND bl.fk_id_playlist = :blacklist_plaid
+	LEFT OUTER JOIN playlist_content AS wl ON ak.pk_kid = wl.fk_kid AND wl.fk_id_playlist = :whitelist_plaid
+	LEFT OUTER JOIN upvote up ON up.fk_id_plcontent = pc.pk_id_plcontent AND up.fk_login = :username
+	LEFT OUTER JOIN favorites f ON f.fk_kid = ak.pk_kid AND f.fk_login = :username
+	LEFT OUTER JOIN played AS p ON p.fk_kid = ak.pk_kid
+	LEFT OUTER JOIN requested AS rq ON rq.fk_kid = ak.pk_kid
+	LEFT OUTER JOIN playlist AS pl ON pl.pk_id_playlist = pc.fk_id_playlist
+	LEFT OUTER JOIN playlist_content AS pc_pub ON pc_pub.fk_kid = pc.fk_kid AND pc_pub.fk_id_playlist = :public_plaid
+	LEFT OUTER JOIN playlist_content AS pc_self on pc_self.fk_kid = pc.fk_kid AND pc_self.fk_id_playlist = :public_plaid AND pc_self.fk_login = :username
+	${additionalFrom}
+	WHERE pc.fk_id_playlist = :plaid
+	${filterClauses.map(clause => `AND (${clause})`).join(' ')}
+	${whereClause}
+	GROUP BY pl.fk_id_plcontent_playing, ak.pk_kid, ak.titles, ak.titles_aliases, ak.titles_default_language, ak.songorder, ak.tags, ak.subfile, ak.year, ak.mediafile, ak.karafile, ak.duration, ak.mediasize, pc.created_at, pc.nickname, ak.download_status, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, u.type, ak.repository, pc.criterias
+	ORDER BY ${orderClause}
+	${limitClause}
+	${offsetClause}
+) p
 `;
 
 export const sqlgetPlaylistContentsMini = `
