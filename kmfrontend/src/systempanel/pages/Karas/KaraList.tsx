@@ -386,7 +386,7 @@ class KaraList extends Component<unknown, KaraListState> {
 							<Button type="primary" icon={<EditOutlined />} title={i18next.t('KARA.EDIT_KARA')} />
 						</Link>
 					);
-					const lyricsButton: JSX.Element = (
+					let lyricsButton: JSX.Element = (
 						<Button
 							type="primary"
 							icon={<FontColorsOutlined />}
