@@ -830,7 +830,7 @@ class Players {
 			await Promise.all(loads);
 		} catch (err) {
 			logger.error('mpvAPI (send)', { service, obj: err });
-			sentry.addErrorInfo('mpvLog', (await getMpvLog()).join('\n'));
+			sentry.addErrorInfo('mpvLog', (await getMpvLog())?.join('\n'));
 			throw new Error(JSON.stringify(err));
 		}
 	}
