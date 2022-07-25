@@ -153,13 +153,18 @@ export function formatKaraList(karaList: any, from: number, count: number): Kara
 	};
 }
 
-/** Returns a string with series or singers with their correct i18n. */
+/** Returns a string with series or singers with their correct i18n.
+ * If series, only first one is returned
+ * If singers only, only first two singers are returned with a "..." string added if there are more
+ */
 export function getSongSeriesSingers(kara: DBKara): string {
 	const langs = [getConfig().Player.Display.SongInfoLanguage, convert1LangTo2B(getState().defaultLocale), 'eng'];
 	if (kara.series?.length > 0) {
 		return getTagNameInLanguage(kara.series[0], langs);
 	}
-	return kara.singers.map(s => getTagNameInLanguage(s, langs)).join(', ');
+	const result = kara.singers.map(s => getTagNameInLanguage(s, langs)).slice(0, 2);
+	if (kara.singers.length > 2) result.push('...');
+	return result.join(', ');
 }
 
 /** Get kara's default title */
