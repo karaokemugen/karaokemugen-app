@@ -1,7 +1,6 @@
-import { app, BrowserWindow, dialog, ipcMain, Menu, protocol } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, Menu, protocol, shell } from 'electron';
 import { promises as fs } from 'fs';
 import i18next from 'i18next';
-import open from 'open';
 import { resolve } from 'path';
 
 import { exit, welcomeToYoukousoKaraokeMugen } from '../components/engine';
@@ -175,7 +174,7 @@ async function registerIPCEvents() {
 	});
 	ipcMain.on('openFolder', (_event, eventData) => {
 		if (eventData.type === 'streamFiles') {
-			open(resolve(resolvedPath('StreamFiles')));
+			shell.openPath(resolve(resolvedPath('StreamFiles')));
 		}
 	});
 }
@@ -328,7 +327,7 @@ async function createWindow() {
 }
 
 function openLink(url: string) {
-	url.indexOf('//localhost') !== -1 ? win?.loadURL(url) : open(url);
+	url.indexOf('//localhost') !== -1 ? win?.loadURL(url) : shell.openPath(url);
 }
 
 export function setProgressBar(number: number) {

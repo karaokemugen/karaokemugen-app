@@ -1,5 +1,5 @@
 // Node modules
-import { app } from 'electron';
+import { app, shell } from 'electron';
 import { execa } from 'execa';
 import i18next from 'i18next';
 import internetAvailable from 'internet-available';
@@ -383,6 +383,6 @@ export async function welcomeToYoukousoKaraokeMugen(): Promise<string> {
 		const adminPassword = await generateAdminPassword();
 		url = `http://localhost:${conf.System.FrontendPort}/setup?admpwd=${adminPassword}`;
 	}
-	if (!state.opt.noBrowser && !state.isTest && state.opt.cli) open(url);
+	if (!state.opt.noBrowser && !state.isTest && state.opt.cli) shell.openPath(url);
 	return url;
 }

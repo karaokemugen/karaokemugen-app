@@ -1,6 +1,5 @@
-import { app, dialog } from 'electron';
+import { app, dialog, shell } from 'electron';
 import i18next from 'i18next';
-import open from 'open';
 import { resolve } from 'path';
 import Postgrator from 'postgrator';
 import { v4 as uuidV4 } from 'uuid';
@@ -119,7 +118,7 @@ export async function initDBSystem(): Promise<Postgrator.Migration[]> {
 				buttons: [i18next.t('DATABASE_CONNECTION_ERROR.HELP'), 'OK'],
 			});
 			if (res.response === 0) {
-				open(
+				shell.openPath(
 					'https://discourse.karaokes.moe/t/error-database-initialization-failed-unable-to-connect-to-the-database/25'
 				);
 			}
