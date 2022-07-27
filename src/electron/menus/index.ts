@@ -1,6 +1,5 @@
-import { dialog } from 'electron';
+import { dialog, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
-import open from 'open';
 
 import { getConfig } from '../../lib/utils/config';
 import logger from '../../lib/utils/logger';
@@ -19,20 +18,20 @@ export const urls = {
 	download: () => openURL('/system/karas/download'),
 	karas: () => openURL('/system/karas'),
 	database: () => openURL('/system/db'),
-	helpGuide: () => open('https://docs.karaokes.moe/user-guide/getting-started/'),
-	website: () => open('https://karaokes.moe'),
-	twitter: () => open('https://twitter.com/KaraokeMugen'),
-	discord: () => open('https://karaokes.moe/discord'),
-	forum: () => open('https://discourse.karaokes.moe'),
-	gitlab: () => open('https://gitlab.com/karaokemugen/karaokemugen-app'),
-	changelog: () => open('https://gitlab.com/karaokemugen/karaokemugen-app/-/releases'),
-	contribDoc: () => open('https://docs.karaokes.moe/contrib-guide/base/'),
-	sendKaraoke: () => open('https://kara.moe/base/import'),
-	reportBug: () => open('https://discourse.karaokes.moe/c/help/8'),
-	translations: () => open('https://hosted.weblate.org/projects/karaoke-mugen/'),
+	helpGuide: () => shell.openPath('https://docs.karaokes.moe/user-guide/getting-started/'),
+	website: () => shell.openPath('https://karaokes.moe'),
+	twitter: () => shell.openPath('https://twitter.com/KaraokeMugen'),
+	discord: () => shell.openPath('https://karaokes.moe/discord'),
+	forum: () => shell.openPath('https://discourse.karaokes.moe'),
+	gitlab: () => shell.openPath('https://gitlab.com/karaokemugen/karaokemugen-app'),
+	changelog: () => shell.openPath('https://gitlab.com/karaokemugen/karaokemugen-app/-/releases'),
+	contribDoc: () => shell.openPath('https://docs.karaokes.moe/contrib-guide/base/'),
+	sendKaraoke: () => shell.openPath('https://kara.moe/base/import'),
+	reportBug: () => shell.openPath('https://discourse.karaokes.moe/c/help/8'),
+	translations: () => shell.openPath('https://hosted.weblate.org/projects/karaoke-mugen/'),
 	donations: {
-		fr: () => open('https://mugen.karaokes.moe/donations.html'),
-		en: () => open('https://mugen.karaokes.moe/en/donations.html'),
+		fr: () => shell.openPath('https://mugen.karaokes.moe/donations.html'),
+		en: () => shell.openPath('https://mugen.karaokes.moe/en/donations.html'),
 	},
 };
 
