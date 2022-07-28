@@ -298,6 +298,7 @@ export function truncateCriterias(plaid: string) {
 	return db().query(sqldeleteCriteriaForPlaylist, [plaid]);
 }
 
+/** I'm adding this to the list of cursed KM functions. */
 export async function selectKarasFromCriterias(
 	plaid: string,
 	smartPlaylistType: SmartPlaylistType
@@ -368,11 +369,13 @@ export async function selectKarasFromCriterias(
 		sql =
 			queryArr.length > 0
 				? `(${queryArr.join(`) ${smartPlaylistType} (`)})${
-						uniqueKIDsSQL === '' ? '' : ` UNION ${uniqueKIDsSQL}`
+						uniqueKIDsSQL === ''
+							? ''
+							: ` UNION (SELECT type_1001_1.kid, type_1001_1.duration, type_1001_1.created_at FROM (${uniqueKIDsSQL}) type_1001_1)`
 				  }`
 				: uniqueKIDsSQL;
 	}
-	logger.debug(`SQL for Smart playlist: "${sql}" with params ${params}`, { service, obj: { sql, params } });
+	logger.debug(`SQL for Smart playlist: "${sql}" with params ${params}`, { service });
 	const res = await db().query(sql, params);
 	// When INTERSECT, we add all criterias to the songs.
 	if (smartPlaylistType === 'INTERSECT') {
