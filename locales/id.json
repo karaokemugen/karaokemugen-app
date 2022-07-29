@@ -128,8 +128,7 @@
 			"Ketika kamu melakukan pencarian, kamu bisa mengetik \"-kata\" untuk mengecualikan lagu karaoke yang mengandung kata tersebut (entah kata itu didalam judul, serial, penyanyi, dll.) dari hasil pencarianmu.",
 			"Kamu dapat menerima atau menolak lagu pada daftar putar publik. Untuk melakukannya, tampilkan publik dan daftar putar saat ini secara berdampingan.",
 			"Menerima saran lagu publik akan mengembalikan kuota lagu kepada pengguna yang meminta lagu dimainkan, dan menambahkan lagu ke daftar putar saat ini!",
-			"Menolak saran lagu publik akan mengembalikan kuota lagu kepada pengguna yang meminta lagu dimainkan, dan menahan lagu di daftar putar publik sehingga lagu tersebut tidak dapat diminta mainkan lagi!",
-			"Ketika kamu melakukan pencarian, kamu dapat memasukan serangkaian kata dalam petik dua untuk mencari lagu persis dengan kata tersebut. Ketik\"love live\" untuk mendapatkan lagu karaoke hanya dari seri Love Live."
+			"Menolak saran lagu publik akan mengembalikan kuota lagu kepada pengguna yang meminta lagu dimainkan, dan menahan lagu di daftar putar publik sehingga lagu tersebut tidak dapat diminta mainkan lagi!"
 		],
 		"ERRORS": [
 			"Kunjungi kami di Discord jika kamu butuh bantuan: https://karaokes.moe/discord",
