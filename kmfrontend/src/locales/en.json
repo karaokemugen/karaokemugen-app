@@ -56,7 +56,8 @@
 	"PLAYLIST_HEADER": {
 		"FILTERS": "Filters",
 		"ACTIVE_FILTER": "Active filter",
-		"EDIT_CRITERIAS": "Edit criterias"
+		"EDIT_CRITERIA": "Edit criteria",
+		"SHOW_SONGS": "Show songs"
 	},
 	"ADVANCED": {
 		"PLAYLIST_COMMANDS": "Playlist commands",
@@ -165,7 +166,8 @@
 			"TITLE": "The karaoke containing {{title}} in the title are on the list.",
 			"TAG_NAME": "The karaoke with a tag containing {{title}} are on the list."
 		},
-		"EXPL": "The smart playlist is created from <1>the criteria</1>, you can also add manually karaokes to this list."
+		"EXPL": "The smart playlist is created from <1>the criteria</1>, you can also add manually karaokes to this list.",
+		"EXPL_OPEN": "This is the criteria used to generate <1>the playlist</1>, it will be refreshed automatically whenever new songs are added to the database."
 	},
 	"PUBLIC_HOMEPAGE": {
 		"RESTRICTED_DESCRIPTION": "Karaoke is in restricted mode, you can't add songs.",
