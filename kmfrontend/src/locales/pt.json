@@ -41,7 +41,7 @@
 	"PLAYLIST_HEADER": {
 		"FILTERS": "Filtros",
 		"ACTIVE_FILTER": "Filtro activo",
-		"EDIT_CRITERIAS": "Editar critérios"
+		"EDIT_CRITERIA": "Editar critérios"
 	},
 	"ADVANCED": {
 		"ADD_ALL": "Adicionar todas as músicas à outra lista",

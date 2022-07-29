@@ -87,7 +87,7 @@
 	"PLAYLIST_HEADER": {
 		"FILTERS": "Filter",
 		"ACTIVE_FILTER": "Aktive Filter",
-		"EDIT_CRITERIAS": "Kriterien bearbeiten"
+		"EDIT_CRITERIA": "Kriterien bearbeiten"
 	},
 	"ADVANCED": {
 		"PLAYLIST_COMMANDS": "Playlist Befehle",

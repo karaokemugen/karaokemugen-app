@@ -63,7 +63,8 @@
 	"PLAYLIST_HEADER": {
 		"FILTERS": "Filtres",
 		"ACTIVE_FILTER": "Filtre actif",
-		"EDIT_CRITERIAS": "Editer les critères"
+		"EDIT_CRITERIA": "Éditer les critères",
+		"SHOW_SONGS": "Afficher les chansons"
 	},
 	"ADVANCED": {
 		"PLAYLIST_COMMANDS": "Commandes de liste de lecture",
@@ -170,7 +171,8 @@
 			"LONGER": "Les karaokés de plus de {{time}} secondes sont dans la liste.",
 			"SHORTER": "Les karaokés de moins de {{time}} secondes sont dans la liste."
 		},
-		"EXPL": "La liste intelligente est créée à partir des <1>critères</1>, vous pouvez également en ajouter manuellement à cette liste."
+		"EXPL": "La liste intelligente est créée à partir des <1>critères</1>, vous pouvez également en ajouter manuellement à cette liste.",
+		"EXPL_OPEN": "Voici les critères utilisés pour créer la <1>liste</1>, celle-ci sera mise à jour dès que de nouvelles chansons sont ajoutées."
 	},
 	"MESSAGE": "Passer un message au public",
 	"LOG_SUCCESS": "Connecté en tant que {{name}}",

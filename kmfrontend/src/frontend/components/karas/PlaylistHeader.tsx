@@ -350,12 +350,15 @@ function PlaylistHeader(props: IProps) {
 							<button
 								type="button"
 								title={i18next.t(
-									props.criteriasOpen ? 'BACK_PLAYLISTS' : 'PLAYLIST_HEADER.EDIT_CRITERIAS'
+									props.criteriasOpen ? 'PLAYLIST_HEADER.SHOW_SONGS' : 'PLAYLIST_HEADER.EDIT_CRITERIA'
 								)}
-								className={'btn btn-default'}
+								className={'btn btn-default' + (props.criteriasOpen ? ' btn-primary' : '')}
 								onClick={props.openCloseCriterias}
 							>
 								<i className={`fas fa-fw ${props.criteriasOpen ? 'fa-list-ul' : 'fa-sliders-h'}`} />
+								{i18next.t(
+									props.criteriasOpen ? 'PLAYLIST_HEADER.SHOW_SONGS' : 'PLAYLIST_HEADER.EDIT_CRITERIA'
+								)}
 							</button>
 						) : null}
 					</div>
@@ -370,6 +373,7 @@ function PlaylistHeader(props: IProps) {
 								: context.globalState.frontendContext.filterValue2
 						}
 						onChange={changeFilterValue}
+						disabled={props.criteriasOpen}
 					/>
 				</div>
 				{plCommandsContainer}
@@ -418,14 +422,24 @@ function PlaylistHeader(props: IProps) {
 					</a>
 				</p>
 			) : null}
-			{playlist?.flag_smart && !props.criteriasOpen ? (
-				<p className="playlist-tooltip">
-					<Trans
-						i18nKey="CRITERIA.EXPL"
-						components={{ 1: <a href="#" onClick={() => props.openCloseCriterias()} /> }}
-						defaults=""
-					/>
-				</p>
+			{playlist?.flag_smart ? (
+				!props.criteriasOpen ? (
+					<p className="playlist-tooltip">
+						<Trans
+							i18nKey="CRITERIA.EXPL"
+							components={{ 1: <a href="#" onClick={() => props.openCloseCriterias()} /> }}
+							defaults=""
+						/>
+					</p>
+				) : (
+					<p className="playlist-tooltip">
+						<Trans
+							i18nKey="CRITERIA.EXPL_OPEN"
+							components={{ 1: <a href="#" onClick={() => props.openCloseCriterias()} /> }}
+							defaults=""
+						/>
+					</p>
+				)
 			) : null}
 		</>
 	);
