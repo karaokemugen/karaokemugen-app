@@ -150,11 +150,10 @@
 			"Le mode Karaoké classique reproduit ce que l'on trouve dans les kiosques de karaoké japonais ou lors des concours de karaoké dans les évènements d'anime : une pause est faite entre chaque chanson et le titre et le demandeur de la prochaine chanson sont affichés à l'écran !",
 			"Le mode Karaoké Classique permet de simuler un box karaoké japonais ou un concours de karaoké en convention : une pause avec affichage de la piste suivante aura lieu entre chaque chanson.",
 			"Vous avez besoin d'envoyer un message à votre public ? L'option message permettra d'afficher un texte sur leurs appareils mobiles ou sur l'écran du karaoké !",
-			"Lorsque vous effectuez une recherche, vous pouvez taper « -mot » pour exclure de vos résultats les karaokés contenant ce mot (qu'il soit dans la tuile, la série, les chanteurs, etc.).",
-			"Dans la recherche, vous pouvez taper \"-mot\" pour exclure les karaokés contenant ce mot (que ce soit dans le titre, la série, les chanteurs, etc.) de vos résultats de recherche.",
+			"Dans la recherche, vous pouvez taper \"-mot\" pour exclure les karaokés contenant ce mot (que ce soit dans le titre, l'œuvre, les chanteurs, etc.) de vos résultats de recherche.",
 			"Accepter une suggestion publique redonne le quota de chanson à l'utilisateur qui l'a demandée, et ajoute la chanson dans la liste de lecture actuelle !",
 			"Accepter une suggestion du public redonne du quota à la personne qui a demandé, et ajoute la chanson dans la liste courante si celle-ci est en face !",
-			"Lorsque vous effectuez une recherche, vous pouvez mettre un groupe de mots entre guillemets pour demander précisément ce texte. Tapez \"love live\" pour obtenir uniquement les karaokés de la série Love Live."
+			"Lorsque vous effectuez une recherche, vous pouvez mettre un groupe de mots entre guillemets pour demander précisément ce texte. Tapez \"love live\" pour obtenir uniquement les karaokés de l'œuvre Love Live."
 		],
 		"ERRORS": [
 			"N'hésitez pas à venir nous voir sur Discord si vous avez besoin d'aide : https://karaokes.moe/discord",
