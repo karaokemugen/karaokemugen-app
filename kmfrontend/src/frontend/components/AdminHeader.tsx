@@ -522,7 +522,7 @@ function AdminHeader(props: IProps) {
 						<li>
 							<a href="/welcome">
 								<i className="fas fa-fw fa-home" />
-								&nbsp;{i18next.t('CHANGE_INTERFACE')}
+								&nbsp;{i18next.t('HOME_BUTTON')}
 							</a>
 						</li>
 						{props.powerOff ? (
