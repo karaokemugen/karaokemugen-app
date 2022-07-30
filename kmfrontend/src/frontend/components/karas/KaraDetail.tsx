@@ -20,7 +20,7 @@ import {
 	getPreviewLink,
 	getTitleInLocale,
 } from '../../../utils/kara';
-import { commandBackend } from '../../../utils/socket';
+import { commandBackend, getSocket } from '../../../utils/socket';
 import { YEARS } from '../../../utils/tagTypes';
 import { is_touch_device, secondsTimeSpanToHMS } from '../../../utils/tools';
 import MakeFavButton from '../generic/buttons/MakeFavButton';
@@ -168,6 +168,22 @@ export default function KaraDetail(props: IProps) {
 			getKaraDetail();
 		}
 	}, [plc_id]);
+
+	useEffect(() => {
+		const refreshKaras = updated => {
+			for (const k of updated) {
+				if (id === k.kid) {
+					getKaraDetail();
+					break;
+				}
+			}
+		};
+
+		getSocket().on('KIDUpdated', refreshKaras);
+		return () => {
+			getSocket().off('KIDUpdated', refreshKaras);
+		};
+	}, [id]);
 
 	const karoulette_submit = (accepted: boolean) => {
 		setPending(true);
