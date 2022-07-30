@@ -10,7 +10,7 @@ import { setSettings } from '../../../store/actions/settings';
 import GlobalContext from '../../../store/context';
 import { useTagSearch } from '../../../utils/hooks';
 import { buildKaraTitle } from '../../../utils/kara';
-import { commandBackend } from '../../../utils/socket';
+import { commandBackend, getSocket } from '../../../utils/socket';
 import { getTagTypeName, tagTypes, YEARS } from '../../../utils/tagTypes';
 import { hmsToSecondsOnly, secondsTimeSpanToHMS } from '../../../utils/tools';
 import Autocomplete from '../generic/Autocomplete';
@@ -113,8 +113,16 @@ function CriteriasList(props: IProps) {
 		setSettings(context.globalDispatch);
 	};
 
+	const playlistContentsUpdated = (idPlaylist: string) => {
+		if (props.playlist.plaid === idPlaylist) getCriterias();
+	};
+
 	useEffect(() => {
+		getSocket().on('playlistContentsUpdated', playlistContentsUpdated);
 		getCriterias();
+		return () => {
+			getSocket().off('playlistContentsUpdated', playlistContentsUpdated);
+		};
 	}, []);
 
 	const types: number[] = [];
