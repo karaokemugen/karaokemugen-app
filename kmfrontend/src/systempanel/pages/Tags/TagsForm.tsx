@@ -1,5 +1,18 @@
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { Alert, Button, Cascader, Checkbox, Divider, Form, Input, InputNumber, message, Select, Tooltip } from 'antd';
+import {
+	Alert,
+	Button,
+	Cascader,
+	Checkbox,
+	Collapse,
+	Divider,
+	Form,
+	Input,
+	InputNumber,
+	message,
+	Select,
+	Tooltip,
+} from 'antd';
 import { FormInstance } from 'antd/lib/form';
 import i18next from 'i18next';
 import { Component, createRef } from 'react';
@@ -8,6 +21,7 @@ import { Tag } from '../../../../../src/lib/types/tag';
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 import EditableGroupAlias from '../../components/EditableGroupAlias';
+import KaraList from '../../components/KaraList';
 import LanguagesList from '../../components/LanguagesList';
 
 interface TagsFormProps {
@@ -106,6 +120,14 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 
 	mergeCascaderFilter = function (inputValue, path) {
 		return path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1);
+	};
+
+	buildTagFilter = () => {
+		const tagArray = [];
+		for (const type of this.props.tag.types) {
+			tagArray.push(`${this.props.tag.tid}~${type}`);
+		}
+		return `t:${tagArray.join(',')}`;
 	};
 
 	render() {
@@ -322,6 +344,13 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 						{i18next.t('SUBMIT')}
 					</Button>
 				</Form.Item>
+				{this.props.tag?.tid && (
+					<Collapse>
+						<Collapse.Panel header={i18next.t('TAGS.KARAOKES_WITH_TAGS')} key="1">
+							<KaraList tagFilter={this.buildTagFilter()} tagFilterType={'OR'} />
+						</Collapse.Panel>
+					</Collapse>
+				)}
 				{this.props.tag ? (
 					<>
 						<Divider />

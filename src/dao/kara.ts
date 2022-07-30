@@ -179,6 +179,7 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	}
 	const query = sqlgetAllKaras(
 		yesqlPayload.sql,
+		params.qType || 'AND',
 		whereClauses,
 		groupClause,
 		orderClauses,

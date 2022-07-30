@@ -1013,7 +1013,8 @@
 		"COPY_TAG": "Copy tag to another repository",
 		"DESCRIPTION": "Description",
 		"DESCRIPTION_TOOLTIP": "A description of the tag, used only for collections.",
-		"ADD_DESCRIPTION": "Add a description"
+		"ADD_DESCRIPTION": "Add a description",
+		"KARAOKES_WITH_TAGS": "Karaokes with this tag"
 	},
 	"TAG_TYPES": {
 		"SINGERS_one": "Singer",

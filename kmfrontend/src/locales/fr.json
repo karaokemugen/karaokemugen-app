@@ -1015,7 +1015,8 @@
 		"COPY_TAG": "Copier le tag vers un autre dépôt",
 		"DESCRIPTION": "Description",
 		"DESCRIPTION_TOOLTIP": "Une description du tag, utilisé uniquement pour les collections.",
-		"ADD_DESCRIPTION": "Ajouter une description"
+		"ADD_DESCRIPTION": "Ajouter une description",
+		"KARAOKES_WITH_TAGS": "Karaokés ayant ce tag"
 	},
 	"TAG_TYPES": {
 		"SINGERS_one": "Chanteur",
