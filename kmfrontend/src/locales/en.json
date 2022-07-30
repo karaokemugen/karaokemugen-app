@@ -24,7 +24,7 @@
 	"VERSION": "Version",
 	"SHUTDOWN": "Shutdown Karaoke Mugen",
 	"SHUTDOWN_POPUP": "Connection with Karaoke Mugen lost",
-	"CHANGE_INTERFACE": "Change interface",
+	"HOME_BUTTON": "Home",
 	"MUTE_UNMUTE": "Mute/unmute",
 	"SHOW_SUBS": "Show lyrics on screen",
 	"HIDE_SUBS": "Hide lyrics on screen",
