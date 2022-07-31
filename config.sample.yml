@@ -197,7 +197,7 @@ Playlist:
     # List of mystery songs labels
     Labels:
       - ???
-      - Chanson mystère !
+      - Mystery song!
 System:
   # Port to listen to
   FrontendPort: 1337
