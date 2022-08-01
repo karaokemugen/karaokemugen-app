@@ -662,9 +662,9 @@ export async function newGitRepo(repo: Repository) {
 	await stopWatchingHooks();
 	await remove(baseDir);
 	await asyncCheckOrMkdir(baseDir);
-	const git = await setupGit(repo, true, true);
+	const git = await setupGit(repo, false, true);
 	await git.clone();
-	git.setRemote().catch();
+	git.setup(true);
 	if (repo.AutoMediaDownloads === 'all') {
 		updateMedias(repo.Name).catch(e => {
 			if (e?.code === 409) {
