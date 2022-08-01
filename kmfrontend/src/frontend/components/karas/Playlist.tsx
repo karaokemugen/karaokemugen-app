@@ -805,56 +805,64 @@ function Playlist(props: IProps) {
 	};
 
 	const deleteCriteria = (kara: KaraElement) => {
-		const criteria = kara.criterias[0];
-		let typeLabel;
-		if (criteria.type === 0) {
-			typeLabel = i18next.t('DETAILS.YEAR');
-		} else if (criteria.type > 1000) {
-			typeLabel = i18next.t(`CRITERIA.CRITERIA_TYPE_${criteria.type}`);
+		if (kara.criterias[0].type === 1001) {
+			removeCriterias(kara);
 		} else {
-			typeLabel = i18next.t(`TAG_TYPES.${getTagTypeName(criteria.type)}_other`);
-		}
-		callModal(
-			context.globalDispatch,
-			'confirm',
-			i18next.t('CL_DELETE_CRITERIAS_PLAYLIST', { type: typeLabel }),
-			<div style={{ maxHeight: '200px' }}>
-				{data.content
-					.filter(
-						e =>
-							e.criterias[0].value === kara.criterias[0].value &&
-							e.criterias[0].type === kara.criterias[0].type
-					)
-					.map(criteria => {
-						return (
-							<div key={kara.kid}>
-								{buildKaraTitle(
-									context.globalState.settings.data,
-									criteria as unknown as KaraElement,
-									true
-								)}
-							</div>
-						);
-					})}
-			</div>,
-			async (confirm: boolean) => {
-				if (confirm) {
-					await commandBackend('removeCriterias', {
-						criterias: [
-							{
-								plaid: getPlaylistInfo(props.side, context)?.plaid,
-								type: kara.criterias[0].type,
-								value: kara.criterias[0].value,
-							},
-						],
-					});
-					if (kara.criterias.length > 1) {
-						kara.criterias = kara.criterias.slice(1);
-						deleteCriteria(kara);
+			const criteria = kara.criterias[0];
+			let typeLabel;
+			if (criteria.type === 0) {
+				typeLabel = i18next.t('DETAILS.YEAR');
+			} else if (criteria.type > 1000) {
+				typeLabel = i18next.t(`CRITERIA.CRITERIA_TYPE_${criteria.type}`);
+			} else {
+				typeLabel = i18next.t(`TAG_TYPES.${getTagTypeName(criteria.type)}_other`);
+			}
+			callModal(
+				context.globalDispatch,
+				'confirm',
+				i18next.t('CL_DELETE_CRITERIAS_PLAYLIST', { type: typeLabel }),
+				<div style={{ maxHeight: '200px' }}>
+					{data.content
+						.filter(
+							e =>
+								e.criterias[0].value === kara.criterias[0].value &&
+								e.criterias[0].type === kara.criterias[0].type
+						)
+						.map(criteria => {
+							return (
+								<div key={kara.kid}>
+									{buildKaraTitle(
+										context.globalState.settings.data,
+										criteria as unknown as KaraElement,
+										true
+									)}
+								</div>
+							);
+						})}
+				</div>,
+				async (confirm: boolean) => {
+					if (confirm) {
+						removeCriterias(kara);
 					}
 				}
-			}
-		);
+			);
+		}
+	};
+
+	const removeCriterias = async (kara: KaraElement) => {
+		await commandBackend('removeCriterias', {
+			criterias: [
+				{
+					plaid: getPlaylistInfo(props.side, context)?.plaid,
+					type: kara.criterias[0].type,
+					value: kara.criterias[0].value,
+				},
+			],
+		});
+		if (kara.criterias.length > 1) {
+			kara.criterias = kara.criterias.slice(1);
+			deleteCriteria(kara);
+		}
 	};
 
 	const sortRow = useCallback(

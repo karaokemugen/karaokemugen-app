@@ -180,7 +180,7 @@ function PublicHeader(props: IProps) {
 							{context?.globalState.auth.data.role === 'admin' ? (
 								<div className="link">
 									<a href="/welcome">
-										<i className="fas fa-fw fa-home" /> {i18next.t('CHANGE_INTERFACE')}
+										<i className="fas fa-fw fa-home" /> {i18next.t('HOME_BUTTON')}
 									</a>
 								</div>
 							) : null}

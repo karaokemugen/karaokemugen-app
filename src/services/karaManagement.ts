@@ -1,6 +1,6 @@
+import { shell } from 'electron';
 import { promises as fs } from 'fs';
 import { copy } from 'fs-extra';
-import open from 'open';
 import { basename, extname, resolve } from 'path';
 
 import { getStoreChecksum, removeKaraInStore } from '../dao/dataStore';
@@ -349,7 +349,7 @@ ${!mediafile.match(audioFileRegexp) ? `Video File: ${mediaPath}` : ''}
 				}
 			}
 		}
-		await open(lyricsPath);
+		await shell.openPath(lyricsPath);
 	} catch (err) {
 		throw err;
 	}

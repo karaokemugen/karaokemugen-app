@@ -1,7 +1,6 @@
-import { app, BrowserWindow, dialog, ipcMain, Menu, protocol } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, Menu, protocol, shell } from 'electron';
 import { promises as fs } from 'fs';
 import i18next from 'i18next';
-import open from 'open';
 import { resolve } from 'path';
 
 import { exit, welcomeToYoukousoKaraokeMugen } from '../components/engine';
@@ -12,8 +11,6 @@ import logger from '../lib/utils/logger';
 import { testJSON } from '../lib/utils/validators';
 import { emitWS } from '../lib/utils/ws';
 import { importFavorites } from '../services/favorites';
-import { isAllKaras } from '../services/kara';
-import { playSingleSong } from '../services/karaEngine';
 import { importPlaylist, playlistImported } from '../services/playlist';
 import { addRepo, getRepo } from '../services/repo';
 import { generateAdminPassword } from '../services/user';
@@ -177,7 +174,7 @@ async function registerIPCEvents() {
 	});
 	ipcMain.on('openFolder', (_event, eventData) => {
 		if (eventData.type === 'streamFiles') {
-			open(resolve(resolvedPath('StreamFiles')));
+			shell.openPath(resolve(resolvedPath('StreamFiles')));
 		}
 	});
 }
@@ -260,12 +257,6 @@ export async function handleFile(file: string, username?: string, onlineToken?: 
 					emitWS('favoritesUpdated', username);
 				}
 				break;
-			case 'Karaoke Mugen Karaoke Data File':
-				const kara = await isAllKaras([data.data.kid]);
-				if (kara.length > 0) throw 'Song unknown in database';
-				await playSingleSong(data.data.kid);
-				if (win && !win.webContents.getURL().includes('/admin')) win.loadURL(url);
-				break;
 			case 'Karaoke Mugen Playlist File':
 				if (!username) throw 'Unable to find a user to import the file to';
 				const res = await importPlaylist(data, username);
@@ -336,7 +327,7 @@ async function createWindow() {
 }
 
 function openLink(url: string) {
-	getConfig().GUI.OpenInElectron && url.indexOf('//localhost') !== -1 ? win?.loadURL(url) : open(url);
+	url.indexOf('//localhost') !== -1 ? win?.loadURL(url) : shell.openPath(url);
 }
 
 export function setProgressBar(number: number) {

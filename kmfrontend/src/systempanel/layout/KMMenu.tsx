@@ -111,7 +111,7 @@ function KMMenu() {
 				</span>
 			</Menu.Item>
 			<Menu.Item key="change" onClick={() => window.location.assign('/welcome')}>
-				<HomeOutlined /> {i18next.t('CHANGE_INTERFACE')}
+				<HomeOutlined /> {i18next.t('HOME_BUTTON')}
 			</Menu.Item>
 			<Menu.Item key="logout" onClick={() => logout(context.globalDispatch)}>
 				<LogoutOutlined /> {i18next.t('LOGOUT')}

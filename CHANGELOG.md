@@ -1,3 +1,24 @@
+# v6.1.16 - 01/08/2022
+
+## Fixes
+
+-   Fixed confirmation modal appearing when removing a single song from a smart playlist
+-   Fixed criterias not refreshing when adding a single song
+-   Fixed "Add this song to the list" not being greyed out in public interface right after using it.
+-   Fixed tips
+-   Fixed "AND" smart playlists with a single karaoke added not working
+-   Fixed opening URLs (using Electron's shell.openPath)
+-   Fixed mpv's log not going through Sentry when needed
+-   Fixed missing translation for Uploading media error
+-   Fixed bugged moving media label in repo edit page
+
+## Changes
+
+-   Renamed "Change Interface" button to "Home"
+-   Made changing between criterias and list view in smart playlists more clear
+-   Renamed "Série" to "Oeuvre" in french translation
+-   Added log to removeTag to try to understand why the f\*\*\* some tags aren't in database when integrating some songs after an update
+
 # v6.1.15 - 21/07/2022
 
 ## Fixes

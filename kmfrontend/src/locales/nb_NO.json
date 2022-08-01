@@ -60,7 +60,7 @@
 		"AUTOMIX": "Opprett en automiks"
 	},
 	"PLAYLIST_HEADER": {
-		"EDIT_CRITERIAS": "Rediger kriterium",
+		"EDIT_CRITERIA": "Rediger kriterium",
 		"ACTIVE_FILTER": "Aktivt filter",
 		"FILTERS": "Filtre"
 	},
@@ -88,7 +88,7 @@
 	"OPTIONS": "Innstillinger",
 	"HIDE_SUBS": "Skjul sangtekster på skjermen",
 	"SHOW_SUBS": "Vis sangtekster på skjermen",
-	"CHANGE_INTERFACE": "Endre grensesnitt",
+	"HOME_BUTTON": "Endre grensesnitt",
 	"SHUTDOWN_POPUP": "Mistet tilkoblingen til Karaoke Mugen",
 	"SHUTDOWN": "Slå av Karaoke Mugen",
 	"VERSION": "Versjon",

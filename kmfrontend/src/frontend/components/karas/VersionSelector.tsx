@@ -182,7 +182,9 @@ export default function VersionSelector(props: Props) {
 												{context.globalState.auth.data.role === 'guest' ? null : (
 													<MakeFavButton kid={kara.kid} />
 												)}
-												<AddKaraButton kara={kara} />
+												{!kara?.public_plc_id || !kara?.public_plc_id[0] ? (
+													<AddKaraButton kara={kara} />
+												) : null}
 												<ShowVideoButton
 													togglePreview={() => setShowVideo(!showVideo)}
 													preview={showVideo}

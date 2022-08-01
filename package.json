@@ -1,6 +1,6 @@
 {
   "name": "karaokemugen-app",
-  "version": "6.1.15",
+  "version": "6.1.16",
   "versionName": "Quintuplées Qualitatives",
   "description": "Karaoke playlist manager / player",
   "bin": {
@@ -113,7 +113,6 @@
     "logform": "^2.4.1",
     "multer": "^1.4.4",
     "node-id3": "^0.2.3",
-    "open": "^8.4.0",
     "os-locale": "^6.0.2",
     "p-map": "^5.5.0",
     "p-retry": "^5.1.1",

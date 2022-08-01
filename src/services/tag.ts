@@ -298,11 +298,12 @@ export async function removeTag(
 		logger.warn('Failed to remove tag files / tag from kara', { service, obj: err });
 		// Non fatal
 	});
-	for (const tag of tags) {
-		removeTagInStore(tag.tid);
-	}
 	saveSetting('baseChecksum', getStoreChecksum());
 	await deleteTag(tags.map(tag => tag.tid));
+	for (const tag of tags) {
+		removeTagInStore(tag.tid);
+		logger.debug(`Removed tag ${tag.tid} (${tag.name})`, { service });
+	}
 	emitWS('statsRefresh');
 	if (opt.refresh) {
 		if (karasToRemoveTagIn.length > 0) await refreshKarasUpdate(karasToRemoveTagIn.map(k => k.kid));
