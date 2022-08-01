@@ -440,12 +440,12 @@ class Player {
 		// By default, center.
 		let positionX = 50;
 		let positionY = 50;
-		if (conf.Player.PIP.PositionX === 'Left') positionX = 5;
+		if (conf.Player.PIP.PositionX === 'Left') positionX = 1;
 		if (conf.Player.PIP.PositionX === 'Center') positionX = 50;
-		if (conf.Player.PIP.PositionX === 'Right') positionX = -5;
-		if (conf.Player.PIP.PositionY === 'Top') positionY = 5;
+		if (conf.Player.PIP.PositionX === 'Right') positionX = -1;
+		if (conf.Player.PIP.PositionY === 'Top') positionY = 1;
 		if (conf.Player.PIP.PositionY === 'Center') positionY = 50;
-		if (conf.Player.PIP.PositionY === 'Bottom') positionY = -5;
+		if (conf.Player.PIP.PositionY === 'Bottom') positionY = -1;
 		if (options.monitor) {
 			if (positionX >= 0) positionX += 10;
 			else positionX -= 10;
