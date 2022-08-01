@@ -1232,7 +1232,10 @@ export async function pushCommits(repoName: string, push: Push, ignoreFTP?: bool
 			for (const commit of push.commits) {
 				if (commit.addedFiles) {
 					for (const addedFile of commit.addedFiles) {
-						await git.add(addedFile);
+						await git.add(addedFile).catch(err => {
+							logger.error(`Failed to add file ${addedFile} : ${err}`, { service });
+							throw err;
+						});
 					}
 				}
 				if (commit.removedFiles) {
