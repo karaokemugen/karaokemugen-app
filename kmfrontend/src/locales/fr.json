@@ -981,7 +981,7 @@
 		"NAME_REQUIRED": "Entrez un nom",
 		"NAME_TOOLTIP": "Ceci est le nom interne utilisé pour référencer les tags dans la base de données de Karaoke Mugen",
 		"SHORT_NAME": "Nom court",
-		"SHORT_NAME_TOOLTIP": "Ceci est le nom court utilisé pour référencer les tags dans la base de données de Karaoke Mugen",
+		"SHORT_NAME_TOOLTIP": "Ceci est le nom court utilisé pour afficher le tag à côté des karaokés dans l'interface opérateur",
 		"KARAFILETAG": "Etiquette optionnelle du fichier karaoké",
 		"KARAFILETAG_TOOLTIP": "Ceci sera ajouté à la section type des noms de fichiers des chansons",
 		"TYPES": "Types du tag",
