@@ -276,6 +276,7 @@ WITH playing_pos AS (
    )
 SELECT
   ak.pk_kid AS kid,
+  ak.tags AS tags,
   ak.titles AS titles,
   ak.titles_aliases AS titles_aliases,
   ak.titles_default_language AS titles_default_language,
