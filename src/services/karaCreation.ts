@@ -81,7 +81,6 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 			await smartMove(mediaPath, mediaDest, { overwrite: true });
 		} else if (oldKara.mediafile !== filenames.mediafile && oldMediaPath) {
 			// Check if media name has changed BECAUSE WE'RE NOT USING UUIDS AS FILENAMES GRRRR.
-			kara.medias[0].filename = filenames.mediafile;
 			try {
 				await smartMove(oldMediaPath, mediaDest);
 			} catch (err) {
@@ -89,6 +88,7 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 				throw { code: 409, msg: 'KARA_EDIT_ERROR_UNMOVABLE_MEDIA' };
 			}
 		}
+		kara.medias[0].filename = filenames.mediafile;
 		if (editedKara.modifiedLyrics) {
 			if (kara.medias[0].lyrics[0]) {
 				const subPath = resolve(resolvedPath('Temp'), kara.medias[0].lyrics[0].filename);
