@@ -28,7 +28,7 @@ import { getState } from '../utils/state';
 import { checkMediaAndDownload } from './download';
 import { getKara, getKaras } from './kara';
 import { editKara } from './karaCreation';
-import { getRepo, getRepos } from './repo';
+import { checkDownloadStatus, getRepo, getRepos } from './repo';
 import { updateAllSmartPlaylists } from './smartPlaylist';
 import { getTag } from './tag';
 
@@ -36,7 +36,7 @@ const service = 'KaraManager';
 
 export async function createKaraInDB(kara: KaraFileV4, opts = { refresh: true }) {
 	const oldData = await insertKara(kara);
-	await Promise.all([updateKaraParents(kara.data), updateTags(kara.data)]);
+	await Promise.all([updateKaraParents(kara.data), updateTags(kara.data), checkDownloadStatus([kara.data.kid])]);
 	if (opts.refresh) {
 		if (!oldData.old_modified_at) {
 			await refreshKarasAfterDBChange('ADD', [kara.data]);
