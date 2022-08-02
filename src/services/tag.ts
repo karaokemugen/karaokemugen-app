@@ -146,7 +146,6 @@ export async function mergeTags(tid1: string, tid2: string) {
 		const newTagFiles = resolve(resolvedPathRepos('Tags', tagObj.repository)[0], tagObj.tagfile);
 		await addTagToStore(newTagFiles);
 		sortTagsStore();
-		await updateKaraTagsTID(tid1, tagObj.tid);
 		// We're not asyncing these because after the first one passes, if the new TID already has the same songs registered in the kara_tag table, it'll break the unique constraint on the table and destroy the universe.
 		// So we don't do that.
 		// The query updates only rows where KIDs aren't already listed as belonging to the new TID.
