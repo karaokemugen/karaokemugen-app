@@ -82,7 +82,6 @@
     "@sentry/node": "^7.8.1",
     "agentkeepalive": "^4.2.1",
     "ass-compiler": "^0.1.4",
-    "async-await-parallel": "^1.0.0",
     "axios": "^0.27.2",
     "basic-ftp": "^5.0.1",
     "bcryptjs": "^2.4.3",
