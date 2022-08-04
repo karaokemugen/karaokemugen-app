@@ -107,7 +107,7 @@ export default function Background() {
 		{
 			title: i18next.t('BACKGROUNDS_MGMT.CATEGORY'),
 			dataIndex: 'type',
-			render: text => i18next.t(`BACKGROUNDS_MGMT.TYPE.${text}`),
+			render: text => i18next.t(`BACKGROUNDS_MGMT.TYPE.${text.toUpperCase()}`),
 		},
 		{
 			title: i18next.t('ACTION'),
