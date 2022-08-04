@@ -64,7 +64,7 @@ export async function playSingleSong(kid?: string, randomPlaying = false) {
 		emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYER_PLAY', err));
 		// Not sending to sentry when media source couldn't be found
 		if (!err.message.includes('No media source')) sentry.error(err, 'warning');
-		stopPlayer(true);
+		stopPlayer();
 		throw err;
 	}
 }
@@ -118,7 +118,7 @@ export async function playRandomSongAfterPlaylist() {
 		if (kara) {
 			await playSingleSong(kara.kid, true);
 		} else {
-			stopPlayer(true);
+			stopPlayer();
 			stopAddASongMessage();
 		}
 	} catch (err) {
@@ -176,7 +176,7 @@ export async function playCurrentSong(now: boolean) {
 				}
 			} else {
 				logger.warn('Stopping karaoke due to error', { service });
-				stopPlayer(true);
+				stopPlayer();
 			}
 		} finally {
 			profile('playCurrentSong');
@@ -199,7 +199,7 @@ export async function playerEnding() {
 		}
 		// Stopping after current song, no need for all the code below.
 		if (state.stopping) {
-			await stopPlayer(true);
+			await stopPlayer();
 			next();
 			return;
 		}
@@ -263,7 +263,7 @@ export async function playerEnding() {
 					throw err;
 				}
 			} else {
-				stopPlayer(true);
+				stopPlayer();
 			}
 			return;
 		}
@@ -339,7 +339,7 @@ export async function playerEnding() {
 					if (conf.Playlist.EndOfPlaylistAction === 'random') {
 						await playRandomSongAfterPlaylist();
 					} else {
-						stopPlayer(true);
+						stopPlayer();
 					}
 				}
 			} else if (conf.Playlist.EndOfPlaylistAction === 'random') {
@@ -406,11 +406,11 @@ export async function playerEnding() {
 				throw err;
 			}
 		} else {
-			stopPlayer(true);
+			stopPlayer();
 		}
 	} catch (err) {
 		logger.error('Unable to end play properly, stopping.', { service, obj: err });
 		sentry.error(err);
-		stopPlayer(true);
+		stopPlayer();
 	}
 }

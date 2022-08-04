@@ -855,7 +855,7 @@ class Players {
 	/** Progress bar on pause screens inbetween songs */
 	private tickProgressBar(nextTick: number, ticked: number, DI: string) {
 		// 10 ticks
-		if (ticked <= 10 && getState().streamerPause) {
+		if (ticked <= 10 && getState().streamerPause && getState().pauseInProgress) {
 			if (this.progressBarTimeout) clearTimeout(this.progressBarTimeout);
 			let progressBar = '';
 			for (const _nothing of Array(ticked)) {
@@ -1492,7 +1492,11 @@ class Players {
 					// Non fatal.
 				}
 				emitPlayerState();
-				if (getState().streamerPause && getConfig().Karaoke.StreamerMode.PauseDuration > 0) {
+				if (
+					getState().streamerPause &&
+					getState().pauseInProgress &&
+					getConfig().Karaoke.StreamerMode.PauseDuration > 0
+				) {
 					this.progressBar(
 						getConfig().Karaoke.StreamerMode.PauseDuration,
 						position + warningString + nextSongString + infos
