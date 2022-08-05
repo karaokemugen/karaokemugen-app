@@ -1688,6 +1688,8 @@
 		"FILE": "Nom du fichier",
 		"PREVIEW": "Aperçu",
 		"CATEGORY": "Catégorie",
+		"PICTURES": "Images",
+		"MUSIC": "Musique",
 		"TYPE": {
 			"PAUSE": "Pause",
 			"STOP": "Stop",

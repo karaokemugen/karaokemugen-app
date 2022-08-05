@@ -1686,6 +1686,8 @@
 		"FILE": "Filename",
 		"PREVIEW": "Preview",
 		"CATEGORY": "Category",
+		"PICTURES": "Pictures",
+		"MUSIC": "Music",
 		"TYPE": {
 			"PAUSE": "Pause",
 			"STOP": "Stop",
