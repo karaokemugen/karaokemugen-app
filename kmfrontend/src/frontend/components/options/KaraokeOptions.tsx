@@ -587,6 +587,12 @@ function KaraokeOptions(props: IProps) {
 							<span className="title">{i18next.t('SETTINGS.KARAOKE.CLASSIC_MODE')}</span>
 							<br />
 							<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.CLASSIC_MODE_TOOLTIP')}</span>
+							{config['Karaoke.StreamerMode.Enabled'] ? (
+								<>
+									<br />
+									<span className="warning">{i18next.t('SETTINGS.KARAOKE.CLASSIC_MODE_LOCKED')}</span>
+								</>
+							) : null}
 						</label>
 						<div>
 							<Switch
@@ -691,6 +697,12 @@ function KaraokeOptions(props: IProps) {
 							<span className="title">{i18next.t('SETTINGS.KARAOKE.STREAM_MODE')}</span>
 							<br />
 							<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.STREAM_MODE_TOOLTIP')}</span>
+							{config['Karaoke.ClassicMode'] ? (
+								<>
+									<br />
+									<span className="warning">{i18next.t('SETTINGS.KARAOKE.STREAM_MODE_LOCKED')}</span>
+								</>
+							) : null}
 						</label>
 						<div>
 							<Switch
