@@ -902,7 +902,7 @@
 		"COLLECTIONS_TOOLTIP": "Sélectionnez les collections dans lesquelles le karaoké doit apparaître"
 	},
 	"MENU": {
-		"HOME": "Home",
+		"HOME": "Tableau de bord",
 		"SYSTEM": "Système",
 		"LOGS": "Journal d'événements",
 		"CONFIGURATION": "Configuration avancée",
@@ -1482,7 +1482,7 @@
 	},
 	"HEADERS": {
 		"HOME": {
-			"TITLE": "Accueil",
+			"TITLE": "Panneau Système",
 			"DESCRIPTION": "C'est ici que tout commence. Choisissez votre action."
 		},
 		"LOGS": {

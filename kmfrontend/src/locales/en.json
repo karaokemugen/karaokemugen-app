@@ -900,7 +900,7 @@
 		"COLLECTIONS_TOOLTIP": "Select the collections in which the karaoke should appear"
 	},
 	"MENU": {
-		"HOME": "Home",
+		"HOME": "Dashboard",
 		"SYSTEM": "System",
 		"LOGS": "Logs",
 		"CONFIGURATION": "Advanced configuration",
@@ -1480,7 +1480,7 @@
 	},
 	"HEADERS": {
 		"HOME": {
-			"TITLE": "Home",
+			"TITLE": "System Panel",
 			"DESCRIPTION": "This is where it all begins. Choose your action."
 		},
 		"LOGS": {
