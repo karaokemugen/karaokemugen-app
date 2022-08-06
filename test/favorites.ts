@@ -36,8 +36,11 @@ describe('Favorites', () => {
 
 	it('Generate a automix playlist', async () => {
 		const data = {
-			users: [usernameAdmin],
-			duration: 5,
+			filters: {
+				usersFavorites: [usernameAdmin],
+			},
+			limitType: 'duration',
+			limitNumber: 5,
 		};
 		const body = await commandBackend(token, 'createAutomix', data);
 		expect(body.plaid).to.not.be.NaN;
