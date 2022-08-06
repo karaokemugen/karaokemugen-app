@@ -16,6 +16,7 @@ import { refreshKarasAfterDBChange, updateTags } from '../lib/services/karaManag
 import { DBKara, DBKaraTag } from '../lib/types/database/kara';
 import { DBTag } from '../lib/types/database/tag';
 import { KaraFileV4, KaraTag } from '../lib/types/kara';
+import { TagTypeNum } from '../lib/types/tag';
 import { resolvedPathRepos } from '../lib/utils/config';
 import { audioFileRegexp, getTagTypeName } from '../lib/utils/constants';
 import { fileExists, resolveFileInDirs } from '../lib/utils/files';
@@ -180,13 +181,12 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 	}
 }
 
-export async function batchEditKaras(plaid: string, action: 'add' | 'remove', tid: string, type: number) {
+export async function batchEditKaras(plaid: string, action: 'add' | 'remove', tid: string, type: TagTypeNum) {
 	// Checks
 	const task = new Task({
 		text: 'EDITING_KARAS_BATCH_TAGS',
 	});
 	try {
-		type = +type;
 		const tagType = getTagTypeName(type);
 		if (!tagType) throw 'Type unknown';
 		const pl = await selectPlaylistContentsMicro(plaid);
