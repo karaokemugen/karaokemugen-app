@@ -125,10 +125,10 @@
 			"Mode Karaoke Klasik meniru apa yang kamu temukan di bilik karaoke jepang atau saat kontes karaoke di acara anime: jeda dibuat di antara setiap lagu dan judul lagu berikutnya serta peminta ditampilkan di layar!",
 			"Apakah sesi karaoke kamu akan segera berakhir? Alihkan antarmuka ke mode terbatas: pengguna tidak akan dapat menambahkan lagu lagi, tetapi masih dapat melihat apa yang akan diputar selanjutnya.",
 			"Perlu mengirim pesan ke publik? Opsi pesan akan menunjukan teks pada telepon genggam mereka dan/atau pada layar karaoke!",
-			"Ketika kamu melakukan pencarian, kamu bisa mengetik \"-kata\" untuk mengecualikan lagu karaoke yang mengandung kata tersebut (entah kata itu didalam judul, serial, penyanyi, dll.) dari hasil pencarianmu.",
+			"Ketika sedang melakukan pencarian, kamu bisa mengetik \"-kata\" untuk mengecualikan lagu karaoke yang mengandung kata tersebut (entah kata itu didalam judul, serial, penyanyi, dll.) dari hasil pencarianmu.",
 			"Kamu dapat menerima atau menolak lagu pada daftar putar publik. Untuk melakukannya, tampilkan publik dan daftar putar saat ini secara berdampingan.",
-			"Menerima saran lagu publik akan mengembalikan kuota lagu kepada pengguna yang meminta lagu dimainkan, dan menambahkan lagu ke daftar putar saat ini!",
-			"Menolak saran lagu publik akan mengembalikan kuota lagu kepada pengguna yang meminta lagu dimainkan, dan menahan lagu di daftar putar publik sehingga lagu tersebut tidak dapat diminta mainkan lagi!"
+			"Menerima atau menolak saran lagu publik akan mengembalikan kuota lagu kepada pengguna yang meminta lagu dimainkan, dan menambahkan lagu ke daftar putar saat ini!",
+			"Ketika kamu mencari sesuatu, kamu bisa menempatkan sebuah kelompok kata antara petik dua untuk mencari tepat teks tersebut. Ketik \"love live\" untuk karaoke hanya dari serial Love Live saja."
 		],
 		"ERRORS": [
 			"Kunjungi kami di Discord jika kamu butuh bantuan: https://karaokes.moe/discord",
@@ -230,5 +230,6 @@
 	"PERMISSIONS_KEYBOARD_INFO_MACOS": {
 		"TITLE": "Permintaan izin",
 		"MESSAGE": "macOS akan meminta kamu untuk menambahkan Karaoke Mugen ke perizinan aksesibilitas sistem. Izin ini memperbolehkan kamu untuk menggunakan kunci media papan tik kamu untuk mengontrol pemutar video. Kamu bisa menolak untuk menambahkan izini ini, tapi kunci media tidak akan bekerja."
-	}
+	},
+	"INIT_MIGRATION": "Memperbarui struktur basis data, mohon ditunggu…"
 }
