@@ -42,7 +42,6 @@ import {
 	sqlsetPLCRefused,
 	sqlsetPLCVisible,
 	sqlshiftPosInPlaylist,
-	sqltrimPlaylist,
 	sqlupdateFreeOrphanedSongs,
 	sqlupdatePlaylistDuration,
 	sqlupdatePlaylistKaraCount,
@@ -161,15 +160,6 @@ export function updatePos(plc_id: number, pos: number) {
 
 export function updatePlaylistDuration(id: string) {
 	return db().query(sqlupdatePlaylistDuration, [id]);
-}
-
-export function trimPlaylist(id: string, pos: number) {
-	return db().query(
-		yesql(sqltrimPlaylist)({
-			plaid: id,
-			pos,
-		})
-	);
 }
 
 export async function selectPlaylistContentsMini(id: string): Promise<DBPLC[]> {

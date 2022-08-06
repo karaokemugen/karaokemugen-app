@@ -6,7 +6,6 @@ import { check } from '../../lib/utils/validators';
 import { SocketIOApp } from '../../lib/utils/ws';
 import {
 	addToFavorites,
-	createAutoMix,
 	exportFavorites,
 	getFavorites,
 	importFavorites,
@@ -16,33 +15,6 @@ import { APIMessage, errMessage } from '../common';
 import { runChecklist } from '../middlewares';
 
 export default function favoritesController(router: SocketIOApp) {
-	router.route('createAutomix', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req);
-		const validationErrors = check(req.body, {
-			users: { presence: { allowEmpty: false } },
-			duration: { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0 } },
-		});
-		if (!validationErrors) {
-			// No errors detected
-			try {
-				return await createAutoMix(
-					{
-						duration: +req.body?.duration,
-						users: req.body?.users,
-					},
-					req.token.username
-				);
-			} catch (err) {
-				const code = 'AUTOMIX_ERROR';
-				errMessage(code, err);
-				throw { code: err?.code || 500, message: APIMessage(err?.msg || code) };
-			}
-		} else {
-			// Errors detected
-			// Sending BAD REQUEST HTTP code and error object.
-			throw { code: 400, message: validationErrors };
-		}
-	});
 	router.route('getFavorites', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest', 'closed');
 		try {

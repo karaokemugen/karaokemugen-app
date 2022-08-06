@@ -8,17 +8,36 @@ import './Autocomplete.scss';
 
 import { useEffect, useRef, useState } from 'react';
 
-export type AutocompleteOptions = { label: string; value: string | number }[];
+export interface AutocompleteOption {
+	label: string;
+	value: string | number;
+}
 
-interface IProps {
+export type AutocompleteOptions = AutocompleteOption[];
+
+interface LabelProps {
 	options?: AutocompleteOptions;
 	placeholder?: string;
 	value: string | number;
 	acceptNewValues?: boolean;
+	provideLabels?: true;
+	onChange: (value: AutocompleteOption) => void;
+	onType?: (query: string) => void;
+	styleInclude?: boolean;
+}
+
+interface DefaultProps {
+	options?: AutocompleteOptions;
+	placeholder?: string;
+	value: string | number;
+	acceptNewValues?: boolean;
+	provideLabels?: false;
 	onChange: (value: string) => void;
 	onType?: (query: string) => void;
 	styleInclude?: boolean;
 }
+
+type IProps = LabelProps | DefaultProps;
 
 function Autocomplete(props: IProps) {
 	const options = props.options || [];
@@ -33,7 +52,10 @@ function Autocomplete(props: IProps) {
 	const [focus, setFocus] = useState(false);
 
 	const updateSelectedValue = (v: any) => {
-		if (typeof props.onChange === 'function') props.onChange(v);
+		if (typeof props.onChange === 'function') {
+			if (props.provideLabels) props.onChange(v);
+			else props.onChange(v.value);
+		}
 		props.onType('');
 		return;
 	};
@@ -60,9 +82,9 @@ function Autocomplete(props: IProps) {
 			setFocus(false);
 			const o = options[activeIndex];
 			if (props.acceptNewValues) {
-				updateSelectedValue(e.target.value);
+				updateSelectedValue({ label: e.target.value, value: e.target.value });
 			} else if (o) {
-				updateSelectedValue(o.value);
+				updateSelectedValue(o);
 			}
 		} else if (e.keyCode === 27)
 			//ESC
@@ -77,7 +99,7 @@ function Autocomplete(props: IProps) {
 
 	const handleOptionSelection = (o: any) => {
 		setFocus(false);
-		updateSelectedValue(o.value);
+		updateSelectedValue(o);
 		setSearchValue(o.label);
 		setPlaceholder(o.label);
 	};

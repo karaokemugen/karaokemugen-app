@@ -79,7 +79,7 @@ export async function getSongInfosForPlayer(kara: DBKara | DBPLC): Promise<{ inf
 	// Escaping {} because it'll be interpreted as ASS tags below.
 	let requestedBy = '';
 	let avatarfile = null;
-	if (getConfig().Player.Display.Nickname && 'username' in kara) {
+	if (getConfig().Player.Display.Nickname && 'nickname' in kara) {
 		const upvoters = await selectUpvotesByPLC(kara.plcid);
 		// Escaping {} because it'll be interpreted as ASS tags below.
 		kara.nickname = kara.nickname.replace(/[{}]/g, '');

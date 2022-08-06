@@ -487,12 +487,6 @@ FROM playlist_content
 WHERE pk_id_playlist = $2;
 `;
 
-export const sqltrimPlaylist = `
-DELETE FROM playlist_content
-WHERE fk_id_playlist = :plaid
-	AND pos > :pos;
-`;
-
 export const sqladdCriteria = `
 INSERT INTO playlist_criteria(
 	value,

@@ -1,15 +1,14 @@
 import { deleteFavorites, insertFavorites, truncateFavorites } from '../dao/favorites';
+import { DBKara } from '../lib/types/database/kara';
 import { KaraList, KaraParams } from '../lib/types/kara';
 import { getConfig } from '../lib/utils/config';
 import { uuidRegexp } from '../lib/utils/constants';
-import { date } from '../lib/utils/date';
 import HTTP from '../lib/utils/http';
 import logger, { profile } from '../lib/utils/logger';
 import { emitWS } from '../lib/utils/ws';
-import { AutoMixParams, AutoMixPlaylistInfo, FavExport, FavExportContent, Favorite } from '../types/favorites';
+import { FavExport, FavExportContent } from '../types/favorites';
 import sentry from '../utils/sentry';
 import { getKaras, isAllKaras } from './kara';
-import { addKaraToPlaylist, createPlaylist, shufflePlaylist, trimPlaylist } from './playlist';
 import { getUser } from './user';
 
 const service = 'Favorites';
@@ -190,8 +189,8 @@ export async function importFavorites(
 }
 
 /* Get favorites from a user list */
-async function getAllFavorites(userList: string[]): Promise<Favorite[]> {
-	const faves: Favorite[] = [];
+export async function getAllFavorites(userList: string[]): Promise<DBKara[]> {
+	const faves: DBKara[] = [];
 	for (let user of userList) {
 		user = user.toLowerCase();
 		if (!(await getUser(user))) {
@@ -203,7 +202,7 @@ async function getAllFavorites(userList: string[]): Promise<Favorite[]> {
 			for (const f of favs.content) {
 				if (!faves.find(fav => fav.kid === f.kid)) {
 					faves.push({
-						kid: f.kid,
+						...f,
 						username: user,
 					});
 				}
@@ -211,58 +210,4 @@ async function getAllFavorites(userList: string[]): Promise<Favorite[]> {
 		}
 	}
 	return faves;
-}
-
-export async function createAutoMix(params: AutoMixParams, username: string): Promise<AutoMixPlaylistInfo> {
-	profile('AutoMix');
-	params.users = params.users.map(u => u.toLowerCase());
-	try {
-		const favs = await getAllFavorites(params.users);
-		if (favs.length === 0) throw { code: 404, msg: 'AUTOMIX_ERROR_NOT_FOUND_FAV_FOR_USERS' };
-		const autoMixPLName = `AutoMix ${date()}`;
-		const plaid = await createPlaylist(
-			{
-				name: autoMixPLName,
-				flag_visible: true,
-				username,
-			},
-			username
-		);
-		// Copy karas from everyone listed
-		const addPromises = [];
-		for (const user of params.users) {
-			const userFaves = favs.filter(f => f.username === user);
-			if (userFaves.length > 0) {
-				addPromises.push(
-					addKaraToPlaylist(
-						userFaves.map(f => f.kid),
-						user,
-						plaid,
-						null,
-						true
-					)
-				);
-			}
-		}
-		await Promise.all(addPromises);
-		// Shuffle time. First we shuffle with balanced to make sure everyone gets to have some songs in.
-		await shufflePlaylist(plaid, 'balance');
-		// Cut playlist after duration
-		await trimPlaylist(plaid, params.duration);
-		// Let's reshuffle normally now that the playlist is trimmed.
-		await shufflePlaylist(plaid, 'normal');
-		emitWS('playlistsUpdated');
-		return {
-			plaid,
-			playlist_name: autoMixPLName,
-		};
-	} catch (err) {
-		logger.error('Failed to create AutoMix', { service, obj: err });
-		if (err?.code === 404) throw err;
-		sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
-		sentry.error(err);
-		throw err;
-	} finally {
-		profile('AutoMix');
-	}
 }

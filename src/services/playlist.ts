@@ -23,7 +23,6 @@ import {
 	selectSongCountForUser,
 	selectSongTimeSpentForUser,
 	shiftPosInPlaylist,
-	trimPlaylist as trimPL,
 	truncatePlaylist,
 	updateFreeOrphanedSongs,
 	updatePlaying as setPlayingFlag,
@@ -41,23 +40,25 @@ import {
 	updatePos,
 } from '../dao/playlist';
 import { PLImportConstraints } from '../lib/services/playlist';
-import { DBKaraBase } from '../lib/types/database/kara';
+import { DBKara, DBKaraBase } from '../lib/types/database/kara';
 import { DBPL, DBPLC, DBPLCBase, PLCInsert } from '../lib/types/database/playlist';
 import { AggregatedCriteria, PlaylistExport, PLCEditParams } from '../lib/types/playlist';
 import { OldJWTToken, User } from '../lib/types/user';
 import { getConfig } from '../lib/utils/config';
-import { now } from '../lib/utils/date';
+import { date, now, time as time2 } from '../lib/utils/date';
 import logger, { profile } from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import { check } from '../lib/utils/validators';
 import { emitWS } from '../lib/utils/ws';
+import { AutoMixParams, AutoMixPlaylistInfo, PlaylistLimit } from '../types/favorites';
 import { CurrentSong, Pos, ShuffleMethods } from '../types/playlist';
 import { adminToken } from '../utils/constants';
 import sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
 import { writeStreamFiles } from '../utils/streamerFiles';
 import { checkMediaAndDownload } from './download';
-import { formatKaraList, getKarasMicro } from './kara';
+import { getAllFavorites } from './favorites';
+import { formatKaraList, getKaras, getKarasMicro } from './kara';
 import { getSongInfosForPlayer } from './karaEngine';
 import { playPlayer } from './player';
 import { getRepos } from './repo';
@@ -230,21 +231,24 @@ export async function setPlaying(plc_id: number, plaid: string) {
 }
 
 /** Trim playlist after a certain duration */
-export async function trimPlaylist(plaid: string, duration: number) {
-	const durationSecs = duration * 60;
-	let durationPL = 0;
-	let lastPos = 1;
-	const pl = await getPlaylistContentsMini(plaid);
-	// Going through the playlist and updating lastPos on each item
-	// Until we hit the limit for duration
-	const needsTrimming = pl.some((kara: DBPLCBase) => {
-		lastPos = kara.pos;
-		durationPL += kara.duration;
-		return durationPL > durationSecs;
-	});
-	if (needsTrimming) await trimPL(plaid, lastPos);
-	await Promise.all([updatePlaylistDuration(plaid), updatePlaylistKaraCount(plaid)]);
-	updatePlaylistLastEditTime(plaid);
+export async function trimPlaylist(playlist: DBPLC[], duration: number, type: PlaylistLimit = 'duration') {
+	let lastPos = 0;
+	if (type === 'duration') {
+		const durationSecs = duration * 60 || 0;
+		let durationPL = 0;
+		// Going through the playlist and updating lastPos on each item
+		// Until we hit the limit for duration
+		for (const pos in playlist) {
+			if (Object.prototype.hasOwnProperty.call(playlist, pos)) {
+				lastPos = +pos;
+				durationPL += playlist[pos].duration;
+				if (durationPL > durationSecs) break;
+			}
+		}
+	} else {
+		lastPos = duration;
+	}
+	return playlist.slice(0, lastPos);
 }
 
 /** Remove playlist entirely */
@@ -506,7 +510,8 @@ export async function addKaraToPlaylist(
 	ignoreQuota?: boolean,
 	refresh = true,
 	criterias?: AggregatedCriteria[],
-	throwOnMissingKara = true
+	throwOnMissingKara = true,
+	visible = true
 ) {
 	requester = requester.toLowerCase();
 	let errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR';
@@ -619,7 +624,8 @@ export async function addKaraToPlaylist(
 				karaList[i].flag_visible = true;
 				if (
 					(!conf.Playlist.MysterySongs.AddedSongVisibilityAdmin && user.type === 0) ||
-					(!conf.Playlist.MysterySongs.AddedSongVisibilityPublic && user.type > 0)
+					(!conf.Playlist.MysterySongs.AddedSongVisibilityPublic && user.type > 0) ||
+					visible === false
 				) {
 					karaList[i].flag_visible = false;
 				}
@@ -1370,21 +1376,25 @@ function smartShuffle(playlist: DBPLC[]) {
 	return playlist;
 }
 
-/** Balance playlist * */
+/* Balance playlist */
 function balancePlaylist(playlist: DBPLC[]) {
+	// This function uses balanceUID property of playlists.
+	// This can have a username or tag+type string
+	// This allows to balance playlists which have a user + tag&type constraint, like "favorites from N people + songs with tag 1 + songs with tag 2, etc."
+	// By default this should only contain usernames though.
 	const balance: Map<string, DBPLC>[] = [];
 
-	// Organisation of karaokes
+	// Organization of karaokes
 	for (const content of playlist) {
 		let hasBeenInserted = false;
 		for (const i in balance) {
-			if (!balance[i].has(content.username)) {
-				balance[i].set(content.username, content);
+			if (!balance[i].has(content.balanceUID || content.username)) {
+				balance[i].set(content.balanceUID || content.username, content);
 				hasBeenInserted = true;
 				break;
 			}
 		}
-		if (!hasBeenInserted) balance.push(new Map().set(content.username, content));
+		if (!hasBeenInserted) balance.push(new Map().set(content.balanceUID || content.username, content));
 	}
 
 	// Re-insertion
@@ -1392,7 +1402,7 @@ function balancePlaylist(playlist: DBPLC[]) {
 	for (const pool of balance) {
 		const values = [...pool.values()];
 		// If last of previous pool and first of current pool have same user
-		if (newPlaylist.length > 0 && newPlaylist[newPlaylist.length - 1].username === values[0].username) {
+		if (newPlaylist.length > 0 && newPlaylist[newPlaylist.length - 1].balanceUID === values[0].balanceUID) {
 			values.push(values.shift());
 		}
 		newPlaylist.push(...values);
@@ -1558,4 +1568,91 @@ export async function updateUserQuotas(kara: DBPLCBase) {
 
 export function playlistImported(res: any) {
 	emitWS('playlistImported', res);
+}
+
+export async function createAutoMix(params: AutoMixParams, username: string): Promise<AutoMixPlaylistInfo> {
+	profile('AutoMix');
+	// Now we need to get our different lists depending on what filters we have.
+	// For each list we add the balanceUID needed to balance our songs later.
+	// If this doesn't give expected results due to async optimizations (for years and/or karas) we should try using Maps or Sets instead of arrays. Or use .push on each element
+	const uniqueList = new Map<string, DBPLC>();
+
+	let favs: DBKara[] = [];
+	if (params.filters?.usersFavorites) {
+		const users = params.filters.usersFavorites;
+		favs = await getAllFavorites(users);
+		favs = shuffle(favs);
+		favs.forEach(f => uniqueList.set(f.kid, f as any));
+	}
+	let karaTags: DBKara[] = [];
+	if (params.filters?.tags) {
+		for (const tagAndType of params.filters.tags) {
+			const tag = `${tagAndType.tid}~${tagAndType.type}`;
+			const karas = await getKaras({
+				q: `t:${tag}`,
+			});
+			karas.content.forEach((_, i) => (karas.content[i].balanceUID = `${tag}`));
+			karaTags = [].concat(karaTags, karas.content);
+			karaTags = shuffle(karaTags);
+		}
+		karaTags.forEach(k => uniqueList.set(k.kid, k as any));
+	}
+	let years: DBKara[] = [];
+	if (params.filters?.years) {
+		for (const year of params.filters.years) {
+			const karas = await getKaras({
+				q: `y:${year}`,
+			});
+			karas.content.forEach((_, i) => (karas.content[i].balanceUID = `${year}`));
+			years = [].concat(years, karas.content);
+			years = shuffle(years);
+		}
+		years.forEach(y => uniqueList.set(y.kid, y as any));
+	}
+	// Let's balance what we have here.
+
+	let balancedList = shufflePlaylistWithList([...uniqueList.values()], 'balance');
+
+	try {
+		const autoMixPLName = params.playlistName || `AutoMix ${date()} ${time2()}`;
+		const plaid = await createPlaylist(
+			{
+				name: autoMixPLName,
+				flag_visible: true,
+				username,
+			},
+			username
+		);
+		// Cut playlist after duration/number of songs
+		if (params.limitType) {
+			balancedList = await trimPlaylist(balancedList, params.limitNumber, params.limitType);
+		}
+		// Let's reshuffle normally now that the playlist is trimmed.
+		balancedList = shuffle(balancedList);
+
+		await addKaraToPlaylist(
+			balancedList.map(k => k.kid),
+			username,
+			plaid,
+			undefined,
+			undefined,
+			undefined,
+			undefined,
+			undefined,
+			params.surprisePlaylist !== true
+		);
+		emitWS('playlistsUpdated');
+		return {
+			plaid,
+			playlist_name: autoMixPLName,
+		};
+	} catch (err) {
+		logger.error('Failed to create AutoMix', { service, obj: err });
+		if (err?.code === 404) throw err;
+		sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
+		sentry.error(err);
+		throw err;
+	} finally {
+		profile('AutoMix');
+	}
 }

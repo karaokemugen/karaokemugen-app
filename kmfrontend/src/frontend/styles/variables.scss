@@ -20,7 +20,7 @@ $mugen-playlist-dejavu-odd: scale-color(map-get($mugen-colors, 'orange'), $light
 $mugen-playlist-dejavu-even: scale-color($mugen-playlist-dejavu-odd, $lightness: 10%);
 
 // Colors for buttons
-$mugen-btn-background: #262626b3;
+$mugen-btn-background: #2e2e2e;
 $mugen-btn-primary-background: darken(map-get($mugen-colors, 'blue'), 5);
 $mugen-btn-danger-background: map-get($mugen-colors, 'red');
 $mugen-btn-border: solid 1px lighten($mugen-btn-background, 40);
@@ -45,8 +45,8 @@ $mugen-article-error-border: orangered;
 $mugen-welcome-page-background: black linear-gradient(135deg, #1f3647 0%, #557767 100%) repeat scroll 0 0;
 
 // colors for select
-$mugen-select-background: #343434;
-$mugen-select-border: 1px solid #fafafa70;
+$mugen-select-background: $mugen-btn-background;
+$mugen-select-border: $mugen-btn-border;
 $mugen-select-focus: darken(map-get($mugen-colors, 'blue'), 15);
 
 $mugen-nav-background: #5d5d5d;

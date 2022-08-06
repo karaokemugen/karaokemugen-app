@@ -130,6 +130,11 @@ export const YEARS = {
 	type: 0,
 };
 
+export const FAVORITES = {
+	icon: 'star',
+	type: 1001,
+};
+
 export function getTagTypeName(type: number): string {
 	return Object.keys(tagTypes).find(t => tagTypes[t].type === type);
 }

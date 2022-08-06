@@ -221,10 +221,22 @@
 	},
 	"AUTOMIX_MODAL": {
 		"TITLE": "Créer un AutoMix",
-		"DESCRIPTION": "La liste de lecture créée va être remplie avec les favoris des utilisateurs que vous avez sélectionnés durant la durée que vous avez spécifiée.",
+		"DESCRIPTION": "Un AutoMix est une liste créée selon des critères et une durée définie. À la différence d'une liste intelligente, cette liste ne sera pas mise à jour automatiquement. Pour qu'une chanson soit retenue, un seul critère doit correspondre.",
+		"NAME": "Nom de la liste",
+		"NAME_PLACEHOLDER": "Nom généré automatiquement",
+		"CRITERIA": "Critères du mix",
+		"FAVOURITES": "Favoris de",
+		"FAVOURITES_OF": "Favoris de {{name}}",
+		"LIMIT": "Limiter la liste à...",
+		"LIMIT_TYPE": {
+			"DURATION": "Durée",
+			"SONGS": "Nombre de chansons"
+		},
 		"DURATION": "Durée (en minutes)",
-		"MIX": "Créer l'automix",
-		"EMPTY": "Choisissez un utilisateur et spécifiez une durée"
+		"NUMBER_SONGS": "Nombre de chansons",
+		"MIX": "Créer l'AutoMix",
+		"EMPTY": "Choisissez un critère et spécifiez une durée",
+		"IS_ADMIN_PLAYER": "Cette liste est pour un quiz, ne pas me la montrer."
 	},
 	"CONFIRM_FAV_IMPORT": "Écraser vos favoris avec cet import ?",
 	"KARAOKE_one": "{{count}} karaoké",
