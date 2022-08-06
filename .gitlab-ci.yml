@@ -311,6 +311,7 @@ pkg_mac:
     - yarn install
     - rm -Rf release_mac
     - rm -Rf app-mac
+    - rm -Rf app/bin
     - wget -qO- http://mugen.karaokes.moe/downloads/dist_mac-7.x.tar.gz | tar xvz
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
     - bash util/electronBuilder.sh -m
