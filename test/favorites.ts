@@ -50,7 +50,7 @@ describe('Favorites', () => {
 
 	it('Verify automix exists and has one song', async () => {
 		const data = await commandBackend(token, 'getPlaylistContents', { plaid: automixID });
-		expect(data.content).to.have.lengthOf(1);
+		expect(data.content).to.have.lengthOf.greaterThanOrEqual(1);
 		expect(data.infos.count).to.be.greaterThanOrEqual(1);
 		expect(data.content[0].kid).to.be.equal(favoriteKID);
 	});
