@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
 import { FavExport } from '../src/types/favorites.js';
-import { commandBackend, getToken, usernameAdmin } from './util/util.js';
+import { commandBackend, getToken } from './util/util.js';
 
 describe('Favorites', () => {
 	const favoriteKID = 'a6108863-0ae9-48ad-adb5-cb703651f6bf';
