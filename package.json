@@ -321,6 +321,10 @@
 	  {
 	    "from": "app-mac/bin/${arch}",
 	    "to": "app/bin"
+	  },
+	  {
+		"from": "app-mac/bin/universal",
+		"to": "app/bin"
 	  }
     ],
     "directories": {
