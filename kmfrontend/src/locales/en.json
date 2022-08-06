@@ -214,10 +214,22 @@
 	},
 	"AUTOMIX_MODAL": {
 		"TITLE": "Create an AutoMix",
-		"DESCRIPTION": "The created playlist will be filled with the selected users' favorites for the duration you specify.",
+		"DESCRIPTION": "An AutoMix is a playlist created with criteria and a duration. Unlike smart playlists, this list will not be updated automatically. For a song to be included in the list, a single criterion have to match.",
+		"NAME": "Playlist name",
+		"NAME_PLACEHOLDER": "Auto-generated name",
+		"CRITERIA": "Mix criteria",
+		"FAVOURITES": "Favourites of",
+		"FAVOURITES_OF": "{{name}}'s favourites",
+		"LIMIT": "Limit the list to...",
+		"LIMIT_TYPE": {
+			"DURATION": "Duration",
+			"SONGS": "Number of songs"
+		},
 		"DURATION": "Duration (in minutes)",
+		"NUMBER_SONGS": "Number of songs",
 		"MIX": "Create AutoMix",
-		"EMPTY": "Select users and a duration"
+		"EMPTY": "Select criteria and a duration",
+		"IS_ADMIN_PLAYER": "This playlist is for a quiz, don't show me."
 	},
 	"KARAOKE_one": "{{count}} karaoke",
 	"KARAOKE_other": "{{count}} karaokes",

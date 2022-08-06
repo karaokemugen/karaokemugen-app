@@ -10,7 +10,7 @@ import { getOppositePlaylistInfo, getPlaylistInfo, setPlaylistInfo } from '../..
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { callModal, displayMessage, isNonStandardPlaylist, nonStandardPlaylists } from '../../../utils/tools';
 import DeletePlaylistModal from './DeletePlaylistModal';
-import FavMixModal from './FavMixModal';
+import AutoMixModal from './AutoMixModal';
 import PlaylistModal from './PlaylistModal';
 import ShuffleModal from './ShuffleModal';
 
@@ -39,7 +39,7 @@ function PlaylistCommandsModal(props: IProps) {
 		props.closePlaylistCommands();
 		const response = await commandBackend('getUsers');
 		const userList = response.filter((u: User) => (u.type as number) < 2);
-		showModal(context.globalDispatch, <FavMixModal side={props.side} userList={userList} />);
+		showModal(context.globalDispatch, <AutoMixModal side={props.side} userList={userList} />);
 	};
 
 	const exportPlaylist = async () => {

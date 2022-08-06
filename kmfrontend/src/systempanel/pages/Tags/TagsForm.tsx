@@ -97,7 +97,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 
 	mergeCascaderOption = () => {
 		const options = Object.keys(tagTypes).map(type => {
-			const typeID = tagTypes[type].type;
+			const typeID: any = tagTypes[type].type;
 
 			const option = {
 				value: typeID,

@@ -7,6 +7,7 @@ import { SocketIOApp } from '../../lib/utils/ws';
 import {
 	addKaraToPlaylist,
 	copyKaraToPlaylist,
+	createAutoMix,
 	createPlaylist,
 	editPlaylist,
 	editPLC,
@@ -29,6 +30,28 @@ import { APIMessage, errMessage } from '../common';
 import { runChecklist } from '../middlewares';
 
 export default function playlistsController(router: SocketIOApp) {
+	router.route('createAutomix', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req);
+		const validationErrors = check(req.body, {
+			filters: { presence: true },
+			limitNumber: { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0 } },
+		});
+		if (!validationErrors) {
+			// No errors detected
+			try {
+				return await createAutoMix(req.body, req.token.username);
+			} catch (err) {
+				const code = 'AUTOMIX_ERROR';
+				errMessage(code, err);
+				throw { code: err?.code || 500, message: APIMessage(err?.msg || code) };
+			}
+		} else {
+			// Errors detected
+			// Sending BAD REQUEST HTTP code and error object.
+			throw { code: 400, message: validationErrors };
+		}
+	});
+
 	router.route('getPlaylists', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		// Get list of playlists
