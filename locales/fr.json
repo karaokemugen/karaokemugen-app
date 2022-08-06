@@ -1,5 +1,8 @@
 {
-	"REQUESTED_BY": "Demandé par",
+	"REQUESTED_BY": "Demandé par {{name}}",
+	"REQUESTED_WITH": "(avec {{names}})",
+	"REQUESTED_AND_one": "et d'autres",
+	"REQUESTED_AND_other": "et {{count}} autres",
 	"MY_PLAYLIST": "Ma playlist",
 	"WHITELIST": "Liste blanche",
 	"BLACKLIST": "Liste noire",
