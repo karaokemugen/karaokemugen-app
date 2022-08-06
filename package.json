@@ -261,17 +261,20 @@
       }
     },
     "mac": {
+	  "artifactName": "${productName}-${version}-mac-${arch}.${ext}",
       "target": [
         {
           "target": "dmg",
           "arch": [
-            "x64"
+            "x64",
+			"arm64"
           ]
         },
         {
           "target": "zip",
           "arch": [
-            "x64"
+            "x64",
+			"arm64"
           ]
         }
       ],
@@ -314,7 +317,11 @@
       "build/electronAboutWindow.css"
     ],
     "extraFiles": [
-      "app/bin/**"
+      "app/bin/**",
+	  {
+	    "from": "app-mac/bin/${arch}",
+	    "to": "app/bin"
+	  }
     ],
     "directories": {
       "output": "packages",
