@@ -1,6 +1,8 @@
+import { TagTypeNum } from '../../../src/lib/types/tag';
+
 export interface tagType {
 	icon: string;
-	type: number;
+	type: TagTypeNum;
 	color: string;
 	karajson: string;
 }
