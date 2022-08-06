@@ -4,6 +4,7 @@ import { resolve } from 'path';
 
 import { APIMessage } from '../controllers/common';
 import { selectPlaylistContentsMicro, updatePlaylistDuration, updatePlaylistLastEditTime } from '../dao/playlist';
+import { selectUpvotesByPLC } from '../dao/upvote';
 import { DBKara } from '../lib/types/database/kara';
 import { DBPLC } from '../lib/types/database/playlist';
 import { getConfig, resolvedPath } from '../lib/utils/config';
@@ -79,9 +80,29 @@ export async function getSongInfosForPlayer(kara: DBKara | DBPLC): Promise<{ inf
 	let requestedBy = '';
 	let avatarfile = null;
 	if (getConfig().Player.Display.Nickname && 'username' in kara) {
+		const upvoters = await selectUpvotesByPLC(kara.plcid);
 		// Escaping {} because it'll be interpreted as ASS tags below.
 		kara.nickname = kara.nickname.replace(/[{}]/g, '');
-		requestedBy = `\\N{\\fscx50}{\\fscy50}${i18next.t('REQUESTED_BY')} ${kara.nickname}`;
+		requestedBy = `\\N{\\fscx50}{\\fscy50}${i18next.t('REQUESTED_BY', { name: kara.nickname })}`;
+		if (upvoters.length > 0) {
+			// Add each upvoter's nickname until the string is too long
+			// 80 is the max length of the line, but we set 100 for the escaping to not count
+			// We subtract the length of the initial requester and the (with ...) words (different for each language)
+			const target = 100 - requestedBy.length - i18next.t('REQUESTED_WITH', { names: '' }).length;
+			let str = '';
+			let people = upvoters.length;
+			for (const upvoter of upvoters) {
+				const staging = `${upvoter.nickname}, `;
+				if (str.length + staging.length < target) {
+					str += staging;
+					people -= 1;
+				} else {
+					str = `${str.slice(0, -2)} ${i18next.t('REQUESTED_AND', { count: people })}`;
+					break;
+				}
+			}
+			requestedBy += ` ${i18next.t('REQUESTED_WITH', { names: str.endsWith(', ') ? str.slice(0, -2) : str })}`;
+		}
 		// Get user avatar
 		let user = await getUser(kara.username);
 		if (!user) {

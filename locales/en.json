@@ -1,5 +1,8 @@
 {
 	"REQUESTED_BY": "Requested by",
+	"REQUESTED_WITH": "(with )",
+	"REQUESTED_AND_one": "and others",
+	"REQUESTED_AND_other": "and {{count}} others",
 	"MY_PLAYLIST": "My playlist",
 	"WHITELIST": "Whitelist",
 	"BLACKLIST": "Blacklist",
