@@ -141,6 +141,10 @@ export async function mergeTags(tid1: string, tid2: string) {
 			noLiveDownload: tag1.noLiveDownload || tag2.noLiveDownload,
 			karafile_tag: tag1.karafile_tag || tag2.karafile_tag,
 			priority: tag1.priority,
+			external_database_ids:
+				tag1.external_database_ids == null && tag2.external_database_ids == null
+					? null
+					: { ...tag1.external_database_ids, ...tag2.external_database_ids },
 		};
 		tagObj = await addTag(tagObj, { silent: true, refresh: false });
 		const newTagFiles = resolve(resolvedPathRepos('Tags', tagObj.repository)[0], tagObj.tagfile);

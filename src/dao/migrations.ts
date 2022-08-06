@@ -84,6 +84,9 @@ export async function postMigrationTasks(migrations: Postgrator.Migration[], did
 				});
 				if (getState().player?.mediaType === 'stop' || getState().player?.mediaType === 'pause') displayInfo();
 				break;
+			case 'addExternalDatabaseIds':
+				if (!didGeneration) doGenerate = true;
+				break;
 			default:
 		}
 		if (breakFromLoop) break;
