@@ -186,7 +186,15 @@ export async function restorePG() {
 		throw err;
 	}
 	try {
-		const dumpFile = await decompressGzipFile(compressedDumpFile);
+		let dumpFile = '';
+		try {
+			dumpFile = await decompressGzipFile(compressedDumpFile);
+		} catch (err) {
+			// Decompression can fail if the gzip file doesn't exist.
+			// This can happen if the user didn't launch KM in a while and its dump is still uncompressed
+			logger.warn('No compressed dump file, trying for uncompressed already...', { service });
+			dumpFile = resolve(state.dataPath, 'karaokemugen.sql');
+		}
 		const options = [
 			'-U',
 			conf.System.Database.username,
