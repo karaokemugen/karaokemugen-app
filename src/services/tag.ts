@@ -22,7 +22,7 @@ import { formatTagFile, getDataFromTagFile, removeTagFile, writeTagFile } from '
 import { refreshKarasAfterDBChange } from '../lib/services/karaManagement';
 import { DBKara, DBKaraTag } from '../lib/types/database/kara';
 import { DBTag, DBTagMini } from '../lib/types/database/tag';
-import { KaraFileV4 } from '../lib/types/kara.d';
+import { Kara, KaraFileV4 } from '../lib/types/kara.d';
 import { Tag, TagFile, TagParams } from '../lib/types/tag';
 import { getConfig, resolvedPathRepos } from '../lib/utils/config';
 import { tagTypes } from '../lib/utils/constants';
@@ -164,15 +164,16 @@ export async function mergeTags(tid1: string, tid2: string) {
 			removeTagInStore(tid2),
 		]);
 		const karas = await getKarasWithTags([tag1, tag2, tagObj as any]);
-		const modifiedKaras = await replaceTagInKaras(tid1, tid2, tagObj, karas);
-		for (const kara of modifiedKaras) {
-			await editKaraInStore(kara);
+		const modifiedKIDs = await replaceTagInKaras(tid1, tid2, tagObj, karas);
+		const karasData: Kara[] = [];
+		for (const modifiedKID of modifiedKIDs) {
+			await editKaraInStore(modifiedKID);
+			karasData.push(formatKaraV4(karas.find(k => k.kid === modifiedKID)).data);
 		}
+		refreshKarasAfterDBChange('UPDATE', karasData);
 		sortKaraStore();
 		saveSetting('baseChecksum', getStoreChecksum());
-		await updateTagSearchVector();
-		await refreshKarasUpdate(karas.map(k => k.kid));
-		refreshTags();
+		await refreshTags();
 		return tagObj;
 	} catch (err) {
 		logger.error(`Error merging tag ${tid1} and ${tid2}`, { service, obj: err });
@@ -396,9 +397,12 @@ async function replaceTagInKaras(oldTID1: string, oldTID2: string, newTag: Tag, 
 				kara[type].push(newTag);
 			}
 		}
-		await editKara({
-			kara: formatKaraV4(kara),
-		});
+		await editKara(
+			{
+				kara: formatKaraV4(kara),
+			},
+			false
+		);
 	}
 	return modifiedKaras;
 }
