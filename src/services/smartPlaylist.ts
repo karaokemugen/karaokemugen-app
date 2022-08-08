@@ -164,16 +164,15 @@ export async function updateSmartPlaylist(plaid: string) {
 	}
 	if (addedSongs.length > 0) {
 		try {
-			await addKaraToPlaylist(
-				addedSongs.map(s => s.kid),
-				pl.username,
+			await addKaraToPlaylist({
+				kids: addedSongs.map(s => s.kid),
+				requester: pl.username,
 				plaid,
-				undefined,
-				true,
-				false,
-				newArray,
-				false
-			);
+				ignoreQuota: true,
+				refresh: false,
+				criterias: newArray,
+				visible: false,
+			});
 		} catch (err) {
 			logger.warn(`Unable to add karaokes to playlist "${pl.name}"`, { service, obj: err });
 		}

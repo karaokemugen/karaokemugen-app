@@ -102,7 +102,7 @@ export default function karaController(router: SocketIOApp) {
 		if (!isUUID(req.body.kids)) throw { code: 400 };
 		try {
 			return {
-				data: await addKaraToPlaylist(req.body.kids, req.token.username),
+				data: await addKaraToPlaylist({ kids: req.body.kids, requester: req.token.username }),
 				code: 'PL_SONG_ADDED',
 			};
 		} catch (err) {

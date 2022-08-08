@@ -189,7 +189,12 @@ export default function playlistsController(router: SocketIOApp) {
 		});
 		if (!validationErrors) {
 			try {
-				return await addKaraToPlaylist(req.body.kids, req.token.username, req.body.plaid, req.body.pos);
+				return await addKaraToPlaylist({
+					kids: req.body.kids,
+					requester: req.token.username,
+					plaid: req.body.plaid,
+					pos: req.body.pos,
+				});
 			} catch (err) {
 				const code = 'PL_ADD_SONG_ERROR';
 				errMessage(code, err);

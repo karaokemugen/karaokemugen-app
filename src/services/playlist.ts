@@ -42,7 +42,7 @@ import {
 import { PLImportConstraints } from '../lib/services/playlist';
 import { DBKara, DBKaraBase } from '../lib/types/database/kara';
 import { DBPL, DBPLC, DBPLCBase, PLCInsert } from '../lib/types/database/playlist';
-import { AggregatedCriteria, PlaylistExport, PLCEditParams } from '../lib/types/playlist';
+import { PlaylistExport, PLCEditParams } from '../lib/types/playlist';
 import { OldJWTToken, User } from '../lib/types/user';
 import { getConfig } from '../lib/utils/config';
 import { date, now, time as time2 } from '../lib/utils/date';
@@ -51,7 +51,7 @@ import Task from '../lib/utils/taskManager';
 import { check } from '../lib/utils/validators';
 import { emitWS } from '../lib/utils/ws';
 import { AutoMixParams, AutoMixPlaylistInfo, PlaylistLimit } from '../types/favorites';
-import { CurrentSong, Pos, ShuffleMethods } from '../types/playlist';
+import { AddKaraParams, CurrentSong, Pos, ShuffleMethods } from '../types/playlist';
 import { adminToken } from '../utils/constants';
 import sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
@@ -502,27 +502,24 @@ export function isAllKarasInPlaylist(karas: PLCInsert[], playlist: DBPLCBase[]) 
  * This is one of the most cursed functions in Karaoke Mugen.
  * Please be calm when reading it.
  */
-export async function addKaraToPlaylist(
-	kids: string[],
-	requester: string,
-	plaid?: string,
-	pos?: number,
-	ignoreQuota?: boolean,
-	refresh = true,
-	criterias?: AggregatedCriteria[],
-	throwOnMissingKara = true,
-	visible = true
-) {
-	requester = requester.toLowerCase();
+export async function addKaraToPlaylist(params: AddKaraParams) {
+	// Defaults
+	params = {
+		refresh: true,
+		throwOnMissingKara: true,
+		visible: true,
+		...params,
+	};
+	const requester = params.requester.toLowerCase();
 	let errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR';
 	const conf = getConfig();
 	const state = getState();
-	if (!plaid) plaid = state.publicPlaid;
-	const [pl, karasInDB] = await Promise.all([getPlaylistInfo(plaid), getKarasMicro(kids)]);
+	if (!params.plaid) params.plaid = state.publicPlaid;
+	const [pl, karasInDB] = await Promise.all([getPlaylistInfo(params.plaid), getKarasMicro(params.kids)]);
 	const karas: DBKaraBase[] = [];
 	try {
 		profile('addKaraToPL');
-		if (!pl) throw { code: 404, msg: `Playlist ${plaid} unknown` };
+		if (!pl) throw { code: 404, msg: `Playlist ${params.plaid} unknown` };
 
 		const user: User = await getUser(requester);
 		if (!user) throw { code: 404, msg: 'Requester does not exist' };
@@ -530,15 +527,15 @@ export async function addKaraToPlaylist(
 		profile('addKaraToPL-checkKIDExistence');
 		const allKaras = new Set(karasInDB.map(k => k.kid));
 		const karasUnknown = [];
-		kids.forEach(kid => {
+		params.kids.forEach(kid => {
 			if (!allKaras.has(kid)) karasUnknown.push(kid);
 		});
-		if (karasUnknown.length > 0 && throwOnMissingKara)
+		if (karasUnknown.length > 0 && params.throwOnMissingKara)
 			throw { code: 404, msg: 'One of the karaokes does not exist' };
 		profile('addKaraToPL-checkKIDExistence');
 		// Sort karas from our database by the list that was provided to this function, so songs are added in the correct order
 		profile('addKaraToPL-sort');
-		for (const kid of kids) {
+		for (const kid of params.kids) {
 			karas.push(karasInDB.find(k => k.kid === kid));
 		}
 		profile('addKaraToPL-sort');
@@ -546,7 +543,7 @@ export async function addKaraToPlaylist(
 			service,
 		});
 
-		if (user.type > 0 && !ignoreQuota) {
+		if (user.type > 0 && !params.ignoreQuota) {
 			// If user is not admin
 			// Check if karaoke is in blacklist
 			const [blacklist, whitelist] = await Promise.all([
@@ -558,7 +555,7 @@ export async function addKaraToPlaylist(
 				throw { code: 451 };
 			}
 			// Check user quota first
-			if (!(await isUserAllowedToAddKara(plaid, user, karas[0].duration))) {
+			if (!(await isUserAllowedToAddKara(params.plaid, user, karas[0].duration))) {
 				errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED';
 				throw { code: 429 };
 			}
@@ -570,17 +567,17 @@ export async function addKaraToPlaylist(
 				kid: k.kid,
 				username: requester,
 				nickname: user.nickname,
-				plaid,
+				plaid: params.plaid,
 				added_at: date_add,
-				criterias: criterias?.find(c => c.kid === k.kid)?.criterias,
+				criterias: params.criterias?.find(c => c.kid === k.kid)?.criterias,
 			};
 		});
 
 		profile('addKaraToPL-determinePos');
 		profile('addKaraToPL-determinePos-queries');
-		const [playlistMaxPos] = await Promise.all([selectMaxPosInPlaylist(plaid)]);
+		const [playlistMaxPos] = await Promise.all([selectMaxPosInPlaylist(params.plaid)]);
 		profile('addKaraToPL-determinePos-queries');
-		const plContents = await selectPlaylistContentsMicro(plaid);
+		const plContents = await selectPlaylistContentsMicro(params.plaid);
 		// Making a unique ID depending on if we're in public playlist or something else.
 		// Unique ID here is to determine if a song is already present or not
 		// A person cannot add a song a second time if it's already pending. However, if it's been already played, it won't count
@@ -611,21 +608,21 @@ export async function addKaraToPlaylist(
 		// Find out position of currently playing karaoke
 		// If no flag_playing is found, we'll add songs at the end of playlist.
 		// -1 means the admin right-clicked and the song is to be added after the current playing song
-		if (pos === -1) pos = playingPos + 1;
-		if (pos) {
-			await shiftPosInPlaylist(plaid, pos, kids.length);
+		if (params.pos === -1) params.pos = playingPos + 1;
+		if (params.pos) {
+			await shiftPosInPlaylist(params.plaid, params.pos, params.kids.length);
 		} else {
-			pos = playlistMaxPos + 1;
+			params.pos = playlistMaxPos + 1;
 		}
 		for (const i in karaList) {
 			if ({}.hasOwnProperty.call(karaList, i)) {
-				karaList[i].pos = pos + +i;
+				karaList[i].pos = params.pos + +i;
 				// Test if we're adding a invisible/masked karaoke or not
 				karaList[i].flag_visible = true;
 				if (
 					(!conf.Playlist.MysterySongs.AddedSongVisibilityAdmin && user.type === 0) ||
 					(!conf.Playlist.MysterySongs.AddedSongVisibilityPublic && user.type > 0) ||
-					visible === false
+					params.visible === false
 				) {
 					karaList[i].flag_visible = false;
 				}
@@ -644,11 +641,11 @@ export async function addKaraToPlaylist(
 			);
 		}
 
-		updatePlaylistLastEditTime(plaid);
+		updatePlaylistLastEditTime(params.plaid);
 
 		// Auto-balance current playlist if user isn't in first pool
 		if (conf.Karaoke.AutoBalance) {
-			let playlist = await getPlaylistContentsMini(plaid);
+			let playlist = await getPlaylistContentsMini(params.plaid);
 			const playingPosInPL = getPlayingPos(playlist);
 			if (playingPosInPL) {
 				playlist = playlist.filter(plc => plc.pos > playingPosInPL.plc_id_pos);
@@ -657,7 +654,7 @@ export async function addKaraToPlaylist(
 			const checker = new Set<string>();
 			for (const content of playlist) {
 				if (checker.has(content.username)) {
-					await shufflePlaylist(plaid, 'balance');
+					await shufflePlaylist(params.plaid, 'balance');
 					break;
 				} else if (content.username === user.login) {
 					break;
@@ -670,16 +667,16 @@ export async function addKaraToPlaylist(
 		// If not, we'll have to set the karaoke we just added as the currently playing one. updatePlaylistDuration is done by setPlaying already.
 		profile('addKaraToPL-updateFlagPlaying');
 		if (!plContents.find((plc: DBPLCBase) => plc.flag_playing)) {
-			await setPlaying(PLCsInserted[0].plcid, plaid);
+			await setPlaying(PLCsInserted[0].plcid, params.plaid);
 		} else {
-			await updatePlaylistDuration(plaid);
+			await updatePlaylistDuration(params.plaid);
 		}
 		profile('addKaraToPL-updateFlagPlaying');
 		profile('addKaraToPL-updateCountAndSongsLeft');
-		await Promise.all([updatePlaylistKaraCount(plaid), updateSongsLeft(user.login, plaid)]);
+		await Promise.all([updatePlaylistKaraCount(params.plaid), updateSongsLeft(user.login, params.plaid)]);
 		profile('addKaraToPL-updateCountAndSongsLeft');
 		const plc = await getPLCInfo(PLCsInserted[0].plcid, true, requester);
-		if (plaid === state.currentPlaid) {
+		if (params.plaid === state.currentPlaid) {
 			checkMediaAndDownload(karas);
 			writeStreamFiles('current_kara_count');
 			writeStreamFiles('time_remaining_in_current_playlist');
@@ -689,7 +686,7 @@ export async function addKaraToPlaylist(
 				await playPlayer(true);
 			}
 		}
-		if (plaid === state.publicPlaid) {
+		if (params.plaid === state.publicPlaid) {
 			emitWS(
 				'KIDUpdated',
 				PLCsInserted.map(iplc => {
@@ -702,9 +699,9 @@ export async function addKaraToPlaylist(
 			);
 			writeStreamFiles('public_kara_count');
 		}
-		if (refresh) {
-			emitWS('playlistContentsUpdated', plaid);
-			emitWS('playlistInfoUpdated', plaid);
+		if (params.refresh) {
+			emitWS('playlistContentsUpdated', params.plaid);
+			emitWS('playlistInfoUpdated', params.plaid);
 		}
 		return { plc };
 	} catch (err) {
@@ -1630,17 +1627,12 @@ export async function createAutoMix(params: AutoMixParams, username: string): Pr
 		// Let's reshuffle normally now that the playlist is trimmed.
 		balancedList = shuffle(balancedList);
 
-		await addKaraToPlaylist(
-			balancedList.map(k => k.kid),
-			username,
+		await addKaraToPlaylist({
+			kids: balancedList.map(k => k.kid),
+			requester: username,
 			plaid,
-			undefined,
-			undefined,
-			undefined,
-			undefined,
-			undefined,
-			params.surprisePlaylist !== true
-		);
+			visible: params.surprisePlaylist !== true,
+		});
 		emitWS('playlistsUpdated');
 		return {
 			plaid,
