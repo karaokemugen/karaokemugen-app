@@ -1283,7 +1283,8 @@
 		"COMMITING_CHANGES": "Committing changes",
 		"PREPARING_CHANGES": "Preparing changes",
 		"REFRESHING_DATA": "Refreshing data…",
-		"UPLOADING_FTP": "Uploading to the FTP…"
+		"UPLOADING_FTP": "Uploading to the FTP…",
+		"DUMMY_TASK": "No ongoing tasks"
 	},
 	"ERROR_CODES": {
 		"UNKNOWN_COMMAND": "Unknown command (API)",
