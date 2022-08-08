@@ -1,5 +1,6 @@
 import { DeleteOutlined, DownloadOutlined, UserOutlined } from '@ant-design/icons';
 import { Alert, Button, Layout, Modal, Table } from 'antd';
+import Title from '../components/Title';
 import i18next from 'i18next';
 import { useContext, useEffect, useState } from 'react';
 
@@ -240,10 +241,7 @@ export default function Inbox() {
 		<Alert style={{ textAlign: 'left', margin: '20px' }} message={message} type="error" />
 	) : (
 		<>
-			<Layout.Header>
-				<div className="title">{i18next.t('HEADERS.INBOX.TITLE')}</div>
-				<div className="description">{i18next.t('HEADERS.INBOX.DESCRIPTION')}</div>
-			</Layout.Header>
+			<Title title={i18next.t('HEADERS.INBOX.TITLE')} description={i18next.t('HEADERS.INBOX.DESCRIPTION')} />
 			<Layout.Content>
 				<Table dataSource={inbox} columns={columns} rowKey="inid" />
 			</Layout.Content>

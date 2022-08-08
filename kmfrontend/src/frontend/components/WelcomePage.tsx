@@ -3,7 +3,7 @@ import '../styles/start/WelcomePage.scss';
 
 import i18next from 'i18next';
 import { useContext, useEffect, useMemo, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { Repository } from '../../../../src/types/config';
 import { DBStats } from '../../../../src/types/database/database';
@@ -239,7 +239,7 @@ function WelcomePage() {
 				<div className="logo">
 					<img src={logo} alt="Logo Karaoke Mugen" />
 				</div>
-				<TasksEvent limit={3} isWelcomePage={true} />
+				<TasksEvent limit={3} styleTask="page-tasks-wrapper" />
 				<div className="aside">
 					<nav>
 						<ul>

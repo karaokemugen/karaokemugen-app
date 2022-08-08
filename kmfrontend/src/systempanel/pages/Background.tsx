@@ -1,5 +1,6 @@
 import { DeleteOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
 import { Alert, Button, Image, Layout, Modal, Select, Table, Typography, Upload } from 'antd';
+import Title from '../components/Title';
 import i18next from 'i18next';
 import { basename } from 'path-browserify';
 import { useEffect, useState } from 'react';
@@ -129,10 +130,10 @@ export default function Background() {
 
 	return (
 		<>
-			<Layout.Header>
-				<div className="title">{i18next.t('HEADERS.BACKGROUNDS.TITLE')}</div>
-				<div className="description">{i18next.t('HEADERS.BACKGROUNDS.DESCRIPTION')}</div>
-			</Layout.Header>
+			<Title
+				title={i18next.t('HEADERS.BACKGROUNDS.TITLE')}
+				description={i18next.t('HEADERS.BACKGROUNDS.DESCRIPTION')}
+			/>
 			<Layout.Content>
 				<p>{i18next.t('BACKGROUNDS_MGMT.EXPL')}</p>
 				<Alert

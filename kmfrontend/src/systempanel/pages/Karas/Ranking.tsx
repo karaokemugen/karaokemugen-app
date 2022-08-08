@@ -6,6 +6,7 @@ import { DBKara } from '../../../../../src/lib/types/database/kara';
 import GlobalContext from '../../../store/context';
 import { getTagInLocale, getTagInLocaleList, getTitleInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
+import Title from '../../components/Title';
 
 interface RankingState {
 	karas: DBKara[];
@@ -37,14 +38,14 @@ class Ranking extends Component<unknown, RankingState> {
 	render() {
 		return (
 			<>
-				<Layout.Header>
-					<div className="title">{i18next.t('HEADERS.MOST_REQUESTED.TITLE')}</div>
-					<div className="description">
-						{this.context.globalState.settings.data.config?.Online?.FetchPopularSongs
+				<Title
+					title={i18next.t('HEADERS.MOST_REQUESTED.TITLE')}
+					description={
+						this.context.globalState.settings.data.config?.Online?.FetchPopularSongs
 							? i18next.t('HEADERS.MOST_REQUESTED.DESCRIPTION_ONLINE')
-							: i18next.t('HEADERS.MOST_REQUESTED.DESCRIPTION')}
-					</div>
-				</Layout.Header>
+							: i18next.t('HEADERS.MOST_REQUESTED.DESCRIPTION')
+					}
+				/>
 				<Layout.Content>
 					<Button style={{ margin: '1em' }} type="primary" onClick={this.refresh}>
 						{i18next.t('REFRESH')}

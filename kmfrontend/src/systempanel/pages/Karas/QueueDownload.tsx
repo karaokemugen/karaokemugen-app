@@ -1,5 +1,6 @@
 import { ClockCircleTwoTone, InfoCircleTwoTone, SyncOutlined, WarningTwoTone } from '@ant-design/icons';
 import { Button, Cascader, Col, Input, Layout, Row, Select, Table } from 'antd';
+import Title from '../../components/Title';
 import i18next from 'i18next';
 import prettyBytes from 'pretty-bytes';
 import { Component } from 'react';
@@ -213,10 +214,10 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 	render() {
 		return (
 			<>
-				<Layout.Header>
-					<div className="title">{i18next.t('HEADERS.DOWNLOAD_QUEUE.TITLE')}</div>
-					<div className="description">{i18next.t('HEADERS.DOWNLOAD_QUEUE.DESCRIPTION')}</div>
-				</Layout.Header>
+				<Title
+					title={i18next.t('HEADERS.DOWNLOAD_QUEUE.TITLE')}
+					description={i18next.t('HEADERS.DOWNLOAD_QUEUE.DESCRIPTION')}
+				/>
 				<Layout.Content>
 					<Row justify="space-between">
 						<Col flex={3} style={{ marginRight: '10px' }}>

@@ -9,7 +9,6 @@ import i18next from 'i18next';
 import { Component } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
-import TasksEvent from '../../TasksEvent';
 import { getSocket } from '../../utils/socket';
 import { displayMessage } from '../../utils/tools';
 import Loading from '../components/Loading';
@@ -84,7 +83,6 @@ class KMSystem extends Component<unknown, unknown> {
 					</Layout.Sider>
 					<Layout>
 						<Loading />
-						<TasksEvent limit={5} />
 						<Routes>
 							<Route path="/home" element={<Home />} />
 							<Route path="/log" element={<Log />} />

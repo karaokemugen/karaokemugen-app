@@ -1,14 +1,15 @@
 import { Layout } from 'antd';
+import Title from '../../components/Title';
 import i18next from 'i18next';
 import KaraList from '../../components/KaraList';
 
 function KaraListPage() {
 	return (
 		<>
-			<Layout.Header>
-				<div className="title">{i18next.t('HEADERS.KARAOKE_LIST.TITLE')}</div>
-				<div className="description">{i18next.t('HEADERS.KARAOKE_LIST.DESCRIPTION')}</div>
-			</Layout.Header>
+			<Title
+				title={i18next.t('HEADERS.KARAOKE_LIST.TITLE')}
+				description={i18next.t('HEADERS.KARAOKE_LIST.DESCRIPTION')}
+			/>
 			<Layout.Content>
 				<KaraList />
 			</Layout.Content>

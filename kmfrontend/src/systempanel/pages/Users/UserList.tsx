@@ -1,5 +1,6 @@
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Divider, Input, Layout, Modal, Table } from 'antd';
+import Title from '../../components/Title';
 import i18next from 'i18next';
 import { Component } from 'react';
 import { Link } from 'react-router-dom';
@@ -48,10 +49,10 @@ class UserList extends Component<unknown, UserListState> {
 	render() {
 		return (
 			<>
-				<Layout.Header>
-					<div className="title">{i18next.t('HEADERS.USER_LIST.TITLE')}</div>
-					<div className="description">{i18next.t('HEADERS.USER_LIST.DESCRIPTION')}</div>
-				</Layout.Header>
+				<Title
+					title={i18next.t('HEADERS.USER_LIST.TITLE')}
+					description={i18next.t('HEADERS.USER_LIST.DESCRIPTION')}
+				/>
 				<Layout.Content>
 					<Link to={'/system/users/create'}>
 						<Button style={{ margin: '0.75em' }} type="primary">

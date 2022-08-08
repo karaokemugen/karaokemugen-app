@@ -567,6 +567,7 @@
 	"VIEW_LIKES": "Likes",
 	"VIEW_LIKES_TOOLTIP": "The song with the most likes will be showed first, this does not impact the real playlist order.",
 	"KARA_SUGGESTION_NOT_FOUND": "Can't find your favorite song? Check your configured online repositories as well as the suggestions site if your wish has not already been granted:",
+	"REPO_IN_PROGRESS": "Karaoke Mugen isn't quite ready, please wait for the following tasks to end.",
 	"ONLINE_STATS": {
 		"TITLE": "Stats",
 		"INTRO": "Karaoke Mugen can send anonymous information about your instance to Karaoke Mugen Server to create usage statistics.",

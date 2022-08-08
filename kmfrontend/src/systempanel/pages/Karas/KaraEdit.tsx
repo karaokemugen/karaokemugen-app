@@ -1,4 +1,5 @@
 import { Layout } from 'antd';
+import Title from '../../components/Title';
 import i18next from 'i18next';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -55,14 +56,10 @@ function KaraEdit() {
 
 	return (
 		<>
-			<Layout.Header>
-				<div className="title">
-					{i18next.t(kid ? 'HEADERS.KARAOKE_EDIT.TITLE' : 'HEADERS.KARAOKE_NEW.TITLE')}
-				</div>
-				<div className="description">
-					{i18next.t(kid ? 'HEADERS.KARAOKE_EDIT.DESCRIPTION' : 'HEADERS.KARAOKE_NEW.DESCRIPTION')}
-				</div>
-			</Layout.Header>
+			<Title
+				title={i18next.t(kid ? 'HEADERS.KARAOKE_EDIT.TITLE' : 'HEADERS.KARAOKE_NEW.TITLE')}
+				description={i18next.t(kid ? 'HEADERS.KARAOKE_EDIT.DESCRIPTION' : 'HEADERS.KARAOKE_NEW.DESCRIPTION')}
+			/>
 			<Layout.Content>
 				{loaded && <KaraForm kara={kara} save={kid ? saveUpdate : saveNew} handleCopy={handleCopy} />}
 			</Layout.Content>

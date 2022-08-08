@@ -1,4 +1,5 @@
 import { Button, Col, Layout, Row } from 'antd';
+import Title from '../components/Title';
 import i18next from 'i18next';
 import { Component } from 'react';
 import { Trans } from 'react-i18next';
@@ -25,10 +26,10 @@ class Database extends Component<unknown, unknown> {
 	render() {
 		return (
 			<>
-				<Layout.Header>
-					<div className="title">{i18next.t('HEADERS.DATABASE.TITLE')}</div>
-					<div className="description">{i18next.t('HEADERS.DATABASE.DESCRIPTION')}</div>
-				</Layout.Header>
+				<Title
+					title={i18next.t('HEADERS.DATABASE.TITLE')}
+					description={i18next.t('HEADERS.DATABASE.DESCRIPTION')}
+				/>
 				<Layout.Content style={{ padding: '25px' }}>
 					<Row justify="space-between" style={{ flexWrap: 'nowrap' }}>
 						<Col flex="22em">

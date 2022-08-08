@@ -569,6 +569,7 @@
 	"VIEW_LIKES": "J'aime",
 	"VIEW_LIKES_TOOLTIP": "Les chansons avec le plus de J'aime sont affichées en premier, ceci n'a pas d'effet sur l'ordonnancement de la liste de lecture.",
 	"KARA_SUGGESTION_NOT_FOUND": "Vous ne trouvez pas votre bonheur ? Vérifiez sur vos dépôts en ligne configurés ainsi que sur le site de suggestions si votre souhait n'est pas déjà exaucé :",
+	"REPO_IN_PROGRESS": "Karaoke Mugen n'est pas encore tout à fait prêt, merci de patienter en attendant que les tâches ci-dessus soient terminées.",
 	"ONLINE_STATS": {
 		"TITLE": "Statistiques",
 		"INTRO": "Karaoke Mugen peut envoyer des informations anonymisées sur votre instance à Karaoke Mugen Server afin d'établir des statistiques d'utilisation.",
@@ -1284,7 +1285,8 @@
 		"COMMITING_CHANGES": "Réalisation des modifications",
 		"PREPARING_CHANGES": "Préparation des modifications",
 		"REFRESHING_DATA": "Rafraichissement des données…",
-		"UPLOADING_FTP": "Envoi sur le FTP…"
+		"UPLOADING_FTP": "Envoi sur le FTP…",
+		"DUMMY_TASK": "Aucune tâche en cours"
 	},
 	"ERROR_CODES": {
 		"UNKNOWN_COMMAND": "Commande inconnue (API)",

@@ -12,6 +12,7 @@ import {
 	SettingOutlined,
 } from '@ant-design/icons';
 import { Button, Card, Col, Layout, Row } from 'antd';
+import Title from '../components/Title';
 import i18next from 'i18next';
 import { useContext } from 'react';
 import { Link } from 'react-router-dom';
@@ -42,10 +43,7 @@ function Home() {
 
 	return (
 		<>
-			<Layout.Header>
-				<div className="title">{i18next.t('HEADERS.HOME.TITLE')}</div>
-				<div className="description">{i18next.t('HEADERS.HOME.DESCRIPTION')}</div>
-			</Layout.Header>
+			<Title title={i18next.t('HEADERS.HOME.TITLE')} description={i18next.t('HEADERS.HOME.DESCRIPTION')} />
 			<Layout.Content>
 				<Row gutter={[16, 16]}>
 					<Col span={12}>
