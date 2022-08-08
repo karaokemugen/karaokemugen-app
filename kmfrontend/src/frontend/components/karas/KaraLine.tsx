@@ -229,10 +229,18 @@ function KaraLine(props: IProps) {
 		return karaTags.filter(el => !!el);
 	})();
 
-	const getSerieOrSingers = (data: KaraElement) => {
-		return data.series && data.series.length > 0
-			? data.series.map(e => getTagInLocale(context?.globalState.settings.data, e, props.i18nTag)).join(', ')
-			: data.singers.map(e => getTagInLocale(context?.globalState.settings.data, e, props.i18nTag)).join(', ');
+	const getSerieOrSingerGroupsOrSingers = (data: KaraElement) => {
+		if (data.series?.length > 0) {
+			return data.series
+				.map(e => getTagInLocale(context?.globalState.settings.data, e, props.i18nTag))
+				.join(', ');
+		}
+		if (data.singergroups?.length > 0) {
+			return data.singergroups
+				.map(e => getTagInLocale(context?.globalState.settings.data, e, props.i18nTag))
+				.join(', ');
+		}
+		return data.singers.map(e => getTagInLocale(context?.globalState.settings.data, e, props.i18nTag)).join(', ');
 	};
 
 	const openKaraMenu = (event: MouseEvent) => {
@@ -274,7 +282,7 @@ function KaraLine(props: IProps) {
 	};
 
 	const karaTitle = buildKaraTitle(context.globalState.settings.data, props.kara, false, props.i18nTag);
-	const karaSerieOrSingers = getSerieOrSingers(props.kara);
+	const karaSerieOrSingerGroupsOrSingers = getSerieOrSingerGroupsOrSingers(props.kara);
 	const plaid = getPlaylistInfo(props.side, context).plaid;
 	const shouldShowProfile =
 		context.globalState.settings.data.config.Frontend?.ShowAvatarsOnPlaylist && props.avatar_file;
@@ -404,7 +412,7 @@ function KaraLine(props: IProps) {
 										{props.kara.songtypes[0].short?.toUpperCase() || props.kara.songtypes[0].name}{' '}
 										{props.kara.songorder}
 									</span>
-									{karaSerieOrSingers}
+									{karaSerieOrSingerGroupsOrSingers}
 								</div>
 								{props.kara.upvotes && props.scope === 'admin' ? (
 									<div className="upvoteCount">

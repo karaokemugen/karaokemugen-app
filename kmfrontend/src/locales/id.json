@@ -1194,7 +1194,6 @@
 		"SESSION_EXPORT_ERROR": "Galat mengekspor sesi",
 		"DOWNLOADS_START_ERROR": "Galat memulai unduhan",
 		"FAVORITES_ADDED_ERROR": "Galat menambahkan favorit",
-		"PLAYLIST_MODE_ADD_SONG_ERROR_NO_DUPLICATE_SERIES_SINGERS": "Tidak diperbolehkan serial atau penyanyi duplikat",
 		"SETTINGS_UPDATE_ERROR": "Galat memperbarui pengaturan",
 		"FS_ERROR": "Galat menjelajahi sistem berkas",
 		"FAVORITES_IMPORTED_ERROR": "Galat mengimpor favorit",

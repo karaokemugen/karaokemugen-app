@@ -347,10 +347,12 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 			{
 				serieSingersRequired:
 					this.formRef.current.getFieldValue('singers')?.length === 0 &&
+					this.formRef.current.getFieldValue('singergroups')?.length === 0 &&
 					this.formRef.current.getFieldValue('series')?.length === 0,
 			},
 			() => {
 				this.formRef.current.validateFields(['series']);
+				this.formRef.current.validateFields(['singergroups']);
 				this.formRef.current.validateFields(['singers']);
 			}
 		);
@@ -455,6 +457,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					langs: this.props.kara?.langs || this.state.parentKara?.langs,
 					year: this.props.kara?.year || this.state.parentKara?.year || new Date().getFullYear(),
 					singers: this.props.kara?.singers || this.state.parentKara?.singers,
+					singergroups: this.props.kara?.singergroups || this.state.parentKara?.singergroups,
 					songwriters: this.props.kara?.songwriters || this.state.parentKara?.songwriters,
 					creators: this.props.kara?.creators || this.state.parentKara?.creators,
 					authors: this.props.kara?.authors || this.state.parentKara?.authors,
@@ -814,6 +817,27 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						tagType={2}
 						onChange={tags => {
 							this.formRef.current.setFieldsValue({ singer: tags });
+							this.onChangeSingersSeries();
+						}}
+					/>
+				</Form.Item>
+				<Form.Item
+					label={i18next.t('KARA.SINGERGROUPS_BY')}
+					labelCol={{ flex: '0 1 220px' }}
+					wrapperCol={{ span: 6 }}
+					rules={[
+						{
+							required: this.state.serieSingersRequired,
+							message: i18next.t('KARA.SERIES_SINGERS_REQUIRED'),
+						},
+					]}
+					name="singergroups"
+				>
+					<EditableTagGroup
+						form={this.formRef.current}
+						tagType={17}
+						onChange={tags => {
+							this.formRef.current.setFieldsValue({ singergroup: tags });
 							this.onChangeSingersSeries();
 						}}
 					/>

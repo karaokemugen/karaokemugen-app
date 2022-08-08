@@ -163,7 +163,8 @@
 				"13": "attached to the platform",
 				"14": "that are",
 				"15": "with the warning",
-				"16": "included in the collection"
+				"16": "included in the collection",
+				"17": "played by music band"
 			},
 			"YEAR": "The karaokes from year {{year}} are on the list.",
 			"KID": "This karaokes is on the list.",
@@ -840,6 +841,7 @@
 		"LANGUAGES_REQUIRED": "Please choose a language",
 		"YEAR": "Broadcast year",
 		"YEAR_TOOLTIP": "Year when the series was broadcasted or the video was produced",
+		"SINGERGROUPS_TOOLTIP": "If the singers belong to a music band, put them in here. The band will be displayed in the player and song lists instead of individual singers.",
 		"SONGWRITERS_TOOLTIP": "Composers, Arrangers and Lyricists.",
 		"CREATORS_TOOLTIP": "Entity that created the series. Can be animation studio, movie studio, or game studio.",
 		"KARA_AUTHORS_REQUIRED": "Author of the karaoke is mandatory",
@@ -889,6 +891,7 @@
 			"EDIT": "Batch edit",
 			"SELECT": "Select"
 		},
+		"SINGERGROUPS_BY": "from the music band",
 		"SINGERS_BY": "Sung by",
 		"SONGWRITERS_BY": "Written by",
 		"CREATORS_BY": "Created by",
@@ -1031,6 +1034,8 @@
 		"KARAOKES_WITH_TAGS": "Karaokes with this tag"
 	},
 	"TAG_TYPES": {
+		"SINGERGROUPS_one": "Band",
+		"SINGERGROUPS_other": "Bands",
 		"SINGERS_one": "Singer",
 		"SINGERS_other": "Singers",
 		"SONGTYPES_one": "Song type",
@@ -1325,7 +1330,6 @@
 		"KARA_EDITED_ERROR": "Error editing song",
 		"PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED": "This song has already been added.",
 		"PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED": "Can't add any song, quota reached",
-		"PLAYLIST_MODE_ADD_SONG_ERROR_NO_DUPLICATE_SERIES_SINGERS": "No duplicate series or singers are allowed",
 		"PLAYLIST_MODE_ADD_SONG_ERROR_BLACKLISTED": "Song is blacklisted and cannot be added",
 		"PLAYLIST_MODE_ADD_SONG_ERROR": "Error adding a song to a playlist",
 		"LYRICS_VIEW_ERROR": "Error getting lyrics",

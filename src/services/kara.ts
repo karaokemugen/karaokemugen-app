@@ -159,9 +159,17 @@ export function formatKaraList(karaList: any, from: number, count: number): Kara
  */
 export function getSongSeriesSingers(kara: DBKara): string {
 	const langs = [getConfig().Player.Display.SongInfoLanguage, convert1LangTo2B(getState().defaultLocale), 'eng'];
+	// Multiple series aren't very common, so we return always the first one
 	if (kara.series?.length > 0) {
 		return getTagNameInLanguage(kara.series[0], langs);
 	}
+	// Multiple singer groups aren't too common but you never know : we'll return at least 2, then add ... if needs be.
+	if (kara.singergroups?.length > 0) {
+		const result = kara.singergroups.slice(0, 2).map(sg => getTagNameInLanguage(sg, langs));
+		if (kara.singergroups.length > 2) result.push('...');
+		return result.join(', ');
+	}
+	// Same with singers
 	const result = kara.singers.map(s => getTagNameInLanguage(s, langs)).slice(0, 2);
 	if (kara.singers.length > 2) result.push('...');
 	return result.join(', ');

@@ -124,18 +124,24 @@ function PlayerBox(props: IProps) {
 				if (props.onKaraChange) props.onKaraChange(null);
 			} else if (data.currentSong) {
 				const kara = data.currentSong;
-				const serieText =
-					kara.series?.length > 0
-						? kara.series
-								.slice(0, 3)
-								.map(e => getTagInLocale(context?.globalState.settings.data, e))
-								.join(', ') + (kara.series.length > 3 ? '...' : '')
-						: kara.singers
-						? kara.singers
-								.slice(0, 3)
-								.map(e => e.name)
-								.join(', ') + (kara.singers.length > 3 ? '...' : '')
-						: '';
+				let serieText = '';
+				if (kara.series?.length > 0) {
+					serieText =
+						kara.series.map(e => getTagInLocale(context?.globalState.settings.data, e)).join(', ') +
+						(kara.series.length > 3 ? '...' : '');
+				} else if (kara.singergroups?.length > 0) {
+					serieText =
+						kara.singergroups
+							.slice(0, 3)
+							.map(e => e.name)
+							.join(', ') + (kara.singers.length > 3 ? '...' : '');
+				} else if (kara.singers) {
+					serieText =
+						kara.singers
+							.slice(0, 3)
+							.map(e => e.name)
+							.join(', ') + (kara.singers.length > 3 ? '...' : '');
+				}
 				const songtypeText = sortAndHideTags(kara.songtypes, 'public')
 					.map(e => (e.short ? +e.short : e.name))
 					.join(' ');
