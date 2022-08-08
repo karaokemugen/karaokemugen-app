@@ -116,7 +116,7 @@
 			}
 		}
 
-		.welcome-page-tasks-wrapper {
+		.page-tasks-wrapper {
 			grid-area: tasks;
 			@media (max-width: $mugen-breakpoint-large) {
 				position: fixed;

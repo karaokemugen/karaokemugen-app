@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import { commandBackend } from '../../utils/socket';
 import { dotify, expand } from '../../utils/tools';
 import FoldersElement from '../components/FoldersElement';
+import Title from '../components/Title';
 
 interface ConfigProps {
 	properties?: string[];
@@ -192,20 +193,16 @@ class Config extends Component<ConfigProps, ConfigState> {
 	render() {
 		return (
 			<>
-				<Layout.Header>
-					<div className="title">
-						{i18next.t(
-							this.props.properties ? 'HEADERS.SYSTEM_PREFERENCES.TITLE' : 'HEADERS.CONFIGURATION.TITLE'
-						)}
-					</div>
-					<div className="description">
-						{i18next.t(
-							this.props.properties
-								? 'HEADERS.SYSTEM_PREFERENCES.DESCRIPTION'
-								: 'HEADERS.CONFIGURATION.DESCRIPTION'
-						)}
-					</div>
-				</Layout.Header>
+				<Title
+					title={i18next.t(
+						this.props.properties ? 'HEADERS.SYSTEM_PREFERENCES.TITLE' : 'HEADERS.CONFIGURATION.TITLE'
+					)}
+					description={i18next.t(
+						this.props.properties
+							? 'HEADERS.SYSTEM_PREFERENCES.DESCRIPTION'
+							: 'HEADERS.CONFIGURATION.DESCRIPTION'
+					)}
+				/>
 				<Layout.Content>
 					<Button style={{ margin: '0.75em' }} type="primary" onClick={this.refresh}>
 						{i18next.t('CONFIG.SAVE')}

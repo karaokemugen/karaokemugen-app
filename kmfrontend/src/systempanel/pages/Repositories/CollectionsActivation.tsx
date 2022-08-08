@@ -1,4 +1,5 @@
 import { Checkbox, Table } from 'antd';
+import Title from '../../components/Title';
 import i18next from 'i18next';
 import { useContext, useEffect, useState } from 'react';
 import { Tag } from '../../../../../src/lib/types/tag';

@@ -1,5 +1,6 @@
 import { DeleteOutlined, EditOutlined, FileExcelOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Divider, Layout, Modal, Table } from 'antd';
+import Title from '../../components/Title';
 import i18next from 'i18next';
 import { Component } from 'react';
 import { Link } from 'react-router-dom';
@@ -75,10 +76,10 @@ class SessionList extends Component<unknown, SessionListState> {
 	render() {
 		return (
 			<>
-				<Layout.Header>
-					<div className="title">{i18next.t('HEADERS.SESSIONS.TITLE')}</div>
-					<div className="description">{i18next.t('HEADERS.SESSIONS.DESCRIPTION')}</div>
-				</Layout.Header>
+				<Title
+					title={i18next.t('HEADERS.SESSIONS.TITLE')}
+					description={i18next.t('HEADERS.SESSIONS.DESCRIPTION')}
+				/>
 				<Layout.Content>
 					<Link to={'/system/sessions/new'}>
 						<Button style={{ margin: '0.75em' }} type="primary">

@@ -7,6 +7,7 @@ import {
 	WarningTwoTone,
 } from '@ant-design/icons';
 import { Button, Cascader, Col, Input, Layout, Radio, Row, Select, Table } from 'antd';
+import Title from '../../components/Title';
 import i18next from 'i18next';
 import prettyBytes from 'pretty-bytes';
 import { Component } from 'react';
@@ -271,10 +272,10 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 	render() {
 		return (
 			<>
-				<Layout.Header>
-					<div className="title">{i18next.t('HEADERS.DOWNLOAD.TITLE')}</div>
-					<div className="description">{i18next.t('HEADERS.DOWNLOAD.DESCRIPTION')}</div>
-				</Layout.Header>
+				<Title
+					title={i18next.t('HEADERS.DOWNLOAD.TITLE')}
+					description={i18next.t('HEADERS.DOWNLOAD.DESCRIPTION')}
+				/>
 				<Layout.Content>
 					<Row justify="space-between">
 						<Col flex={3} style={{ marginRight: '10px' }}>

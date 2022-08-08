@@ -1,4 +1,5 @@
 import { Button, Layout, Table } from 'antd';
+import Title from '../../components/Title';
 import { ColumnProps } from 'antd/lib/table';
 import i18next from 'i18next';
 import { Component } from 'react';
@@ -38,10 +39,10 @@ class KaraList extends Component<unknown, KaraListState> {
 	render() {
 		return (
 			<>
-				<Layout.Header>
-					<div className="title">{i18next.t('HEADERS.HISTORY.TITLE')}</div>
-					<div className="description">{i18next.t('HEADERS.HISTORY.DESCRIPTION')}</div>
-				</Layout.Header>
+				<Title
+					title={i18next.t('HEADERS.HISTORY.TITLE')}
+					description={i18next.t('HEADERS.HISTORY.DESCRIPTION')}
+				/>
 				<Layout.Content>
 					<Button style={{ margin: '1em' }} type="primary" onClick={this.refresh}>
 						{i18next.t('REFRESH')}

@@ -26,6 +26,7 @@ import { KaraElement } from '../../types/kara';
 import CriteriasList from './CriteriasList';
 import KaraLine from './KaraLine';
 import PlaylistHeader from './PlaylistHeader';
+import TasksEvent from '../../../TasksEvent';
 
 const chunksize = 400;
 let timer: any;
@@ -313,26 +314,41 @@ function Playlist(props: IProps) {
 		[sortable, playing, data, songsBeforeSponsor, songsBeforeJingle, checkedKaras]
 	);
 
+	const [repoInProgress, setRepoInProgress] = useState(false);
+
 	const noRowsRenderer = useCallback(() => {
 		return (
 			<>
 				{getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.library &&
 				props.scope === 'admin' ? (
 					<div className="list-group-item karaSuggestion">
-						<div>{i18next.t('KARA_SUGGESTION_NOT_FOUND')}</div>
-						{context?.globalState.settings.data.config.System.Repositories.filter(
-							value => value.Enabled && value.Online
-						).map(value => (
-							<a key={value.Name} href={`https://${value.Name}/`}>
-								{value.Name}
-							</a>
-						))}
-						<a href="https://kara.moe/suggest">kara.moe/suggest</a>
+						<TasksEvent
+							limit={6}
+							styleTask="page-tasks-wrapper"
+							onTask={t => setRepoInProgress(t.length > 0)}
+						/>
+						{repoInProgress && getFilterValue(props.side).length === 0 ? (
+							<>
+								<div>{i18next.t('REPO_IN_PROGRESS')}</div>
+							</>
+						) : (
+							<>
+								<div>{i18next.t('KARA_SUGGESTION_NOT_FOUND')}</div>
+								{context?.globalState.settings.data.config.System.Repositories.filter(
+									value => value.Enabled && value.Online
+								).map(value => (
+									<a key={value.Name} href={`https://${value.Name}/`}>
+										{value.Name}
+									</a>
+								))}
+								<a href="https://kara.moe/suggest">kara.moe/suggest</a>
+							</>
+						)}
 					</div>
 				) : null}
 			</>
 		);
-	}, [getPlaylistInfo(props.side, context)?.plaid]);
+	}, [getPlaylistInfo(props.side, context)?.plaid, repoInProgress, getFilterValue(props.side)]);
 
 	const playlistContentsUpdatedFromServer = (idPlaylist: string) => {
 		if (getPlaylistInfo(props.side, context)?.plaid === idPlaylist && !stopUpdate) getPlaylist();

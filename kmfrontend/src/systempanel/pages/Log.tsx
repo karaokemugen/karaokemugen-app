@@ -1,5 +1,6 @@
 import { ArrowRightOutlined } from '@ant-design/icons';
 import { Collapse, Layout, Select, Timeline } from 'antd';
+import Title from '../components/Title';
 import i18next from 'i18next';
 import { Component } from 'react';
 
@@ -60,10 +61,7 @@ class Log extends Component<unknown, LogState> {
 	render() {
 		return (
 			<>
-				<Layout.Header>
-					<div className="title">{i18next.t('HEADERS.LOGS.TITLE')}</div>
-					<div className="description">{i18next.t('HEADERS.LOGS.DESCRIPTION')}</div>
-				</Layout.Header>
+				<Title title={i18next.t('HEADERS.LOGS.TITLE')} description={i18next.t('HEADERS.LOGS.DESCRIPTION')} />
 				<Layout.Content>
 					<Select defaultValue="info" onChange={this.setLevel} style={{ marginBottom: '1em' }}>
 						<Select.Option value="error">{i18next.t('LOGS.LEVELS.ERROR')}</Select.Option>

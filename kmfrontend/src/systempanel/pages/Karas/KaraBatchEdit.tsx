@@ -1,4 +1,5 @@
 import { Button, Cascader, Col, Layout, Radio, Row, Select, Table } from 'antd';
+import Title from '../../components/Title';
 import i18next from 'i18next';
 import { Component } from 'react';
 import { Link } from 'react-router-dom';
@@ -92,10 +93,10 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 	render() {
 		return (
 			<>
-				<Layout.Header>
-					<div className="title">{i18next.t('HEADERS.KARATAG_BATCH_EDIT.TITLE')}</div>
-					<div className="description">{i18next.t('HEADERS.KARATAG_BATCH_EDIT.DESCRIPTION')}</div>
-				</Layout.Header>
+				<Title
+					title={i18next.t('HEADERS.KARATAG_BATCH_EDIT.TITLE')}
+					description={i18next.t('HEADERS.KARATAG_BATCH_EDIT.DESCRIPTION')}
+				/>
 				<Layout.Content>
 					<Row justify="space-between" style={{ flexWrap: 'nowrap' }}>
 						<Col flex={'15%'}>

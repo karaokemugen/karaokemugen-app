@@ -1,5 +1,6 @@
 import { DeleteOutlined } from '@ant-design/icons';
 import { Button, Col, Layout, Radio, Row, Select, Table } from 'antd';
+import Title from '../components/Title';
 import i18next from 'i18next';
 import { Component } from 'react';
 
@@ -79,10 +80,10 @@ class SessionList extends Component<unknown, SessionListState> {
 	render() {
 		return (
 			<>
-				<Layout.Header>
-					<div className="title">{i18next.t('HEADERS.UNUSED_FILES.TITLE')}</div>
-					<div className="description">{i18next.t('HEADERS.UNUSED_FILES.DESCRIPTION')}</div>
-				</Layout.Header>
+				<Title
+					title={i18next.t('HEADERS.UNUSED_FILES.TITLE')}
+					description={i18next.t('HEADERS.UNUSED_FILES.DESCRIPTION')}
+				/>
 				<Layout.Content>
 					<Row style={{ marginBottom: '0.5em', marginLeft: '0.5em' }}>
 						{this.state.repositories && this.state.repository ? (
