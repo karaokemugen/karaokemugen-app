@@ -164,7 +164,8 @@
 				"13": "attachés à la plateforme",
 				"14": "qui sont une version",
 				"15": "avec le warning",
-				"16": "inclus dans la collection"
+				"16": "inclus dans la collection",
+				"17": "est joué par le groupe"
 			},
 			"YEAR": "Les karaokés de l'année {{year}} sont dans la liste.",
 			"KID": "Ce karaoké est dans la liste.",
@@ -841,7 +842,8 @@
 		"LANGUAGES_REQUIRED": "Choisissez une langue",
 		"YEAR": "Année de diffusion",
 		"YEAR_TOOLTIP": "Année de la diffusion de l'œuvre ou de la vidéo",
-		"SERIES_SINGERS_REQUIRED": "Les champs Œuvre et Chanté par ne peuvent être vide en même temps.",
+		"SERIES_SINGERS_REQUIRED": "Les champs Œuvre, Groupes de Chanteurs et Chanté par ne peuvent être vide en même temps.",
+		"SINGERGROUPS_TOOLTIP": "Si les chanteurs listés appartiennent à un groupe de musique, indiquez-le(s). Le groupe sera affiché sur le lecteur vidéo et dans les listes au détriment des chanteurs individuels",
 		"SONGWRITERS_TOOLTIP": "Compositeurs, Arrangeurs et paroliers.",
 		"CREATORS_TOOLTIP": "Entité qui a créé l'œuvre ou le clip. Peut être un studio d'animation, de cinéma, de jeu vidéo, etc.",
 		"KARA_AUTHORS_REQUIRED": "L'auteur du karaoké est obligatoire",
@@ -891,6 +893,7 @@
 			"EDIT": "Edition en masse",
 			"SELECT": "Sélectionnez"
 		},
+		"SINGERGROUPS_BY": "du groupe musical",
 		"SINGERS_BY": "Chanté par",
 		"SONGWRITERS_BY": "Composé par",
 		"CREATORS_BY": "Créé par",
@@ -1033,6 +1036,8 @@
 		"KARAOKES_WITH_TAGS": "Karaokés ayant ce tag"
 	},
 	"TAG_TYPES": {
+		"SINGERGROUPS_one": "Groupe de musique",
+		"SINGERGROUPS_other": "Groupes de musique",
 		"SINGERS_one": "Chanteur",
 		"SINGERS_other": "Chanteurs",
 		"SONGTYPES_one": "Type de chanson",
@@ -1327,7 +1332,6 @@
 		"KARA_EDITED_ERROR": "Erreur lors de l'édition d'une chanson",
 		"PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED": "Cette chanson a déjà été ajoutée.",
 		"PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED": "Ajout de chanson impossible, quota atteint",
-		"PLAYLIST_MODE_ADD_SONG_ERROR_NO_DUPLICATE_SERIES_SINGERS": "Impossible d'avoir plusieurs chansons de la même œuvre ou du même chanteur",
 		"PLAYLIST_MODE_ADD_SONG_ERROR_BLACKLISTED": "La chanson est en liste noire et ne peut être ajoutée",
 		"PLAYLIST_MODE_ADD_SONG_ERROR": "Erreur lors de l'ajout d'une chanson à une liste de lecture",
 		"LYRICS_VIEW_ERROR": "Erreur lors de la récupération des paroles",

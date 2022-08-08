@@ -64,16 +64,25 @@ class KaraList extends Component<unknown, KaraListState> {
 			title: `${i18next.t('TAG_TYPES.SERIES_other')} / ${i18next.t('KARA.SINGERS_BY')}`,
 			dataIndex: 'series',
 			key: 'series',
-			render: (series, record) =>
-				series && series.length > 0
-					? series
-							.map(serie =>
-								getTagInLocale(this.context?.globalState.settings.data, serie, this.state.i18n)
-							)
-							.join(', ')
-					: getTagInLocaleList(this.context.globalState.settings.data, record.singers, this.state.i18n).join(
-							', '
-					  ),
+			render: (series, record) => {
+				if (series?.length > 0) {
+					return getTagInLocaleList(this.context?.globalState.settings.data, series, this.state.i18n).join(
+						','
+					);
+				} else if (record.singergroups?.length > 0) {
+					return getTagInLocaleList(
+						this.context.globalState.settings.data,
+						record.singergroups,
+						this.state.i18n
+					).join(', ');
+				} else {
+					return getTagInLocaleList(
+						this.context.globalState.settings.data,
+						record.singers,
+						this.state.i18n
+					).join(', ');
+				}
+			},
 		},
 		{
 			title: i18next.t('TAG_TYPES.SONGTYPES_other'),

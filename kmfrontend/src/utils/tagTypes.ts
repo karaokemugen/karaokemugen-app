@@ -20,6 +20,7 @@ export const tagTypesKaraFileV4Order = [
 	'PLATFORMS',
 	'SERIES',
 	'SINGERS',
+	'SINGERGROUPS',
 	'SONGTYPES',
 	'SONGWRITERS',
 	'VERSIONS',
@@ -50,6 +51,12 @@ export const tagTypes: Readonly<{ [key: string]: tagType }> = {
 		type: 2,
 		color: 'orange',
 		karajson: 'singers',
+	},
+	SINGERGROUPS: {
+		icon: 'people-group',
+		type: 17,
+		color: 'orange',
+		karajson: 'singergroups',
 	},
 	SONGWRITERS: {
 		icon: 'signature',

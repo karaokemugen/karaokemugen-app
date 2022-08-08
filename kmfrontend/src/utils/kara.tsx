@@ -100,14 +100,21 @@ export function buildKaraTitle(
 	}
 	const serieText =
 		data?.series?.length > 0
-			? data.series.map(e => getTagInLocale(settings, e, i18nParam)).join(', ') +
-			  (data.series.length > 3 ? '...' : '')
-			: data?.singers
+			? data.series
+					.slice(0, 3)
+					.map(e => getTagInLocale(settings, e, i18nParam))
+					.join(', ') + (data.series.length > 3 ? '...' : '')
+			: data?.singergroups?.length > 0
+			? data.singergroups
+					.slice(0, 3)
+					.map(e => getTagInLocale(settings, e, i18nParam))
+					.join(', ') + (data.singergroups.length > 3 ? '...' : '')
+			: data?.singers?.length > 0
 			? data.singers
 					.slice(0, 3)
-					.map(e => e.name)
+					.map(e => getTagInLocale(settings, e, i18nParam))
 					.join(', ') + (data.singers.length > 3 ? '...' : '')
-			: '';
+			: ''; // wtf?
 	const langsText = data?.langs
 		?.map(e => e.name)
 		.join(', ')
@@ -329,9 +336,9 @@ export function computeTagsElements(kara: DBKara, scope: Scope, versions = true,
 		}
 	}
 
-	// Tags in the page/modal itself (singers, songwriters, creators, karaoke authors)
+	// Tags in the page/modal itself (singers, singersgroups, songwriters, creators, karaoke authors)
 	const karaBlockTags: ReactNode[] = [];
-	for (const type of ['SINGERS', 'SONGWRITERS', 'CREATORS', 'AUTHORS']) {
+	for (const type of ['SINGERS', 'SINGERGROUPS', 'SONGWRITERS', 'CREATORS', 'AUTHORS']) {
 		let key = 0;
 		const tagData = tagTypes[type];
 		if (kara[tagData.karajson]?.length > 0) {
