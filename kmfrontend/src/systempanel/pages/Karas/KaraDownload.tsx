@@ -205,7 +205,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 			for (const tag of this.state.tags.filter(tag => tag.types.length && tag.types.indexOf(typeID) >= 0)) {
 				option.children.push({
 					value: tag.tid,
-					label: getTagInLocale(this.context?.globalState.settings.data, tag as unknown as DBKaraTag),
+					label: getTagInLocale(this.context?.globalState.settings.data, tag as unknown as DBKaraTag).i18n,
 				});
 			}
 			return option;
@@ -466,8 +466,10 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 			render: (series, record) => {
 				return series && series.length > 0
 					? series
-							.map(serie =>
-								getTagInLocale(this.context?.globalState.settings.data, serie, this.state.i18nTag)
+							.map(
+								serie =>
+									getTagInLocale(this.context?.globalState.settings.data, serie, this.state.i18nTag)
+										.i18n
 							)
 							.join(', ')
 					: getTagInLocaleList(

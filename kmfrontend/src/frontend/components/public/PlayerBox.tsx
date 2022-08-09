@@ -127,7 +127,7 @@ function PlayerBox(props: IProps) {
 				let serieText = '';
 				if (kara.series?.length > 0) {
 					serieText =
-						kara.series.map(e => getTagInLocale(context?.globalState.settings.data, e)).join(', ') +
+						kara.series.map(e => getTagInLocale(context?.globalState.settings.data, e).i18n).join(', ') +
 						(kara.series.length > 3 ? '...' : '');
 				} else if (kara.singergroups?.length > 0) {
 					serieText =
@@ -155,9 +155,9 @@ function PlayerBox(props: IProps) {
 								<div
 									key={tag.tid}
 									className={`tag inline ${typeData.color}`}
-									title={getTagInLocale(context?.globalState.settings.data, tag)}
+									title={getTagInLocale(context?.globalState.settings.data, tag).i18n}
 								>
-									{getTagInLocale(context?.globalState.settings.data, tag)}
+									{getTagInLocale(context?.globalState.settings.data, tag).i18n}
 								</div>
 							);
 						});

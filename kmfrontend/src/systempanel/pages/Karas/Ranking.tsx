@@ -71,8 +71,9 @@ class Ranking extends Component<unknown, RankingState> {
 			render: (series, record) =>
 				series && series.length > 0
 					? series
-							.map(serie =>
-								getTagInLocale(this.context?.globalState.settings.data, serie, this.state.i18n)
+							.map(
+								serie =>
+									getTagInLocale(this.context?.globalState.settings.data, serie, this.state.i18n).i18n
 							)
 							.join(', ')
 					: getTagInLocaleList(this.context.globalState.settings.data, record.singers, this.state.i18n).join(

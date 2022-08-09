@@ -820,6 +820,21 @@
 	"CONFIRM_SURE": "Êtes-vous sûr ?",
 	"ACTION": "Action",
 	"KARA": {
+		"SECTIONS": {
+			"FILES": "Fichiers",
+			"PARENTS": "Chanson(s) parente(s)",
+			"TITLES": "Titre(s)",
+			"IDENTITY": "Identité",
+			"CATEGORIZATION": "Catégorisation",
+			"META": "Metadonnées"
+		},
+		"DESC": {
+			"PARENTS": "Si cette chanson est une version alternative d'une autre, selectionner son ou ses parent(s) pour préremplir ce formulaire.",
+			"PARENTS_PUBLIC": "Quand un utilisateur selectionne une chanson parente dans l'interface publique, ils verront alors toutes les versions alternatives / enfants.",
+			"TITLES": "Définissez tous les titres que cette chanson possède dans différentes langues. Habituellement, il n'y a qu'un titre.",
+			"TITLES_DEFAULT_LANGUAGE": "La langue du titre par défaut devrait être le titre d'origine. Pour les titres en alphabet non-latin (chinois, japonais, coréen, arabe...), ajoutez un titre \"Romanisation\" et mettez-le par défaut.",
+			"ALIASES": "Si la chanson est connue sosu un autre nom (abbréviation par exemple), indiquez-les ici pour aider le public à les trouver à travers la recherche. Pas besoin d'utiliser des mots déjà contenus dans le(s) titre(s)."
+		},
 		"MEDIA_FILE": "Fichier média",
 		"MEDIA_FILE_TOOLTIP": "Formats de fichier acceptés : {{formats}}",
 		"MEDIA_REQUIRED": "Le fichier média est obligatoire",
@@ -833,7 +848,7 @@
 		"TITLE": "Titres",
 		"TITLE_TOOLTIP": "Si vous ne le connaissez pas, mettez le nom de l'œuvre. Dans le cas d'une version alternative, nommez votre titre ainsi : 'Mon titre ~ Disco vers.' par exemple",
 		"TITLE_REQUIRED": "Un titre est obligatoire",
-		"DEFAULT_LANGUAGE": "Langue par défaut",
+		"DEFAULT_LANGUAGE": "Langue à utiliser par défaut",
 		"ALIASES": "Alias",
 		"ALIASES_TOOLTIP": "Noms courts ou alternatifs, utilisés pour la recherche.",
 		"SERIES_TOOLTIP": "Série TV, nom de film, de jeu vidéo, etc.",

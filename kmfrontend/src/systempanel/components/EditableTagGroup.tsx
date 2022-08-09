@@ -128,7 +128,7 @@ export default class EditableTagGroup extends Component<EditableTagGroupProps, E
 	};
 
 	getTagLabel = tag => {
-		const labelI18n = getTagInLocale(this.context?.globalState.settings.data, tag);
+		const labelI18n = getTagInLocale(this.context?.globalState.settings.data, tag).i18n;
 		return `${labelI18n}${labelI18n !== tag.name ? ` (${tag.name})` : ''}`;
 	};
 
@@ -139,10 +139,13 @@ export default class EditableTagGroup extends Component<EditableTagGroupProps, E
 				<Checkbox.Group value={tids} style={{ width: '100%' }} onChange={this.onCheck}>
 					<Row>
 						{this.state.tags.map((tag: DBKaraTag) => {
+							const tagi18n = getTagInLocale(this.context?.globalState.settings.data, tag);
+							const desc = tagi18n.description || '';
 							return (
 								<Col span={8} key={tag.tid || tag.name} title={tag.aliases?.join(', ')}>
 									<Checkbox value={tag.tid}>
-										{getTagInLocale(this.context?.globalState.settings.data, tag)}
+										{tagi18n.i18n}
+										<br /> <div style={{ fontSize: 11 }}>{desc}</div>
 									</Checkbox>
 								</Col>
 							);

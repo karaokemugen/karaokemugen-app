@@ -10,6 +10,7 @@ import {
 	Modal,
 	Select,
 	Tag,
+	Typography,
 	Tooltip,
 	Upload,
 } from 'antd';
@@ -29,6 +30,8 @@ import EditableGroupAlias from '../../components/EditableGroupAlias';
 import EditableTagGroup from '../../components/EditableTagGroup';
 import LanguagesList from '../../components/LanguagesList';
 import OpenLyricsFileButton from '../../components/OpenLyricsFileButton';
+
+const { Paragraph } = Typography;
 
 interface KaraFormProps {
 	kara: DBKara;
@@ -174,7 +177,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				<ul>
 					{data?.map(tag => (
 						<li key={tag.tid} title={tag.tagfile}>
-							{getTagInLocale(this.context?.globalState.settings.data, tag)} (
+							{getTagInLocale(this.context?.globalState.settings.data, tag).i18n} (
 							{i18next.t(`TAG_TYPES.${getTagTypeName(tag.types[0])}_other`)})
 						</li>
 					))}
@@ -480,6 +483,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					collections: this.props.kara?.collections || this.state.parentKara?.collections,
 				}}
 			>
+				<Divider orientation="left">{i18next.t('KARA.SECTIONS.FILES')}</Divider>
 				<Form.Item
 					label={
 						<span>
@@ -558,53 +562,9 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						</div>
 					)}
 				</Form.Item>
-				{this.state.repositoriesValue ? (
-					<Form.Item
-						label={i18next.t('KARA.REPOSITORY')}
-						labelCol={{ flex: '0 1 220px' }}
-						wrapperCol={{ span: 3 }}
-						rules={[
-							{
-								required: true,
-								message: i18next.t('KARA.REPOSITORY_REQUIRED'),
-							},
-						]}
-						name="repository"
-					>
-						<Select
-							disabled={this.props.kara?.repository !== undefined}
-							placeholder={i18next.t('KARA.REPOSITORY')}
-						>
-							{this.state.repositoriesValue.map(this.mapRepoToSelectOption)}
-						</Select>
-					</Form.Item>
-				) : null}
-				<Form.Item
-					label={
-						<span>
-							{i18next.t('TAG_TYPES.COLLECTIONS_other')}&nbsp;
-							<Tooltip title={i18next.t('KARA.COLLECTIONS_TOOLTIP')}>
-								<QuestionCircleOutlined />
-							</Tooltip>
-						</span>
-					}
-					labelCol={{ flex: '0 1 220px' }}
-					wrapperCol={{ span: 10, offset: 0 }}
-					name="collections"
-					rules={[
-						{
-							required: true,
-							message: i18next.t('KARA.COLLECTIONS_REQUIRED'),
-						},
-					]}
-				>
-					<EditableTagGroup
-						form={this.formRef.current}
-						tagType={16}
-						checkboxes={true}
-						onChange={tags => this.formRef.current.setFieldsValue({ collections: tags })}
-					/>
-				</Form.Item>
+				<Divider orientation="left">{i18next.t('KARA.SECTIONS.PARENTS')}</Divider>
+				<Paragraph>{i18next.t('KARA.DESC.PARENTS')}</Paragraph>
+				<Paragraph>{i18next.t('KARA.DESC.PARENTS_PUBLIC')}</Paragraph>
 				<Form.Item
 					label={
 						<span>
@@ -629,6 +589,9 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						tagRender={this.tagRender}
 					/>
 				</Form.Item>
+				<Divider orientation="left">{i18next.t('KARA.SECTIONS.TITLES')}</Divider>
+				<Paragraph>{i18next.t('KARA.DESC.TITLES')}</Paragraph>
+				<Paragraph>{i18next.t('KARA.DESC.TITLES_DEFAULT_LANGUAGE')}</Paragraph>
 				<Form.Item
 					hasFeedback
 					label={
@@ -660,6 +623,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					defaultLanguage={this.state.defaultLanguage}
 					onDefaultLanguageSelect={defaultLanguage => this.setState({ defaultLanguage })}
 				/>
+				<Paragraph>{i18next.t('KARA.DESC.ALIASES')}</Paragraph>
 				<Form.Item
 					label={
 						<span>
@@ -675,6 +639,79 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					<EditableGroupAlias
 						onChange={aliases => this.formRef.current?.setFieldsValue({ titles_aliases: aliases })}
 					/>
+				</Form.Item>
+				<Divider orientation="left">{i18next.t('KARA.SECTIONS.IDENTITY')}</Divider>
+				<Form.Item
+					label={i18next.t('TAG_TYPES.LANGS_other')}
+					labelCol={{ flex: '0 1 220px' }}
+					wrapperCol={{ span: 6 }}
+					rules={[
+						{
+							required: true,
+							message: i18next.t('KARA.LANGUAGES_REQUIRED'),
+						},
+					]}
+					name="langs"
+				>
+					<EditableTagGroup
+						form={this.formRef.current}
+						tagType={5}
+						onChange={tags => this.formRef.current.setFieldsValue({ langs: tags })}
+					/>
+				</Form.Item>
+				<Form.Item
+					label={
+						<span>
+							{i18next.t('TAG_TYPES.FRANCHISES_other')}&nbsp;
+							<Tooltip title={i18next.t('KARA.FRANCHISES_TOOLTIP')}>
+								<QuestionCircleOutlined />
+							</Tooltip>
+						</span>
+					}
+					labelCol={{ flex: '0 1 220px' }}
+					wrapperCol={{ span: 6 }}
+					name="franchises"
+				>
+					<EditableTagGroup
+						form={this.formRef.current}
+						tagType={18}
+						onChange={tags => this.formRef.current.setFieldsValue({ franchises: tags })}
+					/>
+				</Form.Item>
+				<Form.Item
+					label={i18next.t('TAG_TYPES.SONGTYPES_other')}
+					labelCol={{ flex: '0 1 220px' }}
+					wrapperCol={{ span: 10, offset: 0 }}
+					name="songtypes"
+					rules={[
+						{
+							required: true,
+							message: i18next.t('KARA.TYPE_REQUIRED'),
+						},
+					]}
+				>
+					<EditableTagGroup
+						form={this.formRef.current}
+						tagType={3}
+						checkboxes={true}
+						onChange={tags => this.formRef.current.setFieldsValue({ songtypes: tags })}
+					/>
+				</Form.Item>
+				<Form.Item
+					hasFeedback
+					label={
+						<span>
+							{i18next.t('KARA.ORDER')}&nbsp;
+							<Tooltip title={i18next.t('KARA.ORDER_TOOLTIP')}>
+								<QuestionCircleOutlined />
+							</Tooltip>
+						</span>
+					}
+					labelCol={{ flex: '0 1 220px' }}
+					wrapperCol={{ span: 1 }}
+					name="songorder"
+				>
+					<InputNumber min={0} style={{ width: '100%' }} onPressEnter={this.submitHandler} />
 				</Form.Item>
 				<Form.Item
 					label={
@@ -694,6 +731,48 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						tagType={14}
 						checkboxes={true}
 						onChange={tags => this.formRef.current.setFieldsValue({ versions: tags })}
+					/>
+				</Form.Item>
+				<Form.Item
+					label={i18next.t('KARA.SINGERS_BY')}
+					labelCol={{ flex: '0 1 220px' }}
+					wrapperCol={{ span: 6 }}
+					rules={[
+						{
+							required: this.state.serieSingersRequired,
+							message: i18next.t('KARA.SERIES_SINGERS_REQUIRED'),
+						},
+					]}
+					name="singers"
+				>
+					<EditableTagGroup
+						form={this.formRef.current}
+						tagType={2}
+						onChange={tags => {
+							this.formRef.current.setFieldsValue({ singer: tags });
+							this.onChangeSingersSeries();
+						}}
+					/>
+				</Form.Item>
+				<Form.Item
+					label={i18next.t('KARA.SINGERGROUPS_BY')}
+					labelCol={{ flex: '0 1 220px' }}
+					wrapperCol={{ span: 6 }}
+					rules={[
+						{
+							required: this.state.serieSingersRequired,
+							message: i18next.t('KARA.SERIES_SINGERS_REQUIRED'),
+						},
+					]}
+					name="singergroups"
+				>
+					<EditableTagGroup
+						form={this.formRef.current}
+						tagType={17}
+						onChange={tags => {
+							this.formRef.current.setFieldsValue({ singergroup: tags });
+							this.onChangeSingersSeries();
+						}}
 					/>
 				</Form.Item>
 				<Form.Item
@@ -744,125 +823,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					/>
 				</Form.Item>
 				<Form.Item
-					label={i18next.t('TAG_TYPES.SONGTYPES_other')}
-					labelCol={{ flex: '0 1 220px' }}
-					wrapperCol={{ span: 10, offset: 0 }}
-					name="songtypes"
-					rules={[
-						{
-							required: true,
-							message: i18next.t('KARA.TYPE_REQUIRED'),
-						},
-					]}
-				>
-					<EditableTagGroup
-						form={this.formRef.current}
-						tagType={3}
-						checkboxes={true}
-						onChange={tags => this.formRef.current.setFieldsValue({ songtypes: tags })}
-					/>
-				</Form.Item>
-
-				<Form.Item
-					hasFeedback
-					label={
-						<span>
-							{i18next.t('KARA.ORDER')}&nbsp;
-							<Tooltip title={i18next.t('KARA.ORDER_TOOLTIP')}>
-								<QuestionCircleOutlined />
-							</Tooltip>
-						</span>
-					}
-					labelCol={{ flex: '0 1 220px' }}
-					wrapperCol={{ span: 1 }}
-					name="songorder"
-				>
-					<InputNumber min={0} style={{ width: '100%' }} onPressEnter={this.submitHandler} />
-				</Form.Item>
-				<Form.Item
-					label={i18next.t('TAG_TYPES.LANGS_other')}
-					labelCol={{ flex: '0 1 220px' }}
-					wrapperCol={{ span: 6 }}
-					rules={[
-						{
-							required: true,
-							message: i18next.t('KARA.LANGUAGES_REQUIRED'),
-						},
-					]}
-					name="langs"
-				>
-					<EditableTagGroup
-						form={this.formRef.current}
-						tagType={5}
-						onChange={tags => this.formRef.current.setFieldsValue({ langs: tags })}
-					/>
-				</Form.Item>
-				<Form.Item
-					hasFeedback
-					label={
-						<span>
-							{i18next.t('KARA.YEAR')}&nbsp;
-							<Tooltip title={i18next.t('KARA.YEAR_TOOLTIP')}>
-								<QuestionCircleOutlined />
-							</Tooltip>
-						</span>
-					}
-					labelCol={{ flex: '0 1 220px' }}
-					wrapperCol={{ span: 2 }}
-					name="year"
-				>
-					<InputNumber
-						required={true}
-						min={0}
-						max={new Date().getFullYear()}
-						placeholder="Year"
-						style={{ width: '100%' }}
-						onPressEnter={this.submitHandler}
-					/>
-				</Form.Item>
-				<Form.Item
-					label={i18next.t('KARA.SINGERS_BY')}
-					labelCol={{ flex: '0 1 220px' }}
-					wrapperCol={{ span: 6 }}
-					rules={[
-						{
-							required: this.state.serieSingersRequired,
-							message: i18next.t('KARA.SERIES_SINGERS_REQUIRED'),
-						},
-					]}
-					name="singers"
-				>
-					<EditableTagGroup
-						form={this.formRef.current}
-						tagType={2}
-						onChange={tags => {
-							this.formRef.current.setFieldsValue({ singer: tags });
-							this.onChangeSingersSeries();
-						}}
-					/>
-				</Form.Item>
-				<Form.Item
-					label={i18next.t('KARA.SINGERGROUPS_BY')}
-					labelCol={{ flex: '0 1 220px' }}
-					wrapperCol={{ span: 6 }}
-					rules={[
-						{
-							required: this.state.serieSingersRequired,
-							message: i18next.t('KARA.SERIES_SINGERS_REQUIRED'),
-						},
-					]}
-					name="singergroups"
-				>
-					<EditableTagGroup
-						form={this.formRef.current}
-						tagType={17}
-						onChange={tags => {
-							this.formRef.current.setFieldsValue({ singergroup: tags });
-							this.onChangeSingersSeries();
-						}}
-					/>
-				</Form.Item>
-				<Form.Item
 					label={
 						<span>
 							{i18next.t('KARA.SONGWRITERS_BY')}&nbsp;
@@ -901,30 +861,56 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					/>
 				</Form.Item>
 				<Form.Item
+					hasFeedback
 					label={
 						<span>
-							{i18next.t('KARA.AUTHORS_BY')}&nbsp;
-							<Tooltip title={i18next.t('KARA.KARA_AUTHORS_TOOLTIP')}>
+							{i18next.t('KARA.YEAR')}&nbsp;
+							<Tooltip title={i18next.t('KARA.YEAR_TOOLTIP')}>
 								<QuestionCircleOutlined />
 							</Tooltip>
 						</span>
 					}
 					labelCol={{ flex: '0 1 220px' }}
-					wrapperCol={{ span: 6 }}
+					wrapperCol={{ span: 2 }}
+					name="year"
+				>
+					<InputNumber
+						required={true}
+						min={0}
+						max={new Date().getFullYear()}
+						placeholder="Year"
+						style={{ width: '100%' }}
+						onPressEnter={this.submitHandler}
+					/>
+				</Form.Item>
+				<Divider orientation="left">{i18next.t('KARA.SECTIONS.CATEGORIZATION')}</Divider>
+				<Form.Item
+					label={
+						<span>
+							{i18next.t('TAG_TYPES.COLLECTIONS_other')}&nbsp;
+							<Tooltip title={i18next.t('KARA.COLLECTIONS_TOOLTIP')}>
+								<QuestionCircleOutlined />
+							</Tooltip>
+						</span>
+					}
+					labelCol={{ flex: '0 1 220px' }}
+					wrapperCol={{ span: 10, offset: 0 }}
+					name="collections"
 					rules={[
 						{
 							required: true,
-							message: i18next.t('KARA.KARA_AUTHORS_REQUIRED'),
+							message: i18next.t('KARA.COLLECTIONS_REQUIRED'),
 						},
 					]}
-					name="authors"
 				>
 					<EditableTagGroup
 						form={this.formRef.current}
-						tagType={6}
-						onChange={tags => this.formRef.current.setFieldsValue({ author: tags })}
+						tagType={16}
+						checkboxes={true}
+						onChange={tags => this.formRef.current.setFieldsValue({ collections: tags })}
 					/>
 				</Form.Item>
+
 				<Form.Item
 					label={i18next.t('TAG_TYPES.FAMILIES_other')}
 					labelCol={{ flex: '0 1 220px' }}
@@ -1023,6 +1009,32 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						onChange={tags => this.formRef.current.setFieldsValue({ groups: tags })}
 					/>
 				</Form.Item>
+				<Divider orientation="left">{i18next.t('KARA.SECTIONS.META')}</Divider>
+				<Form.Item
+					label={
+						<span>
+							{i18next.t('KARA.AUTHORS_BY')}&nbsp;
+							<Tooltip title={i18next.t('KARA.KARA_AUTHORS_TOOLTIP')}>
+								<QuestionCircleOutlined />
+							</Tooltip>
+						</span>
+					}
+					labelCol={{ flex: '0 1 220px' }}
+					wrapperCol={{ span: 6 }}
+					rules={[
+						{
+							required: true,
+							message: i18next.t('KARA.KARA_AUTHORS_REQUIRED'),
+						},
+					]}
+					name="authors"
+				>
+					<EditableTagGroup
+						form={this.formRef.current}
+						tagType={6}
+						onChange={tags => this.formRef.current.setFieldsValue({ author: tags })}
+					/>
+				</Form.Item>
 				<Form.Item
 					hasFeedback
 					label={
@@ -1065,6 +1077,27 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				>
 					<Checkbox />
 				</Form.Item>
+				{this.state.repositoriesValue ? (
+					<Form.Item
+						label={i18next.t('KARA.REPOSITORY')}
+						labelCol={{ flex: '0 1 220px' }}
+						wrapperCol={{ span: 3 }}
+						rules={[
+							{
+								required: true,
+								message: i18next.t('KARA.REPOSITORY_REQUIRED'),
+							},
+						]}
+						name="repository"
+					>
+						<Select
+							disabled={this.props.kara?.repository !== undefined}
+							placeholder={i18next.t('KARA.REPOSITORY')}
+						>
+							{this.state.repositoriesValue.map(this.mapRepoToSelectOption)}
+						</Select>
+					</Form.Item>
+				) : null}
 				<Form.Item
 					label={i18next.t('KARA.CREATED_AT')}
 					labelCol={{ flex: '0 1 220px' }}
