@@ -25,6 +25,7 @@ export const tagTypesKaraFileV4Order = [
 	'SONGWRITERS',
 	'VERSIONS',
 	'WARNINGS',
+	'FRANCHISES',
 ];
 
 export const tagTypes: Readonly<{ [key: string]: tagType }> = {
@@ -129,6 +130,12 @@ export const tagTypes: Readonly<{ [key: string]: tagType }> = {
 		type: 16,
 		color: 'white',
 		karajson: 'collections',
+	},
+	FRANCHISES: {
+		icon: 'sitemap',
+		type: 18,
+		color: 'green',
+		karajson: 'franchises',
 	},
 };
 

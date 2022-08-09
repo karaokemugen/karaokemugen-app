@@ -463,6 +463,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					authors: this.props.kara?.authors || this.state.parentKara?.authors,
 					families: this.props.kara?.families || this.state.parentKara?.families,
 					platforms: this.props.kara?.platforms || this.state.parentKara?.platforms,
+					franchises: this.props.kara?.franchises || this.state.parentKara?.franchises,
 					genres: this.props.kara?.genres || this.state.parentKara?.genres,
 					origins: this.props.kara?.origins || this.state.parentKara?.origins,
 					misc: this.props.kara?.misc || this.state.parentKara?.misc,
@@ -721,6 +722,25 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 							this.formRef.current.setFieldsValue({ series: tags });
 							this.onChangeSingersSeries();
 						}}
+					/>
+				</Form.Item>
+				<Form.Item
+					label={
+						<span>
+							{i18next.t('TAG_TYPES.FRANCHISES_other')}&nbsp;
+							<Tooltip title={i18next.t('KARA.FRANCHISES_TOOLTIP')}>
+								<QuestionCircleOutlined />
+							</Tooltip>
+						</span>
+					}
+					labelCol={{ flex: '0 1 220px' }}
+					wrapperCol={{ span: 6 }}
+					name="franchises"
+				>
+					<EditableTagGroup
+						form={this.formRef.current}
+						tagType={18}
+						onChange={tags => this.formRef.current.setFieldsValue({ franchises: tags })}
 					/>
 				</Form.Item>
 				<Form.Item
