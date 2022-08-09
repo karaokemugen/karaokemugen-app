@@ -835,6 +835,7 @@
 		"ALIASES": "Aliases",
 		"ALIASES_TOOLTIP": "Short names or alternative names, used for search.",
 		"SERIES_TOOLTIP": "TV series, movie title, video game title, etc.",
+		"FRANCHISES_TOOLTIP": "If the series is part of a franchise (like Gundam, Mario, Zelda, Naruto, etc.)",
 		"SERIES_SINGERS_REQUIRED": "Series or Singer cannot be empty in the same time.",
 		"TYPE_REQUIRED": "Song type is mandatory",
 		"ORDER": "Song order",
@@ -1067,6 +1068,8 @@
 		"VERSIONS_other": "Versions",
 		"WARNINGS_one": "Warning",
 		"WARNINGS_other": "Warnings",
+		"FRANCHISES_one": "Franchise",
+		"FRANCHISES_other": "Franchises",
 		"COLLECTIONS_one": "Collection",
 		"COLLECTIONS_other": "Collections"
 	},

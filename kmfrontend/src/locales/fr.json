@@ -837,6 +837,7 @@
 		"ALIASES": "Alias",
 		"ALIASES_TOOLTIP": "Noms courts ou alternatifs, utilisés pour la recherche.",
 		"SERIES_TOOLTIP": "Série TV, nom de film, de jeu vidéo, etc.",
+		"FRANCHISES_TOOLTIP": "Si la série fait partie d'une franchise (Gundam, Mario, Zelda, Naruto, etc.) indiquez-le ici.",
 		"TYPE_REQUIRED": "Un type de chanson est obligatoire",
 		"ORDER": "Numéro de chanson",
 		"ORDER_TOOLTIP": "Numéro de l'opening/ending/etc. Si c'est le seul opening/ending dans l'œuvre, laissez vide.",
@@ -1069,6 +1070,8 @@
 		"VERSIONS_other": "Versions",
 		"WARNINGS_one": "Warning",
 		"WARNINGS_other": "Warnings",
+		"FRANCHISES_one": "Franchise",
+		"FRANCHISES_other": "Franchises",
 		"COLLECTIONS_one": "Collection",
 		"COLLECTIONS_other": "Collections"
 	},
