@@ -87,17 +87,17 @@ export default function InlineTag(props: Props) {
 					}
 				}}
 			>
-				{getTagInLocale(context.globalState.settings.data, props.tag, props.i18nParam)}
+				{getTagInLocale(context.globalState.settings.data, props.tag, props.i18nParam).i18n}
 			</span>
 			{showPopup ? (
 				<div className={`tag-popup${rightClass ? ' right' : ''}`}>
-					<p className="tag-name">{getTagInLocale(context.globalState.settings.data, props.tag)}</p>
+					<p className="tag-name">{getTagInLocale(context.globalState.settings.data, props.tag).i18n}</p>
 					<p className="tag-stat">{i18next.t('INLINE_TAG.COUNT', { count: count })}</p>
 					<p className="tag-action">
 						<button className="btn" onClick={goToTagSearch}>
 							<i className="fas fa-fw fa-search" />
 							{i18next.t('INLINE_TAG.SEARCH', {
-								tag: getTagInLocale(context.globalState.settings.data, props.tag, props.i18nParam),
+								tag: getTagInLocale(context.globalState.settings.data, props.tag, props.i18nParam).i18n,
 							})}
 						</button>
 					</p>

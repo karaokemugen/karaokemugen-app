@@ -176,8 +176,9 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 			render: (series, record: DBKara) => {
 				return (
 					series
-						.map(serie =>
-							getTagInLocale(this.context?.globalState.settings.data, serie, this.state.i18nTag)
+						.map(
+							serie =>
+								getTagInLocale(this.context?.globalState.settings.data, serie, this.state.i18nTag).i18n
 						)
 						.join(', ') ||
 					getTagInLocaleList(this.context.globalState.settings.data, record.singers, this.state.i18nTag).join(

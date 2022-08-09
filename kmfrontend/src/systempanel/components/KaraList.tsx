@@ -98,7 +98,7 @@ function KaraList(props: KaraListProps) {
 			for (const tag of tags.filter(tag => tag.types.length && tag.types.indexOf(typeID) >= 0)) {
 				option.children.push({
 					value: tag.tid,
-					label: getTagInLocale(context?.globalState.settings.data, tag as unknown as DBKaraTag),
+					label: getTagInLocale(context?.globalState.settings.data, tag as unknown as DBKaraTag).i18n,
 				});
 			}
 			return option;
@@ -228,7 +228,9 @@ function KaraList(props: KaraListProps) {
 			key: 'series',
 			render: (series, record: DBKara) =>
 				series && series.length > 0
-					? series.map(serie => getTagInLocale(context?.globalState.settings.data, serie, i18nTag)).join(', ')
+					? series
+							.map(serie => getTagInLocale(context?.globalState.settings.data, serie, i18nTag).i18n)
+							.join(', ')
 					: getTagInLocaleList(context.globalState.settings.data, record.singers, i18nTag).join(', '),
 		},
 		{

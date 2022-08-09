@@ -233,7 +233,7 @@ export async function decodeCriteriaReason(settings: SettingsStoreData, criteria
 			args[0] = 'TAG';
 			const tag = await commandBackend('getTag', { tid: criteria.value });
 			args[1] = {
-				tag: getTagInLocale(settings, tag),
+				tag: getTagInLocale(settings, tag).i18n,
 				verb: i18next.t(`CRITERIA.LABEL.TAG_VERBS.${criteria.type}`),
 			};
 			break;
