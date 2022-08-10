@@ -20,7 +20,7 @@ function TasksEvent(props: IProps) {
 					{
 						text: 'DUMMY_TASK',
 						percentage: 0,
-						time: new Date().getTime(),
+						time: Infinity,
 					},
 			  ]
 			: []
@@ -37,7 +37,7 @@ function TasksEvent(props: IProps) {
 				{
 					text: 'DUMMY_TASK',
 					percentage: 0,
-					time: new Date().getTime(),
+					time: Infinity,
 				},
 			]);
 		} else {
