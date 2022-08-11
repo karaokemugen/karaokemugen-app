@@ -8,7 +8,7 @@ import { errorStep, initStep } from '../electron/electronLogger';
 import { connectDB, db, getInstanceID, getSettings, saveSetting, setInstanceID } from '../lib/dao/database';
 import { generateDatabase } from '../lib/services/generation';
 import { getConfig } from '../lib/utils/config';
-import { uuidRegexp } from '../lib/utils/constants';
+import { tagTypes, uuidRegexp } from '../lib/utils/constants';
 import logger from '../lib/utils/logger';
 import { updateAllSmartPlaylists } from '../services/smartPlaylist';
 import { DBStats } from '../types/database/database';
@@ -147,9 +147,15 @@ export async function resetUserData() {
 }
 
 export async function getStats(): Promise<DBStats> {
-	const res = await db().query(sqlGetStats);
-	const stats: DBStats = res.rows[0];
-	return { ...stats, total_media_size: +stats.total_media_size };
+	const collectionClauses = [];
+	for (const collection of Object.keys(getConfig().Karaoke.Collections)) {
+		if (getConfig().Karaoke.Collections[collection] === true)
+			collectionClauses.push(`'${collection}~${tagTypes.collections}' = ANY(ak.tid)`);
+	}
+	const res = await db().query(sqlGetStats(collectionClauses));
+	// Bigints are returned as strings in node-postgres for now. So we'll turn it into a number here.
+	// See this issue : https://github.com/brianc/node-postgres/issues/2398
+	return { ...res.rows[0], total_media_size: +res.rows[0].total_media_size };
 }
 
 let generationInProgress = false;
