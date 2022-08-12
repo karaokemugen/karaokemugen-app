@@ -25,6 +25,7 @@ function mapDrives(drives: { mount: string; label: string }[]) {
 async function getFS(path: string, os: string) {
 	if (!path) path = '/';
 	let computedPath = path.length > 1 && os === 'win32' ? path.substr(1) : path;
+	if (os !== 'win32' && path[0] !== '/') path = `/${path}`;
 	let response;
 	try {
 		response = await commandBackend('getFS', { path });
@@ -53,8 +54,8 @@ function computeListing(listing: Listing, path: string, seeFiles: boolean): List
 
 export default function FileSystem(props: IProps) {
 	const [listing, setListing] = useState<Listing>([]);
-	const [path, setPath] = useState<string>();
-
+	let [path, setPath] = useState<string>();
+	path = path?.replace(/\/$/, '');
 	const separator = props.os === 'win32' ? '\\' : '/';
 
 	function getFSCallback(res) {
