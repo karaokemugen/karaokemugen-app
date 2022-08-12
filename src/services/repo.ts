@@ -569,22 +569,26 @@ async function applyChanges(changes: Change[], repo: Repository) {
 				};
 			}), null, 2), 'utf-8');
 			*/
-			const karasBeforeSort = karas.map(k => {
-				return {
-					file: k.file,
-					kid: k.data.data.kid,
-					parents: k.data.data.parents,
-				};
-			});
+			const karasBeforeSort = {
+				karas: karas.map(k => {
+					return {
+						file: k.file,
+						kid: k.data.data.kid,
+						parents: k.data.data.parents,
+					};
+				}),
+			};
 			logger.debug('Songs to add before sort', { service, obj: karasBeforeSort });
 			karas = topologicalSort(karas);
-			const karasAfterSort = karas.map(k => {
-				return {
-					file: k.file,
-					kid: k.data.data.kid,
-					parents: k.data.data.parents,
-				};
-			});
+			const karasAfterSort = {
+				karas: karas.map(k => {
+					return {
+						file: k.file,
+						kid: k.data.data.kid,
+						parents: k.data.data.parents,
+					};
+				}),
+			};
 			logger.debug('Songs to add after sort', { service, obj: karasAfterSort });
 		} catch (err) {
 			logger.error('Topological sort failed', { service, obj: karas });
