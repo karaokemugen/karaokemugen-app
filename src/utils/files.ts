@@ -45,9 +45,10 @@ export async function browseFs(dir: string, onlyMedias: boolean) {
 	});
 	if (onlyMedias) list = list.filter(f => isMediaFile(f.name));
 	const drives = getState().os === 'win32' ? await blockDevices() : null;
+	const fullPath = resolve(dir).replace(/\/$/g, '');
 	return {
 		contents: list,
 		drives,
-		fullPath: resolve(dir),
+		fullPath,
 	};
 }
