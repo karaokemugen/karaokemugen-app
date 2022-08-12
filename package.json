@@ -283,8 +283,6 @@
         "url": "https://mugen.karaokes.moe/downloads/"
       },
       "hardenedRuntime": true,
-      "entitlements": "build/entitlements.plist",
-      "entitlementsInherit": "build/entitlements.plist",
       "gatekeeperAssess": false,
       "compression": "normal",
       "minimumSystemVersion": "10.14.0",
