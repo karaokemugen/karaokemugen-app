@@ -660,25 +660,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					/>
 				</Form.Item>
 				<Form.Item
-					label={
-						<span>
-							{i18next.t('TAG_TYPES.FRANCHISES_other')}&nbsp;
-							<Tooltip title={i18next.t('KARA.FRANCHISES_TOOLTIP')}>
-								<QuestionCircleOutlined />
-							</Tooltip>
-						</span>
-					}
-					labelCol={{ flex: '0 1 220px' }}
-					wrapperCol={{ span: 6 }}
-					name="franchises"
-				>
-					<EditableTagGroup
-						form={this.formRef.current}
-						tagType={18}
-						onChange={tags => this.formRef.current.setFieldsValue({ franchises: tags })}
-					/>
-				</Form.Item>
-				<Form.Item
 					label={i18next.t('TAG_TYPES.SONGTYPES_other')}
 					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 10, offset: 0 }}
