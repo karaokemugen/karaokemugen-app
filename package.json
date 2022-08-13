@@ -78,7 +78,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@sentry/electron": "^3.0.7",
+    "@sentry/electron": "^4.0.0",
     "agentkeepalive": "^4.2.1",
     "ass-compiler": "^0.1.4",
     "axios": "^0.27.2",
@@ -176,7 +176,7 @@
     "chai": "^4.3.6",
     "electron": "^20.0.2",
     "electron-notarize": "^1.2.1",
-    "esbuild": "^0.15.1",
+    "esbuild": "^0.15.2",
     "eslint": "^8.21.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-typescript": "^17.0.0",
