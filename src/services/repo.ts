@@ -253,7 +253,7 @@ export async function updateZipRepo(name: string) {
 					await writeFullPatchedFiles(fullFiles.data as DiffChanges[], repo);
 					changes = computeFileChanges(patch.data as string);
 				}
-				logger.debug('Applying changes', { service, obj: changes });
+				logger.debug('Applying changes', { service, obj: { changes } });
 				await applyChanges(changes, repo);
 				await saveSetting(`commit-${repo.Name}`, LatestCommit);
 				return false;
