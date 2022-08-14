@@ -231,5 +231,8 @@
 		"TITLE": "Permintaan izin",
 		"MESSAGE": "macOS akan meminta kamu untuk menambahkan Karaoke Mugen ke perizinan aksesibilitas sistem. Izin ini memperbolehkan kamu untuk menggunakan kunci media papan tik kamu untuk mengontrol pemutar video. Kamu bisa menolak untuk menambahkan izini ini, tapi kunci media tidak akan bekerja."
 	},
-	"INIT_MIGRATION": "Memperbarui struktur basis data, mohon ditunggu…"
+	"INIT_MIGRATION": "Memperbarui struktur basis data, mohon ditunggu…",
+	"REQUESTED_WITH": "(dengan )",
+	"REQUESTED_AND_one": "dan lainnya",
+	"REQUESTED_AND_other": "dan {{count}} lainnya"
 }
