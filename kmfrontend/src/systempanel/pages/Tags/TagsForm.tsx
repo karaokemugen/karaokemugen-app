@@ -7,13 +7,13 @@ import {
 	Collapse,
 	Divider,
 	Form,
+	FormInstance,
 	Input,
 	InputNumber,
 	message,
 	Select,
 	Tooltip,
 } from 'antd';
-import { FormInstance } from 'antd/lib/form';
 import i18next from 'i18next';
 import { Component, createRef } from 'react';
 
@@ -42,10 +42,15 @@ interface TagsFormState {
 	displayDescription: boolean;
 }
 
+const myanimelistUrlRegexp = /myanimelist.net\/anime\/(\d+)/;
+const anilistUrlRegexp = /anilist.co\/anime\/(\d+)/;
+const kitsuUrlRegexp = /kitsu.io\/anime\/([a-zA-Z-]+)/;
+const validExternalAnimeIdRegexp = /^[1-9]|\d\d+$/; // strictly positive
+
 class TagForm extends Component<TagsFormProps, TagsFormState> {
 	formRef = createRef<FormInstance>();
 
-	constructor(props) {
+	constructor(props: Readonly<TagsFormProps> | TagsFormProps) {
 		super(props);
 		this.getRepositories();
 
@@ -81,6 +86,14 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 					? this.state.description
 					: undefined;
 			values.tid = this.props.tag?.tid;
+			values.external_database_ids = {
+				anilist: +values.anilistID || null,
+				kitsu: +values.kitsuID || null,
+				myanimelist: +values.malID || null,
+			};
+			delete values.malID;
+			delete values.anilistID;
+			delete values.kitsuID;
 			this.props.save(values);
 		} else {
 			message.error(i18next.t('TAGS.LANG_ERROR'));
@@ -149,6 +162,9 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 					noLiveDownload: this.props.tag?.noLiveDownload,
 					priority: this.props.tag?.priority ? this.props.tag?.priority : 10,
 					karafile_tag: this.props.tag?.karafile_tag,
+					malID: this.props.tag?.external_database_ids?.myanimelist?.toString(),
+					anilistID: this.props.tag?.external_database_ids?.anilist?.toString(),
+					kitsuID: this.props.tag?.external_database_ids?.kitsu?.toString(),
 				}}
 			>
 				<Form.Item
@@ -339,6 +355,70 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 				>
 					<Checkbox />
 				</Form.Item>
+				<Form.Item
+					label={
+						<span>
+							{i18next.t('TAGS.MAL_ID')}&nbsp;
+							<Tooltip title={i18next.t('TAGS.MAL_ID_TOOLTIP')}>
+								<QuestionCircleOutlined />
+							</Tooltip>
+						</span>
+					}
+					labelCol={{ flex: '0 1 300px' }}
+					wrapperCol={{ span: 2 }}
+					name="malID"
+					getValueFromEvent={this.transformMalId.bind(this)}
+					rules={[
+						{
+							validator: this.externalAnimeIdValidator.bind(this),
+							required: false,
+						},
+					]}
+				>
+					<Input placeholder={i18next.t('TAGS.MAL_ID')} style={{ width: '100%' }} />
+				</Form.Item>
+				<Form.Item
+					label={
+						<span>
+							{i18next.t('TAGS.ANILIST_ID')}&nbsp;
+							<Tooltip title={i18next.t('TAGS.ANILIST_ID_TOOLTIP')}>
+								<QuestionCircleOutlined />
+							</Tooltip>
+						</span>
+					}
+					labelCol={{ flex: '0 1 300px' }}
+					wrapperCol={{ span: 2 }}
+					name="anilistID"
+					getValueFromEvent={this.transformAnilistId.bind(this)}
+					rules={[
+						{
+							validator: this.externalAnimeIdValidator.bind(this),
+						},
+					]}
+				>
+					<Input placeholder={i18next.t('TAGS.ANILIST_ID')} style={{ width: '100%' }} />
+				</Form.Item>
+				<Form.Item
+					label={
+						<span>
+							{i18next.t('TAGS.KITSU_ID')}&nbsp;
+							<Tooltip title={i18next.t('TAGS.KITSU_ID_TOOLTIP')}>
+								<QuestionCircleOutlined />
+							</Tooltip>
+						</span>
+					}
+					labelCol={{ flex: '0 1 300px' }}
+					wrapperCol={{ span: 2 }}
+					name="kitsuID"
+					getValueFromEvent={this.transformKitsuId.bind(this)}
+					rules={[
+						{
+							validator: this.externalAnimeIdValidator.bind(this),
+						},
+					]}
+				>
+					<Input placeholder={i18next.t('TAGS.KITSU_ID')} style={{ width: '100%' }} />
+				</Form.Item>
 				<Form.Item wrapperCol={{ flex: '45%' }} style={{ textAlign: 'right' }}>
 					<Button type="primary" htmlType="submit" className="tags-form-button">
 						{i18next.t('SUBMIT')}
@@ -426,6 +506,84 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 				) : null}
 			</Form>
 		);
+	}
+
+	private transformMalId(event: any) {
+		if (this.validExternalAnimeId(event.target.value)) {
+			return event.target.value;
+		}
+		const res = event.target.value?.match(myanimelistUrlRegexp);
+		if (res == null) {
+			return event.target.value;
+		}
+		return res[1];
+	}
+
+	private transformAnilistId(event: any) {
+		if (this.validExternalAnimeId(event.target.value)) {
+			return event.target.value;
+		}
+		const res = event.target.value?.match(anilistUrlRegexp);
+		if (res == null) {
+			return event.target.value;
+		}
+		return res[1];
+	}
+
+	private transformKitsuId(event: any) {
+		if (this.validExternalAnimeId(event.target.value)) {
+			return event.target.value;
+		}
+		const res = event.target.value?.match(kitsuUrlRegexp);
+		if (res == null) {
+			return event.target.value;
+		}
+		fetch(`https://kitsu.io/api/edge/anime?fields[anime]=id&filter[slug]=${res[1]}`)
+			.then(res => res.json())
+			.then(json => {
+				if (json?.data == null || json.data[0]?.id == null) {
+					this.setFieldError('kitsuID', i18next.t('TAGS.KITSU_SLUG_ERROR'));
+					return;
+				}
+				this.formRef.current.setFieldValue('kitsuID', json.data[0].id);
+				this.formRef.current.validateFields();
+			})
+			.catch(e => {
+				this.setFieldError('kitsuID', i18next.t('TAGS.KITSU_REQUEST_ERROR'));
+			});
+		return event.target.value;
+	}
+
+	private setFieldError(name: string, error: string) {
+		this.formRef.current.setFields([
+			{
+				name: name,
+				errors: [error],
+			},
+		]);
+	}
+
+	private externalAnimeIdValidator(_: any, value: string) {
+		if (this.validExternalAnimeId(value)) {
+			return Promise.resolve();
+		}
+		if (value.match(myanimelistUrlRegexp)) {
+			return Promise.reject(JSON.stringify(i18next.t('TAGS.NOT_MAL_URL_ERROR')));
+		}
+		if (value.match(anilistUrlRegexp)) {
+			return Promise.reject(JSON.stringify(i18next.t('TAGS.NOT_ANILIST_URL_ERROR')));
+		}
+		if (value.match(kitsuUrlRegexp)) {
+			return Promise.reject(JSON.stringify(i18next.t('TAGS.NOT_KITSU_URL_ERROR')));
+		}
+		if (value.startsWith('http')) {
+			return Promise.reject(JSON.stringify(i18next.t('TAGS.NOT_VALID_URL_ERROR')));
+		}
+		return Promise.reject(JSON.stringify(i18next.t('TAGS.ANIME_ID_ERROR')));
+	}
+
+	private validExternalAnimeId(id: string) {
+		return id == null || id === '' || id.match(validExternalAnimeIdRegexp);
 	}
 }
 

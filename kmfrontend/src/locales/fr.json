@@ -1052,7 +1052,20 @@
 		"DESCRIPTION": "Description",
 		"DESCRIPTION_TOOLTIP": "Une description du tag, utilisé uniquement pour les collections.",
 		"ADD_DESCRIPTION": "Ajouter une description",
-		"KARAOKES_WITH_TAGS": "Karaokés ayant ce tag"
+		"KARAOKES_WITH_TAGS": "Karaokés ayant ce tag",
+		"MAL_ID": "Identifiant/URL MyAnimeList",
+		"MAL_ID_TOOLTIP": "Si c'est un anime, indiquez son ID sur myanimelist.net",
+		"ANILIST_ID": "Identifiant/URL Anilist",
+		"ANILIST_ID_TOOLTIP": "Si c'est un anime, indiquez son ID sur anilist.co",
+		"KITSU_ID": "Identifiant/URL Kitsu",
+		"KITSU_ID_TOOLTIP": "Si c'est un anime, indiquez son ID sur kitsu.io",
+		"NOT_MAL_URL_ERROR": "C'est une url myanimelist",
+		"NOT_ANILIST_URL_ERROR": "C'est une url anilist",
+		"NOT_KITSU_URL_ERROR": "C'est une url kitsu",
+		"NOT_VALID_URL_ERROR": "Ce n'est pas une url valide",
+		"ANIME_ID_ERROR": "Entrez un nombre positif",
+		"KITSU_SLUG_ERROR": "Slug invalide",
+		"KITSU_REQUEST_ERROR": "Erreur de réseau"
 	},
 	"TAG_TYPES": {
 		"SINGERGROUPS_one": "Groupe de musique",
