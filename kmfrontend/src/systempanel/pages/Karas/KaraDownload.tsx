@@ -6,7 +6,7 @@ import {
 	SyncOutlined,
 	WarningTwoTone,
 } from '@ant-design/icons';
-import { Button, Cascader, Col, Input, Layout, Radio, Row, Select, Table } from 'antd';
+import { Button, Cascader, Col, Input, Layout, Modal, Radio, Row, Select, Table } from 'antd';
 import Title from '../../components/Title';
 import i18next from 'i18next';
 import prettyBytes from 'pretty-bytes';
@@ -36,6 +36,7 @@ interface KaraDownloadState {
 	totalMediaSize: string;
 	tagOptions: any[];
 	preview: string;
+	syncModal: boolean;
 }
 
 class KaraDownload extends Component<unknown, KaraDownloadState> {
@@ -48,6 +49,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 			karas: [],
 			i18nTag: {},
 			karasCount: 0,
+			syncModal: false,
 			karasQueue: [],
 			currentPage: parseInt(localStorage.getItem('karaDownloadPage')) || 1,
 			currentPageSize: parseInt(localStorage.getItem('karaDownloadPageSize')) || 100,
@@ -269,6 +271,11 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 		}
 	};
 
+	syncMedias = () => {
+		commandBackend('updateAllMedias').catch(() => {});
+		this.setState({ syncModal: false });
+	};
+
 	render() {
 		return (
 			<>
@@ -277,6 +284,17 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 					description={i18next.t('HEADERS.DOWNLOAD.DESCRIPTION')}
 				/>
 				<Layout.Content>
+					<Modal
+						title={i18next.t('KARA.SYNC_WARNING_TITLE')}
+						visible={this.state.syncModal}
+						onOk={() => this.syncMedias()}
+						onCancel={() => this.setState({ syncModal: false })}
+						okText={i18next.t('YES')}
+						cancelText={i18next.t('NO')}
+					>
+						<p>{i18next.t('KARA.SYNC_WARNING_DESCRIPTION')}</p>
+						<p>{i18next.t('CONFIRM_SURE')}</p>
+					</Modal>
 					<Row justify="space-between">
 						<Col flex={3} style={{ marginRight: '10px' }}>
 							<Row>
@@ -298,7 +316,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 									style={{ width: '230px' }}
 									type="primary"
 									key="synchronize"
-									onClick={() => commandBackend('updateAllMedias').catch(() => {})}
+									onClick={() => this.setState({ syncModal: true })}
 								>
 									{i18next.t('KARA.SYNCHRONIZE')}
 								</Button>

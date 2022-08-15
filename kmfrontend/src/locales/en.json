@@ -897,6 +897,8 @@
 		"COPY_SONG": "Copy song to another repository",
 		"VIDEO_PREVIEW": "Video preview",
 		"TOTAL_MEDIA_SIZE": "Total media size:",
+		"SYNC_WARNING_TITLE": "Warning about synchronizing medias",
+		"SYNC_WARNING_DESCRIPTION": "Syncing medias will remove all medias from disabled collections if they have been previously downloaded. This can delete many files if you have temporarily disabled a collection that you usually use.",
 		"REPOSITORY_REQUIRED": "Repository is mandatory",
 		"BATCH_EDIT": {
 			"ADD_TAG": "Add tag",

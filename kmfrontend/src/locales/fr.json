@@ -899,6 +899,8 @@
 		"COPY_SONG": "Copier la chanson vers un autre dépôt",
 		"VIDEO_PREVIEW": "Aperçu de la vidéo",
 		"TOTAL_MEDIA_SIZE": "Taille totale des médias :",
+		"SYNC_WARNING_TITLE": "Attention à la synchronisation des médias",
+		"SYNC_WARNING_DESCRIPTION": "Synchroniser les médias supprimera les médias des collections désactivées s'ils ont été téléchargés précédemment sur votre ordinateur. Cela peut supprimer beaucoup de fichiers si vous avez désactivé temporairement une collection que vous utilisez d'habitude.",
 		"REPOSITORY_REQUIRED": "Le dépôt est obligatoire",
 		"BATCH_EDIT": {
 			"ADD_TAG": "Ajout de tag",
