@@ -64,7 +64,7 @@ export async function preInit() {
 	logger.debug(`app.getAppPath : ${app ? app.getAppPath() : undefined}`, { service });
 	logger.debug(`argv: ${JSON.stringify(process.argv)}`, { service });
 	logger.debug(`Locale : ${state.defaultLocale}`, { service });
-	logger.debug(`OS : ${state.os}`, { service });
+	logger.debug(`OS : ${process.platform}`, { service });
 	await initConfig(argv);
 	// Using system temp directory instead of our own.
 	// This is kind of an ugly fix for issue #1252 but since temp is stored in config and not state and we're *always* using the electron runtime, this seems like a good solution.
