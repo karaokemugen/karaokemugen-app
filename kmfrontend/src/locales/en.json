@@ -828,7 +828,7 @@
 		},
 		"DESC": {
 			"PARENTS": "If this song is an alternative version of another one, select its parent(s) to pre-fill this form.",
-			"PARENTS_PUBLIC": "When a user selects a parent song in the public interface, they will all their children / alternative versions.",
+			"PARENTS_PUBLIC": "When a user selects a parent song in the public interface, they'll see all their children / alternative versions.",
 			"TITLES": "Set all titles the song has in different languages. Usually, there's only one title.",
 			"TITLES_DEFAULT_LANGUAGE": "Default title language should be the song's original title. For titles in non-latin languages (chinese, japanese, arabic, korean...), add a \"Romanization\" title and make it default.",
 			"ALIASES": "If the song is known as something else (abbreviations for example), set them here to help people find it through search. No need to use words already contained in the song title(s)."

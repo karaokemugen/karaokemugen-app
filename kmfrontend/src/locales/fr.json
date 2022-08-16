@@ -830,7 +830,7 @@
 		},
 		"DESC": {
 			"PARENTS": "Si cette chanson est une version alternative d'une autre, selectionner son ou ses parent(s) pour préremplir ce formulaire.",
-			"PARENTS_PUBLIC": "Quand un utilisateur selectionne une chanson parente dans l'interface publique, ils verront alors toutes les versions alternatives / enfants.",
+			"PARENTS_PUBLIC": "Quand un utilisateur selectionne une chanson parente dans l'interface publique, il verra alors toutes les versions alternatives / enfants.",
 			"TITLES": "Définissez tous les titres que cette chanson possède dans différentes langues. Habituellement, il n'y a qu'un titre.",
 			"TITLES_DEFAULT_LANGUAGE": "La langue du titre par défaut devrait être le titre d'origine. Pour les titres en alphabet non-latin (chinois, japonais, coréen, arabe...), ajoutez un titre \"Romanisation\" et mettez-le par défaut.",
 			"ALIASES": "Si la chanson est connue sosu un autre nom (abbréviation par exemple), indiquez-les ici pour aider le public à les trouver à travers la recherche. Pas besoin d'utiliser des mots déjà contenus dans le(s) titre(s)."
