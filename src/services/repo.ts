@@ -56,7 +56,10 @@ export function getRepo(name: string) {
 
 /** Remove a repository */
 export async function removeRepo(name: string) {
-	if (!getRepo(name)) throw { code: 404 };
+	const repos = getRepos();
+	if (!repos.find(r => r.Name === name)) throw { code: 404 };
+	// Forbid people from removing the last repo
+	if (repos.length === 1) throw { code: 403 };
 	deleteRepo(name);
 	await generateDB();
 	logger.info(`Removed ${name}`, { service });
