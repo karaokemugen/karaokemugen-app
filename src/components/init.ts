@@ -72,7 +72,8 @@ export async function preInit() {
 	setConfig({ System: { Path: { Temp: app.getPath('temp') } } });
 	removeOldTempFolder();
 	// Set default repositories on First Run only
-	if (getConfig().App.FirstRun) {
+	const conf = getConfig();
+	if (conf.App.FirstRun && conf.System.Repositories.length === 0) {
 		setConfig({ System: { Repositories: [...defaultRepositories] } });
 	}
 	// Test if network ports are available
