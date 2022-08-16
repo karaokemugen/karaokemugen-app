@@ -563,14 +563,8 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					)}
 				</Form.Item>
 				<Divider orientation="left">{i18next.t('KARA.SECTIONS.PARENTS')}</Divider>
-				<Paragraph>
-					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					{i18next.t('KARA.DESC.PARENTS')}
-				</Paragraph>
-				<Paragraph>
-					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					{i18next.t('KARA.DESC.PARENTS_PUBLIC')}
-				</Paragraph>
+				<Paragraph style={{ marginLeft: '200px' }}>{i18next.t('KARA.DESC.PARENTS')}</Paragraph>
+				<Paragraph style={{ marginLeft: '200px' }}>{i18next.t('KARA.DESC.PARENTS_PUBLIC')}</Paragraph>
 				<Form.Item
 					label={
 						<span>
@@ -596,14 +590,8 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					/>
 				</Form.Item>
 				<Divider orientation="left">{i18next.t('KARA.SECTIONS.TITLES')}</Divider>
-				<Paragraph>
-					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					{i18next.t('KARA.DESC.TITLES')}
-				</Paragraph>
-				<Paragraph>
-					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					{i18next.t('KARA.DESC.TITLES_DEFAULT_LANGUAGE')}
-				</Paragraph>
+				<Paragraph style={{ marginLeft: '200px' }}>{i18next.t('KARA.DESC.TITLES')}</Paragraph>
+				<Paragraph style={{ marginLeft: '200px' }}>{i18next.t('KARA.DESC.TITLES_DEFAULT_LANGUAGE')}</Paragraph>
 				<Form.Item
 					hasFeedback
 					label={
@@ -635,10 +623,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					defaultLanguage={this.state.defaultLanguage}
 					onDefaultLanguageSelect={defaultLanguage => this.setState({ defaultLanguage })}
 				/>
-				<Paragraph>
-					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					{i18next.t('KARA.DESC.ALIASES')}
-				</Paragraph>
+				<Paragraph style={{ marginLeft: '200px' }}>{i18next.t('KARA.DESC.ALIASES')}</Paragraph>
 				<Form.Item
 					label={
 						<span>
