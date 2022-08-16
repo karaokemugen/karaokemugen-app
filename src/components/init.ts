@@ -17,6 +17,7 @@ import { editRepo } from '../services/repo';
 import { Config } from '../types/config';
 import { initConfig } from '../utils/config';
 import { logo } from '../utils/constants';
+import { defaultRepositories } from '../utils/defaultSettings';
 import { removeOldTempFolder } from '../utils/hokutoNoCode';
 import Sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
@@ -70,6 +71,10 @@ export async function preInit() {
 	// This is kind of an ugly fix for issue #1252 but since temp is stored in config and not state and we're *always* using the electron runtime, this seems like a good solution.
 	setConfig({ System: { Path: { Temp: app.getPath('temp') } } });
 	removeOldTempFolder();
+	// Set default repositories on First Run only
+	if (getConfig().App.FirstRun) {
+		setConfig({ System: { Repositories: [...defaultRepositories] } });
+	}
 	// Test if network ports are available
 	await verifyOpenPort(getConfig().System.FrontendPort, getConfig().App.FirstRun);
 }

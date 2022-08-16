@@ -5,7 +5,7 @@
 import { app } from 'electron';
 
 import { bools, hostnameRegexp } from '../lib/utils/constants';
-import { Config } from '../types/config';
+import { Config, Repository } from '../types/config';
 
 export const dbConfig = {
 	bundledPostgresBinary: true,
@@ -190,41 +190,7 @@ export const defaults: Config = {
 				Windows: 'app\\bin\\patch.exe',
 			},
 		},
-		Repositories: [
-			{
-				Name: 'kara.moe',
-				Online: true,
-				Update: true,
-				Enabled: true,
-				SendStats: true,
-				AutoMediaDownloads: 'updateOnly',
-				MaintainerMode: false,
-				BaseDir: process.platform === 'win32' ? 'repos\\kara.moe\\json' : 'repos/kara.moe/json',
-				Path:
-					process.platform === 'win32'
-						? {
-								Medias: ['repos\\kara.moe\\medias'],
-						  }
-						: {
-								Medias: ['repos/kara.moe/medias'],
-						  },
-			},
-			{
-				Name: 'Local',
-				Online: false,
-				Enabled: true,
-				BaseDir: process.platform === 'win32' ? 'repos\\Local\\json' : 'repos/Local/json',
-				MaintainerMode: false,
-				Path:
-					process.platform === 'win32'
-						? {
-								Medias: ['repos\\Local\\medias'],
-						  }
-						: {
-								Medias: ['repos/Local/medias'],
-						  },
-			},
-		],
+		Repositories: [],
 		MediaPath: {
 			Encores: ['encores', process.platform === 'win32' ? 'encores\\KaraokeMugen' : 'encores/KaraokeMugen'],
 			Intros: ['intros', process.platform === 'win32' ? 'intros\\KaraokeMugen' : 'intros/KaraokeMugen'],
@@ -340,3 +306,39 @@ export const configConstraints = {
 	'System.Path.Import': { presence: true },
 	'System.Repositories': { repositoriesValidator: true },
 };
+
+export const defaultRepositories: Repository[] = [
+	{
+		Name: 'kara.moe',
+		Online: true,
+		Update: true,
+		Enabled: true,
+		SendStats: true,
+		AutoMediaDownloads: 'updateOnly',
+		MaintainerMode: false,
+		BaseDir: process.platform === 'win32' ? 'repos\\kara.moe\\json' : 'repos/kara.moe/json',
+		Path:
+			process.platform === 'win32'
+				? {
+						Medias: ['repos\\kara.moe\\medias'],
+				  }
+				: {
+						Medias: ['repos/kara.moe/medias'],
+				  },
+	},
+	{
+		Name: 'My Custom Songs',
+		Online: false,
+		Enabled: true,
+		BaseDir: process.platform === 'win32' ? 'repos\\My Custom Songs\\json' : 'repos/My Custom Songs/json',
+		MaintainerMode: false,
+		Path:
+			process.platform === 'win32'
+				? {
+						Medias: ['repos\\My Custom Songs\\medias'],
+				  }
+				: {
+						Medias: ['repos/My Custom Songs/medias'],
+				  },
+	},
+];

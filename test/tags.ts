@@ -20,7 +20,7 @@ describe('Tags', () => {
 		i18n: {
 			fre: 'Mon super tag',
 		},
-		repository: 'Local',
+		repository: 'My Custom Songs',
 		types: [8],
 	};
 	const tag2: any = {
@@ -32,7 +32,7 @@ describe('Tags', () => {
 			fre: 'Mon mega tag',
 			eng: "My mega tag can't be this cute",
 		},
-		repository: 'Local',
+		repository: 'My Custom Songs',
 		types: [2],
 	};
 	it('Get tag list', async () => {
