@@ -1173,7 +1173,6 @@ export async function generateCommits(repoName: string) {
 		logger.debug(`Preparing ${commits.length} commits`, { service, obj: commits });
 		logger.debug(`You have ${modifiedMedias.length} modified medias`, { service, obj: modifiedMedias });
 		if (commits.length === 0) return;
-		console.log(commits);
 		return { commits, modifiedMedias };
 	} catch (err) {
 		logger.error('Failed to prepare commits', { service, obj: err });
