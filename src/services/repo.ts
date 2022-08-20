@@ -906,9 +906,9 @@ export async function generateCommits(repoName: string) {
 		const modifiedSongs = status.modified.filter(f => f.endsWith('kara.json'));
 		let addedTags = status.not_added.filter(f => f.endsWith('tag.json'));
 		let modifiedTags = status.modified.filter(f => f.endsWith('tag.json'));
-		let modifiedLyrics = status.modified;
-		let deletedLyrics = status.deleted;
-		let addedLyrics = status.not_added;
+		let modifiedLyrics = status.modified.filter(f => f.includes('lyrics/'));
+		let deletedLyrics = status.deleted.filter(f => f.includes('lyrics/'));
+		let addedLyrics = status.not_added.filter(f => f.includes('lyrics/'));
 		let commits: Commit[] = [];
 		// These are to keep track of if files have been renamed or not
 		const deletedTIDFiles = new Map<string, string>();
@@ -1173,6 +1173,7 @@ export async function generateCommits(repoName: string) {
 		logger.debug(`Preparing ${commits.length} commits`, { service, obj: commits });
 		logger.debug(`You have ${modifiedMedias.length} modified medias`, { service, obj: modifiedMedias });
 		if (commits.length === 0) return;
+		console.log(commits);
 		return { commits, modifiedMedias };
 	} catch (err) {
 		logger.error('Failed to prepare commits', { service, obj: err });
