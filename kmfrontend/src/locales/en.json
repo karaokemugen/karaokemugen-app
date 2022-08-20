@@ -1745,6 +1745,11 @@
 			"PAUSE": "Pause",
 			"STOP": "Stop",
 			"POLL": "Poll"
+		},
+		"DESC": {
+			"PAUSE": "Between songs (streamer/classic mode.)",
+			"STOP": "When the player is in a stopped state.",
+			"POLL": "When a poll is running."
 		}
 	},
 	"INBOX": {

@@ -1747,6 +1747,11 @@
 			"PAUSE": "Pause",
 			"STOP": "Stop",
 			"POLL": "Sondage"
+		},
+		"DESC": {
+			"PAUSE": "Entre les chansons (mode stream/classique.)",
+			"STOP": "Quand le lecteur a démarré ou est arrêté.",
+			"POLL": "Quand un sondage est en cours."
 		}
 	},
 	"INBOX": {

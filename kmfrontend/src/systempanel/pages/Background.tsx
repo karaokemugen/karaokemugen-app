@@ -173,13 +173,13 @@ export default function Background() {
 							onChange={(value: BackgroundType) => setType(value)}
 						>
 							<Select.Option key="pause" value="pause">
-								{i18next.t('BACKGROUNDS_MGMT.TYPE.PAUSE')}
+								{i18next.t('BACKGROUNDS_MGMT.TYPE.PAUSE')} - {i18next.t('BACKGROUNDS_MGMT.DESC.PAUSE')}
 							</Select.Option>
 							<Select.Option key="stop" value="stop">
-								{i18next.t('BACKGROUNDS_MGMT.TYPE.STOP')}
+								{i18next.t('BACKGROUNDS_MGMT.TYPE.STOP')} - {i18next.t('BACKGROUNDS_MGMT.DESC.STOP')}
 							</Select.Option>
 							<Select.Option key="poll" value="poll">
-								{i18next.t('BACKGROUNDS_MGMT.TYPE.POLL')}
+								{i18next.t('BACKGROUNDS_MGMT.TYPE.POLL')} - {i18next.t('BACKGROUNDS_MGMT.DESC.POLL')}
 							</Select.Option>
 						</Select>
 					</div>
