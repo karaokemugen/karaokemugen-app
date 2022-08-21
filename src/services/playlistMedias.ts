@@ -197,22 +197,9 @@ export function getSingleMedia(type: MediaType): Media | null {
 	}
 	// Pick a media from a random series
 	let media: Media | null = null;
-	let fromConfig = false;
-	if (type === 'Jingles' || type === 'Sponsors') {
-		// Jingles and sponsors do not have a specific file to use in options
-		media = sample(currentMedias[type]);
-	} else {
-		// For every other media type we pick the file from config if it's specified.
-		const configCandidate = currentMedias[type].find(
-			(m: Media) => basename(m.filename) === getConfig().Playlist.Medias[type].File
-		);
-		if (configCandidate) {
-			fromConfig = true;
-		}
-		media = configCandidate || sample(currentMedias[type]);
-	}
+	media = sample(currentMedias[type]);
 	// Let's remove the series of the jingle we just selected so it won't be picked again next time.
-	if (!fromConfig) currentMedias[type] = currentMedias[type].filter(m => m.series !== media.series);
+	currentMedias[type] = currentMedias[type].filter(m => m.series !== media.series);
 	logger.info(`${type} time !`, { service });
 	return media;
 }

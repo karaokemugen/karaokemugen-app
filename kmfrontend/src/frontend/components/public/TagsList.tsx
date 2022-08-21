@@ -109,7 +109,7 @@ function TagsList() {
 						<div className="title">
 							{tagType === YEARS.type
 								? tag.name
-								: getTagInLocale(context?.globalState.settings.data, tag as unknown as DBKaraTag)}
+								: getTagInLocale(context?.globalState.settings.data, tag as unknown as DBKaraTag).i18n}
 						</div>
 						<div className="karacount">
 							<em>

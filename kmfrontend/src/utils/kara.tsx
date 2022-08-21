@@ -17,10 +17,13 @@ export function getTagInLanguage(
 	mainLanguage: string,
 	fallbackLanguage: string,
 	i18nParam?: any
-): string {
+): { i18n: string; description: string } {
 	const i18n = i18nParam && i18nParam[tag.tid] ? i18nParam[tag.tid] : tag.i18n;
+	const desc = tag.description;
+	let resulti18n = '';
+	let resultDescription = null;
 	if (i18n) {
-		return i18n[mainLanguage]
+		resulti18n = i18n[mainLanguage]
 			? i18n[mainLanguage]
 			: i18n[fallbackLanguage]
 			? i18n[fallbackLanguage]
@@ -28,13 +31,26 @@ export function getTagInLanguage(
 			? i18n.eng
 			: tag.name;
 	} else {
-		return tag.name;
+		resulti18n = tag.name;
 	}
+	if (desc) {
+		resultDescription = desc[mainLanguage]
+			? desc[mainLanguage]
+			: desc[fallbackLanguage]
+			? desc[fallbackLanguage]
+			: desc.eng
+			? desc.eng
+			: null;
+	}
+	return {
+		i18n: resulti18n,
+		description: resultDescription,
+	};
 }
 
 export function getTagInLocaleList(settings: SettingsStoreData, list: DBKaraTag[], i18n?: any): string[] {
 	if (list) {
-		return list.map((tag: DBKaraTag) => getTagInLocale(settings, tag, i18n));
+		return list.map((tag: DBKaraTag) => getTagInLocale(settings, tag, i18n).i18n);
 	} else {
 		return [];
 	}
@@ -100,16 +116,23 @@ export function buildKaraTitle(
 	}
 	const serieText =
 		data?.series?.length > 0
-			? data.series.map(e => getTagInLocale(settings, e, i18nParam)).join(', ') +
-			  (data.series.length > 3 ? '...' : '')
-			: data?.singers
+			? data.series
+					.slice(0, 3)
+					.map(e => getTagInLocale(settings, e, i18nParam).i18n)
+					.join(', ') + (data.series.length > 3 ? '...' : '')
+			: data?.singergroups?.length > 0
+			? data.singergroups
+					.slice(0, 3)
+					.map(e => getTagInLocale(settings, e, i18nParam).i18n)
+					.join(', ') + (data.singergroups.length > 3 ? '...' : '')
+			: data?.singers?.length > 0
 			? data.singers
 					.slice(0, 3)
-					.map(e => e.name)
+					.map(e => getTagInLocale(settings, e, i18nParam).i18n)
 					.join(', ') + (data.singers.length > 3 ? '...' : '')
-			: '';
+			: ''; // wtf?
 	const langsText = data?.langs
-		.map(e => e.name)
+		?.map(e => e.name)
 		.join(', ')
 		.toUpperCase();
 	const songtypeText = sortAndHideTags(data?.songtypes)
@@ -117,7 +140,7 @@ export function buildKaraTitle(
 		.join(' ');
 	const songorderText = data?.songorder > 0 ? ' ' + data.songorder : '';
 	if (onlyText) {
-		const versions = sortAndHideTags(data?.versions).map(t => `[${getTagInLocale(settings, t, i18nParam)}]`);
+		const versions = sortAndHideTags(data?.versions).map(t => `[${getTagInLocale(settings, t, i18nParam).i18n}]`);
 		const version = versions?.length > 0 ? ` ${versions.join(' ')}` : '';
 		return `${langsText} - ${serieText} - ${songtypeText} ${songorderText} - ${getTitleInLocale(
 			settings,
@@ -127,7 +150,7 @@ export function buildKaraTitle(
 	} else {
 		const versions = sortAndHideTags(data?.versions).map(t => (
 			<span className="tag inline white" key={t.tid}>
-				{getTagInLocale(settings, t, i18nParam)}
+				{getTagInLocale(settings, t, i18nParam).i18n}
 			</span>
 		));
 		return (
@@ -329,9 +352,9 @@ export function computeTagsElements(kara: DBKara, scope: Scope, versions = true,
 		}
 	}
 
-	// Tags in the page/modal itself (singers, songwriters, creators, karaoke authors)
+	// Tags in the page/modal itself (singers, singersgroups, songwriters, creators, karaoke authors)
 	const karaBlockTags: ReactNode[] = [];
-	for (const type of ['SINGERS', 'SONGWRITERS', 'CREATORS', 'AUTHORS']) {
+	for (const type of ['SINGERS', 'SINGERGROUPS', 'SONGWRITERS', 'CREATORS', 'AUTHORS']) {
 		let key = 0;
 		const tagData = tagTypes[type];
 		if (kara[tagData.karajson]?.length > 0) {

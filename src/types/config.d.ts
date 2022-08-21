@@ -10,7 +10,6 @@ export interface Config {
 		JwtSecret?: string;
 		InstanceID?: string;
 		FirstRun?: boolean;
-		QuickStart?: boolean;
 		Language?: string;
 	};
 	Online: {
@@ -39,14 +38,12 @@ export interface Config {
 	};
 	Frontend: {
 		AllowGuestLogin?: boolean;
+		AllowCustomTemporaryGuests?: boolean;
 		Mode?: number;
-		Permissions?: {
-			AllowNicknameChange?: boolean;
-		};
 		ShowAvatarsOnPlaylist?: boolean;
+		WelcomeMessage?: string;
 	};
 	GUI: {
-		OpenInElectron?: boolean;
 		ChibiPlayer?: {
 			Enabled?: boolean;
 			AlwaysOnTop?: boolean;
@@ -75,7 +72,6 @@ export interface Config {
 		};
 		MinutesBeforeEndOfSessionWarning?: number;
 		Autoplay?: boolean;
-		SmartInsert?: boolean;
 		AutoBalance?: boolean;
 		Poll: {
 			Enabled?: boolean;
@@ -110,8 +106,6 @@ export interface Config {
 		Screen?: number;
 		AudioDevice?: string;
 		Monitor?: boolean;
-		NoHud?: boolean;
-		NoBar?: boolean;
 		mpvVideoOutput?: string;
 		PIP: {
 			Size?: number;
@@ -140,17 +134,14 @@ export interface Config {
 			};
 			Intros: {
 				Enabled: boolean;
-				File: string;
 				Message?: string;
 			};
 			Outros: {
 				Enabled: boolean;
-				File: string;
 				Message?: string;
 			};
 			Encores: {
 				Enabled: boolean;
-				File: string;
 				Message?: string;
 			};
 		};

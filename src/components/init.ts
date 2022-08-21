@@ -17,7 +17,8 @@ import { editRepo } from '../services/repo';
 import { Config } from '../types/config';
 import { initConfig } from '../utils/config';
 import { logo } from '../utils/constants';
-import { migrateReposToZip, renameConfigKeys } from '../utils/hokutoNoCode';
+import { defaultRepositories } from '../utils/defaultSettings';
+import { removeOldTempFolder } from '../utils/hokutoNoCode';
 import Sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
 import { parseArgs, setupFromCommandLineArgs } from './args';
@@ -64,12 +65,17 @@ export async function preInit() {
 	logger.debug(`app.getAppPath : ${app ? app.getAppPath() : undefined}`, { service });
 	logger.debug(`argv: ${JSON.stringify(process.argv)}`, { service });
 	logger.debug(`Locale : ${state.defaultLocale}`, { service });
-	logger.debug(`OS : ${state.os}`, { service });
-	await renameConfigKeys(argv).catch(() => {});
+	logger.debug(`OS : ${process.platform}`, { service });
 	await initConfig(argv);
 	// Using system temp directory instead of our own.
 	// This is kind of an ugly fix for issue #1252 but since temp is stored in config and not state and we're *always* using the electron runtime, this seems like a good solution.
 	setConfig({ System: { Path: { Temp: app.getPath('temp') } } });
+	removeOldTempFolder();
+	// Set default repositories on First Run only
+	const conf = getConfig();
+	if (conf.App.FirstRun && conf.System.Repositories.length === 0) {
+		setConfig({ System: { Repositories: [...defaultRepositories] } });
+	}
 	// Test if network ports are available
 	await verifyOpenPort(getConfig().System.FrontendPort, getConfig().App.FirstRun);
 }
@@ -86,7 +92,6 @@ export async function init() {
 	console.log('================================================================================');
 	logger.debug('Initial state', { service, obj: state });
 
-	await migrateReposToZip();
 	// Checking paths, create them if needed.
 	await checkPaths(getConfig());
 	// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel

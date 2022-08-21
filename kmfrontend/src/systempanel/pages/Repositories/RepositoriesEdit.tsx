@@ -1,4 +1,5 @@
 import { Layout } from 'antd';
+import Title from '../../components/Title';
 import Modal from 'antd/lib/modal/Modal';
 import i18next from 'i18next';
 import { useEffect, useState } from 'react';
@@ -18,6 +19,7 @@ const newrepository: Repository = {
 	Online: false,
 	Enabled: true,
 	SendStats: false,
+	Update: true,
 	AutoMediaDownloads: 'updateOnly',
 	// @ts-ignore: omg just shut up
 	MaintainerMode: false,
@@ -112,14 +114,12 @@ function RepositoriesEdit() {
 
 	return (
 		<>
-			<Layout.Header>
-				<div className="title">
-					{i18next.t(name ? 'HEADERS.REPOSITORIES_EDIT.TITLE' : 'HEADERS.REPOSITORIES_NEW.TITLE')}
-				</div>
-				<div className="description">
-					{i18next.t(name ? 'HEADERS.REPOSITORIES_EDIT.DESCRIPTION' : 'HEADERS.REPOSITORIES_NEW.DESCRIPTION')}
-				</div>
-			</Layout.Header>
+			<Title
+				title={i18next.t(name ? 'HEADERS.REPOSITORIES_EDIT.TITLE' : 'HEADERS.REPOSITORIES_NEW.TITLE')}
+				description={i18next.t(
+					name ? 'HEADERS.REPOSITORIES_EDIT.DESCRIPTION' : 'HEADERS.REPOSITORIES_NEW.DESCRIPTION'
+				)}
+			/>
 			<Layout.Content>
 				{repository && (
 					<RepositoryForm

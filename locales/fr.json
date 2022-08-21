@@ -1,11 +1,14 @@
 {
-	"REQUESTED_BY": "Demandé par",
+	"REQUESTED_BY": "Demandé par {{name}}",
+	"REQUESTED_WITH": "(avec {{names}})",
+	"REQUESTED_AND_one": "et d'autres",
+	"REQUESTED_AND_other": "et {{count}} autres",
 	"MY_PLAYLIST": "Ma playlist",
 	"WHITELIST": "Liste blanche",
 	"BLACKLIST": "Liste noire",
 	"CURRENT_PLAYLIST": "Liste de lecture",
 	"PUBLIC_PLAYLIST": "Suggestions du public",
-	"GO_TO": "Allez sur",
+	"GO_TO": "Allez sur $url pour suggérer des chansons !",
 	"VOTE_MESSAGE_SCREEN": "Votez pour la prochaine chanson !",
 	"VOTE_MESSAGE_SCREEN_WINNER": "Nous avons un gagnant !",
 	"NEXT_SONG": "Chanson suivante",
@@ -13,6 +16,7 @@
 	"INIT_DUMPDB": "Sauvegarde de la base de données…",
 	"INIT_RESTOREDB": "Restauration de la base de données…",
 	"INIT_DB": "Initialisation de la base de données…",
+	"INIT_MIGRATION": "Mise à jour de la structure de la base de données, veuillez patienter…",
 	"INIT_VALIDATION": "Validation de vos fichiers…",
 	"INIT_GEN": "Génération de la base de données, veuillez patienter…",
 	"INIT_UPDATEMEDIAS": "Mise à jour des médias…",
@@ -85,7 +89,6 @@
 	"MENU_TOOLS_KARAOKES": "&Liste de vos karaokés",
 	"MENU_TOOLS_DATABASE": "&Gestion de la base de données",
 	"MENU_OPTIONS": "&Options",
-	"MENU_OPTIONS_OPENINELECTRON": "&Toujours ouvrir dans cette fenêtre",
 	"MENU_OPTIONS_CHECKFORUPDATES": "&Vérifier les mises à jour au démarrage",
 	"MENU_OPTIONS_OPERATORCONFIG": "&Préférences",
 	"MENU_OPTIONS_SYSTEMCONFIG": "Préférences &système",
@@ -214,12 +217,6 @@
 	"INTERFACE_RESTRICTED": "Pas de suggestions",
 	"INTERFACE_CLOSED": "Fermée",
 	"PROBLEMATIC_SONGS": "Chansons problématiques",
-	"SYSTEM_MESSAGES": {
-		"ZIP_MIGRATION_FAILED": {
-			"TITLE": "Problème de migration",
-			"BODY": "Le dépôt {{repo}} n'a pas pu être migré vers le nouveau système de gestion des dépôts. Le dépôt a ainsi été désactivé, vous pouvez le restaurer en le configurant correctement dans le panneau système. Vous pouvez nous contacter pour de l'aide avec le bouton en haut."
-		}
-	},
 	"GIT": {
 		"CURRENT_ACTION": "Action Git en cours",
 		"METHODS": {

@@ -9,6 +9,7 @@ import { getConfig, setConfig } from '../lib/utils/config';
 import logger, { profile } from '../lib/utils/logger';
 import { on } from '../lib/utils/pubsub';
 import { emitWS } from '../lib/utils/ws';
+import { BackgroundType } from '../types/backgrounds';
 import { MpvHardwareDecodingOptions } from '../types/mpvIPC';
 import { getState, setState } from '../utils/state';
 import { playCurrentSong } from './karaEngine';
@@ -55,26 +56,13 @@ export async function next() {
 		if (song) {
 			await setPlaying(song.plcid, currentPlaid);
 			if (conf.Karaoke.ClassicMode) {
-				await stopPlayer(true);
-				if (conf.Karaoke.StreamerMode.Enabled && conf.Karaoke.StreamerMode.PauseDuration > 0) {
-					setState({ streamerPause: true });
-					await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
-					// Recheck if classic mode is still enabled after the sleep timer. If it's disabled now, do not play song.
-					if (
-						getState().streamerPause &&
-						getState().player.playerStatus === 'stop' &&
-						getConfig().Karaoke.ClassicMode
-					) {
-						await playPlayer(true);
-					}
-					setState({ streamerPause: false });
-				}
+				await stopPlayer();
 			} else if (conf.Karaoke.StreamerMode.Enabled) {
 				setState({ currentRequester: null });
 				const kara = await getCurrentSong();
-				await stopPlayer(true);
-				if (conf.Karaoke.StreamerMode.PauseDuration > 0) setState({ streamerPause: true });
-				if (conf.Karaoke.Poll.Enabled) {
+				setState({ streamerPause: true });
+				await stopPlayer();
+				if (conf.Karaoke.StreamerMode.PauseDuration > 0 && conf.Karaoke.Poll.Enabled) {
 					switchToPollScreen();
 					const poll = await startPoll();
 					if (!poll) {
@@ -88,12 +76,13 @@ export async function next() {
 					await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
 					if (
 						getState().streamerPause &&
+						getState().pauseInProgress &&
 						getConfig().Karaoke.StreamerMode.Enabled &&
 						getState().player.playerStatus === 'stop'
 					) {
 						await playPlayer(true);
 					}
-					setState({ streamerPause: false });
+					setState({ streamerPause: false, pauseInProgress: false });
 				}
 			} else {
 				setState({ currentRequester: null });
@@ -169,17 +158,30 @@ export async function playPlayer(now?: boolean) {
 	} else {
 		await mpv.resume();
 	}
+	setState({ pauseInProgress: false });
 	profile('Play');
 }
 
 export async function stopPlayer(now = true, endOfPlaylist = false) {
-	if (now || getState().stopping || getState().streamerPause) {
+	if (now || getState().stopping || getState().streamerPause || getConfig().Karaoke.ClassicMode) {
 		logger.info('Karaoke stopping NOW', { service });
 		// No need to stop in streamerPause, we're already stopped, but we'll disable the pause anyway.
-		if (!getState().streamerPause) await mpv.stop('stop');
-		setState({ streamerPause: false, randomPlaying: false, stopping: false });
+		let stopType: BackgroundType = 'stop';
+		if (
+			(getState().streamerPause || getConfig().Karaoke.ClassicMode) &&
+			!endOfPlaylist &&
+			!getState().stopping &&
+			!getState().pauseInProgress
+		) {
+			stopType = 'pause';
+			setState({ pauseInProgress: true });
+		} else {
+			setState({ pauseInProgress: false });
+		}
+		await mpv.stop(stopType);
+		setState({ randomPlaying: false, stopping: false });
 		stopAddASongMessage();
-		if (!endOfPlaylist && getConfig().Karaoke.ClassicMode) {
+		if (!endOfPlaylist && getConfig().Karaoke.ClassicMode && getState().pauseInProgress) {
 			await prepareClassicPauseScreen();
 		}
 	} else if (!getState().stopping) {
@@ -229,6 +231,12 @@ async function setVolumePlayer(volume: number) {
 	await mpv.setVolume(volume);
 	// Save the volume in configuration
 	setConfig({ Player: { Volume: volume } });
+}
+async function setPitchPlayer(pitch: number) {
+	await mpv.setModifiers({ pitch });
+}
+async function setSpeedPlayer(speed: number) {
+	await mpv.setModifiers({ speed });
 }
 
 async function setAudioDevicePlayer(device: string) {
@@ -290,7 +298,7 @@ export async function sendCommand(command: string, options: any): Promise<APIMes
 			await playPlayer();
 		} else if (command === 'stopNow') {
 			setState({ singlePlay: false, randomPlaying: false });
-			await stopPlayer(true);
+			await stopPlayer();
 		} else if (command === 'pause') {
 			await pausePlayer();
 		} else if (command === 'stopAfter') {
@@ -331,6 +339,14 @@ export async function sendCommand(command: string, options: any): Promise<APIMes
 		} else if (command === 'setVolume') {
 			if (isNaN(options)) throw 'Command setVolume must have a numeric option value';
 			await setVolumePlayer(options);
+		} else if (command === 'setPitch') {
+			if (isNaN(options)) throw 'Command setPitch must have a numeric option value';
+			if (options > 3 || options < -3) throw 'Pitch range has to be between -3 and +3';
+			await setPitchPlayer(options);
+		} else if (command === 'setSpeed') {
+			if (isNaN(options)) throw 'Command setSpeed must have a numeric option value';
+			if (options > 200 || options < 25) throw 'Speed range has to be between 0.25 and 2';
+			await setSpeedPlayer(options);
 		} else {
 			throw `Unknown command ${command}`;
 		}
@@ -347,6 +363,18 @@ export function isPlayerRunning() {
 export async function initPlayer() {
 	try {
 		profile('initPlayer');
+		if (getConfig().App.FirstRun) {
+			// Write in config the message we should have depending on user locale.
+			setConfig({
+				Player: {
+					Display: {
+						ConnectionInfo: {
+							Message: i18next.t('GO_TO'),
+						},
+					},
+				},
+			});
+		}
 		await mpv.initPlayerSystem();
 	} catch (err) {
 		logger.error('Failed mpv init', { service, obj: err });

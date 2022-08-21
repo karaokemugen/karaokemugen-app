@@ -35,8 +35,12 @@
 	flex-wrap: wrap;
 	align-items: center;
 
-	div {
+	div:not(.page-tasks-wrapper) {
 		margin-left: 0.25em;
+	}
+
+	.page-tasks-wrapper {
+		margin: 0.25em;
 	}
 
 	a {

@@ -94,9 +94,7 @@
 	"CRITERIA": {
 		"OR": "ATAU",
 		"PLAYLIST_DURATION_ORDER_MORE_RECENT": "terbaru",
-		"CRITERIA_TYPE_1005": "Tanda mengandung",
 		"LABEL": {
-			"TAG_NAME": "Karaoke dengan tanda yang mengandung {{title}} ada di daftar.",
 			"TAG_VERBS": {
 				"1": "dari",
 				"2": "dinyanyikan oleh",
@@ -117,8 +115,7 @@
 			"KID": "Karaoke ini ada di daftar.",
 			"LONGER": "Karaoke yang lebih panjang dari {{time}} detik ada di daftar.",
 			"SHORTER": "Karaoke yang lebih pendek dari {{time}} detik ada di daftar.",
-			"TITLE": "Karaoke yang mengandung {{title}} di judul ada di daftar.",
-			"TAG": "Karaoke {{verb}} {{tag}} ada dalam daftar hitam."
+			"TAG": "Karaoke {{verb}} {{tag}} ada di daftar."
 		},
 		"AND": "DAN",
 		"TYPE_SMART": "Jenis daftar putar pintar",
@@ -131,7 +128,6 @@
 		"CRITERIA_TYPE_1001": "Lagu",
 		"CRITERIA_TYPE_1002": "Lebih panjang dari (mm:ss)",
 		"CRITERIA_TYPE_1003": "Lebih pendek dari (mm:ss)",
-		"CRITERIA_TYPE_1004": "Judul mengandung",
 		"CRITERIA_TYPE_1006": "lagu yang disembunyikan tidak tersedia secara luring",
 		"ADD_PLACEHOLDER": "Tambahkan nilai ke kriteria",
 		"EXPL": "Daftar putar pintar dibuat dari <1>kriteria</1>, kamu juga bisa menambahkan secara manual karaoke ke daftar ini.",
@@ -206,7 +202,7 @@
 			"DISPLAY_CONNECTION_INFO_HOST": "Paksa nama hos atau IP",
 			"DISPLAY_CONNECTION_INFO_HOST_TOOLTIP": "Jika alamat IP kamu salah terdeteksi oleh Karaoke Mugen, kamu bisa memaksanya di sini.",
 			"DISPLAY_CONNECTION_INFO_MESSAGE": "Pesan yang ditampilkan sebelum URL",
-			"DISPLAY_CONNECTION_INFO_MESSAGE_TOOLTIP": "Sesuaikan pesan sebelum mengakses URL, untuk menyemangati audiens kamu atau memberi mereka arahan.",
+			"DISPLAY_CONNECTION_INFO_MESSAGE_TOOLTIP": "Sesuaikan pesan sebelum mengakses URL, untuk menyemangati audiens kamu atau memberi mereka arahan. Gunakan $url untuk menunjukkan URL untuk mengakses karaoke Anda. Seperti ini: \"Buka $url!\"",
 			"DISPLAY_CONNECTION_INFO_TOOLTIP": "Adalah \"Pergi ke http://xxx !\"",
 			"DISPLAY_NICKNAME": "Tampilkan nama panggilan di karaoke",
 			"DISPLAY_NICKNAME_TOOLTIP": "Tampilkan di bawah layar saat awal dan akhir lagu",
@@ -222,7 +218,6 @@
 			"SONGS_BY_USER": "Jumlah lagu per pengguna",
 			"SONGS_BY_USER_TOOLTIP": "Jumlah lagu yang pengguna bisa minta secara bersamaan. Sebuah lagu yang dirilis atau yang baru saja diputar tidak dihitung terhadap kuota",
 			"FREE_AUTO_TIME_TOOLTIP": "Setelah X menit, lagu tidak akan dihitung terhadap kuota pengguna. Sesuaikan ini dengan jumlah tamu yang berpartisipasi",
-			"ENABLE_SMARTINSERT": "Aktifkan penyisipan lagu pintar untuk menghindari monopoli pengguna",
 			"MINUTES_BEFORE_SESSION_ENDS_WARNING": "Tampilkan peringatan X menit sebelum akhir daftar putar",
 			"ADDED_SONG_VISIBILITY_MYSTERY_OPTION": "Lagu misterius",
 			"MINUTES_BEFORE_SESSION_ENDS_WARNING_TOOLTIP": "Sebuah notifikasi akan mengingatkan kamu X menit sebelum akhir dari sesi terencana kamu",
@@ -1199,7 +1194,6 @@
 		"SESSION_EXPORT_ERROR": "Galat mengekspor sesi",
 		"DOWNLOADS_START_ERROR": "Galat memulai unduhan",
 		"FAVORITES_ADDED_ERROR": "Galat menambahkan favorit",
-		"PLAYLIST_MODE_ADD_SONG_ERROR_NO_DUPLICATE_SERIES_SINGERS": "Tidak diperbolehkan serial atau penyanyi duplikat",
 		"SETTINGS_UPDATE_ERROR": "Galat memperbarui pengaturan",
 		"FS_ERROR": "Galat menjelajahi sistem berkas",
 		"FAVORITES_IMPORTED_ERROR": "Galat mengimpor favorit",
@@ -1363,7 +1357,8 @@
 		"DELETE_ALL_TOOLTIP": "Hapus semua karaoke tertampil sekaligus",
 		"EDIT_KARA": "Sunting karaoke",
 		"AUTHORS_BY": "Karaoke dibuat oleh",
-		"DELETE_KARA": "Hapus karaoke?",
+		"DELETE_KARA": "Hapus karaoke",
+		"DELETE_KARA_MODAL": "Hapus karaoke?",
 		"ALIASES": "Alias",
 		"IGNOREHOOKS": "Hiraukan tanda otomatis",
 		"GROUPS_TOOLTIP": "Kelompok unduhan untuk lagu ini. Lagu ini akan dimasukkan ke paket unduhan tersebut",
@@ -1525,22 +1520,11 @@
 		"Terlalu tenang, saya tidak suka ini…",
 		"Persiapan sedang berlangsung!"
 	],
-	"JINGLE_TAGLINES": [
-		"Kami akan segera kembali!"
-	],
+	"JINGLE_TAGLINES": ["Kami akan segera kembali!"],
 	"INTRO_TIME": "Introduksi daftar putar",
-	"INTRO_TAGLINES": [
-		"Ayo!",
-		"Memulai…",
-		"Inisialisasi…",
-		"Siapkan mikrofon kamu!",
-		"*bersihkan tenggorokan*"
-	],
+	"INTRO_TAGLINES": ["Ayo!", "Memulai…", "Inisialisasi…", "Siapkan mikrofon kamu!", "*bersihkan tenggorokan*"],
 	"OUTRO_TIME": "Penutup daftar putar",
-	"OUTRO_TAGLINES": [
-		"Tamat :(",
-		"Terima kasih semuanya!"
-	],
+	"OUTRO_TAGLINES": ["Tamat :(", "Terima kasih semuanya!"],
 	"ENCORES_TIME": "Ekstra! Ekstra!",
 	"ENCORES_TAGLINES": [
 		"Yah, bukan karena aku menyukaimu atau apa gitu…",
@@ -1548,9 +1532,7 @@
 		"Lagu terakhir, berikan yang terbaik!"
 	],
 	"SPONSOR_TIME": "IKLAN!",
-	"SPONSOR_TAGLINES": [
-		"Dan terima kasih atas duitnya."
-	],
+	"SPONSOR_TAGLINES": ["Dan terima kasih atas duitnya."],
 	"QUOTA_AVAILABLE": "Kamu sekarang bisa menambahkan lagu lagi!",
 	"SERIE_NAME_MODE": "Mode bahasa serial",
 	"SERIE_NAME_MODE_TOOLTIP": "Ubah bagaimana nama serial ditampilkan di daftar lagu. Mungkin diabaikan oleh preferensi pengguna",
@@ -1565,14 +1547,8 @@
 		"CONNECTED": "Tersambung"
 	},
 	"REMOTE_TOKEN": "Token akses jarak jauh",
-	"PAUSE_TAGLINES": [
-		"Beristirahatlah!",
-		"Saatnya minum!",
-		"Kami akan segera kembali!"
-	],
-	"POLL_TAGLINES": [
-		"Pilihan ada padamu."
-	],
+	"PAUSE_TAGLINES": ["Beristirahatlah!", "Saatnya minum!", "Kami akan segera kembali!"],
+	"POLL_TAGLINES": ["Pilihan ada padamu."],
 	"REMOTE_URL": "URL akses jarak jauh",
 	"DATABASE": {
 		"REGENERATE_DB": "Membuat kembali basis data kamu",

@@ -13,9 +13,10 @@ import { formatKaraV4, getDataFromKaraFile, writeKara } from '../lib/dao/karafil
 import { refreshTags } from '../lib/dao/tag';
 import { writeTagFile } from '../lib/dao/tagfile';
 import { refreshKarasAfterDBChange, updateTags } from '../lib/services/karaManagement';
-import { DBKara } from '../lib/types/database/kara';
+import { DBKara, DBKaraTag } from '../lib/types/database/kara';
+import { DBTag } from '../lib/types/database/tag';
 import { KaraFileV4, KaraTag } from '../lib/types/kara';
-import { Tag } from '../lib/types/tag';
+import { TagTypeNum } from '../lib/types/tag';
 import { resolvedPathRepos } from '../lib/utils/config';
 import { audioFileRegexp, getTagTypeName } from '../lib/utils/constants';
 import { fileExists, resolveFileInDirs } from '../lib/utils/files';
@@ -28,7 +29,7 @@ import { getState } from '../utils/state';
 import { checkMediaAndDownload } from './download';
 import { getKara, getKaras } from './kara';
 import { editKara } from './karaCreation';
-import { getRepo, getRepos } from './repo';
+import { checkDownloadStatus, getRepo, getRepos } from './repo';
 import { updateAllSmartPlaylists } from './smartPlaylist';
 import { getTag } from './tag';
 
@@ -36,7 +37,7 @@ const service = 'KaraManager';
 
 export async function createKaraInDB(kara: KaraFileV4, opts = { refresh: true }) {
 	const oldData = await insertKara(kara);
-	await Promise.all([updateKaraParents(kara.data), updateTags(kara.data)]);
+	await Promise.all([updateKaraParents(kara.data), updateTags(kara.data), checkDownloadStatus([kara.data.kid])]);
 	if (opts.refresh) {
 		if (!oldData.old_modified_at) {
 			await refreshKarasAfterDBChange('ADD', [kara.data]);
@@ -166,7 +167,7 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 			// If for some reason tag couldn't be found, continue.
 			if (!tag) continue;
 			// Modify tag file we just copied to change its repo
-			const newTag: Tag = {
+			const newTag: DBTag = {
 				...tag,
 				repository: repoName,
 			};
@@ -180,13 +181,12 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 	}
 }
 
-export async function batchEditKaras(plaid: string, action: 'add' | 'remove', tid: string, type: number) {
+export async function batchEditKaras(plaid: string, action: 'add' | 'remove', tid: string, type: TagTypeNum) {
 	// Checks
 	const task = new Task({
 		text: 'EDITING_KARAS_BATCH_TAGS',
 	});
 	try {
-		type = +type;
 		const tagType = getTagTypeName(type);
 		if (!tagType) throw 'Type unknown';
 		const pl = await selectPlaylistContentsMicro(plaid);
@@ -219,7 +219,9 @@ export async function batchEditKaras(plaid: string, action: 'add' | 'remove', ti
 			}
 			if (action === 'add' && !kara[tagType].find((t: KaraTag) => t.tid === tid)) {
 				modified = true;
-				kara[tagType].push(tag);
+				kara[tagType].push({
+					tid: tag.tid,
+				} as DBKaraTag);
 			}
 			if (modified) {
 				profile('editKaraBatch');
@@ -301,10 +303,14 @@ export async function integrateKaraFile(
 	}
 	if (mediaDownload !== 'none') {
 		checkMediaAndDownload(
-			karaData.data.kid,
-			karaData.medias[0].filename,
-			karaData.data.repository,
-			karaData.medias[0].filesize,
+			[
+				{
+					kid: karaData.data.kid,
+					mediafile: karaData.medias[0].filename,
+					repository: karaData.data.repository,
+					mediasize: karaData.medias[0].filesize,
+				},
+			],
 			mediaDownload === 'updateOnly'
 		);
 	}

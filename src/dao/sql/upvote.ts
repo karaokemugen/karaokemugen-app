@@ -18,7 +18,8 @@ WHERE fk_id_plcontent = :plc_id
 `;
 
 export const sqlselectUpvoteByPLC = `
-SELECT fk_login AS username
-FROM upvote
-WHERE fk_id_plcontent = $1;
+SELECT u.fk_login AS username, us.nickname
+FROM upvote u
+LEFT JOIN users us ON us.pk_login = u.fk_login
+WHERE u.fk_id_plcontent = $1;
 `;

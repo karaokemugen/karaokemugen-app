@@ -1,4 +1,5 @@
 import { Layout } from 'antd';
+import Title from '../../components/Title';
 import i18next from 'i18next';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -53,14 +54,10 @@ function SessionEdit() {
 
 	return (
 		<>
-			<Layout.Header>
-				<div className="title">
-					{i18next.t(seid ? 'HEADERS.SESSIONS_EDIT.TITLE' : 'HEADERS.SESSIONS_NEW.TITLE')}
-				</div>
-				<div className="description">
-					{i18next.t(seid ? 'HEADERS.SESSIONS_EDIT.DESCRIPTION' : 'HEADERS.SESSIONS_NEW.DESCRIPTION')}
-				</div>
-			</Layout.Header>
+			<Title
+				title={i18next.t(seid ? 'HEADERS.SESSIONS_EDIT.TITLE' : 'HEADERS.SESSIONS_NEW.TITLE')}
+				description={i18next.t(seid ? 'HEADERS.SESSIONS_EDIT.DESCRIPTION' : 'HEADERS.SESSIONS_NEW.DESCRIPTION')}
+			/>
 			<Layout.Content>
 				{session && (
 					<SessionForm

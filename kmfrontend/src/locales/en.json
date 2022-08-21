@@ -28,6 +28,12 @@
 	"MUTE_UNMUTE": "Mute/unmute",
 	"SHOW_SUBS": "Show lyrics on screen",
 	"HIDE_SUBS": "Hide lyrics on screen",
+	"SPEED_UP": "Play faster",
+	"SPEED_RESET": "Reset to normal speed",
+	"SPEED_DOWN": "Play slower",
+	"PITCH_UP": "Higher pitch",
+	"PITCH_RESET": "Reset pitch",
+	"PITCH_DOWN": "Lower pitch",
 	"OPTIONS": "Options",
 	"STOP_AFTER": "Stop after current song",
 	"STOP_NOW": "Stop NOW (That's dangerous!)",
@@ -99,7 +105,9 @@
 		"WHITELISTED": "Whitelisted!",
 		"TRANSFER_KARA": "Transfer this song",
 		"TRANSFER_KARA_AFTER_PLAYING": "Transfer it after the currently playing song",
-		"MOVE_KARA": "Move after current song"
+		"MOVE_KARA": "Move after current song",
+		"SHUFFLE": "Mix the songs",
+		"SHUFFLED": "Songs mixed !"
 	},
 	"KAROULETTE": {
 		"START": "Review suggestions from the public",
@@ -136,8 +144,6 @@
 		"CRITERIA_TYPE_1001": "Song",
 		"CRITERIA_TYPE_1002": "Longer than (mm:ss)",
 		"CRITERIA_TYPE_1003": "Shorter than (mm:ss)",
-		"CRITERIA_TYPE_1004": "Title contains",
-		"CRITERIA_TYPE_1005": "Tag contains",
 		"CRITERIA_TYPE_1006": "Hide songs not available offline",
 		"LABEL": {
 			"TAG": "The karaokes {{verb}} {{tag}} are on the list.",
@@ -157,14 +163,13 @@
 				"13": "attached to the platform",
 				"14": "that are",
 				"15": "with the warning",
-				"16": "included in the collection"
+				"16": "included in the collection",
+				"17": "played by music band"
 			},
 			"YEAR": "The karaokes from year {{year}} are on the list.",
 			"KID": "This karaokes is on the list.",
 			"LONGER": "The karaokes longer than {{time}} seconds are on the list.",
-			"SHORTER": "The karaokes shorter than {{time}} seconds are on the list.",
-			"TITLE": "The karaoke containing {{title}} in the title are on the list.",
-			"TAG_NAME": "The karaoke with a tag containing {{title}} are on the list."
+			"SHORTER": "The karaokes shorter than {{time}} seconds are on the list."
 		},
 		"EXPL": "The smart playlist is created from <1>the criteria</1>, you can also add manually karaokes to this list.",
 		"EXPL_OPEN": "This is the criteria used to generate <1>the playlist</1>, it will be refreshed automatically whenever new songs are added to the database."
@@ -210,10 +215,22 @@
 	},
 	"AUTOMIX_MODAL": {
 		"TITLE": "Create an AutoMix",
-		"DESCRIPTION": "The created playlist will be filled with the selected users' favorites for the duration you specify.",
+		"DESCRIPTION": "An AutoMix is a playlist created with criteria and a duration. Unlike smart playlists, this list will not be updated automatically. For a song to be included in the list, a single criterion have to match.",
+		"NAME": "Playlist name",
+		"NAME_PLACEHOLDER": "Auto-generated name",
+		"CRITERIA": "Mix criteria",
+		"FAVOURITES": "Favourites of",
+		"FAVOURITES_OF": "{{name}}'s favourites",
+		"LIMIT": "Limit the list to...",
+		"LIMIT_TYPE": {
+			"DURATION": "Duration",
+			"SONGS": "Number of songs"
+		},
 		"DURATION": "Duration (in minutes)",
+		"NUMBER_SONGS": "Number of songs",
 		"MIX": "Create AutoMix",
-		"EMPTY": "Select users and a duration"
+		"EMPTY": "Select criteria and a duration",
+		"IS_ADMIN_PLAYER": "This playlist is for a quiz, don't show me."
 	},
 	"KARAOKE_one": "{{count}} karaoke",
 	"KARAOKE_other": "{{count}} karaokes",
@@ -259,9 +276,10 @@
 	"PROFILE_PASSWORD": "Password",
 	"PROFILE_PASSWORD_AGAIN": "Type your password",
 	"PROFILE_PASSWORDCONF": "Confirm",
-	"TOOLTIP_ADDKARA": "Add this song to the playlist",
-	"TOOLTIP_ADDKARA_ADMIN": "right click to append it after the currently playing song",
+	"TOOLTIP_ADDKARA": "Add this song",
+	"TOOLTIP_ADDKARA_ADMIN": " to the opposite playlist, right click to append it after the currently playing song",
 	"TOOLTIP_ADD_SELECT_KARA": "Add selected songs to the playlist - right click to append it after the currently playing song",
+	"TOOLTIP_KARA_ALREADY_ADDED": "This song is already present in the opposite playlist.",
 	"TOOLTIP_DELETEKARA": "Delete this song",
 	"TOOLTIP_DELETE_FAVS": "Remove song from favorites",
 	"TOOLTIP_DELETE_SELECT_FAVS": "Remove selected songs from favorites",
@@ -351,10 +369,10 @@
 			"DISPLAY_CONNECTION_INFO_HOST": "Force hostname or IP",
 			"DISPLAY_CONNECTION_INFO_HOST_TOOLTIP": "If your IP address is incorrectly detected by Karaoke Mugen, you can force it here.",
 			"DISPLAY_CONNECTION_INFO_MESSAGE": "Message displayed before URL",
-			"DISPLAY_CONNECTION_INFO_MESSAGE_TOOLTIP": "Personalize the message just before the access URL, to encourage your audience or give them more direction.",
+			"DISPLAY_CONNECTION_INFO_MESSAGE_TOOLTIP": "Customize the message displayed on screen, to encourage your audience or give them more information. Use $url to display this karaoke's URL. Like this: \"Go to $url!\"",
 			"DISPLAY_CONNECTION_INFO": "Show connection information",
 			"DISPLAY_CONNECTION_INFO_TOOLTIP": "It's the \"Go to http://xxx !\"",
-			"DISPLAY_NICKNAME": "Display nicknames in karaokes",
+			"DISPLAY_NICKNAME": "Display requesters' nickname in karaokes",
 			"DISPLAY_NICKNAME_TOOLTIP": "Displays at the bottom of the screen at the start and end of a song",
 			"DISPLAY_AVATAR": "Display avatar in karaokes",
 			"DISPLAY_AVATAR_TOOLTIP": "The song requester's avatar will be displayed at the beginning and the end of the song in the lower right corner of the player's screen.",
@@ -407,7 +425,8 @@
 			"WITH": "with",
 			"MESSAGE": "displayed on screen",
 			"CLASSIC_MODE": "Classic Karaoke Mode",
-			"CLASSIC_MODE_TOOLTIP": "A pause will take place between each song and the name of the next song as well as its requester will be displayed on the screen. The song requester or operator will be able to start playing the song",
+			"CLASSIC_MODE_TOOLTIP": "A pause will take place between each song and the name of the next song as well as its requesters will be displayed on the screen. The song's first requester or operator will be able to start playing the song",
+			"CLASSIC_MODE_LOCKED": "Disable Stream Pause in Stream options to use Classic Karaoke Mode.",
 			"ADDED_SONG_VISIBILITY_ADMIN": "Visibility for songs added by the operator",
 			"ADDED_SONG_VISIBILITY_ADMIN_SHORT": "Song additions visibility",
 			"ADDED_SONG_VISIBILITY_PUBLIC": "Public song requests visibility",
@@ -425,6 +444,7 @@
 			"STREAM_SETTINGS_TOOLTIP": "Pause between songs, Twitch chat",
 			"STREAM_MODE": "Stream Pause",
 			"STREAM_MODE_TOOLTIP": "A pause (with a configurable duration) will happen between each song.",
+			"STREAM_MODE_LOCKED": "Disable Classic Karaoke Mode in Karaoke modes to use Stream Pause.",
 			"STREAMER_MODE_LABEL": "Karaoke Mugen is writing text files that you can use in your streaming software, to create a custom overlay.",
 			"OPEN_STREAMER_FILES": "See files.",
 			"STREAM_PAUSE_DURATION": "Pause duration",
@@ -440,8 +460,6 @@
 			"ADDED_SONG_VISIBILITY_MYSTERY_OPTION": "Mystery song",
 			"MINUTES_BEFORE_SESSION_ENDS_WARNING": "Display warning X minutes before end of playlist",
 			"MINUTES_BEFORE_SESSION_ENDS_WARNING_TOOLTIP": "A notification will warn you X minutes before the end of your planned session",
-			"ENABLE_SMARTINSERT": "Enable smart insert of songs to avoid user monopolies",
-			"ENABLE_SMARTINSERT_TOOLTIP": "When a song is added by the audience, it will be placed in a way that allows those who have not requested many songs to go earlier",
 			"ENABLE_AUTOBALANCE": "Enable playlist auto balancing",
 			"ENABLE_AUTOBALANCE_TOOLTIP": "The playlist will be reorganized regularly so that user requests take turns.",
 			"ONLINE_SETTINGS": "Online",
@@ -478,6 +496,8 @@
 			"LABEL": "Interface",
 			"ALLOW_GUEST_LOGIN": "Allow guests",
 			"ALLOW_GUEST_LOGIN_TOOLTIP": "If disabled, a (local or online) account will be required to log into your instance",
+			"ALLOW_CUSTOM_TEMPORARY_GUESTS": "Customisable guest accounts",
+			"ALLOW_CUSTOM_TEMPORARY_GUESTS_TOOLTIP": "Allow visitors to choose their nickname using a guest account, rather than being subjected to a name chosen at random by the application.",
 			"WEBAPPMODE": "Public interface mode",
 			"WEBAPPMODE_SHORT": "Interface mode",
 			"WEBAPPMODE_TOOLTIP": "What your guests will see when they log into the interface",
@@ -488,7 +508,9 @@
 			"WEBAPPMODE_LIMITED": "Restricted: Read-only",
 			"WEBAPPMODE_OPEN": "Open (default): Users can add songs",
 			"SHOW_AVATARS_ON_PLAYLIST": "Show avatars on playlist",
-			"SHOW_AVATARS_ON_PLAYLIST_TOOLTIP": "To know who added what at a glance."
+			"SHOW_AVATARS_ON_PLAYLIST_TOOLTIP": "To know who added what at a glance.",
+			"DISPLAY_WELCOME_MESSAGE": "Display welcome message",
+			"DISPLAY_WELCOME_MESSAGE_TOOLTIP": "This message will be shown on the login page for your karaoke session"
 		}
 	},
 	"KARA_PAUSED_WAITING": "No song playing yet",
@@ -500,22 +522,11 @@
 		"Preparations are ongoing!"
 	],
 	"JINGLE_TIME": "Jingle time!",
-	"JINGLE_TAGLINES": [
-		"We'll be right back!"
-	],
+	"JINGLE_TAGLINES": ["We'll be right back!"],
 	"INTRO_TIME": "Playlist intro",
-	"INTRO_TAGLINES": [
-		"Let's go!",
-		"Starting…",
-		"Initialization…",
-		"Prepare your mic!",
-		"*clears throat*"
-	],
+	"INTRO_TAGLINES": ["Let's go!", "Starting…", "Initialization…", "Prepare your mic!", "*clears throat*"],
 	"OUTRO_TIME": "Playlist ending",
-	"OUTRO_TAGLINES": [
-		"The End :(",
-		"Thanks everyone!"
-	],
+	"OUTRO_TAGLINES": ["The End :(", "Thanks everyone!"],
 	"ENCORES_TIME": "Encore! Encore!",
 	"ENCORES_TAGLINES": [
 		"Well, it's not because I like you or anything…",
@@ -523,21 +534,11 @@
 		"Last song, let's give it our all!"
 	],
 	"SPONSOR_TIME": "COMMERCIAL TIME!",
-	"SPONSOR_TAGLINES": [
-		"Kono bangumi wa…",
-		"And thanks for the money."
-	],
+	"SPONSOR_TAGLINES": ["Kono bangumi wa…", "And thanks for the money."],
 	"PAUSE_TIME": "Pause",
-	"PAUSE_TAGLINES": [
-		"Take a break!",
-		"Time to drink!",
-		"We'll be right back!"
-	],
+	"PAUSE_TAGLINES": ["Take a break!", "Time to drink!", "We'll be right back!"],
 	"POLL_TIME": "Vote",
-	"POLL_TAGLINES": [
-		"Vote! Vote!",
-		"The choice is yours."
-	],
+	"POLL_TAGLINES": ["Vote! Vote!", "The choice is yours."],
 	"QUOTA_AVAILABLE": "You can add songs again now!",
 	"SERIE_NAME_MODE": "Series language mode",
 	"SERIE_NAME_MODE_TOOLTIP": "Changes the way series names are displayed on the song list. Might be ignored by user preferences",
@@ -566,6 +567,7 @@
 	"VIEW_LIKES": "Likes",
 	"VIEW_LIKES_TOOLTIP": "The song with the most likes will be showed first, this does not impact the real playlist order.",
 	"KARA_SUGGESTION_NOT_FOUND": "Can't find your favorite song? Check your configured online repositories as well as the suggestions site if your wish has not already been granted:",
+	"REPO_IN_PROGRESS": "Karaoke Mugen isn't quite ready, please wait for the following tasks to end.",
 	"ONLINE_STATS": {
 		"TITLE": "Stats",
 		"INTRO": "Karaoke Mugen can send anonymous information about your instance to Karaoke Mugen Server to create usage statistics.",
@@ -816,6 +818,21 @@
 	"CONFIRM_SURE": "Are you sure?",
 	"ACTION": "Action",
 	"KARA": {
+		"SECTIONS": {
+			"FILES": "Files",
+			"PARENTS": "Parent Song(s)",
+			"TITLES": "Title(s)",
+			"IDENTITY": "Identity",
+			"CATEGORIZATION": "Categorization",
+			"META": "Metadata"
+		},
+		"DESC": {
+			"PARENTS": "If this song is an alternative version of another one, select its parent(s) to pre-fill this form.",
+			"PARENTS_PUBLIC": "When a user selects a parent song in the public interface, they'll see all their children / alternative versions.",
+			"TITLES": "Set all titles the song has in different languages. Usually, there's only one title.",
+			"TITLES_DEFAULT_LANGUAGE": "Default title language should be the song's original title. For titles in non-latin languages (chinese, japanese, arabic, korean...), add a \"Romanization\" title and make it default.",
+			"ALIASES": "If the song is known as something else (abbreviations for example), set them here to help people find it through search. No need to use words already contained in the song title(s)."
+		},
 		"MEDIA_FILE": "Media file",
 		"MEDIA_FILE_TOOLTIP": "Supported file formats: {{formats}}",
 		"MEDIA_REQUIRED": "Media file is mandatory",
@@ -829,10 +846,11 @@
 		"TITLE": "Titles",
 		"TITLE_TOOLTIP": "If you don't know, put the name of the series here as well",
 		"TITLE_REQUIRED": "Please enter a song title",
-		"DEFAULT_LANGUAGE": "Default language",
+		"DEFAULT_LANGUAGE": "Default language to use",
 		"ALIASES": "Aliases",
 		"ALIASES_TOOLTIP": "Short names or alternative names, used for search.",
 		"SERIES_TOOLTIP": "TV series, movie title, video game title, etc.",
+		"FRANCHISES_TOOLTIP": "If the series is part of a franchise (like Gundam, Mario, Zelda, Naruto, etc.)",
 		"SERIES_SINGERS_REQUIRED": "Series or Singer cannot be empty in the same time.",
 		"TYPE_REQUIRED": "Song type is mandatory",
 		"ORDER": "Song order",
@@ -840,6 +858,7 @@
 		"LANGUAGES_REQUIRED": "Please choose a language",
 		"YEAR": "Broadcast year",
 		"YEAR_TOOLTIP": "Year when the series was broadcasted or the video was produced",
+		"SINGERGROUPS_TOOLTIP": "If the singers belong to a music band, put them in here. The band will be displayed in the player and song lists instead of individual singers.",
 		"SONGWRITERS_TOOLTIP": "Composers, Arrangers and Lyricists.",
 		"CREATORS_TOOLTIP": "Entity that created the series. Can be animation studio, movie studio, or game studio.",
 		"KARA_AUTHORS_REQUIRED": "Author of the karaoke is mandatory",
@@ -878,6 +897,8 @@
 		"COPY_SONG": "Copy song to another repository",
 		"VIDEO_PREVIEW": "Video preview",
 		"TOTAL_MEDIA_SIZE": "Total media size:",
+		"SYNC_WARNING_TITLE": "Warning about synchronizing medias",
+		"SYNC_WARNING_DESCRIPTION": "Syncing medias will remove all medias from disabled collections if they have been previously downloaded. This can delete many files if you have temporarily disabled a collection that you usually use.",
 		"REPOSITORY_REQUIRED": "Repository is mandatory",
 		"BATCH_EDIT": {
 			"ADD_TAG": "Add tag",
@@ -889,11 +910,13 @@
 			"EDIT": "Batch edit",
 			"SELECT": "Select"
 		},
+		"SINGERGROUPS_BY": "from the music band",
 		"SINGERS_BY": "Sung by",
 		"SONGWRITERS_BY": "Written by",
 		"CREATORS_BY": "Created by",
 		"AUTHORS_BY": "Karaoke created by",
-		"DELETE_KARA": "Delete karaoke?",
+		"DELETE_KARA": "Delete karaoke",
+		"DELETE_KARA_MODAL": "Delete karaoke?",
 		"EDIT_KARA": "Edit karaoke",
 		"DEJAVU_TOOLTIP": "Recently played song",
 		"PROBLEMATIC_TOOLTIP": "This song contains scenes ({{tags}}) that may be problematic for some viewers.",
@@ -901,6 +924,7 @@
 		"DELETE_KARA_TITLE": "You're going to remove the {{count}} displayed karaokes, are you sure?",
 		"DELETE_MEDIA_TOOLTIP": "Delete the karaoke media",
 		"UPLOAD_MEDIA_TOOLTIP": "Re-upload karaoke media",
+		"PLAY_KARAOKE": "Play karaoke",
 		"MISSING_DOWNLOAD_TOOLTIP": "This karaoke is not downloaded, you will need Internet in order to play it. You can make it work offline by downloading the media.",
 		"IN_PROGRESS_DOWNLOAD_TOOLTIP": "Download in progress",
 		"ONLINE_REPOSITORIES": "Some of your karaokes are from remote repositories (kara.moe server for example), these karaokes are not editable through this interface, to make sure that the repositories stays in sync. You can check the \"Maintainer mode\" checkbox in the repository settings, you will not receive any updates anymore but you will be able to edit or delete karaokes.",
@@ -912,7 +936,7 @@
 		"COLLECTIONS_TOOLTIP": "Select the collections in which the karaoke should appear"
 	},
 	"MENU": {
-		"HOME": "Home",
+		"HOME": "Dashboard",
 		"SYSTEM": "System",
 		"LOGS": "Logs",
 		"CONFIGURATION": "Advanced configuration",
@@ -1025,9 +1049,25 @@
 		"COPY_TAG": "Copy tag to another repository",
 		"DESCRIPTION": "Description",
 		"DESCRIPTION_TOOLTIP": "A description of the tag, used only for collections.",
-		"ADD_DESCRIPTION": "Add a description"
+		"ADD_DESCRIPTION": "Add a description",
+		"KARAOKES_WITH_TAGS": "Karaokes with this tag",
+		"MAL_ID": "MAL ID/URL",
+		"MAL_ID_TOOLTIP": "If this is an anime, please indicate its id on myanimelist.net",
+		"ANILIST_ID": "Anilist ID/URL",
+		"ANILIST_ID_TOOLTIP": "If this is an anime, please indicate its id on anilist.co",
+		"KITSU_ID": "Kitsu ID/URL",
+		"KITSU_ID_TOOLTIP": "If this is an anime, please indicate its id on kitsu.io",
+		"NOT_MAL_URL_ERROR": "This is a myanimelist url",
+		"NOT_ANILIST_URL_ERROR": "This is a anilist url",
+		"NOT_KITSU_URL_ERROR": "This is a kitsu url",
+		"NOT_VALID_URL_ERROR": "This is not a valid url",
+		"ANIME_ID_ERROR": "Please enter a positive number",
+		"KITSU_SLUG_ERROR": "Invalid slug",
+		"KITSU_REQUEST_ERROR": "Network error"
 	},
 	"TAG_TYPES": {
+		"SINGERGROUPS_one": "Band",
+		"SINGERGROUPS_other": "Bands",
 		"SINGERS_one": "Singer",
 		"SINGERS_other": "Singers",
 		"SONGTYPES_one": "Song type",
@@ -1058,6 +1098,8 @@
 		"VERSIONS_other": "Versions",
 		"WARNINGS_one": "Warning",
 		"WARNINGS_other": "Warnings",
+		"FRANCHISES_one": "Franchise",
+		"FRANCHISES_other": "Franchises",
 		"COLLECTIONS_one": "Collection",
 		"COLLECTIONS_other": "Collections"
 	},
@@ -1139,14 +1181,16 @@
 		"ONLINE": "Online",
 		"ENABLED": "Enabled",
 		"SENDSTATS": "Send statistics",
+		"UPDATE": "Automatic updates",
+		"UPDATE_TOOLTIP": "If disabled, the application will not update the repository anymore.",
 		"SENDSTATS_TOOLTIP": "Sessions and played/requested songs",
-		"AUTO_MEDIA_DOWNLOADS": "Automatically download videos",
-		"AUTO_MEDIA_DOWNLOADS_TOOLTIP": "If your connection is too slow, we recommend that you enable this so that the medias are downloaded beforehand. This is also recommended for convention use or for streams to avoid potential errors in the middle of a karaoke!",
+		"AUTO_MEDIA_DOWNLOADS": "Automatically download media",
+		"AUTO_MEDIA_DOWNLOADS_TOOLTIP": "If your connection is too slow, we recommend that you select \"All\" so that the medias are downloaded beforehand. This is also recommended for convention use or for streams to avoid potential errors in the middle of a karaoke!",
 		"AUTO_MEDIA_DOWNLOADS_NONE": "None",
 		"AUTO_MEDIA_DOWNLOADS_UPDATE_ONLY": "Update only",
 		"AUTO_MEDIA_DOWNLOADS_ALL": "All",
 		"MAINTAINER_MODE": "Maintainer mode",
-		"MAINTAINER_MODE_TOOLTIP": "To be activated if you participate in the maintenance of the deposit (the update of the repository is managed by you and no longer by Karaoke Mugen)",
+		"MAINTAINER_MODE_TOOLTIP": "Enable this if you participate in the maintenance of the repository. The app will switch to a git-based repository. Git needs to be installed on your system.",
 		"FOLDERS_REQUIRED": "A folder of {{name}} is required.",
 		"MOVE": "Define the priority of repositories",
 		"MOVE_TOOLTIP": "This allows you to define which repositories take priority when creating your database: the highest repositories will be taken into account first if two repositories have the same karaoke",
@@ -1272,7 +1316,8 @@
 		"COMMITING_CHANGES": "Committing changes",
 		"PREPARING_CHANGES": "Preparing changes",
 		"REFRESHING_DATA": "Refreshing data…",
-		"UPLOADING_FTP": "Uploading to the FTP…"
+		"UPLOADING_FTP": "Uploading to the FTP…",
+		"DUMMY_TASK": "No ongoing tasks"
 	},
 	"ERROR_CODES": {
 		"UNKNOWN_COMMAND": "Unknown command (API)",
@@ -1295,6 +1340,7 @@
 		"PL_MOVE_SONG_ERROR": "Unable to copy song to the destination playlist",
 		"LOG_ERROR": "Invalid credentials",
 		"NO_MORE_GUESTS_AVAILABLE": "No more guest accounts available",
+		"GUESTS_NOT_ALLOWED": "Guests accounts not allowed",
 		"DOWNLOADS_QUEUED_ERROR": "Error adding downloads to the queue",
 		"DOWNLOADS_QUEUED_ALREADY_ADDED_ERROR": "No downloads added, all are already in queue or running",
 		"DOWNLOADS_GET_ERROR": "Error getting downloads from the queue",
@@ -1319,7 +1365,6 @@
 		"KARA_EDITED_ERROR": "Error editing song",
 		"PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED": "This song has already been added.",
 		"PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED": "Can't add any song, quota reached",
-		"PLAYLIST_MODE_ADD_SONG_ERROR_NO_DUPLICATE_SERIES_SINGERS": "No duplicate series or singers are allowed",
 		"PLAYLIST_MODE_ADD_SONG_ERROR_BLACKLISTED": "Song is blacklisted and cannot be added",
 		"PLAYLIST_MODE_ADD_SONG_ERROR": "Error adding a song to a playlist",
 		"LYRICS_VIEW_ERROR": "Error getting lyrics",
@@ -1488,7 +1533,7 @@
 	},
 	"HEADERS": {
 		"HOME": {
-			"TITLE": "Home",
+			"TITLE": "System Panel",
 			"DESCRIPTION": "This is where it all begins. Choose your action."
 		},
 		"LOGS": {
@@ -1694,10 +1739,17 @@
 		"FILE": "Filename",
 		"PREVIEW": "Preview",
 		"CATEGORY": "Category",
+		"PICTURES": "Pictures",
+		"MUSIC": "Music",
 		"TYPE": {
 			"PAUSE": "Pause",
 			"STOP": "Stop",
 			"POLL": "Poll"
+		},
+		"DESC": {
+			"PAUSE": "Between songs (streamer/classic mode.)",
+			"STOP": "When the player is in a stopped state.",
+			"POLL": "When a poll is running."
 		}
 	},
 	"INBOX": {

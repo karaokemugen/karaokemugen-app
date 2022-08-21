@@ -1,5 +1,6 @@
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { Button, Divider, Input, Layout, Modal, Select, Table, Tag, Tooltip } from 'antd';
+import Title from '../../components/Title';
 import i18next from 'i18next';
 import { useContext, useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
@@ -135,10 +136,10 @@ function TagsList() {
 
 	return (
 		<>
-			<Layout.Header>
-				<div className="title">{i18next.t('HEADERS.TAG_LIST.TITLE')}</div>
-				<div className="description">{i18next.t('HEADERS.TAG_LIST.DESCRIPTION')}</div>
-			</Layout.Header>
+			<Title
+				title={i18next.t('HEADERS.TAG_LIST.TITLE')}
+				description={i18next.t('HEADERS.TAG_LIST.DESCRIPTION')}
+			/>
 			<Layout.Content>
 				<div style={{ display: 'flex', marginBottom: '1em' }}>
 					<Input.Search

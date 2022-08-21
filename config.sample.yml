@@ -4,8 +4,6 @@ App:
   FirstRun: true
   # JWT secret used to salt passwords (uuid)
   JwtSecret: Change me
-  # Application quick start (like --noBaseCheck)
-  QuickStart: false
   # Instance ID
   #InstanceID: uuid here
 Online:
@@ -38,18 +36,16 @@ Online:
   AllowDownloads: true
 Frontend:
   AllowGuestLogin: true
+  AllowCustomTemporaryGuests: false
   # Webapp mode :
   # 0 : closed
   # 1 : Current playlist/song only (restricted)
   # 2 : Opened (all features available)
   Mode: 2
-  Permissions:
-    # Permissions for users
-    AllowNicknameChange: true
   ShowAvatarsOnPlaylist: true
+  # This message will be shown on the login page for your karaoke session
+  WelcomeMessage: ''
 GUI:
-  # Should window shortcuts be opened in electron or in a browser?
-  OpenInElectron: true
   # Enable or disable chibi player
   ChibiPlayer:
     Enabled: false
@@ -123,10 +119,9 @@ Player:
     # Show nickname of the person who requested a song
     Nickname: true
     ConnectionInfo:
-      # Enable display of connection messages
       Enabled: true
-      # Additional message prepended to the connection URL
-      #Message: 'Connect to Wifi xxx'
+      # Message to display to invite people to connect (or not)
+      Message: 'Log in at $url to add songs!'
       # Override host/IP address
       Host: '192.168.0.1'
   # Override mpv's video output driver
@@ -137,10 +132,6 @@ Player:
   Monitor: false
   # Should the player window have borders ?
   Borders: true
-  # No progress bar
-  NoBar: true
-  # No HUD
-  NoHud: true
   # Which screen to display on (0 is first)
   Screen: 0
   # Stay on top
@@ -189,15 +180,12 @@ Playlist:
       Interval: 50
     Intros:
       Enabled: true
-      File: PS1-Nanami.mp4
       Message: "Let's Karaoke!"
     Outros:
       Enabled: false
-      File: Byebye.mp4
       Message: "That's all folks!"
     Encores:
       Enabled: false
-      File: encoru.mp4
       Message: 'This is the last song!'
   MysterySongs:
     # Invisible songs are not hidden (they appear as a slot in playlist)
@@ -209,7 +197,7 @@ Playlist:
     # List of mystery songs labels
     Labels:
       - ???
-      - Chanson mystère !
+      - Mystery song!
 System:
   # Port to listen to
   FrontendPort: 1337
@@ -239,7 +227,20 @@ System:
     - Name: kara.moe
       Online: true
       Enabled: true
-      Git: 'http://xxx'
+      Update: true
+      Git:
+        URL: https://gitlab.com/karaokemugen/bases/karaokebase.git
+        Username: username
+        Password: pass
+        Author: Nanamin
+        Email: nanamin@eternity.ln
+        ProjectID: 32123952
+      FTP:
+        Host: ftphost
+        Port: 21
+        Username: nanamin
+        Password: pass
+        BaseDir: storage/medias-otaku
       SendStats: true
       AutoMediaDownloads: updateOnly
       # AutoMediaDownloads determines when a song should be downloaded

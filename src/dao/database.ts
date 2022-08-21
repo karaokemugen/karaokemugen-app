@@ -4,15 +4,14 @@ import { resolve } from 'path';
 import Postgrator from 'postgrator';
 import { v4 as uuidV4 } from 'uuid';
 
-import { errorStep } from '../electron/electronLogger';
+import { errorStep, initStep } from '../electron/electronLogger';
 import { connectDB, db, getInstanceID, getSettings, saveSetting, setInstanceID } from '../lib/dao/database';
 import { generateDatabase } from '../lib/services/generation';
 import { getConfig } from '../lib/utils/config';
-import { uuidRegexp } from '../lib/utils/constants';
+import { tagTypes, uuidRegexp } from '../lib/utils/constants';
 import logger from '../lib/utils/logger';
 import { updateAllSmartPlaylists } from '../services/smartPlaylist';
 import { DBStats } from '../types/database/database';
-import { migrateFromDBMigrate } from '../utils/hokutoNoCode';
 import { initPG, isShutdownPG, restorePG } from '../utils/postgresql';
 import sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
@@ -68,8 +67,7 @@ export async function initDB() {
 
 async function migrateDB(): Promise<Postgrator.Migration[]> {
 	logger.info('Running migrations if needed', { service });
-	// First check if database still has db-migrate and determine at which we're at.
-	await migrateFromDBMigrate();
+	initStep(i18next.t('INIT_MIGRATION'));
 	const conf = getConfig();
 	const migrationDir = resolve(getState().resourcePath, 'migrations/');
 	const migrator = new Postgrator({
@@ -149,8 +147,15 @@ export async function resetUserData() {
 }
 
 export async function getStats(): Promise<DBStats> {
-	const res = await db().query(sqlGetStats);
-	return res.rows[0];
+	const collectionClauses = [];
+	for (const collection of Object.keys(getConfig().Karaoke.Collections)) {
+		if (getConfig().Karaoke.Collections[collection] === true)
+			collectionClauses.push(`'${collection}~${tagTypes.collections}' = ANY(ak.tid)`);
+	}
+	const res = await db().query(sqlGetStats(collectionClauses));
+	// Bigints are returned as strings in node-postgres for now. So we'll turn it into a number here.
+	// See this issue : https://github.com/brianc/node-postgres/issues/2398
+	return { ...res.rows[0], total_media_size: +res.rows[0].total_media_size };
 }
 
 let generationInProgress = false;

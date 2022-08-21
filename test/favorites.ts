@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
 import { FavExport } from '../src/types/favorites.js';
-import { commandBackend, getToken, usernameAdmin } from './util/util.js';
+import { commandBackend, getToken } from './util/util.js';
 
 describe('Favorites', () => {
 	const favoriteKID = 'a6108863-0ae9-48ad-adb5-cb703651f6bf';
@@ -36,8 +36,11 @@ describe('Favorites', () => {
 
 	it('Generate a automix playlist', async () => {
 		const data = {
-			users: [usernameAdmin],
-			duration: 5,
+			filters: {
+				years: [2000],
+			},
+			limitType: 'duration',
+			limitNumber: 20,
 		};
 		const body = await commandBackend(token, 'createAutomix', data);
 		expect(body.plaid).to.not.be.NaN;
@@ -47,9 +50,8 @@ describe('Favorites', () => {
 
 	it('Verify automix exists and has one song', async () => {
 		const data = await commandBackend(token, 'getPlaylistContents', { plaid: automixID });
-		expect(data.content).to.have.lengthOf(1);
-		expect(data.infos.count).to.be.equal(1);
-		expect(data.content[0].kid).to.be.equal(favoriteKID);
+		expect(data.content).to.have.lengthOf.greaterThanOrEqual(1);
+		expect(data.infos.count).to.be.greaterThanOrEqual(1);
 	});
 
 	it('Delete karaoke from your favorites', async () => {

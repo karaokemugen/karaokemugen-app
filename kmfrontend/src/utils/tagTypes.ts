@@ -1,6 +1,8 @@
+import { TagTypeNum } from '../../../src/lib/types/tag';
+
 export interface tagType {
 	icon: string;
-	type: number;
+	type: TagTypeNum;
 	color: string;
 	karajson: string;
 }
@@ -18,10 +20,12 @@ export const tagTypesKaraFileV4Order = [
 	'PLATFORMS',
 	'SERIES',
 	'SINGERS',
+	'SINGERGROUPS',
 	'SONGTYPES',
 	'SONGWRITERS',
 	'VERSIONS',
 	'WARNINGS',
+	'FRANCHISES',
 ];
 
 export const tagTypes: Readonly<{ [key: string]: tagType }> = {
@@ -48,6 +52,12 @@ export const tagTypes: Readonly<{ [key: string]: tagType }> = {
 		type: 2,
 		color: 'orange',
 		karajson: 'singers',
+	},
+	SINGERGROUPS: {
+		icon: 'people-group',
+		type: 17,
+		color: 'orange',
+		karajson: 'singergroups',
 	},
 	SONGWRITERS: {
 		icon: 'signature',
@@ -121,6 +131,12 @@ export const tagTypes: Readonly<{ [key: string]: tagType }> = {
 		color: 'white',
 		karajson: 'collections',
 	},
+	FRANCHISES: {
+		icon: 'sitemap',
+		type: 18,
+		color: 'green',
+		karajson: 'franchises',
+	},
 };
 
 Object.freeze(tagTypes);
@@ -128,6 +144,11 @@ Object.freeze(tagTypes);
 export const YEARS = {
 	icon: 'calendar-alt',
 	type: 0,
+};
+
+export const FAVORITES = {
+	icon: 'star',
+	type: 1001,
 };
 
 export function getTagTypeName(type: number): string {

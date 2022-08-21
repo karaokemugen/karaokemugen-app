@@ -1,4 +1,5 @@
 import { Button, Layout, Table } from 'antd';
+import Title from '../../components/Title';
 import { ColumnProps } from 'antd/lib/table';
 import i18next from 'i18next';
 import { Component } from 'react';
@@ -38,10 +39,10 @@ class Viewcounts extends Component<unknown, ViewcountsState> {
 	render() {
 		return (
 			<>
-				<Layout.Header>
-					<div className="title">{i18next.t('HEADERS.MOST_PLAYED.TITLE')}</div>
-					<div className="description">{i18next.t('HEADERS.MOST_PLAYED.DESCRIPTION')}</div>
-				</Layout.Header>
+				<Title
+					title={i18next.t('HEADERS.MOST_PLAYED.TITLE')}
+					description={i18next.t('HEADERS.MOST_PLAYED.DESCRIPTION')}
+				/>
 				<Layout.Content>
 					<Button style={{ margin: '1em' }} type="primary" onClick={this.refresh}>
 						{i18next.t('REFRESH')}
@@ -76,8 +77,9 @@ class Viewcounts extends Component<unknown, ViewcountsState> {
 			render: (series, record) =>
 				series && series.length > 0
 					? series
-							.map(serie =>
-								getTagInLocale(this.context?.globalState.settings.data, serie, this.state.i18n)
+							.map(
+								serie =>
+									getTagInLocale(this.context?.globalState.settings.data, serie, this.state.i18n).i18n
 							)
 							.join(', ')
 					: getTagInLocaleList(this.context.globalState.settings.data, record.singers, this.state.i18n).join(

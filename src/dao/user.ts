@@ -6,10 +6,10 @@ import { User, UserParams } from '../lib/types/user';
 import { now } from '../lib/utils/date';
 import {
 	sqlcreateUser,
+	sqldeleteTempUsers,
 	sqldeleteUser,
 	sqleditUser,
 	sqleditUserPassword,
-	sqlLowercaseAllUsers,
 	sqlMergeUserDataPlaylist,
 	sqlMergeUserDataPlaylistContent,
 	sqlMergeUserDataRequested,
@@ -47,6 +47,7 @@ export function insertUser(user: User) {
 			flag_tutorial_done: user.flag_tutorial_done || false,
 			flag_sendstats: user.flag_sendstats || null,
 			language: user.language,
+			flag_temporary: user.flag_temporary,
 		})
 	);
 }
@@ -138,8 +139,8 @@ export async function selectAllDupeUsers() {
 	return result.rows;
 }
 
-export async function lowercaseAllUsers() {
-	await db().query(sqlLowercaseAllUsers);
+export function deleteTempUsers() {
+	return db().query(sqldeleteTempUsers);
 }
 
 export async function mergeUserData(oldUser: string, newUser: string): Promise<any> {

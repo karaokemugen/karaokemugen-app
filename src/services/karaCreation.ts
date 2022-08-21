@@ -6,7 +6,7 @@ import { extractVideoSubtitles, verifyKaraData, writeKara } from '../lib/dao/kar
 import { defineFilename, determineMediaAndLyricsFilenames, processSubfile } from '../lib/services/karaCreation';
 import { EditedKara } from '../lib/types/kara.d';
 import { resolvedPath, resolvedPathRepos } from '../lib/utils/config';
-import { resolveFileInDirs, smartMove } from '../lib/utils/files';
+import { replaceExt, resolveFileInDirs, smartMove } from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import { adminToken } from '../utils/constants';
@@ -81,7 +81,6 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 			await smartMove(mediaPath, mediaDest, { overwrite: true });
 		} else if (oldKara.mediafile !== filenames.mediafile && oldMediaPath) {
 			// Check if media name has changed BECAUSE WE'RE NOT USING UUIDS AS FILENAMES GRRRR.
-			kara.medias[0].filename = filenames.mediafile;
 			try {
 				await smartMove(oldMediaPath, mediaDest);
 			} catch (err) {
@@ -89,17 +88,18 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 				throw { code: 409, msg: 'KARA_EDIT_ERROR_UNMOVABLE_MEDIA' };
 			}
 		}
+		kara.medias[0].filename = filenames.mediafile;
 		if (editedKara.modifiedLyrics) {
 			if (kara.medias[0].lyrics[0]) {
 				const subPath = resolve(resolvedPath('Temp'), kara.medias[0].lyrics[0].filename);
-				await processSubfile(subPath);
+				const ext = await processSubfile(subPath);
 				if (oldKara.subfile) {
 					const oldSubPath = (
 						await resolveFileInDirs(oldKara.subfile, resolvedPathRepos('Lyrics', oldKara.repository))
 					)[0];
 					await fs.unlink(oldSubPath);
 				}
-				kara.medias[0].lyrics[0].filename = filenames.lyricsfile;
+				kara.medias[0].lyrics[0].filename = replaceExt(filenames.lyricsfile, ext);
 				try {
 					await smartMove(subPath, subDest, { overwrite: true });
 				} catch (err) {
@@ -167,10 +167,11 @@ export async function createKara(editedKara: EditedKara) {
 		const mediaDest = resolve(resolvedPathRepos('Medias', kara.data.repository)[0], filenames.mediafile);
 		if (kara.medias[0].lyrics[0]) {
 			const subPath = resolve(resolvedPath('Temp'), kara.medias[0].lyrics[0].filename);
-			const subDest = resolve(resolvedPathRepos('Lyrics', kara.data.repository)[0], filenames.lyricsfile);
-			await processSubfile(subPath);
-			await smartMove(subPath, subDest, { overwrite: true });
+			const ext = await processSubfile(subPath);
+			filenames.lyricsfile = replaceExt(filenames.lyricsfile, ext);
 			kara.medias[0].lyrics[0].filename = filenames.lyricsfile;
+			const subDest = resolve(resolvedPathRepos('Lyrics', kara.data.repository)[0], filenames.lyricsfile);
+			await smartMove(subPath, subDest, { overwrite: true });
 		}
 		await smartMove(mediaPath, mediaDest, { overwrite: true });
 		kara.medias[0].filename = filenames.mediafile;

@@ -5,14 +5,15 @@ import { WhereClause } from '../lib/types/database';
 import { DBPL, DBPLC, DBPLCBase, PLCInsert, SmartPlaylistType } from '../lib/types/database/playlist';
 import { Criteria, PLCParams, UnaggregatedCriteria } from '../lib/types/playlist';
 import { getConfig } from '../lib/utils/config';
+import { getTagTypeName } from '../lib/utils/constants';
 import { now } from '../lib/utils/date';
 import logger, { profile } from '../lib/utils/logger';
 import { DBPLCInfo } from '../types/database/playlist';
 import { getState } from '../utils/state';
+import { organizeTagsInKara } from './kara';
 import {
 	sqladdCriteria,
 	sqladdKaraToPlaylist,
-	sqlcountPlaylistUsers,
 	sqlcreatePlaylist,
 	sqldeleteCriteria,
 	sqldeleteCriteriaForPlaylist,
@@ -21,7 +22,6 @@ import {
 	sqlemptyPlaylist,
 	sqlgetCriterias,
 	sqlgetMaxPosInPlaylist,
-	sqlgetMaxPosInPlaylistForUser,
 	sqlgetPlaylist,
 	sqlgetPlaylistContents,
 	sqlgetPlaylistContentsMicro,
@@ -42,7 +42,6 @@ import {
 	sqlsetPLCRefused,
 	sqlsetPLCVisible,
 	sqlshiftPosInPlaylist,
-	sqltrimPlaylist,
 	sqlupdateFreeOrphanedSongs,
 	sqlupdatePlaylistDuration,
 	sqlupdatePlaylistKaraCount,
@@ -163,18 +162,26 @@ export function updatePlaylistDuration(id: string) {
 	return db().query(sqlupdatePlaylistDuration, [id]);
 }
 
-export function trimPlaylist(id: string, pos: number) {
-	return db().query(
-		yesql(sqltrimPlaylist)({
-			plaid: id,
-			pos,
-		})
-	);
-}
-
 export async function selectPlaylistContentsMini(id: string): Promise<DBPLC[]> {
 	const res = await db().query(sqlgetPlaylistContentsMini, [id]);
-	return res.rows;
+	const miniTypes = ['singers', 'songtypes', 'langs', 'misc', 'series', 'versions', 'warnings'];
+	return res.rows.map(row => {
+		const { tags, ...rowWithoutTags } = row;
+
+		for (const tagType of miniTypes) {
+			rowWithoutTags[tagType] = [];
+		}
+		if (tags == null) {
+			return rowWithoutTags;
+		}
+		for (const tag of tags) {
+			if (tag?.type_in_kara == null) continue;
+			const type = getTagTypeName(tag.type_in_kara);
+			if (type == null || !miniTypes.includes(type)) continue;
+			rowWithoutTags[type].push(tag);
+		}
+		return rowWithoutTags;
+	});
 }
 
 export async function selectPlaylistContents(params: PLCParams): Promise<DBPLC[]> {
@@ -219,7 +226,7 @@ export async function selectPlaylistContents(params: PLCParams): Promise<DBPLC[]
 			...filterClauses.params,
 		})
 	);
-	return res.rows;
+	return res.rows.map(row => organizeTagsInKara(row));
 }
 
 export async function selectPlaylistContentsMicro(id: string): Promise<DBPLCBase[]> {
@@ -247,7 +254,11 @@ export async function selectPLCInfo(id: number, forUser: boolean, username: stri
 			blacklist_plaid: getState().blacklistPlaid,
 		})
 	);
-	return res.rows[0] || {};
+	if (!res.rows[0]) {
+		return <any>{};
+	}
+
+	return organizeTagsInKara(res.rows[0]);
 }
 
 export async function selectPLCInfoMini(ids: number[]): Promise<DBPLC[]> {
@@ -277,21 +288,6 @@ export async function selectPlaylists(visibleOnly?: boolean, singlePlaylist?: st
 
 export async function updatePlaying(plc_id: number, plaid: string) {
 	await db().query(sqlsetPlaying, [plc_id, plaid]);
-}
-
-export async function countPlaylistUsers(plaid: string): Promise<number> {
-	const res = await db().query(sqlcountPlaylistUsers, [plaid]);
-	return res.rows[0]?.NumberOfUsers;
-}
-
-export async function selectMaxPosInPlaylistForUser(plaid: string, username: string): Promise<number> {
-	const res = await db().query(
-		yesql(sqlgetMaxPosInPlaylistForUser)({
-			plaid,
-			username,
-		})
-	);
-	return res.rows[0]?.maxpos;
 }
 
 export function insertCriteria(cList: Criteria[]) {
@@ -337,6 +333,8 @@ export async function selectKarasFromCriterias(
 	logger.debug(`Criterias selected for playlist ${plaid}: ${JSON.stringify(criterias)}`, { service, obj: criterias });
 	if (smartPlaylistType === 'UNION') {
 		for (const c of criterias) {
+			// Ignore if criteria is not found
+			if (c.type > 999 && !sqlselectKarasFromCriterias[c.type]) continue;
 			if (c.type > 0 && c.type < 1000) {
 				queryArr.push(sqlselectKarasFromCriterias.tagTypes(`= ${c.type}`, c.value));
 			} else if (c.type === 1001) {
@@ -354,6 +352,8 @@ export async function selectKarasFromCriterias(
 		let uniqueKIDsSQL = '';
 		let i = 0;
 		for (const c of criterias) {
+			// Ignore if criteria is not found
+			if (c.type > 999 && !sqlselectKarasFromCriterias[c.type]) continue;
 			i += 1;
 			if (c.type > 0 && c.type < 1000) {
 				queryArr.push(

@@ -87,6 +87,12 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 		) {
 			playerNeedsRestart();
 		}
+		if (
+			oldConfig.Player.Display.ConnectionInfo.Message !== newConfig.Player.Display.ConnectionInfo.Message &&
+			(getState().player.mediaType === 'pause' || getState().player.mediaType === 'stop')
+		) {
+			displayInfo();
+		}
 	}
 	if (newConfig.Online.Remote !== oldConfig.Online.Remote && state.ready) {
 		if (newConfig.Online.Remote) {

@@ -14,7 +14,7 @@ import { getConfig, resolvedPath } from '../lib/utils/config';
 import { asciiRegexp } from '../lib/utils/constants';
 import { downloadFile } from '../lib/utils/downloader';
 // KM Imports
-import { fileExists, smartMove } from '../lib/utils/files';
+import { compressGzipFile, decompressGzipFile, fileExists, smartMove } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import { PGVersion } from '../types/database';
 import { checkBinaries, editSetting } from './config';
@@ -31,6 +31,7 @@ export function isShutdownPG(): boolean {
 	return shutdownInProgress;
 }
 
+/** Determines some env values, especially for Linux where we need to add the PG library path when running our own Postgres binaries. */
 function determineEnv() {
 	const env = { ...process.env };
 	const state = getState();
@@ -140,6 +141,8 @@ export async function dumpPG() {
 		logger.warn(err, { service });
 		throw err;
 	}
+	logger.info('Dumping database...', { service });
+	const dumpFile = resolve(state.dataPath, 'karaokemugen.sql');
 	try {
 		const options = [
 			'-c',
@@ -151,16 +154,17 @@ export async function dumpPG() {
 			'-p',
 			`${conf.System.Database.port}`,
 			'-f',
-			resolve(state.dataPath, 'karaokemugen.sql'),
+			dumpFile,
 			conf.System.Database.database,
 		];
 		let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_dump);
 		if (state.os === 'win32') binPath = `"${binPath}"`;
 		await execa(binPath, options, {
 			cwd: resolve(state.appPath, state.binPath.postgres),
-			stdio: 'inherit',
 			env: determineEnv(),
 		});
+		await compressGzipFile(dumpFile);
+		await fs.unlink(dumpFile);
 		logger.info('Database dumped to file', { service });
 	} catch (err) {
 		if (err.stdout) sentry.addErrorInfo('stdout', err.stdout);
@@ -175,28 +179,39 @@ export async function dumpPG() {
 export async function restorePG() {
 	const conf = getConfig();
 	const state = getState();
+	const compressedDumpFile = resolve(state.dataPath, 'karaokemugen.sql.gz');
 	if (!conf.System.Database.bundledPostgresBinary) {
 		const err = 'Restore not available with hosted PostgreSQL servers';
 		logger.warn(err, { service });
 		throw err;
 	}
 	try {
+		let dumpFile = '';
+		try {
+			dumpFile = await decompressGzipFile(compressedDumpFile);
+		} catch (err) {
+			// Decompression can fail if the gzip file doesn't exist.
+			// This can happen if the user didn't launch KM in a while and its dump is still uncompressed
+			logger.warn('No compressed dump file, trying for uncompressed already...', { service });
+			dumpFile = resolve(state.dataPath, 'karaokemugen.sql');
+		}
 		const options = [
 			'-U',
 			conf.System.Database.username,
 			'-p',
 			`${conf.System.Database.port}`,
 			'-f',
-			resolve(state.dataPath, 'karaokemugen.sql'),
+			dumpFile,
 			conf.System.Database.database,
 		];
 		let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_client);
 		if (state.os === 'win32') binPath = `"${binPath}"`;
+		logger.info('Restoring dump to database...', { service });
 		await execa(binPath, options, {
 			cwd: resolve(state.appPath, state.binPath.postgres),
-			stdio: 'inherit',
 			env: determineEnv(),
 		});
+		await fs.unlink(dumpFile);
 		logger.info('Database restored from file', { service });
 	} catch (err) {
 		if (err.stdout) sentry.addErrorInfo('stdout', err.stdout);

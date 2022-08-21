@@ -25,6 +25,7 @@ function CheckedKaraMenuModal(props: IProps) {
 	const [effectWhitelist, setEffectWhitelist] = useState(false);
 	const [effectFree, setEffectFree] = useState(false);
 	const [effectVisibility, setEffectVisibility] = useState(false);
+	const [effectShuffle, setEffectShuffle] = useState(false);
 
 	const freeKara = async () => {
 		if (props.checkedKaras.length === 0) {
@@ -129,6 +130,22 @@ function CheckedKaraMenuModal(props: IProps) {
 		}
 	};
 
+	const shuffleSongs = () => {
+		if (props.checkedKaras.length === 0) {
+			displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
+			return;
+		}
+		try {
+			commandBackend('randomizePLC', {
+				plc_ids: props.checkedKaras.map(a => a.plcid),
+			});
+			setEffectShuffle(true);
+			setTimeout(props.closeKaraMenu, 350);
+		} catch (e) {
+			//already display
+		}
+	};
+
 	const handleClick = (e: MouseEvent) => {
 		if (!(e.target as Element).closest('#modal') && !(e.target as Element).closest('.karaLineButton')) {
 			e.preventDefault();
@@ -161,8 +178,7 @@ function CheckedKaraMenuModal(props: IProps) {
 		>
 			{!isNonStandardPlaylist(oppositePlaylist.plaid) && !isNonStandardPlaylist(playlist.plaid) ? (
 				<li>
-					<a
-						href="#"
+					<div
 						onClick={event => {
 							props.transferKara(event);
 							props.closeKaraMenu();
@@ -171,13 +187,12 @@ function CheckedKaraMenuModal(props: IProps) {
 						<i className={`fas fa-fw fa-long-arrow-alt-${props.side === 'left' ? 'right' : 'left'}`} />
 						&nbsp;
 						{i18next.t('KARA_MENU.TRANSFER_SELECT_KARA')}
-					</a>
+					</div>
 				</li>
 			) : null}
 			{!isNonStandardPlaylist(oppositePlaylist.plaid) && !isNonStandardPlaylist(playlist.plaid) ? (
 				<li>
-					<a
-						href="#"
+					<div
 						onClick={event => {
 							props.transferKara(event, -1);
 							props.closeKaraMenu();
@@ -186,91 +201,105 @@ function CheckedKaraMenuModal(props: IProps) {
 						<i className="fas fa-fw fa-exchange-alt" />
 						&nbsp;
 						{i18next.t('KARA_MENU.TRANSFER_SELECT_KARA_AFTER_PLAYING')}
-					</a>
+					</div>
 				</li>
 			) : null}
 			{playlist.plaid !== nonStandardPlaylists.favorites ? (
 				<li className="animate-button-container">
-					<a href="#" onClick={makeFavorite}>
+					<div onClick={makeFavorite}>
 						<i className="fas fa-star" />
 						&nbsp;
 						{i18next.t('KARA_MENU.FAV')}
-					</a>
-					<a href="#" className={`animate-button-success${effectFavorite ? ' activate' : ''}`}>
+					</div>
+					<div className={`animate-button-success${effectFavorite ? ' activate' : ''}`}>
 						<i className="fas fa-fw fa-check-square" />
 						&nbsp;
 						{i18next.t('KARA_MENU.FAVORITES_ADDED')}
-					</a>
+					</div>
 				</li>
 			) : null}
 			{playlist.flag_current || playlist.flag_public ? (
 				<li className="animate-button-container">
-					<a href="#" onClick={freeKara} title={i18next.t('KARA_MENU.FREE')}>
+					<div onClick={freeKara} title={i18next.t('KARA_MENU.FREE')}>
 						<i className="fas fa-gift" />
 						&nbsp;
 						{i18next.t('KARA_MENU.FREE_SHORT')}
-					</a>
-					<a href="#" className={`animate-button-success${effectFree ? ' activate' : ''}`}>
+					</div>
+					<div className={`animate-button-success${effectFree ? ' activate' : ''}`}>
 						<i className="fas fa-fw fa-check-square" />
 						&nbsp;
 						{i18next.t('KARA_MENU.FREED')}
-					</a>
+					</div>
 				</li>
 			) : null}
 			{!isNonStandardPlaylist(playlist.plaid) ? (
 				<li className="animate-button-container">
-					<a href="#" onClick={changeVisibilityKaraOn} title={i18next.t('KARA_MENU.VISIBLE_ON')}>
+					<div onClick={changeVisibilityKaraOn} title={i18next.t('KARA_MENU.VISIBLE_ON')}>
 						<i className="fas fa-eye" />
 						&nbsp;
 						{i18next.t('KARA_MENU.VISIBLE_ON_SHORT')}
-					</a>
-					<a href="#" className={`animate-button-success${effectVisibility ? ' activate' : ''}`}>
+					</div>
+					<div className={`animate-button-success${effectVisibility ? ' activate' : ''}`}>
 						<i className="fas fa-fw fa-check-square" />
 						&nbsp;
 						{i18next.t('KARA_MENU.SHOWN')}
-					</a>
+					</div>
 				</li>
 			) : null}
 			{!isNonStandardPlaylist(playlist.plaid) ? (
 				<li className="animate-button-container">
-					<a href="#" onClick={changeVisibilityKaraOff} title={i18next.t('KARA_MENU.VISIBLE_OFF')}>
+					<div onClick={changeVisibilityKaraOff} title={i18next.t('KARA_MENU.VISIBLE_OFF')}>
 						<i className="fas fa-eye-slash" />
 						&nbsp;
 						{i18next.t('KARA_MENU.VISIBLE_OFF_SHORT')}
-					</a>
-					<a href="#" className={`animate-button-success${effectVisibility ? ' activate' : ''}`}>
+					</div>
+					<div className={`animate-button-success${effectVisibility ? ' activate' : ''}`}>
 						<i className="fas fa-fw fa-check-square" />
 						&nbsp;
 						{i18next.t('KARA_MENU.HIDDEN')}
-					</a>
+					</div>
 				</li>
 			) : null}
 			{!playlist.flag_blacklist ? (
 				<li className="animate-button-container">
-					<a href="#" onClick={addToBlacklist}>
+					<div onClick={addToBlacklist}>
 						<i className="fas fa-ban" />
 						&nbsp;
 						{i18next.t('KARA_MENU.ADD_BLACKLIST')}
-					</a>
-					<a href="#" className={`animate-button-success${effectBlacklist ? ' activate' : ''}`}>
+					</div>
+					<div className={`animate-button-success${effectBlacklist ? ' activate' : ''}`}>
 						<i className="fas fa-fw fa-check-square" />
 						&nbsp;
 						{i18next.t('KARA_MENU.BLACKLISTED')}
-					</a>
+					</div>
 				</li>
 			) : null}
 			{!playlist.flag_whitelist ? (
 				<li className="animate-button-container">
-					<a href="#" onClick={addToWhitelist}>
+					<div onClick={addToWhitelist}>
 						<i className="fas fa-check-circle" />
 						&nbsp;
 						{i18next.t('KARA_MENU.ADD_WHITELIST')}
-					</a>
-					<a href="#" className={`animate-button-success${effectWhitelist ? ' activate' : ''}`}>
+					</div>
+					<div className={`animate-button-success${effectWhitelist ? ' activate' : ''}`}>
 						<i className="fas fa-fw fa-check-square" />
 						&nbsp;
 						{i18next.t('KARA_MENU.WHITELISTED')}
-					</a>
+					</div>
+				</li>
+			) : null}
+			{!isNonStandardPlaylist(playlist.plaid) ? (
+				<li className="animate-button-container">
+					<div onClick={shuffleSongs}>
+						<i className="fas fa-arrows-turn-to-dots" />
+						&nbsp;
+						{i18next.t('KARA_MENU.SHUFFLE')}
+					</div>
+					<div className={`animate-button-success${effectShuffle ? ' activate' : ''}`}>
+						<i className="fas fa-fw fa-check-square" />
+						&nbsp;
+						{i18next.t('KARA_MENU.SHUFFLED')}
+					</div>
 				</li>
 			) : null}
 		</ul>

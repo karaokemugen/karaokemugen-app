@@ -1,4 +1,5 @@
 import { Layout } from 'antd';
+import Title from '../../components/Title';
 import i18next from 'i18next';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -65,12 +66,10 @@ function TagEdit() {
 
 	return (
 		<>
-			<Layout.Header>
-				<div className="title">{i18next.t(tid ? 'HEADERS.TAG_EDIT.TITLE' : 'HEADERS.TAG_NEW.TITLE')}</div>
-				<div className="description">
-					{i18next.t(tid ? 'HEADERS.TAG_EDIT.DESCRIPTION' : 'HEADERS.TAG_NEW.DESCRIPTION')}
-				</div>
-			</Layout.Header>
+			<Title
+				title={i18next.t(tid ? 'HEADERS.TAG_EDIT.TITLE' : 'HEADERS.TAG_NEW.TITLE')}
+				description={i18next.t(tid ? 'HEADERS.TAG_EDIT.DESCRIPTION' : 'HEADERS.TAG_NEW.DESCRIPTION')}
+			/>
 			<Layout.Content>
 				{loaded && (
 					<TagsForm

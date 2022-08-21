@@ -42,6 +42,7 @@ describe('Main', () => {
 		expect(stats.singers).to.be.a('number').and.at.least(0);
 		expect(stats.songwriters).to.be.a('number').and.at.least(0);
 		expect(stats.tags).to.be.a('number').and.at.least(0);
+		expect(stats.total_media_size).to.be.a('number').and.at.least(0);
 	});
 
 	it('Test catchphrases', async () => {

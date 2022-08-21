@@ -1,5 +1,6 @@
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { Button, Divider, Layout, Modal, Table, Tag, Tooltip } from 'antd';
+import Title from '../../components/Title';
 import i18next from 'i18next';
 import { Component } from 'react';
 import { Link } from 'react-router-dom';
@@ -56,10 +57,10 @@ class TagsDuplicate extends Component<unknown, TagsListState> {
 	render() {
 		return (
 			<>
-				<Layout.Header>
-					<div className="title">{i18next.t('HEADERS.TAG_DUPLICATES.TITLE')}</div>
-					<div className="description">{i18next.t('HEADERS.TAG_DUPLICATES.DESCRIPTION')}</div>
-				</Layout.Header>
+				<Title
+					title={i18next.t('HEADERS.TAG_DUPLICATES.TITLE')}
+					description={i18next.t('HEADERS.TAG_DUPLICATES.DESCRIPTION')}
+				/>
 				<Layout.Content>
 					<Table dataSource={this.state.tags} columns={this.columns} rowKey="tid" />
 					<Modal

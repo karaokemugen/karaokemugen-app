@@ -18,7 +18,7 @@ import { generateDatabase as generateKaraBase } from '../lib/services/generation
 // Utils
 import { getConfig, setConfig } from '../lib/utils/config';
 import { duration } from '../lib/utils/date';
-import logger, { enableWSLogging, profile } from '../lib/utils/logger';
+import logger, { archiveOldLogs, enableWSLogging, profile } from '../lib/utils/logger';
 import { createImagePreviews } from '../lib/utils/previews';
 import { initDownloader, wipeDownloadQueue, wipeDownloads } from '../services/download';
 import { updateAllMedias } from '../services/downloadMedias';
@@ -216,6 +216,7 @@ export async function initEngine() {
 			initStep(i18next.t('INIT_DONE'), true);
 			postInit();
 			initHooks();
+			archiveOldLogs();
 			logger.info(`Karaoke Mugen is ${ready}`, { service });
 		} catch (err) {
 			logger.error('Karaoke Mugen IS NOT READY', { service, obj: err });
@@ -260,7 +261,13 @@ export async function exit(rc = 0, update = false) {
 		logger.warn('mpv error', { service, obj: err });
 		// Non fatal.
 	}
-	if (getState().DBReady && getConfig().System.Database.bundledPostgresBinary) await dumpPG().catch();
+	if (
+		getState().DBReady &&
+		getConfig().System.Database.bundledPostgresBinary &&
+		!getState().opt.dumpDB &&
+		!getState().opt.restoreDB
+	)
+		await dumpPG().catch();
 	try {
 		await closeDB();
 	} catch (err) {
@@ -303,9 +310,8 @@ export function shutdown() {
 
 async function preFlightCheck(): Promise<boolean> {
 	const state = getState();
-	const conf = getConfig();
 	let doGenerate = false;
-	if (!state.opt.noBaseCheck && !conf.App.QuickStart) {
+	if (!state.opt.noBaseCheck) {
 		const filesChanged = await compareKarasChecksum();
 		if (filesChanged === true) {
 			logger.info('Data files have changed: database generation triggered', { service });

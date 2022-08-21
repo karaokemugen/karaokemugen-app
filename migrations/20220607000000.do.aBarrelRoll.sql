@@ -1,0 +1,2 @@
+--This migration actually does nothing and is used to trigger the config change needed for #1256.
+--Sue me, my lawyers will have you for breakfast.

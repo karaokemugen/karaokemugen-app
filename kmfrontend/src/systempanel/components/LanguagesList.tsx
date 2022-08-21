@@ -22,6 +22,8 @@ export default function LanguagesList(props: IProps) {
 	const context = useContext(GlobalContext);
 	const languages = getListLanguagesInLocale(context.globalState.settings.data.user.language);
 
+	const romanizationLanguage = 'qro';
+
 	useEffect(() => {
 		// Update all language fields if nothing has been touched yet
 		if (props.value && !isFieldsTouched) {
@@ -33,8 +35,11 @@ export default function LanguagesList(props: IProps) {
 		setSelectVisible(true);
 	}
 
-	function addLang(lang) {
-		if (Object.keys(i18n).length === 0 && props.onDefaultLanguageSelect) {
+	function addLang(lang: string) {
+		if (
+			typeof props.onDefaultLanguageSelect === 'function' &&
+			(Object.keys(i18n).length === 0 || lang === romanizationLanguage)
+		) {
 			props.onDefaultLanguageSelect(lang);
 		}
 		const newI18n = i18n;
@@ -44,7 +49,7 @@ export default function LanguagesList(props: IProps) {
 		setInputToFocus(lang);
 	}
 
-	function removeLang(lang) {
+	function removeLang(lang: string) {
 		const newI18n = Object.assign({}, i18n);
 		delete newI18n[lang];
 		setI18n(newI18n);
@@ -99,7 +104,8 @@ export default function LanguagesList(props: IProps) {
 					</Col>
 				</Row>
 			))}
-			{!Object.keys(i18n).includes('qro') && langWithRomanization.some(v => Object.keys(i18n).includes(v)) ? (
+			{!Object.keys(i18n).includes(romanizationLanguage) &&
+			langWithRomanization.some(v => Object.keys(i18n).includes(v)) ? (
 				<Form.Item wrapperCol={{ span: 8, offset: 4 }} style={{ textAlign: 'right' }}>
 					<Alert
 						style={{ textAlign: 'left', marginTop: '20px' }}

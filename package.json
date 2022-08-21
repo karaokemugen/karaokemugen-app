@@ -1,7 +1,7 @@
 {
   "name": "karaokemugen-app",
-  "version": "6.1.18-master",
-  "versionName": "Quintuplées Qualitatives",
+  "version": "7.0.18-master",
+  "versionName": "Rin Rassasiée",
   "description": "Karaoke playlist manager / player",
   "bin": {
     "karaokemugen": "./dist/src/index.js"
@@ -69,7 +69,8 @@
     "leonekmi <git+km@leonekmi.fr>",
     "Pierre CAMILLI <camillipierre@gmail.com> (@Shueisha64)",
     "Pierre Ellul <pierreellul.epi@gmail.com> (@Snak)",
-    "Themio <themio@protonmail.ch>"
+    "Themio <themio@protonmail.ch>",
+    "Damien HERBERT <dherbert98@gmail.com> (Dragicafit)"
   ],
   "engines": {
     "node": ">=14"
@@ -77,31 +78,30 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@sentry/electron": "^3.0.7",
-    "@sentry/node": "^7.3.1",
+    "@sentry/electron": "^4.0.0",
     "agentkeepalive": "^4.2.1",
     "ass-compiler": "^0.1.4",
-    "async-await-parallel": "^1.0.0",
     "axios": "^0.27.2",
-    "basic-ftp": "^4.6.6",
+    "basic-ftp": "^5.0.1",
     "bcryptjs": "^2.4.3",
     "chokidar": "^3.5.3",
-    "commander": "^9.3.0",
+    "commander": "^9.4.0",
     "compression": "^1.7.4",
+    "convert-srt-to-ass": "^1.0.3",
     "cors": "^2.8.5",
     "csv-writer": "^1.6.0",
     "discord-rpc": "^4.0.1",
     "dotenv": "^16.0.1",
-    "electron-updater": "^5.0.5",
+    "electron-updater": "^5.2.1",
     "execa": "^6.1.0",
     "express": "^4.18.1",
     "extract-zip": "^2.0.1",
     "fastq": "^1.13.0",
-    "file-type": "^17.1.2",
+    "file-type": "^17.1.6",
     "form-data": "^4.0.0",
     "fs-extra": "^10.1.0",
-    "i18next": "^21.8.11",
-    "i18next-fs-backend": "^1.1.4",
+    "i18next": "^21.9.1",
+    "i18next-fs-backend": "^1.1.5",
     "internet-available": "^1.0.0",
     "ip": "^1.1.8",
     "js-yaml": "^4.1.0",
@@ -110,7 +110,7 @@
     "kfn-to-ass": "^1.1.0",
     "langs": "^2.0.0",
     "lodash": "^4.17.21",
-    "logform": "^2.4.1",
+    "logform": "^2.4.2",
     "multer": "^1.4.4",
     "node-id3": "^0.2.3",
     "os-locale": "^6.0.2",
@@ -118,18 +118,18 @@
     "p-retry": "^5.1.1",
     "pg": "^8.7.3",
     "pg-copy-streams": "^6.0.2",
-    "portfinder": "^1.0.28",
+    "portfinder": "1.0.32",
     "postgrator": "^7.1.0",
     "pretty-bytes": "^6.0.0",
     "randomstring": "^1.2.2",
     "sanitize-filename": "^1.6.3",
     "semver": "^7.3.7",
-    "simple-git": "^3.10.0",
-    "slug": "^5.3.0",
+    "simple-git": "^3.12.0",
+    "slug": "^6.0.0",
     "socket.io": "^4.5.1",
     "socket.io-client": "^4.5.1",
     "source-map-support": "^0.5.21",
-    "systeminformation": "^5.11.22",
+    "systeminformation": "^5.12.6",
     "tasklist": "^5.0.0",
     "tmi.js": "^1.8.5",
     "topological-sort": "^0.3.0",
@@ -145,10 +145,10 @@
     "yesql": "^5.0.0"
   },
   "devDependencies": {
-    "@sentry/cli": "^2.2.0",
+    "@sentry/cli": "^2.5.2",
     "@types/bcryptjs": "^2.4.2",
     "@types/better-queue": "^3.8.3",
-    "@types/chai": "^4.3.1",
+    "@types/chai": "^4.3.3",
     "@types/compression": "^1.7.2",
     "@types/cors": "^2.8.12",
     "@types/discord-rpc": "4.0.3",
@@ -157,15 +157,15 @@
     "@types/ip": "^1.1.0",
     "@types/js-yaml": "^4.0.5",
     "@types/langs": "^2.0.1",
-    "@types/lodash": "^4.14.182",
+    "@types/lodash": "^4.14.184",
     "@types/mocha": "^9.1.1",
     "@types/multer": "^1.4.7",
-    "@types/node": "^18.0.0",
+    "@types/node": "^18.7.7",
     "@types/pg": "^8.6.5",
     "@types/pg-copy-streams": "^1.2.1",
     "@types/randomstring": "^1.1.8",
     "@types/readline-sync": "^1.4.4",
-    "@types/semver": "^7.3.10",
+    "@types/semver": "^7.3.12",
     "@types/slug": "^5.0.3",
     "@types/tmi.js": "^1.8.1",
     "@types/uuid": "^8.3.4",
@@ -174,10 +174,10 @@
     "@typescript-eslint/eslint-plugin": "5",
     "@typescript-eslint/parser": "5",
     "chai": "^4.3.6",
-    "electron": "^19.0.7",
+    "electron": "^20.0.3",
     "electron-notarize": "^1.2.1",
-    "esbuild": "^0.14.48",
-    "eslint": "^8.18.0",
+    "esbuild": "^0.15.5",
+    "eslint": "^8.22.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-typescript": "^17.0.0",
     "eslint-config-prettier": "^8.5.0",
@@ -186,13 +186,13 @@
     "eslint-plugin-security": "^1.5.0",
     "eslint-plugin-simple-import-sort": "^7.0.0",
     "husky": "^8.0.1",
-    "i18next-scanner": "^3.3.0",
+    "i18next-scanner": "^4.0.0",
     "lint-staged": "^13.0.3",
     "mocha": "^10.0.0",
     "postgrator-cli": "^6.0.0",
     "prettier": "2.7.1",
     "rimraf": "^3.0.2",
-    "ts-node": "^10.8.1",
+    "ts-node": "^10.9.1",
     "typescript": "^4.7.4"
   },
   "build": {
@@ -260,17 +260,20 @@
       }
     },
     "mac": {
+      "artifactName": "${productName}-${version}-mac-${arch}.${ext}",
       "target": [
         {
           "target": "dmg",
           "arch": [
-            "x64"
+            "x64",
+            "arm64"
           ]
         },
         {
           "target": "zip",
           "arch": [
-            "x64"
+            "x64",
+            "arm64"
           ]
         }
       ],
@@ -311,7 +314,15 @@
       "build/electronAboutWindow.css"
     ],
     "extraFiles": [
-      "app/bin/**"
+      "app/bin/**",
+      {
+        "from": "app-mac/bin/${arch}",
+        "to": "app/bin"
+      },
+      {
+        "from": "app-mac/bin/universal",
+        "to": "app/bin"
+      }
     ],
     "directories": {
       "output": "packages",

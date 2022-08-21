@@ -5,7 +5,7 @@ import { WhereClause } from '../lib/types/database';
 import { DBKara, DBKaraBase, DBYear, KaraOldData } from '../lib/types/database/kara';
 import { Kara, KaraFileV4, KaraParams } from '../lib/types/kara';
 import { getConfig } from '../lib/utils/config';
-import { tagTypes } from '../lib/utils/constants';
+import { getTagTypeName, tagTypes } from '../lib/utils/constants';
 import { now } from '../lib/utils/date';
 import { getState } from '../utils/state';
 import {
@@ -179,6 +179,7 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	}
 	const query = sqlgetAllKaras(
 		yesqlPayload.sql,
+		params.qType || 'AND',
 		whereClauses,
 		groupClause,
 		orderClauses,
@@ -200,7 +201,25 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		...yesqlPayload.params,
 	};
 	const res = await db().query(yesql(query)(queryParams));
-	return res.rows;
+	return res.rows.map(row => organizeTagsInKara(row));
+}
+
+export function organizeTagsInKara<T extends DBKara>(row: T & { tags: any }): T {
+	const { tags, ...rowWithoutTags } = row;
+
+	for (const tagType of Object.keys(tagTypes)) {
+		rowWithoutTags[tagType] = [];
+	}
+	if (tags == null) {
+		return <any>rowWithoutTags;
+	}
+	for (const tag of tags) {
+		if (tag?.type_in_kara == null) continue;
+		const type = getTagTypeName(tag.type_in_kara);
+		if (type == null) continue;
+		rowWithoutTags[type].push(tag);
+	}
+	return <any>rowWithoutTags;
 }
 
 export async function selectAllKarasMicro(params: KaraParams): Promise<DBKaraBase[]> {

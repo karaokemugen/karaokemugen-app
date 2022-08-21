@@ -8,18 +8,41 @@ import { getSocket } from './utils/socket';
 
 interface IProps {
 	limit: number;
-	isWelcomePage?: boolean;
+	styleTask?: 'tasksEvent-wrapper' | 'page-tasks-wrapper' | 'system-tasks-wrapper' | 'bottom-admin-wrapper';
+	onTask?: (tasks: TaskItem[]) => any;
+	dummyTask?: boolean;
 }
 
 function TasksEvent(props: IProps) {
-	const [tasks, setTasks] = useState<TaskItem[]>([]);
+	const [tasks, setTasks] = useState<TaskItem[]>(
+		props.dummyTask
+			? [
+					{
+						text: 'DUMMY_TASK',
+						percentage: 0,
+						time: Infinity,
+					},
+			  ]
+			: []
+	);
 	const [i, setI] = useState(0);
 
 	const updateTasks = (tasks: TaskItem[]) => {
 		for (const task of tasks) {
 			task.time = new Date().getTime();
 		}
-		setTasks(tasks);
+		if (props.onTask) props.onTask(tasks);
+		if (props.dummyTask && tasks.length === 0) {
+			setTasks([
+				{
+					text: 'DUMMY_TASK',
+					percentage: 0,
+					time: Infinity,
+				},
+			]);
+		} else {
+			setTasks(tasks);
+		}
 	};
 
 	useEffect(() => {
@@ -32,7 +55,7 @@ function TasksEvent(props: IProps) {
 
 	let tCount = 0;
 	return (
-		<div className={props.isWelcomePage ? 'welcome-page-tasks-wrapper' : 'tasksEvent-wrapper'}>
+		<div className={props.styleTask}>
 			{tasks.map((item, index) => {
 				if (tCount >= props.limit)
 					// no more than 3 tasks displayed

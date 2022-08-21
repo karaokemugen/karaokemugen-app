@@ -278,21 +278,6 @@ function KaraokeOptions(props: IProps) {
 				</div>
 				<div className="settings-group">
 					<div className="settings-line">
-						<label htmlFor="Karaoke.SmartInsert">
-							<span className="title">{i18next.t('SETTINGS.KARAOKE.ENABLE_SMARTINSERT')}</span>
-							<br />
-							<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.ENABLE_SMARTINSERT_TOOLTIP')}</span>
-						</label>
-						<div>
-							<Switch
-								idInput="Karaoke.SmartInsert"
-								handleChange={onChange}
-								isChecked={config['Karaoke.SmartInsert']}
-							/>
-						</div>
-					</div>
-
-					<div className="settings-line">
 						<label htmlFor="Karaoke.AutoBalance">
 							<span className="title">{i18next.t('SETTINGS.KARAOKE.ENABLE_AUTOBALANCE')}</span>
 							<br />
@@ -602,6 +587,12 @@ function KaraokeOptions(props: IProps) {
 							<span className="title">{i18next.t('SETTINGS.KARAOKE.CLASSIC_MODE')}</span>
 							<br />
 							<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.CLASSIC_MODE_TOOLTIP')}</span>
+							{config['Karaoke.StreamerMode.Enabled'] ? (
+								<>
+									<br />
+									<span className="warning">{i18next.t('SETTINGS.KARAOKE.CLASSIC_MODE_LOCKED')}</span>
+								</>
+							) : null}
 						</label>
 						<div>
 							<Switch
@@ -706,6 +697,12 @@ function KaraokeOptions(props: IProps) {
 							<span className="title">{i18next.t('SETTINGS.KARAOKE.STREAM_MODE')}</span>
 							<br />
 							<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.STREAM_MODE_TOOLTIP')}</span>
+							{config['Karaoke.ClassicMode'] ? (
+								<>
+									<br />
+									<span className="warning">{i18next.t('SETTINGS.KARAOKE.STREAM_MODE_LOCKED')}</span>
+								</>
+							) : null}
 						</label>
 						<div>
 							<Switch

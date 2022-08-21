@@ -309,9 +309,9 @@ async function createWindow() {
 	win.once('ready-to-show', () => {
 		win.show();
 	});
-	win.webContents.on('new-window', (event, url) => {
-		event.preventDefault();
-		openLink(url);
+	win.webContents.setWindowOpenHandler(handler => {
+		openLink(handler.url);
+		return { action: 'allow' };
 	});
 	win.webContents.on('will-navigate', (event, url) => {
 		event.preventDefault();
@@ -327,7 +327,7 @@ async function createWindow() {
 }
 
 function openLink(url: string) {
-	url.indexOf('//localhost') !== -1 ? win?.loadURL(url) : shell.openPath(url);
+	url.includes('//localhost') ? win?.loadURL(url) : shell.openPath(url);
 }
 
 export function setProgressBar(number: number) {

@@ -66,6 +66,23 @@ function InterfaceOptions(props: IProps) {
 			</div>
 
 			<div className="settings-line">
+				<label htmlFor="Frontend.AllowCustomTemporaryGuests">
+					<span className="title">{i18next.t('SETTINGS.INTERFACE.ALLOW_CUSTOM_TEMPORARY_GUESTS')}</span>
+					<br />
+					<span className="tooltip">
+						{i18next.t('SETTINGS.INTERFACE.ALLOW_CUSTOM_TEMPORARY_GUESTS_TOOLTIP')}
+					</span>
+				</label>
+				<div>
+					<Switch
+						idInput="Frontend.AllowCustomTemporaryGuests"
+						handleChange={onChange}
+						isChecked={config['Frontend.AllowCustomTemporaryGuests']}
+					/>
+				</div>
+			</div>
+
+			<div className="settings-line">
 				<label htmlFor="Frontend.ShowAvatarsOnPlaylist">
 					<span className="title">{i18next.t('SETTINGS.INTERFACE.SHOW_AVATARS_ON_PLAYLIST')}</span>
 					<br />
@@ -76,6 +93,21 @@ function InterfaceOptions(props: IProps) {
 						idInput="Frontend.ShowAvatarsOnPlaylist"
 						handleChange={onChange}
 						isChecked={config['Frontend.ShowAvatarsOnPlaylist']}
+					/>
+				</div>
+			</div>
+
+			<div className="settings-line">
+				<label htmlFor="Frontend.WelcomeMessage">
+					<span className="title">{i18next.t('SETTINGS.INTERFACE.DISPLAY_WELCOME_MESSAGE')}</span>
+					<br />
+					<span className="tooltip">{i18next.t('SETTINGS.INTERFACE.DISPLAY_WELCOME_MESSAGE_TOOLTIP')}</span>
+				</label>
+				<div>
+					<input
+						id="Frontend.WelcomeMessage"
+						onBlur={onChange}
+						defaultValue={config['Frontend.WelcomeMessage']}
 					/>
 				</div>
 			</div>

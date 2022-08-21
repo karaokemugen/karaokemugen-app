@@ -32,6 +32,8 @@ import { getState, setState } from '../utils/state';
 import { exit } from './engine';
 import Timeout = NodeJS.Timeout;
 import { DBKaraTag } from '../lib/types/database/kara';
+import { supportedFiles } from '../lib/utils/constants';
+import { date } from '../lib/utils/date';
 import HTTP from '../lib/utils/http';
 import { convert1LangTo2B } from '../lib/utils/langs';
 import logger, { profile } from '../lib/utils/logger';
@@ -63,6 +65,10 @@ const playerState: PlayerState = {
 	songNearEnd: false,
 	nextSongNotifSent: false,
 	isOperating: false,
+
+	// Experimental modifiers
+	pitch: 0,
+	speed: 100,
 };
 
 async function resolveMediaURL(file: string, repo: string): Promise<string> {
@@ -375,11 +381,12 @@ class Player {
 	private async genConf(options: MpvOptions) {
 		const conf = getConfig();
 		const state = getState();
+		const today = date();
 
 		const mpvArgs = [
 			'--keep-open=always',
 			'--osd-level=0',
-			`--log-file=${resolve(state.dataPath, 'logs/', 'mpv.log')}`,
+			`--log-file=${resolve(state.dataPath, 'logs/', `mpv.${today}.log`)}`,
 			`--hwdec=${conf.Player.HardwareDecoding}`,
 			`--volume=${+conf.Player.Volume}`,
 			'--no-config',
@@ -393,6 +400,8 @@ class Player {
 			`--audio-device=${conf.Player.AudioDevice}`,
 			`--screenshot-directory=${resolve(state.dataPath)}`,
 			'--screenshot-format=png',
+			'--no-osc',
+			'--no-osd-bar',
 		];
 
 		if (options.monitor) {
@@ -431,12 +440,12 @@ class Player {
 		// By default, center.
 		let positionX = 50;
 		let positionY = 50;
-		if (conf.Player.PIP.PositionX === 'Left') positionX = 5;
+		if (conf.Player.PIP.PositionX === 'Left') positionX = 1;
 		if (conf.Player.PIP.PositionX === 'Center') positionX = 50;
-		if (conf.Player.PIP.PositionX === 'Right') positionX = -5;
-		if (conf.Player.PIP.PositionY === 'Top') positionY = 5;
+		if (conf.Player.PIP.PositionX === 'Right') positionX = -1;
+		if (conf.Player.PIP.PositionY === 'Top') positionY = 1;
 		if (conf.Player.PIP.PositionY === 'Center') positionY = 50;
-		if (conf.Player.PIP.PositionY === 'Bottom') positionY = -5;
+		if (conf.Player.PIP.PositionY === 'Bottom') positionY = -1;
 		if (options.monitor) {
 			if (positionX >= 0) positionX += 10;
 			else positionX -= 10;
@@ -448,9 +457,6 @@ class Player {
 				positionY > 0 ? `+${positionY}` : positionY
 			}%`
 		);
-
-		if (conf.Player.NoHud) mpvArgs.push('--no-osc');
-		if (conf.Player.NoBar) mpvArgs.push('--no-osd-bar');
 
 		if (conf.Player.mpvVideoOutput) {
 			mpvArgs.push(`--vo=${conf.Player.mpvVideoOutput}`);
@@ -849,7 +855,7 @@ class Players {
 	/** Progress bar on pause screens inbetween songs */
 	private tickProgressBar(nextTick: number, ticked: number, DI: string) {
 		// 10 ticks
-		if (ticked <= 10 && getState().streamerPause) {
+		if (ticked <= 10 && getState().streamerPause && getState().pauseInProgress) {
 			if (this.progressBarTimeout) clearTimeout(this.progressBarTimeout);
 			let progressBar = '';
 			for (const _nothing of Array(ticked)) {
@@ -895,13 +901,20 @@ class Players {
 							'audio-files-set': background.music[0],
 							aid: '1',
 							'loop-file': 'inf',
-							pause: 'yes',
 						},
 					],
 				});
 			} else {
 				await this.exec({
-					command: ['loadfile', background.pictures[0], 'replace', { 'force-media-title': 'Background' }],
+					command: [
+						'loadfile',
+						background.pictures[0],
+						'replace',
+						{
+							'force-media-title': 'Background',
+							'loop-file': 'inf',
+						},
+					],
 				});
 			}
 			setState({
@@ -1114,6 +1127,14 @@ class Players {
 		}
 	}
 
+	private async findSubfile(mediaFile: string): Promise<string> {
+		for (const ext of supportedFiles.mpvlyrics) {
+			const subfile = replaceExt(mediaFile, `.${ext}`);
+			if (await fileExists(subfile)) return subfile;
+		}
+		return null;
+	}
+
 	async playMedia(mediaType: MediaType): Promise<PlayerState> {
 		const conf = getConfig();
 		const media = getSingleMedia(mediaType);
@@ -1123,9 +1144,9 @@ class Players {
 				'force-media-title': mediaType,
 				af: 'loudnorm',
 			};
-			const subFile = replaceExt(media.filename, '.ass');
+			const subFile = await this.findSubfile(media.filename);
 			logger.debug(`Searching for ${subFile}`, { service });
-			if (await fileExists(subFile)) {
+			if (subFile) {
 				options['sub-file'] = subFile;
 				options.sid = '1';
 				logger.debug(`Loading ${subFile}`, { service });
@@ -1315,6 +1336,37 @@ class Players {
 		}
 	}
 
+	async setModifiers(options: { speed?: number; pitch?: number }) {
+		try {
+			if (options.speed && options.pitch) {
+				throw new Error("Pitch and speed can't currently be set at the same time");
+			}
+
+			if (typeof options.pitch !== 'undefined') {
+				const paramSpeed = 1.0 + options.pitch / 16.0;
+				await this.exec({ command: ['set_property', 'audio-pitch-correction', 'no'] });
+				await this.exec({ command: ['set_property', 'af', `scaletempo:scale=1/${paramSpeed}`] });
+				await this.exec({ command: ['set_property', 'speed', paramSpeed] });
+				options.speed = 100; // Reset speed
+			} else if (typeof options.speed !== 'undefined') {
+				await this.exec({ command: ['set_property', 'audio-pitch-correction', 'yes'] });
+				await this.exec({ command: ['set_property', 'af', 'loudnorm'] });
+				await this.exec({ command: ['set_property', 'speed', options.speed / 100] });
+				options.pitch = 0; // Reset pitch
+			}
+
+			playerState.pitch = options.pitch;
+			playerState.speed = options.speed;
+			logger.info(`Set modifiers to: pitch ${playerState.pitch}, speed ${playerState.speed}`, { service });
+			emitPlayerState();
+			return playerState;
+		} catch (err) {
+			logger.error('Unable to set pitch', { service, obj: err });
+			sentry.error(err);
+			throw err;
+		}
+	}
+
 	async setSubs(showSubs: boolean): Promise<PlayerState> {
 		try {
 			await this.exec({ command: ['set_property', 'sub-visibility', showSubs] });
@@ -1440,7 +1492,11 @@ class Players {
 					// Non fatal.
 				}
 				emitPlayerState();
-				if (getState().streamerPause && getConfig().Karaoke.StreamerMode.PauseDuration > 0) {
+				if (
+					getState().streamerPause &&
+					getState().pauseInProgress &&
+					getConfig().Karaoke.StreamerMode.PauseDuration > 0
+				) {
 					this.progressBar(
 						getConfig().Karaoke.StreamerMode.PauseDuration,
 						position + warningString + nextSongString + infos
@@ -1464,8 +1520,8 @@ class Players {
 				playerState.mediaType !== 'song' && conf.Player.Display.RandomQuotes
 					? sample(initializationCatchphrases)
 					: '';
-			if (ci.Enabled) text = `${ci.Message} ${i18n.t('GO_TO')} ${state.osURL} !`; // TODO: internationalize the exclamation mark
-			const version = `Karaoke Mugen ${state.version.number} (${state.version.name}) - http://karaokes.moe`;
+			if (ci.Enabled) text = ci.Message.replaceAll('$url', state.osURL);
+			const version = `Karaoke Mugen ${state.version.number} (${state.version.name}) - https://karaokes.moe`;
 			const message = `{\\an1}{\\fscx80}{\\fscy80}${text}\\N{\\fscx60}{\\fscy60}{\\i1}${version}{\\i0}\\N{\\fscx40}{\\fscy40}${catchphrase}`;
 			this.messages?.addMessage('DI', message, duration === -1 ? 'infinite' : duration);
 		} catch (err) {
@@ -1503,7 +1559,8 @@ class Players {
 /** Get last 100 lines of log */
 async function getMpvLog() {
 	try {
-		const logFile = resolve(getState().dataPath, 'logs/', 'mpv.log');
+		const today = date();
+		const logFile = resolve(getState().dataPath, 'logs/', `mpv.${today}.log`);
 		const logData = await fs.readFile(logFile, 'utf-8');
 		return logData.split('\n').slice(-100);
 	} catch (err) {

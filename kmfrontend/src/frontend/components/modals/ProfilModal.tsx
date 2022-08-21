@@ -212,19 +212,28 @@ function ProfilModal(props: IProps) {
 			if (data?.langs && isMulti) {
 				data.langs = [isMulti];
 			}
-			const serieText =
-				data?.series?.length > 0
-					? data.series
-							.map(e => getTagInLanguage(e, user.main_series_lang, user.fallback_series_lang))
-							.join(', ') + (data.series.length > 3 ? '...' : '')
-					: data?.singers
-					? data.singers
-							.slice(0, 3)
-							.map(e => e.name)
-							.join(', ') + (data.singers.length > 3 ? '...' : '')
-					: '';
+			let serieText = '';
+			if (data?.series?.length > 0) {
+				serieText =
+					data.series
+						.slice(0, 3)
+						.map(e => getTagInLanguage(e, user.main_series_lang, user.fallback_series_lang))
+						.join(', ') + (data.series.length > 3 ? '...' : '');
+			} else if (data?.singergroups?.length > 0) {
+				serieText =
+					data.singergroups
+						.slice(0, 3)
+						.map(e => e.name)
+						.join(', ') + (data.singergroups.length > 3 ? '...' : '');
+			} else if (data?.singers) {
+				serieText =
+					data.singers
+						.slice(0, 3)
+						.map(e => e.name)
+						.join(', ') + (data.singers.length > 3 ? '...' : '');
+			}
 			const langsText = data?.langs
-				.map(e => e.name)
+				?.map(e => e.name)
 				.join(', ')
 				.toUpperCase();
 			const songtypeText = sortAndHideTags(data?.songtypes)

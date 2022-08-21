@@ -3,7 +3,7 @@ import { createHash } from 'crypto';
 import { promises as fs } from 'fs';
 import { copy } from 'fs-extra';
 import { decode, encode } from 'jwt-simple';
-import { deburr, merge } from 'lodash';
+import { deburr, merge, sample } from 'lodash';
 import { resolve } from 'path';
 import randomstring from 'randomstring';
 import slugify from 'slug';
@@ -11,6 +11,7 @@ import { v4 as uuidV4 } from 'uuid';
 
 import { selectSongCountForUser, selectSongTimeSpentForUser } from '../dao/playlist';
 import {
+	deleteTempUsers,
 	deleteUser,
 	insertUser,
 	reassignToUser,
@@ -29,7 +30,6 @@ import { emitWS } from '../lib/utils/ws';
 import { Config } from '../types/config';
 import { UserOpts } from '../types/user';
 import { defaultGuestNames } from '../utils/constants';
-import { lowercaseMigration } from '../utils/hokutoNoCode';
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
 import { stopSub } from '../utils/userPubSub';
@@ -373,12 +373,19 @@ export async function removeUser(username: string) {
 }
 
 /** Updates all guest avatars with those present in KM's codebase in the assets folder */
-async function updateGuestAvatar(user: DBUser) {
-	const bundledAvatarFile = `${slugify(user.login, {
-		lower: true,
-		remove: /['"!,?()]/g,
-	})}.jpg`;
-	const bundledAvatarPath = resolve(getState().resourcePath, 'assets/guestAvatars/', bundledAvatarFile);
+async function updateGuestAvatar(user: DBUser, random?: boolean) {
+	let bundledAvatarFile = '';
+	const bundledAvatarAssets = resolve(getState().resourcePath, 'assets/guestAvatars/');
+	if (random) {
+		const dir = await fs.readdir(bundledAvatarAssets);
+		bundledAvatarFile = sample(dir);
+	} else {
+		bundledAvatarFile = `${slugify(user.login, {
+			lower: true,
+			remove: /['"!,?()]/g,
+		})}.jpg`;
+	}
+	const bundledAvatarPath = resolve(bundledAvatarAssets, bundledAvatarFile);
 	if (!(await fileExists(bundledAvatarPath))) {
 		logger.error(`${bundledAvatarPath} does not exist`, { service });
 		// Bundled avatar does not exist for this user, skipping.
@@ -394,15 +401,12 @@ async function updateGuestAvatar(user: DBUser) {
 	const bundledAvatarStats = await fs.stat(bundledAvatarPath);
 	if (avatarStats.size !== bundledAvatarStats.size) {
 		// bundledAvatar is different from the current guest Avatar, replacing it.
-		// Since pkg is fucking up with copy(), we're going to read/write file in order to save it to a temporary directory
-		const tempFile = resolve(resolvedPath('Temp'), bundledAvatarFile);
-		await copy(bundledAvatarPath, tempFile);
 		editUser(
 			user.login,
 			user,
 			{
 				fieldname: null,
-				path: tempFile,
+				path: bundledAvatarPath,
 				originalname: null,
 				encoding: null,
 				mimetype: null,
@@ -428,6 +432,18 @@ async function checkGuestAvatars() {
 	logger.debug('Updating default avatars', { service });
 	const guests = await getUsers({ guestOnly: true });
 	guests.forEach(u => updateGuestAvatar(u));
+}
+
+export async function createTemporaryGuest(name: string) {
+	const user = {
+		login: deburr(name),
+		nickname: name,
+		type: 2,
+		flag_temporary: true,
+	};
+	await createUser(user);
+	updateGuestAvatar(user, true);
+	return user;
 }
 
 /** Create default guest accounts */
@@ -511,9 +527,9 @@ export async function initUserSystem() {
 			);
 		}
 	} else {
-		if (users.find(u => u.login === 'adminTest')) deleteUser('adminTest');
-		if (users.find(u => u.login === 'publicTest')) deleteUser('publicTest');
-		if (users.find(u => u.login === 'adminTest2')) deleteUser('adminTest2');
+		if (users.find(u => u.login === 'admintest')) deleteUser('adminTest');
+		if (users.find(u => u.login === 'publictest')) deleteUser('publicTest');
+		if (users.find(u => u.login === 'admintest2')) deleteUser('adminTest2');
 	}
 
 	userChecks();
@@ -534,8 +550,8 @@ async function userChecks() {
 	await createDefaultGuests();
 	await checkGuestAvatars();
 	await checkUserAvatars();
+	await deleteTempUsers();
 	await cleanupAvatars();
-	await lowercaseMigration();
 }
 
 /** Verifies that all avatars are > 0 bytes or exist. If they don't, recopy the blank avatar over them */

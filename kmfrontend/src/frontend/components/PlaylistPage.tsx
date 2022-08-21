@@ -62,7 +62,7 @@ export default function PlaylistPage() {
 						kara.series?.length > 0
 							? kara.series
 									.slice(0, 3)
-									.map(e => getTagInLocale(context.globalState.settings.data, e, i18n))
+									.map(e => getTagInLocale(context.globalState.settings.data, e, i18n).i18n)
 									.join(', ') + (kara.series.length > 3 ? '...' : '')
 							: kara.singers
 							? kara.singers
@@ -83,9 +83,9 @@ export default function PlaylistPage() {
 									<div
 										key={tag.tid}
 										className={`tag inline ${typeData.color}`}
-										title={getTagInLocale(context.globalState.settings.data, tag)}
+										title={getTagInLocale(context.globalState.settings.data, tag).i18n}
 									>
-										{getTagInLocale(context.globalState.settings.data, tag)}
+										{getTagInLocale(context.globalState.settings.data, tag).i18n}
 									</div>
 								);
 							});

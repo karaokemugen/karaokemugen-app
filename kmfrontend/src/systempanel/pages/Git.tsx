@@ -10,6 +10,7 @@ import {
 	RightOutlined,
 } from '@ant-design/icons';
 import { Button, Checkbox, Divider, Input, Layout, List, Modal, Table } from 'antd';
+import Title from '../components/Title';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import i18next from 'i18next';
 import { RenderExpandIconProps } from 'rc-table/lib/interface';
@@ -325,10 +326,7 @@ export default function Git() {
 
 	return (
 		<>
-			<Layout.Header>
-				<div className="title">{i18next.t('HEADERS.GIT.TITLE')}</div>
-				<div className="description">{i18next.t('HEADERS.GIT.DESCRIPTION')}</div>
-			</Layout.Header>
+			<Title title={i18next.t('HEADERS.GIT.TITLE')} description={i18next.t('HEADERS.GIT.DESCRIPTION')} />
 			<Layout.Content>
 				<Table
 					dataSource={repos}

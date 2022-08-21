@@ -1,8 +1,10 @@
 import { DeleteOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
-import { Alert, Button, Image, Layout, Modal, Select, Table, Upload } from 'antd';
+import { Alert, Button, Image, Layout, Modal, Select, Table, Typography, Upload } from 'antd';
+import Title from '../components/Title';
 import i18next from 'i18next';
 import { basename } from 'path-browserify';
 import { useEffect, useState } from 'react';
+import ReactAudioPlayer from 'react-audio-player';
 
 import { commandBackend } from '../../utils/socket';
 
@@ -96,18 +98,27 @@ export default function Background() {
 		{
 			title: i18next.t('BACKGROUNDS_MGMT.PREVIEW'),
 			render: (_text, record) => {
-				return (
-					<Image
-						width={200}
-						src={`/backgrounds/${record.type}/${basename(record.file.replace(/\\/g, '/'))}`}
-					/>
-				);
+				if (record.file.endsWith('.mp3')) {
+					return (
+						<ReactAudioPlayer
+							src={`/backgrounds/${record.type}/${basename(record.file.replace(/\\/g, '/'))}`}
+							controls
+						/>
+					);
+				} else {
+					return (
+						<Image
+							width={200}
+							src={`/backgrounds/${record.type}/${basename(record.file.replace(/\\/g, '/'))}`}
+						/>
+					);
+				}
 			},
 		},
 		{
 			title: i18next.t('BACKGROUNDS_MGMT.CATEGORY'),
 			dataIndex: 'type',
-			render: text => i18next.t(`BACKGROUNDS_MGMT.TYPE.${text}`),
+			render: text => i18next.t(`BACKGROUNDS_MGMT.TYPE.${text.toUpperCase()}`),
 		},
 		{
 			title: i18next.t('ACTION'),
@@ -119,10 +130,10 @@ export default function Background() {
 
 	return (
 		<>
-			<Layout.Header>
-				<div className="title">{i18next.t('HEADERS.BACKGROUNDS.TITLE')}</div>
-				<div className="description">{i18next.t('HEADERS.BACKGROUNDS.DESCRIPTION')}</div>
-			</Layout.Header>
+			<Title
+				title={i18next.t('HEADERS.BACKGROUNDS.TITLE')}
+				description={i18next.t('HEADERS.BACKGROUNDS.DESCRIPTION')}
+			/>
 			<Layout.Content>
 				<p>{i18next.t('BACKGROUNDS_MGMT.EXPL')}</p>
 				<Alert
@@ -140,7 +151,10 @@ export default function Background() {
 					{i18next.t('BACKGROUNDS_MGMT.NEW')}
 					<PlusOutlined />
 				</Button>
+				<Typography.Title>{i18next.t('BACKGROUNDS_MGMT.PICTURES')}</Typography.Title>
 				<Table dataSource={bgList?.pictures} columns={columns} rowKey="file" />
+				<Typography.Title>{i18next.t('BACKGROUNDS_MGMT.MUSIC')}</Typography.Title>
+				<Table dataSource={bgList?.music} columns={columns} rowKey="file" />
 				<Modal
 					title={i18next.t('BACKGROUNDS_MGMT.NEW')}
 					visible={addModal}
@@ -159,13 +173,13 @@ export default function Background() {
 							onChange={(value: BackgroundType) => setType(value)}
 						>
 							<Select.Option key="pause" value="pause">
-								{i18next.t('BACKGROUNDS_MGMT.TYPE.PAUSE')}
+								{i18next.t('BACKGROUNDS_MGMT.TYPE.PAUSE')} - {i18next.t('BACKGROUNDS_MGMT.DESC.PAUSE')}
 							</Select.Option>
 							<Select.Option key="stop" value="stop">
-								{i18next.t('BACKGROUNDS_MGMT.TYPE.STOP')}
+								{i18next.t('BACKGROUNDS_MGMT.TYPE.STOP')} - {i18next.t('BACKGROUNDS_MGMT.DESC.STOP')}
 							</Select.Option>
 							<Select.Option key="poll" value="poll">
-								{i18next.t('BACKGROUNDS_MGMT.TYPE.POLL')}
+								{i18next.t('BACKGROUNDS_MGMT.TYPE.POLL')} - {i18next.t('BACKGROUNDS_MGMT.DESC.POLL')}
 							</Select.Option>
 						</Select>
 					</div>

@@ -8,6 +8,7 @@ image: axelterizaki/karaokemugen-ci:node-16-phppg
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
   ELECTRON_CACHE: '.cache/electron'
+  DS_INCLUDE_DEV_DEPENDENCIES: 'false'
 sast:
   variables:
     SAST_EXCLUDED_PATHS: spec, test, tests, tmp, assets, build, img, util, packages
@@ -309,7 +310,9 @@ pkg_mac:
     - source ~/.zshrc
     - yarn install
     - rm -Rf release_mac
-    - wget -qO- http://mugen.karaokes.moe/downloads/dist_mac-6.x.tar.gz | tar xvz
+    - rm -Rf app-mac
+    - rm -Rf app/bin
+    - wget -qO- http://mugen.karaokes.moe/downloads/dist_mac-7.x.tar.gz | tar xvz
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
     - bash util/electronBuilder.sh -m
     - ls -la packages/

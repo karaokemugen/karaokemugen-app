@@ -229,19 +229,11 @@ export async function decodeCriteriaReason(settings: SettingsStoreData, criteria
 			args[0] = 'SHORTER';
 			args[1] = { time: criteria.value };
 			break;
-		case 1004:
-			args[0] = 'TITLE';
-			args[1] = { title: criteria.value };
-			break;
-		case 1005:
-			args[0] = 'TAG_NAME';
-			args[1] = { title: criteria.value };
-			break;
 		default:
 			args[0] = 'TAG';
 			const tag = await commandBackend('getTag', { tid: criteria.value });
 			args[1] = {
-				tag: getTagInLocale(settings, tag),
+				tag: getTagInLocale(settings, tag).i18n,
 				verb: i18next.t(`CRITERIA.LABEL.TAG_VERBS.${criteria.type}`),
 			};
 			break;

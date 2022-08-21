@@ -16,7 +16,7 @@ import { hmsToSecondsOnly, secondsTimeSpanToHMS } from '../../../utils/tools';
 import Autocomplete from '../generic/Autocomplete';
 import Switch from '../generic/Switch';
 
-const listTypeCriteria = [1002, 1003, 1004, 1005, 1006];
+const listTypeCriteria = [1002, 1003, 1006];
 
 interface IProps {
 	playlist: DBPL;

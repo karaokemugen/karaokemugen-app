@@ -21,7 +21,14 @@ const service = 'MediasUpdater';
 let updateRunning = false;
 
 async function getRemoteMedias(repo: string) {
-	const res = await HTTP.get(`https://${repo}/api/karas/medias`);
+	const collections = getConfig().Karaoke.Collections;
+	const enabledCollections = [];
+	for (const collection of Object.keys(collections)) {
+		if (collection) enabledCollections.push(collection);
+	}
+	const res = await HTTP.post(`https://${repo}/api/karas/medias`, {
+		collections: enabledCollections,
+	});
 	return res.data as DBMedia[];
 }
 

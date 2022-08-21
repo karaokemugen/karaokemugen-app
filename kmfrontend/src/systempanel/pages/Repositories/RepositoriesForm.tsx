@@ -1,5 +1,6 @@
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Alert, Button, Checkbox, Divider, Form, Input, Select, Tooltip } from 'antd';
+import Title from '../../components/Title';
 import { FormInstance } from 'antd/lib/form';
 import i18next from 'i18next';
 import { Component, createRef } from 'react';
@@ -83,6 +84,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 			Enabled: values.Enabled,
 			SendStats: values.SendStats,
 			BaseDir: values.BaseDir,
+			Update: values.Update,
 			AutoMediaDownloads: values.AutoMediaDownloads,
 			MaintainerMode: values.MaintainerMode,
 			Path: {
@@ -130,6 +132,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 				initialValues={{
 					Name: this.props.repository?.Name,
 					Online: this.props.repository?.Online,
+					Update: this.props.repository?.Update,
 					Enabled: this.props.repository?.Enabled,
 					SendStats: this.props.repository?.SendStats,
 					AutoMediaDownloads: this.props.repository?.AutoMediaDownloads,
@@ -203,6 +206,21 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 					labelCol={{ flex: '0 1 300px' }}
 					valuePropName="checked"
 					name="SendStats"
+				>
+					<Checkbox />
+				</Form.Item>
+				<Form.Item
+					label={
+						<span>
+							{i18next.t('REPOSITORIES.UPDATE')}&nbsp;
+							<Tooltip title={i18next.t('REPOSITORIES.UPDATE_TOOLTIP')}>
+								<QuestionCircleOutlined />
+							</Tooltip>
+						</span>
+					}
+					labelCol={{ flex: '0 1 300px' }}
+					valuePropName="checked"
+					name="Update"
 				>
 					<Checkbox />
 				</Form.Item>

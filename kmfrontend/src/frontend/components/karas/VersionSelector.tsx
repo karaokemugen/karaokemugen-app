@@ -138,17 +138,23 @@ export default function VersionSelector(props: Props) {
 														)}
 														{sortAndHideTags(kara.versions, 'public').map(t => (
 															<span className="tag white inline" key={t.tid}>
-																{getTagInLocale(
-																	context?.globalState.settings.data,
-																	t,
-																	i18n
-																)}
+																{
+																	getTagInLocale(
+																		context?.globalState.settings.data,
+																		t,
+																		i18n
+																	).i18n
+																}
 															</span>
 														))}
 													</h4>
 													<h5 className="modal-series">
 														<InlineTag
-															tag={kara.series[0] || kara.singers[0]}
+															tag={
+																kara.series[0] ||
+																kara.singergroups[0] ||
+																kara.singers[0]
+															}
 															scope={tagsScope}
 															tagType={kara.series[0] ? 1 : 2}
 															i18nParam={i18n}

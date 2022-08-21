@@ -7,6 +7,7 @@ import { SocketIOApp } from '../../lib/utils/ws';
 import {
 	addKaraToPlaylist,
 	copyKaraToPlaylist,
+	createAutoMix,
 	createPlaylist,
 	editPlaylist,
 	editPLC,
@@ -15,9 +16,11 @@ import {
 	findPlaying,
 	getKaraFromPlaylist,
 	getPlaylistContents,
+	getPlaylistContentsMicro,
 	getPlaylistInfo,
 	getPlaylists,
 	importPlaylist,
+	randomizePLC,
 	removeKaraFromPlaylist,
 	removePlaylist,
 	shufflePlaylist,
@@ -27,6 +30,28 @@ import { APIMessage, errMessage } from '../common';
 import { runChecklist } from '../middlewares';
 
 export default function playlistsController(router: SocketIOApp) {
+	router.route('createAutomix', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req);
+		const validationErrors = check(req.body, {
+			filters: { presence: true },
+			limitNumber: { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0 } },
+		});
+		if (!validationErrors) {
+			// No errors detected
+			try {
+				return await createAutoMix(req.body, req.token.username);
+			} catch (err) {
+				const code = 'AUTOMIX_ERROR';
+				errMessage(code, err);
+				throw { code: err?.code || 500, message: APIMessage(err?.msg || code) };
+			}
+		} else {
+			// Errors detected
+			// Sending BAD REQUEST HTTP code and error object.
+			throw { code: 400, message: validationErrors };
+		}
+	});
+
 	router.route('getPlaylists', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		// Get list of playlists
@@ -146,6 +171,16 @@ export default function playlistsController(router: SocketIOApp) {
 			throw { code: err?.code || 500, message: APIMessage(code) };
 		}
 	});
+	router.route('getPlaylistContentsMicro', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'guest', 'limited');
+		try {
+			return await getPlaylistContentsMicro(req.body?.plaid);
+		} catch (err) {
+			const code = 'PL_VIEW_SONGS_ERROR';
+			errMessage(code, err);
+			throw { code: err?.code || 500, message: APIMessage(code) };
+		}
+	});
 	router.route('addKaraToPlaylist', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest');
 		// add a kara to a playlist
@@ -154,7 +189,12 @@ export default function playlistsController(router: SocketIOApp) {
 		});
 		if (!validationErrors) {
 			try {
-				return await addKaraToPlaylist(req.body.kids, req.token.username, req.body.plaid, req.body.pos);
+				return await addKaraToPlaylist({
+					kids: req.body.kids,
+					requester: req.token.username,
+					plaid: req.body.plaid,
+					pos: req.body.pos,
+				});
 			} catch (err) {
 				const code = 'PL_ADD_SONG_ERROR';
 				errMessage(code, err);
@@ -245,6 +285,15 @@ export default function playlistsController(router: SocketIOApp) {
 			// Errors detected
 			// Sending BAD REQUEST HTTP code and error object.
 			throw { code: 400, message: validationErrors };
+		}
+	});
+	router.route('randomizePLC', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req);
+		try {
+			return await randomizePLC(req.body?.plc_ids);
+		} catch (err) {
+			errMessage(err.msg);
+			throw { code: err?.code || 500, message: APIMessage(err.msg) };
 		}
 	});
 	router.route('votePLC', async (socket: Socket, req: APIData) => {

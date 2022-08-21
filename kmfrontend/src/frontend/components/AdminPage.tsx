@@ -7,8 +7,9 @@ import { Route, Routes } from 'react-router';
 import { setPlaylistInfoLeft, setPlaylistInfoRight } from '../../store/actions/frontendContext';
 import { showModal } from '../../store/actions/modal';
 import GlobalContext from '../../store/context';
+import TasksEvent from '../../TasksEvent';
 import { commandBackend, getSocket } from '../../utils/socket';
-import { decodeCriteriaReason, displayMessage } from '../../utils/tools';
+import { decodeCriteriaReason, displayMessage, is_touch_device } from '../../utils/tools';
 import { KaraElement } from '../types/kara';
 import AdminHeader from './AdminHeader';
 import KmAppBodyDecorator from './decorators/KmAppBodyDecorator';
@@ -70,7 +71,7 @@ function AdminPage(props: IProps) {
 
 	const putPlayerCommando = (event: any) => {
 		const namecommand = event.currentTarget.getAttribute('data-namecommand');
-		let data;
+		let data: { command: string; options?: any };
 		if (namecommand === 'setVolume') {
 			let volume = parseInt(event.currentTarget.value);
 			const base = 100;
@@ -80,6 +81,11 @@ function AdminPage(props: IProps) {
 			data = {
 				command: namecommand,
 				options: volume,
+			};
+		} else if (namecommand === 'setPitch' || namecommand === 'setSpeed') {
+			data = {
+				command: namecommand,
+				options: parseInt(event.currentTarget.value),
 			};
 		} else if (namecommand === 'goTo') {
 			data = {
@@ -174,24 +180,29 @@ function AdminPage(props: IProps) {
 							<Route
 								path="*"
 								element={
-									<PlaylistMainDecorator>
-										<Playlist
-											scope="admin"
-											side={'left'}
-											toggleSearchMenu={toggleSearchMenuLeft}
-											searchMenuOpen={searchMenuOpenLeft}
-											playlistList={playlistList}
-											openKara={openKara}
-										/>
-										<Playlist
-											scope="admin"
-											side={'right'}
-											toggleSearchMenu={toggleSearchMenuRight}
-											searchMenuOpen={searchMenuOpenRight}
-											playlistList={playlistList}
-											openKara={openKara}
-										/>
-									</PlaylistMainDecorator>
+									<>
+										<PlaylistMainDecorator>
+											<Playlist
+												scope="admin"
+												side={'left'}
+												toggleSearchMenu={toggleSearchMenuLeft}
+												searchMenuOpen={searchMenuOpenLeft}
+												playlistList={playlistList}
+												openKara={openKara}
+											/>
+											<Playlist
+												scope="admin"
+												side={'right'}
+												toggleSearchMenu={toggleSearchMenuRight}
+												searchMenuOpen={searchMenuOpenRight}
+												playlistList={playlistList}
+												openKara={openKara}
+											/>
+										</PlaylistMainDecorator>
+										{!is_touch_device() ? (
+											<TasksEvent limit={3} styleTask="bottom-admin-wrapper" dummyTask={true} />
+										) : null}
+									</>
 								}
 							/>
 						</Routes>

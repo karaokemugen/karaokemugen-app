@@ -3,7 +3,7 @@ import { sample } from 'lodash';
 import { basename, resolve } from 'path';
 
 import { resolvedPath } from '../lib/utils/config';
-import { audioFileRegexp, imageFileRegexp } from '../lib/utils/constants';
+import { audioFileRegexp, backgroundFileRegexp } from '../lib/utils/constants';
 import { replaceExt } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import { BackgroundList, BackgroundType } from '../types/backgrounds';
@@ -21,6 +21,7 @@ export async function getBackgroundAndMusic(type: BackgroundType): Promise<Backg
 	if (files.pictures.length === 0) files = await getBackgroundFiles('bundled');
 	const backgroundImageFile = sample(files.pictures);
 	// First, try to find a "neighbour" mp3
+	// FIXME: make it so it works with any audio file format, not just MP3
 	let backgroundMusicFile = files.music.find(f => f === replaceExt(backgroundImageFile, '.mp3'));
 	if (!backgroundMusicFile && files.music.length > 0) {
 		backgroundMusicFile = sample(files.music);
@@ -39,7 +40,7 @@ export async function getBackgroundFiles(type: BackgroundType = 'pause'): Promis
 				: resolve(resolvedPath('Backgrounds'), type);
 		const files = await fs.readdir(path);
 		return {
-			pictures: files.filter(f => imageFileRegexp.test(f)).map(f => resolve(path, f)),
+			pictures: files.filter(f => backgroundFileRegexp.test(f)).map(f => resolve(path, f)),
 			music: files.filter(f => audioFileRegexp.test(f)).map(f => resolve(path, f)),
 		};
 	} catch (err) {

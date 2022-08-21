@@ -1,5 +1,6 @@
 import { DBKara } from '../lib/types/database/kara';
 import { DBPLCBase } from '../lib/types/database/playlist';
+import { AggregatedCriteria } from '../lib/types/playlist';
 
 export interface CurrentSong extends DBPLCBase, DBKara {
 	avatar?: string;
@@ -12,3 +13,15 @@ export interface Pos {
 }
 
 export type ShuffleMethods = 'normal' | 'smart' | 'balance' | 'upvotes';
+
+export interface AddKaraParams {
+	kids: string[];
+	requester: string;
+	plaid?: string;
+	pos?: number;
+	ignoreQuota?: boolean;
+	refresh?: boolean;
+	criterias?: AggregatedCriteria[];
+	throwOnMissingKara?: boolean;
+	visible?: boolean;
+}

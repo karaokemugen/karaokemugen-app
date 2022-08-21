@@ -2,6 +2,7 @@
 
 .start-page .wrapper.welcome {
 	min-height: 100vh;
+	max-height: 100vh;
 
 	grid-template-areas:
 		'logo tasks aside'
@@ -16,7 +17,7 @@
 			'main';
 	}
 
-	.welcome-page-tasks-wrapper {
+	.page-tasks-wrapper {
 		grid-area: tasks;
 		@media (max-width: $mugen-breakpoint-large) {
 			position: fixed;
