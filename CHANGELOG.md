@@ -1,4 +1,4 @@
-# v7.0.x - xx/09/2022
+# v7.0.18 - xx/09/2022
 
 This is a major release. A lot of bugfixes have been backported in 6.x versions so don't worry if you've seen some of them.
 
