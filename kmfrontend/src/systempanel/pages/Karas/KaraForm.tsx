@@ -644,7 +644,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				<Form.Item
 					label={i18next.t('TAG_TYPES.LANGS_other')}
 					labelCol={{ flex: '0 1 220px' }}
-					wrapperCol={{ span: 6 }}
+					wrapperCol={{ span: 7 }}
 					rules={[
 						{
 							required: true,
@@ -697,7 +697,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						</span>
 					}
 					labelCol={{ flex: '0 1 220px' }}
-					wrapperCol={{ span: 6 }}
+					wrapperCol={{ span: 7 }}
 					name="franchises"
 				>
 					<EditableTagGroup
@@ -764,7 +764,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				<Form.Item
 					label={i18next.t('KARA.SINGERS_BY')}
 					labelCol={{ flex: '0 1 220px' }}
-					wrapperCol={{ span: 6 }}
+					wrapperCol={{ span: 7 }}
 					rules={[
 						{
 							required: this.state.serieSingersRequired,
@@ -785,7 +785,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				<Form.Item
 					label={i18next.t('KARA.SINGERGROUPS_BY')}
 					labelCol={{ flex: '0 1 220px' }}
-					wrapperCol={{ span: 6 }}
+					wrapperCol={{ span: 7 }}
 					rules={[
 						{
 							required: this.state.serieSingersRequired,
@@ -813,7 +813,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						</span>
 					}
 					labelCol={{ flex: '0 1 220px' }}
-					wrapperCol={{ span: 6 }}
+					wrapperCol={{ span: 7 }}
 					name="songwriters"
 				>
 					<EditableTagGroup
@@ -832,7 +832,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						</span>
 					}
 					labelCol={{ flex: '0 1 220px' }}
-					wrapperCol={{ span: 6 }}
+					wrapperCol={{ span: 7 }}
 					name="creators"
 				>
 					<EditableTagGroup
@@ -1001,7 +1001,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						</span>
 					}
 					labelCol={{ flex: '0 1 220px' }}
-					wrapperCol={{ span: 6 }}
+					wrapperCol={{ span: 7 }}
 					rules={[
 						{
 							required: true,
