@@ -133,7 +133,7 @@ export async function updateAllRepos() {
 export async function checkDownloadStatus(kids?: string[]) {
 	profile('checkDownloadStatus');
 	// Avoid spamming logs if we're only checking one song at a time
-	if (kids.length > 1) logger.info(`Checking downloaded status of ${kids ? kids.length : 'all'} songs`, { service });
+	if (kids?.length > 1) logger.info(`Checking downloaded status of ${kids ? kids.length : 'all'} songs`, { service });
 	const karas = await getKaras({
 		q: kids ? `k:${kids.join(',')}` : undefined,
 		ignoreCollections: true,
@@ -156,7 +156,7 @@ export async function checkDownloadStatus(kids?: string[]) {
 		updateDownloaded(mediasExisting, 'DOWNLOADED');
 	}
 	// Avoid spamming logs if we're only checking one song at a time
-	if (kids.length > 1) logger.info('Finished checking downloaded status', { service });
+	if (kids?.length > 1) logger.info('Finished checking downloaded status', { service });
 	profile('checkDownloadStatus');
 }
 
