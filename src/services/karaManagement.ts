@@ -29,7 +29,7 @@ import { getState } from '../utils/state';
 import { checkMediaAndDownload } from './download';
 import { getKara, getKaras } from './kara';
 import { editKara } from './karaCreation';
-import { checkDownloadStatus, getRepo, getRepos } from './repo';
+import { getRepo, getRepos } from './repo';
 import { updateAllSmartPlaylists } from './smartPlaylist';
 import { getTag } from './tag';
 
