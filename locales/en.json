@@ -1,6 +1,6 @@
 {
-	"REQUESTED_BY": "Requested by",
-	"REQUESTED_WITH": "(with )",
+	"REQUESTED_BY": "Requested by {{name}}",
+	"REQUESTED_WITH": "(with {{names}})",
 	"REQUESTED_AND_one": "and others",
 	"REQUESTED_AND_other": "and {{count}} others",
 	"MY_PLAYLIST": "My playlist",
