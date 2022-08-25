@@ -112,7 +112,6 @@ export interface Config {
 			PositionX?: 'Left' | 'Right' | 'Center';
 			PositionY?: 'Top' | 'Bottom' | 'Center';
 		};
-		ProgressBarDock?: boolean;
 		ExtraCommandLine?: string;
 		Borders?: boolean;
 		HardwareDecoding?: MpvHardwareDecodingOptions;

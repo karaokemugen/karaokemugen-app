@@ -843,7 +843,6 @@
 			"ONLINE_UPDATES_MEDIAS_INTROS": "Otomatis perbarui intro",
 			"ONLINE_FETCHPOPULARSONGS_TOOLTIP": "Jika dinonaktifkan, lagu populer akan dihitung dari aplikasi Karaoke Mugen kamu",
 			"ONLINE_DISCORD_DISPLAYACTIVITY": "Tampilkan aktivitas Karaoke Mugen di profil Discord kamu",
-			"PLAYER_PROGRESSBARDOCK": "Bilah progres pemutar di Dock/Bilah Tugas",
 			"ONLINE_USERS": "Perbolehkan pendaftaran dan masuk pengguna secara daring",
 			"ONLINE_FETCHPOPULARSONGS": "Ambil lagu populer dari repositori daring kamu",
 			"APP_QUICKSTART_TOOLTIP": "Ini menonaktifkan verifikasi data. Kamu akan harus membuat basis data kamu jika terjadi modifikasi manual dari bilah sistem -> halaman basis data.",

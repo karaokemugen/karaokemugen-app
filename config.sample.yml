@@ -146,8 +146,6 @@ Player:
     PositionY: Bottom
     # Size in %
     Size: 30
-  # Play progress bar in Dock / Taskbar
-  ProgressBarDock: true
   # Volume
   Volume: 100
   # Hardware decoding. See mpv manual for more info

@@ -9,7 +9,7 @@ import { cloneDeep, isEqual, merge } from 'lodash';
 import { resolve } from 'path';
 
 import { selectUsers } from '../dao/user';
-import { applyMenu, setProgressBar } from '../electron/electron';
+import { applyMenu } from '../electron/electron';
 import { errorStep } from '../electron/electronLogger';
 import { registerShortcuts, unregisterShortcuts } from '../electron/electronShortcuts';
 import { refreshTags } from '../lib/dao/tag';
@@ -236,8 +236,6 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	config.Online.Stats ? initStats(newConfig.Online.Stats === oldConfig.Online.Stats) : stopStats();
 	// Streamer mode
 	if (config.Karaoke.StreamerMode.Enabled) writeStreamFiles();
-	// Toggling progressbar off if needs be
-	if (config.Player.ProgressBarDock) setProgressBar(-1);
 
 	configureHost();
 
