@@ -156,8 +156,7 @@
 			"Vous avez besoin d'envoyer un message à votre public ? L'option message permettra d'afficher un texte sur leurs appareils mobiles ou sur l'écran du karaoké !",
 			"Dans la recherche, vous pouvez taper \"-mot\" pour exclure les karaokés contenant ce mot (que ce soit dans le titre, l'œuvre, les chanteurs, etc.) de vos résultats de recherche.",
 			"Vous pouvez accepter ou refuser des chansons du public en mettant côte à côte votre liste de lecture publique et courante.",
-			"Accepter ou refuser une suggestion publique redonne le quota de chanson à l'utilisateur qui l'a demandée, et ajoute la chanson dans la liste de lecture actuelle !",
-			"Lorsque vous effectuez une recherche, vous pouvez mettre un groupe de mots entre guillemets pour demander précisément ce texte. Tapez \"love live\" pour obtenir uniquement les karaokés de l'œuvre Love Live."
+			"Accepter ou refuser une suggestion publique redonne le quota de chanson à l'utilisateur qui l'a demandée, et ajoute la chanson dans la liste de lecture actuelle !"
 		],
 		"ERRORS": [
 			"N'hésitez pas à venir nous voir sur Discord si vous avez besoin d'aide : https://karaokes.moe/discord",
