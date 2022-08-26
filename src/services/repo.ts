@@ -8,7 +8,7 @@ import { baseChecksum, editKaraInStore, getStoreChecksum, sortKaraStore } from '
 import { updateDownloaded } from '../dao/download';
 import { deleteRepo, insertRepo, selectRepos, updateRepo } from '../dao/repo';
 import { getSettings, refreshAll, saveSetting } from '../lib/dao/database';
-import { initHooks, stopWatchingHooks } from '../lib/dao/hook';
+import { initHooks } from '../lib/dao/hook';
 import { refreshKaras } from '../lib/dao/kara';
 import { parseKara, writeKara } from '../lib/dao/karafile';
 import { readAllKaras } from '../lib/services/generation';
@@ -654,7 +654,6 @@ export async function newGitRepo(repo: Repository) {
 	const baseDir = resolve(state.dataPath, repo.BaseDir);
 	const mediaDir = resolve(state.dataPath, repo.Path.Medias[0]);
 	if (pathIsContainedInAnother(baseDir, mediaDir)) throw 'Media folder is contained in base dir, move it first!';
-	await stopWatchingHooks();
 	await remove(baseDir);
 	await asyncCheckOrMkdir(baseDir);
 	const git = await setupGit(repo, true, true);
