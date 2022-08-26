@@ -1,3 +1,9 @@
+# v6.1.17 - 26/08/2022
+
+## Fixes
+
+-   Removed hook watcher system, since it's getting buggy with how many hooks there are in the karaoke base right now.
+
 # v6.1.16 - 01/08/2022
 
 ## Fixes
