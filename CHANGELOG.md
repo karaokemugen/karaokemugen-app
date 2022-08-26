@@ -78,7 +78,8 @@ This is a major release. A lot of bugfixes have been backported in 6.x versions 
 
 ## Misc. changes
 
--   Updated Electron to version 19.
+-   Updated Electron to version 20.
+-   Removed the player progress bar in the dock/taskbar. It was redundant with mpv's own progressbar.
 -   Deprecated a variety of code that shouldn't be used anymore (#1247)
 -   Some data types have been reworked to allow better type-checking of our code (#822)
 

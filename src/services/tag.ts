@@ -164,11 +164,12 @@ export async function mergeTags(tid1: string, tid2: string) {
 			removeTagInStore(tid2),
 		]);
 		const karas = await getKarasWithTags([tag1, tag2, tagObj as any]);
-		const modifiedKIDs = await replaceTagInKaras(tid1, tid2, tagObj, karas);
+		await replaceTagInKaras(tid1, tid2, tagObj, karas);
 		const karasData: Kara[] = [];
-		for (const modifiedKID of modifiedKIDs) {
-			await editKaraInStore(modifiedKID);
-			karasData.push(formatKaraV4(karas.find(k => k.kid === modifiedKID)).data);
+		for (const kara of karas) {
+			const karafile = await resolveFileInDirs(kara.karafile, resolvedPathRepos('Karaokes', kara.repository));
+			await editKaraInStore(karafile[0]);
+			karasData.push(formatKaraV4(kara).data);
 		}
 		refreshKarasAfterDBChange('UPDATE', karasData);
 		sortKaraStore();
@@ -176,6 +177,7 @@ export async function mergeTags(tid1: string, tid2: string) {
 		await refreshTags();
 		return tagObj;
 	} catch (err) {
+		console.log(err);
 		logger.error(`Error merging tag ${tid1} and ${tid2}`, { service, obj: err });
 		sentry.error(err);
 		throw err;
@@ -383,9 +385,11 @@ export async function copyTagToRepo(tid: string, repoName: string) {
 	}
 }
 
-async function replaceTagInKaras(oldTID1: string, oldTID2: string, newTag: Tag, karas: DBKara[]): Promise<string[]> {
-	logger.info(`Replacing tag ${oldTID1} and ${oldTID2} by ${newTag.tid} in .kara.json files`, { service });
-	const modifiedKaras: string[] = [];
+async function replaceTagInKaras(oldTID1: string, oldTID2: string, newTag: Tag, karas: DBKara[]) {
+	logger.info(
+		`Replacing tag ${oldTID1} and ${oldTID2} by ${newTag.tid} in kara(s) ${karas.map(k => k.kid).join(', ')}`,
+		{ service }
+	);
 	for (const kara of karas) {
 		kara.modified_at = new Date();
 		for (const type of Object.keys(tagTypes)) {
@@ -404,7 +408,6 @@ async function replaceTagInKaras(oldTID1: string, oldTID2: string, newTag: Tag, 
 			false
 		);
 	}
-	return modifiedKaras;
 }
 
 export async function syncTagsFromRepo(repoSourceName: string, repoDestName: string) {

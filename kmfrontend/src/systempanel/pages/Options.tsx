@@ -10,7 +10,6 @@ const propertiesToDisplay = [
 	'Online.FetchPopularSongs',
 	'Online.ErrorTracking',
 	'Player.HardwareDecoding',
-	'Player.ProgressBarDock',
 	'Player.KeyboardMediaShortcuts',
 	'Online.Updates.Medias.Jingles',
 	'Online.Updates.Medias.Sponsors',

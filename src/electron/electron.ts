@@ -330,10 +330,6 @@ function openLink(url: string) {
 	url.includes('//localhost') ? win?.loadURL(url) : shell.openPath(url);
 }
 
-export function setProgressBar(number: number) {
-	if (win) win.setProgressBar(number);
-}
-
 export function focusWindow() {
 	if (win) {
 		if (win.isMinimized()) win.restore();

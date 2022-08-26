@@ -13,6 +13,7 @@ import { adminToken } from '../utils/constants';
 import sentry from '../utils/sentry';
 import { getKara } from './kara';
 import { integrateKaraFile } from './karaManagement';
+import { checkDownloadStatus } from './repo';
 import { consolidateTagsInRepo } from './tag';
 
 const service = 'KaraCreation';
@@ -124,6 +125,7 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 		await fs.unlink(karaPath);
 		await writeKara(karaDest, kara);
 		await integrateKaraFile(karaDest, kara, false, refresh);
+		checkDownloadStatus([kara.data.kid]);
 		await consolidateTagsInRepo(kara);
 	} catch (err) {
 		logger.error('Error while editing kara', { service, obj: err });
@@ -178,6 +180,7 @@ export async function createKara(editedKara: EditedKara) {
 		const karaDest = resolve(resolvedPathRepos('Karaokes', kara.data.repository)[0], `${karaFile}.kara.json`);
 		await writeKara(karaDest, kara);
 		await integrateKaraFile(karaDest, kara, false, true);
+		checkDownloadStatus([kara.data.kid]);
 		await consolidateTagsInRepo(kara);
 	} catch (err) {
 		logger.error('Error while creating kara', { service, obj: err });

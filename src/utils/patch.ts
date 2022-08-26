@@ -5,7 +5,7 @@ import { move, remove } from 'fs-extra';
 import parallel from 'p-map';
 import { resolve } from 'path';
 
-import { initHooks, stopWatchingHooks } from '../lib/dao/hook';
+import { initHooks } from '../lib/dao/hook';
 import { DiffChanges } from '../lib/types/repo';
 import { resolvedPath } from '../lib/utils/config';
 import { downloadFile } from '../lib/utils/downloader';
@@ -52,7 +52,6 @@ export async function downloadAndExtractZip(zipURL: string, outDir: string, repo
 			data: repo,
 		});
 		const dir = await extractZip(target, tempDir, task);
-		await stopWatchingHooks();
 		await remove(outDir);
 		await move(resolve(tempDir, dir), outDir);
 		await initHooks();

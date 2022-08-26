@@ -1141,8 +1141,7 @@
 			"ONLINE_USERS": "Autoriser l'inscription des utilisateurs en ligne",
 			"ONLINE_DISCORD_DISPLAYACTIVITY": "Afficher votre activité de Karaoke Mugen sur votre profil Discord",
 			"ONLINE_FETCHPOPULARSONGS": "Récupérer les chansons populaires depuis vos dépôts en ligne",
-			"ONLINE_FETCHPOPULARSONGS_TOOLTIP": "Si désactivé, les chansons populaires seront calculées uniquement depuis votre application Karaoke Mugen",
-			"PLAYER_PROGRESSBARDOCK": "Barre de progression de la lecture dans le Dock/Barre des tâches"
+			"ONLINE_FETCHPOPULARSONGS_TOOLTIP": "Si désactivé, les chansons populaires seront calculées uniquement depuis votre application Karaoke Mugen"
 		}
 	},
 	"SESSIONS": {

@@ -1139,8 +1139,7 @@
 			"ONLINE_USERS": "Allow online user registration & login",
 			"ONLINE_FETCHPOPULARSONGS": "Fetch popular songs from your online repositories",
 			"ONLINE_FETCHPOPULARSONGS_TOOLTIP": "If disabled, popular songs will be calculated from your Karaoke Mugen app",
-			"ONLINE_DISCORD_DISPLAYACTIVITY": "Show Karaoke Mugen activity on your Discord profile",
-			"PLAYER_PROGRESSBARDOCK": "Player progress bar in Dock / Taskbar"
+			"ONLINE_DISCORD_DISPLAYACTIVITY": "Show Karaoke Mugen activity on your Discord profile"
 		}
 	},
 	"SESSIONS": {

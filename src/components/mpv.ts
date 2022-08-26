@@ -10,7 +10,6 @@ import semver from 'semver';
 import { graphics } from 'systeminformation';
 import { setTimeout as sleep } from 'timers/promises';
 
-import { setProgressBar } from '../electron/electron';
 import { errorStep } from '../electron/electronLogger';
 import { getConfig, resolvedPath, resolvedPathRepos, setConfig } from '../lib/utils/config';
 import { getAvatarResolution } from '../lib/utils/ffmpeg';
@@ -495,11 +494,6 @@ class Player {
 		if (playerState.mediaType === 'song' && playerState.currentSong?.duration) {
 			playerState.timeposition = position;
 			const conf = getConfig();
-			if (conf.Player.ProgressBarDock) {
-				playerState.mediaType === 'song'
-					? setProgressBar(position / playerState.currentSong.duration)
-					: setProgressBar(-1);
-			}
 			// Send notification to frontend if timeposition is 15 seconds before end of song
 			if (
 				position >= playerState.currentSong.duration - 15 &&
@@ -1209,7 +1203,6 @@ class Players {
 		logger.debug('Stop DI', { service });
 		this.displayInfo();
 		emitPlayerState();
-		setProgressBar(-1);
 		setDiscordActivity('idle');
 		this.messages.removeMessage('poll');
 		return playerState;
