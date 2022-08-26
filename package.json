@@ -84,7 +84,6 @@
     "axios": "^0.27.2",
     "basic-ftp": "^5.0.1",
     "bcryptjs": "^2.4.3",
-    "chokidar": "^3.5.3",
     "commander": "^9.4.0",
     "compression": "^1.7.4",
     "convert-srt-to-ass": "^1.0.3",
