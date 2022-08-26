@@ -136,7 +136,7 @@
 			"Karaoke Mugen est un projet 100% open source et collaboratif, tout le monde peut apporter sa pierre à l'édifice !",
 			"Vous pouvez glisser-déposer des fichiers dans cette fenêtre, utiliser le menu Fichier -> Importer, ou associer le programme Karaoke Mugen à ceux-ci pour les intégrer directement : listes de lecture, favoris, etc…",
 			"Je suis Nanamin, mascotte de Karaoke Mugen crée par la talentueuse Sedeto ! http://www.sedeto.fr",
-			"Il y a plein de façons de configurer un karaoké ! Prenez le temps de regarder les options avant de vous lancer!",
+			"Il y a plein de façons de configurer un karaoké ! Prenez le temps de regarder les options avant de vous lancer.",
 			"Les sessions sont des évènements karaoké individuels. Il vous permettent de regrouper les chansons demandées et jouées pour vous rappeler ce qui a été joué lors d'un anniversaire, d'un mariage ou d'un évènement !",
 			"La liste noire vous permet d'exclure certains karaokés de la vue publique lors d'une session, comme par exemple les chansons pour adulte !",
 			"Les AutoMix sont des playlists crées uniquement avec les favoris de vos invités. Idéal pour se faire une soirée karaoké rapidement !",
@@ -155,8 +155,7 @@
 			"Dans la recherche, vous pouvez taper \"-mot\" pour exclure les karaokés contenant ce mot (que ce soit dans le titre, l'œuvre, les chanteurs, etc.) de vos résultats de recherche.",
 			"Vous pouvez accepter ou refuser des chansons du public en mettant côte à côte votre liste de lecture publique et courante.",
 			"Accepter ou refuser une suggestion publique redonne le quota de chanson à l'utilisateur qui l'a demandée, et ajoute la chanson dans la liste de lecture actuelle !",
-			"Lorsque vous effectuez une recherche, vous pouvez mettre un groupe de mots entre guillemets pour demander précisément ce texte. Tapez \"love live\" pour obtenir uniquement les karaokés de l'œuvre Love Live.",
-			"Lorsque vous faîtes une recherche, vous pouvez mettre un groupe de mots entre des guillemets anglais pour demander précisément ce mot. Tapez \"love live\" pour n'avoir que des karaoke de la série Love Live."
+			"Lorsque vous effectuez une recherche, vous pouvez mettre un groupe de mots entre guillemets pour demander précisément ce texte. Tapez \"love live\" pour obtenir uniquement les karaokés de l'œuvre Love Live."
 		],
 		"ERRORS": [
 			"N'hésitez pas à venir nous voir sur Discord si vous avez besoin d'aide : https://karaokes.moe/discord",
