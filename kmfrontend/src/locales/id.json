@@ -380,7 +380,8 @@
 		"REQUESTED_KARAOKES": "Lagu yang diminta",
 		"NEW_KARAOKES": "Lagu baru",
 		"KARA_VERSIONS": "Lagu ini tersedia dalam {{length}} versi, pilih yang kamu mau dan tambahkan ke daftar putar atau favorit kamu.",
-		"GET_LUCKY": "Mencoba Keberuntungan"
+		"GET_LUCKY": "Mencoba Keberuntungan",
+		"CURRENT": "Lihat daftar putar saat ini"
 	},
 	"ADMIN_MESSAGE": {
 		"ESSENTIAL_MESSAGE": "Pesan penting",
@@ -397,7 +398,8 @@
 		"DESCRIPTION": "Daftar putar yang dibuat akan diisikan dengan favorit pengguna yang dipilih untuk durasi yang kamu tentukan.",
 		"DURATION": "Durasi (dalam menit)",
 		"MIX": "Buat Oto-Campur",
-		"EMPTY": "Pilih pengguna dan durasi"
+		"EMPTY": "Pilih pengguna dan durasi",
+		"NAME": "Nama daftar putar"
 	},
 	"KARAOKE_one": "{{count}} karaoke",
 	"KARAOKE_other": "{{count}} karaoke",
@@ -1385,7 +1387,15 @@
 		"CREATED_AT": "Tanggal pembuatan",
 		"MODIFIED_AT": "Tanggal terakhir diperbarui",
 		"ONLINE_REPOSITORIES": "Beberapa karaoke kamu berasal dari repositori jarak jauh (seperti contohnya peladen kara.moe), karaoke tersebut tidak bisa disunting lewat antarmuka ini, untuk memastikan repositori tetap tersinkronisasi. Kamu bisa mencentang kotak \"Mode pengelola\" di pengaturan repositori, kamu tidak akan menerima pembaruan lagi tapi kamu akan bisa menyunting atau menghapus karaoke.",
-		"PROBLEMATIC_TOOLTIP": "Lagu ini berisi adegan ({{tags}}) yang mungkin bermasalah bagi sebagian penonton."
+		"PROBLEMATIC_TOOLTIP": "Lagu ini berisi adegan ({{tags}}) yang mungkin bermasalah bagi sebagian penonton.",
+		"DEFAULT_LANGUAGE": "Bahasa baku untuk digunakan",
+		"SECTIONS": {
+			"FILES": "Berkas",
+			"PARENTS": "Lagu Induk",
+			"TITLES": "Judul"
+		},
+		"SINGERGROUPS_TOOLTIP": "Apabila penyanyinya merupakan salah satu anggota band, masukkan di sini. Band akan ditampilkan di pemutar dan daftar lagu alih-alih penyanyi individu.",
+		"FRANCHISES_TOOLTIP": "Apabila serial merupakan bagian dari franchise (seperti Gundam, Mario, dll.)"
 	},
 	"USERS": {
 		"LOGIN": "Nama pengguna",
@@ -1519,11 +1529,22 @@
 		"Terlalu tenang, saya tidak suka ini…",
 		"Persiapan sedang berlangsung!"
 	],
-	"JINGLE_TAGLINES": ["Kami akan segera kembali!"],
+	"JINGLE_TAGLINES": [
+		"Kami akan segera kembali!"
+	],
 	"INTRO_TIME": "Introduksi daftar putar",
-	"INTRO_TAGLINES": ["Ayo!", "Memulai…", "Inisialisasi…", "Siapkan mikrofon kamu!", "*bersihkan tenggorokan*"],
+	"INTRO_TAGLINES": [
+		"Ayo!",
+		"Memulai…",
+		"Inisialisasi…",
+		"Siapkan mikrofon kamu!",
+		"*bersihkan tenggorokan*"
+	],
 	"OUTRO_TIME": "Penutup daftar putar",
-	"OUTRO_TAGLINES": ["Tamat :(", "Terima kasih semuanya!"],
+	"OUTRO_TAGLINES": [
+		"Tamat :(",
+		"Terima kasih semuanya!"
+	],
 	"ENCORES_TIME": "Ekstra! Ekstra!",
 	"ENCORES_TAGLINES": [
 		"Yah, bukan karena aku menyukaimu atau apa gitu…",
@@ -1531,7 +1552,9 @@
 		"Lagu terakhir, berikan yang terbaik!"
 	],
 	"SPONSOR_TIME": "IKLAN!",
-	"SPONSOR_TAGLINES": ["Dan terima kasih atas duitnya."],
+	"SPONSOR_TAGLINES": [
+		"Dan terima kasih atas duitnya."
+	],
 	"QUOTA_AVAILABLE": "Kamu sekarang bisa menambahkan lagu lagi!",
 	"SERIE_NAME_MODE": "Mode bahasa serial",
 	"SERIE_NAME_MODE_TOOLTIP": "Ubah bagaimana nama serial ditampilkan di daftar lagu. Mungkin diabaikan oleh preferensi pengguna",
@@ -1546,8 +1569,14 @@
 		"CONNECTED": "Tersambung"
 	},
 	"REMOTE_TOKEN": "Token akses jarak jauh",
-	"PAUSE_TAGLINES": ["Beristirahatlah!", "Saatnya minum!", "Kami akan segera kembali!"],
-	"POLL_TAGLINES": ["Pilihan ada padamu."],
+	"PAUSE_TAGLINES": [
+		"Beristirahatlah!",
+		"Saatnya minum!",
+		"Kami akan segera kembali!"
+	],
+	"POLL_TAGLINES": [
+		"Pilihan ada padamu."
+	],
 	"REMOTE_URL": "URL akses jarak jauh",
 	"DATABASE": {
 		"REGENERATE_DB": "Membuat kembali basis data kamu",
@@ -1603,5 +1632,7 @@
 	"TOOLTIP_REFUSE_KARA": "Tolak lagu (bebaskan lagu)",
 	"CHECKED": "Dipilih:",
 	"POLL_TIME": "Pilih",
-	"TOOLTIP_ADD_SELECT_KARA": "Tambahkan lagu yang dipilih ke daftar putar - klik kanan untuk menambahkannya ke setelah lagu yang sedang diputar"
+	"TOOLTIP_ADD_SELECT_KARA": "Tambahkan lagu yang dipilih ke daftar putar - klik kanan untuk menambahkannya ke setelah lagu yang sedang diputar",
+	"SPEED_UP": "Putar lebih cepat",
+	"SPEED_DOWN": "Putar lebih lambat"
 }
