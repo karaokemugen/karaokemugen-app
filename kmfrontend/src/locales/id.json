@@ -56,7 +56,8 @@
 	"PLAYLIST_HEADER": {
 		"FILTERS": "Filter",
 		"ACTIVE_FILTER": "Filter aktif",
-		"EDIT_CRITERIA": "Sunting kriteria"
+		"EDIT_CRITERIA": "Sunting kriteria",
+		"SHOW_SONGS": "Tampilkan lagu"
 	},
 	"ADVANCED": {
 		"PLAYLIST_COMMANDS": "Perintah daftar putar",
@@ -132,7 +133,8 @@
 		"ADD_PLACEHOLDER": "Tambahkan nilai ke kriteria",
 		"EXPL": "Daftar putar pintar dibuat dari <1>kriteria</1>, kamu juga bisa menambahkan secara manual karaoke ke daftar ini.",
 		"PLAYLIST_DURATION": "<1/> Limit to <2/> <3/> (<4/> order)",
-		"ADD": "Tambahkan kriteria"
+		"ADD": "Tambahkan kriteria",
+		"EXPL_OPEN": "Ini adalah kriteria yang digunakan untuk membuat <1>daftar putar</1>, akan diperbarui secara otomatis apabila lagu baru ditambahkan ke basis data."
 	},
 	"PROFILE": "Profil",
 	"MENU": {
@@ -352,7 +354,9 @@
 		"MOVE_KARA": "Pindah setelah lagu saat ini",
 		"FREE": "Bebaskan lagu ini dari kuota pengguna",
 		"FREE_SHORT": "Bebas",
-		"FREED": "Bebas!"
+		"FREED": "Bebas!",
+		"SHUFFLE": "Campur lagunya",
+		"SHUFFLED": "Lagu dicampur!"
 	},
 	"PUBLIC_HOMEPAGE": {
 		"RESTRICTED_DESCRIPTION": "Karaoke berada di mode terbatas, kamu tidak bisa menambahkan lagu.",
@@ -399,7 +403,15 @@
 		"DURATION": "Durasi (dalam menit)",
 		"MIX": "Buat Oto-Campur",
 		"EMPTY": "Pilih pengguna dan durasi",
-		"NAME": "Nama daftar putar"
+		"NAME": "Nama daftar putar",
+		"NAME_PLACEHOLDER": "Nama yang dibuat otomatis",
+		"FAVOURITES": "Favorit dari",
+		"LIMIT_TYPE": {
+			"DURATION": "Durasi",
+			"SONGS": "Jumlah lagu"
+		},
+		"NUMBER_SONGS": "Jumlah lagu",
+		"IS_ADMIN_PLAYER": "Daftar putar ini untuk kuis, jangan tampilkan kepadaku."
 	},
 	"KARAOKE_one": "{{count}} karaoke",
 	"KARAOKE_other": "{{count}} karaoke",
