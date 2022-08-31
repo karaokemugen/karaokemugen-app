@@ -98,6 +98,16 @@ export function sortAndHideTags(tags: any[], scope: Scope = 'public') {
 		: [];
 }
 
+export function getSeriesSingersFull(settings: SettingsStoreData, data: DBKara, i18nParam?: any) {
+	return data?.series?.length > 0
+		? data.series.map(e => getTagInLocale(settings, e, i18nParam).i18n).join(', ')
+		: data?.singergroups?.length > 0
+		? data.singergroups.map(e => getTagInLocale(settings, e, i18nParam).i18n).join(', ')
+		: data?.singers?.length > 0
+		? data.singers.map(e => getTagInLocale(settings, e, i18nParam).i18n).join(', ')
+		: ''; // wtf?;
+}
+
 /**
  * Build kara title for users depending on the data
  * @param {Object} data - data from the kara

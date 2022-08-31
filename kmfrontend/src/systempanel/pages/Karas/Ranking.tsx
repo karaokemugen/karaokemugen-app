@@ -4,7 +4,7 @@ import { Component } from 'react';
 
 import { DBKara } from '../../../../../src/lib/types/database/kara';
 import GlobalContext from '../../../store/context';
-import { getTagInLocale, getTagInLocaleList, getTitleInLocale } from '../../../utils/kara';
+import { getSeriesSingersFull, getTagInLocaleList, getTitleInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import Title from '../../components/Title';
 
@@ -68,17 +68,8 @@ class Ranking extends Component<unknown, RankingState> {
 			title: `${i18next.t('TAG_TYPES.SERIES_other')} / ${i18next.t('KARA.SINGERS_BY')}`,
 			dataIndex: 'series',
 			key: 'series',
-			render: (series, record) =>
-				series && series.length > 0
-					? series
-							.map(
-								serie =>
-									getTagInLocale(this.context?.globalState.settings.data, serie, this.state.i18n).i18n
-							)
-							.join(', ')
-					: getTagInLocaleList(this.context.globalState.settings.data, record.singers, this.state.i18n).join(
-							', '
-					  ),
+			render: (_series, record) =>
+				getSeriesSingersFull(this.context?.globalState.settings.data, record, this.state.i18n),
 		},
 		{
 			title: i18next.t('TAG_TYPES.SONGTYPES_other'),
