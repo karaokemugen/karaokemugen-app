@@ -37,6 +37,10 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 	try {
 		profile('editKaraFile');
 		const oldKara = await getKara(kara.data.kid, adminToken);
+		if (!oldKara) {
+			logger.error(`Old Kara not found when editing! KID: ${kara.data.kid}`, { service });
+			throw 'Former song not found!';
+		}
 		if (!kara.data.ignoreHooks) await applyKaraHooks(kara);
 		const karaFile = await defineFilename(kara);
 		const filenames = determineMediaAndLyricsFilenames(kara, karaFile);
