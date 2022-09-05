@@ -32,15 +32,27 @@ function App() {
 		displayMessage('warning', i18next.t('REPOSITORIES.NO_FREE_SPACE'), 0);
 	};
 
+	const songDownloadedFromInbox = song => {
+		displayMessage('success', i18next.t('INBOX.SONG_DOWNLOADED_FROM_INBOX', { song: song?.name }), 5000);
+	};
+
+	const songDownloadedFromInboxFailed = () => {
+		displayMessage('error', i18next.t('INBOX.SONG_DOWNLOADED_FROM_INBOX_FAILED'), 5000);
+	};
+
 	useEffect(() => {
 		isAlreadyLogged(context.globalDispatch).then(() => {
 			setInitialized(true);
 			getSocket().on('settingsUpdated', setSettingsStore);
 			getSocket().on('noFreeSpace', warningNoFreeSpace);
+			getSocket().on('songDownloadedFromInbox', songDownloadedFromInbox);
+			getSocket().on('songDownloadedFromInboxFailed', songDownloadedFromInboxFailed);
 		});
 		return () => {
 			getSocket().off('settingsUpdated', setSettingsStore);
 			getSocket().off('noFreeSpace', warningNoFreeSpace);
+			getSocket().off('songDownloadedFromInbox', songDownloadedFromInbox);
+			getSocket().off('songDownloadedFromInboxFailed', songDownloadedFromInboxFailed);
 		};
 	}, []);
 
