@@ -1762,7 +1762,9 @@
 		"ISSUE": "Ticket {{number}}",
 		"USER": "Utilisateur en charge de l'intégration du ticket",
 		"DOWNLOAD": "Télécharger le karaoké",
-		"DELETE": "Êtes-vous sûr de supprimer le karaoké de la boite de réception ainsi que ses fichiers sur le serveur ?",
+		"SONG_DOWNLOADED_FROM_INBOX": "La chanson {{song}} a bien été récupérée depuis la boîte de réception",
+		"SONG_DOWNLOADED_FROM_INBOX_FAILED": "La chanson n'a pas pu être récupérée depuis la boîte de réception!",
+		"DELETE": "Êtes-vous sûr de vouloir supprimer le karaoké de la boite de réception ainsi que ses fichiers sur le serveur ?",
 		"CONTACT_INFOS_MODAL": {
 			"USERNAME": "Nom d'utilisateur : ",
 			"MAIL": "Courriel : ",

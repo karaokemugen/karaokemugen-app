@@ -1760,7 +1760,9 @@
 		"ISSUE": "Issue {{number}}",
 		"USER": "User in charge of issue integration",
 		"DOWNLOAD": "Download karaoke",
-		"DELETE": "Are you sure you delete the karaoke from the inbox as well as its files on the server?",
+		"SONG_DOWNLOADED_FROM_INBOX": "Song {{song}} succesfully downloaded from inbox",
+		"SONG_DOWNLOADED_FROM_INBOX_FAILED": "Song could not be downloaded from inbox!",
+		"DELETE": "Are you sure you want to delete the karaoke from the inbox as well as its files on the server?",
 		"CONTACT_INFOS_MODAL": {
 			"USERNAME": "Username: ",
 			"MAIL": "Email: ",
