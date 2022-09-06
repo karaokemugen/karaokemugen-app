@@ -13,7 +13,7 @@ import {
 	truncateOnlineRequested,
 } from '../dao/kara';
 import { getLyrics } from '../lib/dao/karafile';
-import { consolidateData, removeUnusedTagData } from '../lib/services/kara';
+import { formatKaraList } from '../lib/services/kara';
 import { ASSLine } from '../lib/types/ass';
 import { DBKara } from '../lib/types/database/kara';
 import { KaraList, KaraParams, YearList } from '../lib/types/kara';
@@ -136,21 +136,6 @@ export async function getKaras(params: KaraParams): Promise<KaraList> {
 	} finally {
 		profile('getKaras');
 	}
-}
-
-export function formatKaraList(karaList: any, from: number, count: number): KaraList {
-	karaList = removeUnusedTagData(karaList);
-	const { i18n, avatars, data } = consolidateData(karaList);
-	return {
-		infos: {
-			count,
-			from,
-			to: from + data.length,
-		},
-		i18n,
-		avatars,
-		content: data,
-	};
 }
 
 /** Returns a string with series or singers with their correct i18n.
