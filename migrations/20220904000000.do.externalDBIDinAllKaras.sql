@@ -1,8 +1,8 @@
-CREATE INDEX idx_tag_myanimelist ON tag(cast(external_database_ids->>'myanimelist' as integer));
+CREATE INDEX IF NOT EXISTS idx_tag_myanimelist ON tag(cast(external_database_ids->>'myanimelist' as integer));
 
-CREATE INDEX idx_tag_kitsu ON tag(cast(external_database_ids->>'kitsu' as integer));
+CREATE INDEX IF NOT EXISTS idx_tag_kitsu ON tag(cast(external_database_ids->>'kitsu' as integer));
 
-CREATE INDEX idx_tag_anilist ON tag(cast(external_database_ids->>'anilist' as integer));
+CREATE INDEX IF NOT EXISTS idx_tag_anilist ON tag(cast(external_database_ids->>'anilist' as integer));
 
 DROP TABLE all_karas;
 CREATE TABLE all_karas AS
