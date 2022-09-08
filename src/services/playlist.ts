@@ -39,6 +39,7 @@ import {
 	updatePLCVisible,
 	updatePos,
 } from '../dao/playlist';
+import { formatKaraList } from '../lib/services/kara';
 import { PLImportConstraints } from '../lib/services/playlist';
 import { DBKara, DBKaraBase } from '../lib/types/database/kara';
 import { DBPL, DBPLC, DBPLCBase, PLCInsert } from '../lib/types/database/playlist';
@@ -58,7 +59,7 @@ import { getState, setState } from '../utils/state';
 import { writeStreamFiles } from '../utils/streamerFiles';
 import { checkMediaAndDownload } from './download';
 import { getAllFavorites } from './favorites';
-import { formatKaraList, getKaras, getKarasMicro } from './kara';
+import { getKaras, getKarasMicro } from './kara';
 import { getSongInfosForPlayer } from './karaEngine';
 import { playPlayer } from './player';
 import { getRepos } from './repo';

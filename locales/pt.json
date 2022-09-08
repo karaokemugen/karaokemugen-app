@@ -1,5 +1,5 @@
 {
-	"REQUESTED_BY": "Pedido por",
+	"REQUESTED_BY": "Pedido por {{name}}",
 	"YES": "Sim",
 	"NO": "Não",
 	"NEXT_SONG": "Próxima música",

@@ -1,5 +1,5 @@
 {
-	"REQUESTED_BY": "Diminta oleh",
+	"REQUESTED_BY": "Diminta oleh {{name}}",
 	"VOTE_MESSAGE_SCREEN": "Berikan suara untuk lagu selanjutnya!",
 	"MY_PLAYLIST": "Daftar putar saya",
 	"CURRENT_PLAYLIST": "Daftar putar",
@@ -122,7 +122,7 @@
 			"Karaoke Mugen membutuhkanmu! Untuk infomasi lebih lanjut kunjungi http://mugen.karaokes.moe/en/participate.html !",
 			"Tip satu lagi yang di akhiri dengan tanda seru!",
 			"Layar monitor memungkinkan kamu untuk melihat lagu yang sedang diputar jika kamu tidak bisa melihat layar dari tempat kamu berada.",
-			"Mode Karaoke Klasik meniru apa yang kamu temukan di bilik karaoke jepang atau saat kontes karaoke di acara anime: jeda dibuat di antara setiap lagu dan judul lagu berikutnya serta peminta ditampilkan di layar!",
+			"Mode Karaoke Klasik meniru apa yang kamu temukan di bilik karaoke jepang atau saat kontes karaoke di acara anime: jeda dibuat di antara setiap lagu dan judul lagu berikutnya serta peminta ditampilkan di layar.",
 			"Apakah sesi karaoke kamu akan segera berakhir? Alihkan antarmuka ke mode terbatas: pengguna tidak akan dapat menambahkan lagu lagi, tetapi masih dapat melihat apa yang akan diputar selanjutnya.",
 			"Perlu mengirim pesan ke publik? Opsi pesan akan menunjukan teks pada telepon genggam mereka dan/atau pada layar karaoke!",
 			"Ketika sedang melakukan pencarian, kamu bisa mengetik \"-kata\" untuk mengecualikan lagu karaoke yang mengandung kata tersebut (entah kata itu didalam judul, serial, penyanyi, dll.) dari hasil pencarianmu.",
@@ -232,7 +232,7 @@
 		"MESSAGE": "macOS akan meminta kamu untuk menambahkan Karaoke Mugen ke perizinan aksesibilitas sistem. Izin ini memperbolehkan kamu untuk menggunakan kunci media papan tik kamu untuk mengontrol pemutar video. Kamu bisa menolak untuk menambahkan izini ini, tapi kunci media tidak akan bekerja."
 	},
 	"INIT_MIGRATION": "Memperbarui struktur basis data, mohon ditunggu…",
-	"REQUESTED_WITH": "(dengan )",
+	"REQUESTED_WITH": "(dengan {{names}})",
 	"REQUESTED_AND_one": "dan lainnya",
 	"REQUESTED_AND_other": "dan {{count}} lainnya"
 }

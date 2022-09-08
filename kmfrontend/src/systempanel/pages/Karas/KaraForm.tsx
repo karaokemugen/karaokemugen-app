@@ -165,25 +165,34 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 	};
 
 	previewHooks = async () => {
-		const data = await commandBackend(
-			'previewHooks',
-			this.getKaraToSend(this.formRef.current.getFieldsValue()),
-			false,
-			300000
-		);
-		Modal.info({
-			title: i18next.t('KARA.PREVIEW_HOOKS_MODAL'),
-			content: (
-				<ul>
-					{data?.map(tag => (
-						<li key={tag.tid} title={tag.tagfile}>
-							{getTagInLocale(this.context?.globalState.settings.data, tag).i18n} (
-							{i18next.t(`TAG_TYPES.${getTagTypeName(tag.types[0])}_other`)})
-						</li>
-					))}
-				</ul>
-			),
-		});
+		if (
+			!this.state.defaultLanguage ||
+			!this.state.titles ||
+			Object.keys(this.state.titles).length === 0 ||
+			!this.state.titles[this.state.defaultLanguage]
+		) {
+			message.error(i18next.t('KARA.TITLE_REQUIRED'));
+		} else {
+			const data = await commandBackend(
+				'previewHooks',
+				this.getKaraToSend(this.formRef.current.getFieldsValue()),
+				false,
+				300000
+			);
+			Modal.info({
+				title: i18next.t('KARA.PREVIEW_HOOKS_MODAL'),
+				content: (
+					<ul>
+						{data?.map(tag => (
+							<li key={tag.tid} title={tag.tagfile}>
+								{getTagInLocale(this.context?.globalState.settings.data, tag).i18n} (
+								{i18next.t(`TAG_TYPES.${getTagTypeName(tag.types[0])}_other`)})
+							</li>
+						))}
+					</ul>
+				),
+			});
+		}
 	};
 
 	handleSubmit = values => {
@@ -378,6 +387,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				this.setState({
 					karaSearch: karas.content
 						.filter(k => k.kid !== this.props.kara?.kid)
+						.filter(k => !k.parents.includes(this.props.kara?.kid))
 						.map(k => {
 							return {
 								label: buildKaraTitle(this.context.globalState.settings.data, k, true, karas.i18n),

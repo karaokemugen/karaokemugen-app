@@ -11,6 +11,7 @@ import { smartMove } from '../lib/utils/files';
 import HTTP from '../lib/utils/http';
 import logger from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
+import { emitWS } from '../lib/utils/ws';
 import { assignIssue, closeIssue } from '../utils/gitlab';
 import { integrateKaraFile } from './karaManagement';
 import { checkDownloadStatus, getRepo } from './repo';
@@ -40,61 +41,67 @@ export async function getInbox(repoName: string, token: string): Promise<Inbox[]
 }
 
 export async function downloadKaraFromInbox(inid: string, repoName: string, token: string) {
-	const repo = getRepo(repoName);
-	if (!repo) throw { code: 404 };
-	let kara: Inbox;
-	logger.info(`Downloading song ${inid} from inbox at ${repoName}`, { service });
 	try {
-		const res = await HTTP.get(`https://${repoName}/api/inbox/${inid}`, {
-			headers: {
-				authorization: token,
-			},
-		});
-		kara = res.data;
-	} catch (err) {
-		if (err.response.statusCode === 403) {
-			throw { code: 403 };
-		} else {
-			logger.error(`Unable to get kara from inbox : ${err}`, { service, obj: err });
-			throw err;
+		const repo = getRepo(repoName);
+		if (!repo) throw { code: 404 };
+		let kara: Inbox;
+		logger.info(`Downloading song ${inid} from inbox at ${repoName}`, { service });
+		try {
+			const res = await HTTP.get(`https://${repoName}/api/inbox/${inid}`, {
+				headers: {
+					authorization: token,
+				},
+			});
+			kara = res.data;
+		} catch (err) {
+			if (err.response.statusCode === 403) {
+				throw { code: 403 };
+			} else {
+				logger.error(`Unable to get kara from inbox : ${err}`, { service, obj: err });
+				throw err;
+			}
 		}
+		const promises = [downloadMediaFromInbox(kara, repoName)];
+		// Code to integrate kara and download medias
+		if (kara.lyrics) {
+			const lyricsFile = resolve(resolvedPathRepos('Lyrics', repoName)[0], kara.lyrics.file);
+			await fs.writeFile(lyricsFile, kara.lyrics.data, 'utf-8');
+		}
+		for (const tag of kara.extra_tags) {
+			const tagFile = resolve(resolvedPathRepos('Tags', repoName)[0], tag.file);
+			await fs.writeFile(tagFile, JSON.stringify(tag.data, null, 2), 'utf-8');
+			// Let's refresh the database when there are new tags.
+			await integrateTagFile(tagFile);
+		}
+		const karaFile = resolve(resolvedPathRepos('Karaokes', repoName)[0], kara.kara.file);
+		// Yes, we're actually reordering this in order for karas to be in the right order when written. For some reason Axios sorts JSON responses? Or is it KM Server? Who knows? Where is Carmen San Diego?
+		await fs.writeFile(
+			karaFile,
+			JSON.stringify(
+				{
+					header: kara.kara.data.header,
+					medias: kara.kara.data.medias,
+					data: kara.kara.data.data,
+				},
+				null,
+				2
+			),
+			'utf-8'
+		);
+		saveSetting('baseChecksum', await baseChecksum());
+		await integrateKaraFile(karaFile, kara.kara.data, true, true);
+		updateAllSmartPlaylists();
+		await Promise.all(promises);
+		checkDownloadStatus([kara.kara.data.data.kid]);
+		markKaraAsDownloadedInInbox(inid, repoName, token);
+		logger.info(`Song ${basename(kara.kara.file, '.kara.json')} from inbox at ${repoName} downloaded`, {
+			service: 'Inbox',
+		});
+		emitWS('songDownloadedFromInbox', kara);
+	} catch (err) {
+		logger.error(`Inbox item ${inid} failed to download`, { service });
+		emitWS('songDownloadedFromInboxFailed');
 	}
-	const promises = [downloadMediaFromInbox(kara, repoName)];
-	// Code to integrate kara and download medias
-	if (kara.lyrics) {
-		const lyricsFile = resolve(resolvedPathRepos('Lyrics', repoName)[0], kara.lyrics.file);
-		await fs.writeFile(lyricsFile, kara.lyrics.data, 'utf-8');
-	}
-	for (const tag of kara.extra_tags) {
-		const tagFile = resolve(resolvedPathRepos('Tags', repoName)[0], tag.file);
-		await fs.writeFile(tagFile, JSON.stringify(tag.data, null, 2), 'utf-8');
-		// Let's refresh the database when there are new tags.
-		await integrateTagFile(tagFile);
-	}
-	const karaFile = resolve(resolvedPathRepos('Karaokes', repoName)[0], kara.kara.file);
-	// Yes, we're actually reordering this in order for karas to be in the right order when written. For some reason Axios sorts JSON responses? Or is it KM Server? Who knows? Where is Carmen San Diego?
-	await fs.writeFile(
-		karaFile,
-		JSON.stringify(
-			{
-				header: kara.kara.data.header,
-				medias: kara.kara.data.medias,
-				data: kara.kara.data.data,
-			},
-			null,
-			2
-		),
-		'utf-8'
-	);
-	saveSetting('baseChecksum', await baseChecksum());
-	await integrateKaraFile(karaFile, kara.kara.data, true, true);
-	updateAllSmartPlaylists();
-	await Promise.all(promises);
-	checkDownloadStatus([kara.kara.data.data.kid]);
-	markKaraAsDownloadedInInbox(inid, repoName, token);
-	logger.info(`Song ${basename(kara.kara.file, '.kara.json')} from inbox at ${repoName} downloaded`, {
-		service: 'Inbox',
-	});
 }
 
 async function downloadMediaFromInbox(kara: Inbox, repoName: string) {

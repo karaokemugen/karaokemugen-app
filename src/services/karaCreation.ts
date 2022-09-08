@@ -28,8 +28,14 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 	// No sentry triggered if validation fails
 	try {
 		verifyKaraData(kara);
-		if (kara.data.parents && kara.data.parents.includes(kara.data.kid)) {
-			throw 'Did you just try to make a song its own parent?';
+		if (kara.data.parents) {
+			if (kara.data.parents.includes(kara.data.kid)) {
+				throw 'Did you just try to make a song its own parent?';
+			}
+			const DBKara = await getKara(kara.data.kid, adminToken);
+			if (DBKara.children.some(k => kara.data.parents.includes(k))) {
+				throw 'Did you just try to destroy the universe by making a circular dependency?';
+			}
 		}
 	} catch (err) {
 		throw { code: 400, msg: err };
@@ -37,6 +43,10 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 	try {
 		profile('editKaraFile');
 		const oldKara = await getKara(kara.data.kid, adminToken);
+		if (!oldKara) {
+			logger.error(`Old Kara not found when editing! KID: ${kara.data.kid}`, { service });
+			throw 'Former song not found!';
+		}
 		if (!kara.data.ignoreHooks) await applyKaraHooks(kara);
 		const karaFile = await defineFilename(kara);
 		const filenames = determineMediaAndLyricsFilenames(kara, karaFile);

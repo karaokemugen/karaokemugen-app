@@ -228,7 +228,7 @@
 		"CRITERIA": "Critères du mix",
 		"FAVOURITES": "Favoris de",
 		"FAVOURITES_OF": "Favoris de {{name}}",
-		"LIMIT": "Limiter la liste à...",
+		"LIMIT": "Limiter la liste à…",
 		"LIMIT_TYPE": {
 			"DURATION": "Durée",
 			"SONGS": "Nombre de chansons"
@@ -832,7 +832,7 @@
 			"PARENTS": "Si cette chanson est une version alternative d'une autre, selectionner son ou ses parent(s) pour préremplir ce formulaire.",
 			"PARENTS_PUBLIC": "Quand un utilisateur selectionne une chanson parente dans l'interface publique, il verra alors toutes les versions alternatives / enfants.",
 			"TITLES": "Définissez tous les titres que cette chanson possède dans différentes langues. Habituellement, il n'y a qu'un titre.",
-			"TITLES_DEFAULT_LANGUAGE": "La langue du titre par défaut devrait être le titre d'origine. Pour les titres en alphabet non-latin (chinois, japonais, coréen, arabe...), ajoutez un titre \"Romanisation\" et mettez-le par défaut.",
+			"TITLES_DEFAULT_LANGUAGE": "La langue du titre par défaut devrait être le titre d'origine. Pour les titres en alphabet non-latin (chinois, japonais, coréen, arabe…), ajoutez un titre \"Romanisation\" et mettez-le par défaut.",
 			"ALIASES": "Si la chanson est connue sosu un autre nom (abbréviation par exemple), indiquez-les ici pour aider le public à les trouver à travers la recherche. Pas besoin d'utiliser des mots déjà contenus dans le(s) titre(s)."
 		},
 		"MEDIA_FILE": "Fichier média",
@@ -859,8 +859,8 @@
 		"LANGUAGES_REQUIRED": "Choisissez une langue",
 		"YEAR": "Année de diffusion",
 		"YEAR_TOOLTIP": "Année de la diffusion de l'œuvre ou de la vidéo",
-		"SERIES_SINGERS_REQUIRED": "Les champs Œuvre, Groupes de Chanteurs et Chanté par ne peuvent être vide en même temps.",
-		"SINGERGROUPS_TOOLTIP": "Si les chanteurs listés appartiennent à un groupe de musique, indiquez-le(s). Le groupe sera affiché sur le lecteur vidéo et dans les listes au détriment des chanteurs individuels",
+		"SERIES_SINGERS_REQUIRED": "Les champs Œuvre, Chanté par, Du groupe musical ne peuvent être vide en même temps.",
+		"SINGERGROUPS_TOOLTIP": "Si les chanteurs listés appartiennent à un groupe de musique, indiquez-le(s). Le groupe sera affiché sur le lecteur vidéo et dans les listes au détriment des chanteurs individuels.",
 		"SONGWRITERS_TOOLTIP": "Compositeurs, Arrangeurs et paroliers.",
 		"CREATORS_TOOLTIP": "Entité qui a créé l'œuvre ou le clip. Peut être un studio d'animation, de cinéma, de jeu vidéo, etc.",
 		"KARA_AUTHORS_REQUIRED": "L'auteur du karaoké est obligatoire",
@@ -1762,7 +1762,9 @@
 		"ISSUE": "Ticket {{number}}",
 		"USER": "Utilisateur en charge de l'intégration du ticket",
 		"DOWNLOAD": "Télécharger le karaoké",
-		"DELETE": "Êtes-vous sûr de supprimer le karaoké de la boite de réception ainsi que ses fichiers sur le serveur ?",
+		"SONG_DOWNLOADED_FROM_INBOX": "La chanson {{song}} a bien été récupérée depuis la boîte de réception",
+		"SONG_DOWNLOADED_FROM_INBOX_FAILED": "La chanson n'a pas pu être récupérée depuis la boîte de réception!",
+		"DELETE": "Êtes-vous sûr de vouloir supprimer le karaoké de la boite de réception ainsi que ses fichiers sur le serveur ?",
 		"CONTACT_INFOS_MODAL": {
 			"USERNAME": "Nom d'utilisateur : ",
 			"MAIL": "Courriel : ",

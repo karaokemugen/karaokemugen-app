@@ -166,7 +166,7 @@ export async function initEngine() {
 			if (conf.Player.KeyboardMediaShortcuts) registerShortcuts();
 			initStep(i18next.t('INIT_PLAYLIST_AND_PLAYER'));
 			const initPromises = [initPlaylistSystem(), initDownloader(), initSession()];
-			if (conf.Karaoke.StreamerMode.Twitch.Enabled) initPromises.push(initTwitch());
+			if (conf.Karaoke.StreamerMode.Twitch.Enabled) initTwitch();
 			if (!conf.App.FirstRun && !state.isTest && !state.opt.noPlayer) {
 				initPromises.push(initPlayer());
 			}
