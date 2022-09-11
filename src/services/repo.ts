@@ -1,3 +1,4 @@
+import { addBreadcrumb } from '@sentry/react';
 import { promises as fs } from 'fs';
 import { copy, remove } from 'fs-extra';
 import { basename, parse, resolve } from 'path';
@@ -594,6 +595,7 @@ async function applyChanges(changes: Change[], repo: Repository) {
 					};
 				}),
 			};
+			sentry.addErrorInfo('KarasToAdd', JSON.stringify(karasAfterSort, null, 2));
 			logger.debug('Songs to add after sort', { service, obj: karasAfterSort });
 		} catch (err) {
 			logger.error('Topological sort failed', { service, obj: karas });
