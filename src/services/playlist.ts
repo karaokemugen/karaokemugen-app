@@ -455,6 +455,9 @@ export async function getPlaylistContents(
 	profile('getPLC');
 	const plInfo = await getPlaylistInfo(plaid, token);
 	if (!plInfo) throw { code: 404 };
+	if (!plInfo.flag_visible && token.role !== 'admin') {
+		throw { code: 403 };
+	}
 	try {
 		const pl = await selectPlaylistContents({
 			plaid,
