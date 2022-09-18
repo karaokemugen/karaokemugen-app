@@ -68,7 +68,7 @@ export async function removeRepo(name: string) {
 /** Add a repository. Folders will be created if necessary */
 export async function addRepo(repo: Repository) {
 	if (windowsDriveRootRegexp.test(repo.BaseDir)) {
-		throw { code: 400, msg: 'Repository cannot be installed at the root of a Windows drive.' };
+		throw { code: 400, msg: 'CANNOT_INSTALL_REPO_AT_WINDOWS_ROOT_DRIVE' };
 	}
 	if (repo.Online) {
 		// Testing if repository is reachable
@@ -78,7 +78,7 @@ export async function addRepo(repo: Repository) {
 				repo.Git.ProjectID = manifest.ProjectID;
 			}
 		} catch (err) {
-			throw { code: 404, msg: 'Repository unreachable. Did you misspell its name?' };
+			throw { code: 404, msg: 'REPOSITORY_UNREACHABLE' };
 		}
 	}
 	await checkRepoPaths(repo);
@@ -317,7 +317,7 @@ export async function editRepo(
 			const manifest = await getRepoMetadata(repo.Name);
 			if (repo.MaintainerMode && repo.Git) repo.Git.ProjectID = manifest.ProjectID;
 		} catch (err) {
-			throw { code: 404, msg: 'Repository unreachable. Did you misspell its name?' };
+			throw { code: 404, msg: 'REPOSITORY_UNREACHABLE' };
 		}
 	}
 	if (repo.Enabled) await checkRepoPaths(repo);
