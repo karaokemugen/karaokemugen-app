@@ -1482,7 +1482,9 @@
 		"PREVIEW_HOOKS_ERROR": "Error preview hooks",
 		"LYRICS_FILE_OPEN_ERROR": "Error opening the file",
 		"COLLECTIONS_GET_ERROR": "Error fetching collections",
-		"UPLOADED_MEDIA_ERROR": "Error when uploading media"
+		"UPLOADED_MEDIA_ERROR": "Error when uploading media",
+		"REPOSITORY_UNREACHABLE": "Repository unreachable. Did you misspell its name?",
+		"CANNOT_INSTALL_REPO_AT_WINDOWS_ROOT_DRIVE": "Repository cannot be installed at the root of a Windows drive."
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Added {{data}} downloads to the queue",

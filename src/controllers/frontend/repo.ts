@@ -49,8 +49,8 @@ export default function repoController(router: SocketIOApp) {
 			return { code: 200, message: APIMessage('REPO_CREATED') };
 		} catch (err) {
 			const code = 'REPO_CREATE_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			errMessage(err?.msg || code, err);
+			throw { code: err?.code || 500, message: APIMessage(err?.msg || code) };
 		}
 	});
 	router.route('getRepo', async (socket: Socket, req: APIData) => {
@@ -83,8 +83,8 @@ export default function repoController(router: SocketIOApp) {
 			return APIMessage('REPO_EDITED');
 		} catch (err) {
 			const code = 'REPO_EDIT_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			errMessage(err?.msg || code, err);
+			throw { code: err?.code || 500, message: APIMessage(err?.msg || code) };
 		}
 	});
 	router.route('getUnusedTags', async (socket: Socket, req: APIData) => {

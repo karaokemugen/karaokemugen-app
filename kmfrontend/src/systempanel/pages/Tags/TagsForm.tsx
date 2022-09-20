@@ -101,7 +101,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 	};
 
 	handleTagMergeSelection = value => {
-		this.setState({ mergeSelection: value[1] });
+		if (value) this.setState({ mergeSelection: value[1] });
 	};
 
 	handleTagMerge = e => {

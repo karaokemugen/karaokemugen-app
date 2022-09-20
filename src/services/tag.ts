@@ -163,15 +163,15 @@ export async function mergeTags(tid1: string, tid2: string) {
 			removeTagInStore(tid1),
 			removeTagInStore(tid2),
 		]);
-		const karas = await getKarasWithTags([tag1, tag2, tagObj as any]);
+		let karas = await getKarasWithTags([tag1, tag2, tagObj as any]);
 		await replaceTagInKaras(tid1, tid2, tagObj, karas);
+		karas = await getKarasWithTags([tagObj as any]);
 		const karasData: Kara[] = [];
 		for (const kara of karas) {
 			const karafile = await resolveFileInDirs(kara.karafile, resolvedPathRepos('Karaokes', kara.repository));
 			await editKaraInStore(karafile[0]);
 			karasData.push(formatKaraV4(kara).data);
 		}
-		refreshKarasAfterDBChange('UPDATE', karasData);
 		sortKaraStore();
 		saveSetting('baseChecksum', getStoreChecksum());
 		await refreshTags();
@@ -401,12 +401,9 @@ async function replaceTagInKaras(oldTID1: string, oldTID2: string, newTag: Tag, 
 				kara[type].push(newTag);
 			}
 		}
-		await editKara(
-			{
-				kara: formatKaraV4(kara),
-			},
-			false
-		);
+		await editKara({
+			kara: formatKaraV4(kara),
+		});
 	}
 }
 
@@ -487,7 +484,8 @@ export async function checkCollections() {
 		if (repo.Enabled) {
 			if (repo.Online && internet) {
 				try {
-					const tags = (await HTTP.get(`https://${repo.Name}/api/karas/tags/${tagTypes.collections}`)).data;
+					const tags = (await HTTP.get(`https://${repo.Name}/api/karas/tags?type=${tagTypes.collections}`))
+						.data;
 					for (const tag of tags.content) {
 						if (!availableCollections.find(t => t.tid === tag.tid)) availableCollections.push(tag);
 					}

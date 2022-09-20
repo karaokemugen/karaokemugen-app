@@ -585,7 +585,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						</span>
 					}
 					labelCol={{ flex: '0 1 220px' }}
-					wrapperCol={{ span: 8 }}
+					wrapperCol={{ span: 12 }}
 					name="parents"
 				>
 					<Select

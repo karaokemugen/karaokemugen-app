@@ -33,7 +33,7 @@
 	"SPEED_DOWN": "Baisser la vitesse",
 	"PITCH_UP": "Augmenter la hauteur",
 	"PITCH_RESET": "Revenir à la hauteur normale",
-	"PITCH_DOWN": "Diminuier la hauteur",
+	"PITCH_DOWN": "Diminuer la hauteur",
 	"OPTIONS": "Options",
 	"STOP_AFTER": "Arrêt après la chanson en cours",
 	"STOP_NOW": "Arrêt immédiat (C'est dangereux !)",
@@ -1484,7 +1484,9 @@
 		"PREVIEW_HOOKS_ERROR": "Erreur lors de la prévisialisation des hooks",
 		"LYRICS_FILE_OPEN_ERROR": "Erreur lors de l'ouverture du fichier",
 		"COLLECTIONS_GET_ERROR": "Erreur lors de la récupération des collections",
-		"UPLOADED_MEDIA_ERROR": "Erreur lors de l'envoi du média"
+		"UPLOADED_MEDIA_ERROR": "Erreur lors de l'envoi du média",
+		"REPOSITORY_UNREACHABLE": "Dépôt inaccessible. Avez-vous mal orthographié son nom ?",
+		"CANNOT_INSTALL_REPO_AT_WINDOWS_ROOT_DRIVE": "Le dépôt ne peut pas être installé à la racine d'un lecteur Windows."
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Ajout de {{data}} téléchargements à la file d'attente",
