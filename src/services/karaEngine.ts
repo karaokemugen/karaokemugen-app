@@ -158,6 +158,9 @@ export async function playCurrentSong(now: boolean) {
 		try {
 			const conf = getConfig();
 			const kara = await getCurrentSong();
+			if (!kara) {
+				throw 'No song selected';
+			}
 			if (kara.pos === 1) {
 				if (conf.Karaoke.AutoBalance) {
 					await shufflePlaylist(getState().currentPlaid, 'balance');
