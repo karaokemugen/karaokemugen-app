@@ -1,4 +1,4 @@
-# v7.0.x - xx/09/2022
+# v7.0.x - xx/10/2022
 
 This is a major release. A lot of bugfixes have been backported in 6.x versions so don't worry if you've seen some of them.
 
@@ -16,9 +16,9 @@ This is a major release. A lot of bugfixes have been backported in 6.x versions 
 -   Link your profile with your Anilist/MyAnimeList/Kitsu profile! Once linked, Karaoke Mugen will create a special list "My Anime Songs" with songs from anime you've seen! This should help you populate your favorites or selecting songs during a karaoke session. (#1258)
 -   The video player now makes use of your mouse's previous/next buttons to go to change songs if you've focused the player with your mouse (#1305)
 -   New "franchise" tag type to allow searching/blacklisting songs by entire franchises instead of series (#1290)
--   New "music band" tag type to allow searching/blacklisting songs by music bands (when applicable) (#1289)\*
+-   New "music band" tag type to allow searching/blacklisting songs by music bands (when applicable) (#1289)
     -   If no series is present, but a music band is, it'll be displayed on the player instead of individual singers.
--   The Edit Tag page now displays karaokes that are using it. (#1286)
+-   The Edit Tag page now shows which karaokes are using it. (#1286)
 -   Video player will now display who upvoted a song along with the person who requested it (#1284)
 -   Logs are now compressed to save space (#1278)
     -   The database dump too! (#1277)
@@ -35,7 +35,6 @@ This is a major release. A lot of bugfixes have been backported in 6.x versions 
 
 -   Stream Mode and Classic Mode are now exclusive and it's more obvious on the config page. (#1302)
 -   A sample karaoke name is displayed in the Edit Profile window to show you what your linguistic preferences will do.
--
 -   "Delete this karaoke" menu item (and other dangerous actions) are now more easily visible in pop-up menus on system panel (#1298)
 -   Made criterias/list switch for smart playlists easier to read (#1292)
 -   Optimized download manager page (#1281 and #1279)
