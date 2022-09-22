@@ -42,6 +42,8 @@ license_scanning:
   interruptible: true
   stage: scan
   cache: {}
+  tags: 
+    - $RUNNER_LINUX
   rules:
     - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
       when: never
@@ -55,18 +57,8 @@ semgrep-sast:
   interruptible: true
   stage: scan
   cache: {}
-  rules:
-    - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
-      when: never
-    - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
-      when: never
-    - if: $SCHEDULED_RELEASES == "true"
-      when: never
-    - if: $CI_COMMIT_BRANCH == "next"
-    - when: never
-eslint-sast:
-  interruptible: true
-  stage: scan
+  tags: 
+    - $RUNNER_LINUX
   rules:
     - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
       when: never
@@ -79,6 +71,8 @@ eslint-sast:
 gemnasium-dependency_scanning:
   interruptible: true
   stage: scan
+  tags: 
+    - $RUNNER_LINUX
   rules:
     - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
       when: never
@@ -91,6 +85,8 @@ gemnasium-dependency_scanning:
 nodejs-scan-sast:
   interruptible: true
   stage: scan
+  tags: 
+    - $RUNNER_LINUX
   rules:
     - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
       when: never
@@ -103,6 +99,8 @@ nodejs-scan-sast:
 secret_detection:
   interruptible: true
   stage: scan
+  tags: 
+    - $RUNNER_LINUX
   variables:
     SECRET_DETECTION_EXCLUDED_PATHS: 'node_modules kmfrontend/node_modules dist'
   rules:
@@ -121,6 +119,8 @@ test:
     max: 2
   interruptible: true
   needs: []
+  tags: 
+    - $RUNNER_LINUX
   services:
     - postgres:13
   variables:
@@ -150,6 +150,8 @@ test:
 build-react:
   stage: build
   interruptible: true
+  tags: 
+    - $RUNNER_LINUX
   dependencies:
     - test
   needs:
@@ -177,6 +179,8 @@ build-react:
 deploy_kmremote:
   stage: deploy
   interruptible: true
+  tags: 
+    - $RUNNER_LINUX
   cache: {}
   image: axelterizaki/karaokemugen-ci:transferts
   dependencies:
@@ -196,6 +200,8 @@ deploy_kmremote:
 pkg_linux:
   stage: package
   image: electronuserland/builder:latest
+  tags: 
+    - $RUNNER_LINUX
   cache:
     key: km-app-${CI_COMMIT_REF_SLUG}
     paths:
@@ -237,6 +243,8 @@ pkg_linux:
 pkg_win:
   stage: package
   image: electronuserland/builder:wine-mono
+  tags: 
+    - $RUNNER_LINUX
   cache:
     key: km-app-${CI_COMMIT_REF_SLUG}
     paths:
@@ -331,6 +339,8 @@ pkg_mac:
 deploy_mac:
   stage: deploy
   image: axelterizaki/karaokemugen-ci:transferts
+  tags: 
+    - $RUNNER_LINUX
   interruptible: true
   variables:
     GIT_STRATEGY: none
@@ -353,6 +363,8 @@ deploy_mac:
 deploy_linux:
   stage: deploy
   image: axelterizaki/karaokemugen-ci:transferts
+  tags: 
+    - $RUNNER_LINUX
   interruptible: true
   cache: {}
   variables:
@@ -374,6 +386,8 @@ deploy_linux:
 deploy_win:
   stage: deploy
   image: axelterizaki/karaokemugen-ci:transferts
+  tags: 
+    - $RUNNER_LINUX
   interruptible: true
   variables:
     GIT_STRATEGY: none
@@ -396,6 +410,8 @@ deploy_win:
 release_site:
   stage: release
   image: curlimages/curl
+  tags: 
+    - $RUNNER_LINUX
   interruptible: true
   dependencies: []
   cache: {}
@@ -415,6 +431,8 @@ release_site:
 weekly_releases:
   stage: schedule
   image: axelterizaki/karaokemugen-git-ssh:latest
+  tags: 
+    - $RUNNER_LINUX
   interruptible: true
   cache: {}
   needs: []
