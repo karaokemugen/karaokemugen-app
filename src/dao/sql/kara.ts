@@ -65,7 +65,7 @@ SELECT
   ak.mediasize AS mediasize,
   ak.download_status AS download_status,
   ak.comment AS comment,
-  ak.ignore_hooks AS ignoreHooks,
+  ak.ignore_hooks AS ignore_hooks,
   COUNT(p.*)::integer AS played,
   ${selectRequested}
   (CASE WHEN :dejavu_time < MAX(p.played_at)

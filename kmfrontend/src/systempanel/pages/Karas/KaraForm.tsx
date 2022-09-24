@@ -247,7 +247,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				created_at: this.props.kara?.created_at
 					? new Date(this.props.kara?.created_at).toISOString()
 					: new Date().toISOString(),
-				ignoreHooks: kara.ignoreHooks,
+				ignoreHooks: kara.ignore_hooks,
 				kid: this.props.kara?.kid || UUIDv4(),
 				modified_at: new Date().toISOString(),
 				parents:
@@ -484,7 +484,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					groups: this.props.kara?.groups || this.state.parentKara?.groups,
 					versions: this.props.kara?.versions || this.state.parentKara?.versions,
 					comment: this.props.kara?.comment || '',
-					ignoreHooks: this.props.kara?.ignoreHooks || false,
+					ignore_hooks: this.props.kara?.ignore_hooks || false,
 					repository: this.props.kara?.repository || this.state.parentKara?.repository || null,
 					mediafile: this.props.kara?.mediafile,
 					subfile: this.props.kara?.subfile,
@@ -1064,7 +1064,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 							required: false,
 						},
 					]}
-					name="ignoreHooks"
+					name="ignore_hooks"
 				>
 					<Checkbox />
 				</Form.Item>
