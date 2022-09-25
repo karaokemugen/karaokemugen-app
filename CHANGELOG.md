@@ -82,6 +82,12 @@ This is a major release. A lot of bugfixes have been backported in 6.x versions 
 -   Deprecated a variety of code that shouldn't be used anymore (#1247)
 -   Some data types have been reworked to allow better type-checking of our code (#822)
 
+# v6.1.18 - 20/09/2022
+
+## Fixes
+
+-   Fixed setup unable to pick up tags from kara.moe due to API changes
+
 # v6.1.17 - 26/08/2022
 
 ## Fixes
