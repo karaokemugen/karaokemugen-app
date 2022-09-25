@@ -87,7 +87,8 @@
 	"PLAYLIST_HEADER": {
 		"FILTERS": "Filter",
 		"ACTIVE_FILTER": "Aktive Filter",
-		"EDIT_CRITERIA": "Kriterien bearbeiten"
+		"EDIT_CRITERIA": "Kriterien bearbeiten",
+		"SHOW_SONGS": "Lieder anzeigen"
 	},
 	"ADVANCED": {
 		"PLAYLIST_COMMANDS": "Playlist Befehle",
@@ -129,7 +130,8 @@
 		"FAVORITES_ADDED": "Zu Favoriten hinzugefügt",
 		"HIDDEN": "Ausgeblendet!",
 		"BLACKLISTED": "Zur Blacklist hinzugefügt!",
-		"FREE": "Dieses Lied vom Kontingent des Benutzers befreien"
+		"FREE": "Dieses Lied vom Kontingent des Benutzers befreien",
+		"SHUFFLE": "Lieder mischen"
 	},
 	"FLAGS": {
 		"PUBLIC": "Öffentlich",
