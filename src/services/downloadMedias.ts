@@ -26,11 +26,9 @@ async function getRemoteMedias(repo: string) {
 	for (const collection of Object.keys(collections)) {
 		if (collections[collection] === true) enabledCollections.push(collection);
 	}
-	console.log(enabledCollections);
 	const res = await HTTP.post(`https://${repo}/api/karas/medias`, {
 		collections: enabledCollections,
 	});
-	console.log(res.data.length);
 	return res.data as DBMedia[];
 }
 

@@ -17,7 +17,7 @@ import { removeTagInKaras } from '../dao/tagfile';
 import { saveSetting } from '../lib/dao/database';
 import { refreshKarasUpdate } from '../lib/dao/kara';
 import { formatKaraV4 } from '../lib/dao/karafile';
-import { refreshTags, updateTagSearchVector } from '../lib/dao/tag';
+import { convertToDBTag, refreshTags, updateTagSearchVector } from '../lib/dao/tag';
 import { formatTagFile, getDataFromTagFile, removeTagFile, writeTagFile } from '../lib/dao/tagfile';
 import { refreshKarasAfterDBChange } from '../lib/services/karaManagement';
 import { DBKara, DBKaraTag } from '../lib/types/database/kara';
@@ -25,7 +25,7 @@ import { DBTag, DBTagMini } from '../lib/types/database/tag';
 import { Kara, KaraFileV4 } from '../lib/types/kara.d';
 import { Tag, TagFile, TagParams } from '../lib/types/tag';
 import { getConfig, resolvedPathRepos } from '../lib/utils/config';
-import { tagTypes } from '../lib/utils/constants';
+import { getTagTypeName, tagTypes } from '../lib/utils/constants';
 import { listAllFiles, resolveFileInDirs, sanitizeFile } from '../lib/utils/files';
 import HTTP from '../lib/utils/http';
 import logger, { profile } from '../lib/utils/logger';
@@ -242,6 +242,22 @@ export async function editTag(
 		}
 		if (opts.refresh) {
 			const karasToUpdate = await getKarasWithTags([oldTag]);
+			// We need to check if types have been removed from the new tag. If so, we edit all karas with that tag/type to remove them
+			const newDBTag = convertToDBTag(tagObj);
+			for (const oldType of oldTag.types) {
+				const tagTypeName = getTagTypeName(oldType);
+				if (!newDBTag.types.includes(oldType)) {
+					const karasToRemoveTagIn = karasToUpdate.filter(k =>
+						k[tagTypeName].find((t: DBKaraTag) => t.tid === newDBTag.tid)
+					);
+					if (karasToRemoveTagIn.length > 0) {
+						for (const kara of karasToRemoveTagIn) {
+							kara[tagTypeName] = kara[tagTypeName].filter((t: DBKaraTag) => t.tid !== newDBTag.tid);
+							await editKara({ kara: formatKaraV4(kara) }, false);
+						}
+					}
+				}
+			}
 			await updateTagSearchVector();
 			const karasData = karasToUpdate.map(k => formatKaraV4(k).data);
 			await refreshKarasAfterDBChange('UPDATE', karasData);

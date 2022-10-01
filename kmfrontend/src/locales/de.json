@@ -87,7 +87,8 @@
 	"PLAYLIST_HEADER": {
 		"FILTERS": "Filter",
 		"ACTIVE_FILTER": "Aktive Filter",
-		"EDIT_CRITERIA": "Kriterien bearbeiten"
+		"EDIT_CRITERIA": "Kriterien bearbeiten",
+		"SHOW_SONGS": "Lieder anzeigen"
 	},
 	"ADVANCED": {
 		"PLAYLIST_COMMANDS": "Playlist Befehle",
@@ -129,7 +130,9 @@
 		"FAVORITES_ADDED": "Zu Favoriten hinzugefügt",
 		"HIDDEN": "Ausgeblendet!",
 		"BLACKLISTED": "Zur Blacklist hinzugefügt!",
-		"FREE": "Dieses Lied vom Kontingent des Benutzers befreien"
+		"FREE": "Dieses Lied vom Kontingent des Benutzers befreien",
+		"SHUFFLE": "Lieder mischen",
+		"SHUFFLED": "Lieder gemischt!"
 	},
 	"FLAGS": {
 		"PUBLIC": "Öffentlich",
@@ -195,7 +198,7 @@
 	"GOTO_PLAYING": "Zum aktuell gespielten Lied gehen",
 	"PROFILE_PASSWORDCONF": "Bestätigen",
 	"CL_PLAYLISTS": "Songlisten",
-	"TOOLTIP_ADDKARA": "Diesen Song zur Wiedergabeliste hinzufügen",
+	"TOOLTIP_ADDKARA": "Dieses Lied hinzufügen",
 	"ACCOUNT": "Mein Benutzerkonto",
 	"PROFILE_URL": "Webseite",
 	"LOGIN_SLOGAN_ADMIN": "Bitte anmelden.",
@@ -206,7 +209,12 @@
 		"DESCRIPTION": "Die neu erstellte Wiedergabeliste wird mit den Favoriten des ausgewählten Benutzers für die angegebene Dauer gefüllt.",
 		"EMPTY": "Benutzer und Dauer auswählen",
 		"DURATION": "Dauer (in Minuten)",
-		"TITLE": "Einen AutoMix erstellen"
+		"TITLE": "Einen AutoMix erstellen",
+		"FAVOURITES": "Favoriten von",
+		"FAVOURITES_OF": "{{name}} Favoriten",
+		"LIMIT_TYPE": {
+			"DURATION": "Dauer"
+		}
 	},
 	"LOGIN": {
 		"ONLINE_ACCOUNT": "Online-Konto?",
@@ -237,5 +245,9 @@
 	"ADMIN_HEADER": {
 		"QUICK_ACCESS": "Schnellzugriff"
 	},
-	"PROFILE_PASSWORD_AGAIN": "Password eingeben"
+	"PROFILE_PASSWORD_AGAIN": "Password eingeben",
+	"TOOLTIP_DELETEKARA": "Dieses Lied löschen",
+	"TOOLTIP_DELETE_SELECT_KARA": "Ausgewählte Lieder löschen",
+	"TOOLTIP_CLOSEPARENT": "Schliessen",
+	"TOOLTIP_DELETE_FAVS": "Lied aus den Favoriten entfernen"
 }
