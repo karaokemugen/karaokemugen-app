@@ -1781,8 +1781,8 @@
 	},
 	"ABOUT": {
 		"DESCRIPTION": "A karaoke player and a party organizer, between friends or in public. MIT-licensed.",
-		"CONTRIBUTORS": "The karaokes were created by awesome people, like <contrib/> for example.",
-		"DONATORS": "Thanks to <donators/> for their donations to Karaoke Mugen"
+		"CONTRIBUTORS": "The karaokes were created by awesome people, like <1>{{contributors}}</1> for example.",
+		"DONATORS": "Thanks to <1>{{donators}}</1> for their donations to Karaoke Mugen"
 	},
 	"COLLECTIONS_MIGRATION": {
 		"TITLE": "Introducing collections!",

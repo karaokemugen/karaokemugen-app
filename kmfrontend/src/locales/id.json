@@ -808,8 +808,8 @@
 		"ONLINE_USER_REQUIRED": "Pengguna daring diperlukan untuk kotak masuk"
 	},
 	"ABOUT": {
-		"CONTRIBUTORS": "Karaoke dibuat oleh orang-orang yang hebat, seperti <contrib/> misalnya.",
-		"DONATORS": "Terima kasih kepada <donators/> untuk donasinya ke Karaoke Mugen",
+		"CONTRIBUTORS": "Karaoke dibuat oleh orang-orang yang hebat, seperti <1>{{contributors}}</1> misalnya.",
+		"DONATORS": "Terima kasih kepada <1>{{donators}}</1> untuk donasinya ke Karaoke Mugen",
 		"DESCRIPTION": "Pemutar karaoke dan pengelola pesta, antar teman atau di publik. Dilisensikan MIT."
 	},
 	"SETUP_PAGE": {
@@ -1541,22 +1541,11 @@
 		"Terlalu tenang, saya tidak suka ini…",
 		"Persiapan sedang berlangsung!"
 	],
-	"JINGLE_TAGLINES": [
-		"Kami akan segera kembali!"
-	],
+	"JINGLE_TAGLINES": ["Kami akan segera kembali!"],
 	"INTRO_TIME": "Introduksi daftar putar",
-	"INTRO_TAGLINES": [
-		"Ayo!",
-		"Memulai…",
-		"Inisialisasi…",
-		"Siapkan mikrofon kamu!",
-		"*bersihkan tenggorokan*"
-	],
+	"INTRO_TAGLINES": ["Ayo!", "Memulai…", "Inisialisasi…", "Siapkan mikrofon kamu!", "*bersihkan tenggorokan*"],
 	"OUTRO_TIME": "Penutup daftar putar",
-	"OUTRO_TAGLINES": [
-		"Tamat :(",
-		"Terima kasih semuanya!"
-	],
+	"OUTRO_TAGLINES": ["Tamat :(", "Terima kasih semuanya!"],
 	"ENCORES_TIME": "Ekstra! Ekstra!",
 	"ENCORES_TAGLINES": [
 		"Yah, bukan karena aku menyukaimu atau apa gitu…",
@@ -1564,9 +1553,7 @@
 		"Lagu terakhir, berikan yang terbaik!"
 	],
 	"SPONSOR_TIME": "IKLAN!",
-	"SPONSOR_TAGLINES": [
-		"Dan terima kasih atas duitnya."
-	],
+	"SPONSOR_TAGLINES": ["Dan terima kasih atas duitnya."],
 	"QUOTA_AVAILABLE": "Kamu sekarang bisa menambahkan lagu lagi!",
 	"SERIE_NAME_MODE": "Mode bahasa serial",
 	"SERIE_NAME_MODE_TOOLTIP": "Ubah bagaimana nama serial ditampilkan di daftar lagu. Mungkin diabaikan oleh preferensi pengguna",
@@ -1581,14 +1568,8 @@
 		"CONNECTED": "Tersambung"
 	},
 	"REMOTE_TOKEN": "Token akses jarak jauh",
-	"PAUSE_TAGLINES": [
-		"Beristirahatlah!",
-		"Saatnya minum!",
-		"Kami akan segera kembali!"
-	],
-	"POLL_TAGLINES": [
-		"Pilihan ada padamu."
-	],
+	"PAUSE_TAGLINES": ["Beristirahatlah!", "Saatnya minum!", "Kami akan segera kembali!"],
+	"POLL_TAGLINES": ["Pilihan ada padamu."],
 	"REMOTE_URL": "URL akses jarak jauh",
 	"DATABASE": {
 		"REGENERATE_DB": "Membuat kembali basis data kamu",
