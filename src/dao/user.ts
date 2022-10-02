@@ -66,15 +66,15 @@ export async function updateUser(user: User): Promise<User> {
 			old_login: user.old_login,
 			main_series_lang: user.main_series_lang,
 			fallback_series_lang: user.fallback_series_lang,
-			flag_tutorial_done: user.flag_tutorial_done || false,
+			flag_tutorial_done: user.flag_tutorial_done ?? false,
 			flag_sendstats: user.flag_sendstats,
 			location: user.location,
 			flag_parentsonly: user.flag_parentsonly,
 			language: user.language,
-			flag_public: user.flag_public,
-			flag_displayfavorites: user.flag_displayfavorites,
-			social_networks: user.social_networks,
-			banner: user.banner,
+			flag_public: user.flag_public ?? true,
+			flag_displayfavorites: user.flag_displayfavorites ?? false,
+			social_networks: user.social_networks || { discord: '', twitter: '', twitch: '', instagram: '' },
+			banner: user.banner || 'default.jpg',
 		})
 	);
 	if (!ret) {
