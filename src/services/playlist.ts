@@ -437,7 +437,10 @@ export function getPlaylistContentsMini(plaid: string) {
 /** Get a tiny amount of data from a PLC
  * After Mini-PL, Micro-PL, we need the PL-C format.
  */
-export function getPlaylistContentsMicro(plaid: string) {
+export async function getPlaylistContentsMicro(plaid: string, token: OldJWTToken) {
+	const pl = await getPlaylistInfo(plaid, token);
+	// Playlist isn't visible to user, throw.
+	if (!pl) throw { code: 404 };
 	return selectPlaylistContentsMicro(plaid);
 }
 
