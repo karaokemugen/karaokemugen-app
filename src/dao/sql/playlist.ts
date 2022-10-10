@@ -117,14 +117,12 @@ WHERE pk_id_playlist = $1;
 
 export const sqlgetPlaylistContentsMicro = `
 SELECT pc.fk_kid AS kid,
-	pc.fk_login AS username,
 	pc.pk_id_plcontent AS plcid,
 	(CASE WHEN pl.fk_id_plcontent_playing = pc.pk_id_plcontent
 		THEN TRUE
 		ELSE FALSE
 	  END) AS flag_playing,
 	pc.pos AS pos,
-	pc.fk_id_playlist AS plaid,
 	pc.fk_login AS username,
 	pc.nickname AS nickname,
 	pc.flag_free AS flag_free,
