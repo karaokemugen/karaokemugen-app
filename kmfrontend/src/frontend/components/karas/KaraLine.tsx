@@ -116,7 +116,8 @@ function KaraLine(props: IProps) {
 	const addKara = async (_event?: any, pos?: number) => {
 		let url = '';
 		let data;
-		if (getOppositePlaylistInfo(props.side, context).plaid === nonStandardPlaylists.favorites) {
+		const oppositePlaylist = getOppositePlaylistInfo(props.side, context);
+		if (oppositePlaylist.plaid === nonStandardPlaylists.favorites) {
 			if (context.globalState.auth.data.onlineAvailable !== false) {
 				url = 'addFavorites';
 				data = {
@@ -127,25 +128,25 @@ function KaraLine(props: IProps) {
 				return;
 			}
 		} else if (props.scope === 'admin') {
-			if (!getOppositePlaylistInfo(props.side, context).flag_smart) {
+			if (!oppositePlaylist.flag_smart) {
 				if (!isNonStandardPlaylist(getPlaylistInfo(props.side, context).plaid) && !pos) {
 					url = 'copyKaraToPlaylist';
 					data = {
-						plaid: getOppositePlaylistInfo(props.side, context).plaid,
+						plaid: oppositePlaylist.plaid,
 						plc_ids: [props.kara.plcid],
 					};
 				} else {
 					url = 'addKaraToPlaylist';
 					if (pos) {
 						data = {
-							plaid: getOppositePlaylistInfo(props.side, context).plaid,
+							plaid: oppositePlaylist.plaid,
 							requestedby: context.globalState.auth.data.username,
 							kids: [props.kara.kid],
 							pos: pos,
 						};
 					} else {
 						data = {
-							plaid: getOppositePlaylistInfo(props.side, context).plaid,
+							plaid: oppositePlaylist.plaid,
 							requestedby: context.globalState.auth.data.username,
 							kids: [props.kara.kid],
 						};
@@ -158,7 +159,7 @@ function KaraLine(props: IProps) {
 						{
 							type: 1001,
 							value: props.kara.kid,
-							plaid: getOppositePlaylistInfo(props.side, context).plaid,
+							plaid: oppositePlaylist.plaid,
 						},
 					],
 				};
