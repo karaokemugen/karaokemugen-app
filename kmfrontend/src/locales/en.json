@@ -48,7 +48,7 @@
 	"PLAYLISTS": {
 		"LIBRARY": "Library",
 		"FAVORITES": "Favorites",
-		"ANIME_LIST": "Anime list"
+		"ANIME_LIST": "My animes"
 	},
 	"WEBAPPMODE_CLOSED_MESSAGE": "The interface is closed, please wait.",
 	"INLINE_TAG": {
@@ -203,7 +203,7 @@
 		"REQUESTED_KARAOKES": "Requested songs",
 		"NEW_KARAOKES": "New songs",
 		"KARA_VERSIONS": "This song is available in {{length}} versions, choose the one you want and add it to the playlist or your favorites.",
-		"ANIME_LIST": "Anime list"
+		"ANIME_LIST": "My animes"
 	},
 	"ADMIN_MESSAGE": {
 		"ESSENTIAL_MESSAGE": "Important message",

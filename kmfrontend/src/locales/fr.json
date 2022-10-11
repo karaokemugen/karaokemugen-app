@@ -48,7 +48,7 @@
 	"PLAYLISTS": {
 		"LIBRARY": "Bibliothèque",
 		"FAVORITES": "Favoris",
-		"ANIME_LIST": "Liste d'animés"
+		"ANIME_LIST": "Mes animés"
 	},
 	"WEBAPPMODE_CLOSED_MESSAGE": "L'interface est fermée, merci de patienter.",
 	"INLINE_TAG": {
@@ -210,7 +210,7 @@
 		"REQUESTED_KARAOKES": "Karaokés populaires",
 		"NEW_KARAOKES": "Nouveaux karaokés",
 		"KARA_VERSIONS": "Cette chanson est disponible en {{length}} versions, choisissez celle que vous voulez et ajoutez-là à la playlist ou à vos favoris.",
-		"ANIME_LIST": "Liste d'animés"
+		"ANIME_LIST": "Mes animés"
 	},
 	"ADMIN_MESSAGE": {
 		"ESSENTIAL_MESSAGE": "Message indispensable",
