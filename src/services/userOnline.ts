@@ -318,3 +318,21 @@ export async function convertToRemoteUser(token: OldJWTToken, password: string, 
 		throw { msg: err.msg || 'USER_CONVERT_ERROR', details: err };
 	}
 }
+
+export async function refreshAnimeList(username: string, token: string): Promise<void> {
+	try {
+		const instance = username.split('@')[1];
+		await HTTP.post(`https://${instance}/api/myaccount/myanime`, null, {
+			headers: {
+				authorization: token,
+			},
+		});
+	} catch (err) {
+		logger.error(`Unable to refetch animeList for ${username}`, {
+			service,
+			obj: err,
+		});
+		sentry.error(err);
+		throw err;
+	}
+}

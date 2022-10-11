@@ -115,6 +115,14 @@ function PublicHomepage(props: IProps) {
 									<i className="fas fa-fw fa-fire" />{' '}
 									{i18next.t('PUBLIC_HOMEPAGE.REQUESTED_KARAOKES')}
 								</Link>
+								{context?.globalState.settings.data.user.anime_list_to_fetch ? (
+									<Link className="action yellow" to="/public/animelist">
+										<i
+											className={`icon-${context?.globalState.settings.data.user.anime_list_to_fetch}`}
+										/>{' '}
+										{i18next.t('PUBLIC_HOMEPAGE.ANIME_LIST')}
+									</Link>
+								) : null}
 								<h3 className="subtitle">{i18next.t('PUBLIC_HOMEPAGE.EXPLORE')}</h3>
 								{Object.keys(tagTypes).map(type => {
 									if ([1, 2, 4, 5].includes(tagTypes[type].type)) {

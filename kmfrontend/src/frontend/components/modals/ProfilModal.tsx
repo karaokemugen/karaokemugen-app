@@ -34,6 +34,8 @@ interface UserProfile extends User {
 	avatar?: any;
 }
 
+type AnimeListProvider = 'myanimelist' | 'anilist' | 'kitsu';
+
 function ProfilModal(props: IProps) {
 	const context = useContext(GlobalContext);
 	const [passwordDifferent, setPasswordDifferent] = useState('');
@@ -42,6 +44,7 @@ function ProfilModal(props: IProps) {
 	const [cropAvatarModalOpen, setCropAvatarModalOpen] = useState(false);
 	const [dangerousActions, setDangerousActions] = useState(false);
 	const [exampleForLinguisticsPreference, setExampleForLinguisticsPreference] = useState('');
+	const [animeListToFetch, setAnimeListToFetch] = useState<AnimeListProvider | ''>('');
 
 	const onChange = (event: any) => {
 		if (event.target.name.includes('.')) {
@@ -50,6 +53,7 @@ function ProfilModal(props: IProps) {
 		} else {
 			user[event.target.name] = event.target.value;
 		}
+		setAnimeListToFetch(user.anime_list_to_fetch ? user.anime_list_to_fetch : '');
 		setUser(user);
 	};
 
@@ -92,6 +96,7 @@ function ProfilModal(props: IProps) {
 		try {
 			const user = await commandBackend('getMyAccount');
 			delete user.password;
+			setAnimeListToFetch(user.anime_list_to_fetch ? user.anime_list_to_fetch : '');
 			setUser(user);
 		} catch (e) {
 			logout(context.globalDispatch);
@@ -187,6 +192,11 @@ function ProfilModal(props: IProps) {
 		);
 	};
 
+	const refreshAnimeList = async () => {
+		await commandBackend('refreshAnimeList');
+		closeModalWithContext();
+	};
+
 	const keyObserverHandler = (e: KeyboardEvent) => {
 		if (e.code === 'Escape') {
 			closeModalWithContext();
@@ -204,6 +214,26 @@ function ProfilModal(props: IProps) {
 	const updateAvatar = async () => {
 		await updateUser();
 		await getUser();
+	};
+
+	const changeAnimeList = (event: any) => {
+		if (event.target.name.includes('.')) {
+			const split = event.target.name.split('.');
+			user[split[0]][split[1]] = event.target.value;
+		} else {
+			user[event.target.name] = event.target.value;
+		}
+		if (!user.social_networks.anilist && !user.social_networks.myanimelist && !user.social_networks.kitsu) {
+			user.anime_list_to_fetch = undefined;
+		} else if (user.social_networks.anilist && !user.social_networks.myanimelist && !user.social_networks.kitsu) {
+			user.anime_list_to_fetch = 'anilist';
+		} else if (!user.social_networks.anilist && user.social_networks.myanimelist && !user.social_networks.kitsu) {
+			user.anime_list_to_fetch = 'myanimelist';
+		} else if (!user.social_networks.anilist && !user.social_networks.myanimelist && user.social_networks.kitsu) {
+			user.anime_list_to_fetch = 'kitsu';
+		}
+		setAnimeListToFetch(user.anime_list_to_fetch ? user.anime_list_to_fetch : '');
+		setUser(user);
 	};
 
 	useEffect(() => {
@@ -255,7 +285,6 @@ function ProfilModal(props: IProps) {
 		const getExampleForLinguisticsPreference = async () => {
 			try {
 				const data = await commandBackend('getKara', { kid: 'ed57440b-0410-4fd4-8fc0-b87eee2df9a0' });
-				console.log(buildKaraTitleFuture(data));
 				setExampleForLinguisticsPreference(buildKaraTitleFuture(data));
 			} catch (err) {
 				// ignore error
@@ -494,6 +523,75 @@ function ProfilModal(props: IProps) {
 									autoComplete="off"
 								/>
 							</div>
+							{logInfos?.onlineToken ? (
+								<>
+									<div className="profileLine">
+										<div className="profileLabel">
+											<label>
+												{i18next.t('MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.MYANIMELIST')}
+											</label>
+										</div>
+										<input
+											name="social_networks.myanimelist"
+											type="text"
+											placeholder={i18next.t(
+												'MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.MYANIMELIST_PLACEHOLDER'
+											)}
+											defaultValue={user.social_networks.myanimelist}
+											onKeyUp={changeAnimeList}
+											onChange={changeAnimeList}
+											autoComplete="off"
+										/>
+									</div>
+									<div className="profileLine">
+										<div className="profileLabel">
+											<label>{i18next.t('MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.ANILIST')}</label>
+										</div>
+										<input
+											name="social_networks.anilist"
+											type="text"
+											placeholder={i18next.t(
+												'MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.ANILIST_PLACEHOLDER'
+											)}
+											defaultValue={user.social_networks.anilist}
+											onKeyUp={changeAnimeList}
+											onChange={changeAnimeList}
+											autoComplete="off"
+										/>
+									</div>
+									<div className="profileLine">
+										<div className="profileLabel">
+											<label>{i18next.t('MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.KITSU')}</label>
+										</div>
+										<input
+											name="social_networks.kitsu"
+											type="text"
+											placeholder={i18next.t(
+												'MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.KITSU_PLACEHOLDER'
+											)}
+											defaultValue={user.social_networks.kitsu}
+											onKeyUp={changeAnimeList}
+											onChange={changeAnimeList}
+											autoComplete="off"
+										/>
+									</div>
+									<div className="profileLine row">
+										<div className="profileLabel">
+											<label htmlFor="anime_list_to_fetch">
+												{i18next.t('MODAL.PROFILE_MODAL.ANIME_LIST_TO_FETCH')}
+											</label>
+										</div>
+										<select name="anime_list_to_fetch" onChange={onChange} value={animeListToFetch}>
+											<option value="">
+												{i18next.t('MODAL.PROFILE_MODAL.CHOOSE_ANIME_LIST')}
+											</option>
+											<option value="myanimelist">MyAnimeList</option>
+											<option value="anilist">AniList</option>
+											<option value="kitsu">Kitsu</option>
+										</select>
+									</div>
+								</>
+							) : null}
 							<div className="profileLine">
 								<div className="profileLabel">
 									<i className="fas fa-fw fa-lock" />
@@ -664,6 +762,16 @@ function ProfilModal(props: IProps) {
 								<button type="submit" className="btn btn-action btn-save">
 									{i18next.t('SUBMIT')}
 								</button>
+								{logInfos?.onlineToken ? (
+									<button
+										type="button"
+										className="btn btn-action btn-default"
+										onClick={refreshAnimeList}
+									>
+										<i className="fa-solid fa-arrows-rotate" />{' '}
+										{i18next.t('MODAL.PROFILE_MODAL.REFRESH_ANIME_LIST')}
+									</button>
+								) : null}
 								<button
 									type="button"
 									className="btn btn-danger profileDelete"

@@ -170,6 +170,15 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		joinClauses.push(' LEFT OUTER JOIN favorites AS uf ON uf.fk_login = :username_favs AND uf.fk_kid = ak.pk_kid ');
 		yesqlPayload.params.username_favs = params.userFavorites;
 	}
+	if (params.userAnimeList) {
+		withCTEs.push(
+			'anime_list_infos AS (SELECT anime_list_ids, anime_list_to_fetch FROM users where users.pk_login = :username_anime_list)'
+		);
+		whereClauses += ` AND ((SELECT anime_list_to_fetch FROM anime_list_infos) = 'myanimelist' AND myanimelist_ids::int[] && (SELECT anime_list_ids FROM anime_list_infos)
+		OR (SELECT anime_list_to_fetch FROM anime_list_infos) = 'anilist' AND anilist_ids::int[] && (SELECT anime_list_ids FROM anime_list_infos)
+		OR (SELECT anime_list_to_fetch FROM anime_list_infos) = 'kitsu' AND kitsu_ids::int[] && (SELECT anime_list_ids FROM anime_list_infos))`;
+		yesqlPayload.params.username_anime_list = params.userAnimeList;
+	}
 	const collectionClauses = [];
 	if (!params.ignoreCollections) {
 		for (const collection of Object.keys(collections)) {

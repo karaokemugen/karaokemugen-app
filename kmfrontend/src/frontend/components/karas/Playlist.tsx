@@ -362,6 +362,8 @@ function Playlist(props: IProps) {
 			url = 'getKaras';
 		} else if (idPlaylist === nonStandardPlaylists.favorites) {
 			url = 'getFavorites';
+		} else if (idPlaylist === nonStandardPlaylists.animelist) {
+			url = 'getAnimeList';
 		} else {
 			url = 'getPlaylistContents';
 		}
