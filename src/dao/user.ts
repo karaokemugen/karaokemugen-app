@@ -75,6 +75,9 @@ export async function updateUser(user: User): Promise<User> {
 			flag_displayfavorites: user.flag_displayfavorites ?? false,
 			social_networks: user.social_networks || { discord: '', twitter: '', twitch: '', instagram: '' },
 			banner: user.banner || 'default.jpg',
+			anime_list_to_fetch: user.anime_list_to_fetch,
+			anime_list_last_modified_at: user.anime_list_last_modified_at,
+			anime_list_ids: user.anime_list_ids,
 		})
 	);
 	if (!ret) {

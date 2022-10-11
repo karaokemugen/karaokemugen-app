@@ -311,7 +311,7 @@ function PlaylistCommandsModal(props: IProps) {
 					</li>
 				</>
 			) : null}
-			{playlist?.plaid !== nonStandardPlaylists.library ? (
+			{playlist?.plaid !== nonStandardPlaylists.library && playlist?.plaid !== nonStandardPlaylists.animelist ? (
 				<li>
 					<div onClick={exportPlaylist}>
 						<i className="fas fa-fw fa-upload" />
