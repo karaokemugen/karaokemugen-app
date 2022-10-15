@@ -9,7 +9,7 @@ import { showModal } from '../../store/actions/modal';
 import GlobalContext from '../../store/context';
 import TasksEvent from '../../TasksEvent';
 import { commandBackend, getSocket } from '../../utils/socket';
-import { decodeCriteriaReason, displayMessage, is_touch_device } from '../../utils/tools';
+import { decodeCriteriaReason, displayMessage, is_touch_device, nonStandardPlaylists } from '../../utils/tools';
 import { KaraElement } from '../types/kara';
 import AdminHeader from './AdminHeader';
 import KmAppBodyDecorator from './decorators/KmAppBodyDecorator';
@@ -111,11 +111,15 @@ function AdminPage(props: IProps) {
 			};
 		}
 		playlistList.push({
-			plaid: 'efe3687f-9e0b-49fc-a5cc-89df25a17e94',
+			plaid: nonStandardPlaylists.favorites,
 			name: i18next.t('PLAYLISTS.FAVORITES'),
 		});
 		playlistList.push({
-			plaid: '524de79d-10b2-49dc-90b1-597626d0cee8',
+			plaid: nonStandardPlaylists.animelist,
+			name: i18next.t('PLAYLISTS.ANIME_LIST'),
+		});
+		playlistList.push({
+			plaid: nonStandardPlaylists.library,
 			name: i18next.t('PLAYLISTS.LIBRARY'),
 			karacount: kmStats.karas,
 		});

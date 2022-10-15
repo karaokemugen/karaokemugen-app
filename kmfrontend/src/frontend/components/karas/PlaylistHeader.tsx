@@ -76,6 +76,9 @@ function PlaylistHeader(props: IProps) {
 		if (playlist?.flag_current) return ['fa-play-circle'];
 		// library : book icon
 		if (playlist?.plaid === nonStandardPlaylists.library) return ['fa-book'];
+		// animelist depending of user settings
+		if (playlist?.plaid === nonStandardPlaylists.animelist)
+			return [`icon-${context?.globalState.settings.data.user.anime_list_to_fetch}`];
 		// blacklist : ban icon
 		if (playlist?.plaid === context.globalState.settings.data.state.blacklistPlaid) return ['fa-ban'];
 		// whitelist : check-circle icon

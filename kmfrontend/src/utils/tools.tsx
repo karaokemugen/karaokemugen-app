@@ -193,8 +193,9 @@ export function callModal(
 }
 
 export const nonStandardPlaylists = {
-	favorites: 'efe3687f-9e0b-49fc-a5cc-89df25a17e94', // -5
-	library: '524de79d-10b2-49dc-90b1-597626d0cee8', // -1
+	favorites: 'efe3687f-9e0b-49fc-a5cc-89df25a17e94',
+	library: '524de79d-10b2-49dc-90b1-597626d0cee8',
+	animelist: 'f3f1d49c-b701-4ac7-8209-cbcaa64c2985',
 };
 
 export function isNonStandardPlaylist(plaid: string) {

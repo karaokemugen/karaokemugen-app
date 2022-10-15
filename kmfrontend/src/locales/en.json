@@ -47,7 +47,8 @@
 	"VOLUME_LEVEL": "Set volume",
 	"PLAYLISTS": {
 		"LIBRARY": "Library",
-		"FAVORITES": "Favorites"
+		"FAVORITES": "Favorites",
+		"ANIME_LIST": "My animes"
 	},
 	"WEBAPPMODE_CLOSED_MESSAGE": "The interface is closed, please wait.",
 	"INLINE_TAG": {
@@ -201,7 +202,8 @@
 		"GET_LUCKY": "Get lucky",
 		"REQUESTED_KARAOKES": "Requested songs",
 		"NEW_KARAOKES": "New songs",
-		"KARA_VERSIONS": "This song is available in {{length}} versions, choose the one you want and add it to the playlist or your favorites."
+		"KARA_VERSIONS": "This song is available in {{length}} versions, choose the one you want and add it to the playlist or your favorites.",
+		"ANIME_LIST": "My animes"
 	},
 	"ADMIN_MESSAGE": {
 		"ESSENTIAL_MESSAGE": "Important message",
@@ -626,8 +628,17 @@
 				"INSTAGRAM": "Instagram",
 				"INSTAGRAM_PLACEHOLDER": "karaokemugen",
 				"DISCORD": "Discord",
-				"DISCORD_PLACEHOLDER": "Karak#1423"
-			}
+				"DISCORD_PLACEHOLDER": "Karak#1423",
+				"MYANIMELIST": "MyAnimeList",
+				"MYANIMELIST_PLACEHOLDER": "karaokemugen",
+				"ANILIST": "AniList",
+				"ANILIST_PLACEHOLDER": "karaokemugen",
+				"KITSU": "Kitsu",
+				"KITSU_PLACEHOLDER": "karaokemugen"
+			},
+			"ANIME_LIST_TO_FETCH": "Anime list to fetch",
+			"REFRESH_ANIME_LIST": "Refresh anime list",
+			"CHOOSE_ANIME_LIST": "Choose an anime list"
 		},
 		"SHUFFLE_MODAL": {
 			"TITLE": "Shuffle playlist",
@@ -1484,7 +1495,9 @@
 		"COLLECTIONS_GET_ERROR": "Error fetching collections",
 		"UPLOADED_MEDIA_ERROR": "Error when uploading media",
 		"REPOSITORY_UNREACHABLE": "Repository unreachable. Did you misspell its name?",
-		"CANNOT_INSTALL_REPO_AT_WINDOWS_ROOT_DRIVE": "Repository cannot be installed at the root of a Windows drive."
+		"CANNOT_INSTALL_REPO_AT_WINDOWS_ROOT_DRIVE": "Repository cannot be installed at the root of a Windows drive.",
+		"REFRESH_ANIME_LIST_ERROR": "Error refreshing anime list",
+		"ANIME_LIST_VIEW_ERROR": "Error getting anime list"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Added {{data}} downloads to the queue",
@@ -1781,8 +1794,8 @@
 	},
 	"ABOUT": {
 		"DESCRIPTION": "A karaoke player and a party organizer, between friends or in public. MIT-licensed.",
-		"CONTRIBUTORS": "The karaokes were created by awesome people, like <contrib/> for example.",
-		"DONATORS": "Thanks to <donators/> for their donations to Karaoke Mugen"
+		"CONTRIBUTORS": "The karaokes were created by awesome people, like <1>{{contributors}}</1> for example.",
+		"DONATORS": "Thanks to <1>{{donators}}</1> for their donations to Karaoke Mugen"
 	},
 	"COLLECTIONS_MIGRATION": {
 		"TITLE": "Introducing collections!",

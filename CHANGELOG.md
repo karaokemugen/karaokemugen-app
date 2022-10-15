@@ -49,6 +49,11 @@ This is a major release. A lot of bugfixes have been backported in 6.x versions 
 
 ## Fixes
 
+-   Fixed medias sync/update not properly removing songs from disabled collections (#1324 #1306)
+-   Fixed circular dependencies in karaoke updates (#1320)
+-   Fixed inbox download feedback for maintainers (#1316)
+-   Fixed About page list of donators (#1310)
+-   Fixed removing kara.moe repository creating a new local repo (#1309)
 -   Fixed welcome page being too big on small screens (#1164)
 -   Fixed + button not greyed out when a song is already present in the destination playlist (#1198)
 -   After editing a tag, clicking on new tag doesn't pre-fill the new tag with your previously edited tag (that wasn't a feature, yeah) (#1299)
@@ -77,7 +82,7 @@ This is a major release. A lot of bugfixes have been backported in 6.x versions 
 
 ## Misc. changes
 
--   Updated Electron to version 20.
+-   Updated Electron to version 21.
 -   Removed the player progress bar in the dock/taskbar. It was redundant with mpv's own progressbar.
 -   Deprecated a variety of code that shouldn't be used anymore (#1247)
 -   Some data types have been reworked to allow better type-checking of our code (#822)

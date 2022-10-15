@@ -68,6 +68,7 @@ function ActionsButtons(props: IProps) {
 			) : null}
 
 			{playlist?.plaid !== nonStandardPlaylists.favorites &&
+			playlist?.plaid !== nonStandardPlaylists.animelist &&
 			((props.scope === 'admin' &&
 				playlist?.plaid !== nonStandardPlaylists.library &&
 				!(props.isHeader && playlist?.flag_smart) &&
@@ -104,6 +105,7 @@ function ActionsButtons(props: IProps) {
 			{(props.scope === 'admin' &&
 				oppositePlaylist?.plaid !== nonStandardPlaylists.library &&
 				oppositePlaylist?.plaid !== nonStandardPlaylists.favorites &&
+				oppositePlaylist?.plaid !== nonStandardPlaylists.animelist &&
 				!(
 					playlist?.plaid === context.globalState.settings.data.state.publicPlaid &&
 					oppositePlaylist?.plaid === context.globalState.settings.data.state.currentPlaid

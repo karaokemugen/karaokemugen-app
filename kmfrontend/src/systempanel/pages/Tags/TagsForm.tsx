@@ -44,7 +44,7 @@ interface TagsFormState {
 
 const myanimelistUrlRegexp = /myanimelist.net\/anime\/(\d+)/;
 const anilistUrlRegexp = /anilist.co\/anime\/(\d+)/;
-const kitsuUrlRegexp = /kitsu.io\/anime\/([a-zA-Z-]+)/;
+const kitsuUrlRegexp = /kitsu.io\/anime\/([a-zA-Z0-9-]+)/;
 const validExternalAnimeIdRegexp = /^[1-9]|\d\d+$/; // strictly positive
 
 class TagForm extends Component<TagsFormProps, TagsFormState> {

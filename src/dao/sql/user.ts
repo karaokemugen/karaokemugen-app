@@ -35,6 +35,9 @@ SELECT
 		u.flag_displayfavorites,
 		u.social_networks,
 		u.banner,
+		u.anime_list_to_fetch,
+		u.anime_list_last_modified_at,
+		u.anime_list_ids,
 	`
 			: ''
 	}
@@ -106,6 +109,9 @@ UPDATE users SET
 	flag_public = :flag_public,
     flag_displayfavorites = :flag_displayfavorites,
     social_networks = :social_networks,
+	anime_list_to_fetch = :anime_list_to_fetch,
+	anime_list_last_modified_at = :anime_list_last_modified_at,
+	anime_list_ids = :anime_list_ids,
     banner = :banner
 WHERE pk_login = :old_login
 RETURNING pk_login as login, *;

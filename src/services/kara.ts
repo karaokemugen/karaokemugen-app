@@ -170,7 +170,7 @@ export function getSongVersion(kara: DBKara): string {
 	if (kara.versions?.length > 0) {
 		const versions = kara.versions.map(v => {
 			const lang = convert1LangTo2B(getState().defaultLocale) || 'eng';
-			return `[${v.i18n[lang] || v.i18n?.eng || v.i18n?.qjr || v.name}]`;
+			return `[${v.i18n[lang] || v.i18n?.eng || v.i18n?.qro || v.name}]`;
 		});
 		return ` ${versions.join(' ')}`;
 	}
