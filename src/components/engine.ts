@@ -45,6 +45,10 @@ let shutdownInProgress = false;
 
 const service = 'Engine';
 
+export function isShutdownInProgress() {
+	return shutdownInProgress;
+}
+
 export async function initEngine() {
 	profile('Init');
 	const conf = getConfig();
