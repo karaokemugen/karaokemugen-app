@@ -56,7 +56,11 @@ export function getTagInLocaleList(settings: SettingsStoreData, list: DBKaraTag[
 	}
 }
 
-export function getTagInLocale(settings: SettingsStoreData, tag: DBKaraTag, i18nParam?: any): any {
+export function getTagInLocale(
+	settings: SettingsStoreData,
+	tag: DBKaraTag,
+	i18nParam?: any
+): { i18n: string; description: string } {
 	const user = settings?.user;
 	if (user?.main_series_lang && user?.fallback_series_lang) {
 		return getTagInLanguage(tag, user.main_series_lang, user.fallback_series_lang, i18nParam);

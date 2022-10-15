@@ -247,7 +247,7 @@ function ProfilModal(props: IProps) {
 				serieText =
 					data.series
 						.slice(0, 3)
-						.map(e => getTagInLanguage(e, user.main_series_lang, user.fallback_series_lang))
+						.map(e => getTagInLanguage(e, user.main_series_lang, user.fallback_series_lang).i18n)
 						.join(', ') + (data.series.length > 3 ? '...' : '');
 			} else if (data?.singergroups?.length > 0) {
 				serieText =
@@ -271,7 +271,7 @@ function ProfilModal(props: IProps) {
 				.join(' ');
 			const songorderText = data?.songorder > 0 ? ' ' + data.songorder : '';
 			const versions = sortAndHideTags(data?.versions).map(
-				t => `[${getTagInLanguage(t, user.main_series_lang, user.fallback_series_lang)}]`
+				t => `[${getTagInLanguage(t, user.main_series_lang, user.fallback_series_lang).i18n}]`
 			);
 			const version = versions?.length > 0 ? ` ${versions.join(' ')}` : '';
 			return `${langsText} - ${serieText} - ${songtypeText} ${songorderText} - ${
