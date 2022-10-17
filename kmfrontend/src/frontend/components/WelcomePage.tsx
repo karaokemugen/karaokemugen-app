@@ -5,7 +5,6 @@ import i18next from 'i18next';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Repository } from '../../../../src/types/config';
 import { DBStats } from '../../../../src/types/database/database';
 import { Feed } from '../../../../src/types/feeds';
 import { Session } from '../../../../src/types/session';
@@ -23,6 +22,7 @@ import ProfilModal from './modals/ProfilModal';
 import RestartDownloadsModal from './modals/RestartDownloadsModal';
 import WelcomePageArticle from './WelcomePageArticle';
 import { Tag } from '../../../../src/lib/types/tag';
+import { Repository } from '../../../../src/lib/types/repo';
 
 function WelcomePage() {
 	const context = useContext(GlobalContext);

@@ -5,14 +5,10 @@ import { FormInstance } from 'antd/lib/form';
 import i18next from 'i18next';
 import { Component, createRef } from 'react';
 
-import { RepositoryMaintainerSettings } from '../../../../../src/lib/types/repo';
 import { TaskItem } from '../../../../../src/lib/types/taskItem';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import FoldersElement from '../../components/FoldersElement';
-
-interface Repository extends RepositoryMaintainerSettings {
-	// Should be okay, even if technically we shouldn't be able to place Maintainer Settings when MaintainerMode is off
-}
+import { Repository } from '../../../../../src/lib/types/repo';
 
 interface RepositoriesFormProps {
 	repository: Repository;

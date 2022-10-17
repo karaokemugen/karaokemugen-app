@@ -5,14 +5,10 @@ import i18next from 'i18next';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { RepositoryMaintainerSettings } from '../../../../../src/lib/types/repo';
 import { DifferentChecksumReport } from '../../../../../src/types/repo';
 import { commandBackend } from '../../../utils/socket';
 import RepositoryForm from './RepositoriesForm';
-
-interface Repository extends RepositoryMaintainerSettings {
-	// Should be okay, even if technically we shouldn't be able to place Maintainer Settings when MaintainerMode is off
-}
+import { Repository } from '../../../../../src/lib/types/repo';
 
 const newrepository: Repository = {
 	Name: undefined,
