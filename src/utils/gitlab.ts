@@ -1,4 +1,3 @@
-import { RepositoryMaintainerSettings } from '../lib/types/repo';
 import HTTP from '../lib/utils/http';
 import logger from '../lib/utils/logger';
 import { editRepo, getRepo } from '../services/repo';
@@ -16,7 +15,7 @@ export async function assignIssue(issue: number, repoName: string) {
 	};
 	if (!repo.Git.ProjectID) {
 		// Editing the repo should trigger
-		repo = (await editRepo(repo.Name, repo)) as RepositoryMaintainerSettings;
+		repo = await editRepo(repo.Name, repo);
 	}
 	await HTTP.put(`${url.protocol}//${url.hostname}/api/v4/projects/${repo.Git.ProjectID}/issues/${+issue}`, params, {
 		headers: {

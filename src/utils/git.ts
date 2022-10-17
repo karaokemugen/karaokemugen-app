@@ -3,12 +3,11 @@ import { resolve } from 'path';
 import simpleGit, { DefaultLogFields, ListLogLine, SimpleGit, SimpleGitProgressEvent } from 'simple-git';
 import which from 'which';
 
-import { RepositoryMaintainerSettings } from '../lib/types/repo';
+import { Repository } from '../lib/types/repo';
 import { fileExists } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import { getRepo } from '../services/repo';
-import { Repository } from '../types/config';
 import { Commit } from '../types/repo';
 import { getState } from './state';
 
@@ -84,7 +83,7 @@ export default class Git {
 			logger.info('Setting up git repository settings', { service });
 			// Set email and stuff
 			// This is done on each setup because when these are modified in the repo setting, git might not be ready yet.
-			const repo = getRepo(this.opts.repoName) as RepositoryMaintainerSettings;
+			const repo = getRepo(this.opts.repoName);
 			await this.configUser(repo.Git.Author, repo.Git.Email);
 			// Avoid crlf conflicts
 			await this.git.addConfig('core.autocrlf', 'true');
