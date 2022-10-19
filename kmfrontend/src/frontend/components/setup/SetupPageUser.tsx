@@ -47,7 +47,9 @@ function SetupPageUser() {
 			setError(undefined);
 			loginCall();
 		} catch (err: any) {
-			const error = err?.message ? i18next.t(`ERROR_CODES.${err.message.code}`) : JSON.stringify(err);
+			const error = err?.message
+				? i18next.t(`ERROR_CODES.${JSON.parse(err.message).message.code}`)
+				: JSON.stringify(err);
 			setError(error);
 		}
 	};
