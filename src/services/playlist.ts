@@ -717,7 +717,7 @@ export async function addKaraToPlaylist(params: AddKaraParams) {
 		pl ? (plname = pl.name) : (plname = 'Unknown');
 		throw {
 			code: err?.code,
-			message: errorCode,
+			msg: errorCode,
 			data: {
 				details: err.msg,
 				kara: karas ? karas[0] : null,
