@@ -519,6 +519,7 @@
 		},
 		"SYSTEM_PREFERENCES": {
 			"TITLE": "Preferensi sistem",
+			"TITLEMAC": "Pengaturan système",
 			"DESCRIPTION": "Pengaturan terkait aplikasi saja"
 		},
 		"CONFIGURATION": {

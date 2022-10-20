@@ -1558,6 +1558,7 @@
 		},
 		"SYSTEM_PREFERENCES": {
 			"TITLE": "Préférences système",
+			"TITLEMAC": "Réglages système",
 			"DESCRIPTION": "Paramètres uniquement liés à l'application Karaoke Mugen"
 		},
 		"CONFIGURATION": {

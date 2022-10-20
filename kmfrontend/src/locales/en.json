@@ -1556,6 +1556,7 @@
 		},
 		"SYSTEM_PREFERENCES": {
 			"TITLE": "System preferences",
+			"TITLEMAC": "System settings",
 			"DESCRIPTION": "Application-related settings only"
 		},
 		"CONFIGURATION": {
