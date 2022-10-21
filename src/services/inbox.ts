@@ -62,7 +62,7 @@ export async function downloadKaraFromInbox(inid: string, repoName: string, toke
 				throw err;
 			}
 		}
-		kara.kara.data.data.created_at = new Date().toISOString();
+		if (!kara.edited_kid) kara.kara.data.data.created_at = new Date().toISOString();
 		kara.kara.data.data.modified_at = new Date().toISOString();
 		const promises = [downloadMediaFromInbox(kara, repoName)];
 		// Code to integrate kara and download medias
