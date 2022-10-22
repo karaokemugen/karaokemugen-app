@@ -47,7 +47,10 @@ export function commandBackend(name: string, body?: any, loading = false, timeou
 				message: `${name} timeout`,
 				data: bodyWithoutpwd,
 			});
-			reject(new Error('commandBackend timeout'));
+			const error = new Error();
+			error.message = `${name} timeout`;
+			error.name = 'commandBackend timeout';
+			reject(error);
 		}, timeout);
 		socket.emit(
 			name,
