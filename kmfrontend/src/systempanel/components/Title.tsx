@@ -4,7 +4,6 @@ import TasksEvent from '../../TasksEvent';
 interface Props {
 	title: string;
 	description: string;
-	showTasks?: boolean;
 }
 
 export default function Title(props: Props) {
@@ -15,7 +14,7 @@ export default function Title(props: Props) {
 					<div className="title">{props.title}</div>
 					<div className="description">{props.description}</div>
 				</div>
-				{props.showTasks ? <TasksEvent limit={3} styleTask="system-tasks-wrapper" /> : null}
+				<TasksEvent limit={3} styleTask="system-tasks-wrapper" />
 			</div>
 		</Layout.Header>
 	);
