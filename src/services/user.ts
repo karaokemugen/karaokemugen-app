@@ -217,17 +217,6 @@ export async function hashPasswordbcrypt(password: string): Promise<string> {
 
 /** Check if password matches or if user type is 2 (guest) and password in database is empty. */
 export async function checkPassword(user: User, password: string): Promise<boolean> {
-	// First we test if password needs to be updated to new hash
-	// Remove this in KM 7.0
-	const hashedPasswordSHA = hashPassword(password);
-	const hashedPasswordbcrypt = await hashPasswordbcrypt(password);
-
-	if (user.password === hashedPasswordSHA) {
-		// Needs update to bcrypt hashed password
-		await updateUserPassword(user.login, hashedPasswordbcrypt);
-		user.password = hashedPasswordbcrypt;
-	}
-
 	if ((await compare(password, user.password)) || (user.type === 2 && !user.password)) {
 		return true;
 	}
