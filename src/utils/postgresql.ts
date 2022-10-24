@@ -435,11 +435,6 @@ export async function checkAndInstallVCRedist() {
 				file: resolve('C:/Windows/System32/vcruntime140.dll'),
 				URL: 'https://mugen.karaokes.moe/downloads/vcredist2015_x64.exe',
 			},
-			// Remove 2012 in KM 7.0
-			2012: {
-				file: resolve('C:/Windows/System32/msvcr120.dll'),
-				URL: 'https://mugen.karaokes.moe/downloads/vcredist_x64.exe',
-			},
 		};
 		const check = expectedPGVersion > 10 ? checks[2015] : checks[2012];
 		if (await fileExists(check.file)) return;
