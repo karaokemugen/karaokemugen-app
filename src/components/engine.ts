@@ -171,15 +171,13 @@ export async function initEngine() {
 		}
 		try {
 			if (conf.Player.KeyboardMediaShortcuts) registerShortcuts();
-			initStep(i18next.t('INIT_PLAYLIST_AND_PLAYER'));
-			const initPromises = [initPlaylistSystem(), initDownloader(), initSession()];
+			initPlaylistSystem();
+			initDownloader();
+			initSession();
 			if (conf.Karaoke.StreamerMode.Twitch.Enabled) initTwitch();
 			if (!conf.App.FirstRun && !state.isTest && !state.opt.noPlayer) {
-				initPromises.push(initPlayer());
+				initPlayer();
 			}
-			profile('initPromises');
-			await Promise.all(initPromises);
-			profile('initPromises');
 			if (conf.Online.Stats === true) initStats(false);
 			initStep(i18next.t('INIT_LAST'), true);
 			enableWSLogging(state.opt.debug ? 'debug' : 'info');
