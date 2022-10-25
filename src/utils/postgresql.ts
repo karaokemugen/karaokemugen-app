@@ -436,7 +436,7 @@ export async function checkAndInstallVCRedist() {
 				URL: 'https://mugen.karaokes.moe/downloads/vcredist2015_x64.exe',
 			},
 		};
-		const check = expectedPGVersion > 10 ? checks[2015] : checks[2012];
+		const check = checks[2015];
 		if (await fileExists(check.file)) return;
 		// Let's download VC Redist and install it yo.
 		logger.warn('Visual C++ Redistribuable not found, downloading and installing.', { service });
