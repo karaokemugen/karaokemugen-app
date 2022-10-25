@@ -15,7 +15,7 @@ import { asciiRegexp } from '../lib/utils/constants';
 import { downloadFile } from '../lib/utils/downloader';
 // KM Imports
 import { compressGzipFile, decompressGzipFile, fileExists, smartMove } from '../lib/utils/files';
-import logger from '../lib/utils/logger';
+import logger, { profile } from '../lib/utils/logger';
 import { PGVersion } from '../types/database';
 import { checkBinaries, editSetting } from './config';
 import { expectedPGVersion, pgctlRegex } from './constants';
@@ -340,6 +340,7 @@ export async function checkPG(): Promise<boolean> {
 
 /** Initialize bundled PostgreSQL server and data if necessary */
 export async function initPG(relaunch = true) {
+	profile('initPG');
 	let conf = getConfig();
 	let state = getState();
 	// Sometime this fails and doesn't detect VCRedist's absence.
@@ -423,6 +424,7 @@ export async function initPG(relaunch = true) {
 			logger.error('PostgreSQL error', { service, obj: decoder.write(err2.stderr) });
 		}
 		errorStep(i18next.t('ERROR_START_PG'));
+		profile('initPG');
 		throw err.message;
 	}
 }

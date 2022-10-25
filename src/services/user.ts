@@ -25,7 +25,7 @@ import { User, UserParams } from '../lib/types/user';
 import { getConfig, resolvedPath, setConfig } from '../lib/utils/config';
 import { asciiRegexp, imageFileTypes } from '../lib/utils/constants';
 import { detectFileType, fileExists } from '../lib/utils/files';
-import logger from '../lib/utils/logger';
+import logger, { profile } from '../lib/utils/logger';
 import { emitWS } from '../lib/utils/ws';
 import { Config } from '../types/config';
 import { UserOpts } from '../types/user';
@@ -466,6 +466,7 @@ async function createDefaultGuests() {
 /** Initializing user auth module */
 export async function initUserSystem() {
 	// Check if a admin user exists just in case. If not create it with a random password.
+	profile('initUserSystem');
 	let users = await getUsers();
 	if (!users.find(u => u.login === 'admin')) {
 		await createUser(
@@ -532,6 +533,7 @@ export async function initUserSystem() {
 		.sort((a, b) => (a.last_login_at < b.last_login_at ? 1 : -1));
 	logger.debug('Admin users', { service, obj: JSON.stringify(adminUsers) });
 	sentry.setUser(adminUsers[0]?.login || 'admin');
+	profile('initUserSystem');
 }
 
 /** Performs defaults checks and creations for avatars/guests. This is done synchronously here because these are linked, but userChecks is called asynchronously to speed up init process */

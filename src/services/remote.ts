@@ -2,7 +2,7 @@ import { getInstanceID, getSettings, saveSetting } from '../lib/dao/database';
 import { APIDataProxied } from '../lib/types/api';
 import { RemoteSettings, RemoteSuccess } from '../lib/types/remote';
 import { getConfig } from '../lib/utils/config';
-import logger from '../lib/utils/logger';
+import logger, { profile } from '../lib/utils/logger';
 import { getWS } from '../lib/utils/ws';
 import { configureHost } from '../utils/config';
 import { commandKMServer, getKMServerSocket } from '../utils/kmserver';
@@ -129,6 +129,7 @@ export async function destroyRemote() {
 
 export async function initRemote() {
 	try {
+		profile('initRemote');
 		const data = await startRemote();
 		getKMServerSocket().onAny(proxy);
 		// This will be triggered on reconnection, as the first connect is handled by initKMServerCommunication
@@ -144,5 +145,7 @@ export async function initRemote() {
 		if (err?.message?.code) {
 			setState({ remoteAccess: { err: true, reason: err.message.code } });
 		}
+	} finally {
+		profile('initRemote');
 	}
 }
