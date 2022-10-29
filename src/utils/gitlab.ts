@@ -1,4 +1,3 @@
-import { RepositoryMaintainerSettings } from '../lib/types/repo';
 import HTTP from '../lib/utils/http';
 import logger from '../lib/utils/logger';
 import { editRepo, getRepo } from '../services/repo';
@@ -16,7 +15,7 @@ export async function assignIssue(issue: number, repoName: string) {
 	};
 	if (!repo.Git.ProjectID) {
 		// Editing the repo should trigger
-		repo = (await editRepo(repo.Name, repo)) as RepositoryMaintainerSettings;
+		repo = await editRepo(repo.Name, repo);
 	}
 	await HTTP.put(`${url.protocol}//${url.hostname}/api/v4/projects/${repo.Git.ProjectID}/issues/${+issue}`, params, {
 		headers: {
@@ -48,28 +47,4 @@ export async function getUserID(repoName: string) {
 		logger.error('Unable to get assign user to an issue', { service, obj: err });
 		throw err;
 	}
-}
-
-/** Close an issue */
-export async function closeIssue(issue: number, repoName: string) {
-	let repo = getRepo(repoName);
-	const params = {
-		state_event: 'close',
-	};
-	if (!repo.MaintainerMode) throw 'Maintainer mode is not enabled for this repository';
-	const url = new URL(repo.Git.URL);
-	if (!repo.Git.ProjectID) {
-		// Editing the repo should trigger
-		await editRepo(repo.Name, repo);
-		repo = getRepo(repoName) as RepositoryMaintainerSettings;
-	}
-	const closeIssueURL = `${url.protocol}//${url.hostname}/api/v4/projects/${repo.Git.ProjectID}/issues/${issue}`;
-	logger.debug(`Close Issue URL: ${closeIssueURL}`, { service });
-	await HTTP.put(closeIssueURL, params, {
-		headers: {
-			'PRIVATE-TOKEN': repo.Git.Password,
-			'Content-Type': 'application/json',
-		},
-		timeout: 25000,
-	});
 }

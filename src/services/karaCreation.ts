@@ -2,7 +2,7 @@ import { promises as fs } from 'fs';
 import { basename, extname, resolve } from 'path';
 
 import { applyKaraHooks } from '../lib/dao/hook';
-import { extractVideoSubtitles, verifyKaraData, writeKara } from '../lib/dao/karafile';
+import { extractVideoSubtitles, trimKaraData, verifyKaraData, writeKara } from '../lib/dao/karafile';
 import { defineFilename, determineMediaAndLyricsFilenames, processSubfile } from '../lib/services/karaCreation';
 import { EditedKara } from '../lib/types/kara.d';
 import { resolvedPath, resolvedPathRepos } from '../lib/utils/config';
@@ -23,11 +23,12 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 		text: 'EDITING_SONG',
 		subtext: editedKara.kara.data.titles[editedKara.kara.data.titles_default_language],
 	});
-	const kara = editedKara.kara;
+	const kara = trimKaraData(editedKara.kara);
 	// Validation here, processing stuff later
 	// No sentry triggered if validation fails
 	try {
 		verifyKaraData(kara);
+
 		if (kara.data.parents) {
 			if (kara.data.parents.includes(kara.data.kid)) {
 				throw 'Did you just try to make a song its own parent?';
@@ -150,7 +151,7 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 }
 
 export async function createKara(editedKara: EditedKara) {
-	const kara = editedKara.kara;
+	const kara = trimKaraData(editedKara.kara);
 	const task = new Task({
 		text: 'CREATING_SONG',
 		subtext: kara.data.titles[kara.data.titles_default_language],

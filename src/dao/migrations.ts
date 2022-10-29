@@ -1,3 +1,4 @@
+import { profile } from 'console';
 import { dialog } from 'electron';
 import i18next from 'i18next';
 import Postgrator from 'postgrator';
@@ -16,6 +17,7 @@ import { compareKarasChecksum, generateDB } from './database';
 const service = 'DBMigration';
 
 export async function postMigrationTasks(migrations: Postgrator.Migration[], didGeneration: boolean) {
+	profile('postMigrationTasks');
 	let doGenerate = false;
 	// Add code here to do stuff when migrations occur
 	for (const migration of migrations) {
@@ -92,4 +94,5 @@ export async function postMigrationTasks(migrations: Postgrator.Migration[], did
 		if (breakFromLoop) break;
 	}
 	if (doGenerate) await Promise.all([generateDB(), compareKarasChecksum()]);
+	profile('postMigrationTasks');
 }

@@ -223,7 +223,7 @@ function Playlist(props: IProps) {
 		return (
 			!is_touch_device() &&
 			props.scope === 'admin' &&
-			!isNonStandardPlaylist(getPlaylistInfo(props.side, context).plaid) &&
+			!isNonStandardPlaylist(getPlaylistInfo(props.side, context)?.plaid) &&
 			searchType !== 'recent' &&
 			searchType !== 'requested' &&
 			!searchValue &&

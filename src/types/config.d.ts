@@ -1,9 +1,7 @@
 import { PathType } from '../lib/types/config';
-import { RepositoryMaintainerSettings, RepositoryUserSettings } from '../lib/types/repo';
+import { Repository } from '../lib/types/repo';
 import { MediaType } from './medias';
 import { MpvHardwareDecodingOptions } from './mpvIPC';
-
-export type Repository = RepositoryUserSettings | RepositoryMaintainerSettings;
 
 export interface Config {
 	App: {

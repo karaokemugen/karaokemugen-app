@@ -2,6 +2,7 @@ import { dialog, globalShortcut, systemPreferences } from 'electron';
 import i18next from 'i18next';
 
 import { getConfig } from '../lib/utils/config';
+import { profile } from '../lib/utils/logger';
 import { next, pausePlayer, playPlayer, prev, stopPlayer } from '../services/player';
 import { getState, setState } from '../utils/state';
 
@@ -14,6 +15,7 @@ export async function registerShortcuts() {
 			});
 		systemPreferences.isTrustedAccessibilityClient(true);
 	}
+	profile('initKeyboardShortcuts');
 	globalShortcut.register('MediaPlayPause', () => {
 		getState().player.playerStatus === 'play' ? pausePlayer() : playPlayer().catch(() => {});
 	});
@@ -29,6 +31,7 @@ export async function registerShortcuts() {
 		setState({ singlePlay: false, randomPlaying: false });
 		stopPlayer().catch(() => {});
 	});
+	profile('initKeyboardShortcuts');
 }
 
 export function unregisterShortcuts() {

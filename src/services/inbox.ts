@@ -8,11 +8,12 @@ import { Inbox } from '../lib/types/inbox';
 import { resolvedPath, resolvedPathRepos } from '../lib/utils/config';
 import { downloadFile } from '../lib/utils/downloader';
 import { smartMove } from '../lib/utils/files';
+import { closeIssue } from '../lib/utils/gitlab';
 import HTTP from '../lib/utils/http';
 import logger from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import { emitWS } from '../lib/utils/ws';
-import { assignIssue, closeIssue } from '../utils/gitlab';
+import { assignIssue } from '../utils/gitlab';
 import { integrateKaraFile } from './karaManagement';
 import { checkDownloadStatus, getRepo } from './repo';
 import { updateAllSmartPlaylists } from './smartPlaylist';
@@ -61,6 +62,8 @@ export async function downloadKaraFromInbox(inid: string, repoName: string, toke
 				throw err;
 			}
 		}
+		if (!kara.edited_kid) kara.kara.data.data.created_at = new Date().toISOString();
+		kara.kara.data.data.modified_at = new Date().toISOString();
 		const promises = [downloadMediaFromInbox(kara, repoName)];
 		// Code to integrate kara and download medias
 		if (kara.lyrics) {

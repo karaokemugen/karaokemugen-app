@@ -47,7 +47,10 @@ export function commandBackend(name: string, body?: any, loading = false, timeou
 				message: `${name} timeout`,
 				data: bodyWithoutpwd,
 			});
-			reject(new Error('commandBackend timeout'));
+			const error = new Error();
+			error.message = `${name} timeout`;
+			error.name = 'commandBackend timeout';
+			reject(error);
 		}, timeout);
 		socket.emit(
 			name,
@@ -81,7 +84,10 @@ export function commandBackend(name: string, body?: any, loading = false, timeou
 				) {
 					displayMessage('success', i18next.t(`SUCCESS_CODES.${data.code}`, { data: data.data }));
 				} else if (err && data?.message?.code && typeof data.data !== 'object') {
-					displayMessage('error', i18next.t(`ERROR_CODES.${data.message.code}`, { data: data.data }));
+					displayMessage(
+						data.code?.toString().startsWith('4') ? 'warning' : 'error',
+						i18next.t(`ERROR_CODES.${data.message.code}`, { data: data.data })
+					);
 				}
 				err ? reject(new Error(JSON.stringify(data))) : resolve(data);
 			}

@@ -191,47 +191,93 @@ class Config extends Component<ConfigProps, ConfigState> {
 	};
 
 	render() {
-		return (
-			<>
-				<Title
-					title={i18next.t(
-						this.props.properties ? 'HEADERS.SYSTEM_PREFERENCES.TITLE' : 'HEADERS.CONFIGURATION.TITLE'
-					)}
-					description={i18next.t(
-						this.props.properties
-							? 'HEADERS.SYSTEM_PREFERENCES.DESCRIPTION'
-							: 'HEADERS.CONFIGURATION.DESCRIPTION'
-					)}
-				/>
-				<Layout.Content>
-					<Button style={{ margin: '0.75em' }} type="primary" onClick={this.refresh}>
-						{i18next.t('CONFIG.SAVE')}
-					</Button>
-					{this.props.properties ? null : (
-						<>
-							<Button style={{ margin: '0.75em' }} type="primary" onClick={this.configBackup}>
-								{i18next.t('CONFIG.BACKUP_CONFIG_FILE')}
-							</Button>
-							<p>{i18next.t('CONFIG.MESSAGE')}</p>
-							<Input.Search
-								placeholder={i18next.t('SEARCH_FILTER')}
-								value={this.state.filter}
-								onChange={event => this.setState({ filter: event.target.value })}
-								enterButton={i18next.t('SEARCH')}
-								style={{ marginBottom: '0.75em' }}
-							/>
-						</>
-					)}
-					<Table
-						columns={this.columns}
-						dataSource={this.state.config.filter(property =>
-							(property.key as string).toLowerCase().includes(this.state.filter.toLowerCase())
+		if (navigator.platform.indexOf('Mac') === 0) {
+			return (
+				<>
+					<Title
+						title={i18next.t(
+							this.props.properties
+								? 'HEADERS.SYSTEM_PREFERENCES.TITLEMAC'
+								: 'HEADERS.CONFIGURATION.TITLE'
 						)}
-						pagination={false}
+						description={i18next.t(
+							this.props.properties
+								? 'HEADERS.SYSTEM_PREFERENCES.DESCRIPTION'
+								: 'HEADERS.CONFIGURATION.DESCRIPTION'
+						)}
 					/>
-				</Layout.Content>
-			</>
-		);
+					<Layout.Content>
+						<Button style={{ margin: '0.75em' }} type="primary" onClick={this.refresh}>
+							{i18next.t('CONFIG.SAVE')}
+						</Button>
+						{this.props.properties ? null : (
+							<>
+								<Button style={{ margin: '0.75em' }} type="primary" onClick={this.configBackup}>
+									{i18next.t('CONFIG.BACKUP_CONFIG_FILE')}
+								</Button>
+								<p>{i18next.t('CONFIG.MESSAGE')}</p>
+								<Input.Search
+									placeholder={i18next.t('SEARCH_FILTER')}
+									value={this.state.filter}
+									onChange={event => this.setState({ filter: event.target.value })}
+									enterButton={i18next.t('SEARCH')}
+									style={{ marginBottom: '0.75em' }}
+								/>
+							</>
+						)}
+						<Table
+							columns={this.columns}
+							dataSource={this.state.config.filter(property =>
+								(property.key as string).toLowerCase().includes(this.state.filter.toLowerCase())
+							)}
+							pagination={false}
+						/>
+					</Layout.Content>
+				</>
+			);
+		} else {
+			return (
+				<>
+					<Title
+						title={i18next.t(
+							this.props.properties ? 'HEADERS.SYSTEM_PREFERENCES.TITLE' : 'HEADERS.CONFIGURATION.TITLE'
+						)}
+						description={i18next.t(
+							this.props.properties
+								? 'HEADERS.SYSTEM_PREFERENCES.DESCRIPTION'
+								: 'HEADERS.CONFIGURATION.DESCRIPTION'
+						)}
+					/>
+					<Layout.Content>
+						<Button style={{ margin: '0.75em' }} type="primary" onClick={this.refresh}>
+							{i18next.t('CONFIG.SAVE')}
+						</Button>
+						{this.props.properties ? null : (
+							<>
+								<Button style={{ margin: '0.75em' }} type="primary" onClick={this.configBackup}>
+									{i18next.t('CONFIG.BACKUP_CONFIG_FILE')}
+								</Button>
+								<p>{i18next.t('CONFIG.MESSAGE')}</p>
+								<Input.Search
+									placeholder={i18next.t('SEARCH_FILTER')}
+									value={this.state.filter}
+									onChange={event => this.setState({ filter: event.target.value })}
+									enterButton={i18next.t('SEARCH')}
+									style={{ marginBottom: '0.75em' }}
+								/>
+							</>
+						)}
+						<Table
+							columns={this.columns}
+							dataSource={this.state.config.filter(property =>
+								(property.key as string).toLowerCase().includes(this.state.filter.toLowerCase())
+							)}
+							pagination={false}
+						/>
+					</Layout.Content>
+				</>
+			);
+		}
 	}
 }
 

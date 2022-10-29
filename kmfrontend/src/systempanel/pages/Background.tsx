@@ -141,7 +141,9 @@ export default function Background() {
 					showIcon
 					message={
 						<ul>
-							{i18next.t<string[]>('BACKGROUNDS_MGMT.INFO', { returnObjects: true })?.map((info, i) => (
+							{(
+								i18next.t<string>('BACKGROUNDS_MGMT.INFO', { returnObjects: true }) as any as string[]
+							)?.map((info, i) => (
 								<li key={i}>{info}</li>
 							))}
 						</ul>

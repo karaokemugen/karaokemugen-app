@@ -106,8 +106,8 @@ export default function karaController(router: SocketIOApp) {
 				code: 'PL_SONG_ADDED',
 			};
 		} catch (err) {
-			errMessage(err?.code, err?.message);
-			throw { code: err?.code || 500, message: APIMessage(err.message, err.msg) };
+			errMessage(err?.code, err?.msg);
+			throw { code: err?.code || 500, message: APIMessage(err?.msg) };
 		}
 	});
 	router.route('editKara', async (socket: Socket, req: APIData) => {

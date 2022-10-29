@@ -35,8 +35,12 @@ function TagEdit() {
 	};
 
 	const handleTagMerge = async (tid1: string, tid2: string) => {
-		await commandBackend('mergeTags', { tid1, tid2 }, true, 300000);
-		navigate('/system/tags/');
+		try {
+			await commandBackend('mergeTags', { tid1, tid2 }, true, 300000);
+			navigate('/system/tags/');
+		} catch (e) {
+			// already display
+		}
 	};
 
 	const loadTag = async () => {

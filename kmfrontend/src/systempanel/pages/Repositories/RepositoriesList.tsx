@@ -12,10 +12,10 @@ import i18next from 'i18next';
 import { Component } from 'react';
 import { Link } from 'react-router-dom';
 
-import { Repository } from '../../../../../src/types/config';
 import { commandBackend } from '../../../utils/socket';
 import { displayMessage } from '../../../utils/tools';
 import CollectionsActivation from './CollectionsActivation';
+import { Repository } from '../../../../../src/lib/types/repo';
 
 interface RepositoryListState {
 	repositories: Repository[];

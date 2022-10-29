@@ -84,7 +84,7 @@ function PublicPage() {
 				setPollActive(true);
 			}
 		} catch (err) {
-			if ((err as { code: number }).code === 425) {
+			if ((err as { code: number })?.code === 425) {
 				setPollActive(false);
 			}
 		}

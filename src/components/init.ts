@@ -10,7 +10,7 @@ import { errorStep, initStep } from '../electron/electronLogger';
 import { PathType } from '../lib/types/config';
 import { configureLocale, getConfig, resolvedPath, setConfig } from '../lib/utils/config';
 import { asyncCheckOrMkdir, fileExists } from '../lib/utils/files';
-import logger, { configureLogger } from '../lib/utils/logger';
+import logger, { configureLogger, profile } from '../lib/utils/logger';
 import { resetSecurityCode } from '../services/auth';
 import { backgroundTypes } from '../services/backgrounds';
 import { editRepo } from '../services/repo';
@@ -51,8 +51,9 @@ async function getAppCommitSHA(): Promise<string> {
 /** First step of init : locale, config, logger, state... */
 export async function preInit() {
 	const state = getState();
-	await configureLocale();
 	await configureLogger(state.dataPath, argv.opts().verbose || app?.commandLine.hasSwitch('verbose'), true);
+	profile('preInit');
+	await configureLocale();
 	resetSecurityCode();
 	setState({ os: process.platform });
 	setupFromCommandLineArgs(argv, app ? app.commandLine : null);
@@ -78,10 +79,12 @@ export async function preInit() {
 	}
 	// Test if network ports are available
 	await verifyOpenPort(getConfig().System.FrontendPort, getConfig().App.FirstRun);
+	profile('preInit');
 }
 
 /** Initialize folders, paths and start the engine */
 export async function init() {
+	profile('Init');
 	initStep(i18next.t('INIT_INIT'));
 	// Set version number
 	const sha = await getAppCommitSHA();
@@ -94,6 +97,7 @@ export async function init() {
 
 	// Checking paths, create them if needed.
 	await checkPaths(getConfig());
+	profile('copyBackgrounds');
 	// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel
 	const tempInput = resolve(resolvedPath('Temp'), 'input.conf');
 	logger.debug(`Copying input.conf to ${tempInput}`, { service });
@@ -106,7 +110,7 @@ export async function init() {
 	// Copy avatar blank.png if it doesn't exist to the avatar path
 	logger.debug(`Copying blank.png to ${resolvedPath('Avatars')}`, { service });
 	await copy(resolve(state.resourcePath, 'assets/blank.png'), resolve(resolvedPath('Avatars'), 'blank.png'));
-
+	profile('copyBackgrounds');
 	// Gentlemen, start your engines.
 	try {
 		await initEngine();
@@ -117,11 +121,13 @@ export async function init() {
 		errorStep(i18next.t('ERROR_UNKNOWN'));
 		if (argv.opts().cli) exit(1);
 	}
+	profile('Init');
 }
 
 /* Checking if application paths exist. * */
 async function checkPaths(config: Config) {
 	try {
+		profile('checkPaths');
 		await remove(resolvedPath('BundledBackgrounds')).catch();
 		await remove(resolvedPath('Import')).catch();
 		// Checking paths
@@ -160,11 +166,14 @@ async function checkPaths(config: Config) {
 	} catch (err) {
 		errorStep(i18next.t('ERROR_INIT_PATHS'));
 		throw err;
+	} finally {
+		profile('checkPaths');
 	}
 }
 
 async function verifyOpenPort(portConfig: number, firstRun: boolean) {
 	try {
+		profile('verifyOpenPort');
 		const port = await getPortPromise({
 			port: portConfig,
 			stopPort: 7331,
@@ -179,5 +188,7 @@ async function verifyOpenPort(portConfig: number, firstRun: boolean) {
 		}
 	} catch (err) {
 		throw new Error('Failed to find a free port to use');
+	} finally {
+		profile('verifyOpenPort');
 	}
 }

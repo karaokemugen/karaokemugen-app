@@ -50,16 +50,19 @@ export function isShutdownInProgress() {
 }
 
 export async function initEngine() {
-	profile('Init');
+	profile('InitEngine');
 	const conf = getConfig();
 	const state = getState();
 	if (conf.Karaoke.Poll.Enabled) setState({ songPoll: true });
 	const internet = await (async () => {
 		try {
+			profile('InternetCheck');
 			await internetAvailable();
 			return true;
 		} catch (err) {
 			return false;
+		} finally {
+			profile('InternetCheck');
 		}
 	})();
 	if (state.opt.validate) {
@@ -168,13 +171,13 @@ export async function initEngine() {
 		}
 		try {
 			if (conf.Player.KeyboardMediaShortcuts) registerShortcuts();
-			initStep(i18next.t('INIT_PLAYLIST_AND_PLAYER'));
-			const initPromises = [initPlaylistSystem(), initDownloader(), initSession()];
+			initPlaylistSystem();
+			initDownloader();
+			initSession();
 			if (conf.Karaoke.StreamerMode.Twitch.Enabled) initTwitch();
 			if (!conf.App.FirstRun && !state.isTest && !state.opt.noPlayer) {
-				initPromises.push(initPlayer());
+				initPlayer();
 			}
-			await Promise.all(initPromises);
 			if (conf.Online.Stats === true) initStats(false);
 			initStep(i18next.t('INIT_LAST'), true);
 			enableWSLogging(state.opt.debug ? 'debug' : 'info');
@@ -227,7 +230,7 @@ export async function initEngine() {
 			sentry.error(err);
 			if (state.isTest) process.exit(1000);
 		} finally {
-			profile('Init');
+			profile('InitEngine');
 		}
 	}
 }
@@ -314,6 +317,7 @@ export function shutdown() {
 
 async function preFlightCheck(): Promise<boolean> {
 	const state = getState();
+	profile('preFlightCheck');
 	let doGenerate = false;
 	if (!state.opt.noBaseCheck) {
 		const filesChanged = await compareKarasChecksum();
@@ -346,6 +350,7 @@ async function preFlightCheck(): Promise<boolean> {
 	logger.info(`Songs played : ${stats?.played}`, { service });
 	// Run this in the background
 	vacuum();
+	profile('preFlightCheck');
 	return doGenerate;
 }
 
@@ -365,12 +370,14 @@ async function runTests() {
 }
 
 async function checkIfAppHasBeenUpdated() {
+	profile('updateCheck');
 	const settings = await getSettings();
 	if (settings.appVersion !== getState().version.number) {
 		// We check if appVersion exists so we don't trigger the appHasBeenUpdated new state if it didn't exist before (new installs, or migration from when this function didn't exist)
 		await saveSetting('appVersion', getState().version.number);
 		if (settings.appVersion) setState({ appHasBeenUpdated: true });
 	}
+	profile('updateCheck');
 }
 
 /** Set admin password on first run, and open browser on welcome page.
@@ -380,6 +387,7 @@ async function checkIfAppHasBeenUpdated() {
  * Sugata katachi mo juunin toiro dakara hikareau no /
  */
 export async function welcomeToYoukousoKaraokeMugen(): Promise<string> {
+	profile('welcome');
 	const conf = getConfig();
 	const state = getState();
 	let url = `http://localhost:${state.frontendPort}/welcome`;
@@ -388,5 +396,6 @@ export async function welcomeToYoukousoKaraokeMugen(): Promise<string> {
 		url = `http://localhost:${conf.System.FrontendPort}/setup?admpwd=${adminPassword}`;
 	}
 	if (!state.opt.noBrowser && !state.isTest && state.opt.cli) shell.openPath(url);
+	profile('welcome');
 	return url;
 }

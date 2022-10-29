@@ -102,13 +102,13 @@ export default function Inbox() {
 							</a>
 						</div>
 					) : null}
-					{userDetails?.social_networks.discord ? (
+					{userDetails?.social_networks?.discord ? (
 						<div>
 							<label>{i18next.t('INBOX.CONTACT_INFOS_MODAL.SOCIAL_NETWORKS.DISCORD')}</label>
 							{userDetails.social_networks.discord}
 						</div>
 					) : null}
-					{userDetails?.social_networks.twitter ? (
+					{userDetails?.social_networks?.twitter ? (
 						<div>
 							<label>{i18next.t('INBOX.CONTACT_INFOS_MODAL.SOCIAL_NETWORKS.TWITTER')}</label>
 							<a
@@ -120,7 +120,7 @@ export default function Inbox() {
 							</a>
 						</div>
 					) : null}
-					{userDetails?.social_networks.instagram ? (
+					{userDetails?.social_networks?.instagram ? (
 						<div>
 							<label>{i18next.t('INBOX.CONTACT_INFOS_MODAL.SOCIAL_NETWORKS.INSTAGRAM')}</label>
 							<a
@@ -132,7 +132,7 @@ export default function Inbox() {
 							</a>
 						</div>
 					) : null}
-					{userDetails?.social_networks.twitch ? (
+					{userDetails?.social_networks?.twitch ? (
 						<div>
 							<label>{i18next.t('INBOX.CONTACT_INFOS_MODAL.SOCIAL_NETWORKS.TWITCH')}</label>
 							<a

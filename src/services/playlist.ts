@@ -77,6 +77,7 @@ const service = 'Playlist';
 
 /** Test if basic playlists exist */
 export async function testPlaylists() {
+	profile('testPlaylists');
 	const pls = await getPlaylists(adminToken);
 	const currentPL = pls.find(pl => pl.flag_current);
 	const publicPL = pls.find(pl => pl.flag_public);
@@ -158,6 +159,7 @@ export async function testPlaylists() {
 		});
 		logger.debug('Initial blacklist playlist created', { service });
 	}
+	profile('testPlaylists');
 }
 
 /** Getting position of the currently playing karaoke in a playlist */
@@ -717,7 +719,7 @@ export async function addKaraToPlaylist(params: AddKaraParams) {
 		pl ? (plname = pl.name) : (plname = 'Unknown');
 		throw {
 			code: err?.code,
-			message: errorCode,
+			msg: errorCode,
 			data: {
 				details: err.msg,
 				kara: karas ? karas[0] : null,

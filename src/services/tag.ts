@@ -18,7 +18,7 @@ import { saveSetting } from '../lib/dao/database';
 import { refreshKarasUpdate } from '../lib/dao/kara';
 import { formatKaraV4 } from '../lib/dao/karafile';
 import { convertToDBTag, refreshTags, updateTagSearchVector } from '../lib/dao/tag';
-import { formatTagFile, getDataFromTagFile, removeTagFile, writeTagFile } from '../lib/dao/tagfile';
+import { formatTagFile, getDataFromTagFile, removeTagFile, trimTagData, writeTagFile } from '../lib/dao/tagfile';
 import { refreshKarasAfterDBChange } from '../lib/services/karaManagement';
 import { DBKara, DBKaraTag } from '../lib/types/database/kara';
 import { DBTag, DBTagMini } from '../lib/types/database/tag';
@@ -67,6 +67,7 @@ export async function addTag(tagObj: Tag, opts = { silent: false, refresh: true 
 		});
 	}
 	try {
+		tagObj = trimTagData(tagObj);
 		if (!tagObj.tid) tagObj.tid = uuidV4();
 		if (!tagObj.tagfile) tagObj.tagfile = `${sanitizeFile(tagObj.name)}.${tagObj.tid.substring(0, 8)}.tag.json`;
 		const tagfile = tagObj.tagfile;
@@ -205,6 +206,7 @@ export async function editTag(
 		if (opts.repoCheck && oldTag.repository !== tagObj.repository) {
 			throw { code: 409, msg: 'Tag repository cannot be modified. Use copy function instead' };
 		}
+		tagObj = trimTagData(tagObj);
 		tagObj.tagfile = `${sanitizeFile(tagObj.name)}.${tid.substring(0, 8)}.tag.json`;
 		await updateTag(tagObj);
 		if (opts.writeFile) {

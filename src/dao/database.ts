@@ -9,7 +9,7 @@ import { connectDB, db, getInstanceID, getSettings, saveSetting, setInstanceID }
 import { generateDatabase } from '../lib/services/generation';
 import { getConfig } from '../lib/utils/config';
 import { tagTypes, uuidRegexp } from '../lib/utils/constants';
-import logger from '../lib/utils/logger';
+import logger, { profile } from '../lib/utils/logger';
 import { updateAllSmartPlaylists } from '../services/smartPlaylist';
 import { DBStats } from '../types/database/database';
 import { initPG, isShutdownPG, restorePG } from '../utils/postgresql';
@@ -38,6 +38,7 @@ function errorFunction(err: any) {
 
 /** Initialize a new database with the bundled PostgreSQL server */
 export async function initDB() {
+	profile('initDB');
 	const conf = getConfig();
 	await connectDB(errorFunction, { superuser: true, db: 'postgres', log: getState().opt.sql });
 	// Testing if database exists. If it does, no need to do the other stuff
@@ -63,10 +64,12 @@ export async function initDB() {
 	await connectDB(errorFunction, { superuser: true, db: conf.System.Database.database, log: getState().opt.sql });
 	await db().query('CREATE EXTENSION IF NOT EXISTS unaccent;');
 	await db().query('CREATE EXTENSION IF NOT EXISTS pgcrypto;');
+	profile('initDB');
 }
 
 async function migrateDB(): Promise<Postgrator.Migration[]> {
 	logger.info('Running migrations if needed', { service });
+	profile('migrateDB');
 	initStep(i18next.t('INIT_MIGRATION'));
 	const conf = getConfig();
 	const migrationDir = resolve(getState().resourcePath, 'migrations/');
@@ -87,10 +90,13 @@ async function migrateDB(): Promise<Postgrator.Migration[]> {
 		logger.error('Migrations done prior to error : ', { service, obj: err.appliedMigrations });
 		sentry.error(error);
 		throw error;
+	} finally {
+		profile('migrateDB');
 	}
 }
 
 export async function initDBSystem(): Promise<Postgrator.Migration[]> {
+	profile('initDBSystem');
 	const conf = getConfig();
 	const state = getState();
 	// Only for bundled postgres binary :
@@ -138,6 +144,7 @@ export async function initDBSystem(): Promise<Postgrator.Migration[]> {
 
 	logger.debug('Database Interface is READY', { service });
 	setState({ DBReady: true });
+	profile('initDBSystem');
 	return migrations;
 }
 
