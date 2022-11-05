@@ -178,7 +178,6 @@ export async function mergeTags(tid1: string, tid2: string) {
 		await refreshTags();
 		return tagObj;
 	} catch (err) {
-		console.log(err);
 		logger.error(`Error merging tag ${tid1} and ${tid2}`, { service, obj: err });
 		sentry.error(err);
 		throw err;

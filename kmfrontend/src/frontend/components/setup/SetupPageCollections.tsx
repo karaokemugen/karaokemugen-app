@@ -33,6 +33,7 @@ function SetupPageCollections() {
 	};
 
 	const getDescriptionInLocale = (description: Record<string, string>): string => {
+		if (!description) return '';
 		const user = context.globalState.settings.data?.user;
 		if (user?.main_series_lang && user?.fallback_series_lang) {
 			return description[user.main_series_lang]
