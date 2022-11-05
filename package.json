@@ -73,7 +73,7 @@
     "Damien HERBERT <dherbert98@gmail.com> (Dragicafit)"
   ],
   "engines": {
-    "node": ">=14"
+    "node": ">=14.17.0"
   },
   "license": "MIT",
   "private": true,
