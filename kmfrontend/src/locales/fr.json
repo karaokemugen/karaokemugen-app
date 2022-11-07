@@ -1687,7 +1687,8 @@
 			"INFO": "Informations",
 			"DEBUG": "Débogage"
 		},
-		"SHOW_DETAILS": "Afficher détails"
+		"SHOW_DETAILS": "Afficher détails",
+		"SELECT_LOG": "Sélectionnez le journal dans le gestionnaire de fichiers"
 	},
 	"CHIBI": {
 		"FOCUS": "Revenir à Karaoke Mugen",
