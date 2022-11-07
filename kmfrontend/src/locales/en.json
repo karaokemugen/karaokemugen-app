@@ -1685,7 +1685,8 @@
 			"INFO": "Informations",
 			"DEBUG": "Debug"
 		},
-		"SHOW_DETAILS": "Show details"
+		"SHOW_DETAILS": "Show details",
+		"SELECT_LOG": "Select log in file manager"
 	},
 	"CHIBI": {
 		"FOCUS": "Go back to Karaoke Mugen",
