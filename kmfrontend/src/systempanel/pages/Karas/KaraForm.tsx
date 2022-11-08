@@ -271,7 +271,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				titles: this.state.titles,
 				titles_default_language: this.state.defaultLanguage,
 				titles_aliases: kara.titles_aliases?.length > 0 ? kara.titles_aliases : undefined,
-				title: this.state.titles[this.state.defaultLanguage],
 				year: kara.year,
 			},
 			meta: {},

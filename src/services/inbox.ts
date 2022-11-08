@@ -92,7 +92,7 @@ export async function downloadKaraFromInbox(inid: string, repoName: string, toke
 			'utf-8'
 		);
 		saveSetting('baseChecksum', await baseChecksum());
-		await integrateKaraFile(karaFile, kara.kara.data, true, true);
+		await integrateKaraFile(karaFile, kara.kara.data, true, true, false);
 		updateAllSmartPlaylists();
 		await Promise.all(promises);
 		checkDownloadStatus([kara.kara.data.data.kid]);

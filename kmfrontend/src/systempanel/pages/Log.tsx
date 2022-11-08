@@ -1,5 +1,5 @@
 import { ArrowRightOutlined } from '@ant-design/icons';
-import { Collapse, Layout, Select, Timeline } from 'antd';
+import { Button, Collapse, Layout, Select, Timeline } from 'antd';
 import Title from '../components/Title';
 import i18next from 'i18next';
 import { Component } from 'react';
@@ -58,6 +58,10 @@ class Log extends Component<unknown, LogState> {
 		this.setState({ level, log: [] }, this.refresh);
 	};
 
+	openLogFile = () => {
+		commandBackend('openLogFile');
+	};
+
 	render() {
 		return (
 			<>
@@ -69,6 +73,9 @@ class Log extends Component<unknown, LogState> {
 						<Select.Option value="info">{i18next.t('LOGS.LEVELS.INFO')}</Select.Option>
 						<Select.Option value="debug">{i18next.t('LOGS.LEVELS.DEBUG')}</Select.Option>
 					</Select>
+					<Button type="primary" style={{ marginRight: '1em' }} onClick={this.openLogFile}>
+						{i18next.t('LOGS.SELECT_LOG')}
+					</Button>
 					<Timeline reverse={true}>
 						{this.state.log.map((line, i) => {
 							let color = '#a6e22d'; // green

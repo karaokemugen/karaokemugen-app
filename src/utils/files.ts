@@ -1,6 +1,7 @@
 import { promises as fs } from 'fs';
 import { isAbsolute, normalize, resolve, sep } from 'path';
 import { blockDevices, fsSize } from 'systeminformation';
+import which from 'which';
 
 import { isMediaFile } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
@@ -51,4 +52,12 @@ export async function browseFs(dir: string, onlyMedias: boolean) {
 		drives,
 		fullPath,
 	};
+}
+
+export async function findCommand(command: string): Promise<boolean> {
+	try {
+		await which(command);
+	} catch (err) {
+		return null;
+	}
 }

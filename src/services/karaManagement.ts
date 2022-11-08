@@ -251,7 +251,8 @@ export async function integrateKaraFile(
 	file: string,
 	kara: KaraFileV4,
 	deleteOldFiles = true,
-	refresh = false
+	refresh = false,
+	downloadVideo = true
 ): Promise<string> {
 	const karaFile = basename(file);
 	logger.debug(`Integrating kara ${kara.data.kid} (${basename(karaFile)})`, {
@@ -301,7 +302,7 @@ export async function integrateKaraFile(
 			}
 		}
 	}
-	if (mediaDownload !== 'none') {
+	if (downloadVideo && mediaDownload !== 'none') {
 		checkMediaAndDownload(
 			[
 				{

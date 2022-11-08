@@ -94,7 +94,7 @@ function StashList(props: {
 			<p>
 				<Trans
 					i18nKey="REPOSITORIES.GIT_STASH"
-					components={{ 1: <a href={props.repo.Git.URL} rel="noreferrer noopener" target="_blank" /> }}
+					components={{ 1: <a href={props.repo.Git.URL} rel="noreferrer noopener" /> }}
 				/>
 			</p>
 			<List

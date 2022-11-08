@@ -3312,10 +3312,10 @@ kar-to-ass@^1.0.11:
     midi-file "^1.2.3"
     uuid "^9.0.0"
 
-kbp2ass@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/kbp2ass/-/kbp2ass-1.0.0.tgz#2ac268417e91d5bb33b90b4777578fc9540b8f67"
-  integrity sha512-H7g8/Z6sa3Cv5xPv4chYWxX0PWatGwyaFbWiFpx/IgRjwxeWTHgaJYNwwwrGIVMI1em/MqkZ3CkqMe31w1PkEA==
+kbp2ass@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/kbp2ass/-/kbp2ass-1.0.1.tgz#c55c5d92974c3b3ccb99aab1ced7a41b5821e74f"
+  integrity sha512-rOD75DbgsE+rCpZQK9gO4fOZ0XOZnBRydWoQ0FGkwkYkdaJB4tB2zDuS1EFnRR3NfSwWS93264cyKQx/8HS2Yg==
   dependencies:
     ass-stringify "^0.1.3"
 
