@@ -2,6 +2,7 @@ import { Socket } from 'socket.io';
 
 import { previewHooks, processUploadedMedia } from '../../lib/services/karaCreation';
 import { APIData } from '../../lib/types/api';
+import { TagTypeNum } from '../../lib/types/tag';
 import { check, isUUID } from '../../lib/utils/validators';
 import { SocketIOApp } from '../../lib/utils/ws';
 import { getKara, getKaraLyrics, getKaras, getKMStats } from '../../services/kara';
@@ -101,12 +102,12 @@ export default function karaController(router: SocketIOApp) {
 		if (!isUUID(req.body.kids)) throw { code: 400 };
 		try {
 			return {
-				data: await addKaraToPlaylist(req.body.kids, req.token.username),
+				data: await addKaraToPlaylist({ kids: req.body.kids, requester: req.token.username }),
 				code: 'PL_SONG_ADDED',
 			};
 		} catch (err) {
-			errMessage(err?.code, err?.message);
-			throw { code: err?.code || 500, message: APIMessage(err.message, err.msg) };
+			errMessage(err?.code, err?.msg);
+			throw { code: err?.code || 500, message: APIMessage(err?.msg) };
 		}
 	});
 	router.route('editKara', async (socket: Socket, req: APIData) => {
@@ -156,7 +157,7 @@ export default function karaController(router: SocketIOApp) {
 	router.route('editKaras', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
-			batchEditKaras(req.body.plaid, req.body.action, req.body.tid, req.body.type).catch(() => {});
+			batchEditKaras(req.body.plaid, req.body.action, req.body.tid, +req.body.type as TagTypeNum).catch(() => {});
 			return;
 		} catch {
 			throw { code: 500 };

@@ -45,6 +45,17 @@
 				max-width: 80%;
 			}
 		}
+		.warning {
+			font-size: 0.975em;
+			font-weight: bold;
+			text-align: justify;
+			display: inline-block;
+			max-width: 50em;
+			color: scale-color(map-get($mugen-colors, 'yellow'), $lightness: 55%, $saturation: 10%);
+			@media screen and (max-width: $mugen-breakpoint-large) {
+				max-width: 80%;
+			}
+		}
 	}
 
 	> div {

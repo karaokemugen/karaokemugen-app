@@ -84,7 +84,7 @@ function PublicPage() {
 				setPollActive(true);
 			}
 		} catch (err) {
-			if ((err as { code: number }).code === 425) {
+			if ((err as { code: number })?.code === 425) {
 				setPollActive(false);
 			}
 		}
@@ -235,6 +235,7 @@ function PublicPage() {
 				hmagrin={
 					!(
 						location.pathname.startsWith('/public/favorites') &&
+						location.pathname.startsWith('/public/animelist') &&
 						location.pathname.startsWith('/public/playlist') &&
 						location.pathname.startsWith('/public/search') &&
 						location.pathname.startsWith('/public/kara') &&
@@ -295,6 +296,12 @@ function PublicPage() {
 						path="/favorites"
 						element={
 							<PublicList sort="search" poll={isPollActive} plaid={nonStandardPlaylists.favorites} />
+						}
+					/>
+					<Route
+						path="/animelist"
+						element={
+							<PublicList sort="search" poll={isPollActive} plaid={nonStandardPlaylists.animelist} />
 						}
 					/>
 					<Route path="/tags/:tagType" element={<PublicList sort="search" poll={isPollActive} />} />

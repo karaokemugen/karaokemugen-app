@@ -1,11 +1,10 @@
+@import '../../styles/variables';
+
 $input-color: white;
-$input-background: #333;
-$input-border: #aaa;
 $input-placeholder: #aaa;
 
 $options-color: white;
 $options-background: #333;
-$options-border: #aaa;
 $option-hover-color: white;
 $option-hover-background: #666;
 $option-active-color: white;
@@ -34,20 +33,20 @@ $option-active-background: #00b0ed;
 	position: relative;
 	z-index: 1;
 	padding: 0.5em;
-	border: 1px solid $input-border;
+	border: $mugen-select-border;
 	color: $input-color;
-	background: $input-background;
+	background: $mugen-select-background;
 	max-width: 100%;
 	width: 100%;
 	text-align: left;
 }
 .UI-autocomplete-options {
-	position: fixed;
+	position: absolute;
 	z-index: 22;
 	list-style-type: none;
 	padding: 0.25em;
 	margin: 0;
-	border: 1px solid $options-border;
+	border: $mugen-select-border;
 	color: $options-color;
 	background: $options-background;
 	.UI-autocomplete-option {

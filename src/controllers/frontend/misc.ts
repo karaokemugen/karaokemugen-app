@@ -18,12 +18,21 @@ import { backupConfig, editSetting, getPublicConfig } from '../../utils/config';
 import { initializationCatchphrases } from '../../utils/constants';
 import { getDisplays } from '../../utils/displays';
 import { browseFs } from '../../utils/files';
+import { selectLogFile } from '../../utils/logger';
 import { dumpPG, restorePG } from '../../utils/postgresql';
 import { getPlayerState, getPublicState, getState } from '../../utils/state';
 import { APIMessage, errMessage } from '../common';
 import { runChecklist } from '../middlewares';
 
 export default function miscController(router: SocketIOApp) {
+	router.route('openLogFile', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin');
+		try {
+			await selectLogFile();
+		} catch (err) {
+			throw { code: 500, msg: err };
+		}
+	});
 	router.route('getMigrationsFrontend', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {

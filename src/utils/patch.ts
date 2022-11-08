@@ -6,14 +6,13 @@ import parallel from 'p-map';
 import { resolve } from 'path';
 
 import { initHooks } from '../lib/dao/hook';
-import { DiffChanges } from '../lib/types/repo';
+import { DiffChanges, Repository } from '../lib/types/repo';
 import { resolvedPath } from '../lib/utils/config';
 import { downloadFile } from '../lib/utils/downloader';
 import { getFilesRecursively } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import { computeFileChanges } from '../lib/utils/patch';
 import Task from '../lib/utils/taskManager';
-import { Repository } from '../types/config';
 import { getState } from './state';
 
 const service = 'Patch';

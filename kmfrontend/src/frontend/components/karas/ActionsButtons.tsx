@@ -36,6 +36,11 @@ function ActionsButtons(props: IProps) {
 	const playlist = getPlaylistInfo(props.side, context);
 	const oppositePlaylist = getOppositePlaylistInfo(props.side, context);
 	const classValue = props.isHeader ? 'btn btn-default karaLineButton' : 'btn btn-action karaLineButton';
+	const addingIsForbidden =
+		!props.isHeader &&
+		!context.globalState.settings.data.config.Playlist.AllowDuplicates &&
+		oppositePlaylist?.content.findIndex(k => k.kid === props.kara.kid) !== -1 &&
+		props.scope === 'admin';
 	return (
 		<>
 			{props.scope === 'admin' &&
@@ -63,6 +68,7 @@ function ActionsButtons(props: IProps) {
 			) : null}
 
 			{playlist?.plaid !== nonStandardPlaylists.favorites &&
+			playlist?.plaid !== nonStandardPlaylists.animelist &&
 			((props.scope === 'admin' &&
 				playlist?.plaid !== nonStandardPlaylists.library &&
 				!(props.isHeader && playlist?.flag_smart) &&
@@ -99,6 +105,7 @@ function ActionsButtons(props: IProps) {
 			{(props.scope === 'admin' &&
 				oppositePlaylist?.plaid !== nonStandardPlaylists.library &&
 				oppositePlaylist?.plaid !== nonStandardPlaylists.favorites &&
+				oppositePlaylist?.plaid !== nonStandardPlaylists.animelist &&
 				!(
 					playlist?.plaid === context.globalState.settings.data.state.publicPlaid &&
 					oppositePlaylist?.plaid === context.globalState.settings.data.state.currentPlaid
@@ -111,16 +118,18 @@ function ActionsButtons(props: IProps) {
 				].includes(playlist?.plaid)) ? (
 				<button
 					title={
-						props.isHeader
+						addingIsForbidden
+							? i18next.t('TOOLTIP_KARA_ALREADY_ADDED')
+							: props.isHeader
 							? i18next.t('TOOLTIP_ADD_SELECT_KARA')
 							: `${i18next.t('TOOLTIP_ADDKARA')}${
-									props.scope === 'admin' ? ' - ' + i18next.t('TOOLTIP_ADDKARA_ADMIN') : ''
+									props.scope === 'admin' ? i18next.t('TOOLTIP_ADDKARA_ADMIN') : ''
 							  }`
 					}
 					className={classValue}
 					onContextMenu={onRightClickAdd}
 					onClick={props.addKara}
-					disabled={props?.checkedKaras === 0}
+					disabled={props?.checkedKaras === 0 || addingIsForbidden}
 				>
 					<i className="fas fa-fw fa-plus" />
 				</button>

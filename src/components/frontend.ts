@@ -24,7 +24,7 @@ import tagsController from '../controllers/frontend/tags';
 import testController from '../controllers/frontend/test';
 import userController from '../controllers/frontend/user';
 import { resolvedPath, resolvedPathRepos } from '../lib/utils/config';
-import logger from '../lib/utils/logger';
+import logger, { profile } from '../lib/utils/logger';
 import { initWS, SocketIOApp } from '../lib/utils/ws';
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
@@ -63,6 +63,7 @@ function apiRouter(ws: SocketIOApp) {
 /** Initialize frontend express server */
 export default function initFrontend(): number {
 	try {
+		profile('initFrontend');
 		const state = getState();
 		const app = express();
 		app.use(cors());
@@ -126,5 +127,7 @@ export default function initFrontend(): number {
 		logger.error('Webapp is NOT READY', { service, obj: err });
 		sentry.error(err);
 		throw err;
+	} finally {
+		profile('initFrontend');
 	}
 }

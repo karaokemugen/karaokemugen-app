@@ -21,6 +21,7 @@ export interface State {
 	currentRequester?: string;
 	stopping: boolean;
 	streamerPause: boolean;
+	pauseInProgress: boolean;
 	randomPlaying: boolean;
 	counterToJingle?: number;
 	counterToSponsor?: number;

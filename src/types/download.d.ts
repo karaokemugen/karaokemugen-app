@@ -28,3 +28,10 @@ export interface File {
 	size: number;
 	kid?: string;
 }
+
+export interface MediaDownloadCheck {
+	kid: string;
+	mediafile: string;
+	repository: string;
+	mediasize: number;
+}

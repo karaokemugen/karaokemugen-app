@@ -26,6 +26,7 @@ import { KaraElement } from '../../types/kara';
 import CriteriasList from './CriteriasList';
 import KaraLine from './KaraLine';
 import PlaylistHeader from './PlaylistHeader';
+import TasksEvent from '../../../TasksEvent';
 
 const chunksize = 400;
 let timer: any;
@@ -105,9 +106,10 @@ function Playlist(props: IProps) {
 			download_status: DownloadedStatus;
 		}[]
 	) => {
+		const playlist = getPlaylistInfo(props.side, context);
 		if (
-			getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.library ||
-			getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.favorites ||
+			playlist?.plaid === nonStandardPlaylists.library ||
+			playlist?.plaid === nonStandardPlaylists.favorites ||
 			(event.length > 0 && event[0].download_status)
 		) {
 			setData(oldData => {
@@ -221,7 +223,7 @@ function Playlist(props: IProps) {
 		return (
 			!is_touch_device() &&
 			props.scope === 'admin' &&
-			!isNonStandardPlaylist(getPlaylistInfo(props.side, context).plaid) &&
+			!isNonStandardPlaylist(getPlaylistInfo(props.side, context)?.plaid) &&
 			searchType !== 'recent' &&
 			searchType !== 'requested' &&
 			!searchValue &&
@@ -313,26 +315,41 @@ function Playlist(props: IProps) {
 		[sortable, playing, data, songsBeforeSponsor, songsBeforeJingle, checkedKaras]
 	);
 
+	const [repoInProgress, setRepoInProgress] = useState(false);
+
 	const noRowsRenderer = useCallback(() => {
 		return (
 			<>
 				{getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.library &&
 				props.scope === 'admin' ? (
 					<div className="list-group-item karaSuggestion">
-						<div>{i18next.t('KARA_SUGGESTION_NOT_FOUND')}</div>
-						{context?.globalState.settings.data.config.System.Repositories.filter(
-							value => value.Enabled && value.Online
-						).map(value => (
-							<a key={value.Name} href={`https://${value.Name}/`}>
-								{value.Name}
-							</a>
-						))}
-						<a href="https://kara.moe/suggest">kara.moe/suggest</a>
+						<TasksEvent
+							limit={6}
+							styleTask="page-tasks-wrapper"
+							onTask={t => setRepoInProgress(t.length > 0)}
+						/>
+						{repoInProgress && getFilterValue(props.side).length === 0 ? (
+							<>
+								<div>{i18next.t('REPO_IN_PROGRESS')}</div>
+							</>
+						) : (
+							<>
+								<div>{i18next.t('KARA_SUGGESTION_NOT_FOUND')}</div>
+								{context?.globalState.settings.data.config.System.Repositories.filter(
+									value => value.Enabled && value.Online
+								).map(value => (
+									<a key={value.Name} href={`https://${value.Name}/`}>
+										{value.Name}
+									</a>
+								))}
+								<a href="https://kara.moe/suggest">kara.moe/suggest</a>
+							</>
+						)}
 					</div>
 				) : null}
 			</>
 		);
-	}, [getPlaylistInfo(props.side, context)?.plaid]);
+	}, [getPlaylistInfo(props.side, context)?.plaid, repoInProgress, getFilterValue(props.side)]);
 
 	const playlistContentsUpdatedFromServer = (idPlaylist: string) => {
 		if (getPlaylistInfo(props.side, context)?.plaid === idPlaylist && !stopUpdate) getPlaylist();
@@ -345,6 +362,8 @@ function Playlist(props: IProps) {
 			url = 'getKaras';
 		} else if (idPlaylist === nonStandardPlaylists.favorites) {
 			url = 'getFavorites';
+		} else if (idPlaylist === nonStandardPlaylists.animelist) {
+			url = 'getAnimeList';
 		} else {
 			url = 'getPlaylistContents';
 		}
@@ -479,15 +498,15 @@ function Playlist(props: IProps) {
 
 	const getPlInfosElement = () => {
 		let plInfos = '';
-		if (getPlaylistInfo(props.side, context)?.plaid && data?.infos?.count) {
+		const playlist = getPlaylistInfo(props.side, context);
+		if (playlist?.plaid && data?.infos?.count) {
 			plInfos =
 				data.infos.count +
 				' karas' +
-				(!isNonStandardPlaylist(getPlaylistInfo(props.side, context)?.plaid) &&
-				getPlaylistInfo(props.side, context)?.duration
+				(!isNonStandardPlaylist(playlist?.plaid) && playlist?.duration
 					? ` ~ ${is_touch_device() ? 'dur.' : i18next.t('DETAILS.DURATION')} ` +
-					  secondsTimeSpanToHMS(getPlaylistInfo(props.side, context)?.duration, 'hm') +
-					  ` / ${secondsTimeSpanToHMS(getPlaylistInfo(props.side, context)?.time_left, 'hm')} ${
+					  secondsTimeSpanToHMS(playlist?.duration, 'hm') +
+					  ` / ${secondsTimeSpanToHMS(playlist?.time_left, 'hm')} ${
 							is_touch_device() ? 're.' : i18next.t('DURATION_REMAINING')
 					  } `
 					: '');
@@ -653,39 +672,40 @@ function Playlist(props: IProps) {
 		const idsKaraPlaylist = listKara.map(a => a.plcid);
 		let url = '';
 		let dataApi;
+		const oppositePlaylist = getOppositePlaylistInfo(props.side, context);
 
-		if (!getOppositePlaylistInfo(props.side, context).flag_smart) {
+		if (!oppositePlaylist.flag_smart) {
 			if (!isNonStandardPlaylist(getPlaylistInfo(props.side, context)?.plaid) && !pos) {
 				url = 'copyKaraToPlaylist';
 				dataApi = {
-					plaid: getOppositePlaylistInfo(props.side, context).plaid,
+					plaid: oppositePlaylist.plaid,
 					plc_ids: idsKaraPlaylist,
 				};
 			} else {
 				url = 'addKaraToPlaylist';
 				if (pos) {
 					dataApi = {
-						plaid: getOppositePlaylistInfo(props.side, context).plaid,
+						plaid: oppositePlaylist.plaid,
 						requestedby: context.globalState.auth.data.username,
 						kids: idsKara,
 						pos: pos,
 					};
 				} else {
 					dataApi = {
-						plaid: getOppositePlaylistInfo(props.side, context).plaid,
+						plaid: oppositePlaylist.plaid,
 						requestedby: context.globalState.auth.data.username,
 						kids: idsKara,
 					};
 				}
 			}
-		} else if (getOppositePlaylistInfo(props.side, context).flag_smart) {
+		} else if (oppositePlaylist.flag_smart) {
 			url = 'addCriterias';
 			dataApi = {
 				criterias: idsKara.map(kid => {
-					return { type: 1001, value: kid, plaid: getOppositePlaylistInfo(props.side, context).plaid };
+					return { type: 1001, value: kid, plaid: oppositePlaylist.plaid };
 				}),
 			};
-		} else if (getOppositePlaylistInfo(props.side, context).plaid === nonStandardPlaylists.favorites) {
+		} else if (oppositePlaylist.plaid === nonStandardPlaylists.favorites) {
 			url = 'addFavorites';
 			dataApi = {
 				kids: idsKara,
@@ -718,12 +738,13 @@ function Playlist(props: IProps) {
 			displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
 			return;
 		}
-		if (getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.favorites) {
+		const playlist = getPlaylistInfo(props.side, context);
+		if (playlist?.plaid === nonStandardPlaylists.favorites) {
 			url = 'deleteFavorites';
 			dataApi = {
 				kids: listKara.map(a => a.kid),
 			};
-		} else if (!getPlaylistInfo(props.side, context)?.flag_smart) {
+		} else if (!playlist?.flag_smart) {
 			const idsKaraPlaylist = listKara.map(a => a.plcid);
 			url = 'deleteKaraFromPlaylist';
 			dataApi = {

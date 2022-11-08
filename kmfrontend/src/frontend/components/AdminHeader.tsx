@@ -134,14 +134,30 @@ function AdminHeader(props: IProps) {
 		});
 	};
 
+	const changePitch = changeValue => {
+		setStatusPlayer(oldState => {
+			const state = { ...oldState };
+			const newValue = (changeValue && oldState.pitch + changeValue) || 0; // Reset if parameter is null
+			state.pitch = newValue <= 3 && newValue >= -3 ? newValue : oldState.pitch; // Limit possible pitch values
+			state.speed = 100; // reset speed
+			return state;
+		});
+	};
+
+	const changeSpeed = changeValue => {
+		setStatusPlayer(oldState => {
+			const state = { ...oldState };
+			const newValue = changeValue === null ? 100 : state.speed + changeValue; // Reset if parameter is null
+			state.speed = newValue <= 200 && newValue >= 25 ? newValue : state.speed; // Limit possible speed values
+			state.pitch = 0; // reset pitch
+			return state;
+		});
+	};
+
 	return (
 		<KmAppHeaderDecorator mode="admin">
 			{location.pathname.includes('/options') ? (
-				<button
-					title={i18next.t('BACK_PLAYLISTS')}
-					className="btn btn-default"
-					onClick={() => navigate('/admin')}
-				>
+				<button title={i18next.t('BACK_PLAYLISTS')} className="btn btn-dark" onClick={() => navigate('/admin')}>
 					<i className="fas fa-fw fa-long-arrow-alt-left" />
 				</button>
 			) : null}
@@ -243,6 +259,88 @@ function AdminHeader(props: IProps) {
 					</ul>
 				) : null}
 			</div>
+
+			<div className={`btn btn-dark splitValueButton speedControl`} id="speedControl">
+				{statusPlayer?.speed === 100 && <i className={'icon fa-solid fa-gauge'}></i>}
+				{statusPlayer?.speed > 100 && <i className={'icon fa-solid fa-gauge-high'}></i>}
+				{statusPlayer?.speed < 100 && <i className={'icon fa-solid fa-gauge-high mirrored-horiz'}></i>}
+				<div className={'modifier-buttons'}>
+					<button
+						title={i18next.t('SPEED_DOWN')}
+						id="speedDown"
+						className={'button-filled'}
+						onMouseDown={_ => changeSpeed(-25)}
+						data-namecommand="setSpeed"
+						value={statusPlayer?.speed}
+						onClick={props.putPlayerCommando}
+					>
+						-
+					</button>
+					<button
+						title={i18next.t('SPEED_RESET')}
+						id="speedReset"
+						onMouseDown={_ => changeSpeed(null)}
+						data-namecommand="setSpeed"
+						value={statusPlayer?.speed}
+						onClick={props.putPlayerCommando}
+					>
+						{(statusPlayer?.speed / 100).toFixed(2)}x
+					</button>
+					<button
+						title={i18next.t('SPEED_UP')}
+						id="speedUp"
+						className={'button-filled'}
+						onMouseDown={_ => changeSpeed(+25)}
+						data-namecommand="setSpeed"
+						value={statusPlayer?.speed}
+						onClick={props.putPlayerCommando}
+					>
+						+
+					</button>
+				</div>
+			</div>
+
+			<div className={`btn btn-dark splitValueButton pitchControl`} id="pitchControl">
+				{statusPlayer?.pitch === 0 && <i className={'icon fa-solid fa-braille'}></i>}
+				{statusPlayer?.pitch > 0 && <i className={'icon fa-solid fa-arrow-up-right-dots'}></i>}
+				{statusPlayer?.pitch < 0 && <i className={'icon fa-solid fa-arrow-up-right-dots mirrored-vert'}></i>}
+
+				<div className={'modifier-buttons'}>
+					<button
+						title={i18next.t('PITCH_DOWN')}
+						id="pitchDown"
+						className={'button-filled'}
+						onMouseDown={_ => changePitch(-1)}
+						data-namecommand="setPitch"
+						value={statusPlayer?.pitch}
+						onClick={props.putPlayerCommando}
+					>
+						-
+					</button>
+					<button
+						title={i18next.t('PITCH_RESET')}
+						id="pitchReset"
+						onMouseDown={_ => changePitch(null)}
+						data-namecommand="setPitch"
+						value={statusPlayer?.pitch}
+						onClick={props.putPlayerCommando}
+					>
+						{statusPlayer?.pitch}
+					</button>
+					<button
+						title={i18next.t('PITCH_UP')}
+						id="pitchUp"
+						className={'button-filled'}
+						onMouseDown={_ => changePitch(+1)}
+						data-namecommand="setPitch"
+						value={statusPlayer?.pitch}
+						onClick={props.putPlayerCommando}
+					>
+						+
+					</button>
+				</div>
+			</div>
+
 			<div className="header-group controls">
 				{statusPlayer?.stopping || statusPlayer?.streamerPause ? (
 					<button
@@ -389,26 +487,25 @@ function AdminHeader(props: IProps) {
 							</a>
 						</li>
 						<li>
-							<a href="#" onClick={toggleProfileModal}>
+							<div onClick={toggleProfileModal}>
 								<i className="fas fa-fw fa-user" />
 								&nbsp;{i18next.t('ACCOUNT')}
-							</a>
+							</div>
 						</li>
 						<li>
-							<a href="#" onClick={toggleUsersModal}>
+							<div onClick={toggleUsersModal}>
 								<i className="fas fa-fw fa-users" />
 								&nbsp;{i18next.t('USERLIST')}
-							</a>
+							</div>
 						</li>
 						<li>
-							<a href="#" onClick={() => logout(context.globalDispatch)}>
+							<div onClick={() => logout(context.globalDispatch)}>
 								<i className="fas fa-fw fa-sign-out-alt" />
 								&nbsp;{i18next.t('LOGOUT')}
-							</a>
+							</div>
 						</li>
 						<li>
-							<a
-								href="#"
+							<div
 								onClick={() => {
 									render(<Tutorial />, document.getElementById('tuto'));
 									setDropDownMenu(!dropDownMenu);
@@ -416,7 +513,7 @@ function AdminHeader(props: IProps) {
 							>
 								<i className="fas fa-fw fa-question-circle" />
 								&nbsp;{i18next.t('MODAL.TUTORIAL.TITLE')}
-							</a>
+							</div>
 						</li>
 						<li>
 							<a href="/welcome">
@@ -426,15 +523,14 @@ function AdminHeader(props: IProps) {
 						</li>
 						{props.powerOff ? (
 							<li>
-								<a href="#" onClick={props.powerOff}>
+								<div onClick={props.powerOff}>
 									<i className="fas fa-fw fa-power-off" />
 									&nbsp;{i18next.t('SHUTDOWN')}
-								</a>
+								</div>
 							</li>
 						) : null}
 						<li className="buttonsMobileMenu">
-							<a
-								href="#"
+							<div
 								onClick={() => {
 									props.adminMessage();
 									setDropDownMenu(!dropDownMenu);
@@ -442,11 +538,10 @@ function AdminHeader(props: IProps) {
 							>
 								<i className="fas fa-fw fa-comment" />
 								&nbsp;{i18next.t('MESSAGE')}
-							</a>
+							</div>
 						</li>
 						<li className="buttonsMobileMenu">
-							<a
-								href="#"
+							<div
 								onClick={event => {
 									props.putPlayerCommando(event);
 									setDropDownMenu(!dropDownMenu);
@@ -456,11 +551,10 @@ function AdminHeader(props: IProps) {
 							>
 								<i className="fas fa-fw fa-closed-captioning" />
 								&nbsp;{i18next.t(statusPlayer?.showSubs ? 'HIDE_SUBS' : 'SHOW_SUBS')}
-							</a>
+							</div>
 						</li>
 						<li className="buttonsMobileMenu">
-							<a
-								href="#"
+							<div
 								onClick={event => {
 									props.putPlayerCommando(event);
 									setDropDownMenu(!dropDownMenu);
@@ -470,11 +564,10 @@ function AdminHeader(props: IProps) {
 							>
 								<i className="fas fa-fw fa-undo-alt" />
 								&nbsp;{i18next.t('REWIND')}
-							</a>
+							</div>
 						</li>
 						<li className="buttonsMobileMenuSmaller">
-							<a
-								href="#"
+							<div
 								onClick={event => {
 									props.putPlayerCommando(event);
 									setDropDownMenu(!dropDownMenu);
@@ -492,12 +585,11 @@ function AdminHeader(props: IProps) {
 									<i className="fas fa-fw fa-volume-off" />
 								)}
 								&nbsp;{i18next.t('MUTE_UNMUTE')}
-							</a>
+							</div>
 						</li>
 						<li className="buttonsMobileMenuSmaller">
 							{statusPlayer?.stopping || statusPlayer?.streamerPause ? (
-								<a
-									href="#"
+								<div
 									onClick={event => {
 										props.putPlayerCommando(event);
 										setDropDownMenu(!dropDownMenu);
@@ -507,10 +599,9 @@ function AdminHeader(props: IProps) {
 								>
 									<i className="fas fa-fw fa-stop" />
 									&nbsp;{i18next.t('STOP_NOW')}
-								</a>
+								</div>
 							) : (
-								<a
-									href="#"
+								<div
 									onClick={event => {
 										props.putPlayerCommando(event);
 										setDropDownMenu(!dropDownMenu);
@@ -520,7 +611,7 @@ function AdminHeader(props: IProps) {
 								>
 									<i className="fas fa-fw fa-stop" />
 									&nbsp;{i18next.t('STOP_AFTER')}
-								</a>
+								</div>
 							)}
 						</li>
 					</ul>

@@ -5,7 +5,7 @@ import { WhereClause } from '../lib/types/database';
 import { DBKara, DBKaraBase, DBYear, KaraOldData } from '../lib/types/database/kara';
 import { Kara, KaraFileV4, KaraParams } from '../lib/types/kara';
 import { getConfig } from '../lib/utils/config';
-import { tagTypes } from '../lib/utils/constants';
+import { getTagTypeName, tagTypes } from '../lib/utils/constants';
 import { now } from '../lib/utils/date';
 import { getState } from '../utils/state';
 import {
@@ -170,6 +170,15 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		joinClauses.push(' LEFT OUTER JOIN favorites AS uf ON uf.fk_login = :username_favs AND uf.fk_kid = ak.pk_kid ');
 		yesqlPayload.params.username_favs = params.userFavorites;
 	}
+	if (params.userAnimeList) {
+		withCTEs.push(
+			'anime_list_infos AS (SELECT anime_list_ids, anime_list_to_fetch FROM users where users.pk_login = :username_anime_list)'
+		);
+		whereClauses += ` AND ((SELECT anime_list_to_fetch FROM anime_list_infos) = 'myanimelist' AND myanimelist_ids::int[] && (SELECT anime_list_ids FROM anime_list_infos)
+		OR (SELECT anime_list_to_fetch FROM anime_list_infos) = 'anilist' AND anilist_ids::int[] && (SELECT anime_list_ids FROM anime_list_infos)
+		OR (SELECT anime_list_to_fetch FROM anime_list_infos) = 'kitsu' AND kitsu_ids::int[] && (SELECT anime_list_ids FROM anime_list_infos))`;
+		yesqlPayload.params.username_anime_list = params.userAnimeList;
+	}
 	const collectionClauses = [];
 	if (!params.ignoreCollections) {
 		for (const collection of Object.keys(collections)) {
@@ -179,6 +188,7 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	}
 	const query = sqlgetAllKaras(
 		yesqlPayload.sql,
+		params.qType || 'AND',
 		whereClauses,
 		groupClause,
 		orderClauses,
@@ -200,7 +210,25 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		...yesqlPayload.params,
 	};
 	const res = await db().query(yesql(query)(queryParams));
-	return res.rows;
+	return res.rows.map(row => organizeTagsInKara(row));
+}
+
+export function organizeTagsInKara<T extends DBKara>(row: T & { tags: any }): T {
+	const { tags, ...rowWithoutTags } = row;
+
+	for (const tagType of Object.keys(tagTypes)) {
+		rowWithoutTags[tagType] = [];
+	}
+	if (tags == null) {
+		return <any>rowWithoutTags;
+	}
+	for (const tag of tags) {
+		if (tag?.type_in_kara == null) continue;
+		const type = getTagTypeName(tag.type_in_kara);
+		if (type == null) continue;
+		rowWithoutTags[type].push(tag);
+	}
+	return <any>rowWithoutTags;
 }
 
 export async function selectAllKarasMicro(params: KaraParams): Promise<DBKaraBase[]> {

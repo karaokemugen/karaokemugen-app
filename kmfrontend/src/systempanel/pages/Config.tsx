@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import { commandBackend } from '../../utils/socket';
 import { dotify, expand } from '../../utils/tools';
 import FoldersElement from '../components/FoldersElement';
+import Title from '../components/Title';
 
 interface ConfigProps {
 	properties?: string[];
@@ -15,14 +16,6 @@ interface ConfigProps {
 interface ConfigState {
 	config: any[];
 	error: string;
-	appPath: string;
-	dataPath: string;
-	os: string;
-	recordModal?: Record;
-	indexModal?: number;
-	newValueModal?: string | string[];
-	visibleModal: boolean;
-	files: string[];
 	filter: string;
 }
 
@@ -35,34 +28,18 @@ interface Record {
 // Transforms object to dot notation
 // Transforms dot notation to object and value
 
-const configWithSelectFileInFolder = [
-	'Playlist.Medias.Intros.File',
-	'Playlist.Medias.Encores.File',
-	'Playlist.Medias.Outros.File',
-];
-
 class Config extends Component<ConfigProps, ConfigState> {
 	constructor(props) {
 		super(props);
 		this.state = {
 			config: [],
 			error: '',
-			dataPath: '',
-			appPath: '',
-			os: '',
-			visibleModal: false,
-			files: [],
 			filter: '',
 		};
 	}
 
 	async componentDidMount() {
 		await this.refresh();
-		const files = this.state.files;
-		for (const elem of configWithSelectFileInFolder) {
-			files[elem] = await this.getListFiles(elem);
-		}
-		this.setState({ files: files });
 	}
 
 	refresh = async () => {
@@ -71,9 +48,6 @@ class Config extends Component<ConfigProps, ConfigState> {
 			this.setState({
 				config: this.configKeyValue(res.config),
 				error: '',
-				appPath: res.state.appPath,
-				dataPath: res.state.dataPath,
-				os: res.state.os,
 			});
 		} catch (e) {
 			//already display
@@ -94,51 +68,6 @@ class Config extends Component<ConfigProps, ConfigState> {
 		});
 		this.saveSetting(name, value);
 	};
-
-	openFileSystemModal(record: Record, index?: number) {
-		this.setState({ recordModal: record, indexModal: index, visibleModal: true });
-	}
-
-	getConfigToSearch(key) {
-		if (key === 'Playlist.Medias.Intros.File') {
-			return 'System.MediaPath.Intros';
-		} else if (key === 'Playlist.Medias.Encores.File') {
-			return 'System.MediaPath.Encores';
-		} else if (key === 'Playlist.Medias.Outros.File') {
-			return 'System.MediaPath.Outros';
-		}
-	}
-
-	getRecord(key): Record {
-		const configToSearch = this.getConfigToSearch(key);
-		let record;
-		for (const elem of this.state.config) {
-			if (elem.key === configToSearch) {
-				record = elem;
-				return elem;
-			}
-		}
-		return record;
-	}
-
-	async getListFiles(key) {
-		const record = this.getRecord(key);
-		let files = [];
-		if (record) {
-			for (const element of record.value) {
-				try {
-					const response = await commandBackend('getFS', {
-						path: `${this.getPathForFileSystem(record.value)}${element}`,
-						onlyMedias: true,
-					});
-					files = files.concat(response.contents.filter(elem => !elem.isDirectory).map(elem => elem.name));
-				} catch (error) {
-					// Folder don't exist so skip
-				}
-			}
-		}
-		return files;
-	}
 
 	columns = [
 		{
@@ -229,22 +158,6 @@ class Config extends Component<ConfigProps, ConfigState> {
 							onChange={value => this.saveSetting(record.key, value)}
 						/>
 					)
-				) : configWithSelectFileInFolder.includes(record.key) ? (
-					<Select
-						style={{ width: '100%' }}
-						value={record.value}
-						allowClear={true}
-						onChange={value => this.saveSetting(record.key, value ? value : null)}
-					>
-						{this.state.files[record.key] &&
-							this.state.files[record.key].map(value => {
-								return (
-									<Select.Option key={Math.random()} value={value}>
-										{value}
-									</Select.Option>
-								);
-							})}
-					</Select>
 				) : (
 					<Input
 						style={{ maxWidth: '700px' }}
@@ -277,61 +190,94 @@ class Config extends Component<ConfigProps, ConfigState> {
 		await commandBackend('backupSettings');
 	};
 
-	getPathForFileSystem(value: string) {
-		const regexp = this.state.os === 'win32' ? '^[a-zA-Z]:' : '^/';
-		if (value.match(regexp) === null) {
-			return `${this.state.dataPath}${this.state.os === 'win32' ? '\\' : '/'}`;
-		} else {
-			return '';
-		}
-	}
-
 	render() {
-		return (
-			<>
-				<Layout.Header>
-					<div className="title">
-						{i18next.t(
-							this.props.properties ? 'HEADERS.SYSTEM_PREFERENCES.TITLE' : 'HEADERS.CONFIGURATION.TITLE'
+		if (navigator.platform.indexOf('Mac') === 0) {
+			return (
+				<>
+					<Title
+						title={i18next.t(
+							this.props.properties
+								? 'HEADERS.SYSTEM_PREFERENCES.TITLEMAC'
+								: 'HEADERS.CONFIGURATION.TITLE'
 						)}
-					</div>
-					<div className="description">
-						{i18next.t(
+						description={i18next.t(
 							this.props.properties
 								? 'HEADERS.SYSTEM_PREFERENCES.DESCRIPTION'
 								: 'HEADERS.CONFIGURATION.DESCRIPTION'
 						)}
-					</div>
-				</Layout.Header>
-				<Layout.Content>
-					<Button style={{ margin: '0.75em' }} type="primary" onClick={this.refresh}>
-						{i18next.t('CONFIG.SAVE')}
-					</Button>
-					{this.props.properties ? null : (
-						<>
-							<Button style={{ margin: '0.75em' }} type="primary" onClick={this.configBackup}>
-								{i18next.t('CONFIG.BACKUP_CONFIG_FILE')}
-							</Button>
-							<p>{i18next.t('CONFIG.MESSAGE')}</p>
-							<Input.Search
-								placeholder={i18next.t('SEARCH_FILTER')}
-								value={this.state.filter}
-								onChange={event => this.setState({ filter: event.target.value })}
-								enterButton={i18next.t('SEARCH')}
-								style={{ marginBottom: '0.75em' }}
-							/>
-						</>
-					)}
-					<Table
-						columns={this.columns}
-						dataSource={this.state.config.filter(property =>
-							(property.key as string).toLowerCase().includes(this.state.filter.toLowerCase())
-						)}
-						pagination={false}
 					/>
-				</Layout.Content>
-			</>
-		);
+					<Layout.Content>
+						<Button style={{ margin: '0.75em' }} type="primary" onClick={this.refresh}>
+							{i18next.t('CONFIG.SAVE')}
+						</Button>
+						{this.props.properties ? null : (
+							<>
+								<Button style={{ margin: '0.75em' }} type="primary" onClick={this.configBackup}>
+									{i18next.t('CONFIG.BACKUP_CONFIG_FILE')}
+								</Button>
+								<p>{i18next.t('CONFIG.MESSAGE')}</p>
+								<Input.Search
+									placeholder={i18next.t('SEARCH_FILTER')}
+									value={this.state.filter}
+									onChange={event => this.setState({ filter: event.target.value })}
+									enterButton={i18next.t('SEARCH')}
+									style={{ marginBottom: '0.75em' }}
+								/>
+							</>
+						)}
+						<Table
+							columns={this.columns}
+							dataSource={this.state.config.filter(property =>
+								(property.key as string).toLowerCase().includes(this.state.filter.toLowerCase())
+							)}
+							pagination={false}
+						/>
+					</Layout.Content>
+				</>
+			);
+		} else {
+			return (
+				<>
+					<Title
+						title={i18next.t(
+							this.props.properties ? 'HEADERS.SYSTEM_PREFERENCES.TITLE' : 'HEADERS.CONFIGURATION.TITLE'
+						)}
+						description={i18next.t(
+							this.props.properties
+								? 'HEADERS.SYSTEM_PREFERENCES.DESCRIPTION'
+								: 'HEADERS.CONFIGURATION.DESCRIPTION'
+						)}
+					/>
+					<Layout.Content>
+						<Button style={{ margin: '0.75em' }} type="primary" onClick={this.refresh}>
+							{i18next.t('CONFIG.SAVE')}
+						</Button>
+						{this.props.properties ? null : (
+							<>
+								<Button style={{ margin: '0.75em' }} type="primary" onClick={this.configBackup}>
+									{i18next.t('CONFIG.BACKUP_CONFIG_FILE')}
+								</Button>
+								<p>{i18next.t('CONFIG.MESSAGE')}</p>
+								<Input.Search
+									placeholder={i18next.t('SEARCH_FILTER')}
+									value={this.state.filter}
+									onChange={event => this.setState({ filter: event.target.value })}
+									enterButton={i18next.t('SEARCH')}
+									style={{ marginBottom: '0.75em' }}
+								/>
+							</>
+						)}
+						<Table
+							columns={this.columns}
+							dataSource={this.state.config.filter(property =>
+								(property.key as string).toLowerCase().includes(this.state.filter.toLowerCase())
+							)}
+							pagination={false}
+						/>
+					</Layout.Content>
+				</>
+			);
+		}
 	}
 }
 

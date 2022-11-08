@@ -1,22 +1,10 @@
 import i18next from 'i18next';
 import { useContext, useEffect, useState } from 'react';
 
-import { RemoteFailure, RemoteSuccess } from '../../../../../src/lib/types/remote';
 import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 import { callModal } from '../../../utils/tools';
-
-interface RemoteStatusInactive {
-	active: false;
-}
-
-interface RemoteStatusActive {
-	active: true;
-	info: RemoteSuccess | RemoteFailure;
-	token: string;
-}
-
-type RemoteStatusData = RemoteStatusInactive | RemoteStatusActive;
+import { RemoteStatusData } from '../../types/remote';
 
 function RemoteStatus() {
 	const context = useContext(GlobalContext);

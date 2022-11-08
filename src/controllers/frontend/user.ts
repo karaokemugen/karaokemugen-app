@@ -4,8 +4,14 @@ import { APIData } from '../../lib/types/api';
 import { check } from '../../lib/utils/validators';
 import { SocketIOApp } from '../../lib/utils/ws';
 import { resetSecurityCode } from '../../services/auth';
+import { getKaras } from '../../services/kara';
 import { createAdminUser, createUser, editUser, getUser, getUsers, removeUser } from '../../services/user';
-import { convertToRemoteUser, removeRemoteUser, resetRemotePassword } from '../../services/userOnline';
+import {
+	convertToRemoteUser,
+	refreshAnimeList,
+	removeRemoteUser,
+	resetRemotePassword,
+} from '../../services/userOnline';
 import { getState } from '../../utils/state';
 import { APIMessage, errMessage } from '../common';
 import { runChecklist } from '../middlewares';
@@ -218,6 +224,41 @@ export default function userController(router: SocketIOApp) {
 			// Errors detected
 			// Sending BAD REQUEST HTTP code and error object.
 			throw { code: 400, message: validationErrors };
+		}
+	});
+
+	router.route('refreshAnimeList', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'user', 'closed');
+		try {
+			await refreshAnimeList(req.token.username, req.onlineAuthorization);
+		} catch (err) {
+			const code = 'REFRESH_ANIME_LIST_ERROR';
+			errMessage(code, err);
+			throw { code: err?.code || 500, message: APIMessage(code) };
+		}
+	});
+
+	router.route('getAnimeList', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'guest', 'closed');
+		try {
+			if (req.token.role === 'guest') {
+				return [];
+			}
+			return await getKaras({
+				username: req.token.username.toLowerCase(),
+				userAnimeList: req.token.username.toLowerCase(),
+				filter: req.body?.filter,
+				lang: req.langs,
+				from: +req.body?.from || 0,
+				size: +req.body?.size || 9999999,
+				order: req.body?.order,
+				parentsOnly: req.body?.parentsOnly,
+				blacklist: req.body?.blacklist,
+			});
+		} catch (err) {
+			const code = 'ANIME_LIST_VIEW_ERROR';
+			errMessage(code, err);
+			throw { code: err?.code || 500, message: APIMessage(code) };
 		}
 	});
 }

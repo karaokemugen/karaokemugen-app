@@ -1,11 +1,12 @@
 import { Button, Layout, Table } from 'antd';
+import Title from '../../components/Title';
 import { ColumnProps } from 'antd/lib/table';
 import i18next from 'i18next';
 import { Component } from 'react';
 
 import { DBKara } from '../../../../../src/lib/types/database/kara';
 import GlobalContext from '../../../store/context';
-import { getTagInLocale, getTagInLocaleList, getTitleInLocale } from '../../../utils/kara';
+import { getSeriesSingersFull, getTagInLocaleList, getTitleInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 
 interface ViewcountsState {
@@ -38,10 +39,10 @@ class Viewcounts extends Component<unknown, ViewcountsState> {
 	render() {
 		return (
 			<>
-				<Layout.Header>
-					<div className="title">{i18next.t('HEADERS.MOST_PLAYED.TITLE')}</div>
-					<div className="description">{i18next.t('HEADERS.MOST_PLAYED.DESCRIPTION')}</div>
-				</Layout.Header>
+				<Title
+					title={i18next.t('HEADERS.MOST_PLAYED.TITLE')}
+					description={i18next.t('HEADERS.MOST_PLAYED.DESCRIPTION')}
+				/>
 				<Layout.Content>
 					<Button style={{ margin: '1em' }} type="primary" onClick={this.refresh}>
 						{i18next.t('REFRESH')}
@@ -73,16 +74,8 @@ class Viewcounts extends Component<unknown, ViewcountsState> {
 			title: `${i18next.t('TAG_TYPES.SERIES_other')} / ${i18next.t('KARA.SINGERS_BY')}`,
 			dataIndex: 'series',
 			key: 'series',
-			render: (series, record) =>
-				series && series.length > 0
-					? series
-							.map(serie =>
-								getTagInLocale(this.context?.globalState.settings.data, serie, this.state.i18n)
-							)
-							.join(', ')
-					: getTagInLocaleList(this.context.globalState.settings.data, record.singers, this.state.i18n).join(
-							', '
-					  ),
+			render: (_series, record) =>
+				getSeriesSingersFull(this.context?.globalState.settings.data, record, this.state.i18n),
 		},
 		{
 			title: i18next.t('TAG_TYPES.SONGTYPES_other'),

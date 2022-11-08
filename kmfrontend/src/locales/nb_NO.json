@@ -250,7 +250,8 @@
 		"SONGWRITERS_BY": "Skrevet av",
 		"CREATORS_BY": "Opprettet av",
 		"AUTHORS_BY": "Karaoke opprettet av",
-		"DELETE_KARA": "Slett karaoke?",
+		"DELETE_KARA": "Slett karaoke",
+		"DELETE_KARA_MODAL": "Slett karaoke?",
 		"EDIT_KARA": "Rediger karaoke",
 		"VIDEO_PREVIEW": "Videoforhåndsvisning",
 		"DOWNLOAD": "Last ned"

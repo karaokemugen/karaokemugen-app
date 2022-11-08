@@ -116,7 +116,8 @@ function KaraLine(props: IProps) {
 	const addKara = async (_event?: any, pos?: number) => {
 		let url = '';
 		let data;
-		if (getOppositePlaylistInfo(props.side, context).plaid === nonStandardPlaylists.favorites) {
+		const oppositePlaylist = getOppositePlaylistInfo(props.side, context);
+		if (oppositePlaylist.plaid === nonStandardPlaylists.favorites) {
 			if (context.globalState.auth.data.onlineAvailable !== false) {
 				url = 'addFavorites';
 				data = {
@@ -127,25 +128,25 @@ function KaraLine(props: IProps) {
 				return;
 			}
 		} else if (props.scope === 'admin') {
-			if (!getOppositePlaylistInfo(props.side, context).flag_smart) {
+			if (!oppositePlaylist.flag_smart) {
 				if (!isNonStandardPlaylist(getPlaylistInfo(props.side, context).plaid) && !pos) {
 					url = 'copyKaraToPlaylist';
 					data = {
-						plaid: getOppositePlaylistInfo(props.side, context).plaid,
+						plaid: oppositePlaylist.plaid,
 						plc_ids: [props.kara.plcid],
 					};
 				} else {
 					url = 'addKaraToPlaylist';
 					if (pos) {
 						data = {
-							plaid: getOppositePlaylistInfo(props.side, context).plaid,
+							plaid: oppositePlaylist.plaid,
 							requestedby: context.globalState.auth.data.username,
 							kids: [props.kara.kid],
 							pos: pos,
 						};
 					} else {
 						data = {
-							plaid: getOppositePlaylistInfo(props.side, context).plaid,
+							plaid: oppositePlaylist.plaid,
 							requestedby: context.globalState.auth.data.username,
 							kids: [props.kara.kid],
 						};
@@ -158,21 +159,14 @@ function KaraLine(props: IProps) {
 						{
 							type: 1001,
 							value: props.kara.kid,
-							plaid: getOppositePlaylistInfo(props.side, context).plaid,
+							plaid: oppositePlaylist.plaid,
 						},
 					],
 				};
 			}
 		} else {
-			if (props.kara.children?.length > 0) {
-				props.openKara(props.kara);
-				return;
-			}
-			url = 'addKaraToPublicPlaylist';
-			data = {
-				requestedby: context.globalState.auth.data.username,
-				kids: [props.kara.kid],
-			};
+			props.openKara(props.kara);
+			return;
 		}
 		try {
 			const response = await commandBackend(url, data);
@@ -220,13 +214,13 @@ function KaraLine(props: IProps) {
 							<div
 								key={tag.tid}
 								className={`tag ${typeData.color}${type === 'WARNINGS' ? ' problematicTag' : ''}`}
-								title={getTagInLocale(context?.globalState.settings.data, tag, props.i18nTag)}
+								title={getTagInLocale(context?.globalState.settings.data, tag, props.i18nTag).i18n}
 							>
 								{props.scope === 'admin' && !is_touch_device()
 									? tag.short
 										? tag.short
 										: tag.name
-									: getTagInLocale(context?.globalState.settings.data, tag, props.i18nTag)}
+									: getTagInLocale(context?.globalState.settings.data, tag, props.i18nTag).i18n}
 							</div>
 						);
 					})
@@ -236,10 +230,20 @@ function KaraLine(props: IProps) {
 		return karaTags.filter(el => !!el);
 	})();
 
-	const getSerieOrSingers = (data: KaraElement) => {
-		return data.series && data.series.length > 0
-			? data.series.map(e => getTagInLocale(context?.globalState.settings.data, e, props.i18nTag)).join(', ')
-			: data.singers.map(e => getTagInLocale(context?.globalState.settings.data, e, props.i18nTag)).join(', ');
+	const getSerieOrSingerGroupsOrSingers = (data: KaraElement) => {
+		if (data.series?.length > 0) {
+			return data.series
+				.map(e => getTagInLocale(context?.globalState.settings.data, e, props.i18nTag).i18n)
+				.join(', ');
+		}
+		if (data.singergroups?.length > 0) {
+			return data.singergroups
+				.map(e => getTagInLocale(context?.globalState.settings.data, e, props.i18nTag).i18n)
+				.join(', ');
+		}
+		return data.singers
+			.map(e => getTagInLocale(context?.globalState.settings.data, e, props.i18nTag).i18n)
+			.join(', ');
 	};
 
 	const openKaraMenu = (event: MouseEvent) => {
@@ -281,7 +285,7 @@ function KaraLine(props: IProps) {
 	};
 
 	const karaTitle = buildKaraTitle(context.globalState.settings.data, props.kara, false, props.i18nTag);
-	const karaSerieOrSingers = getSerieOrSingers(props.kara);
+	const karaSerieOrSingerGroupsOrSingers = getSerieOrSingerGroupsOrSingers(props.kara);
 	const plaid = getPlaylistInfo(props.side, context).plaid;
 	const shouldShowProfile =
 		context.globalState.settings.data.config.Frontend?.ShowAvatarsOnPlaylist && props.avatar_file;
@@ -361,11 +365,13 @@ function KaraLine(props: IProps) {
 								<div className="contentDivMobileTitle">
 									<span
 										className="tag inline green"
-										title={getTagInLocale(
-											context?.globalState.settings.data,
-											props.kara.langs[0],
-											props.i18nTag
-										)}
+										title={
+											getTagInLocale(
+												context?.globalState.settings.data,
+												props.kara.langs[0],
+												props.i18nTag
+											).i18n
+										}
 									>
 										{props.kara.langs[0].short?.toUpperCase() ||
 											props.kara.langs[0].name.toUpperCase()}
@@ -387,12 +393,13 @@ function KaraLine(props: IProps) {
 											className="fas fa-fw fa-exclamation-triangle problematic"
 											title={i18next.t('KARA.PROBLEMATIC_TOOLTIP', {
 												tags: props.kara.warnings
-													.map(t =>
-														getTagInLocale(
-															context?.globalState.settings.data,
-															t,
-															props.i18nTag
-														)
+													.map(
+														t =>
+															getTagInLocale(
+																context?.globalState.settings.data,
+																t,
+																props.i18nTag
+															).i18n
 													)
 													.join(', '),
 											})}
@@ -402,16 +409,18 @@ function KaraLine(props: IProps) {
 								<div className="contentDivMobileSerie">
 									<span
 										className="tag inline green"
-										title={getTagInLocale(
-											context?.globalState.settings.data,
-											props.kara.songtypes[0],
-											props.i18nTag
-										)}
+										title={
+											getTagInLocale(
+												context?.globalState.settings.data,
+												props.kara.songtypes[0],
+												props.i18nTag
+											).i18n
+										}
 									>
 										{props.kara.songtypes[0].short?.toUpperCase() || props.kara.songtypes[0].name}{' '}
 										{props.kara.songorder}
 									</span>
-									{karaSerieOrSingers}
+									{karaSerieOrSingerGroupsOrSingers}
 								</div>
 								{props.kara.upvotes && props.scope === 'admin' ? (
 									<div className="upvoteCount">
@@ -438,7 +447,10 @@ function KaraLine(props: IProps) {
 										{karaTags}
 										{sortAndHideTags(props.kara.versions, props.scope).map(t => (
 											<span className="tag white" key={t.tid}>
-												{getTagInLocale(context?.globalState.settings.data, t, props.i18nTag)}
+												{
+													getTagInLocale(context?.globalState.settings.data, t, props.i18nTag)
+														.i18n
+												}
 											</span>
 										))}
 									</div>
@@ -460,12 +472,13 @@ function KaraLine(props: IProps) {
 											className="fas fa-fw fa-exclamation-triangle problematic"
 											title={i18next.t('KARA.PROBLEMATIC_TOOLTIP', {
 												tags: props.kara.warnings
-													.map(t =>
-														getTagInLocale(
-															context?.globalState.settings.data,
-															t,
-															props.i18nTag
-														)
+													.map(
+														t =>
+															getTagInLocale(
+																context?.globalState.settings.data,
+																t,
+																props.i18nTag
+															).i18n
 													)
 													.join(', '),
 											})}

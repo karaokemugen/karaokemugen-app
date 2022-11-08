@@ -1,4 +1,5 @@
 import 'react-image-crop/dist/ReactCrop.css';
+import './CropAvatarModal.scss';
 
 import i18next from 'i18next';
 import { useState } from 'react';
@@ -99,7 +100,12 @@ function CropAvatarModal(props: IProps) {
 					</ul>
 					<div className="modal-body">
 						<ReactCrop crop={crop} aspect={1} onChange={setCrop}>
-							<img src={imageSource} onLoad={e => setImageRef(e.currentTarget)} alt="avatar" />
+							<img
+								className="crop-avatar"
+								src={imageSource}
+								onLoad={e => setImageRef(e.currentTarget)}
+								alt="avatar"
+							/>
 						</ReactCrop>
 					</div>
 					<div className="modal-footer">

@@ -1,16 +1,13 @@
 import { PathType } from '../lib/types/config';
-import { RepositoryMaintainerSettings, RepositoryUserSettings } from '../lib/types/repo';
+import { Repository } from '../lib/types/repo';
 import { MediaType } from './medias';
 import { MpvHardwareDecodingOptions } from './mpvIPC';
-
-export type Repository = RepositoryUserSettings | RepositoryMaintainerSettings;
 
 export interface Config {
 	App: {
 		JwtSecret?: string;
 		InstanceID?: string;
 		FirstRun?: boolean;
-		QuickStart?: boolean;
 		Language?: string;
 	};
 	Online: {
@@ -39,14 +36,12 @@ export interface Config {
 	};
 	Frontend: {
 		AllowGuestLogin?: boolean;
+		AllowCustomTemporaryGuests?: boolean;
 		Mode?: number;
-		Permissions?: {
-			AllowNicknameChange?: boolean;
-		};
 		ShowAvatarsOnPlaylist?: boolean;
+		WelcomeMessage?: string;
 	};
 	GUI: {
-		OpenInElectron?: boolean;
 		ChibiPlayer?: {
 			Enabled?: boolean;
 			AlwaysOnTop?: boolean;
@@ -75,7 +70,6 @@ export interface Config {
 		};
 		MinutesBeforeEndOfSessionWarning?: number;
 		Autoplay?: boolean;
-		SmartInsert?: boolean;
 		AutoBalance?: boolean;
 		Poll: {
 			Enabled?: boolean;
@@ -110,15 +104,12 @@ export interface Config {
 		Screen?: number;
 		AudioDevice?: string;
 		Monitor?: boolean;
-		NoHud?: boolean;
-		NoBar?: boolean;
 		mpvVideoOutput?: string;
 		PIP: {
 			Size?: number;
 			PositionX?: 'Left' | 'Right' | 'Center';
 			PositionY?: 'Top' | 'Bottom' | 'Center';
 		};
-		ProgressBarDock?: boolean;
 		ExtraCommandLine?: string;
 		Borders?: boolean;
 		HardwareDecoding?: MpvHardwareDecodingOptions;
@@ -140,17 +131,14 @@ export interface Config {
 			};
 			Intros: {
 				Enabled: boolean;
-				File: string;
 				Message?: string;
 			};
 			Outros: {
 				Enabled: boolean;
-				File: string;
 				Message?: string;
 			};
 			Encores: {
 				Enabled: boolean;
-				File: string;
 				Message?: string;
 			};
 		};

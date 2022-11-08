@@ -1,4 +1,5 @@
 import { Layout } from 'antd';
+import Title from '../../components/Title';
 import i18next from 'i18next';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -34,8 +35,12 @@ function TagEdit() {
 	};
 
 	const handleTagMerge = async (tid1: string, tid2: string) => {
-		await commandBackend('mergeTags', { tid1, tid2 }, true, 300000);
-		navigate('/system/tags/');
+		try {
+			await commandBackend('mergeTags', { tid1, tid2 }, true, 300000);
+			navigate('/system/tags/');
+		} catch (e) {
+			// already display
+		}
 	};
 
 	const loadTag = async () => {
@@ -65,12 +70,10 @@ function TagEdit() {
 
 	return (
 		<>
-			<Layout.Header>
-				<div className="title">{i18next.t(tid ? 'HEADERS.TAG_EDIT.TITLE' : 'HEADERS.TAG_NEW.TITLE')}</div>
-				<div className="description">
-					{i18next.t(tid ? 'HEADERS.TAG_EDIT.DESCRIPTION' : 'HEADERS.TAG_NEW.DESCRIPTION')}
-				</div>
-			</Layout.Header>
+			<Title
+				title={i18next.t(tid ? 'HEADERS.TAG_EDIT.TITLE' : 'HEADERS.TAG_NEW.TITLE')}
+				description={i18next.t(tid ? 'HEADERS.TAG_EDIT.DESCRIPTION' : 'HEADERS.TAG_NEW.DESCRIPTION')}
+			/>
 			<Layout.Content>
 				{loaded && (
 					<TagsForm

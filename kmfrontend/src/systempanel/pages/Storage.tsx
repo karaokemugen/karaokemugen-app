@@ -1,5 +1,6 @@
 import { ClearOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Alert, Button, Layout, Table } from 'antd';
+import Title from '../components/Title';
 import i18next from 'i18next';
 import prettyBytes from 'pretty-bytes';
 import { Component } from 'react';
@@ -51,10 +52,10 @@ class Storage extends Component<unknown, StorageState> {
 	render() {
 		return (
 			<>
-				<Layout.Header>
-					<div className="title">{i18next.t('HEADERS.STORAGE.TITLE')}</div>
-					<div className="description">{i18next.t('HEADERS.STORAGE.DESCRIPTION')}</div>
-				</Layout.Header>
+				<Title
+					title={i18next.t('HEADERS.STORAGE.TITLE')}
+					description={i18next.t('HEADERS.STORAGE.DESCRIPTION')}
+				/>
 				<Layout.Content>
 					<Table dataSource={this.state.repositories} columns={this.columns} rowKey="name" />
 					<Alert

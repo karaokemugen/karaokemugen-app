@@ -1,5 +1,6 @@
 import { ArrowRightOutlined } from '@ant-design/icons';
-import { Collapse, Layout, Select, Timeline } from 'antd';
+import { Button, Collapse, Layout, Select, Timeline } from 'antd';
+import Title from '../components/Title';
 import i18next from 'i18next';
 import { Component } from 'react';
 
@@ -57,13 +58,14 @@ class Log extends Component<unknown, LogState> {
 		this.setState({ level, log: [] }, this.refresh);
 	};
 
+	openLogFile = () => {
+		commandBackend('openLogFile');
+	};
+
 	render() {
 		return (
 			<>
-				<Layout.Header>
-					<div className="title">{i18next.t('HEADERS.LOGS.TITLE')}</div>
-					<div className="description">{i18next.t('HEADERS.LOGS.DESCRIPTION')}</div>
-				</Layout.Header>
+				<Title title={i18next.t('HEADERS.LOGS.TITLE')} description={i18next.t('HEADERS.LOGS.DESCRIPTION')} />
 				<Layout.Content>
 					<Select defaultValue="info" onChange={this.setLevel} style={{ marginBottom: '1em' }}>
 						<Select.Option value="error">{i18next.t('LOGS.LEVELS.ERROR')}</Select.Option>
@@ -71,6 +73,9 @@ class Log extends Component<unknown, LogState> {
 						<Select.Option value="info">{i18next.t('LOGS.LEVELS.INFO')}</Select.Option>
 						<Select.Option value="debug">{i18next.t('LOGS.LEVELS.DEBUG')}</Select.Option>
 					</Select>
+					<Button type="primary" style={{ marginRight: '1em' }} onClick={this.openLogFile}>
+						{i18next.t('LOGS.SELECT_LOG')}
+					</Button>
 					<Timeline reverse={true}>
 						{this.state.log.map((line, i) => {
 							let color = '#a6e22d'; // green

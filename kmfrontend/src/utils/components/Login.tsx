@@ -30,7 +30,7 @@ function Login() {
 			? context.globalState.settings.data.config.Online.Host
 			: ''
 	);
-	const [activeView, setActiveView] = useState<'login' | 'signup' | 'welcome'>('welcome');
+	const [activeView, setActiveView] = useState<'login' | 'signup' | 'welcome' | 'guest'>('welcome');
 	const [onlineSwitch, setOnlineSwitch] = useState(true);
 	const [forgotPassword, setForgotPassword] = useState(false);
 	const [login, setLogin] = useState('');
@@ -40,7 +40,12 @@ function Login() {
 
 	const isAdminPath = lastLocation && lastLocation !== '/' && !lastLocation.includes('/public');
 
-	const loginCall = async (username: string | undefined, password?: string, securityCode?: number) => {
+	const loginCall = async (
+		username: string | undefined,
+		password?: string,
+		securityCode?: number,
+		guestName?: string
+	) => {
 		if (isAdminPath && isElectron()) {
 			const { ipcRenderer: ipc } = window.require('electron');
 			ipc.send('getSecurityCode');
@@ -54,13 +59,13 @@ function Login() {
 			if (forgotPassword) {
 				await callForgetPasswordApi(securityCode);
 			}
-			loginFinish(username, password, securityCode);
+			loginFinish(username, password, securityCode, guestName);
 		}
 	};
 
-	const loginFinish = async (username: string, password: string, securityCode: number) => {
+	const loginFinish = async (username: string, password: string, securityCode: number, guestName?: string) => {
 		try {
-			const role = await loginAction(username, password, context.globalDispatch, securityCode);
+			const role = await loginAction(username, password, context.globalDispatch, securityCode, guestName);
 			if (isAdminPath && role !== 'admin') {
 				if (!username) {
 					displayMessage('warning', i18next.t('ERROR_CODES.ADMIN_PLEASE'));
@@ -96,7 +101,7 @@ function Login() {
 	};
 
 	const loginGuest = async () => {
-		loginCall(undefined).catch(() => {});
+		loginCall(undefined, undefined, undefined, login).catch(() => {});
 	};
 
 	const loginUser = () => {
@@ -147,7 +152,13 @@ function Login() {
 
 	const onSubmit = (e: FormEvent) => {
 		e.preventDefault();
-		activeView === 'login' ? loginUser() : signup();
+		if (activeView === 'signup') {
+			signup();
+		} else if (activeView === 'login') {
+			loginUser();
+		} else {
+			loginGuest();
+		}
 	};
 
 	const callForgetPasswordApi = async (securityCode?: number) => {
@@ -165,6 +176,15 @@ function Login() {
 			callForgetPasswordApi();
 		} else {
 			setForgotPassword(!forgotPassword);
+		}
+	};
+
+	const loginGuestContinue = () => {
+		if (context.globalState.settings.data.config?.Frontend.AllowCustomTemporaryGuests) {
+			setOnlineSwitch(false);
+			setActiveView('guest');
+		} else {
+			loginGuest();
 		}
 	};
 
@@ -188,15 +208,20 @@ function Login() {
 				<div className="loginImage">
 					<img src={logo} alt="Logo KM" />
 				</div>
-				<p className="loginSlogan">
-					{isAdminPath ? i18next.t('LOGIN_SLOGAN_ADMIN') : i18next.t('LOGIN_SLOGAN')}
+				<p>
+					<div className="loginWelcomeMessage">
+						{context.globalState.settings.data.config?.Frontend.WelcomeMessage}
+					</div>
+					<div className="loginSlogan">
+						{isAdminPath ? i18next.t('LOGIN_SLOGAN_ADMIN') : i18next.t('LOGIN_SLOGAN')}
+					</div>
 				</p>
 			</div>
 			<div className="loginBox">
 				{activeView === 'welcome' ? (
 					<>
 						{!isAdminPath && context.globalState.settings.data.config?.Frontend.AllowGuestLogin ? (
-							<button className="btn largeButton guestButton" onClick={loginGuest}>
+							<button className="btn largeButton guestButton" onClick={loginGuestContinue}>
 								{i18next.t('LOGIN.GUEST_CONTINUE')}
 							</button>
 						) : null}
@@ -222,13 +247,18 @@ function Login() {
 							{i18next.t('LOGIN.GO_BACK')}
 						</button>
 						<form onSubmit={onSubmit}>
-							<div className="spacedSwitch">
-								<label className="loginLabel">{i18next.t('LOGIN.ONLINE_ACCOUNT')}</label>
-								<Switch handleChange={() => setOnlineSwitch(!onlineSwitch)} isChecked={onlineSwitch} />
-							</div>
+							{activeView !== 'guest' ? (
+								<div className="spacedSwitch">
+									<label className="loginLabel">{i18next.t('LOGIN.ONLINE_ACCOUNT')}</label>
+									<Switch
+										handleChange={() => setOnlineSwitch(!onlineSwitch)}
+										isChecked={onlineSwitch}
+									/>
+								</div>
+							) : null}
 							<div className="loginForm">
 								<label className="loginLabel">
-									{i18next.t('USERNAME')}
+									{i18next.t(activeView === 'guest' ? 'USERS.NICKNAME' : 'USERNAME')}
 									{onlineSwitch ? ` @ ${i18next.t('INSTANCE_NAME_SHORT')}` : ''}
 								</label>
 								<div className="loginLine">
@@ -236,7 +266,7 @@ function Login() {
 										type="text"
 										className={`${errorBackground} ${onlineSwitch ? 'loginName' : ''}`}
 										defaultValue={login}
-										placeholder={i18next.t('USERNAME')}
+										placeholder={i18next.t(activeView === 'guest' ? 'USERS.NICKNAME' : 'USERNAME')}
 										autoComplete="username"
 										required
 										autoFocus
@@ -256,22 +286,28 @@ function Login() {
 										</>
 									) : null}
 								</div>
-								<label className="loginLabel">
-									{forgotPassword && !onlineSwitch
-										? i18next.t('NEW_PASSWORD')
-										: i18next.t('PASSWORD')}
-								</label>
-								<div className="loginLine">
-									<input
-										type="password"
-										className={redBorders}
-										autoComplete={activeView === 'signup' ? 'new-password' : 'current-password'}
-										defaultValue={password}
-										required
-										placeholder={i18next.t('PASSWORD')}
-										onChange={event => setPassword(event.target.value)}
-									/>
-								</div>
+								{activeView !== 'guest' ? (
+									<>
+										<label className="loginLabel">
+											{forgotPassword && !onlineSwitch
+												? i18next.t('NEW_PASSWORD')
+												: i18next.t('PASSWORD')}
+										</label>
+										<div className="loginLine">
+											<input
+												type="password"
+												className={redBorders}
+												autoComplete={
+													activeView === 'signup' ? 'new-password' : 'current-password'
+												}
+												defaultValue={password}
+												required
+												placeholder={i18next.t('PASSWORD')}
+												onChange={event => setPassword(event.target.value)}
+											/>
+										</div>
+									</>
+								) : null}
 								{activeView === 'signup' ? (
 									<>
 										<label className="loginLabel">{i18next.t('PASSWORDCONF')}</label>
@@ -313,7 +349,7 @@ function Login() {
 									</button>
 								) : null}
 								<button type="submit" className="btn largeButton submitButton">
-									{i18next.t(activeView === 'login' ? 'LOG_IN' : 'SIGN_UP')}
+									{i18next.t(activeView === 'signup' ? 'SIGN_UP' : 'LOG_IN')}
 								</button>
 							</div>
 						</form>

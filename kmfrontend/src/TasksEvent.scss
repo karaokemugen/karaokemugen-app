@@ -1,18 +1,48 @@
-.welcome-page-tasks-wrapper {
-	@keyframes pulse {
-		0% {
-			opacity: 0.5;
-		}
-
-		50% {
-			opacity: 1;
-		}
-
-		100% {
-			opacity: 0.5;
-		}
+@keyframes task-pulse {
+	0% {
+		opacity: 0.5;
 	}
 
+	50% {
+		opacity: 1;
+	}
+
+	100% {
+		opacity: 0.5;
+	}
+}
+
+@mixin task-text {
+	.text {
+		font-size: 1em;
+		margin: 0;
+		padding: 0;
+	}
+
+	.subtext {
+		font-size: 0.8em;
+		opacity: 0.8;
+		margin-left: 0.5em;
+	}
+
+	.progress {
+		margin-top: 0.25em;
+
+		.progress-bar {
+			max-width: 100%;
+			background: rgba(#fff, 0.5);
+			height: 2px;
+			transition: width 250ms linear;
+
+			&.unknown {
+				width: 100% !important;
+				animation: task-pulse 1s infinite ease-in-out;
+			}
+		}
+	}
+}
+
+.page-tasks-wrapper {
 	font-size: 0.8em;
 
 	@media (max-width: 1000px) {
@@ -33,32 +63,61 @@
 		margin: 0 0 0.3em;
 		border-radius: 0.5em;
 
+		@include task-text();
+	}
+}
+
+.bottom-admin-wrapper {
+	font-size: 0.85em;
+
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	pointer-events: none;
+	flex-shrink: 1;
+
+	blockquote {
+		display: block;
+		background: transparent;
+		color: white;
+		padding: 0.25em;
+		border-right: 1px solid grey;
+		&:last-child {
+			border-right: none;
+		}
+
+		@include task-text();
+
 		.text {
-			font-size: 1em;
-			margin: 0;
-			padding: 0;
+			height: 1.25em;
+			overflow: hidden;
+			text-overflow: ellipsis;
 		}
+	}
+}
 
-		.subtext {
-			font-size: 0.8em;
-			opacity: 0.8;
-			margin-left: 0.5em;
-		}
+.system-tasks-wrapper {
+	font-size: 0.8em;
 
-		.progress {
-			margin-top: 0.5em;
+	@media (max-width: 1000px) {
+		font-size: 0.7em;
+	}
 
-			.progress-bar {
-				max-width: 100%;
-				background: rgba(#fff, 0.5);
-				height: 2px;
+	display: flex;
+	flex-direction: column;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	pointer-events: none;
 
-				&.unknown {
-					width: 100% !important;
-					animation: pulse 1s infinite ease-in-out;
-				}
-			}
-		}
+	blockquote {
+		width: 90%;
+		background: #333333;
+		color: white;
+		padding: 0.3em 0.5em 0;
+		margin: 0 0 0.3em;
+		border-radius: 0.5em;
+
+		@include task-text();
 	}
 }
 
@@ -82,30 +141,6 @@
 		margin: 0 0 0.3em;
 		border-radius: 0.5em;
 
-		.text {
-			font-size: 1em;
-			margin: 0;
-			padding: 0;
-		}
-
-		.subtext {
-			font-size: 0.8em;
-			opacity: 0.8;
-			margin-left: 0.5em;
-		}
-
-		.progress {
-			margin-top: 0.5em;
-
-			.progress-bar {
-				background: rgba(255, 255, 255, 0.5);
-				height: 2px;
-
-				&.unknown {
-					width: 100% !important;
-					animation: pulse 1s infinite ease-in-out;
-				}
-			}
-		}
+		@include task-text();
 	}
 }

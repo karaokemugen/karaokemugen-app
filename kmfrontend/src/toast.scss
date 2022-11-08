@@ -1,11 +1,3 @@
-@import '~react-toastify/scss/variables';
-
-// React Toastify
-$rt-color-info: #1861b1;
-$rt-color-success: #099242;
-$rt-color-warning: #ae5b13;
-$rt-color-error: #7d140b;
-
 .toast-with-img {
 	display: flex;
 	align-items: center;
@@ -25,3 +17,11 @@ $rt-color-error: #7d140b;
 }
 
 @import '~react-toastify/scss/main';
+
+:root {
+	// React Toastify
+	--toastify-color-info: #1861b1;
+	--toastify-color-success: #099242;
+	--toastify-color-warning: #ae5b13;
+	--toastify-color-error: #7d140b;
+}

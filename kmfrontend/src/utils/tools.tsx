@@ -193,8 +193,9 @@ export function callModal(
 }
 
 export const nonStandardPlaylists = {
-	favorites: 'efe3687f-9e0b-49fc-a5cc-89df25a17e94', // -5
-	library: '524de79d-10b2-49dc-90b1-597626d0cee8', // -1
+	favorites: 'efe3687f-9e0b-49fc-a5cc-89df25a17e94',
+	library: '524de79d-10b2-49dc-90b1-597626d0cee8',
+	animelist: 'f3f1d49c-b701-4ac7-8209-cbcaa64c2985',
 };
 
 export function isNonStandardPlaylist(plaid: string) {
@@ -229,19 +230,11 @@ export async function decodeCriteriaReason(settings: SettingsStoreData, criteria
 			args[0] = 'SHORTER';
 			args[1] = { time: criteria.value };
 			break;
-		case 1004:
-			args[0] = 'TITLE';
-			args[1] = { title: criteria.value };
-			break;
-		case 1005:
-			args[0] = 'TAG_NAME';
-			args[1] = { title: criteria.value };
-			break;
 		default:
 			args[0] = 'TAG';
 			const tag = await commandBackend('getTag', { tid: criteria.value });
 			args[1] = {
-				tag: getTagInLocale(settings, tag),
+				tag: getTagInLocale(settings, tag).i18n,
 				verb: i18next.t(`CRITERIA.LABEL.TAG_VERBS.${criteria.type}`),
 			};
 			break;

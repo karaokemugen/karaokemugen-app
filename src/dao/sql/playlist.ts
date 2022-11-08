@@ -117,14 +117,12 @@ WHERE pk_id_playlist = $1;
 
 export const sqlgetPlaylistContentsMicro = `
 SELECT pc.fk_kid AS kid,
-	pc.fk_login AS username,
 	pc.pk_id_plcontent AS plcid,
 	(CASE WHEN pl.fk_id_plcontent_playing = pc.pk_id_plcontent
 		THEN TRUE
 		ELSE FALSE
 	  END) AS flag_playing,
 	pc.pos AS pos,
-	pc.fk_id_playlist AS plaid,
 	pc.fk_login AS username,
 	pc.nickname AS nickname,
 	pc.flag_free AS flag_free,
@@ -152,29 +150,14 @@ export const sqlgetPlaylistContents = (
 	additionalFrom: string
 ) => `
 SELECT
+  ak.tags AS tags,
   ak.pk_kid AS kid,
   ak.titles AS titles,
   ak.titles_aliases AS titles_aliases,
   ak.titles_default_language AS titles_default_language,
   ak.songorder AS songorder,
   ak.subfile AS subfile,
-  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 2)') AS singers,
-  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 3)') AS songtypes,
-  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 4)') AS creators,
-  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 8)') AS songwriters,
   ak.year AS year,
-  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 5)') AS langs,
-  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 6)') AS authors,
-  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 9)') AS groups,
-  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 7)') AS misc,
-  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 11)') AS origins,
-  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 13)') AS platforms,
-  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 10)') AS families,
-  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 12)') AS genres,
-  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 1)') AS series,
-  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 14)') AS versions,
-  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 15)') AS warnings,
-  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 16)') AS collections,
   ak.mediafile AS mediafile,
   ak.karafile AS karafile,
   ak.duration AS duration,
@@ -236,8 +219,8 @@ LEFT OUTER JOIN playlist_content AS pc_pub ON pc_pub.fk_kid = pc.fk_kid AND pc_p
 LEFT OUTER JOIN playlist_content AS pc_self on pc_self.fk_kid = pc.fk_kid AND pc_self.fk_id_playlist = :public_plaid AND pc_self.fk_login = :username
 ${additionalFrom}
 WHERE pc.fk_id_playlist = :plaid
-  ${filterClauses.map(clause => `AND (${clause})`).join(' ')}
-  ${whereClause}
+${filterClauses.map(clause => `AND (${clause})`).join(' ')}
+${whereClause}
 GROUP BY pl.fk_id_plcontent_playing, ak.pk_kid, ak.titles, ak.titles_aliases, ak.titles_default_language, ak.songorder, ak.tags, ak.subfile, ak.year, ak.mediafile, ak.karafile, ak.duration, ak.mediasize, pc.created_at, pc.nickname, ak.download_status, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, u.type, ak.repository, pc.criterias
 ORDER BY ${orderClause}
 ${limitClause}
@@ -246,13 +229,6 @@ ${offsetClause}
 
 export const sqlgetPlaylistContentsMini = `
 SELECT ak.pk_kid AS kid,
-	jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 2)') AS singers,
-	jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 3)') AS songtypes,
-	jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 5)') AS langs,
-	jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 7)') AS misc,
-	jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 1)') AS series,
-	jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 14)') AS versions,
-	jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 15)') AS warnings,
 	ak.titles AS titles,
 	ak.titles_aliases AS titles_aliases,
 	ak.titles_default_language AS titles_default_language,
@@ -298,28 +274,13 @@ WITH playing_pos AS (
    )
 SELECT
   ak.pk_kid AS kid,
+  ak.tags AS tags,
   ak.titles AS titles,
   ak.titles_aliases AS titles_aliases,
   ak.titles_default_language AS titles_default_language,
   ak.songorder AS songorder,
   ak.subfile AS subfile,
-  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 2)') AS singers,
-  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 3)') AS songtypes,
-  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 4)') AS creators,
-  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 8)') AS songwriters,
   ak.year AS year,
-  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 5)') AS langs,
-  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 6)') AS authors,
-  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 9)') AS groups,
-  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 7)') AS misc,
-  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 11)') AS origins,
-  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 13)') AS platforms,
-  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 10)') AS families,
-  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 12)') AS genres,
-  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 1)') AS series,
-  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 14)') AS versions,
-  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 15)') AS warnings,
-  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 16)') AS collections,
   ak.mediafile AS mediafile,
   ak.karafile AS karafile,
   ak.duration AS duration,
@@ -524,25 +485,6 @@ FROM playlist_content
 WHERE pk_id_playlist = $2;
 `;
 
-export const sqlcountPlaylistUsers = `
-SELECT COUNT(DISTINCT fk_login)::integer AS NumberOfUsers
-FROM playlist_content
-WHERE fk_id_playlist = $1;
-`;
-
-export const sqlgetMaxPosInPlaylistForUser = `
-SELECT MAX(pos) AS maxpos
-FROM playlist_content
-WHERE fk_id_playlist = :plaid
-	AND fk_login = :username;
-`;
-
-export const sqltrimPlaylist = `
-DELETE FROM playlist_content
-WHERE fk_id_playlist = :plaid
-	AND pos > :pos;
-`;
-
 export const sqladdCriteria = `
 INSERT INTO playlist_criteria(
 	value,
@@ -634,32 +576,6 @@ export const sqlselectKarasFromCriterias = {
 	INNER JOIN kara k on k.duration <= ${value}
 	WHERE c.type = 1003
 	AND   k.pk_kid NOT IN (select fk_kid from playlist_content where fk_id_playlist = $2)
-	AND   fk_id_playlist = $1
-	`,
-
-	1004: (value: any) => `
-	SELECT ak.pk_kid AS kid,
-		jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::varchar)) AS criterias,
-		ak.duration AS duration,
-		ak.created_at AS created_at
-	FROM playlist_criteria c
-	INNER JOIN all_karas ak ON ak.titles_sortable LIKE ('%' || lower(unaccent('${value}')) || '%')
-	WHERE c.type = 1004
-	AND   ak.pk_kid NOT IN (select fk_kid from playlist_content where fk_id_playlist = $2)
-	AND   fk_id_playlist = $1
-	`,
-
-	1005: (value: any) => `
-	SELECT kt.fk_kid AS kid,
-		jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::varchar)) AS criterias,
-		k.duration AS duration,
-		k.created_at AS created_at
-	FROM playlist_criteria c
-	INNER JOIN tag t ON unaccent(t.name) ILIKE ('%' || unaccent('${value}') || '%')
-	INNER JOIN kara_tag kt ON t.pk_tid = kt.fk_tid
-	LEFT JOIN kara k ON k.pk_kid = kt.fk_kid
-	WHERE c.type = 1005
-	AND   kt.fk_kid NOT IN (select fk_kid from playlist_content where fk_id_playlist = $2)
 	AND   fk_id_playlist = $1
 	`,
 

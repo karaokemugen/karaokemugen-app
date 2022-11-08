@@ -118,7 +118,7 @@ export const useTagSearch = (
 											label: getTagInLocale(
 												context.globalState.settings.data,
 												val as unknown as DBKaraTag
-											),
+											).i18n,
 											type: val.types,
 											karacount: val.karacount,
 										};

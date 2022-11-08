@@ -350,7 +350,7 @@ export default function KaraDetail(props: IProps) {
 						</h4>
 						<h5 className="modal-series">
 							<InlineTag
-								tag={kara.series[0] || kara.singers[0]}
+								tag={kara.series[0] || kara.singergroups[0] || kara.singers[0]}
 								scope={props.scope}
 								tagType={kara.series[0] ? 1 : 2}
 							/>

@@ -1,11 +1,14 @@
 {
-	"REQUESTED_BY": "Requested by",
+	"REQUESTED_BY": "Requested by {{name}}",
+	"REQUESTED_WITH": "(with {{names}})",
+	"REQUESTED_AND_one": "and others",
+	"REQUESTED_AND_other": "and {{count}} others",
 	"MY_PLAYLIST": "My playlist",
 	"WHITELIST": "Whitelist",
 	"BLACKLIST": "Blacklist",
 	"CURRENT_PLAYLIST": "Play list",
 	"PUBLIC_PLAYLIST": "Public suggestions",
-	"GO_TO": "Go to",
+	"GO_TO": "Go to $url to suggest songs!",
 	"VOTE_MESSAGE_SCREEN": "Vote for the next song!",
 	"VOTE_MESSAGE_SCREEN_WINNER": "We have a winner!",
 	"NEXT_SONG": "Next song",
@@ -14,6 +17,7 @@
 	"INIT_RESTOREDB": "Restoring database…",
 	"INIT_DB": "Initializing database…",
 	"INIT_VALIDATION": "Validating your files…",
+	"INIT_MIGRATION": "Updating database structure, please wait…",
 	"INIT_GEN": "Generating database, please wait…",
 	"INIT_UPDATEMEDIAS": "Updating medias…",
 	"INIT_BASEUPDATE": "Updating songs…",
@@ -85,12 +89,11 @@
 	"MENU_TOOLS_KARAOKES": "&Song list",
 	"MENU_TOOLS_DATABASE": "Data&base",
 	"MENU_OPTIONS": "&Options",
-	"MENU_OPTIONS_OPENINELECTRON": "&Always open in this window",
 	"MENU_OPTIONS_CHECKFORUPDATES": "&Check for updates on startup",
 	"MENU_OPTIONS_OPERATORCONFIG": "&Settings",
 	"MENU_OPTIONS_SYSTEMCONFIG": "S&ystem settings",
-	"MENU_OPTIONS_OPERATORCONFIG_OSX": "Preferences…",
-	"MENU_OPTIONS_SYSTEMCONFIG_OSX": "System preferences…",
+	"MENU_OPTIONS_OPERATORCONFIG_OSX": "Settings…",
+	"MENU_OPTIONS_SYSTEMCONFIG_OSX": "System Settings…",
 	"MENU_OPTIONS_CHIBIPLAYER": "Show Chibi Player",
 	"MENU_OPTIONS_CHIBIPLAYLIST": "Show detached playlist",
 	"MENU_OPTIONS_CHIBIPLAYLIST_LINK": "Copy link to detached playlist",
@@ -147,7 +150,7 @@
 			"Karaoke Mugen needs YOU! More information at http://mugen.karaokes.moe/en/participate.html !",
 			"Another tip ending with an exclamation mark!",
 			"The Monitor allows you to see the currently playing song if you can't see the screen from where you are.",
-			"Classic Karaoke mode emulates what you find in japanese karaoke booths or during karaoke contests at anime events : a pause is madebetween each song and the next song's title and requester are displayed on screen!",
+			"Classic Karaoke mode emulates what you find in japanese karaoke booths or during karaoke contests at anime events : a pause is made between each song and the next song's title and requester are displayed on screen.",
 			"Does your karaoke session end soon? Switch the interface to restricted mode: users won't be able to add songs anymore but will be able to see what's coming next.",
 			"Need to send a message to your public? The message option will show a text on their mobile devices and/or on the karaoke screen!",
 			"When searching, you can type \"-word\" to exclude karaokes containing that word (whether it's in the title, the series, the singers, etc.) from your search results.",
@@ -215,12 +218,6 @@
 	"INTERFACE_RESTRICTED": "No suggestions",
 	"INTERFACE_CLOSED": "Closed",
 	"PROBLEMATIC_SONGS": "Problematic Songs",
-	"SYSTEM_MESSAGES": {
-		"ZIP_MIGRATION_FAILED": {
-			"TITLE": "Migration problem",
-			"BODY": "The {{repo}} repository wasn't able to be migrated to the new repositories management system. The repository was disabled, you can enable it again by going into the system panel and configure it correctly. You can use the Contact us button if you need help."
-		}
-	},
 	"GIT": {
 		"CURRENT_ACTION": "Git action",
 		"METHODS": {

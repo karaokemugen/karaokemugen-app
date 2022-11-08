@@ -69,11 +69,15 @@ export default function About() {
 			<p className="contributors">
 				<Trans
 					i18nKey="ABOUT.CONTRIBUTORS"
+					values={{ contributors: contributors[index % contributors.length] }}
 					components={{
-						contrib: (
-							<TextTransition springConfig={presets.slow} className="awesome-person" inline={true}>
-								{contributors[index % contributors.length]}
-							</TextTransition>
+						1: (
+							<TextTransition
+								springConfig={presets.slow}
+								className="awesome-person"
+								inline={true}
+								children={''}
+							/>
 						),
 					}}
 				/>
@@ -87,8 +91,9 @@ export default function About() {
 			>
 				<Trans
 					i18nKey="ABOUT.DONATORS"
+					values={{ donators: allDonators ? '' : donators[index % donators.length] }}
 					components={{
-						donators: allDonators ? (
+						1: allDonators ? (
 							<>
 								{donators.map((d, i) => (
 									<span key={i}>
@@ -99,9 +104,12 @@ export default function About() {
 								))}
 							</>
 						) : (
-							<TextTransition springConfig={presets.slow} className="awesome-person" inline={true}>
-								{donators[index % donators.length]}
-							</TextTransition>
+							<TextTransition
+								springConfig={presets.slow}
+								className="awesome-person"
+								inline={true}
+								children={''}
+							/>
 						),
 					}}
 				/>{' '}

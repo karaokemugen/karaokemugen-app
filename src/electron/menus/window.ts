@@ -16,15 +16,6 @@ const builder: MenuItemBuilderFunction = options => {
 			{ label: i18next.t('MENU_WINDOW_MINIMIZE'), role: 'minimize' },
 			!isReduced ? { type: 'separator' } : null,
 			{
-				label: i18next.t('MENU_OPTIONS_OPENINELECTRON'),
-				type: 'checkbox',
-				checked: getConfig().GUI.OpenInElectron,
-				click: () => {
-					setConfig({ GUI: { OpenInElectron: !getConfig().GUI.OpenInElectron } });
-				},
-				visible: !isReduced,
-			},
-			{
 				label: i18next.t('MENU_OPTIONS_CHIBIPLAYER'),
 				type: 'checkbox',
 				accelerator: 'CmdOrCtrl+I',

@@ -6,10 +6,10 @@ import { User, UserParams } from '../lib/types/user';
 import { now } from '../lib/utils/date';
 import {
 	sqlcreateUser,
+	sqldeleteTempUsers,
 	sqldeleteUser,
 	sqleditUser,
 	sqleditUserPassword,
-	sqlLowercaseAllUsers,
 	sqlMergeUserDataPlaylist,
 	sqlMergeUserDataPlaylistContent,
 	sqlMergeUserDataRequested,
@@ -47,6 +47,7 @@ export function insertUser(user: User) {
 			flag_tutorial_done: user.flag_tutorial_done || false,
 			flag_sendstats: user.flag_sendstats || null,
 			language: user.language,
+			flag_temporary: user.flag_temporary,
 		})
 	);
 }
@@ -65,15 +66,18 @@ export async function updateUser(user: User): Promise<User> {
 			old_login: user.old_login,
 			main_series_lang: user.main_series_lang,
 			fallback_series_lang: user.fallback_series_lang,
-			flag_tutorial_done: user.flag_tutorial_done || false,
+			flag_tutorial_done: user.flag_tutorial_done ?? false,
 			flag_sendstats: user.flag_sendstats,
 			location: user.location,
 			flag_parentsonly: user.flag_parentsonly,
 			language: user.language,
-			flag_public: user.flag_public,
-			flag_displayfavorites: user.flag_displayfavorites,
-			social_networks: user.social_networks,
-			banner: user.banner,
+			flag_public: user.flag_public ?? true,
+			flag_displayfavorites: user.flag_displayfavorites ?? false,
+			social_networks: user.social_networks || { discord: '', twitter: '', twitch: '', instagram: '' },
+			banner: user.banner || 'default.jpg',
+			anime_list_to_fetch: user.anime_list_to_fetch,
+			anime_list_last_modified_at: user.anime_list_last_modified_at,
+			anime_list_ids: user.anime_list_ids,
 		})
 	);
 	if (!ret) {
@@ -138,8 +142,8 @@ export async function selectAllDupeUsers() {
 	return result.rows;
 }
 
-export async function lowercaseAllUsers() {
-	await db().query(sqlLowercaseAllUsers);
+export function deleteTempUsers() {
+	return db().query(sqldeleteTempUsers);
 }
 
 export async function mergeUserData(oldUser: string, newUser: string): Promise<any> {

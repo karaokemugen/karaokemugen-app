@@ -26,7 +26,11 @@ class ElectronSentryLogger extends SentryLogger {
 			dsn: process.env.SENTRY_DSN || sentryDSN,
 			environment: process.env.SENTRY_ENVIRONMENT || 'release',
 			release: getState().version.number,
-			ignoreErrors: ['Maximum call stack size exceeded', 'No karaoke found in playlist object'],
+			ignoreErrors: [
+				'Maximum call stack size exceeded',
+				'No karaoke found in playlist object',
+				'ENOSPC: no space left on device, write',
+			],
 			beforeSend: (event, _hint) => {
 				// Testing for precise falseness. If errortracking is undefined or if getconfig doesn't return anything, errors are not sent.
 				if (getConfig()?.Online?.ErrorTracking !== true || !this.SentryInitialized) return null;

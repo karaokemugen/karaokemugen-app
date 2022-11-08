@@ -1,5 +1,5 @@
 {
-	"REQUESTED_BY": "Pedido por",
+	"REQUESTED_BY": "Pedido por {{name}}",
 	"YES": "Sim",
 	"NO": "Não",
 	"NEXT_SONG": "Próxima música",
@@ -101,8 +101,8 @@
 	"MENU_GOTO": "&Ir para",
 	"MENU_GOTO_HOME": "&Início",
 	"MENU_GOTO_PUBLIC": "&Interface pública",
-	"MENU_OPTIONS_OPERATORCONFIG_OSX": "Preferências…",
-	"MENU_OPTIONS_SYSTEMCONFIG_OSX": "Preferências de sistema…",
+	"MENU_OPTIONS_OPERATORCONFIG_OSX": "Definições…",
+	"MENU_OPTIONS_SYSTEMCONFIG_OSX": "Definições de sistema…",
 	"MENU_OPTIONS_CHIBIPLAYER": "Mostrar Chibi Player",
 	"MENU_OPTIONS_CHIBIPLAYLIST": "Mostrar playlist separada",
 	"MENU_OPTIONS_CHIBIPLAYLIST_LINK": "Copiar link para a playlist separada",

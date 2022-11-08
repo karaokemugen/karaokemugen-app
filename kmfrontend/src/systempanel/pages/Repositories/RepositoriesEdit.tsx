@@ -1,23 +1,21 @@
 import { Layout } from 'antd';
+import Title from '../../components/Title';
 import Modal from 'antd/lib/modal/Modal';
 import i18next from 'i18next';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { RepositoryMaintainerSettings } from '../../../../../src/lib/types/repo';
 import { DifferentChecksumReport } from '../../../../../src/types/repo';
 import { commandBackend } from '../../../utils/socket';
 import RepositoryForm from './RepositoriesForm';
-
-interface Repository extends RepositoryMaintainerSettings {
-	// Should be okay, even if technically we shouldn't be able to place Maintainer Settings when MaintainerMode is off
-}
+import { Repository } from '../../../../../src/lib/types/repo';
 
 const newrepository: Repository = {
 	Name: undefined,
 	Online: false,
 	Enabled: true,
 	SendStats: false,
+	Update: true,
 	AutoMediaDownloads: 'updateOnly',
 	// @ts-ignore: omg just shut up
 	MaintainerMode: false,
@@ -112,14 +110,12 @@ function RepositoriesEdit() {
 
 	return (
 		<>
-			<Layout.Header>
-				<div className="title">
-					{i18next.t(name ? 'HEADERS.REPOSITORIES_EDIT.TITLE' : 'HEADERS.REPOSITORIES_NEW.TITLE')}
-				</div>
-				<div className="description">
-					{i18next.t(name ? 'HEADERS.REPOSITORIES_EDIT.DESCRIPTION' : 'HEADERS.REPOSITORIES_NEW.DESCRIPTION')}
-				</div>
-			</Layout.Header>
+			<Title
+				title={i18next.t(name ? 'HEADERS.REPOSITORIES_EDIT.TITLE' : 'HEADERS.REPOSITORIES_NEW.TITLE')}
+				description={i18next.t(
+					name ? 'HEADERS.REPOSITORIES_EDIT.DESCRIPTION' : 'HEADERS.REPOSITORIES_NEW.DESCRIPTION'
+				)}
+			/>
 			<Layout.Content>
 				{repository && (
 					<RepositoryForm

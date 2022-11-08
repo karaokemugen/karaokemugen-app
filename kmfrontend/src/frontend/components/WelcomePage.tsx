@@ -3,9 +3,8 @@ import '../styles/start/WelcomePage.scss';
 
 import i18next from 'i18next';
 import { useContext, useEffect, useMemo, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-import { Repository } from '../../../../src/types/config';
 import { DBStats } from '../../../../src/types/database/database';
 import { Feed } from '../../../../src/types/feeds';
 import { Session } from '../../../../src/types/session';
@@ -23,6 +22,8 @@ import ProfilModal from './modals/ProfilModal';
 import RestartDownloadsModal from './modals/RestartDownloadsModal';
 import WelcomePageArticle from './WelcomePageArticle';
 import { Tag } from '../../../../src/lib/types/tag';
+import { Repository } from '../../../../src/lib/types/repo';
+import { RemoteStatusData } from '../types/remote';
 
 function WelcomePage() {
 	const context = useContext(GlobalContext);
@@ -35,6 +36,8 @@ function WelcomePage() {
 	const [repositories, setRepositories] = useState<Repository[]>([]);
 	const [collections, setCollections] = useState<Tag[]>([]);
 	const [stats, setStats] = useState<DBStats>();
+	const [remoteStatus, setRemoteStatus] = useState<RemoteStatusData>();
+	let timeout: NodeJS.Timeout;
 
 	const getSessions = async () => {
 		try {
@@ -59,6 +62,15 @@ function WelcomePage() {
 			) {
 				showModal(context.globalDispatch, <RestartDownloadsModal />);
 			}
+		} catch (e) {
+			// already display
+		}
+	};
+
+	const updateRemoteData = async () => {
+		try {
+			const data: RemoteStatusData = await commandBackend('getRemoteData');
+			setRemoteStatus(data);
 		} catch (e) {
 			// already display
 		}
@@ -208,6 +220,16 @@ function WelcomePage() {
 		}
 	};
 
+	const getWebappMode = () => {
+		if (context?.globalState.settings.data.config?.Frontend?.Mode === 0) {
+			return i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_CLOSED_SHORT');
+		} else if (context?.globalState.settings.data.config?.Frontend?.Mode === 1) {
+			return i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_LIMITED_SHORT');
+		} else if (context?.globalState.settings.data.config?.Frontend?.Mode === 2) {
+			return i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_OPEN_SHORT');
+		}
+	};
+
 	const getCollections = async () => setCollections(await commandBackend('getCollections'));
 
 	useEffect(() => {
@@ -218,8 +240,11 @@ function WelcomePage() {
 		getRepositories();
 		getCollections();
 		getStats();
+		updateRemoteData();
 		getSocket().on('statsRefresh', getStats);
+		timeout = setInterval(updateRemoteData, 500);
 		return () => {
+			clearInterval(timeout);
 			getSocket().off('statsRefresh', getStats);
 		};
 	}, []);
@@ -239,7 +264,7 @@ function WelcomePage() {
 				<div className="logo">
 					<img src={logo} alt="Logo Karaoke Mugen" />
 				</div>
-				<TasksEvent limit={3} isWelcomePage={true} />
+				<TasksEvent limit={3} styleTask="page-tasks-wrapper" />
 				<div className="aside">
 					<nav>
 						<ul>
@@ -365,6 +390,52 @@ function WelcomePage() {
 									<li onClick={() => navigate('/system/tags')}>
 										<strong>{i18next.t('WELCOME_PAGE.STATS_TAGS')}</strong>
 										<span>{stats?.tags}</span>
+									</li>
+								</ul>
+								<ul>
+									<li>
+										<strong>{i18next.t('VERSION')}</strong>
+										<span>
+											v{context.globalState.settings.data.version.number}{' '}
+											<em>({context.globalState.settings.data.version.sha})</em>
+										</span>
+									</li>
+									<li>
+										<strong>{i18next.t('REMOTE_URL')}</strong>
+										<span>
+											{remoteStatus?.active ? (
+												'host' in remoteStatus.info ? (
+													<a href={`https://${remoteStatus.info.host}`}>
+														{remoteStatus.info.host}
+													</a>
+												) : (
+													<>
+														{remoteStatus.info.reason === 'OUTDATED_CLIENT'
+															? i18next.t('REMOTE_STATUS.OUTDATED_CLIENT')
+															: null}
+														{remoteStatus.info.reason === 'UNKNOWN_COMMAND'
+															? i18next.t('REMOTE_STATUS.OUTDATED')
+															: null}
+														{!['OUTDATED_CLIENT', 'UNKNOWN_COMMAND'].includes(
+															remoteStatus.info.reason
+														) ? (
+															<span>
+																{i18next.t('REMOTE_STATUS.DISCONNECTED')}{' '}
+																{remoteStatus.info.reason}
+															</span>
+														) : null}
+													</>
+												)
+											) : (
+												<div onClick={() => navigate('/admin/options/karaoke')}>
+													{i18next.t('REMOTE_STATUS.DISCONNECTED')}
+												</div>
+											)}
+										</span>
+									</li>
+									<li>
+										<strong>{i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_SHORT')}</strong>
+										<span>{getWebappMode()}</span>
 									</li>
 								</ul>
 							</blockquote>

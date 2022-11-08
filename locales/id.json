@@ -1,10 +1,10 @@
 {
-	"REQUESTED_BY": "Diminta oleh",
+	"REQUESTED_BY": "Diminta oleh {{name}}",
 	"VOTE_MESSAGE_SCREEN": "Berikan suara untuk lagu selanjutnya!",
 	"MY_PLAYLIST": "Daftar putar saya",
 	"CURRENT_PLAYLIST": "Daftar putar",
 	"PUBLIC_PLAYLIST": "Saran publik",
-	"GO_TO": "Pergi ke",
+	"GO_TO": "Pergi ke $url",
 	"VOTE_MESSAGE_SCREEN_WINNER": "Kita punya pemenang!",
 	"NEXT_SONG": "Lagu selanjutnya",
 	"INIT_DUMPDB": "Menyimpan basis data…",
@@ -68,14 +68,13 @@
 	"MENU_TOOLS_DOWNLOADS": "&Unduh media",
 	"MENU_TOOLS_KARAOKES": "&Daftar lagu",
 	"MENU_OPTIONS": "&Opsi",
-	"MENU_OPTIONS_OPENINELECTRON": "&Selalu buka di jendela ini",
 	"MENU_OPTIONS_CHECKFORUPDATES": "&Periksa pembaruan saat aplikasi menyala",
 	"MENU_OPTIONS_OPERATORCONFIG": "&Pengaturan",
-	"MENU_OPTIONS_SYSTEMCONFIG_OSX": "Preferensi sistem…",
+	"MENU_OPTIONS_SYSTEMCONFIG_OSX": "Pengaturan sistem…",
 	"MENU_OPTIONS_CHIBIPLAYER": "Tampilkan Pemutar Chibi",
 	"MENU_OPTIONS_CHIBIPLAYLIST": "Perlihatkan daftar putar terpisah",
 	"MENU_OPTIONS_CHIBIPLAYLIST_LINK": "Salin tautan ke daftar putar terpisah",
-	"MENU_OPTIONS_OPERATORCONFIG_OSX": "Preferensi…",
+	"MENU_OPTIONS_OPERATORCONFIG_OSX": "Pengaturan…",
 	"ERROR": "Galat",
 	"YES": "Ya",
 	"NO": "Tidak",
@@ -123,13 +122,13 @@
 			"Karaoke Mugen membutuhkanmu! Untuk infomasi lebih lanjut kunjungi http://mugen.karaokes.moe/en/participate.html !",
 			"Tip satu lagi yang di akhiri dengan tanda seru!",
 			"Layar monitor memungkinkan kamu untuk melihat lagu yang sedang diputar jika kamu tidak bisa melihat layar dari tempat kamu berada.",
-			"Mode Karaoke Klasik meniru apa yang kamu temukan di bilik karaoke jepang atau saat kontes karaoke di acara anime: jeda dibuat di antara setiap lagu dan judul lagu berikutnya serta peminta ditampilkan di layar!",
+			"Mode Karaoke Klasik meniru apa yang kamu temukan di bilik karaoke jepang atau saat kontes karaoke di acara anime: jeda dibuat di antara setiap lagu dan judul lagu berikutnya serta peminta ditampilkan di layar.",
 			"Apakah sesi karaoke kamu akan segera berakhir? Alihkan antarmuka ke mode terbatas: pengguna tidak akan dapat menambahkan lagu lagi, tetapi masih dapat melihat apa yang akan diputar selanjutnya.",
 			"Perlu mengirim pesan ke publik? Opsi pesan akan menunjukan teks pada telepon genggam mereka dan/atau pada layar karaoke!",
-			"Ketika kamu melakukan pencarian, kamu bisa mengetik \"-kata\" untuk mengecualikan lagu karaoke yang mengandung kata tersebut (entah kata itu didalam judul, serial, penyanyi, dll.) dari hasil pencarianmu.",
+			"Ketika sedang melakukan pencarian, kamu bisa mengetik \"-kata\" untuk mengecualikan lagu karaoke yang mengandung kata tersebut (entah kata itu didalam judul, serial, penyanyi, dll.) dari hasil pencarianmu.",
 			"Kamu dapat menerima atau menolak lagu pada daftar putar publik. Untuk melakukannya, tampilkan publik dan daftar putar saat ini secara berdampingan.",
-			"Menerima saran lagu publik akan mengembalikan kuota lagu kepada pengguna yang meminta lagu dimainkan, dan menambahkan lagu ke daftar putar saat ini!",
-			"Menolak saran lagu publik akan mengembalikan kuota lagu kepada pengguna yang meminta lagu dimainkan, dan menahan lagu di daftar putar publik sehingga lagu tersebut tidak dapat diminta mainkan lagi!"
+			"Menerima atau menolak saran lagu publik akan mengembalikan kuota lagu kepada pengguna yang meminta lagu dimainkan, dan menambahkan lagu ke daftar putar saat ini!",
+			"Ketika kamu mencari sesuatu, kamu bisa menempatkan sebuah kelompok kata antara petik dua untuk mencari tepat teks tersebut. Ketik \"love live\" untuk karaoke hanya dari serial Love Live saja."
 		],
 		"ERRORS": [
 			"Kunjungi kami di Discord jika kamu butuh bantuan: https://karaokes.moe/discord",
@@ -197,12 +196,6 @@
 	"INTERFACE_RESTRICTED": "Tidak ada saran",
 	"INTERFACE_CLOSED": "Tutup",
 	"PROBLEMATIC_SONGS": "Lagu Bermasalah",
-	"SYSTEM_MESSAGES": {
-		"ZIP_MIGRATION_FAILED": {
-			"TITLE": "Masalah migrasi",
-			"BODY": "Repositori {{repo}} tidak dapat dimigrasikan ke sistem pengelolaan repositori yang baru. Repositori tersebut dinonaktifkan, kamu bisa mengaktifkannya lagi dengan pergi ke bilah sistem dan mengaturnya dengan benar. Kamu bisa menggunakan tombol Hubungi kami jika kamu perlu bantuan."
-		}
-	},
 	"GIT": {
 		"CURRENT_ACTION": "Aksi Git",
 		"METHODS": {
@@ -237,5 +230,9 @@
 	"PERMISSIONS_KEYBOARD_INFO_MACOS": {
 		"TITLE": "Permintaan izin",
 		"MESSAGE": "macOS akan meminta kamu untuk menambahkan Karaoke Mugen ke perizinan aksesibilitas sistem. Izin ini memperbolehkan kamu untuk menggunakan kunci media papan tik kamu untuk mengontrol pemutar video. Kamu bisa menolak untuk menambahkan izini ini, tapi kunci media tidak akan bekerja."
-	}
+	},
+	"INIT_MIGRATION": "Memperbarui struktur basis data, mohon ditunggu…",
+	"REQUESTED_WITH": "(dengan {{names}})",
+	"REQUESTED_AND_one": "dan lainnya",
+	"REQUESTED_AND_other": "dan {{count}} lainnya"
 }

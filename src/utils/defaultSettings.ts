@@ -4,6 +4,7 @@
 // you can change the default settings by using config.yml to bypass the default values.
 import { app } from 'electron';
 
+import { Repository } from '../lib/types/repo';
 import { bools, hostnameRegexp } from '../lib/utils/constants';
 import { Config } from '../types/config';
 
@@ -23,7 +24,6 @@ export const defaults: Config = {
 	App: {
 		FirstRun: true,
 		JwtSecret: 'Change me',
-		QuickStart: false,
 	},
 	Online: {
 		Host: 'kara.moe',
@@ -51,14 +51,12 @@ export const defaults: Config = {
 	},
 	Frontend: {
 		AllowGuestLogin: true,
+		AllowCustomTemporaryGuests: false,
 		Mode: 2,
-		Permissions: {
-			AllowNicknameChange: true,
-		},
 		ShowAvatarsOnPlaylist: true,
+		WelcomeMessage: '',
 	},
 	GUI: {
-		OpenInElectron: true,
 		ChibiPlayer: {
 			Enabled: false,
 			AlwaysOnTop: true,
@@ -78,7 +76,6 @@ export const defaults: Config = {
 		},
 		Autoplay: false,
 		ClassicMode: false,
-		SmartInsert: false,
 		MinutesBeforeEndOfSessionWarning: 15,
 		Poll: {
 			Choices: 4,
@@ -120,8 +117,6 @@ export const defaults: Config = {
 		Borders: true,
 		ExtraCommandLine: '',
 		mpvVideoOutput: '',
-		NoBar: true,
-		NoHud: true,
 		Screen: 0,
 		StayOnTop: true,
 		PIP: {
@@ -129,7 +124,6 @@ export const defaults: Config = {
 			PositionY: 'Bottom',
 			Size: 30,
 		},
-		ProgressBarDock: true,
 		HardwareDecoding: 'auto-safe',
 		KeyboardMediaShortcuts: true,
 		Volume: 100,
@@ -149,17 +143,14 @@ export const defaults: Config = {
 			},
 			Intros: {
 				Enabled: true,
-				File: null,
 				Message: null,
 			},
 			Encores: {
 				Enabled: true,
-				File: null,
 				Message: null,
 			},
 			Outros: {
 				Enabled: true,
-				File: null,
 				Message: null,
 			},
 		},
@@ -199,40 +190,7 @@ export const defaults: Config = {
 				Windows: 'app\\bin\\patch.exe',
 			},
 		},
-		Repositories: [
-			{
-				Name: 'kara.moe',
-				Online: true,
-				Enabled: true,
-				SendStats: true,
-				AutoMediaDownloads: 'updateOnly',
-				MaintainerMode: false,
-				BaseDir: process.platform === 'win32' ? 'repos\\kara.moe\\json' : 'repos/kara.moe/json',
-				Path:
-					process.platform === 'win32'
-						? {
-								Medias: ['repos\\kara.moe\\medias'],
-						  }
-						: {
-								Medias: ['repos/kara.moe/medias'],
-						  },
-			},
-			{
-				Name: 'Local',
-				Online: false,
-				Enabled: true,
-				BaseDir: process.platform === 'win32' ? 'repos\\Local\\json' : 'repos/Local/json',
-				MaintainerMode: false,
-				Path:
-					process.platform === 'win32'
-						? {
-								Medias: ['repos\\Local\\medias'],
-						  }
-						: {
-								Medias: ['repos/Local/medias'],
-						  },
-			},
-		],
+		Repositories: [],
 		MediaPath: {
 			Encores: ['encores', process.platform === 'win32' ? 'encores\\KaraokeMugen' : 'encores/KaraokeMugen'],
 			Intros: ['intros', process.platform === 'win32' ? 'intros\\KaraokeMugen' : 'intros/KaraokeMugen'],
@@ -263,7 +221,6 @@ const endOfPlaylistActions = ['random', 'repeat', 'none'];
 /** Config constraints. */
 export const configConstraints = {
 	'App.FirstRun': { inclusion: bools },
-	'App.QuickStart': { inclusion: bools },
 	// 'App.InstanceID': {presence: true, format: uuidRegexp}, // Broken on regular installations since InstanceID is stored in database
 	'Online.Stats': { boolUndefinedValidator: true },
 	'Online.ErrorTracking': { boolUndefinedValidator: true },
@@ -276,18 +233,15 @@ export const configConstraints = {
 	'Online.Updates.Medias.Encores': { inclusion: bools },
 	'Online.Updates.Medias.Intros': { inclusion: bools },
 	'Online.Updates.App': { inclusion: bools },
-	'Frontend.Permissions.AllowNicknameChange': { inclusion: bools },
 	'Frontend.Mode': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 2 } },
 	'System.FrontendPort': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0 } },
 	'Frontend.ShowAvatarsOnPlaylist': { inclusion: bools },
-	'GUI.OpenInElectron': { inclusion: bools },
 	'Karaoke.Autoplay': { inclusion: bools },
 	'Karaoke.ClassicMode': { inclusion: bools },
 	'Karaoke.MinutesBeforeEndOfSessionWarning': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0 } },
 	'Karaoke.StreamerMode.Enabled': { inclusion: bools },
 	'Karaoke.StreamerMode.PauseDuration': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0 } },
 	'Karaoke.StreamerMode.Twitch.Enabled': { inclusion: bools },
-	'Karaoke.SmartInsert': { inclusion: bools },
 	'Karaoke.Poll.Choices': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 1 } },
 	'Karaoke.Poll.Timeout': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 1 } },
 	'Karaoke.Poll.Enabled': { inclusion: bools },
@@ -306,14 +260,11 @@ export const configConstraints = {
 	'Player.Display.ConnectionInfo.Message': { presence: { allowEmpty: true } },
 	'Player.FullScreen': { inclusion: bools },
 	'Player.Monitor': { inclusion: bools },
-	'Player.NoBar': { inclusion: bools },
-	'Player.NoHud': { inclusion: bools },
 	'Player.StayOnTop': { inclusion: bools },
 	'Player.Screen': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0 } },
 	'Player.PIP.PositionX': { inclusion: horizontalPosArray },
 	'Player.PIP.PositionY': { inclusion: verticalPosArray },
 	'Player.PIP.Size': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 100 } },
-	'Player.ProgressBarDock': { inclusion: bools },
 	'Player.Volume': { numericality: { greaterThanOrEqualTo: 0, lessThanOrEqualTo: 100 } },
 	'Player.HardwareDecoding': { inclusion: hwdecModes },
 	'Playlist.AllowDuplicates': { inclusion: bools },
@@ -354,3 +305,39 @@ export const configConstraints = {
 	'System.Path.Import': { presence: true },
 	'System.Repositories': { repositoriesValidator: true },
 };
+
+export const defaultRepositories: Repository[] = [
+	{
+		Name: 'kara.moe',
+		Online: true,
+		Update: true,
+		Enabled: true,
+		SendStats: true,
+		AutoMediaDownloads: 'updateOnly',
+		MaintainerMode: false,
+		BaseDir: process.platform === 'win32' ? 'repos\\kara.moe\\json' : 'repos/kara.moe/json',
+		Path:
+			process.platform === 'win32'
+				? {
+						Medias: ['repos\\kara.moe\\medias'],
+				  }
+				: {
+						Medias: ['repos/kara.moe/medias'],
+				  },
+	},
+	{
+		Name: 'My Custom Songs',
+		Online: false,
+		Enabled: true,
+		BaseDir: process.platform === 'win32' ? 'repos\\My Custom Songs\\json' : 'repos/My Custom Songs/json',
+		MaintainerMode: false,
+		Path:
+			process.platform === 'win32'
+				? {
+						Medias: ['repos\\My Custom Songs\\medias'],
+				  }
+				: {
+						Medias: ['repos/My Custom Songs/medias'],
+				  },
+	},
+];

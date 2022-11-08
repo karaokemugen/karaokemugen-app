@@ -7,14 +7,15 @@ import {
 	QuestionCircleOutlined,
 } from '@ant-design/icons';
 import { Button, Checkbox, Col, Divider, Layout, Row, Table, Tooltip } from 'antd';
+import Title from '../../components/Title';
 import i18next from 'i18next';
 import { Component } from 'react';
 import { Link } from 'react-router-dom';
 
-import { Repository } from '../../../../../src/types/config';
 import { commandBackend } from '../../../utils/socket';
 import { displayMessage } from '../../../utils/tools';
 import CollectionsActivation from './CollectionsActivation';
+import { Repository } from '../../../../../src/lib/types/repo';
 
 interface RepositoryListState {
 	repositories: Repository[];
@@ -74,11 +75,13 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 	render() {
 		return (
 			<>
-				<Layout.Header>
-					<div className="title">{i18next.t('HEADERS.REPOSITORIES.TITLE')}</div>
-					<div className="description">{i18next.t('HEADERS.REPOSITORIES.DESCRIPTION_COLLECTION')}</div>
-					<div className="description">{i18next.t('HEADERS.REPOSITORIES.DESCRIPTION')}</div>
-				</Layout.Header>
+				<Title
+					title={i18next.t('HEADERS.REPOSITORIES.TITLE')}
+					description={
+						i18next.t('HEADERS.REPOSITORIES.DESCRIPTION_COLLECTION') +
+						i18next.t('HEADERS.REPOSITORIES.DESCRIPTION')
+					}
+				/>
 				<Layout.Content>
 					<CollectionsActivation />
 					<Link to={'/system/repositories/new'}>
@@ -132,6 +135,12 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 			dataIndex: 'Online',
 			key: 'online',
 			render: (_text, record) => <Checkbox disabled={true} checked={record.Online} />,
+		},
+		{
+			title: i18next.t('REPOSITORIES.UPDATE'),
+			dataIndex: 'Update',
+			key: 'update',
+			render: (_text, record) => <Checkbox disabled={true} checked={record.Update} />,
 		},
 		{
 			title: i18next.t('REPOSITORIES.ENABLED'),

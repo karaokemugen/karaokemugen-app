@@ -2,7 +2,7 @@ import { debounce } from 'lodash';
 import { io, Socket } from 'socket.io-client';
 
 import { DBUser } from '../lib/types/database/user';
-import logger from '../lib/utils/logger';
+import logger, { profile } from '../lib/utils/logger';
 import { importFavorites } from '../services/favorites';
 import { editUser, getUser, getUsers, removeUser } from '../services/user';
 import { Favorite } from '../types/stats';
@@ -15,8 +15,8 @@ const ioMap: Map<string, Socket> = new Map();
 const debounceMap: Map<string, (login: string, payload: any) => Promise<void>> = new Map();
 
 async function listRemoteUsers() {
-	const users = await getUsers({ onlineOnly: true });
-	return users.map(u => u.login);
+	const users = await getUsers();
+	return users.filter(u => u.login.includes('@')).map(u => u.login);
 }
 
 async function updateUser(login: string, payload: any) {
@@ -123,6 +123,7 @@ export function stopSub(user: string, server: string) {
 
 export async function subRemoteUsers() {
 	logger.debug('Starting watching users online', { service });
+	profile('initSubRemoteUsers');
 	const users = await listRemoteUsers();
 	for (const user of users) {
 		if (user) {
@@ -130,4 +131,5 @@ export async function subRemoteUsers() {
 			startSub(login, instance);
 		}
 	}
+	profile('initSubRemoteUsers');
 }

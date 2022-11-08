@@ -57,7 +57,7 @@ Maintainers will usually merge by squashing the commits inside the branch unless
 
 To start things off, you'll need the right tools. This guide is meant for Windows but this won't change things much if you're using Linux or macOS.
 
-We're listing specific tools, but remember you can also choose your own preferred tools, like for example replacing Fork by Gitkraken or git bash by the WSL.
+We're listing specific tools, but remember you can also choose your own preferred tools, like for example replacing Fork by Gitkraken (but who would do that.) or git bash by the WSL.
 
 ### Install git / fork
 
@@ -65,7 +65,7 @@ We're listing specific tools, but remember you can also choose your own preferre
 -   [gitAhead](https://gitahead.com/) is a good multi-platform git GUI
 -   [Fork](https://git-fork.com/) is also a good graphical client for git, but it's not free (as in free beer)
 
-Generally, git bash (bundled with git) is a good terminal.
+Generally, git bash (bundled with git for Windows) is a good terminal. Other OSes have proper terminals already installed.
 
 ### Install Visual Studio Code
 

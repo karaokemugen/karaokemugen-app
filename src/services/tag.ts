@@ -17,15 +17,15 @@ import { removeTagInKaras } from '../dao/tagfile';
 import { saveSetting } from '../lib/dao/database';
 import { refreshKarasUpdate } from '../lib/dao/kara';
 import { formatKaraV4 } from '../lib/dao/karafile';
-import { refreshTags, updateTagSearchVector } from '../lib/dao/tag';
-import { formatTagFile, getDataFromTagFile, removeTagFile, writeTagFile } from '../lib/dao/tagfile';
+import { convertToDBTag, refreshTags, updateTagSearchVector } from '../lib/dao/tag';
+import { formatTagFile, getDataFromTagFile, removeTagFile, trimTagData, writeTagFile } from '../lib/dao/tagfile';
 import { refreshKarasAfterDBChange } from '../lib/services/karaManagement';
 import { DBKara, DBKaraTag } from '../lib/types/database/kara';
 import { DBTag, DBTagMini } from '../lib/types/database/tag';
-import { KaraFileV4 } from '../lib/types/kara.d';
+import { Kara, KaraFileV4 } from '../lib/types/kara.d';
 import { Tag, TagFile, TagParams } from '../lib/types/tag';
 import { getConfig, resolvedPathRepos } from '../lib/utils/config';
-import { tagTypes } from '../lib/utils/constants';
+import { getTagTypeName, tagTypes } from '../lib/utils/constants';
 import { listAllFiles, resolveFileInDirs, sanitizeFile } from '../lib/utils/files';
 import HTTP from '../lib/utils/http';
 import logger, { profile } from '../lib/utils/logger';
@@ -67,6 +67,7 @@ export async function addTag(tagObj: Tag, opts = { silent: false, refresh: true 
 		});
 	}
 	try {
+		tagObj = trimTagData(tagObj);
 		if (!tagObj.tid) tagObj.tid = uuidV4();
 		if (!tagObj.tagfile) tagObj.tagfile = `${sanitizeFile(tagObj.name)}.${tagObj.tid.substring(0, 8)}.tag.json`;
 		const tagfile = tagObj.tagfile;
@@ -141,12 +142,15 @@ export async function mergeTags(tid1: string, tid2: string) {
 			noLiveDownload: tag1.noLiveDownload || tag2.noLiveDownload,
 			karafile_tag: tag1.karafile_tag || tag2.karafile_tag,
 			priority: tag1.priority,
+			external_database_ids:
+				tag1.external_database_ids == null && tag2.external_database_ids == null
+					? null
+					: { ...tag1.external_database_ids, ...tag2.external_database_ids },
 		};
 		tagObj = await addTag(tagObj, { silent: true, refresh: false });
 		const newTagFiles = resolve(resolvedPathRepos('Tags', tagObj.repository)[0], tagObj.tagfile);
 		await addTagToStore(newTagFiles);
 		sortTagsStore();
-		await updateKaraTagsTID(tid1, tagObj.tid);
 		// We're not asyncing these because after the first one passes, if the new TID already has the same songs registered in the kara_tag table, it'll break the unique constraint on the table and destroy the universe.
 		// So we don't do that.
 		// The query updates only rows where KIDs aren't already listed as belonging to the new TID.
@@ -160,16 +164,18 @@ export async function mergeTags(tid1: string, tid2: string) {
 			removeTagInStore(tid1),
 			removeTagInStore(tid2),
 		]);
-		const karas = await getKarasWithTags([tag1, tag2, tagObj as any]);
-		const modifiedKaras = await replaceTagInKaras(tid1, tid2, tagObj, karas);
-		for (const kara of modifiedKaras) {
-			await editKaraInStore(kara);
+		let karas = await getKarasWithTags([tag1, tag2, tagObj as any]);
+		await replaceTagInKaras(tid1, tid2, tagObj, karas);
+		karas = await getKarasWithTags([tagObj as any]);
+		const karasData: Kara[] = [];
+		for (const kara of karas) {
+			const karafile = await resolveFileInDirs(kara.karafile, resolvedPathRepos('Karaokes', kara.repository));
+			await editKaraInStore(karafile[0]);
+			karasData.push(formatKaraV4(kara).data);
 		}
 		sortKaraStore();
 		saveSetting('baseChecksum', getStoreChecksum());
-		await updateTagSearchVector();
-		await refreshKarasUpdate(karas.map(k => k.kid));
-		refreshTags();
+		await refreshTags();
 		return tagObj;
 	} catch (err) {
 		logger.error(`Error merging tag ${tid1} and ${tid2}`, { service, obj: err });
@@ -199,6 +205,7 @@ export async function editTag(
 		if (opts.repoCheck && oldTag.repository !== tagObj.repository) {
 			throw { code: 409, msg: 'Tag repository cannot be modified. Use copy function instead' };
 		}
+		tagObj = trimTagData(tagObj);
 		tagObj.tagfile = `${sanitizeFile(tagObj.name)}.${tid.substring(0, 8)}.tag.json`;
 		await updateTag(tagObj);
 		if (opts.writeFile) {
@@ -236,6 +243,22 @@ export async function editTag(
 		}
 		if (opts.refresh) {
 			const karasToUpdate = await getKarasWithTags([oldTag]);
+			// We need to check if types have been removed from the new tag. If so, we edit all karas with that tag/type to remove them
+			const newDBTag = convertToDBTag(tagObj);
+			for (const oldType of oldTag.types) {
+				const tagTypeName = getTagTypeName(oldType);
+				if (!newDBTag.types.includes(oldType)) {
+					const karasToRemoveTagIn = karasToUpdate.filter(k =>
+						k[tagTypeName].find((t: DBKaraTag) => t.tid === newDBTag.tid)
+					);
+					if (karasToRemoveTagIn.length > 0) {
+						for (const kara of karasToRemoveTagIn) {
+							kara[tagTypeName] = kara[tagTypeName].filter((t: DBKaraTag) => t.tid !== newDBTag.tid);
+							await editKara({ kara: formatKaraV4(kara) }, false);
+						}
+					}
+				}
+			}
 			await updateTagSearchVector();
 			const karasData = karasToUpdate.map(k => formatKaraV4(k).data);
 			await refreshKarasAfterDBChange('UPDATE', karasData);
@@ -379,9 +402,11 @@ export async function copyTagToRepo(tid: string, repoName: string) {
 	}
 }
 
-async function replaceTagInKaras(oldTID1: string, oldTID2: string, newTag: Tag, karas: DBKara[]): Promise<string[]> {
-	logger.info(`Replacing tag ${oldTID1} and ${oldTID2} by ${newTag.tid} in .kara.json files`, { service });
-	const modifiedKaras: string[] = [];
+async function replaceTagInKaras(oldTID1: string, oldTID2: string, newTag: Tag, karas: DBKara[]) {
+	logger.info(
+		`Replacing tag ${oldTID1} and ${oldTID2} by ${newTag.tid} in kara(s) ${karas.map(k => k.kid).join(', ')}`,
+		{ service }
+	);
 	for (const kara of karas) {
 		kara.modified_at = new Date();
 		for (const type of Object.keys(tagTypes)) {
@@ -397,7 +422,6 @@ async function replaceTagInKaras(oldTID1: string, oldTID2: string, newTag: Tag, 
 			kara: formatKaraV4(kara),
 		});
 	}
-	return modifiedKaras;
 }
 
 export async function syncTagsFromRepo(repoSourceName: string, repoDestName: string) {

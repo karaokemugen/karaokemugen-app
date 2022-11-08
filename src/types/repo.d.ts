@@ -16,21 +16,6 @@ export interface Push {
 	modifiedMedias: ModifiedMedia[];
 }
 
-// Used for migration to zip-based repositories
-export interface OldRepository {
-	Name: string;
-	Online: boolean;
-	Enabled: boolean;
-	SendStats?: boolean;
-	Path: {
-		Karas: string[];
-		Lyrics: string[];
-		Medias: string[];
-		Tags: string[];
-		Series?: string[];
-	};
-}
-
 export interface Commit {
 	addedFiles: string[];
 	removedFiles: string[];

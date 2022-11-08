@@ -1,13 +1,9 @@
-import { KaraParams } from '../lib/types/kara';
+import { TagAndType } from '../lib/types/tag';
 
 interface FavExportContent {
 	kid: string;
 }
 
-export interface Favorite {
-	kid: string;
-	username: string;
-}
 export interface FavExport {
 	Header: {
 		description: string;
@@ -21,7 +17,16 @@ export interface AutoMixPlaylistInfo {
 	playlist_name: string;
 }
 
+export type PlaylistLimit = 'duration' | 'songs';
+
 export interface AutoMixParams {
-	users: string[];
-	duration: number;
+	filters?: {
+		usersFavorites?: string[];
+		years?: number[];
+		tags?: TagAndType[];
+	};
+	limitType?: PlaylistLimit;
+	limitNumber?: number;
+	playlistName?: string;
+	surprisePlaylist?: boolean;
 }

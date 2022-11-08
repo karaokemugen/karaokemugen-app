@@ -9,7 +9,6 @@ import i18next from 'i18next';
 import { Component } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
-import TasksEvent from '../../TasksEvent';
 import { getSocket } from '../../utils/socket';
 import { displayMessage } from '../../utils/tools';
 import Loading from '../components/Loading';
@@ -23,7 +22,7 @@ import KaraHistory from '../pages/Karas/History';
 import KaraBatchEdit from '../pages/Karas/KaraBatchEdit';
 import KaraDownload from '../pages/Karas/KaraDownload';
 import KaraEdit from '../pages/Karas/KaraEdit';
-import KaraList from '../pages/Karas/KaraList';
+import KaraListPage from '../pages/Karas/KaraListPage';
 import QueueDownload from '../pages/Karas/QueueDownload';
 import KaraRanking from '../pages/Karas/Ranking';
 import KaraViewcounts from '../pages/Karas/Viewcounts';
@@ -84,7 +83,6 @@ class KMSystem extends Component<unknown, unknown> {
 					</Layout.Sider>
 					<Layout>
 						<Loading />
-						<TasksEvent limit={5} />
 						<Routes>
 							<Route path="/home" element={<Home />} />
 							<Route path="/log" element={<Log />} />
@@ -110,7 +108,7 @@ class KMSystem extends Component<unknown, unknown> {
 							<Route path="/karas/viewcounts" element={<KaraViewcounts />} />
 							<Route path="/karas/batch" element={<KaraBatchEdit />} />
 							<Route path="/karas/:kid" element={<KaraEdit />} />
-							<Route path="/karas" element={<KaraList />} />
+							<Route path="/karas" element={<KaraListPage />} />
 
 							<Route path="/tags/duplicate" element={<TagsDuplicate />} />
 							<Route path="/tags/new" element={<TagsEdit />} />

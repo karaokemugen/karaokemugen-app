@@ -1,5 +1,6 @@
 import { FileExcelOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { Button, Cascader, Checkbox, DatePicker, Divider, Form, Input, Modal, Table, Tooltip } from 'antd';
+import Title from '../../components/Title';
 import { FormInstance, FormProps } from 'antd/lib/form';
 import i18next from 'i18next';
 import moment from 'moment';
