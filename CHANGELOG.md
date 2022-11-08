@@ -1,4 +1,4 @@
-# v7.0.x - xx/10/2022
+# v7.0.34 - 09/11/2022
 
 This is a major release. A lot of bugfixes have been backported in 6.x versions so don't worry if you've seen some of them.
 
@@ -12,7 +12,6 @@ This is a major release. A lot of bugfixes have been backported in 6.x versions 
 -   Customize your session's splash page with a message your users can see before logging in (#1259)
 -   Customize the "Go to https://xxxx.kara.moe" message on the player (#1256)
 -   AutoMixes have been improved : you can now add criterias (like you would do for a smart playlist) to generate the playlist of your dreams (#1270)
--   Quiz time! You can now create a quiz from a playlist, select what to hide and let your guests guess which song is which! Complete with many options, score system and nifty other features! (#755)
 -   Link your profile with your Anilist/MyAnimeList/Kitsu profile! Once linked, Karaoke Mugen will create a special list "My Anime Songs" with songs from anime you've seen! This should help you populate your favorites or selecting songs during a karaoke session. (#1258)
 -   The video player now makes use of your mouse's previous/next buttons to go to change songs if you've focused the player with your mouse (#1305)
 -   New "franchise" tag type to allow searching/blacklisting songs by entire franchises instead of series (#1290)
@@ -27,12 +26,15 @@ This is a major release. A lot of bugfixes have been backported in 6.x versions 
 -   A new language type (Romanization) has been added to allow non-japanese titles/series names to have a proper romanization too.
 -   Database updates and other background tasks are now displayed on the operator screen so you know if something's going on! (#1239 and #1225)
 -   Added support for .SRT subtitle files (#1213)
+-   Added support for .KBP subtitle import. They'll be converted into ASS format on submission (#1347)
 -   Karaoke Mugen is now also available on :
     -   M1/M2 Macs (as a native application) (#824 #499)
     -   As an .AppImage for Linux
 
 ## Improvements
 
+-   Additional information is displayed in the Status box on the welcome screen (#1342)
+-   In the Event Log window, you can now click a button to open the log in your system's file explorer (#1343)
 -   Stream Mode and Classic Mode are now exclusive and it's more obvious on the config page. (#1302)
 -   A sample karaoke name is displayed in the Edit Profile window to show you what your linguistic preferences will do.
 -   "Delete this karaoke" menu item (and other dangerous actions) are now more easily visible in pop-up menus on system panel (#1298)
@@ -46,9 +48,16 @@ This is a major release. A lot of bugfixes have been backported in 6.x versions 
 -   mpv errors now have an accompanying log (#1229)
     -   Also, mpv logs now have a date in their filenames!
 -   "Update repositories" button is now on the repositories screen.
+-   Git/FTP Information is not mandatory anymore in repository edit form (#1330)
+-   All fields from karaokes and tags are now trimmed upons ubmission (#1339)
 
 ## Fixes
 
+-   Fixed progression toast missing from add/delete tag in karaoke (#1341)
+-   Fixed avatar modal being too big on mobile (#1346)
+-   Fixed permission checks in getPlaylistContentMicro route (#1337)
+-   Fixed language preference select box on profile modale in some configurations (#1338)
+-   Fixed creating new repository (#1327)
 -   Fixed medias sync/update not properly removing songs from disabled collections (#1324 #1306)
 -   Fixed circular dependencies in karaoke updates (#1320)
 -   Fixed inbox download feedback for maintainers (#1316)
@@ -1507,7 +1516,8 @@ This is a minor release containing fixes AND new features.
 
 ## Fixes
 
--   Fix karaoke stopping after intro if sponsors are disabled or non-existant (f6e09d84)
+-   Fixed
+-   Fixed karaoke stopping after intro if sponsors are disabled or non-existant (f6e09d84)
 -   Importing favorites is now fixed (650ce09a)
 -   Reworked playlist reordering so it takes into account songs not available in database anymore (5798d60b)
 -   When tags or songs have disappeared from database but are still in the app's blacklist criterias, they are now completely removed from output but still kept in database. (b8d32f04 and e62f0fe4)
