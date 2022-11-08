@@ -89,7 +89,7 @@ export function commandBackend(name: string, body?: any, loading = false, timeou
 						i18next.t(`ERROR_CODES.${data.message.code}`, { data: data.data })
 					);
 				}
-				err ? reject(new Error(JSON.stringify(data))) : resolve(data);
+				err ? reject(new Error(data?.message?.code ? data.message.code : JSON.stringify(data))) : resolve(data);
 			}
 		);
 	});
