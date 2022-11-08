@@ -719,10 +719,6 @@
 			"DELETE": "Effacer la liste des téléchargements",
 			"CONTINUE": "Continuer les téléchargements"
 		},
-		"DELETE_PLAYLIST_ERROR_CURRENT": "Impossible de supprimer une playlist courante. Définissez une autre playlist courante avant.",
-		"DELETE_PLAYLIST_ERROR_PUBLIC": "Impossible de supprimer une playlist publique. Définissez une autre playlist publique avant.",
-		"DELETE_PLAYLIST_ERROR_WHITELIST": "Impossible de supprimer une liste blanche. Définissez une autre liste blanche avant.",
-		"DELETE_PLAYLIST_ERROR_BLACKLIST": "Impossible de supprimer une liste noire. Définissez une autre liste noire avant.",
 		"DELETE_PLAYLIST_MODAL": {
 			"TITLE": "Supprimer {{playlist}} pour toujours ?",
 			"IMPOSSIBLE": "Vous ne pouvez pas supprimer la seule liste de lecture.",
@@ -1499,7 +1495,11 @@
 		"REPOSITORY_UNREACHABLE": "Dépôt inaccessible. Avez-vous mal orthographié son nom ?",
 		"CANNOT_INSTALL_REPO_AT_WINDOWS_ROOT_DRIVE": "Le dépôt ne peut pas être installé à la racine d'un lecteur Windows.",
 		"REFRESH_ANIME_LIST_ERROR": "Erreur lors du rafraichissement de la liste d'anime",
-		"ANIME_LIST_VIEW_ERROR": "Erreur lors de la récupération de la liste d'anime"
+		"ANIME_LIST_VIEW_ERROR": "Erreur lors de la récupération de la liste d'anime",
+		"DELETE_PLAYLIST_ERROR_CURRENT": "Impossible de supprimer une playlist courante. Définissez une autre playlist courante avant.",
+		"DELETE_PLAYLIST_ERROR_PUBLIC": "Impossible de supprimer une playlist publique. Définissez une autre playlist publique avant.",
+		"DELETE_PLAYLIST_ERROR_WHITELIST": "Impossible de supprimer une liste blanche. Définissez une autre liste blanche avant.",
+		"DELETE_PLAYLIST_ERROR_BLACKLIST": "Impossible de supprimer une liste noire. Définissez une autre liste noire avant."
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Ajout de {{data}} téléchargements à la file d'attente",

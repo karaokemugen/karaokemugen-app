@@ -1076,8 +1076,7 @@
 			"DESC": "Kami menggunakan favorit dan juga karaoke kamu yang kamu minta ketika sebuah sesi untuk membuat statistik penggunaan (sebagai contoh, untuk mencari tahu karaoke yang paling sering diminta).",
 			"REFUSE_DESC": "Jika kamu tidak ingin berpartisipasi, meskipun awanama di statistik penggunaan tersebut, mohon beritahu kami. Jika kamu menolak, data kamu akan diabaikan oleh peladen dan tidak akan dikirimkan oleh aplikasi Karaoke Mugen.",
 			"CHANGE": "Kamu bisa mengubah ini kapan saja di profil kamu. Apakah kamu setuju tentang penggunaan statistik kamu?"
-		},
-		"DELETE_PLAYLIST_ERROR_PUBLIC": "Tidak bisa menghapus daftar putar publik. Buat dulu daftar putar publik lain."
+		}
 	},
 	"REPOSITORIES": {
 		"PATH_MEDIAS": "Media",
@@ -1309,7 +1308,8 @@
 		"REPOSITORY_UNREACHABLE": "Repositori tidak dapat dijangkau. Apakah kamu salah menulis namanya?",
 		"CANNOT_INSTALL_REPO_AT_WINDOWS_ROOT_DRIVE": "Repositori tidak bisa dipasang pada root diska Windows.",
 		"DATABASE_DUMPED_ERROR": "Galat melegokan basis data",
-		"GUESTS_NOT_ALLOWED": "Akun tamu tidak diperbolehkan"
+		"GUESTS_NOT_ALLOWED": "Akun tamu tidak diperbolehkan",
+		"DELETE_PLAYLIST_ERROR_PUBLIC": "Tidak bisa menghapus daftar putar publik. Buat dulu daftar putar publik lain."
 	},
 	"SUCCESS_CODES": {
 		"SESSION_MERGED": "Sesi berhasil digabung",
