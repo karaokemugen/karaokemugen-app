@@ -128,7 +128,7 @@ export default function playlistsController(router: SocketIOApp) {
 		} catch (err) {
 			const code = 'PL_DELETE_ERROR';
 			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err?.code || 500, message: APIMessage(err?.msg || code) };
 		}
 	});
 	router.route('emptyPlaylist', async (socket: Socket, req: APIData) => {
