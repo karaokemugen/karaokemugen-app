@@ -115,7 +115,9 @@ function ActionsButtons(props: IProps) {
 				![
 					context.globalState.settings.data.state.publicPlaid,
 					context.globalState.settings.data.state.currentPlaid,
-				].includes(playlist?.plaid)) ? (
+				].includes(playlist?.plaid) &&
+				props.kara.public_plc_id?.length === 0 &&
+				(props.kara.children?.length === 0 || !context.globalState.settings.data.user.flag_parentsonly)) ? (
 				<button
 					title={
 						addingIsForbidden
