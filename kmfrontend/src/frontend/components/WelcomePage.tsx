@@ -82,7 +82,7 @@ function WelcomePage() {
 	};
 
 	const getStats = async () => {
-		const res = await commandBackend('getStats');
+		const res = await commandBackend('getStats', undefined, false, 300000);
 		setStats(res);
 	};
 
