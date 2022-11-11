@@ -82,7 +82,7 @@ function WelcomePage() {
 	};
 
 	const getStats = async () => {
-		const res = await commandBackend('getStats');
+		const res = await commandBackend('getStats', undefined, false, 300000);
 		setStats(res);
 	};
 
@@ -222,13 +222,13 @@ function WelcomePage() {
 
 	const getWebappMode = () => {
 		if (context?.globalState.settings.data.config?.Frontend?.Mode === 0) {
-			return i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_CLOSED_SHORT')
+			return i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_CLOSED_SHORT');
 		} else if (context?.globalState.settings.data.config?.Frontend?.Mode === 1) {
-			return i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_LIMITED_SHORT')
+			return i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_LIMITED_SHORT');
 		} else if (context?.globalState.settings.data.config?.Frontend?.Mode === 2) {
-			return i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_OPEN_SHORT')
+			return i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_OPEN_SHORT');
 		}
-	}
+	};
 
 	const getCollections = async () => setCollections(await commandBackend('getCollections'));
 
@@ -397,18 +397,18 @@ function WelcomePage() {
 										<strong>{i18next.t('VERSION')}</strong>
 										<span>
 											v{context.globalState.settings.data.version.number}{' '}
-											<em>
-												({context.globalState.settings.data.version.sha})
-											</em>
+											<em>({context.globalState.settings.data.version.sha})</em>
 										</span>
 									</li>
 									<li>
 										<strong>{i18next.t('REMOTE_URL')}</strong>
 										<span>
 											{remoteStatus?.active ? (
-												'host' in remoteStatus.info ?
-													<a href={`https://${remoteStatus.info.host}`}>{remoteStatus.info.host}</a>
-													:
+												'host' in remoteStatus.info ? (
+													<a href={`https://${remoteStatus.info.host}`}>
+														{remoteStatus.info.host}
+													</a>
+												) : (
 													<>
 														{remoteStatus.info.reason === 'OUTDATED_CLIENT'
 															? i18next.t('REMOTE_STATUS.OUTDATED_CLIENT')
@@ -416,17 +416,21 @@ function WelcomePage() {
 														{remoteStatus.info.reason === 'UNKNOWN_COMMAND'
 															? i18next.t('REMOTE_STATUS.OUTDATED')
 															: null}
-														{!['OUTDATED_CLIENT', 'UNKNOWN_COMMAND'].includes(remoteStatus.info.reason) ? (
+														{!['OUTDATED_CLIENT', 'UNKNOWN_COMMAND'].includes(
+															remoteStatus.info.reason
+														) ? (
 															<span>
-																{i18next.t('REMOTE_STATUS.DISCONNECTED')} {remoteStatus.info.reason}
+																{i18next.t('REMOTE_STATUS.DISCONNECTED')}{' '}
+																{remoteStatus.info.reason}
 															</span>
 														) : null}
 													</>
-
-											) : <div onClick={() => navigate('/admin/options/karaoke')}>
-												{i18next.t('REMOTE_STATUS.DISCONNECTED')}
-											</div>
-											}
+												)
+											) : (
+												<div onClick={() => navigate('/admin/options/karaoke')}>
+													{i18next.t('REMOTE_STATUS.DISCONNECTED')}
+												</div>
+											)}
 										</span>
 									</li>
 									<li>
