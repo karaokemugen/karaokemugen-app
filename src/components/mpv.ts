@@ -28,7 +28,7 @@ import { setDiscordActivity } from '../utils/discordRPC';
 import MpvIPC from '../utils/mpvIPC';
 import sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
-import { exit } from './engine';
+import { exit, isShutdownInProgress } from './engine';
 import Timeout = NodeJS.Timeout;
 import { DBKaraTag } from '../lib/types/database/kara';
 import { supportedFiles } from '../lib/utils/constants';
@@ -802,7 +802,7 @@ class Players {
 			const mpv = typeof cmd === 'object';
 			// ensureRunning returns -1 if the player does not exist (eg. disabled monitor)
 			// ensureRunning isn't needed on non-mpv commands
-			if (mpv && (await this.ensureRunning(onlyOn, ignoreLock)) === -1) return;
+			if (isShutdownInProgress() || (mpv && (await this.ensureRunning(onlyOn, ignoreLock)) === -1)) return;
 			if (!(typeof cmd !== 'string' && cmd?.command[1] === 'osd-overlay')) {
 				logger.debug(`${mpv ? 'mpv ' : ''}command: ${JSON.stringify(cmd)}, ${JSON.stringify(args)}`, {
 					service,
