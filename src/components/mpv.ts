@@ -28,7 +28,7 @@ import { setDiscordActivity } from '../utils/discordRPC';
 import MpvIPC from '../utils/mpvIPC';
 import sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
-import { exit } from './engine';
+import { exit, isShutdownInProgress } from './engine';
 import Timeout = NodeJS.Timeout;
 import { DBKaraTag } from '../lib/types/database/kara';
 import { supportedFiles } from '../lib/utils/constants';
@@ -630,6 +630,7 @@ class Player {
 		if (!this.configuration) {
 			await this.init();
 		}
+		if (isShutdownInProgress()) return;
 		this.bindEvents();
 		await retry(
 			async () => {
@@ -782,7 +783,7 @@ class Players {
 				for (const player in this.players) {
 					if (!this.players[player].isRunning) {
 						logger.info(`Restarting ${player} player`, { service });
-						loads.push(this.players[player].recreate(null, true));
+						loads.push(this.players[player as PlayerType].recreate(null, true));
 					}
 				}
 			} else {
@@ -797,9 +798,10 @@ class Players {
 		}
 	}
 
-	async exec(cmd: string | MpvCommand, args: any[] = [], onlyOn?: PlayerType, ignoreLock = false) {
+	async exec(cmd: string | MpvCommand, args: any[] = [], onlyOn?: PlayerType, ignoreLock = false, shutdown = false) {
 		try {
 			const mpv = typeof cmd === 'object';
+			if (!shutdown && isShutdownInProgress()) return;
 			// ensureRunning returns -1 if the player does not exist (eg. disabled monitor)
 			// ensureRunning isn't needed on non-mpv commands
 			if (mpv && (await this.ensureRunning(onlyOn, ignoreLock)) === -1) return;
@@ -967,7 +969,7 @@ class Players {
 		if (this.players.main.isRunning || this.players.monitor?.isRunning) {
 			// needed to wait for lock release
 			// eslint-disable-next-line no-return-await
-			return this.exec('destroy').catch(err => {
+			return this.exec('destroy', undefined, undefined, true, true).catch(err => {
 				// Non fatal. Idiots sometimes close mpv instead of KM, this avoids an uncaught exception.
 				logger.warn('Failed to quit mpv', { service, obj: err });
 			});
@@ -988,7 +990,7 @@ class Players {
 				this.players.monitor = new Player({ monitor: true }, this);
 			} else {
 				// Monitor needs to be destroyed
-				await this.exec('destroy', [null], 'monitor', true).catch(() => {
+				await this.exec('destroy', [null], 'monitor', true, true).catch(() => {
 					// Non-fatal, it probably means it's destroyed.
 				});
 				delete this.players.monitor;
