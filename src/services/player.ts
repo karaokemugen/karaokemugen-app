@@ -1,5 +1,6 @@
 import i18next from 'i18next';
 import { setTimeout as sleep } from 'timers/promises';
+import { isShutdownInProgress } from '../components/engine';
 
 import Players, { switchToPollScreen } from '../components/mpv';
 import { APIMessage } from '../controllers/common';
@@ -290,6 +291,7 @@ export function displayInfo() {
 }
 
 export async function sendCommand(command: string, options: any): Promise<APIMessageType> {
+	if (isShutdownInProgress()) return;
 	// Resetting singlePlay to false everytime we use a command.
 	const state = getState();
 	if (state.isTest) throw 'Player management is disabled in test mode';
