@@ -1,11 +1,11 @@
 import { spawn } from 'child_process';
 import { dirname, resolve } from 'path';
 
+import { resolvedPath } from '../lib/utils/config';
 import { date } from '../lib/utils/date';
 import logger from '../lib/utils/logger';
 import { findCommand } from './files';
 import Sentry from './sentry';
-import { getState } from './state';
 
 const service = 'Logger';
 
@@ -13,7 +13,7 @@ export async function selectLogFile() {
 	try {
 		let command = '';
 		const options = [];
-		let fpath = resolve(getState().dataPath, `logs/karaokemugen-${date()}.log`);
+		let fpath = resolve(resolvedPath('Logs'), `karaokemugen-${date()}.log`);
 		switch (process.platform) {
 			case 'darwin':
 				command = 'open';
