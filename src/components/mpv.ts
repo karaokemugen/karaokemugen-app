@@ -385,7 +385,7 @@ class Player {
 		const mpvArgs = [
 			'--keep-open=always',
 			'--osd-level=0',
-			`--log-file=${resolve(state.dataPath, 'logs/', `mpv.${today}.log`)}`,
+			`--log-file=${resolve(resolvedPath('Logs'), `mpv.${today}.log`)}`,
 			`--hwdec=${conf.Player.HardwareDecoding}`,
 			`--volume=${+conf.Player.Volume}`,
 			'--no-config',
@@ -1555,7 +1555,7 @@ class Players {
 async function getMpvLog() {
 	try {
 		const today = date();
-		const logFile = resolve(getState().dataPath, 'logs/', `mpv.${today}.log`);
+		const logFile = resolve(resolvedPath('Logs'), `mpv.${today}.log`);
 		const logData = await fs.readFile(logFile, 'utf-8');
 		return logData.split('\n').slice(-100);
 	} catch (err) {

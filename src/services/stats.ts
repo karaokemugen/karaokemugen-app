@@ -8,7 +8,7 @@ import si from 'systeminformation';
 import { APIMessage } from '../controllers/common';
 import { selectPlayed, selectRequests } from '../dao/stats';
 import { getInstanceID } from '../lib/dao/database';
-import { getConfig } from '../lib/utils/config';
+import { getConfig, resolvedPath } from '../lib/utils/config';
 import HTTP from '../lib/utils/http';
 import logger from '../lib/utils/logger';
 import { emitWS } from '../lib/utils/ws';
@@ -72,7 +72,7 @@ export async function sendPayload(host: string, minimal: boolean) {
 async function savePayload(payload: any, host: string) {
 	try {
 		await fs.writeFile(
-			resolve(getState().dataPath, `logs/statsPayload-${host}.json`),
+			resolve(resolvedPath('Logs'), `statsPayload-${host}.json`),
 			JSON.stringify(payload, null, 2),
 			'utf-8'
 		);
