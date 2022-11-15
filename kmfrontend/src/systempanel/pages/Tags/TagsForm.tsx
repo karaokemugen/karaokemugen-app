@@ -30,6 +30,7 @@ interface TagsFormProps {
 	save: (tag: Tag) => void;
 	handleCopy: (tid, repo) => void;
 	mergeAction: (tid1: string, tid2: string) => void;
+	deleteAction: (tid: string) => void;
 }
 
 interface TagsFormState {
@@ -106,6 +107,10 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 
 	handleTagMerge = e => {
 		this.props.mergeAction(this.props.tag.tid, this.state.mergeSelection);
+	};
+
+	handleTagDelete = e => {
+		this.props.deleteAction(this.props.tag.tid);
 	};
 
 	mergeCascaderOption = () => {
@@ -433,7 +438,21 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 				)}
 				{this.props.tag ? (
 					<>
-						<Divider />
+						<Divider orientation="left">{i18next.t('TAGS.DELETE_TAG')}</Divider>
+						<Form.Item wrapperCol={{ span: 8, offset: 3 }} style={{ textAlign: 'center' }}>
+							<Alert
+								style={{ textAlign: 'left', marginBottom: '20px' }}
+								message={i18next.t('WARNING')}
+								description={i18next.t('TAGS.DELETE_TAG_MESSAGE')}
+								type="warning"
+							/>
+
+							<Button type="primary" danger onClick={this.handleTagDelete}>
+								{i18next.t('TAGS.DELETE_TAG')}
+							</Button>
+						</Form.Item>
+
+						<Divider orientation="left">{i18next.t('TAGS.MERGE_TAGS')}</Divider>
 						<Form.Item
 							label={
 								<span>
@@ -467,7 +486,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 						</Form.Item>
 					</>
 				) : null}
-				<Divider />
+				<Divider orientation="left">{i18next.t('TAGS.COPY_TAG')}</Divider>
 				{this.state.repositoriesValue && this.props.tag?.repository ? (
 					<>
 						<Form.Item

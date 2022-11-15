@@ -7,6 +7,7 @@
 	"SEARCH": "Cari",
 	"SUBMIT": "Simpan",
 	"CANCEL": "Batal",
+	"WARNING": "Peringatan!",
 	"NOT_FOUND_PAGE": {
 		"404": "Tersesat di Karaoke Mugen?",
 		"404_2": "Jangan panik, kami bisa membantumu.",
@@ -1110,7 +1111,6 @@
 		"MOVE": "Tentukan prioritas repositori",
 		"MOVING_MEDIA_BUTTON": "Pindah media…",
 		"MOVING_MEDIA_PANEL": "Pindah media",
-		"WARNING": "Peringatan!",
 		"LYRICS_ARE_DIFFERENT": "Lirik lagu tersebut berbeda antara repositori {{first}} dan repositori {{second}}:",
 		"COMPARE_LYRICS": "Perbarui lirik antar dua repositori",
 		"CHOOSE_REPOSITORY": "Pilih repositori",
