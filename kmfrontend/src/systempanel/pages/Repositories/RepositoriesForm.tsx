@@ -44,7 +44,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 			zipUpdateInProgress: false,
 			maintainerMode: props.repository?.MaintainerMode,
 			onlineMode: props.repository?.Online,
-			update: props.repository?.Update
+			update: props.repository?.Update,
 		};
 	}
 
@@ -487,7 +487,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 							</Button>
 							<Alert
 								style={{ textAlign: 'left', marginTop: '10px' }}
-								message={i18next.t('REPOSITORIES.WARNING')}
+								message={i18next.t('WARNING')}
 								description={i18next.t('REPOSITORIES.MOVING_MEDIA_ABOUT_MESSAGE')}
 								type="warning"
 							/>
