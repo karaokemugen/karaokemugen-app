@@ -51,7 +51,7 @@ const service = 'mpv';
 const playerState: PlayerState = {
 	volume: 100,
 	playing: false,
-	playerStatus: 'stop',
+	playerStatus: null,
 	_playing: false, // internal delay flag
 	timeposition: 0,
 	mute: false,
