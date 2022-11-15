@@ -800,6 +800,7 @@
 				"DOWNLOAD": "Song download error",
 				"SHORTENER": "Error when enabling URL shortener",
 				"PLAYER_PLAY": "Unable to play song",
+				"PLAYER_NO_ONLINE_MEDIA": "Media cannot be read from online sources. Check your internet connection.",
 				"PLAYER_RANDOM_SONG_AFTER_PLAYLIST": "Unable to select a random song to play after playlist ends",
 				"PLAYER_PLMEDIA": "Unable to play playlist media",
 				"PLAYER_CLASSIC_PAUSE_SCREEN": "Unable to prepare pause screen",
