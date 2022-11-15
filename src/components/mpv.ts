@@ -30,12 +30,14 @@ import sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
 import { exit, isShutdownInProgress } from './engine';
 import Timeout = NodeJS.Timeout;
+import { APIMessage } from '../lib/services/frontend';
 import { DBKaraTag } from '../lib/types/database/kara';
 import { supportedFiles } from '../lib/utils/constants';
 import { date } from '../lib/utils/date';
 import HTTP from '../lib/utils/http';
 import { convert1LangTo2B } from '../lib/utils/langs';
 import logger, { profile } from '../lib/utils/logger';
+import { emitWS } from '../lib/utils/ws';
 import { getBackgroundAndMusic } from '../services/backgrounds';
 import { getSongSeriesSingers, getSongTitle } from '../services/kara';
 import { getTagNameInLanguage } from '../services/tag';
@@ -1052,6 +1054,10 @@ class Players {
 						})
 						.catch(error => {
 							mediaFile = '';
+							emitWS(
+								'operatorNotificationError',
+								APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYER_NO_ONLINE_MEDIA')
+							);
 							throw new Error(
 								`No media source for ${song.mediafile} (tried in ${resolvedPathRepos(
 									'Medias',
