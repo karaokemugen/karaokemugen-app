@@ -802,6 +802,7 @@
 				"DOWNLOAD": "Erreur lors du téléchargement",
 				"SHORTENER": "Erreur d'activation de l'URL raccourcie",
 				"PLAYER_PLAY": "Erreur de lecture de karaoké",
+				"PLAYER_NO_ONLINE_MEDIA": "Impossible de lire le média en ligne. Vérifiez votre connexion internet.",
 				"PLAYER_RANDOM_SONG_AFTER_PLAYLIST": "Erreur de sélection de chanson aléatoire en fin de liste de lecture",
 				"PLAYER_PLMEDIA": "Erreur de lecture de média de liste de lecture",
 				"PLAYER_CLASSIC_PAUSE_SCREEN": "Erreur de préparation de l'écran de pause",

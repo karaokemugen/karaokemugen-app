@@ -1,7 +1,7 @@
 import i18next from 'i18next';
 import { setTimeout as sleep } from 'timers/promises';
-import { isShutdownInProgress } from '../components/engine';
 
+import { isShutdownInProgress } from '../components/engine';
 import Players, { switchToPollScreen } from '../components/mpv';
 import { APIMessage } from '../controllers/common';
 import { updatePlaylistLastEditTime, updatePLCVisible } from '../dao/playlist';
@@ -153,6 +153,7 @@ export async function playPlayer(now?: boolean) {
 	profile('Play');
 	const state = getState();
 	if (state.player.playerStatus === 'stop' || now) {
+		// Reinitializing state if the play button has been pressed
 		setState({ singlePlay: false, randomPlaying: false, streamerPause: false });
 		await playCurrentSong(now);
 		stopAddASongMessage();
