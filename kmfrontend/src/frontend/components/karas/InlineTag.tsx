@@ -31,11 +31,13 @@ export default function InlineTag(props: Props) {
 	};
 
 	const getTag = async () => {
-		const res = await commandBackend('getTag', { tid: props.tag.tid });
-		const count = Array.isArray(res.karacount)
-			? res.karacount.filter((karacount: any) => karacount.type === props.tagType)
-			: [];
-		if (count.length > 0) setCount(count[0].count);
+		if (props.tag) {
+			const res = await commandBackend('getTag', { tid: props.tag.tid });
+			const count = Array.isArray(res.karacount)
+				? res.karacount.filter((karacount: any) => karacount.type === props.tagType)
+				: [];
+			if (count.length > 0) setCount(count[0].count);
+		}
 	};
 
 	const handleClick = (e: any) => {
@@ -87,17 +89,18 @@ export default function InlineTag(props: Props) {
 					}
 				}}
 			>
-				{getTagInLocale(context.globalState.settings.data, props.tag, props.i18nParam).i18n}
+				{getTagInLocale(context.globalState.settings.data, props.tag, props.i18nParam)?.i18n}
 			</span>
 			{showPopup ? (
 				<div className={`tag-popup${rightClass ? ' right' : ''}`}>
-					<p className="tag-name">{getTagInLocale(context.globalState.settings.data, props.tag).i18n}</p>
+					<p className="tag-name">{getTagInLocale(context.globalState.settings.data, props.tag)?.i18n}</p>
 					<p className="tag-stat">{i18next.t('INLINE_TAG.COUNT', { count: count })}</p>
 					<p className="tag-action">
 						<button className="btn" onClick={goToTagSearch}>
 							<i className="fas fa-fw fa-search" />
 							{i18next.t('INLINE_TAG.SEARCH', {
-								tag: getTagInLocale(context.globalState.settings.data, props.tag, props.i18nParam).i18n,
+								tag: getTagInLocale(context.globalState.settings.data, props.tag, props.i18nParam)
+									?.i18n,
 							})}
 						</button>
 					</p>
