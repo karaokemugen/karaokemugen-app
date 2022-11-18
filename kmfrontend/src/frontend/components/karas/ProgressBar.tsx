@@ -91,7 +91,7 @@ function ProgressBar() {
 	 */
 	const refreshPlayerInfos = async (data: PublicPlayerState) => {
 		const element = refBar.current;
-		if (element && data.timeposition) {
+		if (element && data.timeposition !== undefined) {
 			const newWidth =
 				(element.offsetWidth * 10000 * (data.timeposition + refreshTime / 1000)) / length / 10000 + 'px';
 
