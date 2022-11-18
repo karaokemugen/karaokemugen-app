@@ -203,7 +203,9 @@ function ProgressBar() {
 				ref={refBar}
 			>
 				<div className="actualTime">
-					{timePosition > 0 && length > 0 && secondsTimeSpanToHMS(Math.round(timePosition), 'mm:ss')}
+					{timePosition !== undefined &&
+						length > 0 &&
+						secondsTimeSpanToHMS(Math.round(timePosition), 'mm:ss')}
 				</div>
 				<div
 					className={`karaTitle${animate !== 0 ? ' animate' : ''}${animationPause ? ' pause' : ''}`}
