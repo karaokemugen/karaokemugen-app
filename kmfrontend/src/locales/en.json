@@ -343,6 +343,7 @@
 		"PLAYER": {
 			"LABEL": "Player",
 			"WINDOW_SETTINGS": "Window",
+			"SCREEN_SETTINGS": "Screen",
 			"DISPLAY_SETTINGS": "Display",
 			"ALWAYS_ON_TOP": "Always on top",
 			"ALWAYS_ON_TOP_TOOLTIP": "If checked, the player window will always be above the others on the screen",
