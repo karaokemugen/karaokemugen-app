@@ -163,7 +163,7 @@ function TagsList() {
 				<Table dataSource={tags} columns={columns} rowKey="tid" />
 				<Modal
 					title={i18next.t('TAGS.TAG_DELETED_CONFIRM')}
-					visible={deleteModal}
+					open={deleteModal}
 					onOk={() => deleteTag(tag.tid)}
 					onCancel={resetDelete}
 					okText={i18next.t('YES')}

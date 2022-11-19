@@ -1,7 +1,5 @@
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { Alert, Button, Checkbox, Divider, Form, Input, Select, Tooltip } from 'antd';
-import Title from '../../components/Title';
-import { FormInstance } from 'antd/lib/form';
+import { Alert, Button, Checkbox, Divider, Form, FormInstance, Input, Select, Tooltip } from 'antd';
 import i18next from 'i18next';
 import { Component, createRef } from 'react';
 

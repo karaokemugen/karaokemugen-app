@@ -1,6 +1,5 @@
-import { Button, Layout, Table } from 'antd';
+import { Button, Layout, Table, TableColumnProps } from 'antd';
 import Title from '../../components/Title';
-import { ColumnProps } from 'antd/lib/table';
 import i18next from 'i18next';
 import { Component } from 'react';
 
@@ -58,7 +57,7 @@ class Viewcounts extends Component<unknown, ViewcountsState> {
 		);
 	}
 
-	columns: ColumnProps<any>[] = [
+	columns: TableColumnProps<any>[] = [
 		{
 			key: 'kid',
 			render: null,

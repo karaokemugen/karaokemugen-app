@@ -65,7 +65,7 @@ class TagsDuplicate extends Component<unknown, TagsListState> {
 					<Table dataSource={this.state.tags} columns={this.columns} rowKey="tid" />
 					<Modal
 						title={i18next.t('TAGS.TAG_DELETED_CONFIRM')}
-						visible={this.state.deleteModal}
+						open={this.state.deleteModal}
 						onOk={() => this.delete(this.state.tag.tid)}
 						onCancel={() => this.setState({ deleteModal: false, tag: undefined })}
 						okText={i18next.t('YES')}

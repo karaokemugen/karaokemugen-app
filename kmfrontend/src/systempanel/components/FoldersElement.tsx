@@ -190,7 +190,7 @@ export default class FoldersElement extends Component<FoldersElementProps, Folde
 
 				<Modal
 					title={this.getTitleModal()}
-					visible={this.state.visibleModal}
+					open={this.state.visibleModal}
 					onOk={() => {
 						this.saveFolders();
 						this.setState({ visibleModal: false });

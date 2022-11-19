@@ -14,8 +14,8 @@ import {
 	Tooltip,
 	Upload,
 	Alert,
+	FormInstance,
 } from 'antd';
-import { FormInstance } from 'antd/lib/form';
 import { SelectValue } from 'antd/lib/select';
 import i18next from 'i18next';
 import { Component, createRef } from 'react';

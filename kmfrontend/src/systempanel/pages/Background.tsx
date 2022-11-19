@@ -159,7 +159,7 @@ export default function Background() {
 				<Table dataSource={bgList?.music} columns={columns} rowKey="file" />
 				<Modal
 					title={i18next.t('BACKGROUNDS_MGMT.NEW')}
-					visible={addModal}
+					open={addModal}
 					onOk={addBg}
 					okText={i18next.t('BACKGROUNDS_MGMT.SAVE')}
 					onCancel={closeModal}
