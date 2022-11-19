@@ -13,6 +13,7 @@ import {
 	editPLC,
 	emptyPlaylist,
 	exportPlaylist,
+	exportPlaylistMedia,
 	findPlaying,
 	getKaraFromPlaylist,
 	getPlaylistContents,
@@ -138,6 +139,17 @@ export default function playlistsController(router: SocketIOApp) {
 			return await emptyPlaylist(req.body?.plaid);
 		} catch (err) {
 			const code = 'PL_EMPTY_ERROR';
+			errMessage(code, err);
+			throw { code: err?.code || 500, message: APIMessage(code) };
+		}
+	});
+	router.route('exportPlaylistMedia', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req);
+		// Export all playlist kara medias to a local directory
+		try {
+			return await exportPlaylistMedia(req.body?.plaid, req.body?.exportDir);
+		} catch (err) {
+			const code = 'PL_EXPORT_MEDIA_ERROR';
 			errMessage(code, err);
 			throw { code: err?.code || 500, message: APIMessage(code) };
 		}

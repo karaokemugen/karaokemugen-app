@@ -76,6 +76,7 @@
 		"DELETE": "Delete playlist",
 		"EDIT": "Edit playlist",
 		"EXPORT": "Export playlist",
+		"EXPORT_MEDIA": "Export all playlist medias",
 		"ADD": "Add new playlist",
 		"AUTOMIX": "Create an automix",
 		"IMPORT": "Import playlist",
@@ -728,6 +729,12 @@
 			"DELETE_CURRENT": "This list is defined as current , change the current playlist for another to delete this one.",
 			"DELETE_CURRENT_PUBLIC": "This list is defined as current and public, change the current and public playlist for another to delete this one."
 		},
+		"EXPORT_PLAYLIST_MEDIA": {
+			"START": "Media files are being exported...",
+			"DONE": "Playlist media files have been exported",
+			"DONE_PARTIALLY": "Playlist media files have been exported, although these could not be saved:",
+			"NOT_ALL_MEDIA_DOWNLOADED": "Not all medias are available locally. Please make sure to download all videos before exporting the playlist"
+		},
 		"STATS_MODAL": {
 			"TITLE": "Use my favorites and karaokes requests for stats",
 			"DESC": "We use your favorites as well as the karaokes that you have requested during a session to make usage statistics (for example, to find out the most requested karaokes).",
@@ -1327,6 +1334,8 @@
 		"PREPARING_CHANGES": "Preparing changes",
 		"REFRESHING_DATA": "Refreshing data…",
 		"UPLOADING_FTP": "Uploading to the FTP…",
+		"EXPORTING_PLAYLIST_MEDIA": "Exporting media from playlist…",
+		"IMPORTING_PLAYLIST": "Importing playlist…",
 		"DUMMY_TASK": "No ongoing tasks"
 	},
 	"ERROR_CODES": {
