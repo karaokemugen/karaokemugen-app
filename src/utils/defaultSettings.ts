@@ -185,7 +185,7 @@ export const defaults: Config = {
 				Windows: 'app\\bin\\postgres\\bin\\',
 			},
 			patch: {
-				Linux: '/usr/bin/patch',
+				Linux: 'app/bin/patch',
 				OSX: app?.isPackaged ? 'Karaoke Mugen.app/Contents/app/bin/patch' : 'app/bin/patch',
 				Windows: 'app\\bin\\patch.exe',
 			},

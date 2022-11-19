@@ -191,13 +191,14 @@ class Config extends Component<ConfigProps, ConfigState> {
 	};
 
 	render() {
-
-		if (navigator.platform.indexOf("Mac") === 0) {
+		if (navigator.platform.indexOf('Mac') === 0) {
 			return (
 				<>
 					<Title
 						title={i18next.t(
-							this.props.properties ? 'HEADERS.SYSTEM_PREFERENCES.TITLEMAC' : 'HEADERS.CONFIGURATION.TITLE'
+							this.props.properties
+								? 'HEADERS.SYSTEM_PREFERENCES.TITLEMAC'
+								: 'HEADERS.CONFIGURATION.TITLE'
 						)}
 						description={i18next.t(
 							this.props.properties

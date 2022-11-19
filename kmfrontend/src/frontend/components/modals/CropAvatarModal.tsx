@@ -100,7 +100,12 @@ function CropAvatarModal(props: IProps) {
 					</ul>
 					<div className="modal-body">
 						<ReactCrop crop={crop} aspect={1} onChange={setCrop}>
-							<img className="crop-avatar" src={imageSource} onLoad={e => setImageRef(e.currentTarget)} alt="avatar" />
+							<img
+								className="crop-avatar"
+								src={imageSource}
+								onLoad={e => setImageRef(e.currentTarget)}
+								alt="avatar"
+							/>
 						</ReactCrop>
 					</div>
 					<div className="modal-footer">

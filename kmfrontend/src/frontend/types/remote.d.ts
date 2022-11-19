@@ -1,4 +1,4 @@
-import { RemoteFailure, RemoteSuccess } from "../../../../src/lib/types/remote";
+import { RemoteFailure, RemoteSuccess } from '../../../../src/lib/types/remote';
 
 interface RemoteStatusInactive {
 	active: false;
