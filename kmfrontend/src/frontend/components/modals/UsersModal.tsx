@@ -28,7 +28,7 @@ function UsersModal(props: IProps) {
 	const getUserDetails = async (user: User) => {
 		if (userDetails?.login === user.login) {
 			setUserDetails(undefined);
-		} else if (user.type !== 2) {
+		} else if (user.type < 2) {
 			try {
 				const response = await commandBackend('getUser', { username: user.login });
 				setUserDetails(response);
