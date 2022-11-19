@@ -322,7 +322,13 @@ export async function emptyPlaylist(plaid: string): Promise<string> {
 export async function exportPlaylistMedia(plaid: string, exportDir: string): Promise<Array<any>> {
 	const pl = await getPlaylistContentsMini(plaid);
 	if (!pl) throw { code: 404, msg: 'Playlist unknown' };
+	const task = new Task({
+		text: 'EXPORTING_PLAYLIST_MEDIA',
+		total: pl.length,
+		value: 0,
+	});
 	try {
+		let itemsProcessed = 0;
 		logger.debug(`Exporting media of playlist ${plaid}`, { service });
 		const exportedResult: Array<{ kid: string; mediafile: string; exportSuccessful: boolean }> = [];
 		for (const kara of pl) {
@@ -338,14 +344,25 @@ export async function exportPlaylistMedia(plaid: string, exportDir: string): Pro
 				// This works as long as filenames are not uuids. After that, the computed filename should be retrieved here
 				// with something like defineFilename() and determineMediaAndLyricsFilenames()
 				logger.debug(`Copying ${karaMediaPath[0]} to ${exportDir}`, { service });
+				task.update({
+					subtext: kara.mediafile,
+				});
 				await copyFile(karaMediaPath[0], join(exportDir, kara.mediafile));
 				if (karaLyricsPath[0]) {
 					// Kara can have no lyrics file
 					await copyFile(karaLyricsPath[0], join(exportDir, kara.subfile));
+					task.update({
+						subtext: kara.subfile,
+					});
 				}
 				exportedResult.push({ kid: kara.kid, mediafile: kara.mediafile, exportSuccessful: true });
 			} catch (e) {
 				exportedResult.push({ kid: kara.kid, mediafile: kara.mediafile, exportSuccessful: false });
+			} finally {
+				itemsProcessed += 1;
+				task.update({
+					value: itemsProcessed,
+				});
 			}
 		}
 		return exportedResult;
@@ -355,7 +372,7 @@ export async function exportPlaylistMedia(plaid: string, exportDir: string): Pro
 			data: plaid,
 		};
 	} finally {
-		//
+		task.end();
 	}
 }
 
