@@ -355,6 +355,10 @@ function Playlist(props: IProps) {
 		if (getPlaylistInfo(props.side, context)?.plaid === idPlaylist && !stopUpdate) getPlaylist();
 	};
 
+	const updateLibrary = () => {
+		if (getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.library) getPlaylist();
+	};
+
 	const getPlaylistUrl = (plaidParam?: string) => {
 		const idPlaylist: string = plaidParam ? plaidParam : getPlaylistInfo(props.side, context)?.plaid;
 		let url: string;
@@ -979,12 +983,14 @@ function Playlist(props: IProps) {
 		getSocket().on('publicPlaylistEmptied', publicPlaylistEmptied);
 		getSocket().on('KIDUpdated', KIDUpdated);
 		getSocket().on('playerStatus', updateCounters);
+		getSocket().on('databaseGenerated', updateLibrary);
 		return () => {
 			getSocket().off('favoritesUpdated', favoritesUpdated);
 			getSocket().off('playlistContentsUpdated', playlistContentsUpdatedFromServer);
 			getSocket().off('publicPlaylistEmptied', publicPlaylistEmptied);
 			getSocket().off('KIDUpdated', KIDUpdated);
 			getSocket().off('playerStatus', updateCounters);
+			getSocket().on('databaseGenerated', updateLibrary);
 		};
 	}, [
 		context.globalState.frontendContext.playlistInfoLeft,

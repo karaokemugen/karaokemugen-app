@@ -4,6 +4,7 @@
 
 -   There is now a delete button on karaoke and tag forms in system panel
 -   Export medias and subs from a playlist into a local directory (so you can use them with another player like VLC)
+-   Once generation is finished, library is refresh in operator view
 
 ## Improvements
 
