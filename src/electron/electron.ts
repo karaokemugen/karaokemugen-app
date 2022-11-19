@@ -299,6 +299,7 @@ async function createWindow() {
 			contextIsolation: false,
 		},
 	});
+	win.webContents.session.clearCache();
 	// and load the index.html of the app.
 	if (initDone) {
 		win?.loadURL(await welcomeToYoukousoKaraokeMugen());
