@@ -1,6 +1,5 @@
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { Form, Input, Modal, Select, Tooltip } from 'antd';
-import { FormInstance } from 'antd/lib/form/hooks/useForm';
+import { Form, FormInstance, Input, Modal, Select, Tooltip } from 'antd';
 import i18next from 'i18next';
 import { useRef, useState } from 'react';
 
@@ -29,7 +28,7 @@ export function CreateTagModal(props: CreateTagModalProps) {
 			onOk={() => {
 				formRef.current.submit();
 			}}
-			visible={true}
+			open={true}
 		>
 			<Form
 				ref={formRef}

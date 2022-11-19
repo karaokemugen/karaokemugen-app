@@ -354,7 +354,7 @@ export default function Git() {
 			</Layout.Content>
 			<Modal
 				title={i18next.t('REPOSITORIES.GIT_CONFIRM_PUSH')}
-				visible={showPushModal}
+				open={showPushModal}
 				onCancel={() => {
 					setShowPushModal(false);
 					setLoading(false);
@@ -416,7 +416,7 @@ export default function Git() {
 					setShowActionsModal(false);
 					setGitStatus(null);
 				}}
-				visible={showActionsModal}
+				open={showActionsModal}
 			>
 				<p>{i18next.t('MODAL.GIT_DANGEROUS.DESCRIPTION')}</p>
 				{gitStatus?.files?.length > 0 ? (
