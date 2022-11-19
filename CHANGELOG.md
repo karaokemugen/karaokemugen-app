@@ -3,6 +3,7 @@
 ## New features
 
 -   There is now a delete button on karaoke and tag forms in system panel
+-   Export medias and subs from a playlist into a local directory (so you can use them with another player like VLC)
 
 ## Improvements
 
@@ -10,6 +11,7 @@
 
 ## Fixes
 
+-   Fixed select log file method
 -   Fixed guests accounts' language being incorrectly set to french
 -   Moved temp directory back into data directory to make it work with the future flatpak release
 -   Locked player commands during shutdown
