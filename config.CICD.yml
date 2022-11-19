@@ -19,3 +19,5 @@ System:
       Linux: mpv
     ffmpeg:
       Linux: ffmpeg
+    patch:
+      Linux: patch
