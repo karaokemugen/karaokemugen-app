@@ -10,6 +10,7 @@ import { generateDatabase } from '../lib/services/generation';
 import { getConfig } from '../lib/utils/config';
 import { tagTypes, uuidRegexp } from '../lib/utils/constants';
 import logger, { profile } from '../lib/utils/logger';
+import { emitWS } from '../lib/utils/ws';
 import { updateAllSmartPlaylists } from '../services/smartPlaylist';
 import { DBStats } from '../types/database/database';
 import { initPG, isShutdownPG, restorePG } from '../utils/postgresql';
@@ -185,6 +186,7 @@ export async function generateDB(): Promise<boolean> {
 			await reorderPlaylist(pl.plaid);
 		}
 		await updateAllSmartPlaylists();
+		emitWS('databaseGenerated');
 	} catch (err) {
 		sentry.error(err);
 		throw err;
