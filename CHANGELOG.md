@@ -1,3 +1,31 @@
+# v7.0.36 - 19/11/2022
+
+## New features
+
+-   There is now a delete button on karaoke and tag forms in system panel
+
+## Improvements
+
+-   Search engine now takes song order into account, so you can search for "ED1" or "ED 1" to get the first ending of a song
+
+## Fixes
+
+-   Moved temp directory back into data directory to make it work with the future flatpak release
+-   Locked player commands during shutdown
+-   Increased timeout for getStats on welcome page so it displays correctly
+-   Fixed some Sentry errors
+-   Changed tooltip for Anilist to be more obvious
+-   Fixed progressbar on operator interface
+-   Fixed kara info crash if no series or singer
+-   Fixed the display monitor list
+-   Fixed player state on startup
+-   Fixed error when playing an online song that isn't available/internet is disabled.
+-
+
+## Misc
+
+-   Upgraded backend dependencies
+
 # v7.0.34 - 09/11/2022
 
 This is a major release. A lot of bugfixes have been backported in 6.x versions so don't worry if you've seen some of them.
