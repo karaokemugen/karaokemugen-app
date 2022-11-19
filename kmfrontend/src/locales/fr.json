@@ -77,6 +77,7 @@
 		"DELETE": "Supprimer la liste",
 		"EDIT": "Editer la liste",
 		"EXPORT": "Exporter la liste",
+		"EXPORT_MEDIA": "Exporter les médias de la liste",
 		"ADD": "Créer une nouvelle liste",
 		"AUTOMIX": "Créer un AutoMix",
 		"IMPORT": "Importer une liste",
@@ -1329,6 +1330,8 @@
 		"PREPARING_CHANGES": "Préparation des modifications",
 		"REFRESHING_DATA": "Rafraichissement des données…",
 		"UPLOADING_FTP": "Envoi sur le FTP…",
+		"EXPORTING_PLAYLIST_MEDIA": "Export des médias de la liste de lecture…",
+		"IMPORTING_PLAYLIST": "Importation de la liste de lecture…",
 		"DUMMY_TASK": "Aucune tâche en cours"
 	},
 	"ERROR_CODES": {
