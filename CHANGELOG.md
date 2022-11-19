@@ -10,6 +10,7 @@
 
 ## Fixes
 
+-   Fixed guests accounts' language being incorrectly set to french
 -   Moved temp directory back into data directory to make it work with the future flatpak release
 -   Locked player commands during shutdown
 -   Increased timeout for getStats on welcome page so it displays correctly
