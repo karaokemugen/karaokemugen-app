@@ -29,8 +29,8 @@ export async function setSettings(
 				for (const kara of favorites) {
 					favoritesSet.add(kara.kid);
 				}
-				i18next.changeLanguage(user.language ? user.language : langSupport);
-				if (!user.language) {
+				i18next.changeLanguage(user.language && user.type < 2 ? user.language : langSupport);
+				if (!user.language && user.type < 2) {
 					user.language = langSupport;
 					try {
 						await commandBackend('editMyAccount', user);

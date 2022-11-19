@@ -260,6 +260,7 @@ export async function createUser(
 	if (opts.admin) user.type = 0;
 	if (user.type === 2) {
 		user.flag_sendstats = true;
+		user.language = null;
 	}
 	if (user.type === undefined) user.type = 1;
 

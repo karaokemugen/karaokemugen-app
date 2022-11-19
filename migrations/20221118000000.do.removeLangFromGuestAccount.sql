@@ -1,0 +1,1 @@
+UPDATE users SET language = NULL WHERE type = 2 ;
