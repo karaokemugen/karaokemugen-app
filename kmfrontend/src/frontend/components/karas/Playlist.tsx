@@ -990,7 +990,7 @@ function Playlist(props: IProps) {
 			getSocket().off('publicPlaylistEmptied', publicPlaylistEmptied);
 			getSocket().off('KIDUpdated', KIDUpdated);
 			getSocket().off('playerStatus', updateCounters);
-			getSocket().on('databaseGenerated', updateLibrary);
+			getSocket().off('databaseGenerated', updateLibrary);
 		};
 	}, [
 		context.globalState.frontendContext.playlistInfoLeft,
