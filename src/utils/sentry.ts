@@ -30,6 +30,7 @@ class ElectronSentryLogger extends SentryLogger {
 				'Maximum call stack size exceeded',
 				'No karaoke found in playlist object',
 				'ENOSPC: no space left on device, write',
+				'No space left on device',
 				'net::ERR_INTERNET_DISCONNECTED',
 			],
 			beforeSend: (event, _hint) => {
