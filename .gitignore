@@ -51,3 +51,10 @@ postgrator.json
 .env
 .eslintcache
 
+# Flatpak
+.flatpak-builder
+build/export
+*.flatpak
+build/build
+build/km
+repo/

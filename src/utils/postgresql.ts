@@ -163,6 +163,11 @@ export async function dumpPG() {
 			cwd: resolve(state.appPath, state.binPath.postgres),
 			env: determineEnv(),
 		});
+
+		if (!(await fileExists(dumpFile))) {
+			throw Error('file not created');
+		}
+
 		await compressGzipFile(dumpFile);
 		await fs.unlink(dumpFile);
 		logger.info('Database dumped to file', { service });

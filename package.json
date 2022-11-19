@@ -176,6 +176,7 @@
     "@typescript-eslint/parser": "5",
     "chai": "^4.3.7",
     "electron": "^21.3.0",
+    "electron-builder": "^23.6.0",
     "electron-notarize": "^1.2.1",
     "esbuild": "^0.15.14",
     "eslint": "^8.27.0",
@@ -300,6 +301,7 @@
       "executableName": "karaokemugen",
       "category": "AudioVideo",
       "synopsis": "Karaoke manager and player",
+      "icon": "icon512.png",
       "publish": {
         "provider": "generic",
         "url": "https://mugen.karaokes.moe/downloads/"
