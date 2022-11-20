@@ -161,13 +161,13 @@ export async function playCurrentSong(now: boolean) {
 			if (!kara) {
 				throw 'No song selected';
 			}
-			if (kara.pos === 1) {
+			if (getState().player.playerStatus === 'stop') {
 				if (conf.Karaoke.AutoBalance) {
 					await shufflePlaylist(getState().currentPlaid, 'balance');
 				}
 				// Testing if intro hasn't been played already and if we have at least one intro available
 				if (conf.Playlist.Medias.Intros.Enabled && !getState().introPlayed) {
-					setState({ introPlayed: true });
+					setState({ introPlayed: true, counterToJingle: 1 });
 					await mpv.playMedia('Intros');
 					return;
 				}
@@ -259,6 +259,7 @@ export async function playerEnding() {
 			setState({ introPlayed: true });
 			if (conf.Playlist.Medias.Sponsors.Enabled) {
 				try {
+					setState({ counterToSponsor: 1 });
 					await mpv.playMedia('Sponsors');
 				} catch (err) {
 					logger.warn('Skipping sponsors due to error, playing current song', {
@@ -294,7 +295,6 @@ export async function playerEnding() {
 		// If Sponsor after intro, just play currently selected song.
 		if (state.player.mediaType === 'Sponsors' && !state.introSponsorPlayed && state.introPlayed) {
 			try {
-				// If it's played just after an intro, play next song. If not, proceed as usual
 				setState({ introPlayed: true, introSponsorPlayed: true });
 				await playCurrentSong(true);
 			} catch (err) {
