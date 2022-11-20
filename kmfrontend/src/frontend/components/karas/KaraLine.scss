@@ -245,7 +245,7 @@ body:not(.touch) {
 	position: absolute;
 	left: 50%;
 	transform: translate(-50%, -60%);
-	z-index: 999999999;
+	z-index: 10000;
 	font-size: small;
 	font-weight: 600;
 }
