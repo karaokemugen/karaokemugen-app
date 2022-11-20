@@ -30,7 +30,7 @@ class SessionList extends Component<unknown, SessionListState> {
 
 	refresh = async () => {
 		const res = await commandBackend('getRepos');
-		this.setState({ repository: res[0].Name, repositories: res.map(value => value.Name) });
+		if (res.length > 0) this.setState({ repository: res[0].Name, repositories: res.map(value => value.Name) });
 	};
 
 	getTags = async () => {

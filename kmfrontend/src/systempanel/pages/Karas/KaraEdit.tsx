@@ -50,6 +50,15 @@ function KaraEdit() {
 		navigate('/system/karas');
 	};
 
+	const handleDelete = async (kid: string) => {
+		try {
+			await commandBackend('deleteKaras', { kids: [kid] }, true);
+			navigate('/system/karas/');
+		} catch (e) {
+			// already display
+		}
+	};
+
 	useEffect(() => {
 		loadKara();
 	}, []);
@@ -61,7 +70,14 @@ function KaraEdit() {
 				description={i18next.t(kid ? 'HEADERS.KARAOKE_EDIT.DESCRIPTION' : 'HEADERS.KARAOKE_NEW.DESCRIPTION')}
 			/>
 			<Layout.Content>
-				{loaded && <KaraForm kara={kara} save={kid ? saveUpdate : saveNew} handleCopy={handleCopy} />}
+				{loaded && (
+					<KaraForm
+						kara={kara}
+						save={kid ? saveUpdate : saveNew}
+						handleCopy={handleCopy}
+						handleDelete={handleDelete}
+					/>
+				)}
 			</Layout.Content>
 		</>
 	);

@@ -311,7 +311,10 @@ export async function removeTag(
 	if (opt.removeTagInKaras) {
 		karasToRemoveTagIn = await getKarasWithTags(tags);
 	}
-	if (tags.length === 0) throw { code: 404, msg: `Tag ID ${tids.toString()} unknown` };
+	if (tags.length === 0) {
+		logger.error(`These tags are unknown : ${tids.toString()}`, { service });
+		throw { code: 404, msg: 'Tag ID unknown' };
+	}
 	const removes = [];
 	for (const tag of tags) {
 		if (opt.deleteFile) removes.push(removeTagFile(tag.tagfile, tag.repository));

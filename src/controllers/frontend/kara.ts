@@ -146,13 +146,7 @@ export default function karaController(router: SocketIOApp) {
 	});
 	router.route('playKara', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req);
-		try {
-			return await playSingleSong(req.body.kid);
-		} catch (err) {
-			const code = 'SONG_PLAY_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
-		}
+		return playSingleSong(req.body.kid);
 	});
 	router.route('editKaras', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open');

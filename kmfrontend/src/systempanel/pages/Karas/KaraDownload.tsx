@@ -292,7 +292,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 				<Layout.Content>
 					<Modal
 						title={i18next.t('KARA.SYNC_WARNING_TITLE')}
-						visible={this.state.syncModal}
+						open={this.state.syncModal}
 						onOk={() => this.syncMedias()}
 						onCancel={() => this.setState({ syncModal: false })}
 						okText={i18next.t('YES')}

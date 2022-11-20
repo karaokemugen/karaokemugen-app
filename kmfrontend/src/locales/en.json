@@ -6,6 +6,7 @@
 	"SEARCH": "Search",
 	"SUBMIT": "Save",
 	"CANCEL": "Cancel",
+	"WARNING": "Warning!",
 	"NOT_FOUND_PAGE": {
 		"404": "Lost in Karaoke Mugen?",
 		"404_2": "Do not panic, we can help you.",
@@ -75,6 +76,7 @@
 		"DELETE": "Delete playlist",
 		"EDIT": "Edit playlist",
 		"EXPORT": "Export playlist",
+		"EXPORT_MEDIA": "Export all playlist medias",
 		"ADD": "Add new playlist",
 		"AUTOMIX": "Create an automix",
 		"IMPORT": "Import playlist",
@@ -342,6 +344,7 @@
 		"PLAYER": {
 			"LABEL": "Player",
 			"WINDOW_SETTINGS": "Window",
+			"SCREEN_SETTINGS": "Screen",
 			"DISPLAY_SETTINGS": "Display",
 			"ALWAYS_ON_TOP": "Always on top",
 			"ALWAYS_ON_TOP_TOOLTIP": "If checked, the player window will always be above the others on the screen",
@@ -717,10 +720,6 @@
 			"DELETE": "Abort all pending downloads",
 			"CONTINUE": "Resume all downloads"
 		},
-		"DELETE_PLAYLIST_ERROR_CURRENT": "Unable to delete a current playlist. Make another playlist current first.",
-		"DELETE_PLAYLIST_ERROR_PUBLIC": "Unable to delete a public playlist. Make another playlist public first.",
-		"DELETE_PLAYLIST_ERROR_WHITELIST": "Unable to delete a whitelist. Make another playlist a whitelist first.",
-		"DELETE_PLAYLIST_ERROR_BLACKLIST": "Unable to delete a blacklist. Make another playlist a blacklist first.",
 		"DELETE_PLAYLIST_MODAL": {
 			"TITLE": "Delete {{playlist}} forever?",
 			"IMPOSSIBLE": "You cannot delete the only playlist.",
@@ -729,6 +728,12 @@
 			"DELETE_PUBLIC": "This list is defined as public, change the public playlist for another to delete this one.",
 			"DELETE_CURRENT": "This list is defined as current , change the current playlist for another to delete this one.",
 			"DELETE_CURRENT_PUBLIC": "This list is defined as current and public, change the current and public playlist for another to delete this one."
+		},
+		"EXPORT_PLAYLIST_MEDIA": {
+			"START": "Media files are being exported...",
+			"DONE": "Playlist media files have been exported",
+			"DONE_PARTIALLY": "Playlist media files have been exported, although these could not be saved:",
+			"NOT_ALL_MEDIA_DOWNLOADED": "Not all medias are available locally. Please make sure to download all videos before exporting the playlist"
 		},
 		"STATS_MODAL": {
 			"TITLE": "Use my favorites and karaokes requests for stats",
@@ -804,6 +809,7 @@
 				"DOWNLOAD": "Song download error",
 				"SHORTENER": "Error when enabling URL shortener",
 				"PLAYER_PLAY": "Unable to play song",
+				"PLAYER_NO_ONLINE_MEDIA": "Media cannot be read from online sources. Check your internet connection.",
 				"PLAYER_RANDOM_SONG_AFTER_PLAYLIST": "Unable to select a random song to play after playlist ends",
 				"PLAYER_PLMEDIA": "Unable to play playlist media",
 				"PLAYER_CLASSIC_PAUSE_SCREEN": "Unable to prepare pause screen",
@@ -1041,6 +1047,7 @@
 		"I18N_DELETE": "Remove name",
 		"I18N_SELECT": "Add a language",
 		"ROMANIZATION_WARNING": "This title/tag contains a non-Latin alphabet language. You must add the language “Latin Alphabet (Romanization)” in addition.",
+		"MERGE_TAGS": "Merge tags",
 		"MERGE_WITH": "Merge with",
 		"MERGE_WITH_TOOLTIP": "Merge the current tag with another one",
 		"MERGE_WITH_SELECT": "Select a tag",
@@ -1048,6 +1055,7 @@
 		"MERGE_ABOUT": "About Merging process",
 		"MERGE_ABOUT_MESSAGE": "Resulting tags will have the current Name and Short name. Types, Aliases and Translations will be merged and the resulting tags will contain all the information from source and destination tags.",
 		"TAG_DELETED_CONFIRM": "Confirm tag deletion",
+		"DELETE_TAG": "Delete tag",
 		"DELETE_TAG_CONFIRM": "Delete tag",
 		"DELETE_TAG_MESSAGE": "This will remove the tag as well as in any song in your database!",
 		"LANG_ERROR": "A tag must have at least one translated name.",
@@ -1063,11 +1071,11 @@
 		"ADD_DESCRIPTION": "Add a description",
 		"KARAOKES_WITH_TAGS": "Karaokes with this tag",
 		"MAL_ID": "MAL ID/URL",
-		"MAL_ID_TOOLTIP": "If this is an anime, please indicate its id on myanimelist.net",
+		"MAL_ID_TOOLTIP": "If this is an anime, please indicate its id/url on myanimelist.net",
 		"ANILIST_ID": "Anilist ID/URL",
-		"ANILIST_ID_TOOLTIP": "If this is an anime, please indicate its id on anilist.co",
+		"ANILIST_ID_TOOLTIP": "If this is an anime, please indicate its id/url on anilist.co",
 		"KITSU_ID": "Kitsu ID/URL",
-		"KITSU_ID_TOOLTIP": "If this is an anime, please indicate its id on kitsu.io",
+		"KITSU_ID_TOOLTIP": "If this is an anime, please indicate its url on kitsu.io",
 		"NOT_MAL_URL_ERROR": "This is a myanimelist url",
 		"NOT_ANILIST_URL_ERROR": "This is a anilist url",
 		"NOT_KITSU_URL_ERROR": "This is a kitsu url",
@@ -1207,7 +1215,6 @@
 		"MOVING_MEDIA": "Destination where to move medias",
 		"MOVING_MEDIA_BUTTON": "Move medias…",
 		"MOVING_MEDIA_PANEL": "Move medias",
-		"WARNING": "Warning!",
 		"MOVING_MEDIA_ABOUT_MESSAGE": "All repository media files will be moved to the new folder. If your repository has several media folders, all files of all folders will be moved into the same target folder. If there are duplicate files, they'll be savagely overwritten.",
 		"COMPARE_LYRICS": "Update lyrics between two repositories",
 		"CHOOSE_REPOSITORY": "Choose a repository",
@@ -1327,6 +1334,8 @@
 		"PREPARING_CHANGES": "Preparing changes",
 		"REFRESHING_DATA": "Refreshing data…",
 		"UPLOADING_FTP": "Uploading to the FTP…",
+		"EXPORTING_PLAYLIST_MEDIA": "Exporting media from playlist…",
+		"IMPORTING_PLAYLIST": "Importing playlist…",
 		"DUMMY_TASK": "No ongoing tasks"
 	},
 	"ERROR_CODES": {
@@ -1497,7 +1506,11 @@
 		"REPOSITORY_UNREACHABLE": "Repository unreachable. Did you misspell its name?",
 		"CANNOT_INSTALL_REPO_AT_WINDOWS_ROOT_DRIVE": "Repository cannot be installed at the root of a Windows drive.",
 		"REFRESH_ANIME_LIST_ERROR": "Error refreshing anime list",
-		"ANIME_LIST_VIEW_ERROR": "Error getting anime list"
+		"ANIME_LIST_VIEW_ERROR": "Error getting anime list",
+		"DELETE_PLAYLIST_ERROR_CURRENT": "Unable to delete a current playlist. Make another playlist current first.",
+		"DELETE_PLAYLIST_ERROR_PUBLIC": "Unable to delete a public playlist. Make another playlist public first.",
+		"DELETE_PLAYLIST_ERROR_WHITELIST": "Unable to delete a whitelist. Make another playlist a whitelist first.",
+		"DELETE_PLAYLIST_ERROR_BLACKLIST": "Unable to delete a blacklist. Make another playlist a blacklist first."
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Added {{data}} downloads to the queue",

@@ -13,8 +13,9 @@ import {
 	Typography,
 	Tooltip,
 	Upload,
+	Alert,
+	FormInstance,
 } from 'antd';
-import { FormInstance } from 'antd/lib/form';
 import { SelectValue } from 'antd/lib/select';
 import i18next from 'i18next';
 import { Component, createRef } from 'react';
@@ -36,7 +37,8 @@ const { Paragraph } = Typography;
 interface KaraFormProps {
 	kara: DBKara;
 	save: any;
-	handleCopy: (kid, repo) => void;
+	handleCopy: (kid: string, repo: string) => void;
+	handleDelete: (kid: string) => void;
 }
 
 interface KaraFormState {
@@ -209,6 +211,10 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		} else {
 			this.props.save(this.getKaraToSend(values));
 		}
+	};
+
+	handleDelete = e => {
+		this.props.handleDelete(this.props.kara.kid);
 	};
 
 	getKaraToSend = values => {
@@ -1123,9 +1129,9 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						{i18next.t('SUBMIT')}
 					</Button>
 				</Form.Item>
-				<Divider />
 				{this.state.repositoriesValue && this.props.kara?.repository ? (
 					<>
+						<Divider orientation="left">{i18next.t('KARA.COPY_SONG')}</Divider>
 						<Form.Item
 							hasFeedback
 							label={i18next.t('KARA.REPOSITORY')}
@@ -1150,6 +1156,20 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 								onClick={() => this.props.handleCopy(this.props.kara?.kid, this.state.repoToCopySong)}
 							>
 								{i18next.t('KARA.COPY_SONG')}
+							</Button>
+						</Form.Item>
+
+						<Divider orientation="left">{i18next.t('KARA.DELETE_KARA')}</Divider>
+						<Form.Item wrapperCol={{ span: 8, offset: 3 }} style={{ textAlign: 'center' }}>
+							<Alert
+								style={{ textAlign: 'left', marginBottom: '20px' }}
+								message={i18next.t('WARNING')}
+								description={i18next.t('CONFIRM_SURE')}
+								type="warning"
+							/>
+
+							<Button type="primary" danger onClick={this.handleDelete}>
+								{i18next.t('KARA.DELETE_KARA')}
 							</Button>
 						</Form.Item>
 					</>

@@ -1,6 +1,5 @@
-import { Button, Layout, Table } from 'antd';
+import { Button, Layout, Table, TableColumnProps } from 'antd';
 import Title from '../../components/Title';
-import { ColumnProps } from 'antd/lib/table';
 import i18next from 'i18next';
 import { Component } from 'react';
 
@@ -53,7 +52,7 @@ class KaraList extends Component<unknown, KaraListState> {
 		);
 	}
 
-	columns: ColumnProps<any>[] = [
+	columns: TableColumnProps<any>[] = [
 		{
 			title: i18next.t('TAG_TYPES.LANGS_other'),
 			dataIndex: 'langs',

@@ -1,7 +1,5 @@
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { Alert, Button, Checkbox, Divider, Form, Input, Select, Tooltip } from 'antd';
-import Title from '../../components/Title';
-import { FormInstance } from 'antd/lib/form';
+import { Alert, Button, Checkbox, Divider, Form, FormInstance, Input, Select, Tooltip } from 'antd';
 import i18next from 'i18next';
 import { Component, createRef } from 'react';
 
@@ -487,7 +485,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 							</Button>
 							<Alert
 								style={{ textAlign: 'left', marginTop: '10px' }}
-								message={i18next.t('REPOSITORIES.WARNING')}
+								message={i18next.t('WARNING')}
 								description={i18next.t('REPOSITORIES.MOVING_MEDIA_ABOUT_MESSAGE')}
 								type="warning"
 							/>

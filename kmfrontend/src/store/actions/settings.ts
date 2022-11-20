@@ -29,8 +29,8 @@ export async function setSettings(
 				for (const kara of favorites) {
 					favoritesSet.add(kara.kid);
 				}
-				i18next.changeLanguage(user.language ? user.language : langSupport);
-				if (!user.language) {
+				i18next.changeLanguage(user.language && user.type < 2 ? user.language : langSupport);
+				if (!user.language && user.type < 2) {
 					user.language = langSupport;
 					try {
 						await commandBackend('editMyAccount', user);
@@ -90,6 +90,10 @@ function setSentry(environment: string, version: Version, config: Config, user: 
 				'PL_ADD_SONG_ERROR',
 				'PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED',
 				'PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED',
+				'DELETE_PLAYLIST_ERROR_CURRENT',
+				'DELETE_PLAYLIST_ERROR_PUBLIC',
+				'DELETE_PLAYLIST_ERROR_WHITELIST',
+				'DELETE_PLAYLIST_ERROR_BLACKLIST',
 			],
 		});
 		Sentry.configureScope(scope => {

@@ -18,7 +18,6 @@ import { Config } from '../types/config';
 import { initConfig } from '../utils/config';
 import { logo } from '../utils/constants';
 import { defaultRepositories } from '../utils/defaultSettings';
-import { removeOldTempFolder } from '../utils/hokutoNoCode';
 import Sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
 import { parseArgs, setupFromCommandLineArgs } from './args';
@@ -51,7 +50,7 @@ async function getAppCommitSHA(): Promise<string> {
 /** First step of init : locale, config, logger, state... */
 export async function preInit() {
 	const state = getState();
-	await configureLogger(state.dataPath, argv.opts().verbose || app?.commandLine.hasSwitch('verbose'), true);
+	await configureLogger(argv.opts().verbose || app?.commandLine.hasSwitch('verbose'), true);
 	profile('preInit');
 	await configureLocale();
 	resetSecurityCode();
@@ -68,10 +67,6 @@ export async function preInit() {
 	logger.debug(`Locale : ${state.defaultLocale}`, { service });
 	logger.debug(`OS : ${process.platform}`, { service });
 	await initConfig(argv);
-	// Using system temp directory instead of our own.
-	// This is kind of an ugly fix for issue #1252 but since temp is stored in config and not state and we're *always* using the electron runtime, this seems like a good solution.
-	setConfig({ System: { Path: { Temp: app.getPath('temp') } } });
-	removeOldTempFolder();
 	// Set default repositories on First Run only
 	const conf = getConfig();
 	if (conf.App.FirstRun && conf.System.Repositories.length === 0) {
@@ -128,12 +123,14 @@ export async function init() {
 async function checkPaths(config: Config) {
 	try {
 		profile('checkPaths');
+		await remove(resolvedPath('Temp')).catch();
 		await remove(resolvedPath('BundledBackgrounds')).catch();
 		await remove(resolvedPath('Import')).catch();
 		// Checking paths
 		const checks = [];
 		const dataPath = getState().dataPath;
-		checks.push(asyncCheckOrMkdir(resolve(dataPath, 'logs/')));
+		checks.push(asyncCheckOrMkdir(resolvedPath('Temp')));
+		checks.push(asyncCheckOrMkdir(resolvedPath('Logs')));
 		for (const repo of config.System.Repositories) {
 			try {
 				checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'karaokes')));

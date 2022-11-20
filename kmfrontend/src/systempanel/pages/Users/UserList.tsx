@@ -75,7 +75,7 @@ class UserList extends Component<unknown, UserListState> {
 					/>
 					<Modal
 						title={i18next.t('USERS.USER_DELETED_CONFIRM')}
-						visible={this.state.deleteModal}
+						open={this.state.deleteModal}
 						onOk={() => this.delete(this.state.user.login)}
 						onCancel={() => this.setState({ deleteModal: false, user: {} })}
 						okText={i18next.t('YES')}

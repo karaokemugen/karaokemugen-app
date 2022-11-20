@@ -274,7 +274,7 @@ export async function exit(rc = 0, update = false) {
 		!getState().opt.dumpDB &&
 		!getState().opt.restoreDB
 	)
-		await dumpPG().catch();
+		await dumpPG().catch(() => {});
 	try {
 		await closeDB();
 	} catch (err) {

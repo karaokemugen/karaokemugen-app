@@ -1,6 +1,5 @@
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { Alert, Button, Checkbox, Form, Input, Select } from 'antd';
-import { FormInstance } from 'antd/lib/form';
+import { Alert, Button, Checkbox, Form, FormInstance, Input, Select } from 'antd';
 import i18next from 'i18next';
 import { Component, createRef } from 'react';
 

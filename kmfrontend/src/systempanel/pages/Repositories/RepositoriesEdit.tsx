@@ -1,6 +1,5 @@
-import { Layout } from 'antd';
+import { Layout, Modal } from 'antd';
 import Title from '../../components/Title';
-import Modal from 'antd/lib/modal/Modal';
 import i18next from 'i18next';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -128,7 +127,7 @@ function RepositoriesEdit() {
 				)}
 				<Modal
 					title={i18next.t('REPOSITORIES.WARNING')}
-					visible={report !== undefined}
+					open={report !== undefined}
 					onOk={() => {
 						copyLyrics();
 						setReport(undefined);

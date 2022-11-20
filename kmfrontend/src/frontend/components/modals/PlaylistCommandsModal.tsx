@@ -13,6 +13,7 @@ import DeletePlaylistModal from './DeletePlaylistModal';
 import AutoMixModal from './AutoMixModal';
 import PlaylistModal from './PlaylistModal';
 import ShuffleModal from './ShuffleModal';
+import { isElectron } from '../../../utils/electron';
 
 interface IProps {
 	side: 'left' | 'right';
@@ -84,6 +85,48 @@ function PlaylistCommandsModal(props: IProps) {
 				// already display
 			}
 		}
+	};
+
+	const exportPlaylistMediaEnabled = isElectron(); // Make sure it's an electron environment
+	const exportPlaylistMedia = async () => {
+		props.closePlaylistCommands();
+		if (!exportPlaylistMediaEnabled) throw new Error('This feature is only available on the km app');
+
+		// Get folder by dialog
+		const { ipcRenderer: ipc } = window.require('electron');
+		const options = {
+			title: 'Select folder to export medias',
+			properties: ['createDirectory', 'openDirectory'],
+		};
+		ipc.send('get-file-paths', options);
+		ipc.once('get-file-paths-response', async (_event, filepaths) => {
+			if (filepaths.length > 0) {
+				const exportDir = filepaths[0];
+
+				const playlist = getPlaylistInfo(props.side, context);
+				const data = { plaid: playlist?.plaid };
+				displayMessage('info', i18next.t('MODAL.EXPORT_PLAYLIST_MEDIA.START'));
+				const result: Array<{ kid: string; mediafile: string; exportSuccessful: boolean }> =
+					await commandBackend('exportPlaylistMedia', {
+						exportDir,
+						plaid: data.plaid,
+					});
+
+				if (result.some(r => r.exportSuccessful !== true)) {
+					displayMessage(
+						'warning',
+						i18next.t('MODAL.EXPORT_PLAYLIST_MEDIA.DONE_PARTIALLY') +
+							'\n' +
+							result
+								.filter(r => r.exportSuccessful !== true)
+								.map(r => r.mediafile)
+								.join(' \n')
+					);
+				} else {
+					displayMessage('success', i18next.t('MODAL.EXPORT_PLAYLIST_MEDIA.DONE'));
+				}
+			}
+		});
 	};
 
 	const addOrEditPlaylist = (mode: 'create' | 'edit') => {
@@ -318,6 +361,17 @@ function PlaylistCommandsModal(props: IProps) {
 						{i18next.t(
 							playlist?.plaid === nonStandardPlaylists.favorites ? 'FAVORITES_EXPORT' : 'ADVANCED.EXPORT'
 						)}
+					</div>
+				</li>
+			) : null}
+			{playlist?.plaid !== nonStandardPlaylists.library &&
+			playlist?.plaid !== nonStandardPlaylists.animelist &&
+			playlist?.plaid !== nonStandardPlaylists.favorites &&
+			exportPlaylistMediaEnabled ? (
+				<li>
+					<div onClick={exportPlaylistMedia}>
+						<i className="fas fa-fw fa-file-export" />
+						{i18next.t('ADVANCED.EXPORT_MEDIA')}
 					</div>
 				</li>
 			) : null}

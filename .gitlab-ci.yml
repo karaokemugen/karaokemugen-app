@@ -130,6 +130,7 @@ test:
     - yarn install --check-files --force --cache-folder .yarn
     - touch mpv
     - touch ffmpeg
+    - touch patch
     - mkdir app
     - cp -f config.CICD.yml app/config.yml
     - export LANG=en_US

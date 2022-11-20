@@ -6,6 +6,7 @@
 	"SEARCH": "Rechercher",
 	"SUBMIT": "Sauvegarder",
 	"CANCEL": "Annuler",
+	"WARNING": "Attention !",
 	"NOT_FOUND_PAGE": {
 		"404": "Perdu dans Karaoke Mugen ?",
 		"404_2": "Pas de panique, on va vous aider.",
@@ -76,6 +77,7 @@
 		"DELETE": "Supprimer la liste",
 		"EDIT": "Editer la liste",
 		"EXPORT": "Exporter la liste",
+		"EXPORT_MEDIA": "Exporter les médias de la liste",
 		"ADD": "Créer une nouvelle liste",
 		"AUTOMIX": "Créer un AutoMix",
 		"IMPORT": "Importer une liste",
@@ -342,6 +344,7 @@
 		"PLAYER": {
 			"LABEL": "Lecteur",
 			"WINDOW_SETTINGS": "Fenêtre",
+			"SCREEN_SETTINGS": "Écran",
 			"DISPLAY_SETTINGS": "Affichage",
 			"ALWAYS_ON_TOP": "Toujours au dessus",
 			"ALWAYS_ON_TOP_TOOLTIP": "Si coché, la fenêtre du lecteur sera toujours au dessus des autres à l'écran",
@@ -719,10 +722,6 @@
 			"DELETE": "Effacer la liste des téléchargements",
 			"CONTINUE": "Continuer les téléchargements"
 		},
-		"DELETE_PLAYLIST_ERROR_CURRENT": "Impossible de supprimer une playlist courante. Définissez une autre playlist courante avant.",
-		"DELETE_PLAYLIST_ERROR_PUBLIC": "Impossible de supprimer une playlist publique. Définissez une autre playlist publique avant.",
-		"DELETE_PLAYLIST_ERROR_WHITELIST": "Impossible de supprimer une liste blanche. Définissez une autre liste blanche avant.",
-		"DELETE_PLAYLIST_ERROR_BLACKLIST": "Impossible de supprimer une liste noire. Définissez une autre liste noire avant.",
 		"DELETE_PLAYLIST_MODAL": {
 			"TITLE": "Supprimer {{playlist}} pour toujours ?",
 			"IMPOSSIBLE": "Vous ne pouvez pas supprimer la seule liste de lecture.",
@@ -806,6 +805,7 @@
 				"DOWNLOAD": "Erreur lors du téléchargement",
 				"SHORTENER": "Erreur d'activation de l'URL raccourcie",
 				"PLAYER_PLAY": "Erreur de lecture de karaoké",
+				"PLAYER_NO_ONLINE_MEDIA": "Impossible de lire le média en ligne. Vérifiez votre connexion internet.",
 				"PLAYER_RANDOM_SONG_AFTER_PLAYLIST": "Erreur de sélection de chanson aléatoire en fin de liste de lecture",
 				"PLAYER_PLMEDIA": "Erreur de lecture de média de liste de lecture",
 				"PLAYER_CLASSIC_PAUSE_SCREEN": "Erreur de préparation de l'écran de pause",
@@ -1043,6 +1043,7 @@
 		"I18N_DELETE": "Supprimer le nom",
 		"I18N_SELECT": "Ajouter une langue",
 		"ROMANIZATION_WARNING": "Ce titre/tag contient une langue en alphabet non latin. Vous devez ajouter la langue “Alphabet Latin (Romanisation)” en plus.",
+		"MERGE_TAGS": "Fusionner des tags",
 		"MERGE_WITH": "Fusionner avec",
 		"MERGE_WITH_TOOLTIP": "Fusionner le tag courant avec un autre",
 		"MERGE_WITH_SELECT": "Sélectionner un tag",
@@ -1050,6 +1051,7 @@
 		"MERGE_ABOUT": "A propos du processus de fusion",
 		"MERGE_ABOUT_MESSAGE": "Le tag final aura le nom et le nom court courants. Les types, alias, traductions seront fusionnés et le tag final contiendra toutes les informations du tag courant et de celui visé.",
 		"TAG_DELETED_CONFIRM": "Confirmer la suppression du tag",
+		"DELETE_TAG": "Supprimer le tag",
 		"DELETE_TAG_CONFIRM": "Suppression du tag",
 		"DELETE_TAG_MESSAGE": "Cela va supprimer le fichier tags.json ainsi que la référence du tag dans les fichiers .kara.json de votre base de données !",
 		"LANG_ERROR": "Un tag doit avoir au moins un nom par langue.",
@@ -1065,11 +1067,11 @@
 		"ADD_DESCRIPTION": "Ajouter une description",
 		"KARAOKES_WITH_TAGS": "Karaokés ayant ce tag",
 		"MAL_ID": "Identifiant/URL MyAnimeList",
-		"MAL_ID_TOOLTIP": "Si c'est un anime, indiquez son ID sur myanimelist.net",
+		"MAL_ID_TOOLTIP": "Si c'est un anime, indiquez son ID/url sur myanimelist.net",
 		"ANILIST_ID": "Identifiant/URL Anilist",
-		"ANILIST_ID_TOOLTIP": "Si c'est un anime, indiquez son ID sur anilist.co",
+		"ANILIST_ID_TOOLTIP": "Si c'est un anime, indiquez son ID/url sur anilist.co",
 		"KITSU_ID": "Identifiant/URL Kitsu",
-		"KITSU_ID_TOOLTIP": "Si c'est un anime, indiquez son ID sur kitsu.io",
+		"KITSU_ID_TOOLTIP": "Si c'est un anime, indiquez son url sur kitsu.io",
 		"NOT_MAL_URL_ERROR": "C'est une url myanimelist",
 		"NOT_ANILIST_URL_ERROR": "C'est une url anilist",
 		"NOT_KITSU_URL_ERROR": "C'est une url kitsu",
@@ -1209,7 +1211,6 @@
 		"MOVING_MEDIA": "Destination des médias",
 		"MOVING_MEDIA_BUTTON": "Déplacer les médias…",
 		"MOVING_MEDIA_PANEL": "Déplacement des médias du dépôt",
-		"WARNING": "Attention !",
 		"MOVING_MEDIA_ABOUT_MESSAGE": "Tous les fichiers médias du dépôt seront déplacés vers le nouveau dossier. Si vous avez plusieurs dossiers de médias, tous les fichiers de tous les dossiers seront copiés dans le même dossier destination. S'il y a des doublons, ils seront écrasés sauvagement.",
 		"COMPARE_LYRICS": "Mise à jour des paroles entre deux dépôts",
 		"CHOOSE_REPOSITORY": "Choix du dépôt",
@@ -1329,6 +1330,8 @@
 		"PREPARING_CHANGES": "Préparation des modifications",
 		"REFRESHING_DATA": "Rafraichissement des données…",
 		"UPLOADING_FTP": "Envoi sur le FTP…",
+		"EXPORTING_PLAYLIST_MEDIA": "Export des médias de la liste de lecture…",
+		"IMPORTING_PLAYLIST": "Importation de la liste de lecture…",
 		"DUMMY_TASK": "Aucune tâche en cours"
 	},
 	"ERROR_CODES": {
@@ -1499,7 +1502,11 @@
 		"REPOSITORY_UNREACHABLE": "Dépôt inaccessible. Avez-vous mal orthographié son nom ?",
 		"CANNOT_INSTALL_REPO_AT_WINDOWS_ROOT_DRIVE": "Le dépôt ne peut pas être installé à la racine d'un lecteur Windows.",
 		"REFRESH_ANIME_LIST_ERROR": "Erreur lors du rafraichissement de la liste d'anime",
-		"ANIME_LIST_VIEW_ERROR": "Erreur lors de la récupération de la liste d'anime"
+		"ANIME_LIST_VIEW_ERROR": "Erreur lors de la récupération de la liste d'anime",
+		"DELETE_PLAYLIST_ERROR_CURRENT": "Impossible de supprimer une playlist courante. Définissez une autre playlist courante avant.",
+		"DELETE_PLAYLIST_ERROR_PUBLIC": "Impossible de supprimer une playlist publique. Définissez une autre playlist publique avant.",
+		"DELETE_PLAYLIST_ERROR_WHITELIST": "Impossible de supprimer une liste blanche. Définissez une autre liste blanche avant.",
+		"DELETE_PLAYLIST_ERROR_BLACKLIST": "Impossible de supprimer une liste noire. Définissez une autre liste noire avant."
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Ajout de {{data}} téléchargements à la file d'attente",

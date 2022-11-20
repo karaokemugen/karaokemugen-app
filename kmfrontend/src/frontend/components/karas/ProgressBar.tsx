@@ -16,14 +16,12 @@ function ProgressBar() {
 	const [playerStatus, setPlayerStatus] = useState<string>();
 	const [karaInfoText, setKaraInfoText] = useState<string | ReactFragment>(i18next.t('KARA_PAUSED_WAITING'));
 	const [length, setLength] = useState(-1);
-	const [width, setWidth] = useState('0');
+	const [width, setWidth] = useState(0);
 	const [timePosition, setTimePosition] = useState(0);
 	const [animate, setAnimate] = useState(0);
 	const [duration, setDuration] = useState(0);
 	const [animationPause, setAnimationPause] = useState(false);
 
-	// Int (ms) : time unit between every call
-	const refreshTime = 1000;
 	const refBar = useRef<HTMLDivElement>();
 	const refCont = useRef<HTMLDivElement>();
 	const refP = useRef<HTMLParagraphElement>();
@@ -91,24 +89,22 @@ function ProgressBar() {
 	 */
 	const refreshPlayerInfos = async (data: PublicPlayerState) => {
 		const element = refBar.current;
-		if (element && data.timeposition) {
-			const newWidth =
-				(element.offsetWidth * 10000 * (data.timeposition + refreshTime / 1000)) / length / 10000 + 'px';
-
+		if (element && data.timeposition !== undefined) {
 			if (length !== 0) {
+				const newWidth = (element.offsetWidth * data.timeposition) / length;
 				setWidth(newWidth);
 				setTimePosition(data.timeposition);
 			}
 		}
 		if (data.playerStatus) {
 			if (data.playerStatus === 'stop') {
-				setWidth('0');
+				setWidth(0);
 			}
 			setPlayerStatus(data.playerStatus);
 		}
 
 		if (data.mediaType || data.currentSong) {
-			setWidth('0');
+			setWidth(0);
 			if (data.mediaType === 'stop') {
 				setKaraInfoText(i18next.t('KARA_PAUSED_WAITING'));
 				setLength(-1);
@@ -203,7 +199,9 @@ function ProgressBar() {
 				ref={refBar}
 			>
 				<div className="actualTime">
-					{timePosition > 0 && length > 0 && secondsTimeSpanToHMS(Math.round(timePosition), 'mm:ss')}
+					{timePosition !== undefined &&
+						length > 0 &&
+						secondsTimeSpanToHMS(Math.round(timePosition), 'mm:ss')}
 				</div>
 				<div
 					className={`karaTitle${animate !== 0 ? ' animate' : ''}${animationPause ? ' pause' : ''}`}

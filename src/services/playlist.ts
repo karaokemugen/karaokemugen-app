@@ -1,6 +1,8 @@
 // Utils
 import i18n from 'i18next';
 import { shuffle } from 'lodash';
+import { copyFile } from 'node:fs/promises';
+import { join } from 'path/posix';
 
 import { APIMessage } from '../controllers/common';
 import { insertKaraToRequests } from '../dao/kara';
@@ -45,8 +47,9 @@ import { DBKara, DBKaraBase } from '../lib/types/database/kara';
 import { DBPL, DBPLC, DBPLCBase, PLCInsert } from '../lib/types/database/playlist';
 import { PlaylistExport, PLCEditParams } from '../lib/types/playlist';
 import { OldJWTToken, User } from '../lib/types/user';
-import { getConfig } from '../lib/utils/config';
+import { getConfig, resolvedPathRepos } from '../lib/utils/config';
 import { date, now, time as time2 } from '../lib/utils/date';
+import { resolveFileInDirs } from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import { check } from '../lib/utils/validators';
@@ -312,6 +315,64 @@ export async function emptyPlaylist(plaid: string): Promise<string> {
 		};
 	} finally {
 		profile('emptyPL');
+	}
+}
+
+/** Exports all playlist media files to a specified directory */
+export async function exportPlaylistMedia(plaid: string, exportDir: string): Promise<Array<any>> {
+	const pl = await getPlaylistContentsMini(plaid);
+	if (!pl) throw { code: 404, msg: 'Playlist unknown' };
+	const task = new Task({
+		text: 'EXPORTING_PLAYLIST_MEDIA',
+		total: pl.length,
+		value: 0,
+	});
+	try {
+		let itemsProcessed = 0;
+		logger.debug(`Exporting media of playlist ${plaid}`, { service });
+		const exportedResult: Array<{ kid: string; mediafile: string; exportSuccessful: boolean }> = [];
+		for (const kara of pl) {
+			try {
+				const karaMediaPath = await resolveFileInDirs(
+					kara.mediafile,
+					resolvedPathRepos('Medias', kara.repository)
+				);
+				const karaLyricsPath = await resolveFileInDirs(
+					kara.subfile,
+					resolvedPathRepos('Lyrics', kara.repository)
+				);
+				// This works as long as filenames are not uuids. After that, the computed filename should be retrieved here
+				// with something like defineFilename() and determineMediaAndLyricsFilenames()
+				logger.debug(`Copying ${karaMediaPath[0]} to ${exportDir}`, { service });
+				task.update({
+					subtext: kara.mediafile,
+				});
+				await copyFile(karaMediaPath[0], join(exportDir, kara.mediafile));
+				if (karaLyricsPath[0]) {
+					// Kara can have no lyrics file
+					await copyFile(karaLyricsPath[0], join(exportDir, kara.subfile));
+					task.update({
+						subtext: kara.subfile,
+					});
+				}
+				exportedResult.push({ kid: kara.kid, mediafile: kara.mediafile, exportSuccessful: true });
+			} catch (e) {
+				exportedResult.push({ kid: kara.kid, mediafile: kara.mediafile, exportSuccessful: false });
+			} finally {
+				itemsProcessed += 1;
+				task.update({
+					value: itemsProcessed,
+				});
+			}
+		}
+		return exportedResult;
+	} catch (err) {
+		throw {
+			message: err,
+			data: plaid,
+		};
+	} finally {
+		task.end();
 	}
 }
 

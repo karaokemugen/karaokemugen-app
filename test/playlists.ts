@@ -159,12 +159,12 @@ describe('Playlists', () => {
 
 	it('Delete a CURRENT playlist (should fail)', async () => {
 		const data = await commandBackend(token, 'deletePlaylist', { plaid: newCurrentPlaylistID }, true);
-		expect(data.message.code).to.be.equal('PL_DELETE_ERROR');
+		expect(data.message.code).to.be.equal('DELETE_PLAYLIST_ERROR_CURRENT');
 	});
 
 	it('Delete a PUBLIC playlist (should fail)', async () => {
 		const data = await commandBackend(token, 'deletePlaylist', { plaid: newPublicPlaylistID }, true);
-		expect(data.message.code).to.be.equal('PL_DELETE_ERROR');
+		expect(data.message.code).to.be.equal('DELETE_PLAYLIST_ERROR_PUBLIC');
 	});
 
 	it('Set playlist to current', async () => {

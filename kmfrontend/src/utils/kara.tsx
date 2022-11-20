@@ -60,9 +60,11 @@ export function getTagInLocale(
 	settings: SettingsStoreData,
 	tag: DBKaraTag,
 	i18nParam?: any
-): { i18n: string; description: string } {
+): { i18n: string; description: string } | undefined {
 	const user = settings?.user;
-	if (user?.main_series_lang && user?.fallback_series_lang) {
+	if (!tag) {
+		return undefined;
+	} else if (user?.main_series_lang && user?.fallback_series_lang) {
 		return getTagInLanguage(tag, user.main_series_lang, user.fallback_series_lang, i18nParam);
 	} else {
 		return getTagInLanguage(tag, getLanguageIn3B(langSupport), 'eng', i18nParam);

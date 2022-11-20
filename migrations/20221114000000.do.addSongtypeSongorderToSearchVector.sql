@@ -1,0 +1,1 @@
+-- This migration has been replaced with the next one fixPreviousMigration because it was bugged.
