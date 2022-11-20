@@ -491,7 +491,13 @@ class Player {
 		return [state.binPath.mpv, socket, mpvArgs];
 	}
 
-	private debounceTimePosition(position: number) {
+	private debounceTimePosition(position: number | undefined) {
+		// position can be undefined when the video starts
+		// position can be negative, or equal to -0
+		if (position == null || position <= 0) {
+			position = 0;
+		}
+
 		// Returns the position in seconds in the current song
 		if (playerState.mediaType === 'song' && playerState.currentSong?.duration) {
 			playerState.timeposition = position;
