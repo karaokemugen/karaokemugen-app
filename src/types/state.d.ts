@@ -117,7 +117,7 @@ export interface PublicState {
 
 export interface PublicPlayerState extends PlayerState {
 	stopping: boolean;
-	currentSong: CurrentSong;
+	currentSong?: CurrentSong;
 	currentRequester: string;
 	currentSessionID: string;
 	defaultLocale: string;
