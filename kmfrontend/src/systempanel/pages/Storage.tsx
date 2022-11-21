@@ -26,8 +26,13 @@ class Storage extends Component<unknown, StorageState> {
 			res
 				.filter(repo => repo.Online)
 				.map(async repo => {
-					const freeSpace = await commandBackend('getRepoFreeSpace', { repoName: repo.Name }, false, 300000);
-					return { name: repo.Name, freeSpace: prettyBytes(freeSpace) };
+					const freeSpace: number | null = await commandBackend(
+						'getRepoFreeSpace',
+						{ repoName: repo.Name },
+						false,
+						300000
+					);
+					return { name: repo.Name, freeSpace: freeSpace == null ? 'N/A' : prettyBytes(freeSpace) };
 				})
 		);
 		this.setState({ repositories });
