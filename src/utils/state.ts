@@ -79,6 +79,7 @@ function emitPlayerState(part: Partial<State>) {
 	]);
 	const toEmit: Partial<PublicPlayerState> = { ...part.player };
 	for (const key of [
+		'currentSong',
 		'currentSessionID',
 		'currentRequester',
 		'stopping',
@@ -136,7 +137,7 @@ export function getPublicState(admin: boolean): PublicState {
 /** Set one or more settings in app state */
 export function setState(part: Partial<State>) {
 	// lodash merges must not merge karas info.
-	if (part?.player?.currentSong && part?.player?.currentSong?.kid !== state?.player?.currentSong?.kid) {
+	if (part?.player?.currentSong && part?.player?.currentSong.kid !== state?.player?.currentSong?.kid) {
 		state.player.currentSong = null;
 	}
 	state = merge(state, part);
