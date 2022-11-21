@@ -99,7 +99,7 @@ export async function startDownloads() {
 async function processDownload(download: KaraDownload) {
 	try {
 		const freeSpace = await getRepoFreeSpace(download.repository);
-		if (download.size > freeSpace) {
+		if (freeSpace != null && download.size > freeSpace) {
 			logger.warn('Not enough free space for download, aborting', { service });
 			emitWS('noFreeSpace');
 			pauseQueue();
