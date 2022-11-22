@@ -1,7 +1,7 @@
 #!/bin/bash
 
-wget -N https://mugen.karaokes.moe/downloads/$DIST_NAME
-DIST_SHA=$(sha256sum "$DIST_NAME" | awk -F\  {'print $1'})
+wget -N https://mugen.karaokes.moe/downloads/$DIST_LINUX
+DIST_SHA=$(sha256sum "$DIST_LINUX" | awk -F\  {'print $1'})
 
 SENTRYCLI_VERSION=$(grep @sentry/cli\": package.json | awk -F\" {'print $4'} | sed -e 's/\^//g')
 
