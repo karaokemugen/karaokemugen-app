@@ -83,7 +83,10 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 		if (
 			oldConfig.Player.mpvVideoOutput !== newConfig.Player.mpvVideoOutput ||
 			oldConfig.Player.ExtraCommandLine !== newConfig.Player.ExtraCommandLine ||
-			oldConfig.Player.Monitor !== newConfig.Player.Monitor
+			oldConfig.Player.Monitor !== newConfig.Player.Monitor ||
+			oldConfig.Player.PIP.Size !== newConfig.Player.PIP.Size ||
+			oldConfig.Player.PIP.PositionX !== newConfig.Player.PIP.PositionX ||
+			oldConfig.Player.PIP.PositionY !== newConfig.Player.PIP.PositionY
 		) {
 			playerNeedsRestart();
 		}
