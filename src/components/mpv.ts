@@ -552,11 +552,13 @@ class Player {
 					playerState[status.name] = status.data;
 				}
 				if (status.name === 'fullscreen') {
-					const FullScreen = !!status.data;
-					editSetting({ Player: { FullScreen } });
-					if (FullScreen) {
+					const fullScreen = !!status.data;
+					editSetting({ Player: { FullScreen: fullScreen } });
+					if (fullScreen) {
+						logger.info('Player going to full screen', { service });
 						this.control.messages.addMessage('fsTip', `{\\an7\\i1\\fs20}${i18n.t('FULLSCREEN_TIP')}`, 3000);
 					} else {
+						logger.info('Player going to windowed mode', { service });
 						this.control.messages.removeMessage('fsTip');
 					}
 				}
@@ -1380,12 +1382,9 @@ class Players {
 		}
 	}
 
-	async toggleFullscreen(): Promise<boolean> {
+	async toggleFullscreen(): Promise<void> {
 		try {
 			await this.exec({ command: ['set_property', 'fullscreen', !playerState.fullscreen] });
-			playerState.fullscreen = !playerState.fullscreen;
-			emitPlayerState();
-			return playerState.fullscreen;
 		} catch (err) {
 			logger.error('Unable to toggle fullscreen', { service, obj: err });
 			sentry.error(err);
