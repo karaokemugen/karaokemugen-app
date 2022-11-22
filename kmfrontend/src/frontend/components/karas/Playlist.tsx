@@ -68,7 +68,9 @@ function Playlist(props: IProps) {
 	const [stopUpdate, setStopUpdate] = useState(false);
 	const [data, setData] = useState<KaraList>();
 	const [checkedKaras, setCheckedKaras] = useState(0);
-	const [playing, setPlaying] = useState<number>();
+	const [playing, setPlaying] = useState<number>(
+		getPlaylistInfo(props.side, context).content.findIndex(k => k.flag_playing)
+	);
 	const [songsBeforeJingle, setSongsBeforeJingle] = useState<number>();
 	const [songsBeforeSponsor, setSongsBeforeSponsor] = useState<number>();
 	const [goToPlaying, setGotToPlaying] = useState<boolean>();
@@ -241,18 +243,18 @@ function Playlist(props: IProps) {
 
 	const HeightPreservingItem = ({ children, ...props }: PropsWithChildren<ItemProps>) => {
 		const ref = useRef<HTMLDivElement>(null);
-		const [height, setHeight] = useState<string>(null);
+		const [height, setHeight] = useState<number>(null);
 
 		useEffect(() => {
 			if (ref.current.firstChild) {
 				const realHeight = (ref.current.firstChild as HTMLDivElement).getBoundingClientRect();
-				setHeight(`${realHeight.height}px`);
+				setHeight(realHeight.height);
 			}
 		}, [props['data-index']]);
 
 		return (
 			// the height is necessary to prevent the item container from collapsing, which confuses Virtuoso measurements
-			<div {...props} ref={ref} style={{ height: height || props['data-known-size'] || undefined }}>
+			<div {...props} ref={ref} style={{ height: height }}>
 				{children}
 			</div>
 		);
@@ -263,7 +265,6 @@ function Playlist(props: IProps) {
 			let content: KaraElement;
 			if (data?.content[index]) {
 				content = data.content[index];
-				if (!playing && content.flag_playing) setPlaying(index);
 				const jingle =
 					typeof songsBeforeJingle === 'number' &&
 					// Are jingles enabled?

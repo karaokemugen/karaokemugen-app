@@ -53,3 +53,6 @@ postgrator.json
 
 # Prettier ignores
 package.json
+
+kmfrontend/src/locales
+locales/

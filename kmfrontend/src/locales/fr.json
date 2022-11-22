@@ -352,6 +352,7 @@
 			"FULLSCREEN_TOOLTIP": "Appuyez sur F une fois le lecteur en plein écran pour le remettre en fenêtré.",
 			"VIDEO_SIZE": "Taille du lecteur",
 			"VIDEO_POSITION_X": "Alignement horizontal de la fenêtre",
+			"VIDEO_SIZE_TOOLTIP": "Taille de la fenêtre du lecteur. Tout changement entraînera un redémarrage du lecteur après la chanson en cours de lecture (s'il y en a une.)",
 			"VIDEO_POSITION_X_TOOLTIP": "Où la fenêtre du lecteur se situe au démarrage de Karaoke Mugen",
 			"LEFT": "Gauche",
 			"CENTER": "Centre",
@@ -527,7 +528,9 @@
 		"Les préparatifs sont en cours !"
 	],
 	"JINGLE_TIME": "Instant jingle !",
-	"JINGLE_TAGLINES": ["On revient !"],
+	"JINGLE_TAGLINES": [
+		"On revient !"
+	],
 	"INTRO_TIME": "Introduction",
 	"INTRO_TAGLINES": [
 		"C'est parti !",
@@ -537,15 +540,32 @@
 		"*se racle la gorge*"
 	],
 	"OUTRO_TIME": "Fin",
-	"OUTRO_TAGLINES": ["C'est fini :(", "Merci à tous !"],
+	"OUTRO_TAGLINES": [
+		"C'est fini :(",
+		"Merci à tous !"
+	],
 	"ENCORES_TIME": "Encore ! Encore !",
-	"ENCORES_TAGLINES": ["Bon, c'est bien parce que c'est vous…", "P'tite dèr ?", "Dernière chanson, on donne tout !"],
+	"ENCORES_TAGLINES": [
+		"Bon, c'est bien parce que c'est vous…",
+		"P'tite dèr ?",
+		"Dernière chanson, on donne tout !"
+	],
 	"SPONSOR_TIME": "LA PUB !",
-	"SPONSOR_TAGLINES": ["Kono bangumi wa…", "Et merci pour l'argent."],
+	"SPONSOR_TAGLINES": [
+		"Kono bangumi wa…",
+		"Et merci pour l'argent."
+	],
 	"PAUSE_TIME": "Pause",
-	"PAUSE_TAGLINES": ["On respire !", "Buvez un coup !", "On revient tout de suite !"],
+	"PAUSE_TAGLINES": [
+		"On respire !",
+		"Buvez un coup !",
+		"On revient tout de suite !"
+	],
 	"POLL_TIME": "Vote",
-	"POLL_TAGLINES": ["Votez ! Votez !", "Le choix vous revient."],
+	"POLL_TAGLINES": [
+		"Votez ! Votez !",
+		"Le choix vous revient."
+	],
 	"QUOTA_AVAILABLE": "Vous pouvez de nouveau ajouter des chansons !",
 	"SERIE_NAME_MODE": "Affichage des noms des œuvres",
 	"SERIE_NAME_MODE_TOOLTIP": "Change la façon dont les noms de œuvres sont affichées dans la liste des chansons. Peut être ignoré par les préférences d'un utilisateur",
@@ -766,6 +786,12 @@
 		"CREATE_TAG": {
 			"OPEN": "Créer un tag",
 			"TITLE": "Création de tag rapide"
+		},
+		"EXPORT_PLAYLIST_MEDIA": {
+			"DONE": "Les fichiers média de la liste de lecture ont été exportés",
+			"DONE_PARTIALLY": "Les fichiers média des listes de lecture ont été exportés, mais ils n'ont pas pu être sauvegardés :",
+			"NOT_ALL_MEDIA_DOWNLOADED": "Tous les médias ne sont pas disponibles localement. Veuillez vous assurer de télécharger toutes les vidéos avant d'exporter la liste de lecture",
+			"START": "Les fichiers médias sont en cours d'exportation…"
 		}
 	},
 	"SETUP_PAGE": {

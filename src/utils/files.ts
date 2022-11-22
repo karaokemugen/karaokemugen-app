@@ -22,13 +22,13 @@ export function pathIsContainedInAnother(p1, p2) {
 	return dst.startsWith(origin);
 }
 
-export async function getFreeSpace(resolvedPath: string): Promise<number> {
+export async function getFreeSpace(resolvedPath: string): Promise<number | null> {
 	const fileSystems = await fsSize();
 	logger.debug(`Filesystems reported with ${resolvedPath}`, { service, obj: fileSystems });
 	// Let's find out which mount has our path
 	const fileSystem = fileSystems.find(f => resolvedPath.toLowerCase().startsWith(f.mount.toLowerCase()));
 	// If path doesn't exist, let's return 0 bytes left
-	if (!fileSystem) return 0;
+	if (!fileSystem) return null;
 	return fileSystem.available;
 }
 

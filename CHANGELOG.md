@@ -1,3 +1,14 @@
+# v7.0.37 - 22/11/2022
+
+## Fixes
+
+-   Fixed filesystem available file detection
+-   Fixed video size tooltip in option
+-   Fixed video size and position needing restarts
+-   Fixed jingles bar refresh on the playlist in operator panel
+-   Fixed intro and sponsor bars at the beginning of the playlist
+-   Fixed negative time displayed when rewinding audio files
+
 # v7.0.36 - 19/11/2022
 
 ## New features
