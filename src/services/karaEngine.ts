@@ -177,13 +177,11 @@ export async function playCurrentSong(now: boolean) {
 			await mpv.play(kara);
 			setState({ randomPlaying: false });
 			addPlayedKara(kara.kid);
-			await Promise.all([
-				updatePlaylistDuration(kara.plaid),
-				updateUserQuotas(kara),
-				writeStreamFiles('time_remaining_in_current_playlist'),
-				writeStreamFiles('song_name'),
-				writeStreamFiles('requester'),
-			]);
+			updateUserQuotas(kara);
+			writeStreamFiles('time_remaining_in_current_playlist');
+			writeStreamFiles('song_name');
+			writeStreamFiles('requester');
+			await updatePlaylistDuration(kara.plaid);
 			updatePlaylistLastEditTime(kara.plaid);
 			emitWS('playlistInfoUpdated', kara.plaid);
 			if (conf.Karaoke.Poll.Enabled && !conf.Karaoke.StreamerMode.Enabled) startPoll();
