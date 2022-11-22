@@ -25,7 +25,6 @@
 -   Fixed the display monitor list
 -   Fixed player state on startup
 -   Fixed error when playing an online song that isn't available/internet is disabled.
--
 
 ## Misc
 
