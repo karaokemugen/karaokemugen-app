@@ -9,6 +9,9 @@ variables:
   GIT_SUBMODULE_STRATEGY: recursive
   ELECTRON_CACHE: '.cache/electron'
   DS_INCLUDE_DEV_DEPENDENCIES: 'false'
+  DIST_LINUX: dist_linux-7.x.tar.gz
+  DIST_WIN: dist_win-6.x.tar.gz
+  DIST_MAC: dist_mac-7.x.tar.gz
 sast:
   variables:
     SAST_EXCLUDED_PATHS: spec, test, tests, tmp, assets, build, img, util, packages
@@ -34,7 +37,6 @@ stages:
   - test
   - build
   - scan
-  - prepackage
   - package
   - deploy
   - release
@@ -225,7 +227,7 @@ pkg_linux:
     - rm -Rf release_linux
     - npm install -g electron-builder
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
-    - wget -qO- http://mugen.karaokes.moe/downloads/dist_linux-6.x.tar.gz | tar xvz
+    - wget -qO- http://mugen.karaokes.moe/downloads/$DIST_LINUX | tar xvz
     - bash util/electronBuilder.sh -l
     - ls -la packages/
     - mkdir release_linux
@@ -270,7 +272,7 @@ pkg_win:
     - wget -qO - https://download.opensuse.org/repositories/Emulators:/Wine:/Debian/xUbuntu_18.04/Release.key
       | apt-key add -
     - apt-get update -qq && apt-get install -y -qq zip
-    - wget -qO- http://mugen.karaokes.moe/downloads/dist_win-6.x.tar.gz | tar xz
+    - wget -qO- http://mugen.karaokes.moe/downloads/$DIST_WIN | tar xz
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
     - bash util/electronBuilder.sh -w
     - ls -la packages/
@@ -321,7 +323,7 @@ pkg_mac:
     - rm -Rf release_mac
     - rm -Rf app-mac
     - rm -Rf app/bin
-    - wget -qO- http://mugen.karaokes.moe/downloads/dist_mac-7.x.tar.gz | tar xvz
+    - wget -qO- http://mugen.karaokes.moe/downloads/$DIST_MAC | tar xvz
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
     - bash util/electronBuilder.sh -m
     - ls -la packages/
@@ -445,4 +447,54 @@ weekly_releases:
     - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
       when: never
     - if: $SCHEDULED_RELEASES == "true"
+    - when: never
+flatpak-generated-sources:
+  stage: build
+  image: python:3-bullseye
+  tags:
+    - $RUNNER_LINUX
+  interruptible: true
+  artifacts:
+    expire_in: 1 day
+    name: km-app-generated_sources-${CI_COMMIT_REF_SLUG}
+    paths:
+      - generated-sources.json
+  script:
+    - git clone https://github.com/flatpak/flatpak-builder-tools.git
+    - cd flatpak-builder-tools/node
+    - pip install .
+    - cd ../..
+    - flatpak-node-generator yarn -r yarn.lock -R kmfrontend/yarn.lock -R yarn.lock
+  rules:
+    - if: '$CI_COMMIT_TAG'
+    - when: never
+deploy_flathub:
+  stage: deploy
+  image: node:18
+  tags:
+    - $RUNNER_LINUX
+  interruptible: true
+  cache:
+    key: km-app-${CI_COMMIT_REF_SLUG}
+    paths:
+      - node_modules/
+      - kmfrontend/node_modules/
+    policy: pull
+  dependencies:
+    - flatpak-generated-sources
+  needs:
+    - flatpak-generated-sources
+  script:
+    - git clone --branch=moe.karaokes.mugen.app https://axelterizaki:$FLATHUB_GITHUB_TOKEN@github.com/karaokemugen/flathub.git
+    - bash util/updateFlatpak.sh
+    - cp generated-sources.json flathub/
+    - cd flathub
+    - git status
+    - git add .
+    - git config user.name "Karaoke Mugen Release Bot"
+    - git config user.email "mugen@karaokes.moe"
+    - git commit -m "New version $CI_COMMIT_REF_NAME"
+    - git push
+  rules:
+    - if: '$CI_COMMIT_TAG'
     - when: never
