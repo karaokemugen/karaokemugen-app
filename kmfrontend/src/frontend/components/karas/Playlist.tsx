@@ -28,6 +28,17 @@ import KaraLine from './KaraLine';
 import PlaylistHeader from './PlaylistHeader';
 import TasksEvent from '../../../TasksEvent';
 
+// Virtuoso's resize observer can this error,
+// which is caught by DnD and aborts dragging.
+window.addEventListener('error', e => {
+	if (
+		e.message === 'ResizeObserver loop completed with undelivered notifications.' ||
+		e.message === 'ResizeObserver loop limit exceeded'
+	) {
+		e.stopImmediatePropagation();
+	}
+});
+
 const chunksize = 400;
 let timer: any;
 
@@ -242,19 +253,21 @@ function Playlist(props: IProps) {
 	]);
 
 	const HeightPreservingItem = ({ children, ...props }: PropsWithChildren<ItemProps>) => {
-		const ref = useRef<HTMLDivElement>(null);
-		const [height, setHeight] = useState<number>(null);
-
+		const [size, setSize] = useState(0);
+		const knownSize = props['data-known-size'];
 		useEffect(() => {
-			if (ref.current.firstChild) {
-				const realHeight = (ref.current.firstChild as HTMLDivElement).getBoundingClientRect();
-				setHeight(realHeight.height);
-			}
-		}, [props['data-index']]);
-
+			setSize(prevSize => {
+				return knownSize === 0 ? prevSize : knownSize;
+			});
+		}, [knownSize]);
 		return (
-			// the height is necessary to prevent the item container from collapsing, which confuses Virtuoso measurements
-			<div {...props} ref={ref} style={{ height: height }}>
+			<div
+				{...props}
+				className="height-preserving-container"
+				//@ts-ignore
+				// check styling in the style tag below
+				style={{ '--child-height': `${size}px` }}
+			>
 				{children}
 			</div>
 		);
@@ -1012,6 +1025,14 @@ function Playlist(props: IProps) {
 	const playlist = getPlaylistInfo(props.side, context);
 	return (
 		<div className="playlist--wrapper">
+			<style>
+				{`
+          .height-preserving-container:empty {
+            min-height: calc(var(--child-height));
+            box-sizing: border-box;
+          }
+      `}
+			</style>
 			{props.scope === 'admin' ? (
 				<PlaylistHeader
 					side={props.side}
