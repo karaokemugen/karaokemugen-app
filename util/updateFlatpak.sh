@@ -9,4 +9,4 @@ wget -N https://downloads.sentry-cdn.com/sentry-cli/$SENTRYCLI_VERSION/sentry-cl
 
 SENTRYCLI_SHA=$(sha256sum sentry-cli-Linux-x86_64 | awk -F\  {'print $1'})
 
-node util/updateFlatpak.cjs "$DIST_NAME" "$DIST_SHA" "$SENTRYCLI_VERSION" "$SENTRYCLI_SHA"
+node util/updateFlatpak.cjs "$DIST_LINUX" "$DIST_SHA" "$SENTRYCLI_VERSION" "$SENTRYCLI_SHA"
