@@ -130,10 +130,7 @@ export async function next() {
 }
 
 async function toggleFullScreenPlayer() {
-	const fsState = await mpv.toggleFullscreen();
-	fsState
-		? logger.info('Player going to full screen', { service })
-		: logger.info('Player going to windowed mode', { service });
+	await mpv.toggleFullscreen();
 }
 
 async function toggleOnTopPlayer() {
