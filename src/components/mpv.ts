@@ -1117,7 +1117,6 @@ class Players {
 			playerState.nextSongNotifSent = false;
 			playerState.playing = true;
 			playerState._playing = true;
-			playerState.currentMedia = undefined;
 			playerState.playerStatus = 'play';
 			emitPlayerState();
 			setDiscordActivity('song', {
