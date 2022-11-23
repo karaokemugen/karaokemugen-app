@@ -885,8 +885,8 @@ class Players {
 		try {
 			playerState.mediaType = type as MediaType;
 			playerState.playerStatus = 'stop';
-			playerState.currentSong = undefined;
-			playerState.currentMedia = undefined;
+			playerState.currentSong = null;
+			playerState.currentMedia = null;
 			playerState._playing = false;
 			playerState.playing = false;
 			emitPlayerState();
