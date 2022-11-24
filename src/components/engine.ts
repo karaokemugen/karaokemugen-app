@@ -395,7 +395,7 @@ export async function welcomeToYoukousoKaraokeMugen(): Promise<string> {
 		const adminPassword = await generateAdminPassword();
 		url = `http://localhost:${conf.System.FrontendPort}/setup?admpwd=${adminPassword}`;
 	}
-	if (!state.opt.noBrowser && !state.isTest && state.opt.cli) shell.openPath(url);
+	if (!state.opt.noBrowser && !state.isTest && state.opt.cli) shell.openExternal(url);
 	profile('welcome');
 	return url;
 }

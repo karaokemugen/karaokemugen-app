@@ -328,7 +328,7 @@ async function createWindow() {
 }
 
 function openLink(url: string) {
-	url.includes('//localhost') ? win?.loadURL(url) : shell.openPath(url);
+	url.includes('//localhost') ? win?.loadURL(url) : shell.openExternal(url);
 }
 
 export function focusWindow() {
