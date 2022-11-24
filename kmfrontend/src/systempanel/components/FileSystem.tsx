@@ -78,7 +78,7 @@ export default function FileSystem(props: IProps) {
 							? 1
 							: path.lastIndexOf(separator)
 				  )
-				: `${path}${item.name}${separator}`;
+				: `${path}${separator}${item.name}`;
 			getFS(newPath, props.os).then(getFSCallback);
 			if (!props.fileRequired) props.saveValueModal(newPath);
 		} else if (props.fileRequired) {
