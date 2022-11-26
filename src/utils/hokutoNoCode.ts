@@ -7,7 +7,18 @@ import i18next from 'i18next';
 
 import { insertCriteria, insertKaraIntoPlaylist, insertPlaylist } from '../dao/playlist';
 import { db } from '../lib/dao/database';
+import { editRepo, getRepo } from '../services/repo';
 import { updateAllSmartPlaylists } from '../services/smartPlaylist';
+
+/** Remove in KM 9.0 */
+export function reenableKaraMoeAutoUpdates() {
+	// Because we're idiots who didn't push the default Update=true to kara.moe repository (it's in the default for new installs but not for existing ones)
+	const repo = getRepo('kara.moe');
+	if (repo && repo.Update === undefined) {
+		repo.Update = true;
+		editRepo('kara.moe', repo, false, false);
+	}
+}
 
 /** Remove in KM 8.0 */
 export async function migrateBLWLToSmartPLs() {
