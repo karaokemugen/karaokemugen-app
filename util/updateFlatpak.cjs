@@ -10,8 +10,8 @@ const distSHA = process.argv[3];
 const sentrycliVersion = process.argv[4];
 const sentrycliSHA = process.argv[5];
 
-const yamlFile = 'flathub/moe.karaokes.mugen.app.yml';
-const xmlFile = 'flathub/moe.karaokes.mugen.app.metainfo.xml';
+const yamlFile = 'flathub/moe.karaokes.mugen.yml';
+const xmlFile = 'flathub/moe.karaokes.mugen.metainfo.xml';
 
 async function main() {
 	const yamldata = await fs.readFile(yamlFile, 'utf-8');
