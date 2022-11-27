@@ -125,7 +125,7 @@ export async function initDBSystem(): Promise<Postgrator.Migration[]> {
 				buttons: [i18next.t('DATABASE_CONNECTION_ERROR.HELP'), 'OK'],
 			});
 			if (res.response === 0) {
-				shell.openPath(
+				shell.openExternal(
 					'https://discourse.karaokes.moe/t/error-database-initialization-failed-unable-to-connect-to-the-database/25'
 				);
 			}

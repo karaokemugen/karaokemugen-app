@@ -37,7 +37,7 @@ async function main() {
 	const versions = metainfo.elements[1].elements.find(e => e.name === 'releases');
 	const d = new Date();
 	if (!versions.elements.find(e => e.attributes.version === process.env.CI_COMMIT_REF_NAME)) {
-		versions.elements.push({
+		versions.elements.unshift({
 			type: 'element',
 			name: 'release',
 			attributes: {
