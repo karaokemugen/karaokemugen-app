@@ -27,11 +27,15 @@ async function main() {
 	flatpak.modules[0].sources[0].tag = process.env.CI_COMMIT_REF_NAME;
 
 	// Updating fetches
-	flatpak.modules[0].sources[8].url = `https://downloads.sentry-cdn.com/sentry-cli/${sentrycliVersion}/sentry-cli-Linux-x86_64`;
-	flatpak.modules[0].sources[8].sha256 = sentrycliSHA;
+	const sentryCliIndex = flatpak.modules[0].sources.findIndex(e => e.url && e.url.includes('sentry-cli'));
+	flatpak.modules[0].sources[
+		sentryCliIndex
+	].url = `https://downloads.sentry-cdn.com/sentry-cli/${sentrycliVersion}/sentry-cli-Linux-x86_64`;
+	flatpak.modules[0].sources[sentryCliIndex].sha256 = sentrycliSHA;
 
-	flatpak.modules[0].sources[9].url = `https://mugen.karaokes.moe/downloads/${dist}`;
-	flatpak.modules[0].sources[9].sha256 = distSHA;
+	const distIndex = flatpak.modules[0].sources.findIndex(e => e.url && e.url.includes('dist'));
+	flatpak.modules[0].sources[distIndex].url = `https://mugen.karaokes.moe/downloads/${dist}`;
+	flatpak.modules[0].sources[distIndex].sha256 = distSHA;
 
 	// Push new version into xml
 	const versions = metainfo.elements[1].elements.find(e => e.name === 'releases');
