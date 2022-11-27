@@ -41,12 +41,13 @@ async function main() {
 	const versions = metainfo.elements[1].elements.find(e => e.name === 'releases');
 	const d = new Date();
 	if (!versions.elements.find(e => e.attributes.version === process.env.CI_COMMIT_REF_NAME)) {
+		const month = (d.getMonth() + 1 < 10 ? '0' : '') + (d.getMonth() + 1);
 		versions.elements.unshift({
 			type: 'element',
 			name: 'release',
 			attributes: {
 				version: process.env.CI_COMMIT_REF_NAME,
-				date: `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`,
+				date: `${d.getFullYear()}-${month}-${d.getDate()}`,
 			},
 		});
 	}
