@@ -1,3 +1,21 @@
+# v7.0.38 - 27/11/2022
+
+## Fixes
+
+-   Fixed kara.moe auto-update for people with installs before 7.0
+-   Fixed opening external links in Linux
+-   Fixed file browser in Linux
+-   Fixed current song not being properly updated when you stop then play again.
+-   Fixed fullscreen option for player not being consistent
+-   Fixed drag & drop of songs in playlsit not always working right
+-   Various fixes for future Flatpak release
+
+## Misc
+
+-   Upgraded frontend and backend dependencies
+-   Removed temporary folder from config as we now use ~/KaraokeMugen/temp 
+-   Replaced mouse wheel up/down on player. It now changes volume again like before.
+
 # v7.0.37 - 22/11/2022
 
 ## Fixes
