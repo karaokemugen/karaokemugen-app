@@ -12,21 +12,21 @@
 	"VOTE_MESSAGE_SCREEN": "Vota para la próxima canción! Vote for the next song!",
 	"VOTE_MESSAGE_SCREEN_WINNER": "Tenemos un ganador!",
 	"NEXT_SONG": "Siguiente canción",
-	"INIT_INIT": "Iniciando...",
-	"INIT_DUMPDB": "Cargando la base de datos...",
-	"INIT_RESTOREDB": "Restaurando la base de datos...",
-	"INIT_DB": "Iniciando la base de datos...",
-	"INIT_VALIDATION": "Validando archivos...",
-	"INIT_MIGRATION": "Migrando la base de datos...",
-	"INIT_GEN": "Generando la base de datos...",
-	"INIT_UPDATEMEDIAS": "Actualizando medias...",
-	"INIT_BASEUPDATE": "Actualizando canciones...",
-	"INIT_USER": "Iniciando usuarios...",
-	"INIT_ONLINEURL": "Conectando al servidor de Karaoke Mugen",
-	"INIT_PLAYLIST_AND_PLAYER": "Iniciando lista de reproducción y reproductor...",
-	"INIT_LAST": "Iniciando el último...",
+	"INIT_INIT": "Iniciando…",
+	"INIT_DUMPDB": "Cargando la base de datos…",
+	"INIT_RESTOREDB": "Restaurando la base de datos…",
+	"INIT_DB": "Iniciando la base de datos…",
+	"INIT_VALIDATION": "Validando archivos…",
+	"INIT_MIGRATION": "Migrando la base de datos…",
+	"INIT_GEN": "Generando la base de datos…",
+	"INIT_UPDATEMEDIAS": "Actualizando medias…",
+	"INIT_BASEUPDATE": "Actualizando canciones…",
+	"INIT_USER": "Iniciando usuarios…",
+	"INIT_ONLINEURL": "Conectando al servidor de Karaoke Mugen…",
+	"INIT_PLAYLIST_AND_PLAYER": "Iniciando lista de reproducción y reproductor…",
+	"INIT_LAST": "Iniciando el último…",
 	"INIT_DONE": "¡Listo!",
-	"INIT_ERROR": "Error al iniciar",
+	"INIT_ERROR": "Error al iniciar!",
 	"ERROR_MISSING_BINARIES": "Algunos binarios necesarios (mpv/postgresql/ffmpeg) no fueron encontrados.",
 	"ERROR_UNKNOWN": "¡Acaba de ocurrir un error desconocido! Eche un vistazo a los registros para obtener más detalles.",
 	"ERROR_INIT_PG_DATA": "Error al iniciar la base de datos de PostgreSQL",
@@ -92,13 +92,13 @@
 	"MENU_OPTIONS_CHECKFORUPDATES": "&Buscar actualizaciones al iniciar",
 	"MENU_OPTIONS_OPERATORCONFIG": "Configuración de &operador",
 	"MENU_OPTIONS_SYSTEMCONFIG": "Configuración de &sistema",
-	"MENU_OPTIONS_OPERATORCONFIG_OSX": "Configuraciones...",
-	"MENU_OPTIONS_SYSTEMCONFIG_OSX": "Configuraciones de sistema...",
-	"MENU_OPTIONS_CHIBIPLAYER": "Mostrar Reproductor &Chibi ",
+	"MENU_OPTIONS_OPERATORCONFIG_OSX": "Configuraciones…",
+	"MENU_OPTIONS_SYSTEMCONFIG_OSX": "Configuraciones de sistema…",
+	"MENU_OPTIONS_CHIBIPLAYER": "Mostrar Reproductor &Chibi",
 	"MENU_OPTIONS_CHIBIPLAYLIST": "Mostrar lista de reproducción separada",
 	"MENU_OPTIONS_CHIBIPLAYLIST_LINK": "Copiar enlace a lista de reproducción separada",
 	"ERROR": "Error",
-	"YES": "Si",
+	"YES": "Sí",
 	"NO": "No",
 	"UPDATE_FOUND": "Se ha encontrado una actualización",
 	"UPDATE_PROMPT": "¿Desea descargar e instalar la actualización de Karaoke Mugen?",
@@ -107,7 +107,7 @@
 	"UPDATE_NOT_AVAILABLE": "Actualización no disponible",
 	"CURRENT_VERSION_OK": "¡Ya estás usando la última versión de Karaoke Mugen!",
 	"UPDATE_DOWNLOADED": "Actualización descargada",
-	"UPDATE_READY_TO_INSTALL_RESTARTING": "Karaoke Mugen se reiniciará para instalar la actualización...",
+	"UPDATE_READY_TO_INSTALL_RESTARTING": "Karaoke Mugen se reiniciará para instalar la actualización…",
 	"ABOUT": {
 		"TITLE": "Acerca de Karaoke Mugen"
 	},
@@ -134,11 +134,11 @@
 			"No olvides sincronizar la base de vez en cuando: ¡puedes descubrir nuevos karaokes!",
 			"¿No encuentras una canción en la base de datos? No dude en consultar https://kara.moe/suggest/, ¡puede que esté allí!",
 			"Karaoke Mugen es un proyecto 100% de código abierto y colaborativo, ¡todos pueden participar!",
-			"Puede importar archivos a través del menú Archivo -> Importar, arrastrar y soltar o asociar el ejecutable Karaoke Mugen para permitir que KM los abra y los use: listas de reproducción, favoritos...",
+			"Puede importar archivos a través del menú Archivo -> Importar, arrastrar y soltar o asociar el ejecutable Karaoke Mugen para permitir que KM los abra y los use: listas de reproducción, favoritos…",
 			"Soy Nanamin, la mascota de Karaoke Mugen, ¡y fui creada por la maravillosa Sedeto! http://www.sedeto.fr",
 			"¡Hay muchas opciones para configurar tu karaoke! ¡Tómate un tiempo para revisarlas todas antes de comenzar una sesión!",
 			"Las sesiones son eventos de karaoke individuales. ¡Te permiten agrupar las canciones solicitadas y reproducidas para recordar lo que se reprodujo durante un cumpleaños, una boda o un evento!",
-			"La lista negra te permite prohibir canciones específicas (¡como las de adultos!) durante un evento",
+			"La lista negra te permite prohibir canciones específicas (¡como las de adultos!) durante un evento.",
 			"AutoMixes son listas de reproducción creadas a partir de las listas favoritas de sus invitados. ¡Perfectas para sesiones de karaoke de inicio rápido!",
 			"¿No sabes qué agregar a tu lista de reproducción? ¡Usa el botón aleatorio para sorpresas!",
 			"Las canciones agregadas con la opción Mystery Song habilitada aparecerán con una etiqueta misteriosa para sus invitados. ¡No sabrán hasta el último momento de qué se trata!",
@@ -150,19 +150,19 @@
 			"¡Karaoke Mugen te necesita! ¡Más información en http://mugen.karaokes.moe/en/participate.html!",
 			"¡Otro consejo que termina con un signo de exclamación!",
 			"El Monitor te permite ver la canción que se está reproduciendo actualmente si no puedes ver la pantalla desde donde estás.",
-			"El modo Karaoke clásico emula lo que encuentras en las cabinas de karaoke japonesas o durante los concursos de karaoke en eventos de anime: se hace una pausa entre cada canción y el título de la siguiente canción y el solicitante se muestran en la pantalla",
-			"¿Tu sesión de karaoke termina pronto? Cambia la interfaz al modo restringido: los usuarios ya no podrán agregar canciones, pero podrán ver lo que viene a continuación",
+			"El modo Karaoke clásico emula lo que encuentras en las cabinas de karaoke japonesas o durante los concursos de karaoke en eventos de anime: se hace una pausa entre cada canción y el título de la siguiente canción y el solicitante se muestran en la pantalla.",
+			"¿Tu sesión de karaoke termina pronto? Cambia la interfaz al modo restringido: los usuarios ya no podrán agregar canciones, pero podrán ver lo que viene a continuación.",
 			"¿Necesitas enviar un mensaje a tu público? ¡La opción de mensaje mostrará un texto en sus dispositivos móviles y/o en la pantalla del karaoke!",
-			"Al buscar, puedes escribir \"-palabra\" para excluir los karaokes que contengan esa palabra (ya sea en el título, la serie, los cantantes, etc.) de los resultados de búsqueda",
+			"Al buscar, puedes escribir \"-palabra\" para excluir los karaokes que contengan esa palabra (ya sea en el título, la serie, los cantantes, etc.) de los resultados de búsqueda.",
 			"Puedes aceptar o rechazar canciones en la lista de reproducción pública. Para hacer esto, muestra la lista de reproducción pública y la actual una al lado de la otra.",
 			"¡Aceptar o rechazar una sugerencia pública devuelve la cuota de la canción al usuario que la solicitó y agrega la canción a la lista de reproducción actual!",
-			"Cuando buscas, puedes poner un grupo de palabras entre comillas dobles para preguntar precisamente por ese texto. Escribe \"love live\" para tener karaokes de la serie Love Live solamente"
+			"Cuando buscas, puedes poner un grupo de palabras entre comillas dobles para preguntar precisamente por ese texto. Escribe \"love live\" para tener karaokes de la serie Love Live solamente."
 		],
 		"ERRORS": [
 			"Ven a vernos en Discord si necesitas ayuda: https://karaokes.moe/discord",
 			"Verifique si una instancia de Karaoke Mugen en ejecución se ejecuta en segundo plano.",
 			"Eche un vistazo a los registros, ¡la razón detrás del error podría estar dentro!",
-			"Por favor, no se asuste, todo va a estar bien."
+			"Por favor, no se asuste, todo va a estar bien"
 		]
 	},
 	"DISCORD": {
@@ -193,25 +193,25 @@
 	},
 	"MISSING_BINARIES": {
 		"TITLE": "Binarios faltantes",
-		"MESSAGE": "No se pudieron encontrar uno o más archivos binarios necesarios para Karaoke Mugen.\n\nEdite su config.yml y establezca las variables System.Binaries.ffmpeg, System.Binaries.Player y System.Binaries.Postgres correctamente para su sistema operativo.\n\nUsted puede descargar mpv para su sistema operativo desde http://mpv.io/\n\nPuede descargar postgreSQL para su sistema operativo desde http://postgresql.org/\n\nPuede descargar ffmpeg para su sistema operativo desde http://ffmpeg .org\n\nPuede descargar la utilidad de parche en https://mugen.karaokes.moe/downloads/patch.exe (Windows) o https://mugen.karaokes.moe/downloads/patch (macOS) o GNU Patch Paquete 2.7+ (Linux)\n\nDetalles del error:"
+		"MESSAGE": "No se pudieron encontrar uno o más archivos binarios necesarios para Karaoke Mugen.\n\nEdite su config.yml y establezca las variables System.Binaries.ffmpeg, System.Binaries.Player y System.Binaries.Postgres correctamente para su sistema operativo.\n\nUsted puede descargar mpv para su sistema operativo desde http://mpv.io/\n\nPuede descargar postgreSQL para su sistema operativo desde http://postgresql.org/\n\nPuede descargar ffmpeg para su sistema operativo desde http://ffmpeg .org\n\nPuede descargar la utilidad de parche en https://mugen.karaokes.moe/downloads/patch.exe (Windows) o https://mugen.karaokes.moe/downloads/patch (macOS) o GNU Patch Paquete 2.7+ (Linux)\n\nDetalles del error: "
 	},
 	"UNKNOWN_REPOSITORY_ADD": {
 		"TITLE": "Repositorio desconocido",
 		"MESSAGE": "Está a punto de agregar el repositorio {{repoName}} a Karaoke Mugen. ¿Está seguro?"
 	},
-	"GENERATING_READING": "Paso 1/2 - Lectura de datos...",
-	"GENERATING_DATABASE": "Paso 2/2: Actualizando la base de datos...",
+	"GENERATING_READING": "Paso 1/2 - Lectura de datos…",
+	"GENERATING_DATABASE": "Paso 2/2: Actualizando la base de datos…",
 	"TWITCH": {
 		"CHAT": {
 			"VOTE": "Nuevo voto: usa !vote x donde x es el número de la canción:",
-			"YOU_ALREADY_VOTED": "Ya has votado",
-			"NO_ACTIVE_POLL": "No hay votación activa",
+			"YOU_ALREADY_VOTED": "Ya has votado.",
+			"NO_ACTIVE_POLL": "No hay votación activa.",
 			"INVALID_CHOICE": "Opción inválida"
 		}
 	},
-	"RESTARTING_PLAYER": "Reiniciando el reproductor...",
+	"RESTARTING_PLAYER": "Reiniciando el reproductor…",
 	"ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE": "¡AGREGAR UNA CANCIÓN A LA LISTA DE REPRODUCCIÓN!",
-	"NEW_SESSION_NAME": "Karaoke el {{fecha}}",
+	"NEW_SESSION_NAME": "Karaoke el {{date}}",
 	"FULLSCREEN_TIP": "Presiona F para salir de la pantalla completa.",
 	"NO_KARA_PLAYING": "No hay karaoke en reproducción",
 	"INTERFACE_OPENED": "Abrir",
@@ -234,5 +234,5 @@
 		}
 	},
 	"OFFICIAL_WEBSITE": "Sitio web oficial",
-	"SUGGEST_SONGS": "Sugerir canciones"
+	"SUGGEST_SONGS": "Sugerir canciones!"
 }
