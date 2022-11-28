@@ -352,7 +352,7 @@
 			"FULLSCREEN_TOOLTIP": "Appuyez sur F une fois le lecteur en plein écran pour le remettre en fenêtré.",
 			"VIDEO_SIZE": "Taille du lecteur",
 			"VIDEO_POSITION_X": "Alignement horizontal de la fenêtre",
-			"VIDEO_SIZE_TOOLTIP": "Taille de la fenêtre du lecteur. Tout changement entraînera un redémarrage du lecteur après la chanson en cours de lecture (s'il y en a une.)",
+			"VIDEO_SIZE_TOOLTIP": "Taille de la fenêtre du lecteur. Tout changement entraînera un redémarrage du lecteur après la chanson en cours de lecture (s'il y en a une).",
 			"VIDEO_POSITION_X_TOOLTIP": "Où la fenêtre du lecteur se situe au démarrage de Karaoke Mugen",
 			"LEFT": "Gauche",
 			"CENTER": "Centre",
