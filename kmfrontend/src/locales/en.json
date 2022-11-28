@@ -836,6 +836,7 @@
 				"PLAYER_PLMEDIA": "Unable to play playlist media",
 				"PLAYER_CLASSIC_PAUSE_SCREEN": "Unable to prepare pause screen",
 				"PLAYLIST_FREE_ORPHANED_SONGS": "Unable to free orphaned songs",
+				"AUTOMIX_NO_SONGS_MEET_CRITERIAS": "No songs met the criterias selected for this AutoMix",
 				"POLL_ALREADY_STARTED": "A poll is already in progress",
 				"POLL_PUBLIC_PL_EMPTY": "Unable to start poll: public playlist is empty",
 				"POLL_NOT_ENOUGH_SONGS": "Unable to start poll: not enough songs available"

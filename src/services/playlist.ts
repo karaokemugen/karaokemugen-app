@@ -1,7 +1,8 @@
 // Utils
+import { copyFile } from 'node:fs/promises';
+
 import i18n from 'i18next';
 import { shuffle } from 'lodash';
-import { copyFile } from 'node:fs/promises';
 import { join } from 'path/posix';
 
 import { APIMessage } from '../controllers/common';
@@ -1676,6 +1677,12 @@ export async function createAutoMix(params: AutoMixParams, username: string): Pr
 		}
 		years.forEach(y => uniqueList.set(y.kid, y as any));
 	}
+	// Test if our list has at least one song
+	if (uniqueList.size === 0) {
+		emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.AUTOMIX_NO_SONGS_MEET_CRITERIAS'));
+		throw { code: 416 };
+	}
+
 	// Let's balance what we have here.
 
 	let balancedList = shufflePlaylistWithList([...uniqueList.values()], 'balance');
@@ -1710,7 +1717,7 @@ export async function createAutoMix(params: AutoMixParams, username: string): Pr
 		};
 	} catch (err) {
 		logger.error('Failed to create AutoMix', { service, obj: err });
-		if (err?.code === 404) throw err;
+		if (err?.code === 404 || err?.code === 416) throw err;
 		sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
 		sentry.error(err);
 		throw err;

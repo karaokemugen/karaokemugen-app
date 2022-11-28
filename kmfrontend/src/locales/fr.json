@@ -836,6 +836,7 @@
 				"PLAYER_PLMEDIA": "Erreur de lecture de média de liste de lecture",
 				"PLAYER_CLASSIC_PAUSE_SCREEN": "Erreur de préparation de l'écran de pause",
 				"PLAYLIST_FREE_ORPHANED_SONGS": "Impossible de libérer les chansons orphelines",
+				"AUTOMIX_NO_SONGS_MEET_CRITERIAS": "Aucune chanson ne remplit les critères selectionnés pour l'AutoMix",
 				"POLL_ALREADY_STARTED": "Un sondage est déjà en cours",
 				"POLL_PUBLIC_PL_EMPTY": "Impossible de démarrer un sondage : la liste de lecture publique est vide",
 				"POLL_NOT_ENOUGH_SONGS": "Impossible de démarrer un sondage : pas assez de chansons disponibles"
