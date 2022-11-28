@@ -587,6 +587,7 @@ export const sqlselectKarasFromCriterias = {
 	INNER JOIN kara k ON k.download_status = '${value}'
 	WHERE c.type = 1006
 	AND   k.pk_kid NOT IN (select fk_kid from playlist_content where fk_id_playlist = $2)
+	AND   fk_id_playlist = $1
 	`,
 };
 
