@@ -11,11 +11,16 @@ import { editRepo, getRepo } from '../services/repo';
 import { updateAllSmartPlaylists } from '../services/smartPlaylist';
 
 /** Remove in KM 9.0 */
-export function reenableKaraMoeAutoUpdates() {
+export function updateKaraMoeRepoConfig() {
 	// Because we're idiots who didn't push the default Update=true to kara.moe repository (it's in the default for new installs but not for existing ones)
+	// Also, we're idiots for not realizing BaseDir might be missing
 	const repo = getRepo('kara.moe');
 	if (repo && repo.Update === undefined) {
 		repo.Update = true;
+		editRepo('kara.moe', repo, false, false);
+	}
+	if (repo && !repo.BaseDir) {
+		repo.BaseDir = process.platform === 'win32' ? 'repos\\kara.moe\\json' : 'repos/kara.moe/json';
 		editRepo('kara.moe', repo, false, false);
 	}
 }
