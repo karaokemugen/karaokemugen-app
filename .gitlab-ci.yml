@@ -485,10 +485,10 @@ deploy_flathub:
   needs:
     - flatpak-generated-sources
   script:
-    - git clone --branch=moe.karaokes.mugen.app https://axelterizaki:$FLATHUB_GITHUB_TOKEN@github.com/karaokemugen/flathub.git
+    - git clone https://axelterizaki:$FLATHUB_GITHUB_TOKEN@github.com/flathub/mugen.karaokes.moe.git
     - bash util/updateFlatpak.sh
-    - cp generated-sources.json flathub/
-    - cd flathub
+    - cp generated-sources.json moe.karaokes.mugen/
+    - cd moe.karaokes.mugen
     - git status
     - git add .
     - git config user.name "Karaoke Mugen Release Bot"
