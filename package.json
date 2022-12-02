@@ -200,6 +200,7 @@
   "build": {
     "appId": "KaraokeMugen",
     "afterSign": "build/notarize.cjs",
+	"npmRebuild": "false",
     "fileAssociations": [
       {
         "ext": "kmplaylist",
@@ -261,7 +262,7 @@
         "url": "https://mugen.karaokes.moe/downloads/"
       }
     },
-    "mac": {
+	"mac": {
       "artifactName": "${productName}-${version}-mac-${arch}.${ext}",
       "target": [
         {
@@ -292,11 +293,30 @@
       "category": "public.app-category.entertainment"
     },
     "linux": {
-      "target": [
-        "deb",
-        "tar.gz",
-        "appImage"
-      ],
+	  "artifactName": "${productName}-${version}-linux-${arch}.${ext}",
+	  "target": [
+	    {
+		  "target": "deb",
+		  "arch": [
+			"x64",
+			"arm64"
+		  ]
+		},
+		{
+		  "target": "appImage",
+		  "arch": [
+			"x64",
+			"arm64"
+		  ]
+		},
+		{
+		  "target": "tar.gz",
+		  "arch": [
+			"x64",
+			"arm64"
+		  ]
+		}
+	  ],
       "vendor": "Karaoke Mugen Team",
       "executableName": "karaokemugen",
       "category": "AudioVideo",
@@ -320,6 +340,10 @@
     ],
     "extraFiles": [
       "app/bin/**",
+	  {
+        "from": "app-linux/bin/${arch}",
+        "to": "app/bin"
+      },
       {
         "from": "app-mac/bin/${arch}",
         "to": "app/bin"

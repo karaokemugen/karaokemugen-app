@@ -9,7 +9,8 @@ variables:
   GIT_SUBMODULE_STRATEGY: recursive
   ELECTRON_CACHE: '.cache/electron'
   DS_INCLUDE_DEV_DEPENDENCIES: 'false'
-  DIST_LINUX: dist_linux-7.x.tar.gz
+  DIST_LINUX_X64: dist_linux-x64-7.x.tar.gz
+  DIST_LINUX_ARM64: dist_linux-arm64-7.x.tar.gz
   DIST_WIN: dist_win-6.x.tar.gz
   DIST_MAC: dist_mac-7.x.tar.gz
 sast:
@@ -227,7 +228,8 @@ pkg_linux:
     - rm -Rf release_linux
     - npm install -g electron-builder
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
-    - wget -qO- http://mugen.karaokes.moe/downloads/$DIST_LINUX | tar xvz
+    - wget -qO- http://mugen.karaokes.moe/downloads/$DIST_LINUX_X64 | tar xvz
+    - wget -qO- http://mugen.karaokes.moe/downloads/$DIST_LINUX_ARM64 | tar xvz
     - bash util/electronBuilder.sh -l
     - ls -la packages/
     - mkdir release_linux
