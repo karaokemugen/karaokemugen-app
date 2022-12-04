@@ -119,10 +119,6 @@
 		"TITLE": "Repositorio deshabilitado",
 		"MESSAGE": "El repositorio {{repo}} ha sido deshabilitado por el administrador del sistema. Por favor, contacte con él para más información."
 	},
-	"NO_KARAOKE_MODE_ANYMORE": {
-		"TITLE": "¡No más modos de karaoke!",
-		"MESSAGE": "Nuevo en la versión 4.0:\n\n¡Los modos de karaoke público/privado han desaparecido! ¡Choque! ¡Horror! *sigue música dramática*\n\nLas listas de reproducción ahora pueden tener el indicador público y actual al mismo tiempo.\n\n- El indicador actual significa que la lista de reproducción es la que usa el jugador\n- El indicador público significa que la lista de reproducción es el que recibe sugerencias de canciones de sus usuarios\n\nEn pocas palabras, combine ambas banderas en una lista de reproducción para emular el antiguo modo privado y cree dos listas de reproducción, cada una con una bandera diferente para emular el antiguo modo público."
-	},
 	"TIPS": {
 		"TITLES": {
 			"NORMAL": "Consejos y trucos con Nanamin",

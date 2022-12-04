@@ -119,10 +119,6 @@
 		"TITLE": "Dépôt désactivé",
 		"MESSAGE": "Le dépôt {{repo}} a été désactivé car l'un de ses dossiers est inaccessible. Si toute ou partie de ses fichiers sont sur un support externe, vérifiez qu'il est bien branché et allez dans Panneau Système > Dépôts pour le réactiver."
 	},
-	"NO_KARAOKE_MODE_ANYMORE": {
-		"TITLE": "Plus de mode de karaoké !",
-		"MESSAGE": "Nouveauté 4.0 :\n\nLe mode public/privé a disparu, et il ne reviendra jamais ! *musique dramatique*\n\nLes playlists ne jurent maintenant que par le système d'état. Elle peuvent dorénavant avoir à la fois l'état publique et courante :\n\n- L'état public fait que la playlist recevra les demandes de chansons de vos invités.\n- L'état courant fait que la playlist sera celle utilisée par le lecteur.\n\nPour activer l'ancien mode public, créez deux playlists, l'une avec l'état public qui recevra les demandes et l'autre avec l'état courant.\nPour activer l'ancien mode privé, créez une playlist et attribuez-lui les deux états simultanément."
-	},
 	"TIPS": {
 		"TITLES": {
 			"NORMAL": "Trucs et astuces avec Nanamin",
