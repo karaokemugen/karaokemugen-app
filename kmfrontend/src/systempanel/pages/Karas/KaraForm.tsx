@@ -379,9 +379,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		if (this.timer) clearTimeout(this.timer);
 		this.timer = setTimeout(async () => {
 			const karas = await commandBackend('getKaras', {
-				q: this.formRef.current?.getFieldValue('repository')
-					? `r:${this.formRef.current?.getFieldValue('repository')}`
-					: '',
 				filter: value,
 				size: 50,
 				ignoreCollections: true,
