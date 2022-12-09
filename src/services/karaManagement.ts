@@ -287,7 +287,7 @@ export async function integrateKaraFile(
 				logger.warn(`Failed to remove ${oldKara.old_mediafile}, does it still exist?`, { service });
 			}
 		}
-		if (oldKara.old_subfile && oldKara.old_subfile !== karaData.medias[0].lyrics[0]?.filename) {
+		if (oldKara.old_subfile && oldKara.old_subfile !== karaData.medias[0].lyrics?.[0]?.filename) {
 			try {
 				await fs.unlink(
 					(
