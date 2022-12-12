@@ -328,6 +328,8 @@
 		"STATS_KARAS": "Karaokes",
 		"STATS_SERIES": "Series",
 		"STATS_TAGS": "Tags",
+		"STATS_USAGETIME": "Usage time",
+		"STATS_PLAYTIME": "Play time",
 		"BASE_UPDATE": "Database update",
 		"MASTODON_UPDATE": "Karaoke Mugen News",
 		"APP_UPDATE": "New version",

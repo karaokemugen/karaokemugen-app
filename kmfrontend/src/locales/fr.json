@@ -328,6 +328,8 @@
 		"STATS_KARAS": "Chansons",
 		"STATS_SERIES": "Œuvres",
 		"STATS_TAGS": "Tags",
+		"STATS_USAGETIME": "Durée d'utilisation",
+		"STATS_PLAYTIME": "Durée de lecture",
 		"BASE_UPDATE": "Nouvelles de la base",
 		"APP_UPDATE": "Nouvelle version de l'application",
 		"MASTODON_UPDATE": "Actualités de Karaoke Mugen",
