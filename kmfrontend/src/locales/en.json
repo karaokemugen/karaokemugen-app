@@ -1251,6 +1251,7 @@
 		"SYNCHRONIZE_ABOUT_MESSAGE": "This will allow you to synchronize tags files from one repository to another. Select a repository to synchronize tags with (it will be the destination repository for the copy of the tags)",
 		"SYNCHRONIZE_BUTTON": "Synchronize",
 		"FREE_SPACE": "Free space",
+		"OPEN_MEDIA_FOLDER": "Open media folder",
 		"DELETE_OLD_MEDIAS": "Delete medias unused since 1 month",
 		"DELETE_ALL_MEDIAS": "Delete all medias",
 		"STORAGE_INFO": "There is multiple ways to manage space used by your repositories:",

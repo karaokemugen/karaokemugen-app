@@ -1,3 +1,4 @@
+import { shell } from 'electron';
 import { promises as fs } from 'fs';
 import { copy, remove } from 'fs-extra';
 import { basename, parse, resolve } from 'path';
@@ -1298,4 +1299,11 @@ function topologicalSort(karas: KaraMetaFile[]): KaraMetaFile[] {
 	}
 
 	return sorted;
+}
+
+export async function openMediaFolder(repoName: string) {
+	const mediaFolders = resolvedPathRepos('Medias', repoName);
+	for (const mediaFolder of mediaFolders) {
+		shell.openPath(mediaFolder);
+	}
 }

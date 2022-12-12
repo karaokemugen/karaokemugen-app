@@ -18,6 +18,7 @@ import {
 	getRepos,
 	listRepoStashes,
 	movingMediaRepo,
+	openMediaFolder,
 	pushCommits,
 	removeRepo,
 	resetRepo,
@@ -146,6 +147,14 @@ export default function repoController(router: SocketIOApp) {
 			const code = 'REPO_COPY_LYRICS_ERROR';
 			errMessage(code, err);
 			throw { code: err?.code || 500, message: APIMessage(code) };
+		}
+	});
+	router.route('openMediaFolder', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin');
+		try {
+			await openMediaFolder(req.body.name);
+		} catch (err) {
+			throw { code: 500, msg: err };
 		}
 	});
 	router.route('deleteAllRepoMedias', async (socket: Socket, req: APIData) => {

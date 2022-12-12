@@ -1251,6 +1251,7 @@
 		"SYNCHRONIZE_ABOUT_MESSAGE": "Cette action vous permettra de synchroniser les tags d'un dépôt à l'autre. Sélectionnez un dépôt avec lequel synchroniser (celui-ci sera la destination de la copie des tags)",
 		"SYNCHRONIZE_BUTTON": "Synchroniser",
 		"FREE_SPACE": "Espace libre",
+		"OPEN_MEDIA_FOLDER": "Ouvrir le dossier des médias",
 		"DELETE_OLD_MEDIAS": "Supprimer les médias inutilisés depuis 1 mois",
 		"DELETE_ALL_MEDIAS": "Supprimer tous les médias",
 		"STORAGE_INFO": "Il existe plusieurs moyens de gérer l'espace occupé par vos dépôts :",
