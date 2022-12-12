@@ -413,8 +413,6 @@ async function initUsageTimer() {
 
 /** This is called every minute */
 async function updateUsageTimer() {
-	logger.info('Triggered usagetime');
 	usageTime += 60;
-	console.log(usageTime);
 	await saveSetting('usageTime', `${usageTime}`);
 }
