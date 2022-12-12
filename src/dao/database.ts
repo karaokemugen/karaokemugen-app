@@ -90,6 +90,8 @@ async function migrateDB(): Promise<Postgrator.Migration[]> {
 	let migrationNumber = 0;
 	if (numberOfMigrationsNeeded > 0) {
 		task = new Task({
+			// This is only used for a test in init page
+			text: 'MIGRATING_DATABASE',
 			value: migrationNumber,
 			total: numberOfMigrationsNeeded,
 		});
