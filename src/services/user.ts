@@ -21,7 +21,7 @@ import {
 	updateUserPassword,
 } from '../dao/user';
 import { DBUser } from '../lib/types/database/user';
-import { User, UserParams } from '../lib/types/user';
+import { OldJWTToken, User, UserParams } from '../lib/types/user';
 import { getConfig, resolvedPath, setConfig } from '../lib/utils/config';
 import { asciiRegexp, imageFileTypes } from '../lib/utils/constants';
 import { detectFileType, fileExists } from '../lib/utils/files';
@@ -49,14 +49,13 @@ export async function getAvailableGuest() {
 /** Create JSON Web Token from timestamp, JWT Secret, role and username */
 export function createJwtToken(username: string, role: string, config?: Config): string {
 	const conf = config || getConfig();
-	const timestamp = new Date().getTime();
-	return sign({ username, iat: timestamp, role }, conf.App.JwtSecret);
+	return sign({ username, role }, conf.App.JwtSecret);
 }
 
 /** Decode token to see if it matches */
-export function decodeJwtToken(token: string, config?: Config) {
+export function decodeJwtToken(token: string, config?: Config): OldJWTToken {
 	const conf = config || getConfig();
-	return verify(token, conf.App.JwtSecret);
+	return verify(token, conf.App.JwtSecret) as any;
 }
 
 /** To avoid flooding database UPDATEs, only update login time every 5 minute for a user */
