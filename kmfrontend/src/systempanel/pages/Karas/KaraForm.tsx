@@ -73,7 +73,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 			titles: kara?.titles ? kara.titles : {},
 			defaultLanguage: kara?.titles_default_language || null,
 			titlesIsTouched: false,
-			serieSingersRequired: false,
+			serieSingersRequired: kara ? false : true,
 			subfile: kara?.subfile
 				? [
 						{
