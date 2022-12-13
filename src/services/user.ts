@@ -2,7 +2,7 @@ import { compare, genSalt, hash } from 'bcryptjs';
 import { createHash } from 'crypto';
 import { promises as fs } from 'fs';
 import { copy } from 'fs-extra';
-import { decode, encode } from 'jwt-simple';
+import { sign, verify } from 'jsonwebtoken';
 import { deburr, merge, sample } from 'lodash';
 import { resolve } from 'path';
 import randomstring from 'randomstring';
@@ -50,13 +50,13 @@ export async function getAvailableGuest() {
 export function createJwtToken(username: string, role: string, config?: Config): string {
 	const conf = config || getConfig();
 	const timestamp = new Date().getTime();
-	return encode({ username, iat: timestamp, role }, conf.App.JwtSecret, 'HS256');
+	return sign({ username, iat: timestamp, role }, conf.App.JwtSecret);
 }
 
 /** Decode token to see if it matches */
 export function decodeJwtToken(token: string, config?: Config) {
 	const conf = config || getConfig();
-	return decode(token, conf.App.JwtSecret, false, 'HS256');
+	return verify(token, conf.App.JwtSecret);
 }
 
 /** To avoid flooding database UPDATEs, only update login time every 5 minute for a user */
