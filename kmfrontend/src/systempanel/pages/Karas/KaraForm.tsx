@@ -559,6 +559,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 							onlineAuthorization: localStorage.getItem('kmOnlineToken'),
 						}}
 						action="/api/importFile"
+						accept=".ass,.cdg,.kar,.kbp,.kfn,.srt"
 						multiple={false}
 						onChange={this.onSubUploadChange}
 						fileList={this.state.subfile}
