@@ -31,6 +31,7 @@ import EditableGroupAlias from '../../components/EditableGroupAlias';
 import EditableTagGroup from '../../components/EditableTagGroup';
 import LanguagesList from '../../components/LanguagesList';
 import OpenLyricsFileButton from '../../components/OpenLyricsFileButton';
+import { supportedFiles } from '../../../../../src/lib/utils/constants';
 
 const { Paragraph } = Typography;
 
@@ -559,7 +560,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 							onlineAuthorization: localStorage.getItem('kmOnlineToken'),
 						}}
 						action="/api/importFile"
-						accept=".ass,.cdg,.kar,.kbp,.jss,.kfn,.lrc,.mpl2,.rt,.smi,.srt,.stl,.sub,.txt,.vtt"
+						accept={supportedFiles.lyrics.map(e => `.${e}`).join(',')}
 						multiple={false}
 						onChange={this.onSubUploadChange}
 						fileList={this.state.subfile}
