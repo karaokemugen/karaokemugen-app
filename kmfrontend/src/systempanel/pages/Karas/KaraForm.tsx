@@ -434,6 +434,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				const oldFormFields = this.formRef.current.getFieldsValue(['mediafile', 'subfile']); // Fields to take over to the applied kara
 				this.formRef.current.resetFields();
 				this.formRef.current.setFieldsValue(oldFormFields); // Re-sets media and lyrics file, if already uploaded
+				this.onChangeSingersSeries();
 			}
 		}
 	};
