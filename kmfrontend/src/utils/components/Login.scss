@@ -81,7 +81,7 @@ body {
 	display: flex;
 	align-items: center;
 	justify-content: space-evenly;
-	height: 100vh;
+	height: calc(100vh - 16px);
 }
 
 @media screen and (max-width: 690px) {
