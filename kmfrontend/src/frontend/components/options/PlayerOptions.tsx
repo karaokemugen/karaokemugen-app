@@ -135,13 +135,17 @@ function PlayerOptions(props: IProps) {
 						<label htmlFor="Player.PIP.Size">
 							<span className="title">{i18next.t('SETTINGS.PLAYER.VIDEO_SIZE')}</span>
 							<br />
-							<span className="tooltip">{config['Player.PIP.Size']}%</span>
+							<span className="tooltip">
+								{i18next.t('SETTINGS.PLAYER.VIDEO_SIZE_TOOLTIP', {
+									value: `${config['Player.PIP.Size']}%`,
+								})}
+							</span>
 						</label>
 						<div>
 							<input
 								type="range"
 								id="Player.PIP.Size"
-								onBlur={onChange}
+								onChange={onChange}
 								defaultValue={config['Player.PIP.Size']}
 							/>
 						</div>

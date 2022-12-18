@@ -353,7 +353,7 @@
 			"FULLSCREEN": "Fullscreen",
 			"FULLSCREEN_TOOLTIP": "Hit F on a fullscreen player to reduce it to windowed mode.",
 			"VIDEO_SIZE": "Video size",
-			"VIDEO_SIZE_TOOLTIP": "Size of the player window. Any change will trigger a player restart after the current song ends if one is playing.",
+			"VIDEO_SIZE_TOOLTIP": "Size of the player window : {{value}}. Any change will trigger a player restart after the current song ends if one is playing.",
 			"VIDEO_POSITION_X": "Video position (X)",
 			"VIDEO_POSITION_X_TOOLTIP": "Where the player window will be located on screen at startup",
 			"LEFT": "Left",

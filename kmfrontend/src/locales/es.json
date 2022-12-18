@@ -197,7 +197,7 @@
 			"DISPLAY_NICKNAME": "Mostrar el apodo de los solicitantes en los karaokes",
 			"DISPLAY_CONNECTION_INFO_HOST_TOOLTIP": "Si tu dirección IP es incorrectamente detectada por Karaoke Mugen, la puedes forzar aquí.",
 			"DISPLAY_CONNECTION_INFO_MESSAGE": "Mensaje mostrado antes del URL",
-			"VIDEO_SIZE_TOOLTIP": "Tamaño de la ventana del reproductor. Cualquier cambio provocará un reinicio del reproductor después de que la canción actual termine, si es que se está reproduciendo una.",
+			"VIDEO_SIZE_TOOLTIP": "Tamaño de la ventana del reproductor : {{value}}. Cualquier cambio provocará un reinicio del reproductor después de que la canción actual termine, si es que se está reproduciendo una.",
 			"SCREEN_SETTINGS": "Pantalla"
 		},
 		"SYSTEMPANEL_TIP": "No encuentras las opciones que buscas? <2>Algunas opciones ahora están en <3>panel de sistema</3>.</2>",
