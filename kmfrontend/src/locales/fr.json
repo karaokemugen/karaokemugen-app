@@ -185,7 +185,7 @@
 		"MESSAGE": "Les modifications de votre profil ne seront pas enregistrées"
 	},
 	"PUBLIC_HOMEPAGE": {
-		"RESTRICTED_DESCRIPTION": "Le karaoké est en mode restreint, les ajouts de karaokés sont limités.",
+		"RESTRICTED_DESCRIPTION": "Le karaoké est en mode restreint, les ajouts de karaokés ne sont plus possibles.",
 		"QUOTA_KARA_DESCRIPTION_one": "Vous ne pouvez suggérer que {{count}} chanson. Vous pourrez en suggérer à nouveau une fois que l'opérateur aura ajouté (ou non) votre suggestion ou lorsque votre chanson sera passée à l'écran.",
 		"QUOTA_KARA_DESCRIPTION_other": "Vous ne pouvez suggérer que {{count}} chansons. Vous pourrez en suggérer à nouveau une fois que l'opérateur aura ajouté (ou non) votre suggestion ou lorsque votre chanson sera passée à l'écran.",
 		"QUOTA_TIME_DESCRIPTION": "Vous ne pouvez suggérer que {{time}} de chanson. Vous pourrez en suggérer à nouveau une fois que l'opérateur aura ajouté (ou non) votre suggestion ou lorsque votre chanson sera passée à l'écran.",
