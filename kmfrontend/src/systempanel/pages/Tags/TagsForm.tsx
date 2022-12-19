@@ -140,12 +140,13 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 		return path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1);
 	};
 
+	/** We're returning at (any tag) here instead of just t (all tags) for the filter */
 	buildTagFilter = () => {
 		const tagArray = [];
 		for (const type of this.props.tag.types) {
 			tagArray.push(`${this.props.tag.tid}~${type}`);
 		}
-		return `t:${tagArray.join(',')}`;
+		return `at:${tagArray.join(',')}`;
 	};
 
 	render() {
