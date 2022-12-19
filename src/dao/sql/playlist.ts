@@ -240,6 +240,7 @@ SELECT ak.pk_kid AS kid,
 	ak.mediafile AS mediafile,
     ak.mediasize AS mediasize,
 	ak.subfile AS subfile,
+	ak.tags AS tags,
 	pc.pos AS pos,
 	(CASE WHEN pl.fk_id_plcontent_playing = pc.pk_id_plcontent
 		THEN TRUE
