@@ -33,7 +33,7 @@ import Timeout = NodeJS.Timeout;
 import { APIMessage } from '../lib/services/frontend';
 import { DBKaraTag } from '../lib/types/database/kara';
 import { supportedFiles } from '../lib/utils/constants';
-import { date } from '../lib/utils/date';
+import { date, time } from '../lib/utils/date';
 import HTTP from '../lib/utils/http';
 import { convert1LangTo2B } from '../lib/utils/langs';
 import logger, { profile } from '../lib/utils/logger';
@@ -383,11 +383,12 @@ class Player {
 		const conf = getConfig();
 		const state = getState();
 		const today = date();
+		const now = time().replaceAll(':', '.');
 
 		const mpvArgs = [
 			'--keep-open=always',
 			'--osd-level=0',
-			`--log-file=${resolve(resolvedPath('Logs'), `mpv.${today}.log`)}`,
+			`--log-file=${resolve(resolvedPath('Logs'), `mpv.${today}.${now}.log`)}`,
 			`--hwdec=${conf.Player.HardwareDecoding}`,
 			`--volume=${+conf.Player.Volume}`,
 			'--no-config',
