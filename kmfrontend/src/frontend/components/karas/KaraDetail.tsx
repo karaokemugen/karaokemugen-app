@@ -319,7 +319,7 @@ export default function KaraDetail(props: IProps) {
 				) : null}
 				{kara.subfile &&
 					lyrics
-						?.filter(lyric => lyric?.trim().length !== 0)
+						?.filter(lyric => lyric?.trim())
 						.map((ligne, index) => {
 							return (
 								<Fragment key={index}>
