@@ -312,7 +312,7 @@ async function createWindow() {
 	});
 	win.webContents.setWindowOpenHandler(handler => {
 		openLink(handler.url);
-		return { action: 'allow' };
+		return { action: 'deny' };
 	});
 	win.webContents.on('will-navigate', (event, url) => {
 		event.preventDefault();
