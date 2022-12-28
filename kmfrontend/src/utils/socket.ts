@@ -1,6 +1,6 @@
 import { addBreadcrumb } from '@sentry/react';
 import i18next from 'i18next';
-import { io, Socket } from 'socket.io-client';
+import { io, ManagerOptions, Socket, SocketOptions } from 'socket.io-client';
 
 import { displayMessage, eventEmitter } from './tools';
 
@@ -9,18 +9,21 @@ let proxy: boolean;
 let authorization;
 let onlineAuthorization;
 
+const ioOpts: Partial<ManagerOptions & SocketOptions> = {
+	transports: ['websocket'],
+	upgrade: false,
+	closeOnBeforeunload: false,
+};
+
 if (document.querySelector<HTMLMetaElement>('meta[name="target"]').content === 'NO-REMOTE') {
 	if (process.env.NODE_ENV === 'development') {
-		socket = io(`http://${window.location.hostname}:1337`, { transports: ['websocket'], upgrade: false });
+		socket = io(`http://${window.location.hostname}:1337`, ioOpts);
 	} else {
-		socket = io({ transports: ['websocket'], upgrade: false });
+		socket = io(ioOpts);
 	}
 	proxy = false;
 } else {
-	socket = io(`/${document.querySelector<HTMLMetaElement>('meta[name="target"]').content}`, {
-		transports: ['websocket'],
-		upgrade: false,
-	});
+	socket = io(`/${document.querySelector<HTMLMetaElement>('meta[name="target"]').content}`, ioOpts);
 	proxy = true;
 }
 
