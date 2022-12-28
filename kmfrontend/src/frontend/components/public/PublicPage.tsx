@@ -200,7 +200,7 @@ function PublicPage() {
 	}, []);
 
 	if (
-		context?.globalState.settings.data.config?.Frontend?.Mode !== 2 &&
+		context?.globalState.settings.data.config?.Frontend?.Mode === 0 &&
 		location.pathname.includes('/public/search')
 	) {
 		navigate('/public/playlist/current', { replace: true });

@@ -513,7 +513,7 @@
 			"WEBAPPMODE_LIMITED_SHORT": "Restreinte",
 			"WEBAPPMODE_OPEN_SHORT": "Ouverte",
 			"WEBAPPMODE_CLOSED": "Fermé : Message \"Nous sommes fermés\"",
-			"WEBAPPMODE_LIMITED": "Restreint : affichage du karaoké en cours et liste de lecture",
+			"WEBAPPMODE_LIMITED": "Restreint : Ajouts impossibles",
 			"WEBAPPMODE_OPEN": "Ouvert (par défaut) : Ajouts possibles",
 			"SHOW_AVATARS_ON_PLAYLIST": "Afficher les avatars sur les listes de lecture",
 			"SHOW_AVATARS_ON_PLAYLIST_TOOLTIP": "Pour savoir qui a ajouté quoi d'un coup d'oeil.",
