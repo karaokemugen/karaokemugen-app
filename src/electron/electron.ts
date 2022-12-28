@@ -317,6 +317,9 @@ async function createWindow() {
 	win.webContents.on('will-navigate', (event, url) => {
 		event.preventDefault();
 		openLink(url);
+		if (!url.includes('//localhost')) {
+			win.webContents.reload();
+		}
 	});
 
 	// What to do when the window is closed.
