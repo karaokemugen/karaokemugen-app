@@ -4332,11 +4332,6 @@ lru_map@^0.3.3:
   resolved "https://registry.yarnpkg.com/lru_map/-/lru_map-0.3.3.tgz#b5c8351b9464cbd750335a79650a0ec0e56118dd"
   integrity sha1-tcg1G5Rky9dQM1p5ZQoOwOVhGN0=
 
-m3u-parser-generator@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/m3u-parser-generator/-/m3u-parser-generator-1.2.0.tgz#238d4473b8bf8d355493f78dca48ae0598962b46"
-  integrity sha512-OyE/U0Irwgt4PLdOpktDuodCNEjehAVSasrczVtkf353Rxqq14KhR/HlId4564jplVXAr9qLv3tCQ9l/DTQxsg==
-
 make-error@^1.1.1:
   version "1.3.6"
   resolved "https://registry.yarnpkg.com/make-error/-/make-error-1.3.6.tgz#2eb2e37ea9b67c4891f684a1394799af484cf7a2"

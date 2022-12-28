@@ -112,7 +112,6 @@
     "langs": "^2.0.0",
     "lodash": "^4.17.21",
     "logform": "^2.4.2",
-    "m3u-parser-generator": "^1.2.0",
     "multer": "^1.4.4",
     "node-id3": "^0.2.5",
     "os-locale": "^6.0.2",
