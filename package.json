@@ -256,6 +256,7 @@
         "nsis",
         "zip"
       ],
+	  "icon": "icon1024.png",
       "compression": "normal",
       "publisherName": "Karaoke Mugen Team",
       "verifyUpdateCodeSignature": false,
@@ -337,7 +338,7 @@
       "assets/**",
       "kmfrontend/build/**",
       "initpage/**",
-      "build/icon.png",
+      "build/icon1024.png",
       "build/electronAboutWindow.css"
     ],
     "extraFiles": [
