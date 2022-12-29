@@ -702,7 +702,8 @@
 			"CANNOT_PUBLIC": "You cannot have no public playlist, edit the one you want to set as the new public playlist.",
 			"CANNOT_SMART": "You cannot remove smart flag from a playlist.",
 			"CANNOT_BLACKLIST": "You cannot have no blacklist, edit the one you want to set as the new blacklist.",
-			"CANNOT_WHITELIST": "You cannot have no whitelist, edit the one you want to set as the new whitelist."
+			"CANNOT_WHITELIST": "You cannot have no whitelist, edit the one you want to set as the new whitelist.",
+			"NAME_MANDATORY": "Name of the playlist is mandatory"
 		},
 		"CROP_AVATAR_MODAL": {
 			"TITLE": "Crop your avatar",

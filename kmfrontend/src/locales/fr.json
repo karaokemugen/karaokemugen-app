@@ -702,7 +702,8 @@
 			"CANNOT_PUBLIC": "Vous ne pouvez pas avoir aucune liste de lecture publique, éditez celle que vous voulez définir comme la nouvelle liste de lecture publique.",
 			"CANNOT_SMART": "Vous ne pouvez pas enlever le tag intelligent d'une liste de lecture.",
 			"CANNOT_BLACKLIST": "Vous ne pouvez pas avoir aucune liste noire, éditez celle que vous voulez définir comme la nouvelle liste noire.",
-			"CANNOT_WHITELIST": "Vous ne pouvez pas avoir aucune liste blanche, éditez celle que vous voulez définir comme la nouvelle liste blanche."
+			"CANNOT_WHITELIST": "Vous ne pouvez pas avoir aucune liste blanche, éditez celle que vous voulez définir comme la nouvelle liste blanche.",
+			"NAME_MANDATORY": "Le nom de la liste de lecture est obligatoire"
 		},
 		"CROP_AVATAR_MODAL": {
 			"TITLE": "Rogner votre avatar",
