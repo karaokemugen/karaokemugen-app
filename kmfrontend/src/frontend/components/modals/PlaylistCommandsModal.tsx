@@ -14,6 +14,7 @@ import AutoMixModal from './AutoMixModal';
 import PlaylistModal from './PlaylistModal';
 import ShuffleModal from './ShuffleModal';
 import { isElectron } from '../../../utils/electron';
+import dayjs from 'dayjs';
 
 interface IProps {
 	side: 'left' | 'right';
@@ -74,9 +75,7 @@ function PlaylistCommandsModal(props: IProps) {
 					} else {
 						dlAnchorElem.setAttribute(
 							'download',
-							['KaraMugen', playlist?.name, new Date().toLocaleDateString().replace('\\', '-')].join(
-								'_'
-							) + '.kmplaylist'
+							`KaraMugen_${playlist?.name}_${dayjs(new Date()).format('YYYY-MM-DD_HH-mm-ss')}.kmplaylist`
 						);
 					}
 					dlAnchorElem.click();
