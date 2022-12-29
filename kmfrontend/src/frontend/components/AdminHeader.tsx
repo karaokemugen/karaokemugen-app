@@ -11,9 +11,10 @@ import { logout } from '../../store/actions/auth';
 import { showModal } from '../../store/actions/modal';
 import GlobalContext from '../../store/context';
 import { commandBackend, getSocket } from '../../utils/socket';
-import { callModal, displayMessage, expand, isNonStandardPlaylist } from '../../utils/tools';
+import { displayMessage, expand, isNonStandardPlaylist } from '../../utils/tools';
 import KmAppHeaderDecorator from './decorators/KmAppHeaderDecorator';
 import RadioButton from './generic/RadioButton';
+import PlayCurrentModal from './modals/PlayCurrentModal';
 import ProfilModal from './modals/ProfilModal';
 import Tutorial from './modals/Tutorial';
 import UsersModal from './modals/UsersModal';
@@ -93,13 +94,7 @@ function AdminHeader(props: IProps) {
 			(!isNonStandardPlaylist(context.globalState.frontendContext.playlistInfoLeft.plaid) ||
 				!isNonStandardPlaylist(context.globalState.frontendContext.playlistInfoRight.plaid))
 		) {
-			callModal(
-				context.globalDispatch,
-				'confirm',
-				i18next.t('MODAL.PLAY_CURRENT_MODAL', { playlist: props.currentPlaylist?.name }),
-				'',
-				() => commandBackend('sendPlayerCommand', { command: 'play' }).catch(() => {})
-			);
+			showModal(context.globalDispatch, <PlayCurrentModal currentPlaylist={props.currentPlaylist} />);
 		} else {
 			props.putPlayerCommando(event);
 		}

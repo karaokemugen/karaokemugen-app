@@ -627,7 +627,10 @@
 			"LIBRARY": "La biblioteca muestra todas las canciones de karaoke disponibles.",
 			"SELECT_PLAYLIST_BUTTON": "Las listas de reproducción están disponibles en el selector:"
 		},
-		"PLAY_CURRENT_MODAL": "Advertencia: la lista actual {{playlist}} no se muestra en pantalla. Esa es la lista de reproducción. ¿Seguro que quieres empezar a tocar?",
+		"PLAY_CURRENT_MODAL": {
+			"TITLE": "Advertencia!",
+			"DESCRIPTION": "La lista actual '<1>{{playlist}}</1>' no se muestra en pantalla."
+		},
 		"DELETE_PLAYLIST_MODAL": {
 			"DELETE_BLACKLIST": "Esta lista se define como lista negra actual, cambie la lista negra actual por otra para eliminar esta.",
 			"TITLE": "¿Eliminar {{playlist}} para siempre?",

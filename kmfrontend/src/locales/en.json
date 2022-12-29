@@ -629,7 +629,12 @@
 			"DESCRIPTION": "This playlist contains songs from repositories you do not have yet locally.",
 			"DOWNLOAD_THEM": "Do you want to add them now?"
 		},
-		"PLAY_CURRENT_MODAL": "Warning : the current playlist '{{playlist}}' isn't displayed on screen. That's the playlist going to be played. Are you sure you want to start playing?",
+		"PLAY_CURRENT_MODAL": {
+			"TITLE": "Warning!",
+			"DESCRIPTION": "The current playlist '<1>{{playlist}}</1>' isn't displayed on screen.",
+			"DESC_OUTCOME": "If you proceed, Karaoke Mugen will play song <1>{{song}}</1>.",
+			"PLAY_ANYWAY": "Play anyway"
+		},
 		"PROFILE_MODAL": {
 			"ONLINE_CONVERT": "Convert to online account",
 			"ONLINE_DELETE": "Disable online account",

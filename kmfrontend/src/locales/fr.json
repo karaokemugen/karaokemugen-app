@@ -629,7 +629,12 @@
 			"DESCRIPTION": "Cette liste de lecture contient des chansons depuis des dépôts que vous n'avez pas encore.",
 			"DOWNLOAD_THEM": "Voulez-vous les ajouter ?"
 		},
-		"PLAY_CURRENT_MODAL": "Attention, la liste de lecture courante '{{playlist}}' n'est pas affichée à l'écran. C'est cette dernière qui sera jouée. Êtes-vous sûr de vouloir lancer la lecture ?",
+		"PLAY_CURRENT_MODAL": {
+			"TITLE": "Attention !",
+			"DESCRIPTION": "La liste de lecture courante '<1>{{playlist}}</1>' n'est pas affichée à l'écran.",
+			"DESC_OUTCOME": "Si vous continuez, Karaoke Mugen jouera la chanson <1>{{song}}</1>.",
+			"PLAY_ANYWAY": "Jouer quand même"
+		},
 		"PROFILE_MODAL": {
 			"ONLINE_CONVERT": "Passer mon compte en ligne",
 			"ONLINE_DELETE": "Désactiver mon compte en ligne",

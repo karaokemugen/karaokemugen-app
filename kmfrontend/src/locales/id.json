@@ -981,7 +981,10 @@
 			"BALANCE": "Seimbang",
 			"SORTUPVOTES_DESC": "Urut menurut jumlah suka yang berkurang (lagu populer terlebih dahulu)"
 		},
-		"PLAY_CURRENT_MODAL": "Peringatan: daftar putar saat ini '{{playlist}}' tidak tertampil di layar. Itu daftar putar yang akan diputar. Apakah kamu yakin kamu ingin mulai memutar?",
+		"PLAY_CURRENT_MODAL": {
+			"TITLE": "Peringatan!",
+			"DESCRIPTION": "Daftar putar saat ini '<1>{{playlist}}</1>' tidak tertampil di layar."
+		},
 		"CREATE_TAG": {
 			"OPEN": "Buat tanda",
 			"TITLE": "Buat tanda cepat"
