@@ -90,6 +90,7 @@
     "convert-srt-to-ass": "^1.0.3",
     "cors": "^2.8.5",
     "csv-writer": "^1.6.0",
+    "dayjs": "^1.11.7",
     "discord-rpc": "^4.0.1",
     "dotenv": "^16.0.3",
     "electron-updater": "^5.3.0",
