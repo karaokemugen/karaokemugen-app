@@ -25,6 +25,7 @@ export interface PlayerState {
 	// Experimental modifiers
 	pitch?: number;
 	speed?: number;
+	blurVideo?: boolean;
 }
 
 export interface mpvStatus {

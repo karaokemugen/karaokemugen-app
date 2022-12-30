@@ -178,6 +178,7 @@ export async function stopPlayer(now = true, endOfPlaylist = false) {
 			setState({ pauseInProgress: false });
 		}
 		await mpv.stop(stopType);
+		await mpv.setBlur(false);
 		setState({ randomPlaying: false, stopping: false });
 		stopAddASongMessage();
 		if (!endOfPlaylist && getConfig().Karaoke.ClassicMode && getState().pauseInProgress) {
@@ -251,6 +252,11 @@ async function showSubsPlayer() {
 async function hideSubsPlayer() {
 	await mpv.setSubs(false);
 	logger.info('Hiding lyrics on screen', { service });
+}
+
+async function setBlurVideoPlayer(blur: boolean) {
+	await mpv.setBlur(blur);
+	logger.info(`Set video blur to ${String(blur)}`, { service });
 }
 
 export async function playerNeedsRestart() {
@@ -327,6 +333,10 @@ export async function sendCommand(command: string, options: any): Promise<APIMes
 			await showSubsPlayer();
 		} else if (command === 'hideSubs') {
 			await hideSubsPlayer();
+		} else if (command === 'blurVideo') {
+			await setBlurVideoPlayer(true);
+		} else if (command === 'unblurVideo') {
+			await setBlurVideoPlayer(false);
 		} else if (command === 'seek') {
 			if (isNaN(options)) throw 'Command seek must have a numeric option value';
 			await seekPlayer(options);

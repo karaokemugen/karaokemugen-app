@@ -32,6 +32,8 @@
 	"SPEED_UP": "Augmenter la vitesse",
 	"SPEED_RESET": "Revenir à la vitesse normale",
 	"SPEED_DOWN": "Baisser la vitesse",
+	"BLURVIDEO_BLUR": "Flouter la vidéo",
+	"BLURVIDEO_UNBLUR": "Déflouter la vidéo",
 	"PITCH_UP": "Augmenter la hauteur",
 	"PITCH_RESET": "Revenir à la hauteur normale",
 	"PITCH_DOWN": "Diminuer la hauteur",
@@ -387,7 +389,9 @@
 			"DISPLAY_SONGINFO": "Afficher les informations de la chanson",
 			"DISPLAY_SONGINFO_TOOLTIP": "Les informations (titres, œuvres/artistes, etc.) sont affichées au début et à la fin d'une chanson, ainsi que durant les écrans de pause en mode Stream/Classique. Désactivez pour les cacher. Idéal pour les blind tests !",
 			"LIVE_COMMENTS": "Commentaires Live",
-			"LIVE_COMMENTS_TOOLTIP": "Les messages de votre chat seront affichés sur le lecteur (configurez bien l'AutoMod)."
+			"LIVE_COMMENTS_TOOLTIP": "Les messages de votre chat seront affichés sur le lecteur (configurez bien l'AutoMod).",
+			"BLUR_VIDEO_ON_WARNING_TAG": "Flouter les vidéos avec un tag warning",
+			"BLUR_VIDEO_ON_WARNING_TAG_TOOLTIP": "Ajoute un floutage aux vidéos qui contiennent un tag de type warning et peuvent donc potentiellement choquer un public. Cela peut entraîner des lenteurs sur les ordinateurs les moins puissants."
 		},
 		"KARAOKE": {
 			"LABEL": "Karaoké",
