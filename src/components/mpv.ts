@@ -1082,6 +1082,7 @@ class Players {
 		];
 		await Promise.all<Promise<any>>(loadPromises);
 		logger.debug(`Loading media: ${mediaFile}${subFile ? ` with ${subFile}` : ''}`, { service });
+		const config = getConfig();
 		if (subFile) {
 			options['sub-file'] = subFile;
 			options.sid = '1';
@@ -1099,6 +1100,11 @@ class Players {
 			options['force-window'] = 'yes';
 			options['image-display-duration'] = 'inf';
 			options.vid = '1';
+		}
+		if (config.Player.BlurVideoOnWarningTag === true || playerState.blurVideo === true) {
+			// Set blur if enabled in settings and kara has warning
+			// Or reset if blur currently enabled and new kara plays
+			await this.setBlur(config.Player.BlurVideoOnWarningTag && song.warnings.length > 0);
 		}
 		// Load all those files into mpv and let's go!
 		try {
@@ -1338,6 +1344,25 @@ class Players {
 			sentry.error(err);
 			throw err;
 		}
+	}
+
+	async setBlurPercentage(blurPercentage: number) {
+		try {
+			await this.exec({
+				command: ['set_property', 'vf', blurPercentage > 0 ? `gblur=sigma=${blurPercentage}:steps=3` : ''],
+			});
+			playerState.blurVideo = blurPercentage > 0;
+			emitPlayerState();
+			return playerState;
+		} catch (err) {
+			logger.error('Unable to set blur', { service, obj: err });
+			sentry.error(err);
+			throw err;
+		}
+	}
+
+	async setBlur(enabled: boolean) {
+		this.setBlurPercentage(enabled ? 90 : 0);
 	}
 
 	async setVolume(volume: number): Promise<PlayerState> {

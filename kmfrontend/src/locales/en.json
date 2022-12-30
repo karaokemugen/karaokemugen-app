@@ -32,6 +32,8 @@
 	"SPEED_UP": "Play faster",
 	"SPEED_RESET": "Reset to normal speed",
 	"SPEED_DOWN": "Play slower",
+	"BLURVIDEO_BLUR": "Blur video",
+	"BLURVIDEO_UNBLUR": "Unblur video",
 	"PITCH_UP": "Higher pitch",
 	"PITCH_RESET": "Reset pitch",
 	"PITCH_DOWN": "Lower pitch",
@@ -387,7 +389,9 @@
 			"DISPLAY_SONGINFO": "Display song information",
 			"DISPLAY_SONGINFO_TOOLTIP": "Information (title, series/singer, etc.) are displayed at the beginning and end of a song, as well as during pause screens in Stream/Classic modes. Disable to hide these, for blind tests for example.",
 			"LIVE_COMMENTS": "Live comments",
-			"LIVE_COMMENTS_TOOLTIP": "The messages of your chat will be displayed on the player (be careful, configure properly your AutoMod)."
+			"LIVE_COMMENTS_TOOLTIP": "The messages of your chat will be displayed on the player (be careful, configure properly your AutoMod).",
+			"BLUR_VIDEO_ON_WARNING_TAG": "Blur videos with warning tags",
+			"BLUR_VIDEO_ON_WARNING_TAG_TOOLTIP": "Apply blur filter to videos with a warning tag that are potentially unsafe. This could cause stutters on less powerful computers."
 		},
 		"KARAOKE": {
 			"LABEL": "Karaoke",

@@ -378,6 +378,20 @@ function PlayerOptions(props: IProps) {
 					</div>
 				</div>
 			) : null}
+			<div className="settings-line">
+				<label htmlFor="Player.BlurVideoOnWarningTag">
+					<span className="title">{i18next.t('SETTINGS.PLAYER.BLUR_VIDEO_ON_WARNING_TAG')}</span>
+					<br />
+					<span className="tooltip">{i18next.t('SETTINGS.PLAYER.BLUR_VIDEO_ON_WARNING_TAG_TOOLTIP')}</span>
+				</label>
+				<div>
+					<Switch
+						idInput="Player.BlurVideoOnWarningTag"
+						handleChange={onChange}
+						isChecked={config['Player.BlurVideoOnWarningTag']}
+					/>
+				</div>
+			</div>
 		</>
 	) : null;
 }

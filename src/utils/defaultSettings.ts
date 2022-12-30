@@ -128,6 +128,7 @@ export const defaults: Config = {
 		KeyboardMediaShortcuts: true,
 		Volume: 100,
 		LiveComments: false,
+		BlurVideoOnWarningTag: false,
 	},
 	Playlist: {
 		AllowDuplicates: false,
