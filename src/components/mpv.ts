@@ -1516,7 +1516,7 @@ class Players {
 			position = nextSong ? '{\\an5}' : '{\\an1}';
 			if (getConfig().Player.Display.SongInfo || nextSong) {
 				this.messages.addMessage(
-					'pauseScreen' || 'DI',
+					'DI',
 					position + warningString + nextSongString + infos,
 					duration === -1 ? 'infinite' : duration
 				);
