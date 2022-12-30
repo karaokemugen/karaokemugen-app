@@ -86,7 +86,13 @@ SELECT
   count(ak.pk_kid) OVER()::integer AS count,
   array_remove(array_agg(DISTINCT krc.fk_kid_parent), null) AS parents,
   array_remove(array_agg(DISTINCT krp.fk_kid_child), null) AS children,
-  array_remove((SELECT array_agg(DISTINCT fk_kid_child) FROM kara_relation WHERE fk_kid_parent = ANY (array_remove(array_agg(DISTINCT krc.fk_kid_parent), null))), ak.pk_kid) AS siblings
+  array_remove((SELECT array_agg(DISTINCT fk_kid_child) FROM kara_relation 
+  WHERE fk_kid_parent = ANY (array_remove(array_agg(DISTINCT krc.fk_kid_parent), null))), ak.pk_kid) AS siblings,
+  (SELECT COUNT(up.fk_id_plcontent)::integer 
+  FROM upvote up 
+  LEFT JOIN playlist_content pc_pub ON pc_pub.fk_id_playlist = :publicPlaylist_id AND up.fk_id_plcontent = pc_pub.pk_id_plcontent
+  WHERE ak.pk_kid = pc.fk_kid
+  ) AS upvotes
 FROM all_karas AS ak
 LEFT OUTER JOIN kara k ON k.pk_kid = ak.pk_kid
 LEFT OUTER JOIN kara_relation krp ON krp.fk_kid_parent = ak.pk_kid ${
