@@ -42,6 +42,8 @@ import { subRemoteUsers } from '../utils/userPubSub';
 import initFrontend from './frontend';
 
 let shutdownInProgress = false;
+let usageTime = 0;
+let usageTimeInterval;
 
 const service = 'Engine';
 
@@ -224,6 +226,7 @@ export async function initEngine() {
 			postInit();
 			initHooks();
 			archiveOldLogs();
+			initUsageTimer();
 			logger.info(`Karaoke Mugen is ${ready}`, { service });
 		} catch (err) {
 			logger.error('Karaoke Mugen IS NOT READY', { service, obj: err });
@@ -257,6 +260,7 @@ export async function exit(rc = 0, update = false) {
 	if (shutdownInProgress) return;
 	logger.info('Shutdown in progress', { service });
 	shutdownInProgress = true;
+	clearInterval(usageTimeInterval);
 	closeAllWindows();
 	wipeDownloadQueue();
 	try {
@@ -398,4 +402,17 @@ export async function welcomeToYoukousoKaraokeMugen(): Promise<string> {
 	if (!state.opt.noBrowser && !state.isTest && state.opt.cli) shell.openExternal(url);
 	profile('welcome');
 	return url;
+}
+
+async function initUsageTimer() {
+	const settings = await getSettings();
+	usageTime = +settings.usageTime || 0;
+	usageTimeInterval = setInterval(updateUsageTimer, 60000);
+	updateUsageTimer();
+}
+
+/** This is called every minute */
+async function updateUsageTimer() {
+	usageTime += 60;
+	await saveSetting('usageTime', `${usageTime}`);
 }

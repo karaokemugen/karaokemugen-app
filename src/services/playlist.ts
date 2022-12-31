@@ -1,7 +1,8 @@
 // Utils
+import { copyFile } from 'node:fs/promises';
+
 import i18n from 'i18next';
 import { shuffle } from 'lodash';
-import { copyFile } from 'node:fs/promises';
 import { join } from 'path/posix';
 
 import { APIMessage } from '../controllers/common';
@@ -51,6 +52,7 @@ import { getConfig, resolvedPathRepos } from '../lib/utils/config';
 import { date, now, time as time2 } from '../lib/utils/date';
 import { resolveFileInDirs } from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
+import { generateM3uFileFromPlaylist } from '../lib/utils/m3u';
 import Task from '../lib/utils/taskManager';
 import { check } from '../lib/utils/validators';
 import { emitWS } from '../lib/utils/ws';
@@ -319,19 +321,22 @@ export async function emptyPlaylist(plaid: string): Promise<string> {
 }
 
 /** Exports all playlist media files to a specified directory */
-export async function exportPlaylistMedia(plaid: string, exportDir: string): Promise<Array<any>> {
-	const pl = await getPlaylistContentsMini(plaid);
-	if (!pl) throw { code: 404, msg: 'Playlist unknown' };
+export async function exportPlaylistMedia(
+	plaid: string,
+	exportDir: string
+): Promise<Array<DBPLC & { exportSuccessful: boolean }>> {
+	const plMini = await getPlaylistContentsMini(plaid);
+	if (!plMini) throw { code: 404, msg: 'Playlist unknown' };
 	const task = new Task({
 		text: 'EXPORTING_PLAYLIST_MEDIA',
-		total: pl.length,
+		total: plMini.length,
 		value: 0,
 	});
 	try {
 		let itemsProcessed = 0;
 		logger.debug(`Exporting media of playlist ${plaid}`, { service });
-		const exportedResult: Array<{ kid: string; mediafile: string; exportSuccessful: boolean }> = [];
-		for (const kara of pl) {
+		const exportedResult: Array<DBPLC & { exportSuccessful: boolean }> = [];
+		for (const kara of plMini) {
 			try {
 				const karaMediaPath = await resolveFileInDirs(
 					kara.mediafile,
@@ -355,9 +360,9 @@ export async function exportPlaylistMedia(plaid: string, exportDir: string): Pro
 						subtext: kara.subfile,
 					});
 				}
-				exportedResult.push({ kid: kara.kid, mediafile: kara.mediafile, exportSuccessful: true });
+				exportedResult.push({ ...kara, exportSuccessful: true });
 			} catch (e) {
-				exportedResult.push({ kid: kara.kid, mediafile: kara.mediafile, exportSuccessful: false });
+				exportedResult.push({ ...kara, exportSuccessful: false });
 			} finally {
 				itemsProcessed += 1;
 				task.update({
@@ -365,6 +370,12 @@ export async function exportPlaylistMedia(plaid: string, exportDir: string): Pro
 				});
 			}
 		}
+
+		// Create m3u playlist
+		const playlist = await getPlaylistInfo(plaid);
+		const successfulExports = exportedResult.filter(resultKara => resultKara.exportSuccessful);
+		if (successfulExports.length > 0) await generateM3uFileFromPlaylist(playlist, successfulExports, exportDir);
+
 		return exportedResult;
 	} catch (err) {
 		throw {
@@ -1676,6 +1687,12 @@ export async function createAutoMix(params: AutoMixParams, username: string): Pr
 		}
 		years.forEach(y => uniqueList.set(y.kid, y as any));
 	}
+	// Test if our list has at least one song
+	if (uniqueList.size === 0) {
+		emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.AUTOMIX_NO_SONGS_MEET_CRITERIAS'));
+		throw { code: 416 };
+	}
+
 	// Let's balance what we have here.
 
 	let balancedList = shufflePlaylistWithList([...uniqueList.values()], 'balance');
@@ -1710,7 +1727,7 @@ export async function createAutoMix(params: AutoMixParams, username: string): Pr
 		};
 	} catch (err) {
 		logger.error('Failed to create AutoMix', { service, obj: err });
-		if (err?.code === 404) throw err;
+		if (err?.code === 404 || err?.code === 416) throw err;
 		sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
 		sentry.error(err);
 		throw err;

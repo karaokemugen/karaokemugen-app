@@ -32,6 +32,8 @@
 	"SPEED_UP": "Play faster",
 	"SPEED_RESET": "Reset to normal speed",
 	"SPEED_DOWN": "Play slower",
+	"BLURVIDEO_BLUR": "Blur video",
+	"BLURVIDEO_UNBLUR": "Unblur video",
 	"PITCH_UP": "Higher pitch",
 	"PITCH_RESET": "Reset pitch",
 	"PITCH_DOWN": "Lower pitch",
@@ -328,6 +330,8 @@
 		"STATS_KARAS": "Karaokes",
 		"STATS_SERIES": "Series",
 		"STATS_TAGS": "Tags",
+		"STATS_USAGETIME": "Usage time",
+		"STATS_PLAYTIME": "Play time",
 		"BASE_UPDATE": "Database update",
 		"MASTODON_UPDATE": "Karaoke Mugen News",
 		"APP_UPDATE": "New version",
@@ -351,7 +355,7 @@
 			"FULLSCREEN": "Fullscreen",
 			"FULLSCREEN_TOOLTIP": "Hit F on a fullscreen player to reduce it to windowed mode.",
 			"VIDEO_SIZE": "Video size",
-			"VIDEO_SIZE_TOOLTIP": "Size of the player window. Any change will trigger a player restart after the current song ends if one is playing.",
+			"VIDEO_SIZE_TOOLTIP": "Size of the player window : {{value}}. Any change will trigger a player restart after the current song ends if one is playing.",
 			"VIDEO_POSITION_X": "Video position (X)",
 			"VIDEO_POSITION_X_TOOLTIP": "Where the player window will be located on screen at startup",
 			"LEFT": "Left",
@@ -385,7 +389,9 @@
 			"DISPLAY_SONGINFO": "Display song information",
 			"DISPLAY_SONGINFO_TOOLTIP": "Information (title, series/singer, etc.) are displayed at the beginning and end of a song, as well as during pause screens in Stream/Classic modes. Disable to hide these, for blind tests for example.",
 			"LIVE_COMMENTS": "Live comments",
-			"LIVE_COMMENTS_TOOLTIP": "The messages of your chat will be displayed on the player (be careful, configure properly your AutoMod)."
+			"LIVE_COMMENTS_TOOLTIP": "The messages of your chat will be displayed on the player (be careful, configure properly your AutoMod).",
+			"BLUR_VIDEO_ON_WARNING_TAG": "Blur videos with warning tags",
+			"BLUR_VIDEO_ON_WARNING_TAG_TOOLTIP": "Apply blur filter to videos with a warning tag that are potentially unsafe. This could cause stutters on less powerful computers."
 		},
 		"KARAOKE": {
 			"LABEL": "Karaoke",
@@ -627,7 +633,12 @@
 			"DESCRIPTION": "This playlist contains songs from repositories you do not have yet locally.",
 			"DOWNLOAD_THEM": "Do you want to add them now?"
 		},
-		"PLAY_CURRENT_MODAL": "Warning : the current playlist '{{playlist}}' isn't displayed on screen. That's the playlist going to be played. Are you sure you want to start playing?",
+		"PLAY_CURRENT_MODAL": {
+			"TITLE": "Warning!",
+			"DESCRIPTION": "The current playlist '<1>{{playlist}}</1>' isn't displayed on screen.",
+			"DESC_OUTCOME": "If you proceed, Karaoke Mugen will play song <1>{{song}}</1>.",
+			"PLAY_ANYWAY": "Play anyway"
+		},
 		"PROFILE_MODAL": {
 			"ONLINE_CONVERT": "Convert to online account",
 			"ONLINE_DELETE": "Disable online account",
@@ -700,7 +711,8 @@
 			"CANNOT_PUBLIC": "You cannot have no public playlist, edit the one you want to set as the new public playlist.",
 			"CANNOT_SMART": "You cannot remove smart flag from a playlist.",
 			"CANNOT_BLACKLIST": "You cannot have no blacklist, edit the one you want to set as the new blacklist.",
-			"CANNOT_WHITELIST": "You cannot have no whitelist, edit the one you want to set as the new whitelist."
+			"CANNOT_WHITELIST": "You cannot have no whitelist, edit the one you want to set as the new whitelist.",
+			"NAME_MANDATORY": "Name of the playlist is mandatory"
 		},
 		"CROP_AVATAR_MODAL": {
 			"TITLE": "Crop your avatar",
@@ -836,6 +848,7 @@
 				"PLAYER_PLMEDIA": "Unable to play playlist media",
 				"PLAYER_CLASSIC_PAUSE_SCREEN": "Unable to prepare pause screen",
 				"PLAYLIST_FREE_ORPHANED_SONGS": "Unable to free orphaned songs",
+				"AUTOMIX_NO_SONGS_MEET_CRITERIAS": "No songs met the criterias selected for this AutoMix",
 				"POLL_ALREADY_STARTED": "A poll is already in progress",
 				"POLL_PUBLIC_PL_EMPTY": "Unable to start poll: public playlist is empty",
 				"POLL_NOT_ENOUGH_SONGS": "Unable to start poll: not enough songs available"
@@ -1248,6 +1261,7 @@
 		"SYNCHRONIZE_ABOUT_MESSAGE": "This will allow you to synchronize tags files from one repository to another. Select a repository to synchronize tags with (it will be the destination repository for the copy of the tags)",
 		"SYNCHRONIZE_BUTTON": "Synchronize",
 		"FREE_SPACE": "Free space",
+		"OPEN_MEDIA_FOLDER": "Open media folder",
 		"DELETE_OLD_MEDIAS": "Delete medias unused since 1 month",
 		"DELETE_ALL_MEDIAS": "Delete all medias",
 		"STORAGE_INFO": "There is multiple ways to manage space used by your repositories:",

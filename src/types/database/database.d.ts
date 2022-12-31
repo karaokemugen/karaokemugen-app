@@ -5,6 +5,8 @@ export interface DBStats {
 	authors: number;
 	karas: number;
 	languages: number;
+	usagetime: number;
+	playtime: number;
 	series: number;
 	played: number;
 	playlists: number;

@@ -87,7 +87,7 @@ export function dotify(obj: any) {
 }
 
 /* format seconds to Hour Minute Second */
-export function secondsTimeSpanToHMS(s: number, format: string) {
+export function secondsTimeSpanToHMS(s: number, format: '24h' | 'dhm' | 'ms' | 'hm' | 'mm:ss') {
 	const d = Math.floor(s / (3600 * 24));
 	if (format === '24h' || format === 'dhm') {
 		s -= d * 3600 * 24;

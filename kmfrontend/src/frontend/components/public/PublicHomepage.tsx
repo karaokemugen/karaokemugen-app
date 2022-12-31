@@ -99,7 +99,7 @@ function PublicHomepage(props: IProps) {
 								<i className="fas fa-fw fa-star" /> {i18next.t('PUBLIC_HOMEPAGE.FAVORITES')}
 							</Link>
 						) : null}
-						{context?.globalState.settings.data.config?.Frontend?.Mode === 2 ? (
+						{context?.globalState.settings.data.config?.Frontend?.Mode !== 0 ? (
 							<>
 								<Link className="action blue" to="/public/search">
 									<i className="fas fa-fw fa-search" /> {i18next.t('PUBLIC_HOMEPAGE.SONG_SEARCH')}

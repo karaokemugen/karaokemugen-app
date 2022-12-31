@@ -29,7 +29,7 @@ class ElectronSentryLogger extends SentryLogger {
 			ignoreErrors: [
 				'Maximum call stack size exceeded',
 				'No karaoke found in playlist object',
-				'ENOSPC: no space left on device, write',
+				'no space left on device',
 				'No space left on device',
 				'net::ERR_INTERNET_DISCONNECTED',
 			],

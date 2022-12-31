@@ -293,7 +293,7 @@ async function createWindow() {
 		height: 900,
 		backgroundColor: '#36393f',
 		show: false,
-		icon: resolve(state.resourcePath, 'build/icon.png'),
+		icon: resolve(state.resourcePath, 'build/icon1024.png'),
 		webPreferences: {
 			nodeIntegration: true,
 			contextIsolation: false,
@@ -312,7 +312,7 @@ async function createWindow() {
 	});
 	win.webContents.setWindowOpenHandler(handler => {
 		openLink(handler.url);
-		return { action: 'allow' };
+		return { action: 'deny' };
 	});
 	win.webContents.on('will-navigate', (event, url) => {
 		event.preventDefault();
@@ -364,7 +364,7 @@ export async function updateChibiPlayerWindow(show: boolean) {
 				nodeIntegration: true,
 				contextIsolation: false,
 			},
-			icon: resolve(state.resourcePath, 'build/icon.png'),
+			icon: resolve(state.resourcePath, 'build/icon1024.png'),
 		});
 		const port = state.frontendPort;
 		chibiPlayerWindow.once('ready-to-show', () => {
@@ -411,7 +411,7 @@ export async function updateChibiPlaylistWindow(show: boolean) {
 				contextIsolation: false,
 			},
 			resizable: true,
-			icon: resolve(state.resourcePath, 'build/icon.png'),
+			icon: resolve(state.resourcePath, 'build/icon1024.png'),
 		});
 		const port = state.frontendPort;
 		chibiPlaylistWindow.once('ready-to-show', () => {
@@ -462,7 +462,7 @@ export async function showAbout() {
 				contextIsolation: false,
 			},
 			resizable: false,
-			icon: resolve(state.resourcePath, 'build/icon.png'),
+			icon: resolve(state.resourcePath, 'build/icon1024.png'),
 			title: i18next.t('ABOUT.TITLE'),
 		});
 		aboutWindow.on('ready-to-show', () => {

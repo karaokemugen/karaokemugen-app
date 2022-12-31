@@ -81,7 +81,10 @@ function ActionsButtons(props: IProps) {
 					!props.kara?.flag_playing &&
 					((props.kara?.my_public_plc_id && props.kara?.my_public_plc_id[0]) ||
 						(playlist?.plaid === context.globalState.settings.data.state.publicPlaid &&
-							props.kara.username === context.globalState.auth.data.username)))) ? (
+							props.kara.username === context.globalState.auth.data.username)) &&
+					(playlist?.plaid !== nonStandardPlaylists.library ||
+						props.kara.children?.length === 0 ||
+						!context.globalState.settings.data.user.flag_parentsonly))) ? (
 				<button
 					title={i18next.t(props.isHeader ? 'TOOLTIP_DELETE_SELECT_KARA' : 'TOOLTIP_DELETEKARA')}
 					disabled={props?.checkedKaras === 0}
@@ -115,7 +118,11 @@ function ActionsButtons(props: IProps) {
 				![
 					context.globalState.settings.data.state.publicPlaid,
 					context.globalState.settings.data.state.currentPlaid,
-				].includes(playlist?.plaid)) ? (
+				].includes(playlist?.plaid) &&
+				props.kara.public_plc_id?.length === 0 &&
+				(playlist?.plaid !== nonStandardPlaylists.library ||
+					props.kara.children?.length === 0 ||
+					!context.globalState.settings.data.user.flag_parentsonly)) ? (
 				<button
 					title={
 						addingIsForbidden
@@ -137,17 +144,17 @@ function ActionsButtons(props: IProps) {
 
 			{props.scope !== 'admin' &&
 			((props.kara.public_plc_id?.length > 0 && props.kara.my_public_plc_id?.length === 0) ||
-				props.kara?.upvotes > 0) ? (
+				props.kara?.upvotes > 0) &&
+			(playlist?.plaid !== nonStandardPlaylists.library ||
+				props.kara.children?.length === 0 ||
+				!context.globalState.settings.data.user.flag_parentsonly) ? (
 				<button
 					title={i18next.t('TOOLTIP_UPVOTE')}
 					className={`${classValue} upvoteKara`}
 					onClick={props.upvoteKara}
 					disabled={props.kara.my_public_plc_id?.length > 0}
 				>
-					<i
-						className={`fas fa-fw fa-thumbs-up ${props.kara?.flag_upvoted ? 'currentUpvote' : ''}
-						${props.kara?.upvotes > 0 ? ' upvotes' : ''}`}
-					/>
+					<i className={`fas fa-fw fa-thumbs-up ${props.kara?.flag_upvoted ? 'currentUpvote' : ''}`} />
 					{props.kara?.upvotes > 0 && props.kara?.upvotes}
 				</button>
 			) : null}

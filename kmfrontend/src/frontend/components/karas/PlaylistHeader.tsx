@@ -15,7 +15,7 @@ import {
 	setPlaylistInfo,
 } from '../../../utils/kara';
 import { tagTypes, YEARS } from '../../../utils/tagTypes';
-import { is_touch_device, isNonStandardPlaylist, nonStandardPlaylists } from '../../../utils/tools';
+import { isNonStandardPlaylist, nonStandardPlaylists } from '../../../utils/tools';
 import { KaraElement } from '../../types/kara';
 import Autocomplete from '../generic/Autocomplete';
 import SelectWithIcon from '../generic/SelectWithIcon';
@@ -333,7 +333,7 @@ function PlaylistHeader(props: IProps) {
 								type="button"
 								title={i18next.t('PLAYLIST_HEADER.FILTERS')}
 								className={
-									'btn btn-default' +
+									'btn btn-default karaLineButton' +
 									(props.searchMenuOpen ||
 									activeFilter !== 'search' ||
 									activeFilterUUID !== '' ||
@@ -381,37 +381,32 @@ function PlaylistHeader(props: IProps) {
 				</div>
 				{plCommandsContainer}
 			</div>
-			{is_touch_device() ? (
-				<div className="panel-heading mobile">
-					<select
-						value={playlist?.plaid}
-						onChange={e => setPlaylistInfo(props.side, context, e.target.value)}
-					>
-						{props.playlistList?.map(playlist => {
-							return (
-								<option key={playlist?.plaid} value={playlist?.plaid}>
-									{playlist?.name}
-									{getFlagLabel(playlist)}
-								</option>
-							);
-						})}
-					</select>
-					<i className="fas fa-arrow-right" />
-					<select
-						value={oppositePlaylist?.plaid}
-						onChange={e => setOppositePlaylistInfo(props.side, context, e.target.value)}
-					>
-						{props.playlistList?.map(playlist => {
-							return (
-								<option key={playlist?.plaid} value={playlist?.plaid}>
-									{playlist?.name}
-									{getFlagLabel(playlist)}
-								</option>
-							);
-						})}
-					</select>
-				</div>
-			) : null}
+			<div className="panel-heading mobile">
+				<select value={playlist?.plaid} onChange={e => setPlaylistInfo(props.side, context, e.target.value)}>
+					{props.playlistList?.map(playlist => {
+						return (
+							<option key={playlist?.plaid} value={playlist?.plaid}>
+								{playlist?.name}
+								{getFlagLabel(playlist)}
+							</option>
+						);
+					})}
+				</select>
+				<i className="fas fa-arrow-right" />
+				<select
+					value={oppositePlaylist?.plaid}
+					onChange={e => setOppositePlaylistInfo(props.side, context, e.target.value)}
+				>
+					{props.playlistList?.map(playlist => {
+						return (
+							<option key={playlist?.plaid} value={playlist?.plaid}>
+								{playlist?.name}
+								{getFlagLabel(playlist)}
+							</option>
+						);
+					})}
+				</select>
+			</div>
 			{props.searchMenuOpen ? searchMenu : null}
 			{playlist?.flag_public && !playlist?.flag_current && playlist.karacount > 0 ? (
 				<p className="playlist-tooltip">

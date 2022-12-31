@@ -118,7 +118,7 @@ function PublicHeader(props: IProps) {
 							{i18next.t('PUBLIC_HOMEPAGE.PUBLIC_SUGGESTIONS_SHORT')}
 						</Link>
 					) : null}
-					{context?.globalState.settings.data.config?.Frontend?.Mode === 2 ? (
+					{context?.globalState.settings.data.config?.Frontend?.Mode !== 0 ? (
 						<Link className="blue" to="/public/search">
 							<i className="fas fa-fw fa-search fa-2x" />
 							{i18next.t('PUBLIC_HOMEPAGE.SONG_SEARCH_SHORT')}

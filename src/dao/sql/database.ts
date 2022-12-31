@@ -13,6 +13,8 @@ SELECT
 (SELECT COUNT(*) FROM played)::integer AS played,
 (SELECT COUNT(pk_id_playlist) FROM playlist)::integer AS playlists,
 (SELECT SUM(duration) FROM kara)::integer AS duration,
+(SELECT SUM(k.duration) FROM played p LEFT JOIN kara k ON k.pk_kid = p.fk_kid)::integer AS playtime,
+(SELECT value FROM settings WHERE option = 'usageTime')::integer AS usagetime,
 (SELECT SUM(k.mediasize)::bigint FROM kara k LEFT JOIN all_karas ak ON k.pk_kid = ak.pk_kid WHERE true ${
 	collectionClauses.length > 0 ? `AND (${collectionClauses.map(clause => `(${clause})`).join(' OR ')})` : ''
 }) AS total_media_size;

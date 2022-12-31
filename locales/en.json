@@ -8,6 +8,37 @@
 	"BLACKLIST": "Blacklist",
 	"CURRENT_PLAYLIST": "Play list",
 	"PUBLIC_PLAYLIST": "Public suggestions",
+	"MIGRATION": "Migration",
+	"MIGRATION_MESSAGES": [
+		"Aligning microphones",
+		"Computing normalization audio waves",
+		"Cooling down drinks",
+		"Calibrating vocal chrods",
+		"Discovering the lost city of Karaokum Mugen-la",
+		"Computing answer to life, the universe, and everything",
+		"Starting up the time convector",
+		"Resolving symphonic equations",
+		"Setting up supra-sonic conducts",
+		"Taking out the trash",
+		"Ordering drinks and snacks",
+		"Enhancing music performance",
+		"Downloading Wikipedia",
+		"Feeding the cat",
+		"Configuring fins",
+		"Absorbing luminescent errors",
+		"Managing liver attacks",
+		"Spreading chocolate",
+		"Cooking pizzas",
+		"Cooking burgers",
+		"Warming up raclette cheese",
+		"Grilling sausages",
+		"Slicing sausages",
+		"Removing quantic bytes",
+		"Managing neighbors",
+		"Manipulating barometer",
+		"Accelerating singing particles",
+		"Increasing nanobots in the air"
+	],
 	"GO_TO": "Go to $url to suggest songs!",
 	"VOTE_MESSAGE_SCREEN": "Vote for the next song!",
 	"VOTE_MESSAGE_SCREEN_WINNER": "We have a winner!",
@@ -118,10 +149,6 @@
 	"REPO_DISABLED": {
 		"TITLE": "Repository disabled",
 		"MESSAGE": "The {{repo}} repository has been disabled because one of its folders is unavailable. If any of its folders are on an external drive, make sure it's plugged in and go into System Panel > Repositories to re-enable it."
-	},
-	"NO_KARAOKE_MODE_ANYMORE": {
-		"TITLE": "No more karaoke modes!",
-		"MESSAGE": "New in version 4.0:\n\nThe public/private karaoke modes have disappeared! Shock! Horror! *dramatic music ensues*\n\nPlaylists can now have both public and current flag at the same time.\n\n- The current flag means the playlist is the one used by the player\n- The public flag means the playlist is th eone receiving song suggestions from your users\n\nPut simply, combine both flags on a playlist to emulate the old private mode, and create two playlists, each one with a different flag to emulate the old public mode."
 	},
 	"TIPS": {
 		"TITLES": {

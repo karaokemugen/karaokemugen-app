@@ -32,6 +32,8 @@
 	"SPEED_UP": "Augmenter la vitesse",
 	"SPEED_RESET": "Revenir à la vitesse normale",
 	"SPEED_DOWN": "Baisser la vitesse",
+	"BLURVIDEO_BLUR": "Flouter la vidéo",
+	"BLURVIDEO_UNBLUR": "Déflouter la vidéo",
 	"PITCH_UP": "Augmenter la hauteur",
 	"PITCH_RESET": "Revenir à la hauteur normale",
 	"PITCH_DOWN": "Diminuer la hauteur",
@@ -185,7 +187,7 @@
 		"MESSAGE": "Les modifications de votre profil ne seront pas enregistrées"
 	},
 	"PUBLIC_HOMEPAGE": {
-		"RESTRICTED_DESCRIPTION": "Le karaoké est en mode restreint, les ajouts de karaokés sont limités.",
+		"RESTRICTED_DESCRIPTION": "Le karaoké est en mode restreint, les ajouts de karaokés ne sont plus possibles.",
 		"QUOTA_KARA_DESCRIPTION_one": "Vous ne pouvez suggérer que {{count}} chanson. Vous pourrez en suggérer à nouveau une fois que l'opérateur aura ajouté (ou non) votre suggestion ou lorsque votre chanson sera passée à l'écran.",
 		"QUOTA_KARA_DESCRIPTION_other": "Vous ne pouvez suggérer que {{count}} chansons. Vous pourrez en suggérer à nouveau une fois que l'opérateur aura ajouté (ou non) votre suggestion ou lorsque votre chanson sera passée à l'écran.",
 		"QUOTA_TIME_DESCRIPTION": "Vous ne pouvez suggérer que {{time}} de chanson. Vous pourrez en suggérer à nouveau une fois que l'opérateur aura ajouté (ou non) votre suggestion ou lorsque votre chanson sera passée à l'écran.",
@@ -328,6 +330,8 @@
 		"STATS_KARAS": "Chansons",
 		"STATS_SERIES": "Œuvres",
 		"STATS_TAGS": "Tags",
+		"STATS_USAGETIME": "Durée d'utilisation",
+		"STATS_PLAYTIME": "Durée de lecture",
 		"BASE_UPDATE": "Nouvelles de la base",
 		"APP_UPDATE": "Nouvelle version de l'application",
 		"MASTODON_UPDATE": "Actualités de Karaoke Mugen",
@@ -352,7 +356,7 @@
 			"FULLSCREEN_TOOLTIP": "Appuyez sur F une fois le lecteur en plein écran pour le remettre en fenêtré.",
 			"VIDEO_SIZE": "Taille du lecteur",
 			"VIDEO_POSITION_X": "Alignement horizontal de la fenêtre",
-			"VIDEO_SIZE_TOOLTIP": "Taille de la fenêtre du lecteur. Tout changement entraînera un redémarrage du lecteur après la chanson en cours de lecture (s'il y en a une.)",
+			"VIDEO_SIZE_TOOLTIP": "Taille de la fenêtre du lecteur : {{value}}. Tout changement entraînera un redémarrage du lecteur après la chanson en cours de lecture (s'il y en a une).",
 			"VIDEO_POSITION_X_TOOLTIP": "Où la fenêtre du lecteur se situe au démarrage de Karaoke Mugen",
 			"LEFT": "Gauche",
 			"CENTER": "Centre",
@@ -385,7 +389,9 @@
 			"DISPLAY_SONGINFO": "Afficher les informations de la chanson",
 			"DISPLAY_SONGINFO_TOOLTIP": "Les informations (titres, œuvres/artistes, etc.) sont affichées au début et à la fin d'une chanson, ainsi que durant les écrans de pause en mode Stream/Classique. Désactivez pour les cacher. Idéal pour les blind tests !",
 			"LIVE_COMMENTS": "Commentaires Live",
-			"LIVE_COMMENTS_TOOLTIP": "Les messages de votre chat seront affichés sur le lecteur (configurez bien l'AutoMod)."
+			"LIVE_COMMENTS_TOOLTIP": "Les messages de votre chat seront affichés sur le lecteur (configurez bien l'AutoMod).",
+			"BLUR_VIDEO_ON_WARNING_TAG": "Flouter les vidéos avec un tag warning",
+			"BLUR_VIDEO_ON_WARNING_TAG_TOOLTIP": "Ajoute un floutage aux vidéos qui contiennent un tag de type warning et peuvent donc potentiellement choquer un public. Cela peut entraîner des lenteurs sur les ordinateurs les moins puissants."
 		},
 		"KARAOKE": {
 			"LABEL": "Karaoké",
@@ -511,7 +517,7 @@
 			"WEBAPPMODE_LIMITED_SHORT": "Restreinte",
 			"WEBAPPMODE_OPEN_SHORT": "Ouverte",
 			"WEBAPPMODE_CLOSED": "Fermé : Message \"Nous sommes fermés\"",
-			"WEBAPPMODE_LIMITED": "Restreint : affichage du karaoké en cours et liste de lecture",
+			"WEBAPPMODE_LIMITED": "Restreint : Ajouts impossibles",
 			"WEBAPPMODE_OPEN": "Ouvert (par défaut) : Ajouts possibles",
 			"SHOW_AVATARS_ON_PLAYLIST": "Afficher les avatars sur les listes de lecture",
 			"SHOW_AVATARS_ON_PLAYLIST_TOOLTIP": "Pour savoir qui a ajouté quoi d'un coup d'oeil.",
@@ -627,7 +633,12 @@
 			"DESCRIPTION": "Cette liste de lecture contient des chansons depuis des dépôts que vous n'avez pas encore.",
 			"DOWNLOAD_THEM": "Voulez-vous les ajouter ?"
 		},
-		"PLAY_CURRENT_MODAL": "Attention, la liste de lecture courante '{{playlist}}' n'est pas affichée à l'écran. C'est cette dernière qui sera jouée. Êtes-vous sûr de vouloir lancer la lecture ?",
+		"PLAY_CURRENT_MODAL": {
+			"TITLE": "Attention !",
+			"DESCRIPTION": "La liste de lecture courante '<1>{{playlist}}</1>' n'est pas affichée à l'écran.",
+			"DESC_OUTCOME": "Si vous continuez, Karaoke Mugen jouera la chanson <1>{{song}}</1>.",
+			"PLAY_ANYWAY": "Jouer quand même"
+		},
 		"PROFILE_MODAL": {
 			"ONLINE_CONVERT": "Passer mon compte en ligne",
 			"ONLINE_DELETE": "Désactiver mon compte en ligne",
@@ -700,7 +711,8 @@
 			"CANNOT_PUBLIC": "Vous ne pouvez pas avoir aucune liste de lecture publique, éditez celle que vous voulez définir comme la nouvelle liste de lecture publique.",
 			"CANNOT_SMART": "Vous ne pouvez pas enlever le tag intelligent d'une liste de lecture.",
 			"CANNOT_BLACKLIST": "Vous ne pouvez pas avoir aucune liste noire, éditez celle que vous voulez définir comme la nouvelle liste noire.",
-			"CANNOT_WHITELIST": "Vous ne pouvez pas avoir aucune liste blanche, éditez celle que vous voulez définir comme la nouvelle liste blanche."
+			"CANNOT_WHITELIST": "Vous ne pouvez pas avoir aucune liste blanche, éditez celle que vous voulez définir comme la nouvelle liste blanche.",
+			"NAME_MANDATORY": "Le nom de la liste de lecture est obligatoire"
 		},
 		"CROP_AVATAR_MODAL": {
 			"TITLE": "Rogner votre avatar",
@@ -836,6 +848,7 @@
 				"PLAYER_PLMEDIA": "Erreur de lecture de média de liste de lecture",
 				"PLAYER_CLASSIC_PAUSE_SCREEN": "Erreur de préparation de l'écran de pause",
 				"PLAYLIST_FREE_ORPHANED_SONGS": "Impossible de libérer les chansons orphelines",
+				"AUTOMIX_NO_SONGS_MEET_CRITERIAS": "Aucune chanson ne remplit les critères selectionnés pour l'AutoMix",
 				"POLL_ALREADY_STARTED": "Un sondage est déjà en cours",
 				"POLL_PUBLIC_PL_EMPTY": "Impossible de démarrer un sondage : la liste de lecture publique est vide",
 				"POLL_NOT_ENOUGH_SONGS": "Impossible de démarrer un sondage : pas assez de chansons disponibles"
@@ -1248,6 +1261,7 @@
 		"SYNCHRONIZE_ABOUT_MESSAGE": "Cette action vous permettra de synchroniser les tags d'un dépôt à l'autre. Sélectionnez un dépôt avec lequel synchroniser (celui-ci sera la destination de la copie des tags)",
 		"SYNCHRONIZE_BUTTON": "Synchroniser",
 		"FREE_SPACE": "Espace libre",
+		"OPEN_MEDIA_FOLDER": "Ouvrir le dossier des médias",
 		"DELETE_OLD_MEDIAS": "Supprimer les médias inutilisés depuis 1 mois",
 		"DELETE_ALL_MEDIAS": "Supprimer tous les médias",
 		"STORAGE_INFO": "Il existe plusieurs moyens de gérer l'espace occupé par vos dépôts :",

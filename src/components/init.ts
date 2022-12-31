@@ -18,7 +18,7 @@ import { Config } from '../types/config';
 import { initConfig } from '../utils/config';
 import { logo } from '../utils/constants';
 import { defaultRepositories } from '../utils/defaultSettings';
-import { reenableKaraMoeAutoUpdates } from '../utils/hokutoNoCode';
+import { updateKaraMoeRepoConfig } from '../utils/hokutoNoCode';
 import Sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
 import { parseArgs, setupFromCommandLineArgs } from './args';
@@ -73,7 +73,7 @@ export async function preInit() {
 	if (conf.App.FirstRun && conf.System.Repositories.length === 0) {
 		setConfig({ System: { Repositories: [...defaultRepositories] } });
 	} else {
-		reenableKaraMoeAutoUpdates();
+		updateKaraMoeRepoConfig();
 	}
 	// Test if network ports are available
 	await verifyOpenPort(getConfig().System.FrontendPort, getConfig().App.FirstRun);

@@ -135,13 +135,17 @@ function PlayerOptions(props: IProps) {
 						<label htmlFor="Player.PIP.Size">
 							<span className="title">{i18next.t('SETTINGS.PLAYER.VIDEO_SIZE')}</span>
 							<br />
-							<span className="tooltip">{config['Player.PIP.Size']}%</span>
+							<span className="tooltip">
+								{i18next.t('SETTINGS.PLAYER.VIDEO_SIZE_TOOLTIP', {
+									value: `${config['Player.PIP.Size']}%`,
+								})}
+							</span>
 						</label>
 						<div>
 							<input
 								type="range"
 								id="Player.PIP.Size"
-								onBlur={onChange}
+								onChange={onChange}
 								defaultValue={config['Player.PIP.Size']}
 							/>
 						</div>
@@ -374,6 +378,20 @@ function PlayerOptions(props: IProps) {
 					</div>
 				</div>
 			) : null}
+			<div className="settings-line">
+				<label htmlFor="Player.BlurVideoOnWarningTag">
+					<span className="title">{i18next.t('SETTINGS.PLAYER.BLUR_VIDEO_ON_WARNING_TAG')}</span>
+					<br />
+					<span className="tooltip">{i18next.t('SETTINGS.PLAYER.BLUR_VIDEO_ON_WARNING_TAG_TOOLTIP')}</span>
+				</label>
+				<div>
+					<Switch
+						idInput="Player.BlurVideoOnWarningTag"
+						handleChange={onChange}
+						isChecked={config['Player.BlurVideoOnWarningTag']}
+					/>
+				</div>
+			</div>
 		</>
 	) : null;
 }

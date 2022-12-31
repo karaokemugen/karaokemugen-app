@@ -1,3 +1,62 @@
+# v7.0.43 - 01/01/2023
+
+Happy new year everyone!
+
+## New features
+
+-   Added support for aarch64 architecture for Linux users (experimental, not for Flatpak yet)
+-   Added Flatpak for Linux users! Karaoke Mugen can thus now easily be installed on a Steam Deck!
+-   Number of upvotes is now displayed in library
+-   Videos with warnings (R18/Spoiler/Epilepsy) can now be blurred automatically (or manually by the operator). Thanks @TheMio !
+-   Added upvote button in the karaoke details page
+-   When exporting medias from a playlist, a .m3u file is now also created for use in any video player.
+-   Songs are now considered "played" (for stats) only when the song ended properly. Previously it was considered "played" as soona s the song started.
+-   Database migrations can take some time and now have a progressbar on the init page.
+-   Added "Open folder" button in the system panel's storage page
+-   Added play/usage time in status page on welcome screen
+
+## Improvements
+
+-   Changed wording on the warning modal when hitting play and current playlist isn't displayed on screen
+-   Kara form now checks for supported lyrics formats
+-   The create playlist modal now tells you what's wrong when there's an error creating a playlist
+-   Exported playlists are now labelled with an ISO date (YYYY-MM-DD)
+-   Upgraded backend dependencies
+-   Upgraded frontend dependencies
+-   Restricted interface now allows searching in the library
+-   Updated Spanish translation
+-   Removed empty lyrics lines
+-   Refactored code of pause message
+-   mpv logs now have a complete timestamp and not just the date since it doesn't append to existing logs
+-   Song parents can be from other repositories. Use at your own risk.
+-   An error is displayed if automix contains no songs on creation
+
+## Fixes
+
+-   Fixed missing songs smart playlist criteria
+-   Fixed repository basedir creation if not present
+-   Fixed song filters when no words have been input
+-   Fixed strict mode when generating. Now should error out properly on media change
+-   Fixed no playlist selector on low resolution operator panel
+-   Fixed kara form requirements not working anymore (serie/singer mandatory)
+-   Fixed karaoke list in tag edit form when tag has multiple types
+-   Fixed slider for mpv window size
+-   Fixed scroll in public/login pages
+-   Fixed video preview when there's a song change in public interface
+-   Fixed missing poll message in i18n
+-   Fixed mini playlist query
+-   Fixed DisplaySongInfo not being correctly removed from screen sometimes
+-   Fixed display of action buttons in playlist (public interface)
+-   Fixed remove and upvote buttons in karaoke detail page (with a specific song version)
+-   Fixed conflict between socket.io and will-navigate preventing destruction of the universe and everything (it made the app go crazy)
+-   Fixed kitsu slug detection
+
+## Misc
+
+-   Added @red5h4d0w to contributors
+-   Switched from jwt-simple to jsonwebtoken package
+-   Removed migration screens from 4.5 and 5.0 versions
+
 # v7.0.38 - 27/11/2022
 
 ## Fixes
@@ -13,7 +72,10 @@
 ## Misc
 
 -   Upgraded frontend and backend dependencies
--   Removed temporary folder from config as we now use ~/KaraokeMugen/temp 
+    <<<<<<< HEAD
+-   # Removed temporary folder from config as we now use ~/KaraokeMugen/temp
+-   Removed temporary folder from config as we now use ~/KaraokeMugen/temp
+    > > > > > > > next
 -   Replaced mouse wheel up/down on player. It now changes volume again like before.
 
 # v7.0.37 - 22/11/2022
