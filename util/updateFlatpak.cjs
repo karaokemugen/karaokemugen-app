@@ -50,7 +50,12 @@ async function main() {
 	flatpak.modules[0].sources[sentryCliARM64Index]['only-arches'] = '[aarch64]';
 	*/
 
-	const distX64Index = flatpak.modules[0].sources.findIndex(e => e.url && e.url.includes('dist_linux-x64'));
+	// REMOVE THE INCLUDE DIST_LINUX ALONE OR ELSE BAD STUFF WILL HAPPEN
+	// Please read this.
+	// Please.
+	const distX64Index = flatpak.modules[0].sources.findIndex(
+		e => e.url && (e.url.includes('dist_linux-x64') || e.url.includes('dist_linux'))
+	);
 	flatpak.modules[0].sources[distX64Index].url = `https://mugen.karaokes.moe/downloads/${distX64}`;
 	flatpak.modules[0].sources[distX64Index].sha256 = distX64SHA;
 	flatpak.modules[0].sources[distX64Index]['only-arches'] = '[x86_64]';
