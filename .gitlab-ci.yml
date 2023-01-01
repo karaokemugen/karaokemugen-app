@@ -25,6 +25,7 @@ include:
   - template: Security/License-Scanning.gitlab-ci.yml
 workflow:
   rules:
+    - if: $CI_COMMIT_BRANCH == "grumble-flatpak"
     - if: '$CI_COMMIT_TAG'
     - if: $CI_COMMIT_BRANCH == "master"
     - if: $CI_COMMIT_BRANCH == "next"
@@ -487,7 +488,12 @@ deploy_flathub:
   needs:
     - flatpak-generated-sources
   script:
-    - git clone https://axelterizaki:$FLATHUB_GITHUB_TOKEN@github.com/flathub/moe.karaokes.mugen.git
+    - mkdir ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+    - cp $GITHUB_SSH_KEY ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - git clone git@github.com:flathub/moe.karaokes.mugen.git
     - bash util/updateFlatpak.sh
     - cp generated-sources.json moe.karaokes.mugen/
     - cd moe.karaokes.mugen
