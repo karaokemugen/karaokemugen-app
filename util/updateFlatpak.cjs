@@ -72,6 +72,7 @@ async function main() {
 	const d = new Date();
 	if (!versions.elements.find(e => e.attributes.version === process.env.CI_COMMIT_REF_NAME)) {
 		const month = (d.getMonth() + 1 < 10 ? '0' : '') + (d.getMonth() + 1);
+		const day = (d.getDate() < 10 ? '0' : '') + d.getDate();
 		versions.elements.unshift({
 			type: 'element',
 			name: 'release',
