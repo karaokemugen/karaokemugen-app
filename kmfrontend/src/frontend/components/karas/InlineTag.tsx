@@ -74,7 +74,7 @@ export default function InlineTag(props: Props) {
 	return (
 		<div
 			className={`inline-tag ${
-				props.scope === 'public' && context?.globalState.settings.data.config?.Frontend?.Mode === 2
+				props.scope === 'public' && context?.globalState.settings.data.config?.Frontend?.Mode !== 0
 					? 'public'
 					: ''
 			}`}
@@ -83,7 +83,7 @@ export default function InlineTag(props: Props) {
 			<span
 				className={props.className}
 				onClick={e => {
-					if (props.scope === 'public' && context?.globalState.settings.data.config?.Frontend?.Mode === 2) {
+					if (props.scope === 'public' && context?.globalState.settings.data.config?.Frontend?.Mode !== 0) {
 						e.stopPropagation();
 						setShowPopup(!showPopup);
 					}

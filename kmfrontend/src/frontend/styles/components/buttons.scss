@@ -119,8 +119,24 @@ h5 > a {
 	}
 }
 
+.btn-tile-group {
+	border: $mugen-btn-border;
+	margin: -2px -1px; // Remove 1px borders from mini buttons
+	display: flex;
+	flex-direction: column;
+
+	.btn-tile {
+		flex-grow: 1;
+		border-radius: 0 !important;
+
+		border-top: $mugen-btn-border !important;
+		border-bottom: $mugen-btn-border !important;
+		font-size: 1em !important;
+	}
+}
+
 .volumeButton,
-.subtitleButton,
+.displayModifierButtons,
 .messageButton {
 	order: 90;
 }
@@ -151,7 +167,9 @@ h5 > a {
 		position: absolute;
 		bottom: 0;
 		left: 0;
-		width: 100%;
+		width: calc(100% - 2px); // Compensate 2px of border, 1px on each side
+		margin-left: 1px;
+		margin-right: 1px;
 	}
 }
 
@@ -161,7 +179,6 @@ h5 > a {
 		display: none;
 	}
 	&.hideSubs {
-		top: -2px;
 		> *:first-child {
 			display: inline-block;
 		}
@@ -235,7 +252,7 @@ h5 > a {
 @media (max-width: $mugen-breakpoint-small) {
 	.KmAppWrapperDecorator:not(.chibi) {
 		.messageButton,
-		.subtitleButton,
+		.displayModifierButtons,
 		.rewindButton {
 			display: none;
 		}

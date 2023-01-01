@@ -28,6 +28,7 @@ import ShowVideoButton from '../generic/buttons/ShowVideoButton';
 import InlineTag from './InlineTag';
 import AddKaraButton from '../generic/buttons/AddKaraButton';
 import VideoPreview from '../generic/VideoPreview';
+import UpvoteKaraButton from '../generic/buttons/UpvoteKaraButton';
 
 interface IProps {
 	kid?: string;
@@ -318,14 +319,16 @@ export default function KaraDetail(props: IProps) {
 					</div>
 				) : null}
 				{kara.subfile &&
-					lyrics?.map((ligne, index) => {
-						return (
-							<Fragment key={index}>
-								{ligne}
-								<br />
-							</Fragment>
-						);
-					})}
+					lyrics
+						?.filter(lyric => lyric?.trim())
+						.map((ligne, index) => {
+							return (
+								<Fragment key={index}>
+									{ligne}
+									<br />
+								</Fragment>
+							);
+						})}
 			</div>
 		) : null;
 
@@ -422,9 +425,11 @@ export default function KaraDetail(props: IProps) {
 							context?.globalState.settings.data.config?.Frontend?.Mode === 2 &&
 							kara.plaid !== context.globalState.settings.data.state.publicPlaid &&
 							kara.plaid !== context.globalState.settings.data.state.currentPlaid &&
-							(!kara?.public_plc_id || !kara?.public_plc_id[0])
-								? addKaraButton
-								: null}
+							(!kara?.public_plc_id || !kara?.public_plc_id[0]) ? (
+								addKaraButton
+							) : kara.my_public_plc_id.length === 0 ? (
+								<UpvoteKaraButton kara={kara} wide={true} updateKara={getKaraDetail} />
+							) : null}
 							{showVideoButton}
 						</div>
 						<VideoPreview kara={kara} show={showVideo} scope={props.scope} />

@@ -1,5 +1,7 @@
 import { app, dialog, shell } from 'electron';
+import fs from 'fs/promises';
 import i18next from 'i18next';
+import { sample } from 'lodash';
 import { resolve } from 'path';
 import Postgrator from 'postgrator';
 import { v4 as uuidV4 } from 'uuid';
@@ -10,6 +12,7 @@ import { generateDatabase } from '../lib/services/generation';
 import { getConfig } from '../lib/utils/config';
 import { tagTypes, uuidRegexp } from '../lib/utils/constants';
 import logger, { profile } from '../lib/utils/logger';
+import Task from '../lib/utils/taskManager';
 import { emitWS } from '../lib/utils/ws';
 import { updateAllSmartPlaylists } from '../services/smartPlaylist';
 import { DBStats } from '../types/database/database';
@@ -81,10 +84,34 @@ async function migrateDB(): Promise<Postgrator.Migration[]> {
 		execQuery: query => db().query(query),
 		validateChecksums: false,
 	});
+	const currentVersion = await migrator.getDatabaseVersion();
+	const numberOfMigrationsNeeded = await determineNumberOfMigrations(currentVersion);
+	let task: Task;
+	let migrationNumber = 0;
+	if (numberOfMigrationsNeeded > 0) {
+		task = new Task({
+			// This is only used for a test in init page
+			text: 'MIGRATING_DATABASE',
+			value: migrationNumber,
+			total: numberOfMigrationsNeeded,
+		});
+	}
+	migrator.on('migration-started', migration => {
+		migrationNumber += 1;
+		logger.debug(`Applying migration ${migration.filename}...`);
+		if (task) {
+			task.update({
+				subtext: `${i18next.t('MIGRATION')} ${migrationNumber} / ${numberOfMigrationsNeeded} : ${sample(
+					i18next.t('MIGRATION_MESSAGES', { returnObjects: true })
+				)}...`,
+				value: migrationNumber,
+			});
+		}
+	});
 	try {
 		const migrations = await migrator.migrate();
 		if (migrations.length > 0) logger.info(`Executed ${migrations.length} migrations`, { service });
-		logger.debug('Migrations executed', { service, obj: migrations });
+		logger.debug('Migrations executed', { service });
 		return migrations;
 	} catch (err) {
 		const error = new Error(`Migrations failed : ${err}`);
@@ -93,6 +120,7 @@ async function migrateDB(): Promise<Postgrator.Migration[]> {
 		throw error;
 	} finally {
 		profile('migrateDB');
+		if (task) task.end();
 	}
 }
 
@@ -194,4 +222,11 @@ export async function generateDB(): Promise<boolean> {
 		generationInProgress = false;
 	}
 	return true;
+}
+
+async function determineNumberOfMigrations(currentMigration: number): Promise<number> {
+	const migrationDir = resolve(getState().resourcePath, 'migrations/');
+	const dir = await fs.readdir(migrationDir);
+	const migrations = dir.map(e => e.split('.')[0]).filter(e => +e > currentMigration);
+	return migrations.length;
 }

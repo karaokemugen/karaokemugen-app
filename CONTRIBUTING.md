@@ -15,10 +15,10 @@ Please read the following before contributing :
 
 When trying to work on a new feature or issue, remember there are two main branches to base your new branch/work off :
 
--   `master` should be used when fixing bugs in the currently running version of Karaoke Mugen. Your fix will be included in the next "bugfix" release.
 -   `next` should be used when adding new features or fixing non-urgent bugs.
+-   `master` should be used when fixing bugs in the currently running version of Karaoke Mugen. Your fix will be included in the next "bugfix" release.
 
-Bugfixes should happen on `next` first, unless it only affects `master` versions. `master` is regularly merged within `next` when we make bugfixes on it. `next` is merged back on `master` only when doing major release versions.
+As a rule of thumb, all merge requests should be made against `next`, except if your fix only applies to `master`. This can happen when `next` and `master` have a different major version number and the fix doesn't apply on `next` for some reason.
 
 So if you want to work on a new feature for example, create a branch or merge request from `next`.
 
@@ -30,9 +30,9 @@ Please respect coding conventions already in place as much as possible.
 -   Use `for..of` loops instead of `.forEach` unless :
     -   Your `.forEach` is not using async functions
     -   You're writing a oneliner function
-    -   You need to work on index instead of the array contents themselves
+    -   You need to work on index instead of the array contents themselves. `for..in` is not safe to use. See [this ESLint rule](https://eslint.org/docs/latest/rules/guard-for-in) for details on hwo to use `for..in` if you need to (like if you're using async/await in the loop).
 -   Use TypeScript
--   Use ES Modules syntax.
+-   Use ES Modules syntax
 -   Before adding a dependancy, ask on Discord if it should really be added. Who knows, someone might have an idea on how to avoid using it, or a better alternative.
 
 ## Workflow
@@ -49,7 +49,7 @@ Use the `Create merge request` button on the issue page.
 
 ### Merging
 
-Once your work is ready, mark the MR as "Ready" and add a comment to tell maintainers this is ready to merge. (or tell us on Discord)
+Once your work is ready, mark the MR as "Ready" and add a comment to tell maintainers this is ready to merge.
 
 Maintainers will usually merge by squashing the commits inside the branch unless explicitely stated otherwise.
 
@@ -59,13 +59,13 @@ To start things off, you'll need the right tools. This guide is meant for Window
 
 We're listing specific tools, but remember you can also choose your own preferred tools, like for example replacing Fork by Gitkraken (but who would do that.) or git bash by the WSL.
 
-### Install git / fork
+### Install git
 
 -   Get [git](https://git-scm.com/)
 -   [gitAhead](https://gitahead.com/) is a good multi-platform git GUI
 -   [Fork](https://git-fork.com/) is also a good graphical client for git, but it's not free (as in free beer)
 
-Generally, git bash (bundled with git for Windows) is a good terminal. Other OSes have proper terminals already installed.
+Generally, git bash (bundled with git for Windows) is a good terminal. You can also use Windows Terminal or Tabby on Windows. Other OSes have proper terminals already installed.
 
 ### Install Visual Studio Code
 
@@ -73,13 +73,11 @@ Generally, git bash (bundled with git for Windows) is a good terminal. Other OSe
 
 You can use some of these extensions :
 
--   Beautify
--   **ES Lint** (mandatory since it'll show you all the little problems your code as like indentation, the ;s to end lines. It'll basically simplify your life immensely.)
+-   **ES Lint** (mandatory since it'll show you all the little problems your code as like indentation or the semi-colons to end lines. It'll basically simplify your life immensely.)
 -   gitignore
 -   GitLens (to easily see commits or who wrote that line of code from VSCode)
 -   Gitmoji
--   Node.js modules intellisense (auto-completion of module names)
--   npm intellisense (auto-completion NPM)
+-   npm intellisense (auto-completion of modules in imports)
 -   SQL Beautify
 -   vscode-icons
 -   YAML
@@ -94,7 +92,7 @@ Once installed, you'll need to create a superadmin user. Launch this command fro
 createuser -h localhost -P -s postgres
 ```
 
-If it says the role already exists, that's good. If not enter the password `musubi`.
+If it says the role already exists, that's good. If not enter a password of your choice.
 
 Connect to it via the postgres user with :
 
@@ -110,7 +108,7 @@ Let's create our database user for KM App. Refer to [this section in the README]
 
 [Install NodeJS from its website](https://nodejs.org/)
 
-You should download the latest LTS version, but sometimes you might need to pick another one only when we do Node version upgrades
+You should download the latest LTS version. The latest should normally work unless specified otherwise.
 
 ### Install Yarn
 
@@ -125,7 +123,7 @@ You _should_ create a fork of Karaoke Mugen App before continuing. The clone URL
 Open your favorite terminal and go to that folder and type :
 
 ```
-git clone https://gitlab.com/karaokemugen/karaokemugen-app.git
+git clone --recurse-submodules https://gitlab.com/karaokemugen/karaokemugen-app.git
 ```
 
 You can also clone via SSH if you prefer. Make sure you have a SSH key and add it to your profile on Gitlab.
@@ -147,6 +145,8 @@ This will enable a few options :
 
 If you're not using SSH, you'll need a token when pushing. You can generate this token from your Settings page on Gitlab in the "Access Token" section.
 
+Also `yarn pull` will do a `git pull` and sync submodules for you.
+
 ### Install and configure the app
 
 Everything's automatic, you just need to type
@@ -160,15 +160,22 @@ yarn setup
 -   It installs all dependencies for all the parts from the app
 -   It transpiles the Typescript/React code into javascript.
 
-Depending on what you modify, use the right commands in the right folder. `yarn setup` can take some time and isn't always mandatory.
+Depending on what you modify, use the right commands in the right folder.
+
+-   The backend is built every time you use `yarn start`
+-   You can build the backend manually with `yarn build`
+-   You can install frontend dependencies with `yarn installkmfrontend`
+-   You can build the frontend manually with `yarm buildkmfrontend`
+
+`yarn setup` does all these for you but it can take a while on some machines.
+
+Check `package.json` for a list of script commands you can use.
 
 ### Install binary dependencies
 
-Check out [README's required binaries section](README.md#required-binaries)
+Check out [README's required binaries section](README.md#required-binaries) to download them manually (except for postgres since you installed it already earlier)
 
-### Media files
-
-Medias take up several hundred giga-bytes of disk space **but are not mandatory to dev**. Except if you work on the player. In that case it's recommended to download a few samples only from the app's downloader.
+You can also download one of the "dist" archives we make in [Karaoke Mugen's website's download folder](https://mugen.karaokes.moe/downloads). Pick one for your OS and KM version and untar it in your current folder.
 
 ### Configure KM
 
@@ -202,6 +209,8 @@ yarn start
 
 `start` will transpile KM from Typescript to Javascript. It can take a few seconds to do that, but the launched app will always be up to date with your code.
 
+You can also launch from the VS Code's debugger, as we provide a `launch.json` in the `.vscode` folder.
+
 ### Other
 
 #### KM's project structure
@@ -218,30 +227,13 @@ There's also a `migrations` folder containing all SQL migrations used to manage 
 
 ##### The Karaoke Mugen Library
 
-KM also uses a functions library shared with KM Server and subtly called KM Lib. This library can be found in `src/lib` and is a git sub-module.
+KM also uses a functions library shared with KM Server and subtly called KM Lib. This library can be found in `src/lib` and is a git submodule.
 
-A sub-module allows us to version the library and make branches. In other words, get reusable code.
+A submodule allows us to version the library and make branches. In other words, get reusable code.
 
 The lib is automatically updated with a `pull` from the KM App, but if you touch any code in it, you'll need to `commit` and `push` inside the `src/lib` folder before adding it to the KM App's `commit`.
 
-The lib contains functions for :
-
--   Database access and filter management
--   File format definitions
--   Database generation from karaoke files
--   Interface with gitlab
--   Creating karaoke files
--   Common types between KM Server and KM App
--   Misc utilities like :
-    -   Progress bar
-    -   ASS manipulation
-    -   date manipulation
-    -   ffmpeg (used for video info or audio gain)
-    -   File access
-    -   Logging
-    -   Preview generation
-    -   Data validation
-    -   Websockets
+The lib contains varions functions, refer to the `README.md` inside for details.
 
 ##### Backend structure
 
@@ -249,22 +241,22 @@ Here's a small tour of the backend :
 
 -   Everything starts in `index.ts`, you just need to follow the `main()` function.
 -   The `components` folder has the main KM modules, like its engine, the frontend initialization and mpv, it's video player.
--   The `electron` folder contains all the code for the Electron app and its graphical user interface.
+-   The `electron` folder contains all the code for the Electron app and its graphical user interface and desktop integration.
 -   The `services` folder has all the app and logic code. Handling playlists, songs, and player engine, and all KM sub-systems. Services expose functions to `controllers` and get their data from `dao`
 -   The `controllers` folder contains all API routes used by the KM frontend. These routes call `services`.
--   The `dao` folder contains all functions getting data in and out of Karaoke Mugen's database.
+-   The `dao` folder contains all functions getting data in and out of Karaoke Mugen's database or files.
 -   The `types` folder has all object definitions we use in Karaoke Mugen's code for Typescript.
 -   The `utils` folder is filled with a lot of utility functions used at some points in the code, like managing configuration, state, constants, downloader tool, etc.
 
 #### Versions
 
-Version numerotation follows the classic semver : major.minor.sub-version
+Version numbering follows the classic semver : major.minor.sub-version
 
 -   2.1.0 is a minor version from the 2.x codebase.
 -   2.2.1 is a patch version of 2.2.
 -   3.0.0 is a whole new major version
 
-Besides, every version has a code name. Major versions are a female character from japanse animation, and every minor version has an adjective starting with the same letter. Examples :
+Besides, every version has a code name. Major versions are usually a female character from japanse animation, and every minor version has an adjective starting with the same letter. Examples :
 
 -   Akari Amoureuse
 -   Belldandy Bolchévique
@@ -297,6 +289,4 @@ You can launch it like this to run migrations without launching KM :
 yarn postgrator
 ```
 
-To create a migration, you need to create two SQL files in `migrations` which have the same name with `do` and `undo` version of the files. Look at the other files provided already.
-
-Try to write your migration step by step and then write the `undo` migrations in a draft before testing them in Karaoke Mugen.
+To create a migration, you need to create two SQL files in `migrations` which have the same name with `do` and `undo` version of the files. Look at the other files provided already. We usually skip the `undo` files because of laziness and because we never go back on a migration anyway.

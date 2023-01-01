@@ -8,6 +8,37 @@
 	"BLACKLIST": "Liste noire",
 	"CURRENT_PLAYLIST": "Liste de lecture",
 	"PUBLIC_PLAYLIST": "Suggestions du public",
+	"MIGRATION": "Migration",
+	"MIGRATION_MESSAGES": [
+		"Alignement des micros",
+		"Calcul des ondes de normalisation audio",
+		"Mise au frais des boissons",
+		"Calibration des cordes vocales",
+		"Découverte de la cité perdue de Karaokum Mugen-la",
+		"Calcul de la réponse sur la vie, l'univers et le reste",
+		"Démarrage du convecteur temporel",
+		"Résolution d'équations symphoniques",
+		"Réglage des conduits supra-soniques",
+		"Balayage des détritus",
+		"Commande des boissons et en-cas",
+		"Amélioration des performances musicales",
+		"Téléchargement de Wikipedia",
+		"Distribution des croquettes au chat",
+		"Configuration des ailerons",
+		"Absorption des erreurs luminescentes",
+		"Gestion des crises de foie",
+		"Tartinage du chocolat",
+		"Cuisson des pizzas",
+		"Cuisson des burgers",
+		"Chauffage de la raclette",
+		"Grillage des saucisses",
+		"Découpage du saucisson",
+		"Suppression des octets quantiques",
+		"Gestion des voisins",
+		"Manipulation du baromètre",
+		"Accélération des particules de chant",
+		"Augmentation des nanobots dans l'air"
+	],
 	"GO_TO": "Allez sur $url pour suggérer des chansons !",
 	"VOTE_MESSAGE_SCREEN": "Votez pour la prochaine chanson !",
 	"VOTE_MESSAGE_SCREEN_WINNER": "Nous avons un gagnant !",
@@ -118,10 +149,6 @@
 	"REPO_DISABLED": {
 		"TITLE": "Dépôt désactivé",
 		"MESSAGE": "Le dépôt {{repo}} a été désactivé car l'un de ses dossiers est inaccessible. Si toute ou partie de ses fichiers sont sur un support externe, vérifiez qu'il est bien branché et allez dans Panneau Système > Dépôts pour le réactiver."
-	},
-	"NO_KARAOKE_MODE_ANYMORE": {
-		"TITLE": "Plus de mode de karaoké !",
-		"MESSAGE": "Nouveauté 4.0 :\n\nLe mode public/privé a disparu, et il ne reviendra jamais ! *musique dramatique*\n\nLes playlists ne jurent maintenant que par le système d'état. Elle peuvent dorénavant avoir à la fois l'état publique et courante :\n\n- L'état public fait que la playlist recevra les demandes de chansons de vos invités.\n- L'état courant fait que la playlist sera celle utilisée par le lecteur.\n\nPour activer l'ancien mode public, créez deux playlists, l'une avec l'état public qui recevra les demandes et l'autre avec l'état courant.\nPour activer l'ancien mode privé, créez une playlist et attribuez-lui les deux états simultanément."
 	},
 	"TIPS": {
 		"TITLES": {

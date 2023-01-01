@@ -24,6 +24,7 @@ import WelcomePageArticle from './WelcomePageArticle';
 import { Tag } from '../../../../src/lib/types/tag';
 import { Repository } from '../../../../src/lib/types/repo';
 import { RemoteStatusData } from '../types/remote';
+import { secondsTimeSpanToHMS } from '../../utils/tools';
 
 function WelcomePage() {
 	const context = useContext(GlobalContext);
@@ -390,6 +391,16 @@ function WelcomePage() {
 									<li onClick={() => navigate('/system/tags')}>
 										<strong>{i18next.t('WELCOME_PAGE.STATS_TAGS')}</strong>
 										<span>{stats?.tags}</span>
+									</li>
+								</ul>
+								<ul>
+									<li>
+										<strong>{i18next.t('WELCOME_PAGE.STATS_USAGETIME')}</strong>
+										<span>{secondsTimeSpanToHMS(stats?.usagetime, 'dhm')}</span>
+									</li>
+									<li>
+										<strong>{i18next.t('WELCOME_PAGE.STATS_PLAYTIME')}</strong>
+										<span>{secondsTimeSpanToHMS(stats?.playtime, 'dhm')}</span>
 									</li>
 								</ul>
 								<ul>

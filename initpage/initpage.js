@@ -87,7 +87,7 @@ ipcRenderer.on('techTip', (event, data) => {
 });
 ipcRenderer.on('tasksUpdated', (event, data) => {
 	for (const task of data) {
-		if (task?.text === 'GENERATING') {
+		if (task?.text === 'GENERATING' || task?.text === 'MIGRATING_DATABASE') {
 			setProgressBar(task.percentage, task.subtext);
 		}
 	}

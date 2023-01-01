@@ -1,3 +1,4 @@
+import { shell } from 'electron';
 import { promises as fs } from 'fs';
 import { copy, remove } from 'fs-extra';
 import { basename, parse, resolve } from 'path';
@@ -712,11 +713,11 @@ export async function compareLyricsChecksums(repo1Name: string, repo2Name: strin
 				// read both lyrics and then decide if they're different
 				const lyricsPath1 = resolve(
 					resolvedPathRepos('Lyrics', kara1.data.repository)[0],
-					kara1.medias[0].lyrics[0]?.filename
+					kara1.medias[0].lyrics?.[0]?.filename
 				);
 				const lyricsPath2 = resolve(
 					resolvedPathRepos('Lyrics', kara2.data.repository)[0],
-					kara2.medias[0].lyrics[0]?.filename
+					kara2.medias[0].lyrics?.[0]?.filename
 				);
 				const [lyrics1, lyrics2] = await Promise.all([
 					fs.readFile(lyricsPath1, 'utf-8'),
@@ -748,13 +749,13 @@ export async function copyLyricsRepo(report: DifferentChecksumReport[]) {
 	try {
 		for (const karas of report) {
 			task.update({
-				subtext: karas.kara2.medias[0].lyrics[0]?.filename,
+				subtext: karas.kara2.medias[0].lyrics?.[0]?.filename,
 			});
 			// Copying kara1 data to kara2
 			karas.kara2.meta.isKaraModified = true;
 			const writes = [];
 			writes.push(writeKara(karas.kara2.meta.karaFile, karas.kara2));
-			if (karas.kara1.medias[0].lyrics[0]) {
+			if (karas.kara1.medias[0].lyrics?.[0]) {
 				const sourceLyrics = await resolveFileInDirs(
 					karas.kara1.medias[0].lyrics[0]?.filename,
 					resolvedPathRepos('Lyrics', karas.kara1.data.repository)
@@ -1298,4 +1299,11 @@ function topologicalSort(karas: KaraMetaFile[]): KaraMetaFile[] {
 	}
 
 	return sorted;
+}
+
+export async function openMediaFolder(repoName: string) {
+	const mediaFolders = resolvedPathRepos('Medias', repoName);
+	for (const mediaFolder of mediaFolders) {
+		shell.openPath(mediaFolder);
+	}
 }

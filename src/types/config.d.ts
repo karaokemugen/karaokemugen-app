@@ -116,6 +116,7 @@ export interface Config {
 		KeyboardMediaShortcuts?: boolean;
 		Volume?: number;
 		LiveComments?: boolean;
+		BlurVideoOnWarningTag?: boolean;
 	};
 	Playlist: {
 		AllowDuplicates?: boolean;

@@ -91,10 +91,6 @@
 		"TITLE": "Repositori dimatikan",
 		"MESSAGE": "Repositori {{repo}} telah dimatikan karena salah satu foldernya tidak tersedia. Jika salah satu foldernya ada di penyimpanan eksternal, pastikan itu terhubung dan pergi ke Bilah Sistem > Repositori untuk menyalakannya lagi."
 	},
-	"NO_KARAOKE_MODE_ANYMORE": {
-		"TITLE": "Tidak ada lagi mode karaoke!",
-		"MESSAGE": "Baru di versi 4.0:\n\nMode karaoke publik/privat telah menghilang! Panik! Horor! *musik dramatis terdengar*\n\nDaftar putar sekarang bisa memiliki bendera publik dan sekarang dalam waktu yang bersamaan.\n\n- Bendera saat ini berarti daftar putar yang sedang digunakan oleh pemain\n- Bendera publik berarti daftar putarlah yang menerima saran lagu dari pengguna kamu\n\nSingkatnya, gabungkan kedua bendera tersebut di sebuah daftar putar untuk meniru mode privat yang lama dan buat dua daftar putar, masing-masing dengan bendera yang berbeda untuk meniru mode publik yang lama."
-	},
 	"TIPS": {
 		"TITLES": {
 			"NORMAL": "Tips dan Trik dengan Nanamin",

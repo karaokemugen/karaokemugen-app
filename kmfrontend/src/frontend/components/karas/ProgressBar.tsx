@@ -134,7 +134,7 @@ function ProgressBar() {
 				setLength(-1);
 				setAnimate(0);
 			} else if (data.mediaType === 'poll') {
-				setKaraInfoText(i18next.t('VOTE_TIME'));
+				setKaraInfoText(i18next.t('POLL_TIME'));
 				setLength(-1);
 				setAnimate(0);
 			} else if (data.currentSong) {

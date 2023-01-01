@@ -33,7 +33,7 @@ import Timeout = NodeJS.Timeout;
 import { APIMessage } from '../lib/services/frontend';
 import { DBKaraTag } from '../lib/types/database/kara';
 import { supportedFiles } from '../lib/utils/constants';
-import { date } from '../lib/utils/date';
+import { date, time } from '../lib/utils/date';
 import HTTP from '../lib/utils/http';
 import { convert1LangTo2B } from '../lib/utils/langs';
 import logger, { profile } from '../lib/utils/logger';
@@ -250,6 +250,10 @@ class MessageManager {
 		this.tick();
 	}
 
+	removeMessages(types: string[]) {
+		types.forEach(e => this.removeMessage(e));
+	}
+
 	getText() {
 		let txt = '';
 		for (const line of this.messages.values()) {
@@ -383,11 +387,12 @@ class Player {
 		const conf = getConfig();
 		const state = getState();
 		const today = date();
+		const now = time().replaceAll(':', '.');
 
 		const mpvArgs = [
 			'--keep-open=always',
 			'--osd-level=0',
-			`--log-file=${resolve(resolvedPath('Logs'), `mpv.${today}.log`)}`,
+			`--log-file=${resolve(resolvedPath('Logs'), `mpv.${today}.${now}.log`)}`,
 			`--hwdec=${conf.Player.HardwareDecoding}`,
 			`--volume=${+conf.Player.Volume}`,
 			'--no-config',
@@ -491,7 +496,13 @@ class Player {
 		return [state.binPath.mpv, socket, mpvArgs];
 	}
 
-	private debounceTimePosition(position: number) {
+	private debounceTimePosition(position: number | undefined) {
+		// position can be undefined when the video starts
+		// position can be negative, or equal to -0
+		if (position == null || position <= 0) {
+			position = 0;
+		}
+
 		// Returns the position in seconds in the current song
 		if (playerState.mediaType === 'song' && playerState.currentSong?.duration) {
 			playerState.timeposition = position;
@@ -864,7 +875,7 @@ class Players {
 			for (const _nothing of Array(10 - ticked)) {
 				progressBar += '□';
 			}
-			this.messages.addMessage('DI', `${DI}\\N\\N{\\fscx70\\fscy70\\fsp-3}${progressBar}`, 'infinite');
+			this.messages.addMessage('pauseScreen', `${DI}\\N\\N{\\fscx70\\fscy70\\fsp-3}${progressBar}`, 'infinite');
 			this.progressBarTimeout = setTimeout(() => {
 				this.tickProgressBar(nextTick, ticked + 1, DI);
 			}, nextTick);
@@ -1071,6 +1082,7 @@ class Players {
 		];
 		await Promise.all<Promise<any>>(loadPromises);
 		logger.debug(`Loading media: ${mediaFile}${subFile ? ` with ${subFile}` : ''}`, { service });
+		const config = getConfig();
 		if (subFile) {
 			options['sub-file'] = subFile;
 			options.sid = '1';
@@ -1089,12 +1101,20 @@ class Players {
 			options['image-display-duration'] = 'inf';
 			options.vid = '1';
 		}
+		if (config.Player.BlurVideoOnWarningTag === true || playerState.blurVideo === true) {
+			// Set blur if enabled in settings and kara has warning
+			// Or reset if blur currently enabled and new kara plays
+			await this.setBlur(config.Player.BlurVideoOnWarningTag && song.warnings.length > 0);
+		}
 		// Load all those files into mpv and let's go!
 		try {
 			playerState.currentSong = song;
 			playerState.mediaType = 'song';
 			playerState.currentMedia = null;
-			if (this.messages) this.messages.removeMessage('poll');
+			if (this.messages) {
+				this.messages.removeMessages(['poll', 'pauseScreen']);
+				this.displaySongInfo(song.infos, -1, false, song.warnings);
+			}
 			await retry(() => this.exec({ command: ['loadfile', mediaFile, 'replace', options] }), {
 				retries: 3,
 				onFailedAttempt: error => {
@@ -1176,7 +1196,7 @@ class Players {
 					: conf.Playlist.Medias[mediaType].Message
 					? this.message(conf.Playlist.Medias[mediaType].Message, -1, 5, 'DI')
 					: this.messages.removeMessage('DI');
-				this.messages.removeMessage('poll');
+				this.messages.removeMessages(['poll', 'pauseScreen']);
 				emitPlayerState();
 				return playerState;
 			} catch (err) {
@@ -1209,11 +1229,11 @@ class Players {
 		playerState['eof-reached'] = true;
 		playerState.playerStatus = 'stop';
 		await this.loadBackground(type);
+		this.messages.clearMessages();
 		logger.debug('Stop DI', { service });
 		this.displayInfo();
 		emitPlayerState();
 		setDiscordActivity('idle');
-		this.messages.removeMessage('poll');
 		return playerState;
 	}
 
@@ -1324,6 +1344,25 @@ class Players {
 			sentry.error(err);
 			throw err;
 		}
+	}
+
+	async setBlurPercentage(blurPercentage: number) {
+		try {
+			await this.exec({
+				command: ['set_property', 'vf', blurPercentage > 0 ? `gblur=sigma=${blurPercentage}:steps=3` : ''],
+			});
+			playerState.blurVideo = blurPercentage > 0;
+			emitPlayerState();
+			return playerState;
+		} catch (err) {
+			logger.error('Unable to set blur', { service, obj: err });
+			sentry.error(err);
+			throw err;
+		}
+	}
+
+	async setBlur(enabled: boolean) {
+		this.setBlurPercentage(enabled ? 90 : 0);
 	}
 
 	async setVolume(volume: number): Promise<PlayerState> {
@@ -1460,27 +1499,30 @@ class Players {
 			let warningString = '';
 			let nextSongString = '';
 			let position = '';
-			if (getConfig().Player.Display.SongInfo) {
-				if (warnings?.length > 0) {
-					const langs = [
-						getConfig().Player.Display.SongInfoLanguage,
-						convert1LangTo2B(getState().defaultLocale),
-						'eng',
-					];
-					const warningArr = warnings.map(t => {
-						return getTagNameInLanguage(t, langs);
-					});
-					warningString = `{\\fscx80}{\\fscy80}{\\b1}{\\c&H0808E8&}⚠ WARNING: ${warningArr.join(
-						', '
-					)} ⚠{\\b0}\\N{\\c&HFFFFFF&}`;
-				}
-				nextSongString = nextSong ? `${i18n.t('NEXT_SONG')}\\N\\N` : '';
-				position = nextSong ? '{\\an5}' : '{\\an1}';
+			if (warnings?.length > 0) {
+				const langs = [
+					getConfig().Player.Display.SongInfoLanguage,
+					convert1LangTo2B(getState().defaultLocale),
+					'eng',
+				];
+				const warningArr = warnings.map(t => {
+					return getTagNameInLanguage(t, langs);
+				});
+				warningString = `{\\fscx80}{\\fscy80}{\\b1}{\\c&H0808E8&}⚠ WARNING: ${warningArr.join(
+					', '
+				)} ⚠{\\b0}\\N{\\c&HFFFFFF&}`;
+			}
+			nextSongString = nextSong ? `${i18n.t('NEXT_SONG')}\\N\\N` : '';
+			position = nextSong ? '{\\an5}' : '{\\an1}';
+			if (getConfig().Player.Display.SongInfo || nextSong) {
 				this.messages.addMessage(
 					'DI',
 					position + warningString + nextSongString + infos,
 					duration === -1 ? 'infinite' : duration
 				);
+			} else {
+				this.messages.removeMessage('DI');
+				return;
 			}
 			if (nextSong) {
 				playerState.mediaType = 'pause';

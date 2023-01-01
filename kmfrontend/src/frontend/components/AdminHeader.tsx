@@ -11,9 +11,10 @@ import { logout } from '../../store/actions/auth';
 import { showModal } from '../../store/actions/modal';
 import GlobalContext from '../../store/context';
 import { commandBackend, getSocket } from '../../utils/socket';
-import { callModal, displayMessage, expand, isNonStandardPlaylist } from '../../utils/tools';
+import { displayMessage, expand, isNonStandardPlaylist } from '../../utils/tools';
 import KmAppHeaderDecorator from './decorators/KmAppHeaderDecorator';
 import RadioButton from './generic/RadioButton';
+import PlayCurrentModal from './modals/PlayCurrentModal';
 import ProfilModal from './modals/ProfilModal';
 import Tutorial from './modals/Tutorial';
 import UsersModal from './modals/UsersModal';
@@ -93,13 +94,7 @@ function AdminHeader(props: IProps) {
 			(!isNonStandardPlaylist(context.globalState.frontendContext.playlistInfoLeft.plaid) ||
 				!isNonStandardPlaylist(context.globalState.frontendContext.playlistInfoRight.plaid))
 		) {
-			callModal(
-				context.globalDispatch,
-				'confirm',
-				i18next.t('MODAL.PLAY_CURRENT_MODAL', { playlist: props.currentPlaylist?.name }),
-				'',
-				() => commandBackend('sendPlayerCommand', { command: 'play' }).catch(() => {})
-			);
+			showModal(context.globalDispatch, <PlayCurrentModal currentPlaylist={props.currentPlaylist} />);
 		} else {
 			props.putPlayerCommando(event);
 		}
@@ -417,19 +412,35 @@ function AdminHeader(props: IProps) {
 				<i className="fas fa-fw fa-comment" />
 			</button>
 
-			<button
-				title={i18next.t(statusPlayer?.showSubs ? 'HIDE_SUBS' : 'SHOW_SUBS')}
-				id="showSubs"
-				data-namecommand={statusPlayer?.showSubs ? 'hideSubs' : 'showSubs'}
-				className={`btn btn-dark subtitleButton ${statusPlayer?.showSubs ? 'hideSubs' : 'showSubs'}`}
-				onClick={props.putPlayerCommando}
-			>
-				<span className="fa-stack">
-					<i className="fas fa-fw fa-closed-captioning fa-stack-1x" />
-					<i className="fas fa-fw fa-ban fa-stack-2x" style={{ color: '#943d42', opacity: 0.7 }} />
-				</span>
-				<i className="fas fa-fw fa-closed-captioning" />
-			</button>
+			<div className="btn-tile-group displayModifierButtons" id="displayModifierButtons">
+				<button
+					title={i18next.t(statusPlayer?.showSubs ? 'HIDE_SUBS' : 'SHOW_SUBS')}
+					id="showSubs"
+					data-namecommand={statusPlayer?.showSubs ? 'hideSubs' : 'showSubs'}
+					className={`btn btn-tile btn-dark subtitleButton ${
+						statusPlayer?.showSubs ? 'hideSubs' : 'showSubs'
+					}`}
+					onClick={props.putPlayerCommando}
+				>
+					<span className="fa-stack">
+						<i className="fas fa-fw fa-closed-captioning fa-stack-1x" />
+						<i className="fas fa-fw fa-ban fa-stack-2x" style={{ color: '#943d42', opacity: 0.7 }} />
+					</span>
+					<span className="fa-stack">
+						<i className="fas fa-fw fa-closed-captioning" />
+					</span>
+				</button>
+				<button
+					title={i18next.t(statusPlayer?.blurVideo ? 'BLURVIDEO_UNBLUR' : 'BLURVIDEO_BLUR')}
+					id="blurVideo"
+					data-namecommand={statusPlayer?.blurVideo ? 'unblurVideo' : 'blurVideo'}
+					className={`btn btn-tile btn-dark ${statusPlayer?.blurVideo ? 'unblurVideo' : 'blurVideo'}`}
+					onClick={props.putPlayerCommando}
+				>
+					<i className={`fas fa-fw ${statusPlayer?.blurVideo ? 'fa-hand' : 'fa-hand-sparkles'}`} />
+				</button>
+			</div>
+
 			<button type="button" title={i18next.t('MUTE_UNMUTE')} className="btn btn-dark volumeButton">
 				<div
 					id="mute"

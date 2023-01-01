@@ -45,7 +45,7 @@ interface TagsFormState {
 
 const myanimelistUrlRegexp = /myanimelist.net\/anime\/(\d+)/;
 const anilistUrlRegexp = /anilist.co\/anime\/(\d+)/;
-const kitsuUrlRegexp = /kitsu.io\/anime\/([a-zA-Z0-9-]+)/;
+const kitsuUrlRegexp = /kitsu.io\/anime\/([a-zA-Z0-9-&]+)/;
 const validExternalAnimeIdRegexp = /^(?:[1-9]|\d\d+)$/; // strictly positive
 
 class TagForm extends Component<TagsFormProps, TagsFormState> {
@@ -140,12 +140,13 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 		return path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1);
 	};
 
+	/** We're returning at (any tag) here instead of just t (all tags) for the filter */
 	buildTagFilter = () => {
 		const tagArray = [];
 		for (const type of this.props.tag.types) {
 			tagArray.push(`${this.props.tag.tid}~${type}`);
 		}
-		return `t:${tagArray.join(',')}`;
+		return `at:${tagArray.join(',')}`;
 	};
 
 	render() {
@@ -557,7 +558,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 		if (res == null) {
 			return event.target.value;
 		}
-		fetch(`https://kitsu.io/api/edge/anime?fields[anime]=id&filter[slug]=${res[1]}`)
+		fetch(`https://kitsu.io/api/edge/anime?fields[anime]=id&filter[slug]=${encodeURIComponent(res[1])}`)
 			.then(res => res.json())
 			.then(json => {
 				if (json?.data == null || json.data[0]?.id == null) {

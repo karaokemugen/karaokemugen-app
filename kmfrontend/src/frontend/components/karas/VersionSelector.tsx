@@ -22,6 +22,7 @@ import ShowVideoButton from '../generic/buttons/ShowVideoButton';
 import InlineTag from './InlineTag';
 import AddKaraButton from '../generic/buttons/AddKaraButton';
 import VideoPreview from '../generic/VideoPreview';
+import UpvoteKaraButton from '../generic/buttons/UpvoteKaraButton';
 
 interface Props {
 	kid: string;
@@ -174,10 +175,12 @@ export default function VersionSelector(props: Props) {
 														>
 															<i className="fas fa-eraser" />
 														</button>
-													) : (
+													) : kara?.public_plc_id.length === 0 ? (
 														<button onClick={e => addKara(e, kara)} className="btn">
 															<i className="fas fa-plus" />
 														</button>
+													) : (
+														<UpvoteKaraButton kara={kara} />
 													)}
 												</div>
 											</div>
@@ -188,7 +191,7 @@ export default function VersionSelector(props: Props) {
 												{context.globalState.auth.data.role === 'guest' ? null : (
 													<MakeFavButton kid={kara.kid} />
 												)}
-												{!kara?.public_plc_id || !kara?.public_plc_id[0] ? (
+												{kara?.public_plc_id.length === 0 ? (
 													<AddKaraButton kara={kara} />
 												) : null}
 												<ShowVideoButton

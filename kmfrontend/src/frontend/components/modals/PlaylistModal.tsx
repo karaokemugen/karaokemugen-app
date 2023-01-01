@@ -1,3 +1,5 @@
+import './PlaylistModal.scss';
+
 import i18next from 'i18next';
 import { useContext, useState } from 'react';
 
@@ -23,10 +25,37 @@ function PlaylistModal(props: IProps) {
 	const [flagWhitelist, setFlagWhitelist] = useState(props.mode === 'edit' ? playlist?.flag_whitelist : false);
 	const [flagBlacklist, setFlagBlacklist] = useState(props.mode === 'edit' ? playlist?.flag_blacklist : false);
 	const [flagSmart, setFlagSmart] = useState(props.mode === 'edit' ? playlist?.flag_smart : false);
+	const [error, setError] = useState<string>();
 
 	const createPlaylist = async () => {
-		try {
-			const response = await commandBackend('createPlaylist', {
+		if (!name) {
+			setError(i18next.t('MODAL.PLAYLIST_MODAL.NAME_MANDATORY'));
+		} else {
+			try {
+				setError(undefined);
+				const response = await commandBackend('createPlaylist', {
+					name: name,
+					flag_visible: flagVisible,
+					flag_current: flagCurrent,
+					flag_smart: flagSmart,
+					flag_whitelist: flagWhitelist,
+					flag_blacklist: flagBlacklist,
+					flag_public: flagPublic,
+				});
+				setPlaylistInfo(props.side, context, response.plaid);
+				closeModalWithContext();
+			} catch (e) {
+				// already display
+			}
+		}
+	};
+
+	const editPlaylist = async () => {
+		if (!name) {
+			setError(i18next.t('MODAL.PLAYLIST_MODAL.NAME_MANDATORY'));
+		} else {
+			setError(undefined);
+			await commandBackend('editPlaylist', {
 				name: name,
 				flag_visible: flagVisible,
 				flag_current: flagCurrent,
@@ -34,27 +63,11 @@ function PlaylistModal(props: IProps) {
 				flag_whitelist: flagWhitelist,
 				flag_blacklist: flagBlacklist,
 				flag_public: flagPublic,
+				plaid: playlist.plaid,
 			});
-			setPlaylistInfo(props.side, context, response.plaid);
+			setSettings(context.globalDispatch);
 			closeModalWithContext();
-		} catch (e) {
-			// already display
 		}
-	};
-
-	const editPlaylist = async () => {
-		await commandBackend('editPlaylist', {
-			name: name,
-			flag_visible: flagVisible,
-			flag_current: flagCurrent,
-			flag_smart: flagSmart,
-			flag_whitelist: flagWhitelist,
-			flag_blacklist: flagBlacklist,
-			flag_public: flagPublic,
-			plaid: playlist.plaid,
-		});
-		setSettings(context.globalDispatch);
-		closeModalWithContext();
 	};
 
 	const toggleCurrent = () => {
@@ -137,6 +150,7 @@ function PlaylistModal(props: IProps) {
 								onChange={event => setName(event.target.value)}
 							/>
 						</div>
+						<label className="error">{error}</label>
 						<div>
 							<button className="btn btn-default" type="button" onClick={toggleCurrent}>
 								<input

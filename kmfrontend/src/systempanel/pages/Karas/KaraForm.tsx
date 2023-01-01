@@ -73,7 +73,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 			titles: kara?.titles ? kara.titles : {},
 			defaultLanguage: kara?.titles_default_language || null,
 			titlesIsTouched: false,
-			serieSingersRequired: false,
+			serieSingersRequired: kara ? false : true,
 			subfile: kara?.subfile
 				? [
 						{
@@ -379,9 +379,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		if (this.timer) clearTimeout(this.timer);
 		this.timer = setTimeout(async () => {
 			const karas = await commandBackend('getKaras', {
-				q: this.formRef.current?.getFieldValue('repository')
-					? `r:${this.formRef.current?.getFieldValue('repository')}`
-					: '',
 				filter: value,
 				size: 50,
 				ignoreCollections: true,
@@ -437,6 +434,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				const oldFormFields = this.formRef.current.getFieldsValue(['mediafile', 'subfile']); // Fields to take over to the applied kara
 				this.formRef.current.resetFields();
 				this.formRef.current.setFieldsValue(oldFormFields); // Re-sets media and lyrics file, if already uploaded
+				this.onChangeSingersSeries();
 			}
 		}
 	};
@@ -562,6 +560,9 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 							onlineAuthorization: localStorage.getItem('kmOnlineToken'),
 						}}
 						action="/api/importFile"
+						accept={this.context.globalState.settings.data.state?.supportedLyrics
+							.map(e => `.${e}`)
+							.join(',')}
 						multiple={false}
 						onChange={this.onSubUploadChange}
 						fileList={this.state.subfile}
