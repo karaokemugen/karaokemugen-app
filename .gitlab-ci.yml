@@ -494,10 +494,11 @@ deploy_flathub:
     - cp $GITHUB_SSH_KEY ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
     - git clone git@github.com:flathub/moe.karaokes.mugen.git
-    - git checkout -b $CI_COMMIT_REF_SLUG
     - bash util/updateFlatpak.sh
     - cp generated-sources.json moe.karaokes.mugen/
     - cd moe.karaokes.mugen
+    - git branch $CI_COMMIT_REF_SLUG
+    - git checkout $CI_COMMIT_REF_SLUG
     - git status
     - git add .
     - git config user.name "Karaoke Mugen Release Bot"
