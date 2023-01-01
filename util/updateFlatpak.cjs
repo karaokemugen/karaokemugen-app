@@ -78,7 +78,7 @@ async function main() {
 			name: 'release',
 			attributes: {
 				version: process.env.CI_COMMIT_REF_NAME,
-				date: `${d.getFullYear()}-${month}-${d.getDate()}`,
+				date: `${d.getFullYear()}-${month}-${day}`,
 			},
 		});
 	}
