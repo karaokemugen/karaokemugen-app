@@ -36,7 +36,7 @@
   "homepage": "https://karaokes.moe",
   "repository": {
     "type": "git",
-    "url": "https://gitlab.com/karaokemugen/karaokemugen-app.git"
+    "url": "https://gitlab.com/karaokemugen/code/karaokemugen-app.git"
   },
   "keywords": [
     "karaoke",
@@ -47,7 +47,7 @@
     "electron"
   ],
   "bugs": {
-    "url": "https://gitlab.com/karaokemugen/karaokemugen-app/issues",
+    "url": "https://gitlab.com/karaokemugen/code/karaokemugen-app/issues",
     "email": "mugen@karaokes.moe"
   },
   "author": "Guillaume Lebigot <axel@teri-chan.net> (http://www.meido-rando.net)",

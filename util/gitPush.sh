@@ -7,5 +7,5 @@ bash util/replaceVersion.sh
 git add package.json
 VERSION=$(grep version\": package.json | awk -F\" {'print $4'})
 git commit -m "🚀 new release $VERSION"
-git remote set-url origin "https://project_32123684_bot:$DEPLOY_TOKEN@gitlab.com/karaokemugen/karaokemugen-app.git"
+git remote set-url origin "https://project_32123684_bot:$DEPLOY_TOKEN@gitlab.com/karaokemugen/code/karaokemugen-app.git"
 git push

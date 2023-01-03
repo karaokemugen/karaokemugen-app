@@ -5,7 +5,7 @@ Every good will is welcome.
 To see how you can help, check :
 
 -   [Documentation](https://docs.karaokes.moe)
--   [Create an issue or try to resolve one!](https://gitlab.com/karaokemugen/karaokemugen-app/issues)
+-   [Create an issue or try to resolve one!](https://gitlab.com/karaokemugen/code/karaokemugen-app/issues)
 -   [Come to our Discord!](https://karaokes.moe/discord)
 -   [Post a message on our forum](https://discourse.karaokes.moe)
 
@@ -123,7 +123,7 @@ You _should_ create a fork of Karaoke Mugen App before continuing. The clone URL
 Open your favorite terminal and go to that folder and type :
 
 ```
-git clone --recurse-submodules https://gitlab.com/karaokemugen/karaokemugen-app.git
+git clone --recurse-submodules https://gitlab.com/karaokemugen/code/karaokemugen-app.git
 ```
 
 You can also clone via SSH if you prefer. Make sure you have a SSH key and add it to your profile on Gitlab.
