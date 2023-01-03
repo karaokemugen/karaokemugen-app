@@ -1339,7 +1339,68 @@
 		"REPO_EDIT_ERROR": "Error al editar el repositorio",
 		"REPO_GIT_UPDATE_ERROR": "No se puede actualizar el repositorio de git",
 		"REPO_GIT_GET_COMMITS_ERROR": "No se pueden preparar los commits de git",
-		"POLL_LIST_ERROR": "Error al enumerar la encuesta actual"
+		"POLL_LIST_ERROR": "Error al enumerar la encuesta actual",
+		"REPO_DELETE_ALL_MEDIAS_ERROR": "Error al eliminar todos los medios del repositorio",
+		"USER_CREATE_ERROR": "Error al crear el usuario",
+		"TAG_GET_ERROR": "Error al obtener la etiqueta",
+		"USER_VIEW_ERROR": "Error al obtener los datos del usuario",
+		"PASSWORD_TOO_SHORT": "Contraseña demasiado corta (mínimo 8 caracteres)",
+		"USER_UNKNOWN": "Usuario conectado desconocido",
+		"ADMIN_CONVERT_ERROR": "La cuenta \"admin\" no puede convertirse en una cuenta en línea",
+		"POLL_VOTE_ERROR": "Esta canción no está en la encuesta",
+		"USER_ONLINE_NOINTERNET": "No puede editar su perfil por ahora, su servidor en línea no funciona.",
+		"NOT_GUEST": "Los invitados no pueden utilizar esta función",
+		"ERROR_READING_LOGS": "No se pueden leer los registros de eventos",
+		"SUBFILE_FORMAT_UNKOWN": "Formato de subtítulo desconocido",
+		"DELETE_PLAYLIST_ERROR_CURRENT": "No se puede eliminar una lista de reproducción actual. Primero selecciona otra lista de reproducción.",
+		"PROBLEMATIC_SMART_PLAYLIST_ERROR": "Error al crear una lista de reproducción inteligente sobre etiquetas problemáticas",
+		"REPO_DELETE_OLD_MEDIAS_ERROR": "Error al eliminar medias antiguas del repositorio",
+		"DELETE_PLAYLIST_ERROR_WHITELIST": "No se puede eliminar una lista blanca. Convierta primero otra lista de reproducción en una lista blanca.",
+		"DELETE_PLAYLIST_ERROR_BLACKLIST": "No se puede borrar una lista negra. Haga primero una lista negra de otra lista de reproducción.",
+		"DELETE_PLAYLIST_ERROR_PUBLIC": "No se puede eliminar una lista de reproducción pública. Primero haz pública otra lista de reproducción.",
+		"TAG_CREATE_ERROR": "Error al crear etiqueta",
+		"REPO_GET_FREE_SPACE_ERROR": "Error al obtener el espacio libre para el repositorio",
+		"REPOSITORY_UNREACHABLE": "Repositorio inalcanzable. ¿Has escrito mal su nombre?",
+		"CANNOT_INSTALL_REPO_AT_WINDOWS_ROOT_DRIVE": "El repositorio no puede instalarse en la raíz de una unidad Windows.",
+		"REFRESH_ANIME_LIST_ERROR": "Error al actualizar la lista de animes",
+		"USER_DELETE_ERROR": "Error al eliminar el usuario",
+		"USER_RESETPASSWORD_ERROR": "Error al restablecer la contraseña de usuario",
+		"REPO_DELETE_MEDIA_ERROR": "Error al eliminar medios",
+		"UNKNOW_CONVERT_ERROR": "Usuario desconocido",
+		"USER_CONVERT_ERROR": "Error al convertir a cuenta en línea",
+		"TAG_EDIT_ERROR": "Error al editar la etiqueta",
+		"USER_LIST_ERROR": "Error al obtener la lista de usuarios",
+		"SESSION_DELETE_ERROR": "Error al eliminar sesión",
+		"REPO_COPY_LYRICS_ERROR": "Error al comparar letras entre dos repositorios",
+		"USER_DELETE_ERROR_ONLINE": "Error al eliminar su cuenta en línea",
+		"TAGS_LIST_ERROR": "Error al obtener la lista de etiquetas",
+		"YEARS_LIST_ERROR": "Error al obtener la lista de años",
+		"TAGS_MERGED_ERROR": "Error al combinar etiquetas",
+		"TAG_DELETE_ERROR": "Error al eliminar la etiqueta",
+		"USER_EMPTY_PASSWORD": "¡Tu contraseña está vacía!",
+		"USER_CREATE_ERROR_ONLINE": "Error al crear el usuario en línea",
+		"PASSWORD_CONVERT_ERROR": "Contraseña incorrecta",
+		"UPDATING_MEDIAS_ERROR": "El repositorio {{repo}} no pudo actualizar los medios correctamente: {{err}}",
+		"SESSION_END_BEFORE_START_ERROR": "El fin de la sesión está antes de su comienzo!",
+		"USER_ALREADY_EXISTS": "El usuario ya existe",
+		"USER_ASCII_CHARACTERS_ONLY": "Sólo caracteres alfanuméricos en tu nombre de usuario, por favor (puedes cambiar tu apodo más tarde por el que desees).",
+		"USER_GET_ERROR_ONLINE": "Error al obtener usuarios en línea",
+		"SESSION_EXPORT_ERROR": "Error al exportar sesión",
+		"SESSION_NOT_FOUND": "Sesión desconocida",
+		"USER_RESETPASSWORD_ONLINE_ERROR": "No se ha podido restablecer la contraseña: póngase en contacto con el administrador del servidor al que pertenece su cuenta.",
+		"REPO_COMPARE_LYRICS_ERROR": "Error al comparar letras entre dos repositorios",
+		"REPO_SYNC_TAGS_ERROR": "Error al sincronizar etiquetas entre dos repositorios",
+		"COLLECTIONS_GET_ERROR": "Error al obtener colecciones",
+		"LYRICS_FILE_OPEN_ERROR": "Error al abrir el archivo",
+		"FS_DELETE_ERROR": "Error al eliminar el archivo",
+		"USER_CANNOT_CHANGE_TYPE": "Sólo los administradores pueden cambiar el tipo de un usuario",
+		"GUESTS_CANNOT_EDIT": "Los invitados no pueden editar sus perfiles",
+		"UPLOADED_MEDIA_ERROR": "Error al subir los medios",
+		"USER_ALREADY_EXISTS_ONLINE": "El usuario ya existe en línea",
+		"USER_EDIT_ERROR": "Error al editar usuario",
+		"ADMIN_PLEASE": "Por favor utilice una cuenta de operador",
+		"FAVORITES_ONLINE_NOINTERNET": "No puede editar sus favoritos por ahora, su servidor en línea no funciona.",
+		"ANIME_LIST_VIEW_ERROR": "Error al obtener la lista de animes"
 	},
 	"CONFIG": {
 		"PROPERTIES": {
@@ -1452,5 +1513,303 @@
 		"EGG_3": "Deja eso, es inútil.",
 		"KARAS_DESCRIPTION": "Lista, edita y crea archivos de datos de karaoke. También puedes descargar medios y ver los más solicitados, los más reproducidos y el historial de karaoke",
 		"SYSTEM_DESCRIPTION": "Consulta los registros, cambia las opciones de configuración, haz una copia de seguridad/restaura tu base de datos, activa una generación manual y gestiona la sesión de karaoke"
+	},
+	"SUCCESS_CODES": {
+		"REPO_LYRICS_COPIED": "La copia de letras entre dos repositorios se ha realizado correctamente",
+		"DATABASE_DUMPED": "Base de datos volcada en karaokemugen.sql",
+		"TAG_CREATED": "Etiqueta creada con éxito",
+		"USER_CREATED": "Usuario creado con éxito",
+		"KARA_CREATED": "Karaoke creado",
+		"DATABASE_RESTORED": "Base de datos restaurada de karaokemugen.sql",
+		"MESSAGE_SENT": "Mensaje enviado",
+		"PL_SONG_ADDED": "¡Añadida con éxito la canción \"{{song}}\"!",
+		"PL_IMPORTED": "Lista de reproducción añadida: {{data}}",
+		"DOWNLOADS_QUEUED": "Se agregaron descargas {{data}} a la cola",
+		"DATABASE_GENERATED": "Base de datos generada correctamente",
+		"REPO_CREATED": "Repositorio añadido correctamente",
+		"POLL_VOTED": "Voto registrado",
+		"SESSION_CREATED": "Sesión creada con éxito",
+		"REPO_MOVING_MEDIA_IN_PROGRESS": "Movimiento de medios en progreso",
+		"TAG_DELETED": "Etiqueta eliminada correctamente",
+		"SESSION_ACTIVATED": "Sesión activada con éxito",
+		"SESSION_ACTIVATED_ERROR": "Error de activación de sesión",
+		"SESSION_DELETED": "Sesión eliminada con éxito",
+		"TAG_EDITED": "Etiqueta editada con éxito",
+		"TAGS_MERGED": "Etiquetas combinadas correctamente",
+		"USER_CONVERTED": "Su cuenta ahora está en línea",
+		"USER_DELETED_ONLINE": "Su cuenta en línea se ha eliminado correctamente",
+		"FAVORITES_IMPORTED": "Favoritos importados",
+		"USER_DELETED": "Usuario eliminado correctamente",
+		"REPO_ALL_MEDIAS_DELETED": "Todos los medios del repositorio eliminados",
+		"REPO_OLD_MEDIAS_DELETED": "Medios antiguos del repositorio eliminados",
+		"USER_RESETPASSWORD_SUCCESS": "Contraseña de usuario restablecida correctamente",
+		"STOP_AFTER": "El karaoke se detendrá al final de la canción actual. Para parar ahora, pulsa de nuevo el botón.",
+		"REPO_MEDIA_DELETED": "Medios eliminados",
+		"SESSION_EDITED": "Sesión editada con éxito",
+		"SESSION_MERGED": "Sesiones combinadas correctamente",
+		"FILES_VALIDATED": "Archivos validados correctamente",
+		"REPO_EDITED": "Repositorio editado con éxito",
+		"REPO_DELETED": "Repositorio eliminado con éxito",
+		"CONFIG_BACKUPED": "Archivo de configuración respaldado en config.yml.backup",
+		"USER_RESETPASSWORD_ONLINE": "Se ha enviado un correo electrónico con un enlace para restablecer su contraseña.",
+		"KARA_EDITED": "Karaoke editado",
+		"UPDATING_MEDIAS_IN_PROGRESS": "Actualización de medios en progreso",
+		"DOWNLOADS_STARTED": "Descargas comenzando",
+		"KARA_DELETED": "Karaoke eliminado",
+		"SONG_COPIED": "Canción copiada con éxito a otro repositorio",
+		"TAG_COPIED": "Etiqueta copiada con éxito a otro repositorio",
+		"USER_EDITED": "Usuario editado con éxito"
+	},
+	"HEADERS": {
+		"SYSTEM_PREFERENCES": {
+			"TITLEMAC": "Configuración del sistema",
+			"DESCRIPTION": "Sólo ajustes relacionados con la aplicación",
+			"TITLE": "Preferencias del sistema"
+		},
+		"SESSIONS_NEW": {
+			"TITLE": "Añade una sesión de karaoke",
+			"DESCRIPTION": "Formulario de creación de sesión de karaoke."
+		},
+		"SESSIONS_EDIT": {
+			"TITLE": "Editar una sesión de karaoke",
+			"DESCRIPTION": "Formulario de modificación de sesión de karaoke."
+		},
+		"BACKGROUNDS": {
+			"TITLE": "Gestión de fondos",
+			"DESCRIPTION": "Sólo una forma de personalizar un poco a tu reproductor."
+		},
+		"TAG_LIST": {
+			"TITLE": "Lista de etiquetas",
+			"DESCRIPTION": "Sólo para mantenedores: lista de etiquetas con las que están hechos sus karaokes."
+		},
+		"REPOSITORIES": {
+			"DESCRIPTION": "Los repositorios son fuentes de karaoke. Añade, activa o elimina repositorios desde esta página.",
+			"DESCRIPTION_COLLECTION": "Las colecciones de canciones están destinadas a diferentes públicos. Elija las colecciones que desea ver en su base de datos de karaoke.",
+			"TITLE": "Gestión de colecciones y repositorios"
+		},
+		"REPOSITORIES_NEW": {
+			"TITLE": "Añadir un repositorio",
+			"DESCRIPTION": "Formulario de creación de repositorios."
+		},
+		"MOST_PLAYED": {
+			"TITLE": "Canciones más reproducidas",
+			"DESCRIPTION": "Lista de las canciones más reproducidas en tu aplicación"
+		},
+		"LOGS": {
+			"TITLE": "Registros",
+			"DESCRIPTION": "Todo lo que nunca quisiste saber sobre el funcionamiento de tu karaoke."
+		},
+		"SESSIONS": {
+			"DESCRIPTION": "Añade, elimina o visualiza los datos de las diferentes sesiones de Karaoke que hayas realizado.",
+			"TITLE": "Gestión de sesiones"
+		},
+		"HOME": {
+			"TITLE": "Panel de sistema",
+			"DESCRIPTION": "Aquí es donde empieza todo. Elige tu acción."
+		},
+		"TAG_NEW": {
+			"TITLE": "Crear una etiqueta",
+			"DESCRIPTION": "Formulario de creación de etiquetas. Recuerde añadir al menos una traducción al inglés."
+		},
+		"GIT": {
+			"TITLE": "Integración de Git",
+			"DESCRIPTION": "Gestión de repositorios Git (push, fusionar conflictos)"
+		},
+		"KARAOKE_NEW": {
+			"DESCRIPTION": "Este formulario le permite añadir un karaoke ya existente a uno de sus repositorios.",
+			"TITLE": "Agregar un karaoke"
+		},
+		"KARAOKE_EDIT": {
+			"TITLE": "Editar un karaoke",
+			"DESCRIPTION": "Formulario de modificación de karaoke."
+		},
+		"DOWNLOAD": {
+			"DESCRIPTION": "Busca y obtén medios vinculados a karaoke desde los repositorios que hayas configurado.",
+			"TITLE": "Administrador de descargas multimedia"
+		},
+		"MOST_REQUESTED": {
+			"TITLE": "Canciones más populares",
+			"DESCRIPTION": "Enumera las canciones más solicitadas en su aplicación. Solo tiene en cuenta las canciones de karaoke agregadas desde la interfaz pública.",
+			"DESCRIPTION_ONLINE": "Ahora mismo estás viendo la lista de canciones populares ONLINE. Desactiva la opción \"Buscar canciones populares online\" para ver sólo las de tu instancia."
+		},
+		"CONFIGURATION": {
+			"TITLE": "Configuración avanzada",
+			"DESCRIPTION": "Sólo para expertos. Todos los ajustes de Karaoke Mugen están aquí, ten cuidado donde pones los dedos."
+		},
+		"UNUSED_FILES": {
+			"DESCRIPTION": "Puede enumerar los archivos innecesarios (utilizados por ningún karaoke) en sus repositorios desde aquí.",
+			"TITLE": "Archivos no utilizados"
+		},
+		"TAG_DUPLICATES": {
+			"TITLE": "Lista de etiquetas duplicadas",
+			"DESCRIPTION": "Esta página le permite ver etiquetas que tienen el mismo nombre pero no la misma categoría para fusionarlas si es necesario."
+		},
+		"TAG_EDIT": {
+			"DESCRIPTION": "Formulario de modificación de etiquetas. Sólo el cambio de nombre original da lugar a un cambio de nombre de archivo.",
+			"TITLE": "Modificar una etiqueta"
+		},
+		"USER_NEW": {
+			"TITLE": "Crear un usuario",
+			"DESCRIPTION": "Formulario de creación de usuario local"
+		},
+		"KARAOKE_LIST": {
+			"TITLE": "Lista de karaokes",
+			"DESCRIPTION": "Desde aquí puedes editar, añadir o eliminar karaoke. Por lo general, solo para mantenedores de repositorios de karaoke."
+		},
+		"HISTORY": {
+			"DESCRIPTION": "Lista todos los karaokes reproducidos en tu aplicación, en orden cronológico descendente.",
+			"TITLE": "Historial de lectura"
+		},
+		"INBOX": {
+			"TITLE": "Bandeja de entrada de karaokes para integrar",
+			"DESCRIPTION": "Como mantenedor de esta base de karaoke, tu deber es dejar vacía esta lista."
+		},
+		"KARATAG_BATCH_EDIT": {
+			"DESCRIPTION": "Sólo para mantenedores: esta página permite añadir o eliminar una etiqueta en varios karaokes simultáneamente.",
+			"TITLE": "Añadir/eliminar etiqueta de forma masiva"
+		},
+		"DATABASE": {
+			"TITLE": "Base de datos",
+			"DESCRIPTION": "Herramientas de gestión de bases de datos. Base de datos, base de datos, simplemente vivir en la base de datos wow wow."
+		},
+		"REPOSITORIES_EDIT": {
+			"DESCRIPTION": "Formulario de modificación del repositorio.",
+			"TITLE": "Editar un repositorio"
+		},
+		"DOWNLOAD_QUEUE": {
+			"DESCRIPTION": "Ver la lista de descargas actuales y pendientes.",
+			"TITLE": "Cola de descarga de medios"
+		},
+		"USER_LIST": {
+			"TITLE": "Gestión de usuarios",
+			"DESCRIPTION": "Desde aquí puede crear, eliminar, modificar usuarios, pero también restablecer su contraseña o cambiar sus derechos."
+		},
+		"USER_EDIT": {
+			"TITLE": "Modificar un usuario",
+			"DESCRIPTION": "Formulario de modificación de usuario"
+		},
+		"STORAGE": {
+			"TITLE": "Gestión del almacenamiento en disco",
+			"DESCRIPTION": "Gestión del almacenamiento de discos multimedia"
+		}
+	},
+	"BULLDOZER_VIDEOS": {
+		"P8": "En realidad, ninguno : Karaoke Mugen se aseguró de que tus repositorios online fueran convertidos para hacerlos compatibles con el nuevo sistema de actualización. Tus archivos multimedia descargados permanecerán allí y podrás eliminar los que no utilices en cualquier momento si necesitas liberar espacio en el disco ahora.",
+		"P9": "También hay una nueva opción, por repositorio, que evita que Karaoke Mugen descargue medios actualizados al iniciarse. Por ejemplo, si un medio ya está presente en el almacenamiento de tu ordenador, pero ha sido actualizado en tu repositorio, la nueva versión se descargará automáticamente.",
+		"P11": "Puede modificar los criterios de la lista negra en cualquier momento.",
+		"L3": "Elimine todos los soportes de un repositorio si necesita espacio en disco en caso de emergencia",
+		"T2": "¿Qué hacer si me estoy quedando sin espacio?",
+		"T5": "¿Qué pasó con los criterios de descarga de la lista negra?",
+		"P7": "Puedes seguir descargando por adelantado todos los medios desde el gestor de descargas.",
+		"T4": "¿Hay algo que deba hacer?",
+		"T3": "¿Qué pasa si tengo que hacer una sesión de karaoke en algún lugar sin acceso a Internet?",
+		"TITLE": "Cambios importantes en la gestión de medios y repositorios",
+		"P2": "Las actualizaciones del repositorio se gestionan ahora a través de git. Esto significa que, independientemente de las canciones que hayas descargado antes, ahora tienes acceso a toda la base de datos de karaoke.",
+		"P5": "Los medios se descargarán a medida que los necesite.",
+		"T1": "¡Pero no puedo descargar todos los medios!",
+		"P10": "Se han migrado a los criterios habituales de las listas negras. Esto significa que no verás esas canciones de la lista negra en tu biblioteca, ¡como si nunca las hubieras descargado!",
+		"P1": "Los repositorios y los medios cambian mucho a partir de esta versión Karaoke Mugen.",
+		"P3": "Somos conscientes de que no todo el mundo puede permitirse descargar toda la base de datos de karaoke. Hemos hecho que eso ya no sea necesario. Ahora sólo se descargan los metadatos de las canciones al iniciarse.",
+		"P4": "Que no cunda el pánico. Ahora tienes acceso a todas las canciones, pero sus soportes no se descargan en tu ordenador.",
+		"L1": "Si deseas reproducir una canción de la biblioteca, se transmitirá desde el servidor de Karaoke Mugen de tu repositorio. Tu conexión a Internet se utilizará para reproducir la canción directamente.",
+		"L2": "Si añades una canción a una lista de reproducción en curso (utilizada por el reproductor de vídeo), el contenido multimedia se descargará en segundo plano. Si la descarga no ha terminado cuando llegues a esa canción, se transmitirá por Internet. Si ya ha terminado, se reproducirá directamente desde el almacenamiento de tu ordenador.",
+		"P6": "En el panel del sistema, hay disponible un nuevo elemento \"Gestión del espacio en disco\". A través de ella se puede:",
+		"L4": "Eliminar sólo las medias que no se han reproducido durante un mes (por defecto)"
+	},
+	"BACKGROUNDS_MGMT": {
+		"NEW": "Música o fondo nuevos",
+		"EXPL": "Hay 3 categorías de fondos. Si una categoría no tiene ningún fondo, se utilizará uno empaquetado (aquellos con el personaje que da nombre a la versión de la app).",
+		"CHOOSE_FILE": "Elija un archivo",
+		"SAVE": "Guardar",
+		"INFO": [
+			"Si quieres utilizar el mismo fondo para 2 categorías diferentes (o más), tienes que colocar él en cada categoría.",
+			"También puedes añadir música. Del mismo modo, cada categoría tiene su propia música.",
+			"Puede vincular un fondo a una música dándole el mismo nombre. Por ejemplo, fondo1.jpg y fondo1.mp3 de la misma categoría estarán siempre vinculados. De lo contrario, si back2.jpg no tiene un sonido con el mismo nombre, será elegido al azar."
+		],
+		"FILE": "Nombre del archivo",
+		"CATEGORY": "Categoría",
+		"DESC": {
+			"POLL": "Cuando se está ejecutando una encuesta.",
+			"STOP": "Cuando el reproductor está detenido.",
+			"PAUSE": "Entre canciones (modo streamer/clásico)"
+		},
+		"PREVIEW": "Vista previa",
+		"PICTURES": "Fotos",
+		"TYPE": {
+			"STOP": "Detener",
+			"PAUSE": "Pausa",
+			"POLL": "Encuesta"
+		},
+		"MUSIC": "Música"
+	},
+	"INBOX": {
+		"DOWNLOAD": "Descargar karaoke",
+		"LINK_TO_ISSUE": "Enlace al problema",
+		"USER": "Usuario a cargo de la integración de problemas",
+		"SONG_DOWNLOADED_FROM_INBOX": "Canción {{song}} descargada con éxito de la bandeja de entrada",
+		"SONG_DOWNLOADED_FROM_INBOX_FAILED": "¡No se pudo descargar la canción de la bandeja de entrada!",
+		"CONTACT_INFOS": "Informaciones de contacto del autor",
+		"ISSUE": "Problema {{number}}",
+		"DELETE": "¿Estás seguro de que quieres borrar el karaoke de la bandeja de entrada, así como sus archivos en el servidor?",
+		"CONTACT_INFOS_MODAL": {
+			"USERNAME": "Nombre de usuario: ",
+			"MAIL": "Correo electrónico: ",
+			"URL": "Sitio web: "
+		},
+		"NO_REPOSITORY_ENABLED": "No hay repositorio en línea habilitado en modo de mantenedor",
+		"ONLINE_USER_REQUIRED": "Se requiere un usuario en línea para la bandeja de entrada",
+		"NAME": "Nombre del karaoke",
+		"TYPE": "Tipo de solicitud"
+	},
+	"COLLECTIONS_MIGRATION": {
+		"P2": "Marque las colecciones que desea activar. Puede cambiar esto en el panel del sistema.",
+		"TITLE": "¡Presentamos colecciones!",
+		"P1": "Para ampliar el repositorio de karaoke con más canciones, creamos colecciones en los repositorios, para seleccionar sólo un subconjunto de canciones y eliminar algunas canciones que no quieras ver. Sólo las canciones dentro de una colección habilitada aparecerán en la interfaz (pública y admin)."
+	},
+	"PRIVACY_POLICY": {
+		"P3": "Dado que este es un proyecto libre (como en libertad de expresión) y gratuito (como en cerveza gratis), consideramos normal que esperes de nosotros total transparencia sobre cómo se utilizan tus datos. Para alcanzar este objetivo, vamos a resumir los datos que procesamos y cómo puedes controlarlos.",
+		"P2": "Tu aplicación acaba de actualizarse a la versión 5.0 con un montón de novedades, como una nueva interfaz pública, acceso remoto (te lo contamos más adelante), un nuevo tipo de etiqueta de versión que nos permite identificar carátulas, versiones alternativas, etc. más fácilmente.",
+		"P4": "En absoluto, los datos que obtenemos son anónimos o están vinculados a tu nombre de usuario. Veamos:",
+		"L4_DETAILS": "Estas estadísticas también incluyen datos sobre el hardware de su ordenador (memoria, monitores, procesador, sistema operativo). Los karaokes reproducidos y solicitados se envían sin que sepamos quién está detrás de estas solicitudes. Esto se utiliza para alimentar nuestras listas de karaokes populares en su interfaz pública, pero también en nuestro explorador de karaokes en línea.",
+		"TITLE": "Privacidad",
+		"MORE": "Más",
+		"L5": "Si activas los informes Sentry, los informes de errores creados por la aplicación se envían automáticamente a Sentry.io, un servicio de terceros que utilizamos para recopilar información sobre errores. Esto nos permite comprender mejor cómo se ha producido un error y solucionarlo en una versión futura. El servicio enviará parte del registro de eventos de la aplicación, que puede contener nombres de usuario. Estos registros contienen información mínima.",
+		"P6": "Si tiene alguna pregunta o desea que eliminemos datos, puede enviarnos un correo electrónico a mugen@karaokes.moe.",
+		"T2": "¿Cómo puedo desactivarlo?",
+		"L3": "Si utilizas la función de acceso remoto (https://<code>.kara.moe), el código generado se almacena en la memoria de nuestro servidor y de tu aplicación. Caduca a los 10 días de no usarlo (así que puedes conservar el mismo código si lo usas a menudo).",
+		"T1": "¿Nos estás espiando?!",
+		"P1": "Gracias por usar Karaoke Mugen. Estamos gestionando la base de datos y el desarrollo de su software de forma gratuita por lo que cualquier atención que nos das nos hace felices. Así que de nuevo, gracias ❤.",
+		"L1": "Si utilizas la función de perfil en línea, los datos de tu perfil (correo electrónico, biografía, URL del sitio, etc.), así como tus favoritos, se envían en tiempo real al servidor que aloja tu perfil (por defecto es kara.moe, nuestro servidor)",
+		"L5_DETAILS": "El informe Sentry incluye el sistema operativo utilizado, la versión de tu aplicación Karaoke Mugen, la pila de ejecución (donde se produjo el error), el estado de la aplicación y su configuración (sin información confidencial como tokens de Twitch o secretos JWT). Estos informes se asocian a tu nombre de usuario (el usuario que instaló la aplicación), lo que hace posible encontrar tus informes fácilmente si nos pides ayuda en relación a un bug de Karaoke Mugen. Estos informes también se publican en nuestro Discord (con un conjunto limitado de información, sin comprometer tu configuración ni el estado de la aplicación, ya que estos detalles están reservados a los mantenedores de la aplicación) para que se puedan encontrar fácilmente.",
+		"L4": "Si activas las estadísticas, la aplicación enviará periódicamente estadísticas sobre las canciones reproducidas, solicitadas y tu lista de sesiones de karaoke. Estos datos nunca se vinculan a tu nombre o nombre de usuario. Sin embargo, se vincula un ID único a tu aplicación para que podamos reagrupar las estadísticas.",
+		"P5": "Sin duda puedes hacerlo. Las cuentas online no son obligatorias, así como las otras características mencionadas anteriormente. Puedes activar/desactivar las estadísticas y/o los informes de errores en el panel del sistema. Sigues siendo dueño de tus datos en cualquier momento."
+	},
+	"LOGS": {
+		"LEVELS": {
+			"ERROR": "Errores",
+			"INFO": "Informaciones",
+			"DEBUG": "Depurar",
+			"WARNING": "Advertencias"
+		},
+		"SELECT_LOG": "Seleccione el registro en el gestor de archivos",
+		"SHOW_DETAILS": "Mostrar detalles"
+	},
+	"ONLINE": {
+		"TITLE": "Karaoke Mugen en línea",
+		"P1": "Tu App Karaoke Mugen fue actualizada a 5.0, nuevas funciones están disponibles y algunas podrían requerir tu atención. ¿Quieres habilitar el acceso remoto para tu instancia? Al hacer clic en sí, un token remoto será generado automáticamente por el servidor de Karaoke Mugen. Caduca a los 10 días de inactividad."
+	},
+	"ABOUT": {
+		"DONATORS": "Gracias a 1 <>{{donators}}</1> para sus donaciones a Karaoke Mugen",
+		"DESCRIPTION": "Reproductor de karaoke y organizador de fiestas, entre amigos o en público. Con licencia MIT.",
+		"CONTRIBUTORS": "Los karaokes fueron creados por gente impresionante, como <1>{{contributors}}</1> por ejemplo."
+	},
+	"CHIBI": {
+		"FOCUS": "Volver a Karaoke Mugen",
+		"CLOSE": "Cerrar reproductor de chibi",
+		"ONTOP": "Mostrar encima de otras ventanas"
+	},
+	"MIGRATE": {
+		"TITLE": "Migración",
+		"CONTINUE": "Continuar."
 	}
 }
