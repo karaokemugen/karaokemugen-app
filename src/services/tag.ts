@@ -22,7 +22,7 @@ import { defineTagFilename, getDataFromTagFile, removeTagFile, trimTagData, writ
 import { refreshKarasAfterDBChange } from '../lib/services/karaManagement';
 import { DBKara, DBKaraTag } from '../lib/types/database/kara';
 import { DBTag } from '../lib/types/database/tag';
-import { Kara, KaraFileV4 } from '../lib/types/kara.d';
+import { KaraFileV4 } from '../lib/types/kara.d';
 import { Tag, TagFile, TagParams } from '../lib/types/tag';
 import { getConfig, resolvedPathRepos } from '../lib/utils/config';
 import { getTagTypeName, tagTypes } from '../lib/utils/constants';
@@ -163,17 +163,17 @@ export async function mergeTags(tid1: string, tid2: string) {
 			removeTagInStore(tid1),
 			removeTagInStore(tid2),
 		]);
-		let karas = await getKarasWithTags([tag1, tag2, tagObj as any]);
-		await replaceTagInKaras(tid1, tid2, tagObj, karas);
-		karas = await getKarasWithTags([tagObj as any]);
-		const karasData: Kara[] = [];
-		for (const kara of karas) {
-			const karafile = await resolveFileInDirs(kara.karafile, resolvedPathRepos('Karaokes', kara.repository));
-			await editKaraInStore(karafile[0]);
-			karasData.push(formatKaraV4(kara).data);
+		let karas = await getKarasWithTags([tag1, tag2]);
+		if (karas.length > 0) {
+			await replaceTagInKaras(tid1, tid2, tagObj, karas);
+			karas = await getKarasWithTags([tagObj]);
+			for (const kara of karas) {
+				const karafile = await resolveFileInDirs(kara.karafile, resolvedPathRepos('Karaokes', kara.repository));
+				await editKaraInStore(karafile[0]);
+			}
+			sortKaraStore();
+			saveSetting('baseChecksum', getStoreChecksum());
 		}
-		sortKaraStore();
-		saveSetting('baseChecksum', getStoreChecksum());
 		await refreshTags();
 		return tagObj;
 	} catch (err) {
@@ -275,23 +275,17 @@ export async function editTag(
 }
 
 async function getKarasWithTags(tags: DBTag[]): Promise<DBKara[]> {
-	let karasToReturn = [];
-	const karaPromises = [];
+	let tagsWithTypes = '';
 	for (const tag of tags) {
 		for (const type of tag.types) {
-			karaPromises.push(
-				getKaras({
-					q: `t:${tag.tid}~${type}`,
-					ignoreCollections: true,
-				})
-			);
+			tagsWithTypes = `${tagsWithTypes},${tag.tid}~${type}`;
 		}
 	}
-	const karas = await Promise.all(karaPromises);
-	for (const karaList of karas) {
-		karasToReturn = [].concat(karasToReturn, karaList.content);
-	}
-	return karasToReturn;
+	const karas = await getKaras({
+		q: `at:${tagsWithTypes}`,
+		ignoreCollections: true,
+	});
+	return karas.content;
 }
 
 export async function removeTag(
