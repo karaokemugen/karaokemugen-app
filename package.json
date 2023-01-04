@@ -326,7 +326,6 @@
       "executableName": "karaokemugen",
       "category": "AudioVideo",
       "synopsis": "Karaoke manager and player",
-      "icon": "icon512.png",
       "publish": {
         "provider": "generic",
         "url": "https://mugen.karaokes.moe/downloads/"
