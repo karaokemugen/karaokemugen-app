@@ -21,7 +21,7 @@ import { convertToDBTag, refreshTags, updateTagSearchVector } from '../lib/dao/t
 import { formatTagFile, getDataFromTagFile, removeTagFile, trimTagData, writeTagFile } from '../lib/dao/tagfile';
 import { refreshKarasAfterDBChange } from '../lib/services/karaManagement';
 import { DBKara, DBKaraTag } from '../lib/types/database/kara';
-import { DBTag, DBTagMini } from '../lib/types/database/tag';
+import { DBTag } from '../lib/types/database/tag';
 import { Kara, KaraFileV4 } from '../lib/types/kara.d';
 import { Tag, TagFile, TagParams } from '../lib/types/tag';
 import { getConfig, resolvedPathRepos } from '../lib/utils/config';
@@ -274,7 +274,7 @@ export async function editTag(
 	}
 }
 
-async function getKarasWithTags(tags: DBTagMini[]): Promise<DBKara[]> {
+async function getKarasWithTags(tags: DBTag[]): Promise<DBKara[]> {
 	let karasToReturn = [];
 	const karaPromises = [];
 	for (const tag of tags) {
@@ -302,7 +302,7 @@ export async function removeTag(
 		deleteFile: true,
 	}
 ) {
-	const tags: DBTagMini[] = [];
+	const tags: DBTag[] = [];
 	for (const tid of tids) {
 		const tag = await getTag(tid);
 		if (tag) tags.push(tag);
