@@ -205,7 +205,7 @@ export async function editTag(
 			throw { code: 409, msg: 'Tag repository cannot be modified. Use copy function instead' };
 		}
 		tagObj = trimTagData(tagObj);
-		tagObj.tagfile = `${sanitizeFile(tagObj.name)}.${tid.substring(0, 8)}.tag.json`;
+		tagObj.tagfile = defineTagFilename(tagObj);
 		await updateTag(tagObj);
 		if (opts.writeFile) {
 			// Try to find old tag
@@ -220,8 +220,9 @@ export async function editTag(
 			}
 			// FS stuff
 			const promises = [];
+			const tagfile = tagObj.tagfile;
 			promises.push(writeTagFile(tagObj, oldTagPath));
-			if (oldTag.tagfile !== tagObj.tagfile) {
+			if (oldTag.tagfile !== tagfile) {
 				promises.push(
 					fs.unlink(oldTagFiles[0]).catch(() => {
 						// Non fatal. Can be triggered if the tag file has already been removed.
@@ -229,7 +230,7 @@ export async function editTag(
 				);
 			}
 			await Promise.all(promises);
-			const newTagFiles = await resolveFileInDirs(tagObj.tagfile, resolvedPathRepos('Tags', tagObj.repository));
+			const newTagFiles = await resolveFileInDirs(tagfile, resolvedPathRepos('Tags', tagObj.repository));
 			// If the old and new paths are different, it means we copied it to a new repository
 			if (oldTagFiles[0] && oldTagFiles[0] !== newTagFiles[0]) {
 				await addTagToStore(newTagFiles[0]);
