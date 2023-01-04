@@ -18,7 +18,7 @@ import { saveSetting } from '../lib/dao/database';
 import { refreshKarasUpdate } from '../lib/dao/kara';
 import { formatKaraV4 } from '../lib/dao/karafile';
 import { convertToDBTag, refreshTags, updateTagSearchVector } from '../lib/dao/tag';
-import { formatTagFile, getDataFromTagFile, removeTagFile, trimTagData, writeTagFile } from '../lib/dao/tagfile';
+import { defineTagFilename, getDataFromTagFile, removeTagFile, trimTagData, writeTagFile } from '../lib/dao/tagfile';
 import { refreshKarasAfterDBChange } from '../lib/services/karaManagement';
 import { DBKara, DBKaraTag } from '../lib/types/database/kara';
 import { DBTag } from '../lib/types/database/tag';
@@ -69,15 +69,12 @@ export async function addTag(tagObj: Tag, opts = { silent: false, refresh: true 
 	try {
 		tagObj = trimTagData(tagObj);
 		if (!tagObj.tid) tagObj.tid = uuidV4();
-		if (!tagObj.tagfile) tagObj.tagfile = `${sanitizeFile(tagObj.name)}.${tagObj.tid.substring(0, 8)}.tag.json`;
+		if (!tagObj.tagfile) tagObj.tagfile = defineTagFilename(tagObj);
 		const tagfile = tagObj.tagfile;
-
 		const promises = [insertTag(tagObj), writeTagFile(tagObj, resolvedPathRepos('Tags', tagObj.repository)[0])];
 		await Promise.all(promises);
 		emitWS('statsRefresh');
-		const tagData = formatTagFile(tagObj).tag;
-		tagData.tagfile = tagfile;
-		const newTagFiles = await resolveFileInDirs(tagObj.tagfile, resolvedPathRepos('Tags', tagObj.repository));
+		const newTagFiles = await resolveFileInDirs(tagfile, resolvedPathRepos('Tags', tagObj.repository));
 		await addTagToStore(newTagFiles[0]);
 		sortTagsStore();
 		saveSetting('baseChecksum', getStoreChecksum());
@@ -86,6 +83,8 @@ export async function addTag(tagObj: Tag, opts = { silent: false, refresh: true 
 			await updateTagSearchVector();
 			refreshTags();
 		}
+		// Re-add tagfile since it's been removed by writeTagFile
+		tagObj.tagfile = tagfile;
 		return tagObj;
 	} catch (err) {
 		sentry.error(err);
