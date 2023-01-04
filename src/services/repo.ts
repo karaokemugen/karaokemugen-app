@@ -1,6 +1,7 @@
 import { shell } from 'electron';
 import { promises as fs } from 'fs';
 import { copy, remove } from 'fs-extra';
+import parallel from 'p-map';
 import { basename, parse, resolve } from 'path';
 import { TopologicalSort } from 'topological-sort';
 
@@ -528,41 +529,58 @@ async function applyChanges(changes: Change[], repo: Repository) {
 		const tagFiles = changes.filter(f => f.path.endsWith('.tag.json'));
 		const karaFiles = changes.filter(f => f.path.endsWith('.kara.json'));
 		const TIDsToDelete = [];
-		const tagPromises = [];
 		task = new Task({ text: 'UPDATING_REPO', total: karaFiles.length + tagFiles.length });
+		const tagFilesToProcess = [];
 		for (const match of tagFiles) {
 			if (match.type === 'new') {
-				tagPromises.push(
-					integrateTagFile(
-						resolve(resolvedPathRepos('Tags', repo.Name)[0], basename(match.path)),
-						false
-					).catch(err => {
-						throw err;
-					})
-				);
+				tagFilesToProcess.push(resolve(resolvedPathRepos('Tags', repo.Name)[0], basename(match.path)));
 			} else {
 				// Delete.
 				TIDsToDelete.push(match.uid);
+				task.update({ value: task.item.value + 1, subtext: match.path });
 			}
-			task.update({ value: task.item.value + 1, subtext: match.path });
 		}
-		await Promise.all(tagPromises);
+		const tagMapper = async (file: string) => {
+			await integrateTagFile(file, false);
+			task.update({ value: task.item.value + 1, subtext: basename(file) });
+		};
+		try {
+			await parallel(tagFilesToProcess, tagMapper, {
+				stopOnError: true,
+				concurrency: 32,
+			});
+		} catch (err) {
+			throw err;
+		}
 		const KIDsToDelete = [];
 		const KIDsToUpdate = [];
 		let karas: KaraMetaFile[] = [];
+		const karaFilesToProcessBeforeSort = [];
 		for (const match of karaFiles) {
 			if (match.type === 'new') {
-				const file = resolve(resolvedPathRepos('Karaokes', repo.Name)[0], basename(match.path));
-				const karaFileData = await parseKara(file);
-				karas.push({
-					file,
-					data: karaFileData,
-				});
+				karaFilesToProcessBeforeSort.push(
+					resolve(resolvedPathRepos('Karaokes', repo.Name)[0], basename(match.path))
+				);
 			} else {
 				// Delete.
 				KIDsToDelete.push(match.uid);
+				task.update({ value: task.item.value + 1, subtext: match.path });
 			}
-			task.update({ value: task.item.value + 1, subtext: match.path });
+		}
+		const karaMapper = async file => {
+			const karaFileData = await parseKara(file);
+			karas.push({
+				file,
+				data: karaFileData,
+			});
+		};
+		try {
+			await parallel(karaFilesToProcessBeforeSort, karaMapper, {
+				stopOnError: true,
+				concurrency: 32,
+			});
+		} catch (err) {
+			throw err;
 		}
 		try {
 			/* Uncomment this when you need to debug stuff.
@@ -602,6 +620,7 @@ async function applyChanges(changes: Change[], repo: Repository) {
 		}
 		for (const kara of karas) {
 			KIDsToUpdate.push(await integrateKaraFile(kara.file, kara.data, false));
+			task.update({ value: task.item.value + 1, subtext: basename(kara.file) });
 		}
 		const deletePromises = [];
 		if (KIDsToDelete.length > 0)
