@@ -408,7 +408,7 @@
 	"KARAOKE_one": "{{count}} canción",
 	"KARAOKE_other": "{{count}} canciones",
 	"AUTOMIX_MODAL": {
-		"EMPTY": "Seleccionar usuarios y una duración",
+		"EMPTY": "Seleccionar criterios y una duración",
 		"MIX": "Crear AutoMix",
 		"DURATION": "Duración (en minutos)",
 		"DESCRIPTION": "Una AutoMix es una lista de reproducción creada con criterios y una duración. A diferencia de las listas de reproducción inteligentes, esta lista no se actualiza automáticamente. Para que una canción se incluya en la lista, tiene que coincidir un solo criterio.",
@@ -551,7 +551,8 @@
 			"NAME": "Nombre",
 			"CURRENT": "Actual",
 			"CANNOT_PUBLIC": "No puedes tener ninguna lista de reproducción pública, edita la que quieras establecer como nueva lista de reproducción pública.",
-			"CANNOT_WHITELIST": "No puedes no tener ninguna lista blanca, edita la que quieras establecer como nueva lista blanca."
+			"CANNOT_WHITELIST": "No puedes no tener ninguna lista blanca, edita la que quieras establecer como nueva lista blanca.",
+			"VISIBLE": "Visible"
 		},
 		"UNKNOW_REPOS": {
 			"TITLE": "Repositorios desconocidos detectados",
@@ -583,7 +584,20 @@
 			"FLAG_DISPLAYFAVORITES": "Comparte tus favoritos",
 			"CHOOSE_ANIME_LIST": "Elija una lista de anime",
 			"SOCIAL_NETWORKS": {
-				"MYANIMELIST": "MyAnimeList"
+				"MYANIMELIST": "MyAnimeList",
+				"ANILIST": "AniList",
+				"ANILIST_PLACEHOLDER": "karaokemugen",
+				"KITSU": "Kitsu",
+				"KITSU_PLACEHOLDER": "karaokemugen",
+				"TWITTER_PLACEHOLDER": "@KaraokeMugen",
+				"TWITCH": "Twitch",
+				"INSTAGRAM_PLACEHOLDER": "karaokemugen",
+				"INSTAGRAM": "Instagram",
+				"TWITCH_PLACEHOLDER": "KaraokeLive",
+				"TWITTER": "Twitter",
+				"MYANIMELIST_PLACEHOLDER": "karaokemugen",
+				"DISCORD": "Discord",
+				"DISCORD_PLACEHOLDER": "Karak#1423"
 			}
 		},
 		"SHUFFLE_MODAL": {
@@ -725,7 +739,7 @@
 	"REMOTE_TOKEN_TOOLTIP": "(revelar sólo a un administrador del servidor)",
 	"REMOTE_RESET": "Restablecer token",
 	"REMOTE_RESET_CONFIRM": "Tu código de habitación será liberado y se generará uno nuevo para ti, ¿estás seguro?",
-	"REMOTE_RESET_TOOLTIP": "Genera un nuevo token,  perderás tu código de sala.",
+	"REMOTE_RESET_TOOLTIP": "Genera un nuevo token, perderás tu código de sala.",
 	"VIEW_STANDARD": "Estándar",
 	"CLEAR_FILTER": "Borrar",
 	"VIEW_FAVORITES": "Favoritos",
@@ -761,7 +775,7 @@
 		"Última canción, ¡vamos a darlo todo!"
 	],
 	"SPONSOR_TAGLINES": [
-		"None",
+		"Kono bangumi wa…",
 		"Y gracias por el dinero."
 	],
 	"PAUSE_TAGLINES": [
@@ -945,7 +959,7 @@
 				"PLAYER_PLAY": "Incapaz de reproducir canción",
 				"POLL_NOT_ENOUGH_SONGS": "No se puede iniciar la encuesta: no hay suficientes canciones disponibles",
 				"PLAYER_NO_ONLINE_MEDIA": "No se pueden leer archivos multimedia de fuentes en línea. Compruebe su conexión a Internet.",
-				"PLAYER_RANDOM_SONG_AFTER_PLAYLIST": "No se puede seleccionar una canción aleatoria para que se reproduzca una vez finalizada la lista de reproducción."
+				"PLAYER_RANDOM_SONG_AFTER_PLAYLIST": "No se puede seleccionar una canción aleatoria para que se reproduzca una vez finalizada la lista de reproducción"
 			},
 			"INFO": {
 				"POLL_WINNER": "¡La gente votó por una nueva canción!",
@@ -978,7 +992,8 @@
 		"STORAGE": "Gestión de almacenamiento en disco",
 		"LIST": "Lista",
 		"HISTORY": "Historia",
-		"RANKING": "Lo más solicitado"
+		"RANKING": "Lo más solicitado",
+		"GIT": "Git"
 	},
 	"USERS": {
 		"CHAR_NOT_ALLOWED": "El personaje '{{char}} no está permitido",
@@ -1056,7 +1071,8 @@
 		"NOT_MAL_URL_ERROR": "Esta es una url de myanimelist",
 		"NOT_ANILIST_URL_ERROR": "Esto es un anilist url",
 		"KITSU_SLUG_ERROR": "Slug no válido",
-		"KITSU_REQUEST_ERROR": "Error de red"
+		"KITSU_REQUEST_ERROR": "Error de red",
+		"MAL_ID": "MAL ID/URL"
 	},
 	"LOADING_SUBTITLE_ELECTRON": "No debería tardar mucho, intenta reiniciar Karaoke Mugen o actualizarlo si te quedas atascado aquí.",
 	"REFRESH": "Actualizar",
@@ -1110,7 +1126,7 @@
 			"USERNAME": "Nombre de usuario FTP",
 			"BASEDIR": "Directorio base FTP"
 		},
-		"TOOLTIP_NAME": "Si es un repositorio en línea, ponga aquí sólo su nombre de dominio. Si es un repositorio local, ponle el nombre que quieras. Por ejemplo 'Mis pequeños karaokes privados'.",
+		"TOOLTIP_NAME": "Si es un repositorio en línea, ponga aquí sólo su nombre de dominio. Si es un repositorio local, ponle el nombre que quieras. Por ejemplo 'Mis pequeños karaokes privados'",
 		"BASE_DIR": "Directorio base",
 		"NEW_REPOSITORY": "Nuevo repositorio",
 		"ONLINE": "En línea",
@@ -1754,7 +1770,13 @@
 		"CONTACT_INFOS_MODAL": {
 			"USERNAME": "Nombre de usuario: ",
 			"MAIL": "Correo electrónico: ",
-			"URL": "Sitio web: "
+			"URL": "Sitio web: ",
+			"SOCIAL_NETWORKS": {
+				"INSTAGRAM": "Instagram: ",
+				"TWITTER": "Twitter: ",
+				"DISCORD": "Discord: ",
+				"TWITCH": "Twitch: "
+			}
 		},
 		"NO_REPOSITORY_ENABLED": "No hay repositorio en línea habilitado en modo de mantenedor",
 		"ONLINE_USER_REQUIRED": "Se requiere un usuario en línea para la bandeja de entrada",
