@@ -19,7 +19,7 @@ const feeds = [
 	},
 	{
 		name: 'git_app',
-		url: 'https://gitlab.com/karaokemugen/karaokemugen-app/-/tags?format=atom&sort=updated_desc',
+		url: 'https://gitlab.com/karaokemugen/code/karaokemugen-app/-/tags?format=atom&sort=updated_desc',
 	},
 	{
 		name: 'mastodon',

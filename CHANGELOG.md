@@ -1057,7 +1057,7 @@ This will allow you to better filter out (or in) different song versions like "A
 
 Karaoke Mugen can now expose itself via Karaoke Mugen Server to allow other people on other networks to access your karaoke. Perfect for remote sessions at anime events or over Discord our Twitch.
 
-![Remote Access control box](https://gitlab.com/karaokemugen/karaokemugen-app/uploads/f769ef18debdb7e4d55abb9b3df91f77/Capture_d_écran_du_2020-12-31_00-08-25.png)
+![Remote Access control box](https://gitlab.com/karaokemugen/code/karaokemugen-app/uploads/f769ef18debdb7e4d55abb9b3df91f77/Capture_d_écran_du_2020-12-31_00-08-25.png)
 
 It can be enabled in Settings -> Karaoke. It will generate a token kept by Karaoke Mugen for you. It will allow your room URL (https://XXXX.kara.moe) to be always the same after restarting the app.
 
@@ -1072,19 +1072,19 @@ A brand new public interface is available with Karaoke Mugen 5.0. Our goal was t
 -   The current song lyrics are available on the home page
     -   The current line is highlighted in yellow
 
-![Lyrics Box](https://gitlab.com/karaokemugen/karaokemugen-app/uploads/49f8517028bc3550e72631a7370fb154/Peek_31-12-2020_00-07.gif)
+![Lyrics Box](https://gitlab.com/karaokemugen/code/karaokemugen-app/uploads/49f8517028bc3550e72631a7370fb154/Peek_31-12-2020_00-07.gif)
 
 -   The top progress bar has been replaced by a new bottom bar
 
-![Bottom bar](https://gitlab.com/karaokemugen/karaokemugen-app/uploads/43a3b9e5a235e9c3789b1efef43cc7d2/image.png)
+![Bottom bar](https://gitlab.com/karaokemugen/code/karaokemugen-app/uploads/43a3b9e5a235e9c3789b1efef43cc7d2/image.png)
 
 -   Homepage is now featuring a "now playing" box
 
-![Player Box](https://gitlab.com/karaokemugen/karaokemugen-app/uploads/8cc3b9e6d90d1bb9c6b2b16468c2962f/Capture_d_écran_2020-11-11_à_22.00.58.png)
+![Player Box](https://gitlab.com/karaokemugen/code/karaokemugen-app/uploads/8cc3b9e6d90d1bb9c6b2b16468c2962f/Capture_d_écran_2020-11-11_à_22.00.58.png)
 
 -   You can now explore tags by category
 
-![Tags List](https://gitlab.com/karaokemugen/karaokemugen-app/uploads/e9696536c20526808ada84b13520c085/Capture_d_écran_2020-11-11_à_21.57.50.png)
+![Tags List](https://gitlab.com/karaokemugen/code/karaokemugen-app/uploads/e9696536c20526808ada84b13520c085/Capture_d_écran_2020-11-11_à_21.57.50.png)
 
 -   Popular songs are now fetched from your configured repositories instead of checking on your local database. You can disable this (#872)
 
@@ -1112,7 +1112,7 @@ You can now more easily **export your sessions data** as .csv, it will contain s
 
 ### Chibi player (#725)
 
-![Chibi player](https://gitlab.com/karaokemugen/karaokemugen-app/uploads/b6a4a7488db7456fadc30a37a15b18fb/Capture_d_%C3%A9cran_2020-12-04_%C3%A0_22.13.15.png)
+![Chibi player](https://gitlab.com/karaokemugen/code/karaokemugen-app/uploads/b6a4a7488db7456fadc30a37a15b18fb/Capture_d_%C3%A9cran_2020-12-04_%C3%A0_22.13.15.png)
 
 **Chibi player** is a compact window designed to have easy controls over the Karaoke Mugen player, it can be set to be always on top of other windows.
 

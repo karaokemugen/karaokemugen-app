@@ -70,7 +70,7 @@ export async function preInit() {
 	await initConfig(argv);
 	// Set default repositories on First Run only
 	const conf = getConfig();
-	if (conf.App.FirstRun && conf.System.Repositories.length === 0) {
+	if (conf.System.Repositories.length === 0) {
 		setConfig({ System: { Repositories: [...defaultRepositories] } });
 	} else {
 		updateKaraMoeRepoConfig();

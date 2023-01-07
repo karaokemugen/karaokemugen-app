@@ -4,8 +4,8 @@
 
 ![presentation](img/presentation.png)
 
-Master branch: [![pipeline status](https://gitlab.com/karaokemugen/karaokemugen-app/badges/master/pipeline.svg)](https://gitlab.com/karaokemugen/karaokemugen-app/commits/master) -
-Next branch: [![pipeline status](https://gitlab.com/karaokemugen/karaokemugen-app/badges/next/pipeline.svg)](https://gitlab.com/karaokemugen/karaokemugen-app/commits/next)
+Master branch: [![pipeline status](https://gitlab.com/karaokemugen/code/karaokemugen-app/badges/master/pipeline.svg)](https://gitlab.com/karaokemugen/code/karaokemugen-app/commits/master) -
+Next branch: [![pipeline status](https://gitlab.com/karaokemugen/code/karaokemugen-app/badges/next/pipeline.svg)](https://gitlab.com/karaokemugen/code/karaokemugen-app/commits/next)
 
 Project: ![Last commit](https://img.shields.io/github/last-commit/karaokemugen/karaokemugen-app.svg) ![Latest version](https://img.shields.io/gitlab/v/tag/karaokemugen/karaokemugen-app?sort=date) ![License](https://img.shields.io/github/license/karaoke-mugen/karaokemugen-app.svg) ![Size](https://img.shields.io/github/repo-size/karaokemugen/karaokemugen-app.svg) ![Commits since release on next](https://img.shields.io/github/commits-since/karaokemugen/karaokemugen-app/release/next) [![Weblate](https://img.shields.io/weblate/progress/karaoke-mugen)](https://hosted.weblate.org/projects/karaoke-mugen/)
 
@@ -274,7 +274,7 @@ We accept donations through Patreon, Liberapay or Paypal directly. If you're int
 
 Thanks to the [Sentry error tracking](https://sentry.io/welcome?utm_source=KaraokeMugen) solution, the app is self-reporting its errors to maintainers to help them to fix issues.<br/>
 
-<img src="https://gitlab.com/karaokemugen/karaokemugen-app/uploads/dba8fa95d7b4f1fac5e5877c72257f36/image.png" alt="BrowserStack full logo" width="125" />
+<img src="https://gitlab.com/karaokemugen/code/karaokemugen-app/uploads/dba8fa95d7b4f1fac5e5877c72257f36/image.png" alt="BrowserStack full logo" width="125" />
 
 Thanks to the [BrowserStack testing solution](https://browserstack.com), we can be sure that our interfaces will run just fine on each device.
 
