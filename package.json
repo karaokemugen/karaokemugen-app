@@ -1,6 +1,6 @@
 {
   "name": "karaokemugen-app",
-  "version": "7.0.43",
+  "version": "7.0.46",
   "versionName": "Rin Rassasiée",
   "description": "Karaoke playlist manager / player",
   "bin": {
@@ -36,7 +36,7 @@
   "homepage": "https://karaokes.moe",
   "repository": {
     "type": "git",
-    "url": "https://gitlab.com/karaokemugen/karaokemugen-app.git"
+    "url": "https://gitlab.com/karaokemugen/code/karaokemugen-app.git"
   },
   "keywords": [
     "karaoke",
@@ -47,7 +47,7 @@
     "electron"
   ],
   "bugs": {
-    "url": "https://gitlab.com/karaokemugen/karaokemugen-app/issues",
+    "url": "https://gitlab.com/karaokemugen/code/karaokemugen-app/issues",
     "email": "mugen@karaokes.moe"
   },
   "author": "Guillaume Lebigot <axel@teri-chan.net> (http://www.meido-rando.net)",
@@ -326,7 +326,6 @@
       "executableName": "karaokemugen",
       "category": "AudioVideo",
       "synopsis": "Karaoke manager and player",
-      "icon": "icon512.png",
       "publish": {
         "provider": "generic",
         "url": "https://mugen.karaokes.moe/downloads/"
