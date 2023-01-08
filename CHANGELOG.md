@@ -1,3 +1,21 @@
+# v7.0.46 - 08/01/2023
+
+## Improvements
+
+-   Updated Spanish translation
+
+## Fixes
+
+-   Fixed default repositories being wiped when migrating from 6.x versions
+-   Fixed .deb icon for Linux releases
+-   Fixed the way tag types are represented in tag files.
+-   Fixed "too many files open" bug when integrating lots of tags or karaokes after an update
+-   Fixed merging tags
+-   Fixed getKara SQL bug with empty tag filters
+-   Fixed generation in case i18n is missing from tags
+-   Fixed z-index of tag popup
+-   Fixed flatpak release (a bit)
+
 # v7.0.43 - 01/01/2023
 
 Happy new year everyone!
@@ -289,6 +307,12 @@ Us? Releasing a new version before a major event like Japan Expo? Perish the tho
 -   Fixed state emission errors from backend to frontend
 -   Fixed base zip download if basedir isn't emptied properly
 
+## Misc
+
+-   Upgraded backend and frontend dependencies
+-   Added logs to track issues with smart playlist creation
+-   Removed HTTP breadcrumbs in Sentry reports if they're about socket.io
+
 # v6.1.10 - 19/06/2022
 
 ## Changes
@@ -303,7 +327,10 @@ Us? Releasing a new version before a major event like Japan Expo? Perish the tho
 -   Added an example song in profile page so the user can see what his linguistic preferences will do (#1180)
 -   Optimized users initialization a bit
 -   Added language to user if null on login
+-   Fixed users hitting play with no song to play throwing errors
+-   Fixed trouble with input boxes on options page
 -   Added link to current playlist on public welcome page
+-   Fixed setup loading when updating repos is in progress
 
 ## Fixes
 
