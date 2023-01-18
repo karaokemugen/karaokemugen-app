@@ -82,9 +82,7 @@ export default class FTP {
 		});
 		this.client.trackProgress(info => {
 			task.update({
-				subtext: `${this.opts.repoName}: ${info.name} - ${prettyBytes(info.bytes)} / ${prettyBytes(
-					stat.size
-				)}}`,
+				subtext: `${this.opts.repoName}: ${info.name} - ${prettyBytes(info.bytes)} / ${prettyBytes(stat.size)}`,
 				total: stat.size,
 				value: info.bytes,
 			});
