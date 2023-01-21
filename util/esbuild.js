@@ -1,8 +1,7 @@
+import electron from 'electron';
 import { build, buildSync } from 'esbuild';
 import { execa } from 'execa';
-import { promisify } from 'util';
 import rimraf from 'rimraf';
-import electron from 'electron';
 
 const buildOptions = {
 	outfile: 'dist/index.cjs',
@@ -22,7 +21,7 @@ const buildOptions = {
 let edited = true;
 
 console.log('Clearing dist/');
-await promisify(rimraf)('dist/');
+await rimraf('dist/');
 
 if (process.argv[2] === 'watch') {
 	console.log('Launching esbuild');
