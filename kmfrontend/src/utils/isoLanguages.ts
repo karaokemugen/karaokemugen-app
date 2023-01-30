@@ -1,10 +1,23 @@
-import { getCountries } from '@hotosm/iso-countries-languages';
 import { alpha2ToAlpha3B, getAlpha3BCode, getName, getNames, registerLocale } from '@karaokemugen/i18n-iso-languages';
+import countries from 'i18n-iso-countries';
+
 import en from '@karaokemugen/i18n-iso-languages/langs/en.json';
 import es from '@karaokemugen/i18n-iso-languages/langs/es.json';
 import fr from '@karaokemugen/i18n-iso-languages/langs/fr.json';
 import id from '@karaokemugen/i18n-iso-languages/langs/id.json';
 import pt from '@karaokemugen/i18n-iso-languages/langs/pt.json';
+
+import countries_en from 'i18n-iso-countries/langs/en.json';
+import countries_es from 'i18n-iso-countries/langs/es.json';
+import countries_fr from 'i18n-iso-countries/langs/fr.json';
+import countries_id from 'i18n-iso-countries/langs/id.json';
+import countries_pt from 'i18n-iso-countries/langs/pt.json';
+
+countries.registerLocale(countries_en);
+countries.registerLocale(countries_es);
+countries.registerLocale(countries_fr);
+countries.registerLocale(countries_id);
+countries.registerLocale(countries_pt);
 
 registerLocale(fr);
 registerLocale(en);
@@ -81,14 +94,14 @@ export function getLanguageIn3B(code) {
 
 export function listCountries(userLang: string): { value: string; label: string }[] {
 	const listCountries = [];
-	for (const [key, value] of Object.entries(getCountries(userLang))) {
+	for (const [key, value] of Object.entries(countries.getNames(userLang))) {
 		listCountries.push({ value: key, label: value });
 	}
 	return listCountries;
 }
 
 export function getCountryName(code: string, userLang: string): string | undefined {
-	for (const [key, value] of Object.entries(getCountries(userLang || langSupport))) {
+	for (const [key, value] of Object.entries(countries.getNames(userLang || langSupport))) {
 		if (key === code) {
 			return value as string;
 		}
