@@ -659,6 +659,8 @@
 			"SOCIAL_NETWORKS": {
 				"TWITTER": "Twitter",
 				"TWITTER_PLACEHOLDER": "@KaraokeMugen",
+				"MASTODON": "Mastodon",
+				"MASTODON_PLACEHOLDER": "KaraokeMugen@shelter.moe",
 				"TWITCH": "Twitch",
 				"TWITCH_PLACEHOLDER": "KaraokeLive",
 				"INSTAGRAM": "Instagram",
@@ -1835,6 +1837,7 @@
 			"URL": "Site web : ",
 			"SOCIAL_NETWORKS": {
 				"TWITTER": "Twitter : ",
+				"MASTODON": "Mastodon : ",
 				"TWITCH": "Twitch : ",
 				"INSTAGRAM": "Instagram : ",
 				"DISCORD": "Discord : "

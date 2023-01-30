@@ -657,8 +657,10 @@
 			"FLAG_PUBLIC": "Share your profile",
 			"FLAG_DISPLAYFAVORITES": "Share your favorites",
 			"SOCIAL_NETWORKS": {
-				"TWITTER": "Twitter",
+				"TWITTER": "Twitter",				
 				"TWITTER_PLACEHOLDER": "@KaraokeMugen",
+				"MASTODON": "Mastodon",
+				"MASTODON_PLACEHOLDER": "KaraokeMugen@shelter.moe",
 				"TWITCH": "Twitch",
 				"TWITCH_PLACEHOLDER": "KaraokeLive",
 				"INSTAGRAM": "Instagram",
@@ -1835,6 +1837,7 @@
 			"URL": "Website: ",
 			"SOCIAL_NETWORKS": {
 				"TWITTER": "Twitter: ",
+				"MASTODON": "Mastodon: ",
 				"TWITCH": "Twitch: ",
 				"INSTAGRAM": "Instagram: ",
 				"DISCORD": "Discord: "

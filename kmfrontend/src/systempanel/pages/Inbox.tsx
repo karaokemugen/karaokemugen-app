@@ -115,6 +115,19 @@ export default function Inbox() {
 							</a>
 						</div>
 					) : null}
+					{userDetails?.social_networks?.mastodon ? (
+						<div>
+							<label>{i18next.t('INBOX.CONTACT_INFOS_MODAL.SOCIAL_NETWORKS.MASTODON')}</label>
+							<a
+								href={`https://${userDetails.social_networks.mastodon.split('@')[1]}/@${
+									userDetails.social_networks.mastodon.split('@')[0]
+								}`}
+								rel="noreferrer noopener"
+							>
+								{userDetails.social_networks.mastodon}
+							</a>
+						</div>
+					) : null}
 					{userDetails?.social_networks?.instagram ? (
 						<div>
 							<label>{i18next.t('INBOX.CONTACT_INFOS_MODAL.SOCIAL_NETWORKS.INSTAGRAM')}</label>

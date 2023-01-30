@@ -821,6 +821,7 @@
 			"URL": "Situs Web: ",
 			"SOCIAL_NETWORKS": {
 				"TWITTER": "Twitter: ",
+				"MASTODON": "Mastodon: ",
 				"INSTAGRAM": "Instagram: ",
 				"DISCORD": "Discord: ",
 				"TWITCH": "Twitch: "
@@ -948,6 +949,8 @@
 				"INSTAGRAM_PLACEHOLDER": "karaokemugen",
 				"DISCORD_PLACEHOLDER": "Karak#1423",
 				"TWITTER": "Twitter",
+				"MASTODON": "Mastodon",
+				"MASTODON_PLACEHOLDER": "KaraokeMugen@shelter.moe",
 				"DISCORD": "Discord",
 				"MYANIMELIST": "MyAnimeList",
 				"MYANIMELIST_PLACEHOLDER": "karaokemugen",

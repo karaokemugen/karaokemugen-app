@@ -28,6 +28,11 @@ const builder: MenuItemBuilderFunction = options => {
 				click: urls.twitter,
 			},
 			{
+				label: i18next.t('MENU_HELP_MASTODON'),
+				click: urls.mastodon,
+			},
+
+			{
 				label: i18next.t('MENU_HELP_DISCORD'),
 				click: urls.discord,
 			},

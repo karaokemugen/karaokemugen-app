@@ -73,7 +73,7 @@ export async function updateUser(user: User): Promise<User> {
 			language: user.language,
 			flag_public: user.flag_public ?? true,
 			flag_displayfavorites: user.flag_displayfavorites ?? false,
-			social_networks: user.social_networks || { discord: '', twitter: '', twitch: '', instagram: '' },
+			social_networks: user.social_networks || null,
 			banner: user.banner || 'default.jpg',
 			anime_list_to_fetch: user.anime_list_to_fetch,
 			anime_list_last_modified_at: user.anime_list_last_modified_at,

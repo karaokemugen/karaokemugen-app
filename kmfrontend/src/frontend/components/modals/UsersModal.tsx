@@ -134,6 +134,19 @@ function UsersModal(props: IProps) {
 												</a>
 											</div>
 										) : null}
+										{userDetails?.social_networks.mastodon ? (
+											<div>
+												<i className="fab fa-fw fa-mastodon" />
+												<a
+													href={`https://${
+														userDetails.social_networks.mastodon.split('@')[1]
+													}/@${userDetails.social_networks.mastodon.split('@')[0]}`}
+													rel="noreferrer noopener"
+												>
+													{userDetails.social_networks.mastodon}
+												</a>
+											</div>
+										) : null}
 										{userDetails?.social_networks.instagram ? (
 											<div>
 												<i className="fab fa-fw fa-instagram" />
