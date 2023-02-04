@@ -1065,7 +1065,7 @@
 		"CONFIRM_UPDATE": "Confirm update"
 	},
 	"TAGS": {
-		"NAME": "Original name",
+		"NAME": "Internal name",
 		"NAME_REQUIRED": "Please enter a name",
 		"NAME_TOOLTIP": "This is the internal name used to reference the tags in Karaoke Mugen's database",
 		"SHORT_NAME": "Short name",
