@@ -252,7 +252,7 @@ function Playlist(props: IProps) {
 		getPlaylistInfo(props.side, context)?.plaid,
 	]);
 
-	const HeightPreservingItem = ({ children, ...props }: PropsWithChildren<ItemProps>) => {
+	const HeightPreservingItem = ({ children, ...props }: PropsWithChildren<ItemProps<any>>) => {
 		const [size, setSize] = useState(0);
 		const knownSize = props['data-known-size'];
 		useEffect(() => {
