@@ -127,6 +127,7 @@ function AdminHeader(props: IProps) {
 			state.volume = event.target.value;
 			return state;
 		});
+		props.putPlayerCommando(event);
 	};
 
 	const changePitch = changeValue => {
@@ -464,8 +465,7 @@ function AdminHeader(props: IProps) {
 						id="volume"
 						value={statusPlayer.volume}
 						type="range"
-						onChange={setVolume}
-						onMouseUp={props.putPlayerCommando}
+						onInput={setVolume}
 					/>
 				) : null}
 			</button>
