@@ -126,7 +126,7 @@ const chibis = new Map<TypeOptions, ReactNode>([
 		<picture>
 			<source type="image/webp" srcSet={nanamiCryWebP} />
 			<source type="image/png" srcSet={nanamiCryPNG} />
-			<img src={nanamiCryPNG} alt="Nanami is crying :c" />
+			<img src={nanamiCryPNG} alt="Nanami is crying :c" draggable="false" />
 		</picture>,
 	],
 	[
@@ -134,7 +134,7 @@ const chibis = new Map<TypeOptions, ReactNode>([
 		<picture>
 			<source type="image/webp" srcSet={nanamiThinkWebP} />
 			<source type="image/png" srcSet={nanamiThinkPng} />
-			<img src={nanamiThinkPng} alt="Nanami is confused :/" />
+			<img src={nanamiThinkPng} alt="Nanami is confused :/" draggable="false" />
 		</picture>,
 	],
 	[
@@ -142,7 +142,7 @@ const chibis = new Map<TypeOptions, ReactNode>([
 		<picture>
 			<source type="image/webp" srcSet={nanamiUmuWebP} />
 			<source type="image/png" srcSet={nanamiUmuPng} />
-			<img src={nanamiUmuPng} alt="Nanami is UmU" />
+			<img src={nanamiUmuPng} alt="Nanami is UmU" draggable="false" />
 		</picture>,
 	],
 ]);
