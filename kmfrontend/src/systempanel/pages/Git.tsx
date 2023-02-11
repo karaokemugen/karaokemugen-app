@@ -198,6 +198,8 @@ export default function Git() {
 		setShowPushModal(false);
 	}, [pendingPush, excludeList]);
 
+	const deselectAllCommits = () => setExcludeList([...Array(pendingPush.commits.commits.length).keys()]);
+
 	const toggleExclude = useCallback(
 		(e: CheckboxChangeEvent) => {
 			const commit = pendingPush.commits.commits.findIndex(el => el.message === e.target.name);
@@ -356,6 +358,7 @@ export default function Git() {
 				title={i18next.t('REPOSITORIES.GIT_CONFIRM_PUSH')}
 				open={showPushModal}
 				onCancel={() => {
+					setExcludeList([]);
 					setShowPushModal(false);
 					setLoading(false);
 					setPendingPush(null);
@@ -364,10 +367,17 @@ export default function Git() {
 				okText={i18next.t('REPOSITORIES.GIT_PUSH')}
 				cancelText={i18next.t('CANCEL')}
 			>
+				<Button
+					type="primary"
+					style={{ marginLeft: '1.7em', marginBottom: '1em' }}
+					onClick={deselectAllCommits}
+				>
+					{i18next.t('REPOSITORIES.DESELECT_ALL_COMMITS')}
+				</Button>
 				<ul>
 					{pendingPush?.commits?.commits?.map((commit, i) => (
 						<li key={commit.message}>
-							<Checkbox defaultChecked={true} name={commit.message} onChange={toggleExclude}>
+							<Checkbox checked={!excludeList.includes(i)} name={commit.message} onChange={toggleExclude}>
 								{typeof commit.comment === 'string' ? (
 									<Input
 										placeholder={i18next.t('REPOSITORIES.GIT_CUSTOM_MESSAGE')}

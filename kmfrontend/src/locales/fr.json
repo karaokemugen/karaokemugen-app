@@ -1301,7 +1301,8 @@
 		"GIT_STASH": "Vous avez des entrées de remisage à appliquer, elles sont créées automatiquement lorsqu'il y a des conflits de fusion. Vous pouvez essayer des les restaurer ou les supprimer. Vous devriez regarder le <1>dépôt Git</1> pour voir les modifications qui ont créées les conflits.",
 		"GIT_UNSTASH": "Appliquer",
 		"GIT_DELETE": "Supprimer",
-		"GIT_CUSTOM_MESSAGE": "Message personnalisé"
+		"GIT_CUSTOM_MESSAGE": "Message personnalisé",
+		"DESELECT_ALL_COMMITS": "Désélectionner tous les commits"
 	},
 	"COLLECTIONS": {
 		"NAME": "Nom de la collection",
