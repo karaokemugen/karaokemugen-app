@@ -62,7 +62,8 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 			mergeSelection: '',
 			repositoriesValue: null,
 			repoToCopySong: null,
-			displayDescription: this.props.tag?.description ? true : false,
+			displayDescription:
+				this.props.tag?.description && Object.keys(this.props.tag?.description).length > 0 ? true : false,
 		};
 	}
 
