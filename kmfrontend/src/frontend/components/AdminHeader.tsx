@@ -88,6 +88,7 @@ function AdminHeader(props: IProps) {
 
 	const play = (event: any) => {
 		if (
+			props.currentPlaylist &&
 			(!statusPlayer || statusPlayer?.playerStatus === 'stop') &&
 			context.globalState.frontendContext.playlistInfoLeft.plaid !== props.currentPlaylist?.plaid &&
 			context.globalState.frontendContext.playlistInfoRight.plaid !== props.currentPlaylist?.plaid &&
