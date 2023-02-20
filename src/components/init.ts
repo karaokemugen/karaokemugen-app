@@ -141,7 +141,18 @@ async function checkPaths(config: Config) {
 				checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'tags')));
 				checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'hooks')));
 				for (const path of repo.Path.Medias) {
-					await asyncCheckOrMkdir(resolve(dataPath, path));
+					try {
+						const mediaPath = resolve(dataPath, path);
+						await asyncCheckOrMkdir(mediaPath);
+					} catch (err) {
+						logger.warn(`Media path ${path} for ${repo.Name} is not accessible`, { service, obj: err });
+						if (path === repo.Path.Medias[0]) {
+							logger.error(`Primary media path for ${repo.Name} is unreachable, disabling...`, {
+								service,
+							});
+							throw err;
+						}
+					}
 				}
 			} catch (err) {
 				// If there's a problem with these folders, let's disable the repository.
