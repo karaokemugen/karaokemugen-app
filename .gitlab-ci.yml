@@ -231,6 +231,7 @@ pkg_linux:
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
     - wget -qO- http://mugen.karaokes.moe/downloads/$DIST_LINUX_X64 | tar xvz
     - wget -qO- http://mugen.karaokes.moe/downloads/$DIST_LINUX_ARM64 | tar xvz
+    - echo $SENTRY_DSN >assets/sentry.txt
     - bash util/electronBuilder.sh -l
     - ls -la packages/
     - mkdir release_linux
@@ -277,6 +278,7 @@ pkg_win:
     - apt-get update -qq && apt-get install -y -qq zip
     - wget -qO- http://mugen.karaokes.moe/downloads/$DIST_WIN | tar xz
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
+    - echo $SENTRY_DSN >assets/sentry.txt
     - bash util/electronBuilder.sh -w
     - ls -la packages/
     - mkdir release_win
@@ -328,6 +330,7 @@ pkg_mac:
     - rm -Rf app/bin
     - wget -qO- http://mugen.karaokes.moe/downloads/$DIST_MAC | tar xvz
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
+    - echo $SENTRY_DSN >assets/sentry.txt
     - bash util/electronBuilder.sh -m
     - ls -la packages/
     - mkdir release_mac
