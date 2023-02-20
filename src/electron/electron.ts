@@ -8,7 +8,6 @@ import { init, preInit } from '../components/init';
 import { selectUsers } from '../dao/user';
 import { getConfig, resolvedPath, setConfig } from '../lib/utils/config';
 import logger from '../lib/utils/logger';
-import { testJSON } from '../lib/utils/validators';
 import { emitWS } from '../lib/utils/ws';
 import { importFavorites } from '../services/favorites';
 import { importPlaylist, playlistImported } from '../services/playlist';
@@ -239,11 +238,13 @@ export async function handleFile(file: string, username?: string, onlineToken?: 
 			}
 		}
 		const rawData = await fs.readFile(resolve(file), 'utf-8');
-		if (!testJSON(rawData)) {
+		let data;
+		try {
+			data = JSON.parse(rawData);
+		} catch (err) {
 			logger.debug(`File ${file} is not JSON, ignoring`, { service });
 			return;
 		}
-		const data = JSON.parse(rawData);
 		const KMFileType = detectKMFileTypes(data);
 		const url = `http://localhost:${getConfig().System.FrontendPort}/admin`;
 		switch (KMFileType) {
