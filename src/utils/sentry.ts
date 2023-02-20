@@ -3,7 +3,6 @@ import Transport from 'winston-transport';
 
 import { getConfig } from '../lib/utils/config';
 import SentryLogger from '../lib/utils/sentry';
-import { sentryDSN } from './constants';
 import { getState } from './state';
 
 class ElectronSentryLogger extends SentryLogger {
@@ -18,12 +17,12 @@ class ElectronSentryLogger extends SentryLogger {
 			console.log("Have a nice day, sentries won't fire at you~");
 			return;
 		}
-		if (!process.env.SENTRY_DSN && !sentryDSN) {
+		if (!process.env.SENTRY_DSN) {
 			// No DSN provided, return.
 			return;
 		}
 		const options: any = {
-			dsn: process.env.SENTRY_DSN || sentryDSN,
+			dsn: process.env.SENTRY_DSN,
 			environment: process.env.SENTRY_ENVIRONMENT || 'release',
 			release: getState().version.number,
 			ignoreErrors: [
