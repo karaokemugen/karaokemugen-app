@@ -95,7 +95,13 @@ function AdminHeader(props: IProps) {
 			(!isNonStandardPlaylist(context.globalState.frontendContext.playlistInfoLeft.plaid) ||
 				!isNonStandardPlaylist(context.globalState.frontendContext.playlistInfoRight.plaid))
 		) {
-			showModal(context.globalDispatch, <PlayCurrentModal currentPlaylist={props.currentPlaylist} />);
+			showModal(
+				context.globalDispatch,
+				<PlayCurrentModal
+					currentPlaylist={props.currentPlaylist}
+					displayedPlaylist={context.globalState.frontendContext.playlistInfoRight}
+				/>
+			);
 		} else {
 			props.putPlayerCommando(event);
 		}
