@@ -266,7 +266,7 @@ export async function playerNeedsRestart() {
 		logger.info('Player will restart in 5 seconds', { service });
 		emitWS('operatorNotificationInfo', APIMessage('NOTIFICATION.OPERATOR.INFO.PLAYER_RESTARTING'));
 		mpv.message(i18next.t('RESTARTING_PLAYER'), 5000);
-		await sleep(5000);
+		await sleep(1000);
 		await restartPlayer();
 		setState({ playerNeedsRestart: false });
 	} else {
