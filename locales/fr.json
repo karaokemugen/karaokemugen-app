@@ -83,6 +83,7 @@
 	"MENU_VIEW_FULLSCREEN": "&Plein écran",
 	"MENU_WINDOW": "&Fenêtre",
 	"MENU_WINDOW_MINIMIZE": "&Minimiser",
+	"MENU_WINDOW_PLAYERMONITOR": "&Afficher Moniteur Vidéo",
 	"MENU_EDIT": "&Edition",
 	"MENU_EDIT_REDO": "&Refaire",
 	"MENU_EDIT_UNDO": "&Annuler",

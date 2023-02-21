@@ -4,6 +4,7 @@ import i18next from 'i18next';
 import { getConfig, setConfig } from '../../lib/utils/config';
 import { generateAdminPassword } from '../../services/user';
 import { MenuItemBuilderFunction } from '../../types/electron';
+import { editSetting } from '../../utils/config';
 import { getState } from '../../utils/state';
 import { updateChibiPlayerWindow, updateChibiPlaylistWindow } from '../electron';
 
@@ -44,6 +45,16 @@ const builder: MenuItemBuilderFunction = options => {
 					clipboard.writeText(
 						`http://localhost:${state.frontendPort}/chibiPlaylist?admpwd=${await generateAdminPassword()}`
 					);
+				},
+				visible: !isReduced,
+			},
+			{
+				label: i18next.t('MENU_WINDOW_PLAYERMONITOR'),
+				type: 'checkbox',
+				accelerator: 'CmdOrCtrl+A',
+				checked: getConfig().Player.Monitor,
+				click: () => {
+					editSetting({ Player: { Monitor: !getConfig().Player.Monitor } });
 				},
 				visible: !isReduced,
 			},
