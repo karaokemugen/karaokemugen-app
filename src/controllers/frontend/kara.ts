@@ -5,7 +5,7 @@ import { APIData } from '../../lib/types/api';
 import { TagTypeNum } from '../../lib/types/tag';
 import { check, isUUID } from '../../lib/utils/validators';
 import { SocketIOApp } from '../../lib/utils/ws';
-import { getKara, getKaraLyrics, getKaras, getKMStats } from '../../services/kara';
+import { getKara, getKaraLyrics, getKaraMediaInfo, getKaras, getKMStats } from '../../services/kara';
 import { createKara, editKara } from '../../services/karaCreation';
 import { playSingleSong } from '../../services/karaEngine';
 import { batchEditKaras, copyKaraToRepo, deleteKara, deleteMediaFile } from '../../services/karaManagement';
@@ -43,6 +43,17 @@ export default function karaController(router: SocketIOApp) {
 			return { code: 200, message: APIMessage('KARA_CREATED') };
 		} catch (err) {
 			const code = 'KARA_CREATED_ERROR';
+			errMessage(code, err);
+			throw { code: err?.code || 500, message: APIMessage(code) };
+		}
+	});
+	router.route('getKaraMediaInfo', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'open');
+		try {
+			if (!isUUID(req.body.kid)) throw { code: 400 };
+			return await getKaraMediaInfo(req.body.kid);
+		} catch (err) {
+			const code = 'GET_MEDIA_INFO_ERROR';
 			errMessage(code, err);
 			throw { code: err?.code || 500, message: APIMessage(code) };
 		}

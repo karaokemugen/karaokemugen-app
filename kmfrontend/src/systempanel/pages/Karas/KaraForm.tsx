@@ -15,6 +15,8 @@ import {
 	Upload,
 	Alert,
 	FormInstance,
+	Row,
+	Col,
 } from 'antd';
 import { SelectValue } from 'antd/lib/select';
 import i18next from 'i18next';
@@ -107,6 +109,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 	componentDidMount() {
 		this.formRef.current.validateFields();
 		this.getParents();
+		this.loadMediaInfo();
 	}
 
 	getParents = async () => {
@@ -122,6 +125,18 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				});
 				this.setState({ karaSearch });
 			}
+		}
+	};
+
+	loadMediaInfo = async () => {
+		if (this.props.kara.kid && this.props.kara.download_status === 'DOWNLOADED') {
+			const mediaInfo: MediaInfo = await commandBackend(
+				'getKaraMediaInfo',
+				{ kid: this.props.kara.kid },
+				false,
+				60000
+			);
+			this.setState({ mediaInfo });
 		}
 	};
 
@@ -199,7 +214,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 
 	handleSubmit = values => {
 		this.setState({ errors: [] });
-		if (this.state.mediafileIsTouched && !this.state.mediaInfo?.filename) {
+		if (this.state.mediafileIsTouched && !this.state.mediaInfo?.loudnorm) {
 			message.error(i18next.t('KARA.MEDIA_IN_PROCESS'));
 		} else if (
 			!this.state.defaultLanguage ||
@@ -309,6 +324,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		this.setState({ mediafile: fileList });
 		if (info.file.status === 'uploading') {
 			this.formRef.current.setFieldsValue({ mediafile: null });
+			this.setState({ mediaInfo: null });
 		} else if (info.file.status === 'done') {
 			if (this.isMediaFile(info.file.name)) {
 				this.setState({ mediafileIsTouched: true });
@@ -512,30 +528,89 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					}
 					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 12 }}
-					name="mediafile"
-					rules={[
-						{
-							required: true,
-							message: i18next.t('KARA.MEDIA_REQUIRED'),
-						},
-					]}
 				>
-					<Upload
-						headers={{
-							authorization: localStorage.getItem('kmToken'),
-							onlineAuthorization: localStorage.getItem('kmOnlineToken'),
-						}}
-						action="/api/importFile"
-						accept="video/*,audio/*,.mkv"
-						multiple={false}
-						onChange={this.onMediaUploadChange}
-						fileList={this.state.mediafile}
-					>
-						<Button>
-							<UploadOutlined />
-							{i18next.t('KARA.MEDIA_FILE')}
-						</Button>
-					</Upload>
+					<Row gutter={32}>
+						<Col>
+							<Form.Item
+								name="mediafile"
+								rules={[
+									{
+										required: true,
+										message: i18next.t('KARA.MEDIA_REQUIRED'),
+									},
+								]}
+							>
+								<Upload
+									headers={{
+										authorization: localStorage.getItem('kmToken'),
+										onlineAuthorization: localStorage.getItem('kmOnlineToken'),
+									}}
+									action="/api/importFile"
+									accept="video/*,audio/*,.mkv"
+									multiple={false}
+									onChange={this.onMediaUploadChange}
+									fileList={this.state.mediafile}
+								>
+									<Button>
+										<UploadOutlined />
+										{i18next.t('KARA.MEDIA_FILE')}
+									</Button>
+								</Upload>
+							</Form.Item>
+						</Col>
+						<Col flex={'0 1 220px'}>
+							{this.props.kara?.download_status === 'DOWNLOADED' || this.state.mediaInfo?.size ? (
+								<table style={{ borderSpacing: '0 10px' }}>
+									<tbody>
+										<tr>
+											<td style={{ paddingRight: '10px' }}>
+												{i18next.t('KARA.MEDIA_FILE_INFO.FILE_FORMAT')}
+											</td>
+											<td>{this.state.mediaInfo?.fileExtension || '-'}</td>
+										</tr>
+										<tr>
+											<td style={{ paddingRight: '10px' }}>
+												{i18next.t('KARA.MEDIA_FILE_INFO.OVERALL_BITRATE')}
+											</td>
+											<td>
+												{this.state.mediaInfo?.overallBitrate
+													? `${Math.round(this.state.mediaInfo?.overallBitrate / 100)} kb/s`
+													: '-'}
+											</td>
+										</tr>
+										<tr>
+											<td style={{ paddingRight: '10px' }}>
+												{i18next.t('KARA.MEDIA_FILE_INFO.VIDEO_CODEC')}
+											</td>
+											<td>{this.state.mediaInfo?.videoCodec || '-'}</td>
+										</tr>
+										<tr>
+											<td style={{ paddingRight: '10px' }}>
+												{i18next.t('KARA.MEDIA_FILE_INFO.VIDEO_COLORSPACE')}
+											</td>
+											<td>{this.state.mediaInfo?.videoColorspace || '-'}</td>
+										</tr>
+										<tr>
+											<td style={{ paddingRight: '10px' }}>
+												{i18next.t('KARA.MEDIA_FILE_INFO.VIDEO_RESOLUTION')}
+											</td>
+											<td>
+												{this.state.mediaInfo?.videoResolution
+													? `${this.state.mediaInfo?.videoResolution?.formatted}`
+													: '-'}
+											</td>
+										</tr>
+										<tr>
+											<td style={{ paddingRight: '10px' }}>
+												{i18next.t('KARA.MEDIA_FILE_INFO.AUDIO_CODEC')}
+											</td>
+											<td>{this.state.mediaInfo?.audioCodec || '-'}</td>
+										</tr>
+									</tbody>
+								</table>
+							) : null}
+						</Col>
+					</Row>
 				</Form.Item>
 				<Form.Item
 					label={
