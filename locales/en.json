@@ -3,6 +3,7 @@
 	"REQUESTED_WITH": "(with {{names}})",
 	"REQUESTED_AND_one": "and others",
 	"REQUESTED_AND_other": "and {{count}} others",
+	"CANCEL": "Cancel",
 	"MY_PLAYLIST": "My playlist",
 	"WHITELIST": "Whitelist",
 	"BLACKLIST": "Blacklist",
@@ -147,6 +148,12 @@
 	"WORLD_REPOSITORY_DISABLED": {
 		"TITLE": "World repository has been disabled",
 		"MESSAGE": "Due to the addition of Collections, the World and kara.moe repositories have been merged. Thus, the World repository is not necessary anymore. It has been disabled, and we advise you to remove it entirely in the System Panel."
+	},
+	"DATABASE_IN_THE_FUTURE_ERROR": {
+		"TITLE": "Database is in the future, Marty!",
+		"MESSAGE": "The database Karaoke Mugen is trying to access has been used by a later version of the application and is incompatible. Let's try to fix that.\n\nIf you click \"CANCEL\", the application will close without doing anything. You should launch a newer version of Karaoke Mugen.\n\nIf you click \"DELETE all data\", the application will DELETE playlists, local users, stats, etc. and start up normally.",
+		"DELETE_ALL_DATA": "DELETE all data",
+		"CONTINUE_ANYWAY": "Continue at your own risk"
 	},
 	"REPO_DISABLED": {
 		"TITLE": "Repository disabled",
