@@ -211,6 +211,7 @@ export const defaults: Config = {
 			StreamFiles: 'streamFiles',
 		},
 	},
+	Maintainer: { ApplyLyricsCleanupOnKaraSave: false },
 };
 
 const horizontalPosArray = ['Left', 'Right', 'Center'];
@@ -303,6 +304,7 @@ export const configConstraints = {
 	'System.Path.Previews': { presence: true },
 	'System.Path.Import': { presence: true },
 	'System.Repositories': { repositoriesValidator: true },
+	'Maintainer.ApplyLyricsCleanupOnKaraSave': { inclusion: bools },
 };
 
 export const defaultRepositories: Repository[] = [

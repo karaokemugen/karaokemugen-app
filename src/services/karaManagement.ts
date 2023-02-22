@@ -17,6 +17,7 @@ import { DBKara, DBKaraTag } from '../lib/types/database/kara';
 import { DBTag } from '../lib/types/database/tag';
 import { KaraFileV4, KaraTag } from '../lib/types/kara';
 import { TagTypeNum } from '../lib/types/tag';
+import { setASSSectionRaw } from '../lib/utils/ass';
 import { resolvedPathRepos } from '../lib/utils/config';
 import { audioFileRegexp, getTagTypeName } from '../lib/utils/constants';
 import { fileExists, resolveFileInDirs } from '../lib/utils/files';
@@ -340,18 +341,8 @@ export async function openLyricsFile(kid: string) {
 Audio File: ${mediaPath}
 ${!mediafile.match(audioFileRegexp) ? `Video File: ${mediaPath}` : ''}
 `;
-
 					let content: string = await fs.readFile(lyricsPath, { encoding: 'utf8' });
-					const blocks = content.split(/(?:\n)(?=^\[)/gm);
-					const index = blocks.findIndex(block => block.startsWith('[Aegisub Project Garbage]'));
-					if (index >= 0) {
-						// replace the existing garbage
-						blocks[index] = garbageBlock;
-					} else {
-						// add the garbage at the second position (default behavior)
-						blocks.splice(1, 0, garbageBlock);
-					}
-					content = blocks.join('\n');
+					content = setASSSectionRaw(content, 'Aegisub Project Garbage', garbageBlock, 1); // add the garbage at the second position (default behavior)
 					await fs.writeFile(lyricsPath, content);
 				}
 			}
