@@ -372,7 +372,7 @@ export async function consolidateTagsInRepo(kara: KaraFileV4) {
 					try {
 						await resolveFileInDirs(tagFile, destPath);
 					} catch {
-						// File doe snot exist, let's write it.
+						// File does not exist, let's write it.
 						copies.push(writeTagFile(tag, destPath[0]));
 					}
 				}

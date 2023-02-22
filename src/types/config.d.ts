@@ -194,4 +194,7 @@ export interface Config {
 			[p in PathType]?: string;
 		};
 	};
+	Maintainer: {
+		ApplyLyricsCleanupOnKaraSave: boolean; // Temporary setting until there's an unified way of defining base rules (media formats, lyrics cleanup)
+	};
 }

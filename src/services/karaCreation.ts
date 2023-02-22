@@ -5,7 +5,8 @@ import { applyKaraHooks } from '../lib/dao/hook';
 import { extractVideoSubtitles, trimKaraData, verifyKaraData, writeKara } from '../lib/dao/karafile';
 import { defineFilename, determineMediaAndLyricsFilenames, processSubfile } from '../lib/services/karaCreation';
 import { EditedKara } from '../lib/types/kara.d';
-import { resolvedPath, resolvedPathRepos } from '../lib/utils/config';
+import { ASSFileCleanup } from '../lib/utils/ass';
+import { getConfig, resolvedPath, resolvedPathRepos } from '../lib/utils/config';
 import { replaceExt, resolveFileInDirs, smartMove } from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
@@ -141,6 +142,13 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 		await integrateKaraFile(karaDest, kara, false, refresh);
 		checkDownloadStatus([kara.data.kid]);
 		await consolidateTagsInRepo(kara);
+
+		// Get finished kara with all updated fields
+		const newKara = await getKara(kara.data.kid, adminToken);
+
+		// ASS file post processing
+		if (kara.medias[0].lyrics?.[0] && getConfig().Maintainer.ApplyLyricsCleanupOnKaraSave === true)
+			await ASSFileCleanup(subDest, newKara);
 	} catch (err) {
 		logger.error('Error while editing kara', { service, obj: err });
 		if (!err.msg) {
@@ -184,12 +192,13 @@ export async function createKara(editedKara: EditedKara) {
 		}
 		const filenames = determineMediaAndLyricsFilenames(kara, karaFile);
 		const mediaDest = resolve(resolvedPathRepos('Medias', kara.data.repository)[0], filenames.mediafile);
+		let subDest: string;
 		if (kara.medias[0].lyrics?.[0]) {
 			const subPath = resolve(resolvedPath('Temp'), kara.medias[0].lyrics?.[0].filename);
 			const ext = await processSubfile(subPath);
 			filenames.lyricsfile = replaceExt(filenames.lyricsfile, ext);
 			kara.medias[0].lyrics[0].filename = filenames.lyricsfile;
-			const subDest = resolve(resolvedPathRepos('Lyrics', kara.data.repository)[0], filenames.lyricsfile);
+			subDest = resolve(resolvedPathRepos('Lyrics', kara.data.repository)[0], filenames.lyricsfile);
 			await smartMove(subPath, subDest, { overwrite: true });
 		}
 		await smartMove(mediaPath, mediaDest, { overwrite: true });
@@ -199,6 +208,13 @@ export async function createKara(editedKara: EditedKara) {
 		await integrateKaraFile(karaDest, kara, false, true);
 		checkDownloadStatus([kara.data.kid]);
 		await consolidateTagsInRepo(kara);
+
+		// Get finished kara with all fields
+		const newKara = await getKara(kara.data.kid, adminToken);
+
+		// ASS file post processing
+		if (kara.medias[0].lyrics?.[0] && getConfig().Maintainer.ApplyLyricsCleanupOnKaraSave === true)
+			await ASSFileCleanup(subDest, newKara);
 	} catch (err) {
 		logger.error('Error while creating kara', { service, obj: err });
 		if (!err.msg) {
