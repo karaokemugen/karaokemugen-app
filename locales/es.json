@@ -3,6 +3,7 @@
 	"REQUESTED_WITH": "(con {{names}})",
 	"REQUESTED_AND_one": "y otros",
 	"REQUESTED_AND_other": "y {{count}} otros",
+	"CANCEL": "Cancelar",
 	"MY_PLAYLIST": "Mi lista de reproducción",
 	"WHITELIST": "Lista blanca",
 	"BLACKLIST": "Lista negra",

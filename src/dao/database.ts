@@ -6,11 +6,13 @@ import { resolve } from 'path';
 import Postgrator from 'postgrator';
 import { v4 as uuidV4 } from 'uuid';
 
+import { exit } from '../components/engine';
 import { errorStep, initStep } from '../electron/electronLogger';
 import { connectDB, db, getInstanceID, getSettings, saveSetting, setInstanceID } from '../lib/dao/database';
 import { generateDatabase } from '../lib/services/generation';
 import { getConfig } from '../lib/utils/config';
 import { tagTypes, uuidRegexp } from '../lib/utils/constants';
+import { fileExists } from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import { emitWS } from '../lib/utils/ws';
@@ -71,21 +73,92 @@ export async function initDB() {
 	profile('initDB');
 }
 
+/** Reads migrations.txt to determine if some migrations should be removed */
+async function cleanupMigrations(migrationsDir: string) {
+	const migrationsFile = resolve(migrationsDir, 'migrations.txt');
+
+	if (!(await fileExists(migrationsFile))) {
+		// File does not exist, which is fine(tm).
+		// It's only provided with packaged versions.
+		return;
+	}
+	const migrationsFileData = await fs.readFile(migrationsFile, 'utf-8');
+	const migrationsInRelease = new Set(migrationsFileData.split('\n'));
+	let migrationsInDir = await fs.readdir(migrationsDir);
+	migrationsInDir = migrationsInDir.filter(e => e.endsWith('.sql'));
+	for (const file of migrationsInDir) {
+		if (!migrationsInRelease.has(file)) {
+			logger.warn(`Removing extraneous migration ${file}`, { service });
+			await fs.unlink(resolve(migrationsDir, file));
+		}
+	}
+}
+
 async function migrateDB(): Promise<Postgrator.Migration[]> {
 	logger.info('Running migrations if needed', { service });
 	profile('migrateDB');
 	initStep(i18next.t('INIT_MIGRATION'));
 	const conf = getConfig();
 	const migrationDir = resolve(getState().resourcePath, 'migrations/');
-	const migrator = new Postgrator({
+	// First clean out any unnecessary migrations
+	await cleanupMigrations(migrationDir);
+	const migratorOptions = {
 		migrationPattern: `${migrationDir}/*.sql`,
 		driver: 'pg',
 		database: conf.System.Database.database,
 		execQuery: query => db().query(query),
 		validateChecksums: false,
-	});
-	const currentVersion = await migrator.getDatabaseVersion();
-	const numberOfMigrationsNeeded = await determineNumberOfMigrations(currentVersion);
+	} as Postgrator.Options;
+	let migrator = new Postgrator(migratorOptions);
+	const [currentVersion, maxVersionAvailable] = await Promise.all([
+		migrator.getDatabaseVersion(),
+		migrator.getMaxVersion(),
+	]);
+	let maxVersionInDB = currentVersion;
+	if (maxVersionAvailable < maxVersionInDB) {
+		// Database is in the future, abort mission.
+		const res = await dialog.showMessageBox({
+			type: 'error',
+			title: i18next.t('DATABASE_IN_THE_FUTURE_ERROR.TITLE'),
+			message: i18next.t('DATABASE_IN_THE_FUTURE_ERROR.MESSAGE'),
+			defaultId: 0,
+			buttons: [
+				i18next.t('CANCEL'),
+				i18next.t('DATABASE_IN_THE_FUTURE_ERROR.DELETE_ALL_DATA'),
+				i18next.t('DATABASE_IN_THE_FUTURE_ERROR.CONTINUE_ANYWAY'),
+			],
+		});
+		if (res.response === 0) {
+			// Cancel
+			await exit(1);
+		} else if (res.response === 1) {
+			// OK, we remove everything and start over.
+			// Remove all tables and types
+			const tables = await db().query(`
+				SELECT tablename
+  					FROM pg_tables
+ 				WHERE schemaname = 'public';
+ 			`);
+			for (const row of tables.rows) {
+				await db().query(`DROP TABLE IF EXISTS ${row.tablename} CASCADE;`);
+			}
+			const types = await db().query(`
+				SELECT DISTINCT ON(pg_type.typname)
+					pg_type.typname AS enumtype,
+					pg_enum.enumlabel AS enumlabel
+				FROM pg_type
+				JOIN pg_enum ON pg_enum.enumtypid = pg_type.oid;
+			`);
+			for (const row of types.rows) {
+				await db().query(`DROP TYPE ${row.enumtype}`);
+			}
+			maxVersionInDB = null;
+			// Reinit migrator just in case
+			migrator = new Postgrator(migratorOptions);
+		}
+		// Else continue as usual
+	}
+	const numberOfMigrationsNeeded = await determineNumberOfMigrations(maxVersionInDB);
 	let task: Task;
 	let migrationNumber = 0;
 	if (numberOfMigrationsNeeded > 0) {

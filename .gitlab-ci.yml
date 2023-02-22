@@ -152,6 +152,20 @@ test:
     - if: $CI_COMMIT_BRANCH == "master"
     - if: $CI_COMMIT_BRANCH == "next"
     - when: never
+build-migrationsFile:
+  stage: build
+  interruptible: true
+  tags:
+    - $RUNNER_LINUX
+  artifacts:
+    expire_in: 1 day
+    name: km-app-migrations-$CI_COMMIT_REF_SLUG}
+    paths:
+      - migrations/migrations.txt
+  cache: {}
+  script:
+    - cd migrations
+    - ls *.sql > migrations.txt
 build-react:
   stage: build
   interruptible: true
@@ -221,8 +235,10 @@ pkg_linux:
       - release_linux
   dependencies:
     - build-react
+    - build-migrationsFile
   needs:
     - build-react
+    - build-migrationsFile
     - test
   script:
     - yarn install
@@ -266,8 +282,10 @@ pkg_win:
       - release_win
   dependencies:
     - build-react
+    - build-migrationsFile
   needs:
     - build-react
+    - build-migrationsFile
     - test
   script:
     - yarn install
@@ -316,8 +334,10 @@ pkg_mac:
       - release_mac
   dependencies:
     - build-react
+    - build-migrationsFile
   needs:
     - build-react
+    - build-migrationsFile
     - test
   variables:
     ARTIFACT_DOWNLOAD_ATTEMPTS: 10
