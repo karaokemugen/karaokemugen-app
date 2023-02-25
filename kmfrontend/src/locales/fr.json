@@ -987,7 +987,15 @@
 		"PARENTS_TOOLTIP": "Si un parent est défini, ce karaoké apparaîtra comme une alternative au(x) kara(s) parent(s) renseigné(s). Veillez à définir le dépôt avant de remplir ce tableau pour éviter d'ajouter des karaokés d'autres dépôts.",
 		"VERSION_AVAILABILITY": "Disponible en {{count}} versions.",
 		"COLLECTIONS_REQUIRED": "Une collection est obligatoire",
-		"COLLECTIONS_TOOLTIP": "Sélectionnez les collections dans lesquelles le karaoké doit apparaître"
+		"COLLECTIONS_TOOLTIP": "Sélectionnez les collections dans lesquelles le karaoké doit apparaître",
+		"MEDIA_FILE_INFO": {
+			"FILE_FORMAT": "Format de fichier",
+			"OVERALL_BITRATE": "Débit global",
+			"AUDIO_CODEC": "Codec audio",
+			"VIDEO_CODEC": "Codec vidéo",
+			"VIDEO_RESOLUTION": "Résolution",
+			"VIDEO_COLORSPACE": "Espace de couleur"
+		}
 	},
 	"MENU": {
 		"HOME": "Tableau de bord",
