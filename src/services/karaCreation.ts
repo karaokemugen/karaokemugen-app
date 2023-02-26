@@ -76,8 +76,8 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 					}
 					kara.medias[0].lyrics[0] = {
 						filename: basename(extractFile),
-						version: 'Default',
 						default: true,
+						version: 'Default',
 					};
 					filenames.lyricsfile = karaFile + extname(kara.medias[0].lyrics[0].filename);
 					editedKara.modifiedLyrics = true;
@@ -183,8 +183,8 @@ export async function createKara(editedKara: EditedKara) {
 				}
 				kara.medias[0].lyrics[0] = {
 					filename: basename(extractFile),
-					version: 'Default',
 					default: true,
+					version: 'Default',
 				};
 			}
 		} catch (err) {
