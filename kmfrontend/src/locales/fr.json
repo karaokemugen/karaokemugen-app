@@ -994,7 +994,8 @@
 			"AUDIO_CODEC": "Codec audio",
 			"VIDEO_CODEC": "Codec vidéo",
 			"VIDEO_RESOLUTION": "Résolution",
-			"VIDEO_COLORSPACE": "Espace de couleur"
+			"VIDEO_COLORSPACE": "Espace de couleur",
+			"FILE_SIZE": "Taille du fichier"
 		}
 	},
 	"MENU": {
