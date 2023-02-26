@@ -8,6 +8,7 @@
     "antd": "4.24.7",
     "dayjs": "^1.11.7",
     "dompurify": "^2.4.3",
+    "filesize": "^10.0.6",
     "i18n-iso-countries": "^7.5.0",
     "i18next": "^22.4.9",
     "lodash": "^4.17.21",

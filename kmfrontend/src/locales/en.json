@@ -893,6 +893,7 @@
 		"MEDIA_IN_PROCESS": "The media file is being integrated, please wait for the notification of successful processing.",
 		"MEDIA_FILE_INFO": {
 			"OVERALL_BITRATE": "Overall bitrate",
+			"FILE_SIZE": "File size",
 			"FILE_FORMAT": "File format",
 			"VIDEO_CODEC": "Video codec",
 			"VIDEO_RESOLUTION": "Resolution",

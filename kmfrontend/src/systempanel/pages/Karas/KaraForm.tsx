@@ -19,6 +19,7 @@ import {
 	Col,
 } from 'antd';
 import { SelectValue } from 'antd/lib/select';
+import { filesize } from 'filesize';
 import i18next from 'i18next';
 import { Component, createRef } from 'react';
 import { v4 as UUIDv4 } from 'uuid';
@@ -567,6 +568,15 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 												{i18next.t('KARA.MEDIA_FILE_INFO.FILE_FORMAT')}
 											</td>
 											<td>{this.state.mediaInfo?.fileExtension || '-'}</td>
+										</tr>
+										<tr>
+											<td style={{ paddingRight: '10px' }}>
+												{i18next.t('KARA.MEDIA_FILE_INFO.FILE_SIZE')}
+											</td>
+											<td>
+												{(this.state.mediaInfo?.size && filesize(this.state.mediaInfo?.size)) ||
+													'-'}
+											</td>
 										</tr>
 										<tr>
 											<td style={{ paddingRight: '10px' }}>
