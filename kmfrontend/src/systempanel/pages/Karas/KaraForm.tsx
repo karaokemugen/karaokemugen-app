@@ -817,7 +817,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					/>
 				</Form.Item>
 				<Form.Item
-					hasFeedback
 					label={
 						<span>
 							{i18next.t('KARA.ORDER')}&nbsp;
@@ -827,7 +826,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						</span>
 					}
 					labelCol={{ flex: '0 1 220px' }}
-					wrapperCol={{ span: 1 }}
+					wrapperCol={{ flex: '0 1 70px' }}
 					name="songorder"
 				>
 					<InputNumber min={0} style={{ width: '100%' }} onPressEnter={this.submitHandler} />
