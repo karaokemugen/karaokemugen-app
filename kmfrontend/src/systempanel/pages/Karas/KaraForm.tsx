@@ -788,7 +788,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						</span>
 					}
 					labelCol={{ flex: '0 1 220px' }}
-					wrapperCol={{ span: 7 }}
+					wrapperCol={{ span: 14 }}
 					name="franchises"
 				>
 					<EditableTagGroup
