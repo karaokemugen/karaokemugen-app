@@ -318,7 +318,9 @@ export async function integrateKaraFile(
 	}
 	// Do not create image previews if running this from the command line.
 	if (!getState().opt.generateDB)
-		createImagePreviews(await getKaras({ q: `k:${karaData.data.kid}`, ignoreCollections: true }), 'single');
+		createImagePreviews(await getKaras({ q: `k:${karaData.data.kid}`, ignoreCollections: true }), 'single').catch(
+			() => {}
+		);
 	return karaData.data.kid;
 }
 

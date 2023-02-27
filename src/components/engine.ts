@@ -253,7 +253,7 @@ export async function updateBase(internet: boolean) {
 			ignoreCollections: true,
 		}),
 		'single'
-	);
+	).catch(() => {}); // Non-fatal
 }
 
 export async function exit(rc = 0, update = false) {

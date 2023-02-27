@@ -74,7 +74,7 @@ export function initDownloadQueue() {
 			ignoreCollections: true,
 		});
 		downloadedKIDs.clear();
-		createImagePreviews(karas, 'single');
+		createImagePreviews(karas, 'single').catch(() => {});
 	};
 }
 
