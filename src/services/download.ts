@@ -25,7 +25,7 @@ import { emitWS } from '../lib/utils/ws';
 import { KaraDownload, KaraDownloadRequest, MediaDownloadCheck, QueueStatus } from '../types/download';
 import { getState } from '../utils/state';
 import { getKaras } from './kara';
-import { getRepoFreeSpace } from './repo';
+import { getRepo, getRepoFreeSpace } from './repo';
 
 const service = 'Downloads';
 
@@ -177,7 +177,8 @@ export async function checkMediaAndDownloadSingleKara(kara: MediaDownloadCheck, 
 		const mediaStats = await fs.stat(mediaPath);
 		downloadMedia = mediaStats.size !== kara.mediasize;
 	}
-	if (downloadMedia && getConfig().Online.AllowDownloads && !getState().isTest) {
+	const repo = getRepo(kara.repository);
+	if (downloadMedia && getConfig().Online.AllowDownloads && !getState().isTest && repo.Online) {
 		try {
 			await addDownloads([
 				{
