@@ -130,7 +130,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 	};
 
 	loadMediaInfo = async () => {
-		if (this.props.kara.kid && this.props.kara.download_status === 'DOWNLOADED') {
+		if (this.props.kara?.kid && this.props.kara?.download_status === 'DOWNLOADED') {
 			const mediaInfo: MediaInfo = await commandBackend(
 				'getKaraMediaInfo',
 				{ kid: this.props.kara.kid },
