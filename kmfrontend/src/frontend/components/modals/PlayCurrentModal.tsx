@@ -12,6 +12,7 @@ import { commandBackend } from '../../../utils/socket';
 
 interface IProps {
 	currentPlaylist: PlaylistElem;
+	displayedPlaylist: { plaid?: string; name: string };
 }
 
 function PlayCurrentModal(props: IProps) {
@@ -25,6 +26,15 @@ function PlayCurrentModal(props: IProps) {
 		} catch (e) {
 			// already display
 		}
+	};
+
+	const switchPlaylistAndPlay = async () => {
+		await commandBackend('editPlaylist', {
+			flag_current: true,
+			plaid: props.displayedPlaylist.plaid,
+		});
+		await commandBackend('sendPlayerCommand', { command: 'play' });
+		closeModalWithContext();
 	};
 
 	const closeModalWithContext = () => closeModal(context.globalDispatch);
@@ -76,8 +86,23 @@ function PlayCurrentModal(props: IProps) {
 						>
 							<i className="fas fa-times" /> {i18next.t('CANCEL')}
 						</button>
+						{props.displayedPlaylist.plaid ? (
+							<button
+								type="button"
+								className="btn btn-action btn-secondary"
+								onClick={switchPlaylistAndPlay}
+							>
+								<i className="fas fa-shuffle" />
+								&nbsp;
+								<Trans
+									i18nKey="MODAL.PLAY_CURRENT_MODAL.CHANGE_TO_DISPLAYED_AND_PLAY"
+									components={{ 1: <span className="important-name" /> }}
+									values={{ displayedPlaylistName: props.displayedPlaylist.name }}
+								/>
+							</button>
+						) : null}
 						<button type="button" className="btn btn-action btn-default ok" onClick={playCurrentPlaylist}>
-							<i className="fas fa-check" /> {i18next.t('MODAL.PLAY_CURRENT_MODAL.PLAY_ANYWAY')}
+							<i className="fas fa-play" /> {i18next.t('MODAL.PLAY_CURRENT_MODAL.PLAY_ANYWAY')}
 						</button>
 					</div>
 				</div>
