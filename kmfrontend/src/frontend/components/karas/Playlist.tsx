@@ -582,7 +582,7 @@ function Playlist(props: IProps) {
 		let checkedKarasNumber = checkedKaras;
 		for (const kara of data.content) {
 			if (!isNonStandardPlaylist(getPlaylistInfo(props.side, context)?.plaid)) {
-				if (kara.plcid === id) {
+				if (kara?.plcid === id) {
 					kara.checked = !kara.checked;
 					if (kara.checked) {
 						checkedKarasNumber++;
