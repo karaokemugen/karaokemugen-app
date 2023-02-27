@@ -45,7 +45,7 @@ function CheckedKaraMenuModal(props: IProps) {
 	};
 
 	const changeVisibilityKaraOn = () => {
-		if (props.checkedKaras.length === 0) {
+		if (!props.checkedKaras || props.checkedKaras?.length === 0) {
 			displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
 			return;
 		}
