@@ -115,7 +115,8 @@ async function migrateDB(): Promise<Postgrator.Migration[]> {
 		migrator.getMaxVersion(),
 	]);
 	let maxVersionInDB = currentVersion;
-	if (maxVersionAvailable < maxVersionInDB) {
+	// Only check this if app is packaged. Source code users should know what they're doing.
+	if (app.isPackaged && maxVersionAvailable < maxVersionInDB) {
 		// Database is in the future, abort mission.
 		const res = await dialog.showMessageBox({
 			type: 'error',
