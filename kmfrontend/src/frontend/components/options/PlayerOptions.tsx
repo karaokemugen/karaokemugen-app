@@ -89,9 +89,9 @@ function PlayerOptions(props: IProps) {
 			displays?.map((display: any, index: number) => (
 				<option key={index} value={index}>
 					&nbsp;
-					{`${i18next.t('SETTINGS.PLAYER.SCREEN_SETTINGS')} ${index + 1} - ${display.connection} - ${
-						display.resolutionX
-					}x${display.resolutionY}`}
+					{`${i18next.t('SETTINGS.PLAYER.SCREEN_SETTINGS')} ${index + 1} - ${display.resolutionX}x${
+						display.resolutionY
+					}`}
 				</option>
 			)),
 		[displays]
