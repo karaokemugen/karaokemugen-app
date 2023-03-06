@@ -22,6 +22,7 @@ export type PlaylistLimit = 'duration' | 'songs';
 export interface AutoMixParams {
 	filters?: {
 		usersFavorites?: string[];
+		usersAnimeList?: string[];
 		years?: number[];
 		tags?: TagAndType[];
 	};
