@@ -225,6 +225,7 @@ export async function handleProtocol(args: string[]) {
 
 export async function handleFile(file: string, username?: string, onlineToken?: string) {
 	try {
+		if (!file) return;
 		logger.info(`Received file path ${file}`, { service });
 		if (!getState().ready) return;
 		if (!username) {
