@@ -225,8 +225,10 @@
 		"NAME": "Playlist name",
 		"NAME_PLACEHOLDER": "Auto-generated name",
 		"CRITERIA": "Mix criteria",
-		"FAVOURITES": "Favourites of",
-		"FAVOURITES_OF": "{{name}}'s favourites",
+		"ANIMELISTS": "Animelists of",
+		"ANIMELISTS_OF": "{{name}}'s animelist",
+		"FAVOURITES": "Favorites of",
+		"FAVOURITES_OF": "{{name}}'s favorites",
 		"LIMIT": "Limit the list to…",
 		"LIMIT_TYPE": {
 			"DURATION": "Duration",

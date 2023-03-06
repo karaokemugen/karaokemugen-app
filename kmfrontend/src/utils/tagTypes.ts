@@ -151,6 +151,11 @@ export const FAVORITES = {
 	type: 1001,
 };
 
+export const ANIMELISTS = {
+	icon: 'star',
+	type: 1002,
+};
+
 export function getTagTypeName(type: number): string {
 	return Object.keys(tagTypes).find(t => tagTypes[t].type === type);
 }

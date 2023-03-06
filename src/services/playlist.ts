@@ -1655,12 +1655,20 @@ export async function createAutoMix(params: AutoMixParams, username: string): Pr
 	// If this doesn't give expected results due to async optimizations (for years and/or karas) we should try using Maps or Sets instead of arrays. Or use .push on each element
 	const uniqueList = new Map<string, DBPLC>();
 
-	let favs: DBKara[] = [];
 	if (params.filters?.usersFavorites) {
 		const users = params.filters.usersFavorites;
-		favs = await getAllFavorites(users);
+		let favs = await getAllFavorites(users);
 		favs = shuffle(favs);
 		favs.forEach(f => uniqueList.set(f.kid, f as any));
+	}
+	if (params.filters?.usersAnimeList) {
+		for (const userlogin of params.filters.usersAnimeList) {
+			const user = await getUser(userlogin);
+			if (user.anime_list_to_fetch) {
+				const karas = await getKaras({ userAnimeList: userlogin });
+				karas.content.forEach(k => uniqueList.set(k.kid, k as any));
+			}
+		}
 	}
 	let karaTags: DBKara[] = [];
 	if (params.filters?.tags) {

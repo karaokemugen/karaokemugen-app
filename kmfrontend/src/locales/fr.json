@@ -232,6 +232,8 @@
 		"NAME": "Nom de la liste",
 		"NAME_PLACEHOLDER": "Nom généré automatiquement",
 		"CRITERIA": "Critères du mix",
+		"ANIMELISTS": "Liste d'animés de",
+		"ANIMELISTS_OF": "Liste d'animés de {{name}}",
 		"FAVOURITES": "Favoris de",
 		"FAVOURITES_OF": "Favoris de {{name}}",
 		"LIMIT": "Limiter la liste à…",
