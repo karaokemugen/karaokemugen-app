@@ -334,7 +334,6 @@ async function preFlightCheck(): Promise<boolean> {
 	}
 	const settings = await getSettings();
 	if (!doGenerate && !settings.lastGeneration) {
-		setConfig({ App: { FirstRun: true } });
 		logger.info('Unable to tell when last generation occured: database generation triggered', { service });
 		doGenerate = true;
 	}
