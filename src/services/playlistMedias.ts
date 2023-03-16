@@ -8,6 +8,7 @@ import { createClient, FileStat } from 'webdav';
 import { getConfig } from '../lib/utils/config';
 import { downloadFiles } from '../lib/utils/downloader';
 import { asyncCheckOrMkdir, isMediaFile } from '../lib/utils/files';
+import { fixedEncodeURIComponent } from '../lib/utils/http';
 import logger from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import { Config } from '../types/config';
@@ -154,7 +155,7 @@ async function downloadMedias(files: File[], dir: string, type: MediaType, task:
 	const list = files.map(file => {
 		return {
 			filename: resolve(dir, file.basename),
-			url: `${playlistMediasURL}/${type}/${encodeURIComponent(file.basename)}`,
+			url: `${playlistMediasURL}/${type}/${fixedEncodeURIComponent(file.basename)}`,
 			size: file.size,
 		};
 	});

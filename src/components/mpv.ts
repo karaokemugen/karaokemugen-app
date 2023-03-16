@@ -34,7 +34,7 @@ import { APIMessage } from '../lib/services/frontend';
 import { DBKaraTag } from '../lib/types/database/kara';
 import { supportedFiles } from '../lib/utils/constants';
 import { date, time } from '../lib/utils/date';
-import HTTP from '../lib/utils/http';
+import HTTP, { fixedEncodeURIComponent } from '../lib/utils/http';
 import { convert1LangTo2B } from '../lib/utils/langs';
 import logger, { profile } from '../lib/utils/logger';
 import { emitWS } from '../lib/utils/ws';
@@ -75,12 +75,12 @@ const playerState: PlayerState = {
 async function resolveMediaURL(file: string, repo: string): Promise<string> {
 	const conf = getConfig();
 	let up = false;
-	let mediaFile = `${conf.Online.MediasHost}/${encodeURIComponent(file)}`;
+	let mediaFile = `${conf.Online.MediasHost}/${fixedEncodeURIComponent(file)}`;
 	// We test if the MediasHost allows us to reach a file. If not we try the song's repository.
 	if (conf.Online.MediasHost) {
 		if (await HTTP.head(mediaFile)) up = true;
 	} else {
-		mediaFile = `https://${repo}/downloads/medias/${encodeURIComponent(file)}`;
+		mediaFile = `https://${repo}/downloads/medias/${fixedEncodeURIComponent(file)}`;
 		if (await HTTP.head(mediaFile)) up = true;
 	}
 	if (up) {

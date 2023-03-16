@@ -17,6 +17,7 @@ import {
 import { getConfig, resolvedPath, resolvedPathRepos } from '../lib/utils/config';
 import { downloadFile } from '../lib/utils/downloader';
 import { resolveFileInDirs, smartMove } from '../lib/utils/files';
+import { fixedEncodeURIComponent } from '../lib/utils/http';
 import logger, { profile } from '../lib/utils/logger';
 import { createImagePreviews } from '../lib/utils/previews';
 import { emit } from '../lib/utils/pubsub';
@@ -119,7 +120,7 @@ async function processDownload(download: KaraDownload) {
 		const tempMedia = resolve(tempDir, download.mediafile);
 		const downloadItem = {
 			filename: tempMedia,
-			url: `https://${download.repository}/downloads/medias/${encodeURIComponent(download.mediafile)}`,
+			url: `https://${download.repository}/downloads/medias/${fixedEncodeURIComponent(download.mediafile)}`,
 			id: download.name,
 		};
 		await downloadFile(downloadItem, downloadTask);

@@ -9,7 +9,7 @@ import { resolvedPath, resolvedPathRepos } from '../lib/utils/config';
 import { downloadFile } from '../lib/utils/downloader';
 import { smartMove } from '../lib/utils/files';
 import { closeIssue } from '../lib/utils/gitlab';
-import HTTP from '../lib/utils/http';
+import HTTP, { fixedEncodeURIComponent } from '../lib/utils/http';
 import logger from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import { emitWS } from '../lib/utils/ws';
@@ -120,7 +120,9 @@ async function downloadMediaFromInbox(kara: Inbox, repoName: string) {
 			const tempMedia = resolve(resolvedPath('Temp'), kara.mediafile);
 			const downloadItem = {
 				filename: tempMedia,
-				url: `https://${repoName}/inbox/${encodeURIComponent(kara.name)}/${encodeURIComponent(kara.mediafile)}`,
+				url: `https://${repoName}/inbox/${fixedEncodeURIComponent(kara.name)}/${fixedEncodeURIComponent(
+					kara.mediafile
+				)}`,
 				id: kara.name,
 			};
 			try {
