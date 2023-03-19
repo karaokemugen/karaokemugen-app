@@ -1,6 +1,6 @@
 {
   "name": "karaokemugen-app",
-  "version": "7.0.56-next",
+  "version": "7.0.57-next",
   "versionName": "Rin Rassasiée",
   "description": "Karaoke playlist manager / player",
   "bin": {
