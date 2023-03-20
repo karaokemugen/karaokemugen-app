@@ -350,8 +350,8 @@ export function computeTagsElements(kara: DBKara, scope: Scope, versions = true,
 	}
 
 	const types = versions
-		? ['VERSIONS', 'FAMILIES', 'PLATFORMS', 'GENRES', 'ORIGINS', 'GROUPS', 'COLLECTIONS', 'MISC', 'WARNINGS']
-		: ['FAMILIES', 'PLATFORMS', 'GENRES', 'ORIGINS', 'GROUPS', 'COLLECTIONS', 'MISC', 'WARNINGS'];
+		? ['VERSIONS', 'FAMILIES', 'PLATFORMS', 'GENRES', 'ORIGINS', 'COLLECTIONS', 'MISC', 'WARNINGS']
+		: ['FAMILIES', 'PLATFORMS', 'GENRES', 'ORIGINS', 'COLLECTIONS', 'MISC', 'WARNINGS'];
 
 	for (const type of types) {
 		const tagData = tagTypes[type];
