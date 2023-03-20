@@ -2,6 +2,7 @@ import { QuestionCircleOutlined, UploadOutlined } from '@ant-design/icons';
 import {
 	Button,
 	Checkbox,
+	Collapse,
 	Divider,
 	Form,
 	Input,
@@ -36,6 +37,7 @@ import LanguagesList from '../../components/LanguagesList';
 import OpenLyricsFileButton from '../../components/OpenLyricsFileButton';
 
 const { Paragraph } = Typography;
+const { Panel } = Collapse;
 
 interface KaraFormProps {
 	kara: DBKara;
@@ -1011,12 +1013,16 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					wrapperCol={{ span: 10 }}
 					name="platforms"
 				>
-					<EditableTagGroup
-						form={this.formRef.current}
-						tagType={13}
-						checkboxes={true}
-						onChange={tags => this.formRef.current.setFieldsValue({ platforms: tags })}
-					/>
+					<Collapse bordered={false}>
+						<Panel header={i18next.t('SHOW-HIDE')} key="1">
+							<EditableTagGroup
+								form={this.formRef.current}
+								tagType={13}
+								checkboxes={true}
+								onChange={tags => this.formRef.current.setFieldsValue({ platforms: tags })}
+							/>
+						</Panel>
+					</Collapse>
 				</Form.Item>
 				<Form.Item
 					label={i18next.t('TAG_TYPES.GENRES_other')}
