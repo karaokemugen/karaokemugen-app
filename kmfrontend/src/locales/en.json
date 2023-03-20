@@ -926,6 +926,7 @@
 		"LANGUAGES_REQUIRED": "Please choose a language",
 		"YEAR": "Broadcast year",
 		"YEAR_TOOLTIP": "Year when the series was broadcasted or the video was produced",
+		"FAMILIES_TOOLTIP": "Defines what kind of content the video has.",
 		"SINGERGROUPS_TOOLTIP": "If the singers belong to a music band, put them in here. The band will be displayed in the player and song lists instead of individual singers.",
 		"SONGWRITERS_TOOLTIP": "Composers, Arrangers and Lyricists.",
 		"CREATORS_TOOLTIP": "Entity that created the series. Can be animation studio, movie studio, or game studio.",

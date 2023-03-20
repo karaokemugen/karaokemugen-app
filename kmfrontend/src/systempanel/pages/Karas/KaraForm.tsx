@@ -995,7 +995,14 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				</Form.Item>
 
 				<Form.Item
-					label={i18next.t('TAG_TYPES.FAMILIES_other')}
+					label={
+						<span>
+							{i18next.t('TAG_TYPES.FAMILIES_other')}&nbsp;
+							<Tooltip title={i18next.t('KARA.FAMILIES_TOOLTIP')}>
+								<QuestionCircleOutlined />
+							</Tooltip>
+						</span>
+					}
 					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 10 }}
 					name="families"
