@@ -322,14 +322,14 @@ export function computeTagsElements(kara: DBKara, scope: Scope, versions = true,
 		const isMulti = kara.langs.find(e => e.name.indexOf('mul') > -1);
 		isMulti
 			? karaTags.push(
-					<div key={isMulti.tid} className="tag">
+					<div key={isMulti.tid} className="tag black">
 						{getInlineTag(isMulti, tagTypes.LANGS.type, scope, i18nParam)}
 					</div>
 			  )
 			: karaTags.push(
 					...sortAndHideTags(kara.langs, scope).map(tag => {
 						return (
-							<div key={tag.tid} className="tag green" title={tag.short ? tag.short : tag.name}>
+							<div key={tag.tid} className="tag black" title={tag.short ? tag.short : tag.name}>
 								{getInlineTag(tag, tagTypes.LANGS.type, scope, i18nParam)}
 							</div>
 						);

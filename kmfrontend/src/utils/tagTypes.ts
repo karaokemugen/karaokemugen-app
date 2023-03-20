@@ -44,7 +44,7 @@ export const tagTypes: Readonly<{ [key: string]: tagType }> = {
 	LANGS: {
 		icon: 'globe',
 		type: 5,
-		color: 'green',
+		color: 'black',
 		karajson: 'langs',
 	},
 	SINGERS: {
