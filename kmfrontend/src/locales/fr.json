@@ -916,7 +916,7 @@
 		"LANGUAGES_REQUIRED": "Choisissez une langue",
 		"YEAR": "Année de diffusion",
 		"YEAR_TOOLTIP": "Année de la diffusion de l'œuvre ou de la vidéo",
-		"FAMILIES_TOOLTIP": "Définit quel genre de contenu la vidéo a",
+		"FAMILIES_TOOLTIP": "Définit le genre de contenu de la vidéo",
 		"SERIES_SINGERS_REQUIRED": "Les champs Œuvre, Chanté par, Du groupe musical ne peuvent être vides en même temps.",
 		"SINGERGROUPS_TOOLTIP": "Si les chanteurs listés appartiennent à un groupe de musique, indiquez-le(s). Le groupe sera affiché sur le lecteur vidéo et dans les listes au détriment des chanteurs individuels.",
 		"SONGWRITERS_TOOLTIP": "Compositeurs, Arrangeurs et paroliers.",
