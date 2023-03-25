@@ -17,6 +17,7 @@ SELECT
 	u.avatar_file,
 	u.last_login_at,
 	u.flag_temporary,
+	u.flag_public,
 	${
 		params.full
 			? `
@@ -31,7 +32,6 @@ SELECT
 		u.location AS location,
 		u.language AS language,
 		u.flag_parentsonly AS flag_parentsonly,
-		u.flag_public,
 		u.flag_displayfavorites,
 		u.social_networks,
 		u.banner,
