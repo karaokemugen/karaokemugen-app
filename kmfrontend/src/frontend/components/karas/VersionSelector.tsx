@@ -162,15 +162,15 @@ export default function VersionSelector(props: Props) {
 														/>
 													</h5>
 												</div>
-												<div>
-													<h6 className="modal-series">
+												<div className="modal-right">
+													<h6>
 														<span>
 															<i className={`fas fa-fw fa-${YEARS.icon}`} />
 															{kara.year}
 														</span>
 													</h6>
 
-													<h6 className="modal-series">
+													<h6>
 														<span>
 															<i className="fas fa-fw fa-clock" />
 															{secondsTimeSpanToHMS(kara.duration, 'mm:ss')}
