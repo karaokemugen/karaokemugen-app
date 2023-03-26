@@ -1023,6 +1023,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					<Collapse bordered={false}>
 						<Panel header={i18next.t('SHOW-HIDE')} key="1" forceRender={true}>
 							<EditableTagGroup
+								value={this.props.kara?.platforms || this.state.parentKara?.platforms}
 								form={this.formRef.current}
 								tagType={13}
 								checkboxes={true}
