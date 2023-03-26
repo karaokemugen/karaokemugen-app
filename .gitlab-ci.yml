@@ -166,6 +166,9 @@ build-migrationsFile:
   script:
     - cd migrations
     - ls *.sql > migrations.txt
+  rules:
+    - if: $SCHEDULED_RELEASES == "true"
+      when: never
 build-react:
   stage: build
   interruptible: true
