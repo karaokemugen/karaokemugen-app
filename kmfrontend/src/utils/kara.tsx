@@ -12,6 +12,20 @@ import { getLanguageIn3B, langSupport } from './isoLanguages';
 import { isRemote } from './socket';
 import { tagTypes } from './tagTypes';
 
+export function getDescriptionInLocale(settings: SettingsStoreData, description: Record<string, string>): string {
+	if (!description) return '';
+	const user = settings?.user;
+	if (user?.main_series_lang && user?.fallback_series_lang) {
+		return description[user.main_series_lang]
+			? description[user.main_series_lang]
+			: description[user.fallback_series_lang]
+			? description[user.fallback_series_lang]
+			: description.eng;
+	} else {
+		return description[getLanguageIn3B(langSupport)] ? description[getLanguageIn3B(langSupport)] : description.eng;
+	}
+}
+
 export function getTagInLanguage(
 	tag: DBKaraTag,
 	mainLanguage: string,
