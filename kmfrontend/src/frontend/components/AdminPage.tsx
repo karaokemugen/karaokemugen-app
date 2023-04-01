@@ -114,10 +114,12 @@ function AdminPage(props: IProps) {
 			plaid: nonStandardPlaylists.favorites,
 			name: i18next.t('PLAYLISTS.FAVORITES'),
 		});
-		playlistList.push({
-			plaid: nonStandardPlaylists.animelist,
-			name: i18next.t('PLAYLISTS.ANIME_LIST'),
-		});
+		if (context.globalState.settings.data.user.anime_list_to_fetch) {
+			playlistList.push({
+				plaid: nonStandardPlaylists.animelist,
+				name: i18next.t('PLAYLISTS.ANIME_LIST'),
+			});
+		}
 		playlistList.push({
 			plaid: nonStandardPlaylists.library,
 			name: i18next.t('PLAYLISTS.LIBRARY'),
