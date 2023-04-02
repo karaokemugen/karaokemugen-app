@@ -166,9 +166,15 @@ build-migrationsFile:
   script:
     - cd migrations
     - ls *.sql > migrations.txt
-  rules:
+  rules:    
     - if: $SCHEDULED_RELEASES == "true"
-      when: never
+      when: never    
+    - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
+    - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
+    - if: '$CI_COMMIT_TAG'
+    - if: $CI_COMMIT_BRANCH == "master"
+    - if: $CI_COMMIT_BRANCH == "next"
+    - when: never
 build-react:
   stage: build
   interruptible: true
