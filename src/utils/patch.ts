@@ -5,15 +5,15 @@ import { move, remove } from 'fs-extra';
 import parallel from 'p-map';
 import { resolve } from 'path';
 
-import { initHooks } from '../lib/dao/hook';
-import { DiffChanges, Repository } from '../lib/types/repo';
-import { resolvedPath } from '../lib/utils/config';
-import { downloadFile } from '../lib/utils/downloader';
-import { getFilesRecursively } from '../lib/utils/files';
-import logger from '../lib/utils/logger';
-import { computeFileChanges } from '../lib/utils/patch';
-import Task from '../lib/utils/taskManager';
-import { getState } from './state';
+import { initHooks } from '../lib/dao/hook.js';
+import { DiffChanges, Repository } from '../lib/types/repo.js';
+import { resolvedPath } from '../lib/utils/config.js';
+import { downloadFile } from '../lib/utils/downloader.js';
+import { getFilesRecursively } from '../lib/utils/files.js';
+import logger from '../lib/utils/logger.js';
+import { computeFileChanges } from '../lib/utils/patch.js';
+import Task from '../lib/utils/taskManager.js';
+import { getState } from './state.js';
 
 const service = 'Patch';
 

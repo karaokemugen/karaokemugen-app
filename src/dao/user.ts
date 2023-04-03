@@ -1,9 +1,9 @@
 import { pg as yesql } from 'yesql';
 
-import { db, newDBTask } from '../lib/dao/database';
-import { DBUser } from '../lib/types/database/user';
-import { User, UserParams } from '../lib/types/user';
-import { now } from '../lib/utils/date';
+import { db, newDBTask } from '../lib/dao/database.js';
+import { DBUser } from '../lib/types/database/user.js';
+import { User, UserParams } from '../lib/types/user.js';
+import { now } from '../lib/utils/date.js';
 import {
 	sqlcreateUser,
 	sqldeleteTempUsers,
@@ -19,7 +19,7 @@ import {
 	sqlSelectAllDupeUsers,
 	sqlselectUsers,
 	sqlupdateLastLogin,
-} from './sql/user';
+} from './sql/user.js';
 
 export function deleteUser(username: string) {
 	return db().query(sqldeleteUser, [username]);

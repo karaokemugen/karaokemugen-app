@@ -3,16 +3,16 @@ import { dialog } from 'electron';
 import i18next from 'i18next';
 import Postgrator from 'postgrator';
 
-import { win } from '../electron/electron';
-import { refreshTags } from '../lib/dao/tag';
-import { setConfig } from '../lib/utils/config';
-import logger from '../lib/utils/logger';
-import { displayInfo } from '../services/player';
-import { editRepo, getRepo } from '../services/repo';
-import { migrateBLWLToSmartPLs } from '../utils/hokutoNoCode';
-import Sentry from '../utils/sentry';
-import { getState } from '../utils/state';
-import { compareKarasChecksum, generateDB } from './database';
+import { win } from '../electron/electron.js';
+import { refreshTags } from '../lib/dao/tag.js';
+import { setConfig } from '../lib/utils/config.js';
+import logger from '../lib/utils/logger.js';
+import { displayInfo } from '../services/player.js';
+import { editRepo, getRepo } from '../services/repo.js';
+import { migrateBLWLToSmartPLs } from '../utils/hokutoNoCode.js';
+import Sentry from '../utils/sentry.js';
+import { getState } from '../utils/state.js';
+import { compareKarasChecksum, generateDB } from './database.js';
 
 const service = 'DBMigration';
 

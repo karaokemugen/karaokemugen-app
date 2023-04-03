@@ -3,22 +3,22 @@ import { promises as fs } from 'fs';
 import i18next from 'i18next';
 import { resolve } from 'path';
 
-import { exit, welcomeToYoukousoKaraokeMugen } from '../components/engine';
-import { init, preInit } from '../components/init';
-import { selectUsers } from '../dao/user';
-import { getConfig, resolvedPath, setConfig } from '../lib/utils/config';
-import logger from '../lib/utils/logger';
-import { emitWS } from '../lib/utils/ws';
-import { importFavorites } from '../services/favorites';
-import { importPlaylist, playlistImported } from '../services/playlist';
-import { addRepo, getRepo } from '../services/repo';
-import { generateAdminPassword } from '../services/user';
-import { MenuLayout } from '../types/electron';
-import { detectKMFileTypes } from '../utils/files';
-import { getState, setState } from '../utils/state';
-import { tip } from '../utils/tips';
-import { emitIPC } from './electronLogger';
-import { createMenu } from './electronMenu';
+import { exit, welcomeToYoukousoKaraokeMugen } from '../components/engine.js';
+import { init, preInit } from '../components/init.js';
+import { selectUsers } from '../dao/user.js';
+import { getConfig, resolvedPath, setConfig } from '../lib/utils/config.js';
+import logger from '../lib/utils/logger.js';
+import { emitWS } from '../lib/utils/ws.js';
+import { importFavorites } from '../services/favorites.js';
+import { importPlaylist, playlistImported } from '../services/playlist.js';
+import { addRepo, getRepo } from '../services/repo.js';
+import { generateAdminPassword } from '../services/user.js';
+import { MenuLayout } from '../types/electron.js';
+import { detectKMFileTypes } from '../utils/files.js';
+import { getState, setState } from '../utils/state.js';
+import { tip } from '../utils/tips.js';
+import { emitIPC } from './electronLogger.js';
+import { createMenu } from './electronMenu.js';
 
 const service = 'Electron';
 

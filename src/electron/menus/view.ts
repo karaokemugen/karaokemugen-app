@@ -1,6 +1,6 @@
 import i18next from 'i18next';
 
-import { MenuItemBuilderFunction } from '../../types/electron';
+import { MenuItemBuilderFunction } from '../../types/electron.js';
 
 const builder: MenuItemBuilderFunction = () => {
 	return {

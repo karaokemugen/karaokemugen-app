@@ -1,5 +1,5 @@
-import { Media } from './medias';
-import { CurrentSong } from './playlist';
+import { Media } from './medias.js';
+import { CurrentSong } from './playlist.js';
 
 export interface PlayerState {
 	volume?: number;

@@ -1,6 +1,6 @@
 // Karaoke Mugen App Constants
 
-import { OldJWTToken } from '../lib/types/user';
+import { OldJWTToken } from '../lib/types/user.js';
 
 export const discordClientID = '718211141033263145';
 

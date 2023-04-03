@@ -3,12 +3,12 @@ import { merge } from 'lodash';
 
 import packageJSON from '../../package.json';
 // KM Imports
-import { getConfig } from '../lib/utils/config';
-import { supportedFiles } from '../lib/utils/constants';
-import { emit } from '../lib/utils/pubsub';
-import { emitWS } from '../lib/utils/ws';
+import { getConfig } from '../lib/utils/config.js';
+import { supportedFiles } from '../lib/utils/constants.js';
+import { emit } from '../lib/utils/pubsub.js';
+import { emitWS } from '../lib/utils/ws.js';
 // Types
-import { PublicPlayerState, PublicState, State } from '../types/state';
+import { PublicPlayerState, PublicState, State } from '../types/state.js';
 
 // Internal settings
 let state: State = {

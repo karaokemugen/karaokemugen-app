@@ -1,5 +1,5 @@
-import { Config } from './config';
-import { DBStatsPlayed, DBStatsRequested } from './database/stats';
+import { Config } from './config.js';
+import { DBStatsPlayed, DBStatsRequested } from './database/stats.js';
 
 export interface StatsPayload {
 	payloadVersion: number;

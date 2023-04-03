@@ -5,8 +5,8 @@ import i18n from 'i18next';
 import { shuffle } from 'lodash';
 import { join } from 'path/posix';
 
-import { APIMessage } from '../controllers/common';
-import { insertKaraToRequests } from '../dao/kara';
+import { APIMessage } from '../controllers/common.js';
+import { insertKaraToRequests } from '../dao/kara.js';
 // DAO
 import {
 	deleteKaraFromPlaylist,
@@ -41,33 +41,33 @@ import {
 	updatePLCRefused,
 	updatePLCVisible,
 	updatePos,
-} from '../dao/playlist';
-import { formatKaraList } from '../lib/services/kara';
-import { PLImportConstraints } from '../lib/services/playlist';
-import { DBKara, DBKaraBase } from '../lib/types/database/kara';
-import { DBPL, DBPLC, DBPLCBase, PLCInsert } from '../lib/types/database/playlist';
-import { PlaylistExport, PLCEditParams } from '../lib/types/playlist';
-import { OldJWTToken, User } from '../lib/types/user';
-import { getConfig, resolvedPathRepos } from '../lib/utils/config';
-import { date, now, time as time2 } from '../lib/utils/date';
-import { resolveFileInDirs } from '../lib/utils/files';
-import logger, { profile } from '../lib/utils/logger';
-import { generateM3uFileFromPlaylist } from '../lib/utils/m3u';
-import Task from '../lib/utils/taskManager';
-import { check } from '../lib/utils/validators';
-import { emitWS } from '../lib/utils/ws';
-import { AutoMixParams, AutoMixPlaylistInfo, PlaylistLimit } from '../types/favorites';
-import { AddKaraParams, CurrentSong, Pos, ShuffleMethods } from '../types/playlist';
-import { adminToken } from '../utils/constants';
-import sentry from '../utils/sentry';
-import { getState, setState } from '../utils/state';
-import { writeStreamFiles } from '../utils/streamerFiles';
-import { checkMediaAndDownload } from './download';
-import { getAllFavorites } from './favorites';
-import { getKaras, getKarasMicro } from './kara';
-import { getSongInfosForPlayer } from './karaEngine';
-import { playPlayer } from './player';
-import { getRepos } from './repo';
+} from '../dao/playlist.js';
+import { formatKaraList } from '../lib/services/kara.js';
+import { PLImportConstraints } from '../lib/services/playlist.js';
+import { DBKara, DBKaraBase } from '../lib/types/database/kara.js';
+import { DBPL, DBPLC, DBPLCBase, PLCInsert } from '../lib/types/database/playlist.js';
+import { PlaylistExport, PLCEditParams } from '../lib/types/playlist.js';
+import { OldJWTToken, User } from '../lib/types/user.js';
+import { getConfig, resolvedPathRepos } from '../lib/utils/config.js';
+import { date, now, time as time2 } from '../lib/utils/date.js';
+import { resolveFileInDirs } from '../lib/utils/files.js';
+import logger, { profile } from '../lib/utils/logger.js';
+import { generateM3uFileFromPlaylist } from '../lib/utils/m3u.js';
+import Task from '../lib/utils/taskManager.js';
+import { check } from '../lib/utils/validators.js';
+import { emitWS } from '../lib/utils/ws.js';
+import { AutoMixParams, AutoMixPlaylistInfo, PlaylistLimit } from '../types/favorites.js';
+import { AddKaraParams, CurrentSong, Pos, ShuffleMethods } from '../types/playlist.js';
+import { adminToken } from '../utils/constants.js';
+import sentry from '../utils/sentry.js';
+import { getState, setState } from '../utils/state.js';
+import { writeStreamFiles } from '../utils/streamerFiles.js';
+import { checkMediaAndDownload } from './download.js';
+import { getAllFavorites } from './favorites.js';
+import { getKaras, getKarasMicro } from './kara.js';
+import { getSongInfosForPlayer } from './karaEngine.js';
+import { playPlayer } from './player.js';
+import { getRepos } from './repo.js';
 import {
 	addCriteria,
 	blacklistHook,
@@ -75,8 +75,8 @@ import {
 	updateAllSmartPlaylists,
 	updateSmartPlaylist,
 	whitelistHook,
-} from './smartPlaylist';
-import { getUser, updateSongsLeft } from './user';
+} from './smartPlaylist.js';
+import { getUser, updateSongsLeft } from './user.js';
 
 const service = 'Playlist';
 

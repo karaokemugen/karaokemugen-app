@@ -1,7 +1,7 @@
 import { Socket } from 'socket.io';
 
-import { APIData } from '../../lib/types/api';
-import { SocketIOApp } from '../../lib/utils/ws';
+import { APIData } from '../../lib/types/api.js';
+import { SocketIOApp } from '../../lib/utils/ws.js';
 import {
 	addRepo,
 	checkGitRepoStatus,
@@ -27,10 +27,10 @@ import {
 	updateAllRepos,
 	updateGitRepo,
 	uploadMedia,
-} from '../../services/repo';
-import { syncTagsFromRepo } from '../../services/tag';
-import { APIMessage, errMessage } from '../common';
-import { runChecklist } from '../middlewares';
+} from '../../services/repo.js';
+import { syncTagsFromRepo } from '../../services/tag.js';
+import { APIMessage, errMessage } from '../common.js';
+import { runChecklist } from '../middlewares.js';
 
 export default function repoController(router: SocketIOApp) {
 	router.route('getRepos', async (socket: Socket, req: APIData) => {

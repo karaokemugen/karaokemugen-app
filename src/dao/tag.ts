@@ -1,11 +1,11 @@
 import { pg as yesql } from 'yesql';
 
-import { db, paramWords } from '../lib/dao/database';
-import { WhereClause } from '../lib/types/database';
-import { DBTag } from '../lib/types/database/tag';
-import { Tag, TagAndType, TagParams } from '../lib/types/tag';
-import { uuidRegexp } from '../lib/utils/constants';
-import logger from '../lib/utils/logger';
+import { db, paramWords } from '../lib/dao/database.js';
+import { WhereClause } from '../lib/types/database.js';
+import { DBTag } from '../lib/types/database/tag.js';
+import { Tag, TagAndType, TagParams } from '../lib/types/tag.js';
+import { uuidRegexp } from '../lib/utils/constants.js';
+import logger from '../lib/utils/logger.js';
 import {
 	sqldeleteTag,
 	sqldeleteTagsByKara,
@@ -14,7 +14,7 @@ import {
 	sqlinsertTag,
 	sqlupdateKaraTagsTID,
 	sqlupdateTag,
-} from './sql/tag';
+} from './sql/tag.js';
 
 const service = 'DBTag';
 

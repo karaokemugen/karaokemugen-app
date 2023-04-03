@@ -1,11 +1,11 @@
 import { debounce } from 'lodash';
 import { io, Socket } from 'socket.io-client';
 
-import { DBUser } from '../lib/types/database/user';
-import logger, { profile } from '../lib/utils/logger';
-import { importFavorites } from '../services/favorites';
-import { editUser, getUser, getUsers, removeUser } from '../services/user';
-import { Favorite } from '../types/stats';
+import { DBUser } from '../lib/types/database/user.js';
+import logger, { profile } from '../lib/utils/logger.js';
+import { importFavorites } from '../services/favorites.js';
+import { editUser, getUser, getUsers, removeUser } from '../services/user.js';
+import { Favorite } from '../types/stats.js';
 
 const service = 'RemoteUser';
 

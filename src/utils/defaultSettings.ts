@@ -4,9 +4,9 @@
 // you can change the default settings by using config.yml to bypass the default values.
 import { app } from 'electron';
 
-import { Repository } from '../lib/types/repo';
-import { bools, hostnameRegexp } from '../lib/utils/constants';
-import { Config } from '../types/config';
+import { Repository } from '../lib/types/repo.js';
+import { bools, hostnameRegexp } from '../lib/utils/constants.js';
+import { Config } from '../types/config.js';
 
 export const dbConfig = {
 	bundledPostgresBinary: true,

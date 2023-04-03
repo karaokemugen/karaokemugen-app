@@ -1,10 +1,10 @@
 import { dialog, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
 
-import logger from '../../lib/utils/logger';
-import { getState } from '../../utils/state';
-import { handleFile, win } from '../electron';
-import { setManualUpdate } from '../electronAutoUpdate';
+import logger from '../../lib/utils/logger.js';
+import { getState } from '../../utils/state.js';
+import { handleFile, win } from '../electron.js';
+import { setManualUpdate } from '../electronAutoUpdate.js';
 
 export const urls = {
 	operatorOptions: () => openURL('/admin/options'),

@@ -1,7 +1,7 @@
-import { PathType } from '../lib/types/config';
-import { Repository } from '../lib/types/repo';
-import { MediaType } from './medias';
-import { MpvHardwareDecodingOptions } from './mpvIPC';
+import { PathType } from '../lib/types/config.js';
+import { Repository } from '../lib/types/repo.js';
+import { MediaType } from './medias.js';
+import { MpvHardwareDecodingOptions } from './mpvIPC.js';
 
 export interface Config {
 	App: {

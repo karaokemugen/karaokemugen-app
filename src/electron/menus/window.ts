@@ -1,12 +1,12 @@
 import { clipboard } from 'electron';
 import i18next from 'i18next';
 
-import { getConfig, setConfig } from '../../lib/utils/config';
-import { generateAdminPassword } from '../../services/user';
-import { MenuItemBuilderFunction } from '../../types/electron';
-import { editSetting } from '../../utils/config';
-import { getState } from '../../utils/state';
-import { updateChibiPlayerWindow, updateChibiPlaylistWindow } from '../electron';
+import { getConfig, setConfig } from '../../lib/utils/config.js';
+import { generateAdminPassword } from '../../services/user.js';
+import { MenuItemBuilderFunction } from '../../types/electron.js';
+import { editSetting } from '../../utils/config.js';
+import { getState } from '../../utils/state.js';
+import { updateChibiPlayerWindow, updateChibiPlaylistWindow } from '../electron.js';
 
 const builder: MenuItemBuilderFunction = options => {
 	const { layout } = options;

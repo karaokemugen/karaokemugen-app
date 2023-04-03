@@ -1,7 +1,7 @@
-import logger from '../lib/utils/logger';
-import { decodeJwtToken } from '../services/user';
-import { APIMessage } from './common';
-import { checkValidUser } from './middlewares';
+import logger from '../lib/utils/logger.js';
+import { decodeJwtToken } from '../services/user.js';
+import { APIMessage } from './common.js';
+import { checkValidUser } from './middlewares.js';
 
 export function requireHTTPAuth(req: any, res: any, next: any) {
 	if (req.get('authorization')) {
