@@ -1,7 +1,7 @@
-import { RemoteFailure, RemoteSuccess } from '../lib/types/remote';
-import { BinariesConfig } from './binChecker';
-import { PlayerState } from './player';
-import { CurrentSong } from './playlist';
+import { RemoteFailure, RemoteSuccess } from '../lib/types/remote.js';
+import { BinariesConfig } from './binChecker.js';
+import { PlayerState } from './player.js';
+import { CurrentSong } from './playlist.js';
 
 export interface Version {
 	number?: string;

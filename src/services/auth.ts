@@ -1,12 +1,12 @@
 import randomstring from 'randomstring';
 
-import { OldTokenResponse, Role, User } from '../lib/types/user';
-import { getConfig } from '../lib/utils/config';
-import logger from '../lib/utils/logger';
-import { getState, setState } from '../utils/state';
-import { fetchAndAddFavorites } from './favorites';
-import { checkPassword, createJwtToken, getUser, updateLastLoginName } from './user';
-import { fetchAndUpdateRemoteUser } from './userOnline';
+import { OldTokenResponse, Role, User } from '../lib/types/user.js';
+import { getConfig } from '../lib/utils/config.js';
+import logger from '../lib/utils/logger.js';
+import { getState, setState } from '../utils/state.js';
+import { fetchAndAddFavorites } from './favorites.js';
+import { checkPassword, createJwtToken, getUser, updateLastLoginName } from './user.js';
+import { fetchAndUpdateRemoteUser } from './userOnline.js';
 
 const service = 'Auth';
 

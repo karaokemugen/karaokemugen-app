@@ -8,12 +8,12 @@ import { address } from 'ip';
 import { cloneDeep, isEqual, merge } from 'lodash';
 import { resolve } from 'path';
 
-import { selectUsers } from '../dao/user';
-import { applyMenu } from '../electron/electron';
-import { errorStep } from '../electron/electronLogger';
-import { registerShortcuts, unregisterShortcuts } from '../electron/electronShortcuts';
-import { refreshTags } from '../lib/dao/tag';
-import { RecursivePartial } from '../lib/types';
+import { selectUsers } from '../dao/user.js';
+import { applyMenu } from '../electron/electron.js';
+import { errorStep } from '../electron/electronLogger.js';
+import { registerShortcuts, unregisterShortcuts } from '../electron/electronShortcuts.js';
+import { refreshTags } from '../lib/dao/tag.js';
+import { RecursivePartial } from '../lib/types/index.js';
 import {
 	changeLanguage,
 	configureIDs,
@@ -22,35 +22,35 @@ import {
 	setConfig,
 	setConfigConstraints,
 	verifyConfig,
-} from '../lib/utils/config';
-import { fileRequired, relativePath } from '../lib/utils/files';
+} from '../lib/utils/config.js';
+import { fileRequired, relativePath } from '../lib/utils/files.js';
 // KM Imports
-import logger from '../lib/utils/logger';
-import { removeNulls } from '../lib/utils/objectHelpers';
-import { emit } from '../lib/utils/pubsub';
-import { emitWS } from '../lib/utils/ws';
+import logger from '../lib/utils/logger.js';
+import { removeNulls } from '../lib/utils/objectHelpers.js';
+import { emit } from '../lib/utils/pubsub.js';
+import { emitWS } from '../lib/utils/ws.js';
 import {
 	displayInfo,
 	initAddASongMessage,
 	playerNeedsRestart,
 	prepareClassicPauseScreen,
 	stopAddASongMessage,
-} from '../services/player';
-import { setSongPoll } from '../services/poll';
-import { destroyRemote, initRemote } from '../services/remote';
-import { initStats, stopStats } from '../services/stats';
-import { updateSongsLeft } from '../services/user';
-import { BinariesConfig } from '../types/binChecker';
-import { Config } from '../types/config';
-import { MediaType } from '../types/medias';
-import { supportedLanguages } from './constants';
-import { configConstraints, defaults } from './defaultSettings';
-import { initDiscordRPC, stopDiscordRPC } from './discordRPC';
-import { initKMServerCommunication } from './kmserver';
-import sentry from './sentry';
-import { getState, setState } from './state';
-import { writeStreamFiles } from './streamerFiles';
-import { initTwitch, stopTwitch } from './twitch';
+} from '../services/player.js';
+import { setSongPoll } from '../services/poll.js';
+import { destroyRemote, initRemote } from '../services/remote.js';
+import { initStats, stopStats } from '../services/stats.js';
+import { updateSongsLeft } from '../services/user.js';
+import { BinariesConfig } from '../types/binChecker.js';
+import { Config } from '../types/config.js';
+import { MediaType } from '../types/medias.js';
+import { supportedLanguages } from './constants.js';
+import { configConstraints, defaults } from './defaultSettings.js';
+import { initDiscordRPC, stopDiscordRPC } from './discordRPC.js';
+import { initKMServerCommunication } from './kmserver.js';
+import sentry from './sentry.js';
+import { getState, setState } from './state.js';
+import { writeStreamFiles } from './streamerFiles.js';
+import { initTwitch, stopTwitch } from './twitch.js';
 
 const service = 'Config';
 

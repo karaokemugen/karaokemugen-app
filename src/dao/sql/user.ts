@@ -1,6 +1,6 @@
 // SQL queries for user manipulation
 
-import { UserParams } from '../../lib/types/user';
+import { UserParams } from '../../lib/types/user.js';
 
 export const sqlreassignPlaylistToUser = 'UPDATE playlist SET fk_login = :username WHERE fk_login = :old_username;';
 

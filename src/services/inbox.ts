@@ -2,22 +2,22 @@ import { promises as fs } from 'fs';
 import { basename, resolve } from 'path';
 import { setTimeout as sleep } from 'timers/promises';
 
-import { baseChecksum } from '../dao/dataStore';
-import { saveSetting } from '../lib/dao/database';
-import { Inbox } from '../lib/types/inbox';
-import { resolvedPath, resolvedPathRepos } from '../lib/utils/config';
-import { downloadFile } from '../lib/utils/downloader';
-import { smartMove } from '../lib/utils/files';
-import { closeIssue } from '../lib/utils/gitlab';
-import HTTP, { fixedEncodeURIComponent } from '../lib/utils/http';
-import logger from '../lib/utils/logger';
-import Task from '../lib/utils/taskManager';
-import { emitWS } from '../lib/utils/ws';
-import { assignIssue } from '../utils/gitlab';
-import { integrateKaraFile } from './karaManagement';
-import { checkDownloadStatus, getRepo } from './repo';
-import { updateAllSmartPlaylists } from './smartPlaylist';
-import { integrateTagFile } from './tag';
+import { baseChecksum } from '../dao/dataStore.js';
+import { saveSetting } from '../lib/dao/database.js';
+import { Inbox } from '../lib/types/inbox.js';
+import { resolvedPath, resolvedPathRepos } from '../lib/utils/config.js';
+import { downloadFile } from '../lib/utils/downloader.js';
+import { smartMove } from '../lib/utils/files.js';
+import { closeIssue } from '../lib/utils/gitlab.js';
+import HTTP, { fixedEncodeURIComponent } from '../lib/utils/http.js';
+import logger from '../lib/utils/logger.js';
+import Task from '../lib/utils/taskManager.js';
+import { emitWS } from '../lib/utils/ws.js';
+import { assignIssue } from '../utils/gitlab.js';
+import { integrateKaraFile } from './karaManagement.js';
+import { checkDownloadStatus, getRepo } from './repo.js';
+import { updateAllSmartPlaylists } from './smartPlaylist.js';
+import { integrateTagFile } from './tag.js';
 
 const service = 'Inbox';
 

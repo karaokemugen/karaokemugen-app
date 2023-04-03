@@ -5,7 +5,7 @@ import parallel from 'p-map';
 import { resolve } from 'path';
 import { v4 as uuidV4 } from 'uuid';
 
-import { APIMessage } from '../controllers/common';
+import { APIMessage } from '../controllers/common.js';
 import {
 	initDownloads,
 	insertDownloads,
@@ -13,20 +13,20 @@ import {
 	truncateDownload,
 	updateDownload,
 	updateDownloaded,
-} from '../dao/download';
-import { getConfig, resolvedPath, resolvedPathRepos } from '../lib/utils/config';
-import { downloadFile } from '../lib/utils/downloader';
-import { resolveFileInDirs, smartMove } from '../lib/utils/files';
-import { fixedEncodeURIComponent } from '../lib/utils/http';
-import logger, { profile } from '../lib/utils/logger';
-import { createImagePreviews } from '../lib/utils/previews';
-import { emit } from '../lib/utils/pubsub';
-import Task from '../lib/utils/taskManager';
-import { emitWS } from '../lib/utils/ws';
-import { KaraDownload, KaraDownloadRequest, MediaDownloadCheck, QueueStatus } from '../types/download';
-import { getState } from '../utils/state';
-import { getKaras } from './kara';
-import { getRepo, getRepoFreeSpace } from './repo';
+} from '../dao/download.js';
+import { getConfig, resolvedPath, resolvedPathRepos } from '../lib/utils/config.js';
+import { downloadFile } from '../lib/utils/downloader.js';
+import { resolveFileInDirs, smartMove } from '../lib/utils/files.js';
+import { fixedEncodeURIComponent } from '../lib/utils/http.js';
+import logger, { profile } from '../lib/utils/logger.js';
+import { createImagePreviews } from '../lib/utils/previews.js';
+import { emit } from '../lib/utils/pubsub.js';
+import Task from '../lib/utils/taskManager.js';
+import { emitWS } from '../lib/utils/ws.js';
+import { KaraDownload, KaraDownloadRequest, MediaDownloadCheck, QueueStatus } from '../types/download.js';
+import { getState } from '../utils/state.js';
+import { getKaras } from './kara.js';
+import { getRepo, getRepoFreeSpace } from './repo.js';
 
 const service = 'Downloads';
 

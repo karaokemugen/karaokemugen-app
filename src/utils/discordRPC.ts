@@ -2,10 +2,10 @@ import discordRPC from 'discord-rpc';
 import i18next from 'i18next';
 import { sample } from 'lodash';
 
-import { getConfig } from '../lib/utils/config';
-import logger from '../lib/utils/logger';
-import { discordClientID } from './constants';
-import { getState } from './state';
+import { getConfig } from '../lib/utils/config.js';
+import logger from '../lib/utils/logger.js';
+import { discordClientID } from './constants.js';
+import { getState } from './state.js';
 
 const service = 'Discord';
 

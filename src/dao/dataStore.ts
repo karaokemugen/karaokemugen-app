@@ -5,10 +5,10 @@
 import { promises as fs } from 'fs';
 import parallel from 'p-map';
 
-import { checksum, listAllFiles } from '../lib/utils/files';
-import logger, { profile } from '../lib/utils/logger';
-import Task from '../lib/utils/taskManager';
-import sentry from '../utils/sentry';
+import { checksum, listAllFiles } from '../lib/utils/files.js';
+import logger, { profile } from '../lib/utils/logger.js';
+import Task from '../lib/utils/taskManager.js';
+import sentry from '../utils/sentry.js';
 
 const service = 'Store';
 

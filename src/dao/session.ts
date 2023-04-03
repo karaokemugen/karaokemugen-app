@@ -1,5 +1,5 @@
-import { db } from '../lib/dao/database';
-import { Session } from '../types/session';
+import { db } from '../lib/dao/database.js';
+import { Session } from '../types/session.js';
 import {
 	sqlAutoFillSessionEndedAt,
 	sqlcleanSessions,
@@ -9,7 +9,7 @@ import {
 	sqlreplaceRequested,
 	sqlselectSessions,
 	sqlupdateSession,
-} from './sql/session';
+} from './sql/session.js';
 
 export async function selectSessions(): Promise<Session[]> {
 	const sessions = await db().query(sqlselectSessions);

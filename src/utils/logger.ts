@@ -1,9 +1,9 @@
 import { shell } from 'electron';
 import { resolve } from 'path';
 
-import { resolvedPath } from '../lib/utils/config';
-import { date } from '../lib/utils/date';
-import logger from '../lib/utils/logger';
+import { resolvedPath } from '../lib/utils/config.js';
+import { date } from '../lib/utils/date.js';
+import logger from '../lib/utils/logger.js';
 
 const service = 'Logger';
 

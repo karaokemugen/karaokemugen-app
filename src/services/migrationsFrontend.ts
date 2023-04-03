@@ -1,5 +1,5 @@
-import { selectMigrationsFrontend, updateMigrationsFrontend } from '../dao/migrationsFrontend';
-import { MigrationsFrontend } from '../types/database/migrationsFrontend';
+import { selectMigrationsFrontend, updateMigrationsFrontend } from '../dao/migrationsFrontend.js';
+import { MigrationsFrontend } from '../types/database/migrationsFrontend.js';
 
 export async function getMigrationsFrontend() {
 	return selectMigrationsFrontend();

@@ -1,8 +1,8 @@
 import { pg as yesql } from 'yesql';
 
-import { db } from '../lib/dao/database';
-import { DBUpvote } from '../types/database/upvote';
-import { sqldeleteUpvote, sqlinsertUpvote, sqlselectUpvoteByPLC } from './sql/upvote';
+import { db } from '../lib/dao/database.js';
+import { DBUpvote } from '../types/database/upvote.js';
+import { sqldeleteUpvote, sqlinsertUpvote, sqlselectUpvoteByPLC } from './sql/upvote.js';
 
 export async function selectUpvotesByPLC(plc_id: number): Promise<DBUpvote[]> {
 	const res = await db().query(sqlselectUpvoteByPLC, [plc_id]);

@@ -1,11 +1,11 @@
 import i18next from 'i18next';
 
-import { exit } from '../../components/engine';
-import { getConfig, setConfig } from '../../lib/utils/config';
-import { MenuItemBuilderFunction } from '../../types/electron';
-import { getState } from '../../utils/state';
-import { showAbout } from '../electron';
-import { checkForUpdates, importFile, urls } from '.';
+import { exit } from '../../components/engine.js';
+import { getConfig, setConfig } from '../../lib/utils/config.js';
+import { MenuItemBuilderFunction } from '../../types/electron.js';
+import { getState } from '../../utils/state.js';
+import { showAbout } from '../electron.js';
+import { checkForUpdates, importFile, urls } from './index.js';
 
 const builder: MenuItemBuilderFunction = options => {
 	const { isMac, layout } = options;

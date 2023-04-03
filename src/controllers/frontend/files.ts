@@ -5,14 +5,14 @@ import { resolve } from 'path';
 import { Socket } from 'socket.io';
 import { v4 as uuidV4 } from 'uuid';
 
-import { APIData } from '../../lib/types/api';
-import { resolvedPath } from '../../lib/utils/config';
-import logger from '../../lib/utils/logger';
-import { SocketIOApp } from '../../lib/utils/ws';
-import { openLyricsFile } from '../../services/karaManagement';
-import { APIMessage, errMessage } from '../common';
-import { runChecklist } from '../middlewares';
-import { requireHTTPAuth, requireValidUser } from '../middlewaresHTTP';
+import { APIData } from '../../lib/types/api.js';
+import { resolvedPath } from '../../lib/utils/config.js';
+import logger from '../../lib/utils/logger.js';
+import { SocketIOApp } from '../../lib/utils/ws.js';
+import { openLyricsFile } from '../../services/karaManagement.js';
+import { APIMessage, errMessage } from '../common.js';
+import { runChecklist } from '../middlewares.js';
+import { requireHTTPAuth, requireValidUser } from '../middlewaresHTTP.js';
 
 export default function filesController(router: Router) {
 	const upload = multer({ dest: resolvedPath('Temp') });

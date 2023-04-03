@@ -10,17 +10,17 @@ import {
 	selectKarasFromCriterias,
 	truncateCriterias,
 	updatePlaylistLastEditTime,
-} from '../dao/playlist';
-import { Criteria } from '../lib/types/playlist';
-import { uuidRegexp } from '../lib/utils/constants';
-import logger, { profile } from '../lib/utils/logger';
-import { isNumber } from '../lib/utils/validators';
-import { emitWS } from '../lib/utils/ws';
-import { adminToken } from '../utils/constants';
-import Sentry from '../utils/sentry';
-import { getState, setState } from '../utils/state';
-import { downloadStatuses } from './download';
-import { getKara } from './kara';
+} from '../dao/playlist.js';
+import { Criteria } from '../lib/types/playlist.js';
+import { uuidRegexp } from '../lib/utils/constants.js';
+import logger, { profile } from '../lib/utils/logger.js';
+import { isNumber } from '../lib/utils/validators.js';
+import { emitWS } from '../lib/utils/ws.js';
+import { adminToken } from '../utils/constants.js';
+import Sentry from '../utils/sentry.js';
+import { getState, setState } from '../utils/state.js';
+import { downloadStatuses } from './download.js';
+import { getKara } from './kara.js';
 import {
 	addKaraToPlaylist,
 	editPLC,
@@ -28,8 +28,8 @@ import {
 	getPlaylistInfo,
 	getPlaylists,
 	removeKaraFromPlaylist,
-} from './playlist';
-import { getTag, getTags } from './tag';
+} from './playlist.js';
+import { getTag, getTags } from './tag.js';
 
 const service = 'SmartPlaylist';
 
