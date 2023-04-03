@@ -51,7 +51,7 @@
 			}
 		],
 		"no-param-reassign": 0,
-		"no-return-await": 1,
+		"no-return-await": 0,
 		"no-restricted-globals": 0,
 		"no-tabs": [
 			"warn",

@@ -165,7 +165,7 @@ export async function dumpPG() {
 		});
 
 		if (!(await fileExists(dumpFile))) {
-			throw Error('file not created');
+			throw Error('Dump file not created');
 		}
 
 		await compressGzipFile(dumpFile);
