@@ -1,9 +1,9 @@
 import i18next from 'i18next';
 
-import { MenuItemBuilderFunction } from '../../types/electron';
-import { getState } from '../../utils/state';
-import { showAbout } from '../electron';
-import { urls } from '.';
+import { MenuItemBuilderFunction } from '../../types/electron.js';
+import { getState } from '../../utils/state.js';
+import { showAbout } from '../electron.js';
+import { urls } from './index.js';
 
 const builder: MenuItemBuilderFunction = options => {
 	const { isMac } = options;

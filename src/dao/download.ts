@@ -1,8 +1,8 @@
-import { db, transaction } from '../lib/dao/database';
-import { DownloadedStatus } from '../lib/types/database/download';
-import logger from '../lib/utils/logger';
-import { DBDownload } from '../types/database/download';
-import { KaraDownload } from '../types/download';
+import { db, transaction } from '../lib/dao/database.js';
+import { DownloadedStatus } from '../lib/types/database/download.js';
+import logger from '../lib/utils/logger.js';
+import { DBDownload } from '../types/database/download.js';
+import { KaraDownload } from '../types/download.js';
 import {
 	sqldeleteDoneFailedDownloads,
 	sqlemptyDownload,
@@ -12,7 +12,7 @@ import {
 	sqlsetDownloadedAK,
 	sqlupdateDownloadStatus,
 	sqlupdateRunningDownloads,
-} from './sql/download';
+} from './sql/download.js';
 
 const service = 'DBDownload';
 

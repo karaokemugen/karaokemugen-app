@@ -1,10 +1,10 @@
-import { formatKaraV4 } from '../lib/dao/karafile';
-import { DBKara } from '../lib/types/database/kara';
-import { DBTag } from '../lib/types/database/tag';
-import { tagTypes } from '../lib/utils/constants';
-import logger from '../lib/utils/logger';
-import Task from '../lib/utils/taskManager';
-import { editKara } from '../services/karaCreation';
+import { formatKaraV4 } from '../lib/dao/karafile.js';
+import { DBKara } from '../lib/types/database/kara.js';
+import { DBTag } from '../lib/types/database/tag.js';
+import { tagTypes } from '../lib/utils/constants.js';
+import logger from '../lib/utils/logger.js';
+import Task from '../lib/utils/taskManager.js';
+import { editKara } from '../services/karaCreation.js';
 
 const service = 'DBTag';
 

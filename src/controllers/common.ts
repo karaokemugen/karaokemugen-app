@@ -1,5 +1,5 @@
-import { APIMessageType } from '../lib/types/frontend';
-import logger from '../lib/utils/logger';
+import { APIMessageType } from '../lib/types/frontend.js';
+import logger from '../lib/utils/logger.js';
 
 export function APIMessage(code: string, data?: any): APIMessageType {
 	return {

@@ -1,8 +1,8 @@
 import { Socket } from 'socket.io';
 
-import { APIData } from '../../lib/types/api';
-import { check, isUUID } from '../../lib/utils/validators';
-import { SocketIOApp } from '../../lib/utils/ws';
+import { APIData } from '../../lib/types/api.js';
+import { check, isUUID } from '../../lib/utils/validators.js';
+import { SocketIOApp } from '../../lib/utils/ws.js';
 import {
 	addSession,
 	editSession,
@@ -12,9 +12,9 @@ import {
 	mergeSessions,
 	removeSession,
 	setActiveSession,
-} from '../../services/session';
-import { APIMessage, errMessage } from '../common';
-import { runChecklist } from '../middlewares';
+} from '../../services/session.js';
+import { APIMessage, errMessage } from '../common.js';
+import { runChecklist } from '../middlewares.js';
 
 export default function sessionController(router: SocketIOApp) {
 	router.route('getSessions', async (socket: Socket, req: APIData) => {

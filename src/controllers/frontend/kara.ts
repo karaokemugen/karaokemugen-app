@@ -1,17 +1,17 @@
 import { Socket } from 'socket.io';
 
-import { previewHooks, processUploadedMedia } from '../../lib/services/karaCreation';
-import { APIData } from '../../lib/types/api';
-import { TagTypeNum } from '../../lib/types/tag';
-import { check, isUUID } from '../../lib/utils/validators';
-import { SocketIOApp } from '../../lib/utils/ws';
-import { getKara, getKaraLyrics, getKaraMediaInfo, getKaras, getKMStats } from '../../services/kara';
-import { createKara, editKara } from '../../services/karaCreation';
-import { playSingleSong } from '../../services/karaEngine';
-import { batchEditKaras, copyKaraToRepo, deleteKara, deleteMediaFile } from '../../services/karaManagement';
-import { addKaraToPlaylist } from '../../services/playlist';
-import { APIMessage, errMessage } from '../common';
-import { runChecklist } from '../middlewares';
+import { previewHooks, processUploadedMedia } from '../../lib/services/karaCreation.js';
+import { APIData } from '../../lib/types/api.js';
+import { TagTypeNum } from '../../lib/types/tag.js';
+import { check, isUUID } from '../../lib/utils/validators.js';
+import { SocketIOApp } from '../../lib/utils/ws.js';
+import { getKara, getKaraLyrics, getKaraMediaInfo, getKaras, getKMStats } from '../../services/kara.js';
+import { createKara, editKara } from '../../services/karaCreation.js';
+import { playSingleSong } from '../../services/karaEngine.js';
+import { batchEditKaras, copyKaraToRepo, deleteKara, deleteMediaFile } from '../../services/karaManagement.js';
+import { addKaraToPlaylist } from '../../services/playlist.js';
+import { APIMessage, errMessage } from '../common.js';
+import { runChecklist } from '../middlewares.js';
 
 export default function karaController(router: SocketIOApp) {
 	router.route('getKaras', async (socket: Socket, req: APIData) => {

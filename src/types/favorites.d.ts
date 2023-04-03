@@ -1,4 +1,4 @@
-import { TagAndType } from '../lib/types/tag';
+import { TagAndType } from '../lib/types/tag.js';
 
 interface FavExportContent {
 	kid: string;

@@ -5,17 +5,17 @@ import { resolve } from 'path';
 import prettyBytes from 'pretty-bytes';
 import si from 'systeminformation';
 
-import { APIMessage } from '../controllers/common';
-import { selectPlayed, selectRequests } from '../dao/stats';
-import { getInstanceID } from '../lib/dao/database';
-import { getConfig, resolvedPath } from '../lib/utils/config';
-import HTTP from '../lib/utils/http';
-import logger from '../lib/utils/logger';
-import { emitWS } from '../lib/utils/ws';
-import { getPublicConfig } from '../utils/config';
-import sentry from '../utils/sentry';
-import { getState } from '../utils/state';
-import { getSessions } from './session';
+import { APIMessage } from '../controllers/common.js';
+import { selectPlayed, selectRequests } from '../dao/stats.js';
+import { getInstanceID } from '../lib/dao/database.js';
+import { getConfig, resolvedPath } from '../lib/utils/config.js';
+import HTTP from '../lib/utils/http.js';
+import logger from '../lib/utils/logger.js';
+import { emitWS } from '../lib/utils/ws.js';
+import { getPublicConfig } from '../utils/config.js';
+import sentry from '../utils/sentry.js';
+import { getState } from '../utils/state.js';
+import { getSessions } from './session.js';
 
 const service = 'Stats';
 

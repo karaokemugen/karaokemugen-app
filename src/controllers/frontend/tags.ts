@@ -1,9 +1,9 @@
 import { Socket } from 'socket.io';
 
-import { APIData } from '../../lib/types/api';
-import { isUUID } from '../../lib/utils/validators';
-import { SocketIOApp } from '../../lib/utils/ws';
-import { getYears } from '../../services/kara';
+import { APIData } from '../../lib/types/api.js';
+import { isUUID } from '../../lib/utils/validators.js';
+import { SocketIOApp } from '../../lib/utils/ws.js';
+import { getYears } from '../../services/kara.js';
 import {
 	addTag,
 	checkCollections,
@@ -13,9 +13,9 @@ import {
 	getTags,
 	mergeTags,
 	removeTag,
-} from '../../services/tag';
-import { APIMessage, errMessage } from '../common';
-import { runChecklist } from '../middlewares';
+} from '../../services/tag.js';
+import { APIMessage, errMessage } from '../common.js';
+import { runChecklist } from '../middlewares.js';
 
 export default function tagsController(router: SocketIOApp) {
 	router.route('getTags', async (socket: Socket, req: APIData) => {

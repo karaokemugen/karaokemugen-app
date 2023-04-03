@@ -1,7 +1,7 @@
 import i18n from 'i18next';
 import { shuffle } from 'lodash';
 
-import { TipsAndTricks, TipType } from '../types/tips';
+import { TipsAndTricks, TipType } from '../types/tips.js';
 
 let tips: TipsAndTricks;
 let index = 0;

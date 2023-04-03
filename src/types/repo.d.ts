@@ -1,4 +1,4 @@
-import { KaraFileV4 } from '../lib/types/kara';
+import { KaraFileV4 } from '../lib/types/kara.js';
 
 export interface DifferentChecksumReport {
 	kara1: KaraFileV4;

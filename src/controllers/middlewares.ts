@@ -1,15 +1,15 @@
 import { merge } from 'lodash';
 import { Socket } from 'socket.io';
 
-import { APIData } from '../lib/types/api';
-import { OldJWTToken, Role, User } from '../lib/types/user';
-import { getConfig } from '../lib/utils/config';
-import { userTypes } from '../lib/utils/constants';
-import logger from '../lib/utils/logger';
-import { decodeJwtToken, getUser, updateLastLoginName } from '../services/user';
-import { WebappModes } from '../types/frontend';
-import { webappModes } from '../utils/constants';
-import { APIMessage } from './common';
+import { APIData } from '../lib/types/api.js';
+import { OldJWTToken, Role, User } from '../lib/types/user.js';
+import { getConfig } from '../lib/utils/config.js';
+import { userTypes } from '../lib/utils/constants.js';
+import logger from '../lib/utils/logger.js';
+import { decodeJwtToken, getUser, updateLastLoginName } from '../services/user.js';
+import { WebappModes } from '../types/frontend.js';
+import { webappModes } from '../utils/constants.js';
+import { APIMessage } from './common.js';
 
 interface APIChecklistOptions {
 	optionalAuth?: boolean;

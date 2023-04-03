@@ -1,14 +1,14 @@
-import { DBUserBase } from '../lib/types/database/user';
-import { getConfig } from '../lib/utils/config';
-import logger from '../lib/utils/logger';
-import { SocketIOApp } from '../lib/utils/ws';
-import { checkLogin, resetSecurityCode } from '../services/auth';
-import { fetchAndAddFavorites } from '../services/favorites';
-import { createTemporaryGuest, editUser, getAvailableGuest, updateLastLoginName } from '../services/user';
-import { fetchAndUpdateRemoteUser, remoteCheckAuth } from '../services/userOnline';
-import { getState } from '../utils/state';
-import { APIMessage } from './common';
-import { runChecklist } from './middlewares';
+import { DBUserBase } from '../lib/types/database/user.js';
+import { getConfig } from '../lib/utils/config.js';
+import logger from '../lib/utils/logger.js';
+import { SocketIOApp } from '../lib/utils/ws.js';
+import { checkLogin, resetSecurityCode } from '../services/auth.js';
+import { fetchAndAddFavorites } from '../services/favorites.js';
+import { createTemporaryGuest, editUser, getAvailableGuest, updateLastLoginName } from '../services/user.js';
+import { fetchAndUpdateRemoteUser, remoteCheckAuth } from '../services/userOnline.js';
+import { getState } from '../utils/state.js';
+import { APIMessage } from './common.js';
+import { runChecklist } from './middlewares.js';
 
 const service = 'Auth';
 

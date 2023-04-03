@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { SocketIOApp } from '../../lib/utils/ws';
+import { SocketIOApp } from '../../lib/utils/ws.js';
 
 export default function emulateController(router: Router, ws: SocketIOApp) {
 	router.route('/command').post(async (req, res: any) => {

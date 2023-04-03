@@ -2,10 +2,10 @@ import { promises as fs } from 'fs';
 import { isAbsolute, normalize, resolve, sep } from 'path';
 import { blockDevices, fsSize } from 'systeminformation';
 
-import { isMediaFile } from '../lib/utils/files';
-import logger from '../lib/utils/logger';
-import { KMFileType } from '../types/files';
-import { getState } from './state';
+import { isMediaFile } from '../lib/utils/files.js';
+import logger from '../lib/utils/logger.js';
+import { KMFileType } from '../types/files.js';
+import { getState } from './state.js';
 
 const service = 'Files';
 

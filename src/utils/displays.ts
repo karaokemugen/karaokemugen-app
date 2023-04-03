@@ -1,6 +1,6 @@
 import { graphics } from 'systeminformation';
 
-import logger from '../lib/utils/logger';
+import logger from '../lib/utils/logger.js';
 
 const service = 'Displays';
 

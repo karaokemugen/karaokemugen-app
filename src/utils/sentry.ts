@@ -1,9 +1,9 @@
 import * as SentryElectron from '@sentry/electron/main';
 import Transport from 'winston-transport';
 
-import { getConfig } from '../lib/utils/config';
-import SentryLogger from '../lib/utils/sentry';
-import { getState } from './state';
+import { getConfig } from '../lib/utils/config.js';
+import SentryLogger from '../lib/utils/sentry.js';
+import { getState } from './state.js';
 
 class ElectronSentryLogger extends SentryLogger {
 	// @ts-ignore: Excuse me god. We don't use any of the properties

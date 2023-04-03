@@ -1,7 +1,7 @@
 import { Socket } from 'socket.io';
 
-import { APIData } from '../../lib/types/api';
-import { SocketIOApp } from '../../lib/utils/ws';
+import { APIData } from '../../lib/types/api.js';
+import { SocketIOApp } from '../../lib/utils/ws.js';
 import {
 	addDownloads,
 	getDownloadQueueStatus,
@@ -9,10 +9,10 @@ import {
 	pauseQueue,
 	startDownloads,
 	wipeDownloads,
-} from '../../services/download';
-import { updateAllMedias } from '../../services/downloadMedias';
-import { APIMessage, errMessage } from '../common';
-import { runChecklist } from '../middlewares';
+} from '../../services/download.js';
+import { updateAllMedias } from '../../services/downloadMedias.js';
+import { APIMessage, errMessage } from '../common.js';
+import { runChecklist } from '../middlewares.js';
 
 export default function downloadController(router: SocketIOApp) {
 	router.route('addDownloads', async (socket: Socket, req: APIData) => {

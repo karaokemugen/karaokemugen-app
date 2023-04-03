@@ -1,10 +1,10 @@
-import { deleteUpvote, insertUpvote, selectUpvotesByPLC } from '../dao/upvote';
-import { getConfig } from '../lib/utils/config';
-import logger from '../lib/utils/logger';
-import { emitWS } from '../lib/utils/ws';
-import { getState } from '../utils/state';
-import { freePLC, getPLCInfoMini } from './playlist';
-import { getUsers, updateSongsLeft } from './user';
+import { deleteUpvote, insertUpvote, selectUpvotesByPLC } from '../dao/upvote.js';
+import { getConfig } from '../lib/utils/config.js';
+import logger from '../lib/utils/logger.js';
+import { emitWS } from '../lib/utils/ws.js';
+import { getState } from '../utils/state.js';
+import { freePLC, getPLCInfoMini } from './playlist.js';
+import { getUsers, updateSongsLeft } from './user.js';
 
 const service = 'Upvote';
 

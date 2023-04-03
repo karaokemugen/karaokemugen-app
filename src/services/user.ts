@@ -9,7 +9,7 @@ import randomstring from 'randomstring';
 import slugify from 'slug';
 import { v4 as uuidV4 } from 'uuid';
 
-import { selectSongCountForUser, selectSongTimeSpentForUser } from '../dao/playlist';
+import { selectSongCountForUser, selectSongTimeSpentForUser } from '../dao/playlist.js';
 import {
 	deleteTempUsers,
 	deleteUser,
@@ -19,21 +19,21 @@ import {
 	updateUser,
 	updateUserLastLogin,
 	updateUserPassword,
-} from '../dao/user';
-import { DBUser } from '../lib/types/database/user';
-import { OldJWTToken, User, UserParams } from '../lib/types/user';
-import { getConfig, resolvedPath, setConfig } from '../lib/utils/config';
-import { asciiRegexp, imageFileTypes } from '../lib/utils/constants';
-import { detectFileType, fileExists } from '../lib/utils/files';
-import logger, { profile } from '../lib/utils/logger';
-import { emitWS } from '../lib/utils/ws';
-import { Config } from '../types/config';
-import { UserOpts } from '../types/user';
-import { defaultGuestNames } from '../utils/constants';
-import sentry from '../utils/sentry';
-import { getState } from '../utils/state';
-import { stopSub } from '../utils/userPubSub';
-import { createRemoteUser, editRemoteUser, getUsersFetched } from './userOnline';
+} from '../dao/user.js';
+import { DBUser } from '../lib/types/database/user.js';
+import { OldJWTToken, User, UserParams } from '../lib/types/user.js';
+import { getConfig, resolvedPath, setConfig } from '../lib/utils/config.js';
+import { asciiRegexp, imageFileTypes } from '../lib/utils/constants.js';
+import { detectFileType, fileExists } from '../lib/utils/files.js';
+import logger, { profile } from '../lib/utils/logger.js';
+import { emitWS } from '../lib/utils/ws.js';
+import { Config } from '../types/config.js';
+import { UserOpts } from '../types/user.js';
+import { defaultGuestNames } from '../utils/constants.js';
+import sentry from '../utils/sentry.js';
+import { getState } from '../utils/state.js';
+import { stopSub } from '../utils/userPubSub.js';
+import { createRemoteUser, editRemoteUser, getUsersFetched } from './userOnline.js';
 
 const service = 'User';
 

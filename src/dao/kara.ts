@@ -1,13 +1,13 @@
 import { pg as yesql } from 'yesql';
 
-import { buildClauses, buildTypeClauses, copyFromData, db, transaction } from '../lib/dao/database';
-import { WhereClause } from '../lib/types/database';
-import { DBKara, DBKaraBase, DBYear, KaraOldData } from '../lib/types/database/kara';
-import { Kara, KaraFileV4, KaraParams } from '../lib/types/kara';
-import { getConfig } from '../lib/utils/config';
-import { getTagTypeName, tagTypes } from '../lib/utils/constants';
-import { now } from '../lib/utils/date';
-import { getState } from '../utils/state';
+import { buildClauses, buildTypeClauses, copyFromData, db, transaction } from '../lib/dao/database.js';
+import { WhereClause } from '../lib/types/database.js';
+import { DBKara, DBKaraBase, DBYear, KaraOldData } from '../lib/types/database/kara.js';
+import { Kara, KaraFileV4, KaraParams } from '../lib/types/kara.js';
+import { getConfig } from '../lib/utils/config.js';
+import { getTagTypeName, tagTypes } from '../lib/utils/constants.js';
+import { now } from '../lib/utils/date.js';
+import { getState } from '../utils/state.js';
 import {
 	sqladdRequested,
 	sqladdViewcount,
@@ -20,7 +20,7 @@ import {
 	sqlinsertKara,
 	sqlselectAllKIDs,
 	sqlTruncateOnlineRequested,
-} from './sql/kara';
+} from './sql/kara.js';
 
 export async function selectYears(): Promise<DBYear[]> {
 	const collectionsClauses = [];

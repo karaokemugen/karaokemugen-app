@@ -1,21 +1,21 @@
 import { promises as fs } from 'fs';
 import { basename, extname, resolve } from 'path';
 
-import { applyKaraHooks } from '../lib/dao/hook';
-import { extractVideoSubtitles, trimKaraData, verifyKaraData, writeKara } from '../lib/dao/karafile';
-import { defineFilename, determineMediaAndLyricsFilenames, processSubfile } from '../lib/services/karaCreation';
-import { EditedKara } from '../lib/types/kara.d';
-import { ASSFileCleanup } from '../lib/utils/ass';
-import { getConfig, resolvedPath, resolvedPathRepos } from '../lib/utils/config';
-import { replaceExt, resolveFileInDirs, smartMove } from '../lib/utils/files';
-import logger, { profile } from '../lib/utils/logger';
-import Task from '../lib/utils/taskManager';
-import { adminToken } from '../utils/constants';
-import sentry from '../utils/sentry';
-import { getKara } from './kara';
-import { integrateKaraFile } from './karaManagement';
-import { checkDownloadStatus } from './repo';
-import { consolidateTagsInRepo } from './tag';
+import { applyKaraHooks } from '../lib/dao/hook.js';
+import { extractVideoSubtitles, trimKaraData, verifyKaraData, writeKara } from '../lib/dao/karafile.js';
+import { defineFilename, determineMediaAndLyricsFilenames, processSubfile } from '../lib/services/karaCreation.js';
+import { EditedKara } from '../lib/types/kara.d.js';
+import { ASSFileCleanup } from '../lib/utils/ass.js';
+import { getConfig, resolvedPath, resolvedPathRepos } from '../lib/utils/config.js';
+import { replaceExt, resolveFileInDirs, smartMove } from '../lib/utils/files.js';
+import logger, { profile } from '../lib/utils/logger.js';
+import Task from '../lib/utils/taskManager.js';
+import { adminToken } from '../utils/constants.js';
+import sentry from '../utils/sentry.js';
+import { getKara } from './kara.js';
+import { integrateKaraFile } from './karaManagement.js';
+import { checkDownloadStatus } from './repo.js';
+import { consolidateTagsInRepo } from './tag.js';
 
 const service = 'KaraCreation';
 

@@ -6,11 +6,11 @@ import { dirname, resolve } from 'path';
 import { createInterface } from 'readline';
 import sourceMapSupport from 'source-map-support';
 
-import { exit } from './components/engine';
-import { startElectron } from './electron/electron';
-import logger from './lib/utils/logger';
-import sentry from './utils/sentry';
-import { setState } from './utils/state';
+import { exit } from './components/engine.js';
+import { startElectron } from './electron/electron.js';
+import logger from './lib/utils/logger.js';
+import sentry from './utils/sentry.js';
+import { setState } from './utils/state.js';
 
 /** Welcome to Karaoke Mugen's beginning and end.
  * Emergency exits are on your left and right.
