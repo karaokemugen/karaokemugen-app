@@ -113,15 +113,16 @@ function releaseLock() {
 
 function needsLock() {
 	return (
-		target: any,
+		_target: any,
 		_propertyKey: string,
 		descriptor: TypedPropertyDescriptor<(...params: any[]) => Promise<any>>
 	) => {
 		const originFunc = descriptor.value;
-		descriptor.value = async (...params) => {
+		descriptor.value = async function descriptorFunc(...params) {
 			await acquireLock();
-			return originFunc.call(target, ...params).then(releaseLock);
+			return originFunc.apply(this, params).then(releaseLock);
 		};
+		return descriptor;
 	};
 }
 
