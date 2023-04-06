@@ -1,7 +1,7 @@
 {
 	"compilerOptions": {
 		// Target latest version of ECMAScript.
-		"target": "esNext",
+		"target": "ES2021",
 		"module": "ES2022",
 		// Search under node_modules for non-relative imports.
 		"moduleResolution": "node16",
