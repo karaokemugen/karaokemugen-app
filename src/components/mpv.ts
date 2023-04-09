@@ -865,7 +865,7 @@ class Players {
 	progressBarTimeout: NodeJS.Timeout;
 
 	/** Progress bar on pause screens inbetween songs */
-	private tickProgressBar(nextTick: number, ticked: number, DI: string) {
+	private tickProgressBar(nextTick: number, ticked: number, position: string) {
 		// 10 ticks
 		if (ticked <= 10 && getState().streamerPause && getState().pauseInProgress) {
 			if (this.progressBarTimeout) clearTimeout(this.progressBarTimeout);
@@ -876,16 +876,16 @@ class Players {
 			for (const _nothing of Array(10 - ticked)) {
 				progressBar += '□';
 			}
-			this.messages.addMessage('pauseScreen', `${DI}\\N\\N{\\fscx70\\fscy70\\fsp-3}${progressBar}`, 'infinite');
+			this.messages.addMessage('pauseScreen', `${position}{\\fscx70\\fscy70\\fsp-3}${progressBar}`, 'infinite');
 			this.progressBarTimeout = setTimeout(() => {
-				this.tickProgressBar(nextTick, ticked + 1, DI);
+				this.tickProgressBar(nextTick, ticked + 1, position);
 			}, nextTick);
 		}
 	}
 
-	private progressBar(duration: number, DI: string) {
+	private progressBar(duration: number, position: string) {
 		// * 1000 / 10
-		this.tickProgressBar(Math.round(duration * 100), 1, DI);
+		this.tickProgressBar(Math.round(duration * 100), 1, position);
 	}
 
 	private async loadBackground(type: BackgroundType) {
@@ -1497,9 +1497,9 @@ class Players {
 
 	async displaySongInfo(infos: string, duration = -1, nextSong = false, warnings?: DBKaraTag[]) {
 		try {
+			const nextSongString = nextSong ? `${i18n.t('NEXT_SONG')}\\N\\N` : '';
+			const position = nextSong ? '{\\an5}' : '{\\an1}';
 			let warningString = '';
-			let nextSongString = '';
-			let position = '';
 			if (warnings?.length > 0) {
 				const langs = [
 					getConfig().Player.Display.SongInfoLanguage,
@@ -1513,17 +1513,14 @@ class Players {
 					', '
 				)} ⚠{\\b0}\\N{\\c&HFFFFFF&}`;
 			}
-			nextSongString = nextSong ? `${i18n.t('NEXT_SONG')}\\N\\N` : '';
-			position = nextSong ? '{\\an5}' : '{\\an1}';
-			if (getConfig().Player.Display.SongInfo || nextSong) {
+			if (getConfig().Player.Display.SongInfo) {
 				this.messages.addMessage(
 					'DI',
 					position + warningString + nextSongString + infos,
 					duration === -1 ? 'infinite' : duration
 				);
 			} else {
-				this.messages.removeMessage('DI');
-				return;
+				this.messages.removeMessage('DI'); // not sure if this is needed
 			}
 			if (nextSong) {
 				playerState.mediaType = 'pause';
@@ -1539,10 +1536,7 @@ class Players {
 					getState().pauseInProgress &&
 					getConfig().Karaoke.StreamerMode.PauseDuration > 0
 				) {
-					this.progressBar(
-						getConfig().Karaoke.StreamerMode.PauseDuration,
-						position + warningString + nextSongString + infos
-					);
+					this.progressBar(getConfig().Karaoke.StreamerMode.PauseDuration, position);
 				}
 			}
 		} catch (err) {
