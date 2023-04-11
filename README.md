@@ -23,14 +23,12 @@ This is a mature product, battle-tested during anime conventions like [Jonetsu](
 
 ## Features
 
--   **Accepted formats**:
-    -   **Video**: AVI, MP4, MKV (anything supported by [mpv](http://mpv.io) really)
-    -   **Subtitles**: ASS, SRT, Karafun, KAR, Ultrastar, KBP
+-   **Supported formats**:
+    -   **Video/Audio**: Anything supported by [mpv](http://mpv.io) really
+    -   **Subtiltes/Lyrics**: ASS, SRT, Karafun, KAR, Ultrastar, KBP
         -   Apart from ASS and SRT, subtitles will get converted for use with mpv as it can't read them directly.
-    -   **Music**: MP3, M4A, OGG (anything supported by [mpv](http://mpv.io) really)
 -   **Streamer-friendly options**: Twitch chat triggers, Nico Nico Douga-style comments, text files with refreshed information for your layouts, and more.
--   **Complete player controls**: Skip, pause, play, stop, rewind playback, hide/show lyrics, mute/unmute and volume control.
--   **Pitch and speed controls** for the song currently playing
+-   **Complete player controls**: Skip, pause, play, stop, rewind playback, hide/show lyrics, mute/unmute, pitch, speed and volume control.
 -   **Playlist management**: Reorder, shuffle, copy and move songs around between playlists
     -   Playlists can be _current_ (used by the video player) and/or _public_ (where users can send songs to)
     -   Playlists can be _hidden_ from public interface.
@@ -45,9 +43,9 @@ This is a mature product, battle-tested during anime conventions like [Jonetsu](
     -   **Manage** your song library (add, remove, edit...)
     -   **View stats** like most played or requested songs
 -   **User profiles** with access rights, favorites list, and preferences
--   **Web interface** for smartphone/tablet/desktop ~~IE6 compatible~~
+-   **Web interface** for smartphone/tablet/desktop ~~Internet Explorer compatible~~
     -   Public interface can be set to _restricted mode_ to prevent adding songs or in _closed mode_ to prevent access while you prepare your karaoke.
-    -   Users can **add songs** they want from the library or their own favorites, follow the current playlist, see lyrics in real time from where they are (great for near-sighted people who want to sing along!)
+    -   Users can **add songs** they want from the library or their own favorites or anime lists (MAL/Anilist/Kitsu), follow the current playlist, see lyrics in real time from where they are (great for near-sighted people who want to sing along!)
     -   Operators can **organize playlists** and control the player through the operator interface.
 -   **Highly customizable experience** to tailor the app to your specific needs (for twitch streams, in front of a crowd, between friends, for karaoke contests, etc.)
 -   **Display karaoke information** or operator announcements during song playback
