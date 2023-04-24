@@ -983,6 +983,8 @@
 		"DELETE_ALL_TOOLTIP": "Supprimer tout les karaokés affichés en une seule fois",
 		"DELETE_KARA_TITLE": "Vous allez supprimer les {{count}} karaokés affichés, êtes-vous sûr ?",
 		"DELETE_MEDIA_TOOLTIP": "Supprimer le média du karaoké",
+		"SHOW_LYRICS_IN_FOLDER": "Voir les paroles dans son dossier",
+		"SHOW_MEDIA_IN_FOLDER": "Voir le média dans son dossier",
 		"UPLOAD_MEDIA_TOOLTIP": "Renvoyer le média du karaoké",
 		"PLAY_KARAOKE": "Jouer le karaoké",
 		"MISSING_DOWNLOAD_TOOLTIP": "Ce karaoké n'est pas téléchargé, il vous faudra Internet pour le jouer. Vous pouvez cliquer sur Télécharger le média pour l'utiliser hors-ligne.",

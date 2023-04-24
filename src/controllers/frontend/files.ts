@@ -9,7 +9,7 @@ import { APIData } from '../../lib/types/api.js';
 import { resolvedPath } from '../../lib/utils/config.js';
 import logger from '../../lib/utils/logger.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
-import { openLyricsFile } from '../../services/karaManagement.js';
+import { openLyricsFile, showLyricsInFolder, showMediaInFolder } from '../../services/karaManagement.js';
 import { APIMessage, errMessage } from '../common.js';
 import { runChecklist } from '../middlewares.js';
 import { requireHTTPAuth, requireValidUser } from '../middlewaresHTTP.js';
@@ -44,6 +44,28 @@ export function filesSocketController(router: SocketIOApp) {
 			return await openLyricsFile(req.body.kid);
 		} catch (err) {
 			const code = 'LYRICS_FILE_OPEN_ERROR';
+			errMessage(code, err);
+			throw { code: err?.code || 500, message: APIMessage(code) };
+		}
+	});
+
+	router.route('showLyricsInFolder', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'closed');
+		try {
+			return await showLyricsInFolder(req.body.kid);
+		} catch (err) {
+			const code = 'LYRICS_FILE_OPEN_ERROR';
+			errMessage(code, err);
+			throw { code: err?.code || 500, message: APIMessage(code) };
+		}
+	});
+
+	router.route('showMediaInFolder', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'closed');
+		try {
+			return await showMediaInFolder(req.body.kid);
+		} catch (err) {
+			const code = 'MEDIA_FILE_OPEN_ERROR';
 			errMessage(code, err);
 			throw { code: err?.code || 500, message: APIMessage(code) };
 		}
