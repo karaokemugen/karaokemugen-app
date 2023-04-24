@@ -3,6 +3,7 @@ import {
 	DeleteOutlined,
 	EditOutlined,
 	FontColorsOutlined,
+	FolderViewOutlined,
 	UploadOutlined,
 	DownloadOutlined,
 	DownOutlined,
@@ -28,7 +29,8 @@ import { commandBackend } from '../../utils/socket';
 import { isModifiable } from '../../utils/tools';
 import GlobalContext from '../../store/context';
 import { tagTypes } from '../../utils/tagTypes';
-import { DBTag } from '../../../../src/lib/types/database/tag';
+import type { DBTag } from '../../../../src/lib/types/database/tag';
+import { resolve } from 'path';
 
 interface KaraListProps {
 	tagFilter?: string;
@@ -185,7 +187,7 @@ function KaraList(props: KaraListProps) {
 		commandBackend('addDownloads', { downloads: [downloadObject] }).catch(() => {});
 	};
 
-	const getMenu = record => {
+	const getMenu = (record: DBKara) => {
 		const menu: ItemType[] = [];
 		const deleteButton = {
 			key: '1',
@@ -208,7 +210,23 @@ function KaraList(props: KaraListProps) {
 			icon: <UploadOutlined />,
 			onClick: () => commandBackend('uploadMedia', { kid: record.kid }),
 		};
+		const showMediaButton = {
+			key: '4',
+			label: i18next.t('KARA.SHOW_MEDIA_TOOLTIP'),
+			icon: <FolderViewOutlined />,
+			onClick: () => commandBackend('showMediaInFolder', { kid: record.kid }),
+		};
+		const showLyricsButton = {
+			key: '5',
+			label: i18next.t('KARA.SHOW_LYRICS_TOOLTIP'),
+			icon: <FolderViewOutlined />,
+			onClick: () => commandBackend('showLyricsInFolder', { kid: record.kid }),
+		};
+		if (record.subfile) {
+			menu.push(showLyricsButton);
+		}
 		if (record.download_status === 'DOWNLOADED') {
+			menu.push(showMediaButton);
 			menu.push(uploadMediaButton);
 			menu.push(deleteMediaButton);
 		}

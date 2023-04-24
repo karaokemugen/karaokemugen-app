@@ -354,3 +354,23 @@ ${!mediafile.match(audioFileRegexp) ? `Video File: ${mediaPath}` : ''}
 		throw err;
 	}
 }
+
+export async function showLyricsInFolder(kid: string) {
+	try {
+		const { subfile, repository } = await getKara(kid, adminToken);
+		const lyricsPath = resolve(resolvedPathRepos('Lyrics', repository)[0], subfile);
+		shell.showItemInFolder(lyricsPath);
+	} catch (err) {
+		throw err;
+	}
+}
+
+export async function showMediaInFolder(kid: string) {
+	try {
+		const { mediafile, repository } = await getKara(kid, adminToken);
+		const mediaPath = resolve(resolvedPathRepos('Medias', repository)[0], mediafile);
+		shell.showItemInFolder(mediaPath);
+	} catch (err) {
+		throw err;
+	}
+}
