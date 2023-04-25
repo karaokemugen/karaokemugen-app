@@ -1,4 +1,4 @@
-# v7.1.0 - xx/04/2023
+# v7.1.x - xx/05/2023
 
 Most of the work on this release has already been backported in 7.0.x versions. Refer to these for more details.
 
@@ -6,6 +6,7 @@ Below are changes from 7.0.46 to 7.1.0 :
 
 ## New features
 
+-   You can now open a song's media file from the song list in system panel (#1454)
 -   Display year and duration of song in version selector in public interface (#1448)
 -   Prevent app from starting up if it detects an older database version (#1427)
 -   Added Mastodon link (#1421)
