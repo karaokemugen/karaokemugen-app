@@ -254,7 +254,7 @@ export async function playerEnding() {
 
 		// Add song to played (history) table
 		if (state.player.mediaType === 'song') {
-			addPlayedKara(state.player.currentSong.kid);
+			addPlayedKara(state.player.currentSong?.kid);
 		}
 		// If we just played an intro, play a sponsor.
 		if (state.player.mediaType === 'Intros') {
