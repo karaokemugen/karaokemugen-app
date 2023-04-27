@@ -642,7 +642,7 @@
 			"DESCRIPTION": "La liste de lecture courante '<1>{{playlist}}</1>' n'est pas affichée à l'écran.",
 			"DESC_OUTCOME": "Si vous continuez, Karaoke Mugen jouera la chanson <1>{{song}}</1>.",
 			"PLAY_ANYWAY": "Jouer quand même",
-			"CHANGE_TO_DISPLAYED_AND_PLAY": "Changer la liste de lecture courante en <1>{{displayedPlaylistName}}</1> et la jouer"
+			"CHANGE_TO_DISPLAYED_AND_PLAY": "Change la liste de lecture courante en <1>{{displayedPlaylistName}}</1> et la lis"
 		},
 		"PROFILE_MODAL": {
 			"ONLINE_CONVERT": "Passer mon compte en ligne",
@@ -806,91 +806,6 @@
 			"OPEN": "Créer un tag",
 			"TITLE": "Création de tag rapide"
 		},
-<<<<<<< Updated upstream
-=======
-		"START_QUIZ": {
-			"TITLE": "Démarrer un quiz",
-			"DESCRIPTION": "Confrontez les participants entre eux dans un blind-test ! Les participants vont devoir deviner le plus rapidement possible les chansons qui passent à l'écran. Vous pouvez paramétrer une nouvelle partie ou reprendre une configuration existante.",
-			"LOAD_GAME": "Charger une partie",
-			"NEW_GAME": "Nouvelle partie",
-			"LAST_PLAYED_GAME": " (dernière partie lancée)",
-			"GAME_IN_PROGRESS": {
-				"SONG_COUNT_zero": "Aucune chanson n'est passée.",
-				"SONG_COUNT_one": "{{count}} chanson est passée.",
-				"SONG_COUNT_other": "{{count}} chansons sont passées.",
-				"SCORES": "Voici un récapitulatif des scores."
-			},
-			"GAME_NAME": "Nom de la partie",
-			"GAME_NAME_PLACEHOLDER": "Ma partie",
-			"PLAYER_MESSAGE": "Message affiché sur le lecteur",
-			"PLAYER_MESSAGE_PLACEHOLDER": "Allez sur $url pour jouer !",
-			"EMPTY_NAME": "Spécifiez un nom de partie",
-			"EMPTY_PLAYLIST": "Spécifiez une playlist",
-			"PLAYLIST": "Liste utilisée",
-			"END_GAME": {
-				"TITLE": "Durée de la partie",
-				"DESCRIPTION": "La partie se termine par défaut à la fin de votre playlist si le lecteur n'est pas configuré pour répeter, vous pouvez ajouter des critères supplémentaires. La partie se termine...",
-				"MAX_SCORE": "lorsqu'un joueur atteint",
-				"MAX_SCORE_PLACEHOLDER": "10",
-				"POINTS": "points",
-				"MAX_SONGS": "lorsque",
-				"MAX_SONGS_PLACEHOLDER": "30",
-				"SONGS": "chansons seront passées.",
-				"DURATION": "après",
-				"DURATION_PLACEHOLDER": "60",
-				"MINUTES": "minutes de jeu."
-			},
-			"PLAYERS": {
-				"TITLE": "Qui joue ?",
-				"DESCRIPTION": "Tous les utilisateurs avec leur compte peuvent participer (si l'interface est ouverte), vous pouvez autoriser les comptes invités à jouer ou bien ajouter un joueur représentant le chat Twitch si votre chaîne est connectée.",
-				"ALLOW_GUESTS": "Autoriser les invités à participer",
-				"TWITCH_CHAT": "Faire jouer le chat Twitch avec le nom",
-				"TWITCH_CHAT_PLACEHOLDER": "Twitchos"
-			},
-			"DISPLAY": {
-				"TITLE": "Comment afficher les chansons ?",
-				"DESCRIPTION": "Pour corser la tâche, il est possible de démarrer la chanson à un moment avancé au lieu du début. Il est également possible de masquer la vidéo, couper le son et/ou de ne pas afficher les sous-titres.",
-				"TIME": "Démarrer la chanson",
-				"BEGINNING": "au début",
-				"END": "à la fin",
-				"BLIND": "Masquer la vidéo",
-				"BLACK_SCREEN": "Ecran noir",
-				"BLURRED_SCREEN": "Vidéo floutée",
-				"MUTE": "Couper le son de la vidéo",
-				"NO_LYRICS": "Ne pas afficher les paroles",
-				"RANDOM_ONE": "Un élément au hasard parmi ceux ci-dessus",
-				"RANDOM_TWO": "Deux éléments au hasard parmi ceux ci-dessus"
-			},
-			"ANSWERS": {
-				"TITLE": "Réponses acceptées",
-				"DESCRIPTION": "Vous pouvez choisir quelles réponses sont acceptées (titre, chanteur, œuvre, etc.) et combien de points elles octroient aux joueurs. Vous pouvez aussi configurer une tolérance aux fautes de frappe. Une auto-complétion est proposée à ceux qui utilisent l'interface publique.",
-				"ANSWER_TITLE": "Titre",
-				"TOLERANCE": "Tolérance aux fautes de frappe",
-				"LAX": "Laxiste",
-				"PERFECT": "Strict"
-			},
-			"TIME": {
-				"TITLE": "Temps pour répondre",
-				"DESCRIPTION": "Les participants ont un temps imparti pour répondre. Une fois le délai écoulé, la réponse sera diffusée, avec le son, les paroles, le clip et son nom à l'écran. Une réponse rapide peut apporter plus de points si elle est activée.",
-				"GUESS_DURATION": "Temps pour répondre (secondes)",
-				"ANSWER_DURATION": "Temps de diffusion de la réponse (secondes)",
-				"QUICK_GUESS_DURATION": "Temps pour répondre rapidement (secondes)",
-				"QUICK_AWARD_POINTS": "Points bonus par bonne réponse rapide"
-			},
-			"BUTTONS": {
-				"RESUME": "Reprendre",
-				"EDIT": "Modifier les paramètres",
-				"COPY": "Copier cette partie",
-				"DELETE_SCORES": "Supprimer les scores",
-				"DELETE": "Supprimer cette partie",
-				"CREATE_START": "Créer et démarrer la partie"
-			}
-		},
-		"STOP_QUIZ": {
-			"TITLE": "Arrêter le quiz ?",
-			"DESCRIPTION": "La collecte des réponses et des points s'arrêtera immédiatement, la partie peut être reprise depuis le menu Démarrer un quiz."
-		},
->>>>>>> Stashed changes
 		"EXPORT_PLAYLIST_MEDIA": {
 			"DONE": "Les fichiers média de la liste de lecture ont été exportés",
 			"DONE_PARTIALLY": "Les fichiers média des listes de lecture ont été exportés, mais ils n'ont pas pu être sauvegardés :",
