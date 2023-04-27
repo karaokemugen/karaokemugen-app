@@ -642,7 +642,7 @@
 			"DESCRIPTION": "La liste de lecture courante '<1>{{playlist}}</1>' n'est pas affichée à l'écran.",
 			"DESC_OUTCOME": "Si vous continuez, Karaoke Mugen jouera la chanson <1>{{song}}</1>.",
 			"PLAY_ANYWAY": "Jouer quand même",
-			"CHANGE_TO_DISPLAYED_AND_PLAY": "Change la liste de lecture courante en <1>{{displayedPlaylistName}}</1> et la lis"
+			"CHANGE_TO_DISPLAYED_AND_PLAY": "Changer la liste de lecture courante en <1>{{displayedPlaylistName}}</1> et la jouer"
 		},
 		"PROFILE_MODAL": {
 			"ONLINE_CONVERT": "Passer mon compte en ligne",
