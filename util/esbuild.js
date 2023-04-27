@@ -1,7 +1,7 @@
 import electron from 'electron';
 import { build, buildSync } from 'esbuild';
 import { execa } from 'execa';
-import rimraf from 'rimraf';
+import { rimraf } from 'rimraf';
 
 const buildOptions = {
 	outfile: 'dist/index.cjs',
