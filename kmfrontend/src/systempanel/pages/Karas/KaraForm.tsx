@@ -1020,7 +1020,14 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					wrapperCol={{ span: 10 }}
 					name="platforms"
 				>
-					<Collapse bordered={false}>
+					<Collapse
+						bordered={false}
+						defaultActiveKey={
+							this.props.kara?.platforms.length > 0 || this.state.parentKara?.platforms.length > 0
+								? ['1']
+								: []
+						}
+					>
 						<Panel header={i18next.t('SHOW-HIDE')} key="1" forceRender={true}>
 							<EditableTagGroup
 								value={this.props.kara?.platforms || this.state.parentKara?.platforms}
