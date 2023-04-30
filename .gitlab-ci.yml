@@ -249,7 +249,6 @@ pkg_linux:
     - build-migrationsFile
     - test
   script:
-    - yarn install
     - rm -Rf release_linux
     - npm install -g electron-builder
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
@@ -296,7 +295,6 @@ pkg_win:
     - build-migrationsFile
     - test
   script:
-    - yarn install
     - rm -Rf release_win
     - npm install -g electron-builder
     - wget -qO - https://download.opensuse.org/repositories/Emulators:/Wine:/Debian/xUbuntu_18.04/Release.key
