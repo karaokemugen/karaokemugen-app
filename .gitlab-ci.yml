@@ -297,7 +297,7 @@ pkg_win:
   script:
     - rm -Rf release_win
     - npm install -g electron-builder
-    - wget -qO - https://download.opensuse.org/repositories/Emulators:/Wine:/Debian/xUbuntu_18.04/Release.key
+    - wget -qO - https://download.opensuse.org/repositories/Emulators:/Wine:/Debian/xUbuntu_20.04/Release.key
       | apt-key add -
     - apt-get update -qq && apt-get install -y -qq zip
     - wget -qO- http://mugen.karaokes.moe/downloads/$DIST_WIN | tar xz
