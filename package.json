@@ -14,7 +14,7 @@
     "startHeadless": "yarn build && electron --no-sandbox . --cli",
     "test": "yarn build && electron . --test",
     "testCI": "yarn build && electron --no-sandbox . --test --cli",
-    "manualTest": "mocha --require ts-node/register --timeout 60000 test/*.ts",
+    "manualTest": "mocha -n loader=ts-node/esm --require test/util/hooks.ts --timeout 60000 test/*.ts",
     "build": "yarn typecheck && node util/esbuild.js",
     "setup": "git submodule sync --recursive && git submodule update --init --recursive && yarn install && yarn build && yarn installkmfrontend && yarn buildkmfrontend",
     "gitconfig": "git config diff.submodule log && git config fetch.recursesubmodules on-demand && git config status.submodulesummary true && git config push.recursesubmodules on-demand && git config submodule.recurse true",

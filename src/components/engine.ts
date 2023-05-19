@@ -368,6 +368,7 @@ async function runTests() {
 	} catch (err) {
 		console.log('TESTS FAILED : ');
 		console.log(err.stdout);
+		console.error(err.stderr);
 		process.exit(1000);
 	}
 }
