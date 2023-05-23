@@ -130,9 +130,14 @@ function KaraMenuModal(props: IProps) {
 
 	const shuffleSongs = () => {
 		try {
-			commandBackend('randomizePLC', {
-				plc_ids: [kara?.plcid],
-			});
+			commandBackend(
+				'randomizePLC',
+				{
+					plc_ids: [kara?.plcid],
+				},
+				false,
+				60000
+			);
 			setEffectShuffle(true);
 			setTimeout(props.closeKaraMenu, 350);
 		} catch (e) {

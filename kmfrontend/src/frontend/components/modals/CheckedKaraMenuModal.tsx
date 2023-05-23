@@ -136,9 +136,14 @@ function CheckedKaraMenuModal(props: IProps) {
 			return;
 		}
 		try {
-			commandBackend('randomizePLC', {
-				plc_ids: props.checkedKaras.map(a => a.plcid),
-			});
+			commandBackend(
+				'randomizePLC',
+				{
+					plc_ids: props.checkedKaras.map(a => a.plcid),
+				},
+				false,
+				60000
+			);
 			setEffectShuffle(true);
 			setTimeout(props.closeKaraMenu, 350);
 		} catch (e) {
