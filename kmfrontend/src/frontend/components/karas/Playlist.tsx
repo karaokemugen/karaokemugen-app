@@ -80,7 +80,7 @@ function Playlist(props: IProps) {
 	const [data, setData] = useState<KaraList>();
 	const [checkedKaras, setCheckedKaras] = useState(0);
 	const [playing, setPlaying] = useState<number>(
-		getPlaylistInfo(props.side, context).content.findIndex(k => k.flag_playing)
+		getPlaylistInfo(props.side, context)?.content.findIndex(k => k.flag_playing)
 	);
 	const [songsBeforeJingle, setSongsBeforeJingle] = useState<number>();
 	const [songsBeforeSponsor, setSongsBeforeSponsor] = useState<number>();
