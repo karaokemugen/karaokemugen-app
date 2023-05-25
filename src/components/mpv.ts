@@ -19,7 +19,6 @@ import { next, prev } from '../services/player.js';
 import { notificationNextSong } from '../services/playlist.js';
 import { getSingleMedia } from '../services/playlistMedias.js';
 import { endPoll } from '../services/poll.js';
-import { MediaType } from '../types/medias.js';
 import { MpvCommand } from '../types/mpvIPC.js';
 import { MpvOptions, PlayerState } from '../types/player.js';
 import { CurrentSong } from '../types/playlist.js';
@@ -32,6 +31,7 @@ import { exit, isShutdownInProgress } from './engine.js';
 import Timeout = NodeJS.Timeout;
 import { APIMessage } from '../lib/services/frontend.js';
 import { DBKaraTag } from '../lib/types/database/kara.js';
+import { PlaylistMediaType } from '../lib/types/playlistMedias.js';
 import { supportedFiles } from '../lib/utils/constants.js';
 import { date, time } from '../lib/utils/date.js';
 import HTTP, { fixedEncodeURIComponent } from '../lib/utils/http.js';
@@ -895,7 +895,7 @@ class Players {
 			{ service }
 		);
 		try {
-			playerState.mediaType = type as MediaType;
+			playerState.mediaType = type;
 			playerState.playerStatus = 'stop';
 			playerState.currentSong = null;
 			playerState.currentMedia = null;
@@ -1159,7 +1159,7 @@ class Players {
 		return null;
 	}
 
-	async playMedia(mediaType: MediaType): Promise<PlayerState> {
+	async playMedia(mediaType: PlaylistMediaType): Promise<PlayerState> {
 		const conf = getConfig();
 		const media = getSingleMedia(mediaType);
 		if (media) {

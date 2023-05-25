@@ -1,6 +1,6 @@
 import { PathType } from '../lib/types/config.js';
+import { PlaylistMediaType } from '../lib/types/playlistMedias.js';
 import { Repository } from '../lib/types/repo.js';
-import { MediaType } from './medias.js';
 import { MpvHardwareDecodingOptions } from './mpvIPC.js';
 
 export interface Config {
@@ -188,7 +188,7 @@ export interface Config {
 		};
 		Repositories: Repository[];
 		MediaPath: {
-			[m in MediaType]: string[];
+			[m in PlaylistMediaType]: string[];
 		};
 		Path: {
 			[p in PathType]?: string;

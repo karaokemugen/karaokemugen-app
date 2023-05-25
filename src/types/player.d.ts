@@ -1,4 +1,4 @@
-import { Media } from './medias.js';
+import { PlaylistMedia, PlaylistMediaType } from '../lib/types/playlistMedias.js';
 import { CurrentSong } from './playlist.js';
 
 export interface PlayerState {
@@ -9,8 +9,8 @@ export interface PlayerState {
 	timeposition?: number;
 	mute?: boolean;
 	currentSong?: CurrentSong;
-	currentMedia?: Media;
-	mediaType?: 'song' | 'stop' | 'pause' | 'poll' | 'Jingles' | 'Sponsors' | 'Encores' | 'Outros' | 'Intros';
+	currentMedia?: PlaylistMedia;
+	mediaType?: 'song' | 'stop' | 'pause' | 'poll' | 'bundled' | PlaylistMediaType;
 	showSubs?: boolean;
 	onTop?: boolean;
 	fullscreen?: boolean;

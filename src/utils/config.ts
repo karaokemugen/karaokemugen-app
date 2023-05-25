@@ -14,6 +14,7 @@ import { errorStep } from '../electron/electronLogger.js';
 import { registerShortcuts, unregisterShortcuts } from '../electron/electronShortcuts.js';
 import { refreshTags } from '../lib/dao/tag.js';
 import { RecursivePartial } from '../lib/types/index.js';
+import { PlaylistMediaType } from '../lib/types/playlistMedias.js';
 import {
 	changeLanguage,
 	configureIDs,
@@ -42,7 +43,6 @@ import { initStats, stopStats } from '../services/stats.js';
 import { updateSongsLeft } from '../services/user.js';
 import { BinariesConfig } from '../types/binChecker.js';
 import { Config } from '../types/config.js';
-import { MediaType } from '../types/medias.js';
 import { supportedLanguages } from './constants.js';
 import { configConstraints, defaults } from './defaultSettings.js';
 import { initDiscordRPC, stopDiscordRPC } from './discordRPC.js';
@@ -412,6 +412,6 @@ async function binMissing(binariesPath: any, err: string) {
 	}
 }
 
-export function resolvedMediaPath(type: MediaType) {
+export function resolvedMediaPath(type: PlaylistMediaType) {
 	return getConfig().System.MediaPath[type].map((path: string) => resolve(getState().dataPath, path));
 }
