@@ -12,7 +12,7 @@
 			"Não se esqueça de sincronizar a base de vez em quando: Podes descobrir novos karaokês!",
 			"Não consegue encontrar uma música na base de dados? Procure em https://kara.moe/suggest/, pode estar lá!",
 			"Karaoke Mugen é um projeto de código 100% aberto e colaborativo, todos podem participar!",
-			null,
+			"None",
 			"Sou a Nanamin, a mascote do Karaoke Mugen, fui criado pela maravilhosa Sedeto! http://www.sedeto.fr",
 			"Há muitas opções para configurar seu karaokê! Tire algum tempo para revisá-los todos antes de começar uma sessão!",
 			"As sessões são eventos individuais de karaoke. Permite-lhe agrupar canções pedidas e tocadas para se lembrar do que foi tocado durante um aniversário, casamento ou evento!",
@@ -28,7 +28,7 @@
 			"O Karaoke Mugen precisa de VOCÊ! Mais informações em https://mugen.karaokes.moe/en/participate.html !",
 			"Uma outra dica qualquer que termina com um ponto de exclamação!",
 			"O Monitor permite-lhe ver a canção que está a tocar atualmente mesmo se você não puder ver a tela de onde você está.",
-			"O modo Karaokê clássico emula o que você encontra em cabines de karaokê japonesas, concursos de karaokê ou eventos de anime: uma pausa é feita entre cada canção e o título e solicitante da próxima canção são exibidos na tela!",
+			"O modo Karaokê clássico emula o que você encontra em cabines de karaokê japonesas, concursos de karaokê ou eventos de anime: uma pausa é feita entre cada canção e o título e solicitante da próxima canção são exibidos na tela.",
 			"A sua sessão de karaokê vai terminar em breve? Mude a interface para o modo restrito: os usuários não poderão adicionar mais músicas, mas poderão ver o que vem a seguir.",
 			"Precisas de enviar uma mensagem ao seu público? A opção de enviar uma mensagem irá mostrar o que enviares para todos os dispositivos móveis e/ou no ecrã do karaokê!"
 		],
@@ -221,5 +221,8 @@
 		"TITLE": "Binários em falta"
 	},
 	"GENERATING_READING": "Passo 1/2 - A ler os dados…",
-	"SUGGEST_SONGS": "Sugerir canções!"
+	"SUGGEST_SONGS": "Sugerir canções!",
+	"REQUESTED_AND_other": "e {{count}} outros",
+	"REQUESTED_WITH": "(com {{names}})",
+	"REQUESTED_AND_one": "e outros"
 }
