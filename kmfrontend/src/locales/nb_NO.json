@@ -27,12 +27,12 @@
 		"PUBLIC": "Offentlig"
 	},
 	"KARA_MENU": {
-		"WHITELISTED": "Hvitlistet.",
+		"WHITELISTED": "Hvitlistet!",
 		"ADD_WHITELIST": "Legg til på hvitliste",
-		"BLACKLISTED": "Svartelistet.",
+		"BLACKLISTED": "Svartelistet!",
 		"ADD_BLACKLIST": "Legg til på svarteliste",
-		"SHOWN": "Synlig.",
-		"HIDDEN": "Skjult.",
+		"SHOWN": "Synlig!",
+		"HIDDEN": "Skjult!",
 		"VISIBLE_OFF_SHORT": "Skjul",
 		"VISIBLE_OFF": "Skjul i spilleliste",
 		"VISIBLE_ON_SHORT": "Vis",
