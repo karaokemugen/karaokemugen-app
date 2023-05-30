@@ -62,10 +62,10 @@ async function fetchFeed(url: string, name: string): Promise<Feed> {
 	try {
 		const response = await HTTP.get(url);
 		const feed: any = xml2js(response.data as any, { compact: true });
-		// For Mastodon, we filter out UnJourUnKaraoke toots because we don't want to be spammed.
+		// For Mastodon, we filter out #Karaoke + #KaraokeMugen toots because we don't want to be spammed.
 		if (name === 'mastodon') {
 			feed.rss.channel.item = feed.rss.channel.item.filter(
-				(item: any) => !item.description._text.includes('UnJourUnKaraoke')
+				(item: any) => !item.description._text.includes('#Karaoke #KaraokeMugen')
 			);
 		} else {
 			feed.feed.entry.forEach((element: any) => {
