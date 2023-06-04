@@ -212,13 +212,13 @@ function KaraList(props: KaraListProps) {
 		};
 		const showMediaButton = {
 			key: '4',
-			label: i18next.t('KARA.SHOW_MEDIA_TOOLTIP'),
+			label: i18next.t('KARA.SHOW_MEDIA_IN_FOLDER'),
 			icon: <FolderViewOutlined />,
 			onClick: () => commandBackend('showMediaInFolder', { kid: record.kid }),
 		};
 		const showLyricsButton = {
 			key: '5',
-			label: i18next.t('KARA.SHOW_LYRICS_TOOLTIP'),
+			label: i18next.t('KARA.SHOW_LYRICS_IN_FOLDER'),
 			icon: <FolderViewOutlined />,
 			onClick: () => commandBackend('showLyricsInFolder', { kid: record.kid }),
 		};
