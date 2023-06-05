@@ -373,18 +373,6 @@ export function isPlayerRunning() {
 export async function initPlayer() {
 	try {
 		profile('initPlayer');
-		if (getConfig().App.FirstRun) {
-			// Write in config the message we should have depending on user locale.
-			setConfig({
-				Player: {
-					Display: {
-						ConnectionInfo: {
-							Message: i18next.t('GO_TO'),
-						},
-					},
-				},
-			});
-		}
 		await mpv.initPlayerSystem();
 	} catch (err) {
 		logger.error('Failed mpv init', { service, obj: err });
