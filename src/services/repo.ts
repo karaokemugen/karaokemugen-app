@@ -1084,7 +1084,7 @@ export async function generateCommits(repoName: string) {
 				removedFiles: [],
 				message: `📝 🎤 Update ${song}`,
 			};
-			// Modified songs can be ernamed so we need to find out how it was named before
+			// Modified songs can be renamed so we need to find out how it was named before
 			// We need to find out if some tags have been added or modified and add them to our commit
 			const kara = karas.content.find(k => k.karafile === basename(file));
 			if (!kara) {
@@ -1274,7 +1274,7 @@ export async function pushCommits(repoName: string, push: Push, ignoreFTP?: bool
 				await git.commit(commit.message);
 				task.incr();
 			}
-			// All our commits are hopefully done. Just inc ase we'll update repository now.
+			// All our commits are hopefully done. Just in case we'll update repository now.
 			await updateGitRepo(repoName);
 			await git.push();
 			emitWS('pushComplete', repoName);
