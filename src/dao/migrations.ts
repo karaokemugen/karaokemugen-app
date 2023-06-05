@@ -5,7 +5,6 @@ import Postgrator from 'postgrator';
 
 import { win } from '../electron/electron.js';
 import { refreshTags } from '../lib/dao/tag.js';
-import { setConfig } from '../lib/utils/config.js';
 import logger from '../lib/utils/logger.js';
 import { displayInfo } from '../services/player.js';
 import { editRepo, getRepo } from '../services/repo.js';
@@ -62,15 +61,6 @@ export async function postMigrationTasks(migrations: Postgrator.Migration[], did
 				break;
 			// 7.0 migrations
 			case 'aBarrelRoll':
-				setConfig({
-					Player: {
-						Display: {
-							ConnectionInfo: {
-								Message: i18next.t('GO_TO'),
-							},
-						},
-					},
-				});
 				if (getState().player?.mediaType === 'stop' || getState().player?.mediaType === 'pause') displayInfo();
 				break;
 			case 'addExternalDatabaseIds':
