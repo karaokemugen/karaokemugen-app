@@ -6,11 +6,9 @@ import Postgrator from 'postgrator';
 import { win } from '../electron/electron.js';
 import { refreshTags } from '../lib/dao/tag.js';
 import logger from '../lib/utils/logger.js';
-import { displayInfo } from '../services/player.js';
 import { editRepo, getRepo } from '../services/repo.js';
 import { migrateBLWLToSmartPLs } from '../utils/hokutoNoCode.js';
 import Sentry from '../utils/sentry.js';
-import { getState } from '../utils/state.js';
 import { compareKarasChecksum, generateDB } from './database.js';
 
 const service = 'DBMigration';
@@ -60,9 +58,6 @@ export async function postMigrationTasks(migrations: Postgrator.Migration[], did
 				await refreshTags();
 				break;
 			// 7.0 migrations
-			case 'aBarrelRoll':
-				if (getState().player?.mediaType === 'stop' || getState().player?.mediaType === 'pause') displayInfo();
-				break;
 			case 'addExternalDatabaseIds':
 				if (!didGeneration) doGenerate = true;
 				break;
