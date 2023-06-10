@@ -855,7 +855,7 @@
 		"ACCOUNT_QUESTION": "Apakah kamu ingin menggunakan akun lokal (hanya di komputer kamu saja) atau akun daring (akses internet diperlukan)?",
 		"MODIFY_DIRECTORY": "Ubah folder",
 		"CHOOSE_DIRECTORY": "Pilih folder",
-		"ONLINE_ACCOUNT_SAVE_INFOS": "Cadangkan lagu favorit, avatar, dan informasi profil kamu untuk mendapatkan mereka lagi di komputer berbeda.",
+		"ONLINE_ACCOUNT_SAVE_INFOS": "Cadangkan lagu, avatar, dan info profil favorit Anda untuk mendapatkannya kembali dari komputer lain.",
 		"ONLINE_ACCOUNT_LOST_PASSWORD": "Jika kamu memberikan alamat surel, kamu akan bisa memulihkan akun kamu jika kamu lupa kata sandi.",
 		"LOCAL_ACCOUNT_DESC": "Kamu memilih akun lokal. Ketik nama akun dan kata sandi di bawah ini:",
 		"ONLINE_ACCOUNT_INSTANCE": "Akun daring kamu akan dihos di peladen {{instance}}",
@@ -1003,7 +1003,11 @@
 			},
 			"DONE": "Tugas berhasil diselesaikan.",
 			"EMPTY": "Tidak ada yang berubah!",
-			"DESCRIPTION": "Selamat datang di sisi tindakan berbahaya. Sepertinya kamu bisa mengacaukan banyak hal di sini. Berikut ringkasan singkat dari hasil suntingan yang terdeteksi :"
+			"DESCRIPTION": "Selamat datang di sisi tindakan berbahaya. Sepertinya kamu bisa mengacaukan banyak hal di sini. Berikut ringkasan singkat dari hasil suntingan yang terdeteksi :",
+			"STASH": {
+				"BTN": "Pengeditan simpanan",
+				"DESC": "Simpan hasil suntingan Anda untuk digunakan kembali."
+			}
 		},
 		"PLAYLIST_MODAL": {
 			"CANNOT_BLACKLIST": "Kamu tidak bisa tidak mempunyai daftar hitam, sunting yang kamu ingin untuk atur sebagai daftar hitam baru.",
@@ -1063,7 +1067,8 @@
 			"VOTES_one": "{{count}} suara ({{percent}}%)",
 			"VOTES_other": "{{count}} suara ({{percent}}%)",
 			"REMAINING_one": "{{count}} detik tersisa",
-			"REMAINING_other": "{{count}} detik tersisa"
+			"REMAINING_other": "{{count}} detik tersisa",
+			"VOTED": "Terpilih!"
 		},
 		"RESTART_DOWNLOADS_MODAL": {
 			"TITLE": "Unduhan tertunda",
@@ -1089,7 +1094,9 @@
 		},
 		"EXPORT_PLAYLIST_MEDIA": {
 			"START": "File media sedang diekspor…",
-			"DONE": "File media daftar putar sudah diekspor"
+			"DONE": "File media daftar putar sudah diekspor",
+			"DONE_PARTIALLY": "File media daftar putar telah diekspor, meskipun tidak dapat disimpan:",
+			"NOT_ALL_MEDIA_DOWNLOADED": "Tidak semua media tersedia secara lokal. Pastikan untuk mengunduh semua video sebelum mengekspor daftar putar"
 		}
 	},
 	"REPOSITORIES": {
@@ -1481,7 +1488,9 @@
 		"COLLECTIONS_REQUIRED": "Sebuah koleksi itu wajib",
 		"SINGERGROUPS_BY": "dari klub musik",
 		"DESC": {
-			"TITLES_DEFAULT_LANGUAGE": "Bahasa judul baku harus judul orisinil lagi. Untuk judul pada bahasa non-latin (tiongkok, jepang, arab, korea, dll.), tambahkan judul \"Romanization\" dan jadikan itu baku."
+			"TITLES_DEFAULT_LANGUAGE": "Bahasa judul baku harus judul orisinil lagi. Untuk judul pada bahasa non-latin (tiongkok, jepang, arab, korea, dll.), tambahkan judul \"Romanization\" dan jadikan itu baku.",
+			"PARENTS": "Jika lagu ini adalah versi alternatif dari lagu lain, pilih induknya untuk mengisi formulir ini.",
+			"PARENTS_PUBLIC": "Ketika pengguna memilih lagu induk di antarmuka publik, mereka akan melihat semua versi turunan/alternatifnya."
 		}
 	},
 	"USERS": {
@@ -1718,7 +1727,9 @@
 				"SHORTENER": "Galat ketika mengaktifkan penyingkat URL",
 				"POLL_PUBLIC_PL_EMPTY": "Tidak bisa memulai jajak pendapat: daftar putar publik kosong",
 				"POLL_NOT_ENOUGH_SONGS": "Tidak bisa memulai jajak pendapat: tidak cukup lagu tersedia",
-				"PLAYER_NO_ONLINE_MEDIA": "Media tidak dapat dibaca dari sumber online. Periksa koneksi internet Anda."
+				"PLAYER_NO_ONLINE_MEDIA": "Media tidak dapat dibaca dari sumber online. Periksa koneksi internet Anda.",
+				"AUTOMIX_NO_SONGS_MEET_CRITERIAS": "Tidak ada lagu yang memenuhi kriteria yang dipilih untuk AutoMix ini",
+				"PLAYLIST_FREE_ORPHANED_SONGS": "Tidak dapat membebaskan lagu-lagu yatim piatu"
 			}
 		}
 	},
@@ -1755,5 +1766,7 @@
 	"COLLECTIONS_MIGRATION": {
 		"TITLE": "Memperkenalkan koleksi!"
 	},
-	"TOOLTIP_KARA_ALREADY_ADDED": "Lagu ini telah ada di daftar putar."
+	"TOOLTIP_KARA_ALREADY_ADDED": "Lagu ini telah ada di daftar putar.",
+	"SHOW-HIDE": "Tampilkan/Sembunyikan",
+	"UNKNOWN": "Tidak dikenal"
 }
