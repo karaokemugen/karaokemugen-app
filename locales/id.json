@@ -232,5 +232,23 @@
 	"INIT_MIGRATION": "Memperbarui struktur basis data, mohon ditunggu…",
 	"REQUESTED_WITH": "(dengan {{names}})",
 	"REQUESTED_AND_one": "dan lainnya",
-	"REQUESTED_AND_other": "dan {{count}} lainnya"
+	"REQUESTED_AND_other": "dan {{count}} lainnya",
+	"MIGRATION_MESSAGES": [
+		"Menyelaraskan mikrofon",
+		"Menghitung normalisasi gelombang audio",
+		"Mendinginkan minuman",
+		"Mengkalibrasi chrod vokal",
+		"Menemukan kota Karaokum Mugen-la yang hilang",
+		"Komputasi menjawab kehidupan, alam semesta, dan segalanya",
+		"Memulai konvektor waktu",
+		"Menyelesaikan persamaan simfoni",
+		"Menyiapkan perilaku supra-sonik",
+		"Membuang sampah",
+		"Memesan minuman dan makanan ringan",
+		"Meningkatkan performa musik",
+		"Mengunduh Wikipedia",
+		"Memberi makan kucing",
+		"Mengonfigurasi fins"
+	],
+	"MIGRATION": "Migrasi"
 }
