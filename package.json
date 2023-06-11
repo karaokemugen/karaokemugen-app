@@ -1,6 +1,6 @@
 {
   "name": "karaokemugen-app",
-  "version": "7.1.7-next",
+  "version": "7.1.8-next",
   "versionName": "Rin Respectable",
   "description": "Karaoke playlist manager / player",
   "bin": {
