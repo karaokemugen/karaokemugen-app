@@ -1,0 +1,1 @@
+DROP TRIGGER IF EXISTS playlist_only_one_fallback_trigger ON playlist;

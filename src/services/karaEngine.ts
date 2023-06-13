@@ -18,7 +18,14 @@ import { getState, setState } from '../utils/state.js';
 import { writeStreamFiles } from '../utils/streamerFiles.js';
 import { addPlayedKara, getKara, getKaras, getSongSeriesSingers, getSongTitle, getSongVersion } from './kara.js';
 import { initAddASongMessage, mpv, next, restartPlayer, stopAddASongMessage, stopPlayer } from './player.js';
-import { getCurrentSong, getPlaylistInfo, shufflePlaylist, updateUserQuotas } from './playlist.js';
+import {
+	editPlaylist,
+	getCurrentSong,
+	getPlaylistContentsMini,
+	getPlaylistInfo,
+	shufflePlaylist,
+	updateUserQuotas,
+} from './playlist.js';
 import { startPoll } from './poll.js';
 import { getUser } from './user.js';
 
@@ -130,12 +137,28 @@ export async function getSongInfosForPlayer(kara: DBKara | DBPLC): Promise<{ inf
 
 export async function playRandomSongAfterPlaylist() {
 	try {
-		const karas = await getKaras({
-			username: adminToken.username,
-			random: 1,
-			blacklist: true,
-		});
-		const kara = karas.content[0];
+		let kara: DBKara | DBPLC;
+
+		if (getConfig().Playlist.EndOfPlaylistAction === 'random_fallback') {
+			const fallbackPlaylistId = getState().fallbackPlaid;
+			if (fallbackPlaylistId) {
+				const playlistContent = await getPlaylistContentsMini(fallbackPlaylistId);
+				const notPlayedKaras = playlistContent.filter(plKara => !plKara.flag_dejavu);
+				// If all karas in fallback playlist have been played, ignore the dejavu flag and pick a random played one
+				// (Instead, we could also stop the player here or take a random kara from the library)
+				const karaPool = notPlayedKaras.length > 0 ? notPlayedKaras : playlistContent;
+				kara =
+					karaPool.length > 0 &&
+					(await getKara(karaPool[Math.floor(Math.random() * karaPool.length)].kid, adminToken));
+			}
+		} else {
+			const karas = await getKaras({
+				username: adminToken.username,
+				random: 1,
+				blacklist: true,
+			});
+			kara = karas.content[0];
+		}
 		if (kara) {
 			await playSingleSong(kara.kid, true);
 		} else {
@@ -213,6 +236,15 @@ export async function playerEnding() {
 	const conf = getConfig();
 	logger.debug('Player Ending event triggered', { service });
 	try {
+		// Add song to played (history) table
+		if (
+			state.player.mediaType === 'song' &&
+			// Ignore random karas from the entire library, but count karas from the fallback playlist as played
+			(!state.randomPlaying || getConfig().Playlist.EndOfPlaylistAction === 'random_fallback')
+		) {
+			addPlayedKara(state.player.currentSong?.kid);
+		}
+
 		if (state.playerNeedsRestart) {
 			logger.info('Player restarts, please wait', { service });
 			setState({ playerNeedsRestart: false });
@@ -252,10 +284,6 @@ export async function playerEnding() {
 			}
 		}
 
-		// Add song to played (history) table
-		if (state.player.mediaType === 'song') {
-			addPlayedKara(state.player.currentSong?.kid);
-		}
 		// If we just played an intro, play a sponsor.
 		if (state.player.mediaType === 'Intros') {
 			setState({ introPlayed: true });
@@ -280,8 +308,12 @@ export async function playerEnding() {
 		}
 		// If Outro, load the background.
 		if (state.player.mediaType === 'Outros') {
-			if (getConfig().Playlist.EndOfPlaylistAction === 'random') {
+			if (['random', 'random_fallback'].includes(getConfig().Playlist.EndOfPlaylistAction)) {
 				await playRandomSongAfterPlaylist();
+			} else if (getConfig().Playlist.EndOfPlaylistAction === 'play_fallback') {
+				await editPlaylist(getState().fallbackPlaid, { flag_current: true });
+				setState({ currentPlaid: getState().fallbackPlaid });
+				await next();
 			} else if (getConfig().Playlist.EndOfPlaylistAction === 'repeat') {
 				try {
 					await next();
@@ -368,8 +400,12 @@ export async function playerEnding() {
 						stopPlayer();
 					}
 				}
-			} else if (conf.Playlist.EndOfPlaylistAction === 'random') {
+			} else if (['random', 'random_fallback'].includes(conf.Playlist.EndOfPlaylistAction)) {
 				await playRandomSongAfterPlaylist();
+			} else if (conf.Playlist.EndOfPlaylistAction === 'play_fallback') {
+				await editPlaylist(getState().fallbackPlaid, { flag_current: true });
+				await setState({ currentPlaid: getState().fallbackPlaid });
+				await next();
 			} else {
 				await next();
 			}

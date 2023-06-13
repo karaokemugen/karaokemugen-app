@@ -88,6 +88,7 @@ export async function testPlaylists() {
 	const publicPL = pls.find(pl => pl.flag_public);
 	const whitePL = pls.find(pl => pl.flag_whitelist);
 	const blackPL = pls.find(pl => pl.flag_blacklist);
+	const fallbackPL = pls.find(pl => pl.flag_fallback);
 	if (!currentPL && !publicPL) {
 		// Initial state here, or someone did something REALLY wrong. we create only one playlist
 		const plaid = await insertPlaylist({
@@ -164,6 +165,25 @@ export async function testPlaylists() {
 		});
 		logger.debug('Initial blacklist playlist created', { service });
 	}
+
+	if (fallbackPL) {
+		setState({ fallbackPlaid: fallbackPL.plaid });
+	} else {
+		setState({
+			fallbackPlaid: await insertPlaylist({
+				name: i18n.t('FALLBACK'),
+				created_at: new Date(),
+				modified_at: new Date(),
+				flag_visible: false,
+				flag_fallback: true,
+				flag_smart: true,
+				username: 'admin',
+				type_smart: 'UNION',
+			}),
+		});
+		logger.debug('Initial fallback playlist created', { service });
+	}
+
 	profile('testPlaylists');
 }
 
@@ -419,7 +439,7 @@ function publicHook(plaid: string, name: string) {
 }
 
 /** Edit playlist properties */
-export async function editPlaylist(plaid: string, playlist: DBPL) {
+export async function editPlaylist(plaid: string, playlist: Partial<DBPL>) {
 	const pl = await getPlaylistInfo(plaid);
 	if (!pl) throw { code: 404 };
 	logger.debug(`Editing playlist ${plaid}`, { service, obj: playlist });
@@ -433,6 +453,7 @@ export async function editPlaylist(plaid: string, playlist: DBPL) {
 	if (playlist.flag_public) publicHook(plaid, newPL.name);
 	if (playlist.flag_whitelist) whitelistHook(plaid);
 	if (playlist.flag_blacklist) blacklistHook(plaid);
+	if (playlist.flag_fallback) fallbackPlaylistHook(plaid);
 	const isBlacklist = plaid === getState().blacklistPlaid;
 	const isWhitelist = plaid === getState().whitelistPlaid;
 
@@ -479,6 +500,7 @@ export async function createPlaylist(pl: DBPL, username: string): Promise<string
 	if (+pl.flag_public) publicHook(plaid, pl.name);
 	if (+pl.flag_whitelist) whitelistHook(plaid);
 	if (+pl.flag_blacklist) blacklistHook(plaid);
+	if (+pl.flag_fallback) fallbackPlaylistHook(plaid);
 	emitWS('playlistInfoUpdated', plaid);
 	emitWS('playlistsUpdated');
 	return plaid;
@@ -498,7 +520,12 @@ export async function getPlaylistInfo(plaid: string, token?: OldJWTToken) {
 /** Get all playlists properties */
 export async function getPlaylists(token: OldJWTToken) {
 	profile('getPlaylists');
-	const ret = await selectPlaylists(token.role !== 'admin');
+	let ret = await selectPlaylists(token.role !== 'admin');
+	ret = [
+		// Group by user created and system playlists
+		...ret.filter(pl => pl.username !== 'admin').sort((a, b) => b.created_at?.getTime() - a.created_at?.getTime()),
+		...ret.filter(pl => pl.username === 'admin'),
+	];
 	profile('getPlaylists');
 	return ret;
 }
@@ -1742,4 +1769,12 @@ export async function createAutoMix(params: AutoMixParams, username: string): Pr
 	} finally {
 		profile('AutoMix');
 	}
+}
+
+// Actions took when a new fallback playlist is set
+function fallbackPlaylistHook(plaid: string) {
+	const oldFallbackPlaylist_id = getState().fallbackPlaid;
+	updatePlaylistLastEditTime(oldFallbackPlaylist_id);
+	emitWS('playlistInfoUpdated', oldFallbackPlaylist_id);
+	setState({ fallbackPlaid: plaid });
 }

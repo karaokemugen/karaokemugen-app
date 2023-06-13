@@ -83,6 +83,9 @@ function PlaylistHeader(props: IProps) {
 		if (playlist?.plaid === context.globalState.settings.data.state.blacklistPlaid) return ['fa-ban'];
 		// whitelist : check-circle icon
 		if (playlist?.plaid === context.globalState.settings.data.state.whitelistPlaid) return ['fa-check-circle'];
+		// fallback playlist : arrows-turn-to-dots icon
+		if (playlist?.plaid === context.globalState.settings.data.state.fallbackPlaid)
+			return ['fa-arrows-turn-to-dots'];
 		// favorites : star icon
 		if (playlist?.plaid === nonStandardPlaylists.favorites) return ['fa-star'];
 		// others playlist : list-ol icon

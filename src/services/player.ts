@@ -13,7 +13,7 @@ import { emitWS } from '../lib/utils/ws.js';
 import { BackgroundType } from '../types/backgrounds.js';
 import { MpvHardwareDecodingOptions } from '../types/mpvIPC.js';
 import { getState, setState } from '../utils/state.js';
-import { playCurrentSong } from './karaEngine.js';
+import { playCurrentSong, playRandomSongAfterPlaylist } from './karaEngine.js';
 import { getCurrentSong, getCurrentSongPLCID, getNextSong, getPreviousSong, setPlaying } from './playlist.js';
 import { startPoll } from './poll.js';
 
@@ -89,28 +89,31 @@ export async function next() {
 				setState({ currentRequester: null });
 				if (getState().player.playerStatus !== 'stop') playPlayer(true);
 			}
-		} else if (conf.Karaoke.StreamerMode.Enabled) {
+		} else if (conf.Karaoke.StreamerMode.Enabled && conf.Karaoke.Poll.Enabled) {
 			// End of playlist, let's see what to do with our different modes.
 			await stopPlayer(true, true);
-			if (conf.Karaoke.Poll.Enabled) {
-				try {
-					await startPoll();
-					on('songPollResult', () => {
-						// We're not at the end of playlist anymore!
-						getNextSong()
-							.then(kara => setPlaying(kara.plcid, currentPlaid))
-							.catch(() => {});
-					});
-				} catch (err) {
-					// Non-fatal
-				}
-				if (conf.Karaoke.StreamerMode.PauseDuration > 0) {
-					await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
-					if (getConfig().Karaoke.StreamerMode.Enabled && getState().player.playerStatus === 'stop') {
-						await playPlayer(true);
-					}
+			try {
+				await startPoll();
+				on('songPollResult', () => {
+					// We're not at the end of playlist anymore!
+					getNextSong()
+						.then(kara => setPlaying(kara.plcid, currentPlaid))
+						.catch(() => {});
+				});
+			} catch (err) {
+				// Non-fatal
+			}
+			if (conf.Karaoke.StreamerMode.PauseDuration > 0) {
+				await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
+				if (getConfig().Karaoke.StreamerMode.Enabled && getState().player.playerStatus === 'stop') {
+					await playPlayer(true);
 				}
 			}
+		} else if (
+			getState().player?.playing === true &&
+			['random', 'random_fallback'].includes(conf.Playlist.EndOfPlaylistAction)
+		) {
+			await playRandomSongAfterPlaylist(); // Play next random song when hitting the "next" button after a playlist ended
 		} else {
 			setState({ currentRequester: null });
 			stopPlayer(true, true);

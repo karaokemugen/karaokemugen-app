@@ -26,6 +26,7 @@ UPDATE playlist SET
 	flag_smart = :flag_smart,
 	flag_whitelist = :flag_whitelist,
 	flag_blacklist = :flag_blacklist,
+	flag_fallback = :flag_fallback,
 	flag_smartlimit = :flag_smartlimit,
 	type_smart = :type_smart,
 	smart_limit_order = :smart_limit_order,
@@ -46,6 +47,7 @@ INSERT INTO playlist(
 	flag_public,
 	flag_blacklist,
 	flag_whitelist,
+	flag_fallback,
 	flag_smart,
 	fk_login,
 	time_left
@@ -61,6 +63,7 @@ VALUES(
 	:flag_public,
 	:flag_blacklist,
 	:flag_whitelist,
+	:flag_fallback,
 	:flag_smart,
 	:username,
 	0
@@ -246,6 +249,10 @@ SELECT ak.pk_kid AS kid,
 		THEN TRUE
 		ELSE FALSE
 	END) AS flag_playing,
+	(SELECT (CASE WHEN :dejavu_time < max(p.played_at)
+		THEN TRUE
+		ELSE FALSE
+  	END) FROM played p WHERE ak.pk_kid = p.fk_kid) AS flag_dejavu,
 	pc.pk_id_plcontent AS plcid,
 	pc.fk_login AS username,
 	pc.flag_free AS flag_free,
@@ -259,7 +266,7 @@ SELECT ak.pk_kid AS kid,
 FROM all_karas AS ak
 INNER JOIN playlist_content AS pc ON pc.fk_kid = ak.pk_kid
 LEFT OUTER JOIN playlist AS pl ON pl.pk_id_playlist = pc.fk_id_playlist
-WHERE pc.fk_id_playlist = $1
+WHERE pc.fk_id_playlist = :plaid
 ORDER BY pc.pos;
 `;
 
@@ -409,6 +416,7 @@ SELECT pk_id_playlist AS plaid,
 	flag_smart,
 	flag_whitelist,
 	flag_blacklist,
+	flag_fallback,
 	flag_smartlimit,
 	smart_limit_number,
 	smart_limit_order,

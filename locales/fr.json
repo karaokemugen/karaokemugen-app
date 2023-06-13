@@ -7,6 +7,7 @@
 	"MY_PLAYLIST": "Ma liste de lecture",
 	"WHITELIST": "Liste blanche",
 	"BLACKLIST": "Liste noire",
+	"FALLBACK": "Liste de secours",
 	"CURRENT_PLAYLIST": "Liste de lecture",
 	"PUBLIC_PLAYLIST": "Suggestions du public",
 	"MIGRATION": "Migration",

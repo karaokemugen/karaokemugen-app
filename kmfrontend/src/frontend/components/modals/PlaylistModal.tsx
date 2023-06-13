@@ -24,6 +24,7 @@ function PlaylistModal(props: IProps) {
 	const [flagVisible, setFlagVisible] = useState(props.mode === 'edit' ? playlist?.flag_visible : true);
 	const [flagWhitelist, setFlagWhitelist] = useState(props.mode === 'edit' ? playlist?.flag_whitelist : false);
 	const [flagBlacklist, setFlagBlacklist] = useState(props.mode === 'edit' ? playlist?.flag_blacklist : false);
+	const [flagFallback, setFlagFallback] = useState(props.mode === 'edit' ? playlist?.flag_fallback : false);
 	const [flagSmart, setFlagSmart] = useState(props.mode === 'edit' ? playlist?.flag_smart : false);
 	const [error, setError] = useState<string>();
 
@@ -40,6 +41,7 @@ function PlaylistModal(props: IProps) {
 					flag_smart: flagSmart,
 					flag_whitelist: flagWhitelist,
 					flag_blacklist: flagBlacklist,
+					flag_fallback: flagFallback,
 					flag_public: flagPublic,
 				});
 				setPlaylistInfo(props.side, context, response.plaid);
@@ -62,6 +64,7 @@ function PlaylistModal(props: IProps) {
 				flag_smart: flagSmart,
 				flag_whitelist: flagWhitelist,
 				flag_blacklist: flagBlacklist,
+				flag_fallback: flagFallback,
 				flag_public: flagPublic,
 				plaid: playlist.plaid,
 			});
@@ -77,6 +80,7 @@ function PlaylistModal(props: IProps) {
 			setFlagCurrent(!flagCurrent);
 			setFlagWhitelist(false);
 			setFlagBlacklist(false);
+			setFlagFallback(false);
 		}
 	};
 
@@ -101,7 +105,7 @@ function PlaylistModal(props: IProps) {
 	};
 
 	const toggleBlacklist = () => {
-		if (props.mode === 'edit' || flagCurrent || flagPublic) {
+		if ((props.mode === 'edit' && playlist?.flag_blacklist) || flagCurrent || flagPublic) {
 			displayMessage('warning', i18next.t('MODAL.PLAYLIST_MODAL.CANNOT_BLACKLIST'), 4500, 'top-center');
 		} else {
 			setFlagCurrent(false);
@@ -109,11 +113,12 @@ function PlaylistModal(props: IProps) {
 			setFlagSmart(true);
 			setFlagWhitelist(false);
 			setFlagBlacklist(!flagBlacklist);
+			setFlagFallback(false);
 		}
 	};
 
 	const toggleWhitelist = () => {
-		if (props.mode === 'edit' || flagCurrent || flagPublic) {
+		if ((props.mode === 'edit' && playlist?.flag_whitelist) || flagCurrent || flagPublic) {
 			displayMessage('warning', i18next.t('MODAL.PLAYLIST_MODAL.CANNOT_WHITELIST'), 4500, 'top-center');
 		} else {
 			setFlagCurrent(false);
@@ -121,6 +126,16 @@ function PlaylistModal(props: IProps) {
 			setFlagSmart(true);
 			setFlagWhitelist(!flagWhitelist);
 			setFlagBlacklist(false);
+		}
+	};
+
+	const toggleFallback = () => {
+		if ((props.mode === 'edit' && playlist?.flag_fallback) || flagCurrent || flagBlacklist) {
+			displayMessage('warning', i18next.t('MODAL.PLAYLIST_MODAL.CANNOT_FALLBACK'), 4500, 'top-center');
+		} else {
+			setFlagCurrent(false);
+			setFlagBlacklist(false);
+			setFlagFallback(!flagFallback);
 		}
 	};
 
@@ -218,6 +233,20 @@ function PlaylistModal(props: IProps) {
 								<div className="btn-large-container">
 									<div className="title">{i18next.t('MODAL.PLAYLIST_MODAL.WHITELIST')}</div>
 									<div className="desc">{i18next.t('MODAL.PLAYLIST_MODAL.WHITELIST_DESC')}</div>
+								</div>
+							</button>
+						</div>
+						<div>
+							<button className="btn btn-default" type="button" onClick={toggleFallback}>
+								<input
+									type="checkbox"
+									checked={flagFallback}
+									disabled={playlist?.flag_blacklist || playlist?.flag_current}
+									onChange={toggleFallback}
+								/>
+								<div className="btn-large-container">
+									<div className="title">{i18next.t('MODAL.PLAYLIST_MODAL.FALLBACK')}</div>
+									<div className="desc">{i18next.t('MODAL.PLAYLIST_MODAL.FALLBACK_DESC')}</div>
 								</div>
 							</button>
 						</div>

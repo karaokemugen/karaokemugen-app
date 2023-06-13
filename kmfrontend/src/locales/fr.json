@@ -504,7 +504,9 @@
 				"OPTIONS": {
 					"NONE": "Arrêter le karaoké",
 					"REPEAT": "Relancer la liste de lecture du début",
-					"RANDOM": "Jouer des chansons de la bibliothèque aléatoirement"
+					"RANDOM": "Jouer des chansons de la bibliothèque aléatoirement",
+					"RANDOM_FALLBACK": "Jouer des chansons de la liste de lecture de secours aléatoirement",
+					"PLAY_FALLBACK": "Jouer la liste de lecture de secours"
 				}
 			}
 		},
@@ -708,6 +710,8 @@
 			"BLACKLIST_DESC": "Les chansons de cette liste seront cachés aux utilisateurs (sauf s'ils sont aussi en liste blanche)",
 			"WHITELIST": "Liste blanche",
 			"WHITELIST_DESC": "Les chansons de cette liste ne seront pas cachées même si elles sont dans la liste noire aussi.",
+			"FALLBACK": "Liste de secours",
+			"FALLBACK_DESC": "Les chansons de cette liste seront jouées après que la liste courante soit finie, si l'option correspondante est activée",			
 			"VISIBLE": "Visible",
 			"VISIBLE_DESC": "Visible par le public",
 			"EDIT_PLAYLIST": "Editer {{playlist}}",
@@ -719,6 +723,7 @@
 			"CANNOT_SMART": "Vous ne pouvez pas enlever le tag intelligent d'une liste de lecture.",
 			"CANNOT_BLACKLIST": "Vous ne pouvez pas avoir aucune liste noire, éditez celle que vous voulez définir comme la nouvelle liste noire.",
 			"CANNOT_WHITELIST": "Vous ne pouvez pas avoir aucune liste blanche, éditez celle que vous voulez définir comme la nouvelle liste blanche.",
+			"CANNOT_FALLBACK": "Vous ne pouvez pas avoir aucune liste de secours, éditez celle que vous voulez définir comme la nouvelle liste de secours.",
 			"NAME_MANDATORY": "Le nom de la liste de lecture est obligatoire"
 		},
 		"CROP_AVATAR_MODAL": {

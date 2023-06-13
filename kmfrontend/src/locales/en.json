@@ -504,7 +504,9 @@
 				"OPTIONS": {
 					"NONE": "Stop karaoke session",
 					"REPEAT": "Repeat playlist",
-					"RANDOM": "Play random songs from the library"
+					"RANDOM": "Play random songs from the library",
+					"RANDOM_FALLBACK": "Play random songs from the fallback playlist",
+					"PLAY_FALLBACK": "Play the fallback playlist"
 				}
 			}
 		},
@@ -708,6 +710,8 @@
 			"BLACKLIST_DESC": "The songs on this list will be hidden from users (unless they are also whitelisted)",
 			"WHITELIST": "Whitelist",
 			"WHITELIST_DESC": "The songs on this list will not be hidden even if they are in the blacklist too.",
+			"FALLBACK": "Fallback",
+			"FALLBACK_DESC": "The songs on this list will play after a playlist ends, if enabled in settings",
 			"VISIBLE": "Visible",
 			"VISIBLE_DESC": "Visible by the audience",
 			"EDIT_PLAYLIST": "Edit {{playlist}}",
@@ -719,6 +723,7 @@
 			"CANNOT_SMART": "You cannot remove smart flag from a playlist.",
 			"CANNOT_BLACKLIST": "You cannot have no blacklist, edit the one you want to set as the new blacklist.",
 			"CANNOT_WHITELIST": "You cannot have no whitelist, edit the one you want to set as the new whitelist.",
+			"CANNOT_FALLBACK": "You cannot have no fallback, edit the one you want to set as the new fallback.",
 			"NAME_MANDATORY": "Name of the playlist is mandatory"
 		},
 		"CROP_AVATAR_MODAL": {

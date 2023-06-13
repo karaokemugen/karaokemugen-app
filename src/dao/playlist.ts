@@ -72,6 +72,7 @@ export async function insertPlaylist(pl: DBPL): Promise<string> {
 			flag_smart: pl.flag_smart || false,
 			flag_whitelist: pl.flag_whitelist || false,
 			flag_blacklist: pl.flag_blacklist || false,
+			flag_fallback: pl.flag_fallback || false,
 			type_smart: pl.type_smart || 'INTERSECT',
 			username: pl.username.toLowerCase(),
 		})
@@ -163,7 +164,12 @@ export function updatePlaylistDuration(id: string) {
 }
 
 export async function selectPlaylistContentsMini(id: string): Promise<DBPLC[]> {
-	const res = await db().query(sqlgetPlaylistContentsMini, [id]);
+	const res = await db().query(
+		yesql(sqlgetPlaylistContentsMini)({
+			plaid: id,
+			dejavu_time: new Date(now() - getConfig().Playlist.MaxDejaVuTime * 60 * 1000),
+		})
+	);
 	const miniTypes = ['singers', 'songtypes', 'langs', 'misc', 'series', 'versions', 'warnings'];
 	return res.rows.map(row => {
 		const { tags, ...rowWithoutTags } = row;
