@@ -78,6 +78,10 @@ header.menu-container {
 			&.exhaust {
 				color: goldenrod;
 			}
+			&.quiz {
+				cursor: pointer;
+				user-select: none;
+			}
 		}
 
 		.dropdown-container {
@@ -87,6 +91,7 @@ header.menu-container {
 				&.active {
 					display: initial;
 				}
+				cursor: initial;
 				position: fixed;
 				top: 0;
 				left: 0;

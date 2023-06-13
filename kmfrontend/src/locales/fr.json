@@ -3,6 +3,7 @@
 	"YES": "Oui",
 	"NO": "Non",
 	"AND": "et",
+	"OR": "ou",
 	"UNKNOWN": "Inconnu",
 	"SEARCH": "Rechercher",
 	"SUBMIT": "Sauvegarder",
@@ -64,7 +65,8 @@
 	"FAVORITES_IMPORT": "Importer vos favoris",
 	"FAVORITES_EXPORT": "Exporter vos favoris",
 	"ADMIN_HEADER": {
-		"QUICK_ACCESS": "Accès rapide"
+		"QUICK_ACCESS": "Accès rapide",
+		"QUIZ_RANKING": "Classement du quiz"
 	},
 	"PLAYLIST_HEADER": {
 		"FILTERS": "Filtres",
@@ -216,7 +218,12 @@
 		"REQUESTED_KARAOKES": "Karaokés populaires",
 		"NEW_KARAOKES": "Nouveaux karaokés",
 		"KARA_VERSIONS": "Cette chanson est disponible en {{length}} versions, choisissez celle que vous voulez et ajoutez-là à la playlist ou à vos favoris.",
-		"ANIME_LIST": "Mes animés"
+		"ANIME_LIST": "Mes animés",
+		"QUIZ": {
+			"POINTS": "Points : {{count}}",
+			"ANSWERS_HISTORY": "Historique de vos réponses",
+			"POINTS_TOTAL": "{{count}} points"
+		}
 	},
 	"ADMIN_MESSAGE": {
 		"ESSENTIAL_MESSAGE": "Message indispensable",
@@ -540,9 +547,7 @@
 		"Les préparatifs sont en cours !"
 	],
 	"JINGLE_TIME": "Instant jingle !",
-	"JINGLE_TAGLINES": [
-		"On revient !"
-	],
+	"JINGLE_TAGLINES": ["On revient !"],
 	"INTRO_TIME": "Introduction",
 	"INTRO_TAGLINES": [
 		"C'est parti !",
@@ -552,32 +557,15 @@
 		"*se racle la gorge*"
 	],
 	"OUTRO_TIME": "Fin",
-	"OUTRO_TAGLINES": [
-		"C'est fini :(",
-		"Merci à tous !"
-	],
+	"OUTRO_TAGLINES": ["C'est fini :(", "Merci à tous !"],
 	"ENCORES_TIME": "Encore ! Encore !",
-	"ENCORES_TAGLINES": [
-		"Bon, c'est bien parce que c'est vous…",
-		"P'tite dèr ?",
-		"Dernière chanson, on donne tout !"
-	],
+	"ENCORES_TAGLINES": ["Bon, c'est bien parce que c'est vous…", "P'tite dèr ?", "Dernière chanson, on donne tout !"],
 	"SPONSOR_TIME": "LA PUB !",
-	"SPONSOR_TAGLINES": [
-		"Kono bangumi wa…",
-		"Et merci pour l'argent."
-	],
+	"SPONSOR_TAGLINES": ["Kono bangumi wa…", "Et merci pour l'argent."],
 	"PAUSE_TIME": "Pause",
-	"PAUSE_TAGLINES": [
-		"On respire !",
-		"Buvez un coup !",
-		"On revient tout de suite !"
-	],
+	"PAUSE_TAGLINES": ["On respire !", "Buvez un coup !", "On revient tout de suite !"],
 	"POLL_TIME": "Vote",
-	"POLL_TAGLINES": [
-		"Votez ! Votez !",
-		"Le choix vous revient."
-	],
+	"POLL_TAGLINES": ["Votez ! Votez !", "Le choix vous revient."],
 	"QUOTA_AVAILABLE": "Vous pouvez de nouveau ajouter des chansons !",
 	"SERIE_NAME_MODE": "Affichage des noms des œuvres",
 	"SERIE_NAME_MODE_TOOLTIP": "Change la façon dont les noms de œuvres sont affichées dans la liste des chansons. Peut être ignoré par les préférences d'un utilisateur",
@@ -810,6 +798,90 @@
 		"CREATE_TAG": {
 			"OPEN": "Créer un tag",
 			"TITLE": "Création de tag rapide"
+		},
+		"START_QUIZ": {
+			"TITLE": "Démarrer un quiz",
+			"DESCRIPTION": "Confrontez les participants entre eux dans un blind-test ! Les participants vont devoir deviner le plus rapidement possible les chansons qui passent à l'écran. Vous pouvez paramétrer une nouvelle partie ou reprendre une configuration existante.",
+			"LOAD_GAME": "Charger une partie",
+			"NEW_GAME": "Nouvelle partie",			
+			"COPIED_GAME": "{{gameName}} (copie)",			
+			"LAST_PLAYED_GAME": "{{gameName}} (dernière partie lancée)",
+			"GAME_IN_PROGRESS": {
+				"SONG_COUNT_zero": "Aucune chanson n'est passée.",
+				"SONG_COUNT_one": "{{count}} chanson est passée.",
+				"SONG_COUNT_other": "{{count}} chansons sont passées.",
+				"SCORES": "Voici un récapitulatif des scores."
+			},
+			"GAME_NAME": "Nom de la partie",
+			"GAME_NAME_PLACEHOLDER": "Ma partie",
+			"PLAYER_MESSAGE": "Message affiché sur le lecteur",
+			"PLAYER_MESSAGE_PLACEHOLDER": "Allez sur $url pour jouer !",
+			"EMPTY_NAME": "Spécifiez un nom de partie",
+			"EMPTY_PLAYLIST": "Spécifiez une playlist",
+			"PLAYLIST": "Liste utilisée",
+			"END_GAME": {
+				"TITLE": "Durée de la partie",
+				"DESCRIPTION": "La partie se termine par défaut à la fin de votre playlist si le lecteur n'est pas configuré pour répeter, vous pouvez ajouter des critères supplémentaires. La partie se termine...",
+				"MAX_SCORE": "lorsqu'un joueur atteint",
+				"MAX_SCORE_PLACEHOLDER": "10",
+				"POINTS": "points",
+				"MAX_SONGS": "lorsque",
+				"MAX_SONGS_PLACEHOLDER": "30",
+				"SONGS": "chansons seront passées.",
+				"DURATION": "après",
+				"DURATION_PLACEHOLDER": "60",
+				"MINUTES": "minutes de jeu."
+			},
+			"PLAYERS": {
+				"TITLE": "Qui joue ?",
+				"DESCRIPTION": "Tous les utilisateurs avec leur compte peuvent participer (si l'interface est ouverte), vous pouvez autoriser les comptes invités à jouer ou bien ajouter un joueur représentant le chat Twitch si votre chaîne est connectée.",
+				"ALLOW_GUESTS": "Autoriser les invités à participer",
+				"TWITCH_CHAT": "Faire jouer le chat Twitch avec le nom",
+				"TWITCH_CHAT_PLACEHOLDER": "Twitchos"
+			},
+			"DISPLAY": {
+				"TITLE": "Comment afficher les chansons ?",
+				"DESCRIPTION": "Pour corser la tâche, il est possible de démarrer la chanson à un moment avancé au lieu du début. Il est également possible de masquer la vidéo, couper le son et/ou de ne pas afficher les sous-titres.",
+				"TIME": "Démarrer la chanson",
+				"BEGINNING": "au début",
+				"END": "à la fin",
+				"BLIND": "Masquer la vidéo",
+				"BLACK_SCREEN": "Ecran noir",
+				"BLURRED_SCREEN": "Vidéo floutée",
+				"MUTE": "Couper le son de la vidéo",
+				"NO_LYRICS": "Ne pas afficher les paroles"
+			},
+			"ANSWERS": {
+				"VIEW_ALL_ANSWERS": "Voir tous les types possibles",
+				"VIEW_LESS_ANSWERS": "Voir moins de types possibles",
+				"TITLE": "Réponses acceptées",
+				"DESCRIPTION": "Vous pouvez choisir quelles réponses sont acceptées (titre, chanteur, œuvre, etc.) et combien de points elles octroient aux joueurs. Vous pouvez aussi configurer une tolérance aux fautes de frappe. Une auto-complétion est proposée à ceux qui utilisent l'interface publique.",
+				"ANSWER_TITLE": "Titre",
+				"TOLERANCE": "Tolérance aux fautes de frappe",
+				"LAX": "Laxiste",
+				"PERFECT": "Strict"
+			},
+			"TIME": {
+				"TITLE": "Temps pour répondre",
+				"DESCRIPTION": "Les participants ont un temps imparti pour répondre. Une fois le délai écoulé, la réponse sera diffusée, avec le son, les paroles, le clip et son nom à l'écran. Une réponse rapide peut apporter plus de points si elle est activée.",
+				"GUESS_DURATION": "Temps pour répondre (secondes)",
+				"ANSWER_DURATION": "Temps de diffusion de la réponse (secondes)",
+				"QUICK_GUESS_DURATION": "Temps pour répondre rapidement (secondes)",
+				"QUICK_AWARD_POINTS": "Points bonus par bonne réponse rapide"
+			},
+			"BUTTONS": {
+				"RESUME": "Reprendre",
+				"EDIT": "Modifier les paramètres",
+				"CANCEL_EDIT": "Annuler les modifications",
+				"COPY": "Copier cette partie",
+				"DELETE_SCORES": "Supprimer les scores",
+				"DELETE": "Supprimer cette partie",
+				"CREATE_START": "Créer et démarrer la partie"
+			}
+		},
+		"STOP_QUIZ": {
+			"TITLE": "Arrêter le quiz ?",
+			"DESCRIPTION": "La collecte des réponses et des points s'arrêtera immédiatement, la partie peut être reprise depuis le menu Démarrer un quiz."
 		},
 		"EXPORT_PLAYLIST_MEDIA": {
 			"DONE": "Les fichiers média de la liste de lecture ont été exportés",
@@ -1860,7 +1932,7 @@
 			"URL": "Site web : ",
 			"SOCIAL_NETWORKS": {
 				"TWITTER": "Twitter : ",
-				"MASTODON": "Mastodon : ",
+				"MASTODON": "Mastodon : ",
 				"TWITCH": "Twitch : ",
 				"INSTAGRAM": "Instagram : ",
 				"DISCORD": "Discord : "
@@ -1878,5 +1950,51 @@
 		"TITLE": "Le temps des collections !",
 		"P1": "Pour ajouter toujours plus de chansons, nous avons créé les collections dans les dépôts, afin de sélectionner uniquement les chansons qui peuvent vous intéresser et masquer les sons que vous ne voulez pas voir. Les musiques affichées dans l'interface (opérateur & publique) seront uniquement celles des collections activées.",
 		"P2": "Cochez les collections que vous voulez activer. Vous pouvez les changer plus tard dans le panneau système."
+	},
+	"QUIZ": {
+		"START": "Démarrer un quiz",
+		"STOP": "Arrêter le quiz",
+		"CONTINUE": "Continuer la chanson après la diffusion de la réponse",
+		"TITLE": "Mode quiz",
+		"TAGLINE": "Quelle est cette chanson ?",
+		"POINTS_one": "{{count}} point",
+		"POINTS_other": "{{count}} points",
+		"BONUS_POINTS_one": "{{count}} point bonus",
+		"BONUS_POINTS_other": "{{count}} points bonus",
+		"STATES": {
+			"WAITING": "En attente de la prochaine chanson…",
+			"NEXT_SONG_one": "C'est fini, prochaine chanson dans {{count}} seconde.",
+			"NEXT_SONG_other": "C'est fini, prochaine chanson dans {{count}} secondes.",
+			"GUESSING_one": "Plus que {{count}} seconde !",
+			"GUESSING_other": "Plus que {{count}} secondes !",
+			"QUICK_GUESSING_one": "Répondez sous {{count}} seconde pour avoir plus de points !",
+			"QUICK_GUESSING_other": "Répondez sous {{count}} secondes pour avoir plus de points !",
+			"REGISTERED": "Réponse \"{{answer}}\" enregistrée.",
+			"TOO_LATE": "C'est trop tard ! La dernière réponse enregistrée est \"{{answer}}\".",
+			"NO_ANSWER": "Aucune réponse enregistrée.",
+			"NICE_ONE": "C'est la bonne réponse ! Vous obtenez $t(QUIZ.POINTS, {\"count\": {{points}} }).",
+			"NICE_ONE_QUICK": "C'est la bonne réponse ! Vous obtenez $t(QUIZ.POINTS, {\"count\": {{points}} }) (bonus pour réponse rapide)",
+			"SORRY": "\"{{answer}}\" n'était pas la bonne réponse."
+		},
+		"PLACEHOLDER": "Je sais !",
+		"END": "Le quiz est terminé !",
+		"QUIT": "Quitter le quiz",
+		"RULES": {
+			"TITLE": "Règles",
+			"SECONDS_one": "{{count}} seconde",
+			"SECONDS_other": "{{count}} secondes",
+			"GUESS_TIME": "Vous avez <1>$t(QUIZ.RULES.SECONDS, {\"count\": {{seconds}} })</1> pour deviner la musique à l'écran.",
+			"QUICK_ANSWER": "Si vous devinez correctement en moins de <1>$t(QUIZ.RULES.SECONDS, {\"count\": {{seconds}} })</1>, vous obtiendrez <1>$t(QUIZ.BONUS_POINTS, {\"count\": {{points}} })</1>.",
+			"ACCEPTED_ANSWERS": "Les réponses acceptées sont :",
+			"ACCEPTED_ANSWERS_POINTS": "($t(QUIZ.POINTS, {\"count\": {{points}} }))",
+			"END_GAME": "La partie se termine",
+			"MAX_SCORE": "lorsqu'un joueur atteint un score s'élevant à <1>$t(QUIZ.POINTS, {\"count\": {{points}} })</1>",
+			"MAX_SONGS_one": "dans <1>{{count}} chanson</1>",
+			"MAX_SONGS_other": "dans <1>{{count}} chansons</1>",
+			"DURATION_one": "dans <1>{{count}} minute</1> de jeu",
+			"DURATION_other": "dans <1>{{count}} minutes</1> de jeu",
+			"END_OF_PLAYLIST": "lorsque la liste de lecture touche à sa fin"
+		},
+		"PREVIOUS_KARAOKES": "Karaokés précédents"
 	}
 }

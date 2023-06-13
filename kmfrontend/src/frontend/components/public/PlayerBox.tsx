@@ -248,7 +248,8 @@ function PlayerBox(props: IProps) {
 			className={`player-box${props.mode === 'fixed' ? ' fixed' : ''}`}
 			style={{
 				['--img' as any]: img,
-				display: props.mode === 'fixed' && /^\/public\/?$/.test(location.pathname) ? 'none' : undefined,
+				display:
+					props.mode === 'fixed' && /^\/public(?:\/quiz)?\/?$/.test(location.pathname) ? 'none' : undefined,
 			}}
 			ref={containerRef}
 		>

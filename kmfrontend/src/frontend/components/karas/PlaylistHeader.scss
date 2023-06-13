@@ -71,7 +71,8 @@
 	}
 
 	.filterLabel,
-	.filterInput {
+	.filterInput,
+	.filterCheckbox {
 		background-color: $mugen-select-background;
 		color: white;
 		border: $mugen-select-border;
@@ -88,6 +89,11 @@
 
 	.filterInput {
 		flex-grow: 1;
+		min-width: 60px;
+		&:disabled {
+			background-color: scale-color($color: $mugen-select-background, $lightness: 10%);
+			color: gray;
+		}
 	}
 
 	@media (max-width: $mugen-breakpoint-smaller) {

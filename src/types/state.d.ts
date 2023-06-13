@@ -89,6 +89,14 @@ export interface State {
 		picture: string;
 		music: string;
 	};
+	quizMode: boolean;
+	currentQuizGame?: string;
+	quizGuessingTime?: boolean;
+	quiz: {
+		guessTime: number;
+		quickGuess: number;
+		revealTime: number;
+	};
 }
 
 export interface SystemMessage {
@@ -115,6 +123,8 @@ export interface PublicState {
 	environment: string;
 	sentrytest: boolean;
 	url: string;
+	quiz: boolean;
+	quizGame: string;
 }
 
 export interface PublicPlayerState extends PlayerState {

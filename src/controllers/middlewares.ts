@@ -9,6 +9,7 @@ import logger from '../lib/utils/logger.js';
 import { decodeJwtToken, getUser, updateLastLoginName } from '../services/user.js';
 import { WebappModes } from '../types/frontend.js';
 import { webappModes } from '../utils/constants.js';
+import { getState } from '../utils/state.js';
 import { APIMessage } from './common.js';
 
 interface APIChecklistOptions {
@@ -46,9 +47,11 @@ export async function runChecklist(
 }
 
 function checkWebAppMode(data: APIData, webappModeNeeded: WebappModes) {
+	// In quiz mode, the web app is open
+	const webAppMode = getState().quizMode ? 1 : +getConfig().Frontend.Mode;
 	// Admins get a bypass.
 	if (data.user?.type === 0) return;
-	if (+getConfig().Frontend.Mode < webappModes[webappModeNeeded]) {
+	if (webAppMode < webappModes[webappModeNeeded]) {
 		throw { code: 503, message: APIMessage('WEBAPPMODE_CLOSED_API_MESSAGE') };
 	}
 }

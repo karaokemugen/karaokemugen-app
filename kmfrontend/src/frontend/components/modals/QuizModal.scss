@@ -1,0 +1,120 @@
+@import '../../styles/variables';
+
+@keyframes warn {
+	from {
+		background-color: $mugen-select-background;
+		border: $mugen-select-border;
+	}
+	to {
+		background-color: palevioletred;
+		border: solid 1px white;
+	}
+}
+
+#quiz-modal {
+	.modal-body {
+		padding: 0 1em 1em;
+	}
+
+	.selectWithIcon {
+		flex-grow: 1;
+		text-align: start;
+		border-top-left-radius: 0;
+		border-bottom-left-radius: 0;
+		display: initial;
+		.selectWithIcon-trigger {
+			padding: 0.5em;
+			.selectWithIcon-label {
+				margin: 0;
+			}
+		}
+	}
+
+	h3 {
+		font-size: 1.25em;
+		font-weight: bold;
+		margin-top: 1rem;
+	}
+
+	.no-rborder {
+		border-right: none;
+	}
+	input[type='range'].filterInput {
+		border: none;
+		width: 100%;
+		flex-grow: 0;
+		flex-shrink: 1;
+		padding: 0;
+	}
+	.filterLabel.range {
+		flex-grow: 1;
+		border-left: 0;
+		border-right: 0;
+		& + .filterLabel {
+			border-left: 0;
+		}
+	}
+
+	select:last-child {
+		flex-grow: 1;
+		border-bottom-left-radius: 0;
+		border-top-left-radius: 0;
+	}
+
+	.filterContainer.grow-labels {
+		input.filterInput:not(:last-child) {
+			flex-grow: 0;
+			flex-shrink: 1;
+		}
+		.filterLabel {
+			min-width: 200px;
+			&:nth-child(1) {
+				text-align: start;
+			}
+			&:nth-child(2) {
+				text-align: end;
+			}
+			&:last-child {
+				text-align: start;
+				flex-grow: 1;
+			}
+		}
+	}
+	.filterContainer.grow-labels.big {
+		.filterLabel {
+			min-width: 350px;
+		}
+	}
+
+	.filterContainer.warn {
+		* {
+			animation: warn 1s ease-in-out infinite alternate;
+		}
+	}
+
+	.answers-button {
+		margin: 0.5em;
+	}
+
+	.answers-grid {
+		display: flex;
+		flex-wrap: wrap;
+		grid-template-columns: 1fr 1fr;
+		gap: 0.5em;
+
+		.filterContainer {
+			flex: 1;
+			.filterInput {
+				width: 100%;
+			}
+		}
+	}
+
+	.btn-group.fluid {
+		display: flex;
+		flex-wrap: wrap;
+		.btn {
+			flex: 1 0 auto;
+		}
+	}
+}

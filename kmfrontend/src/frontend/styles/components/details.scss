@@ -1,0 +1,20 @@
+@import '../variables';
+
+details {
+	margin: 0.5rem;
+	background-color: scale-color($mugen-background, $lightness: 10%);
+	border-radius: 8px;
+	border: solid 1px scale-color($mugen-background, $lightness: 25%);
+
+	summary {
+		user-select: none;
+		padding: 0.5rem;
+	}
+	&[open] summary {
+		border-bottom: solid 1px scale-color($mugen-background, $lightness: 25%);
+	}
+
+	> :not(summary) {
+		padding: 1em;
+	}
+}

@@ -4,14 +4,15 @@ import i18next from 'i18next';
 import { MouseEvent, useContext, useMemo, useState } from 'react';
 
 import { User } from '../../../../../src/lib/types/user';
-import { AutoMixParams, PlaylistLimit } from '../../../../../src/types/favorites';
-import { closeModal } from '../../../store/actions/modal';
+import { AutoMixParams, AutoMixPlaylistInfo, PlaylistLimit } from '../../../../../src/types/favorites';
+import { closeModal, showModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
+import { useLocalSearch, useTagSearch } from '../../../utils/hooks';
 import { setPlaylistInfo } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
-import { useLocalSearch, useTagSearch } from '../../../utils/hooks';
+import { ANIMELISTS, FAVORITES, YEARS, getTagTypeName, tagTypes } from '../../../utils/tagTypes';
 import Autocomplete, { AutocompleteOption } from '../generic/Autocomplete';
-import { ANIMELISTS, FAVORITES, getTagTypeName, tagTypes, YEARS } from '../../../utils/tagTypes';
+import QuizModal from './QuizModal';
 
 interface IProps {
 	userList: User[];
@@ -65,13 +66,17 @@ function AutoMixModal(props: IProps) {
 			playlistName: playlistName === '' ? undefined : playlistName,
 			surprisePlaylist: surprisePlaylist,
 		};
+		closeModalWithContext();
 		try {
-			const res = await commandBackend('createAutomix', data);
-			if (!data.surprisePlaylist) setPlaylistInfo(props.side, context, res.plaid);
+			const res: AutoMixPlaylistInfo = await commandBackend('createAutomix', data);
+			if (!data.surprisePlaylist) {
+				setPlaylistInfo(props.side, context, res.plaid);
+			} else {
+				showModal(context.globalDispatch, <QuizModal gamePlaylist={res.plaid} />);
+			}
 		} catch (e) {
 			// already display
 		}
-		closeModalWithContext();
 	};
 
 	const closeModalWithContext = () => closeModal(context.globalDispatch);

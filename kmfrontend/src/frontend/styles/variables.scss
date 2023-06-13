@@ -22,6 +22,7 @@ $mugen-playlist-dejavu-even: scale-color($mugen-playlist-dejavu-odd, $lightness:
 // Colors for buttons
 $mugen-btn-background: #2e2e2e;
 $mugen-btn-primary-background: darken(map-get($mugen-colors, 'blue'), 5);
+$mugen-btn-success-background: darken(map-get($mugen-colors, 'green'), 10);
 $mugen-btn-danger-background: map-get($mugen-colors, 'red');
 $mugen-btn-border: solid 1px lighten($mugen-btn-background, 40);
 $mugen-btn-radius: 0.25rem;

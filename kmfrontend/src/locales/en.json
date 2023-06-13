@@ -3,6 +3,7 @@
 	"YES": "Yes",
 	"NO": "No",
 	"AND": "and",
+	"OR": "or",
 	"UNKNOWN": "Unknown",
 	"SEARCH": "Search",
 	"SUBMIT": "Save",
@@ -62,7 +63,8 @@
 		"SEARCH": "Karaokes with {{tag}}"
 	},
 	"ADMIN_HEADER": {
-		"QUICK_ACCESS": "Quick access"
+		"QUICK_ACCESS": "Quick access",
+		"QUIZ_RANKING": "Quiz ranking"
 	},
 	"MESSAGE": "Message",
 	"PLAYLIST_HEADER": {
@@ -209,7 +211,12 @@
 		"REQUESTED_KARAOKES": "Requested songs",
 		"NEW_KARAOKES": "New songs",
 		"KARA_VERSIONS": "This song is available in {{length}} versions, choose the one you want and add it to the playlist or your favorites.",
-		"ANIME_LIST": "My animes"
+		"ANIME_LIST": "My animes",
+		"QUIZ": {
+			"POINTS": "Points: {{count}}",
+			"ANSWERS_HISTORY": "History of your answers",
+			"POINTS_TOTAL": "{{count}} points"
+		}
 	},
 	"ADMIN_MESSAGE": {
 		"ESSENTIAL_MESSAGE": "Important message",
@@ -664,7 +671,7 @@
 			"FLAG_PUBLIC": "Share your profile",
 			"FLAG_DISPLAYFAVORITES": "Share your favorites",
 			"SOCIAL_NETWORKS": {
-				"TWITTER": "Twitter",				
+				"TWITTER": "Twitter",
 				"TWITTER_PLACEHOLDER": "@KaraokeMugen",
 				"MASTODON": "Mastodon",
 				"MASTODON_PLACEHOLDER": "KaraokeMugen@shelter.moe",
@@ -816,6 +823,90 @@
 		"CREATE_TAG": {
 			"OPEN": "Create a tag",
 			"TITLE": "Quick tag create"
+		},
+		"START_QUIZ": {
+			"TITLE": "Start a quiz",
+			"DESCRIPTION": "Pit participants against each other in a blind test! Participants will have to guess the songs playing on the screen as quickly as possible. You can set up a new game or resume an existing one.",
+			"LOAD_GAME": "Load game",
+			"NEW_GAME": "New game",
+			"COPIED_GAME": "{{gameName}} (copy)",			
+			"LAST_PLAYED_GAME": "{{gameName}} (last launched game)",
+			"GAME_IN_PROGRESS": {
+				"SONG_COUNT_zero": "No song has played.",
+				"SONG_COUNT_one": "{{count}} song has played.",
+				"SONG_COUNT_other": "{{count}} songs have played.",
+				"SCORES": "Here is a summary of the scores."
+			},
+			"GAME_NAME": "Game name",
+			"GAME_NAME_PLACEHOLDER": "My game",
+			"PLAYER_MESSAGE": "Message displayed on screen",
+			"PLAYER_MESSAGE_PLACEHOLDER": "Go to $url to play !",
+			"EMPTY_NAME": "Fill in a game name",
+			"EMPTY_PLAYLIST": "Select a playlist",
+			"PLAYLIST": "Playlist used",
+			"END_GAME": {
+				"TITLE": "Game length",
+				"DESCRIPTION": "The game ends...",
+				"MAX_SCORE": "when a player reaches",
+				"MAX_SCORE_PLACEHOLDER": "10",
+				"POINTS": "points",
+				"MAX_SONGS": "when",
+				"MAX_SONGS_PLACEHOLDER": "30",
+				"SONGS": "songs have played.",
+				"DURATION": "after",
+				"DURATION_PLACEHOLDER": "60",
+				"MINUTES": "minutes of play."
+			},
+			"PLAYERS": {
+				"TITLE": "Who's playing?",
+				"DESCRIPTION": "All users with their account can participate (if the interface is open), you can allow guest accounts to play or add a player representing the Twitch chat if your channel is connected.",
+				"ALLOW_GUESTS": "Allow guests to participate",
+				"TWITCH_CHAT": "Make the Twitch chat play with the name",
+				"TWITCH_CHAT_PLACEHOLDER": "Twitchers"
+			},
+			"DISPLAY": {
+				"TITLE": "How to display the songs?",
+				"DESCRIPTION": "To make the task more challenging, it is possible to start the song at an advanced point instead of the beginning. It is also possible to hide the video, turn off the sound, and/or not display the subtitles.",
+				"TIME": "Start the song",
+				"BEGINNING": "at the beginning",
+				"END": "at the end",
+				"BLIND": "Hide the video",
+				"BLACK_SCREEN": "Black screen",
+				"BLURRED_SCREEN": "Blurred screen",
+				"MUTE": "Turn off the video sound",
+				"NO_LYRICS": "Do not display lyrics"
+			},
+			"ANSWERS": {
+				"VIEW_ALL_ANSWERS": "See all possible types",
+				"VIEW_LESS_ANSWERS": "See less possible types",
+				"TITLE": "Accepted answers",
+				"DESCRIPTION": "You can choose which answers are accepted (titles, singers, series, etc...) and how many points each answer type players earn for a good answer. You can also define a tolerance for typos. An auto-complete is available to people using the public interface.",
+				"ANSWER_TITLE": "Title",
+				"TOLERANCE": "Typos tolerance",
+				"LAX": "Laxist",
+				"PERFECT": "Perfect spelling"
+			},
+			"TIME": {
+				"TITLE": "Answering time",
+				"DESCRIPTION": "Participants will be given a time to answer. Once the timer has elapsed, the answer will be shown on screen, with the sound, the lyrics, the video and the name on screen. A quick answer can award more points if it's on.",
+				"GUESS_DURATION": "Guessing time (seconds)",
+				"ANSWER_DURATION": "Answer time (seconds)",
+				"QUICK_GUESS_DURATION": "Quick guess time (seconds)",
+				"QUICK_AWARD_POINTS": "Points per quick good answer"
+			},
+			"BUTTONS": {
+				"RESUME": "Resume",
+				"EDIT": "Edit game settings",
+				"CANCEL_EDIT": "Cancel changes",
+				"COPY": "Copy game",
+				"DELETE_SCORES": "Delete scores",
+				"DELETE": "Delete game",
+				"CREATE_START": "Create and start the game"
+			}
+		},
+		"STOP_QUIZ": {
+			"TITLE": "Stop quiz?",
+			"DESCRIPTION": "The guessing and points awarding will be stopped immediately, the game can be resumed using the Start a quiz menu."
 		}
 	},
 	"SETUP_PAGE": {
@@ -1878,5 +1969,51 @@
 		"TITLE": "Introducing collections!",
 		"P1": "To expand the karaoke repository with more songs, we created collections in repositories, to select only a subset of songs and remove some songs that you do not want to see. Only songs within an enabled collection will appear in the interface (public & admin).",
 		"P2": "Please check the collections you want to enable. You can change this in the system panel."
+	},
+	"QUIZ": {
+		"START": "Start a quiz",
+		"STOP": "Stop the quiz",
+		"CONTINUE": "Continue the song after the answer reveal",
+		"TITLE": "Quiz mode",
+		"TAGLINE": "What is this song?",
+		"POINTS_one": "{{count}} point",
+		"POINTS_other": "{{count}} points",
+		"BONUS_POINTS_one": "{{count}} bonus point",
+		"BONUS_POINTS_other": "{{count}} bonus points",
+		"STATES": {
+			"WAITING": "Waiting for the next song…",
+			"NEXT_SONG_one": "Finished, next song in {{count}} second.",
+			"NEXT_SONG_other": "Finished, next song in {{count}} seconds.",
+			"GUESSING_one": "Only {{count}} second left!",
+			"GUESSING_other": "Only {{count}} seconds left!",
+			"QUICK_GUESSING_one": "Answer in less than {{count}} second to get more points!",
+			"QUICK_GUESSING_other": "Answer in less than {{count}} seconds to get more points!",
+			"REGISTERED": "\"{{answer}}\" answer recorded.",
+			"TOO_LATE": "Too late! The last answer recorded was \"{{answer}}\".",
+			"NO_ANSWER": "No response recorded.",
+			"NICE_ONE": "That's the right answer! You get $t(QUIZ.POINTS, {\"count\": {{points}} }).",
+			"NICE_ONE_QUICK": "That's the right answer! You get $t(QUIZ.POINTS, {\"count\": {{points}} }) (bonus for quick answer)",
+			"SORRY": "\"{{answer}}\" was the wrong answer."
+		},
+		"PLACEHOLDER": "I know!",
+		"END": "The quiz is over!",
+		"QUIT": "Exit the quiz",
+		"RULES": {
+			"TITLE": "Rules",
+			"SECONDS_one": "{{count}} second",
+			"SECONDS_other": "{{count}} seconds",
+			"GUESS_TIME": "You have <1>$t(QUIZ.RULES.SECONDS, {\"count\": {{seconds}} })</1> to guess the song on screen.",
+			"QUICK_ANSWER": "If you guess correctly in <1>$t(QUIZ.RULES.SECONDS, {\"count\": {{seconds}} })</1> only, you will get <1>$t(QUIZ.BONUS_POINTS, {\"count\": {{points}} })</1>.",
+			"ACCEPTED_ANSWERS": "The following answers are accepted:",
+			"ACCEPTED_ANSWERS_POINTS": "($t(QUIZ.POINTS, {\"count\": {{points}} }))",
+			"END_GAME": "The game ends",
+			"MAX_SCORE": "when a players gets <1>$t(QUIZ.POINTS, {\"count\": {{points}} })</1>",
+			"MAX_SONGS_one": "in <1>{{count}} song</1>",
+			"MAX_SONGS_other": "in <1>{{count}} songs</1>",
+			"DURATION_one": "in <1>{{count}} minute</1> of play",
+			"DURATION_other": "in <1>{{count}} minutes</1> of play",
+			"END_OF_PLAYLIST": "when the playlist reaches its end"
+		},
+		"PREVIOUS_KARAOKES": "Previous karaokes"
 	}
 }

@@ -49,6 +49,13 @@ let state: State = {
 	systemMessages: [],
 	DBReady: false,
 	portable: false,
+	quizMode: false,
+	quizGuessingTime: false,
+	quiz: {
+		guessTime: 0,
+		quickGuess: 0,
+		revealTime: 0,
+	},
 };
 
 /** Get public state (to send to webapp users) */
@@ -132,6 +139,8 @@ export function getPublicState(admin: boolean): PublicState {
 		environment: process.env.SENTRY_ENVIRONMENT,
 		sentrytest: (process.env.CI_SERVER || process.env.SENTRY_TEST === 'true') as boolean,
 		url: state.osURL,
+		quiz: state.quizMode,
+		quizGame: state.currentQuizGame,
 	};
 }
 

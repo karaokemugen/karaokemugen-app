@@ -77,6 +77,47 @@ Karaoke:
       Enabled: false
       OAuth: ''
       Channel: ''
+  QuizMode:
+    EndGame:
+      # At least one must be enabled
+      MaxScore:
+        Enabled: false
+        Score: 10
+      MaxSongs:
+        Enabled: true
+        Songs: 30
+      Duration:
+        Enabled: true
+        Minutes: 60
+    Players:
+      Twitch: true
+      TwitchPlayerName: 'Les Sedetomos'
+      Guests: true
+    TimeSettings:
+      # Percentage of the song length
+      WhenToStartSong: 33
+      GuessingTime: 30
+      QuickGuessingTime: 15
+      AnswerTime: 30
+    Answers:
+      # Can be title, year, AND any tag type. Yes.
+      Accepted:
+        title:
+          Enabled: true
+          Points: 2
+        series:
+          Enabled: true
+          Points: 1
+      AwardedPoints: 1
+      QuickAnswer:
+        Enabled: true
+        Points: 1
+      SimilarityPercentageNeeded: 70
+    Modifiers:
+      Mute: false
+      Blind: 'blur'
+      NoLyrics: false
+
   # Repeat playlist once reaching the end
   Repeat: false
   # In private mode try to insert songs in a smart way.

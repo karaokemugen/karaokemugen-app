@@ -27,6 +27,7 @@ import PublicHeader from './PublicHeader';
 import PublicHomepage from './PublicHomepage';
 import PublicList from './PublicList';
 import NotfoundPage from '../NotfoundPage';
+import QuizPage from './QuizPage';
 
 let timer: any;
 
@@ -40,8 +41,8 @@ function PublicPage() {
 	const [classicModeModal, setClassicModeModal] = useState(false);
 	const [playerStopping, setPlayerStopping] = useState(false);
 	const [playerStopped, setPlayerStopped] = useState(false);
-	const [top, setTop] = useState('0');
-	const [bottom, setBottom] = useState('0');
+	const [top, setTop] = useState('0px');
+	const [bottom, setBottom] = useState('0px');
 	const [publicVisible, setPublicVisible] = useState(false);
 	const [currentVisible, setCurrentVisible] = useState(false);
 
@@ -227,7 +228,9 @@ function PublicPage() {
 	) : (
 		<>
 			<PublicHeader onResize={top => setTop(top)} currentVisible={currentVisible} publicVisible={publicVisible} />
-			<PlayerBox mode="fixed" currentVisible={currentVisible} onResize={bottom => setBottom(bottom)} />
+			{!context.globalState.settings.data.state.quiz ? (
+				<PlayerBox mode="fixed" currentVisible={currentVisible} onResize={bottom => setBottom(bottom)} />
+			) : null}
 			<KmAppWrapperDecorator
 				single
 				top={top}
@@ -249,71 +252,105 @@ function PublicPage() {
 						element={<ProfilModal scope="public" closeProfileModal={() => navigate(-1)} />}
 					/>
 					<Route path="/users" element={<UsersModal scope="public" closeModal={() => navigate(-1)} />} />
-					<Route
-						path="/karaoke/:kid"
-						element={<KaraDetail kid={params.kid} scope="public" closeOnPublic={() => navigate(-1)} />}
-					/>
-					<Route
-						path="/plc/:plcid"
-						element={
-							<KaraDetail
-								playlistcontentId={parseInt(params.plcid)}
-								scope="public"
-								closeOnPublic={() => navigate(-1)}
+					{!context.globalState.settings.data.state.quiz ? ( // Disable routes
+						<>
+							<Route
+								path="/karaoke/:kid"
+								element={
+									<KaraDetail kid={params.kid} scope="public" closeOnPublic={() => navigate(-1)} />
+								}
 							/>
-						}
-					/>
-					<Route path="/karaokes/:kid" element={<VersionSelector kid={params.kid} scope="public" />} />
-					<Route
-						path="/search"
-						element={<PublicList sort="search" poll={isPollActive} plaid={nonStandardPlaylists.library} />}
-					/>
-					<Route path="/search/recent" element={<PublicList sort="recent" poll={isPollActive} />} />
-					<Route path="/search/requested" element={<PublicList sort="requested" poll={isPollActive} />} />
-					<Route path="/search/tag/:tid" element={<PublicList sort="search" poll={isPollActive} />} />
-					<Route path="/search/year/:year" element={<PublicList sort="search" poll={isPollActive} />} />
-					<Route path="/tags/:tagType" element={<PublicList sort="search" poll={isPollActive} />} />
-					<Route
-						path="/playlist/current"
-						element={
-							<Navigate
-								to={`/public/playlist/${context.globalState.settings.data.state.currentPlaid}`}
-								replace={true}
+							<Route
+								path="/plc/:plcid"
+								element={
+									<KaraDetail
+										playlistcontentId={parseInt(params.plcid)}
+										scope="public"
+										closeOnPublic={() => navigate(-1)}
+									/>
+								}
 							/>
-						}
-					/>
-					<Route
-						path="/playlist/public"
-						element={
-							<Navigate
-								to={`/public/playlist/${context.globalState.settings.data.state.publicPlaid}`}
-								replace={true}
+							<Route
+								path="/karaokes/:kid"
+								element={<VersionSelector kid={params.kid} scope="public" />}
 							/>
-						}
-					/>
-					<Route path="/playlist/:plaid" element={<PublicList sort="search" poll={isPollActive} />} />
-					<Route
-						path="/favorites"
-						element={
-							<PublicList sort="search" poll={isPollActive} plaid={nonStandardPlaylists.favorites} />
-						}
-					/>
-					<Route
-						path="/animelist"
-						element={
-							<PublicList sort="search" poll={isPollActive} plaid={nonStandardPlaylists.animelist} />
-						}
-					/>
-					<Route path="/tags/:tagType" element={<PublicList sort="search" poll={isPollActive} />} />
+							<Route
+								path="/search"
+								element={
+									<PublicList
+										sort="search"
+										poll={isPollActive}
+										plaid={nonStandardPlaylists.library}
+									/>
+								}
+							/>
+							<Route path="/search/recent" element={<PublicList sort="recent" poll={isPollActive} />} />
+							<Route
+								path="/search/requested"
+								element={<PublicList sort="requested" poll={isPollActive} />}
+							/>
+							<Route path="/search/tag/:tid" element={<PublicList sort="search" poll={isPollActive} />} />
+							<Route
+								path="/search/year/:year"
+								element={<PublicList sort="search" poll={isPollActive} />}
+							/>
+							<Route path="/tags/:tagType" element={<PublicList sort="search" poll={isPollActive} />} />
+							<Route
+								path="/playlist/current"
+								element={
+									<Navigate
+										to={`/public/playlist/${context.globalState.settings.data.state.currentPlaid}`}
+										replace={true}
+									/>
+								}
+							/>
+							<Route
+								path="/playlist/public"
+								element={
+									<Navigate
+										to={`/public/playlist/${context.globalState.settings.data.state.publicPlaid}`}
+										replace={true}
+									/>
+								}
+							/>
+							<Route path="/playlist/:plaid" element={<PublicList sort="search" poll={isPollActive} />} />
+							<Route
+								path="/favorites"
+								element={
+									<PublicList
+										sort="search"
+										poll={isPollActive}
+										plaid={nonStandardPlaylists.favorites}
+									/>
+								}
+							/>
+							<Route
+								path="/animelist"
+								element={
+									<PublicList
+										sort="search"
+										poll={isPollActive}
+										plaid={nonStandardPlaylists.animelist}
+									/>
+								}
+							/>
+							<Route path="/tags/:tagType" element={<PublicList sort="search" poll={isPollActive} />} />
+						</>
+					) : null}
+					<Route path="/quiz" element={<QuizPage />} />
 					<Route
 						index={true}
 						element={
-							<PublicHomepage
-								activePoll={isPollActive}
-								currentVisible={currentVisible}
-								publicVisible={publicVisible}
-								openPoll={() => showModal(context.globalDispatch, <PollModal />)}
-							/>
+							context.globalState.settings.data.state.quiz ? (
+								<Navigate to="/public/quiz" />
+							) : (
+								<PublicHomepage
+									activePoll={isPollActive}
+									currentVisible={currentVisible}
+									publicVisible={publicVisible}
+									openPoll={() => showModal(context.globalDispatch, <PollModal />)}
+								/>
+							)
 						}
 					/>
 					<Route path="*" element={<NotfoundPage />} />

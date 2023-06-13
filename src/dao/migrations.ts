@@ -5,6 +5,7 @@ import Postgrator from 'postgrator';
 
 import { win } from '../electron/electron.js';
 import { refreshTags } from '../lib/dao/tag.js';
+import { setConfig } from '../lib/utils/config.js';
 import logger from '../lib/utils/logger.js';
 import { editRepo, getRepo } from '../services/repo.js';
 import { migrateBLWLToSmartPLs } from '../utils/hokutoNoCode.js';
@@ -60,6 +61,15 @@ export async function postMigrationTasks(migrations: Postgrator.Migration[], did
 			// 7.0 migrations
 			case 'addExternalDatabaseIds':
 				if (!didGeneration) doGenerate = true;
+				break;
+			case 'addGameTables':
+				setConfig({
+					Karaoke: {
+						QuizMode: {
+							PlayerMessage: i18next.t('GO_TO_QUIZ_MODE'),
+						},
+					},
+				});
 				break;
 			default:
 		}
