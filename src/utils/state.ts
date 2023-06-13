@@ -122,6 +122,7 @@ export function getPublicState(admin: boolean): PublicState {
 		publicPlaid: state.publicPlaid,
 		blacklistPlaid: state.blacklistPlaid,
 		whitelistPlaid: state.whitelistPlaid,
+		fallbackPlaid: state.fallbackPlaid,
 		appPath: admin ? state.appPath : undefined,
 		dataPath: admin ? state.dataPath : undefined,
 		os: admin ? state.os : undefined,

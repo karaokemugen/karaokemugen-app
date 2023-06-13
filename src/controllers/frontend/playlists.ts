@@ -75,6 +75,7 @@ export default function playlistsController(router: SocketIOApp) {
 			flag_smart: { inclusion: bools },
 			flag_whitelist: { inclusion: bools },
 			flag_blacklist: { inclusion: bools },
+			flag_fallback: { inclusion: bools },
 		});
 		if (!validationErrors) {
 			// No errors detected

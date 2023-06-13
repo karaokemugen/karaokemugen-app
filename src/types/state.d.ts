@@ -15,6 +15,7 @@ export interface State {
 	currentPlaid?: string;
 	blacklistPlaid?: string;
 	whitelistPlaid?: string;
+	fallbackPlaid?: string;
 	currentSessionID?: string;
 	currentSessionEndsAt?: Date;
 	publicPlaid?: string;
@@ -104,6 +105,7 @@ export interface PublicState {
 	publicPlaid: string;
 	blacklistPlaid: string;
 	whitelistPlaid: string;
+	fallbackPlaid: string;
 	appPath?: string;
 	dataPath?: string;
 	os?: string;

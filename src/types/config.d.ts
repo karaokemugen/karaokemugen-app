@@ -1,7 +1,10 @@
 import { PathType } from '../lib/types/config.js';
 import { PlaylistMediaType } from '../lib/types/playlistMedias.js';
 import { Repository } from '../lib/types/repo.js';
+import { endOfPlaylistActions } from '../utils/defaultSettings.js';
 import { MpvHardwareDecodingOptions } from './mpvIPC.js';
+
+export type EndOfPlaylistAction = (typeof endOfPlaylistActions)[number];
 
 export interface Config {
 	App: {
@@ -149,7 +152,7 @@ export interface Config {
 			AddedSongVisibilityAdmin?: boolean;
 			Labels?: string[];
 		};
-		EndOfPlaylistAction: 'random' | 'repeat' | 'none';
+		EndOfPlaylistAction: EndOfPlaylistAction;
 		RandomSongsAfterEndMessage: boolean;
 	};
 	System: {

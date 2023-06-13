@@ -157,6 +157,8 @@ Player:
 Playlist:
   # What to do at the end of playlist :
   # - random : plays random songs, should usually be used with autoplay
+  # - random_fallback : plays random song from the fallback playlist
+  # - play_fallback : play the fallback playlist
   # - repeat : cycles through the playlist
   # - none : just end karaoke
   EndOfPlaylistAction: none

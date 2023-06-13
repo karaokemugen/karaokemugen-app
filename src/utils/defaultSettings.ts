@@ -214,10 +214,10 @@ export const defaults: Config = {
 	Maintainer: { ApplyLyricsCleanupOnKaraSave: false },
 };
 
-const horizontalPosArray = ['Left', 'Right', 'Center'];
-const verticalPosArray = ['Top', 'Bottom', 'Center'];
-const hwdecModes = ['auto-safe', 'no', 'yes'];
-const endOfPlaylistActions = ['random', 'repeat', 'none'];
+export const horizontalPosArray = ['Left', 'Right', 'Center'];
+export const verticalPosArray = ['Top', 'Bottom', 'Center'];
+export const hwdecModes = ['auto-safe', 'no', 'yes'];
+export const endOfPlaylistActions = ['random', 'random_fallback', 'play_fallback', 'repeat', 'none'];
 
 /** Config constraints. */
 export const configConstraints = {
