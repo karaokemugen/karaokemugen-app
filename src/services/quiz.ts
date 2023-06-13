@@ -519,13 +519,13 @@ export async function startGame(gamename: string, playlist: string, settings?: Q
 	}
 }
 
-export async function stopGame() {
+export async function stopGame(displayScores = true) {
 	if (!gameState.running) return;
 	setState({ quizMode: false, quizGuessingTime: false });
 	logger.info('Stopping game and saving state', { service });
 	if (!isShutdownInProgress()) {
 		await stopPlayer(true, false);
-		await displayMessage(await buildEndGameScoreString(), -1, 8, 'quizScores');
+		if (displayScores) await displayMessage(await buildEndGameScoreString(), -1, 8, 'quizScores');
 	}
 	await updateGame(getState().currentQuizGame, getConfig().Karaoke.QuizMode, gameState, false);
 	gameState.running = false;

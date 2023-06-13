@@ -33,7 +33,8 @@ export default function quizController(router: SocketIOApp) {
 	router.route('stopGame', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'limited');
 		try {
-			await stopGame();
+			// When stopGame is triggered via API, we don't display scores
+			await stopGame(false);
 		} catch (err) {
 			errMessage(err.msg);
 			throw { code: 500, message: APIMessage(err.msg) };
