@@ -98,7 +98,13 @@ export default function QuizPage() {
 		};
 		commandBackend('getPlayerStatus').then(refreshPlayerInfos);
 		commandBackend('getCurrentGameSong').then((gameSong: GameSong | null) => {
-			if (gameSong?.state === 'answer') {
+			if (gameSong == null) {
+				qStart({
+					guessTime: 0,
+					quickGuess: 0,
+					revealTime: 0,
+				});
+			} else if (gameSong?.state === 'answer') {
 				qResult(gameSong);
 			}
 		});
