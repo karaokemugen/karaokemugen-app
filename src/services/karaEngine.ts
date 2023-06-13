@@ -125,8 +125,9 @@ export async function getSongInfosForPlayer(kara: DBKara | DBPLC): Promise<{ inf
 	let infos = `{\\bord2}{\\fscx70}{\\fscy70}{\\b1}${series}{\\b0}\\N{\\i1}${kara.songtypes
 		.map(s => s.name)
 		.join(' ')}${kara.songorder || ''} - ${getSongTitle(kara)}${versions}{\\i0}${requestedBy}`;
-	if ('flag_visible' in kara && kara.flag_visible === false) {
+	if ('flag_visible' in kara && kara.flag_visible === false && !getState().quizMode) {
 		// We're on a PLC with a flag_visible set to false, let's hide stuff!
+		// But we don't hide it if we're in quiz mode. Because you know.
 		const invisibleSong = sample(getConfig().Playlist.MysterySongs.Labels);
 		infos = `{\\bord2}{\\fscx70}{\\fscy70}{\\b1}${invisibleSong}{\\b0}${requestedBy}`;
 	}
