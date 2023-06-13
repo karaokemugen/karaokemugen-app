@@ -79,7 +79,7 @@ export default function quizController(router: SocketIOApp) {
 	router.route('getCurrentGameSong', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		try {
-			return getCurrentGame().currentSong;
+			return getCurrentGame(req.token?.role === 'admin').currentSong;
 		} catch (err) {
 			errMessage(err.message);
 			throw { code: err?.code || 500, message: APIMessage(err.msg) };
@@ -124,7 +124,7 @@ export default function quizController(router: SocketIOApp) {
 	});
 	router.route('getGameState', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest', 'limited');
-		return getCurrentGame();
+		return getCurrentGame(req.token?.role === 'admin');
 	});
 	router.route('getLastKaras', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest', 'limited');

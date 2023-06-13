@@ -51,8 +51,11 @@ let gameState: GameState = cloneDeep(defaultGameState);
 
 export const acceptedAnswers = [...Object.keys(tagTypes), 'year', 'title'];
 
-export function getCurrentGame() {
-	return gameState;
+export function getCurrentGame(admin: boolean) {
+	if (admin || gameState.currentSong.state === 'answer') {
+		return gameState;
+	}
+	return { ...gameState, currentSong: null };
 }
 
 function translateQuizAnswers(quizAnswer: QuizAnswers) {
@@ -128,12 +131,12 @@ export function buildRulesString() {
 			: null,
 		gameSettings.EndGame.Duration.Enabled
 			? i18next.t('QUIZ_RULES.DURATION', {
-					duration: gameSettings.EndGame.Duration.Minutes - getCurrentGame().currentTotalDuration / 60,
+					duration: gameSettings.EndGame.Duration.Minutes - getCurrentGame(true).currentTotalDuration / 60,
 			  })
 			: null,
 		gameSettings.EndGame.MaxSongs.Enabled
 			? i18next.t('QUIZ_RULES.MAX_SONGS', {
-					songs: gameSettings.EndGame.MaxSongs.Songs - getCurrentGame().currentSongNumber,
+					songs: gameSettings.EndGame.MaxSongs.Songs - getCurrentGame(true).currentSongNumber,
 			  })
 			: null,
 		i18next.t('QUIZ_RULES.END_OF_PLAYLIST'),
@@ -191,7 +194,8 @@ export function startQuizRound(kara: CurrentSong): number {
 		quickGuess: quickGuessDuration,
 		revealTime: revealDuration,
 	});
-	emitWS('quizStateUpdated', gameState);
+	emitWS('quizStateUpdated', getCurrentGame(false));
+	emitWS('quizStateUpdated', getCurrentGame(true), 'admin');
 	startAcceptingAnswers(revealDuration);
 	return start;
 }
@@ -421,7 +425,7 @@ export async function stopAcceptingAnswers() {
 	// Update game state
 	updateGame(getState().currentQuizGame, conf, gameState);
 	emitWS('quizResult', gameState.currentSong);
-	emitWS('quizStateUpdated', gameState);
+	emitWS('quizStateUpdated', getCurrentGame(false));
 }
 
 export function setQuizModifier(): SongModifiers {
@@ -529,7 +533,8 @@ export async function stopGame(displayScores = true) {
 	}
 	await updateGame(getState().currentQuizGame, getConfig().Karaoke.QuizMode, gameState, false);
 	gameState.running = false;
-	emitWS('quizStateUpdated', gameState);
+	emitWS('quizStateUpdated', getCurrentGame(false));
+	emitWS('quizStateUpdated', getCurrentGame(true), 'admin');
 	emitWS('settingsUpdated', {});
 }
 
@@ -612,7 +617,7 @@ export function setAnswer(login: string, input: string) {
 	// If an answer has already been given by this player or if it's a new answer, we update it with the input given.
 	answer.answer = input;
 	answer.quickAnswer = gameState.currentSong.quickGuessOK;
-	emitWS('quizStateUpdated', gameState, 'admin');
+	emitWS('quizStateUpdated', getCurrentGame(true), 'admin');
 	return gameState.currentSong.quickGuessOK ? 'OK_QUICK' : 'OK';
 }
 

@@ -537,7 +537,7 @@ class Player {
 				notificationNextSong();
 			}
 			if (getState().quizMode) {
-				const game = getCurrentGame();
+				const game = getCurrentGame(true);
 				if (game.running && game.currentSong.state === 'answer') {
 					this.control.displaySongInfo(playerState.currentSong.infos);
 				} else {
@@ -1305,7 +1305,7 @@ class Players {
 			playerState._playing = false; // This prevents the play/pause event to be triggered
 			await this.exec({ command: ['set_property', 'pause', true] });
 			if (getState().quizMode) {
-				const game = getCurrentGame();
+				const game = getCurrentGame(true);
 				if (game.running && game.currentSong) {
 					[
 						game.currentSong.quickGuessTimer,
@@ -1342,7 +1342,7 @@ class Players {
 			playerState._playing = true; // This prevents the play/pause event to be triggered
 			await this.exec({ command: ['set_property', 'pause', false] });
 			if (getState().quizMode) {
-				const game = getCurrentGame();
+				const game = getCurrentGame(true);
 				if (game.running && game.currentSong) {
 					[
 						game.currentSong.quickGuessTimer,
