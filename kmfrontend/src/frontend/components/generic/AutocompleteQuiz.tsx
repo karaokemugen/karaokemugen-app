@@ -10,7 +10,7 @@ import { useEffect, useRef, useState } from 'react';
 
 export interface AutocompleteOption {
 	label: string;
-	value: string | number;
+	value: string;
 }
 
 export type AutocompleteOptions = AutocompleteOption[];
@@ -18,11 +18,14 @@ export type AutocompleteOptions = AutocompleteOption[];
 interface LabelProps {
 	options?: AutocompleteOptions;
 	placeholder?: string;
-	value: string | number;
+	value: string;
+	focus: boolean;
+	disabled?: boolean;
 	acceptNewValues?: boolean;
 	provideLabels?: true;
 	onChange: (value: AutocompleteOption) => void;
 	onType?: (query: string) => void;
+	changeFocus?: (focus: boolean) => void;
 	styleInclude?: boolean;
 	inputProps?: JSX.IntrinsicElements['input'];
 }
@@ -30,95 +33,91 @@ interface LabelProps {
 interface DefaultProps {
 	options?: AutocompleteOptions;
 	placeholder?: string;
-	value: string | number;
+	value: string;
+	focus: boolean;
+	disabled?: boolean;
 	acceptNewValues?: boolean;
 	provideLabels?: false;
 	onChange: (value: string) => void;
 	onType?: (query: string) => void;
+	changeFocus?: (focus: boolean) => void;
 	styleInclude?: boolean;
 	inputProps?: JSX.IntrinsicElements['input'];
 }
 
 type IProps = LabelProps | DefaultProps;
 
-function Autocomplete(props: IProps) {
+function AutocompleteQuiz(props: IProps) {
 	const options = props.options || [];
 
 	const node: any = useRef();
-	const [placeholder, setPlaceholder] = useState(props.placeholder || undefined);
-	const [selectedValue, setSelectedValue] = useState('');
-	const [searchValue, setSearchValue] = useState('');
 
 	const searchInputRef = useRef<HTMLInputElement>();
 	const [activeIndex, setActiveIndex] = useState(-1);
-	const [focus, setFocus] = useState(false);
 
 	const updateSelectedValue = (v: any) => {
 		if (typeof props.onChange === 'function') {
 			if (props.provideLabels) props.onChange(v);
 			else props.onChange(v.value);
 		}
-		props.onType('');
 		return;
 	};
 
 	// INPUT USER EVENT
 	const handleInputFocus = () => {
-		setTimeout(() => setFocus(true), 250);
-		setSearchValue('');
+		setTimeout(() => props.changeFocus(true), 250);
 	};
 
 	const handleInputClick = () => {
-		setFocus(true);
+		props.changeFocus(true);
+	};
+
+	const closeFocus = () => {
+		props.changeFocus(false);
+		setActiveIndex(-1);
 	};
 
 	// SEARCH USER EVENT
 	const handleSearchChange = (e: any) => {
 		props?.onType(e.target.value);
-		setSearchValue(e.target.value);
 		setActiveIndex(-1);
 	};
-	const handleSearchKeyUp = (e: any) => {
+	const handleSearchKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
 		if (e.keyCode === 13) {
 			//RETURN
-			setFocus(false);
 			const o = options[activeIndex];
 			if (props.acceptNewValues && activeIndex === -1) {
-				updateSelectedValue({ label: e.target.value, value: e.target.value });
+				const value = (e.target as HTMLInputElement).value;
+				updateSelectedValue({
+					label: value,
+					value: (e.target as HTMLInputElement).value,
+				});
 			} else if (o) {
 				updateSelectedValue(o);
 			}
-		} else if (e.keyCode === 27)
+			closeFocus();
+		} else if (e.keyCode === 27) {
 			//ESC
-			setFocus(false);
-		else if (e.keyCode === 40)
+			closeFocus();
+		} else if (e.keyCode === 40) {
 			//DOWN
 			setActiveIndex(options.length > 0 ? Math.min(activeIndex + 1, options.length - 1) : 0);
-		else if (e.keyCode === 38)
+		} else if (e.keyCode === 38) {
 			//UP
 			setActiveIndex(options.length > 0 ? Math.max(activeIndex - 1, 0) : 0);
+		}
 	};
 
 	const handleOptionSelection = (o: any) => {
-		setFocus(false);
+		closeFocus();
 		updateSelectedValue(o);
-		setSearchValue(o.label);
-		setPlaceholder(o.label);
 	};
 
 	useEffect(() => {
-		if (focus) {
+		if (props.focus) {
 			searchInputRef.current.focus();
 		}
-	}, [focus]); // exécuté au démarrage puis en cas de mise à jour de focus
-
-	useEffect(() => {
-		if (typeof props.value === 'string' && props.options instanceof Array && props.value !== selectedValue) {
-			setSelectedValue(props.value);
-			setPlaceholder(props.value);
-			setSearchValue(props.options.find(opt => opt.value === props.value)?.label || '');
-		}
-	}, [props.value, props.options]); // properly reflect value changes by prop mutation
+	}, [props.focus, props.disabled]); // exécuté au démarrage puis en cas de mise à jour de focus
 
 	const handleClick = (e: any) => {
 		if (node.current?.contains(e.target)) {
@@ -126,7 +125,7 @@ function Autocomplete(props: IProps) {
 			return;
 		}
 		// outside click
-		setFocus(false);
+		closeFocus();
 	};
 
 	useEffect(() => {
@@ -140,20 +139,21 @@ function Autocomplete(props: IProps) {
 
 	return (
 		<div className="UI-autocomplete" ref={node}>
-			<div className="UI-autocomplete-input" data-focus={focus ? 'true' : 'false'}>
+			<div className="UI-autocomplete-input" data-focus={props.focus ? 'true' : 'false'}>
 				<input
 					type="text"
 					data-exclude={!props.styleInclude}
 					ref={searchInputRef}
-					value={searchValue}
-					placeholder={placeholder}
+					value={props.value}
+					placeholder={props.placeholder}
+					disabled={props.disabled}
 					onFocus={handleInputFocus}
 					onClick={handleInputClick}
 					onChange={handleSearchChange}
 					onKeyUp={handleSearchKeyUp}
 					{...props.inputProps}
 				/>
-				{(options.length < 75 || searchValue.length >= 3) && focus ? (
+				{props.value.length > 0 && options.length > 0 && props.focus ? (
 					<ul className="UI-autocomplete-options">
 						<div className="UI-autocomplete-options-wrapper">
 							{options.map((o, index) => (
@@ -174,4 +174,4 @@ function Autocomplete(props: IProps) {
 	);
 }
 
-export default Autocomplete;
+export default AutocompleteQuiz;

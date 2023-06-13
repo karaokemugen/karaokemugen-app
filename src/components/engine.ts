@@ -26,6 +26,7 @@ import { getKaras, initFetchPopularSongs } from '../services/kara.js';
 import { initPlayer, quitmpv } from '../services/player.js';
 import { initPlaylistSystem } from '../services/playlist.js';
 import { buildAllMediasList, updatePlaylistMedias } from '../services/playlistMedias.js';
+import { stopGame } from '../services/quiz.js';
 import { initRemote } from '../services/remote.js';
 import { checkDownloadStatus, updateAllRepos } from '../services/repo.js';
 import { initSession } from '../services/session.js';
@@ -263,6 +264,7 @@ export async function exit(rc = 0, update = false) {
 	clearInterval(usageTimeInterval);
 	closeAllWindows();
 	wipeDownloadQueue();
+	stopGame();
 	try {
 		if (getState().player?.playerStatus) {
 			await quitmpv();

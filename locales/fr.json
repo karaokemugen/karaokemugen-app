@@ -5,6 +5,28 @@
 	"REQUESTED_AND_other": "et {{count}} autres",
 	"CANCEL": "Annuler",
 	"MY_PLAYLIST": "Ma liste de lecture",
+	"YEAR": "Année",
+	"TITLE": "Titre",
+	"TAG_TYPES": {
+		"SINGERGROUPS": "Groupe de musique",
+		"SINGERS": "Chanteur",
+		"SONGTYPES": "Type de chanson",
+		"CREATORS": "Créateur",
+		"LANGS": "Langue",
+		"AUTHORS": "Auteur de karaokés",
+		"MISC": "Divers",
+		"SONGWRITERS": "Compositeur",
+		"GROUPS": "Groupe",
+		"FAMILIES": "Contenu vidéo",
+		"ORIGINS": "Origine",
+		"GENRES": "Thème",
+		"PLATFORMS": "Plateforme",
+		"SERIES": "Œuvre",
+		"VERSIONS": "Version",
+		"WARNINGS": "Warning",
+		"FRANCHISES": "Franchise",
+		"COLLECTIONS": "Collection"
+	},
 	"WHITELIST": "Liste blanche",
 	"BLACKLIST": "Liste noire",
 	"FALLBACK": "Liste de secours",
@@ -42,6 +64,7 @@
 		"Augmentation des nanobots dans l'air"
 	],
 	"GO_TO": "Allez sur $url pour suggérer des chansons !",
+	"GO_TO_QUIZ_MODE": "Allez sur $url pour jouer !",
 	"VOTE_MESSAGE_SCREEN": "Votez pour la prochaine chanson !",
 	"VOTE_MESSAGE_SCREEN_WINNER": "Nous avons un gagnant !",
 	"NEXT_SONG": "Chanson suivante",
@@ -212,7 +235,9 @@
 			"se tourne les pouces",
 			"en convention (dans sa tête)",
 			"regarde les trains passer"
-		]
+		],
+		"QUIZ_IN_PROGRESS": "Quiz Musical en cours !",
+		"QUIET!": "Chut...!"
 	},
 	"UNKNOWN_ARTIST": "Artiste inconnu",
 	"REPOSITORY_ALREADY_EXISTS": {
@@ -271,5 +296,33 @@
 		}
 	},
 	"OFFICIAL_WEBSITE": "Site officiel",
-	"SUGGEST_SONGS": "Suggérer des chansons !"
+	"SUGGEST_SONGS": "Suggérer des chansons !",
+	"QUIZ_RULES": {
+		"TITLE": "REGLES",
+		"SECONDS_one": "{{count}} seconde",
+		"SECONDS_other": "{{count}} secondes",
+		"POINTS_one": "{{count}} point",
+		"POINTS_other": "{{count}} points",
+		"BONUS_POINTS_one": "{{count}} point bonus",
+		"BONUS_POINTS_other": "{{count}} points bonus",
+		"GUESS_TIME": "Devinez quelle chanson est jouée en moins de <1>$t(QUIZ_RULES.SECONDS, {\"count\": {{seconds}} })</1>.",
+		"SCORE": "MARQUER DES POINTS",
+		"QUICK_ANSWER": "- Bonne réponse rapide ( < <1>$t(QUIZ_RULES.SECONDS, {\"count\": {{seconds}} })</1>) : <1>$t(QUIZ_RULES.BONUS_POINTS, {\"count\": {{points}} })</1>.",
+		"ACCEPTED_ANSWERS": "Réponses acceptées :",
+		"ACCEPTED_ANSWERS_POINTS": "($t(QUIZ_RULES.POINTS, {\"count\": {{points}} }))",
+		"END_GAME": "FIN DE PARTIE",
+		"MAX_SCORE": "- Lorque quelqu'un atteint <1>$t(QUIZ_RULES.POINTS, {\"count\": {{points}} })</1>",
+		"SONGS_one": "<1>{{count}} chanson</1>",
+		"SONGS_other": "<1>{{count}} chansons</1>",
+		"MAX_SONGS": "- Dans <1>$t(QUIZ_RULES.SONGS, {\"count\": {{songs}} })</1>",
+		"MINUTES_one": "<1>{{count}} minute</1>",
+		"MINUTES_other": "<1>{{count}} minutes</1>",
+		"DURATION": "- Dans <1>$t(QUIZ_RULES.MINUTES, {\"count\": {{duration}} })</1> de jeu",
+		"END_OF_PLAYLIST": "- Lorque la liste de lecture touche à sa fin"
+	},
+	"GOOD_ANSWER": "Bonne réponse",
+	"QUIZ_SCORES": {
+		"SCORES": "SCORES",
+		"PLAYER_POINTS": "$t(QUIZ_RULES.POINTS, {\"count\": {{points}} })"
+	}
 }

@@ -40,8 +40,13 @@ export async function setDiscordActivity(activityType: 'song' | 'idle', activity
 			activity = sample(i18next.t('DISCORD.IDLING', { returnObjects: true }));
 		}
 		if (activityType === 'song') {
-			activity = activityData.title;
-			activityDetail = activityData.source;
+			if (getState().quizMode) {
+				activity = i18next.t('DISCORD.QUIZ_IN_PROGRESS');
+				activityDetail = i18next.t('DISCORD.QUIET!');
+			} else {
+				activity = activityData.title;
+				activityDetail = activityData.source;
+			}
 		}
 		const buttons = [];
 		if (getState().remoteAccess && 'host' in getState().remoteAccess) {

@@ -4,6 +4,28 @@
 	"REQUESTED_AND_one": "and others",
 	"REQUESTED_AND_other": "and {{count}} others",
 	"CANCEL": "Cancel",
+	"YEAR": "Year",
+	"TITLE": "Title",
+	"TAG_TYPES": {
+		"SINGERGROUPS": "Singergroups",
+		"SINGERS": "Singer",
+		"SONGTYPES": "Song type",
+		"CREATORS": "Creator",
+		"LANGS": "Language",
+		"AUTHORS": "Karaoke Author",
+		"MISC": "Misc",
+		"SONGWRITERS": "Songwriter",
+		"GROUPS": "Group",
+		"FAMILIES": "Video Content",
+		"ORIGINS": "Origin",
+		"GENRES": "Genre",
+		"PLATFORMS": "Platform",
+		"SERIES": "Series",
+		"VERSIONS": "Version",
+		"WARNINGS": "Warning",
+		"FRANCHISES": "Franchise",
+		"COLLECTIONS": "Collection"
+	},
 	"MY_PLAYLIST": "My playlist",
 	"WHITELIST": "Whitelist",
 	"BLACKLIST": "Blacklist",
@@ -42,6 +64,7 @@
 		"Increasing nanobots in the air"
 	],
 	"GO_TO": "Go to $url to suggest songs!",
+	"GO_TO_QUIZ_MODE": "Go to $url to play!",
 	"VOTE_MESSAGE_SCREEN": "Vote for the next song!",
 	"VOTE_MESSAGE_SCREEN_WINNER": "We have a winner!",
 	"NEXT_SONG": "Next song",
@@ -212,7 +235,9 @@
 			"does absolutely nothing",
 			"at a con (in their head)",
 			"watches trains pass"
-		]
+		],
+		"QUIZ_IN_PROGRESS": "Music Quiz in progress!",
+		"QUIET!": "Sshhh...!"
 	},
 	"UNKNOWN_ARTIST": "Unknown artist",
 	"REPOSITORY_ALREADY_EXISTS": {
@@ -271,5 +296,33 @@
 		}
 	},
 	"OFFICIAL_WEBSITE": "Official Website",
-	"SUGGEST_SONGS": "Suggest songs!"
+	"SUGGEST_SONGS": "Suggest songs!",
+	"QUIZ_RULES": {
+		"TITLE": "RULES",
+		"SECONDS_one": "{{count}} second",
+		"SECONDS_other": "{{count}} seconds",
+		"POINTS_one": "{{count}} point",
+		"POINTS_other": "{{count}} points",
+		"BONUS_POINTS_one": "{{count}} bonus point",
+		"BONUS_POINTS_other": "{{count}} bonus points",
+		"GUESS_TIME": "Guess the song playing in less than <1>$t(QUIZ_RULES.SECONDS, {\"count\": {{seconds}} })</1>.",
+		"SCORE": "SCORING",
+		"QUICK_ANSWER": "- Good quick answer ( < <1>$t(QUIZ_RULES.SECONDS, {\"count\": {{seconds}} })</1>): <1>$t(QUIZ_RULES.BONUS_POINTS, {\"count\": {{points}} })</1>.",
+		"ACCEPTED_ANSWERS": "Accepted answers :",
+		"ACCEPTED_ANSWERS_POINTS": "($t(QUIZ_RULES.POINTS, {\"count\": {{points}} }))",
+		"END_GAME": "GAME ENDS",
+		"MAX_SCORE": "- When someone wins <1>$t(QUIZ_RULES.POINTS, {\"count\": {{points}} })</1>",
+		"SONGS_one": "<1>{{count}} song</1>",
+		"SONGS_other": "<1>{{count}} songs</1>",
+		"MAX_SONGS": "- In <1>$t(QUIZ_RULES.SONGS, {\"count\": {{songs}} })</1>",
+		"MINUTES_one": "<1>{{count}} minute</1>",
+		"MINUTES_other": "<1>{{count}} minutes</1>",
+		"DURATION": "- In <1>$t(QUIZ_RULES.MINUTES, {\"count\": {{duration}} })</1>",
+		"END_OF_PLAYLIST": "- When the playlist reaches its end"
+	},
+	"GOOD_ANSWER": "Good answer",
+	"QUIZ_SCORES": {
+		"SCORES": "SCORES",
+		"PLAYER_POINTS": "$t(QUIZ_RULES.POINTS, {\"count\": {{points}} })"
+	}
 }

@@ -3,6 +3,50 @@ import { PlaylistMediaType } from '../lib/types/playlistMedias.js';
 import { Repository } from '../lib/types/repo.js';
 import { endOfPlaylistActions } from '../utils/defaultSettings.js';
 import { MpvHardwareDecodingOptions } from './mpvIPC.js';
+import { SongModifiers } from './player.js';
+
+export interface QuizGameConfig {
+	EndGame: {
+		MaxScore: {
+			Enabled: boolean;
+			Score: number;
+		};
+		MaxSongs: {
+			Enabled: boolean;
+			Songs: number;
+		};
+		Duration: {
+			Enabled: boolean;
+			Minutes: number;
+		};
+	};
+	Players: {
+		Twitch: boolean;
+		TwitchPlayerName?: string;
+		Guests: boolean;
+	};
+	TimeSettings: {
+		WhenToStartSong: number;
+		GuessingTime: number;
+		QuickGuessingTime: number;
+		AnswerTime: number;
+	};
+	Answers: {
+		Accepted: {
+			[QuizAnswers: string]: {
+				Enabled: boolean;
+				Points: number;
+			};
+		};
+		QuickAnswer: {
+			Enabled: boolean;
+			Points: number;
+		};
+		SimilarityPercentageNeeded: number;
+	};
+	Modifiers: SongModifiers;
+	PlayerMessage: string;
+}
 
 export type EndOfPlaylistAction = (typeof endOfPlaylistActions)[number];
 
@@ -79,6 +123,7 @@ export interface Config {
 			Choices?: number;
 			Timeout?: number;
 		};
+		QuizMode: QuizGameConfig;
 		Quota: {
 			Songs?: number;
 			Time?: number;

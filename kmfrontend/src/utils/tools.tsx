@@ -170,7 +170,7 @@ export function displayMessage(
 
 export function callModal(
 	dispatch: Dispatch<ShowModal>,
-	type: string,
+	type: 'prompt' | 'confirm' | 'info',
 	title: any,
 	message: any,
 	callback?: any,

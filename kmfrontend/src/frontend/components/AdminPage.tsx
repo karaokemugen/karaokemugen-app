@@ -31,6 +31,7 @@ function AdminPage(props: IProps) {
 	const [searchMenuOpenLeft, setSearchMenuOpenLeft] = useState(false);
 	const [searchMenuOpenRight, setSearchMenuOpenRight] = useState(false);
 	const [playlistList, setPlaylistList] = useState([]);
+	const [quizRanking, setQuizRanking] = useState(false);
 
 	const operatorNotificationInfo = (data: { code: string; data: string }) =>
 		displayMessage('info', i18next.t(data.code, { data: data }));
@@ -144,6 +145,10 @@ function AdminPage(props: IProps) {
 	};
 
 	useEffect(() => {
+		setQuizRanking(context.globalState.settings.data.state.quiz);
+	}, [context.globalState.settings.data.state.quiz]);
+
+	useEffect(() => {
 		getSocket().on('playlistInfoUpdated', playlistInfoUpdated);
 		return () => {
 			getSocket().off('playlistInfoUpdated', playlistInfoUpdated);
@@ -177,6 +182,7 @@ function AdminPage(props: IProps) {
 					adminMessage={adminMessage}
 					putPlayerCommando={putPlayerCommando}
 					currentPlaylist={playlistList.filter(playlistElem => playlistElem.flag_current)[0]}
+					updateQuizRanking={() => setQuizRanking(!quizRanking)}
 				/>
 				<ProgressBar />
 				<KmAppBodyDecorator mode="admin">
@@ -195,6 +201,7 @@ function AdminPage(props: IProps) {
 												searchMenuOpen={searchMenuOpenLeft}
 												playlistList={playlistList}
 												openKara={openKara}
+												quizRanking={quizRanking}
 											/>
 											<Playlist
 												scope="admin"

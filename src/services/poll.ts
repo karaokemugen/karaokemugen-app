@@ -25,7 +25,7 @@ let poll: PollItem[] = [];
 let voters = new Set();
 let pollDate: Date;
 let pollEnding = false;
-let clock: any;
+let clock: Timer;
 
 on('stateUpdated', (state: State) => {
 	if (!state.songPoll === false && poll.length > 0) stopPoll();
@@ -72,7 +72,7 @@ export async function timerPoll() {
 	const conf = getConfig();
 	const duration = conf.Karaoke.Poll.Timeout;
 	clock = new Timer(duration * 1000);
-	await sleep(duration * 1000);
+	await clock.wait();
 	// Hey, Axel from a while ago, why are you writing this?
 	if (internalDate === pollDate) endPoll();
 }
@@ -197,6 +197,10 @@ export async function startPoll(): Promise<boolean> {
 		logger.info('Unable to start poll, another one is already in progress', { service });
 		emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.POLL_ALREADY_STARTED'));
 
+		return false;
+	}
+	if (getState().quizMode) {
+		// No poll in quiz mode
 		return false;
 	}
 	logger.info('Starting a new poll', { service });

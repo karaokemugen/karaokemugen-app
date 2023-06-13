@@ -27,6 +27,7 @@ import {
 	updateUserQuotas,
 } from './playlist.js';
 import { startPoll } from './poll.js';
+import { setQuizModifier, startQuizRound } from './quiz.js';
 import { getUser } from './user.js';
 
 const service = 'KaraEngine';
@@ -86,7 +87,7 @@ export async function getSongInfosForPlayer(kara: DBKara | DBPLC): Promise<{ inf
 	// Escaping {} because it'll be interpreted as ASS tags below.
 	let requestedBy = '';
 	let avatarfile = null;
-	if (getConfig().Player.Display.Nickname && 'nickname' in kara) {
+	if (!getState().quizMode && getConfig().Player.Display.Nickname && 'nickname' in kara) {
 		const upvoters = await selectUpvotesByPLC(kara.plcid);
 		// Escaping {} because it'll be interpreted as ASS tags below.
 		kara.nickname = kara.nickname.replace(/[{}]/g, '');
@@ -189,15 +190,44 @@ export async function playCurrentSong(now: boolean) {
 					await shufflePlaylist(getState().currentPlaid, 'balance');
 				}
 				// Testing if intro hasn't been played already and if we have at least one intro available
-				if (conf.Playlist.Medias.Intros.Enabled && !getState().introPlayed) {
+				// The intro is never played when there is a quiz
+				if (conf.Playlist.Medias.Intros.Enabled && !getState().introPlayed && !getState().quizMode) {
 					setState({ introPlayed: true, counterToJingle: 1 });
 					await mpv.playMedia('Intros');
 					return;
 				}
 			}
 			logger.debug('Karaoke selected', { service, obj: kara });
+
+			// If we're in quiz mode, we need to make a check before playing
+			if (getState().quizMode) {
+				// Check if the song has at least one answer possible from possible answer types
+				// Whichever answer type we get to first that exists in a song breaks the loop.
+				let answerPossible = false;
+				for (const [possibleAnswerType, { Enabled }] of Object.entries(
+					getConfig().Karaoke.QuizMode.Answers.Accepted
+				)) {
+					if (!Enabled) {
+						continue;
+					}
+					// Skipping title as all songs have titles... right? RIGHT?
+					if (possibleAnswerType === 'title') {
+						answerPossible = true;
+					} else if (possibleAnswerType === 'year' && kara.year) {
+						answerPossible = true;
+					} else if (possibleAnswerType !== 'year' && kara[possibleAnswerType]?.length > 0) {
+						answerPossible = true;
+					}
+					if (answerPossible) break;
+				}
+				if (!answerPossible)
+					throw '[Quiz Mode] Song has no possible answer for the criterias selected for this game';
+			}
 			logger.info(`Playing ${kara.mediafile.substring(0, kara.mediafile.length - 4)}`, { service });
-			await mpv.play(kara);
+			const modifiers = getState().quizMode ? setQuizModifier() : null;
+			let startTime = 0;
+			if (getState().quizMode) startTime = startQuizRound(kara);
+			await mpv.play(kara, modifiers, startTime);
 			setState({ randomPlaying: false });
 			updateUserQuotas(kara);
 			writeStreamFiles('time_remaining_in_current_playlist');
@@ -240,7 +270,8 @@ export async function playerEnding() {
 		if (
 			state.player.mediaType === 'song' &&
 			// Ignore random karas from the entire library, but count karas from the fallback playlist as played
-			(!state.randomPlaying || getConfig().Playlist.EndOfPlaylistAction === 'random_fallback')
+			(!state.randomPlaying || getConfig().Playlist.EndOfPlaylistAction === 'random_fallback') &&
+			!getState().quizMode
 		) {
 			addPlayedKara(state.player.currentSong?.kid);
 		}

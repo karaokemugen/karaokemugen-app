@@ -17,6 +17,7 @@ import miscController from '../controllers/frontend/misc.js';
 import playerController from '../controllers/frontend/player.js';
 import playlistsController from '../controllers/frontend/playlists.js';
 import pollController from '../controllers/frontend/poll.js';
+import quizController from '../controllers/frontend/quiz.js';
 import repoController from '../controllers/frontend/repo.js';
 import sessionController from '../controllers/frontend/session.js';
 import smartPlaylistsController from '../controllers/frontend/smartPlaylists.js';
@@ -57,6 +58,7 @@ function apiRouter(ws: SocketIOApp) {
 	repoController(ws);
 	smartPlaylistsController(ws);
 	inboxController(ws);
+	quizController(ws);
 	if (getState().isTest) testController(ws);
 }
 
