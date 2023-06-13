@@ -1,4 +1,4 @@
-# v7.1.x - xx/05/2023
+# v7.1.7 - 14/06/2023
 
 Most of the work on this release has already been backported in 7.0.x versions. Refer to these for more details.
 
