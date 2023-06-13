@@ -261,9 +261,13 @@ System:
       OSX: app/bin/ffmpeg
       Windows: app/bin/ffmpeg.exe
     Postgres:
-      Windows: app/bin/postgres/bin/
-      OSX: app/bin/postgres/bin/
       Linux: app/bin/postgres/bin/
+      OSX: app/bin/postgres/bin/
+      Windows: app/bin/postgres/bin/
+    patch:
+      Linux: /usr/bin/patch
+      OSX: app/bin/patch
+      Windows: app/bin/patch.exe
   Repositories:
     - Name: kara.moe
       Online: true
