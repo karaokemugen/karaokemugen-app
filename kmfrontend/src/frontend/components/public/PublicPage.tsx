@@ -56,9 +56,9 @@ function PublicPage() {
 
 	const playlistInfoUpdated = (plaid: string) => {
 		getPlaylistList();
-		if (context.globalState.frontendContext.playlistInfoLeft.plaid === plaid)
+		if (context.globalState.frontendContext.playlistInfoLeft?.plaid === plaid)
 			setPlaylistInfoLeft(context.globalDispatch, plaid);
-		if (context.globalState.frontendContext.playlistInfoRight.plaid === plaid)
+		if (context.globalState.frontendContext.playlistInfoRight?.plaid === plaid)
 			setPlaylistInfoRight(context.globalDispatch, plaid);
 	};
 
