@@ -3,30 +3,20 @@ import { remove } from 'fs-extra';
 import { cloneDeep, sample } from 'lodash';
 import { basename, resolve } from 'path';
 import prettyBytes from 'pretty-bytes';
-import { createClient, FileStat } from 'webdav';
 
-import { getConfig } from '../lib/utils/config';
-import { downloadFiles } from '../lib/utils/downloader';
-import { asyncCheckOrMkdir, isMediaFile } from '../lib/utils/files';
-import logger from '../lib/utils/logger';
-import Task from '../lib/utils/taskManager';
-import { Config } from '../types/config';
-import { Media, MediaType } from '../types/medias';
-import { editSetting, resolvedMediaPath } from '../utils/config';
-import { playlistMediasURL } from '../utils/constants';
+import { PlaylistMedia, PlaylistMediaFile, PlaylistMedias, PlaylistMediaType } from '../lib/types/playlistMedias.js';
+import { getConfig } from '../lib/utils/config.js';
+import { downloadFiles } from '../lib/utils/downloader.js';
+import { asyncCheckOrMkdir, isMediaFile } from '../lib/utils/files.js';
+import HTTP, { fixedEncodeURIComponent } from '../lib/utils/http.js';
+import logger from '../lib/utils/logger.js';
+import Task from '../lib/utils/taskManager.js';
+import { Config } from '../types/config.js';
+import { editSetting, resolvedMediaPath } from '../utils/config.js';
 
 const service = 'PlaylistMedias';
 
-interface File {
-	basename: string;
-	size: number;
-}
-
-type Medias = {
-	[key in MediaType]: Media[];
-};
-
-const medias: Medias = {
+const medias: PlaylistMedias = {
 	Intros: [],
 	Outros: [],
 	Encores: [],
@@ -34,11 +24,11 @@ const medias: Medias = {
 	Sponsors: [],
 };
 
-const currentMedias: Partial<Medias> = {};
+const currentMedias: Partial<PlaylistMedias> = {};
 
 export async function buildAllMediasList() {
 	for (const type of Object.keys(medias)) {
-		await buildMediasList(type as MediaType);
+		await buildMediasList(type as PlaylistMediaType);
 		// Failure is non-fatal
 	}
 }
@@ -52,18 +42,22 @@ export async function updatePlaylistMedias() {
 		task.update({
 			subtext: type,
 		});
-		if (updates[type]) await updateMediasHTTP(type as MediaType, task).catch(() => {});
+		if (updates[type]) await updateMediasHTTP(type as PlaylistMediaType, task).catch(() => {});
 		// Failure is non-fatal
 	}
 	task.end();
 }
 
-async function listRemoteMedias(type: MediaType): Promise<FileStat[]> {
-	const webdavClient = createClient(playlistMediasURL);
-	return (await webdavClient.getDirectoryContents(`/${type}`)) as FileStat[];
+async function listRemoteMedias(type: PlaylistMediaType): Promise<PlaylistMediaFile[]> {
+	try {
+		const res = await HTTP.get(`https://${getConfig().Online.Host}/api/playlistMedias/${type}`);
+		return res.data as PlaylistMediaFile[];
+	} catch (err) {
+		logger.warn(`Unable to fetch remote playlist medias list : ${err}`, { service, obj: err });
+	}
 }
 
-async function listLocalFiles(dir: string): Promise<FileStat[]> {
+async function listLocalFiles(dir: string): Promise<PlaylistMediaFile[]> {
 	const localFiles = await fs.readdir(dir);
 	const files = [];
 	for (const file of localFiles) {
@@ -83,9 +77,9 @@ async function removeFiles(files: string[], dir: string) {
 	}
 }
 
-export async function updateMediasHTTP(type: MediaType, task: Task) {
+export async function updateMediasHTTP(type: PlaylistMediaType, task: Task) {
 	try {
-		const remoteFiles: FileStat[] = await listRemoteMedias(type);
+		const remoteFiles = await listRemoteMedias(type);
 		const localDir = resolve(resolvedMediaPath(type)[0], 'KaraokeMugen/');
 		await asyncCheckOrMkdir(localDir);
 		// Setting additional path if it doesn't exist in config (but it should if you used the defaults)
@@ -98,9 +92,9 @@ export async function updateMediasHTTP(type: MediaType, task: Task) {
 			editSetting(ConfigPart);
 		}
 		const localFiles = await listLocalFiles(localDir);
-		const removedFiles: FileStat[] = [];
-		const addedFiles: FileStat[] = [];
-		const updatedFiles: FileStat[] = [];
+		const removedFiles: PlaylistMediaFile[] = [];
+		const addedFiles: PlaylistMediaFile[] = [];
+		const updatedFiles: PlaylistMediaFile[] = [];
 		for (const remoteFile of remoteFiles) {
 			const filePresent = localFiles.some(localFile => {
 				if (localFile.basename === remoteFile.basename) {
@@ -150,11 +144,11 @@ export async function updateMediasHTTP(type: MediaType, task: Task) {
 	}
 }
 
-async function downloadMedias(files: File[], dir: string, type: MediaType, task: Task) {
+async function downloadMedias(files: PlaylistMediaFile[], dir: string, type: PlaylistMediaType, task: Task) {
 	const list = files.map(file => {
 		return {
 			filename: resolve(dir, file.basename),
-			url: `${playlistMediasURL}/${type}/${encodeURIComponent(file.basename)}`,
+			url: `https://${getConfig().Online.Host}/playlistMedias/${type}/${fixedEncodeURIComponent(file.basename)}`,
 			size: file.size,
 		};
 	});
@@ -165,7 +159,7 @@ async function downloadMedias(files: File[], dir: string, type: MediaType, task:
 	task.end();
 }
 
-export async function buildMediasList(type: MediaType) {
+export async function buildMediasList(type: PlaylistMediaType) {
 	medias[type] = [];
 	for (const resolvedPath of resolvedMediaPath(type)) {
 		const files = [];
@@ -185,7 +179,7 @@ export async function buildMediasList(type: MediaType) {
 	currentMedias[type] = cloneDeep(medias[type]);
 }
 
-export function getSingleMedia(type: MediaType): Media | null {
+export function getSingleMedia(type: PlaylistMediaType): PlaylistMedia | null {
 	// If no medias exist, return null.
 	if (!medias[type] || medias[type]?.length === 0) {
 		return null;
@@ -196,7 +190,7 @@ export function getSingleMedia(type: MediaType): Media | null {
 		currentMedias[type] = cloneDeep(medias[type]);
 	}
 	// Pick a media from a random series
-	let media: Media | null = null;
+	let media: PlaylistMedia | null = null;
 	media = sample(currentMedias[type]);
 	// Let's remove the series of the jingle we just selected so it won't be picked again next time.
 	currentMedias[type] = currentMedias[type].filter(m => m.series !== media.series);

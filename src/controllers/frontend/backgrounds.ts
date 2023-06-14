@@ -1,9 +1,9 @@
 import { Socket } from 'socket.io';
 
-import { APIData } from '../../lib/types/api';
-import { SocketIOApp } from '../../lib/utils/ws';
-import { addBackgroundFile, getBackgroundFiles, removeBackgroundFile } from '../../services/backgrounds';
-import { runChecklist } from '../middlewares';
+import { APIData } from '../../lib/types/api.js';
+import { SocketIOApp } from '../../lib/utils/ws.js';
+import { addBackgroundFile, getBackgroundFiles, removeBackgroundFile } from '../../services/backgrounds.js';
+import { runChecklist } from '../middlewares.js';
 
 export default function backgroundsController(router: SocketIOApp) {
 	router.route('getBackgroundFiles', async (socket: Socket, req: APIData) => {

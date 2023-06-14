@@ -1,8 +1,8 @@
 import { pg as yesql } from 'yesql';
 
-import { db, transaction } from '../lib/dao/database';
-import { KaraParams } from '../lib/types/kara';
-import { sqlclearFavorites, sqlgetFavoritesMicro, sqlinsertFavorites, sqlremoveFavorites } from './sql/favorites';
+import { db, transaction } from '../lib/dao/database.js';
+import { KaraParams } from '../lib/types/kara.js';
+import { sqlclearFavorites, sqlgetFavoritesMicro, sqlinsertFavorites, sqlremoveFavorites } from './sql/favorites.js';
 
 export async function selectFavoritesMicro(params: KaraParams) {
 	const finalParams = { username: params.username };

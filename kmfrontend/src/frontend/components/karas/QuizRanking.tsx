@@ -1,0 +1,384 @@
+import { RefObject, useContext, useEffect, useRef, useState } from 'react';
+import { useAsyncMemo } from 'use-async-memo';
+
+import i18next from 'i18next';
+import { Trans } from 'react-i18next';
+import { KaraList as IKaraList } from '../../../../../src/lib/types/kara';
+import { User } from '../../../../../src/lib/types/user';
+import { GameSong, GameState, GameTotalScore, TotalTimes } from '../../../../../src/types/quiz';
+import { PublicPlayerState } from '../../../../../src/types/state';
+import GlobalContext from '../../../store/context';
+import ProfilePicture from '../../../utils/components/ProfilePicture';
+import { commandBackend, getSocket } from '../../../utils/socket';
+import { acceptedAnswerToIcon } from '../../../utils/tagTypes';
+import KaraList from './KaraList';
+
+function QuizRanking() {
+	const context = useContext(GlobalContext);
+
+	const [mode, setMode] = useState<'guess' | 'answer' | 'waiting'>('waiting');
+	const [timeLeft, setTimeLeft] = useState(0);
+	const [quickGuess, setQuickGuess] = useState(0);
+	const [revealTimer, setRevealTimer] = useState(0);
+	const [result, setResult] = useState<GameSong>();
+	const [currentSongQuizNumber, setCurrentSongQuizNumber] = useState<number>();
+	const [currentTotalQuizDuration, setCurrentTotalQuizDuration] = useState<number>();
+	const [progressWidth, setProgressWidth] = useState('0px');
+	const [progressColor, setProgressColor] = useState('forestgreen');
+	const progressBarRef: RefObject<HTMLDivElement> = useRef();
+
+	const userTotalScores = useAsyncMemo(
+		async () => {
+			const [users, scores]: [User[], GameTotalScore[]] = await Promise.all([
+				commandBackend('getUsers'),
+				commandBackend('getTotalGameScore', {
+					gamename: context.globalState.settings.data.state.quizGame,
+				}),
+			]);
+			const scoresToDisplay = scores
+				.map(score => ({ ...score, nickname: users.find(u => u.login === score.login)?.nickname }))
+				.filter(score => score.nickname != null);
+			return scores ? scoresToDisplay : [];
+		},
+		[mode],
+		[]
+	);
+
+	const karas = useAsyncMemo<IKaraList>(() => commandBackend('getLastKaras'), [mode], {
+		content: [],
+		infos: { from: 0, to: 0, count: 0 },
+	});
+
+	useEffect(() => {
+		const qStart = (d: TotalTimes) => {
+			setMode('guess');
+			setTimeLeft(d.guessTime);
+			setQuickGuess(d.quickGuess);
+			setRevealTimer(d.revealTime);
+			setResult(null);
+		};
+		const qResult = (d: GameSong) => {
+			setMode('answer');
+			setResult(d);
+		};
+		const updateQuizState = (gameState: GameState) => {
+			if (gameState.currentSong == null) {
+				qStart({
+					guessTime: 0,
+					quickGuess: 0,
+					revealTime: 0,
+				});
+			} else if (gameState.currentSong?.state === 'answer') {
+				qResult(gameState.currentSong);
+			}
+			setCurrentSongQuizNumber(gameState.currentSongNumber);
+			setCurrentTotalQuizDuration(gameState.currentTotalDuration);
+		};
+
+		commandBackend('getPlayerStatus').then(refreshPlayerInfos);
+		commandBackend('getGameState').then(updateQuizState);
+
+		getSocket().on('quizStart', qStart);
+		getSocket().on('quizResult', qResult);
+		getSocket().on('playerStatus', refreshPlayerInfos);
+		getSocket().on('quizStateUpdated', updateQuizState);
+		return () => {
+			getSocket().off('quizStart', qStart);
+			getSocket().off('quizResult', qResult);
+			getSocket().off('playerStatus', refreshPlayerInfos);
+			getSocket().off('quizStateUpdated', updateQuizState);
+		};
+	}, []);
+
+	const resultColor = (username: string) => {
+		if (!isQuizLaunched) {
+			const maxPoints = Math.max(...userTotalScores?.map(score => score.total));
+			const points = userTotalScores?.find(score => score.login === username)?.total;
+			return maxPoints === points ? 'gold' : 'grey';
+		}
+		if (result == null) {
+			return 'white';
+		}
+		const maxPoints = Math.max(...result?.winners.map(score => score.awardedPoints));
+		const points = result?.winners?.find(score => score.login === username)?.awardedPoints;
+		if (!points) {
+			return 'grey';
+		} else if (points === maxPoints) {
+			return 'lime';
+		}
+		return 'goldenrod';
+	};
+
+	useEffect(() => {
+		setProgressColor(resultColor(context.globalState.auth.data.username));
+	}, [result]);
+
+	const refreshPlayerInfos = async (data: PublicPlayerState) => {
+		const timeSettings = context.globalState.settings.data.config.Karaoke.QuizMode.TimeSettings;
+		const element = progressBarRef.current;
+		if (element && data.quiz !== undefined) {
+			setTimeLeft(Math.floor(data.quiz.guessTime));
+			setQuickGuess(Math.floor(data.quiz.quickGuess));
+			setRevealTimer(Math.floor(data.quiz.revealTime));
+			let newWidth = 0;
+			if (data.quiz.guessTime > 0) {
+				newWidth = (timeSettings.GuessingTime - data.quiz.guessTime) / timeSettings.GuessingTime;
+			} else if (data.quiz.revealTime > 0) {
+				newWidth = (timeSettings.AnswerTime - data.quiz.revealTime) / timeSettings.AnswerTime;
+			}
+			setProgressWidth(`${newWidth * progressBarRef.current.offsetWidth}px`);
+		}
+		if (data.playerStatus) {
+			if (data.playerStatus === 'stop') {
+				setProgressWidth('0px');
+			}
+		}
+	};
+	const quizSettings = context.globalState.settings.data.config.Karaoke.QuizMode;
+	const isQuizLaunched = context.globalState.settings.data.state.quiz;
+
+	return (
+		<>
+			<div className="player-box quiz">
+				<div className="title">
+					<div>
+						<div
+							className="tag inline white"
+							style={{
+								width: '100%',
+								minHeight: '50px',
+								display: 'flex',
+								justifyContent: 'center',
+								flexDirection: 'column',
+							}}
+						>
+							<span>
+								{quizSettings.Answers.QuickAnswer.Enabled && quickGuess > 0 ? (
+									<>
+										<i className="fas fa-fw fa-person-running" />{' '}
+										{i18next.t('QUIZ.STATES.QUICK_GUESSING', { count: quickGuess })}
+									</>
+								) : timeLeft > 0 ? (
+									<>
+										<i className="fas fa-fw fa-person-walking" />{' '}
+										{i18next.t('QUIZ.STATES.GUESSING', { count: timeLeft })}
+									</>
+								) : mode === 'answer' ? (
+									<>
+										<i className="fas fa-fw fa-person" />{' '}
+										{i18next.t('QUIZ.STATES.NEXT_SONG', { count: revealTimer })}
+									</>
+								) : (
+									<>
+										<i className="fas fa-fw fa-hourglass" /> {i18next.t('QUIZ.STATES.WAITING')}
+									</>
+								)}
+							</span>
+						</div>
+					</div>
+				</div>
+				<div>
+					<div className="progress-bar-container" ref={progressBarRef}>
+						<div
+							className="progress-bar"
+							style={{ width: progressWidth, backgroundColor: progressColor }}
+						/>
+					</div>
+				</div>
+			</div>
+			<div id="nav-userlist" className="modal-body">
+				<div className="userlist list-group">
+					{userTotalScores?.map(userTotalScore => {
+						const points = result?.winners?.find(s => s.login === userTotalScore.login);
+						const answer = result?.answers?.find(a => a.login === userTotalScore.login);
+						return (
+							<li
+								key={userTotalScore.login}
+								className="list-group-item"
+								style={{ borderLeft: '6px solid ' + resultColor(userTotalScore.login) }}
+							>
+								<div
+									className="userLine"
+									style={{
+										display: 'flex',
+										flexWrap: 'wrap',
+										justifyContent: 'space-between',
+										height: '100%',
+									}}
+								>
+									<div style={{ display: 'flex', alignItems: 'center' }}>
+										<ProfilePicture user={userTotalScore} className="img-circle avatar" />
+										<span className="nickname">{userTotalScore.nickname}</span>
+									</div>
+									<div
+										style={{
+											flexGrow: 1,
+											textAlign: 'center',
+											paddingLeft: '1em',
+											paddingRight: '1em',
+										}}
+									>
+										{answer?.answer}
+									</div>
+									<div
+										style={{
+											lineHeight: 'normal',
+											textAlign: 'right',
+											marginLeft: 'auto',
+										}}
+									>
+										<div>
+											<span style={{ fontSize: 20 }}>{userTotalScore.total || 0}</span>
+											{points && points.awardedPoints > 0 ? (
+												<span>{' +' + points.awardedPoints}</span>
+											) : null}
+										</div>
+										<div>
+											{points?.awardedPoints > 0 ? '(' : null}
+											{points?.awardedPointsDetailed.typePoints ? (
+												<span>
+													{' '}
+													<i
+														className={`fas fa-${acceptedAnswerToIcon(
+															points.awardedPointsDetailed.type
+														)} fa-sm`}
+													></i>{' '}
+													{points?.awardedPointsDetailed.typePoints}
+												</span>
+											) : null}
+											{points?.awardedPointsDetailed.quickPoints ? (
+												<span>
+													{' '}
+													<i className={`fas fa-bolt fa-sm`}></i>{' '}
+													{points?.awardedPointsDetailed.quickPoints}
+												</span>
+											) : null}
+											{points?.awardedPoints > 0 ? ')' : null}
+										</div>
+									</div>
+								</div>
+							</li>
+						);
+					})}
+				</div>
+			</div>
+			<details className="rules">
+				<summary>{i18next.t('QUIZ.RULES.TITLE')}</summary>
+				<div>
+					<p>
+						<Trans
+							t={i18next.t}
+							i18nKey="QUIZ.RULES.GUESS_TIME"
+							components={{
+								1: <strong />,
+							}}
+							values={{
+								seconds: quizSettings.TimeSettings.GuessingTime,
+							}}
+						/>
+						{quizSettings.Answers.QuickAnswer.Enabled ? (
+							<>
+								<br />
+								<i className={`fas fa-bolt fa-fw`}></i>{' '}
+								<Trans
+									t={i18next.t}
+									i18nKey="QUIZ.RULES.QUICK_ANSWER"
+									components={{
+										1: <strong />,
+									}}
+									values={{
+										seconds: quizSettings.TimeSettings.QuickGuessingTime,
+										points: quizSettings.Answers.QuickAnswer.Points,
+									}}
+								/>
+							</>
+						) : null}
+					</p>
+					<p>{i18next.t('QUIZ.RULES.ACCEPTED_ANSWERS')}</p>
+					<ul>
+						{Object.entries(quizSettings.Answers.Accepted)
+							.filter(([_, { Enabled }]) => Enabled)
+							.map(([possibleAnswerType, { Points }]) => (
+								<li key={possibleAnswerType}>
+									<i className={`fas fa-${acceptedAnswerToIcon(possibleAnswerType)} fa-fw`}></i>
+									{i18next.t(
+										possibleAnswerType === 'title'
+											? 'KARA.TITLE'
+											: possibleAnswerType === 'year'
+											? 'KARA.YEAR'
+											: `TAG_TYPES.${possibleAnswerType.toUpperCase()}_other`
+									)}{' '}
+									{i18next.t('QUIZ.RULES.ACCEPTED_ANSWERS_POINTS', { points: Points })}
+								</li>
+							))}
+					</ul>
+					<p>{i18next.t('QUIZ.RULES.END_GAME')}</p>
+					<ul>
+						{Object.values(quizSettings.EndGame)
+							.filter(eg => eg.Enabled)
+							.map(eg => {
+								if ('Score' in eg) {
+									return (
+										<li key="MaxScore">
+											<Trans
+												t={i18next.t}
+												i18nKey="QUIZ.RULES.MAX_SCORE"
+												components={{
+													1: <strong />,
+												}}
+												values={{
+													points: quizSettings.EndGame.MaxScore.Score,
+												}}
+											/>
+										</li>
+									);
+								} else if ('Songs' in eg) {
+									return (
+										<li key="MaxSongs">
+											<Trans
+												t={i18next.t}
+												i18nKey="QUIZ.RULES.MAX_SONGS"
+												components={{
+													1: <strong />,
+												}}
+												values={{
+													count: quizSettings.EndGame.MaxSongs.Songs - currentSongQuizNumber,
+												}}
+											/>
+										</li>
+									);
+								} else if ('Minutes' in eg) {
+									return (
+										<li key="MaxMinutes">
+											<Trans
+												t={i18next.t}
+												i18nKey="QUIZ.RULES.DURATION"
+												components={{
+													1: <strong />,
+												}}
+												values={{
+													count:
+														quizSettings.EndGame.Duration.Minutes -
+														currentTotalQuizDuration / 60,
+												}}
+											/>
+										</li>
+									);
+								} else {
+									// This shouldn't happen.
+									return null;
+								}
+							})}
+						<li>{i18next.t('QUIZ.RULES.END_OF_PLAYLIST')}</li>
+					</ul>
+				</div>
+			</details>
+			<details>
+				<summary>{i18next.t('QUIZ.PREVIOUS_KARAOKES')}</summary>
+				<KaraList karas={karas} scope="public" />
+			</details>
+		</>
+	);
+}
+
+export default QuizRanking;

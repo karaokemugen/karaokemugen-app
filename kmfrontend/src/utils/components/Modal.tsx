@@ -8,7 +8,7 @@ import GlobalContext from '../../store/context';
 
 interface IProps {
 	placeholder?: string;
-	type: string;
+	type: 'prompt' | 'confirm' | 'info';
 	title: string;
 	message: any;
 	forceSmall: boolean | undefined;

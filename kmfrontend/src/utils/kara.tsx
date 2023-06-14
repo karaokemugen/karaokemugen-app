@@ -12,6 +12,20 @@ import { getLanguageIn3B, langSupport } from './isoLanguages';
 import { isRemote } from './socket';
 import { tagTypes } from './tagTypes';
 
+export function getDescriptionInLocale(settings: SettingsStoreData, description: Record<string, string>): string {
+	if (!description) return '';
+	const user = settings?.user;
+	if (user?.main_series_lang && user?.fallback_series_lang) {
+		return description[user.main_series_lang]
+			? description[user.main_series_lang]
+			: description[user.fallback_series_lang]
+			? description[user.fallback_series_lang]
+			: description.eng;
+	} else {
+		return description[getLanguageIn3B(langSupport)] ? description[getLanguageIn3B(langSupport)] : description.eng;
+	}
+}
+
 export function getTagInLanguage(
 	tag: DBKaraTag,
 	mainLanguage: string,
@@ -322,14 +336,14 @@ export function computeTagsElements(kara: DBKara, scope: Scope, versions = true,
 		const isMulti = kara.langs.find(e => e.name.indexOf('mul') > -1);
 		isMulti
 			? karaTags.push(
-					<div key={isMulti.tid} className="tag">
+					<div key={isMulti.tid} className="tag black">
 						{getInlineTag(isMulti, tagTypes.LANGS.type, scope, i18nParam)}
 					</div>
 			  )
 			: karaTags.push(
 					...sortAndHideTags(kara.langs, scope).map(tag => {
 						return (
-							<div key={tag.tid} className="tag green" title={tag.short ? tag.short : tag.name}>
+							<div key={tag.tid} className="tag black" title={tag.short ? tag.short : tag.name}>
 								{getInlineTag(tag, tagTypes.LANGS.type, scope, i18nParam)}
 							</div>
 						);
@@ -350,8 +364,8 @@ export function computeTagsElements(kara: DBKara, scope: Scope, versions = true,
 	}
 
 	const types = versions
-		? ['VERSIONS', 'FAMILIES', 'PLATFORMS', 'GENRES', 'ORIGINS', 'GROUPS', 'COLLECTIONS', 'MISC', 'WARNINGS']
-		: ['FAMILIES', 'PLATFORMS', 'GENRES', 'ORIGINS', 'GROUPS', 'COLLECTIONS', 'MISC', 'WARNINGS'];
+		? ['VERSIONS', 'FAMILIES', 'PLATFORMS', 'GENRES', 'ORIGINS', 'MISC', 'WARNINGS']
+		: ['FAMILIES', 'PLATFORMS', 'GENRES', 'ORIGINS', 'MISC', 'WARNINGS'];
 
 	for (const type of types) {
 		const tagData = tagTypes[type];

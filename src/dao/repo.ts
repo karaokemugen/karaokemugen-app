@@ -1,8 +1,8 @@
-import { saveSetting } from '../lib/dao/database';
-import { Repository, RepositoryBasic } from '../lib/types/repo';
-import { getConfig } from '../lib/utils/config';
-import { editSetting } from '../utils/config';
-import { getState } from '../utils/state';
+import { saveSetting } from '../lib/dao/database.js';
+import { Repository, RepositoryBasic } from '../lib/types/repo.js';
+import { getConfig } from '../lib/utils/config.js';
+import { editSetting } from '../utils/config.js';
+import { getState } from '../utils/state.js';
 
 export function selectRepos(publicView: false): Repository[];
 export function selectRepos(publicView: true): RepositoryBasic[];

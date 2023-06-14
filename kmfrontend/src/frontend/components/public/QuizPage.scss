@@ -1,0 +1,46 @@
+@import '../../styles/variables';
+
+.scores-popup {
+	display: none;
+	&.active {
+		display: initial;
+	}
+	position: absolute;
+	cursor: initial;
+	user-select: initial;
+	top: 200%;
+	left: 50%;
+	transform: translateX(-50%);
+	width: max-content;
+	max-width: 95vw;
+	max-height: calc(95vh - var(--top, 0));
+	z-index: 10;
+
+	padding: 1em;
+	border-radius: 16px;
+
+	background-color: scale-color($mugen-background, $lightness: -75%);
+	font-size: 1.125rem;
+
+	> hr {
+		margin: 0.5em 0 0.25em;
+	}
+
+	> div {
+		display: flex;
+		justify-content: space-between;
+		gap: 1em;
+	}
+}
+
+details.rules {
+	p {
+		margin: 0.25em 0;
+	}
+	ul > li {
+		margin-left: 0.75ch;
+		i {
+			padding: 0 1ch;
+		}
+	}
+}

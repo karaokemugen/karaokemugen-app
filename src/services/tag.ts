@@ -11,30 +11,30 @@ import {
 	removeTagInStore,
 	sortKaraStore,
 	sortTagsStore,
-} from '../dao/dataStore';
-import { deleteTag, insertTag, selectAllTags, updateKaraTagsTID, updateTag } from '../dao/tag';
-import { removeTagInKaras } from '../dao/tagfile';
-import { saveSetting } from '../lib/dao/database';
-import { refreshKarasUpdate } from '../lib/dao/kara';
-import { formatKaraV4 } from '../lib/dao/karafile';
-import { convertToDBTag, refreshTags, updateTagSearchVector } from '../lib/dao/tag';
-import { defineTagFilename, getDataFromTagFile, removeTagFile, trimTagData, writeTagFile } from '../lib/dao/tagfile';
-import { refreshKarasAfterDBChange } from '../lib/services/karaManagement';
-import { DBKara, DBKaraTag } from '../lib/types/database/kara';
-import { DBTag } from '../lib/types/database/tag';
-import { KaraFileV4 } from '../lib/types/kara.d';
-import { Tag, TagFile, TagParams } from '../lib/types/tag';
-import { getConfig, resolvedPathRepos } from '../lib/utils/config';
-import { getTagTypeName, tagTypes } from '../lib/utils/constants';
-import { listAllFiles, resolveFileInDirs, sanitizeFile } from '../lib/utils/files';
-import HTTP from '../lib/utils/http';
-import logger, { profile } from '../lib/utils/logger';
-import Task from '../lib/utils/taskManager';
-import { emitWS } from '../lib/utils/ws';
-import sentry from '../utils/sentry';
-import { getKaras } from './kara';
-import { editKara } from './karaCreation';
-import { getRepo, getRepos } from './repo';
+} from '../dao/dataStore.js';
+import { deleteTag, insertTag, selectAllTags, updateKaraTagsTID, updateTag } from '../dao/tag.js';
+import { removeTagInKaras } from '../dao/tagfile.js';
+import { saveSetting } from '../lib/dao/database.js';
+import { refreshKarasUpdate } from '../lib/dao/kara.js';
+import { formatKaraV4 } from '../lib/dao/karafile.js';
+import { convertToDBTag, refreshTags, updateTagSearchVector } from '../lib/dao/tag.js';
+import { defineTagFilename, getDataFromTagFile, removeTagFile, trimTagData, writeTagFile } from '../lib/dao/tagfile.js';
+import { refreshKarasAfterDBChange } from '../lib/services/karaManagement.js';
+import { DBKara, DBKaraTag } from '../lib/types/database/kara.js';
+import { DBTag } from '../lib/types/database/tag.js';
+import { KaraFileV4 } from '../lib/types/kara.js';
+import { Tag, TagFile, TagParams } from '../lib/types/tag.js';
+import { getConfig, resolvedPathRepos } from '../lib/utils/config.js';
+import { getTagTypeName, tagTypes } from '../lib/utils/constants.js';
+import { listAllFiles, resolveFileInDirs, sanitizeFile } from '../lib/utils/files.js';
+import HTTP from '../lib/utils/http.js';
+import logger, { profile } from '../lib/utils/logger.js';
+import Task from '../lib/utils/taskManager.js';
+import { emitWS } from '../lib/utils/ws.js';
+import sentry from '../utils/sentry.js';
+import { getKaras } from './kara.js';
+import { editKara } from './karaCreation.js';
+import { getRepo, getRepos } from './repo.js';
 
 const service = 'Tag';
 
@@ -372,7 +372,7 @@ export async function consolidateTagsInRepo(kara: KaraFileV4) {
 					try {
 						await resolveFileInDirs(tagFile, destPath);
 					} catch {
-						// File doe snot exist, let's write it.
+						// File does not exist, let's write it.
 						copies.push(writeTagFile(tag, destPath[0]));
 					}
 				}

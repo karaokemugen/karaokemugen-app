@@ -1,9 +1,9 @@
 import { pg as yesql } from 'yesql';
 
-import { db, newDBTask } from '../lib/dao/database';
-import { DBUser } from '../lib/types/database/user';
-import { User, UserParams } from '../lib/types/user';
-import { now } from '../lib/utils/date';
+import { db, newDBTask } from '../lib/dao/database.js';
+import { DBUser } from '../lib/types/database/user.js';
+import { User, UserParams } from '../lib/types/user.js';
+import { now } from '../lib/utils/date.js';
 import {
 	sqlcreateUser,
 	sqldeleteTempUsers,
@@ -19,7 +19,7 @@ import {
 	sqlSelectAllDupeUsers,
 	sqlselectUsers,
 	sqlupdateLastLogin,
-} from './sql/user';
+} from './sql/user.js';
 
 export function deleteUser(username: string) {
 	return db().query(sqldeleteUser, [username]);
@@ -73,7 +73,7 @@ export async function updateUser(user: User): Promise<User> {
 			language: user.language,
 			flag_public: user.flag_public ?? true,
 			flag_displayfavorites: user.flag_displayfavorites ?? false,
-			social_networks: user.social_networks || { discord: '', twitter: '', twitch: '', instagram: '' },
+			social_networks: user.social_networks || null,
 			banner: user.banner || 'default.jpg',
 			anime_list_to_fetch: user.anime_list_to_fetch,
 			anime_list_last_modified_at: user.anime_list_last_modified_at,

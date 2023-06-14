@@ -3,10 +3,10 @@ import { promises as fs } from 'fs';
 import { basename } from 'path';
 import prettyBytes from 'pretty-bytes';
 
-import { Repository } from '../lib/types/repo';
-import logger from '../lib/utils/logger';
-import Task from '../lib/utils/taskManager';
-import { getRepo } from '../services/repo';
+import { Repository } from '../lib/types/repo.js';
+import logger from '../lib/utils/logger.js';
+import Task from '../lib/utils/taskManager.js';
+import { getRepo } from '../services/repo.js';
 
 const service = 'FTP';
 
@@ -82,9 +82,7 @@ export default class FTP {
 		});
 		this.client.trackProgress(info => {
 			task.update({
-				subtext: `${this.opts.repoName}: ${info.name} - ${prettyBytes(info.bytes)} / ${prettyBytes(
-					stat.size
-				)}}`,
+				subtext: `${this.opts.repoName}: ${info.name} - ${prettyBytes(info.bytes)} / ${prettyBytes(stat.size)}`,
 				total: stat.size,
 				value: info.bytes,
 			});

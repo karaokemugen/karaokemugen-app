@@ -1,9 +1,9 @@
 import { Socket } from 'socket.io';
 
-import { APIData } from '../../lib/types/api';
-import { bools } from '../../lib/utils/constants';
-import { check } from '../../lib/utils/validators';
-import { SocketIOApp } from '../../lib/utils/ws';
+import { APIData } from '../../lib/types/api.js';
+import { bools } from '../../lib/utils/constants.js';
+import { check } from '../../lib/utils/validators.js';
+import { SocketIOApp } from '../../lib/utils/ws.js';
 import {
 	addKaraToPlaylist,
 	copyKaraToPlaylist,
@@ -25,10 +25,10 @@ import {
 	removeKaraFromPlaylist,
 	removePlaylist,
 	shufflePlaylist,
-} from '../../services/playlist';
-import { vote } from '../../services/upvote';
-import { APIMessage, errMessage } from '../common';
-import { runChecklist } from '../middlewares';
+} from '../../services/playlist.js';
+import { vote } from '../../services/upvote.js';
+import { APIMessage, errMessage } from '../common.js';
+import { runChecklist } from '../middlewares.js';
 
 export default function playlistsController(router: SocketIOApp) {
 	router.route('createAutomix', async (socket: Socket, req: APIData) => {
@@ -75,6 +75,7 @@ export default function playlistsController(router: SocketIOApp) {
 			flag_smart: { inclusion: bools },
 			flag_whitelist: { inclusion: bools },
 			flag_blacklist: { inclusion: bools },
+			flag_fallback: { inclusion: bools },
 		});
 		if (!validationErrors) {
 			// No errors detected

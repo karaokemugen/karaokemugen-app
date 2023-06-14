@@ -5,8 +5,8 @@ import useMigration from './Migration';
 import { useContext, useEffect, useState } from 'react';
 import GlobalContext from '../../../store/context';
 import { Tag } from '../../../../../src/lib/types/tag';
-import { getLanguageIn3B, langSupport } from '../../../utils/isoLanguages';
 import Switch from '../generic/Switch';
+import { getDescriptionInLocale } from '../../../utils/kara';
 
 interface Props {
 	onEnd: () => void;
@@ -38,21 +38,6 @@ export default function Collections(props: Props) {
 		} catch (err: any) {
 			const error = err?.message ? i18next.t(`ERROR_CODES.${err.message.code}`) : JSON.stringify(err);
 			setError(error);
-		}
-	};
-
-	const getDescriptionInLocale = (description: Record<string, string>): string => {
-		const user = context.globalState.settings.data?.user;
-		if (user?.main_series_lang && user?.fallback_series_lang) {
-			return description[user.main_series_lang]
-				? description[user.main_series_lang]
-				: description[user.fallback_series_lang]
-				? description[user.fallback_series_lang]
-				: description.eng;
-		} else {
-			return description[getLanguageIn3B(langSupport)]
-				? description[getLanguageIn3B(langSupport)]
-				: description.eng;
 		}
 	};
 
@@ -94,7 +79,12 @@ export default function Collections(props: Props) {
 									</div>
 									<label>
 										<div className="name">{collection.name}</div>
-										<div>{getDescriptionInLocale(collection.description)}</div>
+										<div>
+											{getDescriptionInLocale(
+												context.globalState.settings.data,
+												collection.description
+											)}
+										</div>
 									</label>
 								</div>
 							))}

@@ -3,9 +3,33 @@
 	"REQUESTED_WITH": "(avec {{names}})",
 	"REQUESTED_AND_one": "et d'autres",
 	"REQUESTED_AND_other": "et {{count}} autres",
-	"MY_PLAYLIST": "Ma playlist",
+	"CANCEL": "Annuler",
+	"MY_PLAYLIST": "Ma liste de lecture",
+	"YEAR": "Année",
+	"TITLE": "Titre",
+	"TAG_TYPES": {
+		"SINGERGROUPS": "Groupe de musique",
+		"SINGERS": "Chanteur",
+		"SONGTYPES": "Type de chanson",
+		"CREATORS": "Créateur",
+		"LANGS": "Langue",
+		"AUTHORS": "Auteur de karaokés",
+		"MISC": "Divers",
+		"SONGWRITERS": "Compositeur",
+		"GROUPS": "Groupe",
+		"FAMILIES": "Contenu vidéo",
+		"ORIGINS": "Origine",
+		"GENRES": "Thème",
+		"PLATFORMS": "Plateforme",
+		"SERIES": "Œuvre",
+		"VERSIONS": "Version",
+		"WARNINGS": "Warning",
+		"FRANCHISES": "Franchise",
+		"COLLECTIONS": "Collection"
+	},
 	"WHITELIST": "Liste blanche",
 	"BLACKLIST": "Liste noire",
+	"FALLBACK": "Liste de secours",
 	"CURRENT_PLAYLIST": "Liste de lecture",
 	"PUBLIC_PLAYLIST": "Suggestions du public",
 	"MIGRATION": "Migration",
@@ -40,6 +64,7 @@
 		"Augmentation des nanobots dans l'air"
 	],
 	"GO_TO": "Allez sur $url pour suggérer des chansons !",
+	"GO_TO_QUIZ_MODE": "Allez sur $url pour jouer !",
 	"VOTE_MESSAGE_SCREEN": "Votez pour la prochaine chanson !",
 	"VOTE_MESSAGE_SCREEN_WINNER": "Nous avons un gagnant !",
 	"NEXT_SONG": "Chanson suivante",
@@ -54,7 +79,7 @@
 	"INIT_BASEUPDATE": "Mise à jour des karaokés…",
 	"INIT_USER": "Initialisation des utilisateurs…",
 	"INIT_ONLINEURL": "Connexion à Karaoke Mugen Server…",
-	"INIT_PLAYLIST_AND_PLAYER": "Initialisation du lecteur et des playlists…",
+	"INIT_PLAYLIST_AND_PLAYER": "Initialisation du lecteur et des listes de lecture…",
 	"INIT_LAST": "C'est presque fini…",
 	"INIT_DONE": "Démarrage réussi !",
 	"INIT_ERROR": "L'initialisation a échoué !",
@@ -83,6 +108,7 @@
 	"MENU_VIEW_FULLSCREEN": "&Plein écran",
 	"MENU_WINDOW": "&Fenêtre",
 	"MENU_WINDOW_MINIMIZE": "&Minimiser",
+	"MENU_WINDOW_PLAYERMONITOR": "&Afficher Moniteur Vidéo",
 	"MENU_EDIT": "&Edition",
 	"MENU_EDIT_REDO": "&Refaire",
 	"MENU_EDIT_UNDO": "&Annuler",
@@ -102,6 +128,7 @@
 	"MENU_HELP_DISCORD": "&Discord",
 	"MENU_HELP_FORUM": "&Forum",
 	"MENU_HELP_TWITTER": "&Twitter",
+	"MENU_HELP_MASTODON": "&Mastodon",
 	"MENU_HELP_CHANGELOG": "&Notes de version",
 	"MENU_HELP_GITLAB": "&GitLab",
 	"MENU_HELP_GUIDE": "&Documentation",
@@ -126,8 +153,8 @@
 	"MENU_OPTIONS_OPERATORCONFIG_OSX": "Réglages…",
 	"MENU_OPTIONS_SYSTEMCONFIG_OSX": "Réglages système…",
 	"MENU_OPTIONS_CHIBIPLAYER": "Afficher le Chibi Player",
-	"MENU_OPTIONS_CHIBIPLAYLIST": "Afficher la playlist détachée",
-	"MENU_OPTIONS_CHIBIPLAYLIST_LINK": "Copier le lien vers la playlist détachée",
+	"MENU_OPTIONS_CHIBIPLAYLIST": "Afficher la liste de lecture détachée",
+	"MENU_OPTIONS_CHIBIPLAYLIST_LINK": "Copier le lien vers la liste de lecture détachée",
 	"ERROR": "Erreur",
 	"YES": "Oui",
 	"NO": "Non",
@@ -145,6 +172,12 @@
 	"WORLD_REPOSITORY_DISABLED": {
 		"TITLE": "Dépôt World désactivé",
 		"MESSAGE": "Avec l'ajout des Collections, les dépôts World et Kara.moe ont été fusionnés. Le dépôt World n'est donc plus nécessaire et a été désactivé. Nous vous conseillons de le supprimer entièrement depuis le panneau système."
+	},
+	"DATABASE_IN_THE_FUTURE_ERROR": {
+		"TITLE": "La base de données est dans le futur, Marty !",
+		"MESSAGE": "La base de données que Karaoke Mugen essaye de lire a été utilisée par une autre application plus récente et est donc incompatible. Essayons de régler cela.\n\nSi vous cliquez sur \"ANNULER\", l'application se fermera sans rien faire. Vous devriez lancer une version plus récente de Karaoke Mugen.\n\nSi vous cliquez sur \"SUPPRIMER toutes les données\", l'application va SUPPRIMER listes de lecture, utilisateurs locaux, statistiques, etc. et démarrer normalement.",
+		"DELETE_ALL_DATA": "SUPPRIMER toutesles données",
+		"CONTINUE_ANYWAY": "Continuer quand même (risqué!)"
 	},
 	"REPO_DISABLED": {
 		"TITLE": "Dépôt désactivé",
@@ -166,9 +199,9 @@
 			"Il y a plein de façons de configurer un karaoké ! Prenez le temps de regarder les options avant de vous lancer !",
 			"Les sessions sont des évènements karaoké individuels. Il vous permettent de regrouper les chansons demandées et jouées pour vous rappeler ce qui a été joué lors d'un anniversaire, d'un mariage ou d'un évènement !",
 			"La liste noire vous permet d'exclure certains karaokés de la vue publique lors d'une session, comme par exemple les chansons pour adulte.",
-			"Les AutoMix sont des playlists crées uniquement avec les favoris de vos invités. Idéal pour se faire une soirée karaoké rapidement !",
-			"Vous ne savez pas quoi ajouter dans votre playlist ? Le bouton aléatoire vous réservera quelques surprises !",
-			"Les chansons ajoutées avec l'option \"Ajout Mystère\" apparaitront cachées dans la playlist visible par vos invités !",
+			"Les AutoMix sont des listes de lecture crées uniquement avec les favoris de vos invités. Idéal pour se faire une soirée karaoké rapidement !",
+			"Vous ne savez pas quoi ajouter dans votre liste de lecture ? Le bouton aléatoire vous réservera quelques surprises !",
+			"Les chansons ajoutées avec l'option \"Ajout Mystère\" apparaitront cachées dans la liste de lecture visible par vos invités !",
 			"Hydratez-vous régulièrement !",
 			"Ne dérangez pas les voisins !",
 			"Faites une pause pour aérer la salle de temps en temps !",
@@ -194,7 +227,7 @@
 	},
 	"DISCORD": {
 		"IDLING": [
-			"prépare ses playlists",
+			"prépare ses listes de lecture",
 			"prépare ses favoris",
 			"configure le tout",
 			"lit la doc (non)",
@@ -202,7 +235,9 @@
 			"se tourne les pouces",
 			"en convention (dans sa tête)",
 			"regarde les trains passer"
-		]
+		],
+		"QUIZ_IN_PROGRESS": "Quiz Musical en cours !",
+		"QUIET!": "Chut...!"
 	},
 	"UNKNOWN_ARTIST": "Artiste inconnu",
 	"REPOSITORY_ALREADY_EXISTS": {
@@ -237,7 +272,7 @@
 		}
 	},
 	"RESTARTING_PLAYER": "REDEMARRAGE DU LECTEUR…",
-	"ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE": "AJOUTEZ UNE CHANSON À LA PLAYLIST !",
+	"ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE": "AJOUTEZ UNE CHANSON À LA LISTE DE LECTURE !",
 	"NEW_SESSION_NAME": "Karaoké du {{date}}",
 	"FULLSCREEN_TIP": "Appuyez sur F pour sortir du plein écran.",
 	"NO_KARA_PLAYING": "Aucun karaoké en cours de lecture",
@@ -261,5 +296,33 @@
 		}
 	},
 	"OFFICIAL_WEBSITE": "Site officiel",
-	"SUGGEST_SONGS": "Suggérer des chansons !"
+	"SUGGEST_SONGS": "Suggérer des chansons !",
+	"QUIZ_RULES": {
+		"TITLE": "REGLES",
+		"SECONDS_one": "{{count}} seconde",
+		"SECONDS_other": "{{count}} secondes",
+		"POINTS_one": "{{count}} point",
+		"POINTS_other": "{{count}} points",
+		"BONUS_POINTS_one": "{{count}} point bonus",
+		"BONUS_POINTS_other": "{{count}} points bonus",
+		"GUESS_TIME": "Devinez quelle chanson est jouée en moins de <1>$t(QUIZ_RULES.SECONDS, {\"count\": {{seconds}} })</1>.",
+		"SCORE": "MARQUER DES POINTS",
+		"QUICK_ANSWER": "- Bonne réponse rapide ( < <1>$t(QUIZ_RULES.SECONDS, {\"count\": {{seconds}} })</1>) : <1>$t(QUIZ_RULES.BONUS_POINTS, {\"count\": {{points}} })</1>.",
+		"ACCEPTED_ANSWERS": "Réponses acceptées :",
+		"ACCEPTED_ANSWERS_POINTS": "($t(QUIZ_RULES.POINTS, {\"count\": {{points}} }))",
+		"END_GAME": "FIN DE PARTIE",
+		"MAX_SCORE": "- Lorque quelqu'un atteint <1>$t(QUIZ_RULES.POINTS, {\"count\": {{points}} })</1>",
+		"SONGS_one": "<1>{{count}} chanson</1>",
+		"SONGS_other": "<1>{{count}} chansons</1>",
+		"MAX_SONGS": "- Dans <1>$t(QUIZ_RULES.SONGS, {\"count\": {{songs}} })</1>",
+		"MINUTES_one": "<1>{{count}} minute</1>",
+		"MINUTES_other": "<1>{{count}} minutes</1>",
+		"DURATION": "- Dans <1>$t(QUIZ_RULES.MINUTES, {\"count\": {{duration}} })</1> de jeu",
+		"END_OF_PLAYLIST": "- Lorque la liste de lecture touche à sa fin"
+	},
+	"GOOD_ANSWER": "Bonne réponse",
+	"QUIZ_SCORES": {
+		"SCORES": "SCORES",
+		"PLAYER_POINTS": "$t(QUIZ_RULES.POINTS, {\"count\": {{points}} })"
+	}
 }

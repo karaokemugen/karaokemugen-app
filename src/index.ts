@@ -1,16 +1,16 @@
 import dotenv from 'dotenv';
 import { app } from 'electron';
-import { existsSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 import { mkdirpSync } from 'fs-extra';
 import { dirname, resolve } from 'path';
 import { createInterface } from 'readline';
 import sourceMapSupport from 'source-map-support';
 
-import { exit } from './components/engine';
-import { startElectron } from './electron/electron';
-import logger from './lib/utils/logger';
-import sentry from './utils/sentry';
-import { setState } from './utils/state';
+import { exit } from './components/engine.js';
+import { startElectron } from './electron/electron.js';
+import logger from './lib/utils/logger.js';
+import sentry from './utils/sentry.js';
+import { setState } from './utils/state.js';
 
 /** Welcome to Karaoke Mugen's beginning and end.
  * Emergency exits are on your left and right.
@@ -55,7 +55,6 @@ if (process.platform === 'win32') {
 
 // Main app begins here.
 dotenv.config();
-sentry.init(process.argv.includes('--strict'));
 
 let appPath: string;
 // Resources are all the stuff our app uses and is bundled with. mpv config files, default avatar, background, migrations, locales, etc.
@@ -77,6 +76,16 @@ if (app.isPackaged) {
 	appPath = app.getAppPath();
 	resourcePath = appPath;
 }
+
+try {
+	process.env.SENTRY_DSN = readFileSync(resolve(resourcePath, 'assets/sentry.txt'), 'utf-8').replaceAll('\n', '');
+} catch (err) {
+	// Non-fatal, continue
+}
+
+// Rewriting Sentry DSN if we find a sentry.txt file before initializing it
+
+sentry.init(process.argv.includes('--strict'));
 
 // dataPath is appPath + /app. This is default when running from source
 const dataPath = existsSync(resolve(appPath, 'portable'))

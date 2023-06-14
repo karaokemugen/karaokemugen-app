@@ -1,12 +1,8 @@
 // Karaoke Mugen App Constants
 
-import { OldJWTToken } from '../lib/types/user';
-
-export const sentryDSN = 'https://464814b9419a4880a2197b1df7e1d0ed@o399537.ingest.sentry.io/5256806';
+import { OldJWTToken } from '../lib/types/user.js';
 
 export const discordClientID = '718211141033263145';
-
-export const playlistMediasURL = 'https://mugen.karaokes.moe/medias';
 
 export const requiredMPVVersion = '>=0.33.0';
 

@@ -333,11 +333,19 @@ function KaraokeOptions(props: IProps) {
 									{' '}
 									{i18next.t('SETTINGS.PLAYLIST.ENDOFPLAYLISTACTION.OPTIONS.RANDOM')}{' '}
 								</option>
+								<option value="random_fallback">
+									{' '}
+									{i18next.t('SETTINGS.PLAYLIST.ENDOFPLAYLISTACTION.OPTIONS.RANDOM_FALLBACK')}{' '}
+								</option>
+								<option value="play_fallback">
+									{' '}
+									{i18next.t('SETTINGS.PLAYLIST.ENDOFPLAYLISTACTION.OPTIONS.PLAY_FALLBACK')}{' '}
+								</option>
 							</select>
 						</div>
 					</div>
 
-					{config['Playlist.EndOfPlaylistAction'] === 'random' ? (
+					{['random', 'random_fallback'].includes(config['Playlist.EndOfPlaylistAction']) ? (
 						<div className="settings-line">
 							<label htmlFor="Playlist.RandomSongsAfterEndMessage">
 								<span className="title">

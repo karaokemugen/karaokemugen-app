@@ -5,29 +5,30 @@ import express, { json, Router, urlencoded } from 'express';
 import { createServer } from 'http';
 import { resolve } from 'path';
 
-import authController from '../controllers/auth';
-import backgroundsController from '../controllers/frontend/backgrounds';
-import downloadController from '../controllers/frontend/download';
-import emulateController from '../controllers/frontend/emulate';
-import favoritesController from '../controllers/frontend/favorites';
-import filesController, { filesSocketController } from '../controllers/frontend/files';
-import inboxController from '../controllers/frontend/inbox';
-import karaController from '../controllers/frontend/kara';
-import miscController from '../controllers/frontend/misc';
-import playerController from '../controllers/frontend/player';
-import playlistsController from '../controllers/frontend/playlists';
-import pollController from '../controllers/frontend/poll';
-import repoController from '../controllers/frontend/repo';
-import sessionController from '../controllers/frontend/session';
-import smartPlaylistsController from '../controllers/frontend/smartPlaylists';
-import tagsController from '../controllers/frontend/tags';
-import testController from '../controllers/frontend/test';
-import userController from '../controllers/frontend/user';
-import { resolvedPath, resolvedPathRepos } from '../lib/utils/config';
-import logger, { profile } from '../lib/utils/logger';
-import { initWS, SocketIOApp } from '../lib/utils/ws';
-import sentry from '../utils/sentry';
-import { getState } from '../utils/state';
+import authController from '../controllers/auth.js';
+import backgroundsController from '../controllers/frontend/backgrounds.js';
+import downloadController from '../controllers/frontend/download.js';
+import emulateController from '../controllers/frontend/emulate.js';
+import favoritesController from '../controllers/frontend/favorites.js';
+import filesController, { filesSocketController } from '../controllers/frontend/files.js';
+import inboxController from '../controllers/frontend/inbox.js';
+import karaController from '../controllers/frontend/kara.js';
+import miscController from '../controllers/frontend/misc.js';
+import playerController from '../controllers/frontend/player.js';
+import playlistsController from '../controllers/frontend/playlists.js';
+import pollController from '../controllers/frontend/poll.js';
+import quizController from '../controllers/frontend/quiz.js';
+import repoController from '../controllers/frontend/repo.js';
+import sessionController from '../controllers/frontend/session.js';
+import smartPlaylistsController from '../controllers/frontend/smartPlaylists.js';
+import tagsController from '../controllers/frontend/tags.js';
+import testController from '../controllers/frontend/test.js';
+import userController from '../controllers/frontend/user.js';
+import { resolvedPath, resolvedPathRepos } from '../lib/utils/config.js';
+import logger, { profile } from '../lib/utils/logger.js';
+import { initWS, SocketIOApp } from '../lib/utils/ws.js';
+import sentry from '../utils/sentry.js';
+import { getState } from '../utils/state.js';
 
 const service = 'Frontend';
 
@@ -57,6 +58,7 @@ function apiRouter(ws: SocketIOApp) {
 	repoController(ws);
 	smartPlaylistsController(ws);
 	inboxController(ws);
+	quizController(ws);
 	if (getState().isTest) testController(ws);
 }
 

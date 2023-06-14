@@ -1,5 +1,15 @@
-import { Media } from './medias';
-import { CurrentSong } from './playlist';
+import { PlaylistMedia, PlaylistMediaType } from '../lib/types/playlistMedias.js';
+import { CurrentSong } from './playlist.js';
+
+export type BlindMode = '' | 'black' | 'blur';
+
+export interface SongModifiers {
+	Mute?: boolean;
+	Blind?: BlindMode;
+	NoLyrics?: boolean;
+	Pitch?: number;
+	Speed?: number;
+}
 
 export interface PlayerState {
 	volume?: number;
@@ -9,8 +19,8 @@ export interface PlayerState {
 	timeposition?: number;
 	mute?: boolean;
 	currentSong?: CurrentSong;
-	currentMedia?: Media;
-	mediaType?: 'song' | 'stop' | 'pause' | 'poll' | 'Jingles' | 'Sponsors' | 'Encores' | 'Outros' | 'Intros';
+	currentMedia?: PlaylistMedia;
+	mediaType?: 'song' | 'stop' | 'pause' | 'poll' | 'bundled' | PlaylistMediaType;
 	showSubs?: boolean;
 	onTop?: boolean;
 	fullscreen?: boolean;
@@ -21,6 +31,11 @@ export interface PlayerState {
 	songNearEnd?: boolean;
 	nextSongNotifSent?: boolean;
 	isOperating?: boolean;
+	quiz?: {
+		guessTime: number;
+		quickGuess: number;
+		revealTime: number;
+	};
 
 	// Experimental modifiers
 	pitch?: number;
@@ -36,3 +51,28 @@ export interface mpvStatus {
 export interface MpvOptions {
 	monitor: boolean;
 }
+
+export type PlayerCommand =
+	| 'play'
+	| 'stopNow'
+	| 'pause'
+	| 'stopAfter'
+	| 'skip'
+	| 'prev'
+	| 'toggleFullscreen'
+	| 'toggleAlwaysOnTop'
+	| 'toggleBorders'
+	| 'setHwDec'
+	| 'mute'
+	| 'unmute'
+	| 'showSubs'
+	| 'hideSubs'
+	| 'seek'
+	| 'goTo'
+	| 'setAudioDevice'
+	| 'setVolume'
+	| 'setPitch'
+	| 'setSpeed'
+	| 'setModifiers'
+	| 'blurVideo'
+	| 'unblurVideo';

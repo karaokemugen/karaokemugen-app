@@ -4,14 +4,15 @@ import i18next from 'i18next';
 import { MouseEvent, useContext, useMemo, useState } from 'react';
 
 import { User } from '../../../../../src/lib/types/user';
-import { AutoMixParams, PlaylistLimit } from '../../../../../src/types/favorites';
-import { closeModal } from '../../../store/actions/modal';
+import { AutoMixParams, AutoMixPlaylistInfo, PlaylistLimit } from '../../../../../src/types/favorites';
+import { closeModal, showModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
+import { useLocalSearch, useTagSearch } from '../../../utils/hooks';
 import { setPlaylistInfo } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
-import { useLocalSearch, useTagSearch } from '../../../utils/hooks';
+import { ANIMELISTS, FAVORITES, YEARS, getTagTypeName, tagTypes } from '../../../utils/tagTypes';
 import Autocomplete, { AutocompleteOption } from '../generic/Autocomplete';
-import { FAVORITES, getTagTypeName, tagTypes, YEARS } from '../../../utils/tagTypes';
+import QuizModal from './QuizModal';
 
 interface IProps {
 	userList: User[];
@@ -32,7 +33,8 @@ function AutoMixModal(props: IProps) {
 			};
 		});
 	}, [props.userList]);
-	const [userList, setUserList] = useState([]);
+	const [userFavoritesList, setUserFavoritesList] = useState([]);
+	const [userAnimeList, setUserAnimeList] = useState([]);
 	const [tagList, setTagList] = useState([]);
 	const [yearList, setYearList] = useState([]);
 	const [surprisePlaylist, setSurprisePlaylist] = useState(false);
@@ -44,10 +46,18 @@ function AutoMixModal(props: IProps) {
 	const users = useLocalSearch(memoizedUsers, type);
 
 	const onClick = async () => {
-		if (limitNumber === 0 || (userList.length === 0 && tagList.length === 0 && yearList.length === 0)) return;
+		if (
+			limitNumber === 0 ||
+			(userFavoritesList.length === 0 &&
+				userAnimeList.length === 0 &&
+				tagList.length === 0 &&
+				yearList.length === 0)
+		)
+			return;
 		const data: AutoMixParams = {
 			filters: {
-				usersFavorites: userList.length > 0 ? userList.map(mapValues) : undefined,
+				usersFavorites: userFavoritesList.length > 0 ? userFavoritesList.map(mapValues) : undefined,
+				usersAnimeList: userAnimeList.length > 0 ? userAnimeList.map(mapValues) : undefined,
 				years: yearList.length > 0 ? yearList.map(mapValues) : undefined,
 				tags: tagList.length > 0 ? tagList.map(mapValues) : undefined,
 			},
@@ -56,20 +66,30 @@ function AutoMixModal(props: IProps) {
 			playlistName: playlistName === '' ? undefined : playlistName,
 			surprisePlaylist: surprisePlaylist,
 		};
+		closeModalWithContext();
 		try {
-			const res = await commandBackend('createAutomix', data);
-			if (!data.surprisePlaylist) setPlaylistInfo(props.side, context, res.plaid);
+			const res: AutoMixPlaylistInfo = await commandBackend('createAutomix', data);
+			if (!data.surprisePlaylist) {
+				setPlaylistInfo(props.side, context, res.plaid);
+			} else {
+				showModal(context.globalDispatch, <QuizModal gamePlaylist={res.plaid} />);
+			}
 		} catch (e) {
 			// already display
 		}
-		closeModalWithContext();
 	};
 
 	const closeModalWithContext = () => closeModal(context.globalDispatch);
 
 	const onClickOutsideModal = (e: MouseEvent) => {
 		const el = document.getElementsByClassName('modal-dialog')[0];
-		if (!el.contains(e.target as Node) && userList.length === 0 && tagList.length === 0 && yearList.length === 0) {
+		if (
+			!el.contains(e.target as Node) &&
+			userFavoritesList.length === 0 &&
+			userAnimeList.length === 0 &&
+			tagList.length === 0 &&
+			yearList.length === 0
+		) {
 			closeModalWithContext();
 		}
 	};
@@ -77,7 +97,9 @@ function AutoMixModal(props: IProps) {
 	const addCriterion = () => {
 		if (search.value === '') return;
 		if (criteriaType === 1001) {
-			setUserList([...userList, search]);
+			setUserFavoritesList([...userFavoritesList, search]);
+		} else if (criteriaType === 1002) {
+			setUserAnimeList([...userAnimeList, search]);
 		} else if (criteriaType === 0) {
 			setYearList([
 				...yearList,
@@ -103,10 +125,13 @@ function AutoMixModal(props: IProps) {
 		if (criteriaType !== 1001) tagSearch('', criteriaType);
 	};
 
-	const deleteCriterion = (type: 'user' | 'year' | 'tag', value: any) => {
+	const deleteCriterion = (type: 'favorites' | 'animelist' | 'year' | 'tag', value: any) => {
 		switch (type) {
-			case 'user':
-				setUserList(userList.filter(u => u.value !== value));
+			case 'favorites':
+				setUserFavoritesList(userFavoritesList.filter(u => u.value !== value));
+				break;
+			case 'animelist':
+				setUserAnimeList(userAnimeList.filter(u => u.value !== value));
 				break;
 			case 'year':
 				setYearList(yearList.filter(y => y.value !== value));
@@ -158,6 +183,9 @@ function AutoMixModal(props: IProps) {
 								<option key={FAVORITES.type} value={FAVORITES.type}>
 									{i18next.t('AUTOMIX_MODAL.FAVOURITES')}
 								</option>
+								<option key={ANIMELISTS.type} value={ANIMELISTS.type}>
+									{i18next.t('AUTOMIX_MODAL.ANIMELISTS')}
+								</option>
 								{Object.entries(tagTypes).map(([key, value]) => (
 									<option key={value.type} value={value.type}>
 										{i18next.t(`TAG_TYPES.${key}_other`)}
@@ -170,8 +198,8 @@ function AutoMixModal(props: IProps) {
 							<div className="filterElement filterTagsOptions">
 								<Autocomplete
 									value={search.value}
-									options={criteriaType === 1001 ? users : tags}
-									onType={criteriaType === 1001 ? setType : tagSearch}
+									options={criteriaType === 1001 || criteriaType === 1002 ? users : tags}
+									onType={criteriaType === 1001 || criteriaType === 1002 ? setType : tagSearch}
 									onChange={value => setSearch(value)}
 									provideLabels={true}
 								/>
@@ -184,19 +212,38 @@ function AutoMixModal(props: IProps) {
 								<i className="fas fa-plus" /> {i18next.t('CRITERIA.ADD')}
 							</button>
 						</div>
-						{!(userList.length === 0 && tagList.length === 0 && yearList.length === 0) ? (
+						{!(
+							userFavoritesList.length === 0 &&
+							userAnimeList.length === 0 &&
+							tagList.length === 0 &&
+							yearList.length === 0
+						) ? (
 							<ul className="autoMixCriteria">
-								{userList.map(el => {
+								{userFavoritesList.map(el => {
 									return (
 										<li key={el.value} data-key={el.value}>
 											<button
 												className="btn btn-default"
-												onClick={() => deleteCriterion('user', el.value)}
+												onClick={() => deleteCriterion('favorites', el.value)}
 											>
 												<i className="fas fa-fw fa-trash"></i>
 											</button>{' '}
 											<i className="fas fa-fw fa-star"></i>{' '}
 											{i18next.t('AUTOMIX_MODAL.FAVOURITES_OF', { name: el.label })}
+										</li>
+									);
+								})}
+								{userAnimeList.map(el => {
+									return (
+										<li key={el.value} data-key={el.value}>
+											<button
+												className="btn btn-default"
+												onClick={() => deleteCriterion('animelist', el.value)}
+											>
+												<i className="fas fa-fw fa-trash"></i>
+											</button>{' '}
+											<i className="fas fa-fw fa-th-list"></i>{' '}
+											{i18next.t('AUTOMIX_MODAL.ANIMELISTS_OF', { name: el.label })}
 										</li>
 									);
 								})}
@@ -270,7 +317,10 @@ function AutoMixModal(props: IProps) {
 						</div>
 						<button className="btn btn-default confirm" onClick={onClick}>
 							{limitNumber === 0 ||
-							(userList.length === 0 && tagList.length === 0 && yearList.length === 0) ? (
+							(userFavoritesList.length === 0 &&
+								userAnimeList.length === 0 &&
+								tagList.length === 0 &&
+								yearList.length === 0) ? (
 								<>
 									<i className="fas fa-fw fa-exclamation-triangle" />{' '}
 									{i18next.t('AUTOMIX_MODAL.EMPTY')}

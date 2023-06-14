@@ -1,4 +1,4 @@
-import { DBPLC } from '../../lib/types/database/playlist';
+import { DBPLC } from '../../lib/types/database/playlist.js';
 
 export interface DBPLPos {
 	pos: number;

@@ -1,7 +1,54 @@
-import { PathType } from '../lib/types/config';
-import { Repository } from '../lib/types/repo';
-import { MediaType } from './medias';
-import { MpvHardwareDecodingOptions } from './mpvIPC';
+import { PathType } from '../lib/types/config.js';
+import { PlaylistMediaType } from '../lib/types/playlistMedias.js';
+import { Repository } from '../lib/types/repo.js';
+import { endOfPlaylistActions } from '../utils/defaultSettings.js';
+import { MpvHardwareDecodingOptions } from './mpvIPC.js';
+import { SongModifiers } from './player.js';
+
+export interface QuizGameConfig {
+	EndGame: {
+		MaxScore: {
+			Enabled: boolean;
+			Score: number;
+		};
+		MaxSongs: {
+			Enabled: boolean;
+			Songs: number;
+		};
+		Duration: {
+			Enabled: boolean;
+			Minutes: number;
+		};
+	};
+	Players: {
+		Twitch: boolean;
+		TwitchPlayerName?: string;
+		Guests: boolean;
+	};
+	TimeSettings: {
+		WhenToStartSong: number;
+		GuessingTime: number;
+		QuickGuessingTime: number;
+		AnswerTime: number;
+	};
+	Answers: {
+		Accepted: {
+			[QuizAnswers: string]: {
+				Enabled: boolean;
+				Points: number;
+			};
+		};
+		QuickAnswer: {
+			Enabled: boolean;
+			Points: number;
+		};
+		SimilarityPercentageNeeded: number;
+	};
+	Modifiers: SongModifiers;
+	PlayerMessage: string;
+}
+
+export type EndOfPlaylistAction = (typeof endOfPlaylistActions)[number];
 
 export interface Config {
 	App: {
@@ -76,6 +123,7 @@ export interface Config {
 			Choices?: number;
 			Timeout?: number;
 		};
+		QuizMode: QuizGameConfig;
 		Quota: {
 			Songs?: number;
 			Time?: number;
@@ -149,7 +197,7 @@ export interface Config {
 			AddedSongVisibilityAdmin?: boolean;
 			Labels?: string[];
 		};
-		EndOfPlaylistAction: 'random' | 'repeat' | 'none';
+		EndOfPlaylistAction: EndOfPlaylistAction;
 		RandomSongsAfterEndMessage: boolean;
 	};
 	System: {
@@ -188,10 +236,13 @@ export interface Config {
 		};
 		Repositories: Repository[];
 		MediaPath: {
-			[m in MediaType]: string[];
+			[m in PlaylistMediaType]: string[];
 		};
 		Path: {
 			[p in PathType]?: string;
 		};
+	};
+	Maintainer: {
+		ApplyLyricsCleanupOnKaraSave: boolean; // Temporary setting until there's an unified way of defining base rules (media formats, lyrics cleanup)
 	};
 }

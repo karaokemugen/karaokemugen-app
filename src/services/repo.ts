@@ -5,41 +5,41 @@ import parallel from 'p-map';
 import { basename, parse, resolve } from 'path';
 import { TopologicalSort } from 'topological-sort';
 
-import { compareKarasChecksum, generateDB } from '../dao/database';
-import { baseChecksum, editKaraInStore, getStoreChecksum, sortKaraStore } from '../dao/dataStore';
-import { updateDownloaded } from '../dao/download';
-import { deleteRepo, insertRepo, selectRepos, updateRepo } from '../dao/repo';
-import { getSettings, refreshAll, saveSetting } from '../lib/dao/database';
-import { initHooks } from '../lib/dao/hook';
-import { refreshKaras } from '../lib/dao/kara';
-import { parseKara, writeKara } from '../lib/dao/karafile';
-import { readAllKaras } from '../lib/services/generation';
-import { DBTag } from '../lib/types/database/tag';
-import { KaraMetaFile } from '../lib/types/downloads';
-import { KaraFileV4 } from '../lib/types/kara';
-import { DiffChanges, Repository, RepositoryManifest } from '../lib/types/repo';
-import { TagFile } from '../lib/types/tag';
-import { getConfig, resolvedPathRepos } from '../lib/utils/config';
-import { asyncCheckOrMkdir, listAllFiles, moveAll, relativePath, resolveFileInDirs } from '../lib/utils/files';
-import HTTP from '../lib/utils/http';
-import logger, { profile } from '../lib/utils/logger';
-import { computeFileChanges } from '../lib/utils/patch';
-import Task from '../lib/utils/taskManager';
-import { emitWS } from '../lib/utils/ws';
-import { Change, Commit, DifferentChecksumReport, ModifiedMedia, Push } from '../types/repo';
-import { adminToken } from '../utils/constants';
-import { getFreeSpace, pathIsContainedInAnother } from '../utils/files';
-import FTP from '../utils/ftp';
-import Git, { isGit } from '../utils/git';
-import { applyPatch, cleanFailedPatch, downloadAndExtractZip, writeFullPatchedFiles } from '../utils/patch';
-import sentry from '../utils/sentry';
-import { getState } from '../utils/state';
-import { updateMedias } from './downloadMedias';
-import { getKara, getKaras } from './kara';
-import { createKaraInDB, deleteKara, integrateKaraFile } from './karaManagement';
-import { createProblematicSmartPlaylist, updateAllSmartPlaylists } from './smartPlaylist';
-import { sendPayload } from './stats';
-import { getTags, integrateTagFile, removeTag } from './tag';
+import { compareKarasChecksum, generateDB } from '../dao/database.js';
+import { baseChecksum, editKaraInStore, getStoreChecksum, sortKaraStore } from '../dao/dataStore.js';
+import { updateDownloaded } from '../dao/download.js';
+import { deleteRepo, insertRepo, selectRepos, updateRepo } from '../dao/repo.js';
+import { getSettings, refreshAll, saveSetting } from '../lib/dao/database.js';
+import { initHooks } from '../lib/dao/hook.js';
+import { refreshKaras } from '../lib/dao/kara.js';
+import { parseKara, writeKara } from '../lib/dao/karafile.js';
+import { readAllKaras } from '../lib/services/generation.js';
+import { DBTag } from '../lib/types/database/tag.js';
+import { KaraMetaFile } from '../lib/types/downloads.js';
+import { KaraFileV4 } from '../lib/types/kara.js';
+import { DiffChanges, Repository, RepositoryManifest } from '../lib/types/repo.js';
+import { TagFile } from '../lib/types/tag.js';
+import { getConfig, resolvedPathRepos } from '../lib/utils/config.js';
+import { asyncCheckOrMkdir, listAllFiles, moveAll, relativePath, resolveFileInDirs } from '../lib/utils/files.js';
+import HTTP from '../lib/utils/http.js';
+import logger, { profile } from '../lib/utils/logger.js';
+import { computeFileChanges } from '../lib/utils/patch.js';
+import Task from '../lib/utils/taskManager.js';
+import { emitWS } from '../lib/utils/ws.js';
+import { Change, Commit, DifferentChecksumReport, ModifiedMedia, Push } from '../types/repo.js';
+import { adminToken } from '../utils/constants.js';
+import { getFreeSpace, pathIsContainedInAnother } from '../utils/files.js';
+import FTP from '../utils/ftp.js';
+import Git, { isGit } from '../utils/git.js';
+import { applyPatch, cleanFailedPatch, downloadAndExtractZip, writeFullPatchedFiles } from '../utils/patch.js';
+import sentry from '../utils/sentry.js';
+import { getState } from '../utils/state.js';
+import { updateMedias } from './downloadMedias.js';
+import { getKara, getKaras } from './kara.js';
+import { createKaraInDB, deleteKara, integrateKaraFile } from './karaManagement.js';
+import { createProblematicSmartPlaylist, updateAllSmartPlaylists } from './smartPlaylist.js';
+import { sendPayload } from './stats.js';
+import { getTags, integrateTagFile, removeTag } from './tag.js';
 
 const service = 'Repo';
 
@@ -1084,7 +1084,7 @@ export async function generateCommits(repoName: string) {
 				removedFiles: [],
 				message: `📝 🎤 Update ${song}`,
 			};
-			// Modified songs can be ernamed so we need to find out how it was named before
+			// Modified songs can be renamed so we need to find out how it was named before
 			// We need to find out if some tags have been added or modified and add them to our commit
 			const kara = karas.content.find(k => k.karafile === basename(file));
 			if (!kara) {
@@ -1274,7 +1274,7 @@ export async function pushCommits(repoName: string, push: Push, ignoreFTP?: bool
 				await git.commit(commit.message);
 				task.incr();
 			}
-			// All our commits are hopefully done. Just inc ase we'll update repository now.
+			// All our commits are hopefully done. Just in case we'll update repository now.
 			await updateGitRepo(repoName);
 			await git.push();
 			emitWS('pushComplete', repoName);

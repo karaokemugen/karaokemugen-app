@@ -589,12 +589,14 @@
 				"ANILIST_PLACEHOLDER": "karaokemugen",
 				"KITSU": "Kitsu",
 				"KITSU_PLACEHOLDER": "karaokemugen",
-				"TWITTER_PLACEHOLDER": "@KaraokeMugen",
 				"TWITCH": "Twitch",
 				"INSTAGRAM_PLACEHOLDER": "karaokemugen",
 				"INSTAGRAM": "Instagram",
 				"TWITCH_PLACEHOLDER": "KaraokeLive",
 				"TWITTER": "Twitter",
+				"TWITTER_PLACEHOLDER": "@KaraokeMugen",
+				"MASTODON": "Mastodon",
+				"MASTODON_PLACEHOLDER": "KaraokeMugen@shelter.moe",
 				"MYANIMELIST_PLACEHOLDER": "karaokemugen",
 				"DISCORD": "Discord",
 				"DISCORD_PLACEHOLDER": "Karak#1423"
@@ -1774,6 +1776,7 @@
 			"SOCIAL_NETWORKS": {
 				"INSTAGRAM": "Instagram: ",
 				"TWITTER": "Twitter: ",
+				"MASTODON": "Mastodon: ",
 				"DISCORD": "Discord: ",
 				"TWITCH": "Twitch: "
 			}

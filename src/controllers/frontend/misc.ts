@@ -1,28 +1,28 @@
 import { sample } from 'lodash';
 import { Socket } from 'socket.io';
 
-import { shutdown } from '../../components/engine';
-import { getMpvAudioOutputs } from '../../components/mpv';
-import { generateDB } from '../../dao/database';
-import { getSettings, saveSetting } from '../../lib/dao/database';
-import { generateDatabase } from '../../lib/services/generation';
-import { APIData } from '../../lib/types/api';
-import { getConfig } from '../../lib/utils/config';
-import { enableWSLogging, readLog } from '../../lib/utils/logger';
-import { SocketIOApp } from '../../lib/utils/ws';
-import { getMigrationsFrontend, setMigrationsFrontend } from '../../services/migrationsFrontend';
-import { getFeeds } from '../../services/proxyFeeds';
-import { destroyRemote, initRemote } from '../../services/remote';
-import { updateSongsLeft } from '../../services/user';
-import { backupConfig, editSetting, getPublicConfig } from '../../utils/config';
-import { initializationCatchphrases } from '../../utils/constants';
-import { getDisplays } from '../../utils/displays';
-import { browseFs } from '../../utils/files';
-import { selectLogFile } from '../../utils/logger';
-import { dumpPG, restorePG } from '../../utils/postgresql';
-import { getPlayerState, getPublicState, getState } from '../../utils/state';
-import { APIMessage, errMessage } from '../common';
-import { runChecklist } from '../middlewares';
+import { shutdown } from '../../components/engine.js';
+import { getMpvAudioOutputs } from '../../components/mpv.js';
+import { generateDB } from '../../dao/database.js';
+import { getSettings, saveSetting } from '../../lib/dao/database.js';
+import { generateDatabase } from '../../lib/services/generation.js';
+import { APIData } from '../../lib/types/api.js';
+import { getConfig } from '../../lib/utils/config.js';
+import { enableWSLogging, readLog } from '../../lib/utils/logger.js';
+import { SocketIOApp } from '../../lib/utils/ws.js';
+import { getMigrationsFrontend, setMigrationsFrontend } from '../../services/migrationsFrontend.js';
+import { getFeeds } from '../../services/proxyFeeds.js';
+import { destroyRemote, initRemote } from '../../services/remote.js';
+import { updateSongsLeft } from '../../services/user.js';
+import { backupConfig, editSetting, getPublicConfig } from '../../utils/config.js';
+import { initializationCatchphrases } from '../../utils/constants.js';
+import { getDisplays } from '../../utils/displays.js';
+import { browseFs } from '../../utils/files.js';
+import { selectLogFile } from '../../utils/logger.js';
+import { dumpPG, restorePG } from '../../utils/postgresql.js';
+import { getPlayerState, getPublicState, getState } from '../../utils/state.js';
+import { APIMessage, errMessage } from '../common.js';
+import { runChecklist } from '../middlewares.js';
 
 export default function miscController(router: SocketIOApp) {
 	router.route('openLogFile', async (socket: Socket, req: APIData) => {

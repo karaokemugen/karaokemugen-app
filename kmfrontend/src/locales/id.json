@@ -215,7 +215,8 @@
 			"DISPLAY_SONGINFO": "Tampilkan informasi lagu",
 			"DISPLAY_SONGINFO_TOOLTIP": "Informasi (judul, serial, penyanyi, dll.) ditampilkan saat awal dan akhir lagu, juga saat layar jeda di mode Siar/Klasik. Matikan untuk menyembunyikannya, untuk uji buta contohnya.",
 			"LIVE_COMMENTS": "Komentar langsung",
-			"LIVE_COMMENTS_TOOLTIP": "Pesan percakapan kamu akan ditampilkan di layar (hati-hati, konfigurasikan dengan benar mod otomatis kamu)."
+			"LIVE_COMMENTS_TOOLTIP": "Pesan percakapan kamu akan ditampilkan di layar (hati-hati, konfigurasikan dengan benar mod otomatis kamu).",
+			"SCREEN_SETTINGS": "Layar"
 		},
 		"SYSTEMPANEL_TIP": "Kamu tidak bisa menemukan pilihan yang kamu cari? <2>Beberapa pilihan sekarang ada di <3>bilah sistem</3>.</2>",
 		"KARAOKE": {
@@ -506,7 +507,8 @@
 		"ACTIVE_SESSION": "Sesi Aktif: ",
 		"EDIT_SESSION": "Sunting sesi",
 		"ADMINISTRATION": "BILAH SISTEM",
-		"COLLECTIONS": "KOLEKSI"
+		"COLLECTIONS": "KOLEKSI",
+		"STATS_USAGETIME": "Waktu Penggunaan"
 	},
 	"LOGOUT": "Keluar",
 	"QUOTA_TIME": "Waktu tersisa",
@@ -805,7 +807,8 @@
 		"CATEGORY": "Kategori",
 		"DESC": {
 			"PAUSE": "Antar lagu (mode penyiar/klasik)",
-			"POLL": "Ketika jajak pendapat sedang berlangsung."
+			"POLL": "Ketika jajak pendapat sedang berlangsung.",
+			"STOP": "Ketika pemutar dalam keadaan berhenti."
 		},
 		"PICTURES": "Gambar",
 		"MUSIC": "Musik"
@@ -821,6 +824,7 @@
 			"URL": "Situs Web: ",
 			"SOCIAL_NETWORKS": {
 				"TWITTER": "Twitter: ",
+				"MASTODON": "Mastodon: ",
 				"INSTAGRAM": "Instagram: ",
 				"DISCORD": "Discord: ",
 				"TWITCH": "Twitch: "
@@ -851,7 +855,7 @@
 		"ACCOUNT_QUESTION": "Apakah kamu ingin menggunakan akun lokal (hanya di komputer kamu saja) atau akun daring (akses internet diperlukan)?",
 		"MODIFY_DIRECTORY": "Ubah folder",
 		"CHOOSE_DIRECTORY": "Pilih folder",
-		"ONLINE_ACCOUNT_SAVE_INFOS": "Cadangkan lagu favorit, avatar, dan informasi profil kamu untuk mendapatkan mereka lagi di komputer berbeda.",
+		"ONLINE_ACCOUNT_SAVE_INFOS": "Cadangkan lagu, avatar, dan info profil favorit Anda untuk mendapatkannya kembali dari komputer lain.",
 		"ONLINE_ACCOUNT_LOST_PASSWORD": "Jika kamu memberikan alamat surel, kamu akan bisa memulihkan akun kamu jika kamu lupa kata sandi.",
 		"LOCAL_ACCOUNT_DESC": "Kamu memilih akun lokal. Ketik nama akun dan kata sandi di bawah ini:",
 		"ONLINE_ACCOUNT_INSTANCE": "Akun daring kamu akan dihos di peladen {{instance}}",
@@ -948,6 +952,8 @@
 				"INSTAGRAM_PLACEHOLDER": "karaokemugen",
 				"DISCORD_PLACEHOLDER": "Karak#1423",
 				"TWITTER": "Twitter",
+				"MASTODON": "Mastodon",
+				"MASTODON_PLACEHOLDER": "KaraokeMugen@shelter.moe",
 				"DISCORD": "Discord",
 				"MYANIMELIST": "MyAnimeList",
 				"MYANIMELIST_PLACEHOLDER": "karaokemugen",
@@ -997,7 +1003,11 @@
 			},
 			"DONE": "Tugas berhasil diselesaikan.",
 			"EMPTY": "Tidak ada yang berubah!",
-			"DESCRIPTION": "Selamat datang di sisi tindakan berbahaya. Sepertinya kamu bisa mengacaukan banyak hal di sini. Berikut ringkasan singkat dari hasil suntingan yang terdeteksi :"
+			"DESCRIPTION": "Selamat datang di sisi tindakan berbahaya. Sepertinya kamu bisa mengacaukan banyak hal di sini. Berikut ringkasan singkat dari hasil suntingan yang terdeteksi :",
+			"STASH": {
+				"BTN": "Pengeditan simpanan",
+				"DESC": "Simpan hasil suntingan Anda untuk digunakan kembali."
+			}
 		},
 		"PLAYLIST_MODAL": {
 			"CANNOT_BLACKLIST": "Kamu tidak bisa tidak mempunyai daftar hitam, sunting yang kamu ingin untuk atur sebagai daftar hitam baru.",
@@ -1057,7 +1067,8 @@
 			"VOTES_one": "{{count}} suara ({{percent}}%)",
 			"VOTES_other": "{{count}} suara ({{percent}}%)",
 			"REMAINING_one": "{{count}} detik tersisa",
-			"REMAINING_other": "{{count}} detik tersisa"
+			"REMAINING_other": "{{count}} detik tersisa",
+			"VOTED": "Terpilih!"
 		},
 		"RESTART_DOWNLOADS_MODAL": {
 			"TITLE": "Unduhan tertunda",
@@ -1080,6 +1091,12 @@
 			"DESC": "Kami menggunakan favorit dan juga karaoke kamu yang kamu minta ketika sebuah sesi untuk membuat statistik penggunaan (sebagai contoh, untuk mencari tahu karaoke yang paling sering diminta).",
 			"REFUSE_DESC": "Jika kamu tidak ingin berpartisipasi, meskipun awanama di statistik penggunaan tersebut, mohon beritahu kami. Jika kamu menolak, data kamu akan diabaikan oleh peladen dan tidak akan dikirimkan oleh aplikasi Karaoke Mugen.",
 			"CHANGE": "Kamu bisa mengubah ini kapan saja di profil kamu. Apakah kamu setuju tentang penggunaan statistik kamu?"
+		},
+		"EXPORT_PLAYLIST_MEDIA": {
+			"START": "File media sedang diekspor…",
+			"DONE": "File media daftar putar sudah diekspor",
+			"DONE_PARTIALLY": "File media daftar putar telah diekspor, meskipun tidak dapat disimpan:",
+			"NOT_ALL_MEDIA_DOWNLOADED": "Tidak semua media tersedia secara lokal. Pastikan untuk mengunduh semua video sebelum mengekspor daftar putar"
 		}
 	},
 	"REPOSITORIES": {
@@ -1312,7 +1329,8 @@
 		"CANNOT_INSTALL_REPO_AT_WINDOWS_ROOT_DRIVE": "Repositori tidak bisa dipasang pada root diska Windows.",
 		"DATABASE_DUMPED_ERROR": "Galat melegokan basis data",
 		"GUESTS_NOT_ALLOWED": "Akun tamu tidak diperbolehkan",
-		"DELETE_PLAYLIST_ERROR_PUBLIC": "Tidak bisa menghapus daftar putar publik. Buat dulu daftar putar publik lain."
+		"DELETE_PLAYLIST_ERROR_PUBLIC": "Tidak bisa menghapus daftar putar publik. Buat dulu daftar putar publik lain.",
+		"DELETE_PLAYLIST_ERROR_BLACKLIST": "Tidak dapat menghapus daftar hitam. Jadikan daftar putar lain sebagai daftar hitam terlebih dahulu."
 	},
 	"SUCCESS_CODES": {
 		"SESSION_MERGED": "Sesi berhasil digabung",
@@ -1470,7 +1488,9 @@
 		"COLLECTIONS_REQUIRED": "Sebuah koleksi itu wajib",
 		"SINGERGROUPS_BY": "dari klub musik",
 		"DESC": {
-			"TITLES_DEFAULT_LANGUAGE": "Bahasa judul baku harus judul orisinil lagi. Untuk judul pada bahasa non-latin (tiongkok, jepang, arab, korea, dll.), tambahkan judul \"Romanization\" dan jadikan itu baku."
+			"TITLES_DEFAULT_LANGUAGE": "Bahasa judul baku harus judul orisinil lagi. Untuk judul pada bahasa non-latin (tiongkok, jepang, arab, korea, dll.), tambahkan judul \"Romanization\" dan jadikan itu baku.",
+			"PARENTS": "Jika lagu ini adalah versi alternatif dari lagu lain, pilih induknya untuk mengisi formulir ini.",
+			"PARENTS_PUBLIC": "Ketika pengguna memilih lagu induk di antarmuka publik, mereka akan melihat semua versi turunan/alternatifnya."
 		}
 	},
 	"USERS": {
@@ -1625,11 +1645,22 @@
 		"Terlalu tenang, aku tidak suka ini…",
 		"Persiapan sedang berjalan!"
 	],
-	"JINGLE_TAGLINES": ["Kami akan segera kembali!"],
+	"JINGLE_TAGLINES": [
+		"Kami akan segera kembali!"
+	],
 	"INTRO_TIME": "Introduksi daftar putar",
-	"INTRO_TAGLINES": ["Ayo!", "Memulai…", "Inisialisasi…", "Siapkan mikrofon kamu!", "*bersihkan tenggorokan*"],
+	"INTRO_TAGLINES": [
+		"Ayo!",
+		"Memulai…",
+		"Inisialisasi…",
+		"Siapkan mikrofon kamu!",
+		"*bersihkan tenggorokan*"
+	],
 	"OUTRO_TIME": "Penutup daftar putar",
-	"OUTRO_TAGLINES": ["Tamat :(", "Terima kasih semuanya!"],
+	"OUTRO_TAGLINES": [
+		"Tamat :(",
+		"Terima kasih semuanya!"
+	],
 	"ENCORES_TIME": "Ekstra! Ekstra!",
 	"ENCORES_TAGLINES": [
 		"Yah, bukan karena aku menyukaimu atau apa gitu…",
@@ -1637,7 +1668,10 @@
 		"Lagu terakhir, berikan yang terbaik!"
 	],
 	"SPONSOR_TIME": "IKLAN!",
-	"SPONSOR_TAGLINES": ["Kono bangumi wa…", "Dan terima kasih atas uangnya."],
+	"SPONSOR_TAGLINES": [
+		"Kono bangumi wa…",
+		"Dan terima kasih atas uangnya."
+	],
 	"QUOTA_AVAILABLE": "Kamu sekarang bisa menambahkan lagu lagi!",
 	"SERIE_NAME_MODE": "Mode bahasa serial",
 	"SERIE_NAME_MODE_TOOLTIP": "Ubah bagaimana nama serial ditampilkan di daftar lagu. Mungkin diabaikan oleh preferensi pengguna",
@@ -1652,8 +1686,15 @@
 		"CONNECTED": "Tersambung"
 	},
 	"REMOTE_TOKEN": "Token akses jarak jauh",
-	"PAUSE_TAGLINES": ["Beristirahatlah!", "Saatnya minum!", "Kami akan segera kembali!"],
-	"POLL_TAGLINES": ["Suarakan! Suarakan!", "Pilihan ada pada kamu."],
+	"PAUSE_TAGLINES": [
+		"Beristirahatlah!",
+		"Saatnya minum!",
+		"Kami akan segera kembali!"
+	],
+	"POLL_TAGLINES": [
+		"Suarakan! Suarakan!",
+		"Pilihan ada pada kamu."
+	],
 	"REMOTE_URL": "URL akses jarak jauh",
 	"DATABASE": {
 		"REGENERATE_DB": "Membuat kembali basis data kamu",
@@ -1685,7 +1726,10 @@
 				"PLAYER_PLMEDIA": "Tidak bisa untuk memutar media daftar putar",
 				"SHORTENER": "Galat ketika mengaktifkan penyingkat URL",
 				"POLL_PUBLIC_PL_EMPTY": "Tidak bisa memulai jajak pendapat: daftar putar publik kosong",
-				"POLL_NOT_ENOUGH_SONGS": "Tidak bisa memulai jajak pendapat: tidak cukup lagu tersedia"
+				"POLL_NOT_ENOUGH_SONGS": "Tidak bisa memulai jajak pendapat: tidak cukup lagu tersedia",
+				"PLAYER_NO_ONLINE_MEDIA": "Media tidak dapat dibaca dari sumber online. Periksa koneksi internet Anda.",
+				"AUTOMIX_NO_SONGS_MEET_CRITERIAS": "Tidak ada lagu yang memenuhi kriteria yang dipilih untuk AutoMix ini",
+				"PLAYLIST_FREE_ORPHANED_SONGS": "Tidak dapat membebaskan lagu-lagu yatim piatu"
 			}
 		}
 	},
@@ -1722,5 +1766,7 @@
 	"COLLECTIONS_MIGRATION": {
 		"TITLE": "Memperkenalkan koleksi!"
 	},
-	"TOOLTIP_KARA_ALREADY_ADDED": "Lagu ini telah ada di daftar putar."
+	"TOOLTIP_KARA_ALREADY_ADDED": "Lagu ini telah ada di daftar putar.",
+	"SHOW-HIDE": "Tampilkan/Sembunyikan",
+	"UNKNOWN": "Tidak dikenal"
 }

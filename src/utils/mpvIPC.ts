@@ -2,8 +2,8 @@ import { ChildProcess, spawn } from 'child_process';
 import { EventEmitter } from 'events';
 import { Socket } from 'net';
 
-import { defineMPVEnv } from '../components/mpv';
-import { MpvCommand } from '../types/mpvIPC';
+import { defineMPVEnv } from '../components/mpv.js';
+import { MpvCommand } from '../types/mpvIPC.js';
 
 class Mpv extends EventEmitter {
 	binary: string;

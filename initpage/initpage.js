@@ -32,7 +32,7 @@
 	};
 
 	String.prototype['autoLink'] = autoLink;
-}.call(this));
+}).call(this);
 
 const ipcRenderer = require('electron').ipcRenderer;
 

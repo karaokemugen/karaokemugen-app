@@ -1,15 +1,15 @@
-import { deleteFavorites, insertFavorites, truncateFavorites } from '../dao/favorites';
-import { DBKara } from '../lib/types/database/kara';
-import { KaraList, KaraParams } from '../lib/types/kara';
-import { getConfig } from '../lib/utils/config';
-import { uuidRegexp } from '../lib/utils/constants';
-import HTTP from '../lib/utils/http';
-import logger, { profile } from '../lib/utils/logger';
-import { emitWS } from '../lib/utils/ws';
-import { FavExport, FavExportContent } from '../types/favorites';
-import sentry from '../utils/sentry';
-import { getKaras, isAllKaras } from './kara';
-import { getUser } from './user';
+import { deleteFavorites, insertFavorites, truncateFavorites } from '../dao/favorites.js';
+import { DBKara } from '../lib/types/database/kara.js';
+import { KaraList, KaraParams } from '../lib/types/kara.js';
+import { getConfig } from '../lib/utils/config.js';
+import { uuidRegexp } from '../lib/utils/constants.js';
+import HTTP from '../lib/utils/http.js';
+import logger, { profile } from '../lib/utils/logger.js';
+import { emitWS } from '../lib/utils/ws.js';
+import { FavExport, FavExportContent } from '../types/favorites.js';
+import sentry from '../utils/sentry.js';
+import { getKaras, isAllKaras } from './kara.js';
+import { getUser } from './user.js';
 
 const service = 'Favorites';
 

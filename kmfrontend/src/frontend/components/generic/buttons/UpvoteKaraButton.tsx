@@ -16,7 +16,7 @@ export default function UpvoteKaraButton(props: Props) {
 		const plc_id = props.kara.public_plc_id[0];
 		const data = props.kara.flag_upvoted ? { downvote: 'true', plc_id: plc_id } : { plc_id: plc_id };
 		commandBackend('votePLC', data).catch(() => {});
-		props.updateKara();
+		props.updateKara && props.updateKara();
 	};
 
 	return (

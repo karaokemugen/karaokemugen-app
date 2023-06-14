@@ -2,22 +2,22 @@ import i18n from 'i18next';
 import { sample, sampleSize } from 'lodash';
 import { setTimeout as sleep } from 'timers/promises';
 
-import { APIMessage } from '../controllers/common';
-import { DBPLC } from '../lib/types/database/playlist';
-import { OldJWTToken } from '../lib/types/user';
-import { getConfig } from '../lib/utils/config';
-import { Timer } from '../lib/utils/date';
-import logger from '../lib/utils/logger';
-import { emit, on } from '../lib/utils/pubsub';
-import { emitWS } from '../lib/utils/ws';
-import { PollItem, PollObject, PollResults } from '../types/poll';
-import { State } from '../types/state';
-import { adminToken } from '../utils/constants';
-import { getState, setState } from '../utils/state';
-import { sayTwitch } from '../utils/twitch';
-import { getSongSeriesSingers, getSongTitle, getSongVersion } from './kara';
-import { displayInfo, playerMessage } from './player';
-import { copyKaraToPlaylist, editPLC, getPlaylistContentsMini } from './playlist';
+import { APIMessage } from '../controllers/common.js';
+import { DBPLC } from '../lib/types/database/playlist.js';
+import { OldJWTToken } from '../lib/types/user.js';
+import { getConfig } from '../lib/utils/config.js';
+import { Timer } from '../lib/utils/date.js';
+import logger from '../lib/utils/logger.js';
+import { emit, on } from '../lib/utils/pubsub.js';
+import { emitWS } from '../lib/utils/ws.js';
+import { PollItem, PollObject, PollResults } from '../types/poll.js';
+import { State } from '../types/state.js';
+import { adminToken } from '../utils/constants.js';
+import { getState, setState } from '../utils/state.js';
+import { sayTwitch } from '../utils/twitch.js';
+import { getSongSeriesSingers, getSongTitle, getSongVersion } from './kara.js';
+import { displayInfo, playerMessage } from './player.js';
+import { copyKaraToPlaylist, editPLC, getPlaylistContentsMini } from './playlist.js';
 
 const service = 'Poll';
 
@@ -25,7 +25,7 @@ let poll: PollItem[] = [];
 let voters = new Set();
 let pollDate: Date;
 let pollEnding = false;
-let clock: any;
+let clock: Timer;
 
 on('stateUpdated', (state: State) => {
 	if (!state.songPoll === false && poll.length > 0) stopPoll();
@@ -72,7 +72,7 @@ export async function timerPoll() {
 	const conf = getConfig();
 	const duration = conf.Karaoke.Poll.Timeout;
 	clock = new Timer(duration * 1000);
-	await sleep(duration * 1000);
+	await clock.wait();
 	// Hey, Axel from a while ago, why are you writing this?
 	if (internalDate === pollDate) endPoll();
 }
@@ -197,6 +197,10 @@ export async function startPoll(): Promise<boolean> {
 		logger.info('Unable to start poll, another one is already in progress', { service });
 		emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.POLL_ALREADY_STARTED'));
 
+		return false;
+	}
+	if (getState().quizMode) {
+		// No poll in quiz mode
 		return false;
 	}
 	logger.info('Starting a new poll', { service });

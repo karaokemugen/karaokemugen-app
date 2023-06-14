@@ -1,6 +1,6 @@
-import { db } from '../lib/dao/database';
-import { DBStatsPlayed, DBStatsRequested } from '../types/database/stats';
-import { sqlexportPlayed, sqlexportRequested } from './sql/stats';
+import { db } from '../lib/dao/database.js';
+import { DBStatsPlayed, DBStatsRequested } from '../types/database/stats.js';
+import { sqlexportPlayed, sqlexportRequested } from './sql/stats.js';
 
 export async function selectPlayed(): Promise<DBStatsPlayed[]> {
 	const res = await db().query(sqlexportPlayed);

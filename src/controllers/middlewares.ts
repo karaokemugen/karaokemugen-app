@@ -1,15 +1,16 @@
 import { merge } from 'lodash';
 import { Socket } from 'socket.io';
 
-import { APIData } from '../lib/types/api';
-import { OldJWTToken, Role, User } from '../lib/types/user';
-import { getConfig } from '../lib/utils/config';
-import { userTypes } from '../lib/utils/constants';
-import logger from '../lib/utils/logger';
-import { decodeJwtToken, getUser, updateLastLoginName } from '../services/user';
-import { WebappModes } from '../types/frontend';
-import { webappModes } from '../utils/constants';
-import { APIMessage } from './common';
+import { APIData } from '../lib/types/api.js';
+import { OldJWTToken, Role, User } from '../lib/types/user.js';
+import { getConfig } from '../lib/utils/config.js';
+import { userTypes } from '../lib/utils/constants.js';
+import logger from '../lib/utils/logger.js';
+import { decodeJwtToken, getUser, updateLastLoginName } from '../services/user.js';
+import { WebappModes } from '../types/frontend.js';
+import { webappModes } from '../utils/constants.js';
+import { getState } from '../utils/state.js';
+import { APIMessage } from './common.js';
 
 interface APIChecklistOptions {
 	optionalAuth?: boolean;
@@ -46,9 +47,11 @@ export async function runChecklist(
 }
 
 function checkWebAppMode(data: APIData, webappModeNeeded: WebappModes) {
+	// In quiz mode, the web app is open
+	const webAppMode = getState().quizMode ? 1 : +getConfig().Frontend.Mode;
 	// Admins get a bypass.
 	if (data.user?.type === 0) return;
-	if (+getConfig().Frontend.Mode < webappModes[webappModeNeeded]) {
+	if (webAppMode < webappModes[webappModeNeeded]) {
 		throw { code: 503, message: APIMessage('WEBAPPMODE_CLOSED_API_MESSAGE') };
 	}
 }

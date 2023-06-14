@@ -2,25 +2,33 @@ import i18next from 'i18next';
 import { sample } from 'lodash';
 import { resolve } from 'path';
 
-import { APIMessage } from '../controllers/common';
-import { selectPlaylistContentsMicro, updatePlaylistDuration, updatePlaylistLastEditTime } from '../dao/playlist';
-import { selectUpvotesByPLC } from '../dao/upvote';
-import { DBKara } from '../lib/types/database/kara';
-import { DBPLC } from '../lib/types/database/playlist';
-import { getConfig, resolvedPath } from '../lib/utils/config';
-import { fileExists } from '../lib/utils/files';
-import logger, { profile } from '../lib/utils/logger';
-import { emitWS } from '../lib/utils/ws';
-import { CurrentSong } from '../types/playlist';
-import { adminToken } from '../utils/constants';
-import sentry from '../utils/sentry';
-import { getState, setState } from '../utils/state';
-import { writeStreamFiles } from '../utils/streamerFiles';
-import { addPlayedKara, getKara, getKaras, getSongSeriesSingers, getSongTitle, getSongVersion } from './kara';
-import { initAddASongMessage, mpv, next, restartPlayer, stopAddASongMessage, stopPlayer } from './player';
-import { getCurrentSong, getPlaylistInfo, shufflePlaylist, updateUserQuotas } from './playlist';
-import { startPoll } from './poll';
-import { getUser } from './user';
+import { APIMessage } from '../controllers/common.js';
+import { selectPlaylistContentsMicro, updatePlaylistDuration, updatePlaylistLastEditTime } from '../dao/playlist.js';
+import { selectUpvotesByPLC } from '../dao/upvote.js';
+import { DBKara } from '../lib/types/database/kara.js';
+import { DBPLC } from '../lib/types/database/playlist.js';
+import { getConfig, resolvedPath } from '../lib/utils/config.js';
+import { fileExists } from '../lib/utils/files.js';
+import logger, { profile } from '../lib/utils/logger.js';
+import { emitWS } from '../lib/utils/ws.js';
+import { CurrentSong } from '../types/playlist.js';
+import { adminToken } from '../utils/constants.js';
+import sentry from '../utils/sentry.js';
+import { getState, setState } from '../utils/state.js';
+import { writeStreamFiles } from '../utils/streamerFiles.js';
+import { addPlayedKara, getKara, getKaras, getSongSeriesSingers, getSongTitle, getSongVersion } from './kara.js';
+import { initAddASongMessage, mpv, next, restartPlayer, stopAddASongMessage, stopPlayer } from './player.js';
+import {
+	editPlaylist,
+	getCurrentSong,
+	getPlaylistContentsMini,
+	getPlaylistInfo,
+	shufflePlaylist,
+	updateUserQuotas,
+} from './playlist.js';
+import { startPoll } from './poll.js';
+import { setQuizModifier, startQuizRound } from './quiz.js';
+import { getUser } from './user.js';
 
 const service = 'KaraEngine';
 
@@ -79,7 +87,7 @@ export async function getSongInfosForPlayer(kara: DBKara | DBPLC): Promise<{ inf
 	// Escaping {} because it'll be interpreted as ASS tags below.
 	let requestedBy = '';
 	let avatarfile = null;
-	if (getConfig().Player.Display.Nickname && 'nickname' in kara) {
+	if (!getState().quizMode && getConfig().Player.Display.Nickname && 'nickname' in kara) {
 		const upvoters = await selectUpvotesByPLC(kara.plcid);
 		// Escaping {} because it'll be interpreted as ASS tags below.
 		kara.nickname = kara.nickname.replace(/[{}]/g, '');
@@ -117,8 +125,9 @@ export async function getSongInfosForPlayer(kara: DBKara | DBPLC): Promise<{ inf
 	let infos = `{\\bord2}{\\fscx70}{\\fscy70}{\\b1}${series}{\\b0}\\N{\\i1}${kara.songtypes
 		.map(s => s.name)
 		.join(' ')}${kara.songorder || ''} - ${getSongTitle(kara)}${versions}{\\i0}${requestedBy}`;
-	if ('flag_visible' in kara && kara.flag_visible === false) {
+	if ('flag_visible' in kara && kara.flag_visible === false && !getState().quizMode) {
 		// We're on a PLC with a flag_visible set to false, let's hide stuff!
+		// But we don't hide it if we're in quiz mode. Because you know.
 		const invisibleSong = sample(getConfig().Playlist.MysterySongs.Labels);
 		infos = `{\\bord2}{\\fscx70}{\\fscy70}{\\b1}${invisibleSong}{\\b0}${requestedBy}`;
 	}
@@ -130,12 +139,28 @@ export async function getSongInfosForPlayer(kara: DBKara | DBPLC): Promise<{ inf
 
 export async function playRandomSongAfterPlaylist() {
 	try {
-		const karas = await getKaras({
-			username: adminToken.username,
-			random: 1,
-			blacklist: true,
-		});
-		const kara = karas.content[0];
+		let kara: DBKara | DBPLC;
+
+		if (getConfig().Playlist.EndOfPlaylistAction === 'random_fallback') {
+			const fallbackPlaylistId = getState().fallbackPlaid;
+			if (fallbackPlaylistId) {
+				const playlistContent = await getPlaylistContentsMini(fallbackPlaylistId);
+				const notPlayedKaras = playlistContent.filter(plKara => !plKara.flag_dejavu);
+				// If all karas in fallback playlist have been played, ignore the dejavu flag and pick a random played one
+				// (Instead, we could also stop the player here or take a random kara from the library)
+				const karaPool = notPlayedKaras.length > 0 ? notPlayedKaras : playlistContent;
+				kara =
+					karaPool.length > 0 &&
+					(await getKara(karaPool[Math.floor(Math.random() * karaPool.length)].kid, adminToken));
+			}
+		} else {
+			const karas = await getKaras({
+				username: adminToken.username,
+				random: 1,
+				blacklist: true,
+			});
+			kara = karas.content[0];
+		}
 		if (kara) {
 			await playSingleSong(kara.kid, true);
 		} else {
@@ -166,15 +191,44 @@ export async function playCurrentSong(now: boolean) {
 					await shufflePlaylist(getState().currentPlaid, 'balance');
 				}
 				// Testing if intro hasn't been played already and if we have at least one intro available
-				if (conf.Playlist.Medias.Intros.Enabled && !getState().introPlayed) {
+				// The intro is never played when there is a quiz
+				if (conf.Playlist.Medias.Intros.Enabled && !getState().introPlayed && !getState().quizMode) {
 					setState({ introPlayed: true, counterToJingle: 1 });
 					await mpv.playMedia('Intros');
 					return;
 				}
 			}
 			logger.debug('Karaoke selected', { service, obj: kara });
+
+			// If we're in quiz mode, we need to make a check before playing
+			if (getState().quizMode) {
+				// Check if the song has at least one answer possible from possible answer types
+				// Whichever answer type we get to first that exists in a song breaks the loop.
+				let answerPossible = false;
+				for (const [possibleAnswerType, { Enabled }] of Object.entries(
+					getConfig().Karaoke.QuizMode.Answers.Accepted
+				)) {
+					if (!Enabled) {
+						continue;
+					}
+					// Skipping title as all songs have titles... right? RIGHT?
+					if (possibleAnswerType === 'title') {
+						answerPossible = true;
+					} else if (possibleAnswerType === 'year' && kara.year) {
+						answerPossible = true;
+					} else if (possibleAnswerType !== 'year' && kara[possibleAnswerType]?.length > 0) {
+						answerPossible = true;
+					}
+					if (answerPossible) break;
+				}
+				if (!answerPossible)
+					throw '[Quiz Mode] Song has no possible answer for the criterias selected for this game';
+			}
 			logger.info(`Playing ${kara.mediafile.substring(0, kara.mediafile.length - 4)}`, { service });
-			await mpv.play(kara);
+			const modifiers = getState().quizMode ? setQuizModifier() : null;
+			let startTime = 0;
+			if (getState().quizMode) startTime = startQuizRound(kara);
+			await mpv.play(kara, modifiers, startTime);
 			setState({ randomPlaying: false });
 			updateUserQuotas(kara);
 			writeStreamFiles('time_remaining_in_current_playlist');
@@ -213,6 +267,16 @@ export async function playerEnding() {
 	const conf = getConfig();
 	logger.debug('Player Ending event triggered', { service });
 	try {
+		// Add song to played (history) table
+		if (
+			state.player.mediaType === 'song' &&
+			// Ignore random karas from the entire library, but count karas from the fallback playlist as played
+			(!state.randomPlaying || getConfig().Playlist.EndOfPlaylistAction === 'random_fallback') &&
+			!getState().quizMode
+		) {
+			addPlayedKara(state.player.currentSong?.kid);
+		}
+
 		if (state.playerNeedsRestart) {
 			logger.info('Player restarts, please wait', { service });
 			setState({ playerNeedsRestart: false });
@@ -252,10 +316,6 @@ export async function playerEnding() {
 			}
 		}
 
-		// Add song to played (history) table
-		if (state.player.mediaType === 'song') {
-			addPlayedKara(state.player.currentSong.kid);
-		}
 		// If we just played an intro, play a sponsor.
 		if (state.player.mediaType === 'Intros') {
 			setState({ introPlayed: true });
@@ -280,8 +340,12 @@ export async function playerEnding() {
 		}
 		// If Outro, load the background.
 		if (state.player.mediaType === 'Outros') {
-			if (getConfig().Playlist.EndOfPlaylistAction === 'random') {
+			if (['random', 'random_fallback'].includes(getConfig().Playlist.EndOfPlaylistAction)) {
 				await playRandomSongAfterPlaylist();
+			} else if (getConfig().Playlist.EndOfPlaylistAction === 'play_fallback') {
+				await editPlaylist(getState().fallbackPlaid, { flag_current: true });
+				setState({ currentPlaid: getState().fallbackPlaid });
+				await next();
 			} else if (getConfig().Playlist.EndOfPlaylistAction === 'repeat') {
 				try {
 					await next();
@@ -368,8 +432,12 @@ export async function playerEnding() {
 						stopPlayer();
 					}
 				}
-			} else if (conf.Playlist.EndOfPlaylistAction === 'random') {
+			} else if (['random', 'random_fallback'].includes(conf.Playlist.EndOfPlaylistAction)) {
 				await playRandomSongAfterPlaylist();
+			} else if (conf.Playlist.EndOfPlaylistAction === 'play_fallback') {
+				await editPlaylist(getState().fallbackPlaid, { flag_current: true });
+				await setState({ currentPlaid: getState().fallbackPlaid });
+				await next();
 			} else {
 				await next();
 			}

@@ -2,13 +2,13 @@
 import internet from 'internet-available';
 import { xml2js } from 'xml-js';
 
-import HTTP from '../lib/utils/http';
+import HTTP from '../lib/utils/http.js';
 // KM Imports
-import logger from '../lib/utils/logger';
+import logger from '../lib/utils/logger.js';
 // Types
-import { Feed } from '../types/feeds';
-import { SystemMessage } from '../types/state';
-import { getState, setState } from '../utils/state';
+import { Feed } from '../types/feeds.js';
+import { SystemMessage } from '../types/state.js';
+import { getState, setState } from '../utils/state.js';
 
 const service = 'Feeds';
 
@@ -62,10 +62,10 @@ async function fetchFeed(url: string, name: string): Promise<Feed> {
 	try {
 		const response = await HTTP.get(url);
 		const feed: any = xml2js(response.data as any, { compact: true });
-		// For Mastodon, we filter out UnJourUnKaraoke toots because we don't want to be spammed.
+		// For Mastodon, we filter out #Karaoke + #KaraokeMugen toots because we don't want to be spammed.
 		if (name === 'mastodon') {
 			feed.rss.channel.item = feed.rss.channel.item.filter(
-				(item: any) => !item.description._text.includes('UnJourUnKaraoke')
+				(item: any) => !item.description._text.includes('#Karaoke #KaraokeMugen')
 			);
 		} else {
 			feed.feed.entry.forEach((element: any) => {

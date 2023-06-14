@@ -1,7 +1,7 @@
-import { RemoteFailure, RemoteSuccess } from '../lib/types/remote';
-import { BinariesConfig } from './binChecker';
-import { PlayerState } from './player';
-import { CurrentSong } from './playlist';
+import { RemoteFailure, RemoteSuccess } from '../lib/types/remote.js';
+import { BinariesConfig } from './binChecker.js';
+import { PlayerState } from './player.js';
+import { CurrentSong } from './playlist.js';
 
 export interface Version {
 	number?: string;
@@ -15,6 +15,7 @@ export interface State {
 	currentPlaid?: string;
 	blacklistPlaid?: string;
 	whitelistPlaid?: string;
+	fallbackPlaid?: string;
 	currentSessionID?: string;
 	currentSessionEndsAt?: Date;
 	publicPlaid?: string;
@@ -88,6 +89,14 @@ export interface State {
 		picture: string;
 		music: string;
 	};
+	quizMode: boolean;
+	currentQuizGame?: string;
+	quizGuessingTime?: boolean;
+	quiz: {
+		guessTime: number;
+		quickGuess: number;
+		revealTime: number;
+	};
 }
 
 export interface SystemMessage {
@@ -104,6 +113,7 @@ export interface PublicState {
 	publicPlaid: string;
 	blacklistPlaid: string;
 	whitelistPlaid: string;
+	fallbackPlaid: string;
 	appPath?: string;
 	dataPath?: string;
 	os?: string;
@@ -113,6 +123,8 @@ export interface PublicState {
 	environment: string;
 	sentrytest: boolean;
 	url: string;
+	quiz: boolean;
+	quizGame: string;
 }
 
 export interface PublicPlayerState extends PlayerState {

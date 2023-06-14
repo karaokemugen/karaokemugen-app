@@ -10,41 +10,44 @@ import semver from 'semver';
 import { graphics } from 'systeminformation';
 import { setTimeout as sleep } from 'timers/promises';
 
-import { errorStep } from '../electron/electronLogger';
-import { getConfig, resolvedPath, resolvedPathRepos, setConfig } from '../lib/utils/config';
-import { getAvatarResolution } from '../lib/utils/ffmpeg';
-import { fileExists, replaceExt, resolveFileInDirs } from '../lib/utils/files';
-import { playerEnding } from '../services/karaEngine';
-import { next, prev } from '../services/player';
-import { notificationNextSong } from '../services/playlist';
-import { getSingleMedia } from '../services/playlistMedias';
-import { endPoll } from '../services/poll';
-import { MediaType } from '../types/medias';
-import { MpvCommand } from '../types/mpvIPC';
-import { MpvOptions, PlayerState } from '../types/player';
-import { CurrentSong } from '../types/playlist';
-import { initializationCatchphrases, mpvRegex, requiredMPVVersion } from '../utils/constants';
-import { setDiscordActivity } from '../utils/discordRPC';
-import MpvIPC from '../utils/mpvIPC';
-import sentry from '../utils/sentry';
-import { getState, setState } from '../utils/state';
-import { exit, isShutdownInProgress } from './engine';
+import { errorStep } from '../electron/electronLogger.js';
+import { APIMessage } from '../lib/services/frontend.js';
+import { DBKaraTag } from '../lib/types/database/kara.js';
+import { PlaylistMediaType } from '../lib/types/playlistMedias.js';
+import { getConfig, resolvedPath, resolvedPathRepos, setConfig } from '../lib/utils/config.js';
+import { supportedFiles } from '../lib/utils/constants.js';
+import { date, time, Timer } from '../lib/utils/date.js';
+import { getAvatarResolution } from '../lib/utils/ffmpeg.js';
+import { fileExists, replaceExt, resolveFileInDirs } from '../lib/utils/files.js';
+import HTTP, { fixedEncodeURIComponent } from '../lib/utils/http.js';
+import { convert1LangTo2B } from '../lib/utils/langs.js';
+import logger, { profile } from '../lib/utils/logger.js';
+import { emitWS } from '../lib/utils/ws.js';
+import { getBackgroundAndMusic } from '../services/backgrounds.js';
+import { getSongSeriesSingers, getSongTitle } from '../services/kara.js';
+import { playerEnding } from '../services/karaEngine.js';
+import { getPromoMessage, next, prev } from '../services/player.js';
+import { notificationNextSong } from '../services/playlist.js';
+import { getSingleMedia } from '../services/playlistMedias.js';
+import { endPoll } from '../services/poll.js';
+import { getCurrentGame, getCurrentSongTimers } from '../services/quiz.js';
+import { getTagNameInLanguage } from '../services/tag.js';
+import { BackgroundType } from '../types/backgrounds.js';
+import { MpvCommand } from '../types/mpvIPC.js';
+import { MpvOptions, PlayerState, SongModifiers } from '../types/player.js';
+import { CurrentSong } from '../types/playlist.js';
+import { editSetting } from '../utils/config.js';
+import { initializationCatchphrases, mpvRegex, requiredMPVVersion } from '../utils/constants.js';
+import { setDiscordActivity } from '../utils/discordRPC.js';
+import MpvIPC from '../utils/mpvIPC.js';
+import sentry from '../utils/sentry.js';
+import { getState, setState } from '../utils/state.js';
+import { exit, isShutdownInProgress } from './engine.js';
 import Timeout = NodeJS.Timeout;
-import { APIMessage } from '../lib/services/frontend';
-import { DBKaraTag } from '../lib/types/database/kara';
-import { supportedFiles } from '../lib/utils/constants';
-import { date, time } from '../lib/utils/date';
-import HTTP from '../lib/utils/http';
-import { convert1LangTo2B } from '../lib/utils/langs';
-import logger, { profile } from '../lib/utils/logger';
-import { emitWS } from '../lib/utils/ws';
-import { getBackgroundAndMusic } from '../services/backgrounds';
-import { getSongSeriesSingers, getSongTitle } from '../services/kara';
-import { getTagNameInLanguage } from '../services/tag';
-import { BackgroundType } from '../types/backgrounds';
-import { editSetting } from '../utils/config';
 
 type PlayerType = 'main' | 'monitor';
+
+type ProgressType = 'bar' | 'countdown';
 
 const service = 'mpv';
 
@@ -66,6 +69,11 @@ const playerState: PlayerState = {
 	songNearEnd: false,
 	nextSongNotifSent: false,
 	isOperating: false,
+	quiz: {
+		guessTime: 0,
+		quickGuess: 0,
+		revealTime: 0,
+	},
 
 	// Experimental modifiers
 	pitch: 0,
@@ -75,12 +83,12 @@ const playerState: PlayerState = {
 async function resolveMediaURL(file: string, repo: string): Promise<string> {
 	const conf = getConfig();
 	let up = false;
-	let mediaFile = `${conf.Online.MediasHost}/${encodeURIComponent(file)}`;
+	let mediaFile = `${conf.Online.MediasHost}/${fixedEncodeURIComponent(file)}`;
 	// We test if the MediasHost allows us to reach a file. If not we try the song's repository.
 	if (conf.Online.MediasHost) {
 		if (await HTTP.head(mediaFile)) up = true;
 	} else {
-		mediaFile = `https://${repo}/downloads/medias/${encodeURIComponent(file)}`;
+		mediaFile = `https://${repo}/downloads/medias/${fixedEncodeURIComponent(file)}`;
 		if (await HTTP.head(mediaFile)) up = true;
 	}
 	if (up) {
@@ -113,15 +121,16 @@ function releaseLock() {
 
 function needsLock() {
 	return (
-		target: any,
+		_target: any,
 		_propertyKey: string,
 		descriptor: TypedPropertyDescriptor<(...params: any[]) => Promise<any>>
 	) => {
 		const originFunc = descriptor.value;
-		descriptor.value = async (...params) => {
+		descriptor.value = async function descriptorFunc(...params) {
 			await acquireLock();
-			return originFunc.call(target, ...params).then(releaseLock);
+			return originFunc.apply(this, params).then(releaseLock);
 		};
+		return descriptor;
 	};
 }
 
@@ -285,6 +294,15 @@ function quickDiff() {
 				break;
 			case 'currentMedia':
 				if (oldState.currentMedia?.filename !== playerState.currentMedia?.filename) {
+					diff[key] = playerState[key];
+				}
+				break;
+			case 'quiz':
+				if (
+					oldState.quiz?.guessTime !== playerState.quiz?.guessTime ||
+					oldState.quiz?.quickGuess !== playerState.quiz?.quickGuess ||
+					oldState.quiz?.revealTime !== playerState.quiz?.revealTime
+				) {
 					diff[key] = playerState[key];
 				}
 				break;
@@ -506,20 +524,33 @@ class Player {
 		// Returns the position in seconds in the current song
 		if (playerState.mediaType === 'song' && playerState.currentSong?.duration) {
 			playerState.timeposition = position;
+			playerState.quiz = getCurrentSongTimers();
 			const conf = getConfig();
 			// Send notification to frontend if timeposition is 15 seconds before end of song
 			if (
 				position >= playerState.currentSong.duration - 15 &&
 				playerState.mediaType === 'song' &&
-				!playerState.nextSongNotifSent
+				!playerState.nextSongNotifSent &&
+				!getState().quizMode
 			) {
 				playerState.nextSongNotifSent = true;
 				notificationNextSong();
 			}
-			// Display informations if timeposition is 8 seconds before end of song
-			if (position >= playerState.currentSong.duration - 8 && playerState.mediaType === 'song') {
+			if (getState().quizMode) {
+				const game = getCurrentGame(true);
+				if (game.running && game.currentSong.state === 'answer') {
+					this.control.displaySongInfo(playerState.currentSong.infos);
+				} else {
+					this.control.displayInfo();
+				}
+			} else if (
+				// Display informations if timeposition is 8 seconds before end of song
+				position >= playerState.currentSong.duration - 8 &&
+				playerState.mediaType === 'song' &&
+				!getState().quizMode
+			) {
 				this.control.displaySongInfo(playerState.currentSong.infos);
-			} else if (position <= 8 && playerState.mediaType === 'song') {
+			} else if (position <= 8 && playerState.mediaType === 'song' && !getState().quizMode) {
 				// Display informations if timeposition is 8 seconds after start of song
 				this.control.displaySongInfo(
 					playerState.currentSong.infos,
@@ -736,7 +767,7 @@ class Players {
 	comments: CommentHandler;
 
 	/** Define lavfi-complex commands when we need to display stuff on screen or adjust audio volume. And it's... complex. */
-	private static async genLavfiComplex(song: CurrentSong): Promise<string> {
+	private static async genLavfiComplex(song: CurrentSong, showVideo = true): Promise<string> {
 		// Loudnorm normalization scheme: https://ffmpeg.org/ffmpeg-filters.html#loudnorm
 		let audio: string;
 		if (song.loudnorm) {
@@ -750,7 +781,7 @@ class Players {
 
 		// Avatar
 		const shouldDisplayAvatar =
-			song.avatar && getConfig().Player.Display.SongInfo && getConfig().Player.Display.Avatar;
+			showVideo && song.avatar && getConfig().Player.Display.SongInfo && getConfig().Player.Display.Avatar;
 		const cropRatio = shouldDisplayAvatar ? Math.floor((await getAvatarResolution(song.avatar)) * 0.5) : 0;
 		let avatar = '';
 		if (shouldDisplayAvatar) {
@@ -864,9 +895,9 @@ class Players {
 	progressBarTimeout: NodeJS.Timeout;
 
 	/** Progress bar on pause screens inbetween songs */
-	private tickProgressBar(nextTick: number, ticked: number, DI: string) {
+	private tickProgressBar(nextTick: number, ticked: number, position: string) {
 		// 10 ticks
-		if (ticked <= 10 && getState().streamerPause && getState().pauseInProgress) {
+		if (ticked <= 10 && ((getState().streamerPause && getState().pauseInProgress) || getState().quizMode)) {
 			if (this.progressBarTimeout) clearTimeout(this.progressBarTimeout);
 			let progressBar = '';
 			for (const _nothing of Array(ticked)) {
@@ -875,16 +906,40 @@ class Players {
 			for (const _nothing of Array(10 - ticked)) {
 				progressBar += '□';
 			}
-			this.messages.addMessage('pauseScreen', `${DI}\\N\\N{\\fscx70\\fscy70\\fsp-3}${progressBar}`, 'infinite');
+			this.messages.addMessage('pauseScreen', `${position}{\\fscx70\\fscy70\\fsp-3}${progressBar}`, 'infinite');
 			this.progressBarTimeout = setTimeout(() => {
-				this.tickProgressBar(nextTick, ticked + 1, DI);
+				this.tickProgressBar(nextTick, ticked + 1, position);
 			}, nextTick);
 		}
 	}
 
-	private progressBar(duration: number, DI: string) {
+	countdownTimer: Timer;
+
+	/** Countdown */
+	private tickCountdown(position: string) {
+		if ((getState().streamerPause && getState().pauseInProgress) || getState().quizMode) {
+			if (this.progressBarTimeout) clearTimeout(this.progressBarTimeout);
+			const timeLeft = Math.ceil(this.countdownTimer.getTimeLeft() / 1000);
+			this.messages.addMessage('countdown', `${position}{\\fscx250\\fscy250}${timeLeft}`, 'infinite');
+			this.progressBarTimeout = setTimeout(() => {
+				this.tickCountdown(position);
+			}, 1000);
+		}
+		if (this.countdownTimer.getTimeLeft() === 0) {
+			clearTimeout(this.progressBarTimeout);
+			this.countdownTimer = null;
+			this.messages.clearMessages();
+		}
+	}
+
+	private progressBar(duration: number, position: string, type: ProgressType = 'bar') {
 		// * 1000 / 10
-		this.tickProgressBar(Math.round(duration * 100), 1, DI);
+		if (type === 'bar') {
+			this.tickProgressBar(Math.round(duration * 100), 1, position);
+		} else if (type === 'countdown') {
+			this.countdownTimer = new Timer(duration * 1000);
+			this.tickCountdown(position);
+		}
 	}
 
 	private async loadBackground(type: BackgroundType) {
@@ -894,7 +949,7 @@ class Players {
 			{ service }
 		);
 		try {
-			playerState.mediaType = type as MediaType;
+			playerState.mediaType = type;
 			playerState.playerStatus = 'stop';
 			playerState.currentSong = null;
 			playerState.currentMedia = null;
@@ -1024,18 +1079,18 @@ class Players {
 		}
 	}
 
-	async play(song: CurrentSong): Promise<PlayerState> {
+	async play(song: CurrentSong, modifiers?: SongModifiers, start = 0): Promise<PlayerState> {
 		logger.debug('Play event triggered', { service });
 		playerState.playing = true;
 		profile('mpvPlay');
 		let mediaFile: string;
 		let subFile: string;
-		const options: any = {
-			'force-media-title': getSongTitle(song),
+		const options: Record<string, any> = {
+			'force-media-title': getState().quizMode ? 'Quiz!' : getSongTitle(song),
 		};
 		let onlineMedia = false;
 		const loadPromises = [
-			Players.genLavfiComplex(song)
+			Players.genLavfiComplex(song, modifiers?.Blind === '')
 				.then(res => (options['lavfi-complex'] = res))
 				.catch(err => {
 					logger.error('Cannot compute lavfi-complex filter, disabling avatar display', {
@@ -1101,6 +1156,7 @@ class Players {
 			options['image-display-duration'] = 'inf';
 			options.vid = '1';
 		}
+		options.start = start.toString();
 		if (config.Player.BlurVideoOnWarningTag === true || playerState.blurVideo === true) {
 			// Set blur if enabled in settings and kara has warning
 			// Or reset if blur currently enabled and new kara plays
@@ -1112,8 +1168,8 @@ class Players {
 			playerState.mediaType = 'song';
 			playerState.currentMedia = null;
 			if (this.messages) {
-				this.messages.removeMessages(['poll', 'pauseScreen']);
-				this.displaySongInfo(song.infos, -1, false, song.warnings);
+				this.messages.removeMessages(['poll', 'pauseScreen', 'quizRules']);
+				if (!getState().quizMode) this.displaySongInfo(song.infos, -1, false, song.warnings);
 			}
 			await retry(() => this.exec({ command: ['loadfile', mediaFile, 'replace', options] }), {
 				retries: 3,
@@ -1133,12 +1189,17 @@ class Players {
 			playerState.nextSongNotifSent = false;
 			playerState.playing = true;
 			playerState._playing = true;
+			playerState.currentMedia = null;
 			playerState.playerStatus = 'play';
+			if (modifiers) this.setModifiers(modifiers);
 			emitPlayerState();
 			setDiscordActivity('song', {
 				title: getSongTitle(song),
 				source: getSongSeriesSingers(song) || i18n.t('UNKNOWN_ARTIST'),
 			});
+			if (getState().quizMode) {
+				this.progressBar(getConfig().Karaoke.QuizMode.TimeSettings.GuessingTime, '{\\an5}', 'countdown');
+			}
 			return playerState;
 		} catch (err) {
 			logger.error('Unable to load', { service, obj: err });
@@ -1158,7 +1219,7 @@ class Players {
 		return null;
 	}
 
-	async playMedia(mediaType: MediaType): Promise<PlayerState> {
+	async playMedia(mediaType: PlaylistMediaType): Promise<PlayerState> {
 		const conf = getConfig();
 		const media = getSingleMedia(mediaType);
 		if (media) {
@@ -1177,7 +1238,7 @@ class Players {
 				logger.debug('No subtitles to load (not found for media)', { service });
 			}
 			try {
-				playerState.currentSong = undefined;
+				playerState.currentSong = null;
 				playerState.mediaType = mediaType;
 				playerState.currentMedia = media;
 				await retry(() => this.exec({ command: ['loadfile', media.filename, 'replace', options] }), {
@@ -1223,6 +1284,7 @@ class Players {
 		logger.debug('Stop event triggered', { service });
 		playerState.playing = false;
 		playerState.timeposition = 0;
+		playerState.quiz = { guessTime: 0, quickGuess: 0, revealTime: 0 };
 		playerState._playing = false;
 		// This will be set to false by mpv, meanwhile the eof-reached event is simulated to trigger correctly other
 		// parts of the code
@@ -1231,7 +1293,7 @@ class Players {
 		await this.loadBackground(type);
 		this.messages.clearMessages();
 		logger.debug('Stop DI', { service });
-		this.displayInfo();
+		await this.displayInfo();
 		emitPlayerState();
 		setDiscordActivity('idle');
 		return playerState;
@@ -1242,6 +1304,19 @@ class Players {
 		try {
 			playerState._playing = false; // This prevents the play/pause event to be triggered
 			await this.exec({ command: ['set_property', 'pause', true] });
+			if (getState().quizMode) {
+				const game = getCurrentGame(true);
+				if (game.running && game.currentSong) {
+					[
+						game.currentSong.quickGuessTimer,
+						game.currentSong.guessTimer,
+						game.currentSong.revealTimer,
+					].forEach(timer => timer.pause());
+				}
+				if (this.countdownTimer) {
+					this.countdownTimer.pause();
+				}
+			}
 			playerState.playing = false;
 			playerState.playerStatus = 'pause';
 			emitPlayerState();
@@ -1266,6 +1341,22 @@ class Players {
 			}
 			playerState._playing = true; // This prevents the play/pause event to be triggered
 			await this.exec({ command: ['set_property', 'pause', false] });
+			if (getState().quizMode) {
+				const game = getCurrentGame(true);
+				if (game.running && game.currentSong) {
+					[
+						game.currentSong.quickGuessTimer,
+						game.currentSong.guessTimer,
+						game.currentSong.revealTimer,
+					].forEach(timer => {
+						// If the timer was ever started
+						if (timer.started) timer.start();
+					});
+				}
+			}
+			if (this.countdownTimer?.started) {
+				this.countdownTimer.start();
+			}
 			playerState.playing = true;
 			playerState.playerStatus = 'play';
 			emitPlayerState();
@@ -1365,6 +1456,20 @@ class Players {
 		this.setBlurPercentage(enabled ? 90 : 0);
 	}
 
+	async setBlind(blind: boolean) {
+		try {
+			await this.exec({ command: ['set_property', 'vf', blind ? 'geq=0:128:128' : ''] });
+			if (blind) {
+				playerState.blurVideo = false;
+				emitPlayerState();
+			}
+		} catch (err) {
+			logger.error('Unable to toggle blind', { service, obj: err });
+			sentry.error(err);
+			throw err;
+		}
+	}
+
 	async setVolume(volume: number): Promise<PlayerState> {
 		try {
 			await this.exec({ command: ['set_property', 'volume', volume] });
@@ -1377,32 +1482,49 @@ class Players {
 		}
 	}
 
-	async setModifiers(options: { speed?: number; pitch?: number }) {
+	async setModifiers(options: SongModifiers) {
 		try {
-			if (options.speed && options.pitch) {
-				throw new Error("Pitch and speed can't currently be set at the same time");
+			logger.info(
+				`Setting modifiers: Mute ${options.Mute} - NoLyrics ${options.NoLyrics} - Blind type: ${options.Blind}`,
+				{ service }
+			);
+
+			if (typeof options.Mute === 'boolean') this.setMute(options.Mute);
+			if (typeof options.NoLyrics === 'boolean') this.setSubs(!options.NoLyrics);
+
+			if (options.Blind === 'black') this.setBlind(true);
+			else if (options.Blind === 'blur') this.setBlur(true);
+			else {
+				this.setBlind(false);
+				this.setBlur(false);
 			}
 
-			if (typeof options.pitch !== 'undefined') {
-				const paramSpeed = 1.0 + options.pitch / 16.0;
+			if (options.Speed && options.Pitch) {
+				throw new Error("Pitch and speed can't currently be set at the same time");
+			}
+			if (options.Pitch) {
+				const paramSpeed = 1.0 + options.Pitch / 16.0;
 				await this.exec({ command: ['set_property', 'audio-pitch-correction', 'no'] });
 				await this.exec({ command: ['set_property', 'af', `scaletempo:scale=1/${paramSpeed}`] });
 				await this.exec({ command: ['set_property', 'speed', paramSpeed] });
-				options.speed = 100; // Reset speed
-			} else if (typeof options.speed !== 'undefined') {
+				options.Speed = 100; // Reset speed
+			} else if (options.Speed) {
 				await this.exec({ command: ['set_property', 'audio-pitch-correction', 'yes'] });
 				await this.exec({ command: ['set_property', 'af', 'loudnorm'] });
-				await this.exec({ command: ['set_property', 'speed', options.speed / 100] });
-				options.pitch = 0; // Reset pitch
+				await this.exec({ command: ['set_property', 'speed', options.Speed / 100] });
+				options.Pitch = 0; // Reset pitch
 			}
-
-			playerState.pitch = options.pitch;
-			playerState.speed = options.speed;
-			logger.info(`Set modifiers to: pitch ${playerState.pitch}, speed ${playerState.speed}`, { service });
+			if (options.Pitch || options.Speed) {
+				playerState.pitch = options.Pitch || playerState.pitch;
+				playerState.speed = options.Speed || playerState.speed;
+				logger.info(`Set audio modifiers to: pitch ${playerState.pitch}, speed ${playerState.speed}`, {
+					service,
+				});
+			}
 			emitPlayerState();
 			return playerState;
 		} catch (err) {
-			logger.error('Unable to set pitch', { service, obj: err });
+			logger.error('Unable to set modifiers', { service, obj: err });
 			sentry.error(err);
 			throw err;
 		}
@@ -1494,11 +1616,11 @@ class Players {
 		}
 	}
 
-	async displaySongInfo(infos: string, duration = -1, nextSong = false, warnings?: DBKaraTag[]) {
+	async displaySongInfo(infos: string, duration = -1, nextSong = false, warnings?: DBKaraTag[], visible = true) {
 		try {
+			const nextSongString = nextSong ? `${i18n.t('NEXT_SONG')}\\N\\N` : '';
+			const position = nextSong ? '{\\an5}' : '{\\an1}';
 			let warningString = '';
-			let nextSongString = '';
-			let position = '';
 			if (warnings?.length > 0) {
 				const langs = [
 					getConfig().Player.Display.SongInfoLanguage,
@@ -1512,17 +1634,14 @@ class Players {
 					', '
 				)} ⚠{\\b0}\\N{\\c&HFFFFFF&}`;
 			}
-			nextSongString = nextSong ? `${i18n.t('NEXT_SONG')}\\N\\N` : '';
-			position = nextSong ? '{\\an5}' : '{\\an1}';
-			if (getConfig().Player.Display.SongInfo || nextSong) {
+			if (getConfig().Player.Display.SongInfo && visible) {
 				this.messages.addMessage(
 					'DI',
 					position + warningString + nextSongString + infos,
 					duration === -1 ? 'infinite' : duration
 				);
 			} else {
-				this.messages.removeMessage('DI');
-				return;
+				this.messages.removeMessage('DI'); // not sure if this is needed
 			}
 			if (nextSong) {
 				playerState.mediaType = 'pause';
@@ -1538,10 +1657,7 @@ class Players {
 					getState().pauseInProgress &&
 					getConfig().Karaoke.StreamerMode.PauseDuration > 0
 				) {
-					this.progressBar(
-						getConfig().Karaoke.StreamerMode.PauseDuration,
-						position + warningString + nextSongString + infos
-					);
+					this.progressBar(getConfig().Karaoke.StreamerMode.PauseDuration, position);
 				}
 			}
 		} catch (err) {
@@ -1555,13 +1671,11 @@ class Players {
 		try {
 			const conf = getConfig();
 			const state = getState();
-			const ci = conf.Player.Display.ConnectionInfo;
-			let text = '';
+			const text = getPromoMessage();
 			const catchphrase =
 				playerState.mediaType !== 'song' && conf.Player.Display.RandomQuotes
 					? sample(initializationCatchphrases)
 					: '';
-			if (ci.Enabled) text = ci.Message.replaceAll('$url', state.osURL);
 			const version = `Karaoke Mugen ${state.version.number} (${state.version.name}) - https://karaokes.moe`;
 			const message = `{\\an1}{\\fscx80}{\\fscy80}${text}\\N{\\fscx60}{\\fscy60}{\\i1}${version}{\\i0}\\N{\\fscx40}{\\fscy40}${catchphrase}`;
 			this.messages?.addMessage('DI', message, duration === -1 ? 'infinite' : duration);

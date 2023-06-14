@@ -1,8 +1,8 @@
 import i18next from 'i18next';
 import Transport from 'winston-transport';
 
-import { setTipLoop } from '../utils/tips';
-import { win } from './electron';
+import { setTipLoop } from '../utils/tips.js';
+import { win } from './electron.js';
 
 let errorHappened = false;
 

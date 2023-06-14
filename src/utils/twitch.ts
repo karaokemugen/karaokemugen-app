@@ -2,14 +2,15 @@
 import i18next from 'i18next';
 import tmi, { ChatUserstate, Client } from 'tmi.js';
 
-import { getConfig } from '../lib/utils/config';
+import { getConfig } from '../lib/utils/config.js';
 // KM Imports
-import logger, { profile } from '../lib/utils/logger';
-import { getSongSeriesSingers, getSongTitle } from '../services/kara';
-import { playerComment } from '../services/player';
-import { getCurrentSong } from '../services/playlist';
-import { addPollVoteIndex } from '../services/poll';
-import { getState } from './state';
+import logger, { profile } from '../lib/utils/logger.js';
+import { getSongSeriesSingers, getSongTitle } from '../services/kara.js';
+import { playerComment } from '../services/player.js';
+import { getCurrentSong } from '../services/playlist.js';
+import { addPollVoteIndex } from '../services/poll.js';
+import { registerTwitchAnswer } from '../services/quiz.js';
+import { getState } from './state.js';
 
 const service = 'Twitch';
 
@@ -87,11 +88,15 @@ function listenChat(chat: Client) {
 					: `${getState().osURL}/public/plc/${song.plcid}`
 			})`;
 			chat.say(target, str);
-		} else if (getConfig().Player.LiveComments) {
+		} else if (getConfig().Player.LiveComments && !getState().quizGuessingTime) {
 			// Any other message is treated here for the display message function
+			// Messages aren't displayed if a quiz is going on and people have to guess the answer
 			// We need to strip emotes first
 			msg = stripEmotes(msg, context);
 			if (msg.length < 100) playerComment(msg);
+		} else if (getConfig().Karaoke.QuizMode.Players.Twitch) {
+			msg = stripEmotes(msg, context);
+			registerTwitchAnswer(context.username, msg);
 		}
 	});
 }

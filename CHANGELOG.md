@@ -1,3 +1,63 @@
+# v7.1.9 - 14/06/2023
+
+Most of the work on this release has already been backported in 7.0.x versions. Refer to these for more details.
+
+Below are changes from 7.0.46 to 7.1.0 :
+
+## New features
+
+-   You can now open a song's media file from the song list in system panel (#1454)
+-   Added fallback playlist KM can play when your current playlist has ended (#1418)
+-   Display year and duration of song in version selector in public interface (#1448)
+-   Prevent app from starting up if it detects an older database version (#1427)
+-   Added Mastodon link (#1421)
+-   Added a "Deselect all" button when trying to push new changes to a repository (#1412)
+-   Added option to automatically apply blur on karaokes with a warning tag (#1408)
+-   Added a progress bar to database migrations (#1399)
+-   Added play and usage time on welcome screen in the stats box (#1396)
+-   Added button to open file explorer on database folder (#1393)
+-   Added quiz mode (#755)
+
+## Improvements
+
+-   Changed tag type color for language in version selector of public interface to make it more visible (#1450)
+-   Removed collections in version selector of public interface (#1449)
+-   Removed group in version selector of public interface (#1447)
+-   Renamed "Families" to "Video Contents" in tag types (#1446)
+-   Restricted interface now allows search in library (#1367)
+
+## Fixes
+
+-   Fixed clicking on account after having clicked on website on welcome screen (#1378)
+-   Fixed downloading inbox songs with # in their names (#1443)
+-   Fixed display bug on "Player screen" option (#1441)
+-   Fixed bug on lyrics cleanup on kara edit (#1440)
+-   Fixed media downloads that shouldn't happen in local repositories (#1436)
+-   Fixed karaoke list on tag edit form when tag has multiple types (#1409)
+-   Fixed time in play bar (#1405)
+-   Fixed modal that says you're not playing the current playlist (#1403)
+-   Fixed error display when creating a playlist fails (#1402)
+-   Fixed some filter error (#1398)
+-   Fixed user edit JSON error (#1397)
+-   Fixed kara form submission without series or singer (#1395)
+-   Fixed JWT implementation (#1391)
+-   Fixed playlist selector on operator interface when in low resolution (#1388)
+-   Fixed frontend connection on a fresh reinstall (#1387)
+-   Fixed some operator interface issues with selected karaokes (#1386)
+-   Fixed some alignment problems in public interface (#1380)
+-   Fixed scroll in public and login pages (#1379)
+-   Fixed slider for video size in options (#1375 #1368)
+-   Fixed intro and sponsor lines at the start of playlists not marked in operator view (#1372)
+-   Fixed audio time set to negative when seeking to 0:00 (#1371)
+-   Fixed public interface always in french (#1366)
+
+## Misc
+
+-   Changed `moduleResolution` to `node16` in typescript to be more ESM-compliant (#1452)
+-   Removed Sentry DSN from codebase (#1434)
+-   Switched from iso-ounctires-languages to i18n-iso-countries (#1420)
+-   Removed temp path from config file (#1374)
+
 # v7.0.46 - 08/01/2023
 
 ## Improvements

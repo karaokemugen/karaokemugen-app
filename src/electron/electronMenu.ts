@@ -1,16 +1,16 @@
 import { Menu } from 'electron';
 
-import { removeNulls } from '../lib/utils/objectHelpers';
-import { MenuItemBuilderOptions, MenuLayout } from '../types/electron';
-import { win } from './electron';
-import editMenu from './menus/edit';
-import fileMenu from './menus/file';
-import goToMenu from './menus/goTo';
-import helpMenu from './menus/help';
-import optionsMenu from './menus/options';
-import toolsMenu from './menus/tools';
-import viewMenu from './menus/view';
-import windowMenu from './menus/window';
+import { removeNulls } from '../lib/utils/objectHelpers.js';
+import { MenuItemBuilderOptions, MenuLayout } from '../types/electron.js';
+import { win } from './electron.js';
+import editMenu from './menus/edit.js';
+import fileMenu from './menus/file.js';
+import goToMenu from './menus/goTo.js';
+import helpMenu from './menus/help.js';
+import optionsMenu from './menus/options.js';
+import toolsMenu from './menus/tools.js';
+import viewMenu from './menus/view.js';
+import windowMenu from './menus/window.js';
 
 export function initMenu(layout: MenuLayout) {
 	const options: MenuItemBuilderOptions = {

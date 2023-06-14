@@ -5,24 +5,24 @@ import i18next from 'i18next';
 import { resolve } from 'path';
 import { getPortPromise } from 'portfinder';
 
-import { win } from '../electron/electron';
-import { errorStep, initStep } from '../electron/electronLogger';
-import { PathType } from '../lib/types/config';
-import { configureLocale, getConfig, resolvedPath, setConfig } from '../lib/utils/config';
-import { asyncCheckOrMkdir, fileExists } from '../lib/utils/files';
-import logger, { configureLogger, profile } from '../lib/utils/logger';
-import { resetSecurityCode } from '../services/auth';
-import { backgroundTypes } from '../services/backgrounds';
-import { editRepo } from '../services/repo';
-import { Config } from '../types/config';
-import { initConfig } from '../utils/config';
-import { logo } from '../utils/constants';
-import { defaultRepositories } from '../utils/defaultSettings';
-import { updateKaraMoeRepoConfig } from '../utils/hokutoNoCode';
-import Sentry from '../utils/sentry';
-import { getState, setState } from '../utils/state';
-import { parseArgs, setupFromCommandLineArgs } from './args';
-import { exit, initEngine } from './engine';
+import { win } from '../electron/electron.js';
+import { errorStep, initStep } from '../electron/electronLogger.js';
+import { PathType } from '../lib/types/config.js';
+import { configureLocale, getConfig, resolvedPath, setConfig } from '../lib/utils/config.js';
+import { asyncCheckOrMkdir, fileExists } from '../lib/utils/files.js';
+import logger, { configureLogger, profile } from '../lib/utils/logger.js';
+import { resetSecurityCode } from '../services/auth.js';
+import { backgroundTypes } from '../services/backgrounds.js';
+import { editRepo } from '../services/repo.js';
+import { Config } from '../types/config.js';
+import { initConfig } from '../utils/config.js';
+import { logo } from '../utils/constants.js';
+import { defaultRepositories } from '../utils/defaultSettings.js';
+import { updateKaraMoeRepoConfig } from '../utils/hokutoNoCode.js';
+import Sentry from '../utils/sentry.js';
+import { getState, setState } from '../utils/state.js';
+import { parseArgs, setupFromCommandLineArgs } from './args.js';
+import { exit, initEngine } from './engine.js';
 
 const service = 'Init';
 
@@ -141,7 +141,18 @@ async function checkPaths(config: Config) {
 				checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'tags')));
 				checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'hooks')));
 				for (const path of repo.Path.Medias) {
-					await asyncCheckOrMkdir(resolve(dataPath, path));
+					try {
+						const mediaPath = resolve(dataPath, path);
+						await asyncCheckOrMkdir(mediaPath);
+					} catch (err) {
+						logger.warn(`Media path ${path} for ${repo.Name} is not accessible`, { service, obj: err });
+						if (path === repo.Path.Medias[0]) {
+							logger.error(`Primary media path for ${repo.Name} is unreachable, disabling...`, {
+								service,
+							});
+							throw err;
+						}
+					}
 				}
 			} catch (err) {
 				// If there's a problem with these folders, let's disable the repository.

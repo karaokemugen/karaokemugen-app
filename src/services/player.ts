@@ -1,21 +1,22 @@
 import i18next from 'i18next';
 import { setTimeout as sleep } from 'timers/promises';
 
-import { isShutdownInProgress } from '../components/engine';
-import Players, { switchToPollScreen } from '../components/mpv';
-import { APIMessage } from '../controllers/common';
-import { updatePlaylistLastEditTime, updatePLCVisible } from '../dao/playlist';
-import { APIMessageType } from '../lib/types/frontend';
-import { getConfig, setConfig } from '../lib/utils/config';
-import logger, { profile } from '../lib/utils/logger';
-import { on } from '../lib/utils/pubsub';
-import { emitWS } from '../lib/utils/ws';
-import { BackgroundType } from '../types/backgrounds';
-import { MpvHardwareDecodingOptions } from '../types/mpvIPC';
-import { getState, setState } from '../utils/state';
-import { playCurrentSong } from './karaEngine';
-import { getCurrentSong, getCurrentSongPLCID, getNextSong, getPreviousSong, setPlaying } from './playlist';
-import { startPoll } from './poll';
+import { isShutdownInProgress } from '../components/engine.js';
+import Players, { switchToPollScreen } from '../components/mpv.js';
+import { APIMessage } from '../controllers/common.js';
+import { updatePlaylistLastEditTime, updatePLCVisible } from '../dao/playlist.js';
+import { APIMessageType } from '../lib/types/frontend.js';
+import { getConfig, setConfig } from '../lib/utils/config.js';
+import logger, { profile } from '../lib/utils/logger.js';
+import { on } from '../lib/utils/pubsub.js';
+import { emitWS } from '../lib/utils/ws.js';
+import { BackgroundType } from '../types/backgrounds.js';
+import { MpvHardwareDecodingOptions } from '../types/mpvIPC.js';
+import { PlayerCommand } from '../types/player.js';
+import { getState, setState } from '../utils/state.js';
+import { playCurrentSong, playRandomSongAfterPlaylist } from './karaEngine.js';
+import { getCurrentSong, getCurrentSongPLCID, getNextSong, getPreviousSong, setPlaying } from './playlist.js';
+import { startPoll } from './poll.js';
 
 const service = 'Player';
 
@@ -68,10 +69,10 @@ export async function next() {
 					const poll = await startPoll();
 					if (!poll) {
 						// False returned means startPoll couldn't start a poll
-						mpv.displaySongInfo(kara.infos, -1, true);
+						mpv.displaySongInfo(kara.infos, -1, true, kara.warnings, !getState().quizMode);
 					}
 				} else {
-					mpv.displaySongInfo(kara.infos, -1, true);
+					mpv.displaySongInfo(kara.infos, -1, true, kara.warnings, !getState().quizMode);
 				}
 				if (conf.Karaoke.StreamerMode.PauseDuration > 0) {
 					await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
@@ -89,8 +90,7 @@ export async function next() {
 				setState({ currentRequester: null });
 				if (getState().player.playerStatus !== 'stop') playPlayer(true);
 			}
-		} else if (conf.Karaoke.StreamerMode.Enabled) {
-			// End of playlist, let's see what to do with our different modes.
+		} else if (conf.Karaoke.StreamerMode.Enabled || !getState().quizMode) {
 			await stopPlayer(true, true);
 			if (conf.Karaoke.Poll.Enabled) {
 				try {
@@ -104,16 +104,18 @@ export async function next() {
 				} catch (err) {
 					// Non-fatal
 				}
-				if (conf.Karaoke.StreamerMode.PauseDuration > 0) {
-					await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
-					if (getConfig().Karaoke.StreamerMode.Enabled && getState().player.playerStatus === 'stop') {
-						await playPlayer(true);
-					}
-				}
 			}
+			// Next is hit while the player is still playing a song and random is asked at the end of a playlist
+		} else if (
+			getState().player?.playing === true &&
+			['random', 'random_fallback'].includes(conf.Playlist.EndOfPlaylistAction)
+		) {
+			// Play next random song when hitting the "next" button after a playlist ended
+			setState({ currentRequester: null });
+			await playRandomSongAfterPlaylist();
 		} else {
 			setState({ currentRequester: null });
-			stopPlayer(true, true);
+			await stopPlayer(true, true);
 		}
 	} catch (err) {
 		logger.warn('Next song is not available', { service, obj: err });
@@ -184,10 +186,28 @@ export async function stopPlayer(now = true, endOfPlaylist = false) {
 		if (!endOfPlaylist && getConfig().Karaoke.ClassicMode && getState().pauseInProgress) {
 			await prepareClassicPauseScreen();
 		}
+		if (getState().quizMode) {
+			mpv.messages.clearMessages();
+		}
 	} else if (!getState().stopping) {
 		logger.info('Karaoke stopping after current song', { service });
 		setState({ stopping: true });
 	}
+}
+
+/** Display a message on the player screen. Position 1 is bottom left, 9 top right */
+export async function displayMessage(message: string, duration: number, position: number, type: string) {
+	mpv.messages.clearMessages();
+	await mpv.message(message, duration, position, type);
+}
+
+export function getPromoMessage(): string {
+	const conf = getConfig();
+	const state = getState();
+	const ci = conf.Player.Display.ConnectionInfo;
+	let text = state.quizMode ? conf.Karaoke.QuizMode.PlayerMessage : ci.Message;
+	if (ci.Enabled) text = text.replaceAll('$url', state.osURL);
+	return text;
 }
 
 export async function prepareClassicPauseScreen() {
@@ -195,7 +215,7 @@ export async function prepareClassicPauseScreen() {
 		const kara = await getCurrentSong();
 		if (!kara) throw 'No song selected, current playlist must be empty';
 		setState({ currentRequester: kara?.username || null });
-		mpv.displaySongInfo(kara.infos, -1, true);
+		mpv.displaySongInfo(kara.infos, -1, true, null, !getState().quizMode);
 	} catch (err) {
 		// Failed to get current song, this can happen if the current playlist gets emptied or changed to an empty one inbetween songs. In this case, just display KM infos
 		mpv.displayInfo();
@@ -233,10 +253,10 @@ async function setVolumePlayer(volume: number) {
 	setConfig({ Player: { Volume: volume } });
 }
 async function setPitchPlayer(pitch: number) {
-	await mpv.setModifiers({ pitch });
+	await mpv.setModifiers({ Pitch: pitch });
 }
 async function setSpeedPlayer(speed: number) {
-	await mpv.setModifiers({ speed });
+	await mpv.setModifiers({ Speed: speed });
 }
 
 async function setAudioDevicePlayer(device: string) {
@@ -266,7 +286,7 @@ export async function playerNeedsRestart() {
 		logger.info('Player will restart in 5 seconds', { service });
 		emitWS('operatorNotificationInfo', APIMessage('NOTIFICATION.OPERATOR.INFO.PLAYER_RESTARTING'));
 		mpv.message(i18next.t('RESTARTING_PLAYER'), 5000);
-		await sleep(5000);
+		await sleep(1000);
 		await restartPlayer();
 		setState({ playerNeedsRestart: false });
 	} else {
@@ -294,7 +314,7 @@ export function displayInfo() {
 	return mpv.displayInfo();
 }
 
-export async function sendCommand(command: string, options: any): Promise<APIMessageType> {
+export async function sendCommand(command: PlayerCommand, options: any): Promise<APIMessageType> {
 	if (isShutdownInProgress()) return;
 	// Resetting singlePlay to false everytime we use a command.
 	const state = getState();
@@ -357,6 +377,8 @@ export async function sendCommand(command: string, options: any): Promise<APIMes
 			if (isNaN(options)) throw 'Command setSpeed must have a numeric option value';
 			if (options > 200 || options < 25) throw 'Speed range has to be between 0.25 and 2';
 			await setSpeedPlayer(options);
+		} else if (command === 'setModifiers') {
+			await mpv.setModifiers(options);
 		} else {
 			throw `Unknown command ${command}`;
 		}
@@ -376,11 +398,9 @@ export async function initPlayer() {
 		if (getConfig().App.FirstRun) {
 			// Write in config the message we should have depending on user locale.
 			setConfig({
-				Player: {
-					Display: {
-						ConnectionInfo: {
-							Message: i18next.t('GO_TO'),
-						},
+				Karaoke: {
+					QuizMode: {
+						PlayerMessage: i18next.t('GO_TO_QUIZ_MODE'),
 					},
 				},
 			});

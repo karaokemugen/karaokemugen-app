@@ -3,17 +3,17 @@ import { createReadStream } from 'fs-extra';
 import { resolve } from 'path';
 import { Stream } from 'stream';
 
-import { OldJWTToken, TokenResponseWithRoles, User } from '../lib/types/user';
-import { resolvedPath } from '../lib/utils/config';
-import { writeStreamToFile } from '../lib/utils/files';
-import HTTP from '../lib/utils/http';
-import logger from '../lib/utils/logger';
-import { emitWS } from '../lib/utils/ws';
-import { SingleToken, Tokens } from '../types/user';
-import sentry from '../utils/sentry';
-import { startSub, stopSub } from '../utils/userPubSub';
-import { convertToRemoteFavorites } from './favorites';
-import { checkPassword, createJwtToken, createUser, editUser, getUser } from './user';
+import { OldJWTToken, TokenResponseWithRoles, User } from '../lib/types/user.js';
+import { resolvedPath } from '../lib/utils/config.js';
+import { writeStreamToFile } from '../lib/utils/files.js';
+import HTTP from '../lib/utils/http.js';
+import logger from '../lib/utils/logger.js';
+import { emitWS } from '../lib/utils/ws.js';
+import { SingleToken, Tokens } from '../types/user.js';
+import sentry from '../utils/sentry.js';
+import { startSub, stopSub } from '../utils/userPubSub.js';
+import { convertToRemoteFavorites } from './favorites.js';
+import { checkPassword, createJwtToken, createUser, editUser, getUser } from './user.js';
 
 const service = 'RemoteUser';
 

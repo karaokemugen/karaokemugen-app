@@ -86,10 +86,10 @@ SELECT
   count(ak.pk_kid) OVER()::integer AS count,
   array_remove(array_agg(DISTINCT krc.fk_kid_parent), null) AS parents,
   array_remove(array_agg(DISTINCT krp.fk_kid_child), null) AS children,
-  array_remove((SELECT array_agg(DISTINCT fk_kid_child) FROM kara_relation 
+  array_remove((SELECT array_agg(DISTINCT fk_kid_child) FROM kara_relation
   WHERE fk_kid_parent = ANY (array_remove(array_agg(DISTINCT krc.fk_kid_parent), null))), ak.pk_kid) AS siblings,
-  (SELECT COUNT(up.fk_id_plcontent)::integer 
-  FROM upvote up 
+  (SELECT COUNT(up.fk_id_plcontent)::integer
+  FROM upvote up
   LEFT JOIN playlist_content pc_pub ON pc_pub.fk_id_playlist = :publicPlaylist_id AND up.fk_id_plcontent = pc_pub.pk_id_plcontent
   WHERE ak.pk_kid = pc.fk_kid
   ) AS upvotes
@@ -145,7 +145,15 @@ FROM kara AS k
 ${collectionClauses.length > 0 ? 'LEFT JOIN all_karas ak ON ak.pk_kid = k.pk_kid' : ''}
 ${additionalFrom.join('')}
 WHERE true
-  ${collectionClauses.length > 0 ? `AND (${collectionClauses.map(clause => `(${clause})`).join(' OR ')})` : ''}
+${
+	collectionClauses.length > 0
+		? `AND ((${collectionClauses
+				.map(clause => `(${clause})`)
+				.join(
+					' OR '
+				)}) OR jsonb_array_length(jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 16)')) = 0)`
+		: ''
+}
   ${filterClauses.map(clause => `AND (${clause})`).reduce((a, b) => `${a} ${b}`, '')}
 `;
 
@@ -238,7 +246,15 @@ FROM kara AS k
 LEFT JOIN kara k2 ON k2.pk_kid = k.pk_kid
 LEFT JOIN all_karas ak ON k2.pk_kid = ak.pk_kid
 WHERE true
-${collectionClauses.length > 0 ? `AND (${collectionClauses.map(clause => `(${clause})`).join(' OR ')})` : ''}
+${
+	collectionClauses.length > 0
+		? `AND ((${collectionClauses
+				.map(clause => `(${clause})`)
+				.join(
+					' OR '
+				)}) OR jsonb_array_length(jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 16)')) = 0)`
+		: ''
+}
 GROUP BY k.year
 ORDER BY year;
 `;

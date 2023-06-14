@@ -1,10 +1,10 @@
 {
 	"compilerOptions": {
 		// Target latest version of ECMAScript.
-		"target": "es2021",
-		"module": "ES6",
+		"target": "ES2021",
+		"module": "ES2022",
 		// Search under node_modules for non-relative imports.
-		"moduleResolution": "node",
+		"moduleResolution": "node16",
 		// Process & infer types from .js files.
 		"allowJs": true,
 		// Don't emit; allow esbuild to transform files.
