@@ -3,23 +3,22 @@ import { promises as fs } from 'fs';
 import i18next from 'i18next';
 import { resolve } from 'path';
 
-import { exit, welcomeToYoukousoKaraokeMugen } from '../components/engine';
-import { init, preInit } from '../components/init';
-import { selectUsers } from '../dao/user';
-import { getConfig, resolvedPath, setConfig } from '../lib/utils/config';
-import logger from '../lib/utils/logger';
-import { testJSON } from '../lib/utils/validators';
-import { emitWS } from '../lib/utils/ws';
-import { importFavorites } from '../services/favorites';
-import { importPlaylist, playlistImported } from '../services/playlist';
-import { addRepo, getRepo } from '../services/repo';
-import { generateAdminPassword } from '../services/user';
-import { MenuLayout } from '../types/electron';
-import { detectKMFileTypes } from '../utils/files';
-import { getState, setState } from '../utils/state';
-import { tip } from '../utils/tips';
-import { emitIPC } from './electronLogger';
-import { createMenu } from './electronMenu';
+import { exit, welcomeToYoukousoKaraokeMugen } from '../components/engine.js';
+import { init, preInit } from '../components/init.js';
+import { selectUsers } from '../dao/user.js';
+import { getConfig, resolvedPath, setConfig } from '../lib/utils/config.js';
+import logger from '../lib/utils/logger.js';
+import { emitWS } from '../lib/utils/ws.js';
+import { importFavorites } from '../services/favorites.js';
+import { importPlaylist, playlistImported } from '../services/playlist.js';
+import { addRepo, getRepo } from '../services/repo.js';
+import { generateAdminPassword } from '../services/user.js';
+import { MenuLayout } from '../types/electron.js';
+import { detectKMFileTypes } from '../utils/files.js';
+import { getState, setState } from '../utils/state.js';
+import { tip } from '../utils/tips.js';
+import { emitIPC } from './electronLogger.js';
+import { createMenu } from './electronMenu.js';
 
 const service = 'Electron';
 
@@ -226,6 +225,7 @@ export async function handleProtocol(args: string[]) {
 
 export async function handleFile(file: string, username?: string, onlineToken?: string) {
 	try {
+		if (!file) return;
 		logger.info(`Received file path ${file}`, { service });
 		if (!getState().ready) return;
 		if (!username) {
@@ -239,11 +239,13 @@ export async function handleFile(file: string, username?: string, onlineToken?: 
 			}
 		}
 		const rawData = await fs.readFile(resolve(file), 'utf-8');
-		if (!testJSON(rawData)) {
+		let data;
+		try {
+			data = JSON.parse(rawData);
+		} catch (err) {
 			logger.debug(`File ${file} is not JSON, ignoring`, { service });
 			return;
 		}
-		const data = JSON.parse(rawData);
 		const KMFileType = detectKMFileTypes(data);
 		const url = `http://localhost:${getConfig().System.FrontendPort}/admin`;
 		switch (KMFileType) {

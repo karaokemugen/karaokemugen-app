@@ -4,9 +4,9 @@
 // you can change the default settings by using config.yml to bypass the default values.
 import { app } from 'electron';
 
-import { Repository } from '../lib/types/repo';
-import { bools, hostnameRegexp } from '../lib/utils/constants';
-import { Config } from '../types/config';
+import { Repository } from '../lib/types/repo.js';
+import { bools, hostnameRegexp } from '../lib/utils/constants.js';
+import { Config } from '../types/config.js';
 
 export const dbConfig = {
 	bundledPostgresBinary: true,
@@ -97,6 +97,55 @@ export const defaults: Config = {
 			Twitch: {
 				Enabled: false,
 			},
+		},
+		QuizMode: {
+			EndGame: {
+				MaxScore: {
+					Enabled: false,
+					Score: 10,
+				},
+				MaxSongs: {
+					Enabled: true,
+					Songs: 30,
+				},
+				Duration: {
+					Enabled: true,
+					Minutes: 60,
+				},
+			},
+			Players: {
+				Twitch: false,
+				Guests: true,
+			},
+			TimeSettings: {
+				WhenToStartSong: 33,
+				GuessingTime: 30,
+				QuickGuessingTime: 15,
+				AnswerTime: 30,
+			},
+			Answers: {
+				Accepted: {
+					title: {
+						Enabled: true,
+						Points: 2,
+					},
+					series: {
+						Enabled: true,
+						Points: 1,
+					},
+				},
+				QuickAnswer: {
+					Enabled: true,
+					Points: 1,
+				},
+				SimilarityPercentageNeeded: 70,
+			},
+			Modifiers: {
+				Mute: false,
+				Blind: 'blur',
+				NoLyrics: false,
+			},
+			PlayerMessage: '',
 		},
 	},
 	Player: {
@@ -211,12 +260,13 @@ export const defaults: Config = {
 			StreamFiles: 'streamFiles',
 		},
 	},
+	Maintainer: { ApplyLyricsCleanupOnKaraSave: false },
 };
 
-const horizontalPosArray = ['Left', 'Right', 'Center'];
-const verticalPosArray = ['Top', 'Bottom', 'Center'];
-const hwdecModes = ['auto-safe', 'no', 'yes'];
-const endOfPlaylistActions = ['random', 'repeat', 'none'];
+export const horizontalPosArray = ['Left', 'Right', 'Center'];
+export const verticalPosArray = ['Top', 'Bottom', 'Center'];
+export const hwdecModes = ['auto-safe', 'no', 'yes'];
+export const endOfPlaylistActions = ['random', 'random_fallback', 'play_fallback', 'repeat', 'none'];
 
 /** Config constraints. */
 export const configConstraints = {
@@ -303,6 +353,7 @@ export const configConstraints = {
 	'System.Path.Previews': { presence: true },
 	'System.Path.Import': { presence: true },
 	'System.Repositories': { repositoriesValidator: true },
+	'Maintainer.ApplyLyricsCleanupOnKaraSave': { inclusion: bools },
 };
 
 export const defaultRepositories: Repository[] = [

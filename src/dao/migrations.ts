@@ -3,16 +3,14 @@ import { dialog } from 'electron';
 import i18next from 'i18next';
 import Postgrator from 'postgrator';
 
-import { win } from '../electron/electron';
-import { refreshTags } from '../lib/dao/tag';
-import { setConfig } from '../lib/utils/config';
-import logger from '../lib/utils/logger';
-import { displayInfo } from '../services/player';
-import { editRepo, getRepo } from '../services/repo';
-import { migrateBLWLToSmartPLs } from '../utils/hokutoNoCode';
-import Sentry from '../utils/sentry';
-import { getState } from '../utils/state';
-import { compareKarasChecksum, generateDB } from './database';
+import { win } from '../electron/electron.js';
+import { refreshTags } from '../lib/dao/tag.js';
+import { setConfig } from '../lib/utils/config.js';
+import logger from '../lib/utils/logger.js';
+import { editRepo, getRepo } from '../services/repo.js';
+import { migrateBLWLToSmartPLs } from '../utils/hokutoNoCode.js';
+import Sentry from '../utils/sentry.js';
+import { compareKarasChecksum, generateDB } from './database.js';
 
 const service = 'DBMigration';
 
@@ -61,20 +59,17 @@ export async function postMigrationTasks(migrations: Postgrator.Migration[], did
 				await refreshTags();
 				break;
 			// 7.0 migrations
-			case 'aBarrelRoll':
+			case 'addExternalDatabaseIds':
+				if (!didGeneration) doGenerate = true;
+				break;
+			case 'addGameTables':
 				setConfig({
-					Player: {
-						Display: {
-							ConnectionInfo: {
-								Message: i18next.t('GO_TO'),
-							},
+					Karaoke: {
+						QuizMode: {
+							PlayerMessage: i18next.t('GO_TO_QUIZ_MODE'),
 						},
 					},
 				});
-				if (getState().player?.mediaType === 'stop' || getState().player?.mediaType === 'pause') displayInfo();
-				break;
-			case 'addExternalDatabaseIds':
-				if (!didGeneration) doGenerate = true;
 				break;
 			default:
 		}

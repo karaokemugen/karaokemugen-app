@@ -74,6 +74,7 @@ function ChibiPage() {
 		const state = { ...statusPlayer };
 		state.volume = event.target.value;
 		setStatusPlayer(state);
+		putPlayerCommando(event);
 	};
 
 	const displayChibiPage = async () => {
@@ -160,8 +161,7 @@ function ChibiPage() {
 								id="volume"
 								value={statusPlayer?.volume}
 								type="range"
-								onChange={setVolume}
-								onMouseUp={putPlayerCommando}
+								onInput={setVolume}
 							/>
 						</button>
 						<AdminButtons

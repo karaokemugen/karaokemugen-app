@@ -2,13 +2,13 @@ import { promises as fs } from 'fs';
 import { sample } from 'lodash';
 import { basename, resolve } from 'path';
 
-import { resolvedPath } from '../lib/utils/config';
-import { audioFileRegexp, backgroundFileRegexp } from '../lib/utils/constants';
-import { replaceExt } from '../lib/utils/files';
-import logger from '../lib/utils/logger';
-import { BackgroundList, BackgroundType } from '../types/backgrounds';
-import Sentry from '../utils/sentry';
-import { getState } from '../utils/state';
+import { resolvedPath } from '../lib/utils/config.js';
+import { audioFileRegexp, backgroundFileRegexp } from '../lib/utils/constants.js';
+import { replaceExt } from '../lib/utils/files.js';
+import logger from '../lib/utils/logger.js';
+import { BackgroundList, BackgroundType } from '../types/backgrounds.js';
+import Sentry from '../utils/sentry.js';
+import { getState } from '../utils/state.js';
 
 const service = 'Backgrounds';
 

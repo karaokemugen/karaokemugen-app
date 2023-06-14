@@ -2,9 +2,11 @@ import './PublicHeader.scss';
 
 import i18next from 'i18next';
 import { useContext, useEffect, useRef, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import ResizeObserver from 'resize-observer-polyfill';
 
+import { useAsyncMemo } from 'use-async-memo';
+import { GameScore } from '../../../../../src/types/quiz';
 import nanamiPNG from '../../../assets/nanami.png';
 import nanamiWebP from '../../../assets/nanami.webp';
 import { logout } from '../../../store/actions/auth';
@@ -23,11 +25,38 @@ interface IProps {
 function PublicHeader(props: IProps) {
 	const navigate = useNavigate();
 	const context = useContext(GlobalContext);
-	let observer: ResizeObserver;
+	const isQuiz = context.globalState.settings.data.state.quiz;
+	const [quizMode, setQuizMode] = useState<'guess' | 'answer' | 'waiting'>('waiting');
 	const [dropDownMenu, setDropDownMenu] = useState(false);
+	const [scoresDropDown, setScoresDropDown] = useState(false);
 	const [quotaType, setQuotaType] = useState<number>();
 	const [quotaLeft, setQuotaLeft] = useState<number>();
+	const [height, setHeight] = useState('0px');
 	const ref = useRef<HTMLElement>();
+
+	const score = useAsyncMemo<GameScore[]>(
+		async () => {
+			const score = await commandBackend('getGameScore', {
+				gamename: context.globalState.settings.data.state.quizGame,
+				login: context.globalState.auth.data.username,
+			});
+			return score ? (score as GameScore[]) : [];
+		},
+		[quizMode],
+		[]
+	);
+
+	useEffect(() => {
+		const qStart = () => setQuizMode('guess');
+		const qResult = () => setQuizMode('answer');
+
+		getSocket().on('quizStart', qStart);
+		getSocket().on('quizResult', qResult);
+		return () => {
+			getSocket().off('quizStart', qStart);
+			getSocket().off('quizResult', qResult);
+		};
+	}, []);
 
 	const toggleProfileModal = e => {
 		e.preventDefault();
@@ -63,7 +92,9 @@ function PublicHeader(props: IProps) {
 
 	const resizeCheck = () => {
 		if (ref?.current) {
-			props.onResize(`${ref.current.scrollHeight}px`);
+			const heightCSS = `${ref.current.scrollHeight}px`;
+			setHeight(heightCSS);
+			props.onResize(heightCSS);
 		}
 	};
 
@@ -72,7 +103,7 @@ function PublicHeader(props: IProps) {
 		// This will emit a quotaAvailableUpdated event
 		commandBackend('refreshUserQuotas');
 		props.onResize(`${ref.current.scrollHeight}px`);
-		observer = new ResizeObserver(resizeCheck);
+		let observer = new ResizeObserver(resizeCheck);
 		observer.observe(document.getElementById('menu-supp-root'));
 		return () => {
 			getSocket().off('quotaAvailableUpdated', updateQuotaAvailable);
@@ -89,49 +120,78 @@ function PublicHeader(props: IProps) {
 			ref={ref}
 		>
 			<div className="menu">
-				<a
-					href="/public"
-					className="nanamin-logo"
-					onClick={e => {
-						e.preventDefault();
-						navigate('/public/');
-					}}
-				>
+				<Link to={isQuiz ? '/public/quiz' : '/public'} className="nanamin-logo">
 					<picture>
 						<source srcSet={nanamiWebP} type="image/webp" />
 						<source srcSet={nanamiPNG} type="image/png" />
 						<img src={nanamiPNG} alt="Nanamin logo" />
 					</picture>
-				</a>
-				<div className="menu-bar">
-					{props.currentVisible ? (
-						<Link className="green" to="/public/playlist/current">
-							<i className="fas fa-fw fa-play-circle fa-2x" />
-							{i18next.t('PUBLIC_HOMEPAGE.NEXT')}
-						</Link>
-					) : null}
-					{props.publicVisible &&
-					context.globalState.settings.data.state.currentPlaid !==
-						context.globalState.settings.data.state.publicPlaid ? (
-						<Link className="orange" to="/public/playlist/public">
-							<i className="fas fa-fw fa-globe fa-2x" />
-							{i18next.t('PUBLIC_HOMEPAGE.PUBLIC_SUGGESTIONS_SHORT')}
-						</Link>
-					) : null}
-					{context?.globalState.settings.data.config?.Frontend?.Mode !== 0 ? (
-						<Link className="blue" to="/public/search">
-							<i className="fas fa-fw fa-search fa-2x" />
-							{i18next.t('PUBLIC_HOMEPAGE.SONG_SEARCH_SHORT')}
-						</Link>
-					) : null}
-				</div>
-				{quotaType > 0 ? (
-					<div className={`quota-bar${quotaLeft <= 5 ? ' exhaust' : ''}`}>
-						{quotaType === 1 ? i18next.t('QUOTA_KARA') : i18next.t('QUOTA_TIME')}
-						&nbsp;:&nbsp;
-						{quotaLeft === -1 ? '∞' : quotaType === 2 ? secondsTimeSpanToHMS(quotaLeft, 'ms') : quotaLeft}
+				</Link>
+				{isQuiz ? (
+					<div className="dropdown-container">
+						<div className="quota-bar quiz" tabIndex={0} onClick={() => setScoresDropDown(!scoresDropDown)}>
+							{i18next.t('PUBLIC_HOMEPAGE.QUIZ.POINTS', {
+								count: score.reduce((a, sc) => a + sc.points, 0),
+							})}{' '}
+							<i className={scoresDropDown ? 'fas fa-fw fa-caret-up' : 'fas fa-fw fa-caret-down'}></i>
+						</div>
+						<div
+							className={`closeHandler${scoresDropDown ? ' active' : ''}`}
+							onClick={() => setScoresDropDown(false)}
+						/>
+						<div
+							className={`scores-popup${scoresDropDown ? ' active' : ''}`}
+							style={{ ['--top' as any]: height }}
+						>
+							<div>{i18next.t('PUBLIC_HOMEPAGE.QUIZ.ANSWERS_HISTORY')}</div>
+							<hr />
+							{score.map(el => (
+								<div key={el.kid}>
+									<div>
+										<em>"{el.answer}"</em>
+									</div>
+									<div>{i18next.t('PUBLIC_HOMEPAGE.QUIZ.POINTS_TOTAL', { count: el.points })}</div>
+								</div>
+							))}
+						</div>
 					</div>
-				) : null}
+				) : (
+					<>
+						<div className="menu-bar">
+							{props.currentVisible ? (
+								<Link className="green" to="/public/playlist/current">
+									<i className="fas fa-fw fa-play-circle fa-2x" />
+									{i18next.t('PUBLIC_HOMEPAGE.NEXT')}
+								</Link>
+							) : null}
+							{props.publicVisible &&
+							context.globalState.settings.data.state.currentPlaid !==
+								context.globalState.settings.data.state.publicPlaid ? (
+								<Link className="orange" to="/public/playlist/public">
+									<i className="fas fa-fw fa-globe fa-2x" />
+									{i18next.t('PUBLIC_HOMEPAGE.PUBLIC_SUGGESTIONS_SHORT')}
+								</Link>
+							) : null}
+							{context?.globalState.settings.data.config?.Frontend?.Mode !== 0 ? (
+								<Link className="blue" to="/public/search">
+									<i className="fas fa-fw fa-search fa-2x" />
+									{i18next.t('PUBLIC_HOMEPAGE.SONG_SEARCH_SHORT')}
+								</Link>
+							) : null}
+						</div>
+						{quotaType > 0 ? (
+							<div className={`quota-bar${quotaLeft <= 5 ? ' exhaust' : ''}`}>
+								{quotaType === 1 ? i18next.t('QUOTA_KARA') : i18next.t('QUOTA_TIME')}
+								&nbsp;:&nbsp;
+								{quotaLeft === -1
+									? '∞'
+									: quotaType === 2
+									? secondsTimeSpanToHMS(quotaLeft, 'ms')
+									: quotaLeft}
+							</div>
+						) : null}
+					</>
+				)}
 				<div className="profile-btn">
 					<div className="dropdown-container">
 						<div
@@ -160,11 +220,13 @@ function PublicHeader(props: IProps) {
 							) : null}
 							{context?.globalState.auth.data.role !== 'guest' ? (
 								<>
-									<div className="link">
-										<a href="/public/favorites" onClick={goToFavorites}>
-											<i className="fas fa-fw fa-star" /> {i18next.t('VIEW_FAVORITES')}
-										</a>
-									</div>
+									{!context.globalState.settings.data.state.quiz ? (
+										<div className="link">
+											<a href="/public/favorites" onClick={goToFavorites}>
+												<i className="fas fa-fw fa-star" /> {i18next.t('VIEW_FAVORITES')}
+											</a>
+										</div>
+									) : null}
 									<div className="link">
 										<a href="/public/user" onClick={toggleProfileModal}>
 											<i className="fas fa-fw fa-user" /> {i18next.t('PROFILE')}

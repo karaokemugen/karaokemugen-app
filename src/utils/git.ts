@@ -1,15 +1,15 @@
 import i18next from 'i18next';
 import { resolve } from 'path';
-import simpleGit, { DefaultLogFields, ListLogLine, SimpleGit, SimpleGitProgressEvent } from 'simple-git';
+import { DefaultLogFields, ListLogLine, SimpleGit, simpleGit, SimpleGitProgressEvent } from 'simple-git';
 import which from 'which';
 
-import { Repository } from '../lib/types/repo';
-import { fileExists } from '../lib/utils/files';
-import logger from '../lib/utils/logger';
-import Task from '../lib/utils/taskManager';
-import { getRepo } from '../services/repo';
-import { Commit } from '../types/repo';
-import { getState } from './state';
+import { Repository } from '../lib/types/repo.js';
+import { fileExists } from '../lib/utils/files.js';
+import logger from '../lib/utils/logger.js';
+import Task from '../lib/utils/taskManager.js';
+import { getRepo } from '../services/repo.js';
+import { Commit } from '../types/repo.js';
+import { getState } from './state.js';
 
 const service = 'Git';
 

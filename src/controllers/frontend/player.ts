@@ -1,12 +1,12 @@
 import { Socket } from 'socket.io';
 
-import { APIData } from '../../lib/types/api';
-import { check } from '../../lib/utils/validators';
-import { emitWS, SocketIOApp } from '../../lib/utils/ws';
-import { initPlayer, isPlayerRunning, playerMessage, playPlayer, sendCommand } from '../../services/player';
-import { getState } from '../../utils/state';
-import { APIMessage, errMessage } from '../common';
-import { runChecklist } from '../middlewares';
+import { APIData } from '../../lib/types/api.js';
+import { check } from '../../lib/utils/validators.js';
+import { emitWS, SocketIOApp } from '../../lib/utils/ws.js';
+import { initPlayer, isPlayerRunning, playerMessage, playPlayer, sendCommand } from '../../services/player.js';
+import { getState } from '../../utils/state.js';
+import { APIMessage, errMessage } from '../common.js';
+import { runChecklist } from '../middlewares.js';
 
 export default function playerController(router: SocketIOApp) {
 	router.route('play', async (socket: Socket, req: APIData) => {

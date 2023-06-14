@@ -72,12 +72,16 @@
 		}
 		font-weight: bold;
 	}
-	.modal-series {
+	.modal-series,
+	.modal-right {
 		font-size: 1.5rem;
 		@media screen and (max-width: $mugen-breakpoint-small) {
 			font-size: 1rem;
 		}
 		font-weight: normal;
+	}
+	.modal-right {
+		padding: 0.25em;
 	}
 	a {
 		color: #a4c7e5;

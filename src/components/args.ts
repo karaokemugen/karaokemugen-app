@@ -1,8 +1,8 @@
 import { Command } from 'commander';
 import { app, CommandLine } from 'electron';
 
-import logger, { enableProfiling } from '../lib/utils/logger';
-import { getState, setState } from '../utils/state';
+import logger, { enableProfiling } from '../lib/utils/logger.js';
+import { getState, setState } from '../utils/state.js';
 
 const service = 'Args';
 

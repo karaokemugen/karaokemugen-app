@@ -27,6 +27,7 @@ import CriteriasList from './CriteriasList';
 import KaraLine from './KaraLine';
 import PlaylistHeader from './PlaylistHeader';
 import TasksEvent from '../../../TasksEvent';
+import QuizRanking from './QuizRanking';
 
 // Virtuoso's resize observer can this error,
 // which is caught by DnD and aborts dragging.
@@ -54,6 +55,7 @@ interface IProps {
 	indexKaraDetail?: number;
 	clearIndexKaraDetail?: () => void;
 	searchType?: 'search' | 'recent' | 'requested';
+	quizRanking: boolean;
 }
 interface KaraList {
 	content: KaraElement[];
@@ -80,7 +82,7 @@ function Playlist(props: IProps) {
 	const [data, setData] = useState<KaraList>();
 	const [checkedKaras, setCheckedKaras] = useState(0);
 	const [playing, setPlaying] = useState<number>(
-		getPlaylistInfo(props.side, context).content.findIndex(k => k.flag_playing)
+		getPlaylistInfo(props.side, context)?.content.findIndex(k => k.flag_playing)
 	);
 	const [songsBeforeJingle, setSongsBeforeJingle] = useState<number>();
 	const [songsBeforeSponsor, setSongsBeforeSponsor] = useState<number>();
@@ -91,6 +93,8 @@ function Playlist(props: IProps) {
 	const [criteriasOpen, setCriteriasOpen] = useState(false);
 	const virtuoso = useRef<any>(null);
 	const plaid = useRef<string>(getPlaylistInfo(props.side, context)?.plaid);
+
+	const quizRanking = context.globalState.settings.data.state.quiz && props.quizRanking;
 
 	const publicPlaylistEmptied = () => {
 		if (getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.library) {
@@ -252,7 +256,7 @@ function Playlist(props: IProps) {
 		getPlaylistInfo(props.side, context)?.plaid,
 	]);
 
-	const HeightPreservingItem = ({ children, ...props }: PropsWithChildren<ItemProps>) => {
+	const HeightPreservingItem = ({ children, ...props }: PropsWithChildren<ItemProps<any>>) => {
 		const [size, setSize] = useState(0);
 		const knownSize = props['data-known-size'];
 		useEffect(() => {
@@ -281,6 +285,7 @@ function Playlist(props: IProps) {
 				const jingle =
 					typeof songsBeforeJingle === 'number' &&
 					// Are jingles enabled?
+					!context.globalState.settings.data.state.quiz &&
 					context.globalState.settings.data.config.Playlist.Medias.Jingles.Enabled &&
 					// Use modulo to calculate each occurrence
 					(index - (playing + songsBeforeJingle)) %
@@ -289,6 +294,7 @@ function Playlist(props: IProps) {
 				const sponsor =
 					typeof songsBeforeSponsor === 'number' &&
 					// Are sponsors enabled?
+					!context.globalState.settings.data.state.quiz &&
 					context.globalState.settings.data.config.Playlist.Medias.Sponsors.Enabled &&
 					// Use modulo to calculate each occurrence
 					(index - (playing + songsBeforeSponsor)) %
@@ -582,7 +588,7 @@ function Playlist(props: IProps) {
 		let checkedKarasNumber = checkedKaras;
 		for (const kara of data.content) {
 			if (!isNonStandardPlaylist(getPlaylistInfo(props.side, context)?.plaid)) {
-				if (kara.plcid === id) {
+				if (kara?.plcid === id) {
 					kara.checked = !kara.checked;
 					if (kara.checked) {
 						checkedKarasNumber++;
@@ -1033,7 +1039,7 @@ function Playlist(props: IProps) {
           }
       `}
 			</style>
-			{props.scope === 'admin' ? (
+			{props.scope === 'admin' && !quizRanking ? (
 				<PlaylistHeader
 					side={props.side}
 					playlistList={props.playlistList}
@@ -1059,9 +1065,10 @@ function Playlist(props: IProps) {
 			) : null}
 			<div id={'playlist' + props.side} className="playlistContainer" ref={refContainer}>
 				{playlist?.flag_smart && criteriasOpen ? <CriteriasList playlist={playlist} /> : null}
-				{!data?.infos && !criteriasOpen && isPlaylistInProgress ? (
+				{quizRanking ? <QuizRanking /> : null}
+				{!data?.infos && !criteriasOpen && !quizRanking && isPlaylistInProgress ? (
 					<div className="loader" />
-				) : data && !criteriasOpen ? (
+				) : data && !criteriasOpen && !quizRanking ? (
 					<DragDropContext onDragEnd={sortRow}>
 						<Droppable
 							droppableId={'droppable' + props.side}
@@ -1106,7 +1113,7 @@ function Playlist(props: IProps) {
 				) : null}
 			</div>
 			<div className="plFooter">
-				{!criteriasOpen ? (
+				{!criteriasOpen && !quizRanking ? (
 					<div className="plBrowse btn-group">
 						<button
 							type="button"
@@ -1147,7 +1154,7 @@ function Playlist(props: IProps) {
 						</button>
 					</div>
 				) : null}
-				<div className="plInfos">{getPlInfosElement()}</div>
+				{!quizRanking && <div className="plInfos">{getPlInfosElement()}</div>}
 				{checkedKaras > 0 ? (
 					<div className="plQuota selection">
 						{i18next.t('CHECKED')}

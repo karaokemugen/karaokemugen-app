@@ -1,9 +1,9 @@
 import i18next from 'i18next';
 
-import { MenuItemBuilderFunction } from '../../types/electron';
-import { getState } from '../../utils/state';
-import { showAbout } from '../electron';
-import { urls } from '.';
+import { MenuItemBuilderFunction } from '../../types/electron.js';
+import { getState } from '../../utils/state.js';
+import { showAbout } from '../electron.js';
+import { urls } from './index.js';
 
 const builder: MenuItemBuilderFunction = options => {
 	const { isMac } = options;
@@ -27,6 +27,11 @@ const builder: MenuItemBuilderFunction = options => {
 				label: i18next.t('MENU_HELP_TWITTER'),
 				click: urls.twitter,
 			},
+			{
+				label: i18next.t('MENU_HELP_MASTODON'),
+				click: urls.mastodon,
+			},
+
 			{
 				label: i18next.t('MENU_HELP_DISCORD'),
 				click: urls.discord,

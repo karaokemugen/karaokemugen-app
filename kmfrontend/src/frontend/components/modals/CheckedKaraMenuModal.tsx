@@ -45,7 +45,7 @@ function CheckedKaraMenuModal(props: IProps) {
 	};
 
 	const changeVisibilityKaraOn = () => {
-		if (props.checkedKaras.length === 0) {
+		if (!props.checkedKaras || props.checkedKaras?.length === 0) {
 			displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
 			return;
 		}
@@ -136,9 +136,14 @@ function CheckedKaraMenuModal(props: IProps) {
 			return;
 		}
 		try {
-			commandBackend('randomizePLC', {
-				plc_ids: props.checkedKaras.map(a => a.plcid),
-			});
+			commandBackend(
+				'randomizePLC',
+				{
+					plc_ids: props.checkedKaras.map(a => a.plcid),
+				},
+				false,
+				60000
+			);
 			setEffectShuffle(true);
 			setTimeout(props.closeKaraMenu, 350);
 		} catch (e) {

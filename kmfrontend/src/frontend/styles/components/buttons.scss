@@ -85,6 +85,17 @@ h5 > a {
 	background-color: lighten($mugen-btn-primary-background, 5);
 }
 
+.btn-success,
+.btn-success:active:focus,
+.btn-success:focus {
+	color: white;
+	background-color: $mugen-btn-success-background;
+}
+
+.btn-success:hover {
+	background-color: lighten($mugen-btn-success-background, 5);
+}
+
 .btn-dark,
 .btn-dark:focus {
 	background-color: #1e2124;

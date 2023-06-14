@@ -1,20 +1,21 @@
 import { promises as fs } from 'fs';
 import { basename, extname, resolve } from 'path';
 
-import { applyKaraHooks } from '../lib/dao/hook';
-import { extractVideoSubtitles, trimKaraData, verifyKaraData, writeKara } from '../lib/dao/karafile';
-import { defineFilename, determineMediaAndLyricsFilenames, processSubfile } from '../lib/services/karaCreation';
-import { EditedKara } from '../lib/types/kara.d';
-import { resolvedPath, resolvedPathRepos } from '../lib/utils/config';
-import { replaceExt, resolveFileInDirs, smartMove } from '../lib/utils/files';
-import logger, { profile } from '../lib/utils/logger';
-import Task from '../lib/utils/taskManager';
-import { adminToken } from '../utils/constants';
-import sentry from '../utils/sentry';
-import { getKara } from './kara';
-import { integrateKaraFile } from './karaManagement';
-import { checkDownloadStatus } from './repo';
-import { consolidateTagsInRepo } from './tag';
+import { applyKaraHooks } from '../lib/dao/hook.js';
+import { extractVideoSubtitles, trimKaraData, verifyKaraData, writeKara } from '../lib/dao/karafile.js';
+import { defineFilename, determineMediaAndLyricsFilenames, processSubfile } from '../lib/services/karaCreation.js';
+import { EditedKara } from '../lib/types/kara.d.js';
+import { ASSFileCleanup } from '../lib/utils/ass.js';
+import { getConfig, resolvedPath, resolvedPathRepos } from '../lib/utils/config.js';
+import { replaceExt, resolveFileInDirs, smartMove } from '../lib/utils/files.js';
+import logger, { profile } from '../lib/utils/logger.js';
+import Task from '../lib/utils/taskManager.js';
+import { adminToken } from '../utils/constants.js';
+import sentry from '../utils/sentry.js';
+import { getKara } from './kara.js';
+import { integrateKaraFile } from './karaManagement.js';
+import { checkDownloadStatus } from './repo.js';
+import { consolidateTagsInRepo } from './tag.js';
 
 const service = 'KaraCreation';
 
@@ -75,8 +76,8 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 					}
 					kara.medias[0].lyrics[0] = {
 						filename: basename(extractFile),
-						version: 'Default',
 						default: true,
+						version: 'Default',
 					};
 					filenames.lyricsfile = karaFile + extname(kara.medias[0].lyrics[0].filename);
 					editedKara.modifiedLyrics = true;
@@ -141,6 +142,13 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 		await integrateKaraFile(karaDest, kara, false, refresh);
 		checkDownloadStatus([kara.data.kid]);
 		await consolidateTagsInRepo(kara);
+
+		// Get finished kara with all updated fields
+		const newKara = await getKara(kara.data.kid, adminToken);
+
+		// ASS file post processing
+		if (kara.medias[0].lyrics?.[0] && getConfig().Maintainer.ApplyLyricsCleanupOnKaraSave === true)
+			await ASSFileCleanup(subDest, newKara);
 	} catch (err) {
 		logger.error('Error while editing kara', { service, obj: err });
 		if (!err.msg) {
@@ -175,8 +183,8 @@ export async function createKara(editedKara: EditedKara) {
 				}
 				kara.medias[0].lyrics[0] = {
 					filename: basename(extractFile),
-					version: 'Default',
 					default: true,
+					version: 'Default',
 				};
 			}
 		} catch (err) {
@@ -184,12 +192,13 @@ export async function createKara(editedKara: EditedKara) {
 		}
 		const filenames = determineMediaAndLyricsFilenames(kara, karaFile);
 		const mediaDest = resolve(resolvedPathRepos('Medias', kara.data.repository)[0], filenames.mediafile);
+		let subDest: string;
 		if (kara.medias[0].lyrics?.[0]) {
 			const subPath = resolve(resolvedPath('Temp'), kara.medias[0].lyrics?.[0].filename);
 			const ext = await processSubfile(subPath);
 			filenames.lyricsfile = replaceExt(filenames.lyricsfile, ext);
 			kara.medias[0].lyrics[0].filename = filenames.lyricsfile;
-			const subDest = resolve(resolvedPathRepos('Lyrics', kara.data.repository)[0], filenames.lyricsfile);
+			subDest = resolve(resolvedPathRepos('Lyrics', kara.data.repository)[0], filenames.lyricsfile);
 			await smartMove(subPath, subDest, { overwrite: true });
 		}
 		await smartMove(mediaPath, mediaDest, { overwrite: true });
@@ -199,6 +208,13 @@ export async function createKara(editedKara: EditedKara) {
 		await integrateKaraFile(karaDest, kara, false, true);
 		checkDownloadStatus([kara.data.kid]);
 		await consolidateTagsInRepo(kara);
+
+		// Get finished kara with all fields
+		const newKara = await getKara(kara.data.kid, adminToken);
+
+		// ASS file post processing
+		if (kara.medias[0].lyrics?.[0] && getConfig().Maintainer.ApplyLyricsCleanupOnKaraSave === true)
+			await ASSFileCleanup(subDest, newKara);
 	} catch (err) {
 		logger.error('Error while creating kara', { service, obj: err });
 		if (!err.msg) {

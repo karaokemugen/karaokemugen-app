@@ -2,11 +2,11 @@ import { dialog } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import i18next from 'i18next';
 
-import { exit } from '../components/engine';
-import { getConfig } from '../lib/utils/config';
-import logger from '../lib/utils/logger';
-import sentry from '../utils/sentry';
-import { win } from './electron';
+import { exit } from '../components/engine.js';
+import { getConfig } from '../lib/utils/config.js';
+import logger from '../lib/utils/logger.js';
+import sentry from '../utils/sentry.js';
+import { win } from './electron.js';
 
 const service = 'ElectronUpdater';
 

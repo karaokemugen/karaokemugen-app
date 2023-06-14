@@ -1,10 +1,11 @@
-import { TagTypeNum } from '../../../src/lib/types/tag';
+import { TagType, TagTypeNum } from '../../../src/lib/types/tag';
+import { QuizAnswers } from '../../../src/types/quiz';
 
 export interface tagType {
 	icon: string;
 	type: TagTypeNum;
 	color: string;
-	karajson: string;
+	karajson: TagType;
 }
 
 export const tagTypesKaraFileV4Order = [
@@ -44,7 +45,7 @@ export const tagTypes: Readonly<{ [key: string]: tagType }> = {
 	LANGS: {
 		icon: 'globe',
 		type: 5,
-		color: 'green',
+		color: 'black',
 		karajson: 'langs',
 	},
 	SINGERS: {
@@ -151,6 +152,27 @@ export const FAVORITES = {
 	type: 1001,
 };
 
+export const ANIMELISTS = {
+	icon: 'star',
+	type: 1002,
+};
+
+export const TITLE = {
+	icon: 'music',
+	type: 1003,
+};
+
 export function getTagTypeName(type: number): string {
 	return Object.keys(tagTypes).find(t => tagTypes[t].type === type);
+}
+
+export function acceptedAnswerToIcon(type: QuizAnswers) {
+	switch (type) {
+		case 'year':
+			return YEARS.icon;
+		case 'title':
+			return TITLE.icon;
+		default:
+			return tagTypes[type.toUpperCase()].icon;
+	}
 }

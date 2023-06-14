@@ -88,6 +88,7 @@ function KMFrontend() {
 				<Route path="/chibi" element={<ChibiPage />} />
 				<Route path="/public/*" element={<PublicPage />} />
 				<Route path="/about" element={<About />} />
+				<Route path="/quiz" element={<Navigate to={'/public/quiz'} />} />
 				<Route
 					path="/"
 					element={<Navigate to={context.globalState.auth.data.role === 'admin' ? '/welcome' : '/public'} />}

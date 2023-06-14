@@ -1,4 +1,4 @@
-import { TagAndType } from '../lib/types/tag';
+import { TagAndType } from '../lib/types/tag.js';
 
 interface FavExportContent {
 	kid: string;
@@ -22,6 +22,7 @@ export type PlaylistLimit = 'duration' | 'songs';
 export interface AutoMixParams {
 	filters?: {
 		usersFavorites?: string[];
+		usersAnimeList?: string[];
 		years?: number[];
 		tags?: TagAndType[];
 	};

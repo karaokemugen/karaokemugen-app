@@ -9,18 +9,17 @@ import { resolve } from 'path';
 import { StringDecoder } from 'string_decoder';
 import { tasklist } from 'tasklist';
 
-import { errorStep } from '../electron/electronLogger';
-import { getConfig, resolvedPath } from '../lib/utils/config';
-import { asciiRegexp } from '../lib/utils/constants';
-import { downloadFile } from '../lib/utils/downloader';
-// KM Imports
-import { compressGzipFile, decompressGzipFile, fileExists, smartMove } from '../lib/utils/files';
-import logger, { profile } from '../lib/utils/logger';
-import { PGVersion } from '../types/database';
-import { checkBinaries, editSetting } from './config';
-import { expectedPGVersion, pgctlRegex } from './constants';
-import sentry from './sentry';
-import { getState, setState } from './state';
+import { errorStep } from '../electron/electronLogger.js';
+import { getConfig, resolvedPath } from '../lib/utils/config.js';
+import { asciiRegexp } from '../lib/utils/constants.js';
+import { downloadFile } from '../lib/utils/downloader.js';
+import { compressGzipFile, decompressGzipFile, fileExists, smartMove } from '../lib/utils/files.js';
+import logger, { profile } from '../lib/utils/logger.js';
+import { PGVersion } from '../types/database.js';
+import { checkBinaries, editSetting } from './config.js';
+import { expectedPGVersion, pgctlRegex } from './constants.js';
+import sentry from './sentry.js';
+import { getState, setState } from './state.js';
 
 const service = 'Postgres';
 
@@ -165,7 +164,7 @@ export async function dumpPG() {
 		});
 
 		if (!(await fileExists(dumpFile))) {
-			throw Error('file not created');
+			throw Error('Dump file not created');
 		}
 
 		await compressGzipFile(dumpFile);

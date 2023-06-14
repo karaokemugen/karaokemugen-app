@@ -2,19 +2,19 @@ import { promises as fs } from 'fs';
 import { resolve } from 'path';
 import prettyBytes from 'pretty-bytes';
 
-import { APIMessage } from '../lib/services/frontend';
-import { DBMedia } from '../lib/types/database/kara';
-import { getConfig, resolvedPathRepos } from '../lib/utils/config';
-import { mediaFileRegexp } from '../lib/utils/constants';
-import { resolveFileInDirs } from '../lib/utils/files';
-import HTTP from '../lib/utils/http';
-import logger, { profile } from '../lib/utils/logger';
-import { on } from '../lib/utils/pubsub';
-import Task from '../lib/utils/taskManager';
-import { emitWS } from '../lib/utils/ws';
-import { File } from '../types/download';
-import { addDownloads } from './download';
-import { checkDownloadStatus } from './repo';
+import { APIMessage } from '../lib/services/frontend.js';
+import { DBMedia } from '../lib/types/database/kara.js';
+import { getConfig, resolvedPathRepos } from '../lib/utils/config.js';
+import { mediaFileRegexp } from '../lib/utils/constants.js';
+import { resolveFileInDirs } from '../lib/utils/files.js';
+import HTTP from '../lib/utils/http.js';
+import logger, { profile } from '../lib/utils/logger.js';
+import { on } from '../lib/utils/pubsub.js';
+import Task from '../lib/utils/taskManager.js';
+import { emitWS } from '../lib/utils/ws.js';
+import { File } from '../types/download.js';
+import { addDownloads } from './download.js';
+import { checkDownloadStatus } from './repo.js';
 
 const service = 'MediasUpdater';
 

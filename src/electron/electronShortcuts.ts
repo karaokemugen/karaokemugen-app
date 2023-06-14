@@ -1,10 +1,10 @@
 import { dialog, globalShortcut, systemPreferences } from 'electron';
 import i18next from 'i18next';
 
-import { getConfig } from '../lib/utils/config';
-import { profile } from '../lib/utils/logger';
-import { next, pausePlayer, playPlayer, prev, stopPlayer } from '../services/player';
-import { getState, setState } from '../utils/state';
+import { getConfig } from '../lib/utils/config.js';
+import { profile } from '../lib/utils/logger.js';
+import { next, pausePlayer, playPlayer, prev, stopPlayer } from '../services/player.js';
+import { getState, setState } from '../utils/state.js';
 
 export async function registerShortcuts() {
 	if (process.platform === 'darwin') {

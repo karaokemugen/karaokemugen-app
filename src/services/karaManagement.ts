@@ -3,35 +3,36 @@ import { promises as fs } from 'fs';
 import { copy } from 'fs-extra';
 import { basename, extname, resolve } from 'path';
 
-import { getStoreChecksum, removeKaraInStore } from '../dao/dataStore';
-import { deleteKara as deleteKaraDB, insertKara, selectAllKaras, updateKaraParents } from '../dao/kara';
-import { removeParentInKaras } from '../dao/karafile';
-import { selectPlaylistContentsMicro } from '../dao/playlist';
-import { saveSetting } from '../lib/dao/database';
-import { refreshKarasDelete } from '../lib/dao/kara';
-import { formatKaraV4, getDataFromKaraFile, writeKara } from '../lib/dao/karafile';
-import { refreshTags } from '../lib/dao/tag';
-import { writeTagFile } from '../lib/dao/tagfile';
-import { refreshKarasAfterDBChange, updateTags } from '../lib/services/karaManagement';
-import { DBKara, DBKaraTag } from '../lib/types/database/kara';
-import { DBTag } from '../lib/types/database/tag';
-import { KaraFileV4, KaraTag } from '../lib/types/kara';
-import { TagTypeNum } from '../lib/types/tag';
-import { resolvedPathRepos } from '../lib/utils/config';
-import { audioFileRegexp, getTagTypeName } from '../lib/utils/constants';
-import { fileExists, resolveFileInDirs } from '../lib/utils/files';
-import logger, { profile } from '../lib/utils/logger';
-import { createImagePreviews } from '../lib/utils/previews';
-import Task from '../lib/utils/taskManager';
-import { adminToken } from '../utils/constants';
-import sentry from '../utils/sentry';
-import { getState } from '../utils/state';
-import { checkMediaAndDownload } from './download';
-import { getKara, getKaras } from './kara';
-import { editKara } from './karaCreation';
-import { getRepo, getRepos } from './repo';
-import { updateAllSmartPlaylists } from './smartPlaylist';
-import { getTag } from './tag';
+import { getStoreChecksum, removeKaraInStore } from '../dao/dataStore.js';
+import { deleteKara as deleteKaraDB, insertKara, selectAllKaras, updateKaraParents } from '../dao/kara.js';
+import { removeParentInKaras } from '../dao/karafile.js';
+import { selectPlaylistContentsMicro } from '../dao/playlist.js';
+import { saveSetting } from '../lib/dao/database.js';
+import { refreshKarasDelete } from '../lib/dao/kara.js';
+import { formatKaraV4, getDataFromKaraFile, writeKara } from '../lib/dao/karafile.js';
+import { refreshTags } from '../lib/dao/tag.js';
+import { writeTagFile } from '../lib/dao/tagfile.js';
+import { refreshKarasAfterDBChange, updateTags } from '../lib/services/karaManagement.js';
+import { DBKara, DBKaraTag } from '../lib/types/database/kara.js';
+import { DBTag } from '../lib/types/database/tag.js';
+import { KaraFileV4, KaraTag } from '../lib/types/kara.js';
+import { TagTypeNum } from '../lib/types/tag.js';
+import { setASSSectionRaw } from '../lib/utils/ass.js';
+import { resolvedPathRepos } from '../lib/utils/config.js';
+import { audioFileRegexp, getTagTypeName } from '../lib/utils/constants.js';
+import { fileExists, resolveFileInDirs } from '../lib/utils/files.js';
+import logger, { profile } from '../lib/utils/logger.js';
+import { createImagePreviews } from '../lib/utils/previews.js';
+import Task from '../lib/utils/taskManager.js';
+import { adminToken } from '../utils/constants.js';
+import sentry from '../utils/sentry.js';
+import { getState } from '../utils/state.js';
+import { checkMediaAndDownload } from './download.js';
+import { getKara, getKaras } from './kara.js';
+import { editKara } from './karaCreation.js';
+import { getRepo, getRepos } from './repo.js';
+import { updateAllSmartPlaylists } from './smartPlaylist.js';
+import { getTag } from './tag.js';
 
 const service = 'KaraManager';
 
@@ -317,7 +318,9 @@ export async function integrateKaraFile(
 	}
 	// Do not create image previews if running this from the command line.
 	if (!getState().opt.generateDB)
-		createImagePreviews(await getKaras({ q: `k:${karaData.data.kid}`, ignoreCollections: true }), 'single');
+		createImagePreviews(await getKaras({ q: `k:${karaData.data.kid}`, ignoreCollections: true }), 'single').catch(
+			() => {}
+		);
 	return karaData.data.kid;
 }
 
@@ -340,23 +343,33 @@ export async function openLyricsFile(kid: string) {
 Audio File: ${mediaPath}
 ${!mediafile.match(audioFileRegexp) ? `Video File: ${mediaPath}` : ''}
 `;
-
 					let content: string = await fs.readFile(lyricsPath, { encoding: 'utf8' });
-					const blocks = content.split(/(?:\n)(?=^\[)/gm);
-					const index = blocks.findIndex(block => block.startsWith('[Aegisub Project Garbage]'));
-					if (index >= 0) {
-						// replace the existing garbage
-						blocks[index] = garbageBlock;
-					} else {
-						// add the garbage at the second position (default behavior)
-						blocks.splice(1, 0, garbageBlock);
-					}
-					content = blocks.join('\n');
+					content = setASSSectionRaw(content, 'Aegisub Project Garbage', garbageBlock, 1); // add the garbage at the second position (default behavior)
 					await fs.writeFile(lyricsPath, content);
 				}
 			}
 		}
 		await shell.openPath(lyricsPath);
+	} catch (err) {
+		throw err;
+	}
+}
+
+export async function showLyricsInFolder(kid: string) {
+	try {
+		const { subfile, repository } = await getKara(kid, adminToken);
+		const lyricsPath = resolve(resolvedPathRepos('Lyrics', repository)[0], subfile);
+		shell.showItemInFolder(lyricsPath);
+	} catch (err) {
+		throw err;
+	}
+}
+
+export async function showMediaInFolder(kid: string) {
+	try {
+		const { mediafile, repository } = await getKara(kid, adminToken);
+		const mediaPath = resolve(resolvedPathRepos('Medias', repository)[0], mediafile);
+		shell.showItemInFolder(mediaPath);
 	} catch (err) {
 		throw err;
 	}

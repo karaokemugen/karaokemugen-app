@@ -3,12 +3,12 @@ import { merge } from 'lodash';
 
 import packageJSON from '../../package.json';
 // KM Imports
-import { getConfig } from '../lib/utils/config';
-import { supportedFiles } from '../lib/utils/constants';
-import { emit } from '../lib/utils/pubsub';
-import { emitWS } from '../lib/utils/ws';
+import { getConfig } from '../lib/utils/config.js';
+import { supportedFiles } from '../lib/utils/constants.js';
+import { emit } from '../lib/utils/pubsub.js';
+import { emitWS } from '../lib/utils/ws.js';
 // Types
-import { PublicPlayerState, PublicState, State } from '../types/state';
+import { PublicPlayerState, PublicState, State } from '../types/state.js';
 
 // Internal settings
 let state: State = {
@@ -49,6 +49,13 @@ let state: State = {
 	systemMessages: [],
 	DBReady: false,
 	portable: false,
+	quizMode: false,
+	quizGuessingTime: false,
+	quiz: {
+		guessTime: 0,
+		quickGuess: 0,
+		revealTime: 0,
+	},
 };
 
 /** Get public state (to send to webapp users) */
@@ -122,6 +129,7 @@ export function getPublicState(admin: boolean): PublicState {
 		publicPlaid: state.publicPlaid,
 		blacklistPlaid: state.blacklistPlaid,
 		whitelistPlaid: state.whitelistPlaid,
+		fallbackPlaid: state.fallbackPlaid,
 		appPath: admin ? state.appPath : undefined,
 		dataPath: admin ? state.dataPath : undefined,
 		os: admin ? state.os : undefined,
@@ -131,6 +139,8 @@ export function getPublicState(admin: boolean): PublicState {
 		environment: process.env.SENTRY_ENVIRONMENT,
 		sentrytest: (process.env.CI_SERVER || process.env.SENTRY_TEST === 'true') as boolean,
 		url: state.osURL,
+		quiz: state.quizMode,
+		quizGame: state.currentQuizGame,
 	};
 }
 

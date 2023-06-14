@@ -1,6 +1,6 @@
-import { backgroundTypes } from '../services/backgrounds';
+import { backgroundTypes } from '../services/backgrounds.js';
 
-export type BackgroundType = typeof backgroundTypes[number];
+export type BackgroundType = (typeof backgroundTypes)[number];
 
 export interface BackgroundList {
 	pictures: string[];

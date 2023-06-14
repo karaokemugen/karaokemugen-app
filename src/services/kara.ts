@@ -2,7 +2,7 @@ import { convertToASS as srt2ass } from 'convert-srt-to-ass';
 import internet from 'internet-available';
 import { parse } from 'path';
 
-import { getStats } from '../dao/database';
+import { getStats } from '../dao/database.js';
 import {
 	insertOnlineRequested,
 	insertPlayed,
@@ -11,22 +11,22 @@ import {
 	selectAllKIDs,
 	selectYears,
 	truncateOnlineRequested,
-} from '../dao/kara';
-import { getLyrics } from '../lib/dao/karafile';
-import { formatKaraList } from '../lib/services/kara';
-import { ASSLine } from '../lib/types/ass';
-import { DBKara } from '../lib/types/database/kara';
-import { KaraList, KaraParams, YearList } from '../lib/types/kara';
-import { JWTTokenWithRoles, OldJWTToken } from '../lib/types/user';
-import { ASSToLyrics } from '../lib/utils/ass';
-import { getConfig } from '../lib/utils/config';
-import HTTP from '../lib/utils/http';
-import { convert1LangTo2B } from '../lib/utils/langs';
-import logger, { profile } from '../lib/utils/logger';
-import { adminToken } from '../utils/constants';
-import sentry from '../utils/sentry';
-import { getState } from '../utils/state';
-import { getTagNameInLanguage } from './tag';
+} from '../dao/kara.js';
+import { getLyrics, getMediaFileInfo } from '../lib/dao/karafile.js';
+import { formatKaraList } from '../lib/services/kara.js';
+import { ASSLine } from '../lib/types/ass.js';
+import { DBKara } from '../lib/types/database/kara.js';
+import { KaraList, KaraParams, MediaInfo, YearList } from '../lib/types/kara.js';
+import { JWTTokenWithRoles, OldJWTToken } from '../lib/types/user.js';
+import { ASSToLyrics } from '../lib/utils/ass.js';
+import { getConfig } from '../lib/utils/config.js';
+import HTTP from '../lib/utils/http.js';
+import { convert1LangTo2B } from '../lib/utils/langs.js';
+import logger, { profile } from '../lib/utils/logger.js';
+import { adminToken } from '../utils/constants.js';
+import sentry from '../utils/sentry.js';
+import { getState } from '../utils/state.js';
+import { getTagNameInLanguage } from './tag.js';
 
 const service = 'Kara';
 
@@ -75,6 +75,13 @@ export async function getKaraLyrics(kid: string): Promise<ASSLine[]> {
 		lyrics = srt2ass(lyrics);
 	}
 	return ASSToLyrics(lyrics);
+}
+
+export async function getKaraMediaInfo(kid: string): Promise<MediaInfo> {
+	const kara = await getKara(kid, adminToken);
+	if (!kara) throw { code: 404, msg: `Kara ${kid} unknown` };
+	if (!kara.mediafile) return;
+	return getMediaFileInfo(kara.mediafile, kara.repository);
 }
 
 export async function addPlayedKara(kid: string) {

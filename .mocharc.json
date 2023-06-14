@@ -1,0 +1,6 @@
+{
+	"node-option": ["loader=ts-node/esm"],
+	"require": "test/util/hooks.ts",
+	"timeout": 60000,
+	"spec": "test/*.ts"
+}

@@ -31,6 +31,7 @@ function AdminPage(props: IProps) {
 	const [searchMenuOpenLeft, setSearchMenuOpenLeft] = useState(false);
 	const [searchMenuOpenRight, setSearchMenuOpenRight] = useState(false);
 	const [playlistList, setPlaylistList] = useState([]);
+	const [quizRanking, setQuizRanking] = useState(false);
 
 	const operatorNotificationInfo = (data: { code: string; data: string }) =>
 		displayMessage('info', i18next.t(data.code, { data: data }));
@@ -114,10 +115,12 @@ function AdminPage(props: IProps) {
 			plaid: nonStandardPlaylists.favorites,
 			name: i18next.t('PLAYLISTS.FAVORITES'),
 		});
-		playlistList.push({
-			plaid: nonStandardPlaylists.animelist,
-			name: i18next.t('PLAYLISTS.ANIME_LIST'),
-		});
+		if (context.globalState.settings.data.user.anime_list_to_fetch) {
+			playlistList.push({
+				plaid: nonStandardPlaylists.animelist,
+				name: i18next.t('PLAYLISTS.ANIME_LIST'),
+			});
+		}
 		playlistList.push({
 			plaid: nonStandardPlaylists.library,
 			name: i18next.t('PLAYLISTS.LIBRARY'),
@@ -140,6 +143,10 @@ function AdminPage(props: IProps) {
 			<KaraDetail kid={kara.kid} playlistcontentId={kara.plcid} scope="admin" criteriaLabel={reason.join(' ')} />
 		);
 	};
+
+	useEffect(() => {
+		setQuizRanking(context.globalState.settings.data.state.quiz);
+	}, [context.globalState.settings.data.state.quiz]);
 
 	useEffect(() => {
 		getSocket().on('playlistInfoUpdated', playlistInfoUpdated);
@@ -175,6 +182,7 @@ function AdminPage(props: IProps) {
 					adminMessage={adminMessage}
 					putPlayerCommando={putPlayerCommando}
 					currentPlaylist={playlistList.filter(playlistElem => playlistElem.flag_current)[0]}
+					updateQuizRanking={() => setQuizRanking(!quizRanking)}
 				/>
 				<ProgressBar />
 				<KmAppBodyDecorator mode="admin">
@@ -193,6 +201,7 @@ function AdminPage(props: IProps) {
 												searchMenuOpen={searchMenuOpenLeft}
 												playlistList={playlistList}
 												openKara={openKara}
+												quizRanking={quizRanking}
 											/>
 											<Playlist
 												scope="admin"

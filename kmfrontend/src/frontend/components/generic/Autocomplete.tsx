@@ -24,6 +24,7 @@ interface LabelProps {
 	onChange: (value: AutocompleteOption) => void;
 	onType?: (query: string) => void;
 	styleInclude?: boolean;
+	inputProps?: JSX.IntrinsicElements['input'];
 }
 
 interface DefaultProps {
@@ -35,6 +36,7 @@ interface DefaultProps {
 	onChange: (value: string) => void;
 	onType?: (query: string) => void;
 	styleInclude?: boolean;
+	inputProps?: JSX.IntrinsicElements['input'];
 }
 
 type IProps = LabelProps | DefaultProps;
@@ -47,8 +49,8 @@ function Autocomplete(props: IProps) {
 	const [selectedValue, setSelectedValue] = useState('');
 	const [searchValue, setSearchValue] = useState('');
 
-	const searchInputRef: any = useRef();
-	const [activeIndex, setActiveIndex] = useState(0);
+	const searchInputRef = useRef<HTMLInputElement>();
+	const [activeIndex, setActiveIndex] = useState(-1);
 	const [focus, setFocus] = useState(false);
 
 	const updateSelectedValue = (v: any) => {
@@ -74,14 +76,14 @@ function Autocomplete(props: IProps) {
 	const handleSearchChange = (e: any) => {
 		props?.onType(e.target.value);
 		setSearchValue(e.target.value);
-		setActiveIndex(0);
+		setActiveIndex(-1);
 	};
 	const handleSearchKeyUp = (e: any) => {
 		if (e.keyCode === 13) {
 			//RETURN
 			setFocus(false);
 			const o = options[activeIndex];
-			if (props.acceptNewValues) {
+			if (props.acceptNewValues && activeIndex === -1) {
 				updateSelectedValue({ label: e.target.value, value: e.target.value });
 			} else if (o) {
 				updateSelectedValue(o);
@@ -105,7 +107,9 @@ function Autocomplete(props: IProps) {
 	};
 
 	useEffect(() => {
-		if (focus) searchInputRef.current.focus();
+		if (focus) {
+			searchInputRef.current.focus();
+		}
 	}, [focus]); // exécuté au démarrage puis en cas de mise à jour de focus
 
 	useEffect(() => {
@@ -147,6 +151,7 @@ function Autocomplete(props: IProps) {
 					onClick={handleInputClick}
 					onChange={handleSearchChange}
 					onKeyUp={handleSearchKeyUp}
+					{...props.inputProps}
 				/>
 				{(options.length < 75 || searchValue.length >= 3) && focus ? (
 					<ul className="UI-autocomplete-options">

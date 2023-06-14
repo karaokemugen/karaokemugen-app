@@ -11,11 +11,12 @@ import { logout } from '../../store/actions/auth';
 import { showModal } from '../../store/actions/modal';
 import GlobalContext from '../../store/context';
 import { commandBackend, getSocket } from '../../utils/socket';
-import { displayMessage, expand, isNonStandardPlaylist } from '../../utils/tools';
+import { callModal, displayMessage, expand, isNonStandardPlaylist } from '../../utils/tools';
 import KmAppHeaderDecorator from './decorators/KmAppHeaderDecorator';
 import RadioButton from './generic/RadioButton';
 import PlayCurrentModal from './modals/PlayCurrentModal';
 import ProfilModal from './modals/ProfilModal';
+import QuizModal from './modals/QuizModal';
 import Tutorial from './modals/Tutorial';
 import UsersModal from './modals/UsersModal';
 
@@ -24,6 +25,7 @@ interface IProps {
 	powerOff: (() => void) | undefined;
 	adminMessage: () => void;
 	putPlayerCommando: (event: any) => void;
+	updateQuizRanking: () => void;
 }
 
 function AdminHeader(props: IProps) {
@@ -31,6 +33,7 @@ function AdminHeader(props: IProps) {
 	const [dropDownSettings, setDropDownSettings] = useState(false);
 	const [dropDownMenu, setDropDownMenu] = useState(false);
 	const [statusPlayer, setStatusPlayer] = useState<PublicPlayerState>();
+	const [gameContinue, setGameContinue] = useState(false);
 	const location = useLocation();
 	const navigate = useNavigate();
 
@@ -71,6 +74,26 @@ function AdminHeader(props: IProps) {
 		showModal(context.globalDispatch, <UsersModal scope="admin" />);
 	};
 
+	const toggleQuizModal = () => {
+		setDropDownMenu(!dropDownMenu);
+		showModal(context.globalDispatch, <QuizModal />);
+	};
+
+	const toggleStopQuizModal = () => {
+		setDropDownMenu(!dropDownMenu);
+		callModal(
+			context.globalDispatch,
+			'confirm',
+			i18next.t('MODAL.STOP_QUIZ.TITLE'),
+			i18next.t('MODAL.STOP_QUIZ.DESCRIPTION'),
+			(hasConfirmed: boolean) => {
+				if (hasConfirmed) {
+					commandBackend('stopGame');
+				}
+			}
+		);
+	};
+
 	const saveOperatorAdd = (songVisibility: boolean) => {
 		const data = expand('Playlist.MysterySongs.AddedSongVisibilityAdmin', songVisibility);
 		commandBackend('updateSettings', { setting: data }).catch(() => {});
@@ -88,17 +111,34 @@ function AdminHeader(props: IProps) {
 
 	const play = (event: any) => {
 		if (
+			props.currentPlaylist &&
 			(!statusPlayer || statusPlayer?.playerStatus === 'stop') &&
 			context.globalState.frontendContext.playlistInfoLeft.plaid !== props.currentPlaylist?.plaid &&
 			context.globalState.frontendContext.playlistInfoRight.plaid !== props.currentPlaylist?.plaid &&
 			(!isNonStandardPlaylist(context.globalState.frontendContext.playlistInfoLeft.plaid) ||
 				!isNonStandardPlaylist(context.globalState.frontendContext.playlistInfoRight.plaid))
 		) {
-			showModal(context.globalDispatch, <PlayCurrentModal currentPlaylist={props.currentPlaylist} />);
+			showModal(
+				context.globalDispatch,
+				<PlayCurrentModal
+					currentPlaylist={props.currentPlaylist}
+					displayedPlaylist={context.globalState.frontendContext.playlistInfoRight}
+				/>
+			);
 		} else {
 			props.putPlayerCommando(event);
 		}
 	};
+
+	const toggleGameContinue = () => {
+		commandBackend('continueGameSong').then(setGameContinue);
+	};
+
+	useEffect(() => {
+		getSocket().on('quizStart', () => {
+			setGameContinue(false);
+		});
+	}, []);
 
 	const getPlayerStatus = async () => {
 		try {
@@ -127,6 +167,7 @@ function AdminHeader(props: IProps) {
 			state.volume = event.target.value;
 			return state;
 		});
+		props.putPlayerCommando(event);
 	};
 
 	const changePitch = changeValue => {
@@ -148,6 +189,8 @@ function AdminHeader(props: IProps) {
 			return state;
 		});
 	};
+
+	const quizInProgress = context.globalState.settings.data.state.quiz;
 
 	return (
 		<KmAppHeaderDecorator mode="admin">
@@ -335,6 +378,16 @@ function AdminHeader(props: IProps) {
 					</button>
 				</div>
 			</div>
+			{quizInProgress ? (
+				<button
+					className="btn btn-dark"
+					type="button"
+					title={i18next.t('ADMIN_HEADER.QUIZ_RANKING')}
+					onClick={props.updateQuizRanking}
+				>
+					<i className="fas fa-fw fa-user-graduate" />
+				</button>
+			) : null}
 
 			<div className="header-group controls">
 				{statusPlayer?.stopping || statusPlayer?.streamerPause ? (
@@ -391,16 +444,26 @@ function AdminHeader(props: IProps) {
 				>
 					<i className="fas fa-fw fa-fast-forward" />
 				</button>
-				<button
-					title={i18next.t('REWIND')}
-					id="goTo"
-					data-namecommand="goTo"
-					defaultValue="0"
-					className="btn btn-danger-low rewindButton"
-					onClick={props.putPlayerCommando}
-				>
-					<i className="fas fa-fw fa-undo-alt" />
-				</button>
+				{quizInProgress ? (
+					<button
+						title={i18next.t('QUIZ.CONTINUE')}
+						className={`btn ${gameContinue ? 'btn-primary' : ''}`}
+						onClick={toggleGameContinue}
+					>
+						<i className="fas fa-fw fa-forward" />
+					</button>
+				) : (
+					<button
+						title={i18next.t('REWIND')}
+						id="goTo"
+						data-namecommand="goTo"
+						defaultValue="0"
+						className="btn btn-danger-low rewindButton"
+						onClick={props.putPlayerCommando}
+					>
+						<i className="fas fa-fw fa-undo-alt" />
+					</button>
+				)}
 			</div>
 
 			<button
@@ -464,8 +527,7 @@ function AdminHeader(props: IProps) {
 						id="volume"
 						value={statusPlayer.volume}
 						type="range"
-						onChange={setVolume}
-						onMouseUp={props.putPlayerCommando}
+						onInput={setVolume}
 					/>
 				) : null}
 			</button>
@@ -509,6 +571,21 @@ function AdminHeader(props: IProps) {
 								&nbsp;{i18next.t('USERLIST')}
 							</div>
 						</li>
+						{!quizInProgress ? (
+							<li>
+								<div onClick={toggleQuizModal}>
+									<i className="fas fa-fw fa-person-circle-question" />
+									&nbsp;{i18next.t('QUIZ.START')}
+								</div>
+							</li>
+						) : (
+							<li>
+								<div onClick={toggleStopQuizModal}>
+									<i className="fas fa-fw fa-person-circle-question" />
+									&nbsp;{i18next.t('QUIZ.STOP')}
+								</div>
+							</li>
+						)}
 						<li>
 							<div onClick={() => logout(context.globalDispatch)}>
 								<i className="fas fa-fw fa-sign-out-alt" />

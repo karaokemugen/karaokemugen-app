@@ -4,42 +4,43 @@ import { execa } from 'execa';
 import i18next from 'i18next';
 import internetAvailable from 'internet-available';
 
-import { compareKarasChecksum, generateDB, getStats, initDBSystem } from '../dao/database';
-import { baseChecksum } from '../dao/dataStore';
-import { postMigrationTasks } from '../dao/migrations';
-import { markAllMigrationsFrontendAsDone } from '../dao/migrationsFrontend';
-import { applyMenu, closeAllWindows, handleFile, handleProtocol, postInit } from '../electron/electron';
-import { initAutoUpdate } from '../electron/electronAutoUpdate';
-import { errorStep, initStep } from '../electron/electronLogger';
-import { registerShortcuts, unregisterShortcuts } from '../electron/electronShortcuts';
-import { closeDB, getSettings, saveSetting, vacuum } from '../lib/dao/database';
-import { initHooks } from '../lib/dao/hook';
-import { generateDatabase as generateKaraBase } from '../lib/services/generation';
+import { compareKarasChecksum, generateDB, getStats, initDBSystem } from '../dao/database.js';
+import { baseChecksum } from '../dao/dataStore.js';
+import { postMigrationTasks } from '../dao/migrations.js';
+import { markAllMigrationsFrontendAsDone } from '../dao/migrationsFrontend.js';
+import { applyMenu, closeAllWindows, handleFile, handleProtocol, postInit } from '../electron/electron.js';
+import { initAutoUpdate } from '../electron/electronAutoUpdate.js';
+import { errorStep, initStep } from '../electron/electronLogger.js';
+import { registerShortcuts, unregisterShortcuts } from '../electron/electronShortcuts.js';
+import { closeDB, getSettings, saveSetting, vacuum } from '../lib/dao/database.js';
+import { initHooks } from '../lib/dao/hook.js';
+import { generateDatabase as generateKaraBase } from '../lib/services/generation.js';
 // Utils
-import { getConfig, setConfig } from '../lib/utils/config';
-import { duration } from '../lib/utils/date';
-import logger, { archiveOldLogs, enableWSLogging, profile } from '../lib/utils/logger';
-import { createImagePreviews } from '../lib/utils/previews';
-import { initDownloader, wipeDownloadQueue, wipeDownloads } from '../services/download';
-import { updateAllMedias } from '../services/downloadMedias';
-import { getKaras, initFetchPopularSongs } from '../services/kara';
-import { initPlayer, quitmpv } from '../services/player';
-import { initPlaylistSystem } from '../services/playlist';
-import { buildAllMediasList, updatePlaylistMedias } from '../services/playlistMedias';
-import { initRemote } from '../services/remote';
-import { checkDownloadStatus, updateAllRepos } from '../services/repo';
-import { initSession } from '../services/session';
-import { initStats } from '../services/stats';
-import { generateAdminPassword, initUserSystem } from '../services/user';
-import { initDiscordRPC } from '../utils/discordRPC';
-import { initKMServerCommunication } from '../utils/kmserver';
-import { checkPG, dumpPG, restorePG, stopPG } from '../utils/postgresql';
-import sentry from '../utils/sentry';
-import { getState, setState } from '../utils/state';
-import { writeStreamFiles } from '../utils/streamerFiles';
-import { getTwitchClient, initTwitch, stopTwitch } from '../utils/twitch';
-import { subRemoteUsers } from '../utils/userPubSub';
-import initFrontend from './frontend';
+import { getConfig, setConfig } from '../lib/utils/config.js';
+import { duration } from '../lib/utils/date.js';
+import logger, { archiveOldLogs, enableWSLogging, profile } from '../lib/utils/logger.js';
+import { createImagePreviews } from '../lib/utils/previews.js';
+import { initDownloader, wipeDownloadQueue, wipeDownloads } from '../services/download.js';
+import { updateAllMedias } from '../services/downloadMedias.js';
+import { getKaras, initFetchPopularSongs } from '../services/kara.js';
+import { initPlayer, quitmpv } from '../services/player.js';
+import { initPlaylistSystem } from '../services/playlist.js';
+import { buildAllMediasList, updatePlaylistMedias } from '../services/playlistMedias.js';
+import { stopGame } from '../services/quiz.js';
+import { initRemote } from '../services/remote.js';
+import { checkDownloadStatus, updateAllRepos } from '../services/repo.js';
+import { initSession } from '../services/session.js';
+import { initStats } from '../services/stats.js';
+import { generateAdminPassword, initUserSystem } from '../services/user.js';
+import { initDiscordRPC } from '../utils/discordRPC.js';
+import { initKMServerCommunication } from '../utils/kmserver.js';
+import { checkPG, dumpPG, restorePG, stopPG } from '../utils/postgresql.js';
+import sentry from '../utils/sentry.js';
+import { getState, setState } from '../utils/state.js';
+import { writeStreamFiles } from '../utils/streamerFiles.js';
+import { getTwitchClient, initTwitch, stopTwitch } from '../utils/twitch.js';
+import { subRemoteUsers } from '../utils/userPubSub.js';
+import initFrontend from './frontend.js';
 
 let shutdownInProgress = false;
 let usageTime = 0;
@@ -253,7 +254,7 @@ export async function updateBase(internet: boolean) {
 			ignoreCollections: true,
 		}),
 		'single'
-	);
+	).catch(() => {}); // Non-fatal
 }
 
 export async function exit(rc = 0, update = false) {
@@ -263,6 +264,7 @@ export async function exit(rc = 0, update = false) {
 	clearInterval(usageTimeInterval);
 	closeAllWindows();
 	wipeDownloadQueue();
+	stopGame();
 	try {
 		if (getState().player?.playerStatus) {
 			await quitmpv();
@@ -334,7 +336,6 @@ async function preFlightCheck(): Promise<boolean> {
 	}
 	const settings = await getSettings();
 	if (!doGenerate && !settings.lastGeneration) {
-		setConfig({ App: { FirstRun: true } });
 		logger.info('Unable to tell when last generation occured: database generation triggered', { service });
 		doGenerate = true;
 	}
@@ -359,9 +360,8 @@ async function preFlightCheck(): Promise<boolean> {
 }
 
 async function runTests() {
-	const options = ['-n', 'loader=ts-node/esm', '--require', 'test/util/hooks.ts', '--timeout', '60000', 'test/*.ts'];
 	try {
-		const ret = await execa('mocha', options, {
+		const ret = await execa('mocha', {
 			cwd: getState().appPath,
 		});
 		console.log(ret.stdout);
@@ -369,6 +369,7 @@ async function runTests() {
 	} catch (err) {
 		console.log('TESTS FAILED : ');
 		console.log(err.stdout);
+		console.error(err.stderr);
 		process.exit(1000);
 	}
 }

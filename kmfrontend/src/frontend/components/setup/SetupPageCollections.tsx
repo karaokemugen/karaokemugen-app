@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router';
 import { Tag } from '../../../../../src/lib/types/tag';
 
 import GlobalContext from '../../../store/context';
-import { getLanguageIn3B, langSupport } from '../../../utils/isoLanguages';
+import { getDescriptionInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import Switch from '../generic/Switch';
 
@@ -29,22 +29,6 @@ function SetupPageCollections() {
 		} catch (err: any) {
 			const error = err?.message ? i18next.t(`ERROR_CODES.${err.message.code}`) : JSON.stringify(err);
 			setError(error);
-		}
-	};
-
-	const getDescriptionInLocale = (description: Record<string, string>): string => {
-		if (!description) return '';
-		const user = context.globalState.settings.data?.user;
-		if (user?.main_series_lang && user?.fallback_series_lang) {
-			return description[user.main_series_lang]
-				? description[user.main_series_lang]
-				: description[user.fallback_series_lang]
-				? description[user.fallback_series_lang]
-				: description.eng;
-		} else {
-			return description[getLanguageIn3B(langSupport)]
-				? description[getLanguageIn3B(langSupport)]
-				: description.eng;
 		}
 	};
 
@@ -84,7 +68,12 @@ function SetupPageCollections() {
 									</div>
 									<label>
 										<div className="name">{collection.name}</div>
-										<div>{getDescriptionInLocale(collection.description)}</div>
+										<div>
+											{getDescriptionInLocale(
+												context.globalState.settings.data,
+												collection.description
+											)}
+										</div>
 									</label>
 								</div>
 							))}

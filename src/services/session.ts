@@ -3,8 +3,8 @@ import i18next from 'i18next';
 import { resolve } from 'path';
 import { v4 as uuidV4 } from 'uuid';
 
-import { APIMessage } from '../controllers/common';
-import { selectAllKaras } from '../dao/kara';
+import { APIMessage } from '../controllers/common.js';
+import { selectAllKaras } from '../dao/kara.js';
 import {
 	autoFillSessionEndedAt,
 	cleanSessions,
@@ -13,15 +13,15 @@ import {
 	replaceSession,
 	selectSessions,
 	updateSession,
-} from '../dao/session';
-import { getConfig, resolvedPath } from '../lib/utils/config';
-import { sanitizeFile } from '../lib/utils/files';
-import logger, { profile } from '../lib/utils/logger';
-import { emitWS } from '../lib/utils/ws';
-import { Session, SessionExports } from '../types/session';
-import sentry from '../utils/sentry';
-import { getState, setState } from '../utils/state';
-import { getSongSeriesSingers, getSongTitle, getSongVersion } from './kara';
+} from '../dao/session.js';
+import { getConfig, resolvedPath } from '../lib/utils/config.js';
+import { sanitizeFile } from '../lib/utils/files.js';
+import logger, { profile } from '../lib/utils/logger.js';
+import { emitWS } from '../lib/utils/ws.js';
+import { Session, SessionExports } from '../types/session.js';
+import sentry from '../utils/sentry.js';
+import { getState, setState } from '../utils/state.js';
+import { getSongSeriesSingers, getSongTitle, getSongVersion } from './kara.js';
 
 const service = 'Sessions';
 

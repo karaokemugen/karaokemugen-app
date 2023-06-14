@@ -119,6 +119,7 @@ function ActionsButtons(props: IProps) {
 					context.globalState.settings.data.state.publicPlaid,
 					context.globalState.settings.data.state.currentPlaid,
 				].includes(playlist?.plaid) &&
+				!context.globalState.settings.data.state.quiz &&
 				props.kara.public_plc_id?.length === 0 &&
 				(playlist?.plaid !== nonStandardPlaylists.library ||
 					props.kara.children?.length === 0 ||

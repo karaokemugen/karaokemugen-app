@@ -1,7 +1,7 @@
 import i18next from 'i18next';
 
-import { MenuItemBuilderFunction } from '../../types/electron';
-import { urls } from '.';
+import { MenuItemBuilderFunction } from '../../types/electron.js';
+import { urls } from './index.js';
 
 const builder: MenuItemBuilderFunction = options => {
 	const { isMac, layout } = options;

@@ -5,8 +5,8 @@ import i18n from 'i18next';
 import { shuffle } from 'lodash';
 import { join } from 'path/posix';
 
-import { APIMessage } from '../controllers/common';
-import { insertKaraToRequests } from '../dao/kara';
+import { APIMessage } from '../controllers/common.js';
+import { insertKaraToRequests } from '../dao/kara.js';
 // DAO
 import {
 	deleteKaraFromPlaylist,
@@ -41,33 +41,34 @@ import {
 	updatePLCRefused,
 	updatePLCVisible,
 	updatePos,
-} from '../dao/playlist';
-import { formatKaraList } from '../lib/services/kara';
-import { PLImportConstraints } from '../lib/services/playlist';
-import { DBKara, DBKaraBase } from '../lib/types/database/kara';
-import { DBPL, DBPLC, DBPLCBase, PLCInsert } from '../lib/types/database/playlist';
-import { PlaylistExport, PLCEditParams } from '../lib/types/playlist';
-import { OldJWTToken, User } from '../lib/types/user';
-import { getConfig, resolvedPathRepos } from '../lib/utils/config';
-import { date, now, time as time2 } from '../lib/utils/date';
-import { resolveFileInDirs } from '../lib/utils/files';
-import logger, { profile } from '../lib/utils/logger';
-import { generateM3uFileFromPlaylist } from '../lib/utils/m3u';
-import Task from '../lib/utils/taskManager';
-import { check } from '../lib/utils/validators';
-import { emitWS } from '../lib/utils/ws';
-import { AutoMixParams, AutoMixPlaylistInfo, PlaylistLimit } from '../types/favorites';
-import { AddKaraParams, CurrentSong, Pos, ShuffleMethods } from '../types/playlist';
-import { adminToken } from '../utils/constants';
-import sentry from '../utils/sentry';
-import { getState, setState } from '../utils/state';
-import { writeStreamFiles } from '../utils/streamerFiles';
-import { checkMediaAndDownload } from './download';
-import { getAllFavorites } from './favorites';
-import { getKaras, getKarasMicro } from './kara';
-import { getSongInfosForPlayer } from './karaEngine';
-import { playPlayer } from './player';
-import { getRepos } from './repo';
+} from '../dao/playlist.js';
+import { formatKaraList } from '../lib/services/kara.js';
+import { PLImportConstraints } from '../lib/services/playlist.js';
+import { DBKara, DBKaraBase } from '../lib/types/database/kara.js';
+import { DBPL, DBPLC, DBPLCBase, PLCInsert } from '../lib/types/database/playlist.js';
+import { PlaylistExport, PLCEditParams } from '../lib/types/playlist.js';
+import { OldJWTToken, User } from '../lib/types/user.js';
+import { getConfig, resolvedPathRepos } from '../lib/utils/config.js';
+import { date, now, time as time2 } from '../lib/utils/date.js';
+import { resolveFileInDirs } from '../lib/utils/files.js';
+import logger, { profile } from '../lib/utils/logger.js';
+import { generateM3uFileFromPlaylist } from '../lib/utils/m3u.js';
+import Task from '../lib/utils/taskManager.js';
+import { check } from '../lib/utils/validators.js';
+import { emitWS } from '../lib/utils/ws.js';
+import { AutoMixParams, AutoMixPlaylistInfo, PlaylistLimit } from '../types/favorites.js';
+import { AddKaraParams, CurrentSong, Pos, ShuffleMethods } from '../types/playlist.js';
+import { adminToken } from '../utils/constants.js';
+import sentry from '../utils/sentry.js';
+import { getState, setState } from '../utils/state.js';
+import { writeStreamFiles } from '../utils/streamerFiles.js';
+import { checkMediaAndDownload } from './download.js';
+import { getAllFavorites } from './favorites.js';
+import { getKaras, getKarasMicro } from './kara.js';
+import { getSongInfosForPlayer } from './karaEngine.js';
+import { playPlayer } from './player.js';
+import { stopGame } from './quiz.js';
+import { getRepos } from './repo.js';
 import {
 	addCriteria,
 	blacklistHook,
@@ -75,8 +76,8 @@ import {
 	updateAllSmartPlaylists,
 	updateSmartPlaylist,
 	whitelistHook,
-} from './smartPlaylist';
-import { getUser, updateSongsLeft } from './user';
+} from './smartPlaylist.js';
+import { getUser, updateSongsLeft } from './user.js';
 
 const service = 'Playlist';
 
@@ -88,6 +89,7 @@ export async function testPlaylists() {
 	const publicPL = pls.find(pl => pl.flag_public);
 	const whitePL = pls.find(pl => pl.flag_whitelist);
 	const blackPL = pls.find(pl => pl.flag_blacklist);
+	const fallbackPL = pls.find(pl => pl.flag_fallback);
 	if (!currentPL && !publicPL) {
 		// Initial state here, or someone did something REALLY wrong. we create only one playlist
 		const plaid = await insertPlaylist({
@@ -164,6 +166,25 @@ export async function testPlaylists() {
 		});
 		logger.debug('Initial blacklist playlist created', { service });
 	}
+
+	if (fallbackPL) {
+		setState({ fallbackPlaid: fallbackPL.plaid });
+	} else {
+		setState({
+			fallbackPlaid: await insertPlaylist({
+				name: i18n.t('FALLBACK'),
+				created_at: new Date(),
+				modified_at: new Date(),
+				flag_visible: false,
+				flag_fallback: true,
+				flag_smart: true,
+				username: 'admin',
+				type_smart: 'UNION',
+			}),
+		});
+		logger.debug('Initial fallback playlist created', { service });
+	}
+
 	profile('testPlaylists');
 }
 
@@ -419,7 +440,7 @@ function publicHook(plaid: string, name: string) {
 }
 
 /** Edit playlist properties */
-export async function editPlaylist(plaid: string, playlist: DBPL) {
+export async function editPlaylist(plaid: string, playlist: Partial<DBPL>) {
 	const pl = await getPlaylistInfo(plaid);
 	if (!pl) throw { code: 404 };
 	logger.debug(`Editing playlist ${plaid}`, { service, obj: playlist });
@@ -433,6 +454,7 @@ export async function editPlaylist(plaid: string, playlist: DBPL) {
 	if (playlist.flag_public) publicHook(plaid, newPL.name);
 	if (playlist.flag_whitelist) whitelistHook(plaid);
 	if (playlist.flag_blacklist) blacklistHook(plaid);
+	if (playlist.flag_fallback) fallbackPlaylistHook(plaid);
 	const isBlacklist = plaid === getState().blacklistPlaid;
 	const isWhitelist = plaid === getState().whitelistPlaid;
 
@@ -479,6 +501,7 @@ export async function createPlaylist(pl: DBPL, username: string): Promise<string
 	if (+pl.flag_public) publicHook(plaid, pl.name);
 	if (+pl.flag_whitelist) whitelistHook(plaid);
 	if (+pl.flag_blacklist) blacklistHook(plaid);
+	if (+pl.flag_fallback) fallbackPlaylistHook(plaid);
 	emitWS('playlistInfoUpdated', plaid);
 	emitWS('playlistsUpdated');
 	return plaid;
@@ -498,7 +521,12 @@ export async function getPlaylistInfo(plaid: string, token?: OldJWTToken) {
 /** Get all playlists properties */
 export async function getPlaylists(token: OldJWTToken) {
 	profile('getPlaylists');
-	const ret = await selectPlaylists(token.role !== 'admin');
+	let ret = await selectPlaylists(token.role !== 'admin');
+	ret = [
+		// Group by user created and system playlists
+		...ret.filter(pl => pl.username !== 'admin').sort((a, b) => b.created_at?.getTime() - a.created_at?.getTime()),
+		...ret.filter(pl => pl.username === 'admin'),
+	];
 	profile('getPlaylists');
 	return ret;
 }
@@ -1358,7 +1386,7 @@ export async function shufflePlaylist(plaid: string, method: ShuffleMethods, ful
 	}
 }
 
-function shufflePlaylistWithList(playlist: DBPLC[], method: ShuffleMethods) {
+export function shufflePlaylistWithList(playlist: DBPLC[], method: ShuffleMethods) {
 	if (method === 'normal') {
 		return shuffle(playlist);
 	}
@@ -1522,6 +1550,7 @@ export async function getNextSong(): Promise<DBPLC> {
 		let currentPos = playlist.findIndex(plc => plc.flag_playing);
 		if (currentPos + 1 >= playlist.length && conf.Playlist.EndOfPlaylistAction !== 'repeat') {
 			logger.debug('End of playlist', { service });
+			stopGame();
 			// Current position is last song, not quite an error.
 			return null;
 		}
@@ -1655,12 +1684,20 @@ export async function createAutoMix(params: AutoMixParams, username: string): Pr
 	// If this doesn't give expected results due to async optimizations (for years and/or karas) we should try using Maps or Sets instead of arrays. Or use .push on each element
 	const uniqueList = new Map<string, DBPLC>();
 
-	let favs: DBKara[] = [];
 	if (params.filters?.usersFavorites) {
 		const users = params.filters.usersFavorites;
-		favs = await getAllFavorites(users);
+		let favs = await getAllFavorites(users);
 		favs = shuffle(favs);
 		favs.forEach(f => uniqueList.set(f.kid, f as any));
+	}
+	if (params.filters?.usersAnimeList) {
+		for (const userlogin of params.filters.usersAnimeList) {
+			const user = await getUser(userlogin);
+			if (user.anime_list_to_fetch) {
+				const karas = await getKaras({ userAnimeList: userlogin });
+				karas.content.forEach(k => uniqueList.set(k.kid, k as any));
+			}
+		}
 	}
 	let karaTags: DBKara[] = [];
 	if (params.filters?.tags) {
@@ -1734,4 +1771,12 @@ export async function createAutoMix(params: AutoMixParams, username: string): Pr
 	} finally {
 		profile('AutoMix');
 	}
+}
+
+// Actions took when a new fallback playlist is set
+function fallbackPlaylistHook(plaid: string) {
+	const oldFallbackPlaylist_id = getState().fallbackPlaid;
+	updatePlaylistLastEditTime(oldFallbackPlaylist_id);
+	emitWS('playlistInfoUpdated', oldFallbackPlaylist_id);
+	setState({ fallbackPlaid: plaid });
 }
