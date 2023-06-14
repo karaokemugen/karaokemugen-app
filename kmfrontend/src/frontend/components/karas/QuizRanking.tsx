@@ -61,18 +61,21 @@ function QuizRanking() {
 			setMode('answer');
 			setResult(d);
 		};
-		commandBackend('getPlayerStatus').then(refreshPlayerInfos);
-		commandBackend('getCurrentGameSong').then((gameSong: GameSong | null) => {
-			if (gameSong == null) {
+		const updateQuizState = (gameState: GameState) => {
+			if (gameState.currentSong == null) {
 				qStart({
 					guessTime: 0,
 					quickGuess: 0,
 					revealTime: 0,
 				});
-			} else if (gameSong?.state === 'answer') {
-				qResult(gameSong);
+			} else if (gameState.currentSong?.state === 'answer') {
+				qResult(gameState.currentSong);
 			}
-		});
+			setCurrentSongQuizNumber(gameState.currentSongNumber);
+			setCurrentTotalQuizDuration(gameState.currentTotalDuration);
+		};
+
+		commandBackend('getPlayerStatus').then(refreshPlayerInfos);
 		commandBackend('getGameState').then(updateQuizState);
 
 		getSocket().on('quizStart', qStart);
@@ -86,12 +89,6 @@ function QuizRanking() {
 			getSocket().off('quizStateUpdated', updateQuizState);
 		};
 	}, []);
-
-	const updateQuizState = (gameState: GameState) => {
-		setResult(gameState.currentSong);
-		setCurrentSongQuizNumber(gameState.currentSongNumber);
-		setCurrentTotalQuizDuration(gameState.currentTotalDuration);
-	};
 
 	const resultColor = (username: string) => {
 		if (!isQuizLaunched) {
