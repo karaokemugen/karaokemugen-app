@@ -1693,10 +1693,8 @@ export async function createAutoMix(params: AutoMixParams, username: string): Pr
 	if (params.filters?.usersAnimeList) {
 		for (const userlogin of params.filters.usersAnimeList) {
 			const user = await getUser(userlogin, true);
-			console.log(user);
 			if (user.anime_list_to_fetch) {
 				const karas = await getKaras({ userAnimeList: userlogin });
-				console.log(karas);
 				karas.content.forEach(k => uniqueList.set(k.kid, k as any));
 			}
 		}
