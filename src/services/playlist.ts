@@ -1550,7 +1550,7 @@ export async function getNextSong(): Promise<DBPLC> {
 		let currentPos = playlist.findIndex(plc => plc.flag_playing);
 		if (currentPos + 1 >= playlist.length && conf.Playlist.EndOfPlaylistAction !== 'repeat') {
 			logger.debug('End of playlist', { service });
-			stopGame();
+			stopGame(true);
 			// Current position is last song, not quite an error.
 			return null;
 		}
