@@ -173,10 +173,11 @@ async function migrateDB(): Promise<Postgrator.Migration[]> {
 	migrator.on('migration-started', migration => {
 		migrationNumber += 1;
 		logger.debug(`Applying migration ${migration.filename}...`);
+		const migrationPhrases = i18next.t('MIGRATION_MESSAGES', { returnObjects: true }) as string[];
 		if (task) {
 			task.update({
 				subtext: `${i18next.t('MIGRATION')} ${migrationNumber} / ${numberOfMigrationsNeeded} : ${sample(
-					i18next.t('MIGRATION_MESSAGES', { returnObjects: true })
+					migrationPhrases
 				)}...`,
 				value: migrationNumber,
 			});
