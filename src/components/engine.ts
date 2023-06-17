@@ -264,7 +264,7 @@ export async function exit(rc = 0, update = false) {
 	clearInterval(usageTimeInterval);
 	closeAllWindows();
 	wipeDownloadQueue();
-	stopGame();
+	stopGame(false);
 	try {
 		if (getState().player?.playerStatus) {
 			await quitmpv();

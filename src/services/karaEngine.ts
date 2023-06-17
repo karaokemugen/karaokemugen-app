@@ -436,7 +436,7 @@ export async function playerEnding() {
 				await playRandomSongAfterPlaylist();
 			} else if (conf.Playlist.EndOfPlaylistAction === 'play_fallback') {
 				await editPlaylist(getState().fallbackPlaid, { flag_current: true });
-				await setState({ currentPlaid: getState().fallbackPlaid });
+				setState({ currentPlaid: getState().fallbackPlaid });
 				await next();
 			} else {
 				await next();
@@ -494,7 +494,6 @@ export async function playerEnding() {
 		if (state.player.playerStatus !== 'stop') {
 			try {
 				await next();
-				return;
 			} catch (err) {
 				logger.error('Failed going to next song', { service, obj: err });
 				throw err;

@@ -260,7 +260,7 @@ export async function startAcceptingAnswers(revealDuration: number) {
 	if (gameState.currentSong.continue) return;
 	// Check if the game should end
 	if (gameState.running && (await shouldGameEnd())) {
-		stopGame();
+		stopGame(true);
 	} else {
 		// Let's check again.
 		if (!gameState.running) return;
@@ -525,11 +525,15 @@ export async function startGame(gamename: string, playlist: string, settings?: Q
 
 export async function stopGame(displayScores = true) {
 	if (!gameState.running) return;
-	setState({ quizMode: false, quizGuessingTime: false });
+	setState({ quizGuessingTime: false });
 	logger.info('Stopping game and saving state', { service });
 	if (!isShutdownInProgress()) {
 		await stopPlayer(true, false);
-		if (displayScores) await displayMessage(await buildEndGameScoreString(), -1, 8, 'quizScores');
+		if (displayScores) {
+			await displayMessage(await buildEndGameScoreString(), -1, 8, 'quizScores');
+		} else {
+			setState({ quizMode: false });
+		}
 	}
 	await updateGame(getState().currentQuizGame, getConfig().Karaoke.QuizMode, gameState, false);
 	gameState.running = false;
