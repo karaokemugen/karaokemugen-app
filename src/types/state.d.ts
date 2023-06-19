@@ -12,6 +12,7 @@ export interface Version {
 
 export interface State {
 	appHasBeenUpdated?: boolean;
+	shutdownInProgress?: boolean;
 	currentPlaid?: string;
 	blacklistPlaid?: string;
 	whitelistPlaid?: string;

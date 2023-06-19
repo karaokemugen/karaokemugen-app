@@ -13,6 +13,7 @@ import { PublicPlayerState, PublicState, State } from '../types/state.js';
 // Internal settings
 let state: State = {
 	playerNeedsRestart: false,
+	shutdownInProgress: false,
 	currentRequester: null,
 	stopping: false,
 	counterToJingle: 1,
