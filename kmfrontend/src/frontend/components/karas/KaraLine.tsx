@@ -117,7 +117,7 @@ function KaraLine(props: IProps) {
 		let url = '';
 		let data;
 		const oppositePlaylist = getOppositePlaylistInfo(props.side, context);
-		if (oppositePlaylist.plaid === nonStandardPlaylists.favorites) {
+		if (oppositePlaylist?.plaid === nonStandardPlaylists.favorites) {
 			if (context.globalState.auth.data.onlineAvailable !== false) {
 				url = 'addFavorites';
 				data = {
@@ -128,7 +128,7 @@ function KaraLine(props: IProps) {
 				return;
 			}
 		} else if (props.scope === 'admin') {
-			if (!oppositePlaylist.flag_smart) {
+			if (oppositePlaylist && !oppositePlaylist.flag_smart) {
 				if (!isNonStandardPlaylist(getPlaylistInfo(props.side, context).plaid) && !pos) {
 					url = 'copyKaraToPlaylist';
 					data = {
