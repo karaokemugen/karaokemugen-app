@@ -297,7 +297,7 @@ export const configConstraints = {
 	'Karaoke.Poll.Enabled': { inclusion: bools },
 	'Karaoke.Quota.Type': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 2 } },
 	'Karaoke.Quota.FreeUpVotes': { inclusion: bools },
-	'Karaoke.Quota.FreeAutoTime': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 1 } },
+	'Karaoke.Quota.FreeAutoTime': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0 } },
 	'Karaoke.Quota.FreeUpVotesRequiredMin': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 1 } },
 	'Karaoke.Quota.FreeUpVotesRequiredPercent': {
 		numericality: { onlyInteger: true, greaterThanOrEqualTo: 1, lowerThanOrEqualTo: 100 },
