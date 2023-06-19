@@ -90,8 +90,6 @@ function KaraokeOptions(props: IProps) {
 		} else if (value === 'false') {
 			value = false;
 		}
-		console.log(e.target);
-		console.log(value);
 		if (e.target.type === 'number' && !value) value = e.target.placeHolder || e.target.min || 0;
 		config[e.target.id] = value;
 		if (e.target.type !== 'number' || !isNaN(Number(e.target.value))) props.onChange(e);
