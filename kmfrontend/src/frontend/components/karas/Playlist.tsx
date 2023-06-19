@@ -757,7 +757,7 @@ function Playlist(props: IProps) {
 	const deleteCheckedKaras = async () => {
 		let url;
 		let dataApi;
-		const listKara = data.content.filter(a => a.checked);
+		const listKara = data?.content.filter(a => a.checked) || [];
 		if (listKara.length === 0) {
 			displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
 			return;
