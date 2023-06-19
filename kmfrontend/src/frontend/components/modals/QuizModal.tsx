@@ -131,7 +131,7 @@ export default function QuizModal(props: IProps) {
 	};
 
 	const startGame = async (settings?: QuizGameConfig) => {
-		if (gamePlaylist === null) {
+		if (!gamePlaylist) {
 			displayMessage('warning', i18next.t('MODAL.START_QUIZ.EMPTY_PLAYLIST'));
 			document.getElementById('quiz-modal').scrollTo({
 				top: 0,
