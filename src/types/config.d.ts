@@ -123,7 +123,6 @@ export interface Config {
 			Choices?: number;
 			Timeout?: number;
 		};
-		QuizMode: QuizGameConfig;
 		Quota: {
 			Songs?: number;
 			Time?: number;

@@ -331,7 +331,7 @@ function KaraLine(props: IProps) {
 									title={i18next.t('KARA_MENU.PLAY_LIBRARY')}
 									className="btn btn-action playKara karaLineButton"
 									onClick={playKara}
-									disabled={context.globalState.settings.data.state.quiz}
+									disabled={context.globalState.settings.data.state.quiz.running}
 								>
 									<i className="fas fa-fw fa-play" />
 								</button>

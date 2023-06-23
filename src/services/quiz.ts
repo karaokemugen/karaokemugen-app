@@ -1,6 +1,5 @@
 import levenshtein from 'damerau-levenshtein';
 import i18next from 'i18next';
-import { cloneDeep } from 'lodash';
 
 import { isShutdownInProgress } from '../components/engine.js';
 import {
@@ -19,7 +18,7 @@ import { formatKaraV4 } from '../lib/dao/karafile.js';
 import { defineFilename } from '../lib/services/karaCreation.js';
 import { DBKaraTag } from '../lib/types/database/kara.js';
 import { KaraList } from '../lib/types/kara.js';
-import { getConfig, setConfig } from '../lib/utils/config.js';
+import { getConfig } from '../lib/utils/config.js';
 import { tagTypes } from '../lib/utils/constants.js';
 import { Timer } from '../lib/utils/date.js';
 import logger from '../lib/utils/logger.js';
@@ -28,7 +27,7 @@ import { emitWS } from '../lib/utils/ws.js';
 import { QuizGameConfig } from '../types/config.js';
 import { SongModifiers } from '../types/player.js';
 import { CurrentSong } from '../types/playlist.js';
-import { GameAnswer, GameState, QuizAnswers, TotalTimes } from '../types/quiz.js';
+import { GameAnswer, QuizAnswers, TotalTimes } from '../types/quiz.js';
 import { getState, setState } from '../utils/state.js';
 import { sayTwitch } from '../utils/twitch.js';
 import { getKaras } from './kara.js';
@@ -39,24 +38,7 @@ import { createUser, editUser, getUser, getUsers } from './user.js';
 
 const service = 'Quiz';
 
-const defaultGameState: GameState = {
-	running: false,
-	currentSongNumber: 0,
-	currentTotalDuration: 0,
-	playlist: '',
-	KIDsPlayed: [],
-};
-
-let gameState: GameState = cloneDeep(defaultGameState);
-
 export const acceptedAnswers = [...Object.keys(tagTypes), 'year', 'title'];
-
-export function getCurrentGame(admin: boolean) {
-	if (admin || gameState.currentSong.state === 'answer') {
-		return gameState;
-	}
-	return { ...gameState, currentSong: null };
-}
 
 function translateQuizAnswers(quizAnswer: QuizAnswers) {
 	switch (quizAnswer) {
@@ -70,7 +52,7 @@ function translateQuizAnswers(quizAnswer: QuizAnswers) {
 }
 
 export async function buildEndGameScoreString(): Promise<string> {
-	const [users, scores] = await Promise.all([getUsers({}), getTotalGameScore(getState().currentQuizGame)]);
+	const [users, scores] = await Promise.all([getUsers({}), getTotalGameScore(getState().quiz.currentQuizGame)]);
 	const sizeMax = 100;
 	const leaderboards = [];
 	// Build leaderboard for the first only 10
@@ -98,7 +80,7 @@ export async function buildEndGameScoreString(): Promise<string> {
 }
 
 export function buildRulesString() {
-	const gameSettings = getConfig().Karaoke.QuizMode;
+	const gameSettings = getState().quiz.settings;
 	const rules = [
 		'{\\fscx60}{\\fscy60}',
 		`{\\u1}${i18next.t('QUIZ_RULES.TITLE')}{\\u0}`,
@@ -131,12 +113,12 @@ export function buildRulesString() {
 			: null,
 		gameSettings.EndGame.Duration.Enabled
 			? i18next.t('QUIZ_RULES.DURATION', {
-					duration: gameSettings.EndGame.Duration.Minutes - getCurrentGame(true).currentTotalDuration / 60,
+					duration: gameSettings.EndGame.Duration.Minutes - getState().quiz.currentTotalDuration / 60,
 			  })
 			: null,
 		gameSettings.EndGame.MaxSongs.Enabled
 			? i18next.t('QUIZ_RULES.MAX_SONGS', {
-					songs: gameSettings.EndGame.MaxSongs.Songs - getCurrentGame(true).currentSongNumber,
+					songs: gameSettings.EndGame.MaxSongs.Songs - getState().quiz.currentSongNumber,
 			  })
 			: null,
 		i18next.t('QUIZ_RULES.END_OF_PLAYLIST'),
@@ -149,15 +131,16 @@ export function buildRulesString() {
 }
 
 export async function shouldGameEnd() {
+	const gameState = getState().quiz;
 	if (gameState.running) {
-		const gameSettings = getConfig().Karaoke.QuizMode;
+		const gameSettings = gameState.settings;
 		// Endgame checks
 		// does someone have reached MaxScore ||
 		// does the song count reaches MaxSongs ||
 		// does the timer reaches Duration
 		return (
 			(gameSettings.EndGame.MaxScore.Enabled &&
-				(await getTotalGameScore(getState().currentQuizGame)).some(
+				(await getTotalGameScore(getState().quiz.currentQuizGame)).some(
 					e => e.total >= gameSettings.EndGame.MaxScore.Score
 				)) ||
 			(gameSettings.EndGame.MaxSongs.Enabled &&
@@ -171,8 +154,9 @@ export async function shouldGameEnd() {
 
 export function startQuizRound(kara: CurrentSong): number {
 	// Calculate start time, and various durations depending on the song we have.
+	const gameState = getState().quiz;
 	if (!gameState.running) return 0;
-	const quizTimes = getConfig().Karaoke.QuizMode.TimeSettings;
+	const quizTimes = gameState.settings.TimeSettings;
 	const { start, karaDuration, guessingDuration, quickGuessDuration, revealDuration } = computeDurations(
 		kara.duration,
 		quizTimes
@@ -180,7 +164,7 @@ export function startQuizRound(kara: CurrentSong): number {
 	gameState.currentSong = {
 		song: kara,
 		startTime: new Date(),
-		quickGuessOK: getConfig().Karaoke.QuizMode.Answers.QuickAnswer.Enabled,
+		quickGuessOK: gameState.settings.Answers.QuickAnswer.Enabled,
 		answers: [],
 		winners: [],
 		guessTimer: new Timer(guessingDuration * 1000),
@@ -189,13 +173,12 @@ export function startQuizRound(kara: CurrentSong): number {
 		state: 'guess',
 		continue: false,
 	};
+	setState({ quiz: { currentSong: gameState.currentSong } });
 	emitWS('quizStart', {
 		guessTime: karaDuration,
 		quickGuess: quickGuessDuration,
 		revealTime: revealDuration,
 	});
-	emitWS('quizStateUpdated', getCurrentGame(false));
-	emitWS('quizStateUpdated', getCurrentGame(true), 'admin');
 	startAcceptingAnswers(revealDuration);
 	return start;
 }
@@ -232,8 +215,9 @@ function computeDurations(
 
 // Timer for answering questions
 export async function startAcceptingAnswers(revealDuration: number) {
+	const gameState = getState().quiz;
 	if (!gameState.running) return;
-	setState({ quizGuessingTime: true });
+	setState({ quiz: { quizGuessingTime: true } });
 	const song = gameState.currentSong;
 	const internalDate = song.startTime;
 	song.quickGuessTimer.wait().then(() => {
@@ -271,7 +255,8 @@ export async function startAcceptingAnswers(revealDuration: number) {
 }
 
 function testAnswer(answer: string, input: string) {
-	const minimumScore = getConfig().Karaoke.QuizMode.Answers.SimilarityPercentageNeeded;
+	const gameState = getState().quiz;
+	const minimumScore = gameState.settings.Answers.SimilarityPercentageNeeded;
 	const lev = levenshtein(input.toLowerCase(), answer.toLowerCase());
 	return lev.similarity * 100 > minimumScore;
 }
@@ -296,10 +281,11 @@ async function determineAnswerString(answer: GameAnswer, songString: string): Pr
 
 /** Stops accepting answers for a song and reveals answers and counts points */
 export async function stopAcceptingAnswers() {
+	const gameState = getState().quiz;
 	if (!gameState.running) return;
-	setState({ quizGuessingTime: false });
+	setState({ quiz: { quizGuessingTime: false } });
 	const streamConfig = getConfig().Karaoke.StreamerMode;
-	const conf = getConfig().Karaoke.QuizMode;
+	const conf = gameState.settings;
 	const twitchEnabled = streamConfig.Twitch.Enabled && streamConfig.Twitch.Channel && conf.Players.Twitch;
 	// Copying song object so we can avoid people submitting answers late.
 	const song = { ...gameState.currentSong };
@@ -335,9 +321,7 @@ export async function stopAcceptingAnswers() {
 				awardedPointsDetailed.type = type;
 				awardedPointsDetailed.typePoints = conf.Answers.Accepted[type].Points;
 			};
-			for (const [acceptedAnswerType, { Enabled }] of Object.entries(
-				getConfig().Karaoke.QuizMode.Answers.Accepted
-			)) {
+			for (const [acceptedAnswerType, { Enabled }] of Object.entries(gameState.settings.Answers.Accepted)) {
 				if (!Enabled) {
 					continue;
 				}
@@ -407,7 +391,7 @@ export async function stopAcceptingAnswers() {
 				points_detailed: awardedPointsDetailed,
 				kid: song.song.kid,
 				answer: await determineAnswerString(answer, songString),
-				gamename: getState().currentQuizGame,
+				gamename: getState().quiz.currentQuizGame,
 			});
 		}
 		logger.info(`Players with the good answer: ${winners.map(winner => winner.login).join(', ')}`, { service });
@@ -423,13 +407,13 @@ export async function stopAcceptingAnswers() {
 	gameState.currentTotalDuration += conf.TimeSettings.GuessingTime + conf.TimeSettings.AnswerTime;
 
 	// Update game state
-	updateGame(getState().currentQuizGame, conf, gameState);
+	updateGame(getState().quiz.currentQuizGame, conf, gameState);
 	emitWS('quizResult', gameState.currentSong);
-	emitWS('quizStateUpdated', getCurrentGame(false));
+	setState({ quiz: gameState });
 }
 
 export function setQuizModifier(): SongModifiers {
-	const conf = getConfig().Karaoke.QuizMode;
+	const conf = getState().quiz.settings;
 	return {
 		Mute: false,
 		Blind: '',
@@ -439,13 +423,15 @@ export function setQuizModifier(): SongModifiers {
 }
 
 export function continueGameSong() {
+	const gameState = getState().quiz;
 	if (!gameState.running || !gameState.currentSong) return;
 	gameState.currentSong.continue = !gameState.currentSong.continue;
+	setState({ quiz: gameState });
 	return gameState.currentSong.continue;
 }
 
 export async function startGame(gamename: string, playlist: string, settings?: QuizGameConfig) {
-	if (getState().quizMode === true || gameState.running === true) {
+	if (getState().quiz.running === true) {
 		throw { code: 409, msg: 'Unable to start quiz, one is already in progress' };
 	}
 	if (!playlist) {
@@ -463,18 +449,22 @@ export async function startGame(gamename: string, playlist: string, settings?: Q
 	if (!game) {
 		// Load default game settings if not provided
 		if (settings == null) {
-			settings = getConfig().Karaoke.QuizMode; // FIXME should not be stored in config
+			settings = getState().quiz.settings;
 		}
-		gameState = {
-			...cloneDeep(defaultGameState),
-			running: true,
-			// This presupposes the playlist is already created.
-			playlist,
-		};
+		setState({
+			quiz: {
+				running: true,
+				currentSongNumber: 0,
+				currentTotalDuration: 0,
+				// This presupposes the playlist is already created.
+				playlist,
+				KIDsPlayed: [],
+			},
+		});
 		insertGame({
 			gamename,
 			settings,
-			state: gameState,
+			state: getState().quiz,
 			date: new Date(),
 			flag_active: true,
 		});
@@ -483,11 +473,16 @@ export async function startGame(gamename: string, playlist: string, settings?: Q
 		if (settings == null) {
 			settings = game.settings;
 		}
-		gameState = { ...game.state, running: true, playlist };
-		updateGame(gamename, settings, gameState);
+		setState({
+			quiz: {
+				...game.state,
+				running: true,
+				playlist,
+			},
+		});
+		updateGame(gamename, settings, getState().quiz);
 	}
-	setState({ quizMode: true, currentQuizGame: gamename });
-	setConfig({ Karaoke: { QuizMode: settings } }); // FIXME should use state
+	setState({ quiz: { settings, running: true, currentQuizGame: gamename } });
 	emitWS('settingsUpdated', {});
 	await editPlaylist(playlist, {
 		flag_current: true,
@@ -524,43 +519,43 @@ export async function startGame(gamename: string, playlist: string, settings?: Q
 }
 
 export async function stopGame(displayScores = true) {
+	const gameState = getState().quiz;
 	if (!gameState.running) return;
-	setState({ quizGuessingTime: false });
+	setState({ quiz: { quizGuessingTime: false } });
 	logger.info('Stopping game and saving state', { service });
 	if (!isShutdownInProgress()) {
 		await stopPlayer(true, false);
 		if (displayScores) {
 			await displayMessage(await buildEndGameScoreString(), -1, 8, 'quizScores');
 		} else {
-			setState({ quizMode: false });
+			setState({ quiz: { running: false } });
 		}
 	}
-	await updateGame(getState().currentQuizGame, getConfig().Karaoke.QuizMode, gameState, false);
-	gameState.running = false;
-	emitWS('quizStateUpdated', getCurrentGame(false));
-	emitWS('quizStateUpdated', getCurrentGame(true), 'admin');
+	await updateGame(gameState.currentQuizGame, gameState.settings, gameState, false);
 	emitWS('settingsUpdated', {});
 }
 
 export async function deleteGame(gamename: string) {
-	if (getState().currentQuizGame === gamename) {
+	if (getState().quiz.currentQuizGame === gamename) {
 		await stopGame();
 	}
 	await dropGame(gamename);
 }
 
 export function addPlayedKaraToQuiz(kid: string) {
+	const gameState = getState().quiz;
 	if (!gameState.running) return;
 	gameState.KIDsPlayed.push(kid);
+	setState({ quiz: { KIDsPlayed: gameState.KIDsPlayed } });
 }
 
 export async function getPlayedKarasInQuiz(): Promise<KaraList> {
 	const karasFromDB = await getKaras({
-		q: `k:${gameState.KIDsPlayed.join(',')}`,
+		q: `k:${getState().quiz.KIDsPlayed.join(',')}`,
 	});
 	// Reorder them with our initial order
 	const karas = [];
-	for (const kid of gameState.KIDsPlayed) {
+	for (const kid of getState().quiz.KIDsPlayed) {
 		karas.push(karasFromDB.content.find(k => k.kid === kid));
 	}
 	karasFromDB.content = karas;
@@ -572,7 +567,13 @@ export async function resetGameScores(gamename: string) {
 	const games = await selectGames();
 	const game = games.find(g => g.gamename === gamename);
 	if (game) {
-		game.state = cloneDeep(defaultGameState);
+		game.state = {
+			running: false,
+			currentSongNumber: 0,
+			currentTotalDuration: 0,
+			playlist: '',
+			KIDsPlayed: [],
+		};
 		await updateGame(game.gamename, game.settings, game.state, game.flag_active);
 	}
 }
@@ -594,6 +595,7 @@ export async function getPossibleAnswers(words: string) {
 }
 
 export function getCurrentSongTimers(): TotalTimes {
+	const gameState = getState().quiz;
 	if (!gameState.running)
 		return {
 			guessTime: 0,
@@ -608,6 +610,7 @@ export function getCurrentSongTimers(): TotalTimes {
 }
 
 export function setAnswer(login: string, input: string) {
+	const gameState = getState().quiz;
 	if (!gameState.running) return 'NOT_IN_QUIZ';
 	if (gameState.currentSong.state !== 'guess') return 'TOO_LATE';
 	// Find the answer in our list of answers already given
@@ -621,7 +624,7 @@ export function setAnswer(login: string, input: string) {
 	// If an answer has already been given by this player or if it's a new answer, we update it with the input given.
 	answer.answer = input;
 	answer.quickAnswer = gameState.currentSong.quickGuessOK;
-	emitWS('quizStateUpdated', getCurrentGame(true), 'admin');
+	setState({ quiz: gameState });
 	return gameState.currentSong.quickGuessOK ? 'OK_QUICK' : 'OK';
 }
 
@@ -635,6 +638,7 @@ async function displayGoodAnswerTwitch(song: string) {
 
 /** Register an answer from a twitch user */
 export function registerTwitchAnswer(login: string, answer: string) {
+	const gameState = getState().quiz;
 	if (!gameState.running) return;
 	const song = gameState.currentSong;
 	let twitch = song.answers.find(a => a.login === 'twitchUsers');
@@ -646,10 +650,12 @@ export function registerTwitchAnswer(login: string, answer: string) {
 		song.answers.push(twitch);
 	}
 	twitch.twitchAnswers.set(login, answer.toLowerCase());
+	setState({ quiz: gameState });
 }
 
 /** Select the most returned answer */
 function computeTwitchAnswer() {
+	const gameState = getState().quiz;
 	if (!gameState.running) return;
 	const twitchAnswer = gameState.currentSong.answers.find(a => a.login === 'twitchUsers');
 	if (!twitchAnswer) return;
@@ -660,4 +666,5 @@ function computeTwitchAnswer() {
 		(a, b, _i, arr) => (arr.filter(v => v === a).length >= arr.filter(v => v === b).length ? a : b),
 		null
 	);
+	setState({ quiz: gameState });
 }

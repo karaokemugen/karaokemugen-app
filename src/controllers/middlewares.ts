@@ -48,7 +48,7 @@ export async function runChecklist(
 
 function checkWebAppMode(data: APIData, webappModeNeeded: WebappModes) {
 	// In quiz mode, the web app is open
-	const webAppMode = getState().quizMode ? 1 : +getConfig().Frontend.Mode;
+	const webAppMode = getState().quiz.running ? 1 : +getConfig().Frontend.Mode;
 	// Admins get a bypass.
 	if (data.user?.type === 0) return;
 	if (webAppMode < webappModes[webappModeNeeded]) {

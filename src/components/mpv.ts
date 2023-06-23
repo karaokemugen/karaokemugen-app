@@ -30,7 +30,7 @@ import { getPromoMessage, next, prev } from '../services/player.js';
 import { notificationNextSong } from '../services/playlist.js';
 import { getSingleMedia } from '../services/playlistMedias.js';
 import { endPoll } from '../services/poll.js';
-import { getCurrentGame, getCurrentSongTimers } from '../services/quiz.js';
+import { getCurrentSongTimers } from '../services/quiz.js';
 import { getTagNameInLanguage } from '../services/tag.js';
 import { BackgroundType } from '../types/backgrounds.js';
 import { MpvCommand } from '../types/mpvIPC.js';
@@ -531,13 +531,13 @@ class Player {
 				position >= playerState.currentSong.duration - 15 &&
 				playerState.mediaType === 'song' &&
 				!playerState.nextSongNotifSent &&
-				!getState().quizMode
+				!getState().quiz.running
 			) {
 				playerState.nextSongNotifSent = true;
 				notificationNextSong();
 			}
-			if (getState().quizMode) {
-				const game = getCurrentGame(true);
+			if (getState().quiz.running) {
+				const game = getState().quiz;
 				if (game.running && game.currentSong.state === 'answer') {
 					this.control.displaySongInfo(playerState.currentSong.infos);
 				} else {
@@ -547,10 +547,10 @@ class Player {
 				// Display informations if timeposition is 8 seconds before end of song
 				position >= playerState.currentSong.duration - 8 &&
 				playerState.mediaType === 'song' &&
-				!getState().quizMode
+				!getState().quiz.running
 			) {
 				this.control.displaySongInfo(playerState.currentSong.infos);
-			} else if (position <= 8 && playerState.mediaType === 'song' && !getState().quizMode) {
+			} else if (position <= 8 && playerState.mediaType === 'song' && !getState().quiz.running) {
 				// Display informations if timeposition is 8 seconds after start of song
 				this.control.displaySongInfo(
 					playerState.currentSong.infos,
@@ -897,7 +897,7 @@ class Players {
 	/** Progress bar on pause screens inbetween songs */
 	private tickProgressBar(nextTick: number, ticked: number, position: string) {
 		// 10 ticks
-		if (ticked <= 10 && ((getState().streamerPause && getState().pauseInProgress) || getState().quizMode)) {
+		if (ticked <= 10 && ((getState().streamerPause && getState().pauseInProgress) || getState().quiz.running)) {
 			if (this.progressBarTimeout) clearTimeout(this.progressBarTimeout);
 			let progressBar = '';
 			for (const _nothing of Array(ticked)) {
@@ -917,7 +917,7 @@ class Players {
 
 	/** Countdown */
 	private tickCountdown(position: string) {
-		if ((getState().streamerPause && getState().pauseInProgress) || getState().quizMode) {
+		if ((getState().streamerPause && getState().pauseInProgress) || getState().quiz.running) {
 			if (this.progressBarTimeout) clearTimeout(this.progressBarTimeout);
 			const timeLeft = Math.ceil(this.countdownTimer.getTimeLeft() / 1000);
 			this.messages.addMessage('countdown', `${position}{\\fscx250\\fscy250}${timeLeft}`, 'infinite');
@@ -1086,7 +1086,7 @@ class Players {
 		let mediaFile: string;
 		let subFile: string;
 		const options: Record<string, any> = {
-			'force-media-title': getState().quizMode ? 'Quiz!' : getSongTitle(song),
+			'force-media-title': getState().quiz.running ? 'Quiz!' : getSongTitle(song),
 		};
 		let onlineMedia = false;
 		const loadPromises = [
@@ -1169,7 +1169,7 @@ class Players {
 			playerState.currentMedia = null;
 			if (this.messages) {
 				this.messages.removeMessages(['poll', 'pauseScreen', 'quizRules']);
-				if (!getState().quizMode) this.displaySongInfo(song.infos, -1, false, song.warnings);
+				if (!getState().quiz.running) this.displaySongInfo(song.infos, -1, false, song.warnings);
 			}
 			await retry(() => this.exec({ command: ['loadfile', mediaFile, 'replace', options] }), {
 				retries: 3,
@@ -1197,8 +1197,8 @@ class Players {
 				title: getSongTitle(song),
 				source: getSongSeriesSingers(song) || i18n.t('UNKNOWN_ARTIST'),
 			});
-			if (getState().quizMode) {
-				this.progressBar(getConfig().Karaoke.QuizMode.TimeSettings.GuessingTime, '{\\an5}', 'countdown');
+			if (getState().quiz.running) {
+				this.progressBar(getState().quiz.settings.TimeSettings.GuessingTime, '{\\an5}', 'countdown');
 			}
 			return playerState;
 		} catch (err) {
@@ -1304,8 +1304,8 @@ class Players {
 		try {
 			playerState._playing = false; // This prevents the play/pause event to be triggered
 			await this.exec({ command: ['set_property', 'pause', true] });
-			if (getState().quizMode) {
-				const game = getCurrentGame(true);
+			if (getState().quiz.running) {
+				const game = getState().quiz;
 				if (game.running && game.currentSong) {
 					[
 						game.currentSong.quickGuessTimer,
@@ -1341,8 +1341,8 @@ class Players {
 			}
 			playerState._playing = true; // This prevents the play/pause event to be triggered
 			await this.exec({ command: ['set_property', 'pause', false] });
-			if (getState().quizMode) {
-				const game = getCurrentGame(true);
+			if (getState().quiz.running) {
+				const game = getState().quiz;
 				if (game.running && game.currentSong) {
 					[
 						game.currentSong.quickGuessTimer,

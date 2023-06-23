@@ -1,12 +1,10 @@
 import { Socket } from 'socket.io';
 
 import { APIData } from '../../lib/types/api.js';
-import { getConfig } from '../../lib/utils/config.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
 import {
 	continueGameSong,
 	deleteGame,
-	getCurrentGame,
 	getGames,
 	getGameScore,
 	getPlayedKarasInQuiz,
@@ -17,6 +15,7 @@ import {
 	startGame,
 	stopGame,
 } from '../../services/quiz.js';
+import { getPublicCurrentGame, getState } from '../../utils/state.js';
 import { APIMessage, errMessage } from '../common.js';
 import { runChecklist } from '../middlewares.js';
 
@@ -104,7 +103,7 @@ export default function quizController(router: SocketIOApp) {
 		}
 	});
 	router.route('setAnswer', async (socket: Socket, req: APIData) => {
-		const guestsAllowed = getConfig().Karaoke.QuizMode.Players.Guests;
+		const guestsAllowed = getState().quiz.settings.Players.Guests;
 		await runChecklist(socket, req, guestsAllowed ? 'guest' : 'user', 'limited');
 		try {
 			return setAnswer(req.token.username, req.body.answer);
@@ -115,7 +114,7 @@ export default function quizController(router: SocketIOApp) {
 	});
 	router.route('getGameState', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest', 'limited');
-		return getCurrentGame(req.token?.role === 'admin');
+		return getPublicCurrentGame(req.token?.role === 'admin');
 	});
 	router.route('getLastKaras', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest', 'limited');

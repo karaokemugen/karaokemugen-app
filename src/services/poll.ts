@@ -199,7 +199,7 @@ export async function startPoll(): Promise<boolean> {
 
 		return false;
 	}
-	if (getState().quizMode) {
+	if (getState().quiz.running) {
 		// No poll in quiz mode
 		return false;
 	}

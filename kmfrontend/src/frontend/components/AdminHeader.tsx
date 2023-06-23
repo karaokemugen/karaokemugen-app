@@ -190,7 +190,7 @@ function AdminHeader(props: IProps) {
 		});
 	};
 
-	const quizInProgress = context.globalState.settings.data.state.quiz;
+	const quizInProgress = context.globalState.settings.data.state.quiz.running;
 
 	return (
 		<KmAppHeaderDecorator mode="admin">
