@@ -40,7 +40,7 @@ export async function setDiscordActivity(activityType: 'song' | 'idle', activity
 			activity = sample(i18next.t('DISCORD.IDLING', { returnObjects: true }));
 		}
 		if (activityType === 'song') {
-			if (getState().quizMode) {
+			if (getState().quiz.running) {
 				activity = i18next.t('DISCORD.QUIZ_IN_PROGRESS');
 				activityDetail = i18next.t('DISCORD.QUIET!');
 			} else {

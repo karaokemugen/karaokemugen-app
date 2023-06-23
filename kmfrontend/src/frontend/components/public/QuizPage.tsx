@@ -1,6 +1,6 @@
 import './QuizPage.scss';
 
-import { debounce, uniqBy } from 'lodash';
+import { debounce, merge, uniqBy } from 'lodash';
 import { RefObject, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useAsyncMemo } from 'use-async-memo';
 
@@ -38,8 +38,6 @@ export default function QuizPage() {
 	const [quickGuess, setQuickGuess] = useState(0);
 	const [revealTimer, setRevealTimer] = useState(0);
 	const [result, setResult] = useState<GameSong>();
-	const [currentSongQuizNumber, setCurrentSongQuizNumber] = useState<number>();
-	const [currentTotalQuizDuration, setCurrentTotalQuizDuration] = useState<number>();
 	const [progressWidth, setProgressWidth] = useState('0px');
 	const [progressColor, setProgressColor] = useState('forestgreen');
 	const [responseMode, setResponseMode] = useState<'TOO_LATE' | 'OK' | 'OK_QUICK' | 'NOT_IN_QUIZ'>();
@@ -54,12 +52,14 @@ export default function QuizPage() {
 	const [disabled, setDisabled] = useState(false);
 	const progressBarRef: RefObject<HTMLDivElement> = useRef();
 
+	const quiz = context.globalState.settings.data.state.quiz;
+
 	const userTotalScores = useAsyncMemo(
 		async () => {
 			const [users, scores]: [User[], GameTotalScore[]] = await Promise.all([
 				commandBackend('getUsers'),
 				commandBackend('getTotalGameScore', {
-					gamename: context.globalState.settings.data.state.quizGame,
+					gamename: quiz.currentQuizGame,
 				}),
 			]);
 			const scoresToDisplay = scores
@@ -97,21 +97,22 @@ export default function QuizPage() {
 			setResult(d);
 		};
 		const updateQuizState = (gameState: GameState) => {
-			if (gameState.currentSong == null) {
+			merge(quiz, gameState);
+		};
+
+		commandBackend('getPlayerStatus').then(refreshPlayerInfos);
+		commandBackend('getGameState').then(gameState => {
+			updateQuizState(gameState);
+			if (quiz.currentSong == null || quiz.currentSong?.state === 'guess') {
 				qStart({
 					guessTime: 0,
 					quickGuess: 0,
 					revealTime: 0,
 				});
-			} else if (gameState.currentSong?.state === 'answer') {
-				qResult(gameState.currentSong);
+			} else if (quiz.currentSong?.state === 'answer') {
+				qResult(quiz.currentSong);
 			}
-			setCurrentSongQuizNumber(gameState.currentSongNumber);
-			setCurrentTotalQuizDuration(gameState.currentTotalDuration);
-		};
-
-		commandBackend('getPlayerStatus').then(refreshPlayerInfos);
-		commandBackend('getGameState').then(updateQuizState);
+		});
 
 		getSocket().on('quizStart', qStart);
 		getSocket().on('quizResult', qResult);
@@ -126,7 +127,7 @@ export default function QuizPage() {
 	}, []);
 
 	const resultColor = (username: string) => {
-		if (!isQuizLaunched) {
+		if (!quiz.running) {
 			const maxPoints = Math.max(...userTotalScores?.map(score => score.total));
 			const points = userTotalScores?.find(score => score.login === username)?.total;
 			return maxPoints === points ? 'gold' : 'grey';
@@ -149,7 +150,7 @@ export default function QuizPage() {
 	}, [result]);
 
 	const refreshPlayerInfos = async (data: PublicPlayerState) => {
-		const timeSettings = context.globalState.settings.data.config.Karaoke.QuizMode.TimeSettings;
+		const timeSettings = quiz.settings.TimeSettings;
 		const element = progressBarRef.current;
 		if (element && data.quiz !== undefined) {
 			setTimeLeft(Math.floor(data.quiz.guessTime));
@@ -225,9 +226,6 @@ export default function QuizPage() {
 		navigate('/public');
 	};
 
-	const quizSettings = context.globalState.settings.data.config.Karaoke.QuizMode;
-	const isQuizLaunched = context.globalState.settings.data.state.quiz;
-
 	return (
 		<>
 			<div className="player-box quiz">
@@ -247,12 +245,12 @@ export default function QuizPage() {
 							}}
 						>
 							<span>
-								{quizSettings.Answers.QuickAnswer.Enabled && quickGuess > 0 ? (
+								{mode === 'guess' && quiz.settings.Answers.QuickAnswer.Enabled && quickGuess > 0 ? (
 									<>
 										<i className="fas fa-fw fa-person-running" />{' '}
 										{i18next.t('QUIZ.STATES.QUICK_GUESSING', { count: quickGuess })}
 									</>
-								) : timeLeft > 0 ? (
+								) : mode === 'guess' && timeLeft > 0 ? (
 									<>
 										<i className="fas fa-fw fa-person-walking" />{' '}
 										{i18next.t('QUIZ.STATES.GUESSING', { count: timeLeft })}
@@ -327,7 +325,7 @@ export default function QuizPage() {
 						)}
 					</h4>
 				</div>
-				{isQuizLaunched ? (
+				{quiz.running ? (
 					<div>
 						<div className="progress-bar-container" ref={progressBarRef}>
 							<div
@@ -459,10 +457,10 @@ export default function QuizPage() {
 								1: <strong />,
 							}}
 							values={{
-								seconds: quizSettings.TimeSettings.GuessingTime,
+								seconds: quiz.settings.TimeSettings.GuessingTime,
 							}}
 						/>
-						{quizSettings.Answers.QuickAnswer.Enabled ? (
+						{quiz.settings.Answers.QuickAnswer.Enabled ? (
 							<>
 								<br />
 								<i className={`fas fa-bolt fa-fw`}></i>{' '}
@@ -473,8 +471,8 @@ export default function QuizPage() {
 										1: <strong />,
 									}}
 									values={{
-										seconds: quizSettings.TimeSettings.QuickGuessingTime,
-										points: quizSettings.Answers.QuickAnswer.Points,
+										seconds: quiz.settings.TimeSettings.QuickGuessingTime,
+										points: quiz.settings.Answers.QuickAnswer.Points,
 									}}
 								/>
 							</>
@@ -482,7 +480,7 @@ export default function QuizPage() {
 					</p>
 					<p>{i18next.t('QUIZ.RULES.ACCEPTED_ANSWERS')}</p>
 					<ul>
-						{Object.entries(quizSettings.Answers.Accepted)
+						{Object.entries(quiz.settings.Answers.Accepted)
 							.filter(([_, { Enabled }]) => Enabled)
 							.map(([possibleAnswerType, { Points }]) => (
 								<li key={possibleAnswerType}>
@@ -500,7 +498,7 @@ export default function QuizPage() {
 					</ul>
 					<p>{i18next.t('QUIZ.RULES.END_GAME')}</p>
 					<ul>
-						{Object.values(quizSettings.EndGame)
+						{Object.values(quiz.settings.EndGame)
 							.filter(eg => eg.Enabled)
 							.map(eg => {
 								if ('Score' in eg) {
@@ -513,7 +511,7 @@ export default function QuizPage() {
 													1: <strong />,
 												}}
 												values={{
-													points: quizSettings.EndGame.MaxScore.Score,
+													points: quiz.settings.EndGame.MaxScore.Score,
 												}}
 											/>
 										</li>
@@ -528,7 +526,8 @@ export default function QuizPage() {
 													1: <strong />,
 												}}
 												values={{
-													count: quizSettings.EndGame.MaxSongs.Songs - currentSongQuizNumber,
+													count:
+														quiz.settings.EndGame.MaxSongs.Songs - quiz.currentSongNumber,
 												}}
 											/>
 										</li>
@@ -544,8 +543,8 @@ export default function QuizPage() {
 												}}
 												values={{
 													count:
-														quizSettings.EndGame.Duration.Minutes -
-														currentTotalQuizDuration / 60,
+														quiz.settings.EndGame.Duration.Minutes -
+														quiz.currentTotalDuration / 60,
 												}}
 											/>
 										</li>

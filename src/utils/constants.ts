@@ -1,6 +1,7 @@
 // Karaoke Mugen App Constants
 
 import { OldJWTToken } from '../lib/types/user.js';
+import { QuizGameConfig } from '../types/config.js';
 
 export const discordClientID = '718211141033263145';
 
@@ -311,4 +312,55 @@ export const adminToken: OldJWTToken = {
 	role: 'admin',
 	iat: new Date().getTime().toString(),
 	passwordLastModifiedAt: new Date().getTime().toString(),
+};
+
+export const defaultQuizSettings: QuizGameConfig = {
+	EndGame: {
+		MaxScore: {
+			Enabled: false,
+			Score: 10,
+		},
+		MaxSongs: {
+			Enabled: true,
+			Songs: 30,
+		},
+		Duration: {
+			Enabled: true,
+			Minutes: 60,
+		},
+	},
+	Players: {
+		Twitch: false,
+		Guests: true,
+	},
+	TimeSettings: {
+		WhenToStartSong: 33,
+		GuessingTime: 30,
+		QuickGuessingTime: 15,
+		AnswerTime: 30,
+	},
+	Answers: {
+		Accepted: {
+			title: {
+				Enabled: true,
+				Points: 2,
+			},
+			series: {
+				Enabled: true,
+				Points: 1,
+			},
+		},
+		QuickAnswer: {
+			Enabled: true,
+			Points: 1,
+		},
+		SimilarityPercentageNeeded: 70,
+	},
+	Modifiers: {
+		Mute: false,
+		Blind: 'blur',
+		NoLyrics: false,
+	},
+	// This is undefined because we allow it to be an empty string too and we need to knwo when to apply the i18next string
+	PlayerMessage: undefined,
 };
