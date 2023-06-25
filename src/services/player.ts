@@ -1,4 +1,4 @@
-import i18next from 'i18next';
+import i18n from 'i18next';
 import { setTimeout as sleep } from 'timers/promises';
 
 import { isShutdownInProgress } from '../components/engine.js';
@@ -205,9 +205,13 @@ export function getPromoMessage(): string {
 	const conf = getConfig();
 	const state = getState();
 	const ci = conf.Player.Display.ConnectionInfo;
-	let text = state.quiz.running ? getState().quiz.settings.PlayerMessage : ci.Message;
-	if (ci.Enabled) text = text ? text.replaceAll('$url', state.osURL) : '';
-	return text;
+	if (!ci.Enabled) {
+		return '';
+	}
+	const text = state.quiz.running
+		? getState().quiz.settings.PlayerMessage || i18n.t('GO_TO_QUIZ_MODE')
+		: ci.Message || i18n.t('GO_TO');
+	return text.replaceAll('$url', state.osURL);
 }
 
 export async function prepareClassicPauseScreen() {
@@ -285,7 +289,7 @@ export async function playerNeedsRestart() {
 		setState({ playerNeedsRestart: true });
 		logger.info('Player will restart in 5 seconds', { service });
 		emitWS('operatorNotificationInfo', APIMessage('NOTIFICATION.OPERATOR.INFO.PLAYER_RESTARTING'));
-		mpv.message(i18next.t('RESTARTING_PLAYER'), 5000);
+		mpv.message(i18n.t('RESTARTING_PLAYER'), 5000);
 		await sleep(1000);
 		await restartPlayer();
 		setState({ playerNeedsRestart: false });
