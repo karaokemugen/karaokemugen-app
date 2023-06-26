@@ -29,6 +29,8 @@ import InlineTag from './InlineTag';
 import AddKaraButton from '../generic/buttons/AddKaraButton';
 import VideoPreview from '../generic/VideoPreview';
 import UpvoteKaraButton from '../generic/buttons/UpvoteKaraButton';
+import DOMPurify from 'dompurify';
+import { ASSLine } from '../../../../../src/lib/types/ass';
 
 interface IProps {
 	kid?: string;
@@ -48,7 +50,7 @@ export default function KaraDetail(props: IProps) {
 	const context = useContext(GlobalContext);
 	const [kara, setKara] = useState<DBPLCInfo>();
 	const [showVideo, setShowVideo] = useState(false);
-	const [lyrics, setLyrics] = useState<string[]>([]);
+	const [lyrics, setLyrics] = useState<ASSLine[]>([]);
 	const [pending, setPending] = useState(false);
 	const params = useParams();
 	const id = props.kid ? props.kid : params.kid;
@@ -120,11 +122,47 @@ export default function KaraDetail(props: IProps) {
 			if (response?.length > 0) {
 				response = formatLyrics(response);
 			}
-			setLyrics(response?.map(value => value.text) || []);
+			setLyrics(response ?? []);
 		} catch (e) {
 			// already display
 		}
 	};
+
+	const rubyfiedLyrics = () =>
+		lyrics?.map(line => {
+			const parsedSyllables =
+				line.fullText?.map(event => event.text.replace('｜', '|').replace('|!', '|').replace('|<', '|')) ?? [];
+			const rubifiedArray: Record<'text' | 'ruby', string>[] = [];
+			parsedSyllables.forEach(syl => {
+				if (syl.match(/#\|.*/g)) {
+					const lastElement = rubifiedArray.pop();
+					if (lastElement) {
+						lastElement.ruby += syl.substring(2);
+						rubifiedArray.push(lastElement);
+					}
+				} else if (syl.match(/.*\|.*/g)) {
+					rubifiedArray.push({
+						text: syl.split('|')[0],
+						ruby: syl.split('|')[1],
+					});
+				} else {
+					rubifiedArray.push({
+						text: syl,
+						ruby: '',
+					});
+				}
+			});
+			const lyricsWithRuby = rubifiedArray
+				.map(seq => {
+					if (!seq.ruby) {
+						return seq.text;
+					}
+					return `<ruby>${seq.text}<rp>(</rp><rt>${seq.ruby}</rt><rp>)</rp></ruby>`;
+				})
+				.join('');
+
+			return DOMPurify.sanitize(lyricsWithRuby, { ALLOWED_TAGS: ['ruby', 'rp', 'rt'] });
+		});
 
 	const downloadMedia = () => {
 		const downloadObject: KaraDownloadRequest = {
@@ -318,17 +356,13 @@ export default function KaraDetail(props: IProps) {
 						{i18next.t('KARA_DETAIL.LYRICS')}
 					</div>
 				) : null}
-				{kara.subfile &&
-					lyrics
-						?.filter(lyric => lyric?.trim())
-						.map((ligne, index) => {
-							return (
-								<Fragment key={index}>
-									{ligne}
-									<br />
-								</Fragment>
-							);
-						})}
+				{rubyfiedLyrics().map(ligne => {
+					return (
+						<Fragment>
+							<div dangerouslySetInnerHTML={{ __html: ligne }} />
+						</Fragment>
+					);
+				})}
 			</div>
 		) : null;
 
