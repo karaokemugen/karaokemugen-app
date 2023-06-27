@@ -383,6 +383,8 @@ class Player {
 
 	configuration: any;
 
+	logFile: string;
+
 	options: MpvOptions;
 
 	control: Players;
@@ -404,11 +406,11 @@ class Player {
 		const state = getState();
 		const today = date();
 		const now = time().replaceAll(':', '.');
-
+		this.logFile = `mpv${options.monitor ? '-monitor' : ''}.${today}.${now}.log`;
 		const mpvArgs = [
 			'--keep-open=always',
 			'--osd-level=0',
-			`--log-file=${resolve(resolvedPath('Logs'), `mpv.${today}.${now}.log`)}`,
+			`--log-file=${resolve(resolvedPath('Logs'), this.logFile)}`,
 			`--hwdec=${conf.Player.HardwareDecoding}`,
 			`--volume=${+conf.Player.Volume}`,
 			'--no-config',
@@ -842,6 +844,16 @@ class Players {
 		}
 	}
 
+	async getmpvLog(type: PlayerType) {
+		try {
+			const logData = await fs.readFile(this.players[type].logFile, 'utf-8');
+			return logData.split('\n').slice(-100);
+		} catch (err) {
+			logger.error('Unable to get mpv log', { service, obj: err });
+			// Do not throw, we're already throwing up anyway
+		}
+	}
+
 	async exec(cmd: string | MpvCommand, args: any[] = [], onlyOn?: PlayerType, ignoreLock = false, shutdown = false) {
 		try {
 			const mpv = typeof cmd === 'object';
@@ -870,7 +882,8 @@ class Players {
 			await Promise.all(loads);
 		} catch (err) {
 			logger.error('mpvAPI (send)', { service, obj: err });
-			sentry.addErrorInfo('mpvLog', (await getMpvLog())?.join('\n'));
+			sentry.addErrorInfo('mpvLog', (await this.getmpvLog('main'))?.join('\n'));
+			if (this.players.monitor) sentry.addErrorInfo('mpvLog', (await this.getmpvLog('monitor'))?.join('\n'));
 			throw new Error(JSON.stringify(err));
 		}
 	}
@@ -1706,19 +1719,6 @@ class Players {
 	stopAddASongMessage() {
 		if (this.intervalIDAddASong) clearInterval(this.intervalIDAddASong);
 		this.intervalIDAddASong = undefined;
-	}
-}
-
-/** Get last 100 lines of log */
-async function getMpvLog() {
-	try {
-		const today = date();
-		const logFile = resolve(resolvedPath('Logs'), `mpv.${today}.log`);
-		const logData = await fs.readFile(logFile, 'utf-8');
-		return logData.split('\n').slice(-100);
-	} catch (err) {
-		logger.error('Unable to get mpv log', { service, obj: err });
-		// Do not throw, we're already throwing up anyway
 	}
 }
 
