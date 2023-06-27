@@ -42,7 +42,7 @@ import { setDiscordActivity } from '../utils/discordRPC.js';
 import MpvIPC from '../utils/mpvIPC.js';
 import sentry from '../utils/sentry.js';
 import { getState, setState } from '../utils/state.js';
-import { exit, isShutdownInProgress } from './engine.js';
+import { isShutdownInProgress } from './engine.js';
 import Timeout = NodeJS.Timeout;
 
 type PlayerType = 'main' | 'monitor';
@@ -373,8 +373,8 @@ async function checkMpv() {
 			{ service }
 		);
 		logger.error(`mpv binary: ${state.binPath.mpv}`, { service });
-		logger.error('Exiting due to obsolete mpv version', { service });
-		await exit(1);
+		logger.error('Not starting due to obsolete mpv version', { service });
+		throw new Error('Obsolete mpv version');
 	}
 }
 
