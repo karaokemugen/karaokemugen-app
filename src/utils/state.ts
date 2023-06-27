@@ -2,13 +2,16 @@
 import { merge } from 'lodash';
 
 import packageJSON from '../../package.json';
+import { RecursivePartial } from '../lib/types/index.js';
 // KM Imports
 import { getConfig } from '../lib/utils/config.js';
 import { supportedFiles } from '../lib/utils/constants.js';
 import { emit } from '../lib/utils/pubsub.js';
 import { emitWS } from '../lib/utils/ws.js';
 // Types
+import { GameState } from '../types/quiz.js';
 import { PublicPlayerState, PublicState, State } from '../types/state.js';
+import { defaultQuizSettings } from './constants.js';
 
 // Internal settings
 let state: State = {
@@ -50,12 +53,17 @@ let state: State = {
 	systemMessages: [],
 	DBReady: false,
 	portable: false,
-	quizMode: false,
-	quizGuessingTime: false,
 	quiz: {
+		running: false,
+		quizGuessingTime: false,
+		currentSongNumber: 0,
+		currentTotalDuration: 0,
+		playlist: '',
+		KIDsPlayed: [],
 		guessTime: 0,
 		quickGuess: 0,
 		revealTime: 0,
+		settings: defaultQuizSettings,
 	},
 };
 
@@ -79,13 +87,13 @@ export function getPlayerState(): PublicPlayerState {
 }
 
 /** Emit via websockets the public state */
-function emitPlayerState(part: Partial<State>) {
+function emitPlayerState(part: RecursivePartial<State>) {
 	// Compute diff in other elements
 	const map = new Map([
 		['counterToJingle', { conf: 'Jingles', state: 'songsBeforeJingle' }],
 		['counterToSponsor', { conf: 'Sponsors', state: 'songsBeforeSponsor' }],
 	]);
-	const toEmit: Partial<PublicPlayerState> = { ...part.player };
+	const toEmit: RecursivePartial<PublicPlayerState> = { ...part.player };
 	for (const key of [
 		'currentSong',
 		'currentSessionID',
@@ -118,6 +126,13 @@ function emitPlayerState(part: Partial<State>) {
 	}
 }
 
+function emitQuizState(part: RecursivePartial<State>) {
+	if (part.quiz) {
+		emitWS('quizStateUpdated', getPublicCurrentGame(false, part.quiz));
+		emitWS('quizStateUpdated', getPublicCurrentGame(true, part.quiz), 'admin'); // FIXME doesn't work, admin doesn't join the room
+	}
+}
+
 /** Get current app state object */
 export function getState() {
 	return { ...state };
@@ -140,13 +155,25 @@ export function getPublicState(admin: boolean): PublicState {
 		environment: process.env.SENTRY_ENVIRONMENT,
 		sentrytest: (process.env.CI_SERVER || process.env.SENTRY_TEST === 'true') as boolean,
 		url: state.osURL,
-		quiz: state.quizMode,
-		quizGame: state.currentQuizGame,
+		quiz: getPublicCurrentGame(admin),
 	};
 }
 
+export function getPublicCurrentGame(admin: boolean): GameState;
+export function getPublicCurrentGame(
+	admin: boolean,
+	gameState: RecursivePartial<GameState>
+): RecursivePartial<GameState>;
+export function getPublicCurrentGame(admin: boolean, gameState: RecursivePartial<GameState> = state.quiz) {
+	// only allow to see currentSong for non admin during answers
+	if (admin || state.quiz.currentSong?.state === 'answer') {
+		return gameState;
+	}
+	return { ...gameState, currentSong: null };
+}
+
 /** Set one or more settings in app state */
-export function setState(part: Partial<State>) {
+export function setState(part: RecursivePartial<State>) {
 	// lodash merges must not merge karas info.
 	if (part?.player?.currentSong && part?.player?.currentSong.kid !== state?.player?.currentSong?.kid) {
 		state.player.currentSong = null;
@@ -154,5 +181,6 @@ export function setState(part: Partial<State>) {
 	state = merge(state, part);
 	emit('stateUpdated', state);
 	emitPlayerState(part);
+	emitQuizState(part);
 	return getState();
 }

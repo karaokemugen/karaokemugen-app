@@ -47,10 +47,16 @@ export interface GameSong {
 interface GameState {
 	currentSongNumber: number;
 	currentTotalDuration: number;
+	currentQuizGame?: string;
+	quizGuessingTime?: boolean;
 	playlist: string;
 	running: boolean;
 	currentSong?: GameSong;
 	KIDsPlayed: string[];
+	guessTime?: number;
+	quickGuess?: number;
+	revealTime?: number;
+	settings?: QuizGameConfig;
 }
 
 interface GameAnswer {
