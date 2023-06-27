@@ -74,8 +74,6 @@ const playerState: PlayerState = {
 		quickGuess: 0,
 		revealTime: 0,
 	},
-
-	// Experimental modifiers
 	pitch: 0,
 	speed: 100,
 };
@@ -369,7 +367,7 @@ async function checkMpv() {
 		});
 		return;
 	}
-	if (!semver.satisfies(mpvVersion, requiredMPVVersion)) {
+	if (mpvVersion !== 'UNKNOWN' && !semver.satisfies(mpvVersion, requiredMPVVersion)) {
 		logger.error(
 			`mpv version detected is too old (${mpvVersion}). Upgrade your mpv from http://mpv.io to at least version ${requiredMPVVersion}`,
 			{ service }
