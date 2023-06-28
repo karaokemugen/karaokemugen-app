@@ -1,4 +1,4 @@
-import i18next from 'i18next';
+import i18n from 'i18next';
 import { setTimeout as sleep } from 'timers/promises';
 
 import { isShutdownInProgress } from '../components/engine.js';
@@ -68,11 +68,11 @@ export async function next() {
 					switchToPollScreen();
 					const poll = await startPoll();
 					if (!poll) {
-						// False returned means startPoll couldn't start a poll
-						mpv.displaySongInfo(kara.infos, -1, true, kara.warnings, !getState().quizMode);
+						// False quiz.running means startPoll couldn't start a poll
+						mpv.displaySongInfo(kara.infos, -1, true, kara.warnings, !getState().quiz.running);
 					}
 				} else {
-					mpv.displaySongInfo(kara.infos, -1, true, kara.warnings, !getState().quizMode);
+					mpv.displaySongInfo(kara.infos, -1, true, kara.warnings, !getState().quiz.running);
 				}
 				if (conf.Karaoke.StreamerMode.PauseDuration > 0) {
 					await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
@@ -90,7 +90,7 @@ export async function next() {
 				setState({ currentRequester: null });
 				if (getState().player.playerStatus !== 'stop') playPlayer(true);
 			}
-		} else if (conf.Karaoke.StreamerMode.Enabled || !getState().quizMode) {
+		} else if (conf.Karaoke.StreamerMode.Enabled || !getState().quiz.running) {
 			await stopPlayer(true, true);
 			if (conf.Karaoke.Poll.Enabled) {
 				try {
@@ -186,7 +186,7 @@ export async function stopPlayer(now = true, endOfPlaylist = false) {
 		if (!endOfPlaylist && getConfig().Karaoke.ClassicMode && getState().pauseInProgress) {
 			await prepareClassicPauseScreen();
 		}
-		if (getState().quizMode) {
+		if (getState().quiz.running) {
 			mpv.messages.clearMessages();
 		}
 	} else if (!getState().stopping) {
@@ -205,9 +205,13 @@ export function getPromoMessage(): string {
 	const conf = getConfig();
 	const state = getState();
 	const ci = conf.Player.Display.ConnectionInfo;
-	let text = state.quizMode ? conf.Karaoke.QuizMode.PlayerMessage : ci.Message;
-	if (ci.Enabled) text = text.replaceAll('$url', state.osURL);
-	return text;
+	if (!ci.Enabled) {
+		return '';
+	}
+	const text = state.quiz.running
+		? getState().quiz.settings.PlayerMessage || i18n.t('GO_TO_QUIZ_MODE')
+		: ci.Message || i18n.t('GO_TO');
+	return text.replaceAll('$url', state.osURL);
 }
 
 export async function prepareClassicPauseScreen() {
@@ -215,7 +219,7 @@ export async function prepareClassicPauseScreen() {
 		const kara = await getCurrentSong();
 		if (!kara) throw 'No song selected, current playlist must be empty';
 		setState({ currentRequester: kara?.username || null });
-		mpv.displaySongInfo(kara.infos, -1, true, null, !getState().quizMode);
+		mpv.displaySongInfo(kara.infos, -1, true, null, !getState().quiz.running);
 	} catch (err) {
 		// Failed to get current song, this can happen if the current playlist gets emptied or changed to an empty one inbetween songs. In this case, just display KM infos
 		mpv.displayInfo();
@@ -285,7 +289,7 @@ export async function playerNeedsRestart() {
 		setState({ playerNeedsRestart: true });
 		logger.info('Player will restart in 5 seconds', { service });
 		emitWS('operatorNotificationInfo', APIMessage('NOTIFICATION.OPERATOR.INFO.PLAYER_RESTARTING'));
-		mpv.message(i18next.t('RESTARTING_PLAYER'), 5000);
+		mpv.message(i18n.t('RESTARTING_PLAYER'), 5000);
 		await sleep(1000);
 		await restartPlayer();
 		setState({ playerNeedsRestart: false });
@@ -395,16 +399,6 @@ export function isPlayerRunning() {
 export async function initPlayer() {
 	try {
 		profile('initPlayer');
-		if (getConfig().App.FirstRun) {
-			// Write in config the message we should have depending on user locale.
-			setConfig({
-				Karaoke: {
-					QuizMode: {
-						PlayerMessage: i18next.t('GO_TO_QUIZ_MODE'),
-					},
-				},
-			});
-		}
 		await mpv.initPlayerSystem();
 	} catch (err) {
 		logger.error('Failed mpv init', { service, obj: err });

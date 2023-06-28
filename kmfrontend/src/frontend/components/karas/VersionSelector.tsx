@@ -51,7 +51,7 @@ export default function VersionSelector(props: Props) {
 	useEffect(() => {
 		const refreshKaras = updated => {
 			for (const k of updated) {
-				if (karas.content?.findIndex(dbk => dbk.kid === k.kid) !== -1) {
+				if (!karas?.content.find(dbk => dbk.kid === k.kid)) {
 					getKaras();
 					break;
 				}

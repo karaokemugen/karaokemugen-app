@@ -145,8 +145,8 @@ function AdminPage(props: IProps) {
 	};
 
 	useEffect(() => {
-		setQuizRanking(context.globalState.settings.data.state.quiz);
-	}, [context.globalState.settings.data.state.quiz]);
+		setQuizRanking(context.globalState.settings.data.state.quiz.running);
+	}, [context.globalState.settings.data.state.quiz.running]);
 
 	useEffect(() => {
 		getSocket().on('playlistInfoUpdated', playlistInfoUpdated);

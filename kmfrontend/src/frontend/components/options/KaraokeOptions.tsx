@@ -90,6 +90,7 @@ function KaraokeOptions(props: IProps) {
 		} else if (value === 'false') {
 			value = false;
 		}
+		if (e.target.type === 'number' && !value) value = e.target.placeHolder || e.target.min || 0;
 		config[e.target.id] = value;
 		if (e.target.type !== 'number' || !isNaN(Number(e.target.value))) props.onChange(e);
 	};
@@ -191,9 +192,13 @@ function KaraokeOptions(props: IProps) {
 									type="number"
 									data-exclude="true"
 									id="Karaoke.Quota.FreeAutoTime"
-									placeholder="1000"
-									onBlur={onChange}
-									defaultValue={config['Karaoke.Quota.FreeAutoTime']}
+									placeholder="0"
+									onBlur={(e: any) => {
+										if (!e.target.value) e.target.value = 0;
+										onChange(e);
+									}}
+									min={0}
+									defaultValue={config['Karaoke.Quota.FreeAutoTime'] || 0}
 								/>
 							</div>
 						</div>

@@ -87,7 +87,7 @@ export async function getSongInfosForPlayer(kara: DBKara | DBPLC): Promise<{ inf
 	// Escaping {} because it'll be interpreted as ASS tags below.
 	let requestedBy = '';
 	let avatarfile = null;
-	if (!getState().quizMode && getConfig().Player.Display.Nickname && 'nickname' in kara) {
+	if (!getState().quiz.running && getConfig().Player.Display.Nickname && 'nickname' in kara) {
 		const upvoters = await selectUpvotesByPLC(kara.plcid);
 		// Escaping {} because it'll be interpreted as ASS tags below.
 		kara.nickname = kara.nickname.replace(/[{}]/g, '');
@@ -125,7 +125,7 @@ export async function getSongInfosForPlayer(kara: DBKara | DBPLC): Promise<{ inf
 	let infos = `{\\bord2}{\\fscx70}{\\fscy70}{\\b1}${series}{\\b0}\\N{\\i1}${kara.songtypes
 		.map(s => s.name)
 		.join(' ')}${kara.songorder || ''} - ${getSongTitle(kara)}${versions}{\\i0}${requestedBy}`;
-	if ('flag_visible' in kara && kara.flag_visible === false && !getState().quizMode) {
+	if ('flag_visible' in kara && kara.flag_visible === false && !getState().quiz.running) {
 		// We're on a PLC with a flag_visible set to false, let's hide stuff!
 		// But we don't hide it if we're in quiz mode. Because you know.
 		const invisibleSong = sample(getConfig().Playlist.MysterySongs.Labels);
@@ -192,7 +192,7 @@ export async function playCurrentSong(now: boolean) {
 				}
 				// Testing if intro hasn't been played already and if we have at least one intro available
 				// The intro is never played when there is a quiz
-				if (conf.Playlist.Medias.Intros.Enabled && !getState().introPlayed && !getState().quizMode) {
+				if (conf.Playlist.Medias.Intros.Enabled && !getState().introPlayed && !getState().quiz.running) {
 					setState({ introPlayed: true, counterToJingle: 1 });
 					await mpv.playMedia('Intros');
 					return;
@@ -201,12 +201,12 @@ export async function playCurrentSong(now: boolean) {
 			logger.debug('Karaoke selected', { service, obj: kara });
 
 			// If we're in quiz mode, we need to make a check before playing
-			if (getState().quizMode) {
+			if (getState().quiz.running) {
 				// Check if the song has at least one answer possible from possible answer types
 				// Whichever answer type we get to first that exists in a song breaks the loop.
 				let answerPossible = false;
 				for (const [possibleAnswerType, { Enabled }] of Object.entries(
-					getConfig().Karaoke.QuizMode.Answers.Accepted
+					getState().quiz.settings.Answers.Accepted
 				)) {
 					if (!Enabled) {
 						continue;
@@ -225,9 +225,9 @@ export async function playCurrentSong(now: boolean) {
 					throw '[Quiz Mode] Song has no possible answer for the criterias selected for this game';
 			}
 			logger.info(`Playing ${kara.mediafile.substring(0, kara.mediafile.length - 4)}`, { service });
-			const modifiers = getState().quizMode ? setQuizModifier() : null;
+			const modifiers = getState().quiz.running ? setQuizModifier() : null;
 			let startTime = 0;
-			if (getState().quizMode) startTime = startQuizRound(kara);
+			if (getState().quiz.running) startTime = startQuizRound(kara);
 			await mpv.play(kara, modifiers, startTime);
 			setState({ randomPlaying: false });
 			updateUserQuotas(kara);
@@ -272,7 +272,7 @@ export async function playerEnding() {
 			state.player.mediaType === 'song' &&
 			// Ignore random karas from the entire library, but count karas from the fallback playlist as played
 			(!state.randomPlaying || getConfig().Playlist.EndOfPlaylistAction === 'random_fallback') &&
-			!getState().quizMode
+			!getState().quiz.running
 		) {
 			addPlayedKara(state.player.currentSong?.kid);
 		}
@@ -436,7 +436,7 @@ export async function playerEnding() {
 				await playRandomSongAfterPlaylist();
 			} else if (conf.Playlist.EndOfPlaylistAction === 'play_fallback') {
 				await editPlaylist(getState().fallbackPlaid, { flag_current: true });
-				await setState({ currentPlaid: getState().fallbackPlaid });
+				setState({ currentPlaid: getState().fallbackPlaid });
 				await next();
 			} else {
 				await next();
@@ -494,7 +494,6 @@ export async function playerEnding() {
 		if (state.player.playerStatus !== 'stop') {
 			try {
 				await next();
-				return;
 			} catch (err) {
 				logger.error('Failed going to next song', { service, obj: err });
 				throw err;

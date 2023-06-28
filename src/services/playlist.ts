@@ -1550,7 +1550,7 @@ export async function getNextSong(): Promise<DBPLC> {
 		let currentPos = playlist.findIndex(plc => plc.flag_playing);
 		if (currentPos + 1 >= playlist.length && conf.Playlist.EndOfPlaylistAction !== 'repeat') {
 			logger.debug('End of playlist', { service });
-			stopGame();
+			stopGame(true);
 			// Current position is last song, not quite an error.
 			return null;
 		}
@@ -1692,7 +1692,7 @@ export async function createAutoMix(params: AutoMixParams, username: string): Pr
 	}
 	if (params.filters?.usersAnimeList) {
 		for (const userlogin of params.filters.usersAnimeList) {
-			const user = await getUser(userlogin);
+			const user = await getUser(userlogin, true);
 			if (user.anime_list_to_fetch) {
 				const karas = await getKaras({ userAnimeList: userlogin });
 				karas.content.forEach(k => uniqueList.set(k.kid, k as any));

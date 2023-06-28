@@ -2,6 +2,7 @@ import { RemoteFailure, RemoteSuccess } from '../lib/types/remote.js';
 import { BinariesConfig } from './binChecker.js';
 import { PlayerState } from './player.js';
 import { CurrentSong } from './playlist.js';
+import { GameState } from './quiz.js';
 
 export interface Version {
 	number?: string;
@@ -12,6 +13,7 @@ export interface Version {
 
 export interface State {
 	appHasBeenUpdated?: boolean;
+	shutdownInProgress?: boolean;
 	currentPlaid?: string;
 	blacklistPlaid?: string;
 	whitelistPlaid?: string;
@@ -89,14 +91,7 @@ export interface State {
 		picture: string;
 		music: string;
 	};
-	quizMode: boolean;
-	currentQuizGame?: string;
-	quizGuessingTime?: boolean;
-	quiz: {
-		guessTime: number;
-		quickGuess: number;
-		revealTime: number;
-	};
+	quiz: GameState;
 }
 
 export interface SystemMessage {
@@ -123,8 +118,7 @@ export interface PublicState {
 	environment: string;
 	sentrytest: boolean;
 	url: string;
-	quiz: boolean;
-	quizGame: string;
+	quiz: GameState;
 }
 
 export interface PublicPlayerState extends PlayerState {

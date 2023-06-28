@@ -40,7 +40,7 @@ export default function PublicList(props: Props) {
 				1000,
 				{ leading: true }
 			),
-		[context.globalState.frontendContext.playlistInfoLeft.plaid]
+		[context.globalState.frontendContext.playlistInfoLeft?.plaid]
 	);
 
 	const openKara = (kara: KaraElement, index: number) => {
