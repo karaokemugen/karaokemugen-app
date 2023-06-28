@@ -88,13 +88,13 @@ function listenChat(chat: Client) {
 					: `${getState().osURL}/public/plc/${song.plcid}`
 			})`;
 			chat.say(target, str);
-		} else if (getConfig().Player.LiveComments && !getState().quizGuessingTime) {
+		} else if (getConfig().Player.LiveComments && !getState().quiz.quizGuessingTime) {
 			// Any other message is treated here for the display message function
 			// Messages aren't displayed if a quiz is going on and people have to guess the answer
 			// We need to strip emotes first
 			msg = stripEmotes(msg, context);
 			if (msg.length < 100) playerComment(msg);
-		} else if (getConfig().Karaoke.QuizMode.Players.Twitch) {
+		} else if (getState().quiz.settings.Players.Twitch) {
 			msg = stripEmotes(msg, context);
 			registerTwitchAnswer(context.username, msg);
 		}

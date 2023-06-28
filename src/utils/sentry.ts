@@ -34,7 +34,12 @@ class ElectronSentryLogger extends SentryLogger {
 			],
 			beforeSend: (event, _hint) => {
 				// Testing for precise falseness. If errortracking is undefined or if getconfig doesn't return anything, errors are not sent.
-				if (getConfig()?.Online?.ErrorTracking !== true || !this.SentryInitialized) return null;
+				if (
+					getConfig()?.Online?.ErrorTracking !== true ||
+					!this.SentryInitialized ||
+					getState().shutdownInProgress
+				)
+					return null;
 				return event;
 			},
 		};

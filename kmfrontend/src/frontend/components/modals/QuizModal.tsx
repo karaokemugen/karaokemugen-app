@@ -75,7 +75,7 @@ export default function QuizModal(props: IProps) {
 	const [gameName, setGameName] = useState('');
 	const [gamePlaylist, setGamePlaylist] = useState<string | null>(props.gamePlaylist);
 	const [gameConfig, rawSetGameConfig] = useState<QuizGameConfig>(
-		merge({}, context.globalState.settings.data.config.Karaoke.QuizMode, { Playlist: null })
+		merge({}, context.globalState.settings.data.state.quiz.settings, { Playlist: null })
 	);
 	const [gameLoaded, setGameLoaded] = useState('');
 	const [gameEdition, setGameEdition] = useState(true);
@@ -91,7 +91,7 @@ export default function QuizModal(props: IProps) {
 	const loadGameConfig = async (e: ChangeEvent<HTMLSelectElement>) => {
 		setGameLoaded(e.target.value);
 		if (e.target.value === '') {
-			rawSetGameConfig(context.globalState.settings.data.config.Karaoke.QuizMode);
+			rawSetGameConfig(context.globalState.settings.data.state.quiz.settings);
 			setGamePlaylist(props.gamePlaylist);
 			setGameName('');
 			setGameEdition(true);
@@ -131,7 +131,7 @@ export default function QuizModal(props: IProps) {
 	};
 
 	const startGame = async (settings?: QuizGameConfig) => {
-		if (gamePlaylist === null) {
+		if (!gamePlaylist) {
 			displayMessage('warning', i18next.t('MODAL.START_QUIZ.EMPTY_PLAYLIST'));
 			document.getElementById('quiz-modal').scrollTo({
 				top: 0,
@@ -173,7 +173,7 @@ export default function QuizModal(props: IProps) {
 	const deleteGame = async () => {
 		await commandBackend('deleteGame', { gamename: gameName });
 		setVersion(v => v + 1);
-		rawSetGameConfig(context.globalState.settings.data.config.Karaoke.QuizMode);
+		rawSetGameConfig(context.globalState.settings.data.state.quiz.settings);
 		setGameName('');
 		setGameLoadedResults([]);
 		setGameLoaded('');
@@ -243,10 +243,13 @@ export default function QuizModal(props: IProps) {
 								data-exclude={true}
 								type="text"
 								id="quiz-player-message"
-								value={gameConfig.PlayerMessage}
+								value={
+									gameConfig.PlayerMessage !== undefined
+										? gameConfig.PlayerMessage
+										: i18next.t('MODAL.START_QUIZ.PLAYER_MESSAGE_PLACEHOLDER')
+								}
 								onChange={e => setGameConfig({ PlayerMessage: e.target.value })}
 								disabled={!gameEdition}
-								placeholder={i18next.t('MODAL.START_QUIZ.PLAYER_MESSAGE_PLACEHOLDER')}
 							/>
 						</div>
 						<div className="filterContainer grow-labels">

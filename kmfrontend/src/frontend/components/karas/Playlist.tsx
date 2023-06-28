@@ -94,7 +94,7 @@ function Playlist(props: IProps) {
 	const virtuoso = useRef<any>(null);
 	const plaid = useRef<string>(getPlaylistInfo(props.side, context)?.plaid);
 
-	const quizRanking = context.globalState.settings.data.state.quiz && props.quizRanking;
+	const quizRanking = context.globalState.settings.data.state.quiz.running && props.quizRanking;
 
 	const publicPlaylistEmptied = () => {
 		if (getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.library) {
@@ -285,7 +285,7 @@ function Playlist(props: IProps) {
 				const jingle =
 					typeof songsBeforeJingle === 'number' &&
 					// Are jingles enabled?
-					!context.globalState.settings.data.state.quiz &&
+					!context.globalState.settings.data.state.quiz.running &&
 					context.globalState.settings.data.config.Playlist.Medias.Jingles.Enabled &&
 					// Use modulo to calculate each occurrence
 					(index - (playing + songsBeforeJingle)) %
@@ -294,7 +294,7 @@ function Playlist(props: IProps) {
 				const sponsor =
 					typeof songsBeforeSponsor === 'number' &&
 					// Are sponsors enabled?
-					!context.globalState.settings.data.state.quiz &&
+					!context.globalState.settings.data.state.quiz.running &&
 					context.globalState.settings.data.config.Playlist.Medias.Sponsors.Enabled &&
 					// Use modulo to calculate each occurrence
 					(index - (playing + songsBeforeSponsor)) %
@@ -757,7 +757,7 @@ function Playlist(props: IProps) {
 	const deleteCheckedKaras = async () => {
 		let url;
 		let dataApi;
-		const listKara = data.content.filter(a => a.checked);
+		const listKara = data?.content.filter(a => a.checked) || [];
 		if (listKara.length === 0) {
 			displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
 			return;

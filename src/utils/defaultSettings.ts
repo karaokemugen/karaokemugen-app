@@ -98,55 +98,6 @@ export const defaults: Config = {
 				Enabled: false,
 			},
 		},
-		QuizMode: {
-			EndGame: {
-				MaxScore: {
-					Enabled: false,
-					Score: 10,
-				},
-				MaxSongs: {
-					Enabled: true,
-					Songs: 30,
-				},
-				Duration: {
-					Enabled: true,
-					Minutes: 60,
-				},
-			},
-			Players: {
-				Twitch: false,
-				Guests: true,
-			},
-			TimeSettings: {
-				WhenToStartSong: 33,
-				GuessingTime: 30,
-				QuickGuessingTime: 15,
-				AnswerTime: 30,
-			},
-			Answers: {
-				Accepted: {
-					title: {
-						Enabled: true,
-						Points: 2,
-					},
-					series: {
-						Enabled: true,
-						Points: 1,
-					},
-				},
-				QuickAnswer: {
-					Enabled: true,
-					Points: 1,
-				},
-				SimilarityPercentageNeeded: 70,
-			},
-			Modifiers: {
-				Mute: false,
-				Blind: 'blur',
-				NoLyrics: false,
-			},
-			PlayerMessage: '',
-		},
 	},
 	Player: {
 		Display: {
@@ -297,7 +248,7 @@ export const configConstraints = {
 	'Karaoke.Poll.Enabled': { inclusion: bools },
 	'Karaoke.Quota.Type': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 2 } },
 	'Karaoke.Quota.FreeUpVotes': { inclusion: bools },
-	'Karaoke.Quota.FreeAutoTime': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 1 } },
+	'Karaoke.Quota.FreeAutoTime': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0 } },
 	'Karaoke.Quota.FreeUpVotesRequiredMin': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 1 } },
 	'Karaoke.Quota.FreeUpVotesRequiredPercent': {
 		numericality: { onlyInteger: true, greaterThanOrEqualTo: 1, lowerThanOrEqualTo: 100 },

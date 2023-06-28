@@ -25,7 +25,7 @@ interface IProps {
 function PublicHeader(props: IProps) {
 	const navigate = useNavigate();
 	const context = useContext(GlobalContext);
-	const isQuiz = context.globalState.settings.data.state.quiz;
+	const isQuiz = context.globalState.settings.data.state.quiz.running;
 	const [quizMode, setQuizMode] = useState<'guess' | 'answer' | 'waiting'>('waiting');
 	const [dropDownMenu, setDropDownMenu] = useState(false);
 	const [scoresDropDown, setScoresDropDown] = useState(false);
@@ -37,7 +37,7 @@ function PublicHeader(props: IProps) {
 	const score = useAsyncMemo<GameScore[]>(
 		async () => {
 			const score = await commandBackend('getGameScore', {
-				gamename: context.globalState.settings.data.state.quizGame,
+				gamename: context.globalState.settings.data.state.quiz.currentQuizGame,
 				login: context.globalState.auth.data.username,
 			});
 			return score ? (score as GameScore[]) : [];
@@ -220,7 +220,7 @@ function PublicHeader(props: IProps) {
 							) : null}
 							{context?.globalState.auth.data.role !== 'guest' ? (
 								<>
-									{!context.globalState.settings.data.state.quiz ? (
+									{!context.globalState.settings.data.state.quiz.running ? (
 										<div className="link">
 											<a href="/public/favorites" onClick={goToFavorites}>
 												<i className="fas fa-fw fa-star" /> {i18next.t('VIEW_FAVORITES')}

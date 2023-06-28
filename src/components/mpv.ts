@@ -30,7 +30,7 @@ import { getPromoMessage, next, prev } from '../services/player.js';
 import { notificationNextSong } from '../services/playlist.js';
 import { getSingleMedia } from '../services/playlistMedias.js';
 import { endPoll } from '../services/poll.js';
-import { getCurrentGame, getCurrentSongTimers } from '../services/quiz.js';
+import { getCurrentSongTimers } from '../services/quiz.js';
 import { getTagNameInLanguage } from '../services/tag.js';
 import { BackgroundType } from '../types/backgrounds.js';
 import { MpvCommand } from '../types/mpvIPC.js';
@@ -42,7 +42,7 @@ import { setDiscordActivity } from '../utils/discordRPC.js';
 import MpvIPC from '../utils/mpvIPC.js';
 import sentry from '../utils/sentry.js';
 import { getState, setState } from '../utils/state.js';
-import { exit, isShutdownInProgress } from './engine.js';
+import { isShutdownInProgress } from './engine.js';
 import Timeout = NodeJS.Timeout;
 
 type PlayerType = 'main' | 'monitor';
@@ -74,8 +74,6 @@ const playerState: PlayerState = {
 		quickGuess: 0,
 		revealTime: 0,
 	},
-
-	// Experimental modifiers
 	pitch: 0,
 	speed: 100,
 };
@@ -369,14 +367,14 @@ async function checkMpv() {
 		});
 		return;
 	}
-	if (!semver.satisfies(mpvVersion, requiredMPVVersion)) {
+	if (mpvVersion !== 'UNKNOWN' && !semver.satisfies(mpvVersion, requiredMPVVersion)) {
 		logger.error(
 			`mpv version detected is too old (${mpvVersion}). Upgrade your mpv from http://mpv.io to at least version ${requiredMPVVersion}`,
 			{ service }
 		);
 		logger.error(`mpv binary: ${state.binPath.mpv}`, { service });
-		logger.error('Exiting due to obsolete mpv version', { service });
-		await exit(1);
+		logger.error('Not starting due to obsolete mpv version', { service });
+		throw new Error('Obsolete mpv version');
 	}
 }
 
@@ -384,6 +382,8 @@ class Player {
 	mpv: MpvIPC;
 
 	configuration: any;
+
+	logFile: string;
 
 	options: MpvOptions;
 
@@ -406,11 +406,11 @@ class Player {
 		const state = getState();
 		const today = date();
 		const now = time().replaceAll(':', '.');
-
+		this.logFile = `mpv${options.monitor ? '-monitor' : ''}.${today}.${now}.log`;
 		const mpvArgs = [
 			'--keep-open=always',
 			'--osd-level=0',
-			`--log-file=${resolve(resolvedPath('Logs'), `mpv.${today}.${now}.log`)}`,
+			`--log-file=${resolve(resolvedPath('Logs'), this.logFile)}`,
 			`--hwdec=${conf.Player.HardwareDecoding}`,
 			`--volume=${+conf.Player.Volume}`,
 			'--no-config',
@@ -531,13 +531,13 @@ class Player {
 				position >= playerState.currentSong.duration - 15 &&
 				playerState.mediaType === 'song' &&
 				!playerState.nextSongNotifSent &&
-				!getState().quizMode
+				!getState().quiz.running
 			) {
 				playerState.nextSongNotifSent = true;
 				notificationNextSong();
 			}
-			if (getState().quizMode) {
-				const game = getCurrentGame(true);
+			if (getState().quiz.running) {
+				const game = getState().quiz;
 				if (game.running && game.currentSong.state === 'answer') {
 					this.control.displaySongInfo(playerState.currentSong.infos);
 				} else {
@@ -547,10 +547,10 @@ class Player {
 				// Display informations if timeposition is 8 seconds before end of song
 				position >= playerState.currentSong.duration - 8 &&
 				playerState.mediaType === 'song' &&
-				!getState().quizMode
+				!getState().quiz.running
 			) {
 				this.control.displaySongInfo(playerState.currentSong.infos);
-			} else if (position <= 8 && playerState.mediaType === 'song' && !getState().quizMode) {
+			} else if (position <= 8 && playerState.mediaType === 'song' && !getState().quiz.running) {
 				// Display informations if timeposition is 8 seconds after start of song
 				this.control.displaySongInfo(
 					playerState.currentSong.infos,
@@ -844,6 +844,16 @@ class Players {
 		}
 	}
 
+	async getmpvLog(type: PlayerType) {
+		try {
+			const logData = await fs.readFile(this.players[type].logFile, 'utf-8');
+			return logData.split('\n').slice(-100);
+		} catch (err) {
+			logger.error('Unable to get mpv log', { service, obj: err });
+			// Do not throw, we're already throwing up anyway
+		}
+	}
+
 	async exec(cmd: string | MpvCommand, args: any[] = [], onlyOn?: PlayerType, ignoreLock = false, shutdown = false) {
 		try {
 			const mpv = typeof cmd === 'object';
@@ -872,7 +882,8 @@ class Players {
 			await Promise.all(loads);
 		} catch (err) {
 			logger.error('mpvAPI (send)', { service, obj: err });
-			sentry.addErrorInfo('mpvLog', (await getMpvLog())?.join('\n'));
+			sentry.addErrorInfo('mpvLog', (await this.getmpvLog('main'))?.join('\n'));
+			if (this.players.monitor) sentry.addErrorInfo('mpvLog', (await this.getmpvLog('monitor'))?.join('\n'));
 			throw new Error(JSON.stringify(err));
 		}
 	}
@@ -897,7 +908,7 @@ class Players {
 	/** Progress bar on pause screens inbetween songs */
 	private tickProgressBar(nextTick: number, ticked: number, position: string) {
 		// 10 ticks
-		if (ticked <= 10 && ((getState().streamerPause && getState().pauseInProgress) || getState().quizMode)) {
+		if (ticked <= 10 && ((getState().streamerPause && getState().pauseInProgress) || getState().quiz.running)) {
 			if (this.progressBarTimeout) clearTimeout(this.progressBarTimeout);
 			let progressBar = '';
 			for (const _nothing of Array(ticked)) {
@@ -917,7 +928,7 @@ class Players {
 
 	/** Countdown */
 	private tickCountdown(position: string) {
-		if ((getState().streamerPause && getState().pauseInProgress) || getState().quizMode) {
+		if ((getState().streamerPause && getState().pauseInProgress) || getState().quiz.running) {
 			if (this.progressBarTimeout) clearTimeout(this.progressBarTimeout);
 			const timeLeft = Math.ceil(this.countdownTimer.getTimeLeft() / 1000);
 			this.messages.addMessage('countdown', `${position}{\\fscx250\\fscy250}${timeLeft}`, 'infinite');
@@ -1086,7 +1097,7 @@ class Players {
 		let mediaFile: string;
 		let subFile: string;
 		const options: Record<string, any> = {
-			'force-media-title': getState().quizMode ? 'Quiz!' : getSongTitle(song),
+			'force-media-title': getState().quiz.running ? 'Quiz!' : getSongTitle(song),
 		};
 		let onlineMedia = false;
 		const loadPromises = [
@@ -1169,7 +1180,7 @@ class Players {
 			playerState.currentMedia = null;
 			if (this.messages) {
 				this.messages.removeMessages(['poll', 'pauseScreen', 'quizRules']);
-				if (!getState().quizMode) this.displaySongInfo(song.infos, -1, false, song.warnings);
+				if (!getState().quiz.running) this.displaySongInfo(song.infos, -1, false, song.warnings);
 			}
 			await retry(() => this.exec({ command: ['loadfile', mediaFile, 'replace', options] }), {
 				retries: 3,
@@ -1197,8 +1208,8 @@ class Players {
 				title: getSongTitle(song),
 				source: getSongSeriesSingers(song) || i18n.t('UNKNOWN_ARTIST'),
 			});
-			if (getState().quizMode) {
-				this.progressBar(getConfig().Karaoke.QuizMode.TimeSettings.GuessingTime, '{\\an5}', 'countdown');
+			if (getState().quiz.running) {
+				this.progressBar(getState().quiz.settings.TimeSettings.GuessingTime, '{\\an5}', 'countdown');
 			}
 			return playerState;
 		} catch (err) {
@@ -1304,8 +1315,8 @@ class Players {
 		try {
 			playerState._playing = false; // This prevents the play/pause event to be triggered
 			await this.exec({ command: ['set_property', 'pause', true] });
-			if (getState().quizMode) {
-				const game = getCurrentGame(true);
+			if (getState().quiz.running) {
+				const game = getState().quiz;
 				if (game.running && game.currentSong) {
 					[
 						game.currentSong.quickGuessTimer,
@@ -1341,8 +1352,8 @@ class Players {
 			}
 			playerState._playing = true; // This prevents the play/pause event to be triggered
 			await this.exec({ command: ['set_property', 'pause', false] });
-			if (getState().quizMode) {
-				const game = getCurrentGame(true);
+			if (getState().quiz.running) {
+				const game = getState().quiz;
 				if (game.running && game.currentSong) {
 					[
 						game.currentSong.quickGuessTimer,
@@ -1708,19 +1719,6 @@ class Players {
 	stopAddASongMessage() {
 		if (this.intervalIDAddASong) clearInterval(this.intervalIDAddASong);
 		this.intervalIDAddASong = undefined;
-	}
-}
-
-/** Get last 100 lines of log */
-async function getMpvLog() {
-	try {
-		const today = date();
-		const logFile = resolve(resolvedPath('Logs'), `mpv.${today}.log`);
-		const logData = await fs.readFile(logFile, 'utf-8');
-		return logData.split('\n').slice(-100);
-	} catch (err) {
-		logger.error('Unable to get mpv log', { service, obj: err });
-		// Do not throw, we're already throwing up anyway
 	}
 }
 

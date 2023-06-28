@@ -42,14 +42,13 @@ import { getTwitchClient, initTwitch, stopTwitch } from '../utils/twitch.js';
 import { subRemoteUsers } from '../utils/userPubSub.js';
 import initFrontend from './frontend.js';
 
-let shutdownInProgress = false;
 let usageTime = 0;
 let usageTimeInterval;
 
 const service = 'Engine';
 
 export function isShutdownInProgress() {
-	return shutdownInProgress;
+	return getState().shutdownInProgress;
 }
 
 export async function initEngine() {
@@ -258,13 +257,14 @@ export async function updateBase(internet: boolean) {
 }
 
 export async function exit(rc = 0, update = false) {
-	if (shutdownInProgress) return;
+	// App Update need the app to be alive, so we're not shutting ti down completely if an update is requested
+	if (getState().shutdownInProgress) return;
 	logger.info('Shutdown in progress', { service });
-	shutdownInProgress = true;
+	setState({ shutdownInProgress: true });
 	clearInterval(usageTimeInterval);
 	closeAllWindows();
 	wipeDownloadQueue();
-	stopGame(false);
+	await stopGame(false);
 	try {
 		if (getState().player?.playerStatus) {
 			await quitmpv();

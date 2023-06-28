@@ -346,6 +346,7 @@ ${!mediafile.match(audioFileRegexp) ? `Video File: ${mediaPath}` : ''}
 					let content: string = await fs.readFile(lyricsPath, { encoding: 'utf8' });
 					content = setASSSectionRaw(content, 'Aegisub Project Garbage', garbageBlock, 1); // add the garbage at the second position (default behavior)
 					await fs.writeFile(lyricsPath, content);
+					break;
 				}
 			}
 		}

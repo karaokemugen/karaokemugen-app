@@ -58,7 +58,7 @@ export async function setPlaylistInfoRight(dispatch: Dispatch<PlaylistInfo>, pla
 			cookie !== null &&
 			(isNonStandardPlaylist(cookie) || playlistList.find(playlist => playlist.plaid === cookie))
 				? cookie
-				: playlistList.find(playlist => playlist.flag_current).plaid;
+				: playlistList.find(playlist => playlist.flag_current)?.plaid;
 	}
 	const playlist = await getPlaylistInfo(plaid);
 	if (playlist) {

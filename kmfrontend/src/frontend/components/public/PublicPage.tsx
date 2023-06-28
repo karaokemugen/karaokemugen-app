@@ -228,7 +228,7 @@ function PublicPage() {
 	) : (
 		<>
 			<PublicHeader onResize={top => setTop(top)} currentVisible={currentVisible} publicVisible={publicVisible} />
-			{!context.globalState.settings.data.state.quiz ? (
+			{!context.globalState.settings.data.state.quiz.running ? (
 				<PlayerBox mode="fixed" currentVisible={currentVisible} onResize={bottom => setBottom(bottom)} />
 			) : null}
 			<KmAppWrapperDecorator
@@ -252,7 +252,7 @@ function PublicPage() {
 						element={<ProfilModal scope="public" closeProfileModal={() => navigate(-1)} />}
 					/>
 					<Route path="/users" element={<UsersModal scope="public" closeModal={() => navigate(-1)} />} />
-					{!context.globalState.settings.data.state.quiz ? ( // Disable routes
+					{!context.globalState.settings.data.state.quiz.running ? ( // Disable routes
 						<>
 							<Route
 								path="/karaoke/:kid"
@@ -341,7 +341,7 @@ function PublicPage() {
 					<Route
 						index={true}
 						element={
-							context.globalState.settings.data.state.quiz ? (
+							context.globalState.settings.data.state.quiz.running ? (
 								<Navigate to="/public/quiz" />
 							) : (
 								<PublicHomepage
