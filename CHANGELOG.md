@@ -1,3 +1,36 @@
+# v7.1.13 - 28/06/2023
+
+This is a bugfix release (mostly)
+
+## New features
+
+-   Furigana is now shown in a kara detail's page within lyrics if they have any (like on songs from the kana collection)
+-
+
+## Changes
+
+-   Do not exit anymore if mpv version is obsolete
+-   Upgraded backend dependencies
+-   Quiz settings no longer use configuration file but the app's state instead (and the DB for long-term storage)
+-   Consider mediapath order when editing lyrics to pick the right media
+-   Disabled sentry during shutdown process
+
+## Fixes
+
+-   mpv logs sh ould now be forwarded to sentry upon mpv errors
+-   Fixed mastodon feeds
+-   Fixed macOS notarization
+-   Fixed connection info not displaying at th ebottom of the player screen
+-   Fixed playlist ID in public interface
+-   Fixed deleting checked karaoeks
+-       Fixed karalist issues
+-   Fixed current playlist search
+-   Fixed opposite playlist in karaline
+-   Fixed version selector's TypeError
+-   Fixed starting quiz with empty playlist
+-   Fixed displaying scores at the end of a quiz when playlist reaches its end
+-   Fixed automix with anime lists
+
 # v7.1.9 - 14/06/2023
 
 Most of the work on this release has already been backported in 7.0.x versions. Refer to these for more details.
