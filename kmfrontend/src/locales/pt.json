@@ -66,5 +66,6 @@
 	"DURATION_REMAINING": "restante",
 	"VERSION": "Versão",
 	"WEBAPPMODE_CLOSED_MESSAGE": "A interface está fechada, por favor aguarde.",
-	"MESSAGE": "Mensagem"
+	"MESSAGE": "Mensagem",
+	"WARNING": "Atenção!"
 }
