@@ -829,7 +829,7 @@
 			"DESCRIPTION": "Pit participants against each other in a blind test! Participants will have to guess the songs playing on the screen as quickly as possible. You can set up a new game or resume an existing one.",
 			"LOAD_GAME": "Load game",
 			"NEW_GAME": "New game",
-			"COPIED_GAME": "{{gameName}} (copy)",			
+			"COPIED_GAME": "{{gameName}} (copy)",
 			"LAST_PLAYED_GAME": "{{gameName}} (last launched game)",
 			"GAME_IN_PROGRESS": {
 				"SONG_COUNT_zero": "No song has played.",
@@ -846,7 +846,7 @@
 			"PLAYLIST": "Playlist used",
 			"END_GAME": {
 				"TITLE": "Game length",
-				"DESCRIPTION": "The game ends...",
+				"DESCRIPTION": "The game ends…",
 				"MAX_SCORE": "when a player reaches",
 				"MAX_SCORE_PLACEHOLDER": "10",
 				"POINTS": "points",
@@ -880,7 +880,7 @@
 				"VIEW_ALL_ANSWERS": "See all possible types",
 				"VIEW_LESS_ANSWERS": "See less possible types",
 				"TITLE": "Accepted answers",
-				"DESCRIPTION": "You can choose which answers are accepted (titles, singers, series, etc...) and how many points each answer type players earn for a good answer. You can also define a tolerance for typos. An auto-complete is available to people using the public interface.",
+				"DESCRIPTION": "You can choose which answers are accepted (titles, singers, series, etc…) and how many points each answer type players earn for a good answer. You can also define a tolerance for typos. An auto-complete is available to people using the public interface.",
 				"ANSWER_TITLE": "Title",
 				"TOLERANCE": "Typos tolerance",
 				"LAX": "Laxist",
