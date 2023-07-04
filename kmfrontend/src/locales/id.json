@@ -304,7 +304,8 @@
 			"ADDED_SONG_VISIBILITY_ADMIN_ON": "Lagu akan ditambahkan sebagai lagu misteri (kamu bisa menentukan label lagu di pengaturan)",
 			"LABELS_MYSTERY_SONGS_TOOLTIP": "Kamu bisa menyesuaikan bagaimana lagu misteri ditampilkan kepada publik",
 			"STREAM_TWITCH_OAUTH_TOKEN_GET": "Dapatkan Token OAuth Twitch kamu di sini",
-			"ADDED_SONG_VISIBILITY_PUBLIC": "Visibilitas permintaan lagu publik"
+			"ADDED_SONG_VISIBILITY_PUBLIC": "Visibilitas permintaan lagu publik",
+			"STREAM_TWITCH_TOOLTIP": "Tambah perintah ke pemilihan ketika jajak pendapat atau dapatkan lagu yang sedang diputar saat ini dengan !song"
 		},
 		"INTERFACE": {
 			"WEBAPPMODE_SHORT": "Mode antarmuka",
@@ -394,7 +395,7 @@
 		"REQUESTED_KARAOKES": "Lagu yang diminta",
 		"NEW_KARAOKES": "Lagu baru",
 		"KARA_VERSIONS": "Lagu ini tersedia dalam {{length}} versi, pilih yang kamu mau dan tambahkan ke daftar putar atau favorit kamu.",
-		"GET_LUCKY": "Mencoba Keberuntungan",
+		"GET_LUCKY": "Beruntung",
 		"CURRENT": "Lihat daftar putar saat ini",
 		"ANIME_LIST": "Anime saya"
 	},
@@ -839,7 +840,8 @@
 		"TYPE": "Jenis permintaan",
 		"NO_REPOSITORY_ENABLED": "Tidak ada repositori daring yang diaktifkan di mode pengelola",
 		"ONLINE_USER_REQUIRED": "Pengguna daring diperlukan untuk kotak masuk",
-		"SONG_DOWNLOADED_FROM_INBOX_FAILED": "Lagu tidak bisa diunduh dari kotak masuk!"
+		"SONG_DOWNLOADED_FROM_INBOX_FAILED": "Lagu tidak bisa diunduh dari kotak masuk!",
+		"DELETE": "Apakah kamu yakin kamu menghapus karaoke dari kotak masuk bersama berkasnya dari peladen?"
 	},
 	"ABOUT": {
 		"CONTRIBUTORS": "Karaoke dibuat oleh orang-orang yang hebat, seperti <1>{{contributors}}</1> misalnya.",
