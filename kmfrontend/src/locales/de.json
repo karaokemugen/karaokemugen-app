@@ -258,5 +258,10 @@
 	"SPEED_UP": "Schneller abspielen",
 	"SPEED_RESET": "Auf normale Geschwindigkeit zurücksetzen",
 	"SPEED_DOWN": "Langsamer abspielen",
-	"WARNING": "Warnung!"
+	"WARNING": "Warnung!",
+	"KARA": {
+		"SECTIONS": {
+			"TITLES": "Titel"
+		}
+	}
 }
