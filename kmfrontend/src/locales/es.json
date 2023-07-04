@@ -1366,7 +1366,7 @@
 		"USER_UNKNOWN": "Usuario conectado desconocido",
 		"ADMIN_CONVERT_ERROR": "La cuenta de \"admin\" no puede ser convertida a una cuenta en línea",
 		"POLL_VOTE_ERROR": "Esta canción no está en la encuesta",
-		"USER_ONLINE_NOINTERNET": "No puedes editar tu perfil ahora, tu servidor online no está funcionando",
+		"USER_ONLINE_NOINTERNET": "No puedes editar tu perfil ahora, tu servidor online no está funcionando.",
 		"NOT_GUEST": "Los invitados no pueden usar esta función",
 		"ERROR_READING_LOGS": "No se pueden leer los registros de eventos",
 		"SUBFILE_FORMAT_UNKOWN": "Formato de subtítulo desconocido",
