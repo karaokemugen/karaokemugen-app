@@ -96,7 +96,7 @@
 		"FAV": "Añadir a favoritos",
 		"TRANSFER_SELECT_KARA": "Transferir canciones seleccionadas",
 		"TRANSFER_SELECT_KARA_AFTER_PLAYING": "Transferir después de la canción actual",
-		"WHITELISTED": "Añadido a la lista blanca!",
+		"WHITELISTED": "Añadido!",
 		"ADD_WHITELIST": "Agregar a la lista blanca",
 		"FREE": "Liberar esta canción del límite del usuario",
 		"BLACKLISTED": "Añadido a la lista negra!",
@@ -462,7 +462,7 @@
 		"QUOTA_KARA_DESCRIPTION_other": "Solo puedes sugerir {{count}} canciones. Serás capaz de sugerir canciones una vez que el operador haya aceptado o rechazado tu sugerencia, o cuando tu canción se reproduzca en la pantalla.",
 		"RESTRICTED_DESCRIPTION": "El karaoke está en modo restringido, no puedes añadir canciones.",
 		"KARA_VERSIONS": "Esta canción está disponible en versiones de {{length}}, elige la que prefieres y añádela a tu playlist o a favoritos.",
-		"REQUESTED_KARAOKES": "Canciones solicitadas",
+		"REQUESTED_KARAOKES": "Canciones pedidas",
 		"ANIME_LIST": "Mis animes",
 		"CURRENT": "Ver la lista de reproducción actual"
 	},
@@ -496,7 +496,7 @@
 	},
 	"TOOLTIP_UPVOTE": "Votar por esta canción",
 	"MUTE_UNMUTE": "Silenciar/Desilenciar",
-	"CL_DELETE_CRITERIAS_PLAYLIST": "Borrar criterios del tipo '{{type}}' que contengan todas estas canciones:",
+	"CL_DELETE_CRITERIAS_PLAYLIST": "Borrar criterios del tipo '{{type}}' que contienen todas estas canciones :",
 	"KAROULETTE": {
 		"STATS_one": "{{count}} procesado ({{accepted}} / {{refused}})",
 		"PLAYLIST_REMAINING_one": "Tiempo restante de la lista actual: {{count}} minuto",
