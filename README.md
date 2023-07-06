@@ -141,7 +141,7 @@ Karaoke Mugen can use PostgreSQL in two ways :
 -   **Existing database cluster :** Connect to an existing PostgreSQL server (edit the `config.yml` file to point to the correct server and database). **This is the preferred way on Linux systems**.
 -   **Bundled PostgreSQL version :** If `bundledPostgresBinary` is set to `true` in `config.yml` then Karaoke Mugen will seek a `app/bin/postgresql` directory. Inside, you should have a complete PostgreSQL distribution including a `bin`, `lib` and `share` folders. Karaoke Mugen needs to find the `pg_ctl` binary in the `bin` folder.
 
-See [Database setup](#Database-setup) for more information.
+See [Database setup](#database-setup) for more information.
 
 ### Yarn
 
@@ -194,6 +194,7 @@ As a superuser on PostgreSQL, you need to create the database properly. Use the 
 CREATE DATABASE karaokemugen_app ENCODING 'UTF8';
 CREATE USER karaokemugen_app WITH ENCRYPTED PASSWORD 'musubi';
 GRANT ALL PRIVILEGES ON DATABASE karaokemugen_app TO karaokemugen_app;
+GRANT CREATE ON SCHEMA public TO public;
 ```
 
 Switch to the newly created database and enable the `unaccent` extension.
