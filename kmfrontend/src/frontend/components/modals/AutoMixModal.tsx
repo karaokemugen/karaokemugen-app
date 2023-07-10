@@ -47,11 +47,10 @@ function AutoMixModal(props: IProps) {
 
 	const onClick = async () => {
 		if (
-			limitNumber === 0 ||
-			(userFavoritesList.length === 0 &&
-				userAnimeList.length === 0 &&
-				tagList.length === 0 &&
-				yearList.length === 0)
+			userFavoritesList.length === 0 &&
+			userAnimeList.length === 0 &&
+			tagList.length === 0 &&
+			yearList.length === 0
 		)
 			return;
 		const data: AutoMixParams = {

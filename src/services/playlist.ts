@@ -1745,12 +1745,11 @@ export async function createAutoMix(params: AutoMixParams, username: string): Pr
 			username
 		);
 		// Cut playlist after duration/number of songs
-		if (params.limitType) {
+		if (params.limitNumber) {
 			balancedList = await trimPlaylist(balancedList, params.limitNumber, params.limitType);
 		}
 		// Let's reshuffle normally now that the playlist is trimmed.
 		balancedList = shuffle(balancedList);
-
 		await addKaraToPlaylist({
 			kids: balancedList.map(k => k.kid),
 			requester: username,
