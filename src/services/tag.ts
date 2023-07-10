@@ -205,7 +205,7 @@ export async function editTag(
 			throw { code: 409, msg: 'Tag repository cannot be modified. Use copy function instead' };
 		}
 		tagObj = trimTagData(tagObj);
-		tagObj.tagfile = defineTagFilename(tagObj);
+		tagObj.tagfile = defineTagFilename(tagObj, oldTag);
 		await updateTag(tagObj);
 		if (opts.writeFile) {
 			// Try to find old tag
