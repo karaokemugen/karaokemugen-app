@@ -1,5 +1,6 @@
 {
 	"singleQuote": true,
 	"useTabs": true,
-	"arrowParens": "avoid"
+	"arrowParens": "avoid",
+	"trailingComma": "es5"
 }

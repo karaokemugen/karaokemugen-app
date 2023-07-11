@@ -68,7 +68,7 @@ async function fetchFeed(url: string, name: string): Promise<Feed> {
 			feed.rss.channel.item = feed.rss.channel.item.filter(
 				(item: any) =>
 					!item.description._text.includes('#<span>KaraokeMugen') &&
-					!item.description._text.includes('#<span>Karaoke'),
+					!item.description._text.includes('#<span>Karaoke')
 			);
 		} else {
 			feed.feed.entry.forEach((element: any) => {

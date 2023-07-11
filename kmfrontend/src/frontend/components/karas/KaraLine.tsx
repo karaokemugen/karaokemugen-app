@@ -226,7 +226,7 @@ function KaraLine(props: IProps) {
 									: getTagInLocale(context?.globalState.settings.data, tag, props.i18nTag).i18n}
 							</div>
 						);
-					}),
+					})
 				);
 			}
 		}
@@ -262,7 +262,7 @@ function KaraLine(props: IProps) {
 					leftKaraMenu={element.left}
 					transferKara={transferKara}
 					closeKaraMenu={closeKaraMenu}
-				/>,
+				/>
 			);
 			setKaraMenu(true);
 		}
@@ -373,7 +373,7 @@ function KaraLine(props: IProps) {
 											getTagInLocale(
 												context?.globalState.settings.data,
 												props.kara.langs[0],
-												props.i18nTag,
+												props.i18nTag
 											).i18n
 										}
 									>
@@ -389,7 +389,7 @@ function KaraLine(props: IProps) {
 									{getTitleInLocale(
 										context.globalState.settings.data,
 										props.kara.titles,
-										props.kara.titles_default_language,
+										props.kara.titles_default_language
 									)}
 									{downloadIcon()}
 									{props.kara.warnings?.length > 0 ? (
@@ -402,8 +402,8 @@ function KaraLine(props: IProps) {
 															getTagInLocale(
 																context?.globalState.settings.data,
 																t,
-																props.i18nTag,
-															).i18n,
+																props.i18nTag
+															).i18n
 													)
 													.join(', '),
 											})}
@@ -417,7 +417,7 @@ function KaraLine(props: IProps) {
 											getTagInLocale(
 												context?.globalState.settings.data,
 												props.kara.songtypes[0],
-												props.i18nTag,
+												props.i18nTag
 											).i18n
 										}
 									>
@@ -481,8 +481,8 @@ function KaraLine(props: IProps) {
 															getTagInLocale(
 																context?.globalState.settings.data,
 																t,
-																props.i18nTag,
-															).i18n,
+																props.i18nTag
+															).i18n
 													)
 													.join(', '),
 											})}

@@ -43,7 +43,7 @@ const builder: MenuItemBuilderFunction = options => {
 				click: async () => {
 					const state = getState();
 					clipboard.writeText(
-						`http://localhost:${state.frontendPort}/chibiPlaylist?admpwd=${await generateAdminPassword()}`,
+						`http://localhost:${state.frontendPort}/chibiPlaylist?admpwd=${await generateAdminPassword()}`
 					);
 				},
 				visible: !isReduced,

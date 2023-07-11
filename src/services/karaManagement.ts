@@ -59,7 +59,7 @@ export async function deleteKara(
 	kids: string[],
 	refresh = true,
 	deleteFiles = { media: true, kara: true },
-	batch = false,
+	batch = false
 ) {
 	const parents: Family[] = [];
 	const karas = await selectAllKaras({
@@ -71,7 +71,7 @@ export async function deleteKara(
 		if (kara.download_status === 'DOWNLOADED' && deleteFiles.media) {
 			try {
 				await fs.unlink(
-					(await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', kara.repository)))[0],
+					(await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', kara.repository)))[0]
 				);
 			} catch (err) {
 				logger.warn(`Non fatal: Removing mediafile ${kara.mediafile} failed`, { service, obj: err });
@@ -80,7 +80,7 @@ export async function deleteKara(
 		if (deleteFiles.kara) {
 			try {
 				await fs.unlink(
-					(await resolveFileInDirs(kara.karafile, resolvedPathRepos('Karaokes', kara.repository)))[0],
+					(await resolveFileInDirs(kara.karafile, resolvedPathRepos('Karaokes', kara.repository)))[0]
 				);
 			} catch (err) {
 				logger.warn(`Non fatal: Removing karafile ${kara.karafile} failed`, { service, obj: err });
@@ -88,7 +88,7 @@ export async function deleteKara(
 			if (kara.subfile) {
 				try {
 					await fs.unlink(
-						(await resolveFileInDirs(kara.subfile, resolvedPathRepos('Lyrics', kara.repository)))[0],
+						(await resolveFileInDirs(kara.subfile, resolvedPathRepos('Lyrics', kara.repository)))[0]
 					);
 				} catch (err) {
 					logger.warn(`Non fatal: Removing subfile ${kara.subfile} failed`, { service, obj: err });
@@ -141,20 +141,20 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 			tasks.push(
 				editKara({
 					kara: karaFileData,
-				}),
+				})
 			);
 		}
 		tasks.push(writeKara(resolve(resolvedPathRepos('Karaokes', repoName)[0], kara.karafile), karaFileData));
 		const mediaFiles = await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', oldRepoName));
 		tasks.push(
-			copy(mediaFiles[0], resolve(resolvedPathRepos('Medias', repoName)[0], kara.mediafile), { overwrite: true }),
+			copy(mediaFiles[0], resolve(resolvedPathRepos('Medias', repoName)[0], kara.mediafile), { overwrite: true })
 		);
 		if (kara.subfile) {
 			const lyricsFiles = await resolveFileInDirs(kara.subfile, resolvedPathRepos('Lyrics', oldRepoName));
 			tasks.push(
 				copy(lyricsFiles[0], resolve(resolvedPathRepos('Lyrics', repoName)[0], kara.subfile), {
 					overwrite: true,
-				}),
+				})
 			);
 		}
 		for (const tid of kara.tid) {
@@ -224,7 +224,7 @@ export async function batchEditKaras(plaid: string, action: 'add' | 'remove', ti
 					{
 						kara: formatKaraV4(kara),
 					},
-					false,
+					false
 				);
 				profile('editKaraBatch');
 			} else {
@@ -247,7 +247,7 @@ export async function integrateKaraFile(
 	kara: KaraFileV4,
 	deleteOldFiles = true,
 	refresh = false,
-	downloadVideo = true,
+	downloadVideo = true
 ): Promise<string> {
 	logger.debug(`Integrating kara ${kara.data.kid} (${basename(file)})`, {
 		service,
@@ -273,9 +273,9 @@ export async function integrateKaraFile(
 					(
 						await resolveFileInDirs(
 							oldKara.old_mediafile,
-							resolvedPathRepos('Medias', oldKara.old_repository),
+							resolvedPathRepos('Medias', oldKara.old_repository)
 						)
-					)[0],
+					)[0]
 				);
 			} catch (err) {
 				logger.warn(`Failed to remove ${oldKara.old_mediafile}, does it still exist?`, { service });
@@ -287,9 +287,9 @@ export async function integrateKaraFile(
 					(
 						await resolveFileInDirs(
 							oldKara.old_subfile,
-							resolvedPathRepos('Lyrics', oldKara.old_repository),
+							resolvedPathRepos('Lyrics', oldKara.old_repository)
 						)
-					)[0],
+					)[0]
 				);
 			} catch (err) {
 				logger.warn(`Failed to remove ${oldKara.old_subfile}, does it still exist?`, { service });
@@ -306,13 +306,13 @@ export async function integrateKaraFile(
 					mediasize: karaData.medias[0].filesize,
 				},
 			],
-			mediaDownload === 'updateOnly',
+			mediaDownload === 'updateOnly'
 		);
 	}
 	// Do not create image previews if running this from the command line.
 	if (!getState().opt.generateDB)
 		createImagePreviews(await getKaras({ q: `k:${karaData.data.kid}`, ignoreCollections: true }), 'single').catch(
-			() => {},
+			() => {}
 		);
 	return karaData.data.kid;
 }
