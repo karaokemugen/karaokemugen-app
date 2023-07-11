@@ -238,6 +238,7 @@
 		"ANIMELISTS_OF": "{{name}}'s animelist",
 		"FAVOURITES": "Favorites of",
 		"FAVOURITES_OF": "{{name}}'s favorites",
+		"ALL_LOGGED_USERS": "<All logged in users>",
 		"LIMIT": "Limit the list to…",
 		"LIMIT_TYPE": {
 			"DURATION": "Duration",
