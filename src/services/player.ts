@@ -256,9 +256,11 @@ async function setVolumePlayer(volume: number) {
 	// Save the volume in configuration
 	setConfig({ Player: { Volume: volume } });
 }
+
 async function setPitchPlayer(pitch: number) {
 	await mpv.setModifiers({ Pitch: pitch });
 }
+
 async function setSpeedPlayer(speed: number) {
 	await mpv.setModifiers({ Speed: speed });
 }

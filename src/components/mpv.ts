@@ -1510,22 +1510,22 @@ class Players {
 				this.setBlur(false);
 			}
 
-			if (options.Speed && options.Pitch) {
+			if (typeof options.Speed === 'number' && typeof options.Pitch === 'number') {
 				throw new Error("Pitch and speed can't currently be set at the same time");
 			}
-			if (options.Pitch) {
+			if (typeof options.Pitch === 'number') {
 				const paramSpeed = 1.0 + options.Pitch / 16.0;
 				await this.exec({ command: ['set_property', 'audio-pitch-correction', 'no'] });
 				await this.exec({ command: ['set_property', 'af', `scaletempo:scale=1/${paramSpeed}`] });
 				await this.exec({ command: ['set_property', 'speed', paramSpeed] });
 				options.Speed = 100; // Reset speed
-			} else if (options.Speed) {
+			} else if (typeof options.Speed === 'number') {
 				await this.exec({ command: ['set_property', 'audio-pitch-correction', 'yes'] });
 				await this.exec({ command: ['set_property', 'af', 'loudnorm'] });
 				await this.exec({ command: ['set_property', 'speed', options.Speed / 100] });
 				options.Pitch = 0; // Reset pitch
 			}
-			if (options.Pitch || options.Speed) {
+			if (typeof options.Pitch === 'number' || typeof options.Speed === 'number') {
 				playerState.pitch = options.Pitch || playerState.pitch;
 				playerState.speed = options.Speed || playerState.speed;
 				logger.info(`Set audio modifiers to: pitch ${playerState.pitch}, speed ${playerState.speed}`, {
