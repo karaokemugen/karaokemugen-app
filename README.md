@@ -194,7 +194,6 @@ As a superuser on PostgreSQL, you need to create the database properly. Use the 
 CREATE DATABASE karaokemugen_app ENCODING 'UTF8';
 CREATE USER karaokemugen_app WITH ENCRYPTED PASSWORD 'musubi';
 GRANT ALL PRIVILEGES ON DATABASE karaokemugen_app TO karaokemugen_app;
-GRANT CREATE ON SCHEMA public TO public;
 ```
 
 Switch to the newly created database and enable the `unaccent` extension.
@@ -202,6 +201,7 @@ Switch to the newly created database and enable the `unaccent` extension.
 ```SQL
 \c karaokemugen_app
 CREATE EXTENSION unaccent;
+GRANT CREATE ON SCHEMA public TO public;
 ```
 
 All done!
