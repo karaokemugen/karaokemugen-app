@@ -26,7 +26,7 @@ import { emitWS } from '../lib/utils/ws.js';
 import { getBackgroundAndMusic } from '../services/backgrounds.js';
 import { getSongSeriesSingers, getSongTitle } from '../services/kara.js';
 import { playerEnding } from '../services/karaEngine.js';
-import { getPromoMessage, next, prev } from '../services/player.js';
+import { getPromoMessage, next, pausePlayer, playPlayer, prev } from '../services/player.js';
 import { notificationNextSong } from '../services/playlist.js';
 import { getSingleMedia } from '../services/playlistMedias.js';
 import { endPoll } from '../services/poll.js';
@@ -44,6 +44,7 @@ import sentry from '../utils/sentry.js';
 import { getState, setState } from '../utils/state.js';
 import { isShutdownInProgress } from './engine.js';
 import Timeout = NodeJS.Timeout;
+import { emit } from '../lib/utils/pubsub.js';
 
 type PlayerType = 'main' | 'monitor';
 
@@ -579,6 +580,7 @@ class Player {
 				playerState.songNearEnd = true;
 				endPoll();
 			}
+			emit('playerPositionUpdated', position);
 			emitPlayerState();
 		}
 	}
@@ -634,18 +636,11 @@ class Player {
 					} else if (message.args[0] === 'seek') {
 						await this.control.seek(+message.args[1]);
 					} else if (message.args[0] === 'pause' && playerState.playerStatus !== 'stop') {
-						const playing = playerState.playing;
-						logger.debug(
-							`${playing ? 'Paused' : 'Resumed'} event triggered on ${
-								this.options.monitor ? 'monitor' : 'main'
-							}`,
-							{ service }
-						);
-						playerState._playing = !playing;
-						playerState.playing = !playing;
-						playerState.playerStatus = playing ? 'pause' : 'play';
-						this.control.exec({ command: ['set_property', 'pause', playing] });
-						emitPlayerState();
+						if (playerState.playerStatus === 'pause') {
+							playPlayer();
+						} else {
+							pausePlayer();
+						}
 					} else if (message.args[0] === 'subs') {
 						this.control.setSubs(!playerState.showSubs);
 					}
