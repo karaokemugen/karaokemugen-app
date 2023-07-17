@@ -81,6 +81,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 			SendStats: values.SendStats,
 			BaseDir: values.BaseDir,
 			Update: values.Update,
+			NoMediaDownloadsAtAll: values.NoMediaDownloadsAtAll,
 			AutoMediaDownloads: values.AutoMediaDownloads,
 			MaintainerMode: values.MaintainerMode,
 			Path: {
@@ -133,6 +134,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 					SendStats: this.props.repository?.SendStats,
 					AutoMediaDownloads: this.props.repository?.AutoMediaDownloads,
 					MaintainerMode: this.props.repository?.MaintainerMode,
+					NoMediaDownloadsAtAll: this.props.repository?.NoMediaDownloadsAtAll,
 					BaseDir: this.props.repository?.BaseDir,
 					PathMedias: this.props.repository?.Path.Medias,
 					GitURL: this.props.repository?.Git?.URL,
@@ -219,6 +221,21 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 					name="Update"
 				>
 					<Checkbox onChange={e => this.setState({ update: e.target.checked })} />
+				</Form.Item>
+				<Form.Item
+					label={
+						<span>
+							{i18next.t('REPOSITORIES.NO_MEDIA_DOWNLOADS_AT_ALL')}&nbsp;
+							<Tooltip title={i18next.t('REPOSITORIES.NO_MEDIA_DOWNLOADS_AT_ALL_TOOLTIP')}>
+								<QuestionCircleOutlined />
+							</Tooltip>
+						</span>
+					}
+					labelCol={{ flex: '0 1 300px' }}
+					valuePropName="checked"
+					name="NoMediaDownloadsAtAll"
+				>
+					<Checkbox />
 				</Form.Item>
 				<Form.Item
 					label={

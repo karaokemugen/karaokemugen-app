@@ -154,10 +154,20 @@ export function resumeQueue() {
 }
 
 export async function checkMediaAndDownload(plcs: MediaDownloadCheck[], updateOnly = false) {
+	const mediasToCheck: MediaDownloadCheck[] = [];
+	for (const plc of plcs) {
+		const repo = getRepo(plc.repository);
+		if (!repo.NoMediaDownloadsAtAll) {
+			mediasToCheck.push(plc);
+		} else {
+			logger.info(`Media ${plc.mediafile} will not be downloaded, repository disallows downloads`);
+		}
+	}
+	if (mediasToCheck.length === 0) return;
 	const mapper = async (plc: MediaDownloadCheck) => {
 		return checkMediaAndDownloadSingleKara(plc, updateOnly);
 	};
-	await parallel(plcs, mapper, {
+	await parallel(mediasToCheck, mapper, {
 		stopOnError: false,
 		concurrency: 32,
 	});

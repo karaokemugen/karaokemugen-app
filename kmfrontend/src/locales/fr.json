@@ -1350,6 +1350,8 @@
 		"ONLINE": "En ligne",
 		"UPDATE": "Mise à jour automatique",
 		"UPDATE_TOOLTIP": "Si désactivé, le dépôt ne sera jamais mis à jour par l'application.",
+		"NO_MEDIA_DOWNLOADS_AT_ALL": "Ne télécharger aucun média",
+		"NO_MEDIA_DOWNLOADS_AT_ALL_TOOLTIP": "Si un média manque en local, il sera streamé uniquement depuis le dépôt distant. Ceci n'est PAS recommandé. Utilisez à vos risques et périls.",
 		"ENABLED": "Actif",
 		"SENDSTATS": "Envoyer des statistiques",
 		"SENDSTATS_TOOLTIP": "Chansons jouées, demandées, et sessions",
