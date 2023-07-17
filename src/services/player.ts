@@ -8,7 +8,7 @@ import { updatePlaylistLastEditTime, updatePLCVisible } from '../dao/playlist.js
 import { APIMessageType } from '../lib/types/frontend.js';
 import { getConfig, setConfig } from '../lib/utils/config.js';
 import logger, { profile } from '../lib/utils/logger.js';
-import { on } from '../lib/utils/pubsub.js';
+import { emit, on } from '../lib/utils/pubsub.js';
 import { emitWS } from '../lib/utils/ws.js';
 import { BackgroundType } from '../types/backgrounds.js';
 import { MpvHardwareDecodingOptions } from '../types/mpvIPC.js';
@@ -160,6 +160,7 @@ export async function playPlayer(now?: boolean) {
 		await mpv.resume();
 	}
 	setState({ pauseInProgress: false });
+	emit('playerStatusUpdated', 'Playing');
 	profile('Play');
 }
 
@@ -189,6 +190,7 @@ export async function stopPlayer(now = true, endOfPlaylist = false) {
 		if (getState().quiz.running) {
 			mpv.messages.clearMessages();
 		}
+		emit('playerStatusUpdated', 'Stopped');
 	} else if (!getState().stopping) {
 		logger.info('Karaoke stopping after current song', { service });
 		setState({ stopping: true });
@@ -231,6 +233,7 @@ export async function prepareClassicPauseScreen() {
 export async function pausePlayer() {
 	await mpv.pause();
 	logger.info('Karaoke paused', { service });
+	emit('playerStatusUpdated', 'Paused');
 }
 
 async function mutePlayer() {
@@ -243,18 +246,21 @@ async function unmutePlayer() {
 	logger.info('Player unmuted', { service });
 }
 
-async function seekPlayer(delta: number) {
+export async function seekPlayer(delta: number) {
+	emit('changePosition', getState().player.timeposition + delta);
 	await mpv.seek(delta);
 }
 
-async function goToPlayer(seconds: number) {
+export async function goToPlayer(seconds: number) {
+	emit('changePosition', seconds);
 	await mpv.goTo(seconds);
 }
 
-async function setVolumePlayer(volume: number) {
+export async function setVolumePlayer(volume: number) {
 	await mpv.setVolume(volume);
 	// Save the volume in configuration
 	setConfig({ Player: { Volume: volume } });
+	emit('playerVolumeUpdated', volume);
 }
 
 async function setPitchPlayer(pitch: number) {

@@ -10,6 +10,7 @@ import { DBPLC } from '../lib/types/database/playlist.js';
 import { getConfig, resolvedPath } from '../lib/utils/config.js';
 import { fileExists } from '../lib/utils/files.js';
 import logger, { profile } from '../lib/utils/logger.js';
+import { emit } from '../lib/utils/pubsub.js';
 import { emitWS } from '../lib/utils/ws.js';
 import { CurrentSong } from '../types/playlist.js';
 import { adminToken } from '../utils/constants.js';
@@ -68,6 +69,7 @@ export async function playSingleSong(kid?: string, randomPlaying = false) {
 		writeStreamFiles('song_name');
 		writeStreamFiles('requester');
 		setState({ singlePlay: !randomPlaying, randomPlaying });
+		emit('newSong', current);
 	} catch (err) {
 		logger.error('Error during song playback', { service, obj: err });
 		emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYER_PLAY', err));
@@ -237,6 +239,7 @@ export async function playCurrentSong(now: boolean) {
 			await updatePlaylistDuration(kara.plaid);
 			updatePlaylistLastEditTime(kara.plaid);
 			emitWS('playlistInfoUpdated', kara.plaid);
+			emit('newSong', kara);
 			if (conf.Karaoke.Poll.Enabled && !conf.Karaoke.StreamerMode.Enabled) startPoll();
 		} catch (err) {
 			logger.error('Error during song playback', { service, obj: err });
