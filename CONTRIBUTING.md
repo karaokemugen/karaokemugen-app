@@ -290,3 +290,17 @@ yarn postgrator
 ```
 
 To create a migration, you need to create two SQL files in `migrations` which have the same name with `do` and `undo` version of the files. Look at the other files provided already. We usually skip the `undo` files because of laziness and because we never go back on a migration anyway.
+
+## Tips & Tricks
+
+### Flatpak
+
+When debugging flatpak, you can safely just copy over the `app.asar` file from the backend and the built `kmfrontend/build` directory over inside the flatpak folder and retry your app with changes.
+
+```
+yarn packer
+cp packages/linux-unpacked/resources/app.asar ~/.local/share/flatpak/app/moe.karaokes.mugen/current/active/files/km/resources/app.asar
+flatpak run moe.karaokes.mugen
+```
+
+You can put this on one line for easier retrying.
