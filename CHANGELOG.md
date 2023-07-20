@@ -1,3 +1,30 @@
+# v7.1.17 - 20/07/2023
+
+This is mainly a bugfix release
+
+## New features
+
+-   Added option in repository settings to never download any media during normal use. If this is turned on, KM will only stream from kara.moe instead of downloading songs. Be aware this may cause issues if your database isn't up to date.
+-   "All users" can now be used in favorites/anilist criterias when creating an Automix
+
+## Changes
+
+-   Repository isn't a mandatory property in tag and kara files anymore
+-   Automix limits are now optional
+-   Updated translations
+-   Changed CTRL+A shortcut to something else
+
+## Fixes
+
+-   Fixed flatpak for Steam Deck users (added libs that were missing for mpv)
+-   Fixed README on SQL setup for Postgres 15+
+-   Files won't be renamed on WIndows if only the case changes
+-   Fixed news feed if one of the feeds is unavailable
+
+## Misc
+
+-   Upgraded backend dependencies
+
 # v7.1.13 - 28/06/2023
 
 This is a bugfix release (mostly)
@@ -23,7 +50,7 @@ This is a bugfix release (mostly)
 -   Fixed connection info not displaying at th ebottom of the player screen
 -   Fixed playlist ID in public interface
 -   Fixed deleting checked karaoeks
--       Fixed karalist issues
+-         Fixed karalist issues
 -   Fixed current playlist search
 -   Fixed opposite playlist in karaline
 -   Fixed version selector's TypeError
