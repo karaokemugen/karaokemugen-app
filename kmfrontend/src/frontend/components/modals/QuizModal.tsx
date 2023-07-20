@@ -146,12 +146,16 @@ export default function QuizModal(props: IProps) {
 				}
 			}
 		}
-		await commandBackend('startGame', {
-			gamename: gameName,
-			playlist: gamePlaylist,
-			settings,
-		});
-		closeModalWithContext();
+		try {
+			await commandBackend('startGame', {
+				gamename: gameName,
+				playlist: gamePlaylist,
+				settings,
+			});
+			closeModalWithContext();
+		} catch (e) {
+			// already display
+		}
 	};
 
 	const continueGame = async () => {

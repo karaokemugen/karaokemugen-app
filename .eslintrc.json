@@ -63,6 +63,7 @@
 		"no-throw-literal": 0,
 		"no-trailing-spaces": 0,
 		"no-underscore-dangle": 0,
+		"no-unsafe-finally": 0,
 		"no-unsafe-optional-chaining": [
 			"error",
 			{

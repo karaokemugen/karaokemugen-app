@@ -35,7 +35,6 @@ export default function playlistsController(router: SocketIOApp) {
 		await runChecklist(socket, req);
 		const validationErrors = check(req.body, {
 			filters: { presence: true },
-			limitNumber: { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0 } },
 		});
 		if (!validationErrors) {
 			// No errors detected

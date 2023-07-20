@@ -71,9 +71,7 @@ export async function deleteKara(
 		if (kara.download_status === 'DOWNLOADED' && deleteFiles.media) {
 			try {
 				await fs.unlink(
-					(
-						await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', kara.repository))
-					)[0]
+					(await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', kara.repository)))[0]
 				);
 			} catch (err) {
 				logger.warn(`Non fatal: Removing mediafile ${kara.mediafile} failed`, { service, obj: err });
@@ -82,9 +80,7 @@ export async function deleteKara(
 		if (deleteFiles.kara) {
 			try {
 				await fs.unlink(
-					(
-						await resolveFileInDirs(kara.karafile, resolvedPathRepos('Karaokes', kara.repository))
-					)[0]
+					(await resolveFileInDirs(kara.karafile, resolvedPathRepos('Karaokes', kara.repository)))[0]
 				);
 			} catch (err) {
 				logger.warn(`Non fatal: Removing karafile ${kara.karafile} failed`, { service, obj: err });
@@ -92,9 +88,7 @@ export async function deleteKara(
 			if (kara.subfile) {
 				try {
 					await fs.unlink(
-						(
-							await resolveFileInDirs(kara.subfile, resolvedPathRepos('Lyrics', kara.repository))
-						)[0]
+						(await resolveFileInDirs(kara.subfile, resolvedPathRepos('Lyrics', kara.repository)))[0]
 					);
 				} catch (err) {
 					logger.warn(`Non fatal: Removing subfile ${kara.subfile} failed`, { service, obj: err });
@@ -255,12 +249,11 @@ export async function integrateKaraFile(
 	refresh = false,
 	downloadVideo = true
 ): Promise<string> {
-	const karaFile = basename(file);
-	logger.debug(`Integrating kara ${kara.data.kid} (${basename(karaFile)})`, {
+	logger.debug(`Integrating kara ${kara.data.kid} (${basename(file)})`, {
 		service,
 		obj: kara.data.tags,
 	});
-	const karaData = await getDataFromKaraFile(karaFile, kara, { media: true, lyrics: true });
+	const karaData = await getDataFromKaraFile(file, kara, { media: true, lyrics: true });
 	const mediaDownload = getRepo(karaData.data.repository).AutoMediaDownloads;
 	const oldKara = await createKaraInDB(karaData, { refresh });
 	if (deleteOldFiles && oldKara.old_karafile) {
@@ -268,7 +261,7 @@ export async function integrateKaraFile(
 			const oldKaraFile = (
 				await resolveFileInDirs(oldKara.old_karafile, resolvedPathRepos('Karaokes', oldKara.old_repository))
 			)[0];
-			if (oldKara.old_karafile !== karaData.meta.karaFile) {
+			if (oldKara.old_karafile !== basename(karaData.meta.karaFile)) {
 				await fs.unlink(oldKaraFile);
 			}
 		} catch (err) {

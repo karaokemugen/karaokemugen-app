@@ -4,7 +4,60 @@
 	"AND": "e",
 	"CANCEL": "Cancellare",
 	"DETAILS": {
-		"YEAR": "Anno"
+		"YEAR": "Anno",
+		"DURATION": "Durazione"
 	},
-	"VERSION": "Versione"
+	"VERSION": "Versione",
+	"NOT_FOUND_PAGE": {
+		"404_2": "Niente panico, possiamo aiutarti.",
+		"404_3": "Tu sei qua",
+		"404_4": "Ritorni a casa",
+		"404": "Perso in Karaoke Mugen?"
+	},
+	"MUTE_UNMUTE": "muto/riattiva",
+	"SHOW_SUBS": "Mostra i testi sullo schermo",
+	"DURATION_REMAINING": "Remanente",
+	"STOP_AFTER": "Fermi doppo la canzone currente",
+	"PREVIOUS_SONG": "Canzone precedente",
+	"INLINE_TAG": {
+		"SEARCH": "Karaoke con {{tag}}",
+		"COUNT_other": "{{count}} karaoke",
+		"COUNT_one": "{{count}} Karaoke"
+	},
+	"PLAYLIST_HEADER": {
+		"ACTIVE_FILTER": "Filter attive",
+		"FILTERS": "Filteri"
+	},
+	"LOGIN_MANDATORY": "Il login è obbligatorio",
+	"NEXT_SONG": "Prossima canzone",
+	"PASSWORD_DIFFERENT": "le passwords non corrispondono",
+	"STOP_NOW": "fermi ORA! (E pericolozo!)",
+	"MESSAGE": "Messago",
+	"SECURITY_CODE_MANDATORY": "Il codice di sicurezza è obbligatorio per creare un account operatore",
+	"PASSWORD_MANDATORY": "Il password e obligatorio",
+	"SELECT_PLACEHOLDER": "Seleziona una lista",
+	"PASSWORD": "Password (minimo 8 caratteri)",
+	"PASSWORDCONF": "Confirmazione del' password",
+	"NEW_PASSWORD": "Nuovo password",
+	"PLAYLISTS": {
+		"LIBRARY": "Bibblioteca",
+		"FAVORITES": "Preferiti"
+	},
+	"SEARCH": "Cerci",
+	"SUBMIT": "Salva",
+	"SHUTDOWN_POPUP": "Connezione con Karaoke Mugen perso",
+	"SHUTDOWN": "Chuidi Karaoke Mugen",
+	"HIDE_SUBS": "Nascondi i testi sullo schermo",
+	"REWIND": "Riavvolgi il nastro",
+	"PLAY_PAUSE": "Play/Pausa",
+	"ADMIN_HEADER": {
+		"QUICK_ACCESS": "Accesso veloce"
+	},
+	"ADVANCED": {
+		"PLAYLIST_COMMANDS": "Commandi di lista",
+		"ADD_ALL": "Agguinga tutti i canzoni su un altro lista"
+	},
+	"VOLUME_LEVEL": "Adjusta volume",
+	"OPTIONS": "Opzioni",
+	"WEBAPPMODE_CLOSED_MESSAGE": "L'interfaccia è chiusa, aspetta."
 }

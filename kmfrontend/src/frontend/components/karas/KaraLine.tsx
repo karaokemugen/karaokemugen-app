@@ -78,7 +78,7 @@ function KaraLine(props: IProps) {
 
 	const deleteKara = async () => {
 		if (getPlaylistInfo(props.side, context).flag_smart) {
-			props.deleteCriteria(props.kara);
+			if (props.kara) props.deleteCriteria(props.kara);
 		} else {
 			await commandBackend('deleteKaraFromPlaylist', {
 				plc_ids: props.kara?.plcid ? [props.kara.plcid] : props.kara.my_public_plc_id,

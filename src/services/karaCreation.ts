@@ -50,7 +50,7 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 			throw 'Former song not found!';
 		}
 		if (!kara.data.ignoreHooks) await applyKaraHooks(kara);
-		const karaFile = await defineFilename(kara);
+		const karaFile = await defineFilename(kara, oldKara);
 		const filenames = determineMediaAndLyricsFilenames(kara, karaFile);
 		const mediaDest = resolve(resolvedPathRepos('Medias', kara.data.repository)[0], filenames.mediafile);
 		let oldMediaPath: string;

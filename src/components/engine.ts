@@ -172,8 +172,7 @@ export async function initEngine() {
 			}
 		}
 		try {
-			if (conf.Player.KeyboardMediaShortcuts) registerShortcuts();
-			initPlaylistSystem();
+			await initPlaylistSystem();
 			initDownloader();
 			initSession();
 			if (conf.Karaoke.StreamerMode.Twitch.Enabled) initTwitch();
@@ -227,6 +226,7 @@ export async function initEngine() {
 			initHooks();
 			archiveOldLogs();
 			initUsageTimer();
+			if (conf.Player.KeyboardMediaShortcuts) registerShortcuts();
 			logger.info(`Karaoke Mugen is ${ready}`, { service });
 		} catch (err) {
 			logger.error('Karaoke Mugen IS NOT READY', { service, obj: err });

@@ -26,6 +26,10 @@ function AutoMixModal(props: IProps) {
 	const [limitType, setLimitType] = useState<PlaylistLimit>('duration');
 	const [limitNumber, setLimitNumber] = useState(0);
 	const memoizedUsers = useMemo(() => {
+		props.userList.push({
+			nickname: i18next.t('ALL_LOGGED_USERS'),
+			login: '*',
+		});
 		return props.userList.map(el => {
 			return {
 				label: el.nickname || el.login,
@@ -47,11 +51,10 @@ function AutoMixModal(props: IProps) {
 
 	const onClick = async () => {
 		if (
-			limitNumber === 0 ||
-			(userFavoritesList.length === 0 &&
-				userAnimeList.length === 0 &&
-				tagList.length === 0 &&
-				yearList.length === 0)
+			userFavoritesList.length === 0 &&
+			userAnimeList.length === 0 &&
+			tagList.length === 0 &&
+			yearList.length === 0
 		)
 			return;
 		const data: AutoMixParams = {

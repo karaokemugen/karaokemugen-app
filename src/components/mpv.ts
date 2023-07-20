@@ -26,7 +26,7 @@ import { emitWS } from '../lib/utils/ws.js';
 import { getBackgroundAndMusic } from '../services/backgrounds.js';
 import { getSongSeriesSingers, getSongTitle } from '../services/kara.js';
 import { playerEnding } from '../services/karaEngine.js';
-import { getPromoMessage, next, prev } from '../services/player.js';
+import { getPromoMessage, next, pausePlayer, playPlayer, prev } from '../services/player.js';
 import { notificationNextSong } from '../services/playlist.js';
 import { getSingleMedia } from '../services/playlistMedias.js';
 import { endPoll } from '../services/poll.js';
@@ -44,6 +44,7 @@ import sentry from '../utils/sentry.js';
 import { getState, setState } from '../utils/state.js';
 import { isShutdownInProgress } from './engine.js';
 import Timeout = NodeJS.Timeout;
+import { emit } from '../lib/utils/pubsub.js';
 
 type PlayerType = 'main' | 'monitor';
 
@@ -579,6 +580,7 @@ class Player {
 				playerState.songNearEnd = true;
 				endPoll();
 			}
+			emit('playerPositionUpdated', position);
 			emitPlayerState();
 		}
 	}
@@ -634,18 +636,11 @@ class Player {
 					} else if (message.args[0] === 'seek') {
 						await this.control.seek(+message.args[1]);
 					} else if (message.args[0] === 'pause' && playerState.playerStatus !== 'stop') {
-						const playing = playerState.playing;
-						logger.debug(
-							`${playing ? 'Paused' : 'Resumed'} event triggered on ${
-								this.options.monitor ? 'monitor' : 'main'
-							}`,
-							{ service }
-						);
-						playerState._playing = !playing;
-						playerState.playing = !playing;
-						playerState.playerStatus = playing ? 'pause' : 'play';
-						this.control.exec({ command: ['set_property', 'pause', playing] });
-						emitPlayerState();
+						if (playerState.playerStatus === 'pause') {
+							playPlayer();
+						} else {
+							pausePlayer();
+						}
 					} else if (message.args[0] === 'subs') {
 						this.control.setSubs(!playerState.showSubs);
 					}
@@ -1510,22 +1505,22 @@ class Players {
 				this.setBlur(false);
 			}
 
-			if (options.Speed && options.Pitch) {
+			if (typeof options.Speed === 'number' && typeof options.Pitch === 'number') {
 				throw new Error("Pitch and speed can't currently be set at the same time");
 			}
-			if (options.Pitch) {
+			if (typeof options.Pitch === 'number') {
 				const paramSpeed = 1.0 + options.Pitch / 16.0;
 				await this.exec({ command: ['set_property', 'audio-pitch-correction', 'no'] });
 				await this.exec({ command: ['set_property', 'af', `scaletempo:scale=1/${paramSpeed}`] });
 				await this.exec({ command: ['set_property', 'speed', paramSpeed] });
 				options.Speed = 100; // Reset speed
-			} else if (options.Speed) {
+			} else if (typeof options.Speed === 'number') {
 				await this.exec({ command: ['set_property', 'audio-pitch-correction', 'yes'] });
 				await this.exec({ command: ['set_property', 'af', 'loudnorm'] });
 				await this.exec({ command: ['set_property', 'speed', options.Speed / 100] });
 				options.Pitch = 0; // Reset pitch
 			}
-			if (options.Pitch || options.Speed) {
+			if (typeof options.Pitch === 'number' || typeof options.Speed === 'number') {
 				playerState.pitch = options.Pitch || playerState.pitch;
 				playerState.speed = options.Speed || playerState.speed;
 				logger.info(`Set audio modifiers to: pitch ${playerState.pitch}, speed ${playerState.speed}`, {
