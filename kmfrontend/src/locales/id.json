@@ -6,7 +6,7 @@
 	"AND": "dan",
 	"SEARCH": "Cari",
 	"SUBMIT": "Simpan",
-	"CANCEL": "Batal",
+	"CANCEL": "Batalkan",
 	"WARNING": "Peringatan!",
 	"NOT_FOUND_PAGE": {
 		"404": "Tersesat di Karaoke Mugen?",
@@ -304,7 +304,8 @@
 			"ADDED_SONG_VISIBILITY_ADMIN_ON": "Lagu akan ditambahkan sebagai lagu misteri (kamu bisa menentukan label lagu di pengaturan)",
 			"LABELS_MYSTERY_SONGS_TOOLTIP": "Kamu bisa menyesuaikan bagaimana lagu misteri ditampilkan kepada publik",
 			"STREAM_TWITCH_OAUTH_TOKEN_GET": "Dapatkan Token OAuth Twitch kamu di sini",
-			"ADDED_SONG_VISIBILITY_PUBLIC": "Visibilitas permintaan lagu publik"
+			"ADDED_SONG_VISIBILITY_PUBLIC": "Visibilitas permintaan lagu publik",
+			"STREAM_TWITCH_TOOLTIP": "Tambah perintah ke pemilihan ketika jajak pendapat atau dapatkan lagu yang sedang diputar saat ini dengan !song"
 		},
 		"INTERFACE": {
 			"WEBAPPMODE_SHORT": "Mode antarmuka",
@@ -321,7 +322,9 @@
 			"SHOW_AVATARS_ON_PLAYLIST": "Tampilkan avatar di daftar putar",
 			"DISPLAY_WELCOME_MESSAGE": "Tampilkan pesan selamat datang",
 			"ALLOW_GUEST_LOGIN": "Perbolehkan tamu",
-			"DISPLAY_WELCOME_MESSAGE_TOOLTIP": "Pesan ini akan ditampilkan pada halaman masuk untuk sesi karaoke kamu"
+			"DISPLAY_WELCOME_MESSAGE_TOOLTIP": "Pesan ini akan ditampilkan pada halaman masuk untuk sesi karaoke kamu",
+			"ALLOW_CUSTOM_TEMPORARY_GUESTS": "Akun tamu yang dapat disesuaikan",
+			"ALLOW_GUEST_LOGIN_TOOLTIP": "Jika dimatikan, akun (lokal atau publik) akan diperlukan untuk masuk"
 		},
 		"PLAYLIST": {
 			"ENDOFPLAYLISTACTION": {
@@ -392,7 +395,7 @@
 		"REQUESTED_KARAOKES": "Lagu yang diminta",
 		"NEW_KARAOKES": "Lagu baru",
 		"KARA_VERSIONS": "Lagu ini tersedia dalam {{length}} versi, pilih yang kamu mau dan tambahkan ke daftar putar atau favorit kamu.",
-		"GET_LUCKY": "Mencoba Keberuntungan",
+		"GET_LUCKY": "Beruntung",
 		"CURRENT": "Lihat daftar putar saat ini",
 		"ANIME_LIST": "Anime saya"
 	},
@@ -508,7 +511,8 @@
 		"EDIT_SESSION": "Sunting sesi",
 		"ADMINISTRATION": "BILAH SISTEM",
 		"COLLECTIONS": "KOLEKSI",
-		"STATS_USAGETIME": "Waktu Penggunaan"
+		"STATS_USAGETIME": "Waktu Penggunaan",
+		"STATS_PLAYTIME": "Waktu putar"
 	},
 	"LOGOUT": "Keluar",
 	"QUOTA_TIME": "Waktu tersisa",
@@ -836,7 +840,8 @@
 		"TYPE": "Jenis permintaan",
 		"NO_REPOSITORY_ENABLED": "Tidak ada repositori daring yang diaktifkan di mode pengelola",
 		"ONLINE_USER_REQUIRED": "Pengguna daring diperlukan untuk kotak masuk",
-		"SONG_DOWNLOADED_FROM_INBOX_FAILED": "Lagu tidak bisa diunduh dari kotak masuk!"
+		"SONG_DOWNLOADED_FROM_INBOX_FAILED": "Lagu tidak bisa diunduh dari kotak masuk!",
+		"DELETE": "Apakah kamu yakin kamu menghapus karaoke dari kotak masuk bersama berkasnya dari peladen?"
 	},
 	"ABOUT": {
 		"CONTRIBUTORS": "Karaoke dibuat oleh orang-orang yang hebat, seperti <1>{{contributors}}</1> misalnya.",
@@ -989,7 +994,8 @@
 		},
 		"PLAY_CURRENT_MODAL": {
 			"TITLE": "Peringatan!",
-			"DESCRIPTION": "Daftar putar saat ini '<1>{{playlist}}</1>' tidak tertampil di layar."
+			"DESCRIPTION": "Daftar putar saat ini '<1>{{playlist}}</1>' tidak tertampil di layar.",
+			"PLAY_ANYWAY": "Tetap memutar"
 		},
 		"CREATE_TAG": {
 			"OPEN": "Buat tanda",
@@ -1031,7 +1037,8 @@
 			"SMART": "Pintar",
 			"BLACKLIST_DESC": "Lagu pada daftar ini akan disembunyikan dari pengguna (kecuali mereka diputihkan)",
 			"BLACKLIST": "Daftar Hitam",
-			"SMART_DESC": "Tentukan kriteria yang akan menentukan lagu apa yang secara otomatis akan ditambahkan ke daftar putar"
+			"SMART_DESC": "Tentukan kriteria yang akan menentukan lagu apa yang secara otomatis akan ditambahkan ke daftar putar",
+			"NAME_MANDATORY": "Nama daftar putar diperlukan"
 		},
 		"TUTORIAL": {
 			"WELCOME": "Selamat datang di Karaoke Mugen! Ini adalah apa yang perlu kamu ketahui.",
@@ -1052,7 +1059,8 @@
 			"MESSAGE": "Kamu bisa mengirim pesan ke publik kamu (di perangkat mereka atau layar pemutar) dengan tombol Pesan.",
 			"PLAYER_GO_BACK": "Tombol Ulang memungkinkan kamu untuk kembali ke <1>awal dari lagu saat ini</1>.",
 			"PLAYER_STOP": "Tombol Berhenti akan memberhentikan pemutaran ketika lagu saat ini berakhir. Kamu bisa mengklik pada itu lagi untuk memberhentikan <1>langsung</1>.",
-			"K_MENU": "\"Menu K\" memungkinkan kamu untuk menyunting profil dan pengaturan karaoke lainnya."
+			"K_MENU": "\"Menu K\" memungkinkan kamu untuk menyunting profil dan pengaturan karaoke lainnya.",
+			"CREATE_PLAYLIST_BUTTON": "Buat dan ubah daftar putar dari menu aksi"
 		},
 		"CROP_AVATAR_MODAL": {
 			"TITLE": "Pangkas avatar kamu",
@@ -1330,7 +1338,9 @@
 		"DATABASE_DUMPED_ERROR": "Galat melegokan basis data",
 		"GUESTS_NOT_ALLOWED": "Akun tamu tidak diperbolehkan",
 		"DELETE_PLAYLIST_ERROR_PUBLIC": "Tidak bisa menghapus daftar putar publik. Buat dulu daftar putar publik lain.",
-		"DELETE_PLAYLIST_ERROR_BLACKLIST": "Tidak dapat menghapus daftar hitam. Jadikan daftar putar lain sebagai daftar hitam terlebih dahulu."
+		"DELETE_PLAYLIST_ERROR_BLACKLIST": "Tidak dapat menghapus daftar hitam. Jadikan daftar putar lain sebagai daftar hitam terlebih dahulu.",
+		"BACKGROUND_FILE_DELETE_ERROR_IN_USE": "Tidak dapat menghapus file, file sedang digunakan oleh pemutar!",
+		"PREVIEW_HOOKS_ERROR": "Galat pratinjau kait"
 	},
 	"SUCCESS_CODES": {
 		"SESSION_MERGED": "Sesi berhasil digabung",
@@ -1767,6 +1777,7 @@
 		"TITLE": "Memperkenalkan koleksi!"
 	},
 	"TOOLTIP_KARA_ALREADY_ADDED": "Lagu ini telah ada di daftar putar.",
-	"SHOW-HIDE": "Tampilkan/Sembunyikan",
-	"UNKNOWN": "Tidak dikenal"
+	"SHOW-HIDE": "Munculkan/Sembunyikan",
+	"UNKNOWN": "Tidak diketahui",
+	"BLURVIDEO_BLUR": "Buramkan Vidio"
 }

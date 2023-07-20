@@ -59,6 +59,7 @@ export function addSystemMessage(message: SystemMessage) {
 
 /** Fetch and process a RSS feed */
 async function fetchFeed(url: string, name: string): Promise<Feed> {
+	let body: any;
 	try {
 		const response = await HTTP.get(url);
 		const feed: any = xml2js(response.data as any, { compact: true });
@@ -75,15 +76,14 @@ async function fetchFeed(url: string, name: string): Promise<Feed> {
 					element.content._text = element.content._text.replace(/href="\//g, 'href="https://gitlab.com/');
 			});
 		}
-		return {
-			name,
-			body: JSON.stringify(feed),
-		};
+		body = JSON.stringify(feed);
 	} catch (err) {
-		logger.error(`Unable to fetch feed ${name}`, { service, obj: err });
+		logger.warn(`Unable to fetch feed ${name}`, { service, obj: err });
+		body = null;
+	} finally {
 		return {
 			name,
-			body: null,
+			body,
 		};
 	}
 }

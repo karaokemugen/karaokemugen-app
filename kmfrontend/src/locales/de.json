@@ -160,7 +160,7 @@
 	"SUBMIT": "Speichern",
 	"LOGIN_MANDATORY": "Benutzername erforderlich",
 	"STOP_AFTER": "Nach diesem Song anhalten",
-	"SECURITY_CODE_MANDATORY": "Für die Erstellung eines Adminkontos ist ein Sicherheitscode erforderlich",
+	"SECURITY_CODE_MANDATORY": "Sicherheitscode ist erforderlich, um einen",
 	"MUTE_UNMUTE": "Stummschalten / Stummschaltung aufheben",
 	"SHOW_SUBS": "Songtexte auf dem Bildschirm anzeigen",
 	"STOP_NOW": "JETZT anhalten (Gefährlich!)",
@@ -249,5 +249,19 @@
 	"TOOLTIP_DELETEKARA": "Dieses Lied löschen",
 	"TOOLTIP_DELETE_SELECT_KARA": "Ausgewählte Lieder löschen",
 	"TOOLTIP_CLOSEPARENT": "Schliessen",
-	"TOOLTIP_DELETE_FAVS": "Lied aus den Favoriten entfernen"
+	"TOOLTIP_DELETE_FAVS": "Lied aus den Favoriten entfernen",
+	"SHOW-HIDE": "Anzeigen/Ausblenden",
+	"BLURVIDEO_BLUR": "Video verschwommen abspielen",
+	"BLURVIDEO_UNBLUR": "Video Verschwemmung aufheben",
+	"OR": "oder",
+	"UNKNOWN": "Unbekannt",
+	"SPEED_UP": "Schneller abspielen",
+	"SPEED_RESET": "Auf normale Geschwindigkeit zurücksetzen",
+	"SPEED_DOWN": "Langsamer abspielen",
+	"WARNING": "Warnung!",
+	"KARA": {
+		"SECTIONS": {
+			"TITLES": "Titel"
+		}
+	}
 }

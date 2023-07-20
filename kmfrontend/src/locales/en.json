@@ -238,6 +238,7 @@
 		"ANIMELISTS_OF": "{{name}}'s animelist",
 		"FAVOURITES": "Favorites of",
 		"FAVOURITES_OF": "{{name}}'s favorites",
+		"ALL_LOGGED_USERS": "<All logged in users>",
 		"LIMIT": "Limit the list to…",
 		"LIMIT_TYPE": {
 			"DURATION": "Duration",
@@ -829,7 +830,7 @@
 			"DESCRIPTION": "Pit participants against each other in a blind test! Participants will have to guess the songs playing on the screen as quickly as possible. You can set up a new game or resume an existing one.",
 			"LOAD_GAME": "Load game",
 			"NEW_GAME": "New game",
-			"COPIED_GAME": "{{gameName}} (copy)",			
+			"COPIED_GAME": "{{gameName}} (copy)",
 			"LAST_PLAYED_GAME": "{{gameName}} (last launched game)",
 			"GAME_IN_PROGRESS": {
 				"SONG_COUNT_zero": "No song has played.",
@@ -846,7 +847,7 @@
 			"PLAYLIST": "Playlist used",
 			"END_GAME": {
 				"TITLE": "Game length",
-				"DESCRIPTION": "The game ends...",
+				"DESCRIPTION": "The game ends…",
 				"MAX_SCORE": "when a player reaches",
 				"MAX_SCORE_PLACEHOLDER": "10",
 				"POINTS": "points",
@@ -880,7 +881,7 @@
 				"VIEW_ALL_ANSWERS": "See all possible types",
 				"VIEW_LESS_ANSWERS": "See less possible types",
 				"TITLE": "Accepted answers",
-				"DESCRIPTION": "You can choose which answers are accepted (titles, singers, series, etc...) and how many points each answer type players earn for a good answer. You can also define a tolerance for typos. An auto-complete is available to people using the public interface.",
+				"DESCRIPTION": "You can choose which answers are accepted (titles, singers, series, etc…) and how many points each answer type players earn for a good answer. You can also define a tolerance for typos. An auto-complete is available to people using the public interface.",
 				"ANSWER_TITLE": "Title",
 				"TOLERANCE": "Typos tolerance",
 				"LAX": "Laxist",
@@ -1351,6 +1352,8 @@
 		"SENDSTATS": "Send statistics",
 		"UPDATE": "Automatic updates",
 		"UPDATE_TOOLTIP": "If disabled, the application will not update the repository anymore.",
+		"NO_MEDIA_DOWNLOADS_AT_ALL": "Do not download any media",
+		"NO_MEDIA_DOWNLOADS_AT_ALL_TOOLTIP": "If a media's missing locally, it will be streamed from the remote repository. This is NOT recommended, use at your own risk.",
 		"SENDSTATS_TOOLTIP": "Sessions and played/requested songs",
 		"AUTO_MEDIA_DOWNLOADS": "Automatically download media",
 		"AUTO_MEDIA_DOWNLOADS_TOOLTIP": "If your connection is too slow, we recommend that you select \"All\" so that the medias are downloaded beforehand. This is also recommended for convention use or for streams to avoid potential errors in the middle of a karaoke!",
@@ -1662,7 +1665,8 @@
 		"DELETE_PLAYLIST_ERROR_CURRENT": "Unable to delete a current playlist. Make another playlist current first.",
 		"DELETE_PLAYLIST_ERROR_PUBLIC": "Unable to delete a public playlist. Make another playlist public first.",
 		"DELETE_PLAYLIST_ERROR_WHITELIST": "Unable to delete a whitelist. Make another playlist a whitelist first.",
-		"DELETE_PLAYLIST_ERROR_BLACKLIST": "Unable to delete a blacklist. Make another playlist a blacklist first."
+		"DELETE_PLAYLIST_ERROR_BLACKLIST": "Unable to delete a blacklist. Make another playlist a blacklist first.",
+		"QUIZZ_ALREADY_IN_PROGRESS": "Unable to start quiz, one is already in progress"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Added {{data}} downloads to the queue",

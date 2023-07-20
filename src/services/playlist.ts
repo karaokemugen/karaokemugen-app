@@ -77,7 +77,7 @@ import {
 	updateSmartPlaylist,
 	whitelistHook,
 } from './smartPlaylist.js';
-import { getUser, updateSongsLeft } from './user.js';
+import { getUser, getUsers, updateSongsLeft } from './user.js';
 
 const service = 'Playlist';
 
@@ -1683,15 +1683,30 @@ export async function createAutoMix(params: AutoMixParams, username: string): Pr
 	// For each list we add the balanceUID needed to balance our songs later.
 	// If this doesn't give expected results due to async optimizations (for years and/or karas) we should try using Maps or Sets instead of arrays. Or use .push on each element
 	const uniqueList = new Map<string, DBPLC>();
-
+	let allUsers = [];
+	if (params.filters?.usersFavorites?.includes('*') || params.filters?.usersAnimeList?.includes('*')) {
+		allUsers = await getUsers({ full: true });
+		// Filter all logged in users that are not guests
+		// Guests have no rights! :p
+		allUsers = allUsers.filter(e => e.flag_logged_in === true && e.type < 2).map(e => e.login);
+	}
 	if (params.filters?.usersFavorites) {
-		const users = params.filters.usersFavorites;
+		let users = params.filters.usersFavorites;
+		if (users.includes('*')) {
+			// Remove the joker user, concatenate all users and make it a unique list
+			users = [...new Set(users.filter(e => e === '*').concat(allUsers))];
+		}
 		let favs = await getAllFavorites(users);
 		favs = shuffle(favs);
 		favs.forEach(f => uniqueList.set(f.kid, f as any));
 	}
 	if (params.filters?.usersAnimeList) {
-		for (const userlogin of params.filters.usersAnimeList) {
+		let users = params.filters.usersAnimeList;
+		if (users.includes('*')) {
+			// Remove the joker user, concatenate all users and make it a unique list
+			users = [...new Set(users.filter(e => e === '*').concat(allUsers))];
+		}
+		for (const userlogin of users) {
 			const user = await getUser(userlogin, true);
 			if (user.anime_list_to_fetch) {
 				const karas = await getKaras({ userAnimeList: userlogin });
@@ -1745,12 +1760,11 @@ export async function createAutoMix(params: AutoMixParams, username: string): Pr
 			username
 		);
 		// Cut playlist after duration/number of songs
-		if (params.limitType) {
+		if (params.limitNumber) {
 			balancedList = await trimPlaylist(balancedList, params.limitNumber, params.limitType);
 		}
 		// Let's reshuffle normally now that the playlist is trimmed.
 		balancedList = shuffle(balancedList);
-
 		await addKaraToPlaylist({
 			kids: balancedList.map(k => k.kid),
 			requester: username,

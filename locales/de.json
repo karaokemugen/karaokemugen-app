@@ -2,5 +2,6 @@
 	"NEXT_SONG": "Nächster Song",
 	"YES": "Ja",
 	"NO": "Nein",
-	"CANCEL": "Abbrechen"
+	"CANCEL": "Abbrechen",
+	"GO_TO": "Song- und Wunschliste auf $url"
 }

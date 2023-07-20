@@ -432,7 +432,7 @@ export function continueGameSong() {
 
 export async function startGame(gamename: string, playlist: string, settings?: QuizGameConfig) {
 	if (getState().quiz.running === true) {
-		throw { code: 409, msg: 'Unable to start quiz, one is already in progress' };
+		throw { code: 409, msg: 'QUIZZ_ALREADY_IN_PROGRESS' };
 	}
 	if (!playlist) {
 		throw { code: 400, msg: 'Unable to start quiz, no playlist selected' };

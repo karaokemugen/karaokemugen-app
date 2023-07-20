@@ -51,7 +51,7 @@ const builder: MenuItemBuilderFunction = options => {
 			{
 				label: i18next.t('MENU_WINDOW_PLAYERMONITOR'),
 				type: 'checkbox',
-				accelerator: 'CmdOrCtrl+A',
+				accelerator: 'CmdOrCtrl+E',
 				checked: getConfig().Player.Monitor,
 				click: () => {
 					editSetting({ Player: { Monitor: !getConfig().Player.Monitor } });

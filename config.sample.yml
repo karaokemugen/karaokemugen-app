@@ -247,6 +247,8 @@ System:
         BaseDir: storage/medias-otaku
       SendStats: true
       AutoMediaDownloads: updateOnly
+      # NEVER EVER download any media during playback/playlist making.
+      NoMediaDownloadsAtAll: false
       # AutoMediaDownloads determines when a song should be downloaded
       # 'none' = never
       # 'updateOnly' = only when the song has already been downloaded before and it's an update
