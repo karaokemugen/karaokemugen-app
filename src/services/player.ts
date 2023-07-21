@@ -301,9 +301,9 @@ export async function playerNeedsRestart() {
 	const state = getState();
 	if (state.player.playerStatus === 'stop' && !state.playerNeedsRestart && !state.isTest) {
 		setState({ playerNeedsRestart: true });
-		logger.info('Player will restart in 5 seconds', { service });
+		logger.info('Player will restart in one second', { service });
 		emitWS('operatorNotificationInfo', APIMessage('NOTIFICATION.OPERATOR.INFO.PLAYER_RESTARTING'));
-		mpv.message(i18n.t('RESTARTING_PLAYER'), 5000);
+		mpv.message(i18n.t('RESTARTING_PLAYER'), 1000);
 		await sleep(1000);
 		await restartPlayer();
 		setState({ playerNeedsRestart: false });
