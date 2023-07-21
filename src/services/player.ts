@@ -42,6 +42,8 @@ export async function prev() {
 	}
 }
 
+let pauseDate: Date;
+
 export async function next() {
 	logger.debug('Going to next song', { service });
 	profile('Next');
@@ -75,16 +77,20 @@ export async function next() {
 					mpv.displaySongInfo(kara.infos, -1, true, kara.warnings, !getState().quiz.running);
 				}
 				if (conf.Karaoke.StreamerMode.PauseDuration > 0) {
+					// Setting this to make sure the pause hasn't been reset by another pause
+					const currentDate = new Date();
+					pauseDate = currentDate;
 					await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
 					if (
 						getState().streamerPause &&
 						getState().pauseInProgress &&
 						getConfig().Karaoke.StreamerMode.Enabled &&
-						getState().player.playerStatus === 'stop'
+						getState().player.playerStatus === 'stop' &&
+						pauseDate === currentDate
 					) {
 						await playPlayer(true);
 					}
-					setState({ streamerPause: false, pauseInProgress: false });
+					if (pauseDate === currentDate) setState({ streamerPause: false, pauseInProgress: false });
 				}
 			} else {
 				setState({ currentRequester: null });
