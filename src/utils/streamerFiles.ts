@@ -69,8 +69,12 @@ async function writeKarasInPublicPL() {
 }
 
 async function writeKarasInCurrentPL() {
-	const { karacount } = await getPlaylistInfo(getState().currentPlaid);
-	await fs.writeFile(resolve(resolvedPath('StreamFiles'), 'current_kara_count.txt'), karacount.toString(), 'utf-8');
+	const pl = await getPlaylistInfo(getState().currentPlaid);
+	await fs.writeFile(
+		resolve(resolvedPath('StreamFiles'), 'current_kara_count.txt'),
+		pl?.karacount.toString(),
+		'utf-8'
+	);
 }
 
 /* format seconds to Hour Minute Second */
