@@ -390,7 +390,9 @@ function AdminHeader(props: IProps) {
 			) : null}
 
 			<div className="header-group controls">
-				{statusPlayer?.stopping || statusPlayer?.mediaType !== 'song' ? (
+				{statusPlayer?.stopping ||
+				statusPlayer?.mediaType !== 'song' ||
+				context?.globalState.settings.data.config?.Karaoke.ClassicMode ? (
 					<button
 						title={i18next.t('STOP_NOW')}
 						id="stopNow"
@@ -676,7 +678,9 @@ function AdminHeader(props: IProps) {
 							</div>
 						</li>
 						<li className="buttonsMobileMenuSmaller">
-							{statusPlayer?.stopping || statusPlayer?.mediaType !== 'song' ? (
+							{statusPlayer?.stopping ||
+							statusPlayer?.mediaType !== 'song' ||
+							context?.globalState.settings.data.config?.Karaoke.ClassicMode ? (
 								<div
 									onClick={event => {
 										props.putPlayerCommando(event);
