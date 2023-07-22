@@ -396,7 +396,8 @@ export async function playerEnding() {
 			conf.Playlist.Medias.Encores.Enabled &&
 			state.player.currentSong?.pos === pl.karacount - 1 &&
 			!getState().encorePlayed &&
-			!getState().singlePlay
+			!getState().singlePlay &&
+			!getState().quiz.running
 		) {
 			try {
 				await mpv.playMedia('Encores');
