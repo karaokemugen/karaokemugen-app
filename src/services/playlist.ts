@@ -67,7 +67,6 @@ import { getAllFavorites } from './favorites.js';
 import { getKaras, getKarasMicro } from './kara.js';
 import { getSongInfosForPlayer } from './karaEngine.js';
 import { playPlayer } from './player.js';
-import { stopGame } from './quiz.js';
 import { getRepos } from './repo.js';
 import {
 	addCriteria,
@@ -1550,7 +1549,6 @@ export async function getNextSong(): Promise<DBPLC> {
 		let currentPos = playlist.findIndex(plc => plc.flag_playing);
 		if (currentPos + 1 >= playlist.length && conf.Playlist.EndOfPlaylistAction !== 'repeat') {
 			logger.debug('End of playlist', { service });
-			stopGame(true);
 			// Current position is last song, not quite an error.
 			return null;
 		}

@@ -17,6 +17,7 @@ import { getState, setState } from '../utils/state.js';
 import { playCurrentSong, playRandomSongAfterPlaylist } from './karaEngine.js';
 import { getCurrentSong, getCurrentSongPLCID, getNextSong, getPreviousSong, setPlaying } from './playlist.js';
 import { startPoll } from './poll.js';
+import { stopGame } from './quiz.js';
 
 const service = 'Player';
 
@@ -96,7 +97,7 @@ export async function next() {
 				setState({ currentRequester: null });
 				if (getState().player.playerStatus !== 'stop') playPlayer(true);
 			}
-		} else if (conf.Karaoke.StreamerMode.Enabled || !getState().quiz.running) {
+		} else if (conf.Karaoke.StreamerMode.Enabled && !getState().quiz.running) {
 			await stopPlayer(true, true);
 			if (conf.Karaoke.Poll.Enabled) {
 				try {
@@ -119,8 +120,11 @@ export async function next() {
 			// Play next random song when hitting the "next" button after a playlist ended
 			setState({ currentRequester: null });
 			await playRandomSongAfterPlaylist();
+		} else if (getState().quiz.running) {
+			stopGame(true);
 		} else {
 			setState({ currentRequester: null });
+			console.log('Getting into the last else');
 			await stopPlayer(true, true);
 		}
 	} catch (err) {
