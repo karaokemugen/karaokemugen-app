@@ -203,6 +203,7 @@ export async function stopPlayer(now = true, endOfPlaylist = false) {
 	} else if (!getState().stopping) {
 		logger.info('Karaoke stopping after current song', { service });
 		setState({ stopping: true });
+		return APIMessage('STOP_AFTER');
 	}
 }
 
@@ -350,8 +351,7 @@ export async function sendCommand(command: PlayerCommand, options: any): Promise
 			await pausePlayer();
 		} else if (command === 'stopAfter') {
 			setState({ singlePlay: false, randomPlaying: false });
-			await stopPlayer(false);
-			return APIMessage('STOP_AFTER');
+			return await stopPlayer(false);
 		} else if (command === 'skip') {
 			setState({ singlePlay: false, randomPlaying: false });
 			await next();
