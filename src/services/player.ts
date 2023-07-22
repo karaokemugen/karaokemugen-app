@@ -13,7 +13,7 @@ import { emitWS } from '../lib/utils/ws.js';
 import { BackgroundType } from '../types/backgrounds.js';
 import { MpvHardwareDecodingOptions } from '../types/mpvIPC.js';
 import { PlayerCommand } from '../types/player.js';
-import { getState, setState } from '../utils/state.js';
+import { getPlayerState, getState, setState } from '../utils/state.js';
 import { playCurrentSong, playRandomSongAfterPlaylist } from './karaEngine.js';
 import { getCurrentSong, getCurrentSongPLCID, getNextSong, getPreviousSong, setPlaying } from './playlist.js';
 import { startPoll } from './poll.js';
@@ -174,16 +174,11 @@ export async function playPlayer(now?: boolean) {
 }
 
 export async function stopPlayer(now = true, endOfPlaylist = false) {
-	if (now || getState().stopping || getState().streamerPause || getConfig().Karaoke.ClassicMode) {
+	if (now || getState().stopping || getPlayerState().mediaType !== 'song' || getConfig().Karaoke.ClassicMode) {
 		logger.info('Karaoke stopping NOW', { service });
 		// No need to stop in streamerPause, we're already stopped, but we'll disable the pause anyway.
 		let stopType: BackgroundType = 'stop';
-		if (
-			(getState().streamerPause || getConfig().Karaoke.ClassicMode) &&
-			!endOfPlaylist &&
-			!getState().stopping &&
-			!getState().pauseInProgress
-		) {
+		if ((getState().streamerPause || getConfig().Karaoke.ClassicMode) && !endOfPlaylist && !getState().stopping) {
 			stopType = 'pause';
 			setState({ pauseInProgress: true });
 		} else {
@@ -345,12 +340,18 @@ export async function sendCommand(command: PlayerCommand, options: any): Promise
 		if (command === 'play') {
 			await playPlayer();
 		} else if (command === 'stopNow') {
-			setState({ singlePlay: false, randomPlaying: false });
+			setState({
+				singlePlay: false,
+				randomPlaying: false,
+				streamerPause: false,
+				pauseInProgress: false,
+				stopping: true,
+			});
 			await stopPlayer();
 		} else if (command === 'pause') {
 			await pausePlayer();
 		} else if (command === 'stopAfter') {
-			setState({ singlePlay: false, randomPlaying: false });
+			setState({ singlePlay: false, randomPlaying: false, streamerPause: false, pauseInProgress: false });
 			return await stopPlayer(false);
 		} else if (command === 'skip') {
 			setState({ singlePlay: false, randomPlaying: false });

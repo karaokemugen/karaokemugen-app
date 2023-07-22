@@ -12,7 +12,7 @@ interface IProps {
 function AdminButtons(props: IProps) {
 	return (
 		<>
-			{props.statusPlayer?.stopping || props.statusPlayer?.streamerPause ? (
+			{props.statusPlayer?.stopping || props.statusPlayer?.mediaType !== 'song' ? (
 				<button
 					title={i18next.t('STOP_NOW')}
 					id="stopNow"

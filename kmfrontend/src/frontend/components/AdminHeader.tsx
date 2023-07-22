@@ -390,7 +390,7 @@ function AdminHeader(props: IProps) {
 			) : null}
 
 			<div className="header-group controls">
-				{statusPlayer?.stopping || statusPlayer?.streamerPause ? (
+				{statusPlayer?.stopping || statusPlayer?.mediaType !== 'song' ? (
 					<button
 						title={i18next.t('STOP_NOW')}
 						id="stopNow"
@@ -676,7 +676,7 @@ function AdminHeader(props: IProps) {
 							</div>
 						</li>
 						<li className="buttonsMobileMenuSmaller">
-							{statusPlayer?.stopping || statusPlayer?.streamerPause ? (
+							{statusPlayer?.stopping || statusPlayer?.mediaType !== 'song' ? (
 								<div
 									onClick={event => {
 										props.putPlayerCommando(event);
