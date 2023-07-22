@@ -39,7 +39,7 @@ export async function prev() {
 	} catch (err) {
 		logger.warn('Previous song is not available', { service, obj: err });
 	} finally {
-		playPlayer(true);
+		await playPlayer(true);
 	}
 }
 
@@ -95,7 +95,7 @@ export async function next() {
 				}
 			} else {
 				setState({ currentRequester: null });
-				if (getState().player.playerStatus !== 'stop') playPlayer(true);
+				if (getState().player.playerStatus !== 'stop') await playPlayer(true);
 			}
 		} else if (conf.Karaoke.StreamerMode.Enabled && !getState().quiz.running) {
 			await stopPlayer(true, true);
@@ -331,8 +331,13 @@ export function displayInfo() {
 	return mpv.displayInfo();
 }
 
+let playerCommandLock = false;
+
 export async function sendCommand(command: PlayerCommand, options: any): Promise<APIMessageType> {
+	logger.info(`Received command from API : ${command} (${options})`, { service });
 	if (isShutdownInProgress()) return;
+	if (playerCommandLock) return;
+	playerCommandLock = true;
 	// Resetting singlePlay to false everytime we use a command.
 	const state = getState();
 	if (state.isTest) throw 'Player management is disabled in test mode';
@@ -407,6 +412,8 @@ export async function sendCommand(command: PlayerCommand, options: any): Promise
 	} catch (err) {
 		logger.error(`Command ${command} failed`, { service, obj: err });
 		throw err;
+	} finally {
+		playerCommandLock = false;
 	}
 }
 
