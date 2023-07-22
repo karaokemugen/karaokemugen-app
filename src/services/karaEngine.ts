@@ -421,7 +421,8 @@ export async function playerEnding() {
 			state.player.currentSong?.pos === pl.karacount &&
 			state.player.mediaType !== 'stop' &&
 			state.player.mediaType !== 'pause' &&
-			!state.singlePlay
+			!state.singlePlay &&
+			!state.quiz.running
 		) {
 			if (conf.Playlist.Medias.Outros.Enabled && !state.randomPlaying) {
 				try {
