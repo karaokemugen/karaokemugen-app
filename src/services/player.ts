@@ -124,7 +124,6 @@ export async function next() {
 			stopGame(true);
 		} else {
 			setState({ currentRequester: null });
-			console.log('Getting into the last else');
 			await stopPlayer(true, true);
 		}
 	} catch (err) {
