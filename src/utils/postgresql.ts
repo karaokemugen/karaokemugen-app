@@ -141,7 +141,7 @@ export async function dumpPG() {
 		throw err;
 	}
 	logger.info('Dumping database...', { service });
-	const dumpFile = resolve(state.dataPath, 'karaokemugen.sql');
+	const dumpFile = resolve(state.dataPath, 'karaokemugen.sql.gz');
 	try {
 		const options = [
 			'--compress=1',
