@@ -6,7 +6,7 @@ import { resolve } from 'path';
 import Postgrator from 'postgrator';
 import { v4 as uuidV4 } from 'uuid';
 
-import { exit } from '../components/engine.js';
+import { exit, initKaraBase } from '../components/engine.js';
 import { errorStep, initStep } from '../electron/electronLogger.js';
 import { connectDB, db, getInstanceID, getSettings, saveSetting, setInstanceID } from '../lib/dao/database.js';
 import { generateDatabase } from '../lib/services/generation.js';
@@ -249,6 +249,10 @@ export async function initDBSystem(): Promise<Postgrator.Migration[]> {
 	logger.debug('Database Interface is READY', { service });
 	setState({ DBReady: true });
 	profile('initDBSystem');
+	// Trigger a generation if a restore was needed after a PG upgrade
+	if (getState().restoreNeeded) {
+		await initKaraBase();
+	}
 	return migrations;
 }
 
