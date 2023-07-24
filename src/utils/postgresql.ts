@@ -13,7 +13,7 @@ import { errorStep } from '../electron/electronLogger.js';
 import { getConfig, resolvedPath } from '../lib/utils/config.js';
 import { asciiRegexp } from '../lib/utils/constants.js';
 import { downloadFile } from '../lib/utils/downloader.js';
-import { compressGzipFile, decompressGzipFile, fileExists, smartMove } from '../lib/utils/files.js';
+import { fileExists, smartMove } from '../lib/utils/files.js';
 import logger, { profile } from '../lib/utils/logger.js';
 import { PGVersion } from '../types/database.js';
 import { checkBinaries, editSetting } from './config.js';
@@ -144,6 +144,7 @@ export async function dumpPG() {
 	const dumpFile = resolve(state.dataPath, 'karaokemugen.sql');
 	try {
 		const options = [
+			'--compress=1',
 			'-c',
 			'-E',
 			'UTF8',
@@ -158,17 +159,17 @@ export async function dumpPG() {
 		];
 		let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_dump);
 		if (state.os === 'win32') binPath = `"${binPath}"`;
+		profile('dumpAndCompress');
 		await execa(binPath, options, {
 			cwd: resolve(state.appPath, state.binPath.postgres),
 			env: determineEnv(),
 		});
+		profile('dumpAndCompress');
 
 		if (!(await fileExists(dumpFile))) {
 			throw Error('Dump file not created');
 		}
 
-		await compressGzipFile(dumpFile);
-		await fs.unlink(dumpFile);
 		logger.info('Database dumped to file', { service });
 	} catch (err) {
 		if (err.stdout) sentry.addErrorInfo('stdout', err.stdout);
@@ -183,22 +184,13 @@ export async function dumpPG() {
 export async function restorePG() {
 	const conf = getConfig();
 	const state = getState();
-	const compressedDumpFile = resolve(state.dataPath, 'karaokemugen.sql.gz');
 	if (!conf.System.Database.bundledPostgresBinary) {
 		const err = 'Restore not available with hosted PostgreSQL servers';
 		logger.warn(err, { service });
 		throw err;
 	}
 	try {
-		let dumpFile = '';
-		try {
-			dumpFile = await decompressGzipFile(compressedDumpFile);
-		} catch (err) {
-			// Decompression can fail if the gzip file doesn't exist.
-			// This can happen if the user didn't launch KM in a while and its dump is still uncompressed
-			logger.warn('No compressed dump file, trying for uncompressed already...', { service });
-			dumpFile = resolve(state.dataPath, 'karaokemugen.sql');
-		}
+		const dumpFile = resolve(state.dataPath, 'karaokemugen.sql.gz');
 		const options = [
 			'-U',
 			conf.System.Database.username,
