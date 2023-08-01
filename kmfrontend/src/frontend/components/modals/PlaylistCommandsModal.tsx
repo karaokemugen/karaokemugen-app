@@ -62,22 +62,14 @@ function PlaylistCommandsModal(props: IProps) {
 				const dlAnchorElem = document.getElementById('downloadAnchorElem');
 				if (dlAnchorElem) {
 					dlAnchorElem.setAttribute('href', dataStr);
-					if (playlist?.plaid === nonStandardPlaylists.favorites) {
-						dlAnchorElem.setAttribute(
-							'download',
-							[
-								'KaraMugen',
-								'fav',
-								context.globalState.auth.data.username,
-								new Date().toLocaleDateString().replace('\\', '-'),
-							].join('_') + '.kmfavorites'
-						);
-					} else {
-						dlAnchorElem.setAttribute(
-							'download',
-							`KaraMugen_${playlist?.name}_${dayjs(new Date()).format('YYYY-MM-DD_HH-mm-ss')}.kmplaylist`
-						);
-					}
+					const playlistName =
+						playlist?.plaid === nonStandardPlaylists.favorites
+							? `fav_${context.globalState.auth.data.username}`
+							: `${playlist?.name}`;
+					dlAnchorElem.setAttribute(
+						'download',
+						`KaraMugen_${playlistName}_${dayjs().format('YYYY-MM-DD_HH-mm-ss')}.kmplaylist`
+					);
 					dlAnchorElem.click();
 				}
 			} catch (e) {
