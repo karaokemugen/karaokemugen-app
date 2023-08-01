@@ -174,7 +174,7 @@ function AdminHeader(props: IProps) {
 		setStatusPlayer(oldState => {
 			const state = { ...oldState };
 			const newValue = (changeValue && oldState.pitch + changeValue) || 0; // Reset if parameter is null
-			state.pitch = newValue <= 3 && newValue >= -3 ? newValue : oldState.pitch; // Limit possible pitch values
+			state.pitch = newValue <= 6 && newValue >= -6 ? newValue : oldState.pitch; // Limit possible pitch values
 			state.speed = 100; // reset speed
 			return state;
 		});

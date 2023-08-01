@@ -398,7 +398,7 @@ export async function sendCommand(command: PlayerCommand, options: any): Promise
 			await setVolumePlayer(options);
 		} else if (command === 'setPitch') {
 			if (isNaN(options)) throw 'Command setPitch must have a numeric option value';
-			if (options > 3 || options < -3) throw 'Pitch range has to be between -3 and +3';
+			if (options > 6 || options < -6) throw 'Pitch range has to be between -6 and +6';
 			await setPitchPlayer(options);
 		} else if (command === 'setSpeed') {
 			if (isNaN(options)) throw 'Command setSpeed must have a numeric option value';
