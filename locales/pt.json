@@ -224,5 +224,12 @@
 	"SUGGEST_SONGS": "Sugerir canções!",
 	"REQUESTED_AND_other": "e {{count}} outros",
 	"REQUESTED_WITH": "(com {{names}})",
-	"REQUESTED_AND_one": "e outros"
+	"REQUESTED_AND_one": "e outros",
+	"TAG_TYPES": {
+		"CREATORS": "Criador",
+		"MISC": "Diversos"
+	},
+	"LIBRARY": "Biblioteca",
+	"YEAR": "Ano",
+	"TITLE": "Título"
 }
