@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 
 import { DBKara } from '../../../../../src/lib/types/database/kara';
 import GlobalContext from '../../../store/context';
-import { getTagInLocale, getTagInLocaleList, getTitleInLocale } from '../../../utils/kara';
+import { getSeriesSingersFull, getTagInLocaleList, getTitleInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 
@@ -173,19 +173,8 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 			title: `${i18next.t('TAG_TYPES.SERIES_other')} / ${i18next.t('KARA.SINGERS_BY')}`,
 			dataIndex: 'series',
 			key: 'series',
-			render: (series, record: DBKara) => {
-				return (
-					series
-						.map(
-							serie =>
-								getTagInLocale(this.context?.globalState.settings.data, serie, this.state.i18nTag).i18n
-						)
-						.join(', ') ||
-					getTagInLocaleList(this.context.globalState.settings.data, record.singers, this.state.i18nTag).join(
-						', '
-					)
-				);
-			},
+			render: (_series, record: DBKara) =>
+				getSeriesSingersFull(this.context?.globalState.settings.data, record, this.state.i18nTag),
 		},
 		{
 			title: i18next.t('TAG_TYPES.SONGTYPES_other'),
