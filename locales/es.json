@@ -232,5 +232,28 @@
 		}
 	},
 	"OFFICIAL_WEBSITE": "Sitio web oficial",
-	"SUGGEST_SONGS": "Sugerir canciones!"
+	"SUGGEST_SONGS": "Sugerir canciones!",
+	"LIBRARY": "Librería",
+	"TAG_TYPES": {
+		"SINGERGROUPS": "Banda",
+		"SINGERS": "Cantante",
+		"SONGTYPES": "Tipo de canción",
+		"CREATORS": "Creador",
+		"LANGS": "Idioma",
+		"AUTHORS": "Autor de karaoke",
+		"MISC": "Misceláneas",
+		"SONGWRITERS": "Compositor",
+		"GROUPS": "Grupo",
+		"ORIGINS": "Origen",
+		"GENRES": "Género",
+		"PLATFORMS": "Plataforma",
+		"SERIES": "Serie",
+		"VERSIONS": "Versión",
+		"WARNINGS": "Advertencia",
+		"FRANCHISES": "Franquicia",
+		"COLLECTIONS": "Colección"
+	},
+	"MIGRATION": "Migración",
+	"YEAR": "Año",
+	"TITLE": "Título"
 }
