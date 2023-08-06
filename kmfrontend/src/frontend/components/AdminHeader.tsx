@@ -122,7 +122,11 @@ function AdminHeader(props: IProps) {
 				context.globalDispatch,
 				<PlayCurrentModal
 					currentPlaylist={props.currentPlaylist}
-					displayedPlaylist={context.globalState.frontendContext.playlistInfoRight}
+					displayedPlaylist={
+						!isNonStandardPlaylist(context.globalState.frontendContext.playlistInfoRight.plaid)
+							? context.globalState.frontendContext.playlistInfoRight
+							: context.globalState.frontendContext.playlistInfoLeft
+					}
 				/>
 			);
 		} else {
