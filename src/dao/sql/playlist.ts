@@ -421,7 +421,7 @@ SELECT pk_plaid AS plaid,
 	smart_limit_number,
 	smart_limit_order,
 	smart_limit_type,
-	fk_plcid_playing AS plcontent_id_playing,
+	fk_plcid_playing AS plcid_playing,
 	fk_login AS username,
 	type_smart
 FROM playlist

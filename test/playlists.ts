@@ -360,7 +360,7 @@ describe('Playlists', () => {
 
 	it('Get playlist information AFTER new flag_playing', async () => {
 		const data = await commandBackend(token, 'getPlaylist', { plaid: newPublicPlaylistID });
-		expect(data.plcontent_id_playing).to.be.equal(currentPLCID);
+		expect(data.plcid_playing).to.be.equal(currentPLCID);
 	});
 
 	it('Up/downvote a song in public playlist Error 403', async () => {
