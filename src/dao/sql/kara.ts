@@ -80,17 +80,17 @@ SELECT
   END) as flag_favorites,
   ak.repository as repository,
   ak.tid AS tid,
-  array_remove(array_agg(DISTINCT pc.pk_id_plcontent), null) AS public_plc_id,
+  array_remove(array_agg(DISTINCT pc.pk_plcid), null) AS public_plc_id,
   (CASE WHEN COUNT(up.*) > 0 THEN TRUE ELSE FALSE END) as flag_upvoted,
-  array_remove(array_agg(DISTINCT pc_self.pk_id_plcontent), null) AS my_public_plc_id,
+  array_remove(array_agg(DISTINCT pc_self.pk_plcid), null) AS my_public_plc_id,
   count(ak.pk_kid) OVER()::integer AS count,
   array_remove(array_agg(DISTINCT krc.fk_kid_parent), null) AS parents,
   array_remove(array_agg(DISTINCT krp.fk_kid_child), null) AS children,
   array_remove((SELECT array_agg(DISTINCT fk_kid_child) FROM kara_relation
   WHERE fk_kid_parent = ANY (array_remove(array_agg(DISTINCT krc.fk_kid_parent), null))), ak.pk_kid) AS siblings,
-  (SELECT COUNT(up.fk_id_plcontent)::integer
+  (SELECT COUNT(up.fk_plcid)::integer
   FROM upvote up
-  LEFT JOIN playlist_content pc_pub ON pc_pub.fk_id_playlist = :publicPlaylist_id AND up.fk_id_plcontent = pc_pub.pk_id_plcontent
+  LEFT JOIN playlist_content pc_pub ON pc_pub.fk_plaid = :publicPlaylist_id AND up.fk_plcid = pc_pub.pk_plcid
   WHERE ak.pk_kid = pc.fk_kid
   ) AS upvotes
 FROM all_karas AS ak
@@ -102,9 +102,9 @@ LEFT OUTER JOIN kara_relation krc ON krc.fk_kid_child = ak.pk_kid ${
 	blacklistClauses ? ' AND krc.fk_kid_parent NOT IN (SELECT * FROM blacklist)' : ''
 }
 LEFT OUTER JOIN played AS p ON p.fk_kid = ak.pk_kid
-LEFT OUTER JOIN playlist_content AS pc ON pc.fk_kid = ak.pk_kid AND pc.fk_id_playlist = :publicPlaylist_id
-LEFT OUTER JOIN playlist_content AS pc_self on pc_self.fk_kid = ak.pk_kid AND pc_self.fk_id_playlist = :publicPlaylist_id AND pc_self.fk_login = :username
-LEFT OUTER JOIN upvote up ON up.fk_id_plcontent = pc.pk_id_plcontent AND up.fk_login = :username
+LEFT OUTER JOIN playlist_content AS pc ON pc.fk_kid = ak.pk_kid AND pc.fk_plaid = :publicPlaylist_id
+LEFT OUTER JOIN playlist_content AS pc_self on pc_self.fk_kid = ak.pk_kid AND pc_self.fk_plaid = :publicPlaylist_id AND pc_self.fk_login = :username
+LEFT OUTER JOIN upvote up ON up.fk_plcid = pc.pk_plcid AND up.fk_login = :username
 LEFT OUTER JOIN favorites AS f ON f.fk_login = :username AND f.fk_kid = ak.pk_kid
 ${joinClauses.join('')}
 ${additionalFrom.join('')}

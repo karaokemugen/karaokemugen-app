@@ -1168,7 +1168,7 @@ export async function editPLC(plc_ids: number[], params: PLCEditParams, refresh 
 			if (params.pos === -1) {
 				const pl = pls.find(p => p.plaid === plc.plaid);
 				const plContents = await selectPlaylistContentsMicro(plc.plaid);
-				const playingPLC = plContents.find(pc => pc.plcid === pl.plcontent_id_playing);
+				const playingPLC = plContents.find(pc => pc.plcid === pl.plcid_playing);
 				params.pos = playingPLC?.pos + 1;
 			}
 			await shiftPosInPlaylist(plc.plaid, params.pos, 1);
