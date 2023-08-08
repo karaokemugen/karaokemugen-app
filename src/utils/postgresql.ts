@@ -45,7 +45,7 @@ function determineEnv() {
 async function killPG() {
 	const state = getState();
 	const conf = getConfig();
-	if (state.os !== 'win32' || !conf.System.Database.bundledPostgresBinary) return;
+	if (!conf.System.Database.bundledPostgresBinary) return;
 	try {
 		let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl);
 		binPath = `"${binPath}"`;
@@ -323,16 +323,19 @@ export async function checkPG(): Promise<boolean> {
 		const options = ['status', '-D', resolve(state.dataPath, conf.System.Path.DB, 'postgres/')];
 		let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl);
 		if (state.os === 'win32') binPath = `"${binPath}"`;
-		await execa(binPath, options, {
+		const out = await execa(binPath, options, {
 			cwd: resolve(state.appPath, state.binPath.postgres),
 			env: determineEnv(),
 		});
+		logger.info(`Output from pg_ctl : ${out.stdout}`, { service });
 		logger.debug('Postgresql is running', { service });
 		return true;
 	} catch (err) {
 		// Status sends an exit code of 3 if postgresql is not running
 		// It gets thrown here so we return false (not running).
-		logger.debug('Postgresql is NOT running', { service });
+		logger.info(`Output err from pg_ctl : ${err.stdout}`, { service });
+		logger.info(`Output out from pg_ctl : ${err.stderr}`, { service });
+		logger.info('Postgresql is NOT running', { service });
 		return false;
 	}
 }
@@ -397,6 +400,11 @@ export async function initPG(relaunch = true) {
 		return true;
 	} catch (err) {
 		logger.error('Failed to start PostgreSQL', { service, obj: err });
+		// Postgres usually sends its content in non-unicode format under Windows. Go figure.
+		const decoder = new StringDecoder(state.os === 'win32' ? 'latin1' : 'utf8');
+		logger.error(`STDOUT from postgres : ${decoder.write(err.stdout)}`);
+		logger.error(`STDERR from postgres : ${decoder.write(err.stderr)}`);
+
 		// First let's try to kill PG if it's already running
 		if (relaunch) {
 			try {
@@ -418,8 +426,6 @@ export async function initPG(relaunch = true) {
 				env: determineEnv(),
 			});
 		} catch (err2) {
-			// Postgres usually sends its content in non-unicode format under Windows. Go figure.
-			const decoder = new StringDecoder(state.os === 'win32' ? 'latin1' : 'utf8');
 			logger.error('PostgreSQL error', { service, obj: decoder.write(err2.stderr) });
 		}
 		errorStep(i18next.t('ERROR_START_PG'));
