@@ -386,51 +386,67 @@ export async function initPG(relaunch = true) {
 	if (await checkPG()) return true;
 	logger.info('Launching bundled PostgreSQL', { service });
 	await updatePGConf();
-	const options = ['-w', '-D', `${pgDataDir}`, 'start'];
-	let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl);
+	const options = ['-D', `${pgDataDir}`];
+	const pgBinExe = state.os === 'win32' ? 'postgres.exe' : 'postgres';
+	let binPath = resolve(state.appPath, state.binPath.postgres, pgBinExe);
 	if (state.os === 'win32') binPath = `"${binPath}"`;
-	// We set all stdios on ignore or inherit since pg_ctl requires a TTY terminal and will hang if we don't do that
+	// We set all stdios on ignore or inherit since postgres requires a TTY terminal and will hang if we don't do that
 	const pgBinDir = resolve(state.appPath, state.binPath.postgres);
 	try {
-		await execa(binPath, options, {
+		execa(binPath, options, {
 			cwd: pgBinDir,
 			stdio: 'ignore',
 			env: determineEnv(),
-		});
-		return true;
-	} catch (err) {
-		logger.error('Failed to start PostgreSQL', { service, obj: err });
-		// Postgres usually sends its content in non-unicode format under Windows. Go figure.
-		const decoder = new StringDecoder(state.os === 'win32' ? 'latin1' : 'utf8');
-		logger.error(`STDOUT from postgres : ${decoder.write(err.stdout)}`);
-		logger.error(`STDERR from postgres : ${decoder.write(err.stderr)}`);
+		}).catch(async err => {
+			logger.error('Failed to start PostgreSQL', { service, obj: err });
+			// Postgres usually sends its content in non-unicode format under Windows. Go figure.
+			logger.error(`STDOUT from postgres : ${err.stdout}`);
+			logger.error(`STDERR from postgres : ${err.stderr}`);
 
-		// First let's try to kill PG if it's already running
-		if (relaunch) {
-			try {
-				await killPG();
-			} catch (err2) {
-				// It should be fatal, but even if it does abort, let's try to launch again.
+			// First let's try to kill PG if it's already running
+			if (relaunch) {
+				try {
+					await killPG();
+				} catch (err2) {
+					// It should be fatal, but even if it does abort, let's try to launch again.
+				}
+				// Let's try to relaunch. If it returns true this time, return directly. If not continue to try to pinpoint the error message
+				if (await initPG(false)) return;
 			}
-			// Let's try to relaunch. If it returns true this time, return directly. If not continue to try to pinpoint the error message
-			if (await initPG(false)) return;
-		}
-		// We're going to try launching it directly to get THE error.
-		const pgBinExe = state.os === 'win32' ? 'postgres.exe' : 'postgres';
-		const pgBinPath = `"${resolve(pgBinDir, pgBinExe)}"`;
-		const pgBinOptions = ['-D', `${pgDataDir}`];
-		try {
-			await execa(pgBinPath, pgBinOptions, {
-				cwd: pgBinDir,
-				encoding: null,
-				env: determineEnv(),
-			});
-		} catch (err2) {
-			logger.error('PostgreSQL error', { service, obj: decoder.write(err2.stderr) });
-		}
-		errorStep(i18next.t('ERROR_START_PG'));
-		profile('initPG');
-		throw err.message;
+			// Still no luck starting PG
+			// We're going to try launching it directly to get THE error and log it.
+			const pgBinPath = `"${resolve(pgBinDir, pgBinExe)}"`;
+			const pgBinOptions = ['-D', `${pgDataDir}`];
+			try {
+				await execa(pgBinPath, pgBinOptions, {
+					cwd: pgBinDir,
+					encoding: null,
+					env: determineEnv(),
+				});
+			} catch (err2) {
+				logger.error(`PostgreSQL error: ${err2.stderr}`, { service });
+			}
+			errorStep(i18next.t('ERROR_START_PG'));
+			profile('initPG');
+			throw err;
+		});
+		return await new Promise((PGStarted, PGNotStarted) => {
+			let retries = 0;
+			const detectingPostgres = setInterval(async () => {
+				retries += 1;
+				logger.info(`Checking if PostgreSQL has started up, try ${retries} of 10`, { service });
+				checkPG()
+					.then(() => {
+						clearInterval(detectingPostgres);
+						PGStarted(true);
+					})
+					.catch(() => {
+						if (retries > 10) PGNotStarted();
+					});
+			}, 1000);
+		});
+	} catch (err) {
+		throw err;
 	}
 }
 
