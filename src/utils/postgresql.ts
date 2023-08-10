@@ -13,7 +13,7 @@ import { errorStep } from '../electron/electronLogger.js';
 import { getConfig, resolvedPath } from '../lib/utils/config.js';
 import { asciiRegexp } from '../lib/utils/constants.js';
 import { downloadFile } from '../lib/utils/downloader.js';
-import { compressGzipFile, decompressGzipFile, fileExists, smartMove } from '../lib/utils/files.js';
+import { fileExists, smartMove } from '../lib/utils/files.js';
 import logger, { profile } from '../lib/utils/logger.js';
 import { PGVersion } from '../types/database.js';
 import { checkBinaries, editSetting } from './config.js';
@@ -45,7 +45,7 @@ function determineEnv() {
 async function killPG() {
 	const state = getState();
 	const conf = getConfig();
-	if (state.os !== 'win32' || !conf.System.Database.bundledPostgresBinary) return;
+	if (!conf.System.Database.bundledPostgresBinary) return;
 	try {
 		let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl);
 		binPath = `"${binPath}"`;
@@ -141,9 +141,14 @@ export async function dumpPG() {
 		throw err;
 	}
 	logger.info('Dumping database...', { service });
-	const dumpFile = resolve(state.dataPath, 'karaokemugen.sql');
+	const dumpFile = resolve(state.dataPath, 'karaokemugen.sql.gz');
+	const excludeTables = ['kara', 'tag', 'all_karas', 'all_tags', 'kara_relation', 'kara_tag'].map(
+		t => `--exclude-table-data=${t}`
+	);
 	try {
 		const options = [
+			'--compress=1',
+			...excludeTables,
 			'-c',
 			'-E',
 			'UTF8',
@@ -158,17 +163,17 @@ export async function dumpPG() {
 		];
 		let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_dump);
 		if (state.os === 'win32') binPath = `"${binPath}"`;
+		profile('dumpAndCompress');
 		await execa(binPath, options, {
 			cwd: resolve(state.appPath, state.binPath.postgres),
 			env: determineEnv(),
 		});
+		profile('dumpAndCompress');
 
 		if (!(await fileExists(dumpFile))) {
 			throw Error('Dump file not created');
 		}
 
-		await compressGzipFile(dumpFile);
-		await fs.unlink(dumpFile);
 		logger.info('Database dumped to file', { service });
 	} catch (err) {
 		if (err.stdout) sentry.addErrorInfo('stdout', err.stdout);
@@ -183,22 +188,13 @@ export async function dumpPG() {
 export async function restorePG() {
 	const conf = getConfig();
 	const state = getState();
-	const compressedDumpFile = resolve(state.dataPath, 'karaokemugen.sql.gz');
 	if (!conf.System.Database.bundledPostgresBinary) {
 		const err = 'Restore not available with hosted PostgreSQL servers';
 		logger.warn(err, { service });
 		throw err;
 	}
 	try {
-		let dumpFile = '';
-		try {
-			dumpFile = await decompressGzipFile(compressedDumpFile);
-		} catch (err) {
-			// Decompression can fail if the gzip file doesn't exist.
-			// This can happen if the user didn't launch KM in a while and its dump is still uncompressed
-			logger.warn('No compressed dump file, trying for uncompressed already...', { service });
-			dumpFile = resolve(state.dataPath, 'karaokemugen.sql');
-		}
+		const dumpFile = resolve(state.dataPath, 'karaokemugen.sql.gz');
 		const options = [
 			'-U',
 			conf.System.Database.username,
@@ -215,7 +211,6 @@ export async function restorePG() {
 			cwd: resolve(state.appPath, state.binPath.postgres),
 			env: determineEnv(),
 		});
-		await fs.unlink(dumpFile);
 		logger.info('Database restored from file', { service });
 	} catch (err) {
 		if (err.stdout) sentry.addErrorInfo('stdout', err.stdout);
@@ -328,16 +323,19 @@ export async function checkPG(): Promise<boolean> {
 		const options = ['status', '-D', resolve(state.dataPath, conf.System.Path.DB, 'postgres/')];
 		let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl);
 		if (state.os === 'win32') binPath = `"${binPath}"`;
-		await execa(binPath, options, {
+		const out = await execa(binPath, options, {
 			cwd: resolve(state.appPath, state.binPath.postgres),
 			env: determineEnv(),
 		});
+		logger.info(`Output from pg_ctl : ${out.stdout}`, { service });
 		logger.debug('Postgresql is running', { service });
 		return true;
 	} catch (err) {
 		// Status sends an exit code of 3 if postgresql is not running
 		// It gets thrown here so we return false (not running).
-		logger.debug('Postgresql is NOT running', { service });
+		logger.info(`Output err from pg_ctl : ${err.stdout}`, { service });
+		logger.info(`Output out from pg_ctl : ${err.stderr}`, { service });
+		logger.info('Postgresql is NOT running', { service });
 		return false;
 	}
 }
@@ -388,48 +386,67 @@ export async function initPG(relaunch = true) {
 	if (await checkPG()) return true;
 	logger.info('Launching bundled PostgreSQL', { service });
 	await updatePGConf();
-	const options = ['-w', '-D', `${pgDataDir}`, 'start'];
-	let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl);
+	const options = ['-D', `${pgDataDir}`];
+	const pgBinExe = state.os === 'win32' ? 'postgres.exe' : 'postgres';
+	let binPath = resolve(state.appPath, state.binPath.postgres, pgBinExe);
 	if (state.os === 'win32') binPath = `"${binPath}"`;
-	// We set all stdios on ignore or inherit since pg_ctl requires a TTY terminal and will hang if we don't do that
+	// We set all stdios on ignore or inherit since postgres requires a TTY terminal and will hang if we don't do that
 	const pgBinDir = resolve(state.appPath, state.binPath.postgres);
 	try {
-		await execa(binPath, options, {
+		execa(binPath, options, {
 			cwd: pgBinDir,
 			stdio: 'ignore',
 			env: determineEnv(),
-		});
-		return true;
-	} catch (err) {
-		logger.error('Failed to start PostgreSQL', { service, obj: err });
-		// First let's try to kill PG if it's already running
-		if (relaunch) {
-			try {
-				await killPG();
-			} catch (err2) {
-				// It should be fatal, but even if it does abort, let's try to launch again.
-			}
-			// Let's try to relaunch. If it returns true this time, return directly. If not continue to try to pinpoint the error message
-			if (await initPG(false)) return;
-		}
-		// We're going to try launching it directly to get THE error.
-		const pgBinExe = state.os === 'win32' ? 'postgres.exe' : 'postgres';
-		const pgBinPath = `"${resolve(pgBinDir, pgBinExe)}"`;
-		const pgBinOptions = ['-D', `${pgDataDir}`];
-		try {
-			await execa(pgBinPath, pgBinOptions, {
-				cwd: pgBinDir,
-				encoding: null,
-				env: determineEnv(),
-			});
-		} catch (err2) {
+		}).catch(async err => {
+			logger.error('Failed to start PostgreSQL', { service, obj: err });
 			// Postgres usually sends its content in non-unicode format under Windows. Go figure.
-			const decoder = new StringDecoder(state.os === 'win32' ? 'latin1' : 'utf8');
-			logger.error('PostgreSQL error', { service, obj: decoder.write(err2.stderr) });
-		}
-		errorStep(i18next.t('ERROR_START_PG'));
-		profile('initPG');
-		throw err.message;
+			logger.error(`STDOUT from postgres : ${err.stdout}`);
+			logger.error(`STDERR from postgres : ${err.stderr}`);
+
+			// First let's try to kill PG if it's already running
+			if (relaunch) {
+				try {
+					await killPG();
+				} catch (err2) {
+					// It should be fatal, but even if it does abort, let's try to launch again.
+				}
+				// Let's try to relaunch. If it returns true this time, return directly. If not continue to try to pinpoint the error message
+				if (await initPG(false)) return;
+			}
+			// Still no luck starting PG
+			// We're going to try launching it directly to get THE error and log it.
+			const pgBinPath = `"${resolve(pgBinDir, pgBinExe)}"`;
+			const pgBinOptions = ['-D', `${pgDataDir}`];
+			try {
+				await execa(pgBinPath, pgBinOptions, {
+					cwd: pgBinDir,
+					encoding: null,
+					env: determineEnv(),
+				});
+			} catch (err2) {
+				logger.error(`PostgreSQL error: ${err2.stderr}`, { service });
+			}
+			errorStep(i18next.t('ERROR_START_PG'));
+			profile('initPG');
+			throw err;
+		});
+		return await new Promise((PGStarted, PGNotStarted) => {
+			let retries = 0;
+			const detectingPostgres = setInterval(async () => {
+				retries += 1;
+				logger.info(`Checking if PostgreSQL has started up, try ${retries} of 10`, { service });
+				checkPG()
+					.then(() => {
+						clearInterval(detectingPostgres);
+						PGStarted(true);
+					})
+					.catch(() => {
+						if (retries > 10) PGNotStarted();
+					});
+			}, 1000);
+		});
+	} catch (err) {
+		throw err;
 	}
 }
 

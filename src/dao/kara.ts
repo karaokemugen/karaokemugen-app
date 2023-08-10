@@ -82,9 +82,7 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	let blacklistClauses = '';
 	if (params.blacklist) {
 		withCTEs.push(
-			`blacklist AS (SELECT fk_kid AS kid FROM playlist_content WHERE fk_id_playlist = '${
-				getState().blacklistPlaid
-			}')`
+			`blacklist AS (SELECT fk_kid AS kid FROM playlist_content WHERE fk_plaid = '${getState().blacklistPlaid}')`
 		);
 		blacklistClauses += ' AND ak.pk_kid NOT IN (SELECT kid FROM blacklist)';
 	}
@@ -136,7 +134,7 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		whereClauses += ` AND ak.pk_kid NOT IN (
 			SELECT pc.fk_kid
 			FROM playlist_content pc
-			WHERE pc.fk_id_playlist = '${getState().publicPlaid}'
+			WHERE pc.fk_plaid = '${getState().publicPlaid}'
 		)`;
 	}
 	const collections = getConfig().Karaoke.Collections;

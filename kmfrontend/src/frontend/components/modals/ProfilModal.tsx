@@ -4,6 +4,7 @@ import i18next from 'i18next';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import ReactDOM from 'react-dom';
 
+import { DBKara } from '../../../../../src/lib/types/database/kara';
 import { User } from '../../../../../src/lib/types/user';
 import { logout, setAuthenticationInformation } from '../../../store/actions/auth';
 import { closeModal, showModal } from '../../../store/actions/modal';
@@ -17,13 +18,13 @@ import {
 	languagesSupport,
 	listCountries,
 } from '../../../utils/isoLanguages';
+import { getTagInLanguage, sortAndHideTags } from '../../../utils/kara';
+import { getFavoritesExportFileName } from '../../../utils/playlist';
 import { commandBackend } from '../../../utils/socket';
 import { callModal, displayMessage } from '../../../utils/tools';
 import Autocomplete from '../generic/Autocomplete';
 import CropAvatarModal from './CropAvatarModal';
 import OnlineProfileModal from './OnlineProfileModal';
-import { getTagInLanguage, sortAndHideTags } from '../../../utils/kara';
-import { DBKara } from '../../../../../src/lib/types/database/kara';
 interface IProps {
 	scope?: 'public' | 'admin';
 	closeProfileModal?: () => void;
@@ -147,12 +148,7 @@ function ProfilModal(props: IProps) {
 				dlAnchorElem.setAttribute('href', dataStr);
 				dlAnchorElem.setAttribute(
 					'download',
-					[
-						'KaraMugen',
-						'fav',
-						context.globalState.auth.data.username,
-						new Date().toLocaleDateString().replace('\\', '-'),
-					].join('_') + '.kmfavorites'
+					getFavoritesExportFileName(context.globalState.auth.data.username)
 				);
 				dlAnchorElem.click();
 			}

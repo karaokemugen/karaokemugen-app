@@ -2,6 +2,8 @@ import i18next from 'i18next';
 
 import { CurrentSong } from '../../../../../src/types/playlist';
 import { PublicPlayerState } from '../../../../../src/types/state';
+import { useContext } from 'react';
+import GlobalContext from '../../../store/context';
 
 interface IProps {
 	putPlayerCommando: (event: any) => void;
@@ -10,9 +12,13 @@ interface IProps {
 }
 
 function AdminButtons(props: IProps) {
+	const context = useContext(GlobalContext);
+
 	return (
 		<>
-			{props.statusPlayer?.stopping || props.statusPlayer?.streamerPause ? (
+			{props.statusPlayer?.stopping ||
+			props.statusPlayer?.mediaType !== 'song' ||
+			context?.globalState.settings.data.config?.Karaoke.ClassicMode ? (
 				<button
 					title={i18next.t('STOP_NOW')}
 					id="stopNow"

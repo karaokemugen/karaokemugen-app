@@ -99,6 +99,7 @@ function emitPlayerState(part: RecursivePartial<State>) {
 		'currentSessionID',
 		'currentRequester',
 		'stopping',
+		'streamerPause',
 		'defaultLocale',
 		'counterToJingle',
 		'counterToSponsor',

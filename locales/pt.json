@@ -12,6 +12,7 @@
 			"Não se esqueça de sincronizar a base de vez em quando: Podes descobrir novos karaokês!",
 			"Não consegue encontrar uma música na base de dados? Procure em https://kara.moe/suggest/, pode estar lá!",
 			"Karaoke Mugen é um projeto de código 100% aberto e colaborativo, todos podem participar!",
+			"Você pode importar arquivos através do Menu Arquivo -> Importar, arraste e solte ou associe o executável Karaokê Mugen a ele para permitir que KM os abra e use: listas de reprodução, favoritos…",
 			"Sou a Nanamin, a mascote do Karaoke Mugen, fui criado pela maravilhosa Sedeto! http://www.sedeto.fr",
 			"Há muitas opções para configurar seu karaokê! Tire algum tempo para revisá-los todos antes de começar uma sessão!",
 			"As sessões são eventos individuais de karaoke. Permite-lhe agrupar canções pedidas e tocadas para se lembrar do que foi tocado durante um aniversário, casamento ou evento!",
@@ -223,5 +224,12 @@
 	"SUGGEST_SONGS": "Sugerir canções!",
 	"REQUESTED_AND_other": "e {{count}} outros",
 	"REQUESTED_WITH": "(com {{names}})",
-	"REQUESTED_AND_one": "e outros"
+	"REQUESTED_AND_one": "e outros",
+	"TAG_TYPES": {
+		"CREATORS": "Criador",
+		"MISC": "Diversos"
+	},
+	"LIBRARY": "Biblioteca",
+	"YEAR": "Ano",
+	"TITLE": "Título"
 }

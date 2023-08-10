@@ -11,7 +11,7 @@ SELECT
 (SELECT COUNT(pk_tid) FROM tag WHERE types @> ARRAY[5])::integer AS languages,
 (SELECT COUNT(pk_tid) FROM tag WHERE types @> ARRAY[1])::integer AS series,
 (SELECT COUNT(*) FROM played)::integer AS played,
-(SELECT COUNT(pk_id_playlist) FROM playlist)::integer AS playlists,
+(SELECT COUNT(pk_plaid) FROM playlist)::integer AS playlists,
 (SELECT SUM(duration) FROM kara)::integer AS duration,
 (SELECT SUM(k.duration) FROM played p LEFT JOIN kara k ON k.pk_kid = p.fk_kid)::integer AS playtime,
 (SELECT value FROM settings WHERE option = 'usageTime')::integer AS usagetime,

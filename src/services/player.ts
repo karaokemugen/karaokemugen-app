@@ -13,10 +13,11 @@ import { emitWS } from '../lib/utils/ws.js';
 import { BackgroundType } from '../types/backgrounds.js';
 import { MpvHardwareDecodingOptions } from '../types/mpvIPC.js';
 import { PlayerCommand } from '../types/player.js';
-import { getState, setState } from '../utils/state.js';
+import { getPlayerState, getState, setState } from '../utils/state.js';
 import { playCurrentSong, playRandomSongAfterPlaylist } from './karaEngine.js';
 import { getCurrentSong, getCurrentSongPLCID, getNextSong, getPreviousSong, setPlaying } from './playlist.js';
 import { startPoll } from './poll.js';
+import { stopGame } from './quiz.js';
 
 const service = 'Player';
 
@@ -38,9 +39,11 @@ export async function prev() {
 	} catch (err) {
 		logger.warn('Previous song is not available', { service, obj: err });
 	} finally {
-		playPlayer(true);
+		await playPlayer(true);
 	}
 }
+
+let pauseDate: Date;
 
 export async function next() {
 	logger.debug('Going to next song', { service });
@@ -75,22 +78,26 @@ export async function next() {
 					mpv.displaySongInfo(kara.infos, -1, true, kara.warnings, !getState().quiz.running);
 				}
 				if (conf.Karaoke.StreamerMode.PauseDuration > 0) {
+					// Setting this to make sure the pause hasn't been reset by another pause
+					const currentDate = new Date();
+					pauseDate = currentDate;
 					await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
 					if (
 						getState().streamerPause &&
 						getState().pauseInProgress &&
 						getConfig().Karaoke.StreamerMode.Enabled &&
-						getState().player.playerStatus === 'stop'
+						getState().player.playerStatus === 'stop' &&
+						pauseDate === currentDate
 					) {
 						await playPlayer(true);
 					}
-					setState({ streamerPause: false, pauseInProgress: false });
+					if (pauseDate === currentDate) setState({ streamerPause: false, pauseInProgress: false });
 				}
 			} else {
 				setState({ currentRequester: null });
-				if (getState().player.playerStatus !== 'stop') playPlayer(true);
+				if (getState().player.playerStatus !== 'stop') await playPlayer(true);
 			}
-		} else if (conf.Karaoke.StreamerMode.Enabled || !getState().quiz.running) {
+		} else if (conf.Karaoke.StreamerMode.Enabled && !getState().quiz.running) {
 			await stopPlayer(true, true);
 			if (conf.Karaoke.Poll.Enabled) {
 				try {
@@ -113,6 +120,8 @@ export async function next() {
 			// Play next random song when hitting the "next" button after a playlist ended
 			setState({ currentRequester: null });
 			await playRandomSongAfterPlaylist();
+		} else if (getState().quiz.running) {
+			stopGame(true);
 		} else {
 			setState({ currentRequester: null });
 			await stopPlayer(true, true);
@@ -165,16 +174,11 @@ export async function playPlayer(now?: boolean) {
 }
 
 export async function stopPlayer(now = true, endOfPlaylist = false) {
-	if (now || getState().stopping || getState().streamerPause || getConfig().Karaoke.ClassicMode) {
+	if (now || getState().stopping || getPlayerState().mediaType !== 'song' || getConfig().Karaoke.ClassicMode) {
 		logger.info('Karaoke stopping NOW', { service });
 		// No need to stop in streamerPause, we're already stopped, but we'll disable the pause anyway.
 		let stopType: BackgroundType = 'stop';
-		if (
-			(getState().streamerPause || getConfig().Karaoke.ClassicMode) &&
-			!endOfPlaylist &&
-			!getState().stopping &&
-			!getState().pauseInProgress
-		) {
+		if ((getState().streamerPause || getConfig().Karaoke.ClassicMode) && !endOfPlaylist && !getState().stopping) {
 			stopType = 'pause';
 			setState({ pauseInProgress: true });
 		} else {
@@ -194,6 +198,7 @@ export async function stopPlayer(now = true, endOfPlaylist = false) {
 	} else if (!getState().stopping) {
 		logger.info('Karaoke stopping after current song', { service });
 		setState({ stopping: true });
+		return APIMessage('STOP_AFTER');
 	}
 }
 
@@ -295,9 +300,9 @@ export async function playerNeedsRestart() {
 	const state = getState();
 	if (state.player.playerStatus === 'stop' && !state.playerNeedsRestart && !state.isTest) {
 		setState({ playerNeedsRestart: true });
-		logger.info('Player will restart in 5 seconds', { service });
+		logger.info('Player will restart in one second', { service });
 		emitWS('operatorNotificationInfo', APIMessage('NOTIFICATION.OPERATOR.INFO.PLAYER_RESTARTING'));
-		mpv.message(i18n.t('RESTARTING_PLAYER'), 5000);
+		mpv.message(i18n.t('RESTARTING_PLAYER'), 1000);
 		await sleep(1000);
 		await restartPlayer();
 		setState({ playerNeedsRestart: false });
@@ -326,8 +331,13 @@ export function displayInfo() {
 	return mpv.displayInfo();
 }
 
+let playerCommandLock = false;
+
 export async function sendCommand(command: PlayerCommand, options: any): Promise<APIMessageType> {
+	logger.info(`Received command from API : ${command} (${options})`, { service });
 	if (isShutdownInProgress()) return;
+	if (playerCommandLock) return;
+	playerCommandLock = true;
 	// Resetting singlePlay to false everytime we use a command.
 	const state = getState();
 	if (state.isTest) throw 'Player management is disabled in test mode';
@@ -335,14 +345,19 @@ export async function sendCommand(command: PlayerCommand, options: any): Promise
 		if (command === 'play') {
 			await playPlayer();
 		} else if (command === 'stopNow') {
-			setState({ singlePlay: false, randomPlaying: false });
+			setState({
+				singlePlay: false,
+				randomPlaying: false,
+				streamerPause: false,
+				pauseInProgress: false,
+				stopping: true,
+			});
 			await stopPlayer();
 		} else if (command === 'pause') {
 			await pausePlayer();
 		} else if (command === 'stopAfter') {
-			setState({ singlePlay: false, randomPlaying: false });
-			await stopPlayer(false);
-			return APIMessage('STOP_AFTER');
+			setState({ singlePlay: false, randomPlaying: false, streamerPause: false, pauseInProgress: false });
+			return await stopPlayer(false);
 		} else if (command === 'skip') {
 			setState({ singlePlay: false, randomPlaying: false });
 			await next();
@@ -383,7 +398,7 @@ export async function sendCommand(command: PlayerCommand, options: any): Promise
 			await setVolumePlayer(options);
 		} else if (command === 'setPitch') {
 			if (isNaN(options)) throw 'Command setPitch must have a numeric option value';
-			if (options > 3 || options < -3) throw 'Pitch range has to be between -3 and +3';
+			if (options > 6 || options < -6) throw 'Pitch range has to be between -6 and +6';
 			await setPitchPlayer(options);
 		} else if (command === 'setSpeed') {
 			if (isNaN(options)) throw 'Command setSpeed must have a numeric option value';
@@ -397,6 +412,8 @@ export async function sendCommand(command: PlayerCommand, options: any): Promise
 	} catch (err) {
 		logger.error(`Command ${command} failed`, { service, obj: err });
 		throw err;
+	} finally {
+		playerCommandLock = false;
 	}
 }
 

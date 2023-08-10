@@ -250,5 +250,30 @@
 		"Memberi makan kucing",
 		"Mengonfigurasi fins"
 	],
-	"MIGRATION": "Migrasi"
+	"MIGRATION": "Migrasi",
+	"QUIZ_RULES": {
+		"SECONDS_other": "{{count}} detik"
+	},
+	"LIBRARY": "Pustaka",
+	"TAG_TYPES": {
+		"SONGWRITERS": "Penulis Lagu",
+		"LANGS": "Bahasa",
+		"GROUPS": "Kelompok",
+		"SINGERGROUPS": "Klub Musik",
+		"SINGERS": "Penyanyi",
+		"SONGTYPES": "Jenis lagu",
+		"CREATORS": "Pembuat",
+		"AUTHORS": "Pengarang karaoke",
+		"MISC": "Lain-lain",
+		"ORIGINS": "Asal",
+		"GENRES": "Genre",
+		"PLATFORMS": "Platform",
+		"SERIES": "Serial",
+		"VERSIONS": "Versi",
+		"WARNINGS": "Peringatan",
+		"FRANCHISES": "Waralaba",
+		"COLLECTIONS": "Koleksi"
+	},
+	"YEAR": "Tahun",
+	"TITLE": "Judul"
 }

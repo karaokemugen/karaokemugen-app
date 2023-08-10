@@ -1,3 +1,37 @@
+# v7.1.21 - 09/08/2023
+
+Bugfixes! Bugfixes!
+
+## Changes
+
+-   Extended pitch levels. You can go much higher or lower now when modifying pitch
+-   Database dump should take much less time now as we exclude karaoke store data from it (#1493)
+-   mpv now restarts faster after a change needing restart
+
+## Fixes
+
+-   Fixed the multiple mpv windows appearing sometimes when mpv ahs been closed incorrectly.
+-   Fixed classic mode not being synced between front and backend sometimes
+-   Fixed progress bar not showing after next song
+-   Fixed stopping mechanism when quizz ends because end of playlist
+-   Fixed encore playing during quizz
+-   Fixed outros playing during quizz
+-   Fixed mpv needing a restart when changing screens
+-   Fixed mpv log getter
+-   Fixed postgresql not being closed down with Karaoke Mugen, especially under Linux
+-   Fixed playlist export filenames
+-   Fixed MPRIS initialization requesting info on a song that's not there yet
+-   Fixed Flatpak build by compiling mpv/postgres/patch/ffmpeg directly
+-   Some i18n fixes
+-   Fixed play current modal using non standard playlists
+-   Fixed singer groups in karaoke batch edit page
+
+## Misc
+
+-   Upgraded backend dependencies
+-   Renamed some fields in database
+-   Updated translations
+
 # v7.1.17 - 20/07/2023
 
 This is mainly a bugfix release
@@ -32,7 +66,6 @@ This is a bugfix release (mostly)
 ## New features
 
 -   Furigana is now shown in a kara detail's page within lyrics if they have any (like on songs from the kana collection)
--
 
 ## Changes
 
@@ -50,7 +83,7 @@ This is a bugfix release (mostly)
 -   Fixed connection info not displaying at th ebottom of the player screen
 -   Fixed playlist ID in public interface
 -   Fixed deleting checked karaoeks
--               Fixed karalist issues
+-   Fixed karalist issues
 -   Fixed current playlist search
 -   Fixed opposite playlist in karaline
 -   Fixed version selector's TypeError

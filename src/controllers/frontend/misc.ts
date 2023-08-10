@@ -1,9 +1,8 @@
 import { sample } from 'lodash';
 import { Socket } from 'socket.io';
 
-import { shutdown } from '../../components/engine.js';
+import { initKaraBase, shutdown } from '../../components/engine.js';
 import { getMpvAudioOutputs } from '../../components/mpv.js';
-import { generateDB } from '../../dao/database.js';
 import { getSettings, saveSetting } from '../../lib/dao/database.js';
 import { generateDatabase } from '../../lib/services/generation.js';
 import { APIData } from '../../lib/types/api.js';
@@ -161,7 +160,7 @@ export default function miscController(router: SocketIOApp) {
 	router.route('generateDatabase', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
-			await generateDB();
+			await initKaraBase();
 			return { code: 200, message: APIMessage('DATABASE_GENERATED') };
 		} catch (err) {
 			const code = 'DATABASE_GENERATED_ERROR';
@@ -196,6 +195,7 @@ export default function miscController(router: SocketIOApp) {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			await restorePG();
+			await initKaraBase();
 			return APIMessage('DATABASE_RESTORED');
 		} catch (err) {
 			throw { code: 500, message: APIMessage('DATABASE_RESTORED_ERROR') };
