@@ -841,7 +841,7 @@ class Players {
 
 	async getmpvLog(type: PlayerType) {
 		try {
-			const logData = await fs.readFile(this.players[type].logFile, 'utf-8');
+			const logData = await fs.readFile(resolve(resolvedPath('Logs'), this.players[type].logFile), 'utf-8');
 			return logData.split('\n').slice(-100);
 		} catch (err) {
 			logger.error('Unable to get mpv log', { service, obj: err });

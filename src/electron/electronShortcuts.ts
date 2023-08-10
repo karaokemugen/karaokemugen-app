@@ -69,7 +69,10 @@ export async function mprisService() {
 	player.canEditTracks = false;
 
 	const song = await getCurrentSong();
-	player.metadata = await setMPRISMetadata(song);
+
+	if (song) {
+		player.metadata = await setMPRISMetadata(song);
+	}
 
 	player.on('quit', () => {
 		stopPlayer(true).catch(() => {});

@@ -110,6 +110,7 @@ export async function initEngine() {
 			await initDBSystem();
 			initStep(i18next.t('INIT_RESTOREDB'));
 			await restorePG();
+			await initKaraBase();
 			await exit(0);
 		} catch (err) {
 			sentry.error(err);
@@ -132,10 +133,7 @@ export async function initEngine() {
 		try {
 			initStep(i18next.t('INIT_DB'));
 			await initDBSystem();
-			initStep(i18next.t('INIT_GEN'));
-			const checksum = await baseChecksum();
-			await generateDB();
-			await saveSetting('baseChecksum', checksum);
+			await initKaraBase();
 			await exit(0);
 		} catch (err) {
 			logger.error('Generation failed', { service, obj: err });
@@ -416,4 +414,12 @@ async function initUsageTimer() {
 async function updateUsageTimer() {
 	usageTime += 60;
 	await saveSetting('usageTime', `${usageTime}`);
+}
+
+/* Generates database and writes base checksum to DB */
+export async function initKaraBase() {
+	initStep(i18next.t('INIT_GEN'));
+	const checksum = await baseChecksum();
+	await generateDB();
+	await saveSetting('baseChecksum', checksum);
 }

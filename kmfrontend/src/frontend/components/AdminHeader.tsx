@@ -122,7 +122,11 @@ function AdminHeader(props: IProps) {
 				context.globalDispatch,
 				<PlayCurrentModal
 					currentPlaylist={props.currentPlaylist}
-					displayedPlaylist={context.globalState.frontendContext.playlistInfoRight}
+					displayedPlaylist={
+						!isNonStandardPlaylist(context.globalState.frontendContext.playlistInfoRight.plaid)
+							? context.globalState.frontendContext.playlistInfoRight
+							: context.globalState.frontendContext.playlistInfoLeft
+					}
 				/>
 			);
 		} else {
@@ -174,7 +178,7 @@ function AdminHeader(props: IProps) {
 		setStatusPlayer(oldState => {
 			const state = { ...oldState };
 			const newValue = (changeValue && oldState.pitch + changeValue) || 0; // Reset if parameter is null
-			state.pitch = newValue <= 3 && newValue >= -3 ? newValue : oldState.pitch; // Limit possible pitch values
+			state.pitch = newValue <= 6 && newValue >= -6 ? newValue : oldState.pitch; // Limit possible pitch values
 			state.speed = 100; // reset speed
 			return state;
 		});
@@ -390,7 +394,9 @@ function AdminHeader(props: IProps) {
 			) : null}
 
 			<div className="header-group controls">
-				{statusPlayer?.stopping || statusPlayer?.streamerPause ? (
+				{statusPlayer?.stopping ||
+				statusPlayer?.mediaType !== 'song' ||
+				context?.globalState.settings.data.config?.Karaoke.ClassicMode ? (
 					<button
 						title={i18next.t('STOP_NOW')}
 						id="stopNow"
@@ -676,7 +682,9 @@ function AdminHeader(props: IProps) {
 							</div>
 						</li>
 						<li className="buttonsMobileMenuSmaller">
-							{statusPlayer?.stopping || statusPlayer?.streamerPause ? (
+							{statusPlayer?.stopping ||
+							statusPlayer?.mediaType !== 'song' ||
+							context?.globalState.settings.data.config?.Karaoke.ClassicMode ? (
 								<div
 									onClick={event => {
 										props.putPlayerCommando(event);

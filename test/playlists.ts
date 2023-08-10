@@ -311,7 +311,7 @@ describe('Playlists', () => {
 			expect(pl.karacount).to.be.a('number').and.at.least(0);
 			expect(pl.name).to.be.a('string');
 			expect(pl.plaid).to.be.a('string').and.match(uuidRegexp);
-			expect(pl.plcontent_id_playing).to.be.a('number').and.at.least(0);
+			expect(pl.plcid_playing).to.be.a('number').and.at.least(0);
 			expect(pl.time_left).to.be.a('number').and.at.least(0);
 			expect(pl.username).to.be.a('string');
 		}
@@ -360,7 +360,7 @@ describe('Playlists', () => {
 
 	it('Get playlist information AFTER new flag_playing', async () => {
 		const data = await commandBackend(token, 'getPlaylist', { plaid: newPublicPlaylistID });
-		expect(data.plcontent_id_playing).to.be.equal(currentPLCID);
+		expect(data.plcid_playing).to.be.equal(currentPLCID);
 	});
 
 	it('Up/downvote a song in public playlist Error 403', async () => {

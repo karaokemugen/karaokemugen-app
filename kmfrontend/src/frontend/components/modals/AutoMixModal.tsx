@@ -27,7 +27,7 @@ function AutoMixModal(props: IProps) {
 	const [limitNumber, setLimitNumber] = useState(0);
 	const memoizedUsers = useMemo(() => {
 		props.userList.push({
-			nickname: i18next.t('ALL_LOGGED_USERS'),
+			nickname: i18next.t('AUTOMIX_MODAL.ALL_LOGGED_USERS'),
 			login: '*',
 		});
 		return props.userList.map(el => {

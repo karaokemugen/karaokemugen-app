@@ -6,15 +6,15 @@ import nanamiShockedPng from '../../../assets/nanami-shocked.png';
 import nanamiShockedWebP from '../../../assets/nanami-shocked.webp';
 import { showModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
+import { isElectron } from '../../../utils/electron';
 import { getOppositePlaylistInfo, getPlaylistInfo, setPlaylistInfo } from '../../../utils/kara';
+import { getFavoritesExportFileName, getPlaylistExportFileName } from '../../../utils/playlist';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { callModal, displayMessage, isNonStandardPlaylist, nonStandardPlaylists } from '../../../utils/tools';
-import DeletePlaylistModal from './DeletePlaylistModal';
 import AutoMixModal from './AutoMixModal';
+import DeletePlaylistModal from './DeletePlaylistModal';
 import PlaylistModal from './PlaylistModal';
 import ShuffleModal from './ShuffleModal';
-import { isElectron } from '../../../utils/electron';
-import dayjs from 'dayjs';
 
 interface IProps {
 	side: 'left' | 'right';
@@ -62,22 +62,11 @@ function PlaylistCommandsModal(props: IProps) {
 				const dlAnchorElem = document.getElementById('downloadAnchorElem');
 				if (dlAnchorElem) {
 					dlAnchorElem.setAttribute('href', dataStr);
-					if (playlist?.plaid === nonStandardPlaylists.favorites) {
-						dlAnchorElem.setAttribute(
-							'download',
-							[
-								'KaraMugen',
-								'fav',
-								context.globalState.auth.data.username,
-								new Date().toLocaleDateString().replace('\\', '-'),
-							].join('_') + '.kmfavorites'
-						);
-					} else {
-						dlAnchorElem.setAttribute(
-							'download',
-							`KaraMugen_${playlist?.name}_${dayjs(new Date()).format('YYYY-MM-DD_HH-mm-ss')}.kmplaylist`
-						);
-					}
+					const fileName =
+						playlist?.plaid === nonStandardPlaylists.favorites
+							? getFavoritesExportFileName(context.globalState.auth.data.username)
+							: getPlaylistExportFileName(playlist);
+					dlAnchorElem.setAttribute('download', fileName);
 					dlAnchorElem.click();
 				}
 			} catch (e) {

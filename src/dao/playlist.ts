@@ -77,7 +77,7 @@ export async function insertPlaylist(pl: DBPL): Promise<string> {
 			username: pl.username.toLowerCase(),
 		})
 	);
-	return res.rows[0]?.pk_id_playlist;
+	return res.rows[0]?.pk_plaid;
 }
 
 export function truncatePlaylist(id: string) {
@@ -205,7 +205,7 @@ export async function selectPlaylistContents(params: PLCParams): Promise<DBPLC[]
 		whereClause = ` AND pc.fk_kid NOT IN (
 			SELECT pc.fk_kid
 			FROM playlist_content pc
-			WHERE pc.fk_id_playlist = ${getState().publicPlaid}
+			WHERE pc.fk_plaid = ${getState().publicPlaid}
 		)`;
 		orderClause = 'RANDOM()';
 	}
