@@ -386,7 +386,6 @@ export async function initPG(relaunch = true) {
 	if (await checkPG()) return true;
 	logger.info('Launching bundled PostgreSQL', { service });
 	await updatePGConf();
-	const options = ['-D', `${pgDataDir}`];
 	const pgBinExe = state.os === 'win32' ? 'postgres.exe' : 'postgres';
 	let binPath = resolve(state.appPath, state.binPath.postgres, pgBinExe);
 	if (state.os === 'win32') binPath = `"${binPath}"`;
@@ -394,6 +393,7 @@ export async function initPG(relaunch = true) {
 	const pgBinDir = resolve(state.appPath, state.binPath.postgres);
 	try {
 		if (state.os === 'linux') {
+			const options = ['-D', `${pgDataDir}`];
 			execa(binPath, options, {
 				cwd: pgBinDir,
 				stdio: 'ignore',
@@ -448,6 +448,7 @@ export async function initPG(relaunch = true) {
 			});
 		}
 		try {
+			const options = ['-w', '-D', `${pgDataDir}`, 'start'];
 			await execa(resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl), options, {
 				cwd: pgBinDir,
 				stdio: 'ignore',
