@@ -1,3 +1,7 @@
+# v7.1.22 - 10/08/2023
+
+Hot fix for Postgres not launching directly on Windows with administrator users unless you use pg_ctl ? I've seen weirder stuff happen before. Do you know about The Wandering Inn ?
+
 # v7.1.21 - 09/08/2023
 
 Bugfixes! Bugfixes!

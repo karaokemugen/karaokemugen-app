@@ -393,11 +393,68 @@ export async function initPG(relaunch = true) {
 	// We set all stdios on ignore or inherit since postgres requires a TTY terminal and will hang if we don't do that
 	const pgBinDir = resolve(state.appPath, state.binPath.postgres);
 	try {
-		execa(binPath, options, {
-			cwd: pgBinDir,
-			stdio: 'ignore',
-			env: determineEnv(),
-		}).catch(async err => {
+		if (state.os === 'linux') {
+			execa(binPath, options, {
+				cwd: pgBinDir,
+				stdio: 'ignore',
+				env: determineEnv(),
+			}).catch(async err => {
+				logger.error('Failed to start PostgreSQL', { service, obj: err });
+				// Postgres usually sends its content in non-unicode format under Windows. Go figure.
+				logger.error(`STDOUT from postgres : ${err.stdout}`);
+				logger.error(`STDERR from postgres : ${err.stderr}`);
+
+				// First let's try to kill PG if it's already running
+				if (relaunch) {
+					try {
+						await killPG();
+					} catch (err2) {
+						// It should be fatal, but even if it does abort, let's try to launch again.
+					}
+					// Let's try to relaunch. If it returns true this time, return directly. If not continue to try to pinpoint the error message
+					if (await initPG(false)) return;
+				}
+				// Still no luck starting PG
+				// We're going to try launching it directly to get THE error and log it.
+				const pgBinPath = `"${resolve(pgBinDir, pgBinExe)}"`;
+				const pgBinOptions = ['-D', `${pgDataDir}`];
+				try {
+					await execa(pgBinPath, pgBinOptions, {
+						cwd: pgBinDir,
+						encoding: null,
+						env: determineEnv(),
+					});
+				} catch (err2) {
+					logger.error(`PostgreSQL error: ${err2.stderr}`, { service });
+				}
+				errorStep(i18next.t('ERROR_START_PG'));
+				profile('initPG');
+				throw err;
+			});
+			return await new Promise((PGStarted, PGNotStarted) => {
+				let retries = 0;
+				const detectingPostgres = setInterval(async () => {
+					retries += 1;
+					logger.info(`Checking if PostgreSQL has started up, try ${retries} of 10`, { service });
+					checkPG()
+						.then(() => {
+							clearInterval(detectingPostgres);
+							PGStarted(true);
+						})
+						.catch(() => {
+							if (retries > 10) PGNotStarted();
+						});
+				}, 1000);
+			});
+		}
+		try {
+			await execa(resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl), options, {
+				cwd: pgBinDir,
+				stdio: 'ignore',
+				env: determineEnv(),
+			});
+			return true;
+		} catch (err) {
 			logger.error('Failed to start PostgreSQL', { service, obj: err });
 			// Postgres usually sends its content in non-unicode format under Windows. Go figure.
 			logger.error(`STDOUT from postgres : ${err.stdout}`);
@@ -429,22 +486,7 @@ export async function initPG(relaunch = true) {
 			errorStep(i18next.t('ERROR_START_PG'));
 			profile('initPG');
 			throw err;
-		});
-		return await new Promise((PGStarted, PGNotStarted) => {
-			let retries = 0;
-			const detectingPostgres = setInterval(async () => {
-				retries += 1;
-				logger.info(`Checking if PostgreSQL has started up, try ${retries} of 10`, { service });
-				checkPG()
-					.then(() => {
-						clearInterval(detectingPostgres);
-						PGStarted(true);
-					})
-					.catch(() => {
-						if (retries > 10) PGNotStarted();
-					});
-			}, 1000);
-		});
+		}
 	} catch (err) {
 		throw err;
 	}
