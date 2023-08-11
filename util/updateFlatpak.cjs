@@ -5,13 +5,9 @@ const fs = require('fs/promises');
 
 const { mainModule } = require('process');
 
-const distX64 = process.argv[2];
-const distX64SHA = process.argv[3];
-const distARM64 = process.argv[4];
-const distARM64SHA = process.argv[5];
-const sentrycliVersion = process.argv[6];
-const sentrycliX64SHA = process.argv[7];
-const sentrycliARM64SHA = process.argv[8];
+const sentrycliVersion = process.argv[2];
+const sentrycliX64SHA = process.argv[3];
+const sentrycliARM64SHA = process.argv[4];
 
 const yamlFile = 'moe.karaokes.mugen/moe.karaokes.mugen.yml';
 const xmlFile = 'moe.karaokes.mugen/moe.karaokes.mugen.metainfo.xml';
