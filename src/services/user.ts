@@ -23,7 +23,7 @@ import {
 import { DBUser } from '../lib/types/database/user.js';
 import { OldJWTToken, User, UserParams } from '../lib/types/user.js';
 import { getConfig, resolvedPath, setConfig } from '../lib/utils/config.js';
-import { asciiRegexp, imageFileTypes } from '../lib/utils/constants.js';
+import { asciiRegexp, imageFileTypes, userRegexp } from '../lib/utils/constants.js';
 import { detectFileType, fileExists } from '../lib/utils/files.js';
 import logger, { profile } from '../lib/utils/logger.js';
 import { emitWS } from '../lib/utils/ws.js';
@@ -91,7 +91,7 @@ export async function editUser(
 ) {
 	try {
 		if (!username) throw { code: 401, msg: 'USER_NOT_PROVIDED' };
-		username = username.toLowerCase();
+		username = username.trim().toLowerCase();
 		// Banner are not editable through the app
 		if (opts.editRemote) delete user.banner;
 		const currentUser = await getUser(username, true);
@@ -251,7 +251,8 @@ export async function createUser(
 		noPasswordCheck: false,
 	}
 ) {
-	user.login = user.login.toLowerCase();
+	user.login = user.login.trim().toLowerCase();
+	if (!user.login.match(userRegexp)) throw 'Vomi.';
 	// If nickname is not supplied, guess one
 	user.nickname ||= user.login.includes('@') ? user.login.split('@')[0] : user.login;
 	user = merge(getDefaultUser(), user);
