@@ -122,8 +122,9 @@ export async function getRemoteUser(username: string, token: string): Promise<Us
 /** Edit online user's profile, including avatar. */
 export async function editRemoteUser(user: User, token: string, avatar = true) {
 	// Fetch remote token
-	const [login, instance] = user.login.split('@');
-
+	let [login, instance] = user.login.split('@');
+	instance = instance.trim();
+	login = login.trim();
 	await stopSub(login, instance);
 
 	try {
