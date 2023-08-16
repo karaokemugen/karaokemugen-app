@@ -99,6 +99,7 @@ export async function editUser(
 		if (currentUser.type === 2 && role !== 'admin') throw { code: 403, msg: 'GUESTS_CANNOT_EDIT' };
 		const mergedUser = merge(currentUser, user);
 		delete mergedUser.password;
+		if (!mergedUser.social_networks) mergedUser.social_networks = {};
 		if (user.password) {
 			if (!opts.noPasswordCheck && user.password.length < 8) throw { code: 400, msg: 'PASSWORD_TOO_SHORT' };
 			const password = await hashPasswordbcrypt(user.password);
