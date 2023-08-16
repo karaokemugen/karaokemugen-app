@@ -37,8 +37,8 @@ export async function generateProfilePicLink(user: User): Promise<string> {
 	} else if (isRemote()) {
 		if (user?.login.includes('@')) {
 			const [login, instance] = user.login.split('@');
-			const data: User = await fetch(`https://${instance}/api/users/${encodeURIComponent(login)}`).then(res =>
-				res.json()
+			const data: User = await fetch(`https://${instance}/api/users/${encodeURIComponent(login.trim())}`).then(
+				res => res.json()
 			);
 			if (data.avatar_file) {
 				const url = `https://${instance}/avatars/${data.avatar_file}`;
