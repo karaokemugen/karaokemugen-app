@@ -23,7 +23,7 @@ import {
 import { DBUser } from '../lib/types/database/user.js';
 import { OldJWTToken, User, UserParams } from '../lib/types/user.js';
 import { getConfig, resolvedPath, setConfig } from '../lib/utils/config.js';
-import { asciiRegexp, imageFileTypes, userRegexp } from '../lib/utils/constants.js';
+import { asciiRegexp, imageFileTypes } from '../lib/utils/constants.js';
 import { detectFileType, fileExists } from '../lib/utils/files.js';
 import logger, { profile } from '../lib/utils/logger.js';
 import { emitWS } from '../lib/utils/ws.js';
