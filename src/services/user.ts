@@ -252,7 +252,6 @@ export async function createUser(
 	}
 ) {
 	user.login = user.login.trim().toLowerCase();
-	if (!user.login.match(userRegexp)) throw 'Vomi.';
 	// If nickname is not supplied, guess one
 	user.nickname ||= user.login.includes('@') ? user.login.split('@')[0] : user.login;
 	user = merge(getDefaultUser(), user);
