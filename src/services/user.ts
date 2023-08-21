@@ -232,18 +232,6 @@ export function createAdminUser(user: User, remote: boolean, requester: User) {
 	throw { code: 403, msg: 'UNAUTHORIZED' };
 }
 
-function getDefaultUser(): User {
-	return {
-		login: null,
-		last_login_at: new Date(0),
-		avatar_file: 'blank.png',
-		language: getConfig().App.Language,
-		flag_sendstats: null,
-		flag_tutorial_done: false,
-		type: 1,
-	};
-}
-
 /** Create new user (either local or online. Defaults to online) */
 export async function createUser(
 	user: User,
@@ -256,7 +244,15 @@ export async function createUser(
 	user.login = user.login.trim().toLowerCase();
 	// If nickname is not supplied, guess one
 	user.nickname ||= user.login.includes('@') ? user.login.split('@')[0] : user.login;
-	user = merge(getDefaultUser(), user);
+	user = {
+		last_login_at: new Date(0),
+		avatar_file: 'blank.png',
+		language: getConfig().App.Language,
+		flag_sendstats: null,
+		flag_tutorial_done: false,
+		type: 1,
+		...user,
+	};
 
 	if (opts.admin) user.type = 0;
 	if (user.type === 2) {
