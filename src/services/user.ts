@@ -635,7 +635,7 @@ export async function generateAdminPassword(): Promise<string> {
 	await editUser(
 		'admin',
 		{
-			login: null,
+			login: 'admin',
 			password: adminPassword,
 			nickname: 'Dummy Plug System',
 			type: 0,

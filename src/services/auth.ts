@@ -13,9 +13,9 @@ const service = 'Auth';
 /** Check login and authenticates users */
 export async function checkLogin(username: string, password: string): Promise<OldTokenResponse> {
 	const conf = getConfig();
-	let user: User = { login: null };
 	let onlineToken: string;
-	username = username.toLowerCase();
+	username = username.toLowerCase().trim();
+	let user: User = { login: username };
 	if (username.includes('@') && +conf.Online.Users) {
 		try {
 			// If username has a @, check its instance for existence
