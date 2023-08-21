@@ -194,7 +194,7 @@ export default function playlistsController(router: SocketIOApp) {
 		}
 	});
 	router.route('addKaraToPlaylist', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'guest');
+		await runChecklist(socket, req, 'admin');
 		// add a kara to a playlist
 		const validationErrors = check(req.body, {
 			kids: { presence: true, uuidArrayValidator: true },
