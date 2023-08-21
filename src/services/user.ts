@@ -234,6 +234,7 @@ export function createAdminUser(user: User, remote: boolean, requester: User) {
 
 function getDefaultUser(): User {
 	return {
+		login: null,
 		last_login_at: new Date(0),
 		avatar_file: 'blank.png',
 		language: getConfig().App.Language,
@@ -634,6 +635,7 @@ export async function generateAdminPassword(): Promise<string> {
 	await editUser(
 		'admin',
 		{
+			login: null,
 			password: adminPassword,
 			nickname: 'Dummy Plug System',
 			type: 0,

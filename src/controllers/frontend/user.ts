@@ -112,6 +112,7 @@ export default function userController(router: SocketIOApp) {
 					await editUser(
 						req.body.username,
 						{
+							login: req.body.username,
 							password: req.body.password,
 						},
 						null,
