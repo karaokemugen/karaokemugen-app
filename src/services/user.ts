@@ -92,6 +92,7 @@ export async function editUser(
 	try {
 		if (!username) throw { code: 401, msg: 'USER_NOT_PROVIDED' };
 		username = username.trim().toLowerCase();
+		user.login = user.login?.trim().toLowerCase();
 		// Banner are not editable through the app
 		if (opts.editRemote) delete user.banner;
 		const currentUser = await getUser(username, true);
