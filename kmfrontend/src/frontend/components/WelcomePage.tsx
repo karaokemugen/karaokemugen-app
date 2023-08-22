@@ -363,7 +363,7 @@ function WelcomePage() {
 						</article>
 						<article className="tile-download">
 							<button type="button" onClick={() => navigate('/admin/?quizMode=true')}>
-								<i className="fas fa-fw fa-gamepad" />
+								<i className="fas fa-fw fa-person-circle-question" />
 								<span>{i18next.t('WELCOME_PAGE.QUIZ')}</span>
 							</button>
 						</article>
