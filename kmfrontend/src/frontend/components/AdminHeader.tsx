@@ -210,6 +210,12 @@ function AdminHeader(props: IProps) {
 				{dropDownMenu ? (
 					<ul className="dropdown-menu">
 						<li>
+							<a href="/welcome">
+								<i className="fas fa-fw fa-home" />
+								&nbsp;{i18next.t('HOME_BUTTON')}
+							</a>
+						</li>
+						<li>
 							<a
 								href={`/admin${location.pathname.includes('/options') ? '' : '/options'}`}
 								onClick={e => {
@@ -259,12 +265,6 @@ function AdminHeader(props: IProps) {
 							</li>
 						)}
 						<li>
-							<div onClick={() => logout(context.globalDispatch)}>
-								<i className="fas fa-fw fa-sign-out-alt" />
-								&nbsp;{i18next.t('LOGOUT')}
-							</div>
-						</li>
-						<li>
 							<div
 								onClick={() => {
 									render(<Tutorial />, document.getElementById('tuto'));
@@ -275,11 +275,12 @@ function AdminHeader(props: IProps) {
 								&nbsp;{i18next.t('MODAL.TUTORIAL.TITLE')}
 							</div>
 						</li>
+						<hr></hr>
 						<li>
-							<a href="/welcome">
-								<i className="fas fa-fw fa-home" />
-								&nbsp;{i18next.t('HOME_BUTTON')}
-							</a>
+							<div onClick={() => logout(context.globalDispatch)}>
+								<i className="fas fa-fw fa-sign-out-alt" />
+								&nbsp;{i18next.t('LOGOUT')}
+							</div>
 						</li>
 						{props.powerOff ? (
 							<li>
