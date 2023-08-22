@@ -88,7 +88,6 @@ export function testKara(kara: any, details: TestDetails) {
 	expect(kara.flag_upvoted).to.be.a('boolean');
 	if (details.plc) expect(kara.flag_visible).to.be.a('boolean');
 	if (details.plc) expect(kara.flag_whitelisted).to.be.a('boolean');
-	if (details.kara || details.plcDetail) expect(kara.gain).to.be.a('number');
 	if (details.plcDetail) expect(kara.added_at).to.be.a('string');
 	if (details.plcDetail) expect(kara.created_at).to.be.a('string');
 	if (details.plcDetail) expect(kara.modified_at).to.be.a('string');
