@@ -1034,7 +1034,7 @@
 		"IGNOREHOOKS": "Ignore automatic tags",
 		"IGNOREHOOKS_TOOLTIP": "Some tags can be added automatically to this song if it meets some conditions.",
 		"PREVIEW_HOOKS": "Preview tags added automatically",
-		"PREVIEW_HOOKS_MODAL": "These tags will be added automatically",
+		"PREVIEW_HOOKS_MODAL": "The following changes will be made to the tags for this song",
 		"GROUPS_TOOLTIP": "Download groups for this song. The song will be included in these download packs",
 		"VERSIONS_TOOLTIP": "Versions allow a better identification of songs with the same title. If no version applies to this song because it's too specific (ex. Future Vers. or Chihaya Vers.) indicate it in its title by adding \" ~Chihaya Vers.\" to it.",
 		"CREATED_AT": "Creation date",

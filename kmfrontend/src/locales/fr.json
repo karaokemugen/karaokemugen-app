@@ -1025,7 +1025,7 @@
 		"IGNOREHOOKS": "Ignorer les tags automatiques",
 		"IGNOREHOOKS_TOOLTIP": "Certains tags pourront être ajoutés automatiquement à ce karaoké s'il remplit certaines conditions.",
 		"PREVIEW_HOOKS": "Prévisualiser les tags ajoutés automatiquement",
-		"PREVIEW_HOOKS_MODAL": "Ces tags vont être ajoutés automatiquement",
+		"PREVIEW_HOOKS_MODAL": "Les modifications suivantes vont être apportées aux tags de cette chanson",
 		"GROUPS_TOOLTIP": "Groupes de téléchargement pour ce morceau. Le morceau sera ajouté dans ces paquets pour le téléchargement",
 		"VERSIONS_TOOLTIP": "Les versions permettent d'identifier plus facilement différents karaokés avec le même titre de chanson. Si aucune version ne s'applique car la version est trop spécifique (ex. Future Vers. ou Chihaya Vers.) indiquez-la dans le titre avec \" ~ Chihaya Vers.\" à la fin de celui-ci.",
 		"CREATED_AT": "Date de création",
