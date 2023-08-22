@@ -362,9 +362,9 @@ function WelcomePage() {
 							</button>
 						</article>
 						<article className="tile-download">
-							<button type="button" onClick={() => navigate('/system/karas/download')}>
-								<i className="fas fa-fw fa-download" />
-								<span>{i18next.t('WELCOME_PAGE.DOWNLOAD')}</span>
+							<button type="button" onClick={() => navigate('/admin/?quizMode=true')}>
+								<i className="fas fa-fw fa-gamepad" />
+								<span>{i18next.t('WELCOME_PAGE.QUIZ')}</span>
 							</button>
 						</article>
 						<article className="tile-logs">
