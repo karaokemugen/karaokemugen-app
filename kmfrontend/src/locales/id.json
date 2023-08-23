@@ -1313,7 +1313,6 @@
 		"PL_DELETE_UPVOTED": "Kamu tidak bisa menghapus saran kamu, sudah terlambat.",
 		"PL_VIEW_SONGS_ERROR": "Galat memuat daftar putar",
 		"SONG_LIST_ERROR": "Galat memuat pustaka",
-		"AUTOMIX_NO_SONGS_MEET_CRITERIAS": "Tidak ada lagu yang memenuhi kriteria yang dipilih untuk AutoMix ini",				
 		"PL_ADD_SONG_ERROR": "Galat menambahkan lagu ke daftar putar",
 		"PL_MOVE_SONG_ERROR": "Tidak bisa menyalin lagu ke daftar putar tujuan",
 		"DOWNLOADS_GET_ERROR": "Galat mendapatkan unduhan dari antrian",
