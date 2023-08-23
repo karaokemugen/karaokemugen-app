@@ -514,6 +514,7 @@ export async function startGame(gamename: string, playlist: string, settings?: Q
 				await editUser(
 					'twitchUsers',
 					{
+						login: 'twitchUsers',
 						nickname: settings.Players.TwitchPlayerName || 'Twitch Users',
 					},
 					null,

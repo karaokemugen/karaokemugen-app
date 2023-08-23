@@ -93,12 +93,14 @@ export async function editUser(
 	try {
 		// If we're modifying a online user (@) only editing its type is permitted, so we'll filter that out.
 		if (!username) throw new ErrorKM('INVALID_DATA', 400, false);
+		username = username.trim().toLowerCase();
 
-		user = username.includes('@') ? { type: user.type, flag_tutorial_done: user.flag_tutorial_done } : user;
+		user = username.includes('@')
+			? { login: username, type: user.type, flag_tutorial_done: user.flag_tutorial_done }
+			: user;
 
 		avatar = username.includes('@') ? null : avatar;
 
-		username = username.trim().toLowerCase();
 		if (user.bio) user.bio = user.bio.trim();
 		if (user.email) user.email = user.email.trim();
 		if (user.nickname) user.nickname = user.nickname.trim();
