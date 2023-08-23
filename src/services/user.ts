@@ -480,7 +480,7 @@ async function createDefaultGuests() {
 	if (guests.length >= defaultGuestNames.length) return 'No creation of guest account needed';
 	const guestsToCreate = [];
 	for (const guest of defaultGuestNames) {
-		if (!guests.find(g => g.login === sanitizeLogin(guest))) guestsToCreate.push(guest);
+		if (!guests.find(g => g.nickname === guest)) guestsToCreate.push(guest);
 	}
 	logger.debug(`Creating ${guestsToCreate.length} new guest accounts`, { service });
 	for (const guest of guestsToCreate) {
