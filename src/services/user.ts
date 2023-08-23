@@ -221,7 +221,7 @@ export async function getUser(username: string, full = false, showPassword = fal
 				showPassword,
 			})
 		)[0];
-		if (!userdata.flag_public && role !== 'admin') throw new ErrorKM('UNKNOWN_USER', 404, false);
+		if (!userdata?.flag_public && role !== 'admin') throw new ErrorKM('UNKNOWN_USER', 404, false);
 		return userdata;
 	} catch (err) {
 		logger.error(`Error getting user ${username} : ${err}`, { service });
@@ -272,7 +272,10 @@ export async function createUser(
 	try {
 		user.login = user.login.trim().toLowerCase();
 		if (user.password) user.password = user.password.trim();
-		if (!user.login.match(userRegexp)) throw new ErrorKM('USER_LOGIN_INVALID', 400, false);
+		if (!user.login.match(userRegexp)) {
+			logger.error(`Invalid user name: ${user.login}`, { service });
+			throw new ErrorKM('USER_LOGIN_INVALID', 400, false);
+		}
 		// If nickname is not supplied, guess one
 		user.nickname ||= user.login.includes('@') ? user.login.split('@')[0] : user.login;
 		user = {
@@ -390,7 +393,7 @@ async function updateGuestAvatar(user: DBUser, random?: boolean) {
 		const dir = await fs.readdir(bundledAvatarAssets);
 		bundledAvatarFile = sample(dir);
 	} else {
-		bundledAvatarFile = `${slugify(user.login, {
+		bundledAvatarFile = `${slugify(user.nickname, {
 			lower: true,
 			remove: /['"!,?()]/g,
 		})}.jpg`;
@@ -456,20 +459,35 @@ export async function createTemporaryGuest(name: string) {
 	return user;
 }
 
+/** Sanitize logins, mainly for default guest names */
+function sanitizeLogin(login: string): string {
+	return deburr(
+		login
+			.toLowerCase()
+			.replaceAll(' ', '_')
+			.replaceAll('!', '')
+			.replaceAll("'", '')
+			.replaceAll('/', '_')
+			.replaceAll('<', '')
+			.replaceAll('?', '_')
+			.replaceAll('"', '')
+	);
+}
+
 /** Create default guest accounts */
 async function createDefaultGuests() {
 	const guests = await getUsers({ guestOnly: true });
 	if (guests.length >= defaultGuestNames.length) return 'No creation of guest account needed';
 	const guestsToCreate = [];
 	for (const guest of defaultGuestNames) {
-		if (!guests.find(g => g.login === deburr(guest.toLowerCase()))) guestsToCreate.push(guest);
+		if (!guests.find(g => g.login === sanitizeLogin(guest))) guestsToCreate.push(guest);
 	}
 	logger.debug(`Creating ${guestsToCreate.length} new guest accounts`, { service });
 	for (const guest of guestsToCreate) {
-		if (!(await getUser(guest))) {
+		if (!(await getUser(sanitizeLogin(guest)))) {
 			try {
 				await createUser({
-					login: deburr(guest),
+					login: sanitizeLogin(guest),
 					nickname: guest,
 					type: 2,
 				});
