@@ -4,6 +4,7 @@ import { Socket } from 'socket.io';
 import { initKaraBase, shutdown } from '../../components/engine.js';
 import { getMpvAudioOutputs } from '../../components/mpv.js';
 import { getSettings, saveSetting } from '../../lib/dao/database.js';
+import { APIMessage } from '../../lib/services/frontend.js';
 import { generateDatabase } from '../../lib/services/generation.js';
 import { APIData } from '../../lib/types/api.js';
 import { getConfig } from '../../lib/utils/config.js';
@@ -20,7 +21,6 @@ import { browseFs } from '../../utils/files.js';
 import { selectLogFile } from '../../utils/logger.js';
 import { dumpPG, restorePG } from '../../utils/postgresql.js';
 import { getPlayerState, getPublicState, getState } from '../../utils/state.js';
-import { APIMessage, errMessage } from '../common.js';
 import { runChecklist } from '../middlewares.js';
 
 export default function miscController(router: SocketIOApp) {
@@ -29,7 +29,7 @@ export default function miscController(router: SocketIOApp) {
 		try {
 			await selectLogFile();
 		} catch (err) {
-			throw { code: 500, msg: err };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('getMigrationsFrontend', async (socket: Socket, req: APIData) => {
@@ -74,11 +74,7 @@ export default function miscController(router: SocketIOApp) {
 	});
 	router.route('shutdown', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open');
-		try {
-			shutdown();
-		} catch (err) {
-			throw { code: 500 };
-		}
+		shutdown().catch(() => {});
 	});
 
 	router.route('getSettings', async (socket: Socket, req: APIData) => {
@@ -98,9 +94,7 @@ export default function miscController(router: SocketIOApp) {
 		try {
 			return await editSetting(req.body.setting);
 		} catch (err) {
-			const code = 'SETTINGS_UPDATE_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('getDisplays', async (socket: Socket, req: APIData) => {
@@ -153,7 +147,7 @@ export default function miscController(router: SocketIOApp) {
 			await backupConfig();
 			return { code: 200, message: APIMessage('CONFIG_BACKUPED') };
 		} catch (err) {
-			throw { code: 500, message: APIMessage('CONFIG_BACKUPED_ERROR') };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 
@@ -163,9 +157,7 @@ export default function miscController(router: SocketIOApp) {
 			await initKaraBase();
 			return { code: 200, message: APIMessage('DATABASE_GENERATED') };
 		} catch (err) {
-			const code = 'DATABASE_GENERATED_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: 500, message: APIMessage('DATABASE_GENERATED_ERROR') };
 		}
 	});
 	router.route('validateFiles', async (socket: Socket, req: APIData) => {
@@ -176,9 +168,7 @@ export default function miscController(router: SocketIOApp) {
 			});
 			return { code: 200, message: APIMessage('FILES_VALIDATED') };
 		} catch (err) {
-			const code = 'FILES_VALIDATED_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: 500, message: APIMessage('FILES_VALIDATED_ERROR') };
 		}
 	});
 	router.route('dumpDatabase', async (socket: Socket, req: APIData) => {
@@ -206,9 +196,7 @@ export default function miscController(router: SocketIOApp) {
 		try {
 			return await browseFs(req.body.path, req.body.onlyMedias);
 		} catch (err) {
-			const code = 'FS_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: 500, message: APIMessage('FS_ERROR') };
 		}
 	});
 }

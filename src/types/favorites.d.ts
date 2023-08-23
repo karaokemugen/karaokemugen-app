@@ -19,6 +19,10 @@ export interface AutoMixPlaylistInfo {
 
 export type PlaylistLimit = 'duration' | 'songs';
 
+export interface FavoritesMicro {
+	kid: string;
+}
+
 export interface AutoMixParams {
 	filters?: {
 		usersFavorites?: string[];

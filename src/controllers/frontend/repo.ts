@@ -1,5 +1,6 @@
 import { Socket } from 'socket.io';
 
+import { APIMessage } from '../../lib/services/frontend.js';
 import { APIData } from '../../lib/types/api.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
 import {
@@ -29,7 +30,6 @@ import {
 	uploadMedia,
 } from '../../services/repo.js';
 import { syncTagsFromRepo } from '../../services/tag.js';
-import { APIMessage, errMessage } from '../common.js';
 import { runChecklist } from '../middlewares.js';
 
 export default function repoController(router: SocketIOApp) {
@@ -38,9 +38,7 @@ export default function repoController(router: SocketIOApp) {
 		try {
 			return getRepos(req.token?.role !== 'admin');
 		} catch (err) {
-			const code = 'REPO_LIST_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('addRepo', async (socket: Socket, req: APIData) => {
@@ -49,21 +47,16 @@ export default function repoController(router: SocketIOApp) {
 			await addRepo(req.body);
 			return { code: 200, message: APIMessage('REPO_CREATED') };
 		} catch (err) {
-			const code = 'REPO_CREATE_ERROR';
-			errMessage(err?.msg || code, err);
-			throw { code: err?.code || 500, message: APIMessage(err?.msg || code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('getRepo', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			const repo = getRepo(req.body.name);
-			if (!repo) throw { code: 404 };
 			return repo;
 		} catch (err) {
-			const code = 'REPO_GET_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('deleteRepo', async (socket: Socket, req: APIData) => {
@@ -72,20 +65,16 @@ export default function repoController(router: SocketIOApp) {
 			await removeRepo(req.body.name);
 			return { code: 200, message: APIMessage('REPO_DELETED') };
 		} catch (err) {
-			const code = 'REPO_DELETE_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('editRepo', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			await editRepo(req.body.name, req.body.newRepo);
-			return APIMessage('REPO_EDITED');
+			return { code: 200, message: APIMessage('REPO_EDITED') };
 		} catch (err) {
-			const code = 'REPO_EDIT_ERROR';
-			errMessage(err?.msg || code, err);
-			throw { code: err?.code || 500, message: APIMessage(err?.msg || code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('getUnusedTags', async (socket: Socket, req: APIData) => {
@@ -93,9 +82,7 @@ export default function repoController(router: SocketIOApp) {
 		try {
 			return await findUnusedTags(req.body.name);
 		} catch (err) {
-			const code = 'REPO_GET_UNUSEDTAGS_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('getUnusedMedias', async (socket: Socket, req: APIData) => {
@@ -103,9 +90,7 @@ export default function repoController(router: SocketIOApp) {
 		try {
 			return await findUnusedMedias(req.body.name);
 		} catch (err) {
-			const code = 'REPO_GET_UNUSEDMEDIA_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 
@@ -123,9 +108,7 @@ export default function repoController(router: SocketIOApp) {
 		try {
 			return await compareLyricsChecksums(req.body.repo1, req.body.repo2);
 		} catch (err) {
-			const code = 'REPO_COMPARE_LYRICS_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('syncTagsBetweenRepos', async (socket: Socket, req: APIData) => {
@@ -133,9 +116,7 @@ export default function repoController(router: SocketIOApp) {
 		try {
 			return await syncTagsFromRepo(req.body.repoSourceName, req.body.repoDestName);
 		} catch (err) {
-			const code = 'REPO_SYNC_TAGS_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('copyLyricsBetweenRepos', async (socket: Socket, req: APIData) => {
@@ -144,9 +125,7 @@ export default function repoController(router: SocketIOApp) {
 			await copyLyricsRepo(req.body.report);
 			return { code: 200, message: APIMessage('REPO_LYRICS_COPIED') };
 		} catch (err) {
-			const code = 'REPO_COPY_LYRICS_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('openMediaFolder', async (socket: Socket, req: APIData) => {
@@ -154,7 +133,7 @@ export default function repoController(router: SocketIOApp) {
 		try {
 			await openMediaFolder(req.body.name);
 		} catch (err) {
-			throw { code: 500, msg: err };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('deleteAllRepoMedias', async (socket: Socket, req: APIData) => {
@@ -163,9 +142,7 @@ export default function repoController(router: SocketIOApp) {
 			await deleteMedias(null, req.body?.name);
 			return { code: 200, message: APIMessage('REPO_ALL_MEDIAS_DELETED') };
 		} catch (err) {
-			const code = 'REPO_DELETE_ALL_MEDIAS_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('deleteOldRepoMedias', async (socket: Socket, req: APIData) => {
@@ -174,9 +151,7 @@ export default function repoController(router: SocketIOApp) {
 			await deleteMedias(null, req.body?.name, true);
 			return { code: 200, message: APIMessage('REPO_OLD_MEDIAS_DELETED') };
 		} catch (err) {
-			const code = 'REPO_DELETE_OLD_MEDIAS_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('deleteMedias', async (socket: Socket, req: APIData) => {
@@ -185,9 +160,7 @@ export default function repoController(router: SocketIOApp) {
 			await deleteMedias(req.body?.kids);
 			return { code: 200, message: APIMessage('REPO_MEDIA_DELETED') };
 		} catch (err) {
-			const code = 'REPO_DELETE_MEDIA_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('getRepoFreeSpace', async (socket: Socket, req: APIData) => {
@@ -195,9 +168,7 @@ export default function repoController(router: SocketIOApp) {
 		try {
 			return await getRepoFreeSpace(req.body?.repoName);
 		} catch (err) {
-			const code = 'REPO_GET_FREE_SPACE_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('updateAllRepos', async (socket: Socket, req: APIData) => {
@@ -205,7 +176,7 @@ export default function repoController(router: SocketIOApp) {
 		try {
 			updateAllRepos();
 		} catch (err) {
-			errMessage(err);
+			// This is Async.
 		}
 	});
 
@@ -214,9 +185,7 @@ export default function repoController(router: SocketIOApp) {
 		try {
 			await updateGitRepo(req.body.repoName);
 		} catch (err) {
-			const code = 'REPO_GIT_UPDATE_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 
@@ -225,9 +194,7 @@ export default function repoController(router: SocketIOApp) {
 		try {
 			await stashGitRepo(req.body.repoName);
 		} catch (err) {
-			const code = 'REPO_GIT_STASH_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 
@@ -236,9 +203,7 @@ export default function repoController(router: SocketIOApp) {
 		try {
 			return await checkGitRepoStatus(req.body.repoName);
 		} catch (err) {
-			const code = 'REPO_GIT_CHECK_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 
@@ -247,9 +212,7 @@ export default function repoController(router: SocketIOApp) {
 		try {
 			return await listRepoStashes(req.body.repoName);
 		} catch (err) {
-			const code = 'REPO_GIT_CHECK_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 
@@ -258,9 +221,7 @@ export default function repoController(router: SocketIOApp) {
 		try {
 			return await unstashInRepo(req.body.repoName, req.body.stashId);
 		} catch (err) {
-			const code = 'REPO_GIT_UNSTASH_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 
@@ -269,9 +230,7 @@ export default function repoController(router: SocketIOApp) {
 		try {
 			return await dropStashInRepo(req.body.repoName, req.body.stashId);
 		} catch (err) {
-			const code = 'REPO_GIT_UNSTASH_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 
@@ -280,9 +239,7 @@ export default function repoController(router: SocketIOApp) {
 		try {
 			await resetRepo(req.body.repoName);
 		} catch (err) {
-			const code = 'REPO_GIT_RESET_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('getCommits', async (socket: Socket, req: APIData) => {
@@ -290,9 +247,7 @@ export default function repoController(router: SocketIOApp) {
 		try {
 			return await generateCommits(req.body.repoName);
 		} catch (err) {
-			const code = 'REPO_GIT_GET_COMMITS_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('uploadMedia', async (socket: Socket, req: APIData) => {
@@ -300,9 +255,7 @@ export default function repoController(router: SocketIOApp) {
 		try {
 			await uploadMedia(req.body.kid);
 		} catch (err) {
-			const code = 'REPO_UPLOAD_MEDIA_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('pushCommits', async (socket: Socket, req: APIData) => {
@@ -310,9 +263,7 @@ export default function repoController(router: SocketIOApp) {
 		try {
 			pushCommits(req.body.repoName, req.body.commits, req.body.ignoreFTP);
 		} catch (err) {
-			const code = 'REPO_GIT_PUSH_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			// Async
 		}
 	});
 }

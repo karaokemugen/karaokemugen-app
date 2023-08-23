@@ -4,7 +4,7 @@ import { copy } from 'fs-extra';
 import { basename, extname, resolve } from 'path';
 
 import { getStoreChecksum, removeKaraInStore } from '../dao/dataStore.js';
-import { deleteKara as deleteKaraDB, insertKara, selectAllKaras, updateKaraParents } from '../dao/kara.js';
+import { deleteKara, insertKara, selectAllKaras, updateKaraParents } from '../dao/kara.js';
 import { removeParentInKaras } from '../dao/karafile.js';
 import { selectPlaylistContentsMicro } from '../dao/playlist.js';
 import { saveSetting } from '../lib/dao/database.js';
@@ -20,6 +20,7 @@ import { TagTypeNum } from '../lib/types/tag.js';
 import { setASSSectionRaw } from '../lib/utils/ass.js';
 import { resolvedPathRepos } from '../lib/utils/config.js';
 import { audioFileRegexp, getTagTypeName } from '../lib/utils/constants.js';
+import { ErrorKM } from '../lib/utils/error.js';
 import { fileExists, resolveFileInDirs } from '../lib/utils/files.js';
 import logger, { profile } from '../lib/utils/logger.js';
 import { createImagePreviews } from '../lib/utils/previews.js';
@@ -55,78 +56,84 @@ interface Family {
 	children: DBKara[];
 }
 
-export async function deleteKara(
+export async function removeKara(
 	kids: string[],
 	refresh = true,
 	deleteFiles = { media: true, kara: true },
 	batch = false
 ) {
-	const parents: Family[] = [];
-	const karas = await selectAllKaras({
-		q: `k:${kids.join(',')}`,
-	});
-	if (karas.length === 0) throw { code: 404, msg: `Unknown kara IDs in ${kids.join(',')}` };
-	for (const kara of karas) {
-		// Remove files
-		if (kara.download_status === 'DOWNLOADED' && deleteFiles.media) {
-			try {
-				await fs.unlink(
-					(await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', kara.repository)))[0]
-				);
-			} catch (err) {
-				logger.warn(`Non fatal: Removing mediafile ${kara.mediafile} failed`, { service, obj: err });
-			}
-		}
-		if (deleteFiles.kara) {
-			try {
-				await fs.unlink(
-					(await resolveFileInDirs(kara.karafile, resolvedPathRepos('Karaokes', kara.repository)))[0]
-				);
-			} catch (err) {
-				logger.warn(`Non fatal: Removing karafile ${kara.karafile} failed`, { service, obj: err });
-			}
-			if (kara.subfile) {
+	try {
+		const parents: Family[] = [];
+		const karas = await selectAllKaras({
+			q: `k:${kids.join(',')}`,
+		});
+		if (karas.length === 0) throw new ErrorKM('UNKNOWN_SONG', 404, false);
+		for (const kara of karas) {
+			// Remove files
+			if (kara.download_status === 'DOWNLOADED' && deleteFiles.media) {
 				try {
 					await fs.unlink(
-						(await resolveFileInDirs(kara.subfile, resolvedPathRepos('Lyrics', kara.repository)))[0]
+						(await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', kara.repository)))[0]
 					);
 				} catch (err) {
-					logger.warn(`Non fatal: Removing subfile ${kara.subfile} failed`, { service, obj: err });
+					logger.warn(`Non fatal: Removing mediafile ${kara.mediafile} failed`, { service, obj: err });
 				}
 			}
+			if (deleteFiles.kara) {
+				try {
+					await fs.unlink(
+						(await resolveFileInDirs(kara.karafile, resolvedPathRepos('Karaokes', kara.repository)))[0]
+					);
+				} catch (err) {
+					logger.warn(`Non fatal: Removing karafile ${kara.karafile} failed`, { service, obj: err });
+				}
+				if (kara.subfile) {
+					try {
+						await fs.unlink(
+							(await resolveFileInDirs(kara.subfile, resolvedPathRepos('Lyrics', kara.repository)))[0]
+						);
+					} catch (err) {
+						logger.warn(`Non fatal: Removing subfile ${kara.subfile} failed`, { service, obj: err });
+					}
+				}
+			}
+			logger.info(`Song files of ${kara.karafile} removed`, { service });
+			removeKaraInStore(kara.kid);
+			if (kara.children?.length > 0) {
+				parents.push({
+					parent: kara.kid,
+					children: await selectAllKaras({
+						q: `k:${kara.children.join(',')}`,
+					}),
+				});
+			}
 		}
-		logger.info(`Song files of ${kara.karafile} removed`, { service });
-		removeKaraInStore(kara.kid);
-		if (kara.children?.length > 0) {
-			parents.push({
-				parent: kara.kid,
-				children: await selectAllKaras({
-					q: `k:${kara.children.join(',')}`,
-				}),
-			});
+		saveSetting('baseChecksum', getStoreChecksum());
+		// Remove kara from database only if not in a batch
+		if (!batch) {
+			for (const parent of parents) {
+				await removeParentInKaras(parent.parent, parent.children);
+			}
 		}
-	}
-	saveSetting('baseChecksum', getStoreChecksum());
-	// Remove kara from database only if not in a batch
-	if (!batch) {
-		for (const parent of parents) {
-			await removeParentInKaras(parent.parent, parent.children);
+		await deleteKara(karas.map(k => k.kid));
+		if (refresh) {
+			await refreshKarasDelete(karas.map(k => k.kid));
+			refreshTags();
+			updateAllSmartPlaylists();
 		}
-	}
-	await deleteKaraDB(karas.map(k => k.kid));
-	if (refresh) {
-		await refreshKarasDelete(karas.map(k => k.kid));
-		refreshTags();
-		updateAllSmartPlaylists();
+	} catch (err) {
+		logger.error(`Error deleting song(s) ${kids} : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('KARA_DELETED_ERROR');
 	}
 }
 
 export async function copyKaraToRepo(kid: string, repoName: string) {
 	try {
 		const kara = await getKara(kid, adminToken);
-		if (!kara) throw { code: 404 };
+		if (!kara) throw new ErrorKM('UNKNOWN_SONG', 404, false);
 		const repo = getRepo(repoName);
-		if (!repo) throw { code: 404 };
+		if (!repo) throw new ErrorKM('UNKNOWN_REPOSITORY', 404, false);
 		const oldRepoName = kara.repository;
 		kara.repository = repoName;
 		const tasks = [];
@@ -170,9 +177,9 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 		}
 		await Promise.all(tasks);
 	} catch (err) {
-		if (err?.code === 404) throw err;
+		logger.error(`Unable to copy kara ${kid} to ${repoName} repository : ${err}`, { service });
 		sentry.error(err);
-		throw err;
+		throw err instanceof ErrorKM ? err : new ErrorKM('SONG_COPIED_ERROR');
 	}
 }
 
@@ -318,10 +325,16 @@ export async function integrateKaraFile(
 }
 
 export async function deleteMediaFile(file: string, repo: string) {
-	// Just to make sure someone doesn't send a full path file
-	const mediaFile = basename(file);
-	const mediaPaths = await resolveFileInDirs(mediaFile, resolvedPathRepos('Medias', repo));
-	await fs.unlink(mediaPaths[0]);
+	try {
+		// Just to make sure someone doesn't send a full path file
+		const mediaFile = basename(file);
+		const mediaPaths = await resolveFileInDirs(mediaFile, resolvedPathRepos('Medias', repo));
+		await fs.unlink(mediaPaths[0]);
+	} catch (err) {
+		logger.error(`Unable to delete media file ${file} from repository ${repo} : ${err}`, { service });
+		sentry.error(err);
+		throw new ErrorKM('MEDIA_DELETE_ERROR');
+	}
 }
 
 export async function openLyricsFile(kid: string) {
@@ -345,7 +358,9 @@ ${!mediafile.match(audioFileRegexp) ? `Video File: ${mediaPath}` : ''}
 		}
 		await shell.openPath(lyricsPath);
 	} catch (err) {
-		throw err;
+		logger.error('Failed to open lyrics file', { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('LYRICS_FILE_OPEN_ERROR');
 	}
 }
 
@@ -355,7 +370,9 @@ export async function showLyricsInFolder(kid: string) {
 		const lyricsPath = resolve(resolvedPathRepos('Lyrics', repository)[0], subfile);
 		shell.showItemInFolder(lyricsPath);
 	} catch (err) {
-		throw err;
+		logger.error('Failed to open lyrics folder', { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('LYRICS_FOLDER_OPEN_ERROR');
 	}
 }
 
@@ -365,6 +382,8 @@ export async function showMediaInFolder(kid: string) {
 		const mediaPath = resolve(resolvedPathRepos('Medias', repository)[0], mediafile);
 		shell.showItemInFolder(mediaPath);
 	} catch (err) {
-		throw err;
+		logger.error('Failed to open media folder', { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('MEDIAS_FOLDER_OPEN_ERROR');
 	}
 }

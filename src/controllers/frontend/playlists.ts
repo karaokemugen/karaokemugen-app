@@ -1,5 +1,6 @@
 import { Socket } from 'socket.io';
 
+import { APIMessage } from '../../lib/services/frontend.js';
 import { APIData } from '../../lib/types/api.js';
 import { bools } from '../../lib/utils/constants.js';
 import { check } from '../../lib/utils/validators.js';
@@ -27,28 +28,15 @@ import {
 	shufflePlaylist,
 } from '../../services/playlist.js';
 import { vote } from '../../services/upvote.js';
-import { APIMessage, errMessage } from '../common.js';
 import { runChecklist } from '../middlewares.js';
 
 export default function playlistsController(router: SocketIOApp) {
 	router.route('createAutomix', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req);
-		const validationErrors = check(req.body, {
-			filters: { presence: true },
-		});
-		if (!validationErrors) {
-			// No errors detected
-			try {
-				return await createAutoMix(req.body, req.token.username);
-			} catch (err) {
-				const code = 'AUTOMIX_ERROR';
-				errMessage(code, err);
-				throw { code: err?.code || 500, message: APIMessage(err?.msg || code) };
-			}
-		} else {
-			// Errors detected
-			// Sending BAD REQUEST HTTP code and error object.
-			throw { code: 400, message: validationErrors };
+		try {
+			return await createAutoMix(req.body, req.token.username);
+		} catch (err) {
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 
@@ -58,9 +46,7 @@ export default function playlistsController(router: SocketIOApp) {
 		try {
 			return await getPlaylists(req.token);
 		} catch (err) {
-			const code = 'PL_LIST_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 
@@ -78,7 +64,7 @@ export default function playlistsController(router: SocketIOApp) {
 		});
 		if (!validationErrors) {
 			// No errors detected
-			req.body.name = unescape(req.body.name.trim());
+			req.body.name = encodeURIComponent(req.body.name.trim());
 
 			// Now we add playlist
 			try {
@@ -86,9 +72,7 @@ export default function playlistsController(router: SocketIOApp) {
 					plaid: await createPlaylist(req.body, req.token.username),
 				};
 			} catch (err) {
-				const code = 'PL_CREATE_ERROR';
-				errMessage(code, err);
-				throw { code: err?.code || 500, message: APIMessage(code) };
+				throw { code: err.code || 500, message: APIMessage(err.message) };
 			}
 		} else {
 			// Errors detected
@@ -100,26 +84,21 @@ export default function playlistsController(router: SocketIOApp) {
 		await runChecklist(socket, req, 'guest', 'limited');
 		try {
 			const playlist = await getPlaylistInfo(req.body?.plaid, req.token);
-			if (!playlist) throw { code: 404 };
 			return playlist;
 		} catch (err) {
-			const code = 'PL_VIEW_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('editPlaylist', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req);
 		// No errors detected
-		if (req.body.name) req.body.name = unescape(req.body.name?.trim());
+		if (req.body.name) req.body.name = encodeURIComponent(req.body.name?.trim());
 
 		// Now we add playlist
 		try {
 			return await editPlaylist(req.body?.plaid, req.body);
 		} catch (err) {
-			const code = 'PL_UPDATE_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('deletePlaylist', async (socket: Socket, req: APIData) => {
@@ -127,9 +106,7 @@ export default function playlistsController(router: SocketIOApp) {
 		try {
 			return await removePlaylist(req.body?.plaid);
 		} catch (err) {
-			const code = 'PL_DELETE_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(err?.msg || code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('emptyPlaylist', async (socket: Socket, req: APIData) => {
@@ -138,9 +115,7 @@ export default function playlistsController(router: SocketIOApp) {
 		try {
 			return await emptyPlaylist(req.body?.plaid);
 		} catch (err) {
-			const code = 'PL_EMPTY_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('exportPlaylistMedia', async (socket: Socket, req: APIData) => {
@@ -149,9 +124,7 @@ export default function playlistsController(router: SocketIOApp) {
 		try {
 			return await exportPlaylistMedia(req.body?.plaid, req.body?.exportDir);
 		} catch (err) {
-			const code = 'PL_EXPORT_MEDIA_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('findPlayingSongInPlaylist', async (socket: Socket, req: APIData) => {
@@ -160,7 +133,6 @@ export default function playlistsController(router: SocketIOApp) {
 			const index = await findPlaying(req.body?.plaid);
 			return { index };
 		} catch (err) {
-			errMessage(null, err);
 			throw { code: 500 };
 		}
 	});
@@ -178,9 +150,7 @@ export default function playlistsController(router: SocketIOApp) {
 				req.body?.orderByLikes
 			);
 		} catch (err) {
-			const code = 'PL_VIEW_SONGS_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('getPlaylistContentsMicro', async (socket: Socket, req: APIData) => {
@@ -188,9 +158,7 @@ export default function playlistsController(router: SocketIOApp) {
 		try {
 			return await getPlaylistContentsMicro(req.body?.plaid, req.token);
 		} catch (err) {
-			const code = 'PL_VIEW_SONGS_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('addKaraToPlaylist', async (socket: Socket, req: APIData) => {
@@ -208,9 +176,7 @@ export default function playlistsController(router: SocketIOApp) {
 					pos: req.body.pos,
 				});
 			} catch (err) {
-				const code = 'PL_ADD_SONG_ERROR';
-				errMessage(code, err);
-				throw { code: err?.code || 500, message: APIMessage(code) };
+				throw { code: err.code || 500, message: APIMessage(err.message) };
 			}
 		} else {
 			// Errors detected
@@ -228,9 +194,7 @@ export default function playlistsController(router: SocketIOApp) {
 			try {
 				return await copyKaraToPlaylist(req.body.plc_ids, req.body.plaid, req.body.pos);
 			} catch (err) {
-				const code = 'PL_SONG_COPY_ERROR';
-				errMessage(code, err);
-				throw { code: err?.code || 500, message: APIMessage(code) };
+				throw { code: err.code || 500, message: APIMessage(err.message) };
 			}
 		} else {
 			// Errors detected
@@ -247,9 +211,7 @@ export default function playlistsController(router: SocketIOApp) {
 			try {
 				return await removeKaraFromPlaylist(req.body.plc_ids, req.token);
 			} catch (err) {
-				const code = 'PL_DELETE_SONG_ERROR';
-				errMessage(code, err);
-				throw err?.code ? err : APIMessage(code, err);
+				throw { code: err.code || 500, message: APIMessage(err.message) };
 			}
 		} else {
 			// Errors detected
@@ -263,9 +225,7 @@ export default function playlistsController(router: SocketIOApp) {
 		try {
 			return await getKaraFromPlaylist(req.body?.plc_id, req.token);
 		} catch (err) {
-			const code = 'PL_VIEW_CONTENT_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('editPLC', async (socket: Socket, req: APIData) => {
@@ -289,9 +249,7 @@ export default function playlistsController(router: SocketIOApp) {
 					flag_refused: req.body.flag_refused,
 				});
 			} catch (err) {
-				const code = 'PL_MODIFY_CONTENT_ERROR';
-				errMessage(code, err);
-				throw { code: err?.code || 500, message: APIMessage(code) };
+				throw { code: err.code || 500, message: APIMessage(err.message) };
 			}
 		} else {
 			// Errors detected
@@ -304,8 +262,7 @@ export default function playlistsController(router: SocketIOApp) {
 		try {
 			return await randomizePLC(req.body?.plc_ids);
 		} catch (err) {
-			errMessage(err.msg);
-			throw { code: err?.code || 500, message: APIMessage(err.msg) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('votePLC', async (socket: Socket, req: APIData) => {
@@ -314,8 +271,7 @@ export default function playlistsController(router: SocketIOApp) {
 		try {
 			return await vote(req.body?.plc_id, req.token.username, req.body?.downvote);
 		} catch (err) {
-			errMessage(err.msg);
-			throw { code: err?.code || 500, message: APIMessage(err.msg) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('exportPlaylist', async (socket: Socket, req: APIData) => {
@@ -323,34 +279,21 @@ export default function playlistsController(router: SocketIOApp) {
 		try {
 			return await exportPlaylist(req.body?.plaid);
 		} catch (err) {
-			const code = 'PL_EXPORT_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('importPlaylist', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req);
 		// Imports a playlist and its contents in an importable format (posted as JSON data)
-		const validationErrors = check(req.body, {
-			playlist: { isJSON: true },
-		});
-		if (!validationErrors) {
-			try {
-				const data = await importPlaylist(req.body.playlist, req.token.username);
-				const response = {
-					plaid: data.plaid,
-					unknownRepos: data.reposUnknown,
-				};
-				return { code: 200, message: APIMessage('PL_IMPORTED', response) };
-			} catch (err) {
-				const code = 'PL_IMPORT_ERROR';
-				errMessage(code, err);
-				throw { code: err?.code || 500, message: APIMessage(code) };
-			}
-		} else {
-			// Errors detected
-			// Sending BAD REQUEST HTTP code and error object.
-			throw { code: 400, message: validationErrors };
+		try {
+			const data = await importPlaylist(req.body.playlist, req.token.username);
+			const response = {
+				plaid: data.plaid,
+				unknownRepos: data.reposUnknown,
+			};
+			return { code: 200, message: APIMessage('PL_IMPORTED', response) };
+		} catch (err) {
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('shufflePlaylist', async (socket: Socket, req: APIData) => {
@@ -358,9 +301,7 @@ export default function playlistsController(router: SocketIOApp) {
 		try {
 			return await shufflePlaylist(req.body?.plaid, req.body?.method, req.body?.fullShuffle);
 		} catch (err) {
-			const code = 'PL_SHUFFLE_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 }

@@ -13,6 +13,7 @@ import {
 } from '../dao/playlist.js';
 import { Criteria } from '../lib/types/playlist.js';
 import { uuidRegexp } from '../lib/utils/constants.js';
+import { ErrorKM } from '../lib/utils/error.js';
 import logger, { profile } from '../lib/utils/logger.js';
 import { isNumber } from '../lib/utils/validators.js';
 import { emitWS } from '../lib/utils/ws.js';
@@ -40,28 +41,36 @@ export async function getCriterias(plaid: string, lang?: string, translate = tru
 		if (!translate) return c;
 		return await translateCriterias(c, lang);
 	} catch (err) {
+		logger.error(`Error getting criterias : ${err}`, { service });
 		Sentry.error(err);
-		throw err;
+		throw err instanceof ErrorKM ? err : new ErrorKM('CRITERIAS_GET_ERROR');
 	} finally {
 		profile('getCriterias');
 	}
 }
 
 export async function emptyCriterias(plaid: string) {
-	profile('emptyCriterias');
-	logger.debug('Wiping criterias', { service });
-	const pl = await getPlaylistInfo(plaid);
-	if (!pl) throw { code: 404, message: 'Playlist unknown' };
-	await truncateCriterias(plaid);
-	if (pl.flag_smart) {
-		await updateSmartPlaylist(plaid);
-		const isBlacklist = plaid === getState().blacklistPlaid;
-		const isWhitelist = plaid === getState().whitelistPlaid;
-		if (isBlacklist || isWhitelist) {
-			updateAllSmartPlaylists(isBlacklist, isWhitelist);
+	try {
+		profile('emptyCriterias');
+		logger.debug('Wiping criterias', { service });
+		const pl = await getPlaylistInfo(plaid);
+		if (!pl) throw new ErrorKM('UNKNOWN_PLAYLIST', 404, false);
+		await truncateCriterias(plaid);
+		if (pl.flag_smart) {
+			await updateSmartPlaylist(plaid);
+			const isBlacklist = plaid === getState().blacklistPlaid;
+			const isWhitelist = plaid === getState().whitelistPlaid;
+			if (isBlacklist || isWhitelist) {
+				updateAllSmartPlaylists(isBlacklist, isWhitelist);
+			}
 		}
+	} catch (err) {
+		logger.error(`Error emptying criterias for playlist ${plaid} : ${err}`, { service });
+		Sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('CRITERIAS_EMPTY_ERROR');
+	} finally {
+		profile('emptyCriterias');
 	}
-	profile('emptyCriterias');
 }
 
 export async function updateAllSmartPlaylists(skipBlacklist = false, skipWhitelist = false) {
@@ -197,38 +206,45 @@ export async function updateSmartPlaylist(plaid: string) {
 }
 
 export async function removeCriteria(cs: Criteria[]) {
-	profile('delCriteria');
-	logger.debug('Deleting criterias', { service });
-	const promises: Promise<any>[] = [];
-	for (const c of cs) {
-		promises.push(deleteCriteria(c));
-	}
-	await Promise.all(promises);
-	const playlistsToUpdate = new Set<string>();
-	for (const c of cs) {
-		playlistsToUpdate.add(c.plaid);
-	}
-	if (playlistsToUpdate.has(getState().whitelistPlaid) || playlistsToUpdate.has(getState().blacklistPlaid)) {
-		updateAllSmartPlaylists();
-	} else {
-		for (const plaid of playlistsToUpdate.values()) {
-			updateSmartPlaylist(plaid);
+	try {
+		profile('delCriteria');
+		logger.debug('Deleting criterias', { service });
+		const promises: Promise<any>[] = [];
+		for (const c of cs) {
+			promises.push(deleteCriteria(c));
 		}
+		await Promise.all(promises);
+		const playlistsToUpdate = new Set<string>();
+		for (const c of cs) {
+			playlistsToUpdate.add(c.plaid);
+		}
+		if (playlistsToUpdate.has(getState().whitelistPlaid) || playlistsToUpdate.has(getState().blacklistPlaid)) {
+			updateAllSmartPlaylists();
+		} else {
+			for (const plaid of playlistsToUpdate.values()) {
+				updateSmartPlaylist(plaid);
+			}
+		}
+	} catch (err) {
+		logger.error(`Error removing criterias : ${err}`, { service });
+		Sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('CRITERIAS_REMOVE_ERROR');
+	} finally {
+		profile('delCriteria');
 	}
-	profile('delCriteria');
 }
 
 /** Add one or more criterias to smart playlists */
 export async function addCriteria(cs: Criteria[]) {
-	profile('addCriteria');
-	if (!Array.isArray(cs)) throw { code: 400 };
-	logger.info(`Adding criterias = ${JSON.stringify(cs)}`, { service });
 	try {
+		profile('addCriteria');
+		if (!Array.isArray(cs)) throw new ErrorKM('INVALID_DATA', 400, false);
+		logger.info(`Adding criterias = ${JSON.stringify(cs)}`, { service });
 		const playlistsToUpdate = new Set<string>();
 		for (const c of cs) {
 			if (playlistsToUpdate.has(c.plaid)) continue;
 			const pl = await getPlaylistInfo(c.plaid);
-			if (!pl) throw { code: 404, msg: 'PL unknown' };
+			if (!pl) throw new ErrorKM('UNKNOWN_PLAYLIST', 404, false);
 			playlistsToUpdate.add(c.plaid);
 		}
 		// Validation
@@ -238,33 +254,30 @@ export async function addCriteria(cs: Criteria[]) {
 		const timeC = [false, false];
 		for (const c of cs) {
 			if (c.type < 0 || c.type > 1006 || c.type === 1000) {
-				throw { code: 400, msg: `Incorrect Criteria type (${c.type})` };
+				logger.error(`Incorrect criteria type : ${c.type}`, { service });
+				throw new ErrorKM('INVALID_DATA', 400, false);
 			}
 			if (c.type === 1006) {
 				if (!downloadStatuses.includes(c.value)) {
-					throw {
-						code: 400,
-						msg: `Criteria value mismatch : type ${
-							c.type
-						} must have either of these values : ${downloadStatuses.toString()}`,
-					};
+					logger.error(`Incorrect criteria data for type ${c.type} : ${c.value}`, { service });
+					throw new ErrorKM('INVALID_DATA', 400, false);
 				}
 			}
 			if (c.type === 1001 || (c.type >= 1 && c.type < 1000)) {
 				if (!c.value.match(uuidRegexp)) {
-					throw { code: 400, msg: `Criteria value mismatch : type ${c.type} must have UUID values` };
+					logger.error(`Incorrect criteria data for type ${c.type} : ${c.value}`, { service });
+					throw new ErrorKM('INVALID_DATA', 400, false);
 				}
 			}
 			if (c.type === 1002 || c.type === 1003) {
 				c.value = +c.value;
 				if (!isNumber(c.value)) {
-					throw { code: 400, msg: `Criteria type mismatch : type ${c.type} must have a numeric value!` };
+					logger.error(`Incorrect criteria data for type ${c.type} : ${c.value}`, { service });
+					throw new ErrorKM('INVALID_DATA', 400, false);
 				}
 				if (timeC[c.type - 1002]) {
-					throw {
-						code: 400,
-						msg: `Criteria type mismatch : type ${c.type} can occur only once in a smart playlist.`,
-					};
+					logger.error(`Criteria type ${c.type} can only occur once`, { service });
+					throw new ErrorKM('INVALID_DATA', 400, false);
 				}
 				const opposingC = cs.find(crit => {
 					// Find the C type 1003 (shorter than) when we add a 1002 C (longer than) and vice versa.
@@ -272,9 +285,9 @@ export async function addCriteria(cs: Criteria[]) {
 				});
 				if (opposingC) {
 					if (c.type === 1002 && c.value <= opposingC.value) {
-						throw { code: 409, msg: { code: 'C_LONGER_THAN_CONFLICT' } };
+						throw new ErrorKM('C_LONGER_THAN_CONFLICT', 409, false);
 					} else if (c.type === 1003 && c.value >= opposingC.value) {
-						throw { code: 409, msg: { code: 'C_SHORTER_THAN_CONFLICT' } };
+						throw new ErrorKM('C_SHORTER_THAN_CONFLICT', 409, false);
 					}
 				}
 				const existingC = cs.find(crit => crit.type === c.type && crit.plaid === c.plaid);
@@ -294,9 +307,9 @@ export async function addCriteria(cs: Criteria[]) {
 			}
 		}
 	} catch (err) {
-		logger.error('Error adding criteria', { service, obj: err });
-		if (!err.code || err.code >= 500) Sentry.error(err);
-		throw err;
+		logger.error(`Error creating problematic smart playlist : ${err}`, { service });
+		Sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('CRITERIAS_ADD_ERROR');
 	} finally {
 		profile('addCriteria');
 	}
@@ -341,27 +354,33 @@ async function translateCriterias(cList: Criteria[], lang: string): Promise<Crit
 }
 
 export async function createProblematicSmartPlaylist() {
-	const tags = await getTags({ type: 15 });
-	const plaid = await insertPlaylist({
-		name: i18next.t('PROBLEMATIC_SONGS'),
-		created_at: new Date(),
-		modified_at: new Date(),
-		flag_visible: true,
-		flag_smart: true,
-		username: 'admin',
-		type_smart: 'UNION',
-	});
-	const blcs: Criteria[] = [];
-
-	for (const tag of tags.content) {
-		blcs.push({
-			plaid,
-			type: tag.types[0],
-			value: tag.tid,
+	try {
+		const tags = await getTags({ type: 15 });
+		const plaid = await insertPlaylist({
+			name: i18next.t('PROBLEMATIC_SONGS'),
+			created_at: new Date(),
+			modified_at: new Date(),
+			flag_visible: true,
+			flag_smart: true,
+			username: 'admin',
+			type_smart: 'UNION',
 		});
+		const blcs: Criteria[] = [];
+
+		for (const tag of tags.content) {
+			blcs.push({
+				plaid,
+				type: tag.types[0],
+				value: tag.tid,
+			});
+		}
+		await addCriteria(blcs);
+		await updateSmartPlaylist(plaid);
+	} catch (err) {
+		logger.error(`Error creating problematic smart playlist : ${err}`, { service });
+		Sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('PROBLEMATIC_SMART_PLAYLIST_ERROR');
 	}
-	await addCriteria(blcs);
-	await updateSmartPlaylist(plaid);
 }
 
 // Actions took when a new whitelist is set

@@ -24,7 +24,7 @@ export async function setSettings(
 					res.config.System = { Repositories: await commandBackend('getRepos') };
 				}
 				const user: User = await commandBackend('getMyAccount');
-				const favorites = await commandBackend('getFavorites', { mini: true });
+				const favorites = await commandBackend('getFavoritesMicro');
 				const favoritesSet = new Set<string>();
 				for (const kara of favorites) {
 					favoritesSet.add(kara.kid);
@@ -87,7 +87,6 @@ function setSentry(environment: string, version: Version, config: Config, user: 
 				'ResizeObserver loop limit exceeded',
 				'ResizeObserver loop completed with undelivered notifications',
 				/.*[n|N]o space left on device.*/,
-				'PL_ADD_SONG_ERROR',
 				'PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED',
 				'PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED',
 				'DELETE_PLAYLIST_ERROR_CURRENT',

@@ -7,6 +7,7 @@ import { saveSetting } from '../lib/dao/database.js';
 import { Inbox } from '../lib/types/inbox.js';
 import { resolvedPath, resolvedPathRepos } from '../lib/utils/config.js';
 import { downloadFile } from '../lib/utils/downloader.js';
+import { ErrorKM } from '../lib/utils/error.js';
 import { smartMove } from '../lib/utils/files.js';
 import { closeIssue } from '../lib/utils/gitlab.js';
 import HTTP, { fixedEncodeURIComponent } from '../lib/utils/http.js';
@@ -14,6 +15,7 @@ import logger from '../lib/utils/logger.js';
 import Task from '../lib/utils/taskManager.js';
 import { emitWS } from '../lib/utils/ws.js';
 import { assignIssue } from '../utils/gitlab.js';
+import Sentry from '../utils/sentry.js';
 import { integrateKaraFile } from './karaManagement.js';
 import { checkDownloadStatus, getRepo } from './repo.js';
 import { updateAllSmartPlaylists } from './smartPlaylist.js';
@@ -23,7 +25,7 @@ const service = 'Inbox';
 
 export async function getInbox(repoName: string, token: string): Promise<Inbox[]> {
 	const repo = getRepo(repoName);
-	if (!repo) throw { code: 404 };
+	if (!repo) throw new ErrorKM('UNKNOWN_REPOSITORY', 404, false);
 	try {
 		const res = await HTTP.get(`https://${repoName}/api/inbox`, {
 			headers: {
@@ -32,11 +34,12 @@ export async function getInbox(repoName: string, token: string): Promise<Inbox[]
 		});
 		return res.data;
 	} catch (err) {
-		if (err.response.statusCode === 403) {
-			throw { code: 403 };
+		if (err.response?.statusCode === 403) {
+			throw new ErrorKM('INBOX_VIEW_FORBIDDEN_ERROR', 403, false);
 		} else {
 			logger.error(`Unable to get inbox contents : ${err}`, { service, obj: err });
-			throw err;
+			Sentry.error(err);
+			throw new ErrorKM('INBOX_VIEW_ERROR');
 		}
 	}
 }
@@ -44,7 +47,7 @@ export async function getInbox(repoName: string, token: string): Promise<Inbox[]
 export async function downloadKaraFromInbox(inid: string, repoName: string, token: string) {
 	try {
 		const repo = getRepo(repoName);
-		if (!repo) throw { code: 404 };
+		if (!repo) throw new ErrorKM('UNKNOWN_REPOSITORY', 404, false);
 		let kara: Inbox;
 		logger.info(`Downloading song ${inid} from inbox at ${repoName}`, { service });
 		try {
@@ -55,11 +58,14 @@ export async function downloadKaraFromInbox(inid: string, repoName: string, toke
 			});
 			kara = res.data;
 		} catch (err) {
-			if (err.response.statusCode === 403) {
-				throw { code: 403 };
+			if (err.response?.statusCode === 403) {
+				throw new ErrorKM('INBOX_VIEW_FORBIDDEN_ERROR', 403, false);
 			} else {
-				logger.error(`Unable to get kara from inbox : ${err}`, { service, obj: err });
-				throw err;
+				logger.error(`Unable to get inbox contents for INID ${inid} on ${repoName}: ${err}`, {
+					service,
+					obj: err,
+				});
+				throw new ErrorKM('INBOX_VIEW_ERROR');
 			}
 		}
 		if (!kara.edited_kid) kara.kara.data.data.created_at = new Date().toISOString();
@@ -103,7 +109,9 @@ export async function downloadKaraFromInbox(inid: string, repoName: string, toke
 		emitWS('songDownloadedFromInbox', kara);
 	} catch (err) {
 		logger.error(`Inbox item ${inid} failed to download`, { service });
+		Sentry.error(err);
 		emitWS('songDownloadedFromInboxFailed');
+		throw err instanceof ErrorKM ? err : new ErrorKM('INBOX_DOWNLOAD_ERROR');
 	}
 }
 
@@ -146,35 +154,41 @@ async function downloadMediaFromInbox(kara: Inbox, repoName: string) {
 }
 
 export async function deleteKaraInInbox(inid: string, repoName: string, token: string) {
-	const repo = getRepo(repoName);
-	if (!repo) throw { code: 404 };
-	const inbox = await getInbox(repoName, token);
-	const inboxItem = inbox.find(i => i.inid === inid);
 	try {
-		await HTTP.delete(`https://${repoName}/api/inbox/${inid}`, {
-			headers: {
-				authorization: token,
-			},
+		const repo = getRepo(repoName);
+		if (!repo) throw new ErrorKM('UNKNOWN_REPOSITORY', 404, false);
+		const inbox = await getInbox(repoName, token);
+		const inboxItem = inbox.find(i => i.inid === inid);
+		try {
+			await HTTP.delete(`https://${repoName}/api/inbox/${inid}`, {
+				headers: {
+					authorization: token,
+				},
+			});
+		} catch (err) {
+			if (err.response?.statusCode === 403) {
+				throw new ErrorKM('INBOX_DELETE_FORBIDDEN_ERROR', 403, false);
+			} else {
+				logger.error(`Unable to get inbox contents for INID ${inid} on ${repoName}: ${err}`, {
+					service,
+					obj: err,
+				});
+				throw err;
+			}
+		}
+		const numberIssue = +inboxItem.gitlab_issue.split('/')[inboxItem.gitlab_issue.split('/').length - 1];
+		closeIssue(numberIssue, repoName).catch(err => {
+			logger.warn(`Unable to close issue : ${err}`, { service, obj: err });
+			Sentry.error(err);
 		});
 	} catch (err) {
-		if (err.response.statusCode === 403) {
-			throw { code: 403 };
-		} else {
-			logger.error(`Unable to delete kara in inbox : ${err}`, { service, obj: err });
-			throw err;
-		}
-	}
-	try {
-		const numberIssue = +inboxItem.gitlab_issue.split('/')[inboxItem.gitlab_issue.split('/').length - 1];
-		await closeIssue(numberIssue, repoName);
-	} catch (err) {
-		logger.warn(`Unable to close issue : ${err}`, { service, obj: err });
+		logger.warn(`Unable to delete inbox item ${inid} on ${repoName} : ${err}`, { service, obj: err });
+		Sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('INBOX_DELETE_ERROR');
 	}
 }
 
 export async function markKaraAsDownloadedInInbox(inid: string, repoName: string, token: string) {
-	const repo = getRepo(repoName);
-	if (!repo) throw { code: 404 };
 	const inbox = await getInbox(repoName, token);
 	const inboxItem = inbox.find(i => i.inid === inid);
 	try {
@@ -184,15 +198,13 @@ export async function markKaraAsDownloadedInInbox(inid: string, repoName: string
 			},
 		});
 	} catch (err) {
-		if (err.response.statusCode === 403) {
-			throw { code: 403 };
-		} else {
-			logger.error(`Unable to mark kara in inbox as downloaded : ${err}`, { service, obj: err });
-			throw err;
-		}
+		logger.error(`Unable to mark kara in inbox as downloaded : ${err}`, { service, obj: err });
+		Sentry.error(err);
+		return;
 	}
 	const issueArr = inboxItem.gitlab_issue.split('/');
 	await assignIssue(+issueArr[issueArr.length - 1], repoName).catch(err => {
 		logger.warn(`Unable to assign issue : ${err}`, { service, obj: err });
+		Sentry.error(err);
 	});
 }
