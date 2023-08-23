@@ -226,8 +226,8 @@ describe('Playlists', () => {
 
 	it('Add karaoke to public playlist', async () => {
 		const data = await commandBackend(token, 'addKaraToPublicPlaylist', { kids: [KIDToAdd2] });
-		expect(data.data.plc.kid).to.be.equal(KIDToAdd2);
-		PLCID = data.data.plc.plcid;
+		expect(data.plc.kid).to.be.equal(KIDToAdd2);
+		PLCID = data.plc.plcid;
 	});
 
 	it('Shuffle playlist', async () => {
