@@ -1,19 +1,18 @@
 import { Socket } from 'socket.io';
 
+import { APIMessage } from '../../lib/services/frontend.js';
 import { APIData } from '../../lib/types/api.js';
-import { check, isUUID } from '../../lib/utils/validators.js';
+import { check } from '../../lib/utils/validators.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
 import {
+	activateSession,
 	addSession,
 	editSession,
 	exportSession,
-	findSession,
 	getSessions,
 	mergeSessions,
 	removeSession,
-	setActiveSession,
 } from '../../services/session.js';
-import { APIMessage, errMessage } from '../common.js';
 import { runChecklist } from '../middlewares.js';
 
 export default function sessionController(router: SocketIOApp) {
@@ -22,9 +21,7 @@ export default function sessionController(router: SocketIOApp) {
 		try {
 			return await getSessions();
 		} catch (err) {
-			const code = 'SESSION_LIST_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 
@@ -46,9 +43,7 @@ export default function sessionController(router: SocketIOApp) {
 				);
 				return { code: 200, message: APIMessage('SESSION_CREATED') };
 			} catch (err) {
-				const code = 'SESSION_CREATION_ERROR';
-				errMessage(code, err);
-				throw { code: err?.code || 500, message: APIMessage(code) };
+				throw { code: err.code || 500, message: APIMessage(err.message) };
 			}
 		} else {
 			// Errors detected
@@ -58,21 +53,15 @@ export default function sessionController(router: SocketIOApp) {
 	});
 	router.route('mergeSessions', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req);
-		if (!isUUID(req.body.seid1) || !isUUID(req.body.seid2)) {
-			throw { code: 400, message: 'Invalid UUIDs' };
-		}
 		try {
 			const session = await mergeSessions(req.body.seid1, req.body.seid2);
 			return { code: 200, message: APIMessage('SESSION_MERGED', { session }) };
 		} catch (err) {
-			const code = 'SESSION_MERGE_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 
 	router.route('editSession', async (socket: Socket, req: APIData) => {
-		if (!isUUID(req.body.seid)) throw { code: 400 };
 		await runChecklist(socket, req);
 		// Validate form data
 		const validationErrors = check(req.body, {
@@ -91,9 +80,7 @@ export default function sessionController(router: SocketIOApp) {
 				});
 				return { code: 200, message: APIMessage('SESSION_EDITED') };
 			} catch (err) {
-				const code = 'SESSION_EDIT_ERROR';
-				errMessage(code, err);
-				throw { code: err?.code || 500, message: APIMessage(code) };
+				throw { code: err.code || 500, message: APIMessage(err.message) };
 			}
 		} else {
 			// Errors detected
@@ -102,39 +89,31 @@ export default function sessionController(router: SocketIOApp) {
 		}
 	});
 	router.route('activateSession', async (socket: Socket, req: APIData) => {
-		if (!isUUID(req.body.seid)) throw { code: 400 };
 		await runChecklist(socket, req);
 		try {
-			const session = await findSession(req.body.seid);
-			setActiveSession(session);
+			await activateSession(req.body.seid);
 			return { code: 200, message: APIMessage('SESSION_ACTIVATED') };
 		} catch (err) {
-			return { code: 500, message: APIMessage('SESSION_ACTIVATED_ERROR') };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 
 	router.route('deleteSession', async (socket: Socket, req: APIData) => {
-		if (!isUUID(req.body.seid)) throw { code: 400 };
 		await runChecklist(socket, req);
 		try {
 			await removeSession(req.body.seid);
 			return { code: 200, message: APIMessage('SESSION_DELETED') };
 		} catch (err) {
-			const code = 'SESSION_DELETE_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 
 	router.route('exportSession', async (socket: Socket, req: APIData) => {
-		if (!isUUID(req.body.seid)) throw { code: 400 };
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			return await exportSession(req.body.seid);
 		} catch (err) {
-			const code = 'SESSION_EXPORT_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 }

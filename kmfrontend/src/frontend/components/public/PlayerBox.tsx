@@ -54,7 +54,7 @@ function PlayerBox(props: IProps) {
 
 	const getFavorites = async (payload?: string) => {
 		if (payload === undefined || payload === context.globalState.auth.data.username) {
-			const result = await commandBackend('getFavorites', { mini: true });
+			const result = await commandBackend('getFavoritesMicro');
 			const set = new Set<string>();
 			for (const kara of result) {
 				set.add(kara.kid);

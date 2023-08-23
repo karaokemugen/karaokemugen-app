@@ -1,6 +1,6 @@
+import { APIMessage } from '../lib/services/frontend.js';
 import logger from '../lib/utils/logger.js';
 import { decodeJwtToken } from '../services/user.js';
-import { APIMessage } from './common.js';
 import { checkValidUser } from './middlewares.js';
 
 export function requireHTTPAuth(req: any, res: any, next: any) {

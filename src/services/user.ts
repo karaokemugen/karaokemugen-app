@@ -23,7 +23,8 @@ import {
 import { DBUser } from '../lib/types/database/user.js';
 import { OldJWTToken, User, UserParams } from '../lib/types/user.js';
 import { getConfig, resolvedPath, setConfig } from '../lib/utils/config.js';
-import { asciiRegexp, imageFileTypes } from '../lib/utils/constants.js';
+import { asciiRegexp, imageFileTypes, userRegexp } from '../lib/utils/constants.js';
+import { ErrorKM } from '../lib/utils/error.js';
 import { detectFileType, fileExists } from '../lib/utils/files.js';
 import logger, { profile } from '../lib/utils/logger.js';
 import { emitWS } from '../lib/utils/ws.js';
@@ -90,30 +91,40 @@ export async function editUser(
 	}
 ) {
 	try {
-		if (!username) throw { code: 401, msg: 'USER_NOT_PROVIDED' };
+		// If we're modifying a online user (@) only editing its type is permitted, so we'll filter that out.
+		if (!username) throw new ErrorKM('INVALID_DATA', 400, false);
+
+		user = username.includes('@') ? { type: user.type, flag_tutorial_done: user.flag_tutorial_done } : user;
+
+		avatar = username.includes('@') ? null : avatar;
+
 		username = username.trim().toLowerCase();
+		if (user.bio) user.bio = user.bio.trim();
+		if (user.email) user.email = user.email.trim();
+		if (user.nickname) user.nickname = user.nickname.trim();
+		if (user.url) user.url = user.url.trim();
 		user.login = user.login?.trim().toLowerCase();
 		// Banner are not editable through the app
 		if (opts.editRemote) delete user.banner;
-		const currentUser = await getUser(username, true);
-		if (!currentUser) throw { code: 404, msg: 'USER_NOT_EXISTS' };
-		if (currentUser.type === 2 && role !== 'admin') throw { code: 403, msg: 'GUESTS_CANNOT_EDIT' };
+		const currentUser = await getUser(username, true, true);
+		if (!currentUser) throw new ErrorKM('UNKNOWN_USER', 404, false);
+		if (currentUser.type === 2 && role !== 'admin') throw new ErrorKM('GUESTS_CANNOT_EDIT', 403, false);
 		const mergedUser = merge(currentUser, user);
 		delete mergedUser.password;
 		if (!mergedUser.social_networks) mergedUser.social_networks = {};
 		if (user.password) {
-			if (!opts.noPasswordCheck && user.password.length < 8) throw { code: 400, msg: 'PASSWORD_TOO_SHORT' };
+			if (!opts.noPasswordCheck && user.password.length < 8) throw new ErrorKM('PASSWORD_TOO_SHORT', 411);
 			const password = await hashPasswordbcrypt(user.password);
 			await updateUserPassword(username, password);
 		}
 		if (user.type && +user.type !== currentUser.type && role !== 'admin') {
-			throw { code: 403, msg: 'USER_CANNOT_CHANGE_TYPE' };
+			throw new ErrorKM('USER_CANNOT_CHANGE_TYPE', 403, false);
 		}
 		// If we're renaming a user, mergedUser.login is going to be set to something different than username
 		mergedUser.old_login = username;
 		// Check if login already exists.
 		if (user.nickname && currentUser.nickname !== user.nickname && (await checkNicknameExists(user.nickname))) {
-			throw { code: 409 };
+			throw new ErrorKM('NICKNAME_ALREADY_IN_USE', 409, false);
 		}
 		if (avatar?.path) {
 			// If a new avatar was sent, it is contained in the avatar object
@@ -141,7 +152,7 @@ export async function editUser(
 			}
 		} catch (err) {
 			logger.warn('Cannot push user changes to remote', { service, obj: err });
-			throw { code: 500 };
+			throw err;
 		}
 		emitWS('userUpdated', username);
 		logger.debug(`${username} (${mergedUser.nickname}) profile updated`, { service });
@@ -151,14 +162,20 @@ export async function editUser(
 		};
 	} catch (err) {
 		logger.error(`Failed to update ${username}'s profile`, { service, obj: err });
-		if (!err.msg) err.msg = 'USER_EDIT_ERROR';
-		throw err;
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('USER_EDIT_ERROR');
 	}
 }
 
 /** Get all users (including guests) */
 export function getUsers(params: UserParams = {}): Promise<DBUser[]> {
-	return selectUsers(params);
+	try {
+		return selectUsers(params);
+	} catch (err) {
+		logger.error(`Error listing users : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('USER_LIST_ERROR');
+	}
 }
 
 /** Replace old avatar image by new one sent from editUser or createUser */
@@ -190,17 +207,25 @@ async function replaceAvatar(oldImageFile: string, avatar: Express.Multer.File):
 }
 
 /** Get user by its name, with non-public info like password and mail removed (or not) */
-export async function getUser(username: string, full = false) {
-	if (!username) throw 'No user provided';
-	username = username.toLowerCase();
-	// Check if user exists in db
-	const userdata = (
-		await selectUsers({
-			singleUser: username,
-			full,
-		})
-	)[0];
-	return userdata;
+export async function getUser(username: string, full = false, showPassword = false, role = 'admin') {
+	try {
+		if (!username) throw new ErrorKM('INVALID_DATA', 400, false);
+		username = username.toLowerCase();
+		// Check if user exists in db
+		const userdata = (
+			await selectUsers({
+				singleUser: username,
+				full,
+				showPassword,
+			})
+		)[0];
+		if (!userdata.flag_public && role !== 'admin') throw new ErrorKM('UNKNOWN_USER', 404, false);
+		return userdata;
+	} catch (err) {
+		logger.error(`Error getting user ${username} : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('USER_VIEW_ERROR');
+	}
 }
 
 /** Hash passwords with sha256 */
@@ -242,27 +267,29 @@ export async function createUser(
 		noPasswordCheck: false,
 	}
 ) {
-	user.login = user.login.trim().toLowerCase();
-	// If nickname is not supplied, guess one
-	user.nickname ||= user.login.includes('@') ? user.login.split('@')[0] : user.login;
-	user = {
-		last_login_at: new Date(0),
-		avatar_file: 'blank.png',
-		language: getConfig().App.Language,
-		flag_sendstats: null,
-		flag_tutorial_done: false,
-		type: 1,
-		...user,
-	};
-
-	if (opts.admin) user.type = 0;
-	if (user.type === 2) {
-		user.flag_sendstats = true;
-		user.language = null;
-	}
-	if (user.type === undefined) user.type = 1;
-
 	try {
+		user.login = user.login.trim().toLowerCase();
+		if (user.password) user.password = user.password.trim();
+		if (!user.login.match(userRegexp)) throw new ErrorKM('USER_LOGIN_INVALID', 400, false);
+		// If nickname is not supplied, guess one
+		user.nickname ||= user.login.includes('@') ? user.login.split('@')[0] : user.login;
+		user = {
+			last_login_at: new Date(0),
+			avatar_file: 'blank.png',
+			language: getConfig().App.Language,
+			flag_sendstats: null,
+			flag_tutorial_done: false,
+			type: 1,
+			...user,
+		};
+
+		if (opts.admin) user.type = 0;
+		if (user.type === 2) {
+			user.flag_sendstats = true;
+			user.language = null;
+		}
+		if (user.type === undefined) user.type = 1;
+
 		await newUserIntegrityChecks(user).catch(err => {
 			if (user.login.includes('@')) {
 				// If nickname isn't allowed, append something random to it and retry integrity checks
@@ -283,24 +310,18 @@ export async function createUser(
 		});
 		if (user.login.includes('@')) {
 			if (user.login.split('@')[0] === 'admin') {
-				throw {
-					code: 403,
-					msg: 'USER_CREATE_ERROR',
-					details: 'Admin accounts are not allowed to be created online',
-				};
+				logger.error('Admin accounts are not allowed to be created online', { service });
+				throw new ErrorKM('USER_CREATE_ERROR', 403, false);
 			}
 			if (!+getConfig().Online.Users) {
-				throw {
-					code: 403,
-					msg: 'USER_CREATE_ERROR',
-					details: 'Creating online accounts is not allowed on this instance',
-				};
+				logger.error('Creating online accounts is not allowed on this instance', { service });
+				throw new ErrorKM('USER_CREATE_ERROR_ONLINE_DISABLED', 403, false);
 			}
 			if (opts.createRemote) await createRemoteUser(user);
 		}
 		if (user.password) {
 			if (user.password.length < 8 && !opts.noPasswordCheck) {
-				throw { code: 411, msg: 'PASSWORD_TOO_SHORT', details: user.password.length };
+				throw new ErrorKM('PASSWORD_TOO_SHORT', 411, false);
 			}
 			user.password = await hashPasswordbcrypt(user.password);
 		}
@@ -309,9 +330,9 @@ export async function createUser(
 		delete user.password;
 		return true;
 	} catch (err) {
-		logger.error(`Unable to create user ${user.login}`, { service, obj: err });
-		if (!err.msg) err.msg = 'USER_CREATE_ERROR';
-		throw err;
+		logger.error(`Error creating user : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('USER_CREATE_ERROR');
 	}
 }
 
@@ -331,17 +352,16 @@ async function newUserIntegrityChecks(user: User) {
 /** Remove a user from database */
 export async function removeUser(username: string) {
 	try {
+		if (!username) throw new ErrorKM('INVALID_DATA', 400, false);
 		if (username === 'admin') {
-			throw {
-				code: 406,
-				msg: 'USER_DELETE_ADMIN_DAMEDESU',
-				details: 'Admin user cannot be deleted as it is necessary for the Karaoke Instrumentality Project',
-			};
+			logger.error('Admin user cannot be deleted as it is necessary for the Karaoke Instrumentality Project', {
+				service,
+			});
+			throw new ErrorKM('USER_DELETE_ADMIN_DAMEDESU', 406, false);
 		}
-		if (!username) throw { code: 400 };
 		username = username.toLowerCase();
 		const user = (await selectUsers({ singleUser: username }))[0];
-		if (!user) throw { code: 404, msg: 'USER_NOT_EXISTS' };
+		if (!user) throw new ErrorKM('UNKNOWN_USER', 404, false);
 		// Reassign karas and playlists owned by the user to the admin user
 		await reassignToUser(username, 'admin');
 		await deleteUser(username);
@@ -355,8 +375,8 @@ export async function removeUser(username: string) {
 		return true;
 	} catch (err) {
 		logger.error(`Unable to delete user ${username}`, { service, obj: err });
-		if (!err.msg) err.msg = 'USER_DELETE_ERROR';
-		throw err;
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('USER_DELETE_ERROR');
 	}
 }
 

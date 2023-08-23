@@ -1,5 +1,6 @@
 import { Socket } from 'socket.io';
 
+import { APIMessage } from '../../lib/services/frontend.js';
 import { APIData } from '../../lib/types/api.js';
 import { check } from '../../lib/utils/validators.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
@@ -13,22 +14,17 @@ import {
 	resetRemotePassword,
 } from '../../services/userOnline.js';
 import { getState } from '../../utils/state.js';
-import { APIMessage, errMessage } from '../common.js';
 import { runChecklist } from '../middlewares.js';
 
 export default function userController(router: SocketIOApp) {
 	router.route('getUsers', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		try {
-			if (req.token.role === 'admin') {
-				return await getUsers();
-			}
-			const users = await getUsers();
-			return users.filter(x => x.flag_public);
+			return await getUsers({
+				publicOnly: req.token.role !== 'admin',
+			});
 		} catch (err) {
-			const code = 'USER_LIST_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('createUser', async (socket: Socket, req: APIData) => {
@@ -41,9 +37,6 @@ export default function userController(router: SocketIOApp) {
 		});
 		if (!validationErrors) {
 			// No errors detected
-			if (req.body.login) req.body.login = unescape(req.body.login.trim());
-			if (req.body.role) req.body.role = unescape(req.body.role);
-			if (req.body.password) req.body.password = unescape(req.body.password);
 			try {
 				if (req.body.role === 'admin' && req.user) {
 					await createAdminUser(req.body, req.body.login.includes('@'), req.user);
@@ -52,8 +45,7 @@ export default function userController(router: SocketIOApp) {
 				}
 				return { code: 200, message: APIMessage('USER_CREATED') };
 			} catch (err) {
-				errMessage(err.msg, err.details);
-				throw { code: err?.code || 500, message: APIMessage(err?.msg) };
+				throw { code: err.code || 500, message: APIMessage(err.message) };
 			}
 		} else {
 			// Errors detected
@@ -65,15 +57,9 @@ export default function userController(router: SocketIOApp) {
 	router.route('getUser', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		try {
-			const userdata = await getUser(req.body.username, true);
-			delete userdata.password;
-			if (!userdata.flag_public && req.token.role !== 'admin') throw { code: 403 };
-			if (!userdata) throw { code: 404 };
-			return userdata;
+			return await getUser(req.body.username, true, false, req.token.role);
 		} catch (err) {
-			const code = 'USER_VIEW_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('deleteUser', async (socket: Socket, req: APIData) => {
@@ -82,25 +68,18 @@ export default function userController(router: SocketIOApp) {
 			await removeUser(req.body.username);
 			return { code: 200, message: APIMessage('USER_DELETED') };
 		} catch (err) {
-			errMessage(err.msg, err.details);
-			throw { code: err?.code || 500, message: APIMessage(err.msg, err.details) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('editUser', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'closed');
 		try {
-			// If we're modifying a online user (@) only editing its type is permitted, so we'll filter that out.
-			const user = req.body.login.includes('@')
-				? { type: req.body.type, flag_tutorial_done: req.body.flag_tutorial_done }
-				: req.body;
-			const avatar = req.body.login.includes('@') ? null : req.body.avatar;
-			const login = req.body.old_login ? req.body.old_login : req.body.login;
-			await editUser(login, user, avatar, req.token.role, { editRemote: false });
+			await editUser(req.body.old_login || req.body.login, req.body, req.body.avatar, req.token.role, {
+				editRemote: false,
+			});
 			return { code: 200, message: APIMessage('USER_EDITED') };
 		} catch (err) {
-			const code = 'USER_EDIT_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(err.msg, err.details) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 
@@ -121,9 +100,7 @@ export default function userController(router: SocketIOApp) {
 					resetSecurityCode();
 					return { code: 200, message: APIMessage('USER_RESETPASSWORD_SUCCESS') };
 				} catch (err) {
-					const code = 'USER_RESETPASSWORD_ERROR';
-					errMessage(code, err);
-					throw { code: err?.code || 500, message: APIMessage(code) };
+					throw { code: err.code || 500, message: APIMessage(err.message) };
 				}
 			} else {
 				throw { code: 403, message: APIMessage('USER_RESETPASSWORD_WRONGSECURITYCODE') };
@@ -133,9 +110,7 @@ export default function userController(router: SocketIOApp) {
 				await resetRemotePassword(req.body.username);
 				return { code: 200, message: APIMessage('USER_RESETPASSWORD_ONLINE') };
 			} catch (err) {
-				const code = 'USER_RESETPASSWORD_ONLINE_ERROR';
-				errMessage(code, err);
-				throw { code: err?.code || 500, message: APIMessage(code) };
+				throw { code: err.code || 500, message: APIMessage(err.message) };
 			}
 		}
 	});
@@ -143,13 +118,9 @@ export default function userController(router: SocketIOApp) {
 	router.route('getMyAccount', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest', 'closed');
 		try {
-			const user = await getUser(req.token.username, true);
-			delete user.password;
-			return user;
+			return await getUser(req.token.username, true);
 		} catch (err) {
-			const code = 'USER_VIEW_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 
@@ -159,27 +130,20 @@ export default function userController(router: SocketIOApp) {
 			await removeUser(req.token.username);
 			return { code: 200, message: APIMessage('USER_DELETED') };
 		} catch (err) {
-			const code = 'USER_DELETE_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 
 	router.route('editMyAccount', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'user', 'closed');
 
-		if (req.body.bio) req.body.bio = unescape(req.body.bio.trim());
-		if (req.body.email) req.body.email = unescape(req.body.email.trim());
-		if (req.body.url) req.body.url = unescape(req.body.url.trim());
-		if (req.body.nickname) req.body.nickname = unescape(req.body.nickname.trim());
 		try {
 			const response = await editUser(req.token.username, req.body, req.body.avatar || null, req.token.role, {
 				editRemote: req.onlineAuthorization,
 			});
 			return { code: 200, message: APIMessage('USER_EDITED', { onlineToken: response.onlineToken }) };
 		} catch (err) {
-			errMessage(err.msg, err);
-			throw { code: err?.code || 500, message: APIMessage(err?.msg) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 
@@ -191,13 +155,11 @@ export default function userController(router: SocketIOApp) {
 		});
 		if (!validationErrors) {
 			// No errors detected
-			req.body.instance = unescape(req.body.instance.trim());
 			try {
 				const tokens = await convertToRemoteUser(req.token, req.body.password, req.body.instance);
 				return { code: 200, message: APIMessage('USER_CONVERTED', tokens) };
 			} catch (err) {
-				errMessage(err.msg, err);
-				throw { code: err?.code || 500, message: APIMessage(err.msg) };
+				throw { code: err.code || 500, message: APIMessage(err.message) };
 			}
 		} else {
 			// Errors detected
@@ -217,9 +179,7 @@ export default function userController(router: SocketIOApp) {
 				const newToken = await removeRemoteUser(req.token, req.body.password);
 				return { code: 200, message: APIMessage('USER_DELETED_ONLINE', newToken) };
 			} catch (err) {
-				const code = 'USER_DELETE_ERROR_ONLINE';
-				errMessage(code, err);
-				throw { code: err?.code || 500, message: APIMessage(code) };
+				throw { code: err.code || 500, message: APIMessage(err.message) };
 			}
 		} else {
 			// Errors detected
@@ -233,9 +193,7 @@ export default function userController(router: SocketIOApp) {
 		try {
 			await refreshAnimeList(req.token.username, req.onlineAuthorization);
 		} catch (err) {
-			const code = 'REFRESH_ANIME_LIST_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 
@@ -257,9 +215,7 @@ export default function userController(router: SocketIOApp) {
 				blacklist: req.body?.blacklist,
 			});
 		} catch (err) {
-			const code = 'ANIME_LIST_VIEW_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 }

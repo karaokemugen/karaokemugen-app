@@ -13,6 +13,7 @@ import { on } from '../lib/utils/pubsub.js';
 import Task from '../lib/utils/taskManager.js';
 import { emitWS } from '../lib/utils/ws.js';
 import { File } from '../types/download.js';
+import Sentry from '../utils/sentry.js';
 import { addDownloads } from './download.js';
 import { checkDownloadStatus } from './repo.js';
 
@@ -160,6 +161,7 @@ export async function updateAllMedias() {
 			await updateMedias(repo.Name);
 		} catch (err) {
 			logger.warn(`Repository ${repo.Name} failed to update medias properly`, { service, obj: err });
+			Sentry.error(err);
 			emitWS('operatorNotificationError', APIMessage('ERROR_CODES.UPDATING_MEDIAS_ERROR', repo.Name));
 		}
 	}

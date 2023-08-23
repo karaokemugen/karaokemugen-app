@@ -21,6 +21,7 @@ import { KaraList } from '../lib/types/kara.js';
 import { getConfig } from '../lib/utils/config.js';
 import { tagTypes } from '../lib/utils/constants.js';
 import { Timer } from '../lib/utils/date.js';
+import { ErrorKM } from '../lib/utils/error.js';
 import logger from '../lib/utils/logger.js';
 import { isUUID } from '../lib/utils/validators.js';
 import { emitWS } from '../lib/utils/ws.js';
@@ -28,6 +29,7 @@ import { QuizGameConfig } from '../types/config.js';
 import { SongModifiers } from '../types/player.js';
 import { CurrentSong } from '../types/playlist.js';
 import { GameAnswer, QuizAnswers, TotalTimes } from '../types/quiz.js';
+import Sentry from '../utils/sentry.js';
 import { getState, setState } from '../utils/state.js';
 import { sayTwitch } from '../utils/twitch.js';
 import { getKaras } from './kara.js';
@@ -431,116 +433,135 @@ export function continueGameSong() {
 }
 
 export async function startGame(gamename: string, playlist: string, settings?: QuizGameConfig) {
-	if (getState().quiz.running === true) {
-		throw { code: 409, msg: 'QUIZZ_ALREADY_IN_PROGRESS' };
-	}
-	if (!playlist) {
-		throw { code: 400, msg: 'Unable to start quiz, no playlist selected' };
-	}
-	if (settings != null) {
-		for (const answer of Object.values(settings.Answers.Accepted)) {
-			if (answer.Enabled && answer.Points == null) {
-				throw { code: 400, msg: 'Unable to start quiz, one accepted answer has no points' };
+	try {
+		if (getState().quiz.running === true) {
+			throw new ErrorKM('QUIZZ_ALREADY_IN_PROGRESS', 409, false);
+		}
+		if (!playlist) {
+			throw new ErrorKM('INVALID_DATA', 400, false);
+		}
+		if (settings != null) {
+			for (const answer of Object.values(settings.Answers.Accepted)) {
+				if (answer.Enabled && answer.Points == null) {
+					throw new ErrorKM('INVALID_DATA', 400, false);
+				}
 			}
 		}
-	}
-	const games = await selectGames();
-	const game = games.find(g => g.gamename === gamename);
-	if (!game) {
-		// Load default game settings if not provided
-		if (settings == null) {
-			settings = getState().quiz.settings;
-		}
-		setState({
-			quiz: {
-				running: true,
-				currentSongNumber: 0,
-				currentTotalDuration: 0,
-				// This presupposes the playlist is already created.
-				playlist,
-				KIDsPlayed: [],
-			},
-		});
-		insertGame({
-			gamename,
-			settings,
-			state: getState().quiz,
-			date: new Date(),
-			flag_active: true,
-		});
-	} else {
-		// Load game settings
-		if (settings == null) {
-			settings = game.settings;
-		}
-		setState({
-			quiz: {
-				...game.state,
-				running: true,
-				playlist,
-			},
-		});
-		updateGame(gamename, settings, getState().quiz);
-	}
-	setState({ quiz: { settings, running: true, currentQuizGame: gamename } });
-	emitWS('settingsUpdated', {});
-	await editPlaylist(playlist, {
-		flag_current: true,
-		flag_visible: false,
-	});
-	await stopPlayer(true);
-	await displayMessage(buildRulesString(), -1, 4, 'quizRules');
-	await fillPossibleAnswers(Object.keys(settings.Answers.Accepted).filter(a => settings.Answers.Accepted[a].Enabled));
-	logger.info('Game started.', { service });
-	if (settings.Players.Twitch) {
-		if (!(await getUser('twitchUsers'))) {
-			await createUser(
-				{
-					login: 'twitchUsers',
-					type: 2,
-					nickname: settings.Players.TwitchPlayerName || 'Twitch Users',
+		const games = await selectGames();
+		const game = games.find(g => g.gamename === gamename);
+		if (!game) {
+			// Load default game settings if not provided
+			if (settings == null) {
+				settings = getState().quiz.settings;
+			}
+			setState({
+				quiz: {
+					running: true,
+					currentSongNumber: 0,
+					currentTotalDuration: 0,
+					// This presupposes the playlist is already created.
+					playlist,
+					KIDsPlayed: [],
 				},
-				{
-					createRemote: false,
-					noPasswordCheck: true,
-				}
-			);
+			});
+			insertGame({
+				gamename,
+				settings,
+				state: getState().quiz,
+				date: new Date(),
+				flag_active: true,
+			});
 		} else {
-			await editUser(
-				'twitchUsers',
-				{
-					login: 'twitchUsers',
-					nickname: settings.Players.TwitchPlayerName || 'Twitch Users',
+			// Load game settings
+			if (settings == null) {
+				settings = game.settings;
+			}
+			setState({
+				quiz: {
+					...game.state,
+					running: true,
+					playlist,
 				},
-				null,
-				'admin'
-			);
+			});
+			updateGame(gamename, settings, getState().quiz);
 		}
+		setState({ quiz: { settings, running: true, currentQuizGame: gamename } });
+		emitWS('settingsUpdated', {});
+		await editPlaylist(playlist, {
+			flag_current: true,
+			flag_visible: false,
+		});
+		await stopPlayer(true);
+		await displayMessage(buildRulesString(), -1, 4, 'quizRules');
+		await fillPossibleAnswers(
+			Object.keys(settings.Answers.Accepted).filter(a => settings.Answers.Accepted[a].Enabled)
+		);
+		logger.info('Game started.', { service });
+		if (settings.Players.Twitch) {
+			if (!(await getUser('twitchUsers'))) {
+				await createUser(
+					{
+						login: 'twitchUsers',
+						type: 2,
+						nickname: settings.Players.TwitchPlayerName || 'Twitch Users',
+					},
+					{
+						createRemote: false,
+						noPasswordCheck: true,
+					}
+				);
+			} else {
+				await editUser(
+					'twitchUsers',
+					{
+						nickname: settings.Players.TwitchPlayerName || 'Twitch Users',
+					},
+					null,
+					'admin'
+				);
+			}
+		}
+	} catch (err) {
+		logger.error(`Error starting game : ${err}`, { service });
+		Sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('QUIZZ_START_ERROR');
 	}
 }
 
 export async function stopGame(displayScores = true) {
-	const gameState = getState().quiz;
-	if (!gameState.running) return;
-	setState({ quiz: { quizGuessingTime: false } });
-	logger.info('Stopping game and saving state', { service });
-	if (!isShutdownInProgress()) {
-		await stopPlayer(true, false);
-		if (displayScores) {
-			await displayMessage(await buildEndGameScoreString(), -1, 8, 'quizScores');
-		} else {
-			setState({ quiz: { running: false } });
+	try {
+		const gameState = getState().quiz;
+		if (!gameState.running) return;
+		setState({ quiz: { quizGuessingTime: false } });
+		logger.info('Stopping game and saving state', { service });
+		if (!isShutdownInProgress()) {
+			await stopPlayer(true, false);
+			if (displayScores) {
+				await displayMessage(await buildEndGameScoreString(), -1, 8, 'quizScores');
+			} else {
+				setState({ quiz: { running: false } });
+			}
 		}
+		await updateGame(gameState.currentQuizGame, gameState.settings, gameState, false);
+		emitWS('settingsUpdated', {});
+	} catch (err) {
+		logger.error(`Error stopping game : ${err}`, { service });
+		Sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('QUIZZ_STOP_ERROR');
 	}
-	await updateGame(gameState.currentQuizGame, gameState.settings, gameState, false);
-	emitWS('settingsUpdated', {});
 }
 
 export async function deleteGame(gamename: string) {
-	if (getState().quiz.currentQuizGame === gamename) {
-		await stopGame();
+	try {
+		if (getState().quiz.currentQuizGame === gamename) {
+			await stopGame();
+		}
+		await dropGame(gamename);
+	} catch (err) {
+		logger.error(`Error stopping game : ${err}`, { service });
+		Sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('QUIZZ_DELETE_ERROR');
 	}
-	await dropGame(gamename);
 }
 
 export function addPlayedKaraToQuiz(kid: string) {
@@ -551,44 +572,74 @@ export function addPlayedKaraToQuiz(kid: string) {
 }
 
 export async function getPlayedKarasInQuiz(): Promise<KaraList> {
-	const karasFromDB = await getKaras({
-		q: `k:${getState().quiz.KIDsPlayed.join(',')}`,
-	});
-	// Reorder them with our initial order
-	const karas = [];
-	for (const kid of getState().quiz.KIDsPlayed) {
-		karas.push(karasFromDB.content.find(k => k.kid === kid));
+	try {
+		const karasFromDB = await getKaras({
+			q: `k:${getState().quiz.KIDsPlayed.join(',')}`,
+		});
+		// Reorder them with our initial order
+		const karas = [];
+		for (const kid of getState().quiz.KIDsPlayed) {
+			karas.push(karasFromDB.content.find(k => k.kid === kid));
+		}
+		karasFromDB.content = karas;
+		return karasFromDB;
+	} catch (err) {
+		logger.error(`Error getting last songs for game : ${err}`, { service });
+		Sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('QUIZZ_GET_LAST_SONGS_ERROR');
 	}
-	karasFromDB.content = karas;
-	return karasFromDB;
 }
 
 export async function resetGameScores(gamename: string) {
-	await truncateScores(gamename);
-	const games = await selectGames();
-	const game = games.find(g => g.gamename === gamename);
-	if (game) {
-		game.state = {
-			running: false,
-			currentSongNumber: 0,
-			currentTotalDuration: 0,
-			playlist: '',
-			KIDsPlayed: [],
-		};
-		await updateGame(game.gamename, game.settings, game.state, game.flag_active);
+	try {
+		await truncateScores(gamename);
+		const games = await selectGames();
+		const game = games.find(g => g.gamename === gamename);
+		if (game) {
+			game.state = {
+				running: false,
+				currentSongNumber: 0,
+				currentTotalDuration: 0,
+				playlist: '',
+				KIDsPlayed: [],
+			};
+			await updateGame(game.gamename, game.settings, game.state, game.flag_active);
+		}
+	} catch (err) {
+		logger.error(`Error resetting game scores : ${err}`, { service });
+		Sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('QUIZZ_RESET_SCORES_ERROR');
 	}
 }
 
 export async function getGames() {
-	return selectGames();
+	try {
+		return await selectGames();
+	} catch (err) {
+		logger.error(`Error getting games : ${err}`, { service });
+		Sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('QUIZZ_GET_GAMES_ERROR');
+	}
 }
 
 export async function getGameScore(gamename: string, user?: string) {
-	return selectScores(gamename, user);
+	try {
+		return await selectScores(gamename, user);
+	} catch (err) {
+		logger.error(`Error getting game scores : ${err}`, { service });
+		Sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('QUIZZ_GET_GAME_SCORES_ERROR');
+	}
 }
 
 export async function getTotalGameScore(gamename: string) {
-	return selectTotalScores(gamename);
+	try {
+		return await selectTotalScores(gamename);
+	} catch (err) {
+		logger.error(`Error getting total game scores : ${err}`, { service });
+		Sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('QUIZZ_GET_TOTAL_GAME_SCORES_ERROR');
+	}
 }
 
 export async function getPossibleAnswers(words: string) {

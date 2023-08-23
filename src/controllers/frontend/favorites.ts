@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io';
 
-import { selectFavoritesMicro } from '../../dao/favorites.js';
+import { APIMessage } from '../../lib/services/frontend.js';
 import { APIData } from '../../lib/types/api.js';
 import { check } from '../../lib/utils/validators.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
@@ -8,25 +8,33 @@ import {
 	addToFavorites,
 	exportFavorites,
 	getFavorites,
+	getFavoritesMicro,
 	importFavorites,
 	removeFavorites,
 } from '../../services/favorites.js';
-import { APIMessage, errMessage } from '../common.js';
 import { runChecklist } from '../middlewares.js';
 
 export default function favoritesController(router: SocketIOApp) {
-	router.route('getFavorites', async (socket: Socket, req: APIData) => {
+	router.route('getFavoritesMicro', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest', 'closed');
 		try {
 			if (req.token.role === 'guest') {
 				return [];
 			}
-			if (req?.body?.mini) {
-				return await selectFavoritesMicro({
-					username: req.token.username.toLowerCase(),
-					from: +req.body?.from || 0,
-					size: +req.body?.size || 9999999,
-				});
+			return await getFavoritesMicro({
+				username: req.token.username.toLowerCase(),
+				from: +req.body?.from || 0,
+				size: +req.body?.size || 9999999,
+			});
+		} catch (err) {
+			throw { code: err.code || 500, message: APIMessage(err.message) };
+		}
+	});
+	router.route('getFavorites', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'guest', 'closed');
+		try {
+			if (req.token.role === 'guest') {
+				return {};
 			}
 			return await getFavorites({
 				username: req.token.username.toLowerCase(),
@@ -38,9 +46,7 @@ export default function favoritesController(router: SocketIOApp) {
 				order: req.body?.order,
 			});
 		} catch (err) {
-			const code = 'FAVORITES_VIEW_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('addFavorites', async (socket: Socket, req: APIData) => {
@@ -52,9 +58,7 @@ export default function favoritesController(router: SocketIOApp) {
 			try {
 				return await addToFavorites(req.token.username, req.body?.kids, req.onlineAuthorization);
 			} catch (err) {
-				const code = 'FAVORITES_ADDED_ERROR';
-				errMessage(code, err);
-				throw { code: err?.code || 500, message: APIMessage(code) };
+				throw { code: err.code || 500, message: APIMessage(err.message) };
 			}
 		} else {
 			// Errors detected
@@ -64,8 +68,6 @@ export default function favoritesController(router: SocketIOApp) {
 	});
 	router.route('deleteFavorites', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'user', 'closed');
-		// Delete kara from favorites
-		// Deletion is through kara ID.
 		const validationErrors = check(req.body, {
 			kids: { presence: true, uuidArrayValidator: true },
 		});
@@ -73,9 +75,7 @@ export default function favoritesController(router: SocketIOApp) {
 			try {
 				return await removeFavorites(req.token.username, req.body?.kids, req.onlineAuthorization);
 			} catch (err) {
-				const code = 'FAVORITES_DELETED_ERROR';
-				errMessage(code, err);
-				throw { code: err?.code || 500, message: APIMessage(code) };
+				throw { code: err.code || 500, message: APIMessage(err.message) };
 			}
 		}
 	});
@@ -85,9 +85,7 @@ export default function favoritesController(router: SocketIOApp) {
 		try {
 			return await exportFavorites(req.token.username);
 		} catch (err) {
-			const code = 'FAVORITES_EXPORTED_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('importFavorites', async (socket: Socket, req: APIData) => {
@@ -104,9 +102,7 @@ export default function favoritesController(router: SocketIOApp) {
 				);
 				return { code: 200, message: APIMessage('FAVORITES_IMPORTED', response) };
 			} catch (err) {
-				const code = 'FAVORITES_IMPORTED_ERROR';
-				errMessage(code, err);
-				throw { code: err?.code || 500, message: APIMessage(code) };
+				throw { code: err.code || 500, message: APIMessage(err.message) };
 			}
 		} else {
 			// Errors detected

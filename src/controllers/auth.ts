@@ -1,5 +1,7 @@
+import { APIMessage } from '../lib/services/frontend.js';
 import { DBUserBase } from '../lib/types/database/user.js';
 import { getConfig } from '../lib/utils/config.js';
+import { ErrorKM } from '../lib/utils/error.js';
 import logger from '../lib/utils/logger.js';
 import { SocketIOApp } from '../lib/utils/ws.js';
 import { checkLogin, resetSecurityCode } from '../services/auth.js';
@@ -7,16 +9,12 @@ import { fetchAndAddFavorites } from '../services/favorites.js';
 import { createTemporaryGuest, editUser, getAvailableGuest, updateLastLoginName } from '../services/user.js';
 import { fetchAndUpdateRemoteUser, remoteCheckAuth } from '../services/userOnline.js';
 import { getState } from '../utils/state.js';
-import { APIMessage } from './common.js';
 import { runChecklist } from './middlewares.js';
 
 const service = 'Auth';
 
 export default function authController(router: SocketIOApp) {
 	router.route('login', async (_, req) => {
-		if (req.body.login) req.body.login = unescape(req.body.login.trim());
-		if (req.body.password) req.body.password = unescape(req.body.password);
-		if (!req.body.password) req.body.password = '';
 		try {
 			let token = await checkLogin(req.body.username, req.body.password);
 			// Check if security code is correct
@@ -89,10 +87,10 @@ export default function authController(router: SocketIOApp) {
 				} else {
 					logger.debug('Remote token invalid', { service });
 					// Cancelling remote token.
-					throw 'Invalid online token';
+					throw new ErrorKM('INVALID_ONLINE_TOKEN', 403);
 				}
 			} catch (err) {
-				if (err === 'Invalid online token') throw err;
+				if (err.message === 'INVALID_ONLINE_TOKEN') throw err;
 				logger.warn('Failed to check remote auth (user logged in as local only)', {
 					service,
 					obj: err,

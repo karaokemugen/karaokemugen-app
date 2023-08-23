@@ -1,5 +1,6 @@
 import { Socket } from 'socket.io';
 
+import { APIMessage } from '../../lib/services/frontend.js';
 import { APIData } from '../../lib/types/api.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
 import {
@@ -11,7 +12,6 @@ import {
 	wipeDownloads,
 } from '../../services/download.js';
 import { updateAllMedias } from '../../services/downloadMedias.js';
-import { APIMessage, errMessage } from '../common.js';
 import { runChecklist } from '../middlewares.js';
 
 export default function downloadController(router: SocketIOApp) {
@@ -21,9 +21,7 @@ export default function downloadController(router: SocketIOApp) {
 			const numberOfDLs = await addDownloads(req.body.downloads);
 			return APIMessage('DOWNLOADS_QUEUED', numberOfDLs);
 		} catch (err) {
-			const msg = 'DOWNLOADS_QUEUED_ERROR';
-			errMessage(err?.msg || msg, err);
-			throw { code: err?.code || 500, message: APIMessage(err?.msg || msg) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('getDownloads', async (socket: Socket, req: APIData) => {
@@ -32,9 +30,7 @@ export default function downloadController(router: SocketIOApp) {
 			const downloads = await getDownloads();
 			return downloads;
 		} catch (err) {
-			const code = 'DOWNLOADS_GET_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('getDownloadQueueStatus', async (socket: Socket, req: APIData) => {
@@ -42,7 +38,7 @@ export default function downloadController(router: SocketIOApp) {
 		try {
 			return getDownloadQueueStatus();
 		} catch (err) {
-			throw { code: 500, message: err };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('deleteDownloads', async (socket: Socket, req: APIData) => {
@@ -50,9 +46,7 @@ export default function downloadController(router: SocketIOApp) {
 		try {
 			return await wipeDownloads();
 		} catch (err) {
-			const code = 'DOWNLOADS_WIPE_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('pauseDownloads', async (socket: Socket, req: APIData) => {
@@ -60,9 +54,7 @@ export default function downloadController(router: SocketIOApp) {
 		try {
 			return pauseQueue();
 		} catch (err) {
-			const code = 'DOWNLOADS_PAUSE_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('startDownloadQueue', async (socket: Socket, req: APIData) => {
@@ -71,9 +63,7 @@ export default function downloadController(router: SocketIOApp) {
 			await startDownloads();
 			return APIMessage('DOWNLOADS_STARTED');
 		} catch (err) {
-			const code = 'DOWNLOADS_START_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('updateAllMedias', async (socket: Socket, req: APIData) => {

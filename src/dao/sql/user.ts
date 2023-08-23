@@ -21,7 +21,7 @@ SELECT
 	${
 		params.full
 			? `
-		u.password,
+		${params.showPassword ? 'u.password,' : ''}
 		u.bio,
 		u.url,
 		u.email,
@@ -46,10 +46,11 @@ SELECT
 		ELSE FALSE
     END)  AS flag_logged_in
 FROM users AS u
-WHERE 1 = 1
+WHERE TRUE
 ${params.singleUser ? ' AND u.pk_login = :username' : ''}
 ${params.singleNickname ? ' AND u.nickname = :nickname' : ''}
 ${params.guestOnly || params.randomGuest ? ' AND u.type = 2 AND flag_temporary IS NOT TRUE' : ''}
+${params.publicOnly ? ' AND u.flag_public = TRUE' : ''}
 ${params.randomGuest ? ' AND (:last_login_time_limit > u.last_login_at)' : ''}
 ${params.randomGuest ? ' ORDER BY RANDOM() LIMIT 1' : ''}
 `;

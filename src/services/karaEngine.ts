@@ -2,9 +2,9 @@ import i18next from 'i18next';
 import { sample } from 'lodash';
 import { resolve } from 'path';
 
-import { APIMessage } from '../controllers/common.js';
 import { selectPlaylistContentsMicro, updatePlaylistDuration, updatePlaylistLastEditTime } from '../dao/playlist.js';
 import { selectUpvotesByPLC } from '../dao/upvote.js';
+import { APIMessage } from '../lib/services/frontend.js';
 import { DBKara } from '../lib/types/database/kara.js';
 import { DBPLC } from '../lib/types/database/playlist.js';
 import { getConfig, resolvedPath } from '../lib/utils/config.js';

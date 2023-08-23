@@ -1,10 +1,10 @@
 import { Socket } from 'socket.io';
 
+import { APIMessage } from '../../lib/services/frontend.js';
 import { APIData } from '../../lib/types/api.js';
 import { check } from '../../lib/utils/validators.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
 import { addPollVote, getPoll } from '../../services/poll.js';
-import { APIMessage, errMessage } from '../common.js';
 import { runChecklist } from '../middlewares.js';
 
 export default function pollController(router: SocketIOApp) {
@@ -13,12 +13,7 @@ export default function pollController(router: SocketIOApp) {
 		try {
 			return getPoll(req.token);
 		} catch (err) {
-			if (err.code === 425) {
-				throw { code: 425 };
-			} else {
-				errMessage(err.msg);
-				throw { code: 500, message: APIMessage(err.msg) };
-			}
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('votePoll', async (socket: Socket, req: APIData) => {
@@ -33,8 +28,7 @@ export default function pollController(router: SocketIOApp) {
 				const ret = addPollVote(req.body.index, req.token);
 				return { code: 200, message: APIMessage(ret.code, ret.data) };
 			} catch (err) {
-				errMessage(err.message);
-				throw { code: err?.code || 500, message: APIMessage(err.msg) };
+				throw { code: err.code || 500, message: APIMessage(err.message) };
 			}
 		} else {
 			// Errors detected

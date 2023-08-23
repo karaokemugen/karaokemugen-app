@@ -13,13 +13,15 @@ import { getSettings, refreshAll, saveSetting } from '../lib/dao/database.js';
 import { initHooks } from '../lib/dao/hook.js';
 import { refreshKaras } from '../lib/dao/kara.js';
 import { parseKara, writeKara } from '../lib/dao/karafile.js';
+import { APIMessage } from '../lib/services/frontend.js';
 import { readAllKaras } from '../lib/services/generation.js';
 import { DBTag } from '../lib/types/database/tag.js';
 import { KaraMetaFile } from '../lib/types/downloads.js';
 import { KaraFileV4 } from '../lib/types/kara.js';
-import { DiffChanges, Repository, RepositoryManifest } from '../lib/types/repo.js';
+import { DiffChanges, Repository, RepositoryBasic, RepositoryManifest } from '../lib/types/repo.js';
 import { TagFile } from '../lib/types/tag.js';
 import { getConfig, resolvedPathRepos } from '../lib/utils/config.js';
+import { ErrorKM } from '../lib/utils/error.js';
 import { asyncCheckOrMkdir, listAllFiles, moveAll, relativePath, resolveFileInDirs } from '../lib/utils/files.js';
 import HTTP from '../lib/utils/http.js';
 import logger, { profile } from '../lib/utils/logger.js';
@@ -36,7 +38,7 @@ import sentry from '../utils/sentry.js';
 import { getState } from '../utils/state.js';
 import { updateMedias } from './downloadMedias.js';
 import { getKara, getKaras } from './kara.js';
-import { createKaraInDB, deleteKara, integrateKaraFile } from './karaManagement.js';
+import { createKaraInDB, integrateKaraFile, removeKara } from './karaManagement.js';
 import { createProblematicSmartPlaylist, updateAllSmartPlaylists } from './smartPlaylist.js';
 import { sendPayload } from './stats.js';
 import { getTags, integrateTagFile, removeTag } from './tag.js';
@@ -48,87 +50,130 @@ const windowsDriveRootRegexp = /^[a-zA-Z]:\\$/;
 let updateRunning = false;
 
 /** Get all repositories in database */
-export const getRepos = selectRepos;
+export function getRepos(publicView: false): Repository[];
+export function getRepos(publicView: true): RepositoryBasic[];
+export function getRepos(publicView: boolean): Repository[] | RepositoryBasic[];
+export function getRepos(): Repository[];
+export function getRepos(publicView = false): Repository[] | RepositoryBasic[] {
+	try {
+		return selectRepos(publicView);
+	} catch (err) {
+		logger.error(`Error getting repos : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('REPO_LIST_ERROR');
+	}
+}
 
 /** Get single repository */
 export function getRepo(name: string) {
-	return selectRepos(false).filter((r: Repository) => r.Name === name)[0];
+	try {
+		const repo = selectRepos(false).filter((r: Repository) => r.Name === name)[0];
+		if (!repo) throw new ErrorKM('UNKNOWN_REPOSITORY', 404, false);
+		return repo;
+	} catch (err) {
+		logger.error(`Error getting repo : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('REPO_GET_ERROR');
+	}
 }
 
 /** Remove a repository */
 export async function removeRepo(name: string) {
-	const repos = getRepos();
-	if (!repos.find(r => r.Name === name)) throw { code: 404 };
-	// Forbid people from removing the last repo
-	if (repos.length === 1) throw { code: 403 };
-	deleteRepo(name);
-	await generateDB();
-	logger.info(`Removed ${name}`, { service });
+	try {
+		const repos = getRepos();
+		if (!repos.find(r => r.Name === name)) throw new ErrorKM('UNKNOWN_REPOSITORY', 404, false);
+		// Forbid people from removing the last repo
+		if (repos.length === 1) throw new ErrorKM('CANNOT_DELETE_LAST_REPOSITORY', 403, false);
+		deleteRepo(name);
+		await generateDB();
+		logger.info(`Removed ${name}`, { service });
+	} catch (err) {
+		logger.error(`Error deleting repos : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('REPO_DELETE_ERROR');
+	}
 }
 
 /** Add a repository. Folders will be created if necessary */
 export async function addRepo(repo: Repository) {
-	if (windowsDriveRootRegexp.test(repo.BaseDir)) {
-		throw { code: 400, msg: 'CANNOT_INSTALL_REPO_AT_WINDOWS_ROOT_DRIVE' };
-	}
-	if (repo.Online) {
-		// Testing if repository is reachable
-		try {
-			const manifest = await getRepoMetadata(repo.Name);
-			if (repo.MaintainerMode && repo.Git) {
-				repo.Git.ProjectID = manifest.ProjectID;
-			}
-		} catch (err) {
-			throw { code: 404, msg: 'REPOSITORY_UNREACHABLE' };
+	try {
+		if (windowsDriveRootRegexp.test(repo.BaseDir)) {
+			throw new ErrorKM('CANNOT_INSTALL_REPO_AT_WINDOWS_ROOT_DRIVE', 400, false);
 		}
-	}
-	await checkRepoPaths(repo);
-	insertRepo(repo);
-	// Let's download zip if it's an online repository
-	if (repo.Online && repo.Update) {
-		if (repo.MaintainerMode) {
-			if (repo.Git?.URL) {
-				updateGitRepo(repo.Name)
+		if (repo.Online) {
+			// Testing if repository is reachable
+			try {
+				const manifest = await getRepoMetadata(repo.Name);
+				if (repo.MaintainerMode && repo.Git) {
+					repo.Git.ProjectID = manifest.ProjectID;
+				}
+			} catch (err) {
+				throw new ErrorKM('REPOSITORY_UNREACHABLE', 404);
+			}
+		}
+		await checkRepoPaths(repo);
+		insertRepo(repo);
+		// Let's download zip if it's an online repository
+		if (repo.Online && repo.Update) {
+			if (repo.MaintainerMode) {
+				if (repo.Git?.URL) {
+					updateGitRepo(repo.Name)
+						.then(() => generateDB())
+						.catch(() => {
+							logger.warn('Repository was added, but initializing it failed', { service });
+							emitWS(
+								'OperatorNotificationError',
+								APIMessage('NOTIFICATION.OPERATOR.ERROR.UPDATE_GIT_REPO_ERROR')
+							);
+						});
+				}
+			} else {
+				updateZipRepo(repo.Name)
 					.then(() => generateDB())
 					.catch(() => {
 						logger.warn('Repository was added, but initializing it failed', { service });
 					});
 			}
-		} else {
-			updateZipRepo(repo.Name)
-				.then(() => generateDB())
-				.catch(() => {
-					logger.warn('Repository was added, but initializing it failed', { service });
-				});
 		}
+		logger.info(`Added ${repo.Name}`, { service });
+	} catch (err) {
+		logger.error(`Error getting repos : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('REPO_CREATE_ERROR');
 	}
-	logger.info(`Added ${repo.Name}`, { service });
 }
 
 export async function updateAllRepos() {
-	const repos = getRepos().filter(r => r.Online && r.Enabled && r.Update);
-	let doGenerate = false;
-	logger.info('Updating all repositories', { service });
-	for (const repo of repos) {
-		try {
-			if (repo.MaintainerMode) {
-				if (repo.Git?.URL) {
-					if (await updateGitRepo(repo.Name)) doGenerate = true;
+	try {
+		const repos = getRepos().filter(r => r.Online && r.Enabled && r.Update);
+		let doGenerate = false;
+		logger.info('Updating all repositories', { service });
+		for (const repo of repos) {
+			try {
+				if (repo.MaintainerMode) {
+					if (repo.Git?.URL) {
+						if (await updateGitRepo(repo.Name)) doGenerate = true;
+					}
+				} else if (await updateZipRepo(repo.Name)) {
+					// updateZipRepo returns true when the function has downloaded the entire base (either because it's new or because an error happened during the patch)
+					doGenerate = true;
 				}
-			} else if (await updateZipRepo(repo.Name)) {
-				// updateZipRepo returns true when the function has downloaded the entire base (either because it's new or because an error happened during the patch)
-				doGenerate = true;
+			} catch (err) {
+				logger.error(`Failed to update repository ${repo.Name}`, { service, obj: err });
 			}
-		} catch (err) {
-			logger.error(`Failed to update repository ${repo.Name}`, { service, obj: err });
 		}
+		logger.info('Finished updating all repositories', { service });
+		if (doGenerate) await generateDB();
+		if (getConfig().App.FirstRun) {
+			createProblematicSmartPlaylist();
+		}
+		emitWS('statsRefresh');
+	} catch (err) {
+		logger.error(`Error updating all repositories : ${err}`, { service });
+		sentry.error(err);
+		emitWS('operatorNotificationError', APIMessage('UPDATE_ALL_REPOS_ERROR'));
+		throw err;
 	}
-	logger.info('Finished updating all repositories', { service });
-	if (doGenerate) await generateDB();
-	if (getConfig().App.FirstRun) {
-		createProblematicSmartPlaylist();
-	}
-	emitWS('statsRefresh');
 }
 
 export async function checkDownloadStatus(kids?: string[]) {
@@ -162,48 +207,59 @@ export async function checkDownloadStatus(kids?: string[]) {
 }
 
 export async function deleteMedias(kids?: string[], repo?: string, cleanRarelyUsed = false) {
-	let q: string;
-	if (kids?.length > 0) {
-		q = `k:${kids.join(',')}`;
-	} else if (repo) {
-		q = `r:${repo}`;
-	} else {
-		throw { code: 400 };
-	}
-	const karas = await getKaras({
-		q,
-		ignoreCollections: true,
-	});
-	const deletedFiles: Set<string> = new Set();
-	const deletePromises = [];
-	for (const kara of karas.content) {
-		try {
-			const fullPath = (await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', kara.repository)))[0];
-			let deleteFile = true;
-			if (cleanRarelyUsed) {
-				const oneMonthAgo = new Date();
-				oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
-				if (kara.lastplayed_at < oneMonthAgo) {
-					logger.info(`Removing ${fullPath} because it's too old (${kara.lastplayed_at.toISOString()})`, {
-						service,
-					});
-				} else {
-					deleteFile = false;
-				}
-			}
-			if (deleteFile) {
-				deletePromises.push(fs.unlink(fullPath));
-				deletedFiles.add(kara.mediafile);
-			}
-		} catch {
-			// No file, let's continue.
+	let errorMsg = '';
+	try {
+		let q: string;
+		if (kids?.length > 0) {
+			q = `k:${kids.join(',')}`;
+			errorMsg = 'MEDIA_DELETE_ERROR';
+		} else if (repo) {
+			q = `r:${repo}`;
+			errorMsg = cleanRarelyUsed ? 'REPO_DELETE_OLD_MEDIAS_ERROR' : 'REPO_DELETE_ALL_MEDIAS_ERROR';
+		} else {
+			throw new ErrorKM('INVALID_DATA', 400, false);
 		}
+		const karas = await getKaras({
+			q,
+			ignoreCollections: true,
+		});
+		const deletedFiles: Set<string> = new Set();
+		const deletePromises = [];
+		for (const kara of karas.content) {
+			try {
+				const fullPath = (
+					await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', kara.repository))
+				)[0];
+				let deleteFile = true;
+				if (cleanRarelyUsed) {
+					const oneMonthAgo = new Date();
+					oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+					if (kara.lastplayed_at < oneMonthAgo) {
+						logger.info(`Removing ${fullPath} because it's too old (${kara.lastplayed_at.toISOString()})`, {
+							service,
+						});
+					} else {
+						deleteFile = false;
+					}
+				}
+				if (deleteFile) {
+					deletePromises.push(fs.unlink(fullPath));
+					deletedFiles.add(kara.mediafile);
+				}
+			} catch {
+				// No file, let's continue.
+			}
+		}
+		await Promise.all(deletePromises);
+		updateDownloaded(
+			karas.content.map(k => k.kid),
+			'MISSING'
+		);
+	} catch (err) {
+		logger.error(`Error getting repos : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM(errorMsg);
 	}
-	await Promise.all(deletePromises);
-	updateDownloaded(
-		karas.content.map(k => k.kid),
-		'MISSING'
-	);
 }
 
 export async function updateZipRepo(name: string) {
@@ -310,23 +366,29 @@ export async function editRepo(
 	refresh?: boolean,
 	onlineCheck = true
 ): Promise<Repository> {
-	const oldRepo = getRepo(name);
-	if (!oldRepo) throw { code: 404 };
-	if (repo.Online && onlineCheck) {
-		// Testing if repository is reachable
-		try {
-			const manifest = await getRepoMetadata(repo.Name);
-			if (repo.MaintainerMode && repo.Git) repo.Git.ProjectID = manifest.ProjectID;
-		} catch (err) {
-			throw { code: 404, msg: 'REPOSITORY_UNREACHABLE' };
+	try {
+		const oldRepo = getRepo(name);
+		if (!oldRepo) throw new ErrorKM('UNKNOWN_REPOSITORY', 404, false);
+		if (repo.Online && onlineCheck) {
+			// Testing if repository is reachable
+			try {
+				const manifest = await getRepoMetadata(repo.Name);
+				if (repo.MaintainerMode && repo.Git) repo.Git.ProjectID = manifest.ProjectID;
+			} catch (err) {
+				throw new ErrorKM('REPOSITORY_UNREACHABLE', 404);
+			}
 		}
+		if (repo.Enabled) await checkRepoPaths(repo);
+		updateRepo(repo, name);
+		// Delay repository actions after edit
+		hookEditedRepo(oldRepo, repo, refresh, onlineCheck).catch();
+		logger.info(`Updated ${name}`, { service });
+		return repo;
+	} catch (err) {
+		logger.error(`Error editing repo : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('REPO_EDIT_ERROR');
 	}
-	if (repo.Enabled) await checkRepoPaths(repo);
-	updateRepo(repo, name);
-	// Delay repository actions after edit
-	hookEditedRepo(oldRepo, repo, refresh, onlineCheck).catch();
-	logger.info(`Updated ${name}`, { service });
-	return repo;
 }
 
 async function hookEditedRepo(oldRepo: Repository, repo: Repository, refresh = false, onlineCheck = true) {
@@ -345,6 +407,10 @@ async function hookEditedRepo(oldRepo: Repository, repo: Repository, refresh = f
 					await updateGitRepo(repo.Name);
 				} catch (err) {
 					logger.warn('Repository was edited, but updating it failed', { service });
+					emitWS(
+						'OperatorNotificationError',
+						APIMessage('NOTIFICATION.OPERATOR.ERROR.UPDATE_GIT_REPO_ERROR')
+					);
 				}
 				if (refresh) doGenerate = true;
 			}
@@ -382,60 +448,91 @@ async function hookEditedRepo(oldRepo: Repository, repo: Repository, refresh = f
 }
 
 export async function listRepoStashes(name: string) {
-	const repo = getRepo(name);
-	if (!repo) throw { code: 404 };
-	const git = await setupGit(repo);
-	return git.stashList();
+	try {
+		const repo = getRepo(name);
+		if (!repo) throw new ErrorKM('UNKNOWN_REPOSITORY', 404, false);
+		const git = await setupGit(repo);
+		return await git.stashList();
+	} catch (err) {
+		logger.error(`Error listing repo stashes for  ${name} : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('REPO_GIT_CHECK_ERROR');
+	}
 }
 
 export async function unstashInRepo(name: string, stash: number) {
-	const repo = getRepo(name);
-	if (!repo) throw { code: 404 };
-	const git = await setupGit(repo);
-	const stashes = await git.stashList();
-	if (stash > stashes.all.length || stash < 0) {
-		throw { message: 'This stash does not exist!', code: 404 };
+	try {
+		const repo = getRepo(name);
+		if (!repo) throw { code: 404 };
+		const git = await setupGit(repo);
+		const stashes = await git.stashList();
+		if (stash > stashes.all.length || stash < 0) {
+			throw { message: 'This stash does not exist!', code: 404 };
+		}
+		await git.stashPop(stash);
+		if ((await git.status()).conflicted.length > 0) {
+			await git.wipeChanges();
+			throw { message: 'Cannot unstash because of conflicts', code: 500 };
+		}
+		const diff = await git.diff();
+		const changes = computeFileChanges(diff);
+		await applyChanges(changes, repo);
+		return true;
+	} catch (err) {
+		logger.error(`Error unstashing for ${name} : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('REPO_GIT_UNSTASH_ERROR');
 	}
-	await git.stashPop(stash);
-	if ((await git.status()).conflicted.length > 0) {
-		await git.wipeChanges();
-		throw { message: 'Cannot unstash because of conflicts', code: 500 };
-	}
-	const diff = await git.diff();
-	const changes = computeFileChanges(diff);
-	await applyChanges(changes, repo);
-	return true;
 }
 
 export async function dropStashInRepo(name: string, stash: number) {
-	const repo = getRepo(name);
-	if (!repo) throw { code: 404 };
-	const git = await setupGit(repo);
-	const stashes = await git.stashList();
-	if (stash > stashes.all.length || stash < 0) {
-		throw { message: 'This stash does not exist!', code: 404 };
+	try {
+		const repo = getRepo(name);
+		if (!repo) throw new ErrorKM('UNKNOWN_REPOSITORY', 404, false);
+		const git = await setupGit(repo);
+		const stashes = await git.stashList();
+		if (stash > stashes.all.length || stash < 0) {
+			throw new ErrorKM('UNKNOWN_STASH', 404, false);
+		}
+		return await git.stashDrop(stash);
+	} catch (err) {
+		logger.error(`Error dropping stashes for  ${name} : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('REPO_GIT_DROP_STASH_ERROR');
 	}
-	await git.stashDrop(stash);
-	return true;
 }
 
 export async function resetRepo(name: string) {
-	const repo = getRepo(name);
-	if (!repo) throw { code: 404 };
-	const git = await setupGit(repo);
-	return git.reset();
+	try {
+		const repo = getRepo(name);
+		if (!repo) throw new ErrorKM('UNKNOWN_REPOSITORY', 404, false);
+		const git = await setupGit(repo);
+		return await git.reset();
+	} catch (err) {
+		logger.error(`Error git resetting ${name} : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('REPO_GIT_RESET_ERROR');
+	}
 }
 
 export async function updateGitRepo(name: string) {
-	if (updateRunning) throw 'An update is already on the way, wait for it to finish.';
-	updateRunning = true;
-	const repo = getRepo(name);
-	if (!repo.Online || !repo.Enabled || !repo.MaintainerMode || !repo.Update) {
-		updateRunning = false;
-		throw 'Repository is not online, disabled, not in Maintainer mode, or updates are disabled!';
-	}
-	logger.info(`Update ${repo.Name}: Starting`, { service });
 	try {
+		if (updateRunning) {
+			logger.error(`Unable to update repository ${name} : update already in progress`, { service });
+			throw new ErrorKM('UPDATE_REPO_ALREADY_IN_PROGRESS', 409, false);
+		}
+		updateRunning = true;
+		const repo = getRepo(name);
+		if (!repo.Online || !repo.Enabled || !repo.MaintainerMode || !repo.Update) {
+			updateRunning = false;
+			logger.error(
+				`Unable to update repository ${name} : Repo is disabled or not in maintainer mode or not online, or updates are disabled`,
+				{ service }
+			);
+			throw new ErrorKM('REPO_NOT_UPDATEABLE', 400, false);
+		}
+		logger.info(`Update ${repo.Name}: Starting`, { service });
+
 		if (!(await isGit(repo))) {
 			logger.info(`Update ${repo.Name}: not a git repo, cloning now`, { service });
 			await newGitRepo(repo);
@@ -505,7 +602,7 @@ export async function updateGitRepo(name: string) {
 				...status,
 				repoName: repo.Name,
 			});
-			throw 'Pull failed (conflicts)';
+			throw new ErrorKM('GIT_PULL_FAILED');
 		}
 		const newCommit = await git.getCurrentCommit();
 		logger.debug(`Original commit : ${originalCommit} and new commit : ${newCommit}`, { service });
@@ -514,12 +611,12 @@ export async function updateGitRepo(name: string) {
 		await applyChanges(changes, repo);
 		return false;
 	} catch (err) {
-		logger.error(`Failed to update repo ${repo.Name}: ${err}`, { service, obj: err });
+		logger.error(`Failed to update repo ${name}: ${err}`, { service, obj: err });
 		sentry.error(err);
-		throw err;
+		throw err instanceof ErrorKM ? err : new ErrorKM('REPO_GIT_UPDATE_ERROR');
 	} finally {
 		updateRunning = false;
-		logger.info(`Update ${repo.Name}: Finished`, { service });
+		logger.info(`Update ${name}: Finished`, { service });
 	}
 }
 
@@ -624,7 +721,7 @@ async function applyChanges(changes: Change[], repo: Repository) {
 		}
 		const deletePromises = [];
 		if (KIDsToDelete.length > 0)
-			deletePromises.push(deleteKara(KIDsToDelete, false, { media: true, kara: false }, true));
+			deletePromises.push(removeKara(KIDsToDelete, false, { media: true, kara: false }, true));
 		if (TIDsToDelete.length > 0) {
 			// Let's not remove tags in karas : it's already done anyway
 			deletePromises.push(
@@ -651,16 +748,28 @@ async function applyChanges(changes: Change[], repo: Repository) {
 }
 
 export async function checkGitRepoStatus(repoName: string) {
-	const repo = getRepo(repoName);
-	const git = await setupGit(repo);
-	return git.status();
+	try {
+		const repo = getRepo(repoName);
+		const git = await setupGit(repo);
+		return await git.status();
+	} catch (err) {
+		logger.error(`Error checking git for repo ${repoName} : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('REPO_GIT_CHECK_ERROR');
+	}
 }
 
 export async function stashGitRepo(repoName: string) {
-	const repo = getRepo(repoName);
-	const git = await setupGit(repo, true);
-	await git.abortPull();
-	return git.stash();
+	try {
+		const repo = getRepo(repoName);
+		const git = await setupGit(repo, true);
+		await git.abortPull();
+		return await git.stash();
+	} catch (err) {
+		logger.error(`Error stashing commits for repo ${repoName} : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('REPO_GIT_STASH_ERROR');
+	}
 }
 
 /** Helper function to setup git in other functions */
@@ -706,12 +815,13 @@ export async function newGitRepo(repo: Repository) {
 }
 
 export async function compareLyricsChecksums(repo1Name: string, repo2Name: string): Promise<DifferentChecksumReport[]> {
-	if (!getRepo(repo1Name) || !getRepo(repo2Name)) throw { code: 404 };
 	// Get all files
 	const task = new Task({
 		text: 'COMPARING_LYRICS_IN_REPOS',
 	});
 	try {
+		if (!getRepo(repo1Name) || !getRepo(repo2Name)) throw new ErrorKM('UNKNOWN_REPOSITORY', 404, false);
+
 		const [repo1Files, repo2Files] = await Promise.all([
 			listAllFiles('Karaokes', repo1Name),
 			listAllFiles('Karaokes', repo2Name),
@@ -752,9 +862,9 @@ export async function compareLyricsChecksums(repo1Name: string, repo2Name: strin
 		}
 		return differentChecksums;
 	} catch (err) {
-		if (err?.code === 404) throw err;
+		logger.error(`Error comparing lyrics between ${repo1Name} and ${repo2Name} : ${err}`, { service });
 		sentry.error(err);
-		throw err;
+		throw err instanceof ErrorKM ? err : new ErrorKM('REPO_COMPARE_LYRICS_ERROR');
 	} finally {
 		task.end();
 	}
@@ -766,7 +876,9 @@ export async function copyLyricsRepo(report: DifferentChecksumReport[]) {
 		total: report.length,
 	});
 	try {
+		logger.info('Copying lyrics between repositories', { service });
 		for (const karas of report) {
+			logger.info(`Copying lyrics for ${karas.kara1.meta.karaFile}`, { service });
 			task.update({
 				subtext: karas.kara2.medias[0].lyrics?.[0]?.filename,
 			});
@@ -794,8 +906,9 @@ export async function copyLyricsRepo(report: DifferentChecksumReport[]) {
 		saveSetting('baseChecksum', getStoreChecksum());
 		refreshKaras();
 	} catch (err) {
+		logger.error(`Error getting repos : ${err}`, { service });
 		sentry.error(err);
-		throw err;
+		throw err instanceof ErrorKM ? err : new ErrorKM('REPO_COPY_LYRICS_ERROR');
 	} finally {
 		task.end();
 	}
@@ -803,13 +916,13 @@ export async function copyLyricsRepo(report: DifferentChecksumReport[]) {
 
 function checkRepoPaths(repo: Repository) {
 	if (windowsDriveRootRegexp.test(repo.BaseDir)) {
-		throw { code: 400, msg: 'REPO_PATH_ERROR_IN_WINDOWS_ROOT_DIR' };
+		throw new ErrorKM('REPO_PATH_ERROR_IN_WINDOWS_ROOT_DIR', 400, false);
 	}
 	if (!getState().portable) {
 		// The Mutsui Fix.
 		// If not in portable mode, prevent repo paths from being in the app folder
 		if (pathIsContainedInAnother(resolve(getState().appPath), resolve(getState().dataPath, repo.BaseDir))) {
-			throw { code: 400, msg: 'REPO_PATH_ERROR_IN_APP_PATH' };
+			throw new ErrorKM('REPO_PATH_ERROR_IN_APP_PATH', 400, false);
 		}
 	}
 	for (const path of repo.Path.Medias) {
@@ -818,13 +931,13 @@ function checkRepoPaths(repo: Repository) {
 			!getState().portable &&
 			pathIsContainedInAnother(resolve(getState().appPath), resolve(getState().dataPath, path))
 		) {
-			throw { code: 400, msg: 'REPO_PATH_ERROR_IN_APP_PATH' };
+			throw new ErrorKM('REPO_PATH_ERROR_IN_APP_PATH', 400, false);
 		}
 		if (pathIsContainedInAnother(resolve(getState().dataPath, repo.BaseDir), resolve(getState().dataPath, path))) {
-			throw { code: 400, msg: 'REPO_PATH_ERROR_IN_BASE_PATH' };
+			throw new ErrorKM('REPO_PATH_ERROR_IN_BASE_PATH', 400, false);
 		}
 		if (windowsDriveRootRegexp.test(path)) {
-			throw { code: 400, msg: 'REPO_PATH_ERROR_IN_WINDOWS_ROOT_DIR' };
+			throw new ErrorKM('REPO_PATH_ERROR_IN_WINDOWS_ROOT_DIR', 400, false);
 		}
 	}
 	const checks = [];
@@ -837,11 +950,11 @@ function checkRepoPaths(repo: Repository) {
 
 /** Find any unused medias in a repository */
 export async function findUnusedMedias(repo: string): Promise<string[]> {
-	if (!getRepo(repo)) throw { code: 404 };
 	const task = new Task({
 		text: 'FINDING_UNUSED_MEDIAS',
 	});
 	try {
+		if (!getRepo(repo)) throw new ErrorKM('UNKNOWN_REPOSITORY', 404, false);
 		const [karas, mediaFiles] = await Promise.all([
 			getKaras({ ignoreCollections: true }),
 			listAllFiles('Medias', repo),
@@ -849,9 +962,9 @@ export async function findUnusedMedias(repo: string): Promise<string[]> {
 		const mediasFilesKaras: string[] = karas.content.map(k => k.mediafile);
 		return mediaFiles.filter(file => !mediasFilesKaras.includes(basename(file)));
 	} catch (err) {
-		if (err?.code === 404) throw err;
+		logger.error(`Error getting unused media for repository ${repo} : ${err}`, { service });
 		sentry.error(err);
-		throw err;
+		throw err instanceof ErrorKM ? err : new ErrorKM('REPO_GET_UNUSEDMEDIA_ERROR');
 	} finally {
 		task.end();
 	}
@@ -859,23 +972,27 @@ export async function findUnusedMedias(repo: string): Promise<string[]> {
 
 /** Get metadata. Throws if KM Server is not up to date */
 export async function getRepoMetadata(repo: string) {
-	const ret = await HTTP.get(`https://${repo}/api/karas/repository`);
-	if (ret.status === 404) throw false;
-	return ret.data as RepositoryManifest;
+	try {
+		const ret = await HTTP.get(`https://${repo}/api/karas/repository`);
+		return ret.data as RepositoryManifest;
+	} catch (err) {
+		logger.error(`Error fetching repository manifest for ${repo} : ${err}`);
+		throw err;
+	}
 }
 
 /** Find any unused tags in a repository */
 export async function findUnusedTags(repo: string): Promise<DBTag[]> {
-	if (!getRepo(repo)) throw { code: 404 };
 	try {
+		if (!getRepo(repo)) throw new ErrorKM('UNKNOWN_REPOSITORY', 404, false);
 		const tags = await getTags({});
 		const tagsToDelete = tags.content.filter(t => !t.karacount && t.repository === repo);
 		// Return all valid tags
 		return tagsToDelete;
 	} catch (err) {
-		if (err?.code === 404) throw err;
+		logger.error(`Error getting unused tags in repository ${repo} : ${err}`, { service });
 		sentry.error(err);
-		throw err;
+		throw err instanceof ErrorKM ? err : new ErrorKM('REPO_GET_UNUSEDTAGS_ERROR');
 	}
 }
 
@@ -887,7 +1004,7 @@ export async function movingMediaRepo(repoName: string, newPath: string) {
 	try {
 		const repo = getRepo(repoName);
 		const state = getState();
-		if (!repo) throw 'Unknown repository';
+		if (!repo) throw new ErrorKM('UNKNOWN_REPOSITORY', 404, false);
 		await checkRepoPaths(repo);
 		logger.info(`Moving ${repoName} medias repository to ${newPath}...`, { service });
 		const moveTasks = [];
@@ -899,16 +1016,25 @@ export async function movingMediaRepo(repoName: string, newPath: string) {
 		repo.Path.Medias = [relativePath(state.dataPath, newPath)];
 		await editRepo(repoName, repo, true, false);
 	} catch (err) {
-		logger.error(`Failed to move repo ${repoName}`, { service, obj: err });
-		throw err;
+		logger.error(`Error moving medias for repo ${repoName} : ${err}`, { service });
+		sentry.error(err);
+		const msg = 'MOVING_MEDIAS_ERROR';
+		emitWS('operatorNotificationError', APIMessage(msg));
+		throw err instanceof ErrorKM ? err : new ErrorKM(msg);
 	} finally {
 		task.end();
 	}
 }
 
 export async function getRepoFreeSpace(repoName: string) {
-	const repo = getRepo(repoName);
-	return getFreeSpace(resolve(getState().dataPath, repo.Path.Medias[0]));
+	try {
+		const repo = getRepo(repoName);
+		return await getFreeSpace(resolve(getState().dataPath, repo.Path.Medias[0]));
+	} catch (err) {
+		logger.error(`Error getting repos : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('REPO_GET_FREE_SPACE_ERROR');
+	}
 }
 
 export async function generateCommits(repoName: string) {
@@ -1196,31 +1322,38 @@ export async function generateCommits(repoName: string) {
 		if (commits.length === 0) return;
 		return { commits, modifiedMedias };
 	} catch (err) {
-		logger.error('Failed to prepare commits', { service, obj: err });
+		logger.error(`Error getting commits for ${repoName} : ${err}`, { service });
 		sentry.error(err);
-		throw err;
+		throw err instanceof ErrorKM ? err : new ErrorKM('REPO_GIT_GET_COMMITS_ERROR');
 	} finally {
 		task.end();
 	}
 }
 
 export async function uploadMedia(kid: string) {
-	const kara = await getKara(kid, adminToken);
-	const repo = getRepo(kara.repository);
-	const ftp = new FTP({ repoName: repo.Name });
-	await ftp.connect();
-	const path = await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', repo.Name));
-	await ftp.upload(path[0]);
+	try {
+		const kara = await getKara(kid, adminToken);
+		const repo = getRepo(kara.repository);
+		const ftp = new FTP({ repoName: repo.Name });
+		await ftp.connect();
+		const path = await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', repo.Name));
+		await ftp.upload(path[0]);
+	} catch (err) {
+		logger.error(`Error uploading media for ${kid} : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('REPO_UPLOAD_MEDIA_ERROR');
+	}
 }
 
 /** Commit and Push all modifications */
 export async function pushCommits(repoName: string, push: Push, ignoreFTP?: boolean) {
+	let ftp: FTP;
 	try {
 		const repo = getRepo(repoName);
 		const git = await setupGit(repo, true);
 		if (!ignoreFTP && push.modifiedMedias.length > 0) {
 			// Before making any commits, we have to send stuff via FTP
-			const ftp = new FTP({ repoName });
+			ftp = new FTP({ repoName });
 			await ftp.connect();
 			for (const media of push.modifiedMedias) {
 				// New or updated file
@@ -1285,7 +1418,10 @@ export async function pushCommits(repoName: string, push: Push, ignoreFTP?: bool
 		}
 	} catch (err) {
 		logger.error(`Pushing to repository ${repoName} failed: ${err}`, { service, obj: err });
-		// No need to throw here, this is called asynchronously.
+		sentry.error(err);
+		emitWS('operatorNotificationError', APIMessage('REPO_GIT_PUSH_ERROR'));
+	} finally {
+		if (ftp) ftp.disconnect().catch(() => {});
 	}
 }
 
@@ -1321,8 +1457,14 @@ function topologicalSort(karas: KaraMetaFile[]): KaraMetaFile[] {
 }
 
 export async function openMediaFolder(repoName: string) {
-	const mediaFolders = resolvedPathRepos('Medias', repoName);
-	for (const mediaFolder of mediaFolders) {
-		shell.openPath(mediaFolder);
+	try {
+		const mediaFolders = resolvedPathRepos('Medias', repoName);
+		for (const mediaFolder of mediaFolders) {
+			shell.openPath(mediaFolder);
+		}
+	} catch (err) {
+		logger.error(`Unable to open media folders : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('OPEN_MEDIA_FOLDER_ERROR');
 	}
 }
