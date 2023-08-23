@@ -68,9 +68,8 @@ export default function playlistsController(router: SocketIOApp) {
 
 			// Now we add playlist
 			try {
-				return {
-					plaid: await createPlaylist(req.body, req.token.username),
-				};
+				const plaid = await createPlaylist(req.body, req.token.username);
+				return { plaid };
 			} catch (err) {
 				throw { code: err.code || 500, message: APIMessage(err.message) };
 			}

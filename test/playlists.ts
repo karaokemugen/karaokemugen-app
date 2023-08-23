@@ -59,7 +59,7 @@ describe('Playlists', () => {
 				plaid: newPlaylistID,
 			});
 		} catch (err) {
-			expect(err.message.code).to.be.equal('PL_ADD_SONG_ERROR');
+			expect(err.message.code).to.be.equal('PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED');
 		}
 	});
 
@@ -283,7 +283,7 @@ describe('Playlists', () => {
 			playlist: playlistExport.PlaylistContents,
 		};
 		const body = await commandBackend(token, 'importPlaylist', data, true);
-		expect(body.message.code).to.be.equal('PL_IMPORT_ERROR');
+		expect(body.message.code).to.be.equal('INVALID_DATA');
 	});
 
 	it("Update a playlist's information", async () => {
