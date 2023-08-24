@@ -74,7 +74,13 @@ export default function userController(router: SocketIOApp) {
 	router.route('editUser', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'closed');
 		try {
-			await editUser(req.body.old_login || req.body.login, req.body, req.body.avatar, req.token.role, {
+			// If we're modifying a online user (@) only editing its type is permitted, so we'll filter that out.
+			const user = req.body.login.includes('@')
+				? { type: req.body.type, flag_tutorial_done: req.body.flag_tutorial_done }
+				: req.body;
+			const avatar = req.body.login.includes('@') ? null : req.body.avatar;
+
+			await editUser(req.body.old_login || req.body.login, user, avatar, req.token.role, {
 				editRemote: false,
 			});
 			return { code: 200, message: APIMessage('USER_EDITED') };

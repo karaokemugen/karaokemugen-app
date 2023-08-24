@@ -91,15 +91,8 @@ export async function editUser(
 	}
 ) {
 	try {
-		// If we're modifying a online user (@) only editing its type is permitted, so we'll filter that out.
 		if (!username) throw new ErrorKM('INVALID_DATA', 400, false);
 		username = username.trim().toLowerCase();
-
-		user = username.includes('@')
-			? { login: username, type: user.type, flag_tutorial_done: user.flag_tutorial_done }
-			: user;
-
-		avatar = username.includes('@') ? null : avatar;
 
 		if (user.bio) user.bio = user.bio.trim();
 		if (user.email) user.email = user.email.trim();
@@ -272,7 +265,7 @@ export async function createUser(
 	try {
 		user.login = user.login.trim().toLowerCase();
 		if (user.password) user.password = user.password.trim();
-		if (!user.login.match(userRegexp)) {
+		if (!user.login.split('@')[0].match(userRegexp)) {
 			logger.error(`Invalid user name: ${user.login}`, { service });
 			throw new ErrorKM('USER_LOGIN_INVALID', 400, false);
 		}
