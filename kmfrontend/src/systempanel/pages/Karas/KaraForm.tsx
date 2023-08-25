@@ -258,7 +258,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				{
 					version: mediaVersion,
 					filename: this.state.mediaInfo.filename || this.props.kara?.mediafile,
-					audiogain: this.state.mediaInfo.gain || this.props.kara?.gain,
 					loudnorm: this.state.mediaInfo.loudnorm || this.props.kara?.loudnorm,
 					filesize: this.state.mediaInfo.size || this.props.kara?.mediasize,
 					duration: this.state.mediaInfo.duration || this.props.kara?.duration,
