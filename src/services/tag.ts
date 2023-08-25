@@ -108,7 +108,6 @@ export async function addTag(tagObj: Tag, opts = { silent: false, refresh: true 
 export async function getTag(tid: string, ..._: any) {
 	try {
 		const tags = await selectAllTags({ tid });
-		if (!tags[0]) throw new ErrorKM('UNKNOWN_TAG', 404, false);
 		return tags[0];
 	} catch (err) {
 		logger.error(`Error getting tags : ${err}`, { service });
