@@ -16,7 +16,6 @@ import {
 	removeTag,
 } from '../../services/tag.js';
 import { runChecklist } from '../middlewares.js';
-import { ErrorKM } from '../../lib/utils/error.js';
 
 export default function tagsController(router: SocketIOApp) {
 	router.route('getTags', async (socket: Socket, req: APIData) => {
@@ -70,8 +69,7 @@ export default function tagsController(router: SocketIOApp) {
 		if (!isUUID(req.body.tid)) throw { code: 400 };
 		await runChecklist(socket, req, 'guest', 'limited');
 		try {
-			const tag = await getTag(req.body.tid);
-			if (!tag) throw new ErrorKM('UNKNOWN_TAG', 404, false);
+			const tag = await getTag(req.body.tid, true);
 			return tag;
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
