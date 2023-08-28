@@ -165,7 +165,7 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 			);
 		}
 		for (const tid of kara.tid) {
-			const tag = await getTag(tid.split('~')[0]);
+			const tag = await getTag(tid.split('~')[0]).catch(() => {});
 			// If for some reason tag couldn't be found, continue.
 			if (!tag) continue;
 			// Modify tag file we just copied to change its repo
@@ -199,7 +199,6 @@ export async function batchEditKaras(plaid: string, action: 'add' | 'remove', ti
 		});
 		if (action !== 'add' && action !== 'remove') throw 'Unkown action';
 		const tag = await getTag(tid);
-		if (!tag) throw 'Unknown tag';
 		logger.info(`Batch tag edit starting : adding ${tid} in type ${type} for all songs in playlist ${plaid}`, {
 			service,
 		});

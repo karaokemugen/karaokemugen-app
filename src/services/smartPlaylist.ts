@@ -331,14 +331,8 @@ async function translateCriterias(cList: Criteria[], lang: string): Promise<Crit
 			}
 			if (cList[i].type >= 1 && cList[i].type <= 999) {
 				// We need to get the tag name and then translate it if needed
-				const tag = await getTag(cList[i].value);
-				tag
-					? (cList[i].value_i18n = tag.i18n[langObj['2B']]
-							? tag.i18n[langObj['2B']]
-							: tag.i18n.eng
-							? tag.i18n.eng
-							: tag.name)
-					: (cList[i] = null);
+				const tag = await getTag(cList[i].value).catch(() => {});
+				tag ? (cList[i].value_i18n = tag.i18n[langObj['2B']] || tag.i18n.eng || tag.name) : (cList[i] = null);
 			}
 			if (cList[i].type === 1001) {
 				// We have a kara ID, let's get the kara itself and append it to the value

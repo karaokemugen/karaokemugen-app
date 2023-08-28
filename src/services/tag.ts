@@ -36,7 +36,7 @@ import { emitWS } from '../lib/utils/ws.js';
 import sentry from '../utils/sentry.js';
 import { getKaras } from './kara.js';
 import { editKara } from './karaCreation.js';
-import { getRepo, getRepos } from './repo.js';
+import { getRepos } from './repo.js';
 
 const service = 'Tag';
 
@@ -104,10 +104,10 @@ export async function addTag(tagObj: Tag, opts = { silent: false, refresh: true 
 	}
 }
 
-export async function getTag(tid: string, throwOnNoTag = false) {
+export async function getTag(tid: string) {
 	try {
 		const tags = await selectAllTags({ tid });
-		if (throwOnNoTag && !tags[0]) throw new ErrorKM('UNKNOWN_TAG', 404, false);
+		if (!tags[0]) throw new ErrorKM('UNKNOWN_TAG', 404, false);
 		return tags[0];
 	} catch (err) {
 		logger.error(`Error getting tags : ${err}`, { service });
@@ -135,7 +135,6 @@ export async function mergeTags(tid1: string, tid2: string) {
 	try {
 		if (!isUUID(tid1) || !isUUID(tid2)) throw new ErrorKM('INVALID_DATA', 400, false);
 		const [tag1, tag2] = await Promise.all([getTag(tid1), getTag(tid2)]);
-		if (!tag1 || !tag2) throw { code: 404 };
 		task.update({
 			subtext: `${tag1.name} + ${tag2.name}`,
 		});
@@ -218,7 +217,6 @@ export async function editTag(
 		profile('editTag');
 		if (!isUUID(tid)) throw new ErrorKM('INVALID_DATA', 400, false);
 		const oldTag = await getTag(tid);
-		if (!oldTag) throw new ErrorKM('UNKNOWN_TAG', 404, false);
 		if (opts.repoCheck && oldTag.repository !== tagObj.repository) {
 			throw new ErrorKM('TAG_REPOSITORY_INVALID_CHANGE', 400, false);
 		}
@@ -318,7 +316,7 @@ export async function removeTag(
 		const tags: DBTag[] = [];
 		for (const tid of tids) {
 			const tag = await getTag(tid);
-			if (tag) tags.push(tag);
+			tags.push(tag);
 		}
 		let karasToRemoveTagIn: DBKara[];
 		if (opt.removeTagInKaras) {
@@ -360,7 +358,8 @@ export async function integrateTagFile(file: string, refresh = true): Promise<st
 	if (!tagFileData) return null;
 	try {
 		logger.debug(`Integrating tag ${tagFileData.tid} (${tagFileData.name})`, { service });
-		const tagDBData = await getTag(tagFileData.tid);
+		// This is allowed to fail
+		const tagDBData = await getTag(tagFileData.tid).catch(() => {});
 		if (tagDBData) {
 			if (tagDBData.repository === tagFileData.repository) {
 				// Refresh always disabled for editing tags.
@@ -386,7 +385,7 @@ export async function consolidateTagsInRepo(kara: KaraFileV4) {
 	for (const tagType of Object.keys(tagTypes)) {
 		if (kara.data.tags[tagType]) {
 			for (const karaTag of kara.data.tags[tagType]) {
-				const tag = await getTag(karaTag);
+				const tag = await getTag(karaTag).catch(() => {});
 				if (!tag) continue;
 				if (tag.repository !== kara.data.repository) {
 					// This might need to be copied
@@ -411,9 +410,6 @@ export async function copyTagToRepo(tid: string, repoName: string) {
 	try {
 		if (!isUUID(tid)) throw new ErrorKM('INVALID_DATA', 400, false);
 		const tag = await getTag(tid);
-		if (!tag) throw new ErrorKM('UNKNOWN_TAG', 404, false);
-		const repo = getRepo(repoName);
-		if (!repo) throw new ErrorKM('UNKNOWN_REPOSITORY', 404, false);
 		tag.repository = repoName;
 		const destDir = resolvedPathRepos('Tags', repoName)[0];
 		await writeTagFile(tag, destDir);

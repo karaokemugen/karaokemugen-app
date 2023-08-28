@@ -69,7 +69,7 @@ export default function tagsController(router: SocketIOApp) {
 		if (!isUUID(req.body.tid)) throw { code: 400 };
 		await runChecklist(socket, req, 'guest', 'limited');
 		try {
-			const tag = await getTag(req.body.tid, true);
+			const tag = await getTag(req.body.tid);
 			return tag;
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
