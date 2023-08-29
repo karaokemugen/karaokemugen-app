@@ -43,8 +43,6 @@ let state: State = {
 	player: {},
 	opt: {},
 	args: [],
-	environment: process.env.SENTRY_ENVIRONMENT,
-	sentrytest: (process.env.CI_SERVER || process.env.SENTRY_TEST === 'true') as boolean,
 	version: {
 		number: packageJSON.version,
 		name: packageJSON.versionName,
@@ -154,6 +152,7 @@ export function getPublicState(admin: boolean): PublicState {
 		supportedLyrics: supportedFiles.lyrics,
 		supportedMedias: [].concat(supportedFiles.video, supportedFiles.audio),
 		environment: process.env.SENTRY_ENVIRONMENT,
+		sentrydsn: process.env.sentrydsn,
 		sentrytest: (process.env.CI_SERVER || process.env.SENTRY_TEST === 'true') as boolean,
 		url: state.osURL,
 		quiz: getPublicCurrentGame(admin),
