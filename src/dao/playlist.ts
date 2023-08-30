@@ -2,13 +2,13 @@ import { pg as yesql } from 'yesql';
 
 import { buildClauses, db, transaction } from '../lib/dao/database.js';
 import { WhereClause } from '../lib/types/database.js';
-import { DBPL, DBPLC, DBPLCBase, PLCInsert, SmartPlaylistType } from '../lib/types/database/playlist.js';
+import { DBPLC, DBPLCBase, PLCInsert } from '../lib/types/database/playlist.js';
 import { Criteria, PLCParams, UnaggregatedCriteria } from '../lib/types/playlist.js';
 import { getConfig } from '../lib/utils/config.js';
 import { getTagTypeName } from '../lib/utils/constants.js';
 import { now } from '../lib/utils/date.js';
 import logger, { profile } from '../lib/utils/logger.js';
-import { DBPLCInfo } from '../types/database/playlist.js';
+import { DBPL, DBPLCInfo, SmartPlaylistType } from '../types/database/playlist.js';
 import { getState } from '../utils/state.js';
 import { organizeTagsInKara } from './kara.js';
 import {

@@ -1,9 +1,10 @@
 import { expect } from 'chai';
 import lodash from 'lodash';
 
-import { DBPL, DBPLC } from '../src/lib/types/database/playlist.js';
+import { DBPLC } from '../src/lib/types/database/playlist.js';
 import { PlaylistExport } from '../src/lib/types/playlist.js';
 import { uuidRegexp } from '../src/lib/utils/constants.js';
+import { DBPL } from '../src/types/database/playlist.js';
 import { allKIDs, commandBackend, getToken, setPlaid, socket, testKara } from './util/util.js';
 
 const { sample } = lodash;
