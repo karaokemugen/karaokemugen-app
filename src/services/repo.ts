@@ -327,6 +327,7 @@ export async function updateZipRepo(name: string) {
 				sentry.addErrorInfo('toCommit', LatestCommit);
 				sentry.error(err, 'warning');
 				await saveSetting(`commit-${repo.Name}`, null);
+				updateRunning = false;
 				await updateZipRepo(name);
 			}
 		}
