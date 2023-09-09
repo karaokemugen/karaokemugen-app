@@ -71,7 +71,8 @@
 		"FILTERS": "Filters",
 		"ACTIVE_FILTER": "Active filter",
 		"EDIT_CRITERIA": "Edit criteria",
-		"SHOW_SONGS": "Show songs"
+		"SHOW_SONGS": "Show songs",
+		"REFRESH_LIBRARY_BANNER": "The library criterias have changed, please <1>refresh</1> it."
 	},
 	"ADVANCED": {
 		"PLAYLIST_COMMANDS": "Playlist commands",

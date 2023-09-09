@@ -72,7 +72,8 @@
 		"FILTERS": "Filtres",
 		"ACTIVE_FILTER": "Filtre actif",
 		"EDIT_CRITERIA": "Éditer les critères",
-		"SHOW_SONGS": "Afficher les chansons"
+		"SHOW_SONGS": "Afficher les chansons",
+		"REFRESH_LIBRARY_BANNER": "Les critères de la bibliothèque ont changé, veuillez la <1>rafraichir</1>."
 	},
 	"ADVANCED": {
 		"PLAYLIST_COMMANDS": "Commandes de liste de lecture",
