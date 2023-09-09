@@ -155,6 +155,7 @@ export function getPublicState(admin: boolean): PublicState {
 		sentrydsn: process.env.sentrydsn,
 		sentrytest: (process.env.CI_SERVER || process.env.SENTRY_TEST === 'true') as boolean,
 		url: state.osURL,
+		songPoll: state.songPoll,
 		quiz: getPublicCurrentGame(admin),
 	};
 }

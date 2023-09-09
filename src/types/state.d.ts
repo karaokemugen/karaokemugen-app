@@ -115,6 +115,7 @@ export interface PublicState {
 	sentrydsn: string;
 	sentrytest: boolean;
 	url: string;
+	songPoll?: boolean;
 	quiz: GameState;
 }
 
