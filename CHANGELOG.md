@@ -247,10 +247,7 @@ Happy new year everyone!
 ## Misc
 
 -   Upgraded frontend and backend dependencies
-    <<<<<<< HEAD
--   # Removed temporary folder from config as we now use ~/KaraokeMugen/temp
 -   Removed temporary folder from config as we now use ~/KaraokeMugen/temp
-    > > > > > > > next
 -   Replaced mouse wheel up/down on player. It now changes volume again like before.
 
 # v7.0.37 - 22/11/2022
