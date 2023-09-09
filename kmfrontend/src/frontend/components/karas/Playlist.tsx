@@ -55,7 +55,7 @@ interface IProps {
 	indexKaraDetail?: number;
 	clearIndexKaraDetail?: () => void;
 	searchType?: 'search' | 'recent' | 'requested';
-	quizRanking: boolean;
+	quizRanking?: boolean;
 }
 interface KaraList {
 	content: KaraElement[];
