@@ -96,7 +96,11 @@ export default function karaController(router: SocketIOApp) {
 		// Add Kara to the playlist currently used depending on mode
 		if (!isUUID(req.body.kids)) throw { code: 400 };
 		try {
-			return await addKaraToPlaylist({ kids: req.body.kids, requester: req.token.username });
+			return await addKaraToPlaylist({
+				kids: req.body.kids,
+				requester: req.token.username,
+				throwOnMissingKara: true,
+			});
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}

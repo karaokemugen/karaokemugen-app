@@ -173,6 +173,7 @@ export default function playlistsController(router: SocketIOApp) {
 					requester: req.token.username,
 					plaid: req.body.plaid,
 					pos: req.body.pos,
+					throwOnMissingKara: true,
 				});
 			} catch (err) {
 				throw { code: err.code || 500, message: APIMessage(err.message) };

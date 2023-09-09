@@ -650,7 +650,7 @@ export async function addKaraToPlaylist(params: AddKaraParams) {
 	// Defaults
 	params = {
 		refresh: true,
-		throwOnMissingKara: true,
+		throwOnMissingKara: false,
 		visible: true,
 		...params,
 	};
@@ -672,12 +672,14 @@ export async function addKaraToPlaylist(params: AddKaraParams) {
 		params.kids.forEach(kid => {
 			if (!allKaras.has(kid)) karasUnknown.push(kid);
 		});
-		if (karasUnknown.length > 0 && params.throwOnMissingKara) throw new ErrorKM('UNKNOWN_SONG', 404, false);
+		if (karasUnknown.length > 0 && params.throwOnMissingKara) {
+			throw new ErrorKM('UNKNOWN_SONG', 404, false);
+		}
 		profile('addKaraToPL-checkKIDExistence');
 		// Sort karas from our database by the list that was provided to this function, so songs are added in the correct order
 		profile('addKaraToPL-sort');
 		for (const kid of params.kids) {
-			karas.push(karasInDB.find(k => k.kid === kid));
+			if (!karasUnknown.includes(kid)) karas.push(karasInDB.find(k => k.kid === kid));
 		}
 		profile('addKaraToPL-sort');
 		logger.debug(`Adding ${karas.length} song(s) to playlist ${pl.name || 'unknown'} by ${requester}...`, {
