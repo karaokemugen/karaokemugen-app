@@ -31,7 +31,7 @@ export interface SettingsStore {
 export interface SettingsStoreData {
 	state: PublicState;
 	config: Config;
-	user: User | {};
+	user?: User;
 	favorites: Set<string>;
 	version: Version;
 }
