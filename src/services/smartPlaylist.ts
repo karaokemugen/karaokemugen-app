@@ -83,6 +83,7 @@ export async function updateAllSmartPlaylists(skipBlacklist = false, skipWhiteli
 	if (wl && !skipWhitelist) await updateSmartPlaylist(wl.plaid);
 	const bl = pls.find(p => p.flag_blacklist && p.flag_smart);
 	if (bl && !skipBlacklist) await updateSmartPlaylist(bl.plaid);
+	if ((wl && !skipWhitelist) || (bl && !skipBlacklist)) emitWS('refreshLibrary');
 	for (const pl of pls.filter(p => p.flag_smart && !p.flag_whitelist && !p.flag_blacklist)) {
 		updatePromises.push(updateSmartPlaylist(pl.plaid));
 	}
@@ -382,6 +383,7 @@ export function whitelistHook(plaid: string) {
 	const oldWhitelistPlaylist_id = getState().whitelistPlaid;
 	updatePlaylistLastEditTime(oldWhitelistPlaylist_id);
 	emitWS('playlistInfoUpdated', oldWhitelistPlaylist_id);
+	emitWS('refreshLibrary');
 	setState({ whitelistPlaid: plaid });
 }
 
@@ -390,5 +392,6 @@ export function blacklistHook(plaid: string) {
 	const oldBlacklistPlaylist_id = getState().blacklistPlaid;
 	updatePlaylistLastEditTime(oldBlacklistPlaylist_id);
 	emitWS('playlistInfoUpdated', oldBlacklistPlaylist_id);
+	emitWS('refreshLibrary');
 	setState({ blacklistPlaid: plaid });
 }
