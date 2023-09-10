@@ -768,8 +768,6 @@ class Players {
 		if (song.loudnorm) {
 			const [input_i, input_tp, input_lra, input_thresh, target_offset] = song.loudnorm.split(',');
 			audio = `[aid1]loudnorm=measured_i=${input_i}:measured_tp=${input_tp}:measured_lra=${input_lra}:measured_thresh=${input_thresh}:linear=true:offset=${target_offset}:lra=20[ao]`;
-		} else if (song.gain) {
-			audio = `[aid1]volume=${song.gain}dB[ao]`;
 		} else {
 			audio = '';
 		}

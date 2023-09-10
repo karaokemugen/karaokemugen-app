@@ -1,5 +1,6 @@
 import { Socket } from 'socket.io';
 
+import { APIMessage } from '../../lib/services/frontend.js';
 import { APIData } from '../../lib/types/api.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
 import {
@@ -16,7 +17,6 @@ import {
 	stopGame,
 } from '../../services/quiz.js';
 import { getPublicCurrentGame, getState } from '../../utils/state.js';
-import { APIMessage, errMessage } from '../common.js';
 import { runChecklist } from '../middlewares.js';
 
 export default function quizController(router: SocketIOApp) {
@@ -25,8 +25,7 @@ export default function quizController(router: SocketIOApp) {
 		try {
 			await startGame(req.body.gamename, req.body.playlist, req.body.settings);
 		} catch (err) {
-			errMessage(err.msg);
-			throw { code: 500, message: APIMessage(err.msg) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('stopGame', async (socket: Socket, req: APIData) => {
@@ -35,8 +34,7 @@ export default function quizController(router: SocketIOApp) {
 			// When stopGame is triggered via API, we don't display scores
 			await stopGame(false);
 		} catch (err) {
-			errMessage(err.msg);
-			throw { code: 500, message: APIMessage(err.msg) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('deleteGame', async (socket: Socket, req: APIData) => {
@@ -44,8 +42,7 @@ export default function quizController(router: SocketIOApp) {
 		try {
 			await deleteGame(req.body.gamename);
 		} catch (err) {
-			errMessage(err.msg);
-			throw { code: 500, message: APIMessage(err.msg) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('resetGameScores', async (socket: Socket, req: APIData) => {
@@ -53,8 +50,7 @@ export default function quizController(router: SocketIOApp) {
 		try {
 			await resetGameScores(req.body.gamename);
 		} catch (err) {
-			errMessage(err.msg);
-			throw { code: 500, message: APIMessage(err.msg) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('continueGameSong', async (socket: Socket, req: APIData) => {
@@ -62,8 +58,7 @@ export default function quizController(router: SocketIOApp) {
 		try {
 			return continueGameSong();
 		} catch (err) {
-			errMessage(err.msg);
-			throw { code: 500, message: APIMessage(err.msg) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('getGames', async (socket: Socket, req: APIData) => {
@@ -71,8 +66,7 @@ export default function quizController(router: SocketIOApp) {
 		try {
 			return await getGames();
 		} catch (err) {
-			errMessage(err.message);
-			throw { code: err?.code || 500, message: APIMessage(err.msg) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('getGameScore', async (socket: Socket, req: APIData) => {
@@ -80,8 +74,7 @@ export default function quizController(router: SocketIOApp) {
 		try {
 			return await getGameScore(req.body.gamename, req.body.login);
 		} catch (err) {
-			errMessage(err.message);
-			throw { code: err?.code || 500, message: APIMessage(err.msg) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('getTotalGameScore', async (socket: Socket, req: APIData) => {
@@ -89,8 +82,7 @@ export default function quizController(router: SocketIOApp) {
 		try {
 			return await getTotalGameScore(req.body.gamename);
 		} catch (err) {
-			errMessage(err.message);
-			throw { code: err?.code || 500, message: APIMessage(err.msg) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('getPossibleAnswers', async (socket: Socket, req: APIData) => {
@@ -98,8 +90,7 @@ export default function quizController(router: SocketIOApp) {
 		try {
 			return await getPossibleAnswers(req.body.answer);
 		} catch (err) {
-			errMessage(err.message);
-			throw { code: err?.code || 500, message: APIMessage(err.msg) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('setAnswer', async (socket: Socket, req: APIData) => {
@@ -108,8 +99,7 @@ export default function quizController(router: SocketIOApp) {
 		try {
 			return setAnswer(req.token.username, req.body.answer);
 		} catch (err) {
-			errMessage(err.message);
-			throw { code: err?.code || 500, message: APIMessage(err.msg) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route('getGameState', async (socket: Socket, req: APIData) => {
@@ -121,8 +111,7 @@ export default function quizController(router: SocketIOApp) {
 		try {
 			return await getPlayedKarasInQuiz();
 		} catch (err) {
-			errMessage(err.message);
-			throw { code: err?.code || 500, message: APIMessage(err.msg) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 }

@@ -1,4 +1,4 @@
-import { QuestionCircleOutlined, UploadOutlined } from '@ant-design/icons';
+import { QuestionCircleOutlined, UploadOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import {
 	Button,
 	Checkbox,
@@ -203,11 +203,19 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				title: i18next.t('KARA.PREVIEW_HOOKS_MODAL'),
 				content: (
 					<ul>
-						{data?.map(tag => (
-							<li key={tag.tid} title={tag.tagfile}>
+						{data.addedTags?.map(tag => (
+							<div key={tag.tid} title={tag.tagfile}>
+								<PlusOutlined style={{ marginRight: '2px' }} />
 								{getTagInLocale(this.context?.globalState.settings.data, tag).i18n} (
 								{i18next.t(`TAG_TYPES.${getTagTypeName(tag.types[0])}_other`)})
-							</li>
+							</div>
+						))}
+						{data.removedTags?.map(tag => (
+							<div key={tag.tid} title={tag.tagfile}>
+								<MinusOutlined style={{ marginRight: '2px' }} />
+								{getTagInLocale(this.context?.globalState.settings.data, tag).i18n} (
+								{i18next.t(`TAG_TYPES.${getTagTypeName(tag.types[0])}_other`)})
+							</div>
 						))}
 					</ul>
 				),
@@ -250,7 +258,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				{
 					version: mediaVersion,
 					filename: this.state.mediaInfo.filename || this.props.kara?.mediafile,
-					audiogain: this.state.mediaInfo.gain || this.props.kara?.gain,
 					loudnorm: this.state.mediaInfo.loudnorm || this.props.kara?.loudnorm,
 					filesize: this.state.mediaInfo.size || this.props.kara?.mediasize,
 					duration: this.state.mediaInfo.duration || this.props.kara?.duration,

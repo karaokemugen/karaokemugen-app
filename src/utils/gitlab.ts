@@ -7,7 +7,6 @@ const service = 'Gitlab';
 /** Assign someone to an issue */
 export async function assignIssue(issue: number, repoName: string) {
 	let repo = getRepo(repoName);
-	if (!repo.MaintainerMode) throw 'Maintainer mode is not enabled for this repository';
 	const url = new URL(repo.Git.URL);
 	const userID = await getUserID(repoName);
 	const params = {

@@ -24,6 +24,7 @@ import {
 	setConfigConstraints,
 	verifyConfig,
 } from '../lib/utils/config.js';
+import { ErrorKM } from '../lib/utils/error.js';
 import { fileRequired, relativePath } from '../lib/utils/files.js';
 // KM Imports
 import logger from '../lib/utils/logger.js';
@@ -60,13 +61,18 @@ export async function editSetting(part: RecursivePartial<Config>) {
 		const config = getConfig();
 		const oldConfig = removeNulls(cloneDeep(config));
 		const newConfig = removeNulls(merge(config, part));
-		verifyConfig(newConfig);
+		try {
+			verifyConfig(newConfig);
+		} catch (err) {
+			logger.warn(`Config error: ${err}`, { service });
+			throw new ErrorKM('INVALID_CONFIG', 400, false);
+		}
 		await mergeConfig(newConfig, oldConfig);
 		emitWS('settingsUpdated', part);
 		return config;
 	} catch (err) {
 		sentry.error(err, 'warning');
-		throw err;
+		throw err instanceof ErrorKM ? err : new ErrorKM('SETTINGS_UPDATE_ERROR');
 	}
 }
 
@@ -312,11 +318,17 @@ export function configureHost() {
 /** Create a backup of our config file. Just in case. */
 export function backupConfig() {
 	logger.debug('Making a backup of config.yml', { service });
-	return copy(
-		resolve(getState().dataPath, 'config.yml'),
-		resolve(getState().dataPath, `config.backup.${new Date().getTime().toString()}.yml`),
-		{ overwrite: true }
-	);
+	try {
+		return copy(
+			resolve(getState().dataPath, 'config.yml'),
+			resolve(getState().dataPath, `config.backup.${new Date().getTime().toString()}.yml`),
+			{ overwrite: true }
+		);
+	} catch (err) {
+		logger.error(`Unable to backup config : ${err}`);
+		sentry.error(err);
+		throw new ErrorKM('CONFIG_BACKUPED_ERROR');
+	}
 }
 
 /** Return public configuration (without sensitive data) */

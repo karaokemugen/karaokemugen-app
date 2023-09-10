@@ -5,6 +5,7 @@ import { Stream } from 'stream';
 
 import { OldJWTToken, TokenResponseWithRoles, User } from '../lib/types/user.js';
 import { resolvedPath } from '../lib/utils/config.js';
+import { ErrorKM } from '../lib/utils/error.js';
 import { writeStreamToFile } from '../lib/utils/files.js';
 import HTTP from '../lib/utils/http.js';
 import logger from '../lib/utils/logger.js';
@@ -57,7 +58,8 @@ export async function resetRemotePassword(user: string) {
 		await HTTP.post(`https://${instance}/api/users/${username}/resetpassword`);
 	} catch (err) {
 		logger.error(`Could not trigger reset password for ${user}`, { service, obj: err });
-		throw err;
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('USER_RESETPASSWORD_ONLINE_ERROR');
 	}
 }
 
@@ -122,8 +124,9 @@ export async function getRemoteUser(username: string, token: string): Promise<Us
 /** Edit online user's profile, including avatar. */
 export async function editRemoteUser(user: User, token: string, avatar = true) {
 	// Fetch remote token
-	const [login, instance] = user.login.split('@');
-
+	let [login, instance] = user.login.split('@');
+	instance = instance.trim();
+	login = login.trim();
 	await stopSub(login, instance);
 
 	try {
@@ -207,7 +210,7 @@ export async function fetchAndUpdateRemoteUser(
 			throw err;
 		}
 		// Check if user exists. If it does not, create it.
-		let user: User = await getUser(username, true);
+		let user: User = await getUser(username, true, true);
 		if (!user) {
 			// Remove remoteUser's type
 			delete remoteUser.type;
@@ -258,49 +261,60 @@ export async function fetchAndUpdateRemoteUser(
 	}
 	// Online token was not provided : KM Server might be offline
 	// We'll try to find user in local database. If failure return an error
-	const user = await getUser(username, true);
+	const user = await getUser(username, true, true);
 	if (!user) throw { code: 'USER_LOGIN_ERROR' };
 	return user;
 }
 
 /** Converts a online user to a local one by removing its online account from KM Server */
 export async function removeRemoteUser(token: OldJWTToken, password: string): Promise<SingleToken> {
-	const [username, instance] = token.username.split('@');
-	// Verify that no local user exists with the name we're going to rename it to
-	const user = await getUser(username, true);
-	if (user) throw { code: 409, msg: 'User already exists locally, delete it first.' };
-	const onlineUser = await getUser(token.username, true);
-	// Verify that password matches with online before proceeding
-	const onlineToken = await remoteLogin(token.username, password);
-	if (!onlineToken) throw { code: 500, msg: 'Unable to verify your online account.' };
-	// Renaming user locally
-	onlineUser.login = username;
-	await editUser(token.username, onlineUser, null, 'admin', {
-		editRemote: false,
-		renameUser: true,
-	});
-	await HTTP(`https://${instance}/api/users`, {
-		method: 'DELETE',
-		headers: {
-			authorization: onlineToken,
-		},
-	});
-	emitWS('userUpdated', token.username);
-	return {
-		token: createJwtToken(onlineUser.login, token.role),
-	};
+	try {
+		const [username, instance] = token.username.split('@');
+		// Verify that no local user exists with the name we're going to rename it to
+		const user = await getUser(username, true, true);
+		if (user) throw new ErrorKM('USER_ALREADY_EXISTS_LOCALLY', 409, false);
+		const onlineUser = await getUser(token.username, true, true);
+		// Verify that password matches with online before proceeding
+		const onlineToken = await remoteLogin(token.username, password);
+		if (!onlineToken) {
+			logger.error(`Unable to verify online account identity for ${token.username}`, { service });
+			throw new ErrorKM('INVALID_DATA', 400, false);
+		}
+		// Renaming user locally
+		onlineUser.login = username;
+		await editUser(token.username, onlineUser, null, 'admin', {
+			editRemote: false,
+			renameUser: true,
+		});
+		await HTTP(`https://${instance}/api/users`, {
+			method: 'DELETE',
+			headers: {
+				authorization: onlineToken,
+			},
+		});
+		emitWS('userUpdated', token.username);
+		return {
+			token: createJwtToken(onlineUser.login, token.role),
+		};
+	} catch (err) {
+		logger.error(`Error converting online user to local : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('USER_DELETE_ERROR_ONLINE');
+	}
 }
 
 /** Converting a local account to a online one. */
 export async function convertToRemoteUser(token: OldJWTToken, password: string, instance: string): Promise<Tokens> {
-	token.username = token.username.toLowerCase();
-	if (token.username === 'admin') throw { code: 'ADMIN_CONVERT_ERROR' };
-	const user = await getUser(token.username, true);
-	if (!user) throw { msg: 'UNKNOWN_CONVERT_ERROR' };
-	if (!(await checkPassword(user, password))) throw { msg: 'PASSWORD_CONVERT_ERROR' };
-	user.login = `${token.username}@${instance}`;
-	user.password = password;
 	try {
+		instance = encodeURIComponent(instance.trim());
+		token.username = token.username.toLowerCase();
+		if (token.username === 'admin') throw new ErrorKM('ADMIN_CONVERT_ERROR', 400, false);
+		const user = await getUser(token.username, true, true);
+		if (!user) throw new ErrorKM('UNKNOWN_USER', 404, false);
+		if (!(await checkPassword(user, password))) throw new ErrorKM('INVALID_DATA', 400, false);
+		user.login = `${token.username}@${instance}`;
+		user.password = password;
+
 		await createRemoteUser(user);
 		const remoteUserToken = await remoteLogin(user.login, password);
 		await editUser(token.username, user, null, token.role, {
@@ -314,8 +328,9 @@ export async function convertToRemoteUser(token: OldJWTToken, password: string, 
 			token: createJwtToken(user.login, token.role),
 		};
 	} catch (err) {
-		if (err.msg !== 'USER_ALREADY_EXISTS_ONLINE' && err?.details?.message?.code !== 'ENOTFOUND') sentry.error(err);
-		throw { msg: err.msg || 'USER_CONVERT_ERROR', details: err };
+		logger.error(`Error converting local user to online user ${token.username}@${instance} : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('ONLINE_CONVERT_ERROR');
 	}
 }
 
@@ -333,6 +348,6 @@ export async function refreshAnimeList(username: string, token: string): Promise
 			obj: err,
 		});
 		sentry.error(err);
-		throw err;
+		throw err instanceof ErrorKM ? err : new ErrorKM('REFRESH_ANIME_LIST_ERROR');
 	}
 }

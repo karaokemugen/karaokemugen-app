@@ -2,9 +2,10 @@ import { pg as yesql } from 'yesql';
 
 import { db, transaction } from '../lib/dao/database.js';
 import { KaraParams } from '../lib/types/kara.js';
+import { FavoritesMicro } from '../types/favorites.js';
 import { sqlclearFavorites, sqlgetFavoritesMicro, sqlinsertFavorites, sqlremoveFavorites } from './sql/favorites.js';
 
-export async function selectFavoritesMicro(params: KaraParams) {
+export async function selectFavoritesMicro(params: KaraParams): Promise<FavoritesMicro[]> {
 	const finalParams = { username: params.username };
 	let limitClause = '';
 	let offsetClause = '';

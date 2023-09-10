@@ -21,6 +21,8 @@ import ProgressBar from './karas/ProgressBar';
 import AdminMessageModal from './modals/AdminMessageModal';
 import Tutorial from './modals/Tutorial';
 import Options from './options/Options';
+import QuizModal from './modals/QuizModal';
+import { useSearchParams } from 'react-router-dom';
 
 interface IProps {
 	powerOff: (() => void) | undefined;
@@ -28,6 +30,7 @@ interface IProps {
 
 function AdminPage(props: IProps) {
 	const context = useContext(GlobalContext);
+	const [searchParams] = useSearchParams();
 	const [searchMenuOpenLeft, setSearchMenuOpenLeft] = useState(false);
 	const [searchMenuOpenRight, setSearchMenuOpenRight] = useState(false);
 	const [playlistList, setPlaylistList] = useState([]);
@@ -143,6 +146,13 @@ function AdminPage(props: IProps) {
 			<KaraDetail kid={kara.kid} playlistcontentId={kara.plcid} scope="admin" criteriaLabel={reason.join(' ')} />
 		);
 	};
+
+	useEffect(() => {
+		const quizMode = searchParams.get('quizMode');
+		if (quizMode) {
+			showModal(context.globalDispatch, <QuizModal />);
+		}
+	}, []);
 
 	useEffect(() => {
 		setQuizRanking(context.globalState.settings.data.state.quiz.running);

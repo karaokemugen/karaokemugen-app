@@ -26,15 +26,17 @@ import { KaraFileV4 } from '../lib/types/kara.js';
 import { Tag, TagFile, TagParams } from '../lib/types/tag.js';
 import { getConfig, resolvedPathRepos } from '../lib/utils/config.js';
 import { getTagTypeName, tagTypes } from '../lib/utils/constants.js';
+import { ErrorKM } from '../lib/utils/error.js';
 import { listAllFiles, resolveFileInDirs, sanitizeFile } from '../lib/utils/files.js';
 import HTTP from '../lib/utils/http.js';
 import logger, { profile } from '../lib/utils/logger.js';
 import Task from '../lib/utils/taskManager.js';
+import { isUUID } from '../lib/utils/validators.js';
 import { emitWS } from '../lib/utils/ws.js';
 import sentry from '../utils/sentry.js';
 import { getKaras } from './kara.js';
 import { editKara } from './karaCreation.js';
-import { getRepo, getRepos } from './repo.js';
+import { getRepos } from './repo.js';
 
 const service = 'Tag';
 
@@ -50,12 +52,19 @@ export function formatTagList(tagList: DBTag[], from: number, count: number) {
 }
 
 export async function getTags(params: TagParams) {
-	profile('getTags');
-	const tags = await selectAllTags(params);
-	const count = tags.length > 0 ? tags[0].count : 0;
-	const ret = formatTagList(tags, params.from || 0, count);
-	profile('getTags');
-	return ret;
+	try {
+		profile('getTags');
+		const tags = await selectAllTags(params);
+		const count = tags.length > 0 ? tags[0].count : 0;
+		const ret = formatTagList(tags, params.from || 0, count);
+		return ret;
+	} catch (err) {
+		logger.error(`Error getting tags : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('TAGS_LIST_ERROR');
+	} finally {
+		profile('getTags');
+	}
 }
 
 export async function addTag(tagObj: Tag, opts = { silent: false, refresh: true }): Promise<Tag> {
@@ -87,17 +96,24 @@ export async function addTag(tagObj: Tag, opts = { silent: false, refresh: true 
 		tagObj.tagfile = tagfile;
 		return tagObj;
 	} catch (err) {
+		logger.error(`Error creating tag : ${err}`, { service });
 		sentry.error(err);
-		throw err;
+		throw err instanceof ErrorKM ? err : new ErrorKM('TAG_CREATE_ERROR');
 	} finally {
 		if (!opts.silent) task.end();
 	}
 }
 
-/** Takes any number of arguments to comply with KM Server's multi-argument getTag */
-export async function getTag(tid: string, ..._: any) {
-	const tags = await selectAllTags({ tid });
-	return tags[0];
+export async function getTag(tid: string) {
+	try {
+		const tags = await selectAllTags({ tid });
+		if (!tags[0]) throw new ErrorKM('UNKNOWN_TAG', 404, false);
+		return tags[0];
+	} catch (err) {
+		logger.error(`Error getting tags : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('TAG_GET_ERROR');
+	}
 }
 
 export function getTagNameInLanguage(tag: DBKaraTag, langs: string[]): string {
@@ -117,8 +133,8 @@ export async function mergeTags(tid1: string, tid2: string) {
 		text: 'MERGING_TAGS_IN_PROGRESS',
 	});
 	try {
+		if (!isUUID(tid1) || !isUUID(tid2)) throw new ErrorKM('INVALID_DATA', 400, false);
 		const [tag1, tag2] = await Promise.all([getTag(tid1), getTag(tid2)]);
-		if (!tag1 || !tag2) throw { code: 404 };
 		task.update({
 			subtext: `${tag1.name} + ${tag2.name}`,
 		});
@@ -177,9 +193,9 @@ export async function mergeTags(tid1: string, tid2: string) {
 		await refreshTags();
 		return tagObj;
 	} catch (err) {
-		logger.error(`Error merging tag ${tid1} and ${tid2}`, { service, obj: err });
+		logger.error(`Error getting tags : ${err}`, { service });
 		sentry.error(err);
-		throw err;
+		throw err instanceof ErrorKM ? err : new ErrorKM('TAGS_MERGED_ERROR');
 	} finally {
 		task.end();
 	}
@@ -199,10 +215,10 @@ export async function editTag(
 	}
 	try {
 		profile('editTag');
+		if (!isUUID(tid)) throw new ErrorKM('INVALID_DATA', 400, false);
 		const oldTag = await getTag(tid);
-		if (!oldTag) throw { code: 404, msg: `Tag ID ${tid} unknown` };
 		if (opts.repoCheck && oldTag.repository !== tagObj.repository) {
-			throw { code: 409, msg: 'Tag repository cannot be modified. Use copy function instead' };
+			throw new ErrorKM('TAG_REPOSITORY_INVALID_CHANGE', 400, false);
 		}
 		tagObj = trimTagData(tagObj);
 		tagObj.tagfile = defineTagFilename(tagObj, oldTag);
@@ -265,9 +281,9 @@ export async function editTag(
 			refreshTags();
 		}
 	} catch (err) {
-		if (err?.code === 404) throw err;
+		logger.error(`Error editing tag ${tid} : ${err}`, { service });
 		sentry.error(err);
-		throw err;
+		throw err instanceof ErrorKM ? err : new ErrorKM('TAG_EDIT_ERROR');
 	} finally {
 		profile('editTag');
 		if (!opts.silent) task.end();
@@ -296,38 +312,44 @@ export async function removeTag(
 		deleteFile: true,
 	}
 ) {
-	const tags: DBTag[] = [];
-	for (const tid of tids) {
-		const tag = await getTag(tid);
-		if (tag) tags.push(tag);
-	}
-	let karasToRemoveTagIn: DBKara[];
-	if (opt.removeTagInKaras) {
-		karasToRemoveTagIn = await getKarasWithTags(tags);
-	}
-	if (tags.length === 0) {
-		logger.error(`These tags are unknown : ${tids.toString()}`, { service });
-		throw { code: 404, msg: 'Tag ID unknown' };
-	}
-	const removes = [];
-	for (const tag of tags) {
-		if (opt.deleteFile) removes.push(removeTagFile(tag.tagfile, tag.repository));
-		if (opt.removeTagInKaras) removes.push(removeTagInKaras(tag, karasToRemoveTagIn));
-	}
-	await Promise.all(removes).catch(err => {
-		logger.warn('Failed to remove tag files / tag from kara', { service, obj: err });
-		// Non fatal
-	});
-	saveSetting('baseChecksum', getStoreChecksum());
-	await deleteTag(tags.map(tag => tag.tid));
-	for (const tag of tags) {
-		removeTagInStore(tag.tid);
-		logger.debug(`Removed tag ${tag.tid} (${tag.name})`, { service });
-	}
-	emitWS('statsRefresh');
-	if (opt.refresh) {
-		if (karasToRemoveTagIn.length > 0) await refreshKarasUpdate(karasToRemoveTagIn.map(k => k.kid));
-		refreshTags();
+	try {
+		const tags: DBTag[] = [];
+		for (const tid of tids) {
+			const tag = await getTag(tid);
+			tags.push(tag);
+		}
+		let karasToRemoveTagIn: DBKara[];
+		if (opt.removeTagInKaras) {
+			karasToRemoveTagIn = await getKarasWithTags(tags);
+		}
+		if (tags.length === 0) {
+			logger.error(`These tags are unknown : ${tids.toString()}`, { service });
+			throw { code: 404, msg: 'Tag ID unknown' };
+		}
+		const removes = [];
+		for (const tag of tags) {
+			if (opt.deleteFile) removes.push(removeTagFile(tag.tagfile, tag.repository));
+			if (opt.removeTagInKaras) removes.push(removeTagInKaras(tag, karasToRemoveTagIn));
+		}
+		await Promise.all(removes).catch(err => {
+			logger.warn('Failed to remove tag files / tag from kara', { service, obj: err });
+			// Non fatal
+		});
+		saveSetting('baseChecksum', getStoreChecksum());
+		await deleteTag(tags.map(tag => tag.tid));
+		for (const tag of tags) {
+			removeTagInStore(tag.tid);
+			logger.debug(`Removed tag ${tag.tid} (${tag.name})`, { service });
+		}
+		emitWS('statsRefresh');
+		if (opt.refresh) {
+			if (karasToRemoveTagIn.length > 0) await refreshKarasUpdate(karasToRemoveTagIn.map(k => k.kid));
+			refreshTags();
+		}
+	} catch (err) {
+		logger.error(`Error deleting tags : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('TAG_DELETE_ERROR');
 	}
 }
 
@@ -336,7 +358,8 @@ export async function integrateTagFile(file: string, refresh = true): Promise<st
 	if (!tagFileData) return null;
 	try {
 		logger.debug(`Integrating tag ${tagFileData.tid} (${tagFileData.name})`, { service });
-		const tagDBData = await getTag(tagFileData.tid);
+		// This is allowed to fail
+		const tagDBData = await getTag(tagFileData.tid).catch(() => {});
 		if (tagDBData) {
 			if (tagDBData.repository === tagFileData.repository) {
 				// Refresh always disabled for editing tags.
@@ -362,7 +385,7 @@ export async function consolidateTagsInRepo(kara: KaraFileV4) {
 	for (const tagType of Object.keys(tagTypes)) {
 		if (kara.data.tags[tagType]) {
 			for (const karaTag of kara.data.tags[tagType]) {
-				const tag = await getTag(karaTag);
+				const tag = await getTag(karaTag).catch(() => {});
 				if (!tag) continue;
 				if (tag.repository !== kara.data.repository) {
 					// This might need to be copied
@@ -385,17 +408,15 @@ export async function consolidateTagsInRepo(kara: KaraFileV4) {
 
 export async function copyTagToRepo(tid: string, repoName: string) {
 	try {
+		if (!isUUID(tid)) throw new ErrorKM('INVALID_DATA', 400, false);
 		const tag = await getTag(tid);
-		if (!tag) throw { code: 404 };
-		const repo = getRepo(repoName);
-		if (!repo) throw { code: 404 };
 		tag.repository = repoName;
 		const destDir = resolvedPathRepos('Tags', repoName)[0];
 		await writeTagFile(tag, destDir);
 	} catch (err) {
-		if (err?.code === 404) throw err;
+		logger.error(`Error copying tag ${tid} to ${repoName} : ${err}`, { service });
 		sentry.error(err);
-		throw err;
+		throw err instanceof ErrorKM ? err : new ErrorKM('TAG_COPIED_ERROR');
 	}
 }
 
@@ -422,65 +443,71 @@ async function replaceTagInKaras(oldTID1: string, oldTID2: string, newTag: Tag, 
 }
 
 export async function syncTagsFromRepo(repoSourceName: string, repoDestName: string) {
-	const repos = getConfig().System.Repositories;
-	const repoSource = repos.find(r => r.Name === repoSourceName);
-	const repoDest = repos.find(r => r.Name === repoDestName);
-	if (!repoSource || !repoDest) throw { code: 404 };
-	logger.info(`Syncing tags in repo ${repoDestName} from repo ${repoSourceName}`, { service });
-	const [sourceFiles, destFiles] = await Promise.all([
-		listAllFiles('Tags', repoSourceName),
-		listAllFiles('Tags', repoDestName),
-	]);
-	const sourceTags = new Map<string, { tag: TagFile; file: string }>();
-	let modifiedTags = false;
-	for (const sourceFile of sourceFiles) {
-		const tagData = await fs.readFile(sourceFile, 'utf-8');
-		const tag: TagFile = JSON.parse(tagData);
-		sourceTags.set(tag.tag.tid, {
-			tag,
-			file: sourceFile,
-		});
-	}
-	for (const destFile of destFiles) {
-		const tagData = await fs.readFile(destFile, 'utf-8');
-		const tag: TagFile = JSON.parse(tagData);
-		const sourceTag = sourceTags.get(tag.tag.tid);
-		// We do this so JSON.stringifying tags later actually can return the same stuff.
-		if (sourceTag) sourceTag.tag.tag.repository = repoDestName;
-		if (sourceTag && JSON.stringify(tag) !== JSON.stringify(sourceTag.tag)) {
-			modifiedTags = true;
-			// Filename might have changed because someone thought it'd be funny to change the tag's name (cue in "this would not happen if we used UUIDS", Axel's hit song from 2021. It even won a Grammy Award, would you believe that.)
-			let newDestFile = destFile;
-			if (basename(destFile) !== basename(sourceTag.file)) {
-				const destDir = resolvedPathRepos('Tags', repoDestName);
-				newDestFile = resolve(destDir[0], basename(sourceTag.file));
-				await fs.writeFile(newDestFile, JSON.stringify(sourceTag.tag, null, 2), 'utf-8');
-				await fs.unlink(destFile);
-				removeTagInStore(destFile);
-				addTagToStore(newDestFile);
-			} else {
-				// No change in filename, let's just overwrite destFile
-				await fs.writeFile(newDestFile, JSON.stringify(sourceTag.tag, null, 2), 'utf-8');
-				editTagInStore(newDestFile);
-			}
-			const dbTag = await getTag(sourceTag.tag.tag.tid);
-			if (dbTag.repository === repoDestName) {
-				// Tag in DB is the one from our dest repository, so we're going to edit it.
-				editTag(sourceTag.tag.tag.tid, await getDataFromTagFile(newDestFile), {
-					silent: false,
-					refresh: true,
-					writeFile: false,
-					repoCheck: false,
-				});
-			}
-			logger.info(`Updated ${basename(destFile)} in repo ${repoDestName} from repo ${repoSourceName}`, {
-				service,
+	try {
+		const repos = getConfig().System.Repositories;
+		const repoSource = repos.find(r => r.Name === repoSourceName);
+		const repoDest = repos.find(r => r.Name === repoDestName);
+		if (!repoSource || !repoDest) throw new ErrorKM('UNKNOWN_REPOSITORY', 404, false);
+		logger.info(`Syncing tags in repo ${repoDestName} from repo ${repoSourceName}`, { service });
+		const [sourceFiles, destFiles] = await Promise.all([
+			listAllFiles('Tags', repoSourceName),
+			listAllFiles('Tags', repoDestName),
+		]);
+		const sourceTags = new Map<string, { tag: TagFile; file: string }>();
+		let modifiedTags = false;
+		for (const sourceFile of sourceFiles) {
+			const tagData = await fs.readFile(sourceFile, 'utf-8');
+			const tag: TagFile = JSON.parse(tagData);
+			sourceTags.set(tag.tag.tid, {
+				tag,
+				file: sourceFile,
 			});
 		}
-	}
-	if (modifiedTags) {
-		sortKaraStore();
-		saveSetting('baseChecksum', getStoreChecksum());
+		for (const destFile of destFiles) {
+			const tagData = await fs.readFile(destFile, 'utf-8');
+			const tag: TagFile = JSON.parse(tagData);
+			const sourceTag = sourceTags.get(tag.tag.tid);
+			// We do this so JSON.stringifying tags later actually can return the same stuff.
+			if (sourceTag) sourceTag.tag.tag.repository = repoDestName;
+			if (sourceTag && JSON.stringify(tag) !== JSON.stringify(sourceTag.tag)) {
+				modifiedTags = true;
+				// Filename might have changed because someone thought it'd be funny to change the tag's name (cue in "this would not happen if we used UUIDS", Axel's hit song from 2021. It even won a Grammy Award, would you believe that.)
+				let newDestFile = destFile;
+				if (basename(destFile) !== basename(sourceTag.file)) {
+					const destDir = resolvedPathRepos('Tags', repoDestName);
+					newDestFile = resolve(destDir[0], basename(sourceTag.file));
+					await fs.writeFile(newDestFile, JSON.stringify(sourceTag.tag, null, 2), 'utf-8');
+					await fs.unlink(destFile);
+					removeTagInStore(destFile);
+					addTagToStore(newDestFile);
+				} else {
+					// No change in filename, let's just overwrite destFile
+					await fs.writeFile(newDestFile, JSON.stringify(sourceTag.tag, null, 2), 'utf-8');
+					editTagInStore(newDestFile);
+				}
+				const dbTag = await getTag(sourceTag.tag.tag.tid);
+				if (dbTag.repository === repoDestName) {
+					// Tag in DB is the one from our dest repository, so we're going to edit it.
+					editTag(sourceTag.tag.tag.tid, await getDataFromTagFile(newDestFile), {
+						silent: false,
+						refresh: true,
+						writeFile: false,
+						repoCheck: false,
+					});
+				}
+				logger.info(`Updated ${basename(destFile)} in repo ${repoDestName} from repo ${repoSourceName}`, {
+					service,
+				});
+			}
+		}
+		if (modifiedTags) {
+			sortKaraStore();
+			saveSetting('baseChecksum', getStoreChecksum());
+		}
+	} catch (err) {
+		logger.error(`Error syncing tags for repo ${repoSourceName} to ${repoDestName} : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('REPO_SYNC_TAGS_ERROR');
 	}
 }
 
@@ -493,30 +520,37 @@ export async function checkCollections() {
 			return false;
 		}
 	})();
-	const availableCollections: DBTag[] = [];
-	for (const repo of getRepos()) {
-		if (repo.Enabled) {
-			if (repo.Online && internet) {
-				try {
-					const tags = (await HTTP.get(`https://${repo.Name}/api/karas/tags?type=${tagTypes.collections}`))
-						.data;
-					for (const tag of tags.content) {
-						if (!availableCollections.find(t => t.tid === tag.tid)) availableCollections.push(tag);
+	try {
+		const availableCollections: DBTag[] = [];
+		for (const repo of getRepos()) {
+			if (repo.Enabled) {
+				if (repo.Online && internet) {
+					try {
+						const tags = (
+							await HTTP.get(`https://${repo.Name}/api/karas/tags?type=${tagTypes.collections}`)
+						).data;
+						for (const tag of tags.content) {
+							if (!availableCollections.find(t => t.tid === tag.tid)) availableCollections.push(tag);
+						}
+					} catch (err) {
+						// Fallback to what the repository has locally
+						const tags = await getTags({ type: tagTypes.collections });
+						for (const tag of tags.content) {
+							if (!availableCollections.find(t => t.tid === tag.tid)) availableCollections.push(tag);
+						}
 					}
-				} catch (err) {
-					// Fallback to what the repository has locally
+				} else {
 					const tags = await getTags({ type: tagTypes.collections });
 					for (const tag of tags.content) {
 						if (!availableCollections.find(t => t.tid === tag.tid)) availableCollections.push(tag);
 					}
 				}
-			} else {
-				const tags = await getTags({ type: tagTypes.collections });
-				for (const tag of tags.content) {
-					if (!availableCollections.find(t => t.tid === tag.tid)) availableCollections.push(tag);
-				}
 			}
 		}
+		return availableCollections;
+	} catch (err) {
+		logger.error(`Error getting collections : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('COLLECTIONS_GET_ERROR');
 	}
-	return availableCollections;
 }

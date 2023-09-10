@@ -5,12 +5,12 @@ import { resolve } from 'path';
 import { Socket } from 'socket.io';
 import { v4 as uuidV4 } from 'uuid';
 
+import { APIMessage } from '../../lib/services/frontend.js';
 import { APIData } from '../../lib/types/api.js';
 import { resolvedPath } from '../../lib/utils/config.js';
 import logger from '../../lib/utils/logger.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
 import { openLyricsFile, showLyricsInFolder, showMediaInFolder } from '../../services/karaManagement.js';
-import { APIMessage, errMessage } from '../common.js';
 import { runChecklist } from '../middlewares.js';
 import { requireHTTPAuth, requireValidUser } from '../middlewaresHTTP.js';
 
@@ -43,9 +43,7 @@ export function filesSocketController(router: SocketIOApp) {
 		try {
 			return await openLyricsFile(req.body.kid);
 		} catch (err) {
-			const code = 'LYRICS_FILE_OPEN_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 
@@ -54,9 +52,7 @@ export function filesSocketController(router: SocketIOApp) {
 		try {
 			return await showLyricsInFolder(req.body.kid);
 		} catch (err) {
-			const code = 'LYRICS_FILE_OPEN_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 
@@ -65,9 +61,7 @@ export function filesSocketController(router: SocketIOApp) {
 		try {
 			return await showMediaInFolder(req.body.kid);
 		} catch (err) {
-			const code = 'MEDIA_FILE_OPEN_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 }

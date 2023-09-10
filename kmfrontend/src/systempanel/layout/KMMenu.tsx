@@ -1,4 +1,4 @@
-import { HomeOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons';
+import { DashboardOutlined, HomeOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons';
 import { Menu } from 'antd';
 import i18next from 'i18next';
 import { useContext } from 'react';
@@ -23,8 +23,11 @@ function KMMenu() {
 			style={{ minHeight: '100vh' }}
 			onClick={() => window.scrollTo(0, 0)}
 		>
+			<Menu.Item key="change" onClick={() => window.location.assign('/welcome')}>
+				<HomeOutlined /> {i18next.t('HOME_BUTTON')}
+			</Menu.Item>
 			<Menu.Item key="home">
-				<Link to="/system/home">{i18next.t('MENU.HOME')}</Link>
+				<DashboardOutlined /> <Link to="/system/home">{i18next.t('MENU.HOME')}</Link>
 			</Menu.Item>
 			<Menu.SubMenu key="system-dropdown" title={i18next.t('MENU.SYSTEM')}>
 				<Menu.Item key="log">
@@ -109,9 +112,6 @@ function KMMenu() {
 				<span>
 					<UserOutlined /> {context.globalState.auth.data.username}
 				</span>
-			</Menu.Item>
-			<Menu.Item key="change" onClick={() => window.location.assign('/welcome')}>
-				<HomeOutlined /> {i18next.t('HOME_BUTTON')}
 			</Menu.Item>
 			<Menu.Item key="logout" onClick={() => logout(context.globalDispatch)}>
 				<LogoutOutlined /> {i18next.t('LOGOUT')}

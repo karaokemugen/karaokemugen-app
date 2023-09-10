@@ -5,7 +5,6 @@ import i18n from 'i18next';
 import { shuffle } from 'lodash';
 import { join } from 'path/posix';
 
-import { APIMessage } from '../controllers/common.js';
 import { insertKaraToRequests } from '../dao/kara.js';
 // DAO
 import {
@@ -42,20 +41,23 @@ import {
 	updatePLCVisible,
 	updatePos,
 } from '../dao/playlist.js';
+import { APIMessage } from '../lib/services/frontend.js';
 import { formatKaraList } from '../lib/services/kara.js';
 import { PLImportConstraints } from '../lib/services/playlist.js';
 import { DBKara, DBKaraBase } from '../lib/types/database/kara.js';
-import { DBPL, DBPLC, DBPLCBase, PLCInsert } from '../lib/types/database/playlist.js';
+import { DBPLC, DBPLCBase, PLCInsert } from '../lib/types/database/playlist.js';
 import { PlaylistExport, PLCEditParams } from '../lib/types/playlist.js';
 import { OldJWTToken, User } from '../lib/types/user.js';
 import { getConfig, resolvedPathRepos } from '../lib/utils/config.js';
 import { date, now, time as time2 } from '../lib/utils/date.js';
+import { ErrorKM } from '../lib/utils/error.js';
 import { resolveFileInDirs } from '../lib/utils/files.js';
 import logger, { profile } from '../lib/utils/logger.js';
 import { generateM3uFileFromPlaylist } from '../lib/utils/m3u.js';
 import Task from '../lib/utils/taskManager.js';
 import { check } from '../lib/utils/validators.js';
 import { emitWS } from '../lib/utils/ws.js';
+import { DBPL } from '../types/database/playlist.js';
 import { AutoMixParams, AutoMixPlaylistInfo, PlaylistLimit } from '../types/favorites.js';
 import { AddKaraParams, CurrentSong, Pos, ShuffleMethods } from '../types/playlist.js';
 import { adminToken } from '../utils/constants.js';
@@ -281,10 +283,10 @@ export async function trimPlaylist(playlist: DBPLC[], duration: number, type: Pl
 
 /** Remove playlist entirely */
 export async function removePlaylist(plaid: string) {
-	const pl = await getPlaylistInfo(plaid);
-	if (!pl) throw { code: 404 };
 	try {
 		profile('deletePlaylist');
+		const pl = await getPlaylistInfo(plaid);
+		if (!pl) throw new ErrorKM('UNKNOWN_PLAYLIST', 404, false);
 		const msgs = {
 			flag_current: 'DELETE_PLAYLIST_ERROR_CURRENT',
 			flag_public: 'DELETE_PLAYLIST_ERROR_PUBLIC',
@@ -298,19 +300,15 @@ export async function removePlaylist(plaid: string) {
 			if (pl.flag_blacklist) msg = msgs.flag_blacklist;
 			if (pl.flag_public) msg = msgs.flag_public;
 			if (pl.flag_whitelist) msg = msgs.flag_whitelist;
-			throw {
-				code: 409,
-				msg,
-			};
+			throw new ErrorKM(msg, 409, false);
 		}
 		logger.info(`Deleting playlist ${pl.name}`, { service });
 		await deletePlaylist(plaid);
 		emitWS('playlistsUpdated');
 	} catch (err) {
-		throw {
-			code: err.code,
-			msg: err.msg,
-		};
+		logger.error(`Error deleting playlist ${plaid} : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('PL_DELETE_ERROR');
 	} finally {
 		profile('deletePlaylist');
 	}
@@ -318,10 +316,10 @@ export async function removePlaylist(plaid: string) {
 
 /** Empty playlist completely */
 export async function emptyPlaylist(plaid: string): Promise<string> {
-	const pl = await getPlaylistInfo(plaid);
-	if (!pl) throw { code: 404, msg: 'Playlist unknown' };
 	try {
 		profile('emptyPL');
+		const pl = await getPlaylistInfo(plaid);
+		if (!pl) throw new ErrorKM('UNKNOWN_PLAYLIST', 404, false);
 		logger.debug(`Emptying playlist ${pl.name}`, { service });
 		await truncatePlaylist(plaid);
 		await Promise.all([updatePlaylistKaraCount(plaid), updatePlaylistDuration(plaid)]);
@@ -331,10 +329,9 @@ export async function emptyPlaylist(plaid: string): Promise<string> {
 		emitWS('playlistContentsUpdated', plaid);
 		return plaid;
 	} catch (err) {
-		throw {
-			message: err,
-			data: pl.name,
-		};
+		logger.error(`Error emptying playlist ${plaid} : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('PL_EMPTY_ERROR');
 	} finally {
 		profile('emptyPL');
 	}
@@ -346,7 +343,7 @@ export async function exportPlaylistMedia(
 	exportDir: string
 ): Promise<Array<DBPLC & { exportSuccessful: boolean }>> {
 	const plMini = await getPlaylistContentsMini(plaid);
-	if (!plMini) throw { code: 404, msg: 'Playlist unknown' };
+	if (!plMini) throw new ErrorKM('UNKNOWN_PLAYLIST', 404, false);
 	const task = new Task({
 		text: 'EXPORTING_PLAYLIST_MEDIA',
 		total: plMini.length,
@@ -381,7 +378,8 @@ export async function exportPlaylistMedia(
 					});
 				}
 				exportedResult.push({ ...kara, exportSuccessful: true });
-			} catch (e) {
+			} catch (err) {
+				logger.warn(`Unable to export media ${kara.mediafile} : ${err}`, { service });
 				exportedResult.push({ ...kara, exportSuccessful: false });
 			} finally {
 				itemsProcessed += 1;
@@ -398,10 +396,9 @@ export async function exportPlaylistMedia(
 
 		return exportedResult;
 	} catch (err) {
-		throw {
-			message: err,
-			data: plaid,
-		};
+		logger.error(`Error export media from playlist ${plaid} : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('PL_EXPORT_MEDIA_ERROR');
 	} finally {
 		task.end();
 	}
@@ -440,94 +437,120 @@ function publicHook(plaid: string, name: string) {
 
 /** Edit playlist properties */
 export async function editPlaylist(plaid: string, playlist: Partial<DBPL>) {
-	const pl = await getPlaylistInfo(plaid);
-	if (!pl) throw { code: 404 };
-	logger.debug(`Editing playlist ${plaid}`, { service, obj: playlist });
-	const newPL: DBPL = {
-		...pl,
-		...playlist,
-	};
-	await updatePlaylist(newPL);
-	let needsSmartUpdating = false;
-	if (playlist.flag_current) currentHook(plaid, newPL.name);
-	if (playlist.flag_public) publicHook(plaid, newPL.name);
-	if (playlist.flag_whitelist) whitelistHook(plaid);
-	if (playlist.flag_blacklist) blacklistHook(plaid);
-	if (playlist.flag_fallback) fallbackPlaylistHook(plaid);
-	const isBlacklist = plaid === getState().blacklistPlaid;
-	const isWhitelist = plaid === getState().whitelistPlaid;
+	try {
+		const pl = await getPlaylistInfo(plaid);
+		if (!pl) throw new ErrorKM('UNKNOWN_PLAYLIST', 404, false);
+		logger.debug(`Editing playlist ${plaid}`, { service, obj: playlist });
+		const newPL: DBPL = {
+			...pl,
+			...playlist,
+		};
+		await updatePlaylist(newPL);
+		let needsSmartUpdating = false;
+		if (playlist.flag_current) currentHook(plaid, newPL.name);
+		if (playlist.flag_public) publicHook(plaid, newPL.name);
+		if (playlist.flag_whitelist) whitelistHook(plaid);
+		if (playlist.flag_blacklist) blacklistHook(plaid);
+		if (playlist.flag_fallback) fallbackPlaylistHook(plaid);
+		const isBlacklist = plaid === getState().blacklistPlaid;
+		const isWhitelist = plaid === getState().whitelistPlaid;
 
-	if (newPL.flag_smart) {
-		// Only update if :
-		// - Smart type (AND/OR) has changed
-		// - Smart limit has changed
-		// - Any smart limit option has been set with this change and the PL has the limit enabled
-		if (
-			pl.type_smart !== newPL.type_smart ||
-			pl.flag_smartlimit !== newPL.flag_smartlimit ||
-			(newPL.flag_smartlimit && playlist.smart_limit_number) ||
-			(newPL.flag_smartlimit && playlist.smart_limit_order) ||
-			(newPL.flag_smartlimit && playlist.smart_limit_type)
-		) {
-			needsSmartUpdating = true;
+		if (newPL.flag_smart) {
+			// Only update if :
+			// - Smart type (AND/OR) has changed
+			// - Smart limit has changed
+			// - Any smart limit option has been set with this change and the PL has the limit enabled
+			if (
+				pl.type_smart !== newPL.type_smart ||
+				pl.flag_smartlimit !== newPL.flag_smartlimit ||
+				(newPL.flag_smartlimit && playlist.smart_limit_number) ||
+				(newPL.flag_smartlimit && playlist.smart_limit_order) ||
+				(newPL.flag_smartlimit && playlist.smart_limit_type)
+			) {
+				needsSmartUpdating = true;
+			}
 		}
+		if (needsSmartUpdating) {
+			await updateSmartPlaylist(plaid);
+		}
+		// Skip playlist's smart updating if it's whitelist or blacklist since we already did it.
+		if (isBlacklist || isWhitelist) {
+			updateAllSmartPlaylists(isBlacklist, isWhitelist);
+		}
+		updatePlaylistLastEditTime(plaid);
+		emitWS('playlistInfoUpdated', plaid);
+		emitWS('playlistsUpdated');
+	} catch (err) {
+		logger.error(`Error editing playlist ${plaid} : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('PL_UPDATE_ERROR');
 	}
-	if (needsSmartUpdating) {
-		await updateSmartPlaylist(plaid);
-	}
-	// Skip playlist's smart updating if it's whitelist or blacklist since we already did it.
-	if (isBlacklist || isWhitelist) {
-		updateAllSmartPlaylists(isBlacklist, isWhitelist);
-	}
-	updatePlaylistLastEditTime(plaid);
-	emitWS('playlistInfoUpdated', plaid);
-	emitWS('playlistsUpdated');
 }
 
 /** Create new playlist */
 export async function createPlaylist(pl: DBPL, username: string): Promise<string> {
-	const plaid = await insertPlaylist({
-		...pl,
-		created_at: new Date(),
-		modified_at: new Date(),
-		flag_current: pl.flag_current || null,
-		flag_public: pl.flag_public || null,
-		flag_whitelist: pl.flag_whitelist || null,
-		flag_blacklist: pl.flag_blacklist || null,
-		username,
-	});
-	if (+pl.flag_current) currentHook(plaid, pl.name);
-	if (+pl.flag_public) publicHook(plaid, pl.name);
-	if (+pl.flag_whitelist) whitelistHook(plaid);
-	if (+pl.flag_blacklist) blacklistHook(plaid);
-	if (+pl.flag_fallback) fallbackPlaylistHook(plaid);
-	emitWS('playlistInfoUpdated', plaid);
-	emitWS('playlistsUpdated');
-	return plaid;
+	try {
+		const plaid = await insertPlaylist({
+			...pl,
+			created_at: new Date(),
+			modified_at: new Date(),
+			flag_current: pl.flag_current || null,
+			flag_public: pl.flag_public || null,
+			flag_whitelist: pl.flag_whitelist || null,
+			flag_blacklist: pl.flag_blacklist || null,
+			username,
+		});
+		if (+pl.flag_current) currentHook(plaid, pl.name);
+		if (+pl.flag_public) publicHook(plaid, pl.name);
+		if (+pl.flag_whitelist) whitelistHook(plaid);
+		if (+pl.flag_blacklist) blacklistHook(plaid);
+		if (+pl.flag_fallback) fallbackPlaylistHook(plaid);
+		emitWS('playlistInfoUpdated', plaid);
+		emitWS('playlistsUpdated');
+		return plaid;
+	} catch (err) {
+		logger.error(`Error creating playlist ${pl.name} : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('PL_CREATE_ERROR');
+	}
 }
 
 /** Get playlist properties */
 export async function getPlaylistInfo(plaid: string, token?: OldJWTToken) {
-	const pl = (await selectPlaylists(false, plaid))[0];
-	// We're testing this here instead of in the above function
-	if (token) {
-		if (token.role === 'admin' || pl.flag_visible) return pl;
-		return null;
+	try {
+		const pl = (await selectPlaylists(false, plaid))[0];
+		// We're testing this here instead of in the above function
+		if (token) {
+			if (token.role === 'admin' || pl.flag_visible) return pl;
+			throw new ErrorKM('UNKNOWN_PLAYLIST', 404, false);
+		}
+		return pl;
+	} catch (err) {
+		logger.error(`Error viewing playlist info for ${plaid} : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('PL_VIEW_ERROR');
 	}
-	return pl;
 }
 
 /** Get all playlists properties */
 export async function getPlaylists(token: OldJWTToken) {
 	profile('getPlaylists');
-	let ret = await selectPlaylists(token.role !== 'admin');
-	ret = [
-		// Group by user created and system playlists
-		...ret.filter(pl => pl.username !== 'admin').sort((a, b) => b.created_at?.getTime() - a.created_at?.getTime()),
-		...ret.filter(pl => pl.username === 'admin'),
-	];
-	profile('getPlaylists');
-	return ret;
+	try {
+		let ret = await selectPlaylists(token.role !== 'admin');
+		ret = [
+			// Group by user created and system playlists
+			...ret
+				.filter(pl => pl.username !== 'admin')
+				.sort((a, b) => b.created_at?.getTime() - a.created_at?.getTime()),
+			...ret.filter(pl => pl.username === 'admin'),
+		];
+		profile('getPlaylists');
+		return ret;
+	} catch (err) {
+		logger.error(`Error fetching playlists : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('PL_LIST_ERROR');
+	}
 }
 
 /** Get playlist contents in a smaller format to speed up fetching data for internal use */
@@ -539,10 +562,16 @@ export function getPlaylistContentsMini(plaid: string) {
  * After Mini-PL, Micro-PL, we need the PL-C format.
  */
 export async function getPlaylistContentsMicro(plaid: string, token: OldJWTToken) {
-	const pl = await getPlaylistInfo(plaid, token);
-	// Playlist isn't visible to user, throw.
-	if (!pl) throw { code: 404 };
-	return selectPlaylistContentsMicro(plaid);
+	try {
+		const pl = await getPlaylistInfo(plaid, token);
+		// Playlist isn't visible to user, throw.
+		if (!pl) throw new ErrorKM('UNKNOWN_PLAYLIST', 404, false);
+		return await selectPlaylistContentsMicro(plaid);
+	} catch (err) {
+		logger.error(`Error fetching playlist micro contents : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('PL_VIEW_SONGS_ERROR');
+	}
 }
 
 /** Get playlist contents */
@@ -556,13 +585,14 @@ export async function getPlaylistContents(
 	random = 0,
 	orderByLikes = false
 ) {
-	profile('getPLC');
-	const plInfo = await getPlaylistInfo(plaid, token);
-	if (!plInfo) throw { code: 404 };
-	if (!plInfo.flag_visible && token.role !== 'admin') {
-		throw { code: 403 };
-	}
 	try {
+		profile('getPLC');
+		const plInfo = await getPlaylistInfo(plaid, token);
+		if (!plInfo) throw new ErrorKM('UNKNOWN_PLAYLIST', 404, false);
+		if (!plInfo.flag_visible && token.role !== 'admin') {
+			throw new ErrorKM('UNKNOWN_PLAYLIST', 404, false);
+		}
+
 		const pl = await selectPlaylistContents({
 			plaid,
 			username: token.username.toLowerCase(),
@@ -581,17 +611,23 @@ export async function getPlaylistContents(
 		const count = pl.length > 0 ? pl[0].count : 0;
 		return formatKaraList(pl, from, count);
 	} catch (err) {
-		throw {
-			message: err,
-		};
+		logger.error(`Error fetching playlist contents : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('PL_VIEW_SONGS_ERROR');
 	}
 }
 
 /** Get song information from a particular PLC */
 export async function getKaraFromPlaylist(plc_id: number, token: OldJWTToken) {
-	const kara = await getPLCInfo(plc_id, token.role === 'user', token.username.toLowerCase());
-	if (!kara) throw { code: 404, msg: 'PLCID unknown' };
-	return kara;
+	try {
+		const kara = await getPLCInfo(plc_id, token.role === 'user', token.username.toLowerCase());
+		if (!kara) throw new ErrorKM('UNKNOWN_PLAYLIST_ITEM', 404, false);
+		return kara;
+	} catch (err) {
+		logger.error(`Error getting PLC ${plc_id} : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('PL_VIEW_CONTENT_ERROR');
+	}
 }
 
 /** Get PLC by KID and Username */
@@ -614,23 +650,21 @@ export async function addKaraToPlaylist(params: AddKaraParams) {
 	// Defaults
 	params = {
 		refresh: true,
-		throwOnMissingKara: true,
+		throwOnMissingKara: false,
 		visible: true,
 		...params,
 	};
-	const requester = params.requester.toLowerCase();
-	let errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR';
-	const conf = getConfig();
-	const state = getState();
-	if (!params.plaid) params.plaid = state.publicPlaid;
-	const [pl, karasInDB] = await Promise.all([getPlaylistInfo(params.plaid), getKarasMicro(params.kids)]);
-	const karas: DBKaraBase[] = [];
 	try {
+		const requester = params.requester.toLowerCase();
+		const conf = getConfig();
+		const state = getState();
+		if (!params.plaid) params.plaid = state.publicPlaid;
+		const [pl, karasInDB] = await Promise.all([getPlaylistInfo(params.plaid), getKarasMicro(params.kids)]);
+		const karas: DBKaraBase[] = [];
 		profile('addKaraToPL');
-		if (!pl) throw { code: 404, msg: `Playlist ${params.plaid} unknown` };
-
+		if (!pl) throw new ErrorKM('UNKNOWN_PLAYLIST', 404, false);
 		const user: User = await getUser(requester);
-		if (!user) throw { code: 404, msg: 'Requester does not exist' };
+		if (!user) throw new ErrorKM('UNKNOWN_USER', 404, false);
 
 		profile('addKaraToPL-checkKIDExistence');
 		const allKaras = new Set(karasInDB.map(k => k.kid));
@@ -638,13 +672,14 @@ export async function addKaraToPlaylist(params: AddKaraParams) {
 		params.kids.forEach(kid => {
 			if (!allKaras.has(kid)) karasUnknown.push(kid);
 		});
-		if (karasUnknown.length > 0 && params.throwOnMissingKara)
-			throw { code: 404, msg: 'One of the karaokes does not exist' };
+		if (karasUnknown.length > 0 && params.throwOnMissingKara) {
+			throw new ErrorKM('UNKNOWN_SONG', 404, false);
+		}
 		profile('addKaraToPL-checkKIDExistence');
 		// Sort karas from our database by the list that was provided to this function, so songs are added in the correct order
 		profile('addKaraToPL-sort');
 		for (const kid of params.kids) {
-			karas.push(karasInDB.find(k => k.kid === kid));
+			if (!karasUnknown.includes(kid)) karas.push(karasInDB.find(k => k.kid === kid));
 		}
 		profile('addKaraToPL-sort');
 		logger.debug(`Adding ${karas.length} song(s) to playlist ${pl.name || 'unknown'} by ${requester}...`, {
@@ -659,13 +694,11 @@ export async function addKaraToPlaylist(params: AddKaraParams) {
 				getPlaylistContentsMini(getState().whitelistPlaid),
 			]);
 			if (blacklist.find(k => k.kid === karas[0].kid) && !whitelist.find(k => k.kid === karas[0].kid)) {
-				errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_BLACKLISTED';
-				throw { code: 451 };
+				throw new ErrorKM('PLAYLIST_MODE_ADD_SONG_ERROR_BLACKLISTED', 451, false);
 			}
 			// Check user quota first
 			if (!(await isUserAllowedToAddKara(params.plaid, user, karas[0].duration))) {
-				errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED';
-				throw { code: 429 };
+				throw new ErrorKM('PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED', 429, false);
 			}
 		}
 		// Everything's daijokay, user is allowed to add a song.
@@ -710,8 +743,7 @@ export async function addKaraToPlaylist(params: AddKaraParams) {
 		karaList = songs.notPresent;
 		profile('addKaraToPL-checkDuplicates');
 		if (karaList.length === 0) {
-			errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED';
-			throw { code: 409 };
+			throw new ErrorKM('PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED', 409, false);
 		}
 		// Find out position of currently playing karaoke
 		// If no flag_playing is found, we'll add songs at the end of playlist.
@@ -814,18 +846,7 @@ export async function addKaraToPlaylist(params: AddKaraParams) {
 		return { plc };
 	} catch (err) {
 		logger.error('Unable to add karaokes', { service, obj: err });
-		let plname: string;
-		pl ? (plname = pl.name) : (plname = 'Unknown');
-		throw {
-			code: err?.code,
-			msg: errorCode,
-			data: {
-				details: err.msg,
-				kara: karas ? karas[0] : null,
-				playlist: plname || 'unknown',
-				user: requester,
-			},
-		};
+		throw err instanceof ErrorKM ? err : new ErrorKM('PL_ADD_SONG_ERROR');
 	} finally {
 		profile('addKaraToPL');
 	}
@@ -855,16 +876,16 @@ async function notifyUserOfSongPlayTime(plc_id: number, username: string) {
 
 /** Copy song from one playlist to another */
 export async function copyKaraToPlaylist(plc_ids: number[], plaid: string, pos?: number) {
-	const pl = await getPlaylistInfo(plaid);
-	if (!pl) throw { code: 404, msg: `Playlist ${plaid} unknown` };
-	logger.info(`Copying ${plc_ids.length} karaokes to playlist ${pl.name}`, { service });
 	try {
 		profile('copyKaraToPL');
+		const pl = await getPlaylistInfo(plaid);
+		if (!pl) throw new ErrorKM('UNKNOWN_PLAYLIST', 404, false);
+		logger.info(`Copying ${plc_ids.length} karaokes to playlist ${pl.name}`, { service });
 		const playlist = await selectPlaylistContentsMicro(plaid);
 		const PLCsToFree: number[] = [];
 		let plcs = await getPLCInfoMini(plc_ids);
 		for (const plcid of plc_ids) {
-			if (!plcs.find(plc => plc.plcid === +plcid)) throw { code: 404, msg: `PLC ${plcid} does not exist` };
+			if (!plcs.find(plc => plc.plcid === +plcid)) throw new ErrorKM('UNKNOWN_PLAYLIST_ITEM', 404, false);
 		}
 		for (const plc of plcs) {
 			// If source is public playlist and destination current playlist, free up PLCs from the public playlist.
@@ -925,11 +946,8 @@ export async function copyKaraToPlaylist(plc_ids: number[], plaid: string, pos?:
 		emitWS('playlistInfoUpdated', plaid);
 	} catch (err) {
 		logger.error('Cannot copy karaokes to another playlist', { service, obj: err });
-		throw {
-			code: err?.code,
-			message: err,
-			data: pl.name,
-		};
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('PL_SONG_COPY_ERROR');
 	} finally {
 		profile('copyKaraToPL');
 	}
@@ -949,20 +967,20 @@ export async function removeKaraFromPlaylist(
 		const playlistsNeedingUpdate: Set<string> = new Set();
 		const plcsNeedingDelete: any[] = [];
 		for (const plc_id of plc_ids) {
-			if (typeof plc_id !== 'number') throw { errno: 400, msg: 'At least one PLC ID is invalid' };
+			if (isNaN(plc_id)) throw new ErrorKM('INVALID_DATA', 400, false);
 		}
 		const plcs = await getPLCInfoMini(plc_ids);
 		for (const plc_id of plc_ids) {
 			if (!plcs.find(plc => plc.plcid === plc_id)) {
-				throw { errno: 404, msg: 'At least one playlist content is unknown' };
+				throw new ErrorKM('UNKNOWN_PLAYLIST_ITEM', 404, false);
 			}
 		}
 		for (const plc of plcs) {
 			if (token.role !== 'admin' && plc.username !== token.username.toLowerCase()) {
-				throw { errno: 403, msg: 'You cannot delete a song you did not add' };
+				throw new ErrorKM('CHECK_YOUR_PRIVILEGES', 403, false);
 			}
 			if (token.role !== 'admin' && plc.upvotes > 0) {
-				throw { errno: 403, code: 'PL_DELETE_UPVOTED', msg: 'You cannot delete a song with upvotes' };
+				throw new ErrorKM('PL_DELETE_UPVOTED', 403, false);
 			}
 			if (
 				plc.flag_playing &&
@@ -970,7 +988,7 @@ export async function removeKaraFromPlaylist(
 				plc.plaid === getState().currentPlaid &&
 				!ignorePlaying
 			) {
-				throw { errno: 403, msg: 'You cannot delete a song being currently played. Stop playback first.' };
+				throw new ErrorKM('PL_DELETE_PLAYING_ERROR', 403, false);
 			}
 			usersNeedingUpdate.add(plc.username);
 			playlistsNeedingUpdate.add(plc.plaid);
@@ -1019,10 +1037,9 @@ export async function removeKaraFromPlaylist(
 			writeStreamFiles('public_kara_count'),
 		]);
 	} catch (err) {
-		throw {
-			code: err?.errno,
-			message: err,
-		};
+		logger.error(`Error deleting song from a playlist : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('PL_DELETE_SONG_ERROR');
 	} finally {
 		profile('deleteKara');
 	}
@@ -1047,22 +1064,29 @@ export async function resetAllAcceptedPLCs() {
 
 /** Randomize songs in playlist */
 export async function randomizePLC(plc_ids: number[]) {
-	profile('randomizPLC');
-	const plcs = await getPLCInfoMini(plc_ids);
-	const pls_in_plcs = new Set();
-	for (const plc of plcs) {
-		pls_in_plcs.add(plc.plaid);
+	try {
+		profile('randomizPLC');
+		const plcs = await getPLCInfoMini(plc_ids);
+		const pls_in_plcs = new Set();
+		for (const plc of plcs) {
+			pls_in_plcs.add(plc.plaid);
+		}
+		if (pls_in_plcs.size > 1) throw new ErrorKM('INVALID_DATA', 400, false);
+		const pl = await getPlaylistContentsMini(plcs[0].plaid);
+		// Determine where the flag_playing is in our PL and what's the latest position
+		const playingPos = pl.find(plc => plc.flag_playing)?.pos || 0;
+		const maxPos = Math.max(...pl.map(plc => plc.pos));
+		for (const plc of plcs) {
+			const randomPos = Math.floor(Math.random() * (maxPos - playingPos) + playingPos);
+			await editPLC([plc.plcid], { pos: randomPos });
+		}
+	} catch (err) {
+		logger.error(`Error randomizing PLCs : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('PL_RANDOMIZE_ERROR');
+	} finally {
+		profile('randomizPLC');
 	}
-	if (pls_in_plcs.size > 1) throw { code: 400, msg: 'RANDOMIZE_PLC_ERROR_NO_MORE_THAN_ONE_PLAYLIST' };
-	const pl = await getPlaylistContentsMini(plcs[0].plaid);
-	// Determine where the flag_playing is in our PL and what's the latest position
-	const playingPos = pl.find(plc => plc.flag_playing)?.pos || 0;
-	const maxPos = Math.max(...pl.map(plc => plc.pos));
-	for (const plc of plcs) {
-		const randomPos = Math.floor(Math.random() * (maxPos - playingPos) + playingPos);
-		await editPLC([plc.plcid], { pos: randomPos });
-	}
-	profile('randomizPLC');
 }
 
 /** Edit PLC's properties in a playlist */
@@ -1070,24 +1094,28 @@ export async function editPLC(plc_ids: number[], params: PLCEditParams, refresh 
 	profile('editPLC');
 	try {
 		if (params.flag_playing === false) {
-			throw { code: 400, msg: 'flag_playing cannot be unset! Set it to another karaoke to unset it on this one' };
+			// Cannot be unset.
+			throw new ErrorKM('INVALID_DATA', 400, false);
 		}
 		if (params.flag_playing === true && plc_ids.length > 1) {
-			throw { code: 400, msg: 'flag_playing cannot be set to multiple songs at once' };
+			// Cannot be set to multiple songs at once
+			throw new ErrorKM('INVALID_DATA', 400, false);
 		}
-		if (params.flag_free === false) throw { code: 400, msg: 'flag_free cannot be unset!' };
+		if (params.flag_free === false) throw new ErrorKM('INVALID_DATA', 400, false);
 		const plcs = await getPLCInfoMini(plc_ids);
 		const pls = await getPlaylists(adminToken);
 		if (params.flag_playing && plc_ids.length > 1) {
-			throw { code: 409, msg: 'Only one PLCID can be set as playing, do you want to destroy the universe?' };
+			// Only one PLCID can be set as playing, do you want to destroy the universe?
+			throw new ErrorKM('INVALID_DATA', 409, false);
 		}
 		if (params.pos && plc_ids.length > 1) {
-			throw { code: 409, msg: 'Only one PLCID can be positionned, do you want to destroy the universe?' };
+			// Only one PLCID can be positionned, do you want to destroy the universe?
+			throw new ErrorKM('INVALID_DATA', 409, false);
 		}
 		for (const plc_id of plc_ids) {
 			const plc = plcs.find(pc => pc.plcid === plc_id);
-			if (!plc) throw { code: 404, msg: 'PLC ID unknown' };
-			if (!pls.find(pl => pl.plaid === plc.plaid)) throw { code: 400, msg: 'PLC has no valid playlist attached' };
+			if (!plc) throw new ErrorKM('UNKNOWN_PLAYLIST_ITEM', 404, false);
+			if (!pls.find(pl => pl.plaid === plc.plaid)) throw new ErrorKM('UNKNOWN_PLAYLIST', 404, false);
 		}
 
 		// Validations donne
@@ -1202,7 +1230,9 @@ export async function editPLC(plc_ids: number[], params: PLCEditParams, refresh 
 			plaids: pls.values(),
 		};
 	} catch (err) {
-		throw err;
+		logger.error(`Error editing PLCs : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('PL_MODIFY_CONTENT_ERROR');
 	} finally {
 		profile('editPLC');
 	}
@@ -1215,9 +1245,9 @@ export function reorderPlaylist(plaid: string) {
 
 /** Export playlist as JSON */
 export async function exportPlaylist(plaid: string) {
-	const pl = await getPlaylistInfo(plaid);
-	if (!pl) throw { code: 404, msg: `Playlist ${plaid} unknown` };
 	try {
+		const pl = await getPlaylistInfo(plaid);
+		if (!pl) throw new ErrorKM('UNKNOWN_PLAYLIST', 404);
 		logger.debug(`Exporting playlist ${plaid}`, { service });
 		const plContents = await getPlaylistContentsMini(plaid);
 		const playlist: PlaylistExport = {};
@@ -1233,15 +1263,14 @@ export async function exportPlaylist(plaid: string) {
 		playlist.PlaylistCriterias = plCriterias;
 		return playlist;
 	} catch (err) {
-		throw {
-			message: err,
-			data: pl.name,
-		};
+		logger.error(`Error exporting playlist ${plaid} : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('PL_EXPORT_ERROR');
 	}
 }
 
 /** Import playlist from JSON */
-export async function importPlaylist(playlist: any, username: string, plaid?: string) {
+export async function importPlaylist(playlist: PlaylistExport, username: string, plaid?: string) {
 	// If all tests pass, then add playlist, then add karas
 	// Playlist can end up empty if no karaokes are found in database
 	const task = new Task({
@@ -1251,7 +1280,8 @@ export async function importPlaylist(playlist: any, username: string, plaid?: st
 		logger.debug('Importing playlist', { service, obj: playlist });
 		const validationErrors = check(playlist, PLImportConstraints);
 		if (validationErrors) {
-			throw { code: 400, msg: `Playlist file is invalid : ${JSON.stringify(validationErrors)}` };
+			logger.error(`Invalid data from an imported playlist : ${JSON.stringify(validationErrors)}`, { service });
+			throw new ErrorKM('INVALID_DATA', 400);
 		}
 		task.update({
 			subtext: playlist.PlaylistInformation.name,
@@ -1276,7 +1306,7 @@ export async function importPlaylist(playlist: any, username: string, plaid?: st
 			}
 			if (kara.flag_playing === true) {
 				if (flag_playingDetected) {
-					throw { code: 400, msg: 'Playlist contains more than one currently playing marker' };
+					throw new ErrorKM('INVALID_DATA', 400);
 				}
 				flag_playingDetected = true;
 				playingKara.kid = kara.kid;
@@ -1325,12 +1355,9 @@ export async function importPlaylist(playlist: any, username: string, plaid?: st
 			reposUnknown: [...unknownRepos],
 		};
 	} catch (err) {
-		logger.error('Import failed', { service, obj: err });
-		if (err?.code !== 400) {
-			sentry.addErrorInfo('playlist', JSON.stringify(playlist, null, 2));
-			sentry.error(err);
-		}
-		throw err;
+		logger.error(`Error importing playlist : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('PL_IMPORT_ERROR');
 	} finally {
 		task.end();
 	}
@@ -1344,12 +1371,12 @@ export async function findPlaying(plaid: string): Promise<number> {
 
 /** Shuffle (smartly or not) a playlist */
 export async function shufflePlaylist(plaid: string, method: ShuffleMethods, fullShuffle = false) {
-	const pl = await getPlaylistInfo(plaid);
-	if (!pl) throw { code: 404, msg: `Playlist ${plaid} unknown` };
-	// We check if the playlist to shuffle is the current one. If it is, we will only shuffle
-	// the part after the song currently being played.
 	try {
 		profile('shuffle');
+		const pl = await getPlaylistInfo(plaid);
+		if (!pl) throw new ErrorKM('UNKNOWN_PLAYLIST', 404, false);
+		// We check if the playlist to shuffle is the current one. If it is, we will only shuffle
+		// the part after the song currently being played.
 		let playlist = await getPlaylistContentsMini(plaid);
 		if (!pl.flag_current || fullShuffle) {
 			playlist = shufflePlaylistWithList(playlist, method);
@@ -1375,11 +1402,9 @@ export async function shufflePlaylist(plaid: string, method: ShuffleMethods, ful
 		logger.info(`Playlist ${pl.name} shuffled (method: ${method})`, { service });
 		emitWS('playlistContentsUpdated', plaid);
 	} catch (err) {
-		logger.error('Could not shuffle playlist', { service, obj: err });
-		throw {
-			message: err,
-			data: pl.name,
-		};
+		logger.error(`Error shuffling playlist ${plaid} : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('PL_SHUFFLE_ERROR');
 	} finally {
 		profile('shuffle');
 	}
@@ -1676,78 +1701,77 @@ export function playlistImported(res: any) {
 }
 
 export async function createAutoMix(params: AutoMixParams, username: string): Promise<AutoMixPlaylistInfo> {
-	profile('AutoMix');
-	// Now we need to get our different lists depending on what filters we have.
-	// For each list we add the balanceUID needed to balance our songs later.
-	// If this doesn't give expected results due to async optimizations (for years and/or karas) we should try using Maps or Sets instead of arrays. Or use .push on each element
-	const uniqueList = new Map<string, DBPLC>();
-	let allUsers = [];
-	if (params.filters?.usersFavorites?.includes('*') || params.filters?.usersAnimeList?.includes('*')) {
-		allUsers = await getUsers({ full: true });
-		// Filter all logged in users that are not guests
-		// Guests have no rights! :p
-		allUsers = allUsers.filter(e => e.flag_logged_in === true && e.type < 2).map(e => e.login);
-	}
-	if (params.filters?.usersFavorites) {
-		let users = params.filters.usersFavorites;
-		if (users.includes('*')) {
-			// Remove the joker user, concatenate all users and make it a unique list
-			users = [...new Set(users.filter(e => e === '*').concat(allUsers))];
+	try {
+		profile('AutoMix');
+		// Now we need to get our different lists depending on what filters we have.
+		// For each list we add the balanceUID needed to balance our songs later.
+		// If this doesn't give expected results due to async optimizations (for years and/or karas) we should try using Maps or Sets instead of arrays. Or use .push on each element
+		const uniqueList = new Map<string, DBPLC>();
+		let allUsers = [];
+		if (params.filters?.usersFavorites?.includes('*') || params.filters?.usersAnimeList?.includes('*')) {
+			allUsers = await getUsers({ full: true });
+			// Filter all logged in users that are not guests
+			// Guests have no rights! :p
+			allUsers = allUsers.filter(e => e.flag_logged_in === true && e.type < 2).map(e => e.login);
 		}
-		let favs = await getAllFavorites(users);
-		favs = shuffle(favs);
-		favs.forEach(f => uniqueList.set(f.kid, f as any));
-	}
-	if (params.filters?.usersAnimeList) {
-		let users = params.filters.usersAnimeList;
-		if (users.includes('*')) {
-			// Remove the joker user, concatenate all users and make it a unique list
-			users = [...new Set(users.filter(e => e === '*').concat(allUsers))];
+		if (params.filters?.usersFavorites) {
+			let users = params.filters.usersFavorites;
+			if (users.includes('*')) {
+				// Remove the joker user, concatenate all users and make it a unique list
+				users = [...new Set(users.filter(e => e === '*').concat(allUsers))];
+			}
+			let favs = await getAllFavorites(users);
+			favs = shuffle(favs);
+			favs.forEach(f => uniqueList.set(f.kid, f as any));
 		}
-		for (const userlogin of users) {
-			const user = await getUser(userlogin, true);
-			if (user.anime_list_to_fetch) {
-				const karas = await getKaras({ userAnimeList: userlogin });
-				karas.content.forEach(k => uniqueList.set(k.kid, k as any));
+		if (params.filters?.usersAnimeList) {
+			let users = params.filters.usersAnimeList;
+			if (users.includes('*')) {
+				// Remove the joker user, concatenate all users and make it a unique list
+				users = [...new Set(users.filter(e => e === '*').concat(allUsers))];
+			}
+			for (const userlogin of users) {
+				const user = await getUser(userlogin, true);
+				if (user.anime_list_to_fetch) {
+					const karas = await getKaras({ userAnimeList: userlogin });
+					karas.content.forEach(k => uniqueList.set(k.kid, k as any));
+				}
 			}
 		}
-	}
-	let karaTags: DBKara[] = [];
-	if (params.filters?.tags) {
-		for (const tagAndType of params.filters.tags) {
-			const tag = `${tagAndType.tid}~${tagAndType.type}`;
-			const karas = await getKaras({
-				q: `t:${tag}`,
-			});
-			karas.content.forEach((_, i) => (karas.content[i].balanceUID = `${tag}`));
-			karaTags = [].concat(karaTags, karas.content);
-			karaTags = shuffle(karaTags);
+		let karaTags: DBKara[] = [];
+		if (params.filters?.tags) {
+			for (const tagAndType of params.filters.tags) {
+				const tag = `${tagAndType.tid}~${tagAndType.type}`;
+				const karas = await getKaras({
+					q: `t:${tag}`,
+				});
+				karas.content.forEach((_, i) => (karas.content[i].balanceUID = `${tag}`));
+				karaTags = [].concat(karaTags, karas.content);
+				karaTags = shuffle(karaTags);
+			}
+			karaTags.forEach(k => uniqueList.set(k.kid, k as any));
 		}
-		karaTags.forEach(k => uniqueList.set(k.kid, k as any));
-	}
-	let years: DBKara[] = [];
-	if (params.filters?.years) {
-		for (const year of params.filters.years) {
-			const karas = await getKaras({
-				q: `y:${year}`,
-			});
-			karas.content.forEach((_, i) => (karas.content[i].balanceUID = `${year}`));
-			years = [].concat(years, karas.content);
-			years = shuffle(years);
+		let years: DBKara[] = [];
+		if (params.filters?.years) {
+			for (const year of params.filters.years) {
+				const karas = await getKaras({
+					q: `y:${year}`,
+				});
+				karas.content.forEach((_, i) => (karas.content[i].balanceUID = `${year}`));
+				years = [].concat(years, karas.content);
+				years = shuffle(years);
+			}
+			years.forEach(y => uniqueList.set(y.kid, y as any));
 		}
-		years.forEach(y => uniqueList.set(y.kid, y as any));
-	}
-	// Test if our list has at least one song
-	if (uniqueList.size === 0) {
-		emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.AUTOMIX_NO_SONGS_MEET_CRITERIAS'));
-		throw { code: 416 };
-	}
+		// Test if our list has at least one song
+		if (uniqueList.size === 0) {
+			throw new ErrorKM('AUTOMIX_NO_SONGS_MEET_CRITERIAS_ERROR', 410, false);
+		}
 
-	// Let's balance what we have here.
+		// Let's balance what we have here.
 
-	let balancedList = shufflePlaylistWithList([...uniqueList.values()], 'balance');
+		let balancedList = shufflePlaylistWithList([...uniqueList.values()], 'balance');
 
-	try {
 		const autoMixPLName = params.playlistName || `AutoMix ${date()} ${time2()}`;
 		const plaid = await createPlaylist(
 			{

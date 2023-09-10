@@ -244,15 +244,15 @@ export async function decodeCriteriaReason(settings: SettingsStoreData, criteria
 }
 
 export function PLCCallback(response, context: GlobalContextInterface, kara: DBKara) {
-	if (response && response.code && response.data?.plc) {
+	if (response && response.plc) {
 		let message;
-		if (response.data?.plc.time_before_play) {
-			const playTime = new Date(Date.now() + response.data.plc.time_before_play * 1000);
+		if (response.plc.time_before_play) {
+			const playTime = new Date(Date.now() + response.plc.time_before_play * 1000);
 			const playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
-			const beforePlayTime = secondsTimeSpanToHMS(response.data.plc.time_before_play, 'hm');
+			const beforePlayTime = secondsTimeSpanToHMS(response.plc.time_before_play, 'hm');
 			message = (
 				<>
-					{i18next.t(`SUCCESS_CODES.${response.code}`, {
+					{i18next.t(`SUCCESS_CODES.PL_SONG_ADDED`, {
 						song: getTitleInLocale(
 							context.globalState.settings.data,
 							kara.titles,
@@ -269,7 +269,7 @@ export function PLCCallback(response, context: GlobalContextInterface, kara: DBK
 		} else {
 			message = (
 				<>
-					{i18next.t(`SUCCESS_CODES.${response.code}`, {
+					{i18next.t(`SUCCESS_CODES.PL_SONG_ADDED`, {
 						song: getTitleInLocale(
 							context.globalState.settings.data,
 							kara.titles,
@@ -295,9 +295,9 @@ export function PLCCallback(response, context: GlobalContextInterface, kara: DBK
 						onClick={e => {
 							e.preventDefault();
 							e.stopPropagation();
-							commandBackend('deleteKaraFromPlaylist', { plc_ids: [response.data.plc.plcid] })
+							commandBackend('deleteKaraFromPlaylist', { plc_ids: [response.plc.plcid] })
 								.then(() => {
-									toast.dismiss(response.data.plc.plcid);
+									toast.dismiss(response.plc.plcid);
 									displayMessage('success', i18next.t('SUCCESS_CODES.KARA_DELETED'));
 								})
 								.catch(() => {
@@ -311,7 +311,7 @@ export function PLCCallback(response, context: GlobalContextInterface, kara: DBK
 			</div>,
 			10000,
 			'top-left',
-			response.data.plc.plcid
+			response.plc.plcid
 		);
 	}
 }

@@ -314,7 +314,7 @@ function mataNe(rc: number) {
 	app.exit(rc);
 }
 
-export function shutdown() {
+export async function shutdown() {
 	logger.info('Dropping the mic, shutting down!', { service });
 	exit(0);
 }

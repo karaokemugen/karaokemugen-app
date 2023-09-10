@@ -1,0 +1,1 @@
+ALTER TABLE all_karas DROP COLUMN IF EXISTS gain;

@@ -3,7 +3,6 @@ import i18next from 'i18next';
 import { resolve } from 'path';
 import { v4 as uuidV4 } from 'uuid';
 
-import { APIMessage } from '../controllers/common.js';
 import { selectAllKaras } from '../dao/kara.js';
 import {
 	autoFillSessionEndedAt,
@@ -14,9 +13,12 @@ import {
 	selectSessions,
 	updateSession,
 } from '../dao/session.js';
+import { APIMessage } from '../lib/services/frontend.js';
 import { getConfig, resolvedPath } from '../lib/utils/config.js';
+import { ErrorKM } from '../lib/utils/error.js';
 import { sanitizeFile } from '../lib/utils/files.js';
 import logger, { profile } from '../lib/utils/logger.js';
+import { isUUID } from '../lib/utils/validators.js';
 import { emitWS } from '../lib/utils/ws.js';
 import { Session, SessionExports } from '../types/session.js';
 import sentry from '../utils/sentry.js';
@@ -26,11 +28,17 @@ import { getSongSeriesSingers, getSongTitle, getSongVersion } from './kara.js';
 const service = 'Sessions';
 
 export async function getSessions() {
-	const sessions = await selectSessions();
-	sessions.forEach((e, i) => {
-		if (e.seid === getState().currentSessionID) sessions[i].active = true;
-	});
-	return sessions;
+	try {
+		const sessions = await selectSessions();
+		sessions.forEach((e, i) => {
+			if (e.seid === getState().currentSessionID) sessions[i].active = true;
+		});
+		return sessions;
+	} catch (err) {
+		logger.error(`Error getting sessions : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('SESSION_LIST_ERROR');
+	}
 }
 
 export async function addSession(
@@ -40,18 +48,35 @@ export async function addSession(
 	activate?: boolean,
 	flag_private?: boolean
 ): Promise<Session> {
-	const date = started_at ? new Date(started_at) : new Date();
-	const seid = uuidV4();
-	const session = {
-		seid,
-		name,
-		started_at: date,
-		ended_at: ended_at ? new Date(ended_at) : null,
-		private: flag_private || false,
-	};
-	await insertSession(session);
-	if (activate) setActiveSession(session);
-	return session;
+	try {
+		const date = started_at ? new Date(started_at) : new Date();
+		const seid = uuidV4();
+		const session = {
+			seid,
+			name,
+			started_at: date,
+			ended_at: ended_at ? new Date(ended_at) : null,
+			private: flag_private || false,
+		};
+		await insertSession(session);
+		if (activate) setActiveSession(session);
+		return session;
+	} catch (err) {
+		logger.error(`Error creation a session : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('SESSION_CREATION_ERROR');
+	}
+}
+
+export async function activateSession(seid: string) {
+	try {
+		const session = await findSession(seid);
+		setActiveSession(session);
+	} catch (err) {
+		logger.error(`Error activating session ${seid} : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('SESSION_ACTIVATED_ERROR');
+	}
 }
 
 export function setActiveSession(session: Session) {
@@ -62,54 +87,88 @@ export function setActiveSession(session: Session) {
 }
 
 export async function editSession(session: Session) {
-	const oldSession = await findSession(session.seid);
-	if (!oldSession) throw { code: 404, msg: 'ERROR_CODES.SESSION_NOT_FOUND' };
-	if (session.ended_at && new Date(session.ended_at).getTime() < new Date(session.started_at).getTime()) {
-		throw { code: 409, msg: 'ERROR_CODES.SESSION_END_BEFORE_START_ERROR' };
+	try {
+		if (!isUUID(session.seid)) throw new ErrorKM('INVALID_DATA', 400, false);
+		const oldSession = await findSession(session.seid);
+		if (!oldSession) throw new ErrorKM('UNKNOWN_SESSION', 404, false);
+
+		if (session.ended_at && new Date(session.ended_at).getTime() < new Date(session.started_at).getTime()) {
+			throw new ErrorKM('ERROR_CODES.SESSION_END_BEFORE_START_ERROR', 400);
+		}
+		session.started_at
+			? (session.started_at = new Date(session.started_at))
+			: (session.started_at = oldSession.started_at);
+		// Ended_at is optional
+		if (session.ended_at) session.ended_at = new Date(session.ended_at);
+		await updateSession(session);
+		if (session.active) setActiveSession(session);
+	} catch (err) {
+		logger.error(`Error getting repos : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('SESSION_EDIT_ERROR');
 	}
-	session.started_at
-		? (session.started_at = new Date(session.started_at))
-		: (session.started_at = oldSession.started_at);
-	// Ended_at is optional
-	if (session.ended_at) session.ended_at = new Date(session.ended_at);
-	await updateSession(session);
-	if (session.active) setActiveSession(session);
 }
 
 export async function removeSession(seid: string) {
-	if (seid === getState().currentSessionID) throw { code: 403 };
-	const session = await findSession(seid);
-	if (!session) throw { code: 404 };
-	return deleteSession(seid);
+	try {
+		if (!isUUID(seid)) throw new ErrorKM('INVALID_DATA', 403, false);
+		if (seid === getState().currentSessionID) throw new ErrorKM('SESSION_DELETE_ACTIVE_ERROR', 403, false);
+		const session = await findSession(seid);
+		if (!session) throw new ErrorKM('UNKNOWN_SESSION', 404, false);
+		return await deleteSession(seid);
+	} catch (err) {
+		logger.error(`Error deleting session : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('SESSION_DELETE_ERROR');
+	}
 }
 
 export async function findSession(seid: string): Promise<Session> {
-	const sessions = await selectSessions();
-	return sessions.find(s => s.seid === seid);
+	try {
+		if (!isUUID(seid)) {
+			throw new ErrorKM('INVALID_DATA', 400, false);
+		}
+		const sessions = await selectSessions();
+		return sessions.find(s => s.seid === seid);
+	} catch (err) {
+		logger.error(`Error getting sessions : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('SESSION_GET_ERROR');
+	}
 }
 
 export async function mergeSessions(seid1: string, seid2: string): Promise<Session> {
-	// Get which session is the earliest starting date
-	const [session1, session2] = await Promise.all([findSession(seid1), findSession(seid2)]);
-	if (!session1 || !session2) throw { code: 404 };
-	session1.active = session1.seid === getState().currentSessionID;
-	session2.active = session2.seid === getState().currentSessionID;
-	const started_at = session1.started_at < session2.started_at ? session1.started_at : session2.started_at;
-	const ended_at = session1.ended_at > session2.ended_at ? session1.ended_at : session2.ended_at;
-	const name = session1.started_at < session2.started_at ? session1.name : session2.name;
-	const seid = uuidV4();
-	const session = {
-		name,
-		seid,
-		started_at: new Date(started_at),
-		ended_at: new Date(ended_at),
-		private: session1.private || session2.private,
-	};
-	await insertSession(session);
-	if (session1.active || session2.active) setActiveSession(session);
-	await Promise.all([replaceSession(seid1, seid), replaceSession(seid2, seid)]);
-	await Promise.all([removeSession(seid1), removeSession(seid2)]);
-	return session;
+	try {
+		if (!isUUID(seid1) || !isUUID(seid2)) {
+			throw new ErrorKM('INVALID_DATA', 400, false);
+		}
+
+		// Get which session is the earliest starting date
+		const [session1, session2] = await Promise.all([findSession(seid1), findSession(seid2)]);
+		if (!session1 || !session2) throw { code: 404 };
+		session1.active = session1.seid === getState().currentSessionID;
+		session2.active = session2.seid === getState().currentSessionID;
+		const started_at = session1.started_at < session2.started_at ? session1.started_at : session2.started_at;
+		const ended_at = session1.ended_at > session2.ended_at ? session1.ended_at : session2.ended_at;
+		const name = session1.started_at < session2.started_at ? session1.name : session2.name;
+		const seid = uuidV4();
+		const session = {
+			name,
+			seid,
+			started_at: new Date(started_at),
+			ended_at: new Date(ended_at),
+			private: session1.private || session2.private,
+		};
+		await insertSession(session);
+		if (session1.active || session2.active) setActiveSession(session);
+		await Promise.all([replaceSession(seid1, seid), replaceSession(seid2, seid)]);
+		await Promise.all([removeSession(seid1), removeSession(seid2)]);
+		return session;
+	} catch (err) {
+		logger.error(`Error merging sessions : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('SESSION_MERGE_ERROR');
+	}
 }
 
 export async function initSession() {
@@ -163,8 +222,9 @@ function checkSessionEnd() {
 
 export async function exportSession(seid: string): Promise<SessionExports> {
 	try {
+		if (!isUUID(seid)) throw new ErrorKM('INVALID_DATA', 400, false);
 		const session = await findSession(seid);
-		if (!session) throw { code: 404, msg: 'Session does not exist' };
+		if (!session) throw new ErrorKM('UNKNOWN_SESSION', 404);
 		const [requested, played] = await Promise.all([
 			selectAllKaras({ order: 'sessionRequested', q: `seid:${seid}` }),
 			selectAllKaras({ order: 'sessionPlayed', q: `seid:${seid}` }),
@@ -286,7 +346,8 @@ export async function exportSession(seid: string): Promise<SessionExports> {
 		]);
 		return sessionExports;
 	} catch (err) {
+		logger.error(`Error exporting session ${seid} : ${err}`, { service });
 		sentry.error(err);
-		throw err;
+		throw err instanceof ErrorKM ? err : new ErrorKM('SESSION_EXPORT_ERROR');
 	}
 }

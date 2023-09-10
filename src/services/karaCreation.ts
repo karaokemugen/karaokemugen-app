@@ -7,6 +7,7 @@ import { defineFilename, determineMediaAndLyricsFilenames, processSubfile } from
 import { EditedKara } from '../lib/types/kara.d.js';
 import { ASSFileCleanup } from '../lib/utils/ass.js';
 import { getConfig, resolvedPath, resolvedPathRepos } from '../lib/utils/config.js';
+import { ErrorKM } from '../lib/utils/error.js';
 import { replaceExt, resolveFileInDirs, smartMove } from '../lib/utils/files.js';
 import logger, { profile } from '../lib/utils/logger.js';
 import Task from '../lib/utils/taskManager.js';
@@ -32,22 +33,20 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 
 		if (kara.data.parents) {
 			if (kara.data.parents.includes(kara.data.kid)) {
-				throw 'Did you just try to make a song its own parent?';
+				throw new ErrorKM('TIME_PARADOX', 409, false);
+				// Did you just try to make a song its own parent?
 			}
 			const DBKara = await getKara(kara.data.kid, adminToken);
 			if (DBKara.children.some(k => kara.data.parents.includes(k))) {
-				throw 'Did you just try to destroy the universe by making a circular dependency?';
+				throw new ErrorKM('PIME_TARADOX', 409, false);
+				// Did you just try to destroy the universe by making a circular dependency?
 			}
 		}
-	} catch (err) {
-		throw { code: 400, msg: err };
-	}
-	try {
 		profile('editKaraFile');
 		const oldKara = await getKara(kara.data.kid, adminToken);
 		if (!oldKara) {
 			logger.error(`Old Kara not found when editing! KID: ${kara.data.kid}`, { service });
-			throw 'Former song not found!';
+			throw new ErrorKM('UNKNOWN_SONG', 404, false);
 		}
 		if (!kara.data.ignoreHooks) await applyKaraHooks(kara);
 		const karaFile = await defineFilename(kara, oldKara);
@@ -101,7 +100,7 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 				await smartMove(oldMediaPath, mediaDest);
 			} catch (err) {
 				// Most probable error is that media is unmovable since busy
-				throw { code: 409, msg: 'KARA_EDIT_ERROR_UNMOVABLE_MEDIA' };
+				throw new ErrorKM('KARA_EDIT_ERROR_UNMOVABLE_MEDIA', 409, false);
 			}
 		}
 		kara.medias[0].filename = filenames.mediafile;
@@ -119,7 +118,7 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 				try {
 					await smartMove(subPath, subDest, { overwrite: true });
 				} catch (err) {
-					throw { code: 409, msg: 'KARA_EDIT_ERROR_UNMOVABLE_LYRICS' };
+					throw new ErrorKM('KARA_EDIT_ERROR_UNMOVABLE_LYRICS', 409, false);
 				}
 			}
 		} else if (kara.medias[0].lyrics?.[0] && oldKara.subfile !== filenames.lyricsfile) {
@@ -132,7 +131,7 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 			try {
 				await smartMove(oldSubPath, subDest, { overwrite: true });
 			} catch (err) {
-				throw { code: 409, msg: 'KARA_EDIT_ERROR_UNMOVABLE_LYRICS' };
+				throw new ErrorKM('KARA_EDIT_ERROR_UNMOVABLE_LYRICS', 409, false);
 			}
 		}
 		const karaPath = resolve(resolvedPathRepos('Karaokes', oldKara.repository)[0], oldKara.karafile);
@@ -151,11 +150,9 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 			await ASSFileCleanup(subDest, newKara);
 	} catch (err) {
 		logger.error('Error while editing kara', { service, obj: err });
-		if (!err.msg) {
-			sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
-			sentry.error(err);
-		}
-		throw err;
+		sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('KARA_EDITED_ERROR');
 	} finally {
 		task.end();
 	}
@@ -217,12 +214,10 @@ export async function createKara(editedKara: EditedKara) {
 			await ASSFileCleanup(subDest, newKara);
 	} catch (err) {
 		logger.error('Error while creating kara', { service, obj: err });
-		if (!err.msg) {
-			sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
-			sentry.addErrorInfo('kara', JSON.stringify(kara, null, 2));
-			sentry.error(err);
-		}
-		throw err;
+		sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
+		sentry.addErrorInfo('kara', JSON.stringify(kara, null, 2));
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('KARA_CREATED_ERROR');
 	} finally {
 		task.end();
 	}

@@ -31,6 +31,7 @@ interface IProps {
 	checkedKaras: KaraElement[];
 	selectAllKarasChecked: boolean;
 	criteriasOpen: boolean;
+	refreshLibraryBanner: boolean;
 	getPlaylist: (searchType?: 'search' | 'recent' | 'requested', orderByLikes?: boolean) => void;
 	onChangeTags: (type: number | string, value: string) => void;
 	addAllKaras: () => void;
@@ -441,6 +442,15 @@ function PlaylistHeader(props: IProps) {
 						/>
 					</p>
 				)
+			) : null}
+			{props.refreshLibraryBanner && playlist.plaid === nonStandardPlaylists.library ? (
+				<p className="playlist-tooltip-refresh">
+					<Trans
+						i18nKey="PLAYLIST_HEADER.REFRESH_LIBRARY_BANNER"
+						components={{ 1: <a href="#" onClick={() => props.getPlaylist()} /> }}
+						defaults=""
+					/>
+				</p>
 			) : null}
 		</>
 	);

@@ -53,8 +53,6 @@ export interface State {
 	defaultLocale?: string;
 	player?: PlayerState;
 	securityCode: number;
-	supportedLyrics?: string[];
-	supportedMedias?: string[];
 	forceDisableAppUpdate?: boolean;
 	noAutoTest?: boolean;
 	singlePlay?: boolean;
@@ -81,8 +79,6 @@ export interface State {
 		noAutoTest?: boolean;
 	};
 	args: string[];
-	environment: string;
-	sentrytest: boolean;
 	restoreNeeded: boolean;
 	systemMessages: SystemMessage[];
 	DBReady: boolean;
@@ -116,8 +112,10 @@ export interface PublicState {
 	supportedLyrics?: string[];
 	supportedMedias?: string[];
 	environment: string;
+	sentrydsn: string;
 	sentrytest: boolean;
 	url: string;
+	songPoll?: boolean;
 	quiz: GameState;
 }
 

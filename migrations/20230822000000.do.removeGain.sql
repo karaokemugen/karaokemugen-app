@@ -1,0 +1,1 @@
+ALTER TABLE kara DROP COLUMN gain;

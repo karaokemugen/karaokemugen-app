@@ -1,7 +1,9 @@
 import { deleteUpvote, insertUpvote, selectUpvotesByPLC } from '../dao/upvote.js';
 import { getConfig } from '../lib/utils/config.js';
+import { ErrorKM } from '../lib/utils/error.js';
 import logger from '../lib/utils/logger.js';
 import { emitWS } from '../lib/utils/ws.js';
+import Sentry from '../utils/sentry.js';
 import { getState } from '../utils/state.js';
 import { freePLC, getPLCInfoMini } from './playlist.js';
 import { getUsers, updateSongsLeft } from './user.js';
@@ -19,11 +21,11 @@ export async function addUpvote(plc_id: number, username: string) {
 	try {
 		username = username.toLowerCase();
 		const plc = (await getPLCInfoMini([plc_id]))[0];
-		if (!plc) throw { code: 404 };
-		if (plc.plaid !== getState().publicPlaid) throw { code: 403, msg: 'UPVOTE_FAILED' };
-		if (plc.username === username) throw { code: 403, msg: 'UPVOTE_NO_SELF' };
+		if (!plc) throw new ErrorKM('UNKNOWN_PLAYLIST_ITEM', 404, false);
+		if (plc.plaid !== getState().publicPlaid) throw new ErrorKM('UPVOTE_FAILED', 403, false);
+		if (plc.username === username) throw new ErrorKM('UPVOTE_NO_SELF', 403, false);
 		const userList = await selectUpvotesByPLC(plc_id);
-		if (userList.some(u => u.username === username)) throw { code: 403, msg: 'UPVOTE_ALREADY_DONE' };
+		if (userList.some(u => u.username === username)) throw new ErrorKM('UPVOTE_ALREADY_DONE', 403, false);
 
 		await insertUpvote(plc_id, username);
 		plc.upvotes += 1;
@@ -35,8 +37,9 @@ export async function addUpvote(plc_id: number, username: string) {
 		// If playlist has autosort, playlist contents updated is already triggered by the shuffle.
 		emitWS('playlistContentsUpdated', plc.plaid);
 	} catch (err) {
-		if (!err.msg) err.msg = 'UPVOTE_FAILED';
-		throw err;
+		logger.error(`Upvote of PLC ${plc_id} by ${username} failed : ${err}`, { service });
+		Sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('UPVOTE_FAILED');
 	}
 }
 
@@ -45,12 +48,12 @@ export async function removeUpvote(plc_id: number, username: string) {
 	try {
 		username = username.toLowerCase();
 		const plc = (await getPLCInfoMini([plc_id]))[0];
-		if (!plc) throw { code: 404, msg: 'PLC ID unknown' };
-		if (plc.plaid !== getState().publicPlaid) throw { code: 403, msg: 'DOWNVOTE_FAILED' };
-		if (plc.username === username) throw { code: 403, msg: 'DOWNVOTE_NO_SELF' };
+		if (!plc) throw new ErrorKM('UNKNOWN_PLAYLIST_ITEM', 404, false);
+		if (plc.plaid !== getState().publicPlaid) throw new ErrorKM('DOWNVOTE_FAILED', 403, false);
+		if (plc.username === username) throw new ErrorKM('DOWNVOTE_NO_SELF', 403, false);
 		const userList = await selectUpvotesByPLC(plc_id);
 		const users = userList.map(u => u.username);
-		if (!users.includes(username)) throw { code: 403, msg: 'DOWNVOTE_ALREADY_DONE' };
+		if (!users.includes(username)) throw new ErrorKM('DOWNVOTE_ALREADY_DONE', 403, false);
 		await deleteUpvote(plc_id, username);
 		// Karaokes are not 'un-freed' when downvoted.^
 		plc.upvotes -= 1;
@@ -60,8 +63,9 @@ export async function removeUpvote(plc_id: number, username: string) {
 		// If playlist has autosort, playlist contents updated is already triggered by the shuffle.
 		emitWS('playlistContentsUpdated', plc.plaid);
 	} catch (err) {
-		if (!err.msg) err.msg = 'DOWNVOTE_FAILED';
-		throw err;
+		logger.error(`Upvote of PLC ${plc_id} by ${username} failed : ${err}`, { service });
+		Sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('DOWNVOTE_FAILED');
 	}
 }
 

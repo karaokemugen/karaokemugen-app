@@ -1,8 +1,9 @@
-import { deleteFavorites, insertFavorites, truncateFavorites } from '../dao/favorites.js';
+import { deleteFavorites, insertFavorites, selectFavoritesMicro, truncateFavorites } from '../dao/favorites.js';
 import { DBKara } from '../lib/types/database/kara.js';
 import { KaraList, KaraParams } from '../lib/types/kara.js';
 import { getConfig } from '../lib/utils/config.js';
 import { uuidRegexp } from '../lib/utils/constants.js';
+import { ErrorKM } from '../lib/utils/error.js';
 import HTTP from '../lib/utils/http.js';
 import logger, { profile } from '../lib/utils/logger.js';
 import { emitWS } from '../lib/utils/ws.js';
@@ -13,13 +14,24 @@ import { getUser } from './user.js';
 
 const service = 'Favorites';
 
+export async function getFavoritesMicro(params: KaraParams) {
+	try {
+		return await selectFavoritesMicro(params);
+	} catch (err) {
+		logger.error(`Failed to fetch (micro) favorites for user ${params.username}`, { service });
+		sentry.error(err);
+		throw new ErrorKM('FAVORITES_VIEW_ERROR', 500);
+	}
+}
+
 export async function getFavorites(params: KaraParams): Promise<KaraList> {
 	try {
 		profile('getFavorites');
 		return await getKaras(params);
 	} catch (err) {
+		logger.error(`Failed to fetch favorites for user ${params.username}`, { service });
 		sentry.error(err);
-		throw err;
+		throw new ErrorKM('FAVORITES_VIEW_ERROR', 500);
 	} finally {
 		profile('getFavorites');
 	}
@@ -52,7 +64,13 @@ export async function manageFavoriteInInstanceBatch(
 	kids: string[],
 	token: string
 ) {
-	await Promise.all(kids.map(kid => manageFavoriteInInstance(action, username, kid, token)));
+	try {
+		await Promise.all(kids.map(kid => manageFavoriteInInstance(action, username, kid, token)));
+	} catch (err) {
+		logger.error(`Failed to send favorites command ${action} to online favorites for user ${username}`);
+		sentry.error(err);
+		// Do not throw as this is launched asynchronously
+	}
 }
 
 export async function addToFavorites(username: string, kids: string[], onlineToken?: string, updateRemote = true) {
@@ -65,8 +83,9 @@ export async function addToFavorites(username: string, kids: string[], onlineTok
 		}
 		emitWS('favoritesUpdated', username);
 	} catch (err) {
+		logger.error(`Failed to add to favorites for user ${username}`, { service, obj: err });
 		sentry.error(err);
-		throw err;
+		throw new ErrorKM('FAVORITES_ADDED_ERROR', 500);
 	} finally {
 		profile('addToFavorites');
 	}
@@ -94,11 +113,13 @@ export async function removeFavorites(username: string, kids: string[], token: s
 		username = username.toLowerCase();
 		await deleteFavorites(kids, username);
 		if (username.includes('@') && getConfig().Online.Users) {
-			manageFavoriteInInstanceBatch('DELETE', username, kids, token);
+			manageFavoriteInInstanceBatch('DELETE', username, kids, token).catch(() => {});
 		}
 		emitWS('favoritesUpdated', username);
 	} catch (err) {
-		throw { message: err };
+		logger.error(`Failed to delete favorites for user ${username}`, { service });
+		sentry.error(err);
+		throw new ErrorKM('FAVORITES_DELETED_ERROR');
 	} finally {
 		profile('deleteFavorites');
 	}
@@ -124,28 +145,34 @@ async function manageFavoriteInInstance(action: 'POST' | 'DELETE', username: str
 }
 
 export async function exportFavorites(username: string) {
-	username = username.toLowerCase();
-	const favs = await getFavorites({
-		userFavorites: username,
-	});
-	if (favs.content.length === 0) throw { code: 404, msg: 'No favorites' };
-	return {
-		Header: {
-			version: 1,
-			description: 'Karaoke Mugen Favorites List File',
-		},
-		Favorites: favs.content.map(k => {
-			// Only the kid property is mandatory, the rest is just decoration so the person can know which song is which in the file
-			return {
-				kid: k.kid,
-				titles: k.titles,
-				songorder: k.songorder,
-				serie: k.series.map(s => s.name).join(' '),
-				songtype: k.songtypes.map(s => s.name).join(' '),
-				language: k.langs.map(s => s.name).join(' '),
-			};
-		}),
-	};
+	try {
+		username = username.toLowerCase();
+		const favs = await getFavorites({
+			userFavorites: username,
+		});
+		if (favs.content.length === 0) throw new ErrorKM('FAVORITES_EXPORTED_NO_FAVORITES_ERROR', 404, false);
+		return {
+			Header: {
+				version: 1,
+				description: 'Karaoke Mugen Favorites List File',
+			},
+			Favorites: favs.content.map(k => {
+				// Only the kid property is mandatory, the rest is just decoration so the person can know which song is which in the file
+				return {
+					kid: k.kid,
+					titles: k.titles,
+					songorder: k.songorder,
+					serie: k.series.map(s => s.name).join(' '),
+					songtype: k.songtypes.map(s => s.name).join(' '),
+					language: k.langs.map(s => s.name).join(' '),
+				};
+			}),
+		};
+	} catch (err) {
+		logger.error('Failed to export favorites', { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('FAVORITES_EXPORTED_ERROR');
+	}
 }
 
 export async function importFavorites(
@@ -156,13 +183,12 @@ export async function importFavorites(
 	updateRemote = true
 ) {
 	username = username.toLowerCase();
-	if (favs.Header.version !== 1) throw { code: 400, msg: 'Incompatible favorites version list' };
+	if (favs.Header.version !== 1) throw new ErrorKM('FAVORITES_IMPORTED_INCOMPATIBLE_VERSION_ERROR', 400, false);
 	if (favs.Header.description !== 'Karaoke Mugen Favorites List File') {
-		throw { code: 400, msg: 'Not a favorites list' };
+		throw new ErrorKM('FAVORITES_IMPORTED_WRONG_FILETYPE_ERROR', 400, false);
 	}
-	if (!Array.isArray(favs.Favorites)) throw { code: 400, msg: 'Favorites item is not an array' };
-	if (favs.Favorites.some(f => !uuidRegexp.test(f.kid))) {
-		throw { code: 400, msg: 'One item in the favorites list is not a UUID' };
+	if (!Array.isArray(favs.Favorites || favs.Favorites.some(f => !uuidRegexp.test(f.kid)))) {
+		throw new ErrorKM('FAVORITES_IMPORTED_BAD_DATA_ERROR', 400, false);
 	}
 	// Stripping favorites from unknown karaokes in our database to avoid importing them
 	try {
@@ -184,7 +210,7 @@ export async function importFavorites(
 		logger.error('Unable to import favorites', { service, obj: err });
 		sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
 		sentry.error(err);
-		throw err;
+		throw err instanceof ErrorKM ? err : new ErrorKM('FAVORITES_IMPORTED_ERROR');
 	}
 }
 
