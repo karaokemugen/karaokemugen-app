@@ -20,9 +20,11 @@ import { KaraList, KaraParams, MediaInfo, YearList } from '../lib/types/kara.js'
 import { JWTTokenWithRoles, OldJWTToken } from '../lib/types/user.js';
 import { ASSToLyrics } from '../lib/utils/ass.js';
 import { getConfig } from '../lib/utils/config.js';
+import { ErrorKM } from '../lib/utils/error.js';
 import HTTP from '../lib/utils/http.js';
 import { convert1LangTo2B } from '../lib/utils/langs.js';
 import logger, { profile } from '../lib/utils/logger.js';
+import { isUUID } from '../lib/utils/validators.js';
 import { adminToken } from '../utils/constants.js';
 import sentry from '../utils/sentry.js';
 import { getState } from '../utils/state.js';
@@ -44,9 +46,9 @@ export async function isAllKaras(karas: string[]): Promise<string[]> {
 }
 
 export async function getKara(kid: string, token: OldJWTToken | JWTTokenWithRoles, lang?: string): Promise<DBKara> {
-	profile('getKaraInfo');
-	if (!kid) throw { code: 400 };
 	try {
+		profile('getKaraInfo');
+		if (!isUUID(kid)) throw new ErrorKM('INVALID_DATA', 400, false);
 		const res = await selectAllKaras({
 			username: token.username.toLowerCase(),
 			q: `k:${kid}`,
@@ -56,32 +58,43 @@ export async function getKara(kid: string, token: OldJWTToken | JWTTokenWithRole
 		});
 		return res[0];
 	} catch (err) {
+		logger.error(`Error getting kara ${kid} : ${err}`, { service });
 		sentry.error(err);
-		throw err;
+		throw err instanceof ErrorKM ? err : new ErrorKM('SONG_VIEW_ERROR');
 	} finally {
 		profile('getKaraInfo');
 	}
 }
 
 export async function getKaraLyrics(kid: string): Promise<ASSLine[]> {
-	const kara = await getKara(kid, adminToken);
-	if (!kara) throw { code: 404, msg: `Kara ${kid} unknown` };
-	if (!kara.subfile) return;
-	// FIXME: add support for converting lrc/vtt on the fly here
-	const ext = parse(kara.subfile).ext;
-	let lyrics = await getLyrics(kara.subfile, kara.repository);
-	// If any other format we return.
-	if (ext === '.srt') {
-		lyrics = srt2ass(lyrics);
+	try {
+		const kara = await getKara(kid, adminToken);
+		if (!kara) throw new ErrorKM('UNKNOWN_SONG', 404, false);
+		if (!kara.subfile) return;
+		// FIXME: add support for converting lrc/vtt on the fly here
+		const ext = parse(kara.subfile).ext;
+		let lyrics = await getLyrics(kara.subfile, kara.repository);
+		// If any other format we return.
+		if (ext === '.srt') {
+			lyrics = srt2ass(lyrics);
+		}
+		return ASSToLyrics(lyrics);
+	} catch (err) {
+		throw err instanceof ErrorKM ? err : new ErrorKM('LYRICS_VIEW_ERROR');
 	}
-	return ASSToLyrics(lyrics);
 }
 
 export async function getKaraMediaInfo(kid: string): Promise<MediaInfo> {
-	const kara = await getKara(kid, adminToken);
-	if (!kara) throw { code: 404, msg: `Kara ${kid} unknown` };
-	if (!kara.mediafile) return;
-	return getMediaFileInfo(kara.mediafile, kara.repository);
+	try {
+		if (!isUUID(kid)) throw new ErrorKM('INVALID_DATA', 400, false);
+		const kara = await getKara(kid, adminToken);
+		if (!kara) throw new ErrorKM('UNKNOWN_SONG', 404, false);
+		return await getMediaFileInfo(kara.mediafile, kara.repository);
+	} catch (err) {
+		logger.error(`Unable to retrieve kara media info : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('GET_MEDIA_INFO_ERROR');
+	}
 }
 
 export async function addPlayedKara(kid: string) {
@@ -91,15 +104,21 @@ export async function addPlayedKara(kid: string) {
 }
 
 export async function getYears(): Promise<YearList> {
-	const years = await selectYears();
-	return {
-		content: years,
-		infos: {
-			from: 0,
-			to: years.length,
-			count: years.length,
-		},
-	};
+	try {
+		const years = await selectYears();
+		return {
+			content: years,
+			infos: {
+				from: 0,
+				to: years.length,
+				count: years.length,
+			},
+		};
+	} catch (err) {
+		logger.error(`Error getting years : ${err}`, { service });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('YEARS_LIST_ERROR');
+	}
 }
 
 export async function getKarasMicro(kids: string[], notFromAllKaras = false) {
@@ -139,7 +158,7 @@ export async function getKaras(params: KaraParams): Promise<KaraList> {
 	} catch (err) {
 		sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
 		sentry.error(err);
-		throw err;
+		throw new ErrorKM('SONG_LIST_ERROR', 500, false);
 	} finally {
 		profile('getKaras');
 	}
@@ -220,5 +239,11 @@ export async function fetchPopularSongs() {
 }
 
 export function getKMStats() {
-	return getStats();
+	try {
+		return getStats();
+	} catch (err) {
+		logger.error(`Unable to fetch DB stats : ${err}`, { service });
+		sentry.error(err);
+		throw new ErrorKM('STATS_ERROR');
+	}
 }

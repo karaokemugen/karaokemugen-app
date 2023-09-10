@@ -55,7 +55,7 @@ interface IProps {
 	indexKaraDetail?: number;
 	clearIndexKaraDetail?: () => void;
 	searchType?: 'search' | 'recent' | 'requested';
-	quizRanking: boolean;
+	quizRanking?: boolean;
 }
 interface KaraList {
 	content: KaraElement[];
@@ -91,6 +91,7 @@ function Playlist(props: IProps) {
 	const [goToPlayingAvoidScroll, setGotToPlayingAvoidScroll] = useState<boolean>();
 	const [selectAllKarasChecked, setSelectAllKarasChecked] = useState(false);
 	const [criteriasOpen, setCriteriasOpen] = useState(false);
+	const [refreshLibraryBanner, setRefreshLibraryBanner] = useState(false);
 	const virtuoso = useRef<any>(null);
 	const plaid = useRef<string>(getPlaylistInfo(props.side, context)?.plaid);
 
@@ -375,6 +376,15 @@ function Playlist(props: IProps) {
 		if (getPlaylistInfo(props.side, context)?.plaid === idPlaylist && !stopUpdate) getPlaylist();
 	};
 
+	const displayLibraryBanner = () => {
+		if (getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.library) setRefreshLibraryBanner(true);
+	};
+
+	const debounceUpdateLibrary = useCallback(
+		debounce(() => updateLibrary(), 5000),
+		[]
+	);
+
 	const updateLibrary = () => {
 		if (getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.library) getPlaylist();
 	};
@@ -399,6 +409,7 @@ function Playlist(props: IProps) {
 			year: 'y',
 			tag: 't',
 		};
+		setRefreshLibraryBanner(false);
 		setPlaylistInProgress(true);
 		const loadingPlaid = getPlaylistInfo(props.side, context)?.plaid;
 		let search = searchType;
@@ -1004,6 +1015,11 @@ function Playlist(props: IProps) {
 		getSocket().on('KIDUpdated', KIDUpdated);
 		getSocket().on('playerStatus', updateCounters);
 		getSocket().on('databaseGenerated', updateLibrary);
+		if (props.scope === 'admin') {
+			getSocket().on('refreshLibrary', displayLibraryBanner);
+		} else {
+			getSocket().on('refreshLibrary', debounceUpdateLibrary);
+		}
 		return () => {
 			getSocket().off('favoritesUpdated', favoritesUpdated);
 			getSocket().off('playlistContentsUpdated', playlistContentsUpdatedFromServer);
@@ -1011,6 +1027,11 @@ function Playlist(props: IProps) {
 			getSocket().off('KIDUpdated', KIDUpdated);
 			getSocket().off('playerStatus', updateCounters);
 			getSocket().off('databaseGenerated', updateLibrary);
+			if (props.scope === 'admin') {
+				getSocket().off('refreshLibrary', displayLibraryBanner);
+			} else {
+				getSocket().off('refreshLibrary', debounceUpdateLibrary);
+			}
 		};
 	}, [
 		context.globalState.frontendContext.playlistInfoLeft,
@@ -1061,6 +1082,7 @@ function Playlist(props: IProps) {
 					downloadAllMedias={downloadAllMedias}
 					criteriasOpen={criteriasOpen}
 					openCloseCriterias={() => setCriteriasOpen(!criteriasOpen)}
+					refreshLibraryBanner={refreshLibraryBanner}
 				/>
 			) : null}
 			<div id={'playlist' + props.side} className="playlistContainer" ref={refContainer}>

@@ -4,7 +4,7 @@ import { Dispatch } from 'react';
 
 import { User } from '../../../../src/lib/types/user';
 import { Config } from '../../../../src/types/config';
-import { Version } from '../../../../src/types/state';
+import { PublicState, Version } from '../../../../src/types/state';
 import { langSupport } from '../../utils/isoLanguages';
 import { commandBackend } from '../../utils/socket';
 import { LogoutUser } from '../types/auth';
@@ -17,14 +17,18 @@ export async function setSettings(
 	tryAgain = false
 ): Promise<void> {
 	try {
-		const res = await commandBackend('getSettings');
+		const res: {
+			version: Version;
+			config: Config;
+			state: PublicState;
+		} = await commandBackend('getSettings');
 		if (!withoutProfile) {
 			try {
-				if (!(res.config as Config).System) {
-					res.config.System = { Repositories: await commandBackend('getRepos') };
+				if (!res.config.System) {
+					res.config.System = { Repositories: await commandBackend('getRepos') } as any;
 				}
 				const user: User = await commandBackend('getMyAccount');
-				const favorites = await commandBackend('getFavorites', { mini: true });
+				const favorites = await commandBackend('getFavoritesMicro');
 				const favoritesSet = new Set<string>();
 				for (const kara of favorites) {
 					favoritesSet.add(kara.kid);
@@ -38,7 +42,7 @@ export async function setSettings(
 						// already display
 					}
 				}
-				if (!res.state.sentrytest) setSentry(res.state.environment, res.version, res.config, user);
+				setSentry(res.state, res.version, res.config, user);
 				dispatch({
 					type: Settings.SETTINGS_SUCCESS,
 					payload: {
@@ -74,11 +78,11 @@ export async function setSettings(
 	}
 }
 
-function setSentry(environment: string, version: Version, config: Config, user: User) {
-	if (config.Online?.ErrorTracking) {
+function setSentry(state: PublicState, version: Version, config: Config, user: User) {
+	if (!state.sentrytest && config.Online?.ErrorTracking) {
 		Sentry.init({
-			dsn: 'https://464814b9419a4880a2197b1df7e1d0ed@o399537.ingest.sentry.io/5256806',
-			environment: environment || 'release',
+			dsn: state.sentrydsn,
+			environment: state.environment || 'release',
 			release: version.number,
 			ignoreErrors: [
 				'Network Error',
@@ -87,7 +91,6 @@ function setSentry(environment: string, version: Version, config: Config, user: 
 				'ResizeObserver loop limit exceeded',
 				'ResizeObserver loop completed with undelivered notifications',
 				/.*[n|N]o space left on device.*/,
-				'PL_ADD_SONG_ERROR',
 				'PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED',
 				'PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED',
 				'DELETE_PLAYLIST_ERROR_CURRENT',

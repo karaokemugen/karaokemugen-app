@@ -53,10 +53,10 @@ describe('Users', () => {
 		const data = await commandBackend(
 			token,
 			'resetUserPassword',
-			{ username: 'BakaToTest', password: 'trololo', securityCode: securityCode },
+			{ username: 'BakaToTest', password: 'trololo', securityCode },
 			true
 		);
-		expect(data.message.code).to.be.equal('USER_RESETPASSWORD_ERROR');
+		expect(data.message.code).to.be.equal('PASSWORD_TOO_SHORT');
 	});
 
 	it('Reset password with right security code', async () => {

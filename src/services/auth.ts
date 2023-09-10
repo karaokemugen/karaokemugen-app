@@ -12,10 +12,12 @@ const service = 'Auth';
 
 /** Check login and authenticates users */
 export async function checkLogin(username: string, password: string): Promise<OldTokenResponse> {
+	if (username) username = decodeURI(username.trim());
+	password = password ? decodeURI(password) : '';
 	const conf = getConfig();
-	let user: User = {};
 	let onlineToken: string;
-	username = username.toLowerCase();
+	username = username.toLowerCase().trim();
+	let user: User = { login: username };
 	if (username.includes('@') && +conf.Online.Users) {
 		try {
 			// If username has a @, check its instance for existence
@@ -32,7 +34,7 @@ export async function checkLogin(username: string, password: string): Promise<Ol
 		}
 	}
 
-	user = await getUser(username, true);
+	user = await getUser(username, true, true);
 	if (!user) throw false;
 	if (user.type < 2 && !(await checkPassword(user, password))) throw false;
 	if (user.type === 2 && !getConfig().Frontend.AllowGuestLogin) throw false;

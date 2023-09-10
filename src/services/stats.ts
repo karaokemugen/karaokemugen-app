@@ -5,7 +5,6 @@ import { resolve } from 'path';
 import prettyBytes from 'pretty-bytes';
 import si from 'systeminformation';
 
-import { APIMessage } from '../controllers/common.js';
 import { selectPlayed, selectRequests } from '../dao/stats.js';
 import { getInstanceID } from '../lib/dao/database.js';
 import { getConfig, resolvedPath } from '../lib/utils/config.js';
@@ -16,6 +15,7 @@ import { getPublicConfig } from '../utils/config.js';
 import sentry from '../utils/sentry.js';
 import { getState } from '../utils/state.js';
 import { getSessions } from './session.js';
+import { APIMessage } from '../lib/services/frontend.js';
 
 const service = 'Stats';
 

@@ -1,6 +1,7 @@
 import { merge } from 'lodash';
 import { Socket } from 'socket.io';
 
+import { APIMessage } from '../lib/services/frontend.js';
 import { APIData } from '../lib/types/api.js';
 import { OldJWTToken, Role, User } from '../lib/types/user.js';
 import { getConfig } from '../lib/utils/config.js';
@@ -10,7 +11,6 @@ import { decodeJwtToken, getUser, updateLastLoginName } from '../services/user.j
 import { WebappModes } from '../types/frontend.js';
 import { webappModes } from '../utils/constants.js';
 import { getState } from '../utils/state.js';
-import { APIMessage } from './common.js';
 
 interface APIChecklistOptions {
 	optionalAuth?: boolean;
@@ -67,7 +67,7 @@ function checkAuthPresence(data: APIData) {
 export async function checkValidUser(token: OldJWTToken): Promise<User> {
 	// If user is remote, see if we have a remote token ready.
 	token.username = token.username.toLowerCase();
-	const user = await getUser(token.username);
+	const user = await getUser(token.username, true, true);
 	if (user) {
 		if (token.role === 'admin' && user.type > 0) throw { code: 403, message: APIMessage('ADMIN_PLEASE') };
 		return user;

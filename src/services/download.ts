@@ -5,7 +5,6 @@ import parallel from 'p-map';
 import { resolve } from 'path';
 import { v4 as uuidV4 } from 'uuid';
 
-import { APIMessage } from '../controllers/common.js';
 import {
 	initDownloads,
 	insertDownloads,
@@ -14,8 +13,10 @@ import {
 	updateDownload,
 	updateDownloaded,
 } from '../dao/download.js';
+import { APIMessage } from '../lib/services/frontend.js';
 import { getConfig, resolvedPath, resolvedPathRepos } from '../lib/utils/config.js';
 import { downloadFile } from '../lib/utils/downloader.js';
+import { ErrorKM } from '../lib/utils/error.js';
 import { resolveFileInDirs, smartMove } from '../lib/utils/files.js';
 import { fixedEncodeURIComponent } from '../lib/utils/http.js';
 import logger, { profile } from '../lib/utils/logger.js';
@@ -24,6 +25,7 @@ import { emit } from '../lib/utils/pubsub.js';
 import Task from '../lib/utils/taskManager.js';
 import { emitWS } from '../lib/utils/ws.js';
 import { KaraDownload, KaraDownloadRequest, MediaDownloadCheck, QueueStatus } from '../types/download.js';
+import Sentry from '../utils/sentry.js';
 import { getState } from '../utils/state.js';
 import { getKaras } from './kara.js';
 import { getRepo, getRepoFreeSpace } from './repo.js';
@@ -39,7 +41,13 @@ const dq: queueAsPromised<KaraDownload, void> = fastq(processDownload, 3);
 const downloadedKIDs = new Set();
 
 export function getDownloadQueueStatus() {
-	return downloadQueueStatus;
+	try {
+		return downloadQueueStatus;
+	} catch (err) {
+		logger.error('Unable to queue new download', { service });
+		Sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('DOWNLOADS_GET_ERROR');
+	}
 }
 
 async function emitQueueStatus(status: QueueStatus) {
@@ -80,20 +88,26 @@ export function initDownloadQueue() {
 }
 
 export async function startDownloads() {
-	if (dq) resumeQueue();
-	if (dq?.length() === 0) {
-		const downloads = await selectDownloads(true);
-		try {
-			await internet();
-			downloads.forEach(dl => dq.push(dl));
-			logger.info('Download queue starting up', { service });
-			emitQueueStatus('started');
-		} catch (err) {
-			if (downloads.length > 0) {
-				logger.warn('There are planned downloads, but your computer seems offline', { service });
+	try {
+		if (dq) resumeQueue();
+		if (dq?.length() === 0) {
+			const downloads = await selectDownloads(true);
+			try {
+				await internet();
+				downloads.forEach(dl => dq.push(dl));
+				logger.info('Download queue starting up', { service });
+				emitQueueStatus('started');
+			} catch (err) {
+				if (downloads.length > 0) {
+					logger.warn('There are planned downloads, but your computer seems offline', { service });
+				}
+				emitQueueStatus('stopped');
 			}
-			emitQueueStatus('stopped');
 		}
+	} catch (err) {
+		logger.error('Unable to start download queue', { service });
+		Sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('DOWNLOADS_START_ERROR');
 	}
 }
 
@@ -104,7 +118,7 @@ async function processDownload(download: KaraDownload) {
 			logger.warn('Not enough free space for download, aborting', { service });
 			emitWS('noFreeSpace');
 			pauseQueue();
-			throw 'No space left on device';
+			throw new ErrorKM('NO_SPACE_LEFT_ON_DEVICE', 500, false);
 		}
 		const downloadTask = new Task({
 			text: 'DOWNLOADING',
@@ -138,14 +152,22 @@ async function processDownload(download: KaraDownload) {
 		emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.DOWNLOAD', err));
 		updateDownloaded([download.kid], 'MISSING');
 		emitWS('KIDUpdated', [{ kid: download.kid, download_status: 'MISSING' }]);
+		logger.error(`Failed to process download ${download.mediafile} (${download.uuid})`, { service, obj: err });
+		Sentry.error(err);
 		throw err;
 	}
 }
 
 export function pauseQueue() {
 	// Queue is paused but the current running task is not paused.
-	emitQueueStatus('paused');
-	return dq.pause();
+	try {
+		emitQueueStatus('paused');
+		return dq.pause();
+	} catch (err) {
+		logger.error('Unable to pause downloads', { service });
+		Sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('DOWNLOADS_PAUSE_ERROR');
+	}
 }
 
 export function resumeQueue() {
@@ -207,35 +229,49 @@ export async function checkMediaAndDownloadSingleKara(kara: MediaDownloadCheck, 
 }
 
 export async function addDownloads(downloads: KaraDownloadRequest[]): Promise<number> {
-	const currentDls = await getDownloads();
-	const downloadsFiltered = downloads.filter(dl => {
-		if (
-			currentDls.find(cdl => dl.name === cdl.name && (cdl.status === 'DL_RUNNING' || cdl.status === 'DL_PLANNED'))
-		) {
-			return false;
-		}
-		return true;
-	});
-	if (downloadsFiltered.length === 0) throw { code: 409, msg: 'DOWNLOADS_QUEUED_ALREADY_ADDED_ERROR' };
-	const dls: KaraDownload[] = downloadsFiltered.map(dl => {
-		logger.debug(`Adding download ${dl.name}`, { service });
-		return {
-			uuid: uuidV4(),
-			name: dl.name,
-			size: dl.size,
-			mediafile: dl.mediafile,
-			status: 'DL_PLANNED',
-			repository: dl.repository,
-			kid: dl.kid,
-		};
-	});
-	await insertDownloads(dls);
-	dls.forEach(dl => dq.push(dl));
-	return dls.length;
+	try {
+		const currentDls = await getDownloads();
+		const downloadsFiltered = downloads.filter(dl => {
+			if (
+				currentDls.find(
+					cdl => dl.name === cdl.name && (cdl.status === 'DL_RUNNING' || cdl.status === 'DL_PLANNED')
+				)
+			) {
+				return false;
+			}
+			return true;
+		});
+		if (downloadsFiltered.length === 0) throw { code: 409, msg: 'DOWNLOADS_QUEUED_ALREADY_ADDED_ERROR' };
+		const dls: KaraDownload[] = downloadsFiltered.map(dl => {
+			logger.debug(`Adding download ${dl.name}`, { service });
+			return {
+				uuid: uuidV4(),
+				name: dl.name,
+				size: dl.size,
+				mediafile: dl.mediafile,
+				status: 'DL_PLANNED',
+				repository: dl.repository,
+				kid: dl.kid,
+			};
+		});
+		await insertDownloads(dls);
+		dls.forEach(dl => dq.push(dl));
+		return dls.length;
+	} catch (err) {
+		logger.error('Unable to queue new download', { service });
+		Sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('DOWNLOADS_QUEUED_ERROR');
+	}
 }
 
 export function getDownloads() {
-	return selectDownloads();
+	try {
+		return selectDownloads();
+	} catch (err) {
+		logger.error('Unable to get downloads', { service });
+		Sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('DOWNLOADS_QUEUED_ERROR');
+	}
 }
 
 export function setDownloadStatus(uuid: string, status: string) {
@@ -247,8 +283,14 @@ export function wipeDownloadQueue() {
 }
 
 export function wipeDownloads() {
-	wipeDownloadQueue();
-	initDownloadQueue();
-	emitQueueStatus('stopped');
-	return truncateDownload();
+	try {
+		wipeDownloadQueue();
+		initDownloadQueue();
+		emitQueueStatus('stopped');
+		return truncateDownload();
+	} catch (err) {
+		logger.error('Unable to wipe downloads', { service });
+		Sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('DOWNLOADS_WIPE_ERROR');
+	}
 }

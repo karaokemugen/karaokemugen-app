@@ -203,101 +203,180 @@ function AdminHeader(props: IProps) {
 					<i className="fas fa-fw fa-long-arrow-alt-left" />
 				</button>
 			) : null}
-			<div className="dropdown-settings">
-				<button
-					className="btn btn-dark"
-					type="button"
-					title={i18next.t('ADMIN_HEADER.QUICK_ACCESS')}
-					onClick={() => setDropDownSettings(!dropDownSettings)}
-				>
-					<i className="fas fa-fw fa-sliders-h" />
+			<div className="dropdown">
+				<button className="btn btn-dark klogo" type="button" onClick={() => setDropDownMenu(!dropDownMenu)}>
+					<img src={KLogo} alt="Karaoke Mugen logo" />
 				</button>
-				{dropDownSettings ? (
+				{dropDownMenu ? (
 					<ul className="dropdown-menu">
-						<li title={i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_TOOLTIP')}>
-							<label>
-								{i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_SHORT')}
-								&nbsp;
-								<i className="far fa-question-circle" />
-							</label>
-							<RadioButton
-								buttons={[
-									{
-										label: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_NORMAL_OPTION'),
-										active: context?.globalState.settings.data.config?.Playlist?.MysterySongs
-											.AddedSongVisibilityAdmin,
-										activeColor: '#3c5c00',
-										onClick: () => saveOperatorAdd(true),
-										description: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_OFF'),
-									},
-									{
-										label: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_MYSTERY_OPTION'),
-										active: !context?.globalState.settings.data.config?.Playlist?.MysterySongs
-											.AddedSongVisibilityAdmin,
-										activeColor: '#880500',
-										onClick: () => saveOperatorAdd(false),
-										description: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_ON'),
-									},
-								]}
-							/>
+						<li>
+							<a href="/welcome">
+								<i className="fas fa-fw fa-home" />
+								&nbsp;{i18next.t('HOME_BUTTON')}
+							</a>
 						</li>
-						<li title={i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_TOOLTIP')}>
-							<label>
-								{i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_SHORT')}
-								&nbsp;
-								<i className="far fa-question-circle" />
-							</label>
-							<RadioButton
-								buttons={[
-									{
-										label: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_CLOSED_SHORT'),
-										active: context?.globalState.settings.data.config?.Frontend?.Mode === 0,
-										activeColor: '#880500',
-										onClick: () => changePublicInterfaceMode(0),
-										description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_CLOSED'),
-									},
-									{
-										label: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_LIMITED_SHORT'),
-										active: context?.globalState.settings.data.config?.Frontend?.Mode === 1,
-										activeColor: '#a36700',
-										onClick: () => changePublicInterfaceMode(1),
-										description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_LIMITED'),
-									},
-									{
-										label: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_OPEN_SHORT'),
-										active: context?.globalState.settings.data.config?.Frontend?.Mode === 2,
-										activeColor: '#3c5c00',
-										onClick: () => changePublicInterfaceMode(2),
-										description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_OPEN'),
-									},
-								]}
-							/>
+						<li>
+							<a
+								href={`/admin${location.pathname.includes('/options') ? '' : '/options'}`}
+								onClick={e => {
+									e.preventDefault();
+									navigate(`/admin${location.pathname.includes('/options') ? '' : '/options'}`);
+									setDropDownMenu(!dropDownMenu);
+								}}
+							>
+								{location.pathname.includes('/options') ? (
+									<>
+										<i className="fas fa-fw fa-list-ul" />
+										&nbsp;{i18next.t('CL_PLAYLISTS')}
+									</>
+								) : (
+									<>
+										<i className="fas fa-fw fa-cog" />
+										&nbsp;{i18next.t('OPTIONS')}
+									</>
+								)}
+							</a>
 						</li>
-						{context?.globalState.settings.data.config?.Karaoke?.StreamerMode?.Twitch?.Enabled ? (
-							<li title={i18next.t('SETTINGS.PLAYER.LIVE_COMMENTS_TOOLTIP')}>
-								<label>
-									{i18next.t('SETTINGS.PLAYER.LIVE_COMMENTS')}
-									&nbsp;
-									<i className="far fa-question-circle" />
-								</label>
-								<RadioButton
-									buttons={[
-										{
-											label: i18next.t('YES'),
-											active: context?.globalState.settings.data.config?.Player?.LiveComments,
-											activeColor: '#3c5c00',
-											onClick: () => changeLiveComments(true),
-										},
-										{
-											label: i18next.t('NO'),
-											active: !context?.globalState.settings.data.config?.Player?.LiveComments,
-											activeColor: '#880500',
-											onClick: () => changeLiveComments(false),
-										},
-									]}
-								/>
+						<li>
+							<div onClick={toggleProfileModal}>
+								<i className="fas fa-fw fa-user" />
+								&nbsp;{i18next.t('ACCOUNT')}
+							</div>
+						</li>
+						<li>
+							<div onClick={toggleUsersModal}>
+								<i className="fas fa-fw fa-users" />
+								&nbsp;{i18next.t('USERLIST')}
+							</div>
+						</li>
+						{!quizInProgress ? (
+							<li>
+								<div onClick={toggleQuizModal}>
+									<i className="fas fa-fw fa-person-circle-question" />
+									&nbsp;{i18next.t('QUIZ.START')}
+								</div>
+							</li>
+						) : (
+							<li>
+								<div onClick={toggleStopQuizModal}>
+									<i className="fas fa-fw fa-person-circle-question" />
+									&nbsp;{i18next.t('QUIZ.STOP')}
+								</div>
+							</li>
+						)}
+						<li>
+							<div
+								onClick={() => {
+									render(<Tutorial />, document.getElementById('tuto'));
+									setDropDownMenu(!dropDownMenu);
+								}}
+							>
+								<i className="fas fa-fw fa-question-circle" />
+								&nbsp;{i18next.t('MODAL.TUTORIAL.TITLE')}
+							</div>
+						</li>
+						<hr></hr>
+						<li>
+							<div onClick={() => logout(context.globalDispatch)}>
+								<i className="fas fa-fw fa-sign-out-alt" />
+								&nbsp;{i18next.t('LOGOUT')}
+							</div>
+						</li>
+						{props.powerOff ? (
+							<li>
+								<div onClick={props.powerOff}>
+									<i className="fas fa-fw fa-power-off" />
+									&nbsp;{i18next.t('SHUTDOWN')}
+								</div>
 							</li>
 						) : null}
+						<li className="buttonsMobileMenu">
+							<div
+								onClick={() => {
+									props.adminMessage();
+									setDropDownMenu(!dropDownMenu);
+								}}
+							>
+								<i className="fas fa-fw fa-comment" />
+								&nbsp;{i18next.t('MESSAGE')}
+							</div>
+						</li>
+						<li className="buttonsMobileMenu">
+							<div
+								onClick={event => {
+									props.putPlayerCommando(event);
+									setDropDownMenu(!dropDownMenu);
+								}}
+								data-namecommand={statusPlayer?.showSubs ? 'hideSubs' : 'showSubs'}
+								id="showSubs"
+							>
+								<i className="fas fa-fw fa-closed-captioning" />
+								&nbsp;{i18next.t(statusPlayer?.showSubs ? 'HIDE_SUBS' : 'SHOW_SUBS')}
+							</div>
+						</li>
+						<li className="buttonsMobileMenu">
+							<div
+								onClick={event => {
+									props.putPlayerCommando(event);
+									setDropDownMenu(!dropDownMenu);
+								}}
+								id="goTo"
+								data-namecommand="goTo"
+							>
+								<i className="fas fa-fw fa-undo-alt" />
+								&nbsp;{i18next.t('REWIND')}
+							</div>
+						</li>
+						<li className="buttonsMobileMenuSmaller">
+							<div
+								onClick={event => {
+									props.putPlayerCommando(event);
+									setDropDownMenu(!dropDownMenu);
+								}}
+								id="mute"
+								data-namecommand={statusPlayer?.volume === 0 || statusPlayer?.mute ? 'unmute' : 'mute'}
+							>
+								{statusPlayer?.volume === 0 || statusPlayer?.mute ? (
+									<i className="fas fa-fw fa-volume-mute" />
+								) : statusPlayer?.volume > 66 ? (
+									<i className="fas fa-fw fa-volume-up" />
+								) : statusPlayer?.volume > 33 ? (
+									<i className="fas fa-fw fa-volume-down" />
+								) : (
+									<i className="fas fa-fw fa-volume-off" />
+								)}
+								&nbsp;{i18next.t('MUTE_UNMUTE')}
+							</div>
+						</li>
+						<li className="buttonsMobileMenuSmaller">
+							{statusPlayer?.stopping ||
+							statusPlayer?.mediaType !== 'song' ||
+							context?.globalState.settings.data.config?.Karaoke.ClassicMode ? (
+								<div
+									onClick={event => {
+										props.putPlayerCommando(event);
+										setDropDownMenu(!dropDownMenu);
+									}}
+									id="stopNow"
+									data-namecommand="stopNow"
+								>
+									<i className="fas fa-fw fa-stop" />
+									&nbsp;{i18next.t('STOP_NOW')}
+								</div>
+							) : (
+								<div
+									onClick={event => {
+										props.putPlayerCommando(event);
+										setDropDownMenu(!dropDownMenu);
+									}}
+									id="stopAfter"
+									data-namecommand="stopAfter"
+								>
+									<i className="fas fa-fw fa-stop" />
+									&nbsp;{i18next.t('STOP_AFTER')}
+								</div>
+							)}
+						</li>
 					</ul>
 				) : null}
 			</div>
@@ -537,179 +616,101 @@ function AdminHeader(props: IProps) {
 					/>
 				) : null}
 			</button>
-			<div className="dropdown">
-				<button className="btn btn-dark klogo" type="button" onClick={() => setDropDownMenu(!dropDownMenu)}>
-					<img src={KLogo} alt="Karaoke Mugen logo" />
+			<div className="dropdown-settings">
+				<button
+					className="btn btn-dark"
+					type="button"
+					title={i18next.t('ADMIN_HEADER.QUICK_ACCESS')}
+					onClick={() => setDropDownSettings(!dropDownSettings)}
+				>
+					<i className="fas fa-fw fa-sliders-h" />
 				</button>
-				{dropDownMenu ? (
+				{dropDownSettings ? (
 					<ul className="dropdown-menu">
-						<li>
-							<a
-								href={`/admin${location.pathname.includes('/options') ? '' : '/options'}`}
-								onClick={e => {
-									e.preventDefault();
-									navigate(`/admin${location.pathname.includes('/options') ? '' : '/options'}`);
-									setDropDownMenu(!dropDownMenu);
-								}}
-							>
-								{location.pathname.includes('/options') ? (
-									<>
-										<i className="fas fa-fw fa-list-ul" />
-										&nbsp;{i18next.t('CL_PLAYLISTS')}
-									</>
-								) : (
-									<>
-										<i className="fas fa-fw fa-cog" />
-										&nbsp;{i18next.t('OPTIONS')}
-									</>
-								)}
-							</a>
+						<li title={i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_TOOLTIP')}>
+							<label>
+								{i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_SHORT')}
+								&nbsp;
+								<i className="far fa-question-circle" />
+							</label>
+							<RadioButton
+								buttons={[
+									{
+										label: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_NORMAL_OPTION'),
+										active: context?.globalState.settings.data.config?.Playlist?.MysterySongs
+											.AddedSongVisibilityAdmin,
+										activeColor: '#3c5c00',
+										onClick: () => saveOperatorAdd(true),
+										description: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_OFF'),
+									},
+									{
+										label: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_MYSTERY_OPTION'),
+										active: !context?.globalState.settings.data.config?.Playlist?.MysterySongs
+											.AddedSongVisibilityAdmin,
+										activeColor: '#880500',
+										onClick: () => saveOperatorAdd(false),
+										description: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_ON'),
+									},
+								]}
+							/>
 						</li>
-						<li>
-							<div onClick={toggleProfileModal}>
-								<i className="fas fa-fw fa-user" />
-								&nbsp;{i18next.t('ACCOUNT')}
-							</div>
+						<li title={i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_TOOLTIP')}>
+							<label>
+								{i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_SHORT')}
+								&nbsp;
+								<i className="far fa-question-circle" />
+							</label>
+							<RadioButton
+								buttons={[
+									{
+										label: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_CLOSED_SHORT'),
+										active: context?.globalState.settings.data.config?.Frontend?.Mode === 0,
+										activeColor: '#880500',
+										onClick: () => changePublicInterfaceMode(0),
+										description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_CLOSED'),
+									},
+									{
+										label: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_LIMITED_SHORT'),
+										active: context?.globalState.settings.data.config?.Frontend?.Mode === 1,
+										activeColor: '#a36700',
+										onClick: () => changePublicInterfaceMode(1),
+										description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_LIMITED'),
+									},
+									{
+										label: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_OPEN_SHORT'),
+										active: context?.globalState.settings.data.config?.Frontend?.Mode === 2,
+										activeColor: '#3c5c00',
+										onClick: () => changePublicInterfaceMode(2),
+										description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_OPEN'),
+									},
+								]}
+							/>
 						</li>
-						<li>
-							<div onClick={toggleUsersModal}>
-								<i className="fas fa-fw fa-users" />
-								&nbsp;{i18next.t('USERLIST')}
-							</div>
-						</li>
-						{!quizInProgress ? (
-							<li>
-								<div onClick={toggleQuizModal}>
-									<i className="fas fa-fw fa-person-circle-question" />
-									&nbsp;{i18next.t('QUIZ.START')}
-								</div>
-							</li>
-						) : (
-							<li>
-								<div onClick={toggleStopQuizModal}>
-									<i className="fas fa-fw fa-person-circle-question" />
-									&nbsp;{i18next.t('QUIZ.STOP')}
-								</div>
-							</li>
-						)}
-						<li>
-							<div onClick={() => logout(context.globalDispatch)}>
-								<i className="fas fa-fw fa-sign-out-alt" />
-								&nbsp;{i18next.t('LOGOUT')}
-							</div>
-						</li>
-						<li>
-							<div
-								onClick={() => {
-									render(<Tutorial />, document.getElementById('tuto'));
-									setDropDownMenu(!dropDownMenu);
-								}}
-							>
-								<i className="fas fa-fw fa-question-circle" />
-								&nbsp;{i18next.t('MODAL.TUTORIAL.TITLE')}
-							</div>
-						</li>
-						<li>
-							<a href="/welcome">
-								<i className="fas fa-fw fa-home" />
-								&nbsp;{i18next.t('HOME_BUTTON')}
-							</a>
-						</li>
-						{props.powerOff ? (
-							<li>
-								<div onClick={props.powerOff}>
-									<i className="fas fa-fw fa-power-off" />
-									&nbsp;{i18next.t('SHUTDOWN')}
-								</div>
+						{context?.globalState.settings.data.config?.Karaoke?.StreamerMode?.Twitch?.Enabled ? (
+							<li title={i18next.t('SETTINGS.PLAYER.LIVE_COMMENTS_TOOLTIP')}>
+								<label>
+									{i18next.t('SETTINGS.PLAYER.LIVE_COMMENTS')}
+									&nbsp;
+									<i className="far fa-question-circle" />
+								</label>
+								<RadioButton
+									buttons={[
+										{
+											label: i18next.t('YES'),
+											active: context?.globalState.settings.data.config?.Player?.LiveComments,
+											activeColor: '#3c5c00',
+											onClick: () => changeLiveComments(true),
+										},
+										{
+											label: i18next.t('NO'),
+											active: !context?.globalState.settings.data.config?.Player?.LiveComments,
+											activeColor: '#880500',
+											onClick: () => changeLiveComments(false),
+										},
+									]}
+								/>
 							</li>
 						) : null}
-						<li className="buttonsMobileMenu">
-							<div
-								onClick={() => {
-									props.adminMessage();
-									setDropDownMenu(!dropDownMenu);
-								}}
-							>
-								<i className="fas fa-fw fa-comment" />
-								&nbsp;{i18next.t('MESSAGE')}
-							</div>
-						</li>
-						<li className="buttonsMobileMenu">
-							<div
-								onClick={event => {
-									props.putPlayerCommando(event);
-									setDropDownMenu(!dropDownMenu);
-								}}
-								data-namecommand={statusPlayer?.showSubs ? 'hideSubs' : 'showSubs'}
-								id="showSubs"
-							>
-								<i className="fas fa-fw fa-closed-captioning" />
-								&nbsp;{i18next.t(statusPlayer?.showSubs ? 'HIDE_SUBS' : 'SHOW_SUBS')}
-							</div>
-						</li>
-						<li className="buttonsMobileMenu">
-							<div
-								onClick={event => {
-									props.putPlayerCommando(event);
-									setDropDownMenu(!dropDownMenu);
-								}}
-								id="goTo"
-								data-namecommand="goTo"
-							>
-								<i className="fas fa-fw fa-undo-alt" />
-								&nbsp;{i18next.t('REWIND')}
-							</div>
-						</li>
-						<li className="buttonsMobileMenuSmaller">
-							<div
-								onClick={event => {
-									props.putPlayerCommando(event);
-									setDropDownMenu(!dropDownMenu);
-								}}
-								id="mute"
-								data-namecommand={statusPlayer?.volume === 0 || statusPlayer?.mute ? 'unmute' : 'mute'}
-							>
-								{statusPlayer?.volume === 0 || statusPlayer?.mute ? (
-									<i className="fas fa-fw fa-volume-mute" />
-								) : statusPlayer?.volume > 66 ? (
-									<i className="fas fa-fw fa-volume-up" />
-								) : statusPlayer?.volume > 33 ? (
-									<i className="fas fa-fw fa-volume-down" />
-								) : (
-									<i className="fas fa-fw fa-volume-off" />
-								)}
-								&nbsp;{i18next.t('MUTE_UNMUTE')}
-							</div>
-						</li>
-						<li className="buttonsMobileMenuSmaller">
-							{statusPlayer?.stopping ||
-							statusPlayer?.mediaType !== 'song' ||
-							context?.globalState.settings.data.config?.Karaoke.ClassicMode ? (
-								<div
-									onClick={event => {
-										props.putPlayerCommando(event);
-										setDropDownMenu(!dropDownMenu);
-									}}
-									id="stopNow"
-									data-namecommand="stopNow"
-								>
-									<i className="fas fa-fw fa-stop" />
-									&nbsp;{i18next.t('STOP_NOW')}
-								</div>
-							) : (
-								<div
-									onClick={event => {
-										props.putPlayerCommando(event);
-										setDropDownMenu(!dropDownMenu);
-									}}
-									id="stopAfter"
-									data-namecommand="stopAfter"
-								>
-									<i className="fas fa-fw fa-stop" />
-									&nbsp;{i18next.t('STOP_AFTER')}
-								</div>
-							)}
-						</li>
 					</ul>
 				) : null}
 			</div>

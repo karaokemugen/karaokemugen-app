@@ -1,9 +1,10 @@
 import { expect } from 'chai';
 import lodash from 'lodash';
 
-import { DBPL, DBPLC } from '../src/lib/types/database/playlist.js';
+import { DBPLC } from '../src/lib/types/database/playlist.js';
 import { PlaylistExport } from '../src/lib/types/playlist.js';
 import { uuidRegexp } from '../src/lib/utils/constants.js';
+import { DBPL } from '../src/types/database/playlist.js';
 import { allKIDs, commandBackend, getToken, setPlaid, socket, testKara } from './util/util.js';
 
 const { sample } = lodash;
@@ -59,7 +60,7 @@ describe('Playlists', () => {
 				plaid: newPlaylistID,
 			});
 		} catch (err) {
-			expect(err.message.code).to.be.equal('PL_ADD_SONG_ERROR');
+			expect(err.message.code).to.be.equal('PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED');
 		}
 	});
 
@@ -226,9 +227,8 @@ describe('Playlists', () => {
 
 	it('Add karaoke to public playlist', async () => {
 		const data = await commandBackend(token, 'addKaraToPublicPlaylist', { kids: [KIDToAdd2] });
-		expect(data.code).to.be.equal('PL_SONG_ADDED');
-		expect(data.data.plc.kid).to.be.equal(KIDToAdd2);
-		PLCID = data.data.plc.plcid;
+		expect(data.plc.kid).to.be.equal(KIDToAdd2);
+		PLCID = data.plc.plcid;
 	});
 
 	it('Shuffle playlist', async () => {
@@ -283,7 +283,7 @@ describe('Playlists', () => {
 			playlist: playlistExport.PlaylistContents,
 		};
 		const body = await commandBackend(token, 'importPlaylist', data, true);
-		expect(body.message.code).to.be.equal('PL_IMPORT_ERROR');
+		expect(body.message.code).to.be.equal('INVALID_DATA');
 	});
 
 	it("Update a playlist's information", async () => {

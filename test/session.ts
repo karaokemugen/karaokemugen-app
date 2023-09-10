@@ -56,7 +56,7 @@ describe('Sessions', () => {
 			{ seid: unknownSession, name: newName, ended_at: '2020-08-20 19:30:00' },
 			true
 		);
-		expect(data.message.code).to.be.equal('SESSION_EDIT_ERROR');
+		expect(data.message.code).to.be.equal('UNKNOWN_SESSION');
 	});
 
 	it('Edit session', async () => {
@@ -83,7 +83,7 @@ describe('Sessions', () => {
 
 	it('Delete active session (should fail)', async () => {
 		const data = await commandBackend(token, 'deleteSession', { seid: createdSession.seid }, true);
-		expect(data.message.code).to.be.equal('SESSION_DELETE_ERROR');
+		expect(data.message.code).to.be.equal('SESSION_DELETE_ACTIVE_ERROR');
 	});
 
 	it('Delete unused session', async () => {

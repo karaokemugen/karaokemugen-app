@@ -180,7 +180,7 @@ function PublicPage() {
 	]);
 
 	useEffect(() => {
-		refreshPoll();
+		if (context.globalState.settings.data.state.songPoll) refreshPoll();
 		if (context?.globalState.settings.data.config?.Frontend?.Mode !== 0) getPlaylistList();
 		getSocket().on('playerStatus', displayClassicModeModal);
 		getSocket().on('songPollStarted', songPollStarted);

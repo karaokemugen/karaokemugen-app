@@ -2,11 +2,12 @@ import i18n from 'i18next';
 import { sample, sampleSize } from 'lodash';
 import { setTimeout as sleep } from 'timers/promises';
 
-import { APIMessage } from '../controllers/common.js';
+import { APIMessage } from '../lib/services/frontend.js';
 import { DBPLC } from '../lib/types/database/playlist.js';
 import { OldJWTToken } from '../lib/types/user.js';
 import { getConfig } from '../lib/utils/config.js';
 import { Timer } from '../lib/utils/date.js';
+import { ErrorKM } from '../lib/utils/error.js';
 import logger from '../lib/utils/logger.js';
 import { emit, on } from '../lib/utils/pubsub.js';
 import { emitWS } from '../lib/utils/ws.js';
@@ -162,22 +163,13 @@ export function addPollVoteIndex(index: number, nickname: string) {
 /** Add a vote to a poll option */
 export function addPollVote(index: number, token: OldJWTToken) {
 	if (poll.length === 0 || pollEnding) {
-		throw {
-			code: 425,
-			msg: 'POLL_NOT_ACTIVE',
-		};
+		throw new ErrorKM('POLL_NOT_ACTIVE', 425);
 	}
 	if (!poll[index - 1]) {
-		throw {
-			code: 404,
-			msg: 'POLL_VOTE_ERROR',
-		};
+		throw new ErrorKM('POLL_VOTE_ERROR', 404);
 	}
 	if (voters.has(token.username.toLowerCase())) {
-		throw {
-			code: 429,
-			msg: 'POLL_USER_ALREADY_VOTED',
-		};
+		throw new ErrorKM('POLL_USER_ALREADY_VOTED', 429);
 	}
 	poll[index - 1].votes += 1;
 	voters.add(token.username.toLowerCase());
@@ -283,10 +275,7 @@ async function displayPollTwitch() {
 /** Get current poll options */
 export function getPoll(token: OldJWTToken): PollObject {
 	if (poll.length === 0) {
-		throw {
-			code: 425,
-			msg: 'POLL_NOT_ACTIVE',
-		};
+		throw new ErrorKM('POLL_NOT_ACTIVE', 425, false);
 	}
 	return {
 		infos: {

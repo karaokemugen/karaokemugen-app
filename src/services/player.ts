@@ -3,16 +3,17 @@ import { setTimeout as sleep } from 'timers/promises';
 
 import { isShutdownInProgress } from '../components/engine.js';
 import Players, { switchToPollScreen } from '../components/mpv.js';
-import { APIMessage } from '../controllers/common.js';
 import { updatePlaylistLastEditTime, updatePLCVisible } from '../dao/playlist.js';
-import { APIMessageType } from '../lib/types/frontend.js';
+import { APIMessage } from '../lib/services/frontend.js';
 import { getConfig, setConfig } from '../lib/utils/config.js';
+import { ErrorKM } from '../lib/utils/error.js';
 import logger, { profile } from '../lib/utils/logger.js';
 import { emit, on } from '../lib/utils/pubsub.js';
 import { emitWS } from '../lib/utils/ws.js';
 import { BackgroundType } from '../types/backgrounds.js';
 import { MpvHardwareDecodingOptions } from '../types/mpvIPC.js';
 import { PlayerCommand } from '../types/player.js';
+import Sentry from '../utils/sentry.js';
 import { getPlayerState, getState, setState } from '../utils/state.js';
 import { playCurrentSong, playRandomSongAfterPlaylist } from './karaEngine.js';
 import { getCurrentSong, getCurrentSongPLCID, getNextSong, getPreviousSong, setPlaying } from './playlist.js';
@@ -27,8 +28,25 @@ export function playerComment(msg: string) {
 	return mpv.comments.addComment(msg);
 }
 
-export function playerMessage(msg: string, duration: number, align = 4, type = 'admin') {
-	return mpv.message(msg, duration, align, type);
+export function playerMessage(
+	msg: string,
+	duration: number,
+	align = 4,
+	type = 'admin',
+	destination: 'all' | 'screen' | 'users' = 'screen'
+) {
+	try {
+		if (['all', 'screen'].includes(destination)) {
+			return mpv.message(msg, duration, align, type);
+		}
+		if (['all', 'users'].includes(destination)) {
+			emitWS('adminMessage', msg);
+		}
+	} catch (err) {
+		logger.error(`Error sending message : ${err}`, { service });
+		Sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('MESSAGE_SEND_ERROR');
+	}
 }
 
 export async function prev() {
@@ -157,20 +175,30 @@ async function setHwDecPlayer(method: MpvHardwareDecodingOptions) {
 	await mpv.setHwDec(method);
 }
 
-export async function playPlayer(now?: boolean) {
-	profile('Play');
-	const state = getState();
-	if (state.player.playerStatus === 'stop' || now) {
-		// Reinitializing state if the play button has been pressed
-		setState({ singlePlay: false, randomPlaying: false, streamerPause: false });
-		await playCurrentSong(now);
-		stopAddASongMessage();
-	} else {
-		await mpv.resume();
+export async function playPlayer(now?: boolean, username?: string) {
+	try {
+		profile('Play');
+		const state = getState();
+		if (username && username !== state.currentRequester) {
+			throw new ErrorKM('USER_NOT_ALLOWED_TO_SING', 403, false);
+		}
+		if (state.player.playerStatus === 'stop' || now) {
+			// Reinitializing state if the play button has been pressed
+			setState({ singlePlay: false, randomPlaying: false, streamerPause: false });
+			await playCurrentSong(now);
+			stopAddASongMessage();
+		} else {
+			await mpv.resume();
+		}
+		setState({ pauseInProgress: false });
+		emit('playerStatusUpdated', 'Playing');
+	} catch (err) {
+		logger.error(`Unable to play a song : ${err}`, { service });
+		Sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('PLAY_ERROR');
+	} finally {
+		profile('Play');
 	}
-	setState({ pauseInProgress: false });
-	emit('playerStatusUpdated', 'Playing');
-	profile('Play');
 }
 
 export async function stopPlayer(now = true, endOfPlaylist = false) {
@@ -333,15 +361,14 @@ export function displayInfo() {
 
 let playerCommandLock = false;
 
-export async function sendCommand(command: PlayerCommand, options: any): Promise<APIMessageType> {
+export async function sendCommand(command: PlayerCommand, options: any) {
 	logger.info(`Received command from API : ${command} (${options})`, { service });
 	if (isShutdownInProgress()) return;
 	if (playerCommandLock) return;
 	playerCommandLock = true;
-	// Resetting singlePlay to false everytime we use a command.
-	const state = getState();
-	if (state.isTest) throw 'Player management is disabled in test mode';
 	try {
+		const state = getState();
+		if (state.isTest) throw new ErrorKM('PLAYER_DISABLED_IN_TEST_MODE_SORRYMASEN_PLEASE_UNDERSTAND', 500, false);
 		if (command === 'play') {
 			await playPlayer();
 		} else if (command === 'stopNow') {
@@ -350,14 +377,13 @@ export async function sendCommand(command: PlayerCommand, options: any): Promise
 				randomPlaying: false,
 				streamerPause: false,
 				pauseInProgress: false,
-				stopping: true,
 			});
 			await stopPlayer();
 		} else if (command === 'pause') {
 			await pausePlayer();
 		} else if (command === 'stopAfter') {
 			setState({ singlePlay: false, randomPlaying: false, streamerPause: false, pauseInProgress: false });
-			return await stopPlayer(false);
+			await stopPlayer(false);
 		} else if (command === 'skip') {
 			setState({ singlePlay: false, randomPlaying: false });
 			await next();
@@ -385,33 +411,33 @@ export async function sendCommand(command: PlayerCommand, options: any): Promise
 		} else if (command === 'unblurVideo') {
 			await setBlurVideoPlayer(false);
 		} else if (command === 'seek') {
-			if (isNaN(options)) throw 'Command seek must have a numeric option value';
+			if (isNaN(options)) throw new ErrorKM('INVALID_DATA', 400, false);
 			await seekPlayer(options);
 		} else if (command === 'goTo') {
-			if (isNaN(options)) throw 'Command goTo must have a numeric option value';
+			if (isNaN(options)) throw new ErrorKM('INVALID_DATA', 400, false);
 			await goToPlayer(options);
 		} else if (command === 'setAudioDevice') {
-			if (!options) throw 'Command setAudioDevice must have an option value';
+			if (!options) throw new ErrorKM('INVALID_DATA', 400, false);
 			await setAudioDevicePlayer(options);
 		} else if (command === 'setVolume') {
-			if (isNaN(options)) throw 'Command setVolume must have a numeric option value';
+			if (isNaN(options)) throw new ErrorKM('INVALID_DATA', 400, false);
 			await setVolumePlayer(options);
 		} else if (command === 'setPitch') {
-			if (isNaN(options)) throw 'Command setPitch must have a numeric option value';
-			if (options > 6 || options < -6) throw 'Pitch range has to be between -6 and +6';
+			if (isNaN(options)) throw new ErrorKM('INVALID_DATA', 400, false);
+			if (options > 6 || options < -6) throw new ErrorKM('INVALID_DATA', 400, false);
 			await setPitchPlayer(options);
 		} else if (command === 'setSpeed') {
-			if (isNaN(options)) throw 'Command setSpeed must have a numeric option value';
-			if (options > 200 || options < 25) throw 'Speed range has to be between 0.25 and 2';
+			if (isNaN(options)) throw new ErrorKM('INVALID_DATA', 400, false);
+			if (options > 200 || options < 25) throw new ErrorKM('INVALID_DATA', 400, false);
 			await setSpeedPlayer(options);
 		} else if (command === 'setModifiers') {
 			await mpv.setModifiers(options);
 		} else {
-			throw `Unknown command ${command}`;
+			throw new ErrorKM('INVALID_DATA', 400, false);
 		}
 	} catch (err) {
 		logger.error(`Command ${command} failed`, { service, obj: err });
-		throw err;
+		throw err instanceof ErrorKM ? err : new ErrorKM('COMMAND_SEND_ERROR');
 	} finally {
 		playerCommandLock = false;
 	}

@@ -70,6 +70,11 @@
 	background-color: lighten($mugen-background, 5);
 }
 
+.playlist-tooltip-refresh {
+	padding: 1em;
+	background-color: #1861b1;
+}
+
 .playlist--wrapper {
 	flex: 1 0 auto;
 	display: inline-flex;

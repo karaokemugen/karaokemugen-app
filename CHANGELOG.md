@@ -1,3 +1,37 @@
+# v7.1.27 - 10/09/2023
+
+This is primilarly a bugfix release
+
+## New features
+
+-   Added hooks to remove tags from karaokes when creating/editing them
+
+## Changes
+
+-   Whenever a blacklist or whitelist is modified and impacts which songs should display in the library, a banner will prompt you to refresh the library manually.
+    -   Refresh is automatic for the public interface
+-   Better Sentry logging
+-   Big rework for all errors
+-   Removed gain from karaoke information data. This is deprecated in favor of loudnorm
+-   Refactored some tag code
+-   Upgraded backend and frontend dependencies
+-   Prevented guest users from getting recreated by mistake
+-   Switched K Menu and Quick Settings in Operator view and moved Home button in system panel so all Home buttons are roughly at the same place across interfaces
+-   Changed "Downloads" to "Quiz mode" in Welcome screen
+
+## Fixes
+
+-   Fixed SettingsStoreData for user
+-   Fixed smart playlists when not all collections are being used
+-   Fixed zip repository update fallback not working as intended
+-   Fixed some poll issues
+-   Fixed downloads from inbox
+-   Fixed test playlist
+-   Fixed addKaraToPlaylist which wasn't admin-only
+-   Fixed social networks sometimes being reset when editing a user
+-   Fixed usernames containing weird characters. This is now disallowed.
+-   Fixed flatpak dependencies (since 7.1.22)
+
 # v7.1.22 - 10/08/2023
 
 Hot fix for Postgres not launching directly on Windows with administrator users unless you use pg_ctl ? I've seen weirder stuff happen before. Do you know about The Wandering Inn ?
@@ -247,10 +281,7 @@ Happy new year everyone!
 ## Misc
 
 -   Upgraded frontend and backend dependencies
-    <<<<<<< HEAD
--   # Removed temporary folder from config as we now use ~/KaraokeMugen/temp
 -   Removed temporary folder from config as we now use ~/KaraokeMugen/temp
-    > > > > > > > next
 -   Replaced mouse wheel up/down on player. It now changes volume again like before.
 
 # v7.0.37 - 22/11/2022
