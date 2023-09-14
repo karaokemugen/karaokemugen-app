@@ -71,7 +71,8 @@
     "Pierre Ellul <pierreellul.epi@gmail.com> (@Snak)",
     "Themio <themio@protonmail.ch>",
     "Damien HERBERT <dherbert98@gmail.com> (Dragicafit)",
-    "Ismaël Bussière <bussiereismael@gmail.com> (@red5h4d0w)"
+    "Ismaël Bussière <bussiereismael@gmail.com> (@red5h4d0w)",
+    "Alex Tan (@senpai-notices)"
   ],
   "engines": {
     "node": ">=14.17.0"
