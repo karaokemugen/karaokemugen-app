@@ -77,14 +77,16 @@ function ProfilModal(props: IProps) {
 		if (user.nickname && ((user.password && user.password === user.passwordConfirmation) || !user.password)) {
 			setNicknameMandatory('');
 			setPasswordDifferent('');
+
+			const data: IAuthentifactionInformation = context.globalState.auth.data;
+
 			try {
 				const response = await commandBackend('editMyAccount', user);
-
-				const data: IAuthentifactionInformation = context.globalState.auth.data;
 				data.onlineToken = response.data.onlineToken;
-				setAuthenticationInformation(context.globalDispatch, data);
 			} catch (e) {
 				// already display
+			} finally {
+				setAuthenticationInformation(context.globalDispatch, data);
 			}
 		} else if (!user.nickname) {
 			setNicknameMandatory('redBorders');
