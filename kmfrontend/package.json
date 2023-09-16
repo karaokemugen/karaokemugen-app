@@ -46,7 +46,7 @@
     "i18next-scanner": "^4.4.0",
     "react-scripts": "5.0.1",
     "source-map-explorer": "^2.5.3",
-    "typescript": "5.2.2"
+    "typescript": "5.1.6"
   },
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
