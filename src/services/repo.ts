@@ -23,7 +23,7 @@ import { TagFile } from '../lib/types/tag.js';
 import { getConfig, resolvedPathRepos } from '../lib/utils/config.js';
 import { ErrorKM } from '../lib/utils/error.js';
 import { asyncCheckOrMkdir, listAllFiles, moveAll, relativePath, resolveFileInDirs } from '../lib/utils/files.js';
-import HTTP from '../lib/utils/http.js';
+import HTTP, { fixedEncodeURIComponent } from '../lib/utils/http.js';
 import logger, { profile } from '../lib/utils/logger.js';
 import { computeFileChanges } from '../lib/utils/patch.js';
 import Task from '../lib/utils/taskManager.js';
@@ -296,7 +296,7 @@ export async function updateZipRepo(name: string) {
 		if (LatestCommit !== localCommit) {
 			try {
 				const patch = await HTTP.get(
-					`https://${repo.Name}/api/karas/repository/diff?commit=${encodeURIComponent(localCommit)}`,
+					`https://${repo.Name}/api/karas/repository/diff?commit=${fixedEncodeURIComponent(localCommit)}`,
 					{
 						responseType: 'text',
 					}
@@ -310,7 +310,9 @@ export async function updateZipRepo(name: string) {
 					await cleanFailedPatch(repo);
 					logger.info('Trying to download full files instead', { service });
 					const fullFiles = await HTTP.get(
-						`https://${repo.Name}/api/karas/repository/diff/full?commit=${encodeURIComponent(localCommit)}`
+						`https://${repo.Name}/api/karas/repository/diff/full?commit=${fixedEncodeURIComponent(
+							localCommit
+						)}`
 					);
 					await writeFullPatchedFiles(fullFiles.data as DiffChanges[], repo);
 					changes = computeFileChanges(patch.data as string);
