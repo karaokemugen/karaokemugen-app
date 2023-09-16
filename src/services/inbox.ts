@@ -72,9 +72,11 @@ export async function downloadKaraFromInbox(inid: string, repoName: string, toke
 		}
 		// If song has a parent in the inbox and we don't have it yet, download it first.
 		const unknownKaras: string[] = [];
-		for (const parent of kara.kara.data.data.parents) {
-			const karaInDB = await getKara(parent, adminToken);
-			if (!karaInDB) unknownKaras.push(parent);
+		if (kara.kara.data.data.parents) {
+			for (const parent of kara.kara.data.data.parents) {
+				const karaInDB = await getKara(parent, adminToken);
+				if (!karaInDB) unknownKaras.push(parent);
+			}
 		}
 		let inbox: Inbox[] = [];
 		if (unknownKaras.length > 0) {
@@ -125,7 +127,7 @@ export async function downloadKaraFromInbox(inid: string, repoName: string, toke
 		});
 		emitWS('songDownloadedFromInbox', kara);
 	} catch (err) {
-		logger.error(`Inbox item ${inid} failed to download`, { service });
+		logger.error(`Inbox item ${inid} failed to download`, { service, obj: err });
 		Sentry.error(err);
 		emitWS('songDownloadedFromInboxFailed');
 		throw err instanceof ErrorKM ? err : new ErrorKM('INBOX_DOWNLOAD_ERROR');
