@@ -3,7 +3,6 @@
   "private": true,
   "dependencies": {
     "@karaokemugen/i18n-iso-languages": "^4.0.3",
-    "@sentry/integrations": "^7.64.0",
     "@sentry/react": "^7.64.0",
     "antd": "4.24.12",
     "dayjs": "^1.11.9",
