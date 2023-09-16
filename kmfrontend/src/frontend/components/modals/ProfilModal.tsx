@@ -68,11 +68,6 @@ function ProfilModal(props: IProps) {
 		setUser(user);
 	};
 
-	const changeLanguage = (event: any) => {
-		onChange(event);
-		i18next.changeLanguage(event.target.value);
-	};
-
 	const updateUser = async () => {
 		if (user.nickname && ((user.password && user.password === user.passwordConfirmation) || !user.password)) {
 			setNicknameMandatory('');
@@ -669,7 +664,7 @@ function ProfilModal(props: IProps) {
 										{i18next.t('MODAL.PROFILE_MODAL.INTERFACE_LANGUAGE')}
 									</label>
 								</div>
-								<select name="language" onChange={changeLanguage} defaultValue={user.language}>
+								<select name="language" onChange={onChange} defaultValue={user.language}>
 									{languagesSupport.map(lang => {
 										return (
 											<option key={lang} value={lang}>
