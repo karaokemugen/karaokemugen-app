@@ -103,6 +103,7 @@ function StashList(props: {
 					<List.Item
 						actions={[
 							<Button
+								key={`pop-${index}`}
 								type="primary"
 								icon={<PullRequestOutlined />}
 								loading={props.loading}
@@ -111,6 +112,7 @@ function StashList(props: {
 								{i18next.t('REPOSITORIES.GIT_UNSTASH')}
 							</Button>,
 							<Button
+								key={`drop-${index}`}
 								type="primary"
 								danger
 								icon={<ExceptionOutlined />}
@@ -430,11 +432,7 @@ export default function Git() {
 			>
 				<p>{i18next.t('MODAL.GIT_DANGEROUS.DESCRIPTION')}</p>
 				{gitStatus?.files?.length > 0 ? (
-					<ul>
-						{gitStatus?.files?.map((file, i) => (
-							<li key={i.toString()}>{file.path}</li>
-						))}
-					</ul>
+					<ul>{gitStatus?.files?.map((file, i) => <li key={i.toString()}>{file.path}</li>)}</ul>
 				) : (
 					<ul>
 						<li>{i18next.t('MODAL.GIT_DANGEROUS.EMPTY')}</li>
