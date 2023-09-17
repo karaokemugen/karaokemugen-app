@@ -171,7 +171,7 @@ export async function updateAllRepos() {
 	} catch (err) {
 		logger.error(`Error updating all repositories : ${err}`, { service });
 		sentry.error(err);
-		emitWS('operatorNotificationError', APIMessage('UPDATE_ALL_REPOS_ERROR'));
+		emitWS('operatorNotificationError', APIMessage('ERROR_CODES.UPDATE_ALL_REPOS_ERROR'));
 		throw err;
 	}
 }
@@ -1021,9 +1021,8 @@ export async function movingMediaRepo(repoName: string, newPath: string) {
 	} catch (err) {
 		logger.error(`Error moving medias for repo ${repoName} : ${err}`, { service });
 		sentry.error(err);
-		const msg = 'MOVING_MEDIAS_ERROR';
-		emitWS('operatorNotificationError', APIMessage(msg));
-		throw err instanceof ErrorKM ? err : new ErrorKM(msg);
+		emitWS('operatorNotificationError', APIMessage('ERROR_CODES.MOVING_MEDIAS_ERROR'));
+		throw err instanceof ErrorKM ? err : new ErrorKM('MOVING_MEDIAS_ERROR');
 	} finally {
 		task.end();
 	}
@@ -1422,7 +1421,10 @@ export async function pushCommits(repoName: string, push: Push, ignoreFTP?: bool
 	} catch (err) {
 		logger.error(`Pushing to repository ${repoName} failed: ${err}`, { service, obj: err });
 		sentry.error(err);
-		emitWS('operatorNotificationError', APIMessage('REPO_GIT_PUSH_ERROR'));
+		emitWS(
+			'operatorNotificationError',
+			APIMessage(err instanceof ErrorKM ? `ERROR_CODES.${err.message}` : 'ERROR_CODES.REPO_GIT_PUSH_ERROR')
+		);
 	} finally {
 		if (ftp) ftp.disconnect().catch(() => {});
 	}
