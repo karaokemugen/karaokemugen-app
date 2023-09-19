@@ -1,4 +1,5 @@
 import { promises as fs } from 'node:fs';
+
 import SentryCli from '@sentry/cli';
 
 const { version } = JSON.parse(await fs.readFile('package.json', 'utf-8'));
@@ -21,8 +22,8 @@ await sentry.releases.uploadSourceMaps(version, {
 });
 await sentry.releases.uploadSourceMaps(version, {
 	rewrite: false,
-	urlPrefix: '~/static/js',
-	include: ['kmfrontend/build/static/js'],
+	urlPrefix: '~/assets',
+	include: ['kmfrontend/dist/assets'],
 	projects: ['km-app'],
 });
 await sentry.releases.setCommits(version, {

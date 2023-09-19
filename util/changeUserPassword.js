@@ -1,9 +1,9 @@
 // This script changes a user's password
 
-import pg from 'pg';
 import bcrypt from 'bcryptjs';
-import { load } from 'js-yaml';
 import { readFileSync } from 'fs';
+import { load } from 'js-yaml';
+import pg from 'pg';
 
 async function hashPassword(password) {
 	return bcrypt.hash(password, 10);

@@ -31,11 +31,6 @@ karaokemugen.sql
 # kmfrontend
 kmfrontend/node_modules
 kmfrontend/coverage
-# Legacy frontends
-/frontend/
-/systempanel/
-.cache/
-build/
 
 # sessions export
 *.played.csv

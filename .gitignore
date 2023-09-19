@@ -33,11 +33,6 @@ sha.txt
 # kmfrontend
 kmfrontend/node_modules
 kmfrontend/coverage
-kmfrontend/build
-# Legacy frontends
-/frontend/
-/systempanel/
-.cache/
 
 # sessions export
 *.played.csv
