@@ -1,5 +1,5 @@
 // Minireset
-@import '~minireset.css/minireset';
+@import 'minireset.css/minireset';
 @import 'styles/variables';
 
 // Virtual element to be probed by KmAppWrapperDecorator to workaround URL bar resizing
@@ -48,8 +48,8 @@ a {
 @import 'styles/al-icons/css/al-icons.css';
 
 // FontAwesome
-$fa-font-path: '~@fortawesome/fontawesome-free/webfonts';
-@import '~@fortawesome/fontawesome-free/scss/fontawesome';
-@import '~@fortawesome/fontawesome-free/scss/solid';
-@import '~@fortawesome/fontawesome-free/scss/regular';
-@import '~@fortawesome/fontawesome-free/scss/brands';
+$fa-font-path: '@fortawesome/fontawesome-free/webfonts';
+@import '@fortawesome/fontawesome-free/scss/fontawesome';
+@import '@fortawesome/fontawesome-free/scss/solid';
+@import '@fortawesome/fontawesome-free/scss/regular';
+@import '@fortawesome/fontawesome-free/scss/brands';

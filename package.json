@@ -346,7 +346,7 @@
       "migrations/**",
       "locales/*",
       "assets/**",
-      "kmfrontend/build/**",
+      "kmfrontend/dist/**",
       "initpage/**",
       "build/icon1024.png",
       "build/electronAboutWindow.css"

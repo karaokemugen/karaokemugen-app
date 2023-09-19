@@ -200,7 +200,7 @@ build-react:
     expire_in: 1 day
     name: km-app-build-${CI_COMMIT_REF_SLUG}
     paths:
-      - kmfrontend/build/
+      - kmfrontend/dist/
       - dist/
   script:
     - yarn build
