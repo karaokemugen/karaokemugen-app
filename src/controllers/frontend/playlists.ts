@@ -3,7 +3,6 @@ import { Socket } from 'socket.io';
 import { APIMessage } from '../../lib/services/frontend.js';
 import { APIData } from '../../lib/types/api.js';
 import { bools } from '../../lib/utils/constants.js';
-import { fixedEncodeURIComponent } from '../../lib/utils/http.js';
 import { check } from '../../lib/utils/validators.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
 import {
@@ -65,7 +64,7 @@ export default function playlistsController(router: SocketIOApp) {
 		});
 		if (!validationErrors) {
 			// No errors detected
-			req.body.name = fixedEncodeURIComponent(req.body.name.trim());
+			req.body.name = decodeURIComponent(req.body.name.trim());
 
 			// Now we add playlist
 			try {
@@ -92,7 +91,7 @@ export default function playlistsController(router: SocketIOApp) {
 	router.route('editPlaylist', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req);
 		// No errors detected
-		if (req.body.name) req.body.name = fixedEncodeURIComponent(req.body.name?.trim());
+		if (req.body.name) req.body.name = decodeURIComponent(req.body.name?.trim());
 
 		// Now we add playlist
 		try {
