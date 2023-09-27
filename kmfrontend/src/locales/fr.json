@@ -1524,7 +1524,7 @@
 		"MOVING_MEDIAS_ERROR": "Erreur lors du déplacement des médias",
 		"OPEN_MEDIA_FOLDER_ERROR": "Erreur lors de l'ouverture du dossier des médias",
 		"UPDATE_ALL_REPOS_ERROR": "Erreur de mise à jour de tous les dépôts",
-		"UPDATE_REPO_ALREADY_IN_PROGRESS": "Mise à jour du déoôt déjà en cours",
+		"UPDATE_REPO_ALREADY_IN_PROGRESS": "Mise à jour du dépôt déjà en cours",
 		"REPO_NOT_UPDATEABLE": "Le dépôt ne peut pas être mis à jour : il est désactivé, ses mises à jour sont désactivées, il est hors ligne ou pas en mode mainteneur",
 		"REPO_GIT_DROP_STASH_ERROR": "Impossible de supprimer le stash",
 		"TAG_REPOSITORY_INVALID_CHANGE": "Vous ne pouvez pas changer le dépôt d'un tag : utilisez plutôt la copie",
