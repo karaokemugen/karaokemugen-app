@@ -22,7 +22,6 @@ include:
   - template: Security/Dependency-Scanning.gitlab-ci.yml
   - template: Security/SAST.gitlab-ci.yml
   - template: Security/Secret-Detection.gitlab-ci.yml
-  - template: Security/License-Scanning.gitlab-ci.yml
 workflow:
   rules:
     - if: $CI_COMMIT_BRANCH == "grumble-flatpak"
