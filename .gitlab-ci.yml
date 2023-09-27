@@ -41,23 +41,6 @@ stages:
   - package
   - deploy
   - release
-license_scanning:
-  interruptible: true
-  stage: scan
-  cache: {}
-  artifacts:
-    expire_in: 1 day
-  tags:
-    - $RUNNER_LINUX
-  rules:
-    - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
-      when: never
-    - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
-      when: never
-    - if: $SCHEDULED_RELEASES == "true"
-      when: never
-    - if: $CI_COMMIT_BRANCH == "next"
-    - when: never
 semgrep-sast:
   interruptible: true
   stage: scan
