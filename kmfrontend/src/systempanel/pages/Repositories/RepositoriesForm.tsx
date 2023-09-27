@@ -337,7 +337,14 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 							<Input type="password" placeholder={i18next.t('REPOSITORIES.GIT.PASSWORD')} />
 						</Form.Item>
 						<Form.Item
-							label={i18next.t('REPOSITORIES.GIT.AUTHOR')}
+							label={
+								<span>
+									{i18next.t('REPOSITORIES.GIT.AUTHOR')}&nbsp;
+									<Tooltip title={i18next.t('REPOSITORIES.GIT.AUTHOR_TOOLTIP')}>
+										<QuestionCircleOutlined />
+									</Tooltip>
+								</span>
+							}
 							labelCol={{ flex: '0 1 300px' }}
 							name="GitAuthor"
 							rules={[{ required: this.state.update }]}
@@ -345,7 +352,14 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 							<Input placeholder={i18next.t('REPOSITORIES.GIT.AUTHOR')} />
 						</Form.Item>
 						<Form.Item
-							label={i18next.t('REPOSITORIES.GIT.EMAIL')}
+							label={
+								<span>
+									{i18next.t('REPOSITORIES.GIT.EMAIL')}&nbsp;
+									<Tooltip title={i18next.t('REPOSITORIES.GIT.EMAIL_TOOLTIP')}>
+										<QuestionCircleOutlined />
+									</Tooltip>
+								</span>
+							}
 							labelCol={{ flex: '0 1 300px' }}
 							name="GitEmail"
 							rules={[{ required: this.state.update }]}

@@ -1392,7 +1392,9 @@
 			"USERNAME": "Nom d'utilisateur Git",
 			"PASSWORD": "Mot de passe Git (ou Token Gitlab/Github)",
 			"AUTHOR": "Identité Git",
-			"EMAIL": "E-Mail Git"
+			"AUTHOR_TOOLTIP": "Nom affiché lors de vos commits",
+			"EMAIL": "E-Mail Git",
+			"EMAIL_TOOLTIP": "Email associé à vos commits"
 		},
 		"FTP": {
 			"HOST": "Hôte FTP",
