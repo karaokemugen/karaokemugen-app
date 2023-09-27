@@ -1,6 +1,7 @@
 import { Dispatch } from 'react';
 
-import { DBPL, DBPLCBase } from '../../../../src/lib/types/database/playlist';
+import { DBPLCBase } from '../../../../src/lib/types/database/playlist';
+import { DBPL } from '../../../../src/types/database/playlist';
 import { commandBackend } from '../../utils/socket';
 import { isNonStandardPlaylist, nonStandardPlaylists } from '../../utils/tools';
 import {
