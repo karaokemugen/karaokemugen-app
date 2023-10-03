@@ -54,7 +54,7 @@
 	"PLAYLISTS": {
 		"LIBRARY": "Bibliothèque",
 		"FAVORITES": "Favoris",
-		"ANIME_LIST": "Mes animés"
+		"ANIME_LIST": "Chansons de mes animés"
 	},
 	"WEBAPPMODE_CLOSED_MESSAGE": "L'interface est fermée, merci de patienter.",
 	"INLINE_TAG": {
@@ -588,11 +588,6 @@
 		"Le choix vous revient."
 	],
 	"QUOTA_AVAILABLE": "Vous pouvez de nouveau ajouter des chansons !",
-	"SERIE_NAME_MODE": "Affichage des noms des œuvres",
-	"SERIE_NAME_MODE_TOOLTIP": "Change la façon dont les noms de œuvres sont affichées dans la liste des chansons. Peut être ignoré par les préférences d'un utilisateur",
-	"SERIE_NAME_MODE_ORIGINAL": "Nom original / interne",
-	"SERIE_NAME_MODE_ADMIN": "Selon la langue de votre ordinateur",
-	"SERIE_NAME_MODE_USER": "Selon la langue de l'utilisateur",
 	"POLLENDED": "{{kara}} remporte le vote avec {{votes}} voix !",
 	"REMOTE_URL": "Adresse d'accès à distance",
 	"REMOTE_STATUS": {
@@ -650,10 +645,10 @@
 		},
 		"PLAY_CURRENT_MODAL": {
 			"TITLE": "Attention !",
-			"DESCRIPTION": "La liste de lecture courante '<1>{{playlist}}</1>' n'est pas affichée à l'écran.",
-			"DESC_OUTCOME": "Si vous continuez, Karaoke Mugen jouera la chanson <1>{{song}}</1>.",
+			"DESCRIPTION": "Vous avez appuyé sur Jouer, mais la liste de lecture courante '<1>{{playlist}}</1>' n'est pas affichée à l'écran.",
+			"DESC_OUTCOME": "Si vous continuez, Karaoke Mugen jouera la chanson <1>{{song}}</1> de cette playlist et PAS depuis la playlist que vous aviez sous les yeux.",
 			"PLAY_ANYWAY": "Jouer quand même",
-			"CHANGE_TO_DISPLAYED_AND_PLAY": "Changer la liste de lecture courante en <1>{{displayedPlaylistName}}</1> et la jouer"
+			"CHANGE_TO_DISPLAYED_AND_PLAY": "Passer <1>{{displayedPlaylistName}}</1> en liste courante et la jouer"
 		},
 		"PROFILE_MODAL": {
 			"ONLINE_CONVERT": "Passer mon compte en ligne",
@@ -670,10 +665,10 @@
 			"FALLBACK_SONG_NAME_LANG": "Préférence alternative d'affichage du nom des chansons",
 			"SONG_NAME_DISPLAY_EXAMPLE": "Exemple d'affichage",
 			"FLAG_PARENTSONLY": "Regrouper les chansons par versions",
-			"FLAG_PUBLIC": "Partager son profil",
+			"FLAG_PUBLIC": "Rendre ce profil visible aux autres",
 			"FLAG_DISPLAYFAVORITES": "Partager ses favoris",
 			"SOCIAL_NETWORKS": {
-				"TWITTER": "Twitter",
+				"TWITTER": "X (anciennement Twitter)",
 				"TWITTER_PLACEHOLDER": "@KaraokeMugen",
 				"MASTODON": "Mastodon",
 				"MASTODON_PLACEHOLDER": "KaraokeMugen@shelter.moe",
@@ -756,7 +751,7 @@
 			"CREATE_PLAYLIST_BUTTON": "Créez et modifiez vos listes de lecture depuis le menu d'actions",
 			"SELECT_PLAYLIST_BUTTON": "Les listes de lecture sont disponibles dans le sélecteur :",
 			"LIBRARY": "La bibliothèque contient tous les karaokés disponibles.",
-			"PLAYLIST_ATTRIBUTES": "Lorsque vous créez vos listes de lecture, vous pouvez la définir comme <1>courante</1> ou <3>publique</3>.",
+			"PLAYLIST_ATTRIBUTES": "Lorsque vous créez vos listes de lecture, vous pouvez la définir comme <1>courante</1> et/ou <3>publique</3>.",
 			"CURRENT_DESC": "La liste de lecture <1>courante</1> est celle utilisée par le lecteur.",
 			"PUBLIC_DESC": "La liste de lecture <1>publique</1> est celle où atterriront les demandes de vos utilisateurs.",
 			"CURRENT_PUBLIC_DESC": "La liste de lecture <1>courante</1> et <3>publique</3> peuvent être la même.",

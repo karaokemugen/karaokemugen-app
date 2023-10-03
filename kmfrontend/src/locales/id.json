@@ -1674,11 +1674,6 @@
 		"Dan terima kasih atas uangnya."
 	],
 	"QUOTA_AVAILABLE": "Kamu sekarang bisa menambahkan lagu lagi!",
-	"SERIE_NAME_MODE": "Mode bahasa serial",
-	"SERIE_NAME_MODE_TOOLTIP": "Ubah bagaimana nama serial ditampilkan di daftar lagu. Mungkin diabaikan oleh preferensi pengguna",
-	"SERIE_NAME_MODE_ORIGINAL": "Judul asli",
-	"SERIE_NAME_MODE_ADMIN": "Bahasa hos",
-	"SERIE_NAME_MODE_USER": "Bahasa pengguna",
 	"REMOTE_STATUS": {
 		"OUTDATED_CLIENT": "Aplikasi tidak kompatibel (harap perbarui)",
 		"LABEL": "Status koneksi",

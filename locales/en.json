@@ -38,7 +38,7 @@
 		"Aligning microphones",
 		"Computing normalization audio waves",
 		"Cooling down drinks",
-		"Calibrating vocal chrods",
+		"Calibrating vocal chords",
 		"Discovering the lost city of Karaokum Mugen-la",
 		"Computing answer to life, the universe, and everything",
 		"Starting up the time convector",
@@ -221,7 +221,7 @@
 		],
 		"ERRORS": [
 			"Come see us on Discord if you need help: https://karaokes.moe/discord",
-			"Please check if a running Karaoke Mugen instance runs in the background.",
+			"Please check if another Karaoke Mugen application is running in the background.",
 			"Take a look at logs, the reason behind the error might be inside!",
 			"Please don't panic, everything's going to be daijokay"
 		]
@@ -231,7 +231,7 @@
 			"prepares playlists",
 			"prepares favorites",
 			"sets up everything",
-			"RTFMs (no)",
+			"RTFM (no)",
 			"idles!",
 			"does absolutely nothing",
 			"at a con (in their head)",
@@ -276,7 +276,7 @@
 	"ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE": "ADD A SONG TO THE PLAYLIST!",
 	"NEW_SESSION_NAME": "Karaoke on {{date}}",
 	"FULLSCREEN_TIP": "Press F to exit fullscreen.",
-	"NO_KARA_PLAYING": "No karaoke is playing",
+	"NO_KARA_PLAYING": "No song is playing",
 	"INTERFACE_OPENED": "Open",
 	"INTERFACE_RESTRICTED": "No suggestions",
 	"INTERFACE_CLOSED": "Closed",

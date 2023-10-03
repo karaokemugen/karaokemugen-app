@@ -726,7 +726,6 @@
 	"JINGLE_TIME": "¡Hora de Jingle!",
 	"USER_SONG_PLAYS_IN": "Su canción {{kara}} ha sido añadida y se emitirá en {{time}} ({{date}})",
 	"SPEED_RESET": "Reestablecer a velocidad normal",
-	"SERIE_NAME_MODE_TOOLTIP": "Cambia la forma en que los nombres de las series se muestran en la lista de canciones. Podría ser ignorado por las preferencias de los usuarios",
 	"VIEW_LIKES_TOOLTIP": "La canción con más likes se mostrará primero, esto no afecta al orden real de la lista de reproducción.",
 	"REPO_IN_PROGRESS": "Karaoke Mugen aún no está listo, por favor espera a que terminen las siguientes tareas.",
 	"REMOTE_STATUS": {
@@ -750,9 +749,6 @@
 		"¡Vota! ¡Vota!",
 		"La decisión es tuya."
 	],
-	"SERIE_NAME_MODE": "Modo de idioma de serie",
-	"SERIE_NAME_MODE_ORIGINAL": "Título original",
-	"SERIE_NAME_MODE_ADMIN": "Idioma del anfitrión",
 	"POLLENDED": "{{kara}} ¡gana con {{votes}} votos!",
 	"REMOTE_URL": "URL de acceso remoto",
 	"ENCORES_TIME": "¡Otra vez! ¡Otra vez!",
@@ -784,7 +780,6 @@
 		"¡Hora de beber!",
 		"¡Volveremos enseguida!"
 	],
-	"SERIE_NAME_MODE_USER": "Idioma del usuario",
 	"VIEW_POPULAR": "Popular",
 	"PAUSE_TIME": "Pausa",
 	"VIEW_LIKES": "Me gusta",
