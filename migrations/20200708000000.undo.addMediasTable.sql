@@ -1,1 +1,0 @@
-DROP TABLE pl_medias;

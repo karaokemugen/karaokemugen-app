@@ -1,1 +1,0 @@
-DROP MATERIALIZED VIEW all_kara_serie_langs

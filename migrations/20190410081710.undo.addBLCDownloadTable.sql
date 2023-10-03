@@ -1,1 +1,0 @@
-DROP TABLE download_blacklist_criteria;
