@@ -59,7 +59,7 @@ export class SentryTransport extends Transport {
 			callback();
 			return;
 		}
-		Sentry.addErrorInfo(info.level, `${info.message}`);
+		Sentry.addErrorInfo(info.level, `[${info.service}] ${info.message}`, info?.obj);
 		callback();
 	}
 }

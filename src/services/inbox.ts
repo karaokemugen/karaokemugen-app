@@ -14,8 +14,10 @@ import HTTP, { fixedEncodeURIComponent } from '../lib/utils/http.js';
 import logger from '../lib/utils/logger.js';
 import Task from '../lib/utils/taskManager.js';
 import { emitWS } from '../lib/utils/ws.js';
+import { adminToken } from '../utils/constants.js';
 import { assignIssue } from '../utils/gitlab.js';
 import Sentry from '../utils/sentry.js';
+import { getKara } from './kara.js';
 import { integrateKaraFile } from './karaManagement.js';
 import { checkDownloadStatus, getRepo } from './repo.js';
 import { updateAllSmartPlaylists } from './smartPlaylist.js';
@@ -68,6 +70,23 @@ export async function downloadKaraFromInbox(inid: string, repoName: string, toke
 				throw new ErrorKM('INBOX_VIEW_ERROR');
 			}
 		}
+		// If song has a parent in the inbox and we don't have it yet, download it first.
+		const unknownKaras: string[] = [];
+		if (kara.kara.data.data.parents) {
+			for (const parent of kara.kara.data.data.parents) {
+				const karaInDB = await getKara(parent, adminToken);
+				if (!karaInDB) unknownKaras.push(parent);
+			}
+		}
+		let inbox: Inbox[] = [];
+		if (unknownKaras.length > 0) {
+			inbox = await getInbox(repoName, token);
+		}
+		for (const unknownKara of unknownKaras) {
+			const parentFromInbox = inbox.find(i => i.kid === unknownKara);
+			if (!parentFromInbox) throw new ErrorKM('UNKNOWN_PARENT_FROM_INBOX', 404, false);
+			await downloadKaraFromInbox(parentFromInbox.inid, repoName, token);
+		}
 		if (!kara.edited_kid) kara.kara.data.data.created_at = new Date().toISOString();
 		kara.kara.data.data.modified_at = new Date().toISOString();
 		const promises = [downloadMediaFromInbox(kara, repoName)];
@@ -108,7 +127,7 @@ export async function downloadKaraFromInbox(inid: string, repoName: string, toke
 		});
 		emitWS('songDownloadedFromInbox', kara);
 	} catch (err) {
-		logger.error(`Inbox item ${inid} failed to download`, { service });
+		logger.error(`Inbox item ${inid} failed to download`, { service, obj: err });
 		Sentry.error(err);
 		emitWS('songDownloadedFromInboxFailed');
 		throw err instanceof ErrorKM ? err : new ErrorKM('INBOX_DOWNLOAD_ERROR');

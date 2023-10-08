@@ -64,7 +64,7 @@ export default function playlistsController(router: SocketIOApp) {
 		});
 		if (!validationErrors) {
 			// No errors detected
-			req.body.name = encodeURIComponent(req.body.name.trim());
+			req.body.name = decodeURIComponent(req.body.name.trim());
 
 			// Now we add playlist
 			try {
@@ -91,7 +91,7 @@ export default function playlistsController(router: SocketIOApp) {
 	router.route('editPlaylist', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req);
 		// No errors detected
-		if (req.body.name) req.body.name = encodeURIComponent(req.body.name?.trim());
+		if (req.body.name) req.body.name = decodeURIComponent(req.body.name?.trim());
 
 		// Now we add playlist
 		try {

@@ -7,7 +7,7 @@ import { OldJWTToken, TokenResponseWithRoles, User } from '../lib/types/user.js'
 import { resolvedPath } from '../lib/utils/config.js';
 import { ErrorKM } from '../lib/utils/error.js';
 import { writeStreamToFile } from '../lib/utils/files.js';
-import HTTP from '../lib/utils/http.js';
+import HTTP, { fixedEncodeURIComponent } from '../lib/utils/http.js';
 import logger from '../lib/utils/logger.js';
 import { emitWS } from '../lib/utils/ws.js';
 import { SingleToken, Tokens } from '../types/user.js';
@@ -306,7 +306,7 @@ export async function removeRemoteUser(token: OldJWTToken, password: string): Pr
 /** Converting a local account to a online one. */
 export async function convertToRemoteUser(token: OldJWTToken, password: string, instance: string): Promise<Tokens> {
 	try {
-		instance = encodeURIComponent(instance.trim());
+		instance = fixedEncodeURIComponent(instance.trim());
 		token.username = token.username.toLowerCase();
 		if (token.username === 'admin') throw new ErrorKM('ADMIN_CONVERT_ERROR', 400, false);
 		const user = await getUser(token.username, true, true);

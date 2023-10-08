@@ -1,4 +1,5 @@
-import { DBPL, DBPLCBase } from '../../../../src/lib/types/database/playlist';
+import { DBPLCBase } from '../../../../src/lib/types/database/playlist';
+import { DBPL } from '../../../../src/types/database/playlist';
 
 // Action name
 export enum FrontendContextAction {

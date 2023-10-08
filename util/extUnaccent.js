@@ -1,9 +1,9 @@
 // This script installs the unaccent extension in a database.
 // It requires superuser access.
 
-import pg from 'pg';
-import { load } from 'js-yaml';
 import { readFileSync } from 'fs';
+import { load } from 'js-yaml';
+import pg from 'pg';
 
 async function main() {
 	const configFile = readFileSync('app/config.yml', 'utf-8');

@@ -1,1 +1,0 @@
-ALTER TABLE kara DROP COLUMN loudnorm;

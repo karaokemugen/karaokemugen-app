@@ -1,3 +1,25 @@
+# v7.1.31 - 08/10/2023
+
+This is primilarly a bugfix release
+
+## Changes
+
+-   Switch from react-scripts to Vite for frontend build
+-   Better Sentry logging
+-   Add grant public SQL to init for Postgresql >=15
+
+## Fixes
+
+-   Fixed error in logs on missing tags when integrating songs
+-   Fixed errors when updating profile
+-   Fixed downloads from inbox with circular parent/children relation
+-   Fixed encoding when creating or editing playlist
+-   Fixed error display when pushing commits
+-   Fixed gettint last chunk of a playlist
+-   Fixed local account having online fields visible in profile
+-   Fixed social networks sometimes being reset when editing a user
+-   Some i18n fixes
+
 # v7.1.27 - 10/09/2023
 
 This is primilarly a bugfix release

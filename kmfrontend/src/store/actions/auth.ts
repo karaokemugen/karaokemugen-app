@@ -27,7 +27,9 @@ export async function login(
 
 		// Store data, should be managed in a service and item should be enum and not string
 		localStorage.setItem('kmToken', info.token);
-		localStorage.setItem('kmOnlineToken', info.onlineToken);
+		info.onlineToken
+			? localStorage.setItem('kmOnlineToken', info.onlineToken)
+			: localStorage.removeItem('kmOnlineToken');
 		setAuthorization(info.token, info.onlineToken);
 		displayMessage('info', i18next.t('LOG_SUCCESS', { name: info.username }));
 		setPlaylistInfoLeft(dispatch);
@@ -65,7 +67,9 @@ export function setAuthenticationInformation(
 ) {
 	// Store data, should be managed in a service and item should be enum and not string
 	localStorage.setItem('kmToken', data.token);
-	localStorage.setItem('kmOnlineToken', data.onlineToken);
+	data.onlineToken
+		? localStorage.setItem('kmOnlineToken', data.onlineToken)
+		: localStorage.removeItem('kmOnlineToken');
 	setAuthorization(data.token, data.onlineToken);
 
 	dispatch({
