@@ -19,7 +19,8 @@
 				"9": "von der Gruppe",
 				"10": "von der Familie",
 				"14": "die sind",
-				"3": "vom Typ"
+				"3": "vom Typ",
+				"11": "von"
 			},
 			"TAG": "Die Karaokes {{verb}} {{tag}} sind auf der Liste.",
 			"YEAR": "Karaokes vom Jahr {{year}} sind auf der liste.",
@@ -46,7 +47,7 @@
 	},
 	"PUBLIC_HOMEPAGE": {
 		"NOW_PLAYING": "Derzeit am Abspielen",
-		"NEXT": "Nächste",
+		"NEXT": "Demnächst",
 		"SHOW_LYRICS": "Songtexte anzeigen",
 		"SHOW_ALL_LYRICS": "Kompletten Songtext anzeigen",
 		"HIDE_LYRICS": "Songtext ausblenden",
@@ -160,7 +161,7 @@
 	"SUBMIT": "Speichern",
 	"LOGIN_MANDATORY": "Benutzername erforderlich",
 	"STOP_AFTER": "Nach diesem Song anhalten",
-	"SECURITY_CODE_MANDATORY": "Sicherheitscode ist erforderlich, um einen",
+	"SECURITY_CODE_MANDATORY": "Sicherheitscode ist erforderlich, um ein Benutzerkonto mit erhöhten Rechten zu erstellen",
 	"MUTE_UNMUTE": "Stummschalten / Stummschaltung aufheben",
 	"SHOW_SUBS": "Songtexte auf dem Bildschirm anzeigen",
 	"STOP_NOW": "JETZT anhalten (Gefährlich!)",
@@ -263,5 +264,36 @@
 		"SECTIONS": {
 			"TITLES": "Titel"
 		}
-	}
+	},
+	"SETTINGS": {
+		"KARAOKE": {
+			"QUOTA_TYPE_ONE": "Lieder",
+			"QUOTA_TYPE_TWO": "Dauer",
+			"QUOTA_SETTINGS": "Limitierungen"
+		},
+		"PLAYER": {
+			"TOP": "Oben",
+			"LEFT": "Links",
+			"CENTER": "Mitte",
+			"RIGHT": "Rechts",
+			"WINDOW_SETTINGS": "Fenster",
+			"FULLSCREEN": "Vollbild",
+			"BOTTOM": "Unten"
+		}
+	},
+	"KARA_DETAIL": {
+		"JINGLE": "Jingle",
+		"LYRICS": "Songtext",
+		"SPONSOR": "Sponsoren",
+		"ADDED_3": " von ",
+		"ADDED": "Hinzugefügt ",
+		"ADDED_2": "am "
+	},
+	"WELCOME_PAGE": {
+		"STATS_TAGS": "Stichwörter",
+		"STATS_SERIES": "Serien",
+		"REPOSITORY": "DATENBANKEN",
+		"SITE": "Webseite"
+	},
+	"CHECKED": "Ausgewählt:"
 }
