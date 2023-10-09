@@ -226,9 +226,9 @@ function Playlist(props: IProps) {
 
 	const scrollHandler = async ({ startIndex, endIndex }: ListRange) => {
 		clearScrollToIndex();
-		if (isRowLoaded(startIndex)) return;
-		else if (!isPlaylistInProgress) {
-			data.infos.from = Math.floor(startIndex / chunksize) * chunksize;
+		if (!isPlaylistInProgress && (!isRowLoaded(startIndex) || !isRowLoaded(endIndex))) {
+			const index = !isRowLoaded(startIndex) ? startIndex : endIndex;
+			data.infos.from = Math.floor(index / chunksize) * chunksize;
 			data.infos.to =
 				data.infos.from + (Math.ceil(endIndex / chunksize) - Math.floor(startIndex / chunksize)) * chunksize;
 			setData(data);

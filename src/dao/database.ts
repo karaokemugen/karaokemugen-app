@@ -70,6 +70,7 @@ export async function initDB() {
 	await connectDB(errorFunction, { superuser: true, db: conf.System.Database.database, log: getState().opt.sql });
 	await db().query('CREATE EXTENSION IF NOT EXISTS unaccent;');
 	await db().query('CREATE EXTENSION IF NOT EXISTS pgcrypto;');
+	await db().query('GRANT CREATE ON SCHEMA public TO public;');
 	profile('initDB');
 }
 

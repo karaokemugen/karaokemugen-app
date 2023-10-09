@@ -1,1 +1,0 @@
-ALTER TABLE playlist ADD COLUMN flag_autosortbylike BOOLEAN;

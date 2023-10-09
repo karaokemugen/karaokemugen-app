@@ -1,8 +1,0 @@
-CREATE TABLE pl_medias (
-	type CHARACTER VARYING NOT NULL,
-	filename CHARACTER VARYING NOT NULL,
-	size INTEGER DEFAULT(0),
-	audiogain REAL DEFAULT(0)
-);
-
-CREATE UNIQUE INDEX ON pl_medias USING btree(type, filename);

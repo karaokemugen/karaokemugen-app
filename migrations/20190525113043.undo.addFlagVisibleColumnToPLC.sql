@@ -1,1 +1,0 @@
-ALTER TABLE playlist_content DROP COLUMN flag_visible;

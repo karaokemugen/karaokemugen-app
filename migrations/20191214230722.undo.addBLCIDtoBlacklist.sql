@@ -1,1 +1,0 @@
-ALTER TABLE blacklist DROP COLUMN fk_id_blcriteria
