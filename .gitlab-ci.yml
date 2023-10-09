@@ -489,7 +489,7 @@ weekly_releases:
     - when: never
 flatpak-generated-sources:
   stage: build
-  image: python:3-bullseye
+  image: python:3.11-bullseye
   tags:
     - $RUNNER_LINUX
   interruptible: true
