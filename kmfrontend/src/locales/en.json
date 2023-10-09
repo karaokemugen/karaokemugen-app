@@ -1350,8 +1350,6 @@
 		"SENDSTATS": "Send statistics",
 		"UPDATE": "Automatic updates",
 		"UPDATE_TOOLTIP": "If disabled, the application will not update the repository anymore.",
-		"NO_MEDIA_DOWNLOADS_AT_ALL": "Do not download any media",
-		"NO_MEDIA_DOWNLOADS_AT_ALL_TOOLTIP": "If a media's missing locally, it will be streamed from the remote repository. This is NOT recommended, use at your own risk.",
 		"SENDSTATS_TOOLTIP": "Sessions and played/requested songs",
 		"AUTO_MEDIA_DOWNLOADS": "Automatically download media",
 		"AUTO_MEDIA_DOWNLOADS_TOOLTIP": "If your connection is too slow, we recommend that you select \"All\" so that the medias are downloaded beforehand. This is also recommended for convention use or for streams to avoid potential errors in the middle of a karaoke!",

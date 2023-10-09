@@ -176,20 +176,15 @@ export function resumeQueue() {
 }
 
 export async function checkMediaAndDownload(plcs: MediaDownloadCheck[], updateOnly = false) {
-	const mediasToCheck: MediaDownloadCheck[] = [];
-	for (const plc of plcs) {
-		const repo = getRepo(plc.repository);
-		if (!repo.NoMediaDownloadsAtAll) {
-			mediasToCheck.push(plc);
-		} else {
-			logger.info(`Media ${plc.mediafile} will not be downloaded, repository disallows downloads`);
-		}
+	if (!getConfig().Online.AllowDownloads) {
+		logger.info('No media will be downloaded, settings disallows downloads');
+		return;
 	}
-	if (mediasToCheck.length === 0) return;
+	if (plcs.length === 0) return;
 	const mapper = async (plc: MediaDownloadCheck) => {
 		return checkMediaAndDownloadSingleKara(plc, updateOnly);
 	};
-	await parallel(mediasToCheck, mapper, {
+	await parallel(plcs, mapper, {
 		stopOnError: false,
 		concurrency: 32,
 	});
@@ -211,7 +206,7 @@ export async function checkMediaAndDownloadSingleKara(kara: MediaDownloadCheck, 
 		downloadMedia = mediaStats.size !== kara.mediasize;
 	}
 	const repo = getRepo(kara.repository);
-	if (downloadMedia && getConfig().Online.AllowDownloads && !getState().isTest && repo.Online) {
+	if (downloadMedia && !getState().isTest && repo.Online) {
 		try {
 			await addDownloads([
 				{
