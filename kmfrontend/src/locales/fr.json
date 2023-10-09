@@ -897,7 +897,7 @@
 		},
 		"STOP_QUIZ": {
 			"TITLE": "Arrêter le quiz ?",
-			"DESCRIPTION": "La collecte des réponses et des points s'arrêtera immédiatement, la partie peut être reprise depuis le menu Démarrer un quiz."
+			"DESCRIPTION": "La partie s'arrêtera immédiatement.  Elle peut être reprise depuis le menu Démarrer un quiz."
 		},
 		"EXPORT_PLAYLIST_MEDIA": {
 			"DONE": "Les fichiers média de la liste de lecture ont été exportés",
@@ -1208,8 +1208,8 @@
 		"LANG_ERROR": "Un tag doit avoir au moins un nom par langue.",
 		"REPOSITORY": "Dépôt",
 		"REPOSITORY_REQUIRED": "Le dépôt est obligatoire",
-		"NOLIVEDOWNLOAD": "Interdire sur Live/Téléchargements web",
-		"NOLIVEDOWNLOAD_TOOLTIP": "Les karaokés avec ce tag ne pourront être lus sur Live ni téléchargés par l'interface Web de Karaoke Mugen Server",
+		"NOLIVEDOWNLOAD": "Interdire les téléchargements web",
+		"NOLIVEDOWNLOAD_TOOLTIP": "Les karaokés avec ce tag ne pourront être téléchargés depuis Karaoke Mugen Server",
 		"PRIORITY": "Priorité à l'affichage",
 		"PRIORITY_TOOLTIP": "Les tags avec une valeur plus haute seront affichés en premier. Par défaut 10. -1 masque les tags sur l'interface publique, -2 le masque partout (il sera toujours utilisé pour la recherche).",
 		"COPY_TAG": "Copier le tag vers un autre dépôt",

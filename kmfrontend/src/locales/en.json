@@ -804,7 +804,7 @@
 			},
 			"RESET": {
 				"BTN": "Reset",
-				"DESC": "Delete all the non-pushed edits."
+				"DESC": "Delete all non-pushed edits."
 			},
 			"DONE": "Task done successfully.",
 			"EMPTY": "Nothing was changed!"
@@ -827,20 +827,20 @@
 			"LOAD_GAME": "Load game",
 			"NEW_GAME": "New game",
 			"COPIED_GAME": "{{gameName}} (copy)",
-			"LAST_PLAYED_GAME": "{{gameName}} (last launched game)",
+			"LAST_PLAYED_GAME": "{{gameName}} (last started game)",
 			"GAME_IN_PROGRESS": {
-				"SONG_COUNT_zero": "No song has played.",
+				"SONG_COUNT_zero": "No song played yet.",
 				"SONG_COUNT_one": "{{count}} song has played.",
 				"SONG_COUNT_other": "{{count}} songs have played.",
-				"SCORES": "Here is a summary of the scores."
+				"SCORES": "Here are the scores."
 			},
 			"GAME_NAME": "Game name",
 			"GAME_NAME_PLACEHOLDER": "My game",
 			"PLAYER_MESSAGE": "Message displayed on screen",
-			"PLAYER_MESSAGE_PLACEHOLDER": "Go to $url to play !",
-			"EMPTY_NAME": "Fill in a game name",
+			"PLAYER_MESSAGE_PLACEHOLDER": "Go to $url to play!",
+			"EMPTY_NAME": "Enter a game name",
 			"EMPTY_PLAYLIST": "Select a playlist",
-			"PLAYLIST": "Playlist used",
+			"PLAYLIST": "Playlist to use",
 			"END_GAME": {
 				"TITLE": "Game length",
 				"DESCRIPTION": "The game ends…",
@@ -862,7 +862,7 @@
 				"TWITCH_CHAT_PLACEHOLDER": "Twitchers"
 			},
 			"DISPLAY": {
-				"TITLE": "How to display the songs?",
+				"TITLE": "How to display songs?",
 				"DESCRIPTION": "To make the task more challenging, it is possible to start the song at an advanced point instead of the beginning. It is also possible to hide the video, turn off the sound, and/or not display the subtitles.",
 				"TIME": "Start the song",
 				"BEGINNING": "at the beginning",
@@ -870,12 +870,12 @@
 				"BLIND": "Hide the video",
 				"BLACK_SCREEN": "Black screen",
 				"BLURRED_SCREEN": "Blurred screen",
-				"MUTE": "Turn off the video sound",
+				"MUTE": "Turn off the media sound",
 				"NO_LYRICS": "Do not display lyrics"
 			},
 			"ANSWERS": {
 				"VIEW_ALL_ANSWERS": "See all possible types",
-				"VIEW_LESS_ANSWERS": "See less possible types",
+				"VIEW_LESS_ANSWERS": "See less types",
 				"TITLE": "Accepted answers",
 				"DESCRIPTION": "You can choose which answers are accepted (titles, singers, series, etc…) and how many points each answer type players earn for a good answer. You can also define a tolerance for typos. An auto-complete is available to people using the public interface.",
 				"ANSWER_TITLE": "Title",
@@ -885,7 +885,7 @@
 			},
 			"TIME": {
 				"TITLE": "Answering time",
-				"DESCRIPTION": "Participants will be given a time to answer. Once the timer has elapsed, the answer will be shown on screen, with the sound, the lyrics, the video and the name on screen. A quick answer can award more points if it's on.",
+				"DESCRIPTION": "Participants will be given time to answer. Once the timer has elapsed, the answer will be shown on screen, with sound, lyrics, and video enabled. A quick answer can award more points if the option is enabled.",
 				"GUESS_DURATION": "Guessing time (seconds)",
 				"ANSWER_DURATION": "Answer time (seconds)",
 				"QUICK_GUESS_DURATION": "Quick guess time (seconds)",
@@ -903,7 +903,7 @@
 		},
 		"STOP_QUIZ": {
 			"TITLE": "Stop quiz?",
-			"DESCRIPTION": "The guessing and points awarding will be stopped immediately, the game can be resumed using the Start a quiz menu."
+			"DESCRIPTION": "The game will be stopped immediately. It can be resumed using the Start a quiz menu."
 		}
 	},
 	"SETUP_PAGE": {
@@ -914,11 +914,11 @@
 		"LOCAL_ACCOUNT": "Local",
 		"ONLINE_ACCOUNT": "Online",
 		"ONLINE_ACCOUNT_DESC": "An online account allows you to:",
-		"ONLINE_ACCOUNT_SAVE_INFOS": "Backup your favorite songs, avatar and profile info to get them again from another computer.",
+		"ONLINE_ACCOUNT_SAVE_INFOS": "Backup your favorite songs, avatar and profile info to use them on another Karaoke Mugen App.",
 		"ONLINE_ACCOUNT_LOST_PASSWORD": "If you supply an email address, you'll be able to recover your account if you forget your password.",
 		"LOCAL_ACCOUNT_DESC": "You chose a local account. Type in an account name and a password below:",
 		"ONLINE_ACCOUNT_INSTANCE": "Your online account will be hosted on the {{instance}} instance",
-		"ONLINE_ACCOUNT_INSTANCE_DESC": "An instance is an online service providing several services to Karaoke Mugen. If you're not sure, leave the default instance ({{instance}}), or if you know what you're doing, change it to the instance of your choice.",
+		"ONLINE_ACCOUNT_INSTANCE_DESC": "An instance is an online server providing several services to Karaoke Mugen. If you're not sure, leave the default instance ({{instance}}), or if you know what you're doing, change it to the instance of your choice.",
 		"CREATE_ONLINE_ACCOUNT": "I want to create a new account",
 		"LOGIN_ONLINE_ACCOUNT": "I already have an account",
 		"CREATE_ONLINE_ACCOUNT_DESC": "Type in an account name and a password to create one.",
@@ -933,7 +933,7 @@
 		"CHOOSE_DIRECTORY": "Select a folder",
 		"ADD_DIRECTORY": "Add a folder",
 		"SAVE_PARAMETER": "Save",
-		"COLLECTIONS_CHOICE": "Selection of collections",
+		"COLLECTIONS_CHOICE": "Collection selection",
 		"COLLECTIONS_CHOICE_DESC_1": "The Song Collections are intended for different audiences. Choose the collections you want to see in your karaoke database.",
 		"COLLECTIONS_CHOICE_DESC_2": "You can change your collections at any time in the system panel."
 	},
@@ -941,7 +941,7 @@
 		"OPERATOR": {
 			"ERROR": {
 				"DOWNLOAD": "Song download error",
-				"SHORTENER": "Error when enabling URL shortener",
+				"SHORTENER": "Error enabling URL shortener",
 				"PLAYER_PLAY": "Unable to play song",
 				"PLAYER_NO_ONLINE_MEDIA": "Media cannot be read from online sources. Check your internet connection.",
 				"PLAYER_RANDOM_SONG_AFTER_PLAYLIST": "Unable to select a random song to play after playlist ends",
@@ -951,7 +951,7 @@
 				"POLL_ALREADY_STARTED": "A poll is already in progress",
 				"POLL_PUBLIC_PL_EMPTY": "Unable to start poll: public playlist is empty",
 				"POLL_NOT_ENOUGH_SONGS": "Unable to start poll: not enough songs available",
-				"UPDATE_GIT_REPO_ERROR": "Update repository git failed"
+				"UPDATE_GIT_REPO_ERROR": "Updating git repository failed"
 			},
 			"INFO": {
 				"PLAYER_RESTARTING": "Restarting media player…",
@@ -987,8 +987,8 @@
 		},
 		"MEDIA_FILE": "Media file",
 		"MEDIA_FILE_TOOLTIP": "Supported file formats: {{formats}}",
-		"MEDIA_REQUIRED": "Media file is mandatory",
-		"MEDIA_IN_PROCESS": "The media file is being integrated, please wait for the notification of successful processing.",
+		"MEDIA_REQUIRED": "Media file is required",
+		"MEDIA_IN_PROCESS": "The media file is being processed, please wait for the success notification.",
 		"MEDIA_FILE_INFO": {
 			"OVERALL_BITRATE": "Overall bitrate",
 			"FILE_SIZE": "File size",
@@ -1012,8 +1012,8 @@
 		"ALIASES_TOOLTIP": "Short names or alternative names, used for search.",
 		"SERIES_TOOLTIP": "TV series, movie title, video game title, etc.",
 		"FRANCHISES_TOOLTIP": "If the series is part of a franchise (like Gundam, Mario, Zelda, Naruto, etc.) indicate it here.",
-		"SERIES_SINGERS_REQUIRED": "Series, Sung By or From the music band cannot be empty in the same time.",
-		"TYPE_REQUIRED": "Song type is mandatory",
+		"SERIES_SINGERS_REQUIRED": "Series, Sung By or From the music band cannot be empty at the same time.",
+		"TYPE_REQUIRED": "Song type is required",
 		"ORDER": "Song order",
 		"ORDER_TOOLTIP": "Opening/Ending number. If this is the only opening/ending in the series, leave blank.",
 		"LANGUAGES_REQUIRED": "Please choose a language",
@@ -1023,7 +1023,7 @@
 		"SINGERGROUPS_TOOLTIP": "If the singers belong to a music band, put them in here. The band will be displayed in the player and song lists instead of individual singers.",
 		"SONGWRITERS_TOOLTIP": "Composers, Arrangers and Lyricists.",
 		"CREATORS_TOOLTIP": "Entity that created the series. Can be animation studio, movie studio, or game studio.",
-		"KARA_AUTHORS_REQUIRED": "Author of the karaoke is mandatory",
+		"KARA_AUTHORS_REQUIRED": "Author of the karaoke is required",
 		"KARA_AUTHORS_TOOLTIP": "You should add yourself here ;)",
 		"COMMENT": "Any comments?",
 		"COMMENT_TOOLTIP": "A commentary field for things like \"To all my fans!\" or \"Don't modify the effects!\" or \"Made with lots of coffee\".",
@@ -1036,7 +1036,7 @@
 		"CREATED_AT": "Creation date",
 		"MODIFIED_AT": "Last updated date",
 		"PLAYED": "View count",
-		"PLAYED_AT": "Seen on",
+		"PLAYED_AT": "Played on",
 		"REQUESTED": "Requested",
 		"TAG_FILTER": "Tag filter",
 		"TAG_GROUP_FILTER": "Group filter",
@@ -1083,8 +1083,8 @@
 		"DEJAVU_TOOLTIP": "Recently played song",
 		"PROBLEMATIC_TOOLTIP": "This song contains scenes ({{tags}}) that may be problematic for some viewers.",
 		"DELETE_ALL_TOOLTIP": "Remove all displayed karaokes at once",
-		"DELETE_KARA_TITLE": "You're going to remove the {{count}} displayed karaokes, are you sure?",
-		"DELETE_MEDIA_TOOLTIP": "Delete the karaoke media",
+		"DELETE_KARA_TITLE": "You're going to remove {{count}} displayed karaokes, are you sure?",
+		"DELETE_MEDIA_TOOLTIP": "Delete karaoke media",
 		"UPLOAD_MEDIA_TOOLTIP": "Re-upload karaoke media",
 		"SHOW_LYRICS_IN_FOLDER": "Show lyrics in folder",
 		"SHOW_MEDIA_IN_FOLDER": "Show media in folder",
@@ -1093,10 +1093,10 @@
 		"IN_PROGRESS_DOWNLOAD_TOOLTIP": "Download in progress",
 		"ONLINE_REPOSITORIES": "Some of your karaokes are from remote repositories (kara.moe server for example), these karaokes are not editable through this interface, to make sure that the repositories stays in sync. You can check the \"Maintainer mode\" checkbox in the repository settings, you will not receive any updates anymore but you will be able to edit or delete karaokes.",
 		"PARENTS": "Parents",
-		"CHILDRENS": "Childrens of {{parent}}",
-		"PARENTS_TOOLTIP": "If a parent is defined, this karaoke will show as alternative to the selected parent karaoke(s). Please mind to select the good repository before filling this array to avoid adding karaokes from other repositories.",
+		"CHILDRENS": "Children of {{parent}}",
+		"PARENTS_TOOLTIP": "If a parent is defined, this karaoke will show as alternative to the selected parent karaoke(s). Please select the right repository before filling this to avoid adding karaokes from other repositories.",
 		"VERSION_AVAILABILITY": "Available in {{count}} versions.",
-		"COLLECTIONS_REQUIRED": "A collection is mandatory",
+		"COLLECTIONS_REQUIRED": "A collection is required",
 		"COLLECTIONS_TOOLTIP": "Select the collections in which the karaoke should appear"
 	},
 	"MENU": {
@@ -1193,23 +1193,23 @@
 		"I18N_NAME": "Name in that language",
 		"I18N_DELETE": "Remove name",
 		"I18N_SELECT": "Add a language",
-		"ROMANIZATION_WARNING": "This title/tag contains a non-Latin alphabet language. You must add the language “Latin Alphabet (Romanization)” in addition.",
+		"ROMANIZATION_WARNING": "This title/tag contains a non-Latin alphabet language. You must add the language “Latin Alphabet (Romanization)” as well.",
 		"MERGE_TAGS": "Merge tags",
 		"MERGE_WITH": "Merge with",
 		"MERGE_WITH_TOOLTIP": "Merge the current tag with another one",
 		"MERGE_WITH_SELECT": "Select a tag",
 		"MERGE_WITH_BUTTON": "Merge!",
 		"MERGE_ABOUT": "About Merging process",
-		"MERGE_ABOUT_MESSAGE": "Resulting tags will have the current Name and Short name. Types, Aliases and Translations will be merged and the resulting tags will contain all the information from source and destination tags.",
+		"MERGE_ABOUT_MESSAGE": "Resulting tag will have the current Name and Short name. Types, Aliases and Translations will be merged and the resulting tag will contain all the information from source and destination tags.",
 		"TAG_DELETED_CONFIRM": "Confirm tag deletion",
 		"DELETE_TAG": "Delete tag",
 		"DELETE_TAG_CONFIRM": "Delete tag",
 		"DELETE_TAG_MESSAGE": "This will remove the tag as well as in any song in your database!",
 		"LANG_ERROR": "A tag must have at least one translated name.",
 		"REPOSITORY": "Repository",
-		"REPOSITORY_REQUIRED": "Repository is mandatory",
-		"NOLIVEDOWNLOAD": "Disallow on Live/Web Downloads",
-		"NOLIVEDOWNLOAD_TOOLTIP": "Songs with this tag won't be able to be downloaded on Karaoke Mugen Server from the web interface, or visible on Live",
+		"REPOSITORY_REQUIRED": "Repository is required",
+		"NOLIVEDOWNLOAD": "Disallow Web Downloads",
+		"NOLIVEDOWNLOAD_TOOLTIP": "Songs with this tag won't be able to be downloaded from Karaoke Mugen Server",
 		"PRIORITY": "Display priority",
 		"PRIORITY_TOOLTIP": "Tags with a higher value will be displayed first. 10 by default. -1 hides the tag from being displayed in public interface, -2 hides it everywhere (still used for search).",
 		"COPY_TAG": "Copy tag to another repository",
@@ -1288,10 +1288,10 @@
 			"APP_QUICKSTART_TOOLTIP": "This disables data verification. You will have to generate your database in case of modification manually from the system panel -> database page.",
 			"ONLINE_ERRORTRACKING": "Send error and crash reports (via sentry.io)",
 			"ONLINE_STATS": "Send usage telemetry to Karaoke Mugen Server",
-			"PLAYER_KEYBOARDMEDIASHORTCUTS": "Control the player with the media keys on the keyboard",
+			"PLAYER_KEYBOARDMEDIASHORTCUTS": "Control the player with keyboard media keys",
 			"PLAYER_KEYBOARDMEDIASHORTCUTS_TOOLTIP": "Disable if you want these keys to control another app (iTunes, foobar, etc.)",
 			"PLAYER_HARDWAREDECODING": "Video Hardware Decoding",
-			"PLAYER_HARDWAREDECODING_TOOLTIP": "Forces or not the player's hardware acceleration. Note: on some configurations, it can cause unexpected behavior during playback. In such cases, select \"Disabled\". The \"Automatic\" option is the safest, and \"Force\" the most risky/not recommended.",
+			"PLAYER_HARDWAREDECODING_TOOLTIP": "Forces player's hardware acceleration. Note: on some configurations, it can cause unexpected behavior during playback. In such cases, select \"Disabled\". The \"Automatic\" option is the safest, and \"Force\" the most risky/not recommended.",
 			"PLAYER_HARDWAREDECODING_OPTIONS": {
 				"AUTOSAFE": "Automatic (recommended)",
 				"NO": "Disabled (software decoding only)",
@@ -1319,9 +1319,9 @@
 		"SESSION_EXPORT_REQUESTED_COUNT": "Songs requested (grouped by number of times played)",
 		"NAME": "Name",
 		"STARTED_AT": "Started at",
-		"ENDED_AT": "Finished at",
+		"ENDED_AT": "Ended at",
 		"START_AND_END_DATES": "Start and end dates",
-		"START_DATE_REQUIRED": "Start date is mandatory",
+		"START_DATE_REQUIRED": "Start date is required",
 		"LAST_PLAYED_AT": "Last played at",
 		"LAST_REQUESTED_AT": "Last requested at",
 		"TITLE": "Title",
@@ -1357,7 +1357,7 @@
 		"AUTO_MEDIA_DOWNLOADS_UPDATE_ONLY": "Update only",
 		"AUTO_MEDIA_DOWNLOADS_ALL": "All",
 		"MAINTAINER_MODE": "Maintainer mode",
-		"MAINTAINER_MODE_TOOLTIP": "Enable this if you participate in the maintenance of the repository. The app will switch to a git-based repository. Git needs to be installed on your system.",
+		"MAINTAINER_MODE_TOOLTIP": "Enable this if you participate in the repository's maintenance. The app will switch to a git-based repository. Git needs to be installed on your system.",
 		"FOLDERS_REQUIRED": "A folder of {{name}} is required.",
 		"MOVE": "Define the priority of repositories",
 		"MOVE_TOOLTIP": "This allows you to define which repositories take priority when creating your database: the highest repositories will be taken into account first if two repositories have the same karaoke",
@@ -1369,19 +1369,19 @@
 		"CHOOSE_REPOSITORY": "Choose a repository",
 		"COMPARE_BUTTON": "Compare",
 		"COMPARE_ABOUT_MESSAGE": "This will allow you to compare then eventually copy lyrics files from one repository to another if they differ between the two same songs. Select a repository to compare lyrics with (it will be the destination repository when comes time to copy lyrics)",
-		"LYRICS_ARE_DIFFERENT": "The lyrics of these songs are different between the {{first}} repository and the {{second}} repository:",
-		"CONFIRM_SURE": "Do you want to synchronize the lyrics of repository {{second}} with those of repository {{first}}?",
+		"LYRICS_ARE_DIFFERENT": "These song lyrics are different between the {{first}} and {{second}} repositories:",
+		"CONFIRM_SURE": "Do you want to synchronize lyrics of repository {{second}} with those of repository {{first}}?",
 		"SYNCHRONIZE_TAGS": "Synchronize tags between two repositories",
-		"SYNCHRONIZE_ABOUT_MESSAGE": "This will allow you to synchronize tags files from one repository to another. Select a repository to synchronize tags with (it will be the destination repository for the copy of the tags)",
+		"SYNCHRONIZE_ABOUT_MESSAGE": "This will allow you to synchronize tags files from one repository to another. Select a repository to synchronize tags with (it will be the destination repository for copied tags)",
 		"SYNCHRONIZE_BUTTON": "Synchronize",
 		"FREE_SPACE": "Free space",
 		"OPEN_MEDIA_FOLDER": "Open media folder",
-		"DELETE_OLD_MEDIAS": "Delete medias unused since 1 month",
+		"DELETE_OLD_MEDIAS": "Delete medias unused for one month",
 		"DELETE_ALL_MEDIAS": "Delete all medias",
-		"STORAGE_INFO": "There is multiple ways to manage space used by your repositories:",
-		"STORAGE_INFO_DELETE": "Like you've seen earlier, you have the ability to remove the unused medias for a month or all the medias. They will be redonwloaded when needed again but this will allow you to free space if you make a long karaoke night recently for example.",
-		"STORAGE_INFO_MOVE": "You have also the ability, in the repositories management page, to move the files of a repository somewhere else in an external disk, USB key or a network share, allowing you to free space on your main disk.",
-		"NO_FREE_SPACE": "Not enough disk space to download! Make space on your hard drive and restart the queue.",
+		"STORAGE_INFO": "There are multiple ways to manage space used by your repositories:",
+		"STORAGE_INFO_DELETE": "Like you've seen earlier, you have the ability to remove unused medias for a month or all the medias. They will be redownloaded when needed again but this will allow you to free space if you had a long karaoke night recently for example.",
+		"STORAGE_INFO_MOVE": "You also have the ability, in the repositories management page to move the files of a repository somewhere else like on an external drive, USB key or a network share, allowing you to free space on your main drive.",
+		"NO_FREE_SPACE": "Not enough disk space to download! Make space on your disk and restart the queue.",
 		"GIT": {
 			"URL": "Git Repository",
 			"USERNAME": "Git Username",
@@ -1401,7 +1401,7 @@
 		"GIT_STATUS": "Git status",
 		"GIT_STATUSES": {
 			"CLEAN": "Clean copy",
-			"BEHIND": "Commits to retrieve",
+			"BEHIND": "Commits to fetch",
 			"MODIFIED": "Edited (changes to push)",
 			"CONFLICT": "Conflicts pending (use the resolver)"
 		},
@@ -1506,7 +1506,7 @@
 		"USER_CREATE_ERROR_ONLINE_DISABLED": "Unable to create account : online mode is disabled",
 		"NICKNAME_ALREADY_IN_USE": "Nickname already in use",
 		"ONLINE_CONVERT_ERROR": "Error converting online online account",		
-		"PLAY_ERROR": "Error playing a song",
+		"PLAY_ERROR": "Error playing song",
 		"PL_DELETE_PLAYING_ERROR": "You can't remove the curerntly playing song",
 		"PL_RANDOMIZE_ERROR": "Error shuffling playlist",
 		"CHECK_YOUR_PRIVILEGES": "You cannot do that",
@@ -1820,8 +1820,8 @@
 			"DESCRIPTION": "Manage Git repositories (push, merge conflicts)"
 		},
 		"KARAOKE_LIST": {
-			"TITLE": "List of karaoke",
-			"DESCRIPTION": "From here you can edit, add or delete karaoke. Usually for karaoke repository maintainers only."
+			"TITLE": "List of karaokes",
+			"DESCRIPTION": "From here you can edit, add or delete karaokes. Usually for karaoke repository maintainers only."
 		},
 		"KARAOKE_NEW": {
 			"TITLE": "Add a karaoke",
