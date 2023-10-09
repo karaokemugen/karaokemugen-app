@@ -503,6 +503,21 @@ function ProfilModal(props: IProps) {
 							</div>
 							<div className="profileLine">
 								<div className="profileLabel">
+									<i className="fab fa-fw fa-bluesky" />
+									<label>{i18next.t('MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.BLUESKY')}</label>
+								</div>
+								<input
+									name="social_networks.bluesky"
+									type="text"
+									placeholder={i18next.t('MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.BLUESKY_PLACEHOLDER')}
+									defaultValue={user.social_networks.bluesky}
+									onKeyUp={onChange}
+									onChange={onChange}
+									autoComplete="off"
+								/>
+							</div>
+							<div className="profileLine">
+								<div className="profileLabel">
 									<i className="fab fa-fw fa-instagram" />
 									<label>{i18next.t('MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.INSTAGRAM')}</label>
 								</div>

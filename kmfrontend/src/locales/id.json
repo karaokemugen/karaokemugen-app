@@ -828,6 +828,7 @@
 			"SOCIAL_NETWORKS": {
 				"TWITTER": "Twitter: ",
 				"MASTODON": "Mastodon: ",
+				"BLUESKY": "Bluesky: ",
 				"INSTAGRAM": "Instagram: ",
 				"DISCORD": "Discord: ",
 				"TWITCH": "Twitch: "
@@ -958,6 +959,8 @@
 				"TWITTER": "Twitter",
 				"MASTODON": "Mastodon",
 				"MASTODON_PLACEHOLDER": "KaraokeMugen@shelter.moe",
+				"BLUESKY": "Bluesky",
+				"BLUESKY_PLACEHOLDER": "karaoke.bsky.social",				
 				"DISCORD": "Discord",
 				"MYANIMELIST": "MyAnimeList",
 				"MYANIMELIST_PLACEHOLDER": "karaokemugen",

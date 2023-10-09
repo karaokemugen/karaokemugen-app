@@ -596,6 +596,8 @@
 				"TWITTER_PLACEHOLDER": "@KaraokeMugen",
 				"MASTODON": "Mastodon",
 				"MASTODON_PLACEHOLDER": "KaraokeMugen@shelter.moe",
+				"BLUESKY": "Bluesky",
+				"BLUESKY_PLACEHOLDER": "karaoke.bsky.social",				
 				"MYANIMELIST_PLACEHOLDER": "karaokemugen",
 				"DISCORD": "Discord",
 				"DISCORD_PLACEHOLDER": "Karak#1423"
@@ -1762,6 +1764,7 @@
 			"SOCIAL_NETWORKS": {
 				"INSTAGRAM": "Instagram: ",
 				"TWITTER": "Twitter: ",
+				"BLUESKY": "Bluesky: ",
 				"MASTODON": "Mastodon: ",
 				"DISCORD": "Discord: ",
 				"TWITCH": "Twitch: "

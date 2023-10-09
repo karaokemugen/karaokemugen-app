@@ -128,6 +128,17 @@ export default function Inbox() {
 							</a>
 						</div>
 					) : null}
+					{userDetails?.social_networks?.bluesky ? (
+						<div>
+							<label>{i18next.t('INBOX.CONTACT_INFOS_MODAL.SOCIAL_NETWORKS.BLUESKY')}</label>
+							<a
+								href={`https://bsky.app/profile/${userDetails.social_networks.bluesky}`}
+								rel="noreferrer noopener"
+							>
+								{userDetails.social_networks.bluesky}
+							</a>
+						</div>
+					) : null}
 					{userDetails?.social_networks?.instagram ? (
 						<div>
 							<label>{i18next.t('INBOX.CONTACT_INFOS_MODAL.SOCIAL_NETWORKS.INSTAGRAM')}</label>
