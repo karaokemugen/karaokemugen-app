@@ -1699,29 +1699,6 @@
 			"DESCRIPTION": "Gestión del almacenamiento de discos multimedia"
 		}
 	},
-	"BULLDOZER_VIDEOS": {
-		"P8": "En realidad, ninguno : Karaoke Mugen se aseguró de que tus repositorios online fueran convertidos para hacerlos compatibles con el nuevo sistema de actualización. Tus archivos multimedia descargados permanecerán allí y podrás eliminar los que no utilices en cualquier momento si necesitas liberar espacio en el disco ahora.",
-		"P9": "También hay una nueva opción, por repositorio, que evita que Karaoke Mugen descargue medios actualizados al iniciarse. Por ejemplo, si un medio ya está presente en el almacenamiento de tu ordenador, pero ha sido actualizado en tu repositorio, la nueva versión se descargará automáticamente.",
-		"P11": "Aún puedes modificar los criterios de la lista negra en cualquier momento.",
-		"L3": "Elimine todos los soportes de un repositorio si necesita espacio en disco en caso de emergencia",
-		"T2": "¿Qué hacer si me estoy quedando sin espacio?",
-		"T5": "¿Qué pasó con la descarga de los criterios de la lista negra?",
-		"P7": "Puedes seguir descargando por adelantado todos los medios desde el gestor de descargas.",
-		"T4": "¿Hay algo que deba hacer?",
-		"T3": "¿Qué pasa si tengo que hacer una sesión de karaoke en algún lugar sin acceso a Internet?",
-		"TITLE": "Cambios importantes en la gestión de medios y repositorios",
-		"P2": "Las actualizaciones del repositorio se gestionan ahora a través de git. Esto significa que, independientemente de las canciones que hayas descargado antes, ahora tienes acceso a toda la base de datos de karaoke.",
-		"P5": "Los medios se descargarán a medida que los necesite.",
-		"T1": "¡Pero no puedo descargar todos los medios!",
-		"P10": "Se han migrado a los criterios habituales de las listas negras. Esto significa que no verás esas canciones de la lista negra en tu biblioteca, ¡como si nunca las hubieras descargado!",
-		"P1": "Los repositorios y los medios cambian mucho a partir de esta versión Karaoke Mugen.",
-		"P3": "Somos conscientes de que no todo el mundo puede permitirse descargar toda la base de datos de karaoke. Hemos hecho que eso ya no sea necesario. Ahora sólo se descargan los metadatos de las canciones al iniciarse.",
-		"P4": "Que no cunda el pánico. Ahora tienes acceso a todas las canciones, pero sus soportes no se descargan en tu ordenador.",
-		"L1": "Si deseas reproducir una canción de la biblioteca, se transmitirá desde el servidor de Karaoke Mugen de tu repositorio. Tu conexión a Internet se utilizará para reproducir la canción directamente.",
-		"L2": "Si añades una canción a una lista de reproducción en curso (utilizada por el reproductor de vídeo), el contenido multimedia se descargará en segundo plano. Si la descarga no ha terminado cuando llegues a esa canción, se transmitirá por Internet. Si ya ha terminado, se reproducirá directamente desde el almacenamiento de tu ordenador.",
-		"P6": "En el panel del sistema, hay disponible un nuevo elemento \"Gestión del espacio en disco\". A través de ella se puede:",
-		"L4": "Eliminar sólo las medias que no se han reproducido durante un mes (por defecto)"
-	},
 	"BACKGROUNDS_MGMT": {
 		"NEW": "Música o fondo nuevos",
 		"EXPL": "Hay 3 categorías de fondos. Si una categoría no tiene ningún fondo, se utilizará uno empaquetado (aquellos con el personaje que da nombre a la versión de la app).",
@@ -1775,29 +1752,6 @@
 		"NAME": "Nombre del karaoke",
 		"TYPE": "Tipo de solicitud"
 	},
-	"COLLECTIONS_MIGRATION": {
-		"P2": "Marque las colecciones que desea activar. Puede cambiar esto en el panel del sistema.",
-		"TITLE": "¡Presentamos colecciones!",
-		"P1": "Para ampliar el repositorio de karaoke con más canciones, creamos colecciones en los repositorios, para seleccionar sólo un subconjunto de canciones y eliminar algunas canciones que no quieras ver. Sólo las canciones dentro de una colección habilitada aparecerán en la interfaz (pública y admin)."
-	},
-	"PRIVACY_POLICY": {
-		"P3": "Dado que este es un proyecto libre (como en libertad de expresión) y gratuito (como en cerveza gratis), consideramos normal que esperes de nosotros total transparencia sobre cómo se utilizan tus datos. Para alcanzar este objetivo, vamos a resumir los datos que procesamos y cómo puedes controlarlos.",
-		"P2": "Tu aplicación acaba de actualizarse a la versión 5.0 con un montón de novedades, como una nueva interfaz pública, acceso remoto (te lo contamos más adelante), un nuevo tipo de etiqueta de versión que nos permite identificar carátulas, versiones alternativas, etc. más fácilmente.",
-		"P4": "En absoluto, los datos que obtenemos son anónimos o están vinculados a tu nombre de usuario. Veamos:",
-		"L4_DETAILS": "Estas estadísticas también incluyen datos sobre el hardware de su ordenador (memoria, monitores, procesador, sistema operativo). Los karaokes reproducidos y solicitados se envían sin que sepamos quién está detrás de estas solicitudes. Esto se utiliza para alimentar nuestras listas de karaokes populares en su interfaz pública, pero también en nuestro explorador de karaokes en línea.",
-		"TITLE": "Privacidad",
-		"MORE": "Más",
-		"L5": "Si activas los informes Sentry, los informes de errores creados por la aplicación se envían automáticamente a Sentry.io, un servicio de terceros que utilizamos para recopilar información sobre errores. Esto nos permite comprender mejor cómo se ha producido un error y solucionarlo en una versión futura. El servicio enviará parte del registro de eventos de la aplicación, que puede contener nombres de usuario. Estos registros contienen información mínima.",
-		"P6": "Si tiene alguna pregunta o desea que eliminemos datos, puede enviarnos un correo electrónico a mugen@karaokes.moe.",
-		"T2": "¿Cómo puedo desactivarlo?",
-		"L3": "Si utilizas la función de acceso remoto (https://<code>.kara.moe), el código generado se almacena en la memoria de nuestro servidor y de tu aplicación. Caduca a los 10 días de no usarlo (así que puedes conservar el mismo código si lo usas a menudo).",
-		"T1": "¿Nos estás espiando?!",
-		"P1": "Gracias por usar Karaoke Mugen. Estamos gestionando la base de datos y el desarrollo de su software de forma gratuita por lo que cualquier atención que nos das nos hace felices. Así que de nuevo, gracias ❤.",
-		"L1": "Si utilizas la función de perfil en línea, los datos de tu perfil (correo electrónico, biografía, URL del sitio, etc.), así como tus favoritos, se envían en tiempo real al servidor que aloja tu perfil (por defecto es kara.moe, nuestro servidor)",
-		"L5_DETAILS": "El informe Sentry incluye el sistema operativo utilizado, la versión de tu aplicación Karaoke Mugen, la pila de ejecución (donde se produjo el error), el estado de la aplicación y su configuración (sin información confidencial como tokens de Twitch o secretos JWT). Estos informes se asocian a tu nombre de usuario (el usuario que instaló la aplicación), lo que hace posible encontrar tus informes fácilmente si nos pides ayuda en relación a un bug de Karaoke Mugen. Estos informes también se publican en nuestro Discord (con un conjunto limitado de información, sin comprometer tu configuración ni el estado de la aplicación, ya que estos detalles están reservados a los mantenedores de la aplicación) para que se puedan encontrar fácilmente.",
-		"L4": "Si activas las estadísticas, la aplicación enviará periódicamente estadísticas sobre las canciones reproducidas, solicitadas y tu lista de sesiones de karaoke. Estos datos nunca se vinculan a tu nombre o nombre de usuario. Sin embargo, se vincula un ID único a tu aplicación para que podamos reagrupar las estadísticas.",
-		"P5": "Sin duda puedes hacerlo. Las cuentas online no son obligatorias, así como las otras características mencionadas anteriormente. Puedes activar/desactivar las estadísticas y/o los informes de errores en el panel del sistema. Sigues siendo dueño de tus datos en cualquier momento."
-	},
 	"LOGS": {
 		"LEVELS": {
 			"ERROR": "Errores",
@@ -1807,10 +1761,6 @@
 		},
 		"SELECT_LOG": "Seleccione el registro en el gestor de archivos",
 		"SHOW_DETAILS": "Mostrar detalles"
-	},
-	"ONLINE": {
-		"TITLE": "Karaoke Mugen en línea",
-		"P1": "Tu App Karaoke Mugen fue actualizada a 5.0, nuevas funciones están disponibles y algunas podrían requerir tu atención. ¿Quieres habilitar el acceso remoto para tu instancia? Al hacer clic en sí, un token remoto será generado automáticamente por el servidor de Karaoke Mugen. Caduca a los 10 días de inactividad."
 	},
 	"ABOUT": {
 		"DONATORS": "Gracias a 1 <>{{donators}}</1> para sus donaciones a Karaoke Mugen",

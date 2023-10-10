@@ -1911,52 +1911,7 @@
 	"MIGRATE": {
 		"TITLE": "Assistant de migration",
 		"CONTINUE": "Continuer."
-	},
-	"PRIVACY_POLICY": {
-		"TITLE": "Vie Privée",
-		"P1": "Merci d'utiliser Karaoke Mugen. Nous sommes un groupe de bénévoles qui faisons vivre le logiciel ainsi que la base de karaokés. Donc chaque attention que vous nous donnez fait très plaisir, encore une fois merci ❤.",
-		"P2": "L'application vient d'être mise à jour en 5.0 avec tout un tas de nouvelles fonctionnalités, parmi lesquelles un ravalement de façade sur l'interface publique, l'accès à distance (on vous en reparle après), le nouveau type de tag version qui permet d'identifier et de trier les covers, versions alternatives, etc. plus facilement.",
-		"P3": "En étant un projet libre et bénévole, il est normal que vous attendez de nous une transparence complète sur comment vos données sont utilisées. Pour remplir cette mission, nous allons vous résumer les données que nous traitons et comment vous pouvez contrôler cela.",
-		"T1": "Vous nous espionnez !?",
-		"MORE": "Détails",
-		"P4": "Pas du tout, les données que nous récupérerons sont anonymes ou rattachés à votre pseudo, pas plus. Résumons :",
-		"L1": "Si vous utilisez les profils en ligne, les données de votre profil (adresse courriel, biographie, site internet, etc.) ainsi que vos favoris sont transmis en temps réel au serveur contenant votre profil (par défaut il s'agit de kara.moe, notre serveur, vous pouvez en configurer un autre)",
-		"L3": "Si vous utilisez la fonction d'accès à distance (https://<code>.kara.moe), votre code généré est stocké en mémoire sur le serveur et sur votre application, celui-ci expire au bout de 10 jours sans utilisation (pour vous permettre de conserver le même code d'une session à l'autre).",
-		"L4": "Si vous avez décidé d'activer les statistiques, l'application Karaoke Mugen envoie de façon périodique des statistiques sur les chansons qui sont jouées, demandées, et votre liste de sessions de karaoké. Ces données ne sont à aucun moment associés à votre nom ou pseudo, en revanche un identifiant unique et aléatoire est associé à votre application afin qu'on puisse regrouper les statistiques envoyées.",
-		"L4_DETAILS": "Ces statistiques comprennent également des données sur le matériel de votre ordinateur (mémoire vive, écrans, processeur, système d'exploitation). Les karaokés joués et demandés sont envoyés sans que nous puissions savoir qui est à l'origine de ces ajouts. Ceci nous sert à alimenter nos listes de karaokés populaires sur votre interface publique mais aussi sur notre explorateur de karaokés.",
-		"L5": "Si vous avez décidé d'activer les rapports Sentry, alors les rapports d'erreur créées par l'application seront envoyées automatiquement à Sentry.io, un service tiers de gestion des erreurs, cela nous permet d'obtenir les informations nécessaires pour qu'on puisse réparer les dysfonctionnements que vous pouvez rencontrer. Le service enverra un extrait des journaux de l'application, qui peuvent contenir des données nominatives (pseudos de ceux qui se sont connectés par exemple), ces données sont réduites au minimum.",
-		"L5_DETAILS": "Le rapport Sentry inclut le système d'exploitation utilisé, la version de Karaoke Mugen actuellement utilisée, les journaux de votre application, la pile d'appels (l'endroit où le code a mal fonctionné), une copie de l'état de l'application ainsi qu'un extrait de votre configuration (aucune information confidentielle n'est transmise, ni les identifiants Twitch, ni les secrets JWT, etc.). Ces rapports sont associés avec votre pseudo (le pseudo de la personne qui a installé l'application), ce qui permet de retrouver vos rapports facilement si vous nous demander de l'aide par rapport à un bug de Karaoke Mugen. Ces rapports sont aussi publiés sur notre Discord (avec un jeu d'informations limitées, ne compromettant pas votre configuration et l'état de l'application, ces détails étant réservés aux mainteneurs de l'application) pour être facilement repérées.",
-		"T2": "Mais du coup comment je peux m'opposer à ça ?",
-		"P5": "Vous pouvez ! Les comptes en ligne n'ont rien d'obligatoire, tout comme les autres fonctions en ligne. Pour ce qui est des statistiques et de Sentry, vous pouvez activer et désactiver ces deux mécanismes dans le panneau système. Vous restez maître de vos données à tout moment.",
-		"P6": "Si vous avez des questions ou que vous voulez qu'on supprime des données pour vous, vous pouvez nous envoyer un message à mugen@karaokes.moe."
-	},
-	"ONLINE": {
-		"TITLE": "Karaoke Mugen en ligne",
-		"P1": "Votre application Karaoke Mugen s'est mise à jour en 5.0, des nouvelles fonctionnalités sont disponibles et certaines nécessitent (peut-être) votre attention. Souhaitez-vous activer l'accès à distance de votre instance ? En l'activant, un code de session vous sera attribué automatiquement par le serveur Karaoke Mugen. Celui-ci expirera au bout de 10 jours d'inactivité."
-	},
-	"BULLDOZER_VIDEOS": {
-		"TITLE": "Changement important de la gestion des médias et des dépôts",
-		"P1": "Les dépôts et les médias changent radicalement avec cette version de Karaoke Mugen.",
-		"P2": "La mise à jour du dépôt est maintenant gérée par git. Par conséquent, peu importe les chansons que vous aviez téléchargé, vous avez maintenant l'intégralité de la base à votre disposition.",
-		"P3": "Nous nous sommes bien rendus compte que beaucoup de monde n'avait pas la possibilité de télécharger la base de karaokés en entier. Nous avons donc fait en sorte que cela ne soit plus nécessaire. Seules les métadonnées des chansons sont téléchargées au démarrage de l'application.",
-		"T1": "Mais je ne peux pas télécharger toutes les vidéos !",
-		"P4": "Pas de panique. Vous avez dorénavant accès à toute la base de karaokés mais les médias ne sont pas téléchargés pour autant.",
-		"P5": "Les médias seront téléchargés au fur et à mesure que vous en aurez besoin.",
-		"L1": "Si vous souhaitez lire une chanson depuis la bibliothèque, celle-ci sera streamée en direct depuis le Karaoke Mugen Server de votre dépôt. Votre connexion internet sera donc solicitée.",
-		"L2": "Si vous ajoutez une chanson à une liste de lecture courante (jouée par le lecteur) la vidéo sera téléchargée en tâche de fond. Si le téléchargement n'est pas terminé quand vous appuyez sur Play, la chanson sera streamée par Internet, sinon elle sera lue depuis votre ordinateur.",
-		"T2": "Comment faire si je n'ai plus de place ?",
-		"P6": "Depuis le panneau système, une nouvelle option \"Gestion de l'espace disque\" est disponible. Elle vous permet d'un clic de supprimer :",
-		"L3": "Soit l'intégralité des médias d'un dépôt si vous avez urgemment besoin de place",
-		"L4": "Soit uniquement les médias non utilisés depuis 1 mois (par défaut)",
-		"T3": "Et si je vais organiser un karaoké dans un lieu sans accès internet ?",
-		"P7": "Vous pouvez toujours télécharger l'intégralité des vidéos en avance depuis le gestionnaire de téléchargements.",
-		"T4": "Je dois faire quelque chose ?",
-		"P8": "Rien : Karaoke Mugen s'est chargé de convertir vos dépôts en ligne pour les rendre compatibles avec le nouveau fonctionnement. Les vidéos téléchargées resteront téléchargées et vous pouvez à tout moment nettoyez celles inutilisées si vous voulez faire de la place maintenant.",
-		"P9": "Il y a une nouvelle option, par dépôt, qui empêchera Karaoke Mugen de télécharger les vidéos mises à jour au démarrage. Par exemple, si une vidéo est présente sur votre disque mais qu'elle a été mise à jour sur le dépôt en ligne, elle sera récupérée, et uniquement celle-ci. Vous pouvez néanmoins désactiver cette option pour ne rien télécharger au démarrage de Karaoke Mugen.",
-		"T5": "Qu'est-il arrivé à mes critères de liste noire de téléchargement ?",
-		"P10": "Ils ont été migrés vers des critères de liste noire classique. Cela veut dire que vous ne verrez plus ces chansons blacklistées dans la bibliothèque, comme si vous ne les aviez jamais téléchargées !",
-		"P11": "Vous pouvez toujours modifier les critères de liste noire à tout moment."
-	},
+	},	
 	"BACKGROUNDS_MGMT": {
 		"EXPL": "Il existe trois catégories de fonds d'écran. Si une catégorie n'a pas de fond associé, un fond d'écran inclus sera utilisé (ceux avec le personnage qui prête son nom à la version de l'application).",
 		"INFO": [
@@ -2015,11 +1970,6 @@
 		"DESCRIPTION": "Un lecteur de karaoké et un outil d'organisation de soirées entre amis ou en public. Sous licence MIT.",
 		"CONTRIBUTORS": "Les karaokés ont été créés par des gens géniaux, comme par exemple <1>{{contributors}}</1>.",
 		"DONATORS": "Merci à <1>{{donators}}</1> pour leur don à Karaoke Mugen"
-	},
-	"COLLECTIONS_MIGRATION": {
-		"TITLE": "Le temps des collections !",
-		"P1": "Pour ajouter toujours plus de chansons, nous avons créé les collections dans les dépôts, afin de sélectionner uniquement les chansons qui peuvent vous intéresser et masquer les sons que vous ne voulez pas voir. Les musiques affichées dans l'interface (opérateur & publique) seront uniquement celles des collections activées.",
-		"P2": "Cochez les collections que vous voulez activer. Vous pouvez les changer plus tard dans le panneau système."
 	},
 	"QUIZ": {
 		"START": "Démarrer un quiz",

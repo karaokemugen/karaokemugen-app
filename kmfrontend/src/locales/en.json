@@ -1912,51 +1912,6 @@
 		"TITLE": "Migration",
 		"CONTINUE": "Continue."
 	},
-	"PRIVACY_POLICY": {
-		"TITLE": "Privacy",
-		"P1": "Thank you for using Karaoke Mugen. We are managing the database and developing its software for free so any attention you give us make us happy. So again, thanks ❤.",
-		"P2": "Your app was just updated to version 5.0 with a lot of new features, like a new public interface, remote access (we'll tell you about it later), a new version tag type which allows us to identify covers, alternative versions, etc. more easily.",
-		"P3": "Since this is a free (as in free speech) and free (as in free beer) project, we consider it normal that you expect complete transparency from us on how your data is used. To reach this goal, we're going to sum up the data we're processing and how you can control that.",
-		"T1": "Are you spying on us?!",
-		"MORE": "More",
-		"P4": "Not at all, the data we get is anonymized or linked to your username. Let's see:",
-		"L1": "If you use the online profile feature, your profile data (email, bio, site URL, etc.) as well as your favorites are sent in realtime to the server hosting your profile (by default it's kara.moe, our server.)",
-		"L3": "If you use the remote access feature (https://<code>.kara.moe), your generated code is stored in memory on our server and your app. It expires after 10 days of not using it (so you can keep the same code if you use it often).",
-		"L4": "If you enable stats, the app will periodically send stats on songs played, requested, and your karaoke sessions list. This data is never linked to your name or username. However, a unique ID is linked to your app so we can regroup stats.",
-		"L4_DETAILS": "These statistics also include data on your computer hardware (memory, monitors, processor, operating system). The played and requested karaokes are sent without us knowing who is behind these requests. This is used to feed our lists of popular karaoke on your public interface but also on our online karaoke explorer.",
-		"L5": "If you enable Sentry reports, then error reports created by the app are sent automatically to Sentry.io, a third-party service we use to collect information about errors. This allows us to better understand how an error happened and fix it in a future release. The service will send some of the app's event log, which can contain usernames. These logs contain minimal information.",
-		"L5_DETAILS": "The Sentry report includes OS used, your Karaoke Mugen App version, the execution stack (where the code brainfarted), the app's state as well as your app's configuration (without any confidential information like Twitch tokens or JWT secrets). These reports are associated with your username (the user who installed the application), which makes it possible to find your reports easily if you ask us for help regarding a Karaoke Mugen bug. These reports are also published on our Discord (with a limited set of information, not compromising your configuration and the state of the application, these details being reserved to the application's maintainers) to be easily found.",
-		"T2": "How can I disable this?",
-		"P5": "You can definitely do that! Online accounts aren't mandatory, as well as the other features mentioned above. You can enable/disable either stats and/or error reports in the system panel. You're still owning your data at any time.",
-		"P6": "If you have questions or you want us to delete data, you can send us an e-mail at mugen@karaokes.moe."
-	},
-	"ONLINE": {
-		"TITLE": "Karaoke Mugen Online",
-		"P1": "Your Karaoke Mugen App was updated to 5.0, new features are available and some might require your attention. Do you want to enable the remote access for your instance? By clicking yes, a remote token will be generated automatically by the Karaoke Mugen Server. It expires after 10 days of inactivity."
-	},
-	"BULLDOZER_VIDEOS": {
-		"TITLE": "Important changes to medias and repository management",
-		"P1": "Repositories and medias change a lot starting with this Karaoke Mugen version.",
-		"P2": "Repository updates are now managed via git. This means that no matter which songs you had downloaded before, you now have access to the full karaoke database.",
-		"P3": "We are well aware that not everyone could afford to download the whole karaoke database. We made it so that wasn't necessary anymore. Only the songs' metadata are now downloaded at startup.",
-		"T1": "But I can't download all the medias!",
-		"P4": "Don't panic. You now have access to all the songs, but their media aren't downloaded on your computer.",
-		"P5": "Medias will be downloaded as you need them.",
-		"L1": "If you wish to play a song from the library, it'll be streamed from your repository's Karaoke Mugen Server. Your internet connection will be used to play the song directly.",
-		"L2": "If you add a song to a current playlist (used by the video player) the media will be downloaded in the background. If the download hasn't finished by the time you get to that song, it'll be streamed through internet. If it's done, it'll be played straight from your computer's storage.",
-		"T2": "What to do if I'm running out of space?",
-		"P6": "From the system panel, a new item \"Disk space management\" is available. Through it you can:",
-		"L3": "Remove every media from a repository if you need some disk space in an emergency",
-		"L4": "Remove only medias which haven't been played for one month (by default)",
-		"T3": "What if I have to make a karaoke session at some place without internet access?",
-		"P7": "You can still download in advance every media from the download manager.",
-		"T4": "Is there anything I need to do?",
-		"P8": "Actually, none : Karaoke Mugen made sure that your online repositories got converted to make them compatible with the new update system. Your downloaded media will stay there and you'll be able to remove the unused ones at any time if you need to free disk space now.",
-		"P9": "There's also a new option, per repository, which keeps Karaoke Mugen from downloading updated media on startup. For example, if a media is already present on your computer storage, but has been updated on your repository, the new version will be downloaded automatically.",
-		"T5": "What happened to download blacklist criterias?",
-		"P10": "They have been migrated to regular blacklist criterias. This means that you won't see those blacklisted songs in your library, as if you had never downloaded them!",
-		"P11": "You can still modify blacklist criterias at any time."
-	},
 	"BACKGROUNDS_MGMT": {
 		"EXPL": "There are 3 categories of backgrounds. If a category doesn't have any background, a bundled one will be used (those with the character that give his name to the app version).",
 		"INFO": [
@@ -2015,11 +1970,6 @@
 		"DESCRIPTION": "A karaoke player and a party organizer, between friends or in public. MIT-licensed.",
 		"CONTRIBUTORS": "The karaokes were created by awesome people, like <1>{{contributors}}</1> for example.",
 		"DONATORS": "Thanks to <1>{{donators}}</1> for their donations to Karaoke Mugen"
-	},
-	"COLLECTIONS_MIGRATION": {
-		"TITLE": "Introducing collections!",
-		"P1": "To expand the karaoke repository with more songs, we created collections in repositories, to select only a subset of songs and remove some songs that you do not want to see. Only songs within an enabled collection will appear in the interface (public & admin).",
-		"P2": "Please check the collections you want to enable. You can change this in the system panel."
 	},
 	"QUIZ": {
 		"START": "Start a quiz",
