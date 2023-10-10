@@ -75,7 +75,7 @@
     "Alex Tan (@senpai-notices)"
   ],
   "engines": {
-    "node": ">=14.17.0"
+    "node": ">=18.12.0"
   },
   "license": "MIT",
   "private": true,
