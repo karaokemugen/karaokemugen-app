@@ -132,11 +132,11 @@ You'll need a version of the GNU patch utility 2.7 or above so Karaoke Mugen can
 
 #### PostgreSQL
 
-PostgreSQL 13.x or later is required ([postgreSQL's website](https://www.postgresql.org/))
+PostgreSQL 16 or later is heavily recommended ([postgreSQL's website](https://www.postgresql.org/)).
 
-Version 12.x can work but we're bundling 13 with the binary distribution of Karaoke Mugen, so we'll base any feature decision later on version 13.
+Version starting from 12 can work but we're bundling 16 with the binary distribution of Karaoke Mugen, so we'll base any feature decision later on version 16's features.
 
-Versions below 12.x won't work.
+Versions below 12 won't work.
 
 Later PostgreSQL versions should work just fine.
 
