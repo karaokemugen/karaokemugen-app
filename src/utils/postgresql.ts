@@ -142,7 +142,7 @@ export async function dumpPG() {
 	}
 	logger.info('Dumping database...', { service });
 	const dumpFile = resolve(state.dataPath, 'karaokemugen.sql.gz');
-	const excludeTables = ['kara', 'tag', 'all_karas', 'all_tags', 'kara_relation', 'kara_tag'].map(
+	const excludeTables = ['kara', 'tag', 'all_karas', 'all_tags', 'kara_relation', 'kara_tag', 'online_requested'].map(
 		t => `--exclude-table-data=${t}`
 	);
 	try {
