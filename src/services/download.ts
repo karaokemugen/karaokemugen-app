@@ -177,7 +177,7 @@ export function resumeQueue() {
 
 export async function checkMediaAndDownload(plcs: MediaDownloadCheck[], updateOnly = false) {
 	if (!getConfig().Online.AllowDownloads) {
-		logger.info('No media will be downloaded, settings disallows downloads');
+		logger.info('No media will be downloaded, settings disallows downloads', { service });
 		return;
 	}
 	if (plcs.length === 0) return;
