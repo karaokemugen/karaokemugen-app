@@ -15,6 +15,7 @@ export function updateKaraMoeRepoConfig() {
 	// Because we're idiots who didn't push the default Update=true to kara.moe repository (it's in the default for new installs but not for existing ones)
 	// Also, we're idiots for not realizing BaseDir might be missing
 	const repo = getRepo('kara.moe');
+	if (!repo) return;
 	if (repo && repo.Update === undefined) {
 		repo.Update = true;
 		editRepo('kara.moe', repo, false, false);
