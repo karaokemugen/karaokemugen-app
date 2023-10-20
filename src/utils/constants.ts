@@ -5,7 +5,7 @@ import { QuizGameConfig } from '../types/config.js';
 
 export const discordClientID = '718211141033263145';
 
-export const requiredMPVVersion = '>=0.36.0';
+export const requiredMPVVersion = '>=0.33.0';
 
 // Temporary : mac users will have postgresql 14. We're going to make it to 14 for others.
 export const expectedPGVersion = 16;
