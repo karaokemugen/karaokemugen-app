@@ -49,6 +49,7 @@ INSERT INTO playlist(
 	flag_whitelist,
 	flag_fallback,
 	flag_smart,
+	type_smart,
 	fk_login,
 	time_left
 )
@@ -65,6 +66,7 @@ VALUES(
 	:flag_whitelist,
 	:flag_fallback,
 	:flag_smart,
+	:type_smart,
 	:username,
 	0
 ) RETURNING pk_plaid
