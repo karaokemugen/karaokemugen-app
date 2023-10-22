@@ -1,6 +1,6 @@
 source util/versionUtil.sh
 
-ELECTRONBUILDER=/usr/local/bin/electron-builder
+ELECTRONBUILDER=$(which electron-builder)
 
 if [ $(uname) == 'Darwin' ]
 then

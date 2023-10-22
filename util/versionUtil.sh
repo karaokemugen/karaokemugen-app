@@ -8,6 +8,10 @@ then
 	export RELEASE=$CI_COMMIT_REF_NAME
 else
 	export BUILDVERSION=$(echo "$CI_COMMIT_REF_NAME" | awk -F- {'print $1'} | sed 's/v//g')
+	if [ "$BUILDVERSION" = "" ] 
+	then
+		export BUILDVERSION=$(grep version\": package.json | awk -F\" {'print $4'})
+	fi
 	export RELEASE="release"
 fi
 
