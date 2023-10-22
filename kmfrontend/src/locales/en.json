@@ -1003,6 +1003,8 @@
 		"LYRICS_FILE": "Lyrics file",
 		"LYRICS_FILE_TOOLTIP": "Supported file formats: {{formats}}",
 		"LYRICS_FILE_OPEN": "Open file",
+		"APPLY_LYRICS_CLEANUP": "Cleanup lyrics file after saving",
+		"APPLY_LYRICS_CLEANUP_TOOLTIP": "Cleans lyrics file up from unused styles & comments and saves the title & author of the kara in the properties",
 		"ADD_FILE_SUCCESS": "{{name}} file added successfully",
 		"ADD_FILE_MEDIA_ERROR": "{{name}} is not a media file",
 		"ADD_FILE_LYRICS_ERROR": "{{name}} is not a subtitle file",

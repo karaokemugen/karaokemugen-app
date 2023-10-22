@@ -1,23 +1,23 @@
-import { QuestionCircleOutlined, UploadOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
+import { MinusOutlined, PlusOutlined, QuestionCircleOutlined, UploadOutlined } from '@ant-design/icons';
 import {
+	Alert,
 	Button,
 	Checkbox,
+	Col,
 	Collapse,
 	Divider,
 	Form,
+	FormInstance,
 	Input,
 	InputNumber,
-	message,
 	Modal,
+	Row,
 	Select,
 	Tag,
-	Typography,
 	Tooltip,
+	Typography,
 	Upload,
-	Alert,
-	FormInstance,
-	Row,
-	Col,
+	message,
 } from 'antd';
 import { SelectValue } from 'antd/lib/select';
 import { filesize } from 'filesize';
@@ -25,12 +25,14 @@ import i18next from 'i18next';
 import { Component, createRef } from 'react';
 import { v4 as UUIDv4 } from 'uuid';
 
+import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { DBKara } from '../../../../../src/lib/types/database/kara';
 import { KaraFileV4, MediaInfo } from '../../../../../src/lib/types/kara';
 import GlobalContext from '../../../store/context';
 import { buildKaraTitle, getTagInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { getTagTypeName, tagTypes, tagTypesKaraFileV4Order } from '../../../utils/tagTypes';
+import { expand } from '../../../utils/tools';
 import EditableGroupAlias from '../../components/EditableGroupAlias';
 import EditableTagGroup from '../../components/EditableTagGroup';
 import LanguagesList from '../../components/LanguagesList';
@@ -55,6 +57,7 @@ interface KaraFormState {
 	mediafile: any[];
 	mediafileIsTouched: boolean;
 	subfileIsTouched: boolean;
+	applyLyricsCleanup: boolean;
 	mediaInfo?: MediaInfo;
 	repositoriesValue: string[];
 	repoToCopySong: string;
@@ -74,6 +77,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		super(props);
 		const kara = this.props.kara;
 		this.getRepositories();
+		this.getSettings();
 		this.state = {
 			titles: kara?.titles ? kara.titles : {},
 			defaultLanguage: kara?.titles_default_language || null,
@@ -99,6 +103,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				: [],
 			mediafileIsTouched: false,
 			subfileIsTouched: false,
+			applyLyricsCleanup: false,
 			mediaInfo: {} as unknown as MediaInfo, // Has to be defined for reactive things
 			repositoriesValue: null,
 			repoToCopySong: null,
@@ -182,6 +187,17 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						(this.state.repositoriesValue ? this.state.repositoriesValue[0] : null),
 				})
 		);
+	};
+
+	getSettings = async () => {
+		const res: { config } = await commandBackend('getSettings');
+		this.setState({ applyLyricsCleanup: res.config?.Maintainer?.ApplyLyricsCleanupOnKaraSave });
+	};
+
+	saveSetting = async (key: string, value: any) => {
+		await commandBackend('updateSettings', {
+			setting: expand(key, value),
+		}).catch(() => {});
 	};
 
 	previewHooks = async () => {
@@ -310,6 +326,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 			kara: karaFile,
 			modifiedLyrics: this.state.subfileIsTouched,
 			modifiedMedia: this.state.mediafileIsTouched,
+			applyLyricsCleanup: this.state.applyLyricsCleanup,
 		};
 	};
 
@@ -666,6 +683,20 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 							{i18next.t('KARA.LYRICS_FILE')}
 						</Button>
 					</Upload>
+					{this.state.subfile?.length > 0 && (
+						<Checkbox
+							checked={this.state.applyLyricsCleanup}
+							onChange={(e: CheckboxChangeEvent) => {
+								this.saveSetting('Maintainer.ApplyLyricsCleanupOnKaraSave', e.target.checked);
+								this.setState({ applyLyricsCleanup: e.target.checked });
+							}}
+						>
+							{i18next.t('KARA.APPLY_LYRICS_CLEANUP')}&nbsp;
+							<Tooltip title={i18next.t('KARA.APPLY_LYRICS_CLEANUP_TOOLTIP')}>
+								<QuestionCircleOutlined />
+							</Tooltip>
+						</Checkbox>
+					)}
 					{this.state.subfile?.length > 0 && this.props.kara?.kid && (
 						<div style={{ marginTop: '1em' }}>
 							<OpenLyricsFileButton kara={this.props.kara} />
