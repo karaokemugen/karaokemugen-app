@@ -28,11 +28,11 @@ import { v4 as UUIDv4 } from 'uuid';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { DBKara } from '../../../../../src/lib/types/database/kara';
 import { KaraFileV4, MediaInfo } from '../../../../../src/lib/types/kara';
+import { Config } from '../../../../../src/types/config';
 import GlobalContext from '../../../store/context';
 import { buildKaraTitle, getTagInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { getTagTypeName, tagTypes, tagTypesKaraFileV4Order } from '../../../utils/tagTypes';
-import { expand } from '../../../utils/tools';
 import EditableGroupAlias from '../../components/EditableGroupAlias';
 import EditableTagGroup from '../../components/EditableTagGroup';
 import LanguagesList from '../../components/LanguagesList';
@@ -77,7 +77,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		super(props);
 		const kara = this.props.kara;
 		this.getRepositories();
-		this.getSettings();
 		this.state = {
 			titles: kara?.titles ? kara.titles : {},
 			defaultLanguage: kara?.titles_default_language || null,
@@ -118,6 +117,9 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		this.formRef.current.validateFields();
 		this.getParents();
 		this.loadMediaInfo();
+		this.setState({
+			applyLyricsCleanup: this.context.globalState.settings.data.config?.Maintainer?.ApplyLyricsCleanupOnKaraSave,
+		});
 	}
 
 	getParents = async () => {
@@ -189,16 +191,10 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		);
 	};
 
-	getSettings = async () => {
-		const res: { config } = await commandBackend('getSettings');
-		this.setState({ applyLyricsCleanup: res.config?.Maintainer?.ApplyLyricsCleanupOnKaraSave });
-	};
-
-	saveSetting = async (key: string, value: any) => {
-		await commandBackend('updateSettings', {
-			setting: expand(key, value),
+	saveApplyLyricsCleanupSetting = (enabled: boolean) =>
+		commandBackend('updateSettings', {
+			setting: { Maintainer: { ApplyLyricsCleanupOnKaraSave: enabled } } as Partial<Config>,
 		}).catch(() => {});
-	};
 
 	previewHooks = async () => {
 		if (
@@ -687,7 +683,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						<Checkbox
 							checked={this.state.applyLyricsCleanup}
 							onChange={(e: CheckboxChangeEvent) => {
-								this.saveSetting('Maintainer.ApplyLyricsCleanupOnKaraSave', e.target.checked);
+								this.saveApplyLyricsCleanupSetting(e.target.checked);
 								this.setState({ applyLyricsCleanup: e.target.checked });
 							}}
 						>
