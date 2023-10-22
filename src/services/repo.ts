@@ -280,6 +280,15 @@ export async function updateZipRepo(name: string) {
 			logger.info('Folder is empty, resetting local commit to null', { service });
 			localCommit = null;
 		}
+		try {
+			const karaDir = await fs.readdir(resolve(baseDir, 'karaokes/'));
+			if (karaDir.length === 0) {
+				throw 'Empty';
+			}
+		} catch (err) {
+			logger.info('Karaoke folder is empty or non-existant, resetting local commit to null', { service });
+			localCommit = null;
+		}
 		logger.info(`Updating repository from ${name}, our commit is ${localCommit}`, { service });
 		if (!localCommit) {
 			// If local commit doesn't exist, we have to start by retrieving one
