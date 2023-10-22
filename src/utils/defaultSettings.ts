@@ -211,7 +211,7 @@ export const defaults: Config = {
 			StreamFiles: 'streamFiles',
 		},
 	},
-	Maintainer: { ApplyLyricsCleanupOnKaraSave: false },
+	Maintainer: { ApplyLyricsCleanupOnKaraSave: true },
 };
 
 export const horizontalPosArray = ['Left', 'Right', 'Center'];
