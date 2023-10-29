@@ -255,6 +255,7 @@ SELECT ak.pk_kid AS kid,
 		ELSE FALSE
   	END) FROM played p WHERE ak.pk_kid = p.fk_kid) AS flag_dejavu,
 	pc.pk_plcid AS plcid,
+	pc.fk_plaid as plaid,
 	pc.fk_login AS username,
 	pc.flag_free AS flag_free,
 	pc.flag_refused AS flag_refused,
