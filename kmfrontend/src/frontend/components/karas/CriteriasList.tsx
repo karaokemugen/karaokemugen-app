@@ -4,7 +4,7 @@ import i18next from 'i18next';
 import { Fragment, useContext, useEffect, useState } from 'react';
 import { Trans } from 'react-i18next';
 
-import { DBPL } from '../../../../../src/lib/types/database/playlist';
+import { DBPL } from '../../../../../src/types/database/playlist';
 import { Criteria } from '../../../../../src/lib/types/playlist';
 import { setSettings } from '../../../store/actions/settings';
 import GlobalContext from '../../../store/context';

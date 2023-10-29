@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { DBPL } from '../../../src/lib/types/database/playlist';
+import { DBPL } from '../../../src/types/database/playlist';
 
 const exportDateFormat = 'YYYY-MM-DD_HH-mm-ss';
 
