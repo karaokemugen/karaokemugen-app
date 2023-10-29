@@ -30,7 +30,7 @@
 	"MENU_VIEW_ZOOMOUT": "Zoom &raus",
 	"INIT_INIT": "Fahre hoch…",
 	"BLACKLIST": "Blacklist",
-	"MENU_EDIT_CUT": "&ausschneiden",
+	"MENU_EDIT_CUT": "&Ausschneiden",
 	"MIGRATION_MESSAGES": [
 		"Mikrofone ausrichten",
 		"Berechnung der Normalisierung von Audiowellen",
@@ -147,5 +147,8 @@
 	"MENU_TOOLS_DOWNLOADS": "&Medien herunterladen",
 	"INIT_DONE": "Fertig!",
 	"MENU_EDIT_UNDO": "&Eingabe Widerrufen",
-	"MENU_GOTO_OPERATOR": "&Operator Interface"
+	"MENU_GOTO_OPERATOR": "&Operator Interface",
+	"MENU_TOOLS_DATABASE": "Daten&bank",
+	"REQUESTED_WITH": "(mit {{names}})",
+	"MENU_OPTIONS": "&Optionen"
 }
