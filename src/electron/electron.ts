@@ -456,7 +456,7 @@ export async function showAbout() {
 		const state = getState();
 		aboutWindow = new BrowserWindow({
 			width: 700,
-			height: 450,
+			height: 480,
 			show: false,
 			backgroundColor: '#36393f',
 			webPreferences: {
