@@ -46,7 +46,7 @@ function Autocomplete(props: IProps) {
 
 	const node: any = useRef();
 	const [placeholder, setPlaceholder] = useState(props.placeholder || undefined);
-	const [selectedValue, setSelectedValue] = useState('');
+	const [selectedValue, setSelectedValue] = useState<string | number>('');
 	const [searchValue, setSearchValue] = useState('');
 
 	const searchInputRef = useRef<HTMLInputElement>();
@@ -113,9 +113,13 @@ function Autocomplete(props: IProps) {
 	}, [focus]); // exécuté au démarrage puis en cas de mise à jour de focus
 
 	useEffect(() => {
-		if (typeof props.value === 'string' && props.options instanceof Array && props.value !== selectedValue) {
+		if (
+			(typeof props.value === 'string' || typeof props.value === 'number') &&
+			props.options instanceof Array &&
+			props.value !== selectedValue
+		) {
 			setSelectedValue(props.value);
-			setPlaceholder(props.value);
+			setPlaceholder(props.value.toString());
 			setSearchValue(props.options.find(opt => opt.value === props.value)?.label || '');
 		}
 	}, [props.value, props.options]); // properly reflect value changes by prop mutation
