@@ -414,7 +414,7 @@ pkg_mac:
     - when: never
 deploy_mac:
   stage: deploy
-  image: minidocks/lftpnew
+  image: minidocks/lftp
   tags:
     - $RUNNER_LINUX
   interruptible: true
