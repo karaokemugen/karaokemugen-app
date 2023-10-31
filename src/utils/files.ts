@@ -1,6 +1,8 @@
 import { promises as fs } from 'fs';
 import { isAbsolute, normalize, resolve, sep } from 'path';
 import { blockDevices, fsSize } from 'systeminformation';
+import { promisify } from 'util';
+import zlib from 'zlib';
 
 import { isMediaFile } from '../lib/utils/files.js';
 import logger from '../lib/utils/logger.js';
@@ -8,6 +10,13 @@ import { KMFileType } from '../types/files.js';
 import { getState } from './state.js';
 
 const service = 'Files';
+
+export async function decompressGzip(file: string) {
+	const unzip = promisify(zlib.unzip);
+	const buf = await fs.readFile(file);
+	const fileData = await unzip(buf);
+	await fs.writeFile(file.replace(/\.gz$/, ''), fileData, 'utf-8');
+}
 
 export function detectKMFileTypes(data: any): KMFileType {
 	return data?.header?.description || data?.Header?.description;

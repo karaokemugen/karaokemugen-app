@@ -18,6 +18,7 @@ import logger, { profile } from '../lib/utils/logger.js';
 import { PGVersion } from '../types/database.js';
 import { checkBinaries, editSetting } from './config.js';
 import { expectedPGVersion, pgctlRegex } from './constants.js';
+import { decompressGzip } from './files.js';
 import sentry from './sentry.js';
 import { getState, setState } from './state.js';
 
@@ -194,7 +195,8 @@ export async function restorePG() {
 		throw err;
 	}
 	try {
-		const dumpFile = resolve(state.dataPath, 'karaokemugen.sql.gz');
+		const dumpFile = resolve(state.dataPath, 'karaokemugen.sql');
+		await decompressGzip(`${dumpFile}.gz`);
 		const options = [
 			'-U',
 			conf.System.Database.username,
@@ -210,6 +212,7 @@ export async function restorePG() {
 		await execa(binPath, options, {
 			cwd: resolve(state.appPath, state.binPath.postgres),
 			env: determineEnv(),
+			stdio: 'inherit',
 		});
 		logger.info('Database restored from file', { service });
 	} catch (err) {
