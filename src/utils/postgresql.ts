@@ -215,6 +215,7 @@ export async function restorePG() {
 			stdio: 'inherit',
 		});
 		logger.info('Database restored from file', { service });
+		await fs.unlink(dumpFile).catch(() => {});
 	} catch (err) {
 		if (err.stdout) sentry.addErrorInfo('stdout', err.stdout);
 		if (err.stderr) sentry.addErrorInfo('stderr', err.stderr);
