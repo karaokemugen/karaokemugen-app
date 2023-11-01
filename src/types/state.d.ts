@@ -79,7 +79,6 @@ export interface State {
 		noAutoTest?: boolean;
 	};
 	args: string[];
-	restoreNeeded: boolean;
 	systemMessages: SystemMessage[];
 	DBReady: boolean;
 	portable: boolean;

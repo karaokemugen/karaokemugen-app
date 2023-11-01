@@ -211,6 +211,7 @@ export interface Config {
 			superuserPassword?: string;
 			database?: string;
 			bundledPostgresBinary?: boolean;
+			RestoreNeeded?: boolean;
 		};
 		Binaries: {
 			Player: {

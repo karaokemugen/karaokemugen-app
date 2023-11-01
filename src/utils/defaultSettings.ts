@@ -9,6 +9,7 @@ import { bools, hostnameRegexp } from '../lib/utils/constants.js';
 import { Config } from '../types/config.js';
 
 export const dbConfig = {
+	RestoreNeeded: false,
 	bundledPostgresBinary: true,
 	database: 'karaokemugen_app',
 	host: 'localhost',
