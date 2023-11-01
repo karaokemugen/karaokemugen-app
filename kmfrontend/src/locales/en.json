@@ -391,6 +391,8 @@
 			"DISPLAY_RANDOMQUOTES_TOOLTIP": "Random quotes are displayed at the bottom of the player screen when it is stopped",
 			"DISPLAY_CONNECTION_INFO_HOST": "Force hostname or IP",
 			"DISPLAY_CONNECTION_INFO_HOST_TOOLTIP": "If your IP address is incorrectly detected by Karaoke Mugen, you can force it here.",
+			"DISPLAY_CONNECTION_INFO_QRCODE": "Show QRCode",
+			"DISPLAY_CONNECTION_INFO_QRCODE_TOOLTIP": "The QRCode will be displayed on the upper-right part of the pause and stop screens.",
 			"DISPLAY_CONNECTION_INFO_MESSAGE": "Connection information message",
 			"DISPLAY_CONNECTION_INFO_MESSAGE_TOOLTIP": "Customize the message displayed on screen, to encourage your audience or give them more information. Use $url to display this karaoke session's URL. Like this: \"Go to $url!\"",
 			"DISPLAY_CONNECTION_INFO": "Show connection information",

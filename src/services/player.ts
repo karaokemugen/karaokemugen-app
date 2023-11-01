@@ -447,6 +447,14 @@ export function isPlayerRunning() {
 	return mpv.isRunning();
 }
 
+export async function displayQRCode() {
+	await mpv.displayQRCode();
+}
+
+export async function hideQRCode() {
+	await mpv.hideQRCode();
+}
+
 export async function initPlayer() {
 	try {
 		profile('initPlayer');

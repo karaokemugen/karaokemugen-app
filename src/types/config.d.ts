@@ -141,6 +141,7 @@ export interface Config {
 				Enabled?: boolean;
 				Host?: string;
 				Message?: string;
+				QRCode?: boolean;
 			};
 			RandomQuotes?: boolean;
 			SongInfo?: boolean;

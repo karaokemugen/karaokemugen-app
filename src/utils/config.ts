@@ -33,6 +33,8 @@ import { emit } from '../lib/utils/pubsub.js';
 import { emitWS } from '../lib/utils/ws.js';
 import {
 	displayInfo,
+	displayQRCode,
+	hideQRCode,
 	initAddASongMessage,
 	playerNeedsRestart,
 	prepareClassicPauseScreen,
@@ -48,6 +50,7 @@ import { supportedLanguages } from './constants.js';
 import { configConstraints, defaults } from './defaultSettings.js';
 import { initDiscordRPC, stopDiscordRPC } from './discordRPC.js';
 import { initKMServerCommunication } from './kmserver.js';
+import { createQRCodeFile } from './qrcode.js';
 import sentry from './sentry.js';
 import { getState, setState } from './state.js';
 import { writeStreamFiles } from './streamerFiles.js';
@@ -292,7 +295,7 @@ export async function initConfig(argv: any) {
 }
 
 /** Detect and set hostname and local IP */
-export function configureHost() {
+export async function configureHost() {
 	const state = getState();
 	const config = getConfig();
 	const URLPort = +config.System.FrontendPort === 80 ? '' : `:${config.System.FrontendPort}`;
@@ -304,6 +307,9 @@ export function configureHost() {
 	} else {
 		setState({ osURL: `http://${config.Player.Display.ConnectionInfo.Host}${URLPort}` });
 	}
+	if (config.Player.Display.ConnectionInfo.QRCode) {
+		await createQRCodeFile(getState().osURL);
+	}
 	if (
 		(state.player.mediaType === 'stop' ||
 			state.player.mediaType === 'pause' ||
@@ -311,6 +317,11 @@ export function configureHost() {
 		!state.songPoll
 	) {
 		displayInfo();
+		if (config.Player.Display.ConnectionInfo.QRCode) {
+			displayQRCode();
+		} else {
+			hideQRCode();
+		}
 	}
 	writeStreamFiles('km_url');
 }

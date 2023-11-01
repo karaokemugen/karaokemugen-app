@@ -124,6 +124,7 @@ Player:
       Message: 'Log in at $url to add songs!'
       # Override host/IP address
       Host: '192.168.0.1'
+      QRCode: false
   # Override mpv's video output driver
   mpvVideoOutput: null
   # Fullscreen ?
