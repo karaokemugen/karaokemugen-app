@@ -414,6 +414,7 @@ class Player {
 			`--log-file=${resolve(resolvedPath('Logs'), this.logFile)}`,
 			`--hwdec=${conf.Player.HardwareDecoding}`,
 			`--volume=${+conf.Player.Volume}`,
+			`--audio-delay=${(conf.Player.AudioDelay && +conf.Player.AudioDelay / 1000) || 0}`,
 			'--no-config',
 			'--autoload-files=no',
 			`--input-conf=${resolve(resolvedPath('Temp'), 'input.conf')}`,
@@ -1481,6 +1482,16 @@ class Players {
 			return playerState;
 		} catch (err) {
 			logger.error('Unable to set volume', { service, obj: err });
+			sentry.error(err);
+			throw err;
+		}
+	}
+
+	async setAudioDelay(delayMs = 0) {
+		try {
+			await this.exec({ command: ['set_property', 'audio-delay', (delayMs && delayMs / 1000) || 0] });
+		} catch (err) {
+			logger.error('Unable to set audio delay', { service, obj: err });
 			sentry.error(err);
 			throw err;
 		}

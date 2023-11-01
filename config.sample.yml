@@ -148,6 +148,8 @@ Player:
     Size: 30
   # Volume
   Volume: 100
+  # AudioDelay for audio/video sync
+  AudioDelay: 0
   # Hardware decoding. See mpv manual for more info
   HardwareDecoding: auto-safe
   # Extra mpv commandline arguments example

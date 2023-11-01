@@ -380,6 +380,8 @@
 			"TOP": "Top",
 			"AUDIO_DEVICE": "Player audio device",
 			"AUDIO_DEVICE_TOOLTIP": "Select an audio output device. If you don't know, leave it on \"Autoselect device\". This is useful if you want to output the player audio on a different sound device than your main one.",
+			"AUDIO_DELAY": "Audio / Video delay (in ms)",
+			"AUDIO_DELAY_TOOLTIP": "Add a delay to the audio or video to synchronize the player on your playback device. This is useful when using a bluetooth speaker or a wireless monitor that doesn't play audio and video synchronized",
 			"MONITOR_NUMBER": "Player screen",
 			"MONITOR_NUMBER_TOOLTIP": "Screen on which Karaoke Mugen will be displayed at startup",
 			"WINDOWBORDERS": "Enable borders on the player window",

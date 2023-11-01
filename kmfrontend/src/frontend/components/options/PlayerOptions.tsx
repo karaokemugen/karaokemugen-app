@@ -203,6 +203,28 @@ function PlayerOptions(props: IProps) {
 				</div>
 			</div>
 			<div className="settings-line">
+				<label htmlFor="Player.AudioDelay">
+					<span className="title">{i18next.t('SETTINGS.PLAYER.AUDIO_DELAY')}</span>
+					<br />
+					<span className="tooltip">{i18next.t('SETTINGS.PLAYER.AUDIO_DELAY_TOOLTIP')}</span>
+				</label>
+				<div>
+					<input
+						type="number"
+						data-namecommand="setAudioDelay"
+						id="Player.AudioDelay"
+						placeholder="0"
+						onBlur={putPlayerCommando}
+						onChange={putPlayerCommando}
+						step={20}
+						size={4}
+						min={-3_000}
+						max={3_000}
+						defaultValue={config['Player.AudioDelay']}
+					/>
+				</div>
+			</div>
+			<div className="settings-line">
 				<label htmlFor="Player.AudioDevice">
 					<span className="title">{i18next.t('SETTINGS.PLAYER.AUDIO_DEVICE')}</span>
 					<br />

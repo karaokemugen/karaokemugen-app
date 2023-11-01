@@ -296,6 +296,11 @@ export async function setVolumePlayer(volume: number) {
 	emit('playerVolumeUpdated', volume);
 }
 
+async function setAudioDelay(delayMs = 0) {
+	await mpv.setAudioDelay(delayMs);
+	setConfig({ Player: { AudioDelay: delayMs } });
+}
+
 async function setPitchPlayer(pitch: number) {
 	await mpv.setModifiers({ Pitch: pitch });
 }
@@ -422,6 +427,10 @@ export async function sendCommand(command: PlayerCommand, options: any) {
 		} else if (command === 'setVolume') {
 			if (isNaN(options)) throw new ErrorKM('INVALID_DATA', 400, false);
 			await setVolumePlayer(options);
+		} else if (command === 'setAudioDelay') {
+			if ((options && isNaN(options)) || options > 5000 || options < -5000)
+				throw "Command setAudioDelay must have a numeric option value between -5'000 and 5'000";
+			await setAudioDelay(options);
 		} else if (command === 'setPitch') {
 			if (isNaN(options)) throw new ErrorKM('INVALID_DATA', 400, false);
 			if (options > 6 || options < -6) throw new ErrorKM('INVALID_DATA', 400, false);
