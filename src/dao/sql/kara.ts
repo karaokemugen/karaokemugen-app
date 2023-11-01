@@ -65,6 +65,7 @@ SELECT
   ak.download_status AS download_status,
   ak.comment AS comment,
   ak.ignore_hooks AS ignore_hooks,
+  ak.from_display_type AS from_display_type,
   COUNT(p.*)::integer AS played,
   ${selectRequested}
   (CASE WHEN :dejavu_time < MAX(p.played_at)
@@ -120,7 +121,7 @@ ${
 ${filterClauses.map(clause => `${filterType} (${clause})`).reduce((a, b) => `${a} ${b}`, '')}
 ${whereClauses}
 ${blacklistClauses}
-GROUP BY ${groupClauses} ak.pk_kid, pc.fk_kid, ak.titles, ak.titles_aliases, ak.titles_default_language, ak.comment, ak.songorder, ak.serie_singergroup_singer_sortable, ak.subfile, ak.year, ak.tags, ak.mediafile, ak.karafile, ak.duration, ak.loudnorm, ak.created_at, ak.modified_at, ak.mediasize, ak.repository, ak.songtypes_sortable, f.fk_kid, ak.tid, ak.languages_sortable, ak.download_status, ak.ignore_hooks, ak.titles_sortable ${groupClauseEnd}
+GROUP BY ${groupClauses} ak.pk_kid, pc.fk_kid, ak.titles, ak.titles_aliases, ak.titles_default_language, ak.comment, ak.songorder, ak.serie_singergroup_singer_sortable, ak.subfile, ak.year, ak.tags, ak.mediafile, ak.karafile, ak.duration, ak.loudnorm, ak.created_at, ak.modified_at, ak.mediasize, ak.repository, ak.songtypes_sortable, f.fk_kid, ak.tid, ak.languages_sortable, ak.download_status, ak.ignore_hooks, ak.titles_sortable, ak.from_display_type ${groupClauseEnd}
 ${havingClause}
 ORDER BY ${orderClauses} ak.serie_singergroup_singer_sortable, ak.songtypes_sortable DESC, ak.songorder, ak.languages_sortable, ak.titles_sortable
 ${limitClause}
@@ -139,6 +140,7 @@ export const sqlgetAllKarasMicro = (
   k.repository AS repository,
   k.subfile AS subfile,
   k.karafile AS karafile,
+  k.from_display_type AS from_display_type,
   k.download_status AS download_status
 FROM kara AS k
 ${collectionClauses.length > 0 ? 'LEFT JOIN all_karas ak ON ak.pk_kid = k.pk_kid' : ''}
@@ -179,6 +181,7 @@ INSERT INTO kara(
 	mediasize,
 	download_status,
 	comment,
+	from_display_type,
 	ignore_hooks
 )
 VALUES(
@@ -199,6 +202,7 @@ VALUES(
 	:mediasize,
 	:download_status,
 	:comment,
+	:from_display_type,
 	:ignoreHooks
 )
 ON CONFLICT (pk_kid) DO
@@ -220,6 +224,7 @@ UPDATE SET
  mediasize = :mediasize,
  download_status = :download_status,
  comment = :comment,
+ from_display_type = :from_display_type,
  ignore_hooks = :ignoreHooks
 RETURNING
  (SELECT k2.karafile FROM kara k2 WHERE k2.pk_kid = kara.pk_kid) AS old_karafile,

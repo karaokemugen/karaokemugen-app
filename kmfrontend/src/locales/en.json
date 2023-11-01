@@ -1105,7 +1105,9 @@
 		"PARENTS_TOOLTIP": "If a parent is defined, this karaoke will show as alternative to the selected parent karaoke(s). Please select the right repository before filling this to avoid adding karaokes from other repositories.",
 		"VERSION_AVAILABILITY": "Available in {{count}} versions.",
 		"COLLECTIONS_REQUIRED": "A collection is required",
-		"COLLECTIONS_TOOLTIP": "Select the collections in which the karaoke should appear"
+		"COLLECTIONS_TOOLTIP": "Select the collections in which the karaoke should appear",
+		"FROM_DISPLAY_TYPE": "From tag type display",
+		"FROM_DISPLAY_TYPE_TOOLTIP": "Select tag type to used when displaying the song"
 	},
 	"MENU": {
 		"HOME": "Dashboard",
@@ -1275,7 +1277,8 @@
 		"FRANCHISES_one": "Franchise",
 		"FRANCHISES_other": "Franchises",
 		"COLLECTIONS_one": "Collection",
-		"COLLECTIONS_other": "Collections"
+		"COLLECTIONS_other": "Collections",
+		"DEFAULT": "Default"
 	},
 	"CONFIG": {
 		"PROPERTY": "Property",

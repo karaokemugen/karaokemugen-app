@@ -1,6 +1,5 @@
 import i18next from 'i18next';
-import { ReactFragment, ReactNode } from 'react';
-
+import { ReactNode } from 'react';
 import { ASSLine } from '../../../src/lib/types/ass';
 import { DBKara, DBKaraTag } from '../../../src/lib/types/database/kara';
 import InlineTag from '../frontend/components/karas/InlineTag';
@@ -139,13 +138,18 @@ export function buildKaraTitle(
 	data: DBKara,
 	onlyText?: boolean,
 	i18nParam?: any
-): string | ReactFragment {
+): string | ReactNode {
 	const isMulti = data?.langs?.find(e => e.name.indexOf('mul') > -1);
 	if (data?.langs && isMulti) {
 		data.langs = [isMulti];
 	}
 	const serieText =
-		data?.series?.length > 0
+	 	data.from_display_type && data[data.from_display_type] ?
+			data[data.from_display_type]
+				.slice(0, 3)
+				.map(e => getTagInLocale(settings, e, i18nParam).i18n)
+				.join(', ') + (data.series.length > 3 ? '...' : '')
+			: data?.series?.length > 0
 			? data.series
 					.slice(0, 3)
 					.map(e => getTagInLocale(settings, e, i18nParam).i18n)

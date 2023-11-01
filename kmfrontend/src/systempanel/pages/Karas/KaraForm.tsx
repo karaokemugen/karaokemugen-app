@@ -311,6 +311,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 							}
 						})
 				) as unknown as any,
+				from_display_type: kara.from_display_type,
 				titles: this.state.titles,
 				titles_default_language: this.state.defaultLanguage,
 				titles_aliases: kara.titles_aliases?.length > 0 ? kara.titles_aliases : undefined,
@@ -482,6 +483,12 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		e.key === 'Enter' && e.preventDefault();
 	}
 
+	mapTagTypesToSelectOption = (tagType: string) => (
+		<Select.Option key={tagType} value={tagType.toLowerCase()}>
+			{i18next.t(tagType ? `TAG_TYPES.${tagType}_one` : 'TAG_TYPES.DEFAULT')}
+		</Select.Option>
+	);
+
 	mapRepoToSelectOption = (repo: string) => (
 		<Select.Option key={repo} value={repo}>
 			{repo}
@@ -510,6 +517,8 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					songtypes: this.props.kara?.songtypes || this.state.parentKara?.songtypes,
 					songorder: this.props.kara?.songorder || this.state.parentKara?.songorder,
 					langs: this.props.kara?.langs || this.state.parentKara?.langs,
+					from_display_type:
+						this.props.kara?.from_display_type || this.state.parentKara?.from_display_type || '',
 					year: this.props.kara?.year || this.state.parentKara?.year || new Date().getFullYear(),
 					singers: this.props.kara?.singers || this.state.parentKara?.singers,
 					singergroups: this.props.kara?.singergroups || this.state.parentKara?.singergroups,
@@ -1146,6 +1155,22 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					/>
 				</Form.Item>
 				<Divider orientation="left">{i18next.t('KARA.SECTIONS.META')}</Divider>
+				<Form.Item
+					className='wrap-label'
+					label={
+						<span>
+							{i18next.t('KARA.FROM_DISPLAY_TYPE')}&nbsp;
+							<Tooltip title={i18next.t('KARA.FROM_DISPLAY_TYPE_TOOLTIP')}>
+								<QuestionCircleOutlined />
+							</Tooltip>
+						</span>
+					}		
+					labelCol={{ flex: '0 1 220px' }}
+					wrapperCol={{ span: 7 }}
+					name="from_display_type"
+				>
+					<Select>{Object.keys(tagTypes).concat('').map(this.mapTagTypesToSelectOption)}</Select>
+				</Form.Item>
 				<Form.Item
 					label={
 						<span>

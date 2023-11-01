@@ -165,11 +165,18 @@ export async function getKaras(params: KaraParams): Promise<KaraList> {
 }
 
 /** Returns a string with series or singers with their correct i18n.
+ * If from_display_type exists, we use that.
  * If series, only first one is returned
  * If singers only, only first two singers are returned with a "..." string added if there are more
  */
 export function getSongSeriesSingers(kara: DBKara): string {
 	const langs = [getConfig().Player.Display.SongInfoLanguage, convert1LangTo2B(getState().defaultLocale), 'eng'];
+	if (kara.from_display_type) {
+		const result = kara[kara.from_display_type].slice(0, 2).map(t => getTagNameInLanguage(t, langs));
+		if (kara[kara.from_display_type].length > 2) result.push('...');
+		return result.join(', ');
+	}
+	// If the from_display_type isn't present, we'll guess like we did before.
 	// Multiple series aren't very common, so we return always the first one
 	if (kara.series?.length > 0) {
 		return getTagNameInLanguage(kara.series[0], langs);
