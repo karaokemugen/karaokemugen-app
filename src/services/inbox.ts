@@ -5,7 +5,8 @@ import { setTimeout as sleep } from 'timers/promises';
 import { baseChecksum } from '../dao/dataStore.js';
 import { saveSetting } from '../lib/dao/database.js';
 import { Inbox } from '../lib/types/inbox.js';
-import { resolvedPath, resolvedPathRepos } from '../lib/utils/config.js';
+import { ASSFileCleanup } from '../lib/utils/ass.js';
+import { getConfig, resolvedPath, resolvedPathRepos } from '../lib/utils/config.js';
 import { downloadFile } from '../lib/utils/downloader.js';
 import { ErrorKM } from '../lib/utils/error.js';
 import { smartMove } from '../lib/utils/files.js';
@@ -91,8 +92,9 @@ export async function downloadKaraFromInbox(inid: string, repoName: string, toke
 		kara.kara.data.data.modified_at = new Date().toISOString();
 		const promises = [downloadMediaFromInbox(kara, repoName)];
 		// Code to integrate kara and download medias
+		let lyricsFile = null;
 		if (kara.lyrics) {
-			const lyricsFile = resolve(resolvedPathRepos('Lyrics', repoName)[0], kara.lyrics.file);
+			lyricsFile = resolve(resolvedPathRepos('Lyrics', repoName)[0], kara.lyrics.file);
 			await fs.writeFile(lyricsFile, kara.lyrics.data, 'utf-8');
 		}
 		for (const tag of kara.extra_tags) {
@@ -117,9 +119,16 @@ export async function downloadKaraFromInbox(inid: string, repoName: string, toke
 			'utf-8'
 		);
 		saveSetting('baseChecksum', await baseChecksum());
-		await integrateKaraFile(karaFile, kara.kara.data, true, true, false);
+		const newKaraKid = await integrateKaraFile(karaFile, kara.kara.data, true, true, false);
 		updateAllSmartPlaylists();
 		await Promise.all(promises);
+
+		const newDbKara = await getKara(newKaraKid, adminToken);
+		// ASS file post processing
+		if (lyricsFile && getConfig().Maintainer.ApplyLyricsCleanupOnKaraSave === true) {
+			await ASSFileCleanup(lyricsFile, newDbKara);
+		}
+
 		checkDownloadStatus([kara.kara.data.data.kid]);
 		markKaraAsDownloadedInInbox(inid, repoName, token);
 		logger.info(`Song ${basename(kara.kara.file, '.kara.json')} from inbox at ${repoName} downloaded`, {
