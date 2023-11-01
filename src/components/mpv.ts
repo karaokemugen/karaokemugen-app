@@ -1122,8 +1122,9 @@ class Players {
 			'force-media-title': getState().quiz.running ? 'Quiz!' : getSongTitle(song),
 		};
 		let onlineMedia = false;
+		const showVideo = !modifiers || (modifiers && modifiers.Blind === '');
 		const loadPromises = [
-			Players.genLavfiComplex(song, modifiers?.Blind === '')
+			Players.genLavfiComplex(song, showVideo)
 				.then(res => (options['lavfi-complex'] = res))
 				.catch(err => {
 					logger.error('Cannot compute lavfi-complex filter, disabling avatar display', {
