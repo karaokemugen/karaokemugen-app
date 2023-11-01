@@ -9,7 +9,7 @@ import { showModal } from '../../store/actions/modal';
 import GlobalContext from '../../store/context';
 import TasksEvent from '../../TasksEvent';
 import { commandBackend, getSocket } from '../../utils/socket';
-import { decodeCriteriaReason, displayMessage, is_touch_device, nonStandardPlaylists } from '../../utils/tools';
+import { decodeCriteriaReason, displayMessage, is_touch_device, nonStandardPlaylists, secondsTimeSpanToHMS } from '../../utils/tools';
 import { KaraElement } from '../types/kara';
 import AdminHeader from './AdminHeader';
 import KmAppBodyDecorator from './decorators/KmAppBodyDecorator';
@@ -232,6 +232,11 @@ function AdminPage(props: IProps) {
 					) : null}
 				</KmAppBodyDecorator>
 			</KmAppWrapperDecorator>
+			{context.globalState.frontendContext.futurTime ? (
+				<div id="futurTime" className="futurTime">
+					{context.globalState.frontendContext.futurTime}
+				</div>
+			) : null}
 		</>
 	);
 }

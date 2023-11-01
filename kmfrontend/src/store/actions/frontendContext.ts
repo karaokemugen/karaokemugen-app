@@ -8,6 +8,7 @@ import {
 	BackgroundImage,
 	FilterValue,
 	FrontendContextAction,
+	FuturTime,
 	IndexKaraDetail,
 	PlaylistInfo,
 } from '../types/frontendContext';
@@ -80,6 +81,15 @@ export function setIndexKaraDetail(dispatch: Dispatch<IndexKaraDetail>, indexKar
 			},
 		});
 	}
+}
+
+export function setFutureTime(dispatch: Dispatch<FuturTime>, futurTime: string) {
+	dispatch({
+		type: FrontendContextAction.FUTURE_TIME,
+		payload: {
+			futurTime,
+		},
+	});
 }
 
 async function getPlaylistInfo(plaid: string) {
