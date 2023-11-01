@@ -391,6 +391,8 @@
 			"DISPLAY_RANDOMQUOTES_TOOLTIP": "Des citations aléatoires sont affichées en bas de l'écran quand le lecteur est arrêté",
 			"DISPLAY_CONNECTION_INFO_HOST": "Forcer le nom d'hôte/Adresse IP",
 			"DISPLAY_CONNECTION_INFO_HOST_TOOLTIP": "Si votre adresse IP est mal détectée par Karaoke Mugen, vous pouvez la forcer ici.",
+			"DISPLAY_CONNECTION_INFO_QRCODE": "Afficher le  QRCode",
+			"DISPLAY_CONNECTION_INFO_QRCODE_TOOLTIP": "Le QRCode sera affiché en haut à droite sur les écrans de pause et d'arrêt.",
 			"DISPLAY_CONNECTION_INFO_MESSAGE": "Message à afficher à l'écran pour se connecter",
 			"DISPLAY_CONNECTION_INFO_MESSAGE_TOOLTIP": "Personnalisez le message de connexion affiché sur le lecteur, pour encourager votre public ou leur donner plus d'indications. Utilisez $url pour afficher l'URL d'accès. Par exemple \"Allez sur $url !\"",
 			"DISPLAY_CONNECTION_INFO": "Afficher les informations de connexion à l'écran",

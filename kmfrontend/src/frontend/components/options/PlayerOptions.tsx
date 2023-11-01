@@ -310,6 +310,23 @@ function PlayerOptions(props: IProps) {
 					</div>
 
 					<div className="settings-line">
+						<label htmlFor="Player.Display.ConnectionInfo.QRCode">
+							<span className="title">{i18next.t('SETTINGS.PLAYER.DISPLAY_CONNECTION_INFO_QRCODE')}</span>
+							<br />
+							<span className="tooltip">
+								{i18next.t('SETTINGS.PLAYER.DISPLAY_CONNECTION_INFO_QRCODE_TOOLTIP')}
+							</span>
+						</label>
+						<div>
+							<Switch
+								idInput="Player.Display.ConnectionInfo.QRCode"
+								handleChange={onChange}
+								isChecked={config['Player.Display.ConnectionInfo.QRCode']}
+							/>
+						</div>
+					</div>
+
+					<div className="settings-line">
 						<label htmlFor="Player.Display.ConnectionInfo.Message">
 							<span className="title">
 								{i18next.t('SETTINGS.PLAYER.DISPLAY_CONNECTION_INFO_MESSAGE')}

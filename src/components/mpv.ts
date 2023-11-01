@@ -946,6 +946,26 @@ class Players {
 		}
 	}
 
+	private genLavfiComplexQRCode(): string {
+		return [
+			`movie=\\'${resolve(resolvedPath('Temp'), 'qrcode.png').replaceAll('\\', '/')}\\'[logo]`,
+			'[logo][vid1]scale2ref=w=(ih*.256):h=(ih*.256)[logo1][base]',
+			'[base][logo1]overlay=x=W-(W*50/300):y=H*20/300[vo]',
+		]
+			.filter(x => !!x)
+			.join(';');
+	}
+
+	async displayQRCode() {
+		await this.exec({ command: ['set_property', 'lavfi-complex', this.genLavfiComplexQRCode()] });
+	}
+
+	async hideQRCode() {
+		if (playerState.playerStatus !== 'play') {
+			await this.exec({ command: ['set_property', 'lavfi-complex', '[vid1]null[vo]'] });
+		}
+	}
+
 	private async loadBackground(type: BackgroundType) {
 		const background = await getBackgroundAndMusic(type);
 		logger.debug(
@@ -960,33 +980,42 @@ class Players {
 			playerState._playing = false;
 			playerState.playing = false;
 			emitPlayerState();
+			const conf = getConfig();
+			const options = ['loadfile', background.pictures[0]];
+			const qrCode =
+				conf.Player.Display.ConnectionInfo.Enabled && conf.Player.Display.ConnectionInfo.QRCode
+					? {
+							'lavfi-complex': this.genLavfiComplexQRCode(),
+					  }
+					: {};
 			if (background.music[0]) {
 				await this.exec({
 					command: [
-						'loadfile',
-						background.pictures[0],
+						...options,
 						'replace',
 						{
 							'force-media-title': 'Background',
 							'audio-files-set': background.music[0],
 							aid: '1',
 							'loop-file': 'inf',
+							...qrCode,
 						},
 					],
 				});
 			} else {
 				await this.exec({
 					command: [
-						'loadfile',
-						background.pictures[0],
+						...options,
 						'replace',
 						{
 							'force-media-title': 'Background',
 							'loop-file': 'inf',
+							...qrCode,
 						},
 					],
 				});
 			}
+
 			setState({
 				backgrounds: {
 					music: background.music[0],
