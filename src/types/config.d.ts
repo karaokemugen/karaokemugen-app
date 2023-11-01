@@ -163,6 +163,7 @@ export interface Config {
 		HardwareDecoding?: MpvHardwareDecodingOptions;
 		KeyboardMediaShortcuts?: boolean;
 		Volume?: number;
+		AudioDelay?: number;
 		LiveComments?: boolean;
 		BlurVideoOnWarningTag?: boolean;
 	};

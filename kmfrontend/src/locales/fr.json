@@ -380,6 +380,8 @@
 			"TOP": "Haut",
 			"AUDIO_DEVICE": "Sortie audio à utiliser pour le lecteur",
 			"AUDIO_DEVICE_TOOLTIP": "Selectionnez une sortie audio. Si vous ne savez pas, laissez sur \"Autoselect device\" C'est utile si vous souhaitez diffuser l'audio du lecteur sur une sortie audio autre que votre principale.",
+			"AUDIO_DELAY": "Délai audio/vidéo (en ms)",
+			"AUDIO_DELAY_TOOLTIP": "Ajoute un délai à l'audio ou à la vidéo pour synchroniser le lecteur sur votre appareil de lecture. Ceci est utile lors de l'utilisation d'un haut-parleur bluetooth ou d'un moniteur sans fil qui ne lit pas l'audio et la vidéo de manière synchronisée",
 			"MONITOR_NUMBER": "Écran sur lequel afficher le lecteur",
 			"MONITOR_NUMBER_TOOLTIP": "Écran sur lequel afficher le lecteur au démarrage",
 			"WINDOWBORDERS": "Activer les bordures sur la fenêtre du lecteur",

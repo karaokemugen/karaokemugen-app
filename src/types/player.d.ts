@@ -71,6 +71,7 @@ export type PlayerCommand =
 	| 'goTo'
 	| 'setAudioDevice'
 	| 'setVolume'
+	| 'setAudioDelay'
 	| 'setPitch'
 	| 'setSpeed'
 	| 'setModifiers'
