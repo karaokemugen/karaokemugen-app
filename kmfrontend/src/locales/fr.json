@@ -1105,7 +1105,9 @@
 			"VIDEO_RESOLUTION": "Résolution",
 			"VIDEO_COLORSPACE": "Espace de couleur",
 			"FILE_SIZE": "Taille du fichier"
-		}
+		},
+		"FROM_DISPLAY_TYPE": "Affichage du tag de la provenance de la chanson",
+		"FROM_DISPLAY_TYPE_TOOLTIP": "Choissisez le type de tag utilisé lors de l'affichage de la chanson"
 	},
 	"MENU": {
 		"HOME": "Tableau de bord",
@@ -1275,7 +1277,8 @@
 		"FRANCHISES_one": "Franchise",
 		"FRANCHISES_other": "Franchises",
 		"COLLECTIONS_one": "Collection",
-		"COLLECTIONS_other": "Collections"
+		"COLLECTIONS_other": "Collections",
+		"DEFAULT": "Par Défaut"
 	},
 	"CONFIG": {
 		"PROPERTY": "Propriété",

@@ -2,7 +2,7 @@ import './PlayerBox.scss';
 
 import i18next from 'i18next';
 import { sample } from 'lodash';
-import { ReactFragment, RefObject, useContext, useEffect, useRef, useState } from 'react';
+import { ReactNode, RefObject, useContext, useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import ResizeObserver from 'resize-observer-polyfill';
 
@@ -32,7 +32,7 @@ function PlayerBox(props: IProps) {
 	const [img, setImg] = useState('');
 	const [kid, setKid] = useState('');
 	const [favorites, setFavorites] = useState(new Set<string>());
-	const [karaVersions, setKaraVersions] = useState<ReactFragment>();
+	const [karaVersions, setKaraVersions] = useState<ReactNode>();
 	const ref: RefObject<HTMLDivElement> = useRef();
 	const containerRef: RefObject<HTMLDivElement> = useRef();
 
