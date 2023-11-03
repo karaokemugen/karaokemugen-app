@@ -323,7 +323,8 @@
 		"SPONSOR": "Sponsoren",
 		"ADDED_3": " von ",
 		"ADDED": "Hinzugefügt ",
-		"ADDED_2": "am "
+		"ADDED_2": "am ",
+		"DOWNLOAD_MEDIA": "Download Media"
 	},
 	"WELCOME_PAGE": {
 		"STATS_TAGS": "Stichwörter",
@@ -335,5 +336,6 @@
 	"PITCH_DOWN": "Tonhöhe verringern",
 	"PITCH_RESET": "Tonhöhe zurücksetzen",
 	"CL_ABOUT_TO_ADD": "Du hinzufügst gerade",
-	"PITCH_UP": "Tonhöhe erhöhen"
+	"PITCH_UP": "Tonhöhe erhöhen",
+	"TOOLTIP_DELETE_SELECT_FAVS": "Ausgewählten Song von den Favoriten entfernen"
 }
