@@ -190,7 +190,7 @@
     "@typescript-eslint/eslint-plugin": "^6.7.3",
     "@typescript-eslint/parser": "^6.7.3",
     "chai": "^4.3.9",
-    "electron": "^25.8.0",
+    "electron": "^26.4.3",
     "electron-builder": "^24.6.4",
     "esbuild": "^0.19.4",
     "eslint": "^8.50.0",
