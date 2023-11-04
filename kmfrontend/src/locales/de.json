@@ -330,12 +330,16 @@
 		"STATS_TAGS": "Stichwörter",
 		"STATS_SERIES": "Serien",
 		"REPOSITORY": "DATENBANKEN",
-		"SITE": "Webseite"
+		"SITE": "Webseite",
+		"KARAMANAGER": "Bediener Oberfläche",
+		"GETSTARTED": "STARTE LERNPROGRAMM",
+		"CONTACT": "kontaktieren Sie uns"
 	},
 	"CHECKED": "Ausgewählt:",
 	"PITCH_DOWN": "Tonhöhe verringern",
 	"PITCH_RESET": "Tonhöhe zurücksetzen",
 	"CL_ABOUT_TO_ADD": "Du hinzufügst gerade",
 	"PITCH_UP": "Tonhöhe erhöhen",
-	"TOOLTIP_DELETE_SELECT_FAVS": "Ausgewählten Song von den Favoriten entfernen"
+	"TOOLTIP_DELETE_SELECT_FAVS": "Ausgewählten Song von den Favoriten entfernen",
+	"TOOLTIP_UPVOTE": "Für diesen Song stimmen"
 }
