@@ -6,6 +6,7 @@ import { resolve } from 'path';
 import { exit, welcomeToYoukousoKaraokeMugen } from '../components/engine.js';
 import { init, preInit } from '../components/init.js';
 import { selectUsers } from '../dao/user.js';
+import { Repository } from '../lib/types/repo.js';
 import { getConfig, resolvedPath, setConfig } from '../lib/utils/config.js';
 import logger from '../lib/utils/logger.js';
 import { emitWS } from '../lib/utils/ws.js';
@@ -185,7 +186,12 @@ export async function handleProtocol(args: string[]) {
 		switch (args[0]) {
 			case 'addRepo':
 				const repoName = args[1];
-				const repo = getRepo(repoName);
+				let repo: Repository;
+				try {
+					repo = getRepo(repoName);
+				} catch (e) {
+					// Repo does not exist yet
+				}
 				if (!repo) {
 					const buttons = await dialog.showMessageBox({
 						type: 'none',
