@@ -198,6 +198,7 @@ export async function handleProtocol(args: string[]) {
 							Name: repoName,
 							Online: true,
 							Enabled: true,
+							Update: true,
 							SendStats: false,
 							AutoMediaDownloads: 'updateOnly',
 							MaintainerMode: false,
