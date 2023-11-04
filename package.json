@@ -166,6 +166,7 @@
     "@types/cors": "^2.8.14",
     "@types/damerau-levenshtein": "^1.0.0",
     "@types/discord-rpc": "4.0.6",
+    "@types/dompurify": "^3.0.4",
     "@types/fs-extra": "^11.0.2",
     "@types/i18next-fs-backend": "^1.1.2",
     "@types/ip": "^1.1.1",
