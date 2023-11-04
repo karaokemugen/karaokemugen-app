@@ -91,7 +91,7 @@ SELECT
   (SELECT COUNT(up.fk_plcid)::integer
   FROM upvote up
   LEFT JOIN playlist_content pc_pub ON pc_pub.fk_plaid = :publicPlaylist_id AND up.fk_plcid = pc_pub.pk_plcid
-  WHERE ak.pk_kid = pc.fk_kid
+  WHERE ak.pk_kid = pc_pub.fk_kid
   ) AS upvotes
 FROM all_karas AS ak
 LEFT OUTER JOIN kara k ON k.pk_kid = ak.pk_kid
@@ -102,7 +102,7 @@ LEFT OUTER JOIN kara_relation krc ON krc.fk_kid_child = ak.pk_kid ${
 	blacklistClauses ? ' AND krc.fk_kid_parent NOT IN (SELECT * FROM blacklist)' : ''
 }
 LEFT OUTER JOIN played AS p ON p.fk_kid = ak.pk_kid
-LEFT OUTER JOIN playlist_content AS pc ON pc.fk_kid = ak.pk_kid AND pc.fk_plaid = :publicPlaylist_id
+	LEFT OUTER JOIN playlist_content AS pc ON pc.fk_kid = ak.pk_kid AND pc.fk_plaid = :publicPlaylist_id
 LEFT OUTER JOIN playlist_content AS pc_self on pc_self.fk_kid = ak.pk_kid AND pc_self.fk_plaid = :publicPlaylist_id AND pc_self.fk_login = :username
 LEFT OUTER JOIN upvote up ON up.fk_plcid = pc.pk_plcid AND up.fk_login = :username
 LEFT OUTER JOIN favorites AS f ON f.fk_login = :username AND f.fk_kid = ak.pk_kid
