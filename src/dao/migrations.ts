@@ -62,7 +62,7 @@ export async function postMigrationTasks(migrations: Postgrator.Migration[], did
 				if (!didGeneration) doGenerate = true;
 				break;
 			// 8.0 migrations
-			case 'addKaraDisplayType':
+			case 'addFromDisplayType':
 				if (!didGeneration) doGenerate = true;
 				break;
 			default:
