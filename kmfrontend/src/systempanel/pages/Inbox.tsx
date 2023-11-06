@@ -221,9 +221,12 @@ export default function Inbox() {
 			title: i18next.t('INBOX.LINK_TO_ISSUE'),
 			dataIndex: 'gitlab_issue',
 			key: 'gitlab_issue',
-			render: text => (
-				<a href={text}>{i18next.t('INBOX.ISSUE', { number: text.split('/')[text.split('/').length - 1] })}</a>
-			),
+			render: text =>
+				text && (
+					<a href={text}>
+						{i18next.t('INBOX.ISSUE', { number: text?.split('/')[text?.split('/').length - 1] })}
+					</a>
+				),
 		},
 		{
 			title: i18next.t('ACTION'),
