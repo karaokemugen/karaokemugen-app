@@ -53,6 +53,7 @@ export const defaults: Config = {
 	Frontend: {
 		AllowGuestLogin: true,
 		AllowCustomTemporaryGuests: false,
+		AllowUserCreation: true,
 		Mode: 2,
 		ShowAvatarsOnPlaylist: true,
 		WelcomeMessage: '',

@@ -36,6 +36,7 @@ Online:
   AllowDownloads: true
 Frontend:
   AllowGuestLogin: true
+  AllowUserCreation: true
   AllowCustomTemporaryGuests: false
   # Webapp mode :
   # 0 : closed

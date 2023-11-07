@@ -263,6 +263,9 @@ export async function createUser(
 	}
 ) {
 	try {
+		if (!getConfig().Frontend.AllowUserCreation) {
+			throw new ErrorKM('USER_CREATION_DISABLED', 403);
+		}
 		user.login = user.login.trim().toLowerCase();
 		if (user.password) user.password = user.password.trim();
 		if (!user.login.split('@')[0].match(userRegexp)) {

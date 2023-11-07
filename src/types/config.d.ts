@@ -84,6 +84,7 @@ export interface Config {
 	Frontend: {
 		AllowGuestLogin?: boolean;
 		AllowCustomTemporaryGuests?: boolean;
+		AllowUserCreation?: boolean;
 		Mode?: number;
 		ShowAvatarsOnPlaylist?: boolean;
 		WelcomeMessage?: string;
