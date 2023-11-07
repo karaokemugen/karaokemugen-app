@@ -90,7 +90,7 @@ export default function authController(router: SocketIOApp) {
 					throw new ErrorKM('INVALID_ONLINE_TOKEN', 403);
 				}
 			} catch (err) {
-				if (err.message === 'INVALID_ONLINE_TOKEN') throw err;
+				if (err instanceof ErrorKM) throw err;
 				logger.warn('Failed to check remote auth (user logged in as local only)', {
 					service,
 					obj: err,

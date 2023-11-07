@@ -232,13 +232,15 @@ function Login() {
 						>
 							{i18next.t('LOGIN.BUTTON_LOGIN')}
 						</button>
-						<button
-							type="button"
-							className="btn largeButton signupButton"
-							onClick={() => setActiveView('signup')}
-						>
-							{i18next.t('LOGIN.NEW_ACCOUNT')}
-						</button>
+						{context.globalState.settings.data.config?.Frontend.AllowUserCreation ? (
+							<button
+								type="button"
+								className="btn largeButton signupButton"
+								onClick={() => setActiveView('signup')}
+							>
+								{i18next.t('LOGIN.NEW_ACCOUNT')}
+							</button>
+						) : null}
 					</>
 				) : null}
 				{activeView !== 'welcome' ? (

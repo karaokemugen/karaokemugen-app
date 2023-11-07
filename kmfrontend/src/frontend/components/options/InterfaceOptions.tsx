@@ -66,6 +66,21 @@ function InterfaceOptions(props: IProps) {
 			</div>
 
 			<div className="settings-line">
+				<label htmlFor="Frontend.AllowUserCreation">
+					<span className="title">{i18next.t('SETTINGS.INTERFACE.ALLOW_USER_CREATION')}</span>
+					<br />
+					<span className="tooltip">{i18next.t('SETTINGS.INTERFACE.ALLOW_USER_CREATION_TOOLTIP')}</span>
+				</label>
+				<div>
+					<Switch
+						idInput="Frontend.AllowUserCreation"
+						handleChange={onChange}
+						isChecked={config['Frontend.AllowUserCreation']}
+					/>
+				</div>
+			</div>
+
+			<div className="settings-line">
 				<label htmlFor="Frontend.AllowCustomTemporaryGuests">
 					<span className="title">{i18next.t('SETTINGS.INTERFACE.ALLOW_CUSTOM_TEMPORARY_GUESTS')}</span>
 					<br />

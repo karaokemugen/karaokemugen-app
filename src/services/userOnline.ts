@@ -4,7 +4,7 @@ import { resolve } from 'path';
 import { Stream } from 'stream';
 
 import { OldJWTToken, TokenResponseWithRoles, User } from '../lib/types/user.js';
-import { resolvedPath } from '../lib/utils/config.js';
+import { getConfig, resolvedPath } from '../lib/utils/config.js';
 import { ErrorKM } from '../lib/utils/error.js';
 import { writeStreamToFile } from '../lib/utils/files.js';
 import HTTP, { fixedEncodeURIComponent } from '../lib/utils/http.js';
@@ -212,6 +212,9 @@ export async function fetchAndUpdateRemoteUser(
 		// Check if user exists. If it does not, create it.
 		let user: User = await getUser(username, true, true);
 		if (!user) {
+			if (!getConfig().Frontend.AllowUserCreation) {
+				throw new ErrorKM('USER_CREATION_DISABLED', 403);
+			}
 			// Remove remoteUser's type
 			delete remoteUser.type;
 			await createUser(
@@ -262,7 +265,7 @@ export async function fetchAndUpdateRemoteUser(
 	// Online token was not provided : KM Server might be offline
 	// We'll try to find user in local database. If failure return an error
 	const user = await getUser(username, true, true);
-	if (!user) throw { code: 'USER_LOGIN_ERROR' };
+	if (!user) throw new ErrorKM('USER_LOGIN_ERROR', 404);
 	return user;
 }
 
