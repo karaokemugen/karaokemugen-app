@@ -29,7 +29,6 @@ import InlineTag from './InlineTag';
 import AddKaraButton from '../generic/buttons/AddKaraButton';
 import VideoPreview from '../generic/VideoPreview';
 import UpvoteKaraButton from '../generic/buttons/UpvoteKaraButton';
-import DOMPurify from 'dompurify';
 import { ASSLine } from '../../../../../src/lib/types/ass';
 
 interface IProps {
@@ -152,16 +151,22 @@ export default function KaraDetail(props: IProps) {
 					});
 				}
 			});
-			const lyricsWithRuby = rubifiedArray
-				.map(seq => {
-					if (!seq.ruby) {
-						return seq.text;
-					}
-					return `<ruby>${seq.text}<rp>(</rp><rt>${seq.ruby}</rt><rp>)</rp></ruby>`;
-				})
-				.join('');
-
-			return DOMPurify.sanitize(lyricsWithRuby, { ALLOWED_TAGS: ['ruby', 'rp', 'rt'] });
+			return (
+				<>
+					{rubifiedArray.map((seq, index) =>
+						seq.ruby ? (
+							<ruby key={index}>
+								{seq.text}
+								<rp>(</rp>
+								<rt>{seq.ruby}</rt>
+								<rp>)</rp>
+							</ruby>
+						) : (
+							seq.text
+						)
+					)}
+				</>
+			);
 		});
 
 	const downloadMedia = () => {
@@ -356,13 +361,11 @@ export default function KaraDetail(props: IProps) {
 						{i18next.t('KARA_DETAIL.LYRICS')}
 					</div>
 				) : null}
-				{rubyfiedLyrics().map(ligne => {
-					return (
-						<Fragment>
-							<div dangerouslySetInnerHTML={{ __html: ligne }} />
-						</Fragment>
-					);
-				})}
+				{rubyfiedLyrics().map((line, index) => (
+					<Fragment key={index}>
+						<div>{line}</div>
+					</Fragment>
+				))}
 			</div>
 		) : null;
 

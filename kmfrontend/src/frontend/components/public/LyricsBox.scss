@@ -25,8 +25,13 @@
 		border-radius: 15px;
 		text-align: center;
 		> div {
-			transition: font-size, color, margin ease 200ms, 200ms, 200ms;
-			> span {
+			transition:
+				font-size,
+				color,
+				margin ease 200ms,
+				200ms,
+				200ms;
+			span {
 				&.singing {
 					color: scale-color(skyblue, $saturation: 100%, $lightness: -15%);
 				}
