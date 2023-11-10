@@ -1,4 +1,4 @@
-import { app, BrowserWindow, dialog, ipcMain, Menu, protocol, shell } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, Menu, protocol, shell, screen } from 'electron';
 import { promises as fs } from 'fs';
 import i18next from 'i18next';
 import { resolve } from 'path';
@@ -297,9 +297,20 @@ async function initElectronWindow() {
 async function createWindow() {
 	// Create the browser window
 	const state = getState();
+	// Create a window that fills the screen's available work area.
+	const primaryDisplay = screen.getPrimaryDisplay();
+	const { width, height } = primaryDisplay.workAreaSize;
+	let size_width: number = width;
+	let size_height: number = height;
+	if (width >= 1280) {
+		size_width = 1280;
+	}
+	if (height >= 720) {
+		size_height = 720;
+	}
 	win = new BrowserWindow({
-		width: 1280,
-		height: 720,
+		width: size_width,
+		height: size_height,
 		backgroundColor: '#36393f',
 		show: false,
 		icon: resolve(state.resourcePath, 'build/icon1024.png'),
