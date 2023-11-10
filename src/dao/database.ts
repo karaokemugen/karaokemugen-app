@@ -305,6 +305,7 @@ export async function generateDB(): Promise<boolean> {
 		const pls = await selectPlaylists(false);
 		for (const pl of pls) {
 			await reorderPlaylist(pl.plaid);
+			emitWS('playlistContentsUpdated', pl.plaid);
 		}
 		await updateAllSmartPlaylists();
 		emitWS('databaseGenerated');
