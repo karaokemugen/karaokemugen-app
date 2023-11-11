@@ -910,7 +910,11 @@
 		"IN_PROGRESS_DOWNLOAD_TOOLTIP": "Descarga en progreso",
 		"PLAYED": "Conteo de visitas",
 		"YEAR_TOOLTIP": "Año de emisión de la serie o de producción del vídeo",
-		"COMMENT": "¿Algún comentario?"
+		"COMMENT": "¿Algún comentario?",
+		"MEDIA_FILE_INFO": {
+			"AUDIO_CODEC": "Códec de audio",
+			"VIDEO_FRAMERATE": "Fotogramas por segundo"
+		}
 	},
 	"SETUP_PAGE": {
 		"LOCAL_ACCOUNT_DESC": "Ha elegido una cuenta local. Escriba un nombre de cuenta y una contraseña a continuación:",
