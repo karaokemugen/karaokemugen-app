@@ -24,6 +24,7 @@ import { getState, setState } from '../utils/state.js';
 import { baseChecksum } from './dataStore.js';
 import { reorderPlaylist, selectPlaylists } from './playlist.js';
 import { sqlGetStats, sqlResetUserData } from './sql/database.js';
+import { selectUsers } from './user.js';
 
 const service = 'DB';
 
@@ -305,7 +306,13 @@ export async function generateDB(): Promise<boolean> {
 		const pls = await selectPlaylists(false);
 		for (const pl of pls) {
 			await reorderPlaylist(pl.plaid);
-			emitWS('playlistContentsUpdated', pl.plaid);
+			// Smart playlists are updated below
+			if (!pl.flag_smart) emitWS('playlistContentsUpdated', pl.plaid);
+		}
+		const users = await selectUsers({});
+		for (const user of users) {
+			emitWS('favoritesUpdated', user.login);
+			emitWS('animelistUpdated', user.login);
 		}
 		await updateAllSmartPlaylists();
 		emitWS('databaseGenerated');
