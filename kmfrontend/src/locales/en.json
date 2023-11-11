@@ -1004,6 +1004,7 @@
 			"VIDEO_CODEC": "Video codec",
 			"VIDEO_RESOLUTION": "Resolution",
 			"VIDEO_COLORSPACE": "Colorspace",
+			"VIDEO_FRAMERATE": "Framerate",
 			"AUDIO_CODEC": "Audio codec"
 		},
 		"LYRICS_FILE": "Lyrics file",

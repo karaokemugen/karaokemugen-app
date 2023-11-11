@@ -643,6 +643,16 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 										</tr>
 										<tr>
 											<td style={{ paddingRight: '10px' }}>
+												{i18next.t('KARA.MEDIA_FILE_INFO.VIDEO_FRAMERATE')}
+											</td>
+											<td>
+												{this.state.mediaInfo?.videoFramerate
+													? this.state.mediaInfo?.videoFramerate + ' fps'
+													: '-'}
+											</td>
+										</tr>
+										<tr>
+											<td style={{ paddingRight: '10px' }}>
 												{i18next.t('KARA.MEDIA_FILE_INFO.AUDIO_CODEC')}
 											</td>
 											<td>{this.state.mediaInfo?.audioCodec || '-'}</td>
@@ -1156,7 +1166,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				</Form.Item>
 				<Divider orientation="left">{i18next.t('KARA.SECTIONS.META')}</Divider>
 				<Form.Item
-					className='wrap-label'
+					className="wrap-label"
 					label={
 						<span>
 							{i18next.t('KARA.FROM_DISPLAY_TYPE')}&nbsp;
@@ -1164,7 +1174,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 								<QuestionCircleOutlined />
 							</Tooltip>
 						</span>
-					}		
+					}
 					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 7 }}
 					name="from_display_type"
