@@ -48,7 +48,7 @@ function LyricsBox(props: IProps) {
 	};
 
 	const genBlockClasses = (block: ASSEvent, line: ASSLine) => {
-		if (block.tags[0]?.k && line.start + block.tags[0].k < timePosition + 0.125) {
+		if (typeof block.tags[0]?.k === 'number' && line.start + block.tags[0].k < timePosition + 0.125) {
 			return 'singing';
 		}
 	};
