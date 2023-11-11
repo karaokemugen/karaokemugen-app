@@ -5,6 +5,9 @@ import enUS from 'antd/es/locale/en_US';
 import esES from 'antd/es/locale/es_ES';
 import frFR from 'antd/es/locale/fr_FR';
 import idID from 'antd/es/locale/id_ID';
+import ptPT from 'antd/es/locale/pt_PT';
+import deDE from 'antd/es/locale/de_DE';
+
 import i18next from 'i18next';
 import { Component } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
@@ -69,6 +72,10 @@ class KMSystem extends Component<unknown, unknown> {
 			locale = esES;
 		} else if (navigator.languages[0].includes('id')) {
 			locale = idID;
+		} else if (navigator.languages[0].includes('pt')) {
+			locale = ptPT;
+		} else if (navigator.languages[0].includes('DE')) {
+			locale = deDE;
 		}
 		return locale;
 	}
