@@ -1008,8 +1008,12 @@ function Playlist(props: IProps) {
 			if (searchType && getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.favorites)
 				getPlaylist(searchType);
 		};
+		const animelistUpdated = () => {
+			if (getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.animelist) getPlaylist();
+		};
 
 		getSocket().on('favoritesUpdated', favoritesUpdated);
+		getSocket().on('animelistUpdated', animelistUpdated);
 		getSocket().on('playlistContentsUpdated', playlistContentsUpdatedFromServer);
 		getSocket().on('publicPlaylistEmptied', publicPlaylistEmptied);
 		getSocket().on('KIDUpdated', KIDUpdated);
@@ -1022,6 +1026,7 @@ function Playlist(props: IProps) {
 		}
 		return () => {
 			getSocket().off('favoritesUpdated', favoritesUpdated);
+			getSocket().off('animelistUpdated', animelistUpdated);
 			getSocket().off('playlistContentsUpdated', playlistContentsUpdatedFromServer);
 			getSocket().off('publicPlaylistEmptied', publicPlaylistEmptied);
 			getSocket().off('KIDUpdated', KIDUpdated);
