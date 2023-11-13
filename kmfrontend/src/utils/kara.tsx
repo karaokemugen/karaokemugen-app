@@ -144,11 +144,11 @@ export function buildKaraTitle(
 		data.langs = [isMulti];
 	}
 	const serieText =
-	 	data.from_display_type && data[data.from_display_type] ?
-			data[data.from_display_type]
-				.slice(0, 3)
-				.map(e => getTagInLocale(settings, e, i18nParam).i18n)
-				.join(', ') + (data.series.length > 3 ? '...' : '')
+		data.from_display_type && data[data.from_display_type]
+			? data[data.from_display_type]
+					.slice(0, 3)
+					.map(e => getTagInLocale(settings, e, i18nParam).i18n)
+					.join(', ') + (data[data.from_display_type].length > 3 ? '...' : '')
 			: data?.series?.length > 0
 			? data.series
 					.slice(0, 3)
