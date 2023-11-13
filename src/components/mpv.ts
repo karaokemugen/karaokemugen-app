@@ -24,14 +24,12 @@ import { convert1LangTo2B } from '../lib/utils/langs.js';
 import logger, { profile } from '../lib/utils/logger.js';
 import { emitWS } from '../lib/utils/ws.js';
 import { getBackgroundAndMusic } from '../services/backgrounds.js';
-import { getSongSeriesSingers, getSongTitle } from '../services/kara.js';
 import { playerEnding } from '../services/karaEngine.js';
 import { getPromoMessage, next, pausePlayer, playPlayer, prev } from '../services/player.js';
 import { notificationNextSong } from '../services/playlist.js';
 import { getSingleMedia } from '../services/playlistMedias.js';
 import { endPoll } from '../services/poll.js';
 import { getCurrentSongTimers } from '../services/quiz.js';
-import { getTagNameInLanguage } from '../services/tag.js';
 import { BackgroundType } from '../types/backgrounds.js';
 import { MpvCommand } from '../types/mpvIPC.js';
 import { MpvOptions, PlayerState, SongModifiers } from '../types/player.js';
@@ -44,6 +42,8 @@ import sentry from '../utils/sentry.js';
 import { getState, setState } from '../utils/state.js';
 import { isShutdownInProgress } from './engine.js';
 import Timeout = NodeJS.Timeout;
+import { getSongSeriesSingers, getSongTitle } from '../lib/services/kara.js';
+import { getTagNameInLanguage } from '../lib/services/tag.js';
 import { emit } from '../lib/utils/pubsub.js';
 
 type PlayerType = 'main' | 'monitor';
@@ -1120,7 +1120,9 @@ class Players {
 		let mediaFile: string;
 		let subFile: string;
 		const options: Record<string, any> = {
-			'force-media-title': getState().quiz.running ? 'Quiz!' : getSongTitle(song),
+			'force-media-title': getState().quiz.running
+				? 'Quiz!'
+				: getSongTitle(song, getConfig().Player.Display.SongInfoLanguage),
 		};
 		let onlineMedia = false;
 		const showVideo = !modifiers || (modifiers && modifiers.Blind === '');
@@ -1228,9 +1230,10 @@ class Players {
 			playerState.playerStatus = 'play';
 			if (modifiers) this.setModifiers(modifiers);
 			emitPlayerState();
+			const lang = getConfig().Player.Display.SongInfoLanguage;
 			setDiscordActivity('song', {
-				title: getSongTitle(song),
-				source: getSongSeriesSingers(song) || i18n.t('UNKNOWN_ARTIST'),
+				title: getSongTitle(song, lang),
+				source: getSongSeriesSingers(song, lang) || i18n.t('UNKNOWN_ARTIST'),
 			});
 			if (getState().quiz.running) {
 				this.progressBar(getState().quiz.settings.TimeSettings.GuessingTime, '{\\an5}', 'countdown');

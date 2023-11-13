@@ -4,10 +4,10 @@ import { dialog, globalShortcut, systemPreferences } from 'electron';
 import i18next from 'i18next';
 import mpris from 'mpris-service';
 
+import { getSongSeriesSingers } from '../lib/services/kara.js';
 import { getConfig } from '../lib/utils/config.js';
 import { profile } from '../lib/utils/logger.js';
 import { on } from '../lib/utils/pubsub.js';
-import { getSongSeriesSingers } from '../services/kara.js';
 import { next, pausePlayer, playPlayer, prev, setVolumePlayer, stopPlayer } from '../services/player.js';
 import { getCurrentSong, getPlaylistInfo } from '../services/playlist.js';
 import { CurrentSong } from '../types/playlist.js';
@@ -139,6 +139,6 @@ async function setMPRISMetadata(song: CurrentSong) {
 		// 'xesam:asText': (newSong.lyrics || ''),
 		'xesam:title': song?.titles[song?.titles_default_language],
 		'xesam:album': playlist,
-		'xesam:artist': [getSongSeriesSingers(song)],
+		'xesam:artist': [getSongSeriesSingers(song, null)],
 	};
 }
