@@ -32,7 +32,7 @@ import { Change, Commit, DifferentChecksumReport, ModifiedMedia, Push } from '..
 import { adminToken } from '../utils/constants.js';
 import { getFreeSpace, pathIsContainedInAnother } from '../utils/files.js';
 import FTP from '../utils/ftp.js';
-import Git, { isGit } from '../utils/git.js';
+import Git, { checkGitInstalled, isGit } from '../utils/git.js';
 import { applyPatch, cleanFailedPatch, downloadAndExtractZip, writeFullPatchedFiles } from '../utils/patch.js';
 import sentry from '../utils/sentry.js';
 import { getState } from '../utils/state.js';
@@ -111,6 +111,7 @@ export async function addRepo(repo: Repository) {
 				throw new ErrorKM('REPOSITORY_UNREACHABLE', 404);
 			}
 		}
+		if (repo.MaintainerMode && repo.Git?.URL) await checkGitInstalled();
 		await checkRepoPaths(repo);
 		insertRepo(repo);
 		// Let's download zip if it's an online repository
@@ -119,19 +120,23 @@ export async function addRepo(repo: Repository) {
 				if (repo.Git?.URL) {
 					updateGitRepo(repo.Name)
 						.then(() => generateDB())
-						.catch(() => {
-							logger.warn('Repository was added, but initializing it failed', { service });
+						.catch(err => {
+							logger.warn('Repository was added, but initializing it failed', { service, err });
 							emitWS(
-								'OperatorNotificationError',
-								APIMessage('NOTIFICATION.OPERATOR.ERROR.UPDATE_GIT_REPO_ERROR')
+								'operatorNotificationError',
+								APIMessage(
+									err instanceof ErrorKM
+										? `ERROR_CODES.${err.message}`
+										: 'NOTIFICATION.OPERATOR.ERROR.UPDATE_GIT_REPO_ERROR'
+								)
 							);
 						});
 				}
 			} else {
 				updateZipRepo(repo.Name)
 					.then(() => generateDB())
-					.catch(() => {
-						logger.warn('Repository was added, but initializing it failed', { service });
+					.catch(err => {
+						logger.warn('Repository was added, but initializing it failed', { service, err });
 					});
 			}
 		}
@@ -147,6 +152,7 @@ export async function updateAllRepos() {
 	try {
 		const repos = getRepos().filter(r => r.Online && r.Enabled && r.Update);
 		let doGenerate = false;
+		let allReposUpdated = true;
 		logger.info('Updating all repositories', { service });
 		for (const repo of repos) {
 			try {
@@ -160,9 +166,13 @@ export async function updateAllRepos() {
 				}
 			} catch (err) {
 				logger.error(`Failed to update repository ${repo.Name}`, { service, obj: err });
+				if (err instanceof ErrorKM)
+					emitWS('operatorNotificationError', APIMessage(`ERROR_CODES.${err.message}`));
+				allReposUpdated = false;
 			}
 		}
 		logger.info('Finished updating all repositories', { service });
+		if (allReposUpdated) emitWS('operatorNotificationSuccess', APIMessage('SUCCESS_CODES.REPOS_ALL_UPDATED'));
 		if (doGenerate) await generateDB();
 		if (getConfig().App.FirstRun) {
 			createProblematicSmartPlaylist();
@@ -390,6 +400,7 @@ export async function editRepo(
 				throw new ErrorKM('REPOSITORY_UNREACHABLE', 404);
 			}
 		}
+		if (repo.MaintainerMode && repo.Git?.URL) await checkGitInstalled();
 		if (repo.Enabled) await checkRepoPaths(repo);
 		updateRepo(repo, name);
 		// Delay repository actions after edit
@@ -418,10 +429,14 @@ async function hookEditedRepo(oldRepo: Repository, repo: Repository, refresh = f
 				try {
 					await updateGitRepo(repo.Name);
 				} catch (err) {
-					logger.warn('Repository was edited, but updating it failed', { service });
+					logger.warn('Repository was edited, but updating it failed', { service, err });
 					emitWS(
-						'OperatorNotificationError',
-						APIMessage('NOTIFICATION.OPERATOR.ERROR.UPDATE_GIT_REPO_ERROR')
+						'operatorNotificationError',
+						APIMessage(
+							err instanceof ErrorKM
+								? `ERROR_CODES.${err.message}`
+								: 'NOTIFICATION.OPERATOR.ERROR.UPDATE_GIT_REPO_ERROR'
+						)
 					);
 				}
 				if (refresh) doGenerate = true;

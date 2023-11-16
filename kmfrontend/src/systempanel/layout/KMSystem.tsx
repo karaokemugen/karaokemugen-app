@@ -49,12 +49,14 @@ class KMSystem extends Component<unknown, unknown> {
 		getSocket().on('operatorNotificationInfo', this.operatorNotificationInfo);
 		getSocket().on('operatorNotificationError', this.operatorNotificationError);
 		getSocket().on('operatorNotificationWarning', this.operatorNotificationWarning);
+		getSocket().on('operatorNotificationSuccess', this.operatorNotificationSuccess);
 	}
 
 	componentWillUnmount() {
 		getSocket().off('operatorNotificationInfo', this.operatorNotificationInfo);
 		getSocket().off('operatorNotificationError', this.operatorNotificationError);
 		getSocket().off('operatorNotificationWarning', this.operatorNotificationWarning);
+		getSocket().off('operatorNotificationSuccess', this.operatorNotificationSuccess);
 	}
 
 	operatorNotificationInfo = (data: { code: string; data: string }) =>
@@ -63,6 +65,8 @@ class KMSystem extends Component<unknown, unknown> {
 		displayMessage('error', i18next.t(data.code, { data: data }));
 	operatorNotificationWarning = (data: { code: string; data: string }) =>
 		displayMessage('warning', i18next.t(data.code, { data: data }));
+	operatorNotificationSuccess = (data: { code: string; data: string }) =>
+		displayMessage('success', i18next.t(data.code, { data: data }));
 
 	getLocale() {
 		let locale = enUS;
