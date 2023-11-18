@@ -204,11 +204,13 @@ export async function deleteKaraInInbox(inid: string, repoName: string, token: s
 				throw err;
 			}
 		}
-		const numberIssue = +inboxItem.gitlab_issue.split('/')[inboxItem.gitlab_issue.split('/').length - 1];
-		closeIssue(numberIssue, repoName).catch(err => {
-			logger.warn(`Unable to close issue : ${err}`, { service, obj: err });
-			Sentry.error(err);
-		});
+		if (inboxItem.gitlab_issue) {
+			const numberIssue = +inboxItem.gitlab_issue.split('/')[inboxItem.gitlab_issue.split('/').length - 1];
+			closeIssue(numberIssue, repoName).catch(err => {
+				logger.warn(`Unable to close issue : ${err}`, { service, obj: err });
+				Sentry.error(err);
+			});
+		}
 	} catch (err) {
 		logger.warn(`Unable to delete inbox item ${inid} on ${repoName} : ${err}`, { service, obj: err });
 		Sentry.error(err);
@@ -230,9 +232,11 @@ export async function markKaraAsDownloadedInInbox(inid: string, repoName: string
 		Sentry.error(err);
 		return;
 	}
-	const issueArr = inboxItem.gitlab_issue.split('/');
-	await assignIssue(+issueArr[issueArr.length - 1], repoName).catch(err => {
-		logger.warn(`Unable to assign issue : ${err}`, { service, obj: err });
-		Sentry.error(err);
-	});
+	if (inboxItem.gitlab_issue) {
+		const issueArr = inboxItem.gitlab_issue.split('/');
+		await assignIssue(+issueArr[issueArr.length - 1], repoName).catch(err => {
+			logger.warn(`Unable to assign issue : ${err}`, { service, obj: err });
+			Sentry.error(err);
+		});
+	}
 }
