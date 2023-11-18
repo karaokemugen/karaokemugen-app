@@ -199,7 +199,7 @@ export default function Inbox() {
 			title: i18next.t('INBOX.TYPE'),
 			dataIndex: 'fix',
 			key: 'fix',
-			render: text => (text ? 'Modification' : 'Création'),
+			render: text => (text ? i18next.t('INBOX.TYPES.MODIFICATION') : i18next.t('INBOX.TYPES.CREATION')),
 		},
 		{
 			title: i18next.t('INBOX.USER'),
