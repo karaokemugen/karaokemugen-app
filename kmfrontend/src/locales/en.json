@@ -1957,6 +1957,10 @@
 		"NAME": "Karaoke name",
 		"TIMESTAMP": "Timestamp",
 		"TYPE": "Type of request",
+		"TYPES": {
+			"CREATION": "Creation",
+			"MODIFICATION": "Modification"
+		},
 		"LINK_TO_ISSUE": "Link to issue",
 		"CONTACT_INFOS": "Author contact informations",
 		"ISSUE": "Issue {{number}}",
