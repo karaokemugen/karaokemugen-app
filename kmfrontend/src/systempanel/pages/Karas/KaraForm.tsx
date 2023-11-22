@@ -449,12 +449,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 
 	applyFieldsFromKara = async (kid: string) => {
 		const karas = await commandBackend('getKaras', {
-			q:
-				(this.formRef.current?.getFieldValue('repository') || ''
-					? `r:${this.formRef.current?.getFieldValue('repository') || ''}!`
-					: '!') +
-				'k:' +
-				kid,
+			q: 'k:' + kid,
 			size: 1,
 			ignoreCollections: true,
 		});
