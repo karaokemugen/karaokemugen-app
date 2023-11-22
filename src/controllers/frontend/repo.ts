@@ -16,6 +16,7 @@ import {
 	generateCommits,
 	getRepo,
 	getRepoFreeSpace,
+	getRepoManifest,
 	getRepos,
 	listRepoStashes,
 	movingMediaRepo,
@@ -57,6 +58,18 @@ export default function repoController(router: SocketIOApp) {
 			return repo;
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
+		}
+	});
+	router.route('getRepoManifest', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'open');
+		try {
+			const manifest = getRepoManifest(req.body.name);
+			if (!manifest) throw { code: 404 };
+			return manifest;
+		} catch (err) {
+			const code = 'REPO_MANIFEST_GET_ERROR';
+			errMessage(code, err);
+			throw { code: err?.code || 500, message: APIMessage(code) };
 		}
 	});
 	router.route('deleteRepo', async (socket: Socket, req: APIData) => {

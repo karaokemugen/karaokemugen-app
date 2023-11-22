@@ -8,7 +8,14 @@ import { TopologicalSort } from 'topological-sort';
 import { compareKarasChecksum, generateDB } from '../dao/database.js';
 import { baseChecksum, editKaraInStore, getStoreChecksum, sortKaraStore } from '../dao/dataStore.js';
 import { updateDownloaded } from '../dao/download.js';
-import { deleteRepo, insertRepo, selectRepos, updateRepo } from '../dao/repo.js';
+import {
+	deleteRepo,
+	insertRepo,
+	readRepoManifest,
+	selectRepos,
+	selectRepositoryManifest,
+	updateRepo,
+} from '../dao/repo.js';
 import { getSettings, refreshAll, saveSetting } from '../lib/dao/database.js';
 import { initHooks } from '../lib/dao/hook.js';
 import { refreshKaras } from '../lib/dao/kara.js';
@@ -1000,6 +1007,9 @@ export async function findUnusedMedias(repo: string): Promise<string[]> {
 /** Get metadata. Throws if KM Server is not up to date */
 export async function getRepoMetadata(repo: string) {
 	try {
+		// FIXME : This should be depracted in KM 9.0
+		// Repository metadata will have to come from the manifest file provided by each repository, not from their online server.
+		// Only LastCommit will need to be fetched from KM Server.
 		const ret = await HTTP.get(`https://${repo}/api/karas/repository`);
 		return ret.data as RepositoryManifest;
 	} catch (err) {
@@ -1497,3 +1507,11 @@ export async function openMediaFolder(repoName: string) {
 		throw err instanceof ErrorKM ? err : new ErrorKM('OPEN_MEDIA_FOLDER_ERROR');
 	}
 }
+
+export async function initRepos() {
+	for (const repo of getRepos()) {
+		readRepoManifest(repo.Name);
+	}
+}
+
+export const getRepoManifest = selectRepositoryManifest;
