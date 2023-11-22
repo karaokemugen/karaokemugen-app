@@ -68,7 +68,6 @@ export default function repoController(router: SocketIOApp) {
 			return manifest;
 		} catch (err) {
 			const code = 'REPO_MANIFEST_GET_ERROR';
-			errMessage(code, err);
 			throw { code: err?.code || 500, message: APIMessage(code) };
 		}
 	});
