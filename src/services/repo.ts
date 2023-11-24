@@ -272,6 +272,12 @@ export async function deleteMedias(kids?: string[], repo?: string, cleanRarelyUs
 			karas.content.map(k => k.kid),
 			'MISSING'
 		);
+		emitWS(
+			'KIDUpdated',
+			karas.content.map(kara => {
+				return { kid: kara.kid, download_status: 'MISSING' };
+			})
+		);
 	} catch (err) {
 		logger.error(`Error getting repos : ${err}`, { service });
 		sentry.error(err);
