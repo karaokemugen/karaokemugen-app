@@ -265,7 +265,7 @@ async function getGitPath() {
 	try {
 		return await which(`git${process.platform === 'win32' ? '.exe' : ''}`);
 	} catch (err) {
-		if (err.code === 'ENOENT') throw new ErrorKM('GIT_BINARY_NOT_FOUND');
+		if (err.code === 'ENOENT') throw new ErrorKM('GIT_BINARY_NOT_FOUND', 500, false);
 		throw err;
 	}
 }
