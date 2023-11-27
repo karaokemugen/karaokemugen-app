@@ -457,13 +457,38 @@
 			"ENDOFPLAYLISTACTION": {
 				"OPTIONS": {
 					"REPEAT": "Wiedergabeliste wiederholen",
-					"NONE": "Beende die Karaoke-Sitzung"
+					"NONE": "Beende die Karaoke-Sitzung",
+					"RANDOM_FALLBACK": "Spiele zufällige Songs aus der Fallback-Playlist ab",
+					"RANDOM": "Spiele zufällige Songs aus der Bibliothek",
+					"PLAY_FALLBACK": "Spiele die Fallback-Playlist ab"
 				},
 				"NAME": "Aktion am Ende der Playlist",
 				"TOOLTIP": "Wenn Du „Zufällige Songs“ auswählst, werden diese aus deiner Songbibliothek ausgewählt. In Kombination mit AutoPlay kann deine Playlist fortgesetzt werden, sobald jemand einen neuen Song hinzufügt."
 			},
 			"PLAYLIST_SETTINGS": "Wiedergabelisten",
 			"PLAYLIST_SETTINGS_TOOLTIP": "Ändere das Verhalten von Wiedergabelisten, erlaube Duplikate und wähle die Aktion am Ende der Wiedergabeliste."
+		},
+		"INTERFACE": {
+			"WEBAPPMODE_CLOSED": "Geschlossen: „Entschuldigung, wir sind geschlossen“. Nachricht",
+			"SHOW_AVATARS_ON_PLAYLIST": "Avatare in der Playlist anzeigen",
+			"ALLOW_CUSTOM_TEMPORARY_GUESTS": "Anpassbare Gastkonten",
+			"DISPLAY_WELCOME_MESSAGE_TOOLTIP": "Diese Nachricht wird auf der Anmeldeseite deiner Karaoke-Sitzung angezeigt",
+			"SHOW_AVATARS_ON_PLAYLIST_TOOLTIP": "Sie sehen auf einen Blick, wer was hinzugefügt hat.",
+			"WEBAPPMODE_SHORT": "Oberflächen Modus",
+			"WEBAPPMODE_CLOSED_SHORT": "Geschlossen",
+			"ALLOW_GUEST_LOGIN_TOOLTIP": "Wenn die Option deaktiviert ist, ist ein (lokales oder Online-)Konto erforderlich, um sich bei deiner Instanz anzumelden",
+			"WEBAPPMODE": "Öffentlicher Oberflächen Modus",
+			"WEBAPPMODE_LIMITED": "Eingeschränkt: Schreibgeschützt",
+			"ALLOW_USER_CREATION": "Benutzererstellung zulassen",
+			"WEBAPPMODE_OPEN": "Offen (Standard): Benutzer können Songs hinzufügen",
+			"WEBAPPMODE_TOOLTIP": "Was deine Gäste sehen, wenn sie sich in die Oberfläche einloggen",
+			"WEBAPPMODE_OPEN_SHORT": "Offen",
+			"ALLOW_CUSTOM_TEMPORARY_GUESTS_TOOLTIP": "Ermögliche es den Gästen, ihren Spitznamen zu wählen, anstatt einem von der Anwendung zufällig gewählten Namen zugewiesen zu sein.",
+			"ALLOW_USER_CREATION_TOOLTIP": "Wenn die Funktion deaktiviert ist, können Benutzer keine neuen lokalen Konten erstellen oder sich mit einem Online-Konto anmelden, welche noch nicht in deiner Karaoke Mugen-Anwendung registriert wurden.",
+			"WEBAPPMODE_LIMITED_SHORT": "Eingeschränkt",
+			"LABEL": "Oberfläche",
+			"DISPLAY_WELCOME_MESSAGE": "Willkommensnachricht anzeigen",
+			"ALLOW_GUEST_LOGIN": "Gäste zulassen"
 		}
 	},
 	"KARA_DETAIL": {
@@ -732,5 +757,10 @@
 			"TITLE": "Git-Integration",
 			"DESCRIPTION": "Git-Repositories verwalten (Push, Merge-Konflikte)"
 		}
-	}
+	},
+	"KARA_PAUSED_WAITING": "Es wird noch kein Song abgespielt",
+	"KARA_PAUSED_TAGLINES": [
+		"…aber dies sollte nicht lange andauern!",
+		"Wir werden deinem Wunsch nachgehen."
+	]
 }
