@@ -761,6 +761,205 @@
 	"KARA_PAUSED_WAITING": "Es wird noch kein Song abgespielt",
 	"KARA_PAUSED_TAGLINES": [
 		"…aber dies sollte nicht lange andauern!",
-		"Wir werden deinem Wunsch nachgehen."
-	]
+		"Wir werden deinem Wunsch nachgehen.",
+		"Deine Wartezeit wird geschätzt ermittelt und kann etwas abweichen.",
+		"Zu ruhig, das gefällt mir nicht …",
+		"Die Vorbereitungen laufen!"
+	],
+	"SELECT_KARAS_REQUIRED": "Dz musst mindestens ein Lied auswählen",
+	"MODAL": {
+		"CROP_AVATAR_MODAL": {
+			"TITLE": "Beschneide dein Bild",
+			"HELP": "Passe die Größe des Quadrats an, um ein perfektes Profilbild zu erhalten."
+		},
+		"PROFILE_MODAL": {
+			"REFRESH_ANIME_LIST": "Anime-Liste aktualisieren",
+			"ONLINE_CONVERT": "In ein Online-Konto umwandeln",
+			"ANIME_LIST_TO_FETCH": "Zu verwendender Anime-Listenanbieter",
+			"MAIN_SONG_NAME_LANG": "Präferenz für die Anzeige des Songnamens",
+			"SOCIAL_NETWORKS": {
+				"KITSU_PLACEHOLDER": "karaokemugen",
+				"KITSU": "Kitsu",
+				"MYANIMELIST_PLACEHOLDER": "karaokemugen",
+				"BLUESKY_PLACEHOLDER": "karaoke.bsky.social",
+				"ANILIST_PLACEHOLDER": "karaokemugen",
+				"INSTAGRAM": "Instagram",
+				"MYANIMELIST": "MyAnimeList",
+				"TWITCH_PLACEHOLDER": "KaraokeLive",
+				"DISCORD": "Discord",
+				"TWITTER_PLACEHOLDER": "@KaraokeMugen",
+				"TWITTER": "X (ehemals Twitter)",
+				"MASTODON": "Mastodon",
+				"MASTODON_PLACEHOLDER": "KaraokeMugen@shelter.moe",
+				"TWITCH": "Twitch",
+				"BLUESKY": "Bluesky",
+				"ANILIST": "AniList",
+				"DISCORD_PLACEHOLDER": "Karak#1423",
+				"INSTAGRAM_PLACEHOLDER": "karaokemugen"
+			},
+			"INTERFACE_LANGUAGE": "Oberflächen Sprache",
+			"CHOOSE_ANIME_LIST": "Wähle eine Anime-Liste",
+			"FLAG_PARENTSONLY": "Gruppieren Sie Songs nach Versionen",
+			"FLAG_SENDSTATS": "Verwende meine Favoriten und Songanfragen für Statistiken",
+			"DANGEROUS_ACTIONS": "Gefährliche Aktionen",
+			"LOCAL_DELETE": "Löschen Sie dieses Konto lokal",
+			"FLAG_PUBLIC": "Mache dieses Profil öffentlich",
+			"LOCAL_DELETE_WARN": "Dadurch wird dein Konto nur aus dieser lokalen App entfernt. Wenn du über ein Online-Konto verfügst, wird dieses nicht deaktiviert. Bist du dir sicher, dass du dies tun möchtest?",
+			"SONG_NAME_DISPLAY_EXAMPLE": "Beispiel für einen Songnamen",
+			"ONLINE_DELETE_WARN": "Dadurch wird dein Konto vom Online-Server @{{instance}} entfernt. Bist du dir sicher, dass du dies tun möchtest?",
+			"LOCATION": "Standort",
+			"FLAG_DISPLAYFAVORITES": "Mache deine Favoriten öffentlich",
+			"MISSING_EMAIL": "Achtung: Ohne E-Mail kannst du dein Passwort nicht zurücksetzen!",
+			"FALLBACK_SONG_NAME_LANG": "Anzeigepräferenz für den Fallback-Songnamen",
+			"ONLINE_DELETE": "Online-Konto deaktivieren"
+		},
+		"TUTORIAL": {
+			"NEXT": "Nächste",
+			"BACK": "Zurück",
+			"WELCOME": "Willkommen bei Karaoke Mugen! Folgendes musst du wissen.",
+			"END": "Erledigt",
+			"TITLE": "Lernmodus"
+		},
+		"PLAYLIST_MODAL": {
+			"PUBLIC": "Öffentlich",
+			"CANNOT_WHITELIST": "Du musst eine Whitelist haben. Bearbeite stattdessen diejenige, die du als neue Whitelist festlegen möchtest.",
+			"CREATE_PLAYLIST": "Erstelle eine neue Playlist",
+			"CURRENT": "Aktuell",
+			"EDIT_PLAYLIST": "Editiere {{playlist}}",
+			"SMART_DESC": "Definiere Kriterien, die darüber entscheiden, welche Songs automatisch zur Playlist hinzugefügt werden",
+			"NAME": "Name",
+			"FALLBACK": "Zurückgreifen",
+			"BLACKLIST": "Schwarze Liste",
+			"VISIBLE_DESC": "Für die Öffentlichkeit sichtbar",
+			"WHITELIST_DESC": "Die Songs auf dieser Liste werden nicht ausgeblendet, auch wenn sie auf der schwarzen Liste stehen.",
+			"VISIBLE": "Sichtbar",
+			"BLACKLIST_DESC": "Die Songs auf dieser Liste werden für Benutzer ausgeblendet (es sei denn, sie stehen ebenfalls auf der Whitelist)",
+			"CANNOT_BLACKLIST": "Du musst immer eine Blacklist haben. Bearbeite stattdessen die Blacklist, die du als neue Blacklist festlegen möchtest.",
+			"NAME_MANDATORY": "Der Name der Wiedergabeliste ist erforderlich",
+			"CANNOT_SMART": "Du kannst das Smart-Attribut nicht aus einer Playlist entfernen.",
+			"CANNOT_FALLBACK": "Du musst eine Fallback Liste haben. Bearbeite stattdessen den Fallback, den du als neuen Fallback festlegen möchtest.",
+			"FALLBACK_DESC": "Die Songs in dieser Liste werden nach dem Ende einer Playlist automatisch abgespielt, sofern dies in den Einstellungen aktiviert ist",
+			"CREATE": "Erstellen",
+			"PUBLIC_DESC": "Die öffentliche Liste ist diejenige, die Wünsche von den Gästen enthält",
+			"SMART": "Intelligent",
+			"WHITELIST": "Weiße Liste",
+			"CURRENT_DESC": "Die aktuelle Liste wird vom Mediaplayer gelesen",
+			"CANNOT_PUBLIC": "Du kannst keine öffentliche Playlist haben. Bearbeite stattdessen die Playlist, die Du als neue öffentliche Playlist festlegen möchtest.",
+			"EDIT": "Editieren",
+			"CANNOT_CURRENT_PLAYLIST": "Du kannst keine aktuelle Playlist haben. Bearbeite stattdessen die Playlist, die du als neue aktuelle Playlist festlegen möchtest."
+		},
+		"UNKNOW_REPOS": {
+			"TITLE": "Unbekannte Repositorys erkannt",
+			"DESCRIPTION": "Diese Playlist enthält Songs aus Repositories, die du noch nicht lokal hast.",
+			"DOWNLOAD_THEM": "Möchtest du sie jetzt hinzufügen?"
+		},
+		"SHUFFLE_MODAL": {
+			"BALANCE_DESC": "Ordnet Songs nach Benutzerpools neu (A-B-C, B-A-C, C-B-A usw.)",
+			"SMART_SHUFFLE_DESC": "Verhindert, dass lange Lieder oder Lieder derselben Person aufeinander folgen",
+			"LABEL": "Wähle eine Zufallsmethode aus:",
+			"MIX_ALREADY_PASSED_SONGS": "Mische auch bereits abgespielte Songs.",
+			"SORTUPVOTES": "Nach Likes sortieren",
+			"TITLE": "Mische Playlist",
+			"BALANCE": "Ausgewogen",
+			"SHUFFLE_DESC": "Die Wiedergabeliste wird zufällig gemischt, ohne dass Einfluss auf den Mix genommen wird.",
+			"SORTUPVOTES_DESC": "Sortieren nach der höchsten Anzahl an Likes (beliebteste Songs zuerst)",
+			"SMART_SHUFFLE": "Intelligent",
+			"SHUFFLE": "Zufällig"
+		},
+		"PLAY_CURRENT_MODAL": {
+			"DESCRIPTION": "Du hast Abspielen gedrückt, aber die aktuelle Playlist '<1>{{playlist}}</1>' wird nicht auf dem Bildschirm angezeigt.",
+			"PLAY_ANYWAY": "Trotzdem abspielen",
+			"DESC_OUTCOME": "Wenn Du fortfährst, spielt Karaoke Mugen den Song <1>{{song}}</1> aus dieser Playlist ab, aber NICHT aus der Playlist, die du gerade offen hast.",
+			"TITLE": "Warnung!",
+			"CHANGE_TO_DISPLAYED_AND_PLAY": "Änder die aktuelle Wiedergabeliste in <1>{{displayedPlaylistName}}</1> und spielen diese ab"
+		}
+	},
+	"REMOTE_STATUS": {
+		"LABEL": "Verbindungsstatus",
+		"CONNECTED": "Verbunden",
+		"OUTDATED": "Inkompatibler Server",
+		"DISCONNECTED": "Getrennt",
+		"OUTDATED_CLIENT": "Inkompatible Anwendung (bitte aktualisiere deine Anwendung)"
+	},
+	"ENCORES_TAGLINES": [
+		"Nun, es liegt nicht daran, dass ich dich mag oder so …",
+		"Letzter?",
+		"Letzter Song, gibt noch mal alles!"
+	],
+	"VIEW_POPULAR": "Beliebt",
+	"QUOTA_AVAILABLE": "Du kannst jetzt wieder Songs hinzufügen!",
+	"VIEW_LIKES": "Likes",
+	"REPO_IN_PROGRESS": "Karaoke Mugen ist noch nicht ganz fertig. Bitte warte, bis die folgenden Aufgaben abgeschlossen sind.",
+	"ONLINE_STATS": {
+		"DETAILS": {
+			"1": "Welche Karaokes wurden gespielt",
+			"3": "Informationen zum Computer (CPU, verfügbarer RAM, Betriebssystemname und -version…)",
+			"TITLE": "Gesendete Informationsdetails",
+			"OUTRO": "Statistiken werden bei jedem Start und dann bei jeder Nutzungsstunde gesendet. Du kannst die gesendeten Informationen im Protokollverzeichnis von Karaoke Mugen jederzeit einsehen.",
+			"2": "Welche Karaokes wurden angefragt (aber nicht von wem)",
+			"4": "Anwendungseinstellungen (ausgenommen private Informationen wie Passwörter oder Schlüssel)"
+		},
+		"INTRO": "Karaoke Mugen kann anonyme Informationen über deine Instanz an den Karaoke Mugen Server senden, um Nutzungsstatistiken zu erstellen.",
+		"QUESTION": "Bist du damit einverstanden, diese Statistiken an Karaoke Mugen Server zu senden?",
+		"CHANGE": "Du kannst deine Auswahl jederzeit in den Optionen ändern.",
+		"ERROR": "Karaoke Mugen kann bei Fehlern Informationen über Ihre Instanz an Sentry.io senden. Dies hilft uns, Probleme zu lösen, da diese direkt gemeldet werden. Bist du damit einverstanden, diese Fehlerberichte zu senden?",
+		"TITLE": "Statistiken",
+		"CONFIRM": "Bestätigen"
+	},
+	"INSTANCE_NAME_SHORT": "Server",
+	"INTRO_TAGLINES": [
+		"Auf geht's!",
+		"Starte…",
+		"Initialisiere…",
+		"Bereite dein Mikro vor!",
+		"*räuspern*"
+	],
+	"OUTRO_TAGLINES": [
+		"Das Ende :(",
+		"Vielen Dank an alle!"
+	],
+	"POLLENDED": "{{kara}} gewinnt mit {{votes}} Stimmen!",
+	"PAUSE_TAGLINES": [
+		"Mache eine Pause!",
+		"Zeit etwas zu trinken!",
+		"Wir sind gleich zurück!"
+	],
+	"INSTANCE_NAME": "Server Name",
+	"REMOTE_TOKEN_TOOLTIP": "(Nur einem Serveradministrator offenlegen)",
+	"POLL_TAGLINES": [
+		"Abstimmen! Abstimmen!",
+		"Es ist deine Entscheidung."
+	],
+	"JINGLE_TIME": "Jingle-Zeit!",
+	"REMOTE_RESET": "Token zurücksetzen",
+	"SECURITY_CODE": "Sicherheitscode",
+	"VIEW_LIKES_TOOLTIP": "Der Song mit den meisten Likes wird zuerst angezeigt, die Reihenfolge der Playlist ändert sich dadurch nicht.",
+	"PL_MULTIPLE_ADDED": "Füge {{count}} Songs hinzu",
+	"REMOTE_RESET_CONFIRM": "Dein Zugangscode wird freigegeben und ein neuer generiert. Bist du wirklich sicher?",
+	"KARA_SUGGESTION_NOT_FOUND": "Du kannst dein Lieblingslied nicht finden? Überprüfe deine konfigurierten Online-Repositories sowie die Vorschlagsseite, falls dein Wunsch noch nicht erfüllt wurde:",
+	"USER_SONG_PLAYS_IN": "Dein Song {{kara}} wurde hinzugefügt und wird um {{time}} am ({{date}}) voraussichtlich abgespielt",
+	"REMOTE_TOKEN": "Fernzugriffstoken",
+	"VIEW_FAVORITES": "Favoriten",
+	"SPONSOR_TIME": "WERBEZEIT!",
+	"CLEAR_FILTER": "Frei",
+	"INTRO_TIME": "Playlist-Intro",
+	"VIEW_RECENT": "Neueste",
+	"ENCORES_TIME": "Zugabe! Zugabe!",
+	"MAKE_ACCOUNT_ADMIN": "Dieses Konto auf den Operator-Modus upgraden",
+	"POLL_TIME": "Abstimmen",
+	"NEXT_SONG_MESSAGE": "Als nächstes :",
+	"REMOTE_RESET_TOOLTIP": "Erzeugt ein neues Token.",
+	"SPONSOR_TAGLINES": [
+		"Kono bangumi wa…",
+		"Und danke für das Geld."
+	],
+	"FORGOT_PASSWORD": "Hast du dein Passwort vergessen?",
+	"OUTRO_TIME": "Ende der Playlist",
+	"VIEW_STANDARD": "Standard",
+	"MAKE_ACCOUNT_ADMIN_MESSAGE": "Wenn du dein Konto zum Operator-Modus hochstufen möchtest, gebe hier den 6-stelligen Sicherheitscode ein.",
+	"JINGLE_TAGLINES": [
+		"Wir sind gleich zurück!"
+	],
+	"PAUSE_TIME": "Pause",
+	"REMOTE_URL": "URL für den Fernzugriff auf das System"
 }
