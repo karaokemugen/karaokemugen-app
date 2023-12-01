@@ -347,8 +347,11 @@ async function createWindow() {
 	});
 }
 
-function openLink(url: string) {
-	url.includes('//localhost') ? win?.loadURL(url) : shell.openExternal(url);
+function openLink(urlStr: string) {
+	const url = new URL(urlStr);
+	if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
+	if (url.port !== '' && +url.port !== getState().frontendPort) return;
+	url.hostname === 'localhost' ? win?.loadURL(urlStr) : shell.openExternal(urlStr);
 }
 
 export function focusWindow() {
