@@ -47,7 +47,6 @@ let state: State = {
 		number: packageJSON.version,
 		name: packageJSON.versionName,
 	},
-	restoreNeeded: false,
 	systemMessages: [],
 	DBReady: false,
 	portable: false,

@@ -3,10 +3,10 @@ import i18next from 'i18next';
 import { debounce } from 'lodash';
 import { resolve } from 'path';
 
+import { getSongSeriesSingers, getSongTitle, getSongVersion } from '../lib/services/kara.js';
 import { getConfig, resolvedPath } from '../lib/utils/config.js';
 import { asyncCheckOrMkdir } from '../lib/utils/files.js';
 import logger from '../lib/utils/logger.js';
-import { getSongSeriesSingers, getSongTitle, getSongVersion } from '../services/kara.js';
 import { getPlaylistInfo } from '../services/playlist.js';
 import { StreamFileType } from '../types/streamerFiles.js';
 import sentry from './sentry.js';

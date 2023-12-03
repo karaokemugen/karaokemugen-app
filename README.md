@@ -50,7 +50,7 @@ This is a mature product, battle-tested during anime conventions like [Jonetsu](
 -   **Highly customizable experience** to tailor the app to your specific needs (for twitch streams, in front of a crowd, between friends, for karaoke contests, etc.)
 -   **Display karaoke information** or operator announcements during song playback
 -   **Export/import** playlists and favorites
--   For anime fans: **link your account with MyAnimeList, Anilist or Kitsu** to get a song list with all the anime you've seen!
+-   **Quiz Mode** for blind tests
 -   And **many other things**! Check out the [feature list](http://mugen.karaokes.moe/en/features.html)
 
 ## How it works
@@ -68,7 +68,7 @@ For more information, check out the [documentation site](http://docs.karaokes.mo
 
 The app is multi-platform and works on Linux/Windows/macOS.
 
-For source installs, it requires nodeJS 14 or above, as well as postgresql, GNU patch, mpv and ffmpeg binaries (see below).
+For source installs, it requires nodeJS 18 or above, as well as PostgreSQL, GNU patch, mpv and ffmpeg binaries (see below).
 
 For binary installs, everything's included.
 
@@ -80,17 +80,21 @@ If you don't want to install manually, binaries are available [on the website](h
 
 To install, git clone this repository with the `--recursive` flag since it uses git submodules or download one of the available binaries for macOS or Windows on [Karaoke Mugen's website](http://mugen.karaokes.moe/en).
 
+```sh
+git clone --recursive https://gitlab.com/karaokemugen/code/karaokemugen-app.git
+```
+
 ### Config files and portability
 
 If a file named `portable` exists in the same directory as KM, it will seek its config files in a `app` folder from that directory.
 
-If that file does not exist, config files will be read from `~/KaraokeMugen/`.
+If that file does not exist, config and data files will be read from `~/KaraokeMugen/`.
 
-Portable mode is useful if you're storing Karaoke Mugen on a removeable media or an external hard drive.
+Portable mode is useful if you're storing Karaoke Mugen AND its data on a removable media or an external hard drive.
 
 ### Required binaries
 
-mpv (video player), ffmpeg (video/audio processing), GNU Patch (data updates), and postgreSQL (database) are required by Karaoke Mugen.
+mpv (video player), ffmpeg (video/audio processing), GNU Patch (data updates), and PostgreSQL (database) are required by Karaoke Mugen.
 
 #### Depending on your system
 
@@ -99,7 +103,7 @@ You can also define paths where to find those binaries in your `config.yml` file
 You can download a complete package for mpv/ffmpeg/postgres/patch here:
 
 -   [Linux](https://mugen.karaokes.moe/downloads/dist_linux-7.x.tar.gz)
--   [macOS](https://mugen.karaokes.moe/downloads/dist_linux-7.x.tar.gz)
+-   [macOS](https://mugen.karaokes.moe/downloads/dist_mac-7.x.tar.gz)
 -   [Windows](https://mugen.karaokes.moe/downloads/dist_win-6.x.tar.gz)
 
 Binaries must be placed in the `app/bin` folder (create it if it doesn't exist already).
@@ -108,7 +112,7 @@ If that's not the case, you can modify those paths in `config.yml`.
 
 Make sure postgres is launched, [configured](#PostgreSQL) and ready for use.
 
-If you're using Linux and with to use your distribution's own binaries, beware: they often package old versions of ffmpeg/mpv/postgresql, update them first via their own websites' instructions if you're not using the ones we provide.
+If you're using Linux and wish to use your distribution's own binaries, beware: they often package old versions of ffmpeg/mpv/postgresql, update them first via their own websites' instructions if you're not using the ones we provide.
 
 #### mpv
 
@@ -128,18 +132,18 @@ You'll need a version of the GNU patch utility 2.7 or above so Karaoke Mugen can
 
 #### PostgreSQL
 
-PostgreSQL 13.x or later is required ([postgreSQL's website](https://www.postgresql.org/))
+PostgreSQL 16 or later is heavily recommended ([postgreSQL's website](https://www.postgresql.org/)).
 
-Version 12.x can work but we're bundling 13 with the binary distribution of Karaoke Mugen, so we'll base any feature decision later on version 13.
+Version starting from 12 can work but we're bundling 16 with the binary distribution of Karaoke Mugen, so we'll base any feature decision later on version 16's features.
 
-Versions below 12.x won't work.
+Versions below 12 won't work.
 
 Later PostgreSQL versions should work just fine.
 
 Karaoke Mugen can use PostgreSQL in two ways :
 
 -   **Existing database cluster :** Connect to an existing PostgreSQL server (edit the `config.yml` file to point to the correct server and database). **This is the preferred way on Linux systems**.
--   **Bundled PostgreSQL version :** If `bundledPostgresBinary` is set to `true` in `config.yml` then Karaoke Mugen will seek a `app/bin/postgresql` directory. Inside, you should have a complete PostgreSQL distribution including a `bin`, `lib` and `share` folders. Karaoke Mugen needs to find the `pg_ctl` binary in the `bin` folder.
+-   **Bundled PostgreSQL version :** If `bundledPostgresBinary` is set to `true` in `config.yml` (default) then Karaoke Mugen will seek a `app/bin/postgresql` directory. Inside, you should have a complete PostgreSQL distribution including a `bin`, `lib` and `share` folders. Karaoke Mugen needs to find the `pg_ctl` binary in the `bin` folder.
 
 See [Database setup](#database-setup) for more information.
 
@@ -196,7 +200,7 @@ CREATE USER karaokemugen_app WITH ENCRYPTED PASSWORD 'musubi';
 GRANT ALL PRIVILEGES ON DATABASE karaokemugen_app TO karaokemugen_app;
 ```
 
-Switch to the newly created database and enable the `unaccent` extension.
+Switch to the newly created database and enable the `unaccent` extension. We also need to grant permissions to public to create tables and such on the public schema. This is new since Postgresql 15.
 
 ```SQL
 \c karaokemugen_app
@@ -222,7 +226,7 @@ On first run, the app will make you create an admin user and decide on a few bas
 
 ### Headless install
 
-Our runtime is Electron and it needs a X Server to work, but we can go around that. Once launched, Karaoke Mugen is reachable with a browser by going to `http://<your_ip>:1337`.
+Our runtime is Electron and it needs a graphical server to work, but we can go around that. Once launched, Karaoke Mugen is reachable with a browser by going to `http://<your_ip>:1337`.
 
 To launch an Electron app without an attached X Server you'll need `Xvfb` installed
 
@@ -275,11 +279,11 @@ Thanks to the [Sentry error tracking](https://sentry.io/welcome?utm_source=Karao
 
 <img src="https://gitlab.com/karaokemugen/code/karaokemugen-app/uploads/dba8fa95d7b4f1fac5e5877c72257f36/image.png" alt="BrowserStack full logo" width="125" />
 
-Thanks to the [BrowserStack testing solution](https://browserstack.com), we can be sure that our interfaces will run just fine on each device.
+Thanks to the [BrowserStack testing solution](https://browserstack.com), we can be sure that our interfaces will run just fine on al devices.
 
 <img src="https://uploads-ssl.webflow.com/5ac3c046c82724970fc60918/5c019d917bba312af7553b49_MacStadium-developerlogo.png" alt="MacStadium full logo" width="125"/>
 
-Thanks to [MacStadium](http://www.macstadium.com), we have a Mac mini M1 to run tests and CI to build Karaoke Mugen for the M1 architecture!
+Thanks to [MacStadium](http://www.macstadium.com), we have a Mac mini M1 to run tests and CI to build Karaoke Mugen for the Silicon architecture!
 
 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Weblate_logo.svg/1024px-Weblate_logo.svg.png" alts="Weblate logo" width="125"/>
 

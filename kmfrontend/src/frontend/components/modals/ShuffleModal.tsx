@@ -1,6 +1,6 @@
 import i18next from 'i18next';
 import { useContext, useState } from 'react';
-import { DBPL } from '../../../../../src/lib/types/database/playlist';
+import { DBPL } from '../../../../../src/types/database/playlist';
 
 import { closeModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';

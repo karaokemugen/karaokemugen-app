@@ -26,6 +26,7 @@
 	justify-content: space-between;
 	align-items: center;
 	padding: 0.75em;
+	gap: 0.75em;
 	background-color: $mugen-playlist-odd;
 
 	> label {
@@ -41,9 +42,6 @@
 			text-align: justify;
 			display: inline-block;
 			max-width: 50em;
-			@media screen and (max-width: $mugen-breakpoint-large) {
-				max-width: 80%;
-			}
 		}
 		.warning {
 			font-size: 0.975em;
@@ -75,6 +73,10 @@
 			}
 		}
 
+		input[type='number'][size] {
+			width: fit-content; // Don't shrink fields with fixed size
+		}
+
 		input:not([type='range']) {
 			background-color: scale-color($mugen-playlist-odd, $lightness: 15%);
 			color: white;
@@ -83,6 +85,10 @@
 			&:focus {
 				border: white 1px solid;
 			}
+		}
+
+		select {
+			width: 100%;
 		}
 	}
 }

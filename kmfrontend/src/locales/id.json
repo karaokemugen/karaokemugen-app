@@ -657,51 +657,6 @@
 			"DESCRIPTION": "Pengelola penyimpanan diska media"
 		}
 	},
-	"ONLINE": {
-		"TITLE": "Karaoke Mugen Daring",
-		"P1": "Aplikasi Karaoke Mugen kamu telah diperbarui ke 5.0, fitur baru tersedia dan mungkin beberapa perlu perhatian kami. Apakah kamu ingin mengaktifkan akses jarak jauh untuk program/peladen kamu? Dengan mengklik ya, token jarak jauh akan dibuat secara otomatis di Peladen Karaoke Mugen. Itu kedaluwarsa setelah 10 hari tidak aktif."
-	},
-	"PRIVACY_POLICY": {
-		"P5": "Kamu tentu saja bisa melakukannya! Akun daring tidak wajib, serta berbagai fitur yang disebutkan di atas. Kamu bisa mengaktifkan/menonaktifkan entah statistik dan/atau laporan galat di bilah sistem. Kamu masih memiliki data kamu kapan saja.",
-		"P6": "Jika kamu masih memiliki pertanyaan atau kamu ingin kami untuk menghapus data, kamu bisa mengirim kami sebuah surel ke mugen@karaokes.moe.",
-		"TITLE": "Privasi",
-		"T1": "Apakah kamu memata-matai kami?!",
-		"MORE": "Lebih banyak",
-		"P4": "Tidak sama sekali, data yang kami dapat diawanamakan atau tertaut ke nama pengguna kamu, Coba lihat:",
-		"L1": "Jika kamu menggunakan fitur profil daring, data profil kamu (surel, bio, URL situs, dll.) serta favorit kamu dikirim secara waktu langsung ke peladen yang menghos profil kamu (secara baku itu adalah kara.moe, peladen kami.)",
-		"P2": "Aplikasi kamu baru diperbarui ke versi 5.0 dengan banyak fitur baru, seperti antarmuka publik yang baru, akses jarak jauh (kami akan beritahu kamu tentang ini nanti), jenis tanda versi baru yang memungkinkan kami untuk mengindentifikasi sampul, versi alternatif, dll. lebih mudah.",
-		"P1": "Terima kasih telah menggunakan Karaoke Mugen. Kami mengelola basis data dan mengembangkan perangkat lunaknya secara gratis sehingga perhatian yang kamu berikan pada kami membuat kami bahagia. Sekali lagi, terima kasih ❤.",
-		"P3": "Karena ini proyek bebas (dalam kebebasan berbicara) dan gratis (dalam bir gratis), kami anggap wajar bahwa kamu mengharapkan transparasi dari kami tentang bagaimana data kamu digunakan. Untuk meraih tujuan ini, kami akan merangkum data yang kami proses dan bagaimana kamu bisa mengontrolnya.",
-		"L5": "Jika kamu mengaktifkan laporan Sentry, maka laporan galat yang dibuat aplikasi akan dikirim secara otomatis ke Sentry.io, layanan pihak ketiga yang kami gunakan untuk mengumpulkan informasi tentang galat. Ini memungkinkan kami untuk mengerti lebih lanjut tentang bagaimana sebuah galat terjadi dan memperbaikinya pada rilis yang akan datang. Layanan akan mengirim beberapa log acara aplikasi, yang mengandung nama pengguna. Log tersebut mengandung informasi yang minimal.",
-		"L5_DETAILS": "Laporan Sentry mencakup OS yang digunakan, versi Aplikasi Karaoke Mugen kamu, tumpukan eksekusi (di mana kode brainfarted), status aplikasi serta konfigurasi aplikasi kamu (tanpa informasi rahasia seperti token Twitch atau rahasia JWT). Laporan ini terhubung dengan nama pengguna kamu (pengguna yang memasang aplikasi), yang memungkinkan untuk menemukan laporan kamu dengan mudah jika kamu meminta bantuan kami terkait kutu Karaoke Mugen. Laporan-laporan ini juga dipublikasikan di Discord kami (dengan serangkaian informasi terbatas, tanpa mengorbankan konfigurasi kamu dan status aplikasi, detail ini disediakan untuk pengelola aplikasi) agar mudah ditemukan.",
-		"L4_DETAILS": "Statistik tersebut juga mengandung data tentang perangkat keras komputer kamu (memori, monitor, prosesor, sistem operasi). Karaoke yang diputar dan diminta dikirim kepada kami tanpa kami tahu siapa dibalik permintaan tersebut. Ini digunakan untuk mengumpankan daftar kami tentang karaoke populer di antarmuka publik kamu tapi jua di jelajah karaoke daring kami.",
-		"T2": "Bagaimana saya menonaktifkan ini?",
-		"L3": "Jika kamu menggunakan fitur akses jarak jauh (https://<code>.kara.moe), kode yang dibuat milik kamu disimpan di memori peladen kami dan aplikasi kamu. Itu kedaluwarsa setelah 10 hari tidak menggunakannya (jadi kamu bisa menyimpan kode yang sama jika kamu sering menggunakannya).",
-		"L4": "Jika kamu mengaktifkan statistik, aplikasi akan secara rutin mengirim statistik lagu diputar, diminta, dan daftar sesi karaoke kamu. Data ini tidak akan terhubung ke nama atau nama pengguna kamu. Namun, ID unik akan ditautkan ke aplikasi kamu jadi kami bisa mengelompokkan ulang statistik."
-	},
-	"BULLDOZER_VIDEOS": {
-		"TITLE": "Perubahan penting ke pengelola media dan repositori",
-		"P1": "Repositori dan media berubah banyak mulai dari versi Karaoke Mugen ini.",
-		"P2": "Pembaruan repositori sekarang dikelola lewat Git. Ini berarti entah yang mana lagu yang kamu sudah unduh sebelumnya, kamu sekarang memiliki akses ke basis data penuh karaoke.",
-		"L4": "Menghapus hanya media yang belum diputar dalam sebulan terakhir (secara baku)",
-		"P7": "Kamu masih bisa mengunduh terlebih dahulu setiap media dari pengelola unduhan.",
-		"T4": "Apakah ada yang perlu saya lakukan?",
-		"T3": "Bagaimana jika saya harus membuat sesi karaoke di suatu tempat tanpa akses internet?",
-		"T5": "Apa yang terjadi dengan unduhan kriteria daftar hitam?",
-		"P9": "Ada juga pilihan baru, per repositori, yang mencegah Karaoke Mugen mengunduh media yang diperbarui saat pemulaian. Misalnya, jika sebuah media sudah ada di penyimpanan komputer kamu, tetapi telah diperbarui di repositori kamu, versi baru akan diunduh secara otomatis.",
-		"P10": "Mereka telah dimigrasikan ke kriteria daftar hitam biasa. Ini berarti kamu tidak akan melihat lagu yang masuk daftar hitam itu di perpustakaan kamu, seolah-olah kamu belum pernah mengunduhnya!",
-		"P6": "Dari bilah sistem, item baru \"Pengelola ruang diska\" tersedia. Melalui itu kamu bisa:",
-		"L3": "Menghapus setiap media dari sebuah repositori jika kamu membutuhkan ruang diska dalam keadaan darurat",
-		"P8": "Sebenarnya, tidak ada : Karaoke Mugen memastikan bahwa repositori daring kamu telah dikonversi agar kompatibel dengan sistem pembaruan baru. Media yang kamu unduh akan tetap ada di sana dan kamu dapat menghapus yang tidak digunakan kapan saja jika kamu perlu mengosongkan ruang diska.",
-		"P11": "Kamu masih bisa menyunting kriteria daftar hitam kapan saja.",
-		"T2": "Apa yang harus saya lakukan jika kehabisan ruang?",
-		"L1": "Jika kamu ingin memutar sebuah lagu dari pustaka, itu akan disiarkan dari Peladen Karaoke Mugen repositori kamu. Koneksi internet kamu akan dipakai untuk memutar lagunya langsung.",
-		"L2": "Jika kamu menambahkan sebuah lagu ke daftar putar saat ini (digunakan oleh pemutar video), media akan diunduh di latar belakang. Jika unduhan belum selesai pada saat kamu sampai pada lagu tersebut, itu akan disiarkan melalui internet. Jika itu selesai, itu akan diputar langsung dari penyimpanan komputer kamu.",
-		"P3": "Kami sangat menyadari bahwa tidak semua orang bisa mengunduh seluruh basis data karaoke. Kami mengaturnya sehingga itu tidak diperlukan lagi. Hanya metadata lagu yang sekarang diunduh saat pemulaian.",
-		"T1": "Tapi saya tidak bisa mengunduh seluruh media!",
-		"P4": "Jangan panik. Kamu sekarang memiliki akses ke semua lagu, tapi medianya tidak diunduh ke komputer kamu.",
-		"P5": "Media akan diunduh ketika kamu membutuhkannya."
-	},
 	"TAG_TYPES": {
 		"WARNINGS_other": "Peringatan",
 		"PLATFORMS_other": "Platform",
@@ -828,6 +783,7 @@
 			"SOCIAL_NETWORKS": {
 				"TWITTER": "Twitter: ",
 				"MASTODON": "Mastodon: ",
+				"BLUESKY": "Bluesky: ",
 				"INSTAGRAM": "Instagram: ",
 				"DISCORD": "Discord: ",
 				"TWITCH": "Twitch: "
@@ -958,6 +914,8 @@
 				"TWITTER": "Twitter",
 				"MASTODON": "Mastodon",
 				"MASTODON_PLACEHOLDER": "KaraokeMugen@shelter.moe",
+				"BLUESKY": "Bluesky",
+				"BLUESKY_PLACEHOLDER": "karaoke.bsky.social",
 				"DISCORD": "Discord",
 				"MYANIMELIST": "MyAnimeList",
 				"MYANIMELIST_PLACEHOLDER": "karaokemugen",
@@ -1049,7 +1007,7 @@
 			"TITLE_CLICK": "Klik pada judul karaoke untuk informasi lebih lanjut <1>(penyanyi, penggubah, dll.)</1>.",
 			"PLAYER_BAR": "Pemutar Karaoke Mugen bisa dikelola dari bilah atas.",
 			"PLAYER_CURRENT_HINT": "Pemutar akan memutar lagu yang dipilih di <1>daftar putar saat ini</1>.",
-			"BLACKLIST_DESC": "Daftar hitam berisi semua lagu yang dikecualikan",
+			"BLACKLIST_DESC": "Daftar hitam berisi semua lagu yang dikecualikan.",
 			"CURRENT_DESC": "Daftar putar <1>saat ini</1> adalah yang digunakan oleh pemutar.",
 			"PLAYLIST_ATTRIBUTES": "Ketika kamu membuat daftar putar, kamu bisa mengaturnya sebagai <1>saat ini</1> atau <3>publik</3>.",
 			"PUBLIC_DESC": "Daftar putar <1>publik</1> adalah di mana permintaan pengguna kamu berada.",
@@ -1758,9 +1716,6 @@
 		"ENABLED": "Diaktifkan"
 	},
 	"SPEED_RESET": "Atur ulang ke kecepatan normal",
-	"COLLECTIONS_MIGRATION": {
-		"TITLE": "Memperkenalkan koleksi!"
-	},
 	"TOOLTIP_KARA_ALREADY_ADDED": "Lagu ini telah ada di daftar putar.",
 	"SHOW-HIDE": "Munculkan/Sembunyikan",
 	"UNKNOWN": "Tidak diketahui",

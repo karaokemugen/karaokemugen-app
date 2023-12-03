@@ -53,6 +53,7 @@ export async function insertKara(kara: KaraFileV4): Promise<KaraOldData> {
 			mediasize: kara.medias[0].filesize,
 			download_status: 'DOWNLOADED', // Default
 			comment: kara.data.comment,
+			from_display_type: kara.data.from_display_type,
 			ignoreHooks: kara.data.ignoreHooks || false,
 		})
 	);

@@ -18,12 +18,13 @@ import Task from '../lib/utils/taskManager.js';
 import { emitWS } from '../lib/utils/ws.js';
 import { updateAllSmartPlaylists } from '../services/smartPlaylist.js';
 import { DBStats } from '../types/database/database.js';
-import { initPG, isShutdownPG, restorePG } from '../utils/postgresql.js';
+import { checkDumpExists, initPG, isShutdownPG, restorePG } from '../utils/postgresql.js';
 import sentry from '../utils/sentry.js';
 import { getState, setState } from '../utils/state.js';
 import { baseChecksum } from './dataStore.js';
 import { reorderPlaylist, selectPlaylists } from './playlist.js';
 import { sqlGetStats, sqlResetUserData } from './sql/database.js';
+import { selectUsers } from './user.js';
 
 const service = 'DB';
 
@@ -42,9 +43,12 @@ function errorFunction(err: any) {
 	if (!isShutdownPG()) logger.error('Database error', { service, obj: err });
 }
 
-/** Initialize a new database with the bundled PostgreSQL server */
-export async function initDB() {
+/** Initialize a new database with the bundled PostgreSQL server
+ * Returns true if database seems empty of data
+ */
+export async function initDB(): Promise<boolean> {
 	profile('initDB');
+	let baseEmpty = false;
 	const conf = getConfig();
 	await connectDB(errorFunction, { superuser: true, db: 'postgres', log: getState().opt.sql });
 	// Testing if database exists. If it does, no need to do the other stuff
@@ -52,6 +56,7 @@ export async function initDB() {
 		`SELECT datname FROM pg_catalog.pg_database WHERE datname = '${conf.System.Database.database}'`
 	);
 	if (rows.length === 0) {
+		baseEmpty = true;
 		await db().query(`CREATE DATABASE ${conf.System.Database.database} ENCODING 'UTF8'`);
 		logger.debug('Database created', { service });
 		try {
@@ -69,9 +74,10 @@ export async function initDB() {
 	// We need to reconnect to create the extension on our newly created database
 	await connectDB(errorFunction, { superuser: true, db: conf.System.Database.database, log: getState().opt.sql });
 	await db().query('CREATE EXTENSION IF NOT EXISTS unaccent;');
-	await db().query('CREATE EXTENSION IF NOT EXISTS pgcrypto;');
+	if (process.platform === 'win32') await db().query('CREATE EXTENSION IF NOT EXISTS pgcrypto;');
 	await db().query('GRANT CREATE ON SCHEMA public TO public;');
 	profile('initDB');
+	return baseEmpty;
 }
 
 /** Reads migrations.txt to determine if some migrations should be removed */
@@ -207,11 +213,19 @@ export async function initDBSystem(): Promise<Postgrator.Migration[]> {
 	// Only for bundled postgres binary :
 	// First login as super user to make sure user, database and extensions are created
 	let migrations: Postgrator.Migration[];
+	let restoreDone = false;
 	try {
 		if (conf.System.Database.bundledPostgresBinary) {
 			await initPG();
-			await initDB();
-			if (getState().restoreNeeded) await restorePG();
+			const isBaseEmpty = await initDB();
+			// Determine if a dump exists. If it does, we should try to restore.
+			const dumpExists = await checkDumpExists();
+			if ((getConfig().System.Database.RestoreNeeded || isBaseEmpty) && dumpExists) {
+				await restorePG().catch(_err => {
+					logger.warn('Unable to restore dump during startup, continuing anyway', { service });
+				});
+				restoreDone = true;
+			}
 		}
 		logger.info('Initializing database connection', { service });
 		await connectDB(errorFunction, {
@@ -251,7 +265,7 @@ export async function initDBSystem(): Promise<Postgrator.Migration[]> {
 	setState({ DBReady: true });
 	profile('initDBSystem');
 	// Trigger a generation if a restore was needed after a PG upgrade
-	if (getState().restoreNeeded) {
+	if (restoreDone) {
 		await initKaraBase();
 	}
 	return migrations;
@@ -292,6 +306,13 @@ export async function generateDB(): Promise<boolean> {
 		const pls = await selectPlaylists(false);
 		for (const pl of pls) {
 			await reorderPlaylist(pl.plaid);
+			// Smart playlists are updated below
+			if (!pl.flag_smart) emitWS('playlistContentsUpdated', pl.plaid);
+		}
+		const users = await selectUsers({});
+		for (const user of users) {
+			emitWS('favoritesUpdated', user.login);
+			emitWS('animelistUpdated', user.login);
 		}
 		await updateAllSmartPlaylists();
 		emitWS('databaseGenerated');

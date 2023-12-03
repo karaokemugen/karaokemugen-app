@@ -94,7 +94,12 @@ function SetupPageUser() {
 	};
 
 	return (
-		<form>
+		<form
+			onSubmit={e => {
+				accountType === 'online' && onlineAction === 'login' ? loginCall() : signup();
+				e.preventDefault();
+			}}
+		>
 			<section className="step step-1">
 				<div className="intro">
 					<h2>{i18next.t('SETUP_PAGE.WELCOME')}</h2>
@@ -315,13 +320,11 @@ function SetupPageUser() {
 					) : null}
 					<div className="actions">
 						<label className="error">{error}</label>
-						{accountType === 'online' && onlineAction === 'login' ? (
-							<button type="button" onClick={loginCall}>
-								{i18next.t('LOG_IN')}
-							</button>
-						) : (
-							<button type="button" onClick={signup}>
-								{i18next.t('SIGN_UP')}
+						{(accountType === 'local' || onlineAction) && (
+							<button type="submit">
+								{accountType === 'online' && onlineAction === 'login'
+									? i18next.t('LOG_IN')
+									: i18next.t('SIGN_UP')}
 							</button>
 						)}
 					</div>

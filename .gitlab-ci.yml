@@ -4,15 +4,15 @@
 # Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
 # Note that environment variables can be set in several places
 # See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
-image: axelterizaki/karaokemugen-ci:node-18-phppg
+image: axelterizaki/karaokemugen-ci:node-18
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
   ELECTRON_CACHE: '.cache/electron'
   DS_INCLUDE_DEV_DEPENDENCIES: 'false'
-  DIST_LINUX_X64: dist_linux-x64-7.1.tar.gz
-  DIST_LINUX_ARM64: dist_linux-arm64-7.x.tar.gz
-  DIST_WIN: dist_win-6.x.tar.gz
-  DIST_MAC: dist_mac-7.x.tar.gz
+  DIST_LINUX_X64: dist_linux-x64-8.0.tar.gz
+  DIST_LINUX_ARM64: dist_linux-arm64-8.0.tar.gz
+  DIST_WIN: dist_win-8.0.tar.gz
+  DIST_MAC: dist_mac-8.0.tar.gz
 sast:
   variables:
     SAST_EXCLUDED_PATHS: spec, test, tests, tmp, assets, build, img, util, packages
@@ -24,7 +24,6 @@ include:
   - template: Security/Secret-Detection.gitlab-ci.yml
 workflow:
   rules:
-    - if: $CI_COMMIT_BRANCH == "grumble-flatpak"
     - if: '$CI_COMMIT_TAG'
     - if: $CI_COMMIT_BRANCH == "master"
     - if: $CI_COMMIT_BRANCH == "next"
@@ -221,7 +220,7 @@ deploy_kmremote:
     - if: $CI_COMMIT_BRANCH == "next"
     - if: '$CI_COMMIT_TAG'
     - when: never
-pkg_linux:
+pkg_linux_x64:
   stage: package
   image: electronuserland/builder:latest
   tags:
@@ -250,9 +249,53 @@ pkg_linux:
     - npm install -g electron-builder
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
     - wget -qO- http://mugen.karaokes.moe/downloads/$DIST_LINUX_X64 | tar xvz
+    - echo $SENTRY_DSN >assets/sentry.txt
+    - bash util/electronBuilder.sh -l --x64
+    - ls -la packages/
+    - mkdir release_linux
+    - mv packages/*.deb release_linux/
+    - mv packages/*.tar.gz release_linux/
+    - mv packages/*.yml release_linux/
+    - mv packages/*.AppImage release_linux/
+    - ls -la release_linux/*
+  rules:
+    - if: $SCHEDULED_RELEASES == "true"
+      when: never
+    - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
+    - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
+    - if: '$CI_COMMIT_TAG'
+    - when: never
+pkg_linux_arm64:
+  stage: package
+  image: electronuserland/builder:latest
+  tags:
+    - $RUNNER_LINUX
+  cache:
+    key: km-app-${CI_COMMIT_REF_SLUG}
+    paths:
+      - node_modules/
+      - kmfrontend/node_modules/
+    policy: pull
+  interruptible: true
+  artifacts:
+    expire_in: 1 day
+    name: km-app-pkglinux-${CI_COMMIT_REF_SLUG}
+    paths:
+      - release_linux
+  dependencies:
+    - build-react
+    - build-migrationsFile
+  needs:
+    - build-react
+    - build-migrationsFile
+    - test
+  script:
+    - rm -Rf release_linux
+    - npm install -g electron-builder
+    - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
     - wget -qO- http://mugen.karaokes.moe/downloads/$DIST_LINUX_ARM64 | tar xvz
     - echo $SENTRY_DSN >assets/sentry.txt
-    - bash util/electronBuilder.sh -l
+    - bash util/electronBuilder.sh -l --arm64
     - ls -la packages/
     - mkdir release_linux
     - mv packages/*.deb release_linux/
@@ -370,7 +413,7 @@ pkg_mac:
     - when: never
 deploy_mac:
   stage: deploy
-  image: axelterizaki/karaokemugen-ci:transferts
+  image: minidocks/lftp
   tags:
     - $RUNNER_LINUX
   interruptible: true
@@ -396,7 +439,7 @@ deploy_mac:
     - when: never
 deploy_linux:
   stage: deploy
-  image: axelterizaki/karaokemugen-ci:transferts
+  image: minidocks/lftp
   tags:
     - $RUNNER_LINUX
   interruptible: true
@@ -406,9 +449,11 @@ deploy_linux:
   variables:
     GIT_STRATEGY: none
   dependencies:
-    - pkg_linux
+    - pkg_linux_x64
+    - pkg_linux_arm64
   needs:
-    - pkg_linux
+    - pkg_linux_x64
+    - pkg_linux_arm64
   script:
     - ls -la release_linux/*
     - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD
@@ -421,7 +466,7 @@ deploy_linux:
     - if: '$CI_COMMIT_TAG'
 deploy_win:
   stage: deploy
-  image: axelterizaki/karaokemugen-ci:transferts
+  image: minidocks/lftp
   tags:
     - $RUNNER_LINUX
   interruptible: true
@@ -489,7 +534,7 @@ weekly_releases:
     - when: never
 flatpak-generated-sources:
   stage: build
-  image: python:3-bullseye
+  image: python:3.11-bullseye
   tags:
     - $RUNNER_LINUX
   interruptible: true

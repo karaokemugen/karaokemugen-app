@@ -1,4 +1,4 @@
-import { app, BrowserWindow, dialog, ipcMain, Menu, protocol, shell } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, Menu, protocol, shell, screen } from 'electron';
 import { promises as fs } from 'fs';
 import i18next from 'i18next';
 import { resolve } from 'path';
@@ -6,6 +6,7 @@ import { resolve } from 'path';
 import { exit, welcomeToYoukousoKaraokeMugen } from '../components/engine.js';
 import { init, preInit } from '../components/init.js';
 import { selectUsers } from '../dao/user.js';
+import { Repository } from '../lib/types/repo.js';
 import { getConfig, resolvedPath, setConfig } from '../lib/utils/config.js';
 import logger from '../lib/utils/logger.js';
 import { emitWS } from '../lib/utils/ws.js';
@@ -185,7 +186,12 @@ export async function handleProtocol(args: string[]) {
 		switch (args[0]) {
 			case 'addRepo':
 				const repoName = args[1];
-				const repo = getRepo(repoName);
+				let repo: Repository;
+				try {
+					repo = getRepo(repoName);
+				} catch (e) {
+					// Repo does not exist yet
+				}
 				if (!repo) {
 					const buttons = await dialog.showMessageBox({
 						type: 'none',
@@ -198,6 +204,7 @@ export async function handleProtocol(args: string[]) {
 							Name: repoName,
 							Online: true,
 							Enabled: true,
+							Update: true,
 							SendStats: false,
 							AutoMediaDownloads: 'updateOnly',
 							MaintainerMode: false,
@@ -290,9 +297,20 @@ async function initElectronWindow() {
 async function createWindow() {
 	// Create the browser window
 	const state = getState();
+	// Create a window that fills the screen's available work area.
+	const primaryDisplay = screen.getPrimaryDisplay();
+	const { width, height } = primaryDisplay.workAreaSize;
+	let size_width: number = width;
+	let size_height: number = height;
+	if (width >= 1280) {
+		size_width = 1280;
+	}
+	if (height >= 720) {
+		size_height = 720;
+	}
 	win = new BrowserWindow({
-		width: 1400,
-		height: 900,
+		width: size_width,
+		height: size_height,
 		backgroundColor: '#36393f',
 		show: false,
 		icon: resolve(state.resourcePath, 'build/icon1024.png'),
@@ -329,8 +347,11 @@ async function createWindow() {
 	});
 }
 
-function openLink(url: string) {
-	url.includes('//localhost') ? win?.loadURL(url) : shell.openExternal(url);
+function openLink(urlStr: string) {
+	const url = new URL(urlStr);
+	if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
+	if (url.port !== '' && +url.port !== getState().frontendPort) return;
+	url.hostname === 'localhost' ? win?.loadURL(urlStr) : shell.openExternal(urlStr);
 }
 
 export function focusWindow() {
@@ -456,7 +477,7 @@ export async function showAbout() {
 		const state = getState();
 		aboutWindow = new BrowserWindow({
 			width: 700,
-			height: 450,
+			height: 480,
 			show: false,
 			backgroundColor: '#36393f',
 			webPreferences: {

@@ -7,10 +7,9 @@ export const discordClientID = '718211141033263145';
 
 export const requiredMPVVersion = '>=0.33.0';
 
-// Temporary : mac users will have postgresql 14. We're going to make it to 14 for others.
-export const expectedPGVersion = process.platform === 'darwin' ? 14 : 13;
+export const expectedPGVersion = 16;
 
-export const supportedLanguages = ['en', 'fr', 'es', 'id'];
+export const supportedLanguages = ['en', 'fr', 'es', 'id', 'pt', 'de'];
 
 /** Default guest names used to fill up the database */
 export const defaultGuestNames = [

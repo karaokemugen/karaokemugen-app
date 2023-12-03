@@ -1,7 +1,7 @@
 import './ProgressBar.scss';
 
 import i18next from 'i18next';
-import { ReactFragment, useContext, useEffect, useRef, useState } from 'react';
+import { ReactNode, useContext, useEffect, useRef, useState } from 'react';
 
 import { PublicPlayerState } from '../../../../../src/types/state';
 import GlobalContext from '../../../store/context';
@@ -9,12 +9,13 @@ import { useResizeListener } from '../../../utils/hooks';
 import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { secondsTimeSpanToHMS } from '../../../utils/tools';
+import { setFutureTime } from '../../../store/actions/frontendContext';
 
 function ProgressBar() {
 	const context = useContext(GlobalContext);
 	const [mouseDown, setMouseDown] = useState(false);
 	const [playerStatus, setPlayerStatus] = useState<string>();
-	const [karaInfoText, setKaraInfoText] = useState<string | ReactFragment>(i18next.t('KARA_PAUSED_WAITING'));
+	const [karaInfoText, setKaraInfoText] = useState<string | ReactNode>(i18next.t('KARA_PAUSED_WAITING'));
 	const [length, setLength] = useState(-1);
 	const [width, setWidth] = useState(0);
 	const [timePosition, setTimePosition] = useState(0);
@@ -27,20 +28,22 @@ function ProgressBar() {
 	const refP = useRef<HTMLParagraphElement>();
 	let timeout: NodeJS.Timeout;
 
-	const mouseDownAction = (e: any) => {
+	const mouseDownAction = (e: React.MouseEvent) => {
 		if (playerStatus && playerStatus !== 'stop' && length !== -1) {
 			setMouseDown(true);
 			setWidth(e.pageX);
 		}
 	};
 
-	const mouseMove = (e: any) => {
+	const mouseMove = (e: React.MouseEvent) => {
+		updateFutureTime(e);
 		if (mouseDown) {
 			setWidth(e.pageX);
 		}
 	};
 
 	const mouseOut = () => {
+		setFutureTime(context.globalDispatch, undefined);
 		if (mouseDown) {
 			setMouseDown(false);
 		}
@@ -55,21 +58,33 @@ function ProgressBar() {
 		}
 	};
 
-	const goToPosition = (e: any) => {
+	const goToPosition = (e: React.MouseEvent) => {
+		const futurTimeSec = getFuturTimeSec(e);
+		if (futurTimeSec) {
+			setWidth(e.pageX);
+			commandBackend('sendPlayerCommand', { command: 'goTo', options: futurTimeSec }).catch(() => {});
+		}
+	};
+
+	const getFuturTimeSec = (e: React.MouseEvent): number => {
 		const karaInfo = document.getElementById('karaInfo');
 		if (karaInfo) {
 			const barInnerwidth = karaInfo.offsetWidth;
 			const futurTimeX = e.pageX - karaInfo.offsetLeft;
 			const futurTimeSec = (length * futurTimeX) / barInnerwidth;
 			if (!isNaN(futurTimeSec) && futurTimeSec >= 0) {
-				setWidth(e.pageX);
-				commandBackend('sendPlayerCommand', { command: 'goTo', options: futurTimeSec }).catch(() => {});
+				return futurTimeSec;
 			}
 		}
 	};
 
-	const karaInfoClick = (e: any) => {
-		goToPosition(e);
+	const updateFutureTime = (e: React.MouseEvent) => {
+		const futurTimeSec = getFuturTimeSec(e);
+		if (futurTimeSec) {
+			setFutureTime(context.globalDispatch, secondsTimeSpanToHMS(Math.round(futurTimeSec), 'mm:ss'));
+			const futurTimeElem = document.getElementById('futurTime');
+			if (futurTimeElem) futurTimeElem.style.left = `${e.clientX}px`;
+		}
 	};
 
 	const resizeCheck = () => {
@@ -191,7 +206,7 @@ function ProgressBar() {
 					return false;
 				}}
 				draggable={false}
-				onClick={karaInfoClick}
+				onClick={goToPosition}
 				onMouseDown={mouseDownAction}
 				onMouseUp={() => setMouseDown(false)}
 				onMouseMove={mouseMove}

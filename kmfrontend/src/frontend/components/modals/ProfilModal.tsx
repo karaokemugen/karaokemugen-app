@@ -271,8 +271,8 @@ function ProfilModal(props: IProps) {
 				data.titles[user.main_series_lang]
 					? data.titles[user.main_series_lang]
 					: data.titles[user.fallback_series_lang]
-					? data.titles[user.fallback_series_lang]
-					: data.titles[data.titles_default_language]
+					  ? data.titles[user.fallback_series_lang]
+					  : data.titles[data.titles_default_language]
 			} ${version}`;
 		};
 		const getExampleForLinguisticsPreference = async () => {
@@ -496,6 +496,21 @@ function ProfilModal(props: IProps) {
 									type="text"
 									placeholder={i18next.t('MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.MASTODON_PLACEHOLDER')}
 									defaultValue={user.social_networks.mastodon}
+									onKeyUp={onChange}
+									onChange={onChange}
+									autoComplete="off"
+								/>
+							</div>
+							<div className="profileLine">
+								<div className="profileLabel">
+									<i className="fab fa-fw fa-bluesky" />
+									<label>{i18next.t('MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.BLUESKY')}</label>
+								</div>
+								<input
+									name="social_networks.bluesky"
+									type="text"
+									placeholder={i18next.t('MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.BLUESKY_PLACEHOLDER')}
+									defaultValue={user.social_networks.bluesky}
 									onKeyUp={onChange}
 									onChange={onChange}
 									autoComplete="off"

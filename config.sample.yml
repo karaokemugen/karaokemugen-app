@@ -36,6 +36,7 @@ Online:
   AllowDownloads: true
 Frontend:
   AllowGuestLogin: true
+  AllowUserCreation: true
   AllowCustomTemporaryGuests: false
   # Webapp mode :
   # 0 : closed
@@ -124,6 +125,7 @@ Player:
       Message: 'Log in at $url to add songs!'
       # Override host/IP address
       Host: '192.168.0.1'
+      QRCode: false
   # Override mpv's video output driver
   mpvVideoOutput: null
   # Fullscreen ?
@@ -148,6 +150,8 @@ Player:
     Size: 30
   # Volume
   Volume: 100
+  # AudioDelay for audio/video sync
+  AudioDelay: 0
   # Hardware decoding. See mpv manual for more info
   HardwareDecoding: auto-safe
   # Extra mpv commandline arguments example

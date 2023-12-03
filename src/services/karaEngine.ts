@@ -5,6 +5,7 @@ import { resolve } from 'path';
 import { selectPlaylistContentsMicro, updatePlaylistDuration, updatePlaylistLastEditTime } from '../dao/playlist.js';
 import { selectUpvotesByPLC } from '../dao/upvote.js';
 import { APIMessage } from '../lib/services/frontend.js';
+import { getSongSeriesSingers, getSongTitle, getSongVersion } from '../lib/services/kara.js';
 import { DBKara } from '../lib/types/database/kara.js';
 import { DBPLC } from '../lib/types/database/playlist.js';
 import { getConfig, resolvedPath } from '../lib/utils/config.js';
@@ -17,7 +18,7 @@ import { adminToken } from '../utils/constants.js';
 import sentry from '../utils/sentry.js';
 import { getState, setState } from '../utils/state.js';
 import { writeStreamFiles } from '../utils/streamerFiles.js';
-import { addPlayedKara, getKara, getKaras, getSongSeriesSingers, getSongTitle, getSongVersion } from './kara.js';
+import { addPlayedKara, getKara, getKaras } from './kara.js';
 import { initAddASongMessage, mpv, next, restartPlayer, stopAddASongMessage, stopPlayer } from './player.js';
 import {
 	editPlaylist,
@@ -81,10 +82,11 @@ export async function playSingleSong(kid?: string, randomPlaying = false) {
 }
 
 export async function getSongInfosForPlayer(kara: DBKara | DBPLC): Promise<{ infos: string; avatar: string }> {
+	const lang = getConfig().Player.Display.SongInfoLanguage;
 	// If series is empty, pick singer information instead
-	const series = getSongSeriesSingers(kara);
+	const series = getSongSeriesSingers(kara, lang);
 	// Get song versions for display
-	const versions = getSongVersion(kara);
+	const versions = getSongVersion(kara, lang);
 
 	// Escaping {} because it'll be interpreted as ASS tags below.
 	let requestedBy = '';
@@ -126,7 +128,7 @@ export async function getSongInfosForPlayer(kara: DBKara | DBPLC): Promise<{ inf
 	// If song order is 0, don't display it (we don't want things like OP0, ED0...)
 	let infos = `{\\bord2}{\\fscx70}{\\fscy70}{\\b1}${series}{\\b0}\\N{\\i1}${kara.songtypes
 		.map(s => s.name)
-		.join(' ')}${kara.songorder || ''} - ${getSongTitle(kara)}${versions}{\\i0}${requestedBy}`;
+		.join(' ')}${kara.songorder || ''} - ${getSongTitle(kara, lang)}${versions}{\\i0}${requestedBy}`;
 	if ('flag_visible' in kara && kara.flag_visible === false && !getState().quiz.running) {
 		// We're on a PLC with a flag_visible set to false, let's hide stuff!
 		// But we don't hide it if we're in quiz mode. Because you know.

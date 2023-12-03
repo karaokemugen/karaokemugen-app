@@ -84,6 +84,7 @@ export interface Config {
 	Frontend: {
 		AllowGuestLogin?: boolean;
 		AllowCustomTemporaryGuests?: boolean;
+		AllowUserCreation?: boolean;
 		Mode?: number;
 		ShowAvatarsOnPlaylist?: boolean;
 		WelcomeMessage?: string;
@@ -141,6 +142,7 @@ export interface Config {
 				Enabled?: boolean;
 				Host?: string;
 				Message?: string;
+				QRCode?: boolean;
 			};
 			RandomQuotes?: boolean;
 			SongInfo?: boolean;
@@ -162,6 +164,7 @@ export interface Config {
 		HardwareDecoding?: MpvHardwareDecodingOptions;
 		KeyboardMediaShortcuts?: boolean;
 		Volume?: number;
+		AudioDelay?: number;
 		LiveComments?: boolean;
 		BlurVideoOnWarningTag?: boolean;
 	};
@@ -210,6 +213,7 @@ export interface Config {
 			superuserPassword?: string;
 			database?: string;
 			bundledPostgresBinary?: boolean;
+			RestoreNeeded?: boolean;
 		};
 		Binaries: {
 			Player: {

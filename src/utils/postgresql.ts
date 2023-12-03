@@ -10,7 +10,7 @@ import { StringDecoder } from 'string_decoder';
 import { tasklist } from 'tasklist';
 
 import { errorStep } from '../electron/electronLogger.js';
-import { getConfig, resolvedPath } from '../lib/utils/config.js';
+import { getConfig, resolvedPath, setConfig } from '../lib/utils/config.js';
 import { asciiRegexp } from '../lib/utils/constants.js';
 import { downloadFile } from '../lib/utils/downloader.js';
 import { fileExists, smartMove } from '../lib/utils/files.js';
@@ -18,8 +18,9 @@ import logger, { profile } from '../lib/utils/logger.js';
 import { PGVersion } from '../types/database.js';
 import { checkBinaries, editSetting } from './config.js';
 import { expectedPGVersion, pgctlRegex } from './constants.js';
+import { decompressGzip } from './files.js';
 import sentry from './sentry.js';
-import { getState, setState } from './state.js';
+import { getState } from './state.js';
 
 const service = 'Postgres';
 
@@ -118,7 +119,7 @@ async function getPGVersion(): Promise<PGVersion> {
 }
 
 /** Set a particular config value in bundled postgreSQL server config */
-function setConfig(config: string, setting: string, value: any): string {
+function setPGConfig(config: string, setting: string, value: any): string {
 	const pgConfArr = config.split('\n');
 	const found = pgConfArr.some(l => l.startsWith(`${setting}=`));
 	if (!found) {
@@ -142,7 +143,7 @@ export async function dumpPG() {
 	}
 	logger.info('Dumping database...', { service });
 	const dumpFile = resolve(state.dataPath, 'karaokemugen.sql.gz');
-	const excludeTables = ['kara', 'tag', 'all_karas', 'all_tags', 'kara_relation', 'kara_tag'].map(
+	const excludeTables = ['kara', 'tag', 'all_karas', 'all_tags', 'kara_relation', 'kara_tag', 'online_requested'].map(
 		t => `--exclude-table-data=${t}`
 	);
 	try {
@@ -184,6 +185,12 @@ export async function dumpPG() {
 	}
 }
 
+/** Check if a dump exists */
+export async function checkDumpExists(): Promise<boolean> {
+	if (await fileExists(resolve(getState().dataPath, 'karaokemugen.sql.tar.gz'))) return true;
+	return false;
+}
+
 /** Restore postgreSQL database from file */
 export async function restorePG() {
 	const conf = getConfig();
@@ -194,7 +201,8 @@ export async function restorePG() {
 		throw err;
 	}
 	try {
-		const dumpFile = resolve(state.dataPath, 'karaokemugen.sql.gz');
+		const dumpFile = resolve(state.dataPath, 'karaokemugen.sql');
+		await decompressGzip(`${dumpFile}.gz`);
 		const options = [
 			'-U',
 			conf.System.Database.username,
@@ -210,8 +218,11 @@ export async function restorePG() {
 		await execa(binPath, options, {
 			cwd: resolve(state.appPath, state.binPath.postgres),
 			env: determineEnv(),
+			stdio: 'inherit',
 		});
 		logger.info('Database restored from file', { service });
+		setConfig({ System: { Database: { RestoreNeeded: false } } });
+		await fs.unlink(dumpFile).catch(() => {});
 	} catch (err) {
 		if (err.stdout) sentry.addErrorInfo('stdout', err.stdout);
 		if (err.stderr) sentry.addErrorInfo('stderr', err.stderr);
@@ -305,12 +316,12 @@ export async function updatePGConf() {
 	const pgConfFile = resolve(state.dataPath, conf.System.Path.DB, 'postgres/postgresql.conf');
 	let pgConf = await fs.readFile(pgConfFile, 'utf-8');
 	// Parsing the ini file by hand since it can't be parsed well with ini package
-	pgConf = setConfig(pgConf, 'port', conf.System.Database.port);
-	pgConf = setConfig(pgConf, 'logging_collector', 'on');
+	pgConf = setPGConfig(pgConf, 'port', conf.System.Database.port);
+	pgConf = setPGConfig(pgConf, 'logging_collector', 'on');
 	state.opt.sql
-		? (pgConf = setConfig(pgConf, 'log_statement', "'all'"))
-		: (pgConf = setConfig(pgConf, 'log_statement', "'none'"));
-	pgConf = setConfig(pgConf, 'synchronous_commit', 'off');
+		? (pgConf = setPGConfig(pgConf, 'log_statement', "'all'"))
+		: (pgConf = setPGConfig(pgConf, 'log_statement', "'none'"));
+	pgConf = setPGConfig(pgConf, 'synchronous_commit', 'off');
 	await fs.writeFile(pgConfFile, pgConf, 'utf-8');
 }
 
@@ -379,7 +390,7 @@ export async function initPG(relaunch = true) {
 			await fs.rename(pgDataDir, backupPGDir);
 			await initPGData();
 			// Restore is done once KM is connected to the database.
-			setState({ restoreNeeded: true });
+			setConfig({ System: { Database: { RestoreNeeded: true } } });
 		}
 	}
 	// Try to check if PG is running by conventionnal means.

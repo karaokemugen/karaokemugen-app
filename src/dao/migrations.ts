@@ -61,6 +61,10 @@ export async function postMigrationTasks(migrations: Postgrator.Migration[], did
 			case 'addExternalDatabaseIds':
 				if (!didGeneration) doGenerate = true;
 				break;
+			// 8.0 migrations
+			case 'addFromDisplayType':
+				if (!didGeneration) doGenerate = true;
+				break;
 			default:
 		}
 		if (breakFromLoop) break;

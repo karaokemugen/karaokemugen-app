@@ -1,23 +1,23 @@
-import { QuestionCircleOutlined, UploadOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
+import { MinusOutlined, PlusOutlined, QuestionCircleOutlined, UploadOutlined } from '@ant-design/icons';
 import {
+	Alert,
 	Button,
 	Checkbox,
+	Col,
 	Collapse,
 	Divider,
 	Form,
+	FormInstance,
 	Input,
 	InputNumber,
-	message,
 	Modal,
+	Row,
 	Select,
 	Tag,
-	Typography,
 	Tooltip,
+	Typography,
 	Upload,
-	Alert,
-	FormInstance,
-	Row,
-	Col,
+	message,
 } from 'antd';
 import { SelectValue } from 'antd/lib/select';
 import { filesize } from 'filesize';
@@ -25,8 +25,10 @@ import i18next from 'i18next';
 import { Component, createRef } from 'react';
 import { v4 as UUIDv4 } from 'uuid';
 
+import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { DBKara } from '../../../../../src/lib/types/database/kara';
 import { KaraFileV4, MediaInfo } from '../../../../../src/lib/types/kara';
+import { Config } from '../../../../../src/types/config';
 import GlobalContext from '../../../store/context';
 import { buildKaraTitle, getTagInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
@@ -55,6 +57,7 @@ interface KaraFormState {
 	mediafile: any[];
 	mediafileIsTouched: boolean;
 	subfileIsTouched: boolean;
+	applyLyricsCleanup: boolean;
 	mediaInfo?: MediaInfo;
 	repositoriesValue: string[];
 	repoToCopySong: string;
@@ -99,6 +102,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				: [],
 			mediafileIsTouched: false,
 			subfileIsTouched: false,
+			applyLyricsCleanup: false,
 			mediaInfo: {} as unknown as MediaInfo, // Has to be defined for reactive things
 			repositoriesValue: null,
 			repoToCopySong: null,
@@ -113,6 +117,9 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		this.formRef.current.validateFields();
 		this.getParents();
 		this.loadMediaInfo();
+		this.setState({
+			applyLyricsCleanup: this.context.globalState.settings.data.config?.Maintainer?.ApplyLyricsCleanupOnKaraSave,
+		});
 	}
 
 	getParents = async () => {
@@ -183,6 +190,11 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				})
 		);
 	};
+
+	saveApplyLyricsCleanupSetting = (enabled: boolean) =>
+		commandBackend('updateSettings', {
+			setting: { Maintainer: { ApplyLyricsCleanupOnKaraSave: enabled } } as Partial<Config>,
+		}).catch(() => {});
 
 	previewHooks = async () => {
 		if (
@@ -299,6 +311,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 							}
 						})
 				) as unknown as any,
+				from_display_type: kara.from_display_type,
 				titles: this.state.titles,
 				titles_default_language: this.state.defaultLanguage,
 				titles_aliases: kara.titles_aliases?.length > 0 ? kara.titles_aliases : undefined,
@@ -310,6 +323,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 			kara: karaFile,
 			modifiedLyrics: this.state.subfileIsTouched,
 			modifiedMedia: this.state.mediafileIsTouched,
+			applyLyricsCleanup: this.state.applyLyricsCleanup,
 		};
 	};
 
@@ -435,12 +449,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 
 	applyFieldsFromKara = async (kid: string) => {
 		const karas = await commandBackend('getKaras', {
-			q:
-				(this.formRef.current?.getFieldValue('repository') || ''
-					? `r:${this.formRef.current?.getFieldValue('repository') || ''}!`
-					: '!') +
-				'k:' +
-				kid,
+			q: 'k:' + kid,
 			size: 1,
 			ignoreCollections: true,
 		});
@@ -468,6 +477,12 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 	submitHandler(e) {
 		e.key === 'Enter' && e.preventDefault();
 	}
+
+	mapTagTypesToSelectOption = (tagType: string) => (
+		<Select.Option key={tagType} value={tagType.toLowerCase()}>
+			{i18next.t(tagType ? `TAG_TYPES.${tagType}_one` : 'TAG_TYPES.DEFAULT')}
+		</Select.Option>
+	);
 
 	mapRepoToSelectOption = (repo: string) => (
 		<Select.Option key={repo} value={repo}>
@@ -497,6 +512,8 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					songtypes: this.props.kara?.songtypes || this.state.parentKara?.songtypes,
 					songorder: this.props.kara?.songorder || this.state.parentKara?.songorder,
 					langs: this.props.kara?.langs || this.state.parentKara?.langs,
+					from_display_type:
+						this.props.kara?.from_display_type || this.state.parentKara?.from_display_type || '',
 					year: this.props.kara?.year || this.state.parentKara?.year || new Date().getFullYear(),
 					singers: this.props.kara?.singers || this.state.parentKara?.singers,
 					singergroups: this.props.kara?.singergroups || this.state.parentKara?.singergroups,
@@ -621,6 +638,16 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 										</tr>
 										<tr>
 											<td style={{ paddingRight: '10px' }}>
+												{i18next.t('KARA.MEDIA_FILE_INFO.VIDEO_FRAMERATE')}
+											</td>
+											<td>
+												{this.state.mediaInfo?.videoFramerate
+													? this.state.mediaInfo?.videoFramerate + ' fps'
+													: '-'}
+											</td>
+										</tr>
+										<tr>
+											<td style={{ paddingRight: '10px' }}>
 												{i18next.t('KARA.MEDIA_FILE_INFO.AUDIO_CODEC')}
 											</td>
 											<td>{this.state.mediaInfo?.audioCodec || '-'}</td>
@@ -666,6 +693,20 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 							{i18next.t('KARA.LYRICS_FILE')}
 						</Button>
 					</Upload>
+					{this.state.subfile?.length > 0 && (
+						<Checkbox
+							checked={this.state.applyLyricsCleanup}
+							onChange={(e: CheckboxChangeEvent) => {
+								this.saveApplyLyricsCleanupSetting(e.target.checked);
+								this.setState({ applyLyricsCleanup: e.target.checked });
+							}}
+						>
+							{i18next.t('KARA.APPLY_LYRICS_CLEANUP')}&nbsp;
+							<Tooltip title={i18next.t('KARA.APPLY_LYRICS_CLEANUP_TOOLTIP')}>
+								<QuestionCircleOutlined />
+							</Tooltip>
+						</Checkbox>
+					)}
 					{this.state.subfile?.length > 0 && this.props.kara?.kid && (
 						<div style={{ marginTop: '1em' }}>
 							<OpenLyricsFileButton kara={this.props.kara} />
@@ -1119,6 +1160,22 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					/>
 				</Form.Item>
 				<Divider orientation="left">{i18next.t('KARA.SECTIONS.META')}</Divider>
+				<Form.Item
+					className="wrap-label"
+					label={
+						<span>
+							{i18next.t('KARA.FROM_DISPLAY_TYPE')}&nbsp;
+							<Tooltip title={i18next.t('KARA.FROM_DISPLAY_TYPE_TOOLTIP')}>
+								<QuestionCircleOutlined />
+							</Tooltip>
+						</span>
+					}
+					labelCol={{ flex: '0 1 220px' }}
+					wrapperCol={{ span: 7 }}
+					name="from_display_type"
+				>
+					<Select>{Object.keys(tagTypes).concat('').map(this.mapTagTypesToSelectOption)}</Select>
+				</Form.Item>
 				<Form.Item
 					label={
 						<span>

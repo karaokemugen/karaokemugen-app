@@ -1,6 +1,5 @@
 import i18next from 'i18next';
-import { ReactFragment, ReactNode } from 'react';
-
+import { ReactNode } from 'react';
 import { ASSLine } from '../../../src/lib/types/ass';
 import { DBKara, DBKaraTag } from '../../../src/lib/types/database/kara';
 import InlineTag from '../frontend/components/karas/InlineTag';
@@ -19,8 +18,8 @@ export function getDescriptionInLocale(settings: SettingsStoreData, description:
 		return description[user.main_series_lang]
 			? description[user.main_series_lang]
 			: description[user.fallback_series_lang]
-			? description[user.fallback_series_lang]
-			: description.eng;
+			  ? description[user.fallback_series_lang]
+			  : description.eng;
 	} else {
 		return description[getLanguageIn3B(langSupport)] ? description[getLanguageIn3B(langSupport)] : description.eng;
 	}
@@ -40,10 +39,10 @@ export function getTagInLanguage(
 		resulti18n = i18n[mainLanguage]
 			? i18n[mainLanguage]
 			: i18n[fallbackLanguage]
-			? i18n[fallbackLanguage]
-			: i18n.eng
-			? i18n.eng
-			: tag.name;
+			  ? i18n[fallbackLanguage]
+			  : i18n.eng
+			    ? i18n.eng
+			    : tag.name;
 	} else {
 		resulti18n = tag.name;
 	}
@@ -51,10 +50,10 @@ export function getTagInLanguage(
 		resultDescription = desc[mainLanguage]
 			? desc[mainLanguage]
 			: desc[fallbackLanguage]
-			? desc[fallbackLanguage]
-			: desc.eng
-			? desc.eng
-			: null;
+			  ? desc[fallbackLanguage]
+			  : desc.eng
+			    ? desc.eng
+			    : null;
 	}
 	return {
 		i18n: resulti18n,
@@ -95,8 +94,8 @@ export function getTitleInLocale(
 		return titles[user.main_series_lang]
 			? titles[user.main_series_lang]
 			: titles[user.fallback_series_lang]
-			? titles[user.fallback_series_lang]
-			: titles[default_language];
+			  ? titles[user.fallback_series_lang]
+			  : titles[default_language];
 	} else {
 		return titles[getLanguageIn3B(langSupport)] ? titles[getLanguageIn3B(langSupport)] : titles[default_language];
 	}
@@ -122,10 +121,10 @@ export function getSeriesSingersFull(settings: SettingsStoreData, data: DBKara, 
 	return data?.series?.length > 0
 		? data.series.map(e => getTagInLocale(settings, e, i18nParam).i18n).join(', ')
 		: data?.singergroups?.length > 0
-		? data.singergroups.map(e => getTagInLocale(settings, e, i18nParam).i18n).join(', ')
-		: data?.singers?.length > 0
-		? data.singers.map(e => getTagInLocale(settings, e, i18nParam).i18n).join(', ')
-		: ''; // wtf?;
+		  ? data.singergroups.map(e => getTagInLocale(settings, e, i18nParam).i18n).join(', ')
+		  : data?.singers?.length > 0
+		    ? data.singers.map(e => getTagInLocale(settings, e, i18nParam).i18n).join(', ')
+		    : ''; // wtf?;
 }
 
 /**
@@ -139,28 +138,33 @@ export function buildKaraTitle(
 	data: DBKara,
 	onlyText?: boolean,
 	i18nParam?: any
-): string | ReactFragment {
+): string | ReactNode {
 	const isMulti = data?.langs?.find(e => e.name.indexOf('mul') > -1);
 	if (data?.langs && isMulti) {
 		data.langs = [isMulti];
 	}
 	const serieText =
-		data?.series?.length > 0
-			? data.series
+		data.from_display_type && data[data.from_display_type]
+			? data[data.from_display_type]
 					.slice(0, 3)
 					.map(e => getTagInLocale(settings, e, i18nParam).i18n)
-					.join(', ') + (data.series.length > 3 ? '...' : '')
-			: data?.singergroups?.length > 0
-			? data.singergroups
-					.slice(0, 3)
-					.map(e => getTagInLocale(settings, e, i18nParam).i18n)
-					.join(', ') + (data.singergroups.length > 3 ? '...' : '')
-			: data?.singers?.length > 0
-			? data.singers
-					.slice(0, 3)
-					.map(e => getTagInLocale(settings, e, i18nParam).i18n)
-					.join(', ') + (data.singers.length > 3 ? '...' : '')
-			: ''; // wtf?
+					.join(', ') + (data[data.from_display_type].length > 3 ? '...' : '')
+			: data?.series?.length > 0
+			  ? data.series
+						.slice(0, 3)
+						.map(e => getTagInLocale(settings, e, i18nParam).i18n)
+						.join(', ') + (data.series.length > 3 ? '...' : '')
+			  : data?.singergroups?.length > 0
+			    ? data.singergroups
+							.slice(0, 3)
+							.map(e => getTagInLocale(settings, e, i18nParam).i18n)
+							.join(', ') + (data.singergroups.length > 3 ? '...' : '')
+			    : data?.singers?.length > 0
+			      ? data.singers
+								.slice(0, 3)
+								.map(e => getTagInLocale(settings, e, i18nParam).i18n)
+								.join(', ') + (data.singers.length > 3 ? '...' : '')
+			      : ''; // wtf?
 	const langsText = data?.langs
 		?.map(e => e.name)
 		.join(', ')

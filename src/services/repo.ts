@@ -8,7 +8,14 @@ import { TopologicalSort } from 'topological-sort';
 import { compareKarasChecksum, generateDB } from '../dao/database.js';
 import { baseChecksum, editKaraInStore, getStoreChecksum, sortKaraStore } from '../dao/dataStore.js';
 import { updateDownloaded } from '../dao/download.js';
-import { deleteRepo, insertRepo, selectRepos, updateRepo } from '../dao/repo.js';
+import {
+	deleteRepo,
+	insertRepo,
+	readRepoManifest,
+	selectRepos,
+	selectRepositoryManifest,
+	updateRepo,
+} from '../dao/repo.js';
 import { getSettings, refreshAll, saveSetting } from '../lib/dao/database.js';
 import { initHooks } from '../lib/dao/hook.js';
 import { refreshKaras } from '../lib/dao/kara.js';
@@ -32,7 +39,7 @@ import { Change, Commit, DifferentChecksumReport, ModifiedMedia, Push } from '..
 import { adminToken } from '../utils/constants.js';
 import { getFreeSpace, pathIsContainedInAnother } from '../utils/files.js';
 import FTP from '../utils/ftp.js';
-import Git, { isGit } from '../utils/git.js';
+import Git, { checkGitInstalled, isGit } from '../utils/git.js';
 import { applyPatch, cleanFailedPatch, downloadAndExtractZip, writeFullPatchedFiles } from '../utils/patch.js';
 import sentry from '../utils/sentry.js';
 import { getState } from '../utils/state.js';
@@ -111,6 +118,7 @@ export async function addRepo(repo: Repository) {
 				throw new ErrorKM('REPOSITORY_UNREACHABLE', 404);
 			}
 		}
+		if (repo.MaintainerMode && repo.Git?.URL) await checkGitInstalled();
 		await checkRepoPaths(repo);
 		insertRepo(repo);
 		// Let's download zip if it's an online repository
@@ -119,19 +127,23 @@ export async function addRepo(repo: Repository) {
 				if (repo.Git?.URL) {
 					updateGitRepo(repo.Name)
 						.then(() => generateDB())
-						.catch(() => {
-							logger.warn('Repository was added, but initializing it failed', { service });
+						.catch(err => {
+							logger.warn('Repository was added, but initializing it failed', { service, err });
 							emitWS(
-								'OperatorNotificationError',
-								APIMessage('NOTIFICATION.OPERATOR.ERROR.UPDATE_GIT_REPO_ERROR')
+								'operatorNotificationError',
+								APIMessage(
+									err instanceof ErrorKM
+										? `ERROR_CODES.${err.message}`
+										: 'NOTIFICATION.OPERATOR.ERROR.UPDATE_GIT_REPO_ERROR'
+								)
 							);
 						});
 				}
 			} else {
 				updateZipRepo(repo.Name)
 					.then(() => generateDB())
-					.catch(() => {
-						logger.warn('Repository was added, but initializing it failed', { service });
+					.catch(err => {
+						logger.warn('Repository was added, but initializing it failed', { service, err });
 					});
 			}
 		}
@@ -147,6 +159,7 @@ export async function updateAllRepos() {
 	try {
 		const repos = getRepos().filter(r => r.Online && r.Enabled && r.Update);
 		let doGenerate = false;
+		let allReposUpdated = true;
 		logger.info('Updating all repositories', { service });
 		for (const repo of repos) {
 			try {
@@ -160,9 +173,13 @@ export async function updateAllRepos() {
 				}
 			} catch (err) {
 				logger.error(`Failed to update repository ${repo.Name}`, { service, obj: err });
+				if (err instanceof ErrorKM)
+					emitWS('operatorNotificationError', APIMessage(`ERROR_CODES.${err.message}`));
+				allReposUpdated = false;
 			}
 		}
 		logger.info('Finished updating all repositories', { service });
+		if (allReposUpdated) emitWS('operatorNotificationSuccess', APIMessage('SUCCESS_CODES.REPOS_ALL_UPDATED'));
 		if (doGenerate) await generateDB();
 		if (getConfig().App.FirstRun) {
 			createProblematicSmartPlaylist();
@@ -255,6 +272,12 @@ export async function deleteMedias(kids?: string[], repo?: string, cleanRarelyUs
 			karas.content.map(k => k.kid),
 			'MISSING'
 		);
+		emitWS(
+			'KIDUpdated',
+			karas.content.map(kara => {
+				return { kid: kara.kid, download_status: 'MISSING' };
+			})
+		);
 	} catch (err) {
 		logger.error(`Error getting repos : ${err}`, { service });
 		sentry.error(err);
@@ -278,6 +301,15 @@ export async function updateZipRepo(name: string) {
 		if (dir.length === 0) {
 			// Folder is empty.
 			logger.info('Folder is empty, resetting local commit to null', { service });
+			localCommit = null;
+		}
+		try {
+			const karaDir = await fs.readdir(resolve(baseDir, 'karaokes/'));
+			if (karaDir.length === 0) {
+				throw 'Empty';
+			}
+		} catch (err) {
+			logger.info('Karaoke folder is empty or non-existant, resetting local commit to null', { service });
 			localCommit = null;
 		}
 		logger.info(`Updating repository from ${name}, our commit is ${localCommit}`, { service });
@@ -381,6 +413,7 @@ export async function editRepo(
 				throw new ErrorKM('REPOSITORY_UNREACHABLE', 404);
 			}
 		}
+		if (repo.MaintainerMode && repo.Git?.URL) await checkGitInstalled();
 		if (repo.Enabled) await checkRepoPaths(repo);
 		updateRepo(repo, name);
 		// Delay repository actions after edit
@@ -409,10 +442,14 @@ async function hookEditedRepo(oldRepo: Repository, repo: Repository, refresh = f
 				try {
 					await updateGitRepo(repo.Name);
 				} catch (err) {
-					logger.warn('Repository was edited, but updating it failed', { service });
+					logger.warn('Repository was edited, but updating it failed', { service, err });
 					emitWS(
-						'OperatorNotificationError',
-						APIMessage('NOTIFICATION.OPERATOR.ERROR.UPDATE_GIT_REPO_ERROR')
+						'operatorNotificationError',
+						APIMessage(
+							err instanceof ErrorKM
+								? `ERROR_CODES.${err.message}`
+								: 'NOTIFICATION.OPERATOR.ERROR.UPDATE_GIT_REPO_ERROR'
+						)
 					);
 				}
 				if (refresh) doGenerate = true;
@@ -976,6 +1013,9 @@ export async function findUnusedMedias(repo: string): Promise<string[]> {
 /** Get metadata. Throws if KM Server is not up to date */
 export async function getRepoMetadata(repo: string) {
 	try {
+		// FIXME : This should be depracted in KM 9.0
+		// Repository metadata will have to come from the manifest file provided by each repository, not from their online server.
+		// Only LastCommit will need to be fetched from KM Server.
 		const ret = await HTTP.get(`https://${repo}/api/karas/repository`);
 		return ret.data as RepositoryManifest;
 	} catch (err) {
@@ -1473,3 +1513,11 @@ export async function openMediaFolder(repoName: string) {
 		throw err instanceof ErrorKM ? err : new ErrorKM('OPEN_MEDIA_FOLDER_ERROR');
 	}
 }
+
+export async function initRepos() {
+	for (const repo of getRepos()) {
+		readRepoManifest(repo.Name);
+	}
+}
+
+export const getRepoManifest = selectRepositoryManifest;
