@@ -48,7 +48,7 @@ function LyricsBox(props: IProps) {
 	};
 
 	const genBlockClasses = (block: ASSEvent, line: ASSLine) => {
-		if (block.tags[0]?.k && line.start + block.tags[0].k < timePosition + 0.125) {
+		if (typeof block.tags[0]?.k === 'number' && line.start + block.tags[0].k < timePosition + 0.125) {
 			return 'singing';
 		}
 	};
@@ -97,17 +97,93 @@ function LyricsBox(props: IProps) {
 			{showLyrics > 0 ? (
 				lyrics.length > 0 ? (
 					<div className="lyrics">
-						{lyrics.map((val, index) => {
-							const classes = genClasses(val);
+						{lyrics.map((line, index) => {
+							const parsedSyllables =
+								line.fullText?.map(event =>
+									event.text.replace('｜', '|').replace('|!', '|').replace('|<', '|')
+								) ?? [];
+							const rubifiedArray: { text: string; rubys: string[]; cumulativeNumberOfSyl: number }[] =
+								[];
+							parsedSyllables.forEach(syl => {
+								if (syl.match(/#\|.*/g)) {
+									const lastElement = rubifiedArray.pop();
+									if (lastElement) {
+										lastElement.rubys.push(syl.substring(2));
+										rubifiedArray.push(lastElement);
+									}
+								} else if (syl.match(/.*\|.*/g)) {
+									rubifiedArray.push({
+										text: syl.split('|')[0],
+										rubys: [syl.split('|')[1]],
+										cumulativeNumberOfSyl: 0,
+									});
+								} else {
+									rubifiedArray.push({
+										text: syl,
+										rubys: [],
+										cumulativeNumberOfSyl: 0,
+									});
+								}
+							});
+							rubifiedArray.forEach((val, index) => {
+								if (index == 0) {
+									val.cumulativeNumberOfSyl = 0;
+								} else {
+									const previousVal = rubifiedArray[index - 1];
+									val.cumulativeNumberOfSyl =
+										previousVal.cumulativeNumberOfSyl + Math.max(previousVal.rubys.length, 1);
+								}
+							});
+							const classes = genClasses(line);
 							return (
 								<div className={classes} key={index}>
-									{val.fullText && classes === 'current'
-										? val.fullText.map((block, index) => (
-												<span key={index} className={genBlockClasses(block, val)}>
-													{block.text}
-												</span>
-										  ))
-										: val.text.replace(/\\N/g, ' ')}
+									{line.fullText && classes === 'current'
+										? rubifiedArray.map((val, index) =>
+												val.rubys.length ? (
+													<ruby key={index}>
+														{val.text}
+														<rp>(</rp>
+														<rt>
+															{val.rubys.map((syl, sylIndex) => (
+																<span
+																	key={sylIndex + val.cumulativeNumberOfSyl}
+																	className={genBlockClasses(
+																		line.fullText[
+																			val.cumulativeNumberOfSyl + sylIndex
+																		],
+																		line
+																	)}
+																>
+																	{syl}
+																</span>
+															))}
+														</rt>
+														<rp>)</rp>
+													</ruby>
+												) : (
+													<span
+														key={index}
+														className={genBlockClasses(
+															line.fullText[val.cumulativeNumberOfSyl],
+															line
+														)}
+													>
+														{val.text}
+													</span>
+												)
+										  )
+										: rubifiedArray.map((val, index) =>
+												val.rubys.length ? (
+													<ruby key={index}>
+														{val.text}
+														<rp>(</rp>
+														<rt>{val.rubys.flat()}</rt>
+														<rp>)</rp>
+													</ruby>
+												) : (
+													val.text
+												)
+										  )}
 								</div>
 							);
 						})}

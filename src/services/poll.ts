@@ -3,6 +3,7 @@ import { sample, sampleSize } from 'lodash';
 import { setTimeout as sleep } from 'timers/promises';
 
 import { APIMessage } from '../lib/services/frontend.js';
+import { getSongSeriesSingers, getSongTitle, getSongVersion } from '../lib/services/kara.js';
 import { DBPLC } from '../lib/types/database/playlist.js';
 import { OldJWTToken } from '../lib/types/user.js';
 import { getConfig } from '../lib/utils/config.js';
@@ -16,7 +17,6 @@ import { State } from '../types/state.js';
 import { adminToken } from '../utils/constants.js';
 import { getState, setState } from '../utils/state.js';
 import { sayTwitch } from '../utils/twitch.js';
-import { getSongSeriesSingers, getSongTitle, getSongVersion } from './kara.js';
 import { displayInfo, playerMessage } from './player.js';
 import { copyKaraToPlaylist, editPLC, getPlaylistContentsMini } from './playlist.js';
 

@@ -23,6 +23,8 @@ export default function frontendContextReducer(state: FrontendContextStore, acti
 			return { ...state, playlistInfoRight: action.payload.playlist };
 		case FrontendContextAction.INDEX_KARA_DETAIL:
 			return { ...state, indexKaraDetail: action.payload.indexKaraDetail };
+		case FrontendContextAction.FUTURE_TIME:
+			return { ...state, futurTime: action.payload.futurTime };
 		default:
 			return state;
 	}

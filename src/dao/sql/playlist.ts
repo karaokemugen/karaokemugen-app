@@ -49,6 +49,7 @@ INSERT INTO playlist(
 	flag_whitelist,
 	flag_fallback,
 	flag_smart,
+	type_smart,
 	fk_login,
 	time_left
 )
@@ -65,6 +66,7 @@ VALUES(
 	:flag_whitelist,
 	:flag_fallback,
 	:flag_smart,
+	:type_smart,
 	:username,
 	0
 ) RETURNING pk_plaid
@@ -133,6 +135,7 @@ SELECT pc.fk_kid AS kid,
 	pc.flag_accepted AS flag_accepted,
 	pc.flag_refused AS flag_refused,
 	pc.fk_plaid AS plaid,
+	ak.from_display_type AS from_display_type,
 	ak.mediafile AS mediafile,
 	ak.repository AS repository,
 	ak.mediasize AS mediasize,
@@ -167,6 +170,7 @@ SELECT
   pc.created_at AS added_at,
   ak.mediasize AS mediasize,
   ak.download_status AS download_status,
+  ak.from_display_type AS from_display_type,
   COUNT(p.played_at)::integer AS played,
   COUNT(rq.requested_at)::integer AS requested,
   (CASE WHEN :dejavu_time < max(p.played_at)
@@ -224,7 +228,7 @@ ${additionalFrom}
 WHERE pc.fk_plaid = :plaid
 ${filterClauses.map(clause => `AND (${clause})`).join(' ')}
 ${whereClause}
-GROUP BY pl.fk_plcid_playing, ak.pk_kid, ak.titles, ak.titles_aliases, ak.titles_default_language, ak.songorder, ak.tags, ak.subfile, ak.year, ak.mediafile, ak.karafile, ak.duration, ak.mediasize, pc.created_at, pc.nickname, ak.download_status, pc.fk_login, pc.pos, pc.pk_plcid, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, u.type, ak.repository, pc.criterias
+GROUP BY pl.fk_plcid_playing, ak.pk_kid, ak.titles, ak.titles_aliases, ak.titles_default_language, ak.songorder, ak.tags, ak.subfile, ak.year, ak.mediafile, ak.karafile, ak.from_display_type, ak.duration, ak.mediasize, pc.created_at, pc.nickname, ak.download_status, pc.fk_login, pc.pos, pc.pk_plcid, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, u.type, ak.repository, pc.criterias
 ORDER BY ${orderClause}
 ${limitClause}
 ${offsetClause}
@@ -243,6 +247,7 @@ SELECT ak.pk_kid AS kid,
     ak.mediasize AS mediasize,
 	ak.subfile AS subfile,
 	ak.tags AS tags,
+	ak.from_display_type AS from_display_type,
 	pc.pos AS pos,
 	(CASE WHEN pl.fk_plcid_playing = pc.pk_plcid
 		THEN TRUE
@@ -253,6 +258,7 @@ SELECT ak.pk_kid AS kid,
 		ELSE FALSE
   	END) FROM played p WHERE ak.pk_kid = p.fk_kid) AS flag_dejavu,
 	pc.pk_plcid AS plcid,
+	pc.fk_plaid as plaid,
 	pc.fk_login AS username,
 	pc.flag_free AS flag_free,
 	pc.flag_refused AS flag_refused,
@@ -297,6 +303,7 @@ SELECT
   ak.modified_at AS modified_at,
   ak.mediasize AS mediasize,
   ak.download_status AS download_status,
+  ak.from_display_type AS from_display_type,
   COUNT(p.played_at)::integer AS played,
   COUNT(rq.requested_at)::integer AS requested,
   (CASE WHEN :dejavu_time < max(p.played_at)
@@ -355,7 +362,7 @@ LEFT OUTER JOIN playlist_content AS pc_pub ON pc_pub.fk_kid = pc.fk_kid AND pc_p
 LEFT OUTER JOIN playlist_content AS pc_self on pc_self.fk_kid = pc.fk_kid AND pc_self.fk_plaid = :public_plaid AND pc_self.fk_login = :username
 WHERE  pc.pk_plcid = :plcid
 ${forUser ? ' AND pl.flag_visible = TRUE' : ''}
-GROUP BY pl.fk_plcid_playing, ak.pk_kid, ak.titles, ak.titles_aliases, ak.titles_default_language, ak.songorder, ak.subfile, ak.year, ak.tags, ak.mediafile, ak.karafile, ak.duration, ak.loudnorm, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_plcid, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, u.type, ak.repository, ak.download_status, pc.criterias
+GROUP BY pl.fk_plcid_playing, ak.pk_kid, ak.titles, ak.titles_aliases, ak.titles_default_language, ak.songorder, ak.subfile, ak.year, ak.tags, ak.mediafile, ak.karafile, ak.duration, ak.loudnorm, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_plcid, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, u.type, ak.repository, ak.from_display_type, ak.download_status, pc.criterias
 `;
 
 export const sqlgetPLCInfoMini = `

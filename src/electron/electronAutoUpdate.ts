@@ -17,12 +17,17 @@ export function initAutoUpdate() {
 	autoUpdater.logger = logger;
 	autoUpdater.autoDownload = false;
 	autoUpdater.on('error', error => {
+		if (error.message === 'net::ERR_INTERNET_DISCONNECTED') {
+			// Not yet handled cleanly by the electron-updater package
+			logger.info('Device is offline, skipping update', { service, obj: error });
+			return;
+		}
 		logger.error('', { service, obj: error });
 		const errMsg = error === null ? 'unknown' : (error.stack || error).toString();
 		dialog.showMessageBox({
 			type: 'none',
 			title: i18next.t('ERROR'),
-			message: `${i18next.t('UPDATE_CHECK_ERROR')} : ${errMsg}`,
+			message: `${i18next.t('UPDATE_CHECK_ERROR')}: ${errMsg}`,
 		});
 	});
 	autoUpdater.on('update-available', async () => {

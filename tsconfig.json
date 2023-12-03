@@ -28,7 +28,8 @@
 		"listEmittedFiles": false,
 		"noUnusedParameters": true,
 		"noUnusedLocals": true,
-		"experimentalDecorators": true
+		"experimentalDecorators": true,
+		"skipLibCheck": true
 	},
 	"include": ["src", "test", "util"]
 }

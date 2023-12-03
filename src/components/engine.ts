@@ -28,7 +28,7 @@ import { initPlaylistSystem } from '../services/playlist.js';
 import { buildAllMediasList, updatePlaylistMedias } from '../services/playlistMedias.js';
 import { stopGame } from '../services/quiz.js';
 import { initRemote } from '../services/remote.js';
-import { checkDownloadStatus, updateAllRepos } from '../services/repo.js';
+import { checkDownloadStatus, initRepos, updateAllRepos } from '../services/repo.js';
 import { initSession } from '../services/session.js';
 import { initStats } from '../services/stats.js';
 import { generateAdminPassword, initUserSystem } from '../services/user.js';
@@ -222,6 +222,7 @@ export async function initEngine() {
 			initStep(i18next.t('INIT_DONE'), true);
 			postInit();
 			initHooks();
+			initRepos();
 			archiveOldLogs();
 			initUsageTimer();
 			if (conf.Player.KeyboardMediaShortcuts) registerShortcuts();

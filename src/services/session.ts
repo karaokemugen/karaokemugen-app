@@ -14,6 +14,7 @@ import {
 	updateSession,
 } from '../dao/session.js';
 import { APIMessage } from '../lib/services/frontend.js';
+import { getSongSeriesSingers, getSongTitle, getSongVersion } from '../lib/services/kara.js';
 import { getConfig, resolvedPath } from '../lib/utils/config.js';
 import { ErrorKM } from '../lib/utils/error.js';
 import { sanitizeFile } from '../lib/utils/files.js';
@@ -23,7 +24,6 @@ import { emitWS } from '../lib/utils/ws.js';
 import { Session, SessionExports } from '../types/session.js';
 import sentry from '../utils/sentry.js';
 import { getState, setState } from '../utils/state.js';
-import { getSongSeriesSingers, getSongTitle, getSongVersion } from './kara.js';
 
 const service = 'Sessions';
 

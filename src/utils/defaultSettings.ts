@@ -9,6 +9,7 @@ import { bools, hostnameRegexp } from '../lib/utils/constants.js';
 import { Config } from '../types/config.js';
 
 export const dbConfig = {
+	RestoreNeeded: false,
 	bundledPostgresBinary: true,
 	database: 'karaokemugen_app',
 	host: 'localhost',
@@ -52,6 +53,7 @@ export const defaults: Config = {
 	Frontend: {
 		AllowGuestLogin: true,
 		AllowCustomTemporaryGuests: false,
+		AllowUserCreation: true,
 		Mode: 2,
 		ShowAvatarsOnPlaylist: true,
 		WelcomeMessage: '',
@@ -107,6 +109,7 @@ export const defaults: Config = {
 				Enabled: true,
 				Host: null,
 				Message: '',
+				QRCode: false,
 			},
 			RandomQuotes: true,
 			SongInfo: true,
@@ -127,6 +130,7 @@ export const defaults: Config = {
 		HardwareDecoding: 'auto-safe',
 		KeyboardMediaShortcuts: true,
 		Volume: 100,
+		AudioDelay: 0,
 		LiveComments: false,
 		BlurVideoOnWarningTag: false,
 	},
@@ -211,7 +215,7 @@ export const defaults: Config = {
 			StreamFiles: 'streamFiles',
 		},
 	},
-	Maintainer: { ApplyLyricsCleanupOnKaraSave: false },
+	Maintainer: { ApplyLyricsCleanupOnKaraSave: true },
 };
 
 export const horizontalPosArray = ['Left', 'Right', 'Center'];
@@ -258,6 +262,7 @@ export const configConstraints = {
 	'Player.Display.Avatar': { inclusion: bools },
 	'Player.Display.Nickname': { inclusion: bools },
 	'Player.Display.ConnectionInfo.Enabled': { inclusion: bools },
+	'Player.Display.ConnectionInfo.QRCode': { inclusion: bools },
 	'Player.Display.ConnectionInfo.Message': { presence: { allowEmpty: true } },
 	'Player.FullScreen': { inclusion: bools },
 	'Player.Monitor': { inclusion: bools },
@@ -267,6 +272,7 @@ export const configConstraints = {
 	'Player.PIP.PositionY': { inclusion: verticalPosArray },
 	'Player.PIP.Size': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 100 } },
 	'Player.Volume': { numericality: { greaterThanOrEqualTo: 0, lessThanOrEqualTo: 100 } },
+	'Player.AudioDelay': { numericality: { greaterThanOrEqualTo: -5000, lessThanOrEqualTo: 5000 } },
 	'Player.HardwareDecoding': { inclusion: hwdecModes },
 	'Playlist.AllowDuplicates': { inclusion: bools },
 	'Playlist.MaxDejaVuTime': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 1 } },

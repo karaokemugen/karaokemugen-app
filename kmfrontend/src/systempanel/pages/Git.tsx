@@ -394,6 +394,11 @@ export default function Git() {
 												return { ...pPush, commits: { ...pPush.commits, commits } };
 											});
 										}}
+										onClick={e => {
+											e.stopPropagation();
+											e.preventDefault();
+										}}
+										autoFocus
 									/>
 								) : (
 									<Button
@@ -402,6 +407,7 @@ export default function Git() {
 										disabled={excludeList.includes(i)}
 										onClick={e => {
 											e.stopPropagation();
+											e.preventDefault();
 											setPendingPush(pPush => {
 												const commits = [...pPush.commits.commits];
 												commits[i] = {

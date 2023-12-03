@@ -21,6 +21,7 @@ export const urls = {
 	website: () => shell.openExternal('https://karaokes.moe'),
 	twitter: () => shell.openExternal('https://twitter.com/KaraokeMugen'),
 	mastodon: () => shell.openExternal('https://shelter.moe/@KaraokeMugen'),
+	bluesky: () => shell.openExternal('https://bsky.app/profile/karaokes.moe'),
 	discord: () => shell.openExternal('https://karaokes.moe/discord'),
 	forum: () => shell.openExternal('https://discourse.karaokes.moe'),
 	gitlab: () => shell.openExternal('https://gitlab.com/karaokemugen/code/karaokemugen-app'),

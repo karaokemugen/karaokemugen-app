@@ -6,26 +6,30 @@ import es from '@karaokemugen/i18n-iso-languages/langs/es.json';
 import fr from '@karaokemugen/i18n-iso-languages/langs/fr.json';
 import id from '@karaokemugen/i18n-iso-languages/langs/id.json';
 import pt from '@karaokemugen/i18n-iso-languages/langs/pt.json';
+import de from '@karaokemugen/i18n-iso-languages/langs/de.json';
 
 import countries_en from 'i18n-iso-countries/langs/en.json';
 import countries_es from 'i18n-iso-countries/langs/es.json';
 import countries_fr from 'i18n-iso-countries/langs/fr.json';
 import countries_id from 'i18n-iso-countries/langs/id.json';
 import countries_pt from 'i18n-iso-countries/langs/pt.json';
+import countries_de from 'i18n-iso-countries/langs/de.json';
 
 countries.registerLocale(countries_en);
 countries.registerLocale(countries_es);
 countries.registerLocale(countries_fr);
 countries.registerLocale(countries_id);
 countries.registerLocale(countries_pt);
+countries.registerLocale(countries_de);
 
 registerLocale(fr);
 registerLocale(en);
 registerLocale(es);
 registerLocale(id);
 registerLocale(pt);
+registerLocale(de);
 
-export const languagesSupport = ['en', 'fr', 'es', 'id', 'pt'];
+export const languagesSupport = ['en', 'fr', 'es', 'id', 'pt', 'de'];
 const navigatorLanguage: string = navigator.languages[0].substring(0, 2);
 export const langSupport = languagesSupport.includes(navigatorLanguage) ? navigatorLanguage : 'en';
 

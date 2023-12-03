@@ -128,6 +128,17 @@ export default function Inbox() {
 							</a>
 						</div>
 					) : null}
+					{userDetails?.social_networks?.bluesky ? (
+						<div>
+							<label>{i18next.t('INBOX.CONTACT_INFOS_MODAL.SOCIAL_NETWORKS.BLUESKY')}</label>
+							<a
+								href={`https://bsky.app/profile/${userDetails.social_networks.bluesky}`}
+								rel="noreferrer noopener"
+							>
+								{userDetails.social_networks.bluesky}
+							</a>
+						</div>
+					) : null}
 					{userDetails?.social_networks?.instagram ? (
 						<div>
 							<label>{i18next.t('INBOX.CONTACT_INFOS_MODAL.SOCIAL_NETWORKS.INSTAGRAM')}</label>
@@ -188,7 +199,7 @@ export default function Inbox() {
 			title: i18next.t('INBOX.TYPE'),
 			dataIndex: 'fix',
 			key: 'fix',
-			render: text => (text ? 'Modification' : 'Création'),
+			render: text => (text ? i18next.t('INBOX.TYPES.MODIFICATION') : i18next.t('INBOX.TYPES.CREATION')),
 		},
 		{
 			title: i18next.t('INBOX.USER'),
@@ -210,9 +221,12 @@ export default function Inbox() {
 			title: i18next.t('INBOX.LINK_TO_ISSUE'),
 			dataIndex: 'gitlab_issue',
 			key: 'gitlab_issue',
-			render: text => (
-				<a href={text}>{i18next.t('INBOX.ISSUE', { number: text.split('/')[text.split('/').length - 1] })}</a>
-			),
+			render: text =>
+				text && (
+					<a href={text}>
+						{i18next.t('INBOX.ISSUE', { number: text?.split('/')[text?.split('/').length - 1] })}
+					</a>
+				),
 		},
 		{
 			title: i18next.t('ACTION'),

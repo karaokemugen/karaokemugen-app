@@ -147,6 +147,17 @@ function UsersModal(props: IProps) {
 												</a>
 											</div>
 										) : null}
+										{userDetails?.social_networks.bluesky ? (
+											<div>
+												<i className="fab fa-fw fa-bluesky" />
+												<a
+													href={`https://bsky.app/profile/${userDetails.social_networks.bluesky}`}
+													rel="noreferrer noopener"
+												>
+													{userDetails.social_networks.bluesky}
+												</a>
+											</div>
+										) : null}
 										{userDetails?.social_networks.instagram ? (
 											<div>
 												<i className="fab fa-fw fa-instagram" />

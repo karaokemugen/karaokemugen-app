@@ -4,7 +4,7 @@ import i18next from 'i18next';
 import { Fragment, useContext, useEffect, useState } from 'react';
 import { Trans } from 'react-i18next';
 
-import { DBPL } from '../../../../../src/lib/types/database/playlist';
+import { DBPL } from '../../../../../src/types/database/playlist';
 import { Criteria } from '../../../../../src/lib/types/playlist';
 import { setSettings } from '../../../store/actions/settings';
 import GlobalContext from '../../../store/context';
@@ -281,10 +281,10 @@ function CriteriasList(props: IProps) {
 														true
 												  )
 												: criteria.value_i18n
-												? criteria.value_i18n
-												: [1002, 1003].includes(criteria.type)
-												? secondsTimeSpanToHMS(criteria.value, 'mm:ss')
-												: criteria.value}
+												  ? criteria.value_i18n
+												  : [1002, 1003].includes(criteria.type)
+												    ? secondsTimeSpanToHMS(criteria.value, 'mm:ss')
+												    : criteria.value}
 										</div>
 									) : null}
 								</div>

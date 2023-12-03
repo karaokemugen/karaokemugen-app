@@ -1,3 +1,63 @@
+# v7.1.39 - 03/12/2023
+
+This is a... release! With bugfixes and some new features
+
+## New features
+
+-   (re)Added QR Code to join the instance on screen
+-   Added tooltip showing the time you'll land on when hovering on the song progress bar
+-   Added an audio/video delay setting, for when you're on a screen with input lag (or using wireless speakers)
+-   Added repository manifest containing rules about the repository (see kara.moe's manifest for an example. More documentation to come later)
+-   Window size now adapts better to small screen sizes at launch
+-   Added media compliance checks when adding a song to a repository.
+-   Account creation can now be disabled completely if you want to avoid people skipping quota rule by creating new account.
+-   Songs can now have specific types to display instead of series/singergroup/singer. A song may choose to display the singergroup instead of the series
+-   Added lyrics cleanup for songs in karaoke creation form
+-   Added Bluesky to social media profiles
+
+## Changes
+
+-   Reworked database restore and dump mechanics
+-   Updated PostgreSQL to version 16. It should be transparent for end-users. For those using their own Postgres cluster, we're not yet using version 15 features just yet.
+-   Updated ffmpeg to version 6
+-   Update to mpv will follow sometime later as 0.36.0 has a bad bug with mp3 playback with covers
+-   Enter key can now proceed in setup
+-   Removed NoMediaDownloadsAtAll options as it was redundant with Online.AllowDownloads
+
+## Fixes
+
+-   Fixed low player volume on songs
+-   Fixed zip repository update when folder is there but empty
+-   Fixed empty button for years in operator panel
+-   Fixed about window height
+-   Fixed export playlist function to work better with KM server's import
+-   Fixed french locale for event log button
+-   Fixed commits being unchecked when adding a message
+-   Fixed upvote count in library
+-   Fixed adding repository by URL
+-   Fixed furigana display on lyrics panel
+-   Fixed playlists, favorites and animelists being updated after a database generation
+-   Localized inbox types
+-   Fixed checking for gitlab issue being set before updating
+-   Fixed update error showing up when being offline
+-   Fixed missing french locales
+-   Fixed collor for first syllable on lyrics display
+-   Fixed Kitsu regexp
+-   Fixed stop button not working during classic pause
+-   Fixed autoplay triggering when classic pause is set
+-   Fixed URL open checks (#1534)
+-   Fixed sentry throw for Git Binary not Found
+-   Fixed refreshing play button on kara list after successful download
+
+## Misc
+
+-   Added Sunseille as a new contributor
+-   Various code cleanups
+-   Updated backend and frontend dependencies
+-   Added German translation
+-   Better error handling to get less false positives on Sentry
+-   Minimum node version needed is now 18
+
 # v7.1.31 - 08/10/2023
 
 This is primilarly a bugfix release

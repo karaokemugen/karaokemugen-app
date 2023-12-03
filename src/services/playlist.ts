@@ -820,7 +820,7 @@ export async function addKaraToPlaylist(params: AddKaraParams) {
 			checkMediaAndDownload(karas);
 			writeStreamFiles('current_kara_count');
 			writeStreamFiles('time_remaining_in_current_playlist');
-			if (conf.Karaoke.Autoplay && (state.player.playerStatus === 'stop' || state.randomPlaying)) {
+			if (conf.Karaoke.Autoplay && (state.player?.mediaType === 'stop' || state.randomPlaying)) {
 				setState({ randomPlaying: false });
 				await setPlaying(PLCsInserted[0].plcid, getState().currentPlaid);
 				await playPlayer(true);

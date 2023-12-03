@@ -201,12 +201,17 @@ export async function playPlayer(now?: boolean, username?: string) {
 	}
 }
 
-export async function stopPlayer(now = true, endOfPlaylist = false) {
+export async function stopPlayer(now = true, endOfPlaylist = false, force = false) {
 	if (now || getState().stopping || getPlayerState().mediaType !== 'song' || getConfig().Karaoke.ClassicMode) {
 		logger.info('Karaoke stopping NOW', { service });
 		// No need to stop in streamerPause, we're already stopped, but we'll disable the pause anyway.
 		let stopType: BackgroundType = 'stop';
-		if ((getState().streamerPause || getConfig().Karaoke.ClassicMode) && !endOfPlaylist && !getState().stopping) {
+		if (
+			(getState().streamerPause || getConfig().Karaoke.ClassicMode) &&
+			!force &&
+			!endOfPlaylist &&
+			!getState().stopping
+		) {
 			stopType = 'pause';
 			setState({ pauseInProgress: true });
 		} else {
@@ -216,7 +221,7 @@ export async function stopPlayer(now = true, endOfPlaylist = false) {
 		await mpv.setBlur(false);
 		setState({ randomPlaying: false, stopping: false });
 		stopAddASongMessage();
-		if (!endOfPlaylist && getConfig().Karaoke.ClassicMode && getState().pauseInProgress) {
+		if (!force && !endOfPlaylist && getConfig().Karaoke.ClassicMode && getState().pauseInProgress) {
 			await prepareClassicPauseScreen();
 		}
 		if (getState().quiz.running) {
@@ -294,6 +299,11 @@ export async function setVolumePlayer(volume: number) {
 	// Save the volume in configuration
 	setConfig({ Player: { Volume: volume } });
 	emit('playerVolumeUpdated', volume);
+}
+
+async function setAudioDelay(delayMs = 0) {
+	await mpv.setAudioDelay(delayMs);
+	setConfig({ Player: { AudioDelay: delayMs } });
 }
 
 async function setPitchPlayer(pitch: number) {
@@ -378,7 +388,7 @@ export async function sendCommand(command: PlayerCommand, options: any) {
 				streamerPause: false,
 				pauseInProgress: false,
 			});
-			await stopPlayer();
+			await stopPlayer(true, false, true);
 		} else if (command === 'pause') {
 			await pausePlayer();
 		} else if (command === 'stopAfter') {
@@ -422,6 +432,10 @@ export async function sendCommand(command: PlayerCommand, options: any) {
 		} else if (command === 'setVolume') {
 			if (isNaN(options)) throw new ErrorKM('INVALID_DATA', 400, false);
 			await setVolumePlayer(options);
+		} else if (command === 'setAudioDelay') {
+			if ((options && isNaN(options)) || options > 5000 || options < -5000)
+				throw "Command setAudioDelay must have a numeric option value between -5'000 and 5'000";
+			await setAudioDelay(options);
 		} else if (command === 'setPitch') {
 			if (isNaN(options)) throw new ErrorKM('INVALID_DATA', 400, false);
 			if (options > 6 || options < -6) throw new ErrorKM('INVALID_DATA', 400, false);
@@ -445,6 +459,14 @@ export async function sendCommand(command: PlayerCommand, options: any) {
 
 export function isPlayerRunning() {
 	return mpv.isRunning();
+}
+
+export async function displayQRCode() {
+	await mpv.displayQRCode();
+}
+
+export async function hideQRCode() {
+	await mpv.hideQRCode();
 }
 
 export async function initPlayer() {

@@ -130,6 +130,7 @@
 	"MENU_HELP_FORUM": "&Forum",
 	"MENU_HELP_TWITTER": "&Twitter",
 	"MENU_HELP_MASTODON": "&Mastodon",
+	"MENU_HELP_BLUESKY": "&Bluesky",
 	"MENU_HELP_CHANGELOG": "&Notes de version",
 	"MENU_HELP_GITLAB": "&GitLab",
 	"MENU_HELP_GUIDE": "&Documentation",
@@ -221,7 +222,7 @@
 		],
 		"ERRORS": [
 			"N'hésitez pas à venir nous voir sur Discord si vous avez besoin d'aide : https://karaokes.moe/discord",
-			"Vérifiez que vous n'avez pas une autre instance de Karaoke Mugen en tâche de fond.",
+			"Vérifiez que vous n'avez pas une autre application Karaoke Mugen en tâche de fond.",
 			"Consultez les logs, la raison de l'erreur peut s'y trouver !",
 			"Ne paniquez pas, tout va bien se passer"
 		]
@@ -276,7 +277,7 @@
 	"ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE": "AJOUTEZ UNE CHANSON À LA LISTE DE LECTURE !",
 	"NEW_SESSION_NAME": "Karaoké du {{date}}",
 	"FULLSCREEN_TIP": "Appuyez sur F pour sortir du plein écran.",
-	"NO_KARA_PLAYING": "Aucun karaoké en cours de lecture",
+	"NO_KARA_PLAYING": "Aucune chanson en cours de lecture",
 	"INTERFACE_OPENED": "Ouvert",
 	"INTERFACE_RESTRICTED": "Pas de suggestions",
 	"INTERFACE_CLOSED": "Fermée",

@@ -4,10 +4,11 @@ import { createElement, useCallback, useContext, useEffect, useState } from 'rea
 import ReactDOM from 'react-dom';
 import { Route, Routes } from 'react-router';
 
+import { useSearchParams } from 'react-router-dom';
+import TasksEvent from '../../TasksEvent';
 import { setPlaylistInfoLeft, setPlaylistInfoRight } from '../../store/actions/frontendContext';
 import { showModal } from '../../store/actions/modal';
 import GlobalContext from '../../store/context';
-import TasksEvent from '../../TasksEvent';
 import { commandBackend, getSocket } from '../../utils/socket';
 import { decodeCriteriaReason, displayMessage, is_touch_device, nonStandardPlaylists } from '../../utils/tools';
 import { KaraElement } from '../types/kara';
@@ -19,10 +20,9 @@ import KaraDetail from './karas/KaraDetail';
 import Playlist from './karas/Playlist';
 import ProgressBar from './karas/ProgressBar';
 import AdminMessageModal from './modals/AdminMessageModal';
+import QuizModal from './modals/QuizModal';
 import Tutorial from './modals/Tutorial';
 import Options from './options/Options';
-import QuizModal from './modals/QuizModal';
-import { useSearchParams } from 'react-router-dom';
 
 interface IProps {
 	powerOff: (() => void) | undefined;
@@ -42,6 +42,8 @@ function AdminPage(props: IProps) {
 		displayMessage('error', i18next.t(data.code, { data: data }));
 	const operatorNotificationWarning = (data: { code: string; data: string }) =>
 		displayMessage('warning', i18next.t(data.code, { data: data }));
+	const operatorNotificationSuccess = (data: { code: string; data: string }) =>
+		displayMessage('success', i18next.t(data.code, { data: data }));
 
 	const playlistInfoUpdated = useCallback(
 		debounce(
@@ -176,11 +178,13 @@ function AdminPage(props: IProps) {
 		getSocket().on('operatorNotificationInfo', operatorNotificationInfo);
 		getSocket().on('operatorNotificationError', operatorNotificationError);
 		getSocket().on('operatorNotificationWarning', operatorNotificationWarning);
+		getSocket().on('operatorNotificationSuccess', operatorNotificationSuccess);
 		return () => {
 			getSocket().off('playlistsUpdated', getPlaylistList);
 			getSocket().off('operatorNotificationInfo', operatorNotificationInfo);
 			getSocket().off('operatorNotificationError', operatorNotificationError);
 			getSocket().off('operatorNotificationWarning', operatorNotificationWarning);
+			getSocket().off('operatorNotificationSuccess', operatorNotificationSuccess);
 		};
 	}, []);
 
@@ -232,6 +236,11 @@ function AdminPage(props: IProps) {
 					) : null}
 				</KmAppBodyDecorator>
 			</KmAppWrapperDecorator>
+			{context.globalState.frontendContext.futurTime ? (
+				<div id="futurTime" className="futurTime">
+					{context.globalState.frontendContext.futurTime}
+				</div>
+			) : null}
 		</>
 	);
 }

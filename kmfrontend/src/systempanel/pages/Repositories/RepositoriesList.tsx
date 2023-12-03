@@ -68,7 +68,7 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 
 	updateRepos = async () => {
 		commandBackend('updateAllRepos')
-			.then(() => displayMessage('success', i18next.t('DATABASE.UPDATING_REPOS')))
+			.then(() => displayMessage('info', i18next.t('DATABASE.UPDATING_REPOS')))
 			.catch(() => {});
 	};
 

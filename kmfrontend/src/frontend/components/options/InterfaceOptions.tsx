@@ -18,8 +18,8 @@ function InterfaceOptions(props: IProps) {
 			e.target.type === 'checkbox'
 				? e.target.checked
 				: Number(e.target.value)
-				? Number(e.target.value)
-				: e.target.value;
+				  ? Number(e.target.value)
+				  : e.target.value;
 		if (value === 'true') {
 			value = true;
 		} else if (value === 'false') {
@@ -61,6 +61,21 @@ function InterfaceOptions(props: IProps) {
 						idInput="Frontend.AllowGuestLogin"
 						handleChange={onChange}
 						isChecked={config['Frontend.AllowGuestLogin']}
+					/>
+				</div>
+			</div>
+
+			<div className="settings-line">
+				<label htmlFor="Frontend.AllowUserCreation">
+					<span className="title">{i18next.t('SETTINGS.INTERFACE.ALLOW_USER_CREATION')}</span>
+					<br />
+					<span className="tooltip">{i18next.t('SETTINGS.INTERFACE.ALLOW_USER_CREATION_TOOLTIP')}</span>
+				</label>
+				<div>
+					<Switch
+						idInput="Frontend.AllowUserCreation"
+						handleChange={onChange}
+						isChecked={config['Frontend.AllowUserCreation']}
 					/>
 				</div>
 			</div>

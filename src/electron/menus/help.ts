@@ -31,7 +31,10 @@ const builder: MenuItemBuilderFunction = options => {
 				label: i18next.t('MENU_HELP_MASTODON'),
 				click: urls.mastodon,
 			},
-
+			{
+				label: i18next.t('MENU_HELP_BLUESKY'),
+				click: urls.bluesky,
+			},
 			{
 				label: i18next.t('MENU_HELP_DISCORD'),
 				click: urls.discord,

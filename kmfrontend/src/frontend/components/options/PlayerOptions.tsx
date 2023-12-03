@@ -32,8 +32,8 @@ function PlayerOptions(props: IProps) {
 			e.target.type === 'checkbox'
 				? e.target.checked
 				: Number(e.target.value) && !e.target.value.includes('.')
-				? Number(e.target.value)
-				: e.target.value;
+				  ? Number(e.target.value)
+				  : e.target.value;
 		if (value === 'true') {
 			value = true;
 		} else if (value === 'false') {
@@ -52,8 +52,8 @@ function PlayerOptions(props: IProps) {
 			e.target.type === 'checkbox'
 				? e.target.checked
 				: Number(e.target.value) && !e.target.value.includes('.')
-				? Number(e.target.value)
-				: e.target.value;
+				  ? Number(e.target.value)
+				  : e.target.value;
 		if (value === 'true') {
 			value = true;
 		} else if (value === 'false') {
@@ -203,6 +203,28 @@ function PlayerOptions(props: IProps) {
 				</div>
 			</div>
 			<div className="settings-line">
+				<label htmlFor="Player.AudioDelay">
+					<span className="title">{i18next.t('SETTINGS.PLAYER.AUDIO_DELAY')}</span>
+					<br />
+					<span className="tooltip">{i18next.t('SETTINGS.PLAYER.AUDIO_DELAY_TOOLTIP')}</span>
+				</label>
+				<div>
+					<input
+						type="number"
+						data-namecommand="setAudioDelay"
+						id="Player.AudioDelay"
+						placeholder="0"
+						onBlur={putPlayerCommando}
+						onChange={putPlayerCommando}
+						step={20}
+						size={4}
+						min={-3_000}
+						max={3_000}
+						defaultValue={config['Player.AudioDelay']}
+					/>
+				</div>
+			</div>
+			<div className="settings-line">
 				<label htmlFor="Player.AudioDevice">
 					<span className="title">{i18next.t('SETTINGS.PLAYER.AUDIO_DEVICE')}</span>
 					<br />
@@ -305,6 +327,23 @@ function PlayerOptions(props: IProps) {
 								id="Player.Display.ConnectionInfo.Host"
 								onBlur={onChange}
 								defaultValue={config['Player.Display.ConnectionInfo.Host']}
+							/>
+						</div>
+					</div>
+
+					<div className="settings-line">
+						<label htmlFor="Player.Display.ConnectionInfo.QRCode">
+							<span className="title">{i18next.t('SETTINGS.PLAYER.DISPLAY_CONNECTION_INFO_QRCODE')}</span>
+							<br />
+							<span className="tooltip">
+								{i18next.t('SETTINGS.PLAYER.DISPLAY_CONNECTION_INFO_QRCODE_TOOLTIP')}
+							</span>
+						</label>
+						<div>
+							<Switch
+								idInput="Player.Display.ConnectionInfo.QRCode"
+								handleChange={onChange}
+								isChecked={config['Player.Display.ConnectionInfo.QRCode']}
 							/>
 						</div>
 					</div>

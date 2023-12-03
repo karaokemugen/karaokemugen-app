@@ -24,14 +24,12 @@ import { convert1LangTo2B } from '../lib/utils/langs.js';
 import logger, { profile } from '../lib/utils/logger.js';
 import { emitWS } from '../lib/utils/ws.js';
 import { getBackgroundAndMusic } from '../services/backgrounds.js';
-import { getSongSeriesSingers, getSongTitle } from '../services/kara.js';
 import { playerEnding } from '../services/karaEngine.js';
 import { getPromoMessage, next, pausePlayer, playPlayer, prev } from '../services/player.js';
 import { notificationNextSong } from '../services/playlist.js';
 import { getSingleMedia } from '../services/playlistMedias.js';
 import { endPoll } from '../services/poll.js';
 import { getCurrentSongTimers } from '../services/quiz.js';
-import { getTagNameInLanguage } from '../services/tag.js';
 import { BackgroundType } from '../types/backgrounds.js';
 import { MpvCommand } from '../types/mpvIPC.js';
 import { MpvOptions, PlayerState, SongModifiers } from '../types/player.js';
@@ -44,6 +42,8 @@ import sentry from '../utils/sentry.js';
 import { getState, setState } from '../utils/state.js';
 import { isShutdownInProgress } from './engine.js';
 import Timeout = NodeJS.Timeout;
+import { getSongSeriesSingers, getSongTitle } from '../lib/services/kara.js';
+import { getTagNameInLanguage } from '../lib/services/tag.js';
 import { emit } from '../lib/utils/pubsub.js';
 
 type PlayerType = 'main' | 'monitor';
@@ -414,6 +414,7 @@ class Player {
 			`--log-file=${resolve(resolvedPath('Logs'), this.logFile)}`,
 			`--hwdec=${conf.Player.HardwareDecoding}`,
 			`--volume=${+conf.Player.Volume}`,
+			`--audio-delay=${(conf.Player.AudioDelay && +conf.Player.AudioDelay / 1000) || 0}`,
 			'--no-config',
 			'--autoload-files=no',
 			`--input-conf=${resolve(resolvedPath('Temp'), 'input.conf')}`,
@@ -767,7 +768,7 @@ class Players {
 		let audio: string;
 		if (song.loudnorm) {
 			const [input_i, input_tp, input_lra, input_thresh, target_offset] = song.loudnorm.split(',');
-			audio = `[aid1]loudnorm=measured_i=${input_i}:measured_tp=${input_tp}:measured_lra=${input_lra}:measured_thresh=${input_thresh}:linear=true:offset=${target_offset}:lra=20[ao]`;
+			audio = `[aid1]loudnorm=measured_i=${input_i}:measured_tp=${input_tp}:measured_lra=${input_lra}:measured_thresh=${input_thresh}:linear=true:offset=${target_offset}:lra=15:i=-15[ao]`;
 		} else {
 			audio = '';
 		}
@@ -946,6 +947,26 @@ class Players {
 		}
 	}
 
+	private genLavfiComplexQRCode(): string {
+		return [
+			`movie=\\'${resolve(resolvedPath('Temp'), 'qrcode.png').replaceAll('\\', '/')}\\'[logo]`,
+			'[logo][vid1]scale2ref=w=(ih*.256):h=(ih*.256)[logo1][base]',
+			'[base][logo1]overlay=x=W-(W*50/300):y=H*20/300[vo]',
+		]
+			.filter(x => !!x)
+			.join(';');
+	}
+
+	async displayQRCode() {
+		await this.exec({ command: ['set_property', 'lavfi-complex', this.genLavfiComplexQRCode()] });
+	}
+
+	async hideQRCode() {
+		if (playerState.playerStatus !== 'play') {
+			await this.exec({ command: ['set_property', 'lavfi-complex', '[vid1]null[vo]'] });
+		}
+	}
+
 	private async loadBackground(type: BackgroundType) {
 		const background = await getBackgroundAndMusic(type);
 		logger.debug(
@@ -960,33 +981,42 @@ class Players {
 			playerState._playing = false;
 			playerState.playing = false;
 			emitPlayerState();
+			const conf = getConfig();
+			const options = ['loadfile', background.pictures[0]];
+			const qrCode =
+				conf.Player.Display.ConnectionInfo.Enabled && conf.Player.Display.ConnectionInfo.QRCode
+					? {
+							'lavfi-complex': this.genLavfiComplexQRCode(),
+					  }
+					: {};
 			if (background.music[0]) {
 				await this.exec({
 					command: [
-						'loadfile',
-						background.pictures[0],
+						...options,
 						'replace',
 						{
 							'force-media-title': 'Background',
 							'audio-files-set': background.music[0],
 							aid: '1',
 							'loop-file': 'inf',
+							...qrCode,
 						},
 					],
 				});
 			} else {
 				await this.exec({
 					command: [
-						'loadfile',
-						background.pictures[0],
+						...options,
 						'replace',
 						{
 							'force-media-title': 'Background',
 							'loop-file': 'inf',
+							...qrCode,
 						},
 					],
 				});
 			}
+
 			setState({
 				backgrounds: {
 					music: background.music[0],
@@ -1090,11 +1120,14 @@ class Players {
 		let mediaFile: string;
 		let subFile: string;
 		const options: Record<string, any> = {
-			'force-media-title': getState().quiz.running ? 'Quiz!' : getSongTitle(song),
+			'force-media-title': getState().quiz.running
+				? 'Quiz!'
+				: getSongTitle(song, getConfig().Player.Display.SongInfoLanguage),
 		};
 		let onlineMedia = false;
+		const showVideo = !modifiers || (modifiers && modifiers.Blind === '');
 		const loadPromises = [
-			Players.genLavfiComplex(song, modifiers?.Blind === '')
+			Players.genLavfiComplex(song, showVideo)
 				.then(res => (options['lavfi-complex'] = res))
 				.catch(err => {
 					logger.error('Cannot compute lavfi-complex filter, disabling avatar display', {
@@ -1197,9 +1230,10 @@ class Players {
 			playerState.playerStatus = 'play';
 			if (modifiers) this.setModifiers(modifiers);
 			emitPlayerState();
+			const lang = getConfig().Player.Display.SongInfoLanguage;
 			setDiscordActivity('song', {
-				title: getSongTitle(song),
-				source: getSongSeriesSingers(song) || i18n.t('UNKNOWN_ARTIST'),
+				title: getSongTitle(song, lang),
+				source: getSongSeriesSingers(song, lang) || i18n.t('UNKNOWN_ARTIST'),
 			});
 			if (getState().quiz.running) {
 				this.progressBar(getState().quiz.settings.TimeSettings.GuessingTime, '{\\an5}', 'countdown');
@@ -1259,8 +1293,8 @@ class Players {
 				mediaType === 'Jingles' || mediaType === 'Sponsors'
 					? this.displayInfo()
 					: conf.Playlist.Medias[mediaType].Message
-					? this.message(conf.Playlist.Medias[mediaType].Message, -1, 5, 'DI')
-					: this.messages.removeMessage('DI');
+					  ? this.message(conf.Playlist.Medias[mediaType].Message, -1, 5, 'DI')
+					  : this.messages.removeMessage('DI');
 				this.messages.removeMessages(['poll', 'pauseScreen']);
 				emitPlayerState();
 				return playerState;
@@ -1481,6 +1515,16 @@ class Players {
 			return playerState;
 		} catch (err) {
 			logger.error('Unable to set volume', { service, obj: err });
+			sentry.error(err);
+			throw err;
+		}
+	}
+
+	async setAudioDelay(delayMs = 0) {
+		try {
+			await this.exec({ command: ['set_property', 'audio-delay', (delayMs && delayMs / 1000) || 0] });
+		} catch (err) {
+			logger.error('Unable to set audio delay', { service, obj: err });
 			sentry.error(err);
 			throw err;
 		}

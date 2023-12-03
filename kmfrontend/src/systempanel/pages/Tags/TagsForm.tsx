@@ -45,7 +45,7 @@ interface TagsFormState {
 
 const myanimelistUrlRegexp = /myanimelist.net\/anime\/(\d+)/;
 const anilistUrlRegexp = /anilist.co\/anime\/(\d+)/;
-const kitsuUrlRegexp = /kitsu.io\/anime\/([a-zA-Z0-9-&]+)/;
+const kitsuUrlRegexp = /kitsu.io\/anime\/([a-zA-Z0-9-&(%20)]+)/;
 const validExternalAnimeIdRegexp = /^(?:[1-9]|\d\d+)$/; // strictly positive
 
 class TagForm extends Component<TagsFormProps, TagsFormState> {
@@ -69,14 +69,16 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 
 	getRepositories = async () => {
 		const res = await commandBackend('getRepos');
-		this.setState({ repositoriesValue: res.map(repo => repo.Name) }, () =>
-			this.formRef.current?.setFieldsValue({
-				repository: this.props.tag?.repository
-					? this.props.tag.repository
-					: this.state.repositoriesValue
-					? this.state.repositoriesValue[0]
-					: null,
-			})
+		this.setState(
+			{ repositoriesValue: res.map(repo => repo.Name) },
+			() =>
+				this.formRef.current?.setFieldsValue({
+					repository: this.props.tag?.repository
+						? this.props.tag.repository
+						: this.state.repositoriesValue
+						  ? this.state.repositoriesValue[0]
+						  : null,
+				})
 		);
 	};
 
@@ -163,8 +165,8 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 					repository: this.props.tag?.repository
 						? this.props.tag.repository
 						: this.state.repositoriesValue
-						? this.state.repositoriesValue[0]
-						: null,
+						  ? this.state.repositoriesValue[0]
+						  : null,
 					aliases: this.props.tag?.aliases,
 					noLiveDownload: this.props.tag?.noLiveDownload,
 					priority: this.props.tag?.priority ? this.props.tag?.priority : 10,
@@ -559,7 +561,11 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 		if (res == null) {
 			return event.target.value;
 		}
-		fetch(`https://kitsu.io/api/edge/anime?fields[anime]=id&filter[slug]=${encodeURIComponent(res[1])}`)
+		fetch(
+			`https://kitsu.io/api/edge/anime?fields[anime]=id&filter[slug]=${encodeURIComponent(
+				decodeURIComponent(res[1])
+			)}`
+		)
 			.then(res => res.json())
 			.then(json => {
 				if (json?.data == null || json.data[0]?.id == null) {

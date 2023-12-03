@@ -74,7 +74,7 @@ export default class EditableTagGroup extends Component<EditableTagGroupProps, E
 		}
 	};
 
-	getTags = async (filter, type) => {
+	getTags = async (filter: string, type: number) => {
 		if (filter === '') {
 			return { data: [] };
 		}
@@ -85,7 +85,7 @@ export default class EditableTagGroup extends Component<EditableTagGroupProps, E
 		return tags?.content || [];
 	};
 
-	search = (val?: any) => {
+	search = (val?: string) => {
 		if (timer[this.props.tagType]) clearTimeout(timer[this.props.tagType]);
 		timer[this.props.tagType] = setTimeout(() => {
 			this.getTags(val, this.props.tagType).then(tags => {
@@ -127,7 +127,7 @@ export default class EditableTagGroup extends Component<EditableTagGroupProps, E
 		}
 	};
 
-	getTagLabel = tag => {
+	getTagLabel = (tag: DBKaraTag) => {
 		const labelI18n = getTagInLocale(this.context?.globalState.settings.data, tag).i18n;
 		return `${labelI18n}${labelI18n !== tag.name ? ` (${tag.name})` : ''}`;
 	};
@@ -174,7 +174,7 @@ export default class EditableTagGroup extends Component<EditableTagGroupProps, E
 								onSearch={this.search}
 								onChange={val => this.setState({ currentVal: val })}
 								onSelect={val => this.handleInputConfirm(val)}
-								options={this.state.tags.map(tag => {
+								options={this.state.tags.map((tag: DBKaraTag) => {
 									return {
 										value: tag.tid,
 										label: this.getTagLabel(tag),

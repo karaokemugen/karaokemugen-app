@@ -4,6 +4,7 @@ import { DefaultLogFields, ListLogLine, SimpleGit, simpleGit, SimpleGitProgressE
 import which from 'which';
 
 import { Repository } from '../lib/types/repo.js';
+import { ErrorKM } from '../lib/utils/error.js';
 import { fileExists } from '../lib/utils/files.js';
 import logger from '../lib/utils/logger.js';
 import Task from '../lib/utils/taskManager.js';
@@ -73,10 +74,9 @@ export default class Git {
 
 	/** Prepare git instance */
 	async setup(configChanged = false) {
-		const gitPath = await which(`git${process.platform === 'win32' ? '.exe' : ''}`);
 		this.git = simpleGit({
 			baseDir: this.opts.baseDir,
-			binary: gitPath,
+			binary: await getGitPath(),
 			progress: this.progressHandler.bind(this),
 		});
 		if (configChanged) {
@@ -259,4 +259,18 @@ export default class Git {
 		status.conflicted.forEach((s, i) => (status.conflicted[i] = s.replace(/"/g, '')));
 		return status;
 	}
+}
+
+async function getGitPath() {
+	try {
+		return await which(`git${process.platform === 'win32' ? '.exe' : ''}`);
+	} catch (err) {
+		if (err.code === 'ENOENT') throw new ErrorKM('GIT_BINARY_NOT_FOUND', 500, false);
+		throw err;
+	}
+}
+
+export async function checkGitInstalled() {
+	// Throws an error if git not installed
+	return !!(await getGitPath());
 }

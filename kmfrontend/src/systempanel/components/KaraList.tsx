@@ -25,12 +25,12 @@ import {
 	getTitleInLocale,
 	sortTagByPriority,
 } from '../../utils/kara';
-import { commandBackend } from '../../utils/socket';
+import { commandBackend, getSocket } from '../../utils/socket';
 import { isModifiable } from '../../utils/tools';
 import GlobalContext from '../../store/context';
 import { tagTypes } from '../../utils/tagTypes';
 import type { DBTag } from '../../../../src/lib/types/database/tag';
-import { resolve } from 'path';
+import type { DownloadedStatus } from '../../../../src/lib/types/database/download';
 
 interface KaraListProps {
 	tagFilter?: string;
@@ -62,8 +62,30 @@ function KaraList(props: KaraListProps) {
 	}, [tags]);
 
 	useEffect(() => {
+		getSocket().on('KIDUpdated', KIDUpdated);
+		return () => {
+			getSocket().off('KIDUpdated', KIDUpdated);
+		};
+	}, [karas]);
+
+	useEffect(() => {
 		refresh();
 	}, [tagFilter, currentPage]);
+
+	const KIDUpdated = async (
+		event: {
+			kid: string;
+			download_status: DownloadedStatus;
+		}[]
+	) => {
+		if (
+			event.length > 0 &&
+			event[0].download_status &&
+			karas.filter((kara: DBKara) => kara.kid === event[0].kid).length > 0
+		) {
+			refresh();
+		}
+	};
 
 	const refresh = async () => {
 		const res = await commandBackend(
@@ -148,7 +170,7 @@ function KaraList(props: KaraListProps) {
 	};
 
 	const deleteKaras = async (kids: string[]) => {
-		let karasRemovingUpdated = karasRemoving;
+		const karasRemovingUpdated = karasRemoving;
 		karasRemovingUpdated.push(...kids);
 		setKarasRemoving(karasRemovingUpdated);
 		await commandBackend('deleteKaras', { kids: kids }, true);
@@ -375,6 +397,18 @@ function KaraList(props: KaraListProps) {
 								title={i18next.t('KARA.DELETE_MEDIA_TOOLTIP')}
 								icon={<ClearOutlined />}
 								onClick={() => commandBackend('deleteMedias', { kids: [record.kid] }, true)}
+								style={{ marginRight: '0.75em' }}
+							/>
+						</div>
+					);
+				} else if (record.download_status === 'DOWNLOADING') {
+					return (
+						<div style={{ display: 'flex' }}>
+							<Button
+								type="primary"
+								disabled
+								icon={<DownloadOutlined />}
+								title={i18next.t('KARA_DETAIL.DOWNLOAD_MEDIA')}
 								style={{ marginRight: '0.75em' }}
 							/>
 						</div>

@@ -5,6 +5,9 @@ import enUS from 'antd/es/locale/en_US';
 import esES from 'antd/es/locale/es_ES';
 import frFR from 'antd/es/locale/fr_FR';
 import idID from 'antd/es/locale/id_ID';
+import ptPT from 'antd/es/locale/pt_PT';
+import deDE from 'antd/es/locale/de_DE';
+
 import i18next from 'i18next';
 import { Component } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
@@ -46,12 +49,14 @@ class KMSystem extends Component<unknown, unknown> {
 		getSocket().on('operatorNotificationInfo', this.operatorNotificationInfo);
 		getSocket().on('operatorNotificationError', this.operatorNotificationError);
 		getSocket().on('operatorNotificationWarning', this.operatorNotificationWarning);
+		getSocket().on('operatorNotificationSuccess', this.operatorNotificationSuccess);
 	}
 
 	componentWillUnmount() {
 		getSocket().off('operatorNotificationInfo', this.operatorNotificationInfo);
 		getSocket().off('operatorNotificationError', this.operatorNotificationError);
 		getSocket().off('operatorNotificationWarning', this.operatorNotificationWarning);
+		getSocket().off('operatorNotificationSuccess', this.operatorNotificationSuccess);
 	}
 
 	operatorNotificationInfo = (data: { code: string; data: string }) =>
@@ -60,6 +65,8 @@ class KMSystem extends Component<unknown, unknown> {
 		displayMessage('error', i18next.t(data.code, { data: data }));
 	operatorNotificationWarning = (data: { code: string; data: string }) =>
 		displayMessage('warning', i18next.t(data.code, { data: data }));
+	operatorNotificationSuccess = (data: { code: string; data: string }) =>
+		displayMessage('success', i18next.t(data.code, { data: data }));
 
 	getLocale() {
 		let locale = enUS;
@@ -69,6 +76,10 @@ class KMSystem extends Component<unknown, unknown> {
 			locale = esES;
 		} else if (navigator.languages[0].includes('id')) {
 			locale = idID;
+		} else if (navigator.languages[0].includes('pt')) {
+			locale = ptPT;
+		} else if (navigator.languages[0].includes('DE')) {
+			locale = deDE;
 		}
 		return locale;
 	}
