@@ -29,7 +29,13 @@ export function pathIsContainedInAnother(p1: string, p2: string) {
 }
 
 export async function getFreeSpace(resolvedPath: string): Promise<number | null> {
-	const fileSystems = await fsSize();
+	let fileSystems = [];
+	if (process.platform === 'win32') {
+		// This avoids hanging if a network share isn't available
+		fileSystems = await fsSize(resolvedPath.substring(0, 2));
+	} else {
+		fileSystems = await fsSize();
+	}
 	logger.debug(`Filesystems reported with ${resolvedPath}`, { service, obj: fileSystems });
 	// Let's find out which mount has our path
 	const fileSystem = fileSystems.find(f => resolvedPath.toLowerCase().startsWith(f.mount.toLowerCase()));
