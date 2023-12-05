@@ -58,7 +58,8 @@ export async function setPlaylistInfoRight(dispatch: Dispatch<PlaylistInfo>, pla
 		const playlistList: PlaylistElem[] = await commandBackend('getPlaylists');
 		plaid =
 			cookie !== null &&
-			(isNonStandardPlaylist(cookie) || playlistList.find(playlist => playlist.plaid === cookie))
+			(isNonStandardPlaylist(cookie) || playlistList.find(playlist => playlist.plaid === cookie)) &&
+			cookie !== localStorage.getItem('mugenPlVal1')
 				? cookie
 				: playlistList.find(playlist => playlist.flag_current)?.plaid;
 	}
