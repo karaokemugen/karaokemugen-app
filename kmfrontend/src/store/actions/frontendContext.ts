@@ -38,7 +38,8 @@ export async function setPlaylistInfoLeft(dispatch: Dispatch<PlaylistInfo>, plai
 		const playlistList: PlaylistElem[] = await commandBackend('getPlaylists');
 		plaid =
 			cookie !== null &&
-			(isNonStandardPlaylist(cookie) || playlistList.find(playlist => playlist.plaid === cookie))
+			(isNonStandardPlaylist(cookie) || playlistList.find(playlist => playlist.plaid === cookie)) &&
+			cookie !== localStorage.getItem('mugenPlVal2')
 				? cookie
 				: nonStandardPlaylists.library;
 	}
