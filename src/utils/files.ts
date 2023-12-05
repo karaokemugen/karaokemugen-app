@@ -1,5 +1,5 @@
 import { promises as fs } from 'fs';
-import { isAbsolute, normalize, resolve, sep } from 'path';
+import { isAbsolute, relative, resolve } from 'path';
 import { blockDevices, fsSize } from 'systeminformation';
 import { promisify } from 'util';
 import zlib from 'zlib';
@@ -22,13 +22,10 @@ export function detectKMFileTypes(data: any): KMFileType {
 	return data?.header?.description || data?.Header?.description;
 }
 
-export function pathIsContainedInAnother(p1, p2) {
+export function pathIsContainedInAnother(p1: string, p2: string) {
 	if (!isAbsolute(p1) || !isAbsolute(p2)) throw new Error('One of the paths is not absolute.');
-	let origin = normalize(p1);
-	origin = origin.endsWith(sep) ? origin : `${origin}${sep}`;
-	let dst = normalize(p2);
-	dst = dst.endsWith(sep) ? dst : `${dst}${sep}`;
-	return dst.startsWith(origin);
+	const rel = relative(p2, p1);
+	return rel && !rel.startsWith('..') && !isAbsolute(rel);
 }
 
 export async function getFreeSpace(resolvedPath: string): Promise<number | null> {
