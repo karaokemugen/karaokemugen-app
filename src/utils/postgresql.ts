@@ -187,7 +187,7 @@ export async function dumpPG() {
 
 /** Check if a dump exists */
 export async function checkDumpExists(): Promise<boolean> {
-	if (await fileExists(resolve(getState().dataPath, 'karaokemugen.sql.tar.gz'))) return true;
+	if (await fileExists(resolve(getState().dataPath, 'karaokemugen.sql.gz'))) return true;
 	return false;
 }
 
