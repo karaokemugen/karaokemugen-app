@@ -1,4 +1,4 @@
-import { app, BrowserWindow, dialog, ipcMain, Menu, protocol, shell, screen } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, Menu, protocol, screen, shell } from 'electron';
 import { promises as fs } from 'fs';
 import i18next from 'i18next';
 import { resolve } from 'path';

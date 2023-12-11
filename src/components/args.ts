@@ -31,6 +31,7 @@ export function parseArgs() {
 			'-s, --strict',
 			'(generation/validation only) Strict mode, returns an error if kara files had to be modified.'
 		)
+		.option('--skipParentsCheck', "Skip parent tag validation and don't throw error in strict mode")
 		.option('-t, --test', 'Launches in test mode (for running unit tests)')
 		.option('-u, --updateBase', 'Update karaoke base files')
 		.option('--updateMediasAll', 'Update karaoke media files only (no other data files)')
@@ -86,6 +87,10 @@ export function setupFromCommandLineArgs(argv: any, cmdline: CommandLine) {
 	if (argv.opts().strict) {
 		logger.info('Strict mode enabled. KARAOKE MUGEN DOES NOT FORGIVE. EVER.', { service });
 		setState({ opt: { strict: true } });
+	}
+	if (argv.opts().skipParentsCheck) {
+		logger.info('Validation of parents disabled', { service });
+		setState({ opt: { skipParentsCheck: true } });
 	}
 	if (argv.opts().updateBase) {
 		logger.info('Base update requested', { service });

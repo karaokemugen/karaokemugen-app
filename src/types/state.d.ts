@@ -66,6 +66,7 @@ export interface State {
 		noBaseCheck?: boolean;
 		noPlayer?: boolean;
 		strict?: boolean;
+		skipParentsCheck?: boolean;
 		noMedia?: boolean;
 		baseUpdate?: boolean;
 		mediaUpdateAll?: boolean;

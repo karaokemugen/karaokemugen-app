@@ -9,7 +9,7 @@ import logger, { profile } from '../lib/utils/logger.js';
 import { emitWS } from '../lib/utils/ws.js';
 import { FavExport, FavExportContent } from '../types/favorites.js';
 import sentry from '../utils/sentry.js';
-import { getKaras, isAllKaras } from './kara.js';
+import { getKaras } from './kara.js';
 import { getUser } from './user.js';
 
 const service = 'Favorites';
@@ -190,22 +190,17 @@ export async function importFavorites(
 	if (!Array.isArray(favs.Favorites || favs.Favorites.some(f => !uuidRegexp.test(f.kid)))) {
 		throw new ErrorKM('FAVORITES_IMPORTED_BAD_DATA_ERROR', 400, false);
 	}
-	// Stripping favorites from unknown karaokes in our database to avoid importing them
 	try {
 		if (emptyBefore) {
 			await truncateFavorites(username);
 		}
 		const favorites = favs.Favorites.map(f => f.kid);
-		const [karasUnknown, userFavorites] = await Promise.all([
-			isAllKaras(favorites),
-			getFavorites({ userFavorites: username }),
-		]);
+		const userFavorites = await getFavorites({ userFavorites: username });
 		// Removing favorites already added
 		const mappedUserFavorites = userFavorites.content.map(uf => uf.kid);
 		const favoritesToAdd = favorites.filter(f => !mappedUserFavorites.includes(f));
 		if (favoritesToAdd.length > 0) await addToFavorites(username, favoritesToAdd, token, updateRemote);
 		emitWS('favoritesUpdated', username);
-		return { karasUnknown };
 	} catch (err) {
 		logger.error('Unable to import favorites', { service, obj: err });
 		sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));

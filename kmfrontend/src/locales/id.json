@@ -1659,9 +1659,9 @@
 		"RESTORE_DATABASE": "Pulihkan basis data",
 		"UPDATE_REPOS": "Perbarui semua repositori",
 		"UPDATE_REPOS_DESCRIPTION": "Paksa pembaruan repositori, ini bisa berguna jika salah satu repositori berada di kondisi tidak normal.",
-		"RESTORE_DATABASE_DESCRIPTION": "Memulihkan basis data kamu dari berkas karaokemugen.sql jika itu ada di folder data kamu. <2>**PERINGATAN: Ini akan menimpa SEMUA data tak tersimpan di basis data kamu: daftar putar, sesi, dll.)</2>",
+		"RESTORE_DATABASE_DESCRIPTION": "Memulihkan basis data kamu dari berkas karaokemugen.sql.gz jika itu ada di folder data kamu. <2>**PERINGATAN: Ini akan menimpa SEMUA data tak tersimpan di basis data kamu: daftar putar, sesi, dll.)</2>",
 		"DUMP_DATABASE": "Lego basis data",
-		"DUMP_DATABASE_DESCRIPTION": "Buat sebuah berkas cadangan karaokemugen.sql pada folder data kamu. Berkas ini bisa digunakan untuk membuat poin pemulihan atau untuk mengirimkan basis data kamu ke pengembang jika mereka memintamu demikian."
+		"DUMP_DATABASE_DESCRIPTION": "Buat sebuah berkas cadangan karaokemugen.sql.gz pada folder data kamu. Berkas ini bisa digunakan untuk membuat poin pemulihan atau untuk mengirimkan basis data kamu ke pengembang jika mereka memintamu demikian."
 	},
 	"NOTIFICATION": {
 		"OPERATOR": {

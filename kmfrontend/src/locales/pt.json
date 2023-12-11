@@ -5,7 +5,8 @@
 	"NOT_FOUND_PAGE": {
 		"404": "Perdido no Karaoke Mugen?",
 		"404_2": "Não entres em pânico, nós podemos te ajudar.",
-		"404_3": "Tu estás aqui"
+		"404_3": "Tu estás aqui",
+		"404_4": "Voltar ao início"
 	},
 	"LOGIN_MANDATORY": "O login é obrigatório",
 	"PASSWORD_MANDATORY": "A palavra-passe é obrigatória",
@@ -28,7 +29,8 @@
 	"VOLUME_LEVEL": "Definir volume",
 	"PLAYLISTS": {
 		"LIBRARY": "Biblioteca",
-		"FAVORITES": "Favoritos"
+		"FAVORITES": "Favoritos",
+		"ANIME_LIST": "Músicas de animes"
 	},
 	"INLINE_TAG": {
 		"COUNT_one": "{{count}} karaokê",
@@ -41,7 +43,9 @@
 	"PLAYLIST_HEADER": {
 		"FILTERS": "Filtros",
 		"ACTIVE_FILTER": "Filtro activo",
-		"EDIT_CRITERIA": "Editar critérios"
+		"EDIT_CRITERIA": "Editar critérios",
+		"SHOW_SONGS": "Mostrar músicas",
+		"REFRESH_LIBRARY_BANNER": "Os critérios da biblioteca mudaram por favor <1>atualize</1>."
 	},
 	"ADVANCED": {
 		"ADD_ALL": "Adicionar todas as músicas à outra lista",
@@ -67,5 +71,12 @@
 	"VERSION": "Versão",
 	"WEBAPPMODE_CLOSED_MESSAGE": "A interface está fechada, por favor aguarde.",
 	"MESSAGE": "Mensagem",
-	"WARNING": "Atenção!"
+	"WARNING": "Atenção!",
+	"SHOW-HIDE": "Mostrar/Esconder",
+	"BLURVIDEO_BLUR": "Desfocar vídeo",
+	"UNKNOWN": "Desconhecido",
+	"PREVIOUS_SONG": "Música anterior",
+	"SECURITY_CODE_MANDATORY": "O código de segurança é requerido para criar uma conta de operador",
+	"OR": "ou",
+	"BLURVIDEO_UNBLUR": "Focar vídeo"
 }

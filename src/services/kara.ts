@@ -8,7 +8,6 @@ import {
 	insertPlayed,
 	selectAllKaras,
 	selectAllKarasMicro,
-	selectAllKIDs,
 	selectYears,
 	truncateOnlineRequested,
 } from '../dao/kara.js';
@@ -34,12 +33,6 @@ let popularKaraFetchIntervalID: any;
 export function initFetchPopularSongs() {
 	if (!popularKaraFetchIntervalID) popularKaraFetchIntervalID = setInterval(fetchPopularSongs, 3600000);
 	fetchPopularSongs();
-}
-
-/* Returns an array of unknown karaokes. If array is empty, all songs in "karas" are present in database */
-export async function isAllKaras(karas: string[]): Promise<string[]> {
-	const allKaras = await selectAllKIDs();
-	return karas.filter(kid => !allKaras.includes(kid));
 }
 
 export async function getKara(kid: string, token: OldJWTToken | JWTTokenWithRoles, lang?: string): Promise<DBKara> {
