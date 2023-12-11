@@ -1,3 +1,26 @@
+# v7.1.41 - 11/12/2023
+
+This is a hotfix release
+
+## New features
+
+-   Added `--skipParentsCheck` to CLI options to prevent KM from error'ing out if all parent songs aren't present.
+
+## Changes
+
+-   During Postgres upgrades, a copy of the dump with the data version number will be made, just in case.
+-   Upgraded backend dependencies
+-   Updated portugese translation
+-   Updated italian translation
+-   Removed some obsolete code
+
+## Fixes
+
+-   **Fixed PG dump file check.**
+-   Fixed duplicate playlists in operator page
+-   Fixed fsSize() hanging on Windows when network drives are disconnected
+-   Fixed + button to add a song when in restricted mode on public interface
+
 # v7.1.39 - 03/12/2023
 
 This is a... release! With bugfixes and some new features
