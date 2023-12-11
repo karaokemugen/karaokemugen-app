@@ -11,7 +11,6 @@ This is a hotfix release
 -   During Postgres upgrades, a copy of the dump with the data version number will be made, just in case.
 -   Upgraded backend dependencies
 -   Updated portugese translation
--   Updated italian translation
 -   Removed some obsolete code
 
 ## Fixes

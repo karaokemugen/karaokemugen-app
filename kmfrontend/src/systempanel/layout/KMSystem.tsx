@@ -7,6 +7,7 @@ import frFR from 'antd/es/locale/fr_FR';
 import idID from 'antd/es/locale/id_ID';
 import ptPT from 'antd/es/locale/pt_PT';
 import deDE from 'antd/es/locale/de_DE';
+import itIT from 'antd/es/locale/it_IT';
 
 import i18next from 'i18next';
 import { Component } from 'react';
@@ -78,8 +79,10 @@ class KMSystem extends Component<unknown, unknown> {
 			locale = idID;
 		} else if (navigator.languages[0].includes('pt')) {
 			locale = ptPT;
-		} else if (navigator.languages[0].includes('DE')) {
+		} else if (navigator.languages[0].includes('de')) {
 			locale = deDE;
+		} else if (navigator.languages[0].includes('it')) {
+			locale = itIT;
 		}
 		return locale;
 	}
