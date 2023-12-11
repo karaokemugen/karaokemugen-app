@@ -231,7 +231,7 @@
 			"LABELS_MYSTERY_SONGS_ADD": "Aggiungi",
 			"ENABLE_AUTOBALANCE": "Abilita l'equilibrio automatico della playlist",
 			"LABELS_MYSTERY_SONGS_DELETE": "Rimuovi",
-			"ADDED_SONG_VISIBILITY_ADMIN_ON": "I brani verranno aggiunti come brani misteriosi (puoi deciderne l'etichetta nelle opzioni)",
+			"ADDED_SONG_VISIBILITY_ADMIN_ON": "I brani verranno aggiunti come brani misteriosi (puoi deciderne l'etichetta nelle impostazioni)",
 			"STREAM_TWITCH_CHANNEL": "Nome del canale Twitch",
 			"MINUTES_BEFORE_SESSION_ENDS_WARNING": "Mostra un avviso X minuti prima della fine della playlist",
 			"ONLINE_SETTINGS": "Online",
@@ -606,5 +606,286 @@
 		"Torniamo subito!"
 	],
 	"PAUSE_TIME": "Pausa",
-	"REMOTE_URL": "URL per l'accesso remoto"
+	"REMOTE_URL": "URL per l'accesso remoto",
+	"SELECT_KARAS_REQUIRED": "Devi selezionare almeno un brano",
+	"MODAL": {
+		"CROP_AVATAR_MODAL": {
+			"TITLE": "Ritaglia il tuo avatar",
+			"HELP": "Ridimensiona il riquadro per una foto di profilo perfetta."
+		},
+		"START_QUIZ": {
+			"PLAYERS": {
+				"TITLE": "Chi sta giocando?",
+				"ALLOW_GUESTS": "Permetti agli ospiti di partecipare",
+				"TWITCH_CHAT": "Fai giocare la chat di Twitch con il nome",
+				"DESCRIPTION": "Tutti gli utenti possono partecipare col proprio account (se l'interfaccia è aperta), puoi permettere agli account ospiti di giocare o aggiungere un giocatore che rappresenta la chat di Twitch se il tuo canale è connesso.",
+				"TWITCH_CHAT_PLACEHOLDER": "Twitchers"
+			},
+			"END_GAME": {
+				"MINUTES": "minuti di gioco.",
+				"MAX_SONGS": "quando",
+				"MAX_SCORE": "quando un giocatore raggiunge",
+				"TITLE": "Durata della partita",
+				"DESCRIPTION": "La partita finisce…",
+				"MAX_SONGS_PLACEHOLDER": "30",
+				"MAX_SCORE_PLACEHOLDER": "10",
+				"DURATION": "dopo",
+				"DURATION_PLACEHOLDER": "60",
+				"SONGS": "brani sono stati riprodotti.",
+				"POINTS": "punti"
+			},
+			"EMPTY_PLAYLIST": "Seleziona una playlist",
+			"PLAYER_MESSAGE_PLACEHOLDER": "Vai su $url per giocare!",
+			"COPIED_GAME": "{{gameName}} (copia)",
+			"DISPLAY": {
+				"END": "dalla fine",
+				"NO_LYRICS": "Non mostrare il testo",
+				"BLIND": "Nascondi il video",
+				"BLURRED_SCREEN": "Schermo sfocato",
+				"DESCRIPTION": "Per rendere la partita più difficile, è possibile iniziare il brano da un punto avanzato anziché dall'inizio. È anche possibile nascondere il video, disabilitare l'audio e/o nascondere i sottotitoli.",
+				"TIME": "Inizia il brano",
+				"BLACK_SCREEN": "Schermo nero",
+				"MUTE": "Disabilita l'audio",
+				"BEGINNING": "dall'inizio",
+				"TITLE": "Come visualizzare i brani?"
+			},
+			"PLAYER_MESSAGE": "Messaggio visualizzato a schermo",
+			"GAME_NAME": "Nome della partita",
+			"DESCRIPTION": "Metti i partecipanti l'uno contro l'altro in un test alla cieca! I partecipanti dovranno indovinare il brano in riproduzione il più velocemente possibile. Puoi impostare una nuova partita o riprenderne una esistente.",
+			"GAME_IN_PROGRESS": {
+				"SONG_COUNT_one": "{{count}} brano è stato riprodotto.",
+				"SCORES": "Ecco i punteggi.",
+				"SONG_COUNT_zero": "Nessun brano ancora riprodotto.",
+				"SONG_COUNT_other": "{{count}} brani sono stati riprodotti."
+			},
+			"ANSWERS": {
+				"VIEW_ALL_ANSWERS": "Vedi tutti i tipi possibili",
+				"VIEW_LESS_ANSWERS": "Vedi meno tipi",
+				"TITLE": "Risposte accettate"
+			},
+			"EMPTY_NAME": "Inserisci un nome della partita",
+			"LAST_PLAYED_GAME": "{{gameName}} (ultima partita iniziata)",
+			"GAME_NAME_PLACEHOLDER": "La mia partita",
+			"TITLE": "Inizia un quiz",
+			"NEW_GAME": "Nuova partita",
+			"PLAYLIST": "Playlist da utilizzare",
+			"LOAD_GAME": "Carica partita"
+		},
+		"TUTORIAL": {
+			"PLAYER_CURRENT_HINT": "Il lettore riprodurrà il brano selezionato nella <1>playlist attuale</1>.",
+			"NEXT": "Continua",
+			"SELECT_PLAYLIST_BUTTON": "Le playlist sono disponibili nel selettore:",
+			"BLACKLIST_DESC": "La blacklist contiene tutti i brani esclusi.",
+			"BACK": "Indietro",
+			"CHECK_CASE": "Spunta <1/> per agire su molteplici brani <3>contemporaneamente</3>.",
+			"KARAOKE_PLAYED": "Le righe con un'icona <1><2/> arancione</1> significano che il brano è stato riprodotto recentemente.",
+			"WRENCH_BUTTON": "La chiave inglese <1/> permette di effettuare altre azioni sul brano.",
+			"WELCOME": "Benvenuto su Karaoke Mugen! Ecco cosa devi sapere.",
+			"CREATE_PLAYLIST_BUTTON": "Crea e modifica le tue playlist dal menu delle azioni",
+			"END": "Fatto",
+			"PLAYLIST_ATTRIBUTES": "Quando crei una playlist, puoi impostarla come <1>attuale</1> e/o <3>pubblica</3>.",
+			"PLAYER_GO_BACK": "Il tasto Riavvolgi ti permette di tornare <1>all'inizio del brano attuale</1>.",
+			"K_MENU": "Il \"Menu K\" ti permette di modificare il tuo profilo e altre impostazioni del karaoke.",
+			"ADD_TO_OTHER_PLAYLIST": "Il tasto <1/> aggiunge il brano all'altra playlist.",
+			"KARAOKE_PLAYING": "La riga con uno sfondo <1>blu</1> significa che il brano è stato selezionato per la riproduzione.",
+			"TITLE": "Tutorial",
+			"PLAY_BUTTONS": "Il tasto <1/> riproduce subito il brano <3>(Il tasto <4/> muove il cursore)</3>.",
+			"LIBRARY": "La libreria mostra tutti i brani karaoke disponibili.",
+			"PLAYLIST": "La schermata mostra due playlist. Puoi aggiungere un brano dalla playlist di sinistra a quella di destra e viceversa cliccando su <2/>.",
+			"PLAYER_BAR": "Il lettore di Karaoke Mugen può essere controllato dalla barra superiore.",
+			"MESSAGE": "Puoi inviare un messaggio al tuo pubblico (sui loro dispositivi o sulla schermata del lettore) tramite il tasto Messaggio.",
+			"PUBLIC_DESC": "la playlist <1>pubblica </1> è quella contenente le richieste degli utenti.",
+			"CURRENT_PUBLIC_DESC": "Le playlist <1>attuale</1> e <3>pubblica</3> possono essere la stessa playlist.",
+			"TITLE_CLICK": "Clicca sul titolo del karaoke per altre informazioni <1>(cantanti, autori, ecc...)</1>.",
+			"PLAYER_STOP": "Il tasto \"Interrompi\" interromperà la riproduzione alla fine del brano attuale. Puoi cliccarlo nuovamente per interrompere <1>subito</1>.",
+			"CURRENT_DESC": "La playlist <1>attuale</1> è quella utilizzata dal lettore."
+		},
+		"PROFILE_MODAL": {
+			"REFRESH_ANIME_LIST": "Ricarica lista anime",
+			"ONLINE_CONVERT": "Converti a account online",
+			"ANIME_LIST_TO_FETCH": "Servizio da utilizzare per la lista anime",
+			"MAIN_SONG_NAME_LANG": "Preferenza di visualizzazione dei nomi dei brani",
+			"SOCIAL_NETWORKS": {
+				"KITSU_PLACEHOLDER": "karaokemugen",
+				"KITSU": "Kitsu",
+				"MYANIMELIST_PLACEHOLDER": "karaokemugen",
+				"BLUESKY_PLACEHOLDER": "karaoke.bsky.social",
+				"ANILIST_PLACEHOLDER": "karaokemugen",
+				"INSTAGRAM": "Instagram",
+				"MYANIMELIST": "MyAnimeList",
+				"TWITCH_PLACEHOLDER": "KaraokeLive",
+				"DISCORD": "Discord",
+				"TWITTER_PLACEHOLDER": "@KaraokeMugen",
+				"TWITTER": "Twitter",
+				"MASTODON": "Mastodon",
+				"MASTODON_PLACEHOLDER": "KaraokeMugen@shelter.moe",
+				"TWITCH": "Twitch",
+				"BLUESKY": "Bluesky",
+				"ANILIST": "AniList",
+				"DISCORD_PLACEHOLDER": "Karak#1423",
+				"INSTAGRAM_PLACEHOLDER": "karaokemugen"
+			},
+			"INTERFACE_LANGUAGE": "Lingua dell'interfaccia",
+			"CHOOSE_ANIME_LIST": "Scegli una lista anime",
+			"FLAG_PARENTSONLY": "Raggruppa brani per versione",
+			"FLAG_SENDSTATS": "Utilizza i miei preferiti e le mie richieste di brani per le statistiche",
+			"DANGEROUS_ACTIONS": "Azioni pericolose",
+			"LOCAL_DELETE": "Rimuovi quest'account localmente",
+			"FLAG_PUBLIC": "Rendi questo profilo pubblico",
+			"LOCAL_DELETE_WARN": "Ciò rimuoverà il tuo account solo da questa app locale. Se hai un account online, non verrà disabilitato. Sei sicuro di voler procedere?",
+			"SONG_NAME_DISPLAY_EXAMPLE": "Esempio di nome del brano",
+			"ONLINE_DELETE_WARN": "Ciò rimuoverà il tuo account dal server online @{{instance}}. Sei sicuro di voler procedere?",
+			"LOCATION": "Località",
+			"FLAG_DISPLAYFAVORITES": "Rendi i tuoi preferiti pubblici",
+			"MISSING_EMAIL": "Attenzione: senza email non sarai in grado di ripristinare la tua password!",
+			"FALLBACK_SONG_NAME_LANG": "Preferenza di visualizzazione dei nomi dei brani di riserva",
+			"ONLINE_DELETE": "Disabilita account online"
+		},
+		"DELETE_PLAYLIST_MODAL": {
+			"DELETE_CURRENT_PUBLIC": "Questa lista è la playlist attuale e pubblica, imposta un'altra playlist come attuale e pubblica per poterla eliminare.",
+			"DELETE_WHITELIST": "Questa lista è la whitelist, imposta un'altra playlist come whitelist per poterla eliminare.",
+			"TITLE": "Eliminare {{playlist}} per sempre?",
+			"DELETE_PUBLIC": "Questa lista è la playlist pubblica, imposta un'altra playlist come pubblica per poterla eliminare.",
+			"DELETE_BLACKLIST": "Questa lista è la blacklist, imposta un'altra playlist come blacklist per poterla eliminare.",
+			"IMPOSSIBLE": "Non puoi eliminare l'unica playlist.",
+			"DELETE_CURRENT": "Questa lista è la playlist attuale, imposta un'altra playlist come attuale per poterla eliminare."
+		},
+		"CREATE_TAG": {
+			"OPEN": "Crea una tag",
+			"TITLE": "Creazione rapida di tag"
+		},
+		"STATS_MODAL": {
+			"DESC": "Utilizziamo i tuoi preferiti e le tue richieste karaoke per creare statistiche sul consumo (ad esempio per definire i karaoke più richiesti).",
+			"TITLE": "Utilizza i miei preferiti e le mie richieste karaoke per le statistiche",
+			"REFUSE_DESC": "Se non vuoi partecipare, nonostante l'anonimato, a queste statistiche, si prega di farcelo sapere. Se rifiuti, i tuoi dati verranno ignorati e non saranno inviati dall'app di Karaoke Mugen.",
+			"CHANGE": "Puoi cambiare opzione in qualsiasi momento sul tuo profilo. Acconsenti all'utilizzo della tua cronologia dei brani per le statistiche?"
+		},
+		"PLAYLIST_MODAL": {
+			"PUBLIC": "Pubblica",
+			"CANNOT_WHITELIST": "Non puoi non avere una whitelist, modifica quella che vuoi per impostarla come whitelist.",
+			"CREATE_PLAYLIST": "Crea una nuova playlist",
+			"CURRENT": "Attuale",
+			"EDIT_PLAYLIST": "Modifica {{playlist}}",
+			"SMART_DESC": "Definisci i criteri secondo cui i brani verranno aggiunti automaticamente alla playlist",
+			"NAME": "Nome",
+			"FALLBACK": "Riserva",
+			"BLACKLIST": "Blacklist",
+			"VISIBLE_DESC": "Visibile al pubblico",
+			"WHITELIST_DESC": "I brani in questa lista non verranno nascosti neanche se aggiunti alla blacklist.",
+			"VISIBLE": "Visibile",
+			"BLACKLIST_DESC": "I brani in questa lista verranno nascosti agli utenti (a meno che non siano anche in whitelist)",
+			"CANNOT_BLACKLIST": "Non puoi non avere una blacklist, modifica quella che vuoi per impostarla come blacklist.",
+			"NAME_MANDATORY": "Il nome della playlist è necessario",
+			"CANNOT_SMART": "Non puoi rimuovere l'attributo intelligente da una playlist.",
+			"CANNOT_FALLBACK": "Non puoi non avere una riserva, modifica quella che vuoi per impostarla come riserva.",
+			"FALLBACK_DESC": "I brani in questa lista verranno riprodotti dopo la fine di una playlist, se abilitata nelle impostazioni.",
+			"CREATE": "Crea",
+			"PUBLIC_DESC": "La lista pubblica è quella che riceve suggerimenti dal pubblico",
+			"SMART": "Intelligente",
+			"WHITELIST": "Whitelist",
+			"CURRENT_DESC": "La playlist attuale è quella letta dal lettore multimediale",
+			"CANNOT_PUBLIC": "Non puoi non avere una playlist pubblica, modifica quella che vuoi per impostarla come playlist pubblica.",
+			"EDIT": "Modifica",
+			"CANNOT_CURRENT_PLAYLIST": "Non puoi non avere una playlist attuale, modifica quella che vuoi per impostarla come playlist attuale."
+		},
+		"GIT_DANGEROUS": {
+			"STASH": {
+				"BTN": "Modifiche Stash",
+				"DESC": "Metti via le tue modifiche per riutilizzarle dopo."
+			},
+			"RESET": {
+				"BTN": "Reimposta",
+				"DESC": "Elimina tutte le modifiche non rilasciate."
+			},
+			"TITLE": "Azioni pericolose",
+			"DESCRIPTION": "Benvenuto all'angolo delle azioni pericolose. Sembrerebbe che puoi combinare molti guai qui. Ecco un breve riepilogo delle modifiche rilevate:",
+			"EMPTY": "Non è cambiato nulla!",
+			"DONE": "Azione compiuta correttamente."
+		},
+		"RESTART_DOWNLOADS_MODAL": {
+			"CONTINUE": "Riprendi tutti i download",
+			"DELETE": "Annulla tutti i download in sospeso",
+			"LABEL": "Alcuni download sono in sospeso dalla tua ultima sessione. Cosa vuoi fare?",
+			"LATER": "Chiedimelo dopo",
+			"TITLE": "Download in sospeso"
+		},
+		"UNKNOW_REPOS": {
+			"TITLE": "Rilevati archivi sconosciuti",
+			"DESCRIPTION": "Questa playlist contiene brani da archivi che non possiedi localmente.",
+			"DOWNLOAD_THEM": "Vuoi aggiungerli adesso?"
+		},
+		"SHUFFLE_MODAL": {
+			"BALANCE_DESC": "Riordina i brani per gruppi di utenti (A-B-C, B-A-C, C-B-A, ecc...)",
+			"SMART_SHUFFLE_DESC": "Impedisce a brani lunghi o cantati dalla stessa persona di susseguirsi",
+			"LABEL": "Scegli un metodo da utilizzare per mescolare:",
+			"MIX_ALREADY_PASSED_SONGS": "Mescola anche i brani già riprodotti.",
+			"SORTUPVOTES": "Ordina per voti",
+			"TITLE": "Mescola playlist",
+			"BALANCE": "Equilibrato",
+			"SHUFFLE_DESC": "La playlist verrà mescolata casualmente, senza applicare alcuna influenza.",
+			"SORTUPVOTES_DESC": "Ordina per numero di voti (prima i brani più popolari)",
+			"SMART_SHUFFLE": "Intelligente",
+			"SHUFFLE": "Casuale"
+		},
+		"EXPORT_PLAYLIST_MEDIA": {
+			"START": "Esportando i file multimediali…",
+			"DONE": "I file multimediali della playlist sono stati esportati",
+			"DONE_PARTIALLY": "I file multimediali della playlist sono stati esportati, tuttavia questi hanno fallito:",
+			"NOT_ALL_MEDIA_DOWNLOADED": "Non tutti i file multimediali sono disponibili localmente. Si prega di scaricarli tutti prima di esportare la playlist."
+		},
+		"POLL": {
+			"VOTES_other": "{{count}} voti ({{percent}}%)",
+			"VOTE": "È ora di votare!",
+			"VOTES_one": "{{count}} voto ({{percent}}%)",
+			"REMAINING_other": "{{count}} secondi rimanenti",
+			"REMAINING_one": "{{count}} secondo rimanente",
+			"VOTED": "Votato!"
+		},
+		"PLAY_CURRENT_MODAL": {
+			"DESCRIPTION": "Hai premuto Riproduci, ma la playlist attuale \"<1>{{playlist}}</1>\" non è visualizzata a schermo.",
+			"PLAY_ANYWAY": "Riproduci comunque",
+			"DESC_OUTCOME": "Se procedi, Karaoke Mugen riprodurrà il brano <1>{{song}}</1> da quella playlist, ma NON dalla playlist che stavi guardando.",
+			"TITLE": "Attenzione!",
+			"CHANGE_TO_DISPLAYED_AND_PLAY": "Cambia la playlist attuale a <1>{{displayedPlaylistName}}</1> e riproduci"
+		},
+		"CLASSIC_MODE": {
+			"TITLE": "Tocca a te cantare!",
+			"TEXT": "Clicca sul tasto Riproduci per riprodurre il tuo brano."
+		}
+	},
+	"VIEW_POPULAR": "Popolari",
+	"VIEW_LIKES": "Più amati",
+	"REPO_IN_PROGRESS": "Karaoke Mugen non è ancora pronto, si prega di attendere il termine delle seguenti attività.",
+	"ONLINE_STATS": {
+		"DETAILS": {
+			"1": "I karaoke che sono stati riprodotti",
+			"3": "Informazioni sul computer (CPU, RAM disponibile, nome e versione del Sistema Operativo…)",
+			"TITLE": "Dettagli informativi inviati",
+			"OUTRO": "Le statistiche vengono inviate ad ogni avvio e ad ogni ora di utilizzo. Puoi leggere le informazioni inviate tramite la cartella dei log di Karaoke Mugen.",
+			"2": "I karaoke che sono stati richiesti (ma non da chi)",
+			"4": "Impostazioni dell'applicazione (escluse informazioni private come password o chiavi)"
+		},
+		"INTRO": "Karaoke Mugen può inviare informazioni anonime sulla tua sessione al server di Karaoke Mugen per creare statistiche sul consumo.",
+		"QUESTION": "Acconsenti all'invio di queste statistiche al server di Karaoke Mugen?",
+		"CHANGE": "Puoi cambiare idea in qualsiasi momento tramite le opzioni.",
+		"ERROR": "Karaoke Mugen potrebbe inviare informazioni sulla tua sessione a Sentry.io durante gli errori, il che ci aiuta a risolverli più velocemente. Acconsenti all'invio di queste segnalazioni di errore?",
+		"TITLE": "Statistiche",
+		"CONFIRM": "Conferma"
+	},
+	"INSTANCE_NAME_SHORT": "Server",
+	"INSTANCE_NAME": "Nome del server",
+	"SECURITY_CODE": "Codice di sicurezza",
+	"VIEW_LIKES_TOOLTIP": "I brani più votati verranno mostrati prima, ciò non cambia l'ordine della playlist.",
+	"PL_MULTIPLE_ADDED": "Aggiungi {{count}} brani",
+	"REMOTE_RESET_CONFIRM": "Il codice della tua stanza verrà liberato e te ne verrà generato uno nuovo, sei sicuro?",
+	"KARA_SUGGESTION_NOT_FOUND": "Non trovi il tuo brano preferito? Controlla la configurazione dei tuoi archivi online e la pagina dei suggerimenti se il tuo desiderio non è ancora stato esaudito:",
+	"USER_SONG_PLAYS_IN": "Il tuo brano {{kara}} è stato aggiunto e sarà riprodotto tra {{time}} ({{date}})",
+	"VIEW_FAVORITES": "Preferiti",
+	"CLEAR_FILTER": "Pulisci",
+	"VIEW_RECENT": "Più recenti",
+	"MAKE_ACCOUNT_ADMIN": "Promuovi l'account a operatore",
+	"NEXT_SONG_MESSAGE": "Prossimamente:",
+	"FORGOT_PASSWORD": "Hai dimenticato la password?",
+	"VIEW_STANDARD": "Standard",
+	"MAKE_ACCOUNT_ADMIN_MESSAGE": "Se vuoi promuovere il tuo account a operatore, inserisci il codice di sicurezza di 6 cifre qui."
 }
