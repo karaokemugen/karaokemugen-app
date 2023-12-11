@@ -2,5 +2,11 @@
 	"YES": "Sì",
 	"NO": "No",
 	"CANCEL": "Annulla",
-	"NEXT_SONG": "Prossimo brano"
+	"NEXT_SONG": "Prossimo brano",
+	"TAG_TYPES": {
+		"VERSIONS": "Versione"
+	},
+	"LIBRARY": "Libreria",
+	"YEAR": "Anno",
+	"PUBLIC_PLAYLIST": "Suggerimenti del pubblico"
 }
