@@ -298,7 +298,16 @@
 	"WARNING": "Warnung!",
 	"KARA": {
 		"SECTIONS": {
-			"TITLES": "Titel"
+			"TITLES": "Titel",
+			"PARENTS": "Übergeordnete Song(s)",
+			"FILES": "Dateien",
+			"IDENTITY": "Identität",
+			"META": "Metadaten",
+			"CATEGORIZATION": "Kategorisierung"
+		},
+		"DESC": {
+			"PARENTS": "Wenn dieser Song eine alternative Version eines anderen Songs ist, wähle die übergeordnete(n) Version(en) aus, um das Formular vorauszufüllen.",
+			"PARENTS_PUBLIC": "Wenn ein Nutzer einen übergeordneten Song in der öffentlichen Oberfläche auswählt, sieht er alle seine unterversionen / alternativen Versionen."
 		}
 	},
 	"SETTINGS": {
@@ -818,7 +827,29 @@
 			"BACK": "Zurück",
 			"WELCOME": "Willkommen bei Karaoke Mugen! Folgendes musst du wissen.",
 			"END": "Erledigt",
-			"TITLE": "Lernmodus"
+			"TITLE": "Lernmodus",
+			"PLAYER_CURRENT_HINT": "Der Player spielt den ausgewählten Titel in der <1>aktuellen Wiedergabeliste</1>.",
+			"SELECT_PLAYLIST_BUTTON": "Playlists sind im Selektor verfügbar :",
+			"BLACKLIST_DESC": "Die schwarze Liste enthält alle ausgeschlossenen Lieder.",
+			"CHECK_CASE": "Kreuze <1/> an, um auf mehrere Lieder <3>auf einmal</3> zu wirken.",
+			"KARAOKE_PLAYED": "Zeilen mit einem <1><2/> orangefarbenen</1> Symbol bedeuten, dass dieser Titel kürzlich gespielt wurde.",
+			"WRENCH_BUTTON": "Der Schraubenschlüssel <1/> erlaubt andere Aktionen für ein Lied.",
+			"CREATE_PLAYLIST_BUTTON": "Erstelle und bearbeite deine Wiedergabelisten über das Aktionsmenü",
+			"PLAYLIST_ATTRIBUTES": "Wenn Du eine Wiedergabeliste erstellst, kannst Du sie als <1>aktuell</1> und/oder <3>öffentlich</3> einstellen.",
+			"PLAYER_GO_BACK": "Mit der Rückspul-Taste kannst Du zum <1>Anfang des aktuellen</1> Titels zurückgehen.",
+			"K_MENU": "Im \"K-Menü\" kannst du dein Profil und andere Karaoke-Einstellungen ändern.",
+			"ADD_TO_OTHER_PLAYLIST": "Die Taste <1/> fügt den Titel zur anderen Wiedergabeliste hinzu.",
+			"KARAOKE_PLAYING": "Die Zeile mit <1>blauem</1> Hintergrund bedeutet, dass das Lied für die Wiedergabe ausgewählt ist.",
+			"PLAY_BUTTONS": "Die Taste <1/> spielt das Lied sofort ab <3>(Die Taste <4/> bewegt den Wiedergabecursor)</3>.",
+			"LIBRARY": "Die Bibliothek zeigt alle verfügbaren Karaoke-Lieder an.",
+			"PLAYLIST": "Auf dem Bildschirm werden zwei Wiedergabelisten angezeigt. Du kannst einen Song aus der linken Playlist zur rechten Playlist hinzufügen und umgekehrt, indem du einfach auf <2/> klickst.",
+			"PLAYER_BAR": "Der Karaoke Mugen Player kann über die obere Leiste gesteuert werden.",
+			"MESSAGE": "Mit der Schaltfläche Nachricht kannst Du eine Nachricht an dein Publikum (auf dessen Geräten oder auf dem Bildschirm des Players) senden.",
+			"PUBLIC_DESC": "Die <1>öffentliche</1> Wiedergabeliste ist der Ort, an dem sich die Anfragen deiner Nutzer befinden.",
+			"CURRENT_PUBLIC_DESC": "Die <1>aktuelle</1> und die <3>öffentliche</3> Wiedergabeliste können die gleiche sein.",
+			"TITLE_CLICK": "Klicke auf den Karaoke-Titel, um weitere Informationen <1>(Sänger, Songwriter usw.)</1> zu erhalten.",
+			"PLAYER_STOP": "Die Schaltfläche \"Stop\" stoppt die Wiedergabe, sobald der aktuelle Song endet. Du kannst ihn erneut anklicken, um <1>sofort</1> zu stoppen.",
+			"CURRENT_DESC": "Die <1>aktuelle</1> Wiedergabeliste ist diejenige, die der Player verwendet."
 		},
 		"PLAYLIST_MODAL": {
 			"PUBLIC": "Öffentlich",
@@ -872,6 +903,147 @@
 			"DESC_OUTCOME": "Wenn Du fortfährst, spielt Karaoke Mugen den Song <1>{{song}}</1> aus dieser Playlist ab, aber NICHT aus der Playlist, die du gerade offen hast.",
 			"TITLE": "Warnung!",
 			"CHANGE_TO_DISPLAYED_AND_PLAY": "Änder die aktuelle Wiedergabeliste in <1>{{displayedPlaylistName}}</1> und spielen diese ab"
+		},
+		"START_QUIZ": {
+			"TIME": {
+				"GUESS_DURATION": "Ratezeit (Sekunden)",
+				"ANSWER_DURATION": "Antwortzeit (Sekunden)",
+				"QUICK_GUESS_DURATION": "Schnelle Ratezeit (Sekunden)",
+				"QUICK_AWARD_POINTS": "Punkte für eine schnelle und gute Antwort",
+				"DESCRIPTION": "Die Teilnehmer haben Zeit zu antworten. Sobald der Timer abgelaufen ist, wird die Antwort auf dem Bildschirm angezeigt, wobei Ton, Text und Video aktiviert sind. Eine schnelle Antwort kann mehr Punkte bringen, wenn die Option aktiviert ist.",
+				"TITLE": "Antwortzeit"
+			},
+			"PLAYERS": {
+				"TITLE": "Wer spielt mit?",
+				"ALLOW_GUESTS": "Erlaube den Gästen, teilzunehmen",
+				"TWITCH_CHAT": "Lass den Twitch-Chat mit dem Namen spielen",
+				"DESCRIPTION": "Alle Nutzer mit ihrem Konto können teilnehmen (wenn die Schnittstelle geöffnet ist), du kannst Gastkonten zum Spielen zulassen oder einen Spieler hinzufügen, der den Twitch-Chat repräsentiert, wenn dein Kanal verbunden ist.",
+				"TWITCH_CHAT_PLACEHOLDER": "Twitcher"
+			},
+			"END_GAME": {
+				"MINUTES": "Spielminuten.",
+				"MAX_SONGS": "wenn",
+				"MAX_SCORE": "wenn ein Spieler erreicht",
+				"TITLE": "Spiellänge",
+				"DESCRIPTION": "Das Spiel endet…",
+				"MAX_SONGS_PLACEHOLDER": "30",
+				"MAX_SCORE_PLACEHOLDER": "10",
+				"DURATION": "nach",
+				"DURATION_PLACEHOLDER": "60",
+				"SONGS": "Lieder gespielt wurden.",
+				"POINTS": "Punkte"
+			},
+			"EMPTY_PLAYLIST": "Wähle eine Wiedergabeliste",
+			"PLAYER_MESSAGE_PLACEHOLDER": "Gehe zu $url um zu spielen!",
+			"COPIED_GAME": "{{gameName}} (kopieren)",
+			"DISPLAY": {
+				"END": "am Ende",
+				"NO_LYRICS": "Keine Liedtexte anzeigen",
+				"BLIND": "Das Video ausblenden",
+				"BLURRED_SCREEN": "Verschwommener Bildschirm",
+				"DESCRIPTION": "Um die Aufgabe anspruchsvoller zu machen, ist es möglich, das Lied an einem fortgeschrittenen Punkt statt am Anfang zu starten. Es ist auch möglich, das Video auszublenden, den Ton abzuschalten und/oder die Untertitel nicht anzuzeigen.",
+				"TIME": "Starte das Lied",
+				"BLACK_SCREEN": "Schwarzer Bildschirm",
+				"MUTE": "Schalte den Ton aus",
+				"BEGINNING": "am Anfang",
+				"TITLE": "Wie kann ich Lieder anzeigen?"
+			},
+			"PLAYER_MESSAGE": "Auf dem Bildschirm angezeigte Nachricht",
+			"GAME_NAME": "Name des Spiels",
+			"ANSWERS": {
+				"PERFECT": "Perfekte Rechtschreibung",
+				"VIEW_ALL_ANSWERS": "Alle möglichen Typen sehen",
+				"VIEW_LESS_ANSWERS": "Weniger Typen sehen",
+				"DESCRIPTION": "Du kannst wählen, welche Antworten akzeptiert werden (Titel, Sänger, Serien usw.) und wie viele Punkte jeder Antworttyp für eine gute Antwort erhält. Du kannst auch eine Toleranz für Tippfehler festlegen. Eine Autovervollständigung steht allen zur Verfügung, die die öffentliche Schnittstelle nutzen.",
+				"TOLERANCE": "Toleranz für Tippfehler",
+				"ANSWER_TITLE": "Titel",
+				"LAX": "Laxist"
+			},
+			"DESCRIPTION": "Lasse die Teilnehmer in einem Blindtest gegeneinander antreten! Die Teilnehmer müssen die Lieder, die auf dem Bildschirm gespielt werden, so schnell wie möglich erraten. Du kannst ein neues Spiel einrichten oder ein bestehendes fortsetzen.",
+			"GAME_IN_PROGRESS": {
+				"SONG_COUNT_one": "{{count}} Lied wurde gespielt.",
+				"SCORES": "Hier sind die Ergebnisse.",
+				"SONG_COUNT_zero": "Es wurde noch kein Lied gespielt.",
+				"SONG_COUNT_other": "{{count}} Lieder wurden gespielt."
+			},
+			"EMPTY_NAME": "Einen Spielnamen eingeben",
+			"LAST_PLAYED_GAME": "{{gameName}} (zuletzt gestartetes spiel)",
+			"GAME_NAME_PLACEHOLDER": "Mein Spiel",
+			"BUTTONS": {
+				"CANCEL_EDIT": "Änderungen abbrechen",
+				"DELETE_SCORES": "Spielstände löschen",
+				"RESUME": "Zusammenfassung",
+				"COPY": "Spiel kopieren",
+				"EDIT": "Spieleinstellungen bearbeiten",
+				"CREATE_START": "Das Spiel erstellen und starten",
+				"DELETE": "Spiel löschen"
+			},
+			"TITLE": "Ein Quiz starten",
+			"NEW_GAME": "Neues Spiel",
+			"PLAYLIST": "Zu verwendende Playlist",
+			"LOAD_GAME": "Spiel laden"
+		},
+		"DELETE_PLAYLIST_MODAL": {
+			"DELETE_CURRENT_PUBLIC": "Diese Liste ist als aktuell und öffentlich definiert. Lege eine weitere Playlist mit diesen Attributen an, bevor du diese löschst.",
+			"DELETE_WHITELIST": "Diese Liste ist die Whitelist, lege eine andere Wiedergabeliste als Whitelist fest, um diese zu löschen.",
+			"TITLE": "{{playlist}} für immer löschen?",
+			"DELETE_PUBLIC": "Diese Liste ist die öffentliche Wiedergabeliste, setze eine andere Wiedergabeliste als öffentlich, um diese zu löschen.",
+			"DELETE_BLACKLIST": "Diese Liste ist die schwarze Liste, lege eine andere Wiedergabeliste als schwarze Liste fest, um diese zu löschen.",
+			"IMPOSSIBLE": "Du kannst die einzig existente Wiedergabeliste nicht löschen.",
+			"DELETE_CURRENT": "Diese Liste ist die aktuelle Wiedergabeliste. Setze eine andere Wiedergabeliste als aktuell, um diese zu löschen."
+		},
+		"CREATE_TAG": {
+			"OPEN": "Einen Tag erstellen",
+			"TITLE": "Schnelles Erstellen von Tags"
+		},
+		"STATS_MODAL": {
+			"DESC": "Wir verwenden deine Favoriten sowie die Karaoke, die du während einer Sitzung gewünscht hast, um Nutzungsstatistiken zu erstellen (z. B. um herauszufinden, welche Songs am häufigsten gewünscht wurden).",
+			"TITLE": "Verwende meine Favoriten und Karaoke-Anfragen für Statistiken",
+			"REFUSE_DESC": "Wenn du nicht an diesen Nutzungsstatistiken teilnehmen möchtest, auch wenn sie anonym sind, lass es uns bitte wissen. Wenn du dich weigerst, werden deine Daten ignoriert und nicht an den Karaoke Mugen Server gesendet.",
+			"CHANGE": "Du kannst dies jederzeit in deinem Profil ändern. Bist du damit einverstanden, dass dein Liedverlauf für Statistiken verwendet wird?"
+		},
+		"GIT_DANGEROUS": {
+			"STASH": {
+				"BTN": "Stash-Bearbeitungen (git stash)",
+				"DESC": "Lege deine Bearbeitungen weg, um sie später wiederzuverwenden."
+			},
+			"RESET": {
+				"BTN": "Zurücksetzen",
+				"DESC": "Lösche alle nicht gepushten Bearbeitungen."
+			},
+			"TITLE": "Gefährliche Aktionen",
+			"DESCRIPTION": "Willkommen im Menü für gefährliche Aktionen. Es scheint, dass du hier eine Menge Mist bauen kannst. Hier ist eine kurze Zusammenfassung der gefundenen Bearbeitungen:",
+			"EMPTY": "Es wurde nichts geändert!",
+			"DONE": "Aufgabe erfolgreich erledigt."
+		},
+		"RESTART_DOWNLOADS_MODAL": {
+			"CONTINUE": "Alle Downloads fortsetzen",
+			"DELETE": "Breche alle anstehenden Downloads ab",
+			"LABEL": "Es stehen noch einige Downloads von deiner letzten Sitzung aus. Was möchtest Du tun?",
+			"LATER": "Frag mich später erneut",
+			"TITLE": "Downloads ausstehend"
+		},
+		"EXPORT_PLAYLIST_MEDIA": {
+			"START": "Die Mediendateien werden exportiert…",
+			"DONE": "Die Mediendateien der Wiedergabeliste wurden exportiert",
+			"DONE_PARTIALLY": "Die Mediendateien der Wiedergabeliste wurden exportiert, auch wenn dies fehlgeschlagen ist:",
+			"NOT_ALL_MEDIA_DOWNLOADED": "Nicht alle Medien sind lokal verfügbar. Bitte stelle sicher, dass du alle Medien herunterlädst, bevor du die Wiedergabeliste exportierst"
+		},
+		"POLL": {
+			"VOTES_other": "{{count}} Stimmen ({{percent}}%)",
+			"VOTE": "Zeit zu wählen!",
+			"VOTES_one": "{{count}} Stimme ({{percent}}%)",
+			"REMAINING_other": "{{count}} Sekunden verbleibend",
+			"REMAINING_one": "{{count}} Sekunde verbleibend",
+			"VOTED": "Abgestimmt!"
+		},
+		"STOP_QUIZ": {
+			"DESCRIPTION": "Das Spiel wird sofort angehalten. Es kann über das Menü \"Quiz starten\" fortgesetzt werden.",
+			"TITLE": "Quiz stoppen?"
+		},
+		"CLASSIC_MODE": {
+			"TITLE": "Du bist mit dem Singen dran!",
+			"TEXT": "Klicke auf die Schaltfläche \"Play\", um dein Lied zu starten."
 		}
 	},
 	"REMOTE_STATUS": {
@@ -961,5 +1133,68 @@
 		"Wir sind gleich zurück!"
 	],
 	"PAUSE_TIME": "Pause",
-	"REMOTE_URL": "URL für den Fernzugriff auf das System"
+	"REMOTE_URL": "URL für den Fernzugriff auf das System",
+	"LOADING_SUBTITLE_ELECTRON": "Es sollte nicht allzu lange dauern. Versuche, Karaoke Mugen neu zu starten oder zu aktualisieren, wenn du hier nicht weiterkommst.",
+	"SETUP_PAGE": {
+		"CHOOSE_DIRECTORY": "Einen Ordner auswählen",
+		"ONLINE_ACCOUNT_SAVE_INFOS": "Sichere deine Lieblingslieder, deinen Avatar und deine Profilinformationen, um sie auch auf anderen Veranstaltungen wieder zu verwenden.",
+		"ONLINE_ACCOUNT_LOST_PASSWORD": "Wenn du eine E-Mail-Adresse angibst, kannst du dein Konto wiederherstellen, wenn du dein Passwort vergessen hast.",
+		"SECURITY_CODE_USE": "Dieser Code stellt sicher, dass du wirklich derjenige bist, der diese Aktionen durchführt. Er ändert sich nach jeder Verwendung.",
+		"DEFAULT_REPOSITORY_QUESTION": "Wo willst du diese Downloads speichern? Standardmäßig befinden sie sich in:",
+		"CREATE_ONLINE_ACCOUNT": "Ich möchte ein neues Konto erstellen",
+		"ONLINE_ACCOUNT_INSTANCE": "Dein Online-Konto wird auf der Instanz {{instance}} gespeichert",
+		"TITLE": "Einrichtungsassistent",
+		"CONNECTED_MESSAGE": "Glückwunsch, du bist bei Karaoke Mugen eingeloggt, {{user}}!",
+		"MODIFY_DIRECTORY": "Ordner ändern",
+		"ONLINE_ACCOUNT_INSTANCE_DESC": "Eine Instanz ist ein Online-Server, der verschiedene Dienste für Karaoke Mugen bereitstellt. Wenn du dir nicht sicher bist, belasse die Standardinstanz ({{instance}}), oder wenn du weißt, was du tust, ändere sie in die Instanz deiner Wahl.",
+		"ONLINE_ACCOUNT_DESC": "Ein Online-Konto ermöglicht es dir:",
+		"SAVE_PARAMETER": "Speichern",
+		"COLLECTIONS_CHOICE_DESC_1": "Die Kollektionen sind für unterschiedliche Zielgruppen gedacht. Wähle die Kollektionen aus, die du in deiner Karaoke-Datenbank sehen willst.",
+		"CREATE_ONLINE_ACCOUNT_DESC": "Gib einen Kontonamen und ein Passwort ein, um ein Konto zu erstellen.",
+		"ACCOUNT_QUESTION": "Willst du ein lokales Konto (nur auf deinem Computer) oder ein Online-Konto (Internetzugang erforderlich) verwenden?",
+		"DEFAULT_REPOSITORY_DESC_2": ". Die Mediendateien werden heruntergeladen, wenn du sie brauchst.",
+		"ONLINE_ACCOUNT": "Online",
+		"DEFAULT_REPOSITORY_DESC_1": "Karaoke Mugen hat ein Standard-Karaoke-Repository, ",
+		"WELCOME": "Willkommen bei Karaoke Mugen!",
+		"NEED_ACCOUNT": "Bevor du anfangen kannst zu singen, brauchst du ein Konto, um die App zu nutzen.",
+		"COLLECTIONS_CHOICE": "Auswahl der Kollektion",
+		"LOCAL_ACCOUNT_DESC": "Du hast ein lokales Konto gewählt. Gib unten einen Kontonamen und ein Passwort ein:",
+		"ADD_DIRECTORY": "Einen Ordner hinzufügen",
+		"SECURITY_CODE_DESC_CONSOLE": "Bitte gib auch den 6-stelligen Sicherheitscode ein, den du findest, indem du in der Karaoke Mugen-Logdatei oder in der Konsole nach \"SECURITY CODE FOR THIS SESSION\" suchst.",
+		"LOCAL_ACCOUNT": "Lokal",
+		"REPOSITORY_LATER": "Du kannst diesen Ordner jederzeit ändern.",
+		"LOGIN_ONLINE_ACCOUNT": "Ich habe bereits ein Konto",
+		"COLLECTIONS_CHOICE_DESC_2": "Du kannst deine Kollektionen jederzeit in der Systemsteuerung ändern."
+	},
+	"NOTIFICATION": {
+		"OPERATOR": {
+			"ERROR": {
+				"PLAYER_NO_ONLINE_MEDIA": "Medien können nicht von Online-Quellen gelesen werden. Überprüfe deine Internetverbindung.",
+				"PLAYER_RANDOM_SONG_AFTER_PLAYLIST": "Es konnte Kein zufälliges Lied für die Wiedergabe nach dem Ende der Wiedergabeliste ausgewählt werden können",
+				"PLAYER_PLMEDIA": "Medien der Wiedergabeliste können nicht abgespielt werden",
+				"POLL_PUBLIC_PL_EMPTY": "Umfrage kann nicht gestartet werden: öffentliche Wiedergabeliste ist leer",
+				"DOWNLOAD": "Fehler beim Herunterladen eines Songs",
+				"PLAYER_CLASSIC_PAUSE_SCREEN": "Pausenbildschirm kann nicht vorbereitet werden",
+				"UPDATE_GIT_REPO_ERROR": "Aktualisierung des Git-Repositorys fehlgeschlagen",
+				"PLAYER_PLAY": "Lied kann nicht abgespielt werden",
+				"SHORTENER": "Fehler beim Aktivieren der URL-Verkürzung",
+				"POLL_ALREADY_STARTED": "Eine Umfrage ist bereits im Gange",
+				"POLL_NOT_ENOUGH_SONGS": "Umfrage kann nicht gestartet werden: nicht genügend Lieder verfügbar",
+				"PLAYLIST_FREE_ORPHANED_SONGS": "Verwaiste Lieder können nicht freigegeben werden"
+			},
+			"INFO": {
+				"POLL_WINNER": "Die Leute haben für einen neuen Song gestimmt!",
+				"END_OF_SESSION_NEAR": "Die Karaoke-Session wird aktuell in {{data}} Minuten enden.",
+				"POLL_STARTING": "Start der Umfrage",
+				"PLAYER_RESTARTING": "Neustart des Media Players…"
+			}
+		}
+	},
+	"SEARCH_FILTER": "Suchfilter",
+	"LOADING": "Laden…",
+	"LOADING_SUBTITLE": "Es sollte nicht allzu lange dauern. Wenn du hier nicht weiterkommst, kannst du versuchen, deinen Cache zu leeren oder deinen Browser zu aktualisieren.",
+	"REFRESH": "Aktualisieren",
+	"CONFIRM_SURE": "Bist du dir sicher?",
+	"ACTION": "Aktion",
+	"ADD": "Hinzufügen"
 }
