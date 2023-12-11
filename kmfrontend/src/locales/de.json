@@ -307,7 +307,8 @@
 		},
 		"DESC": {
 			"PARENTS": "Wenn dieser Song eine alternative Version eines anderen Songs ist, wähle die übergeordnete(n) Version(en) aus, um das Formular vorauszufüllen.",
-			"PARENTS_PUBLIC": "Wenn ein Nutzer einen übergeordneten Song in der öffentlichen Oberfläche auswählt, sieht er alle seine unterversionen / alternativen Versionen."
+			"PARENTS_PUBLIC": "Wenn ein Nutzer einen übergeordneten Song in der öffentlichen Oberfläche auswählt, sieht er alle seine unterversionen / alternativen Versionen.",
+			"TITLES": "Lege alle Titelnamen fest, die das Lied in verschiedenen Sprachen hat. Normalerweise gibt es nur einen Titel."
 		}
 	},
 	"SETTINGS": {
