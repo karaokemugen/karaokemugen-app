@@ -196,14 +196,104 @@
 			"FREE_UPVOTES": "Consenti agli utenti di votare i brani per liberarli",
 			"PLAYLIST_OUTRO_VIDEOS": "Video finale della playlist",
 			"FREE_UPVOTES_REQUIREDPERCENT_TOOLTIP": "Percentuale del numero di utenti connessi",
-			"AUTOPLAY": "Riproduci automaticamente il prossimo brano",
+			"AUTOPLAY": "Riproduzione automatica all'aggiunta del prossimo brano",
 			"FREE_UPVOTES_REQUIREDMIN_TOOLTIP": "Modificalo in base al numero di utenti connessi",
 			"FREE_UPVOTES_REQUIREDMIN": "Voti minimi richiesti per liberare un brano",
 			"EVERY": "ogni",
 			"QUOTA_TYPE_TOOLTIP": "La quota aiuta a prevenire l'aggiunta di troppi brani in una volta da parte degli utenti",
 			"PLAYLIST_ENCORES_VIDEOS": "Video Encore della playlist",
 			"QUOTA_SETTINGS": "Limitazioni",
-			"QUOTA_SETTINGS_TOOLTIP": "Modifica restrizioni del pubblico"
+			"QUOTA_SETTINGS_TOOLTIP": "Modifica restrizioni del pubblico",
+			"STREAM_MODE_LOCKED": "Disabilita la Modalità Classica in Modalità del karaoke per usare la Pausa Stream.",
+			"STREAM_PAUSE_DURATION_TOOLTIP": "In secondi, 0 per infinito (premi \"Riproduci\" per riprodurre il prossimo brano)",
+			"STREAM_TWITCH_OAUTH_SUCCESS": "Connessione riuscita ({{login}})",
+			"SONGPOLL": "Sondaggio al pubblico",
+			"REMOTE": "Consenti l'accesso remoto (<codice>.kara.moe)",
+			"MYSTERY_SONG_SETTINGS_TOOLTIP": "Nascondi i brani al pubblico, per sorprenderlo!",
+			"SONGPOLLTIMEOUT_TOOLTIP": "In secondi. Meglio se è più breve del periodo di pausa della modalità Stream!",
+			"MYSTERY_SONG_SETTINGS": "Brani misteriosi",
+			"LABELS_MYSTERY_SONGS_TOOLTIP": "Puoi personalizzare come i brani misteriosi vengono mostrati al pubblico",
+			"ADDED_SONG_VISIBILITY_PUBLIC_TOOLTIP": "I brani aggiunti dal pubblico devono essere visibili al pubblico o considerati brani misteriosi?",
+			"CLASSIC_MODE_TOOLTIP": "Ci sarà una pausa tra un brano e l'altro in cui verranno mostrati a schermo il nome del prossimo brano e il richiedente. La riproduzione del brano potrà essere avviata dal richiedente o dall'operatore.",
+			"HIDE_INVISIBLE_SONGS_TOOLTIP": "Il modo in cui i brani misteriosi vengono visualizzati dal pubblico. Ottimo per una sorpresa!",
+			"ADDED_SONG_VISIBILITY_ADMIN": "Visibilità dei brani aggiunti dall'operatore",
+			"ONLINE_SETTINGS_TOOLTIP": "Connetti il tuo karaoke ad internet e lascia scegliere al mondo i brani per te!",
+			"STREAM_SETTINGS_TOOLTIP": "Pausa tra un brano e l'altro, chat di Twitch",
+			"ADDED_SONG_VISIBILITY_ADMIN_TOOLTIP": "I brani aggiunti dall'operatore devono essere visibili al pubblico o considerati brani misteriosi?",
+			"MINUTES_BEFORE_SESSION_ENDS_WARNING_TOOLTIP": "Una notifica ti avviserà X minuti prima della fine della tua sessione",
+			"ADDED_SONG_VISIBILITY_ADMIN_SHORT": "Visibilità dei brani aggiunti",
+			"ADDED_SONG_VISIBILITY_ADMIN_OFF": "I brani verranno aggiunti normalmente (visibili al pubblico)",
+			"CLASSIC_MODE_LOCKED": "Disabilita la Pausa Stream nelle opzioni Stream per usare la modalità Classica.",
+			"OPEN_STREAMER_FILES": "Vedi i file.",
+			"STREAM_TWITCH_OAUTH_TOKEN": "Twitch OAuth Token",
+			"SONGPOLLCHOICES": "Numero dei brani da cui gli utenti possono scegliere durante il sondaggio al pubblico",
+			"STREAM_PAUSE_DURATION": "Durata della pausa",
+			"LABELS_MYSTERY_SONGS_ADD": "Aggiungi",
+			"ENABLE_AUTOBALANCE": "Abilita l'equilibrio automatico della playlist",
+			"LABELS_MYSTERY_SONGS_DELETE": "Rimuovi",
+			"ADDED_SONG_VISIBILITY_ADMIN_ON": "I brani verranno aggiunti come brani misteriosi (puoi deciderne l'etichetta nelle opzioni)",
+			"STREAM_TWITCH_CHANNEL": "Nome del canale Twitch",
+			"MINUTES_BEFORE_SESSION_ENDS_WARNING": "Mostra un avviso X minuti prima della fine della playlist",
+			"ONLINE_SETTINGS": "Online",
+			"ENABLE_AUTOBALANCE_TOOLTIP": "La playlist verrà regolarmente riorganizzata in modo da alternare le richieste degli utenti.",
+			"HIDE_INVISIBLE_SONGS": "I brani misteriosi vengono visualizzati come",
+			"ADDED_SONG_VISIBILITY_MYSTERY_OPTION": "Brano misterioso",
+			"STREAMER_MODE_LABEL": "Karaoke Mugen sta scrivendo dei file di testo che puoi usare nel tuo software di streaming per creare un overlay personalizzato.",
+			"SONGPOLL_TOOLTIP": "All'inizio di ogni brano, verrà effettuato un sondaggio sui dispositivi degli utenti o sulla chat di Twitch. In modalità Stream, il sondaggio verrà effettuato durante le pause.",
+			"SESSION_SETTINGS_TOOLTIP": "Modalità classica, sondaggio al pubblico",
+			"REMOTE_TOOLTIP": "Abilitalo per consentire ai tuoi amici di suggerire brani durante la tua sessione karaoke!",
+			"SONGPOLLTIMEOUT": "Durata del sondaggio al pubblico",
+			"SONGPOLLCHOICES_TOOLTIP": "Ogni scelta verrà selezionata dalla playlist dei suggerimenti",
+			"SESSION_SETTINGS": "Modalità del karaoke",
+			"HIDE_INVISIBLE_SONGS_VISIBLE_OPTION": "Etichette misteriose",
+			"HIDE_INVISIBLE_SONGS_HIDDEN_OPTION": "Nascondi",
+			"STREAM_TWITCH_TOOLTIP": "Aggiungi i comandi per votare durante i sondaggi o controlla il brano in riproduzione con !song",
+			"ADDED_SONG_VISIBILITY_PUBLIC": "Visibilità dei brani richiesti dal pubblico",
+			"STREAM_TWITCH_OAUTH_TOKEN_GET": "Ottieni il tuo Twitch OAuth Token qui",
+			"ADDED_SONG_VISIBILITY_NORMAL_OPTION": "Normale",
+			"STREAM_TWITCH": "Usa la chat di Twitch",
+			"STREAM_MODE": "Pausa Stream",
+			"STREAM_SETTINGS": "Opzioni Stream",
+			"STREAM_TWITCH_OAUTH_ERROR": "Il token non è valido",
+			"LABELS_MYSTERY_SONGS": "Etichette dei brani misteriosi",
+			"STREAM_MODE_TOOLTIP": "Ci sarà una pausa (di durata configurabile) tra un brano e l'altro."
+		},
+		"PLAYLIST": {
+			"ENDOFPLAYLISTACTION": {
+				"OPTIONS": {
+					"RANDOM_FALLBACK": "Riproduci brani casuali dalla playlist di riserva",
+					"REPEAT": "Ripeti la playlist",
+					"RANDOM": "Riproduci brani casuali dalla libreria",
+					"NONE": "Interrompi la sessione karaoke",
+					"PLAY_FALLBACK": "Riproduci la playlist di riserva"
+				},
+				"NAME": "Azione alla fine della playlist",
+				"TOOLTIP": "Se scegli Brani Casuali, verranno selezionati dalla tua libreria. In combinazione con la riproduzione automatica, la tua playlist può continuare appena qualcuno aggiunge un nuovo brano."
+			},
+			"PLAYLIST_SETTINGS": "Playlist",
+			"PLAYLIST_SETTINGS_TOOLTIP": "Cambia il comportamento delle playlist, consenti doppioni, scegli l'azione alla fine della playlist."
+		},
+		"INTERFACE": {
+			"WEBAPPMODE_CLOSED": "Chiusa con messaggio: \"Ci dispiace, siamo chiusi\"",
+			"SHOW_AVATARS_ON_PLAYLIST": "Mostra gli avatar sulla playlist",
+			"ALLOW_CUSTOM_TEMPORARY_GUESTS": "Account ospiti personalizzabili",
+			"DISPLAY_WELCOME_MESSAGE_TOOLTIP": "Questo messaggio verrà mostrato nella pagina di accesso della tua sessione karaoke",
+			"SHOW_AVATARS_ON_PLAYLIST_TOOLTIP": "Per vedere rapidamente chi ha aggiunto cosa.",
+			"WEBAPPMODE_SHORT": "Modalità interfaccia",
+			"WEBAPPMODE_CLOSED_SHORT": "Chiusa",
+			"ALLOW_GUEST_LOGIN_TOOLTIP": "Se disabilitato, un account (locale o online) sarà necessario per accedere alla tua sessione",
+			"WEBAPPMODE": "Modalità interfaccia pubblica",
+			"WEBAPPMODE_LIMITED": "Limitata: Sola lettura",
+			"ALLOW_USER_CREATION": "Consenti creazione utente",
+			"WEBAPPMODE_OPEN": "Aperta (predefinito): Gli utenti possono aggiungere i brani",
+			"WEBAPPMODE_TOOLTIP": "Cosa vedranno i tuoi ospiti una volta connessi all'interfaccia",
+			"WEBAPPMODE_OPEN_SHORT": "Aperta",
+			"ALLOW_CUSTOM_TEMPORARY_GUESTS_TOOLTIP": "Consenti agli ospiti di scegliere un soprannome, anziché assegnargli un nome scelto casualmente dall'applicazione.",
+			"ALLOW_USER_CREATION_TOOLTIP": "Se disabilitato, gli utenti non potranno creare nuovi utenti locali o accedere con un account online non registrato alla tua app di Karaoke Mugen.",
+			"WEBAPPMODE_LIMITED_SHORT": "Limitata",
+			"LABEL": "Interfaccia",
+			"DISPLAY_WELCOME_MESSAGE": "Mostra messaggio di benvenuto",
+			"ALLOW_GUEST_LOGIN": "Consenti ospiti"
 		}
 	},
 	"KAROULETTE": {
@@ -455,5 +545,66 @@
 	"BLURVIDEO_UNBLUR": "Metti a fuoco il video",
 	"SPEED_RESET": "Reimposta la velocità normale",
 	"CONFIRM_FAV_IMPORT": "Sovrascrivere i tuoi preferiti con quelli importati?",
-	"KARAOKE_other": "{{count}} karaoke"
+	"KARAOKE_other": "{{count}} karaoke",
+	"REMOTE_STATUS": {
+		"LABEL": "Stato della connessione",
+		"CONNECTED": "Connesso",
+		"OUTDATED": "Server incompatibile",
+		"DISCONNECTED": "Disconnesso",
+		"OUTDATED_CLIENT": "Applicazione incompatibile (si prega di aggiornare)"
+	},
+	"ENCORES_TAGLINES": [
+		"Va bene, ma non lo faccio perché mi piaci…",
+		"Ultimo?",
+		"Ultimo brano, diamoci dentro!"
+	],
+	"QUOTA_AVAILABLE": "Ora puoi aggiungere altri brani!",
+	"KARA_PAUSED_TAGLINES": [
+		"…ma non dovrebbe mancare molto!",
+		"La ricontatteremo presto.",
+		"Il tempo di attesa stimato è di qualche minuto.",
+		"Troppa calma, ho una brutta sensazione…",
+		"Preparativi in corso!"
+	],
+	"INTRO_TAGLINES": [
+		"Andiamo!",
+		"Avvio in corso…",
+		"Inizializzazione…",
+		"Prepara il microfono!",
+		"*si schiarisce la gola*"
+	],
+	"OUTRO_TAGLINES": [
+		"Fine :(",
+		"Grazie a tutti!"
+	],
+	"POLLENDED": "{{kara}} vince con {{votes}} voti!",
+	"PAUSE_TAGLINES": [
+		"Riprendi fiato!",
+		"È ora di idratarsi!",
+		"Torniamo subito!"
+	],
+	"REMOTE_TOKEN_TOOLTIP": "(rivelalo solo ad un amministratore del server)",
+	"POLL_TAGLINES": [
+		"Vota! Vota!",
+		"A te la scelta."
+	],
+	"JINGLE_TIME": "Momento Jingle!",
+	"REMOTE_RESET": "Reimposta token",
+	"KARA_PAUSED_WAITING": "Nessun brano attualmente in riproduzione",
+	"REMOTE_TOKEN": "Token per l'accesso remoto",
+	"SPONSOR_TIME": "MOMENTO MARCHETTA!",
+	"INTRO_TIME": "Introduzione alla playlist",
+	"ENCORES_TIME": "Bis! Bis!",
+	"POLL_TIME": "Vota",
+	"REMOTE_RESET_TOOLTIP": "Genera un nuovo token, perderai il codice della tua stanza.",
+	"SPONSOR_TAGLINES": [
+		"Kono bangumi wa…",
+		"E grazie per i soldi."
+	],
+	"OUTRO_TIME": "Fine della playlist",
+	"JINGLE_TAGLINES": [
+		"Torniamo subito!"
+	],
+	"PAUSE_TIME": "Pausa",
+	"REMOTE_URL": "URL per l'accesso remoto"
 }
