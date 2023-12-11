@@ -228,7 +228,21 @@
 	"REQUESTED_AND_one": "e outros",
 	"TAG_TYPES": {
 		"CREATORS": "Criador",
-		"MISC": "Diversos"
+		"MISC": "Diversos",
+		"COLLECTIONS": "Coleção",
+		"WARNINGS": "Aviso",
+		"ORIGINS": "Origem",
+		"FRANCHISES": "Franquia",
+		"VERSIONS": "Versão",
+		"AUTHORS": "Autor do Karaokê",
+		"SINGERGROUPS": "Banda",
+		"SONGWRITERS": "Escritor",
+		"GROUPS": "Grupo",
+		"GENRES": "Gênero",
+		"SONGTYPES": "Tipo de música",
+		"PLATFORMS": "Plataforma",
+		"SERIES": "Série",
+		"LANGS": "Linguagem"
 	},
 	"LIBRARY": "Biblioteca",
 	"YEAR": "Ano",

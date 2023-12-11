@@ -88,7 +88,6 @@ export async function getSongInfosForPlayer(kara: DBKara | DBPLC): Promise<{ inf
 	// Get song versions for display
 	const versions = getSongVersion(kara, lang);
 
-	// Escaping {} because it'll be interpreted as ASS tags below.
 	let requestedBy = '';
 	let avatarfile = null;
 	if (!getState().quiz.running && getConfig().Player.Display.Nickname && 'nickname' in kara) {

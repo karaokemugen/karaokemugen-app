@@ -95,12 +95,8 @@ export default function favoritesController(router: SocketIOApp) {
 		});
 		if (!validationErrors) {
 			try {
-				const response = await importFavorites(
-					req.body?.favorites,
-					req.token.username,
-					req.onlineAuthorization
-				);
-				return { code: 200, message: APIMessage('FAVORITES_IMPORTED', response) };
+				await importFavorites(req.body?.favorites, req.token.username, req.onlineAuthorization);
+				return { code: 200, message: APIMessage('FAVORITES_IMPORTED') };
 			} catch (err) {
 				throw { code: err.code || 500, message: APIMessage(err.message) };
 			}

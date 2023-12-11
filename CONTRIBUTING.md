@@ -256,7 +256,7 @@ Version numbering follows the classic semver : major.minor.sub-version
 -   2.2.1 is a patch version of 2.2.
 -   3.0.0 is a whole new major version
 
-Besides, every version has a code name. Major versions are usually a female character from japanse animation, and every minor version has an adjective starting with the same letter. Examples :
+Besides, every version has a code name. Major versions are usually a female character from japanese animation, and every minor version has an adjective starting with the same letter. Examples :
 
 -   Akari Amoureuse
 -   Belldandy Bolchévique

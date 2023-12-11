@@ -94,7 +94,7 @@ function KaraList({ karas, scope, addKara = false }: KaraListProps) {
 										</span>
 									</h6>
 								</div>
-								{addKara ? (
+								{addKara && context?.globalState.settings.data.config?.Frontend?.Mode === 2 ? (
 									<div className="buttons">
 										{kara.my_public_plc_id.length > 0 ? (
 											<button
@@ -125,7 +125,10 @@ function KaraList({ karas, scope, addKara = false }: KaraListProps) {
 								{context.globalState.auth.data.role === 'guest' ? null : (
 									<MakeFavButton kid={kara.kid} />
 								)}
-								{kara?.public_plc_id.length === 0 ? <AddKaraButton kara={kara} /> : null}
+								{kara?.public_plc_id.length === 0 &&
+								context?.globalState.settings.data.config?.Frontend?.Mode === 2 ? (
+									<AddKaraButton kara={kara} />
+								) : null}
 								<ShowVideoButton
 									togglePreview={() => setShowVideo(!showVideo)}
 									preview={showVideo}

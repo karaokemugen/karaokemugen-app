@@ -27,6 +27,7 @@ updater/
 mpv.log
 karaokemugen.pgdump
 karaokemugen.sql
+karaokemugen.sql.gz
 
 # kmfrontend
 kmfrontend/node_modules

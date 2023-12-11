@@ -187,7 +187,7 @@ export async function dumpPG() {
 
 /** Check if a dump exists */
 export async function checkDumpExists(): Promise<boolean> {
-	if (await fileExists(resolve(getState().dataPath, 'karaokemugen.sql.tar.gz'))) return true;
+	if (await fileExists(resolve(getState().dataPath, 'karaokemugen.sql.gz'))) return true;
 	return false;
 }
 
@@ -388,6 +388,10 @@ export async function initPG(relaunch = true) {
 			// Remove folder before renaming the old one.
 			await fs.rm(backupPGDir, { recursive: true, force: true }).catch(() => {});
 			await fs.rename(pgDataDir, backupPGDir);
+			// Copy the dump too
+			const dumpFile = resolve(state.dataPath, 'karaokemugen.sql.gz');
+			const backupDumpFile = resolve(state.dataPath, `karaokemugen-pg${versions.data}.sql.gz`);
+			await fs.copyFile(dumpFile, backupDumpFile);
 			await initPGData();
 			// Restore is done once KM is connected to the database.
 			setConfig({ System: { Database: { RestoreNeeded: true } } });

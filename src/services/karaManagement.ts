@@ -17,9 +17,9 @@ import { DBKara, DBKaraTag } from '../lib/types/database/kara.js';
 import { DBTag } from '../lib/types/database/tag.js';
 import { KaraFileV4, KaraTag } from '../lib/types/kara.js';
 import { TagTypeNum } from '../lib/types/tag.js';
-import { setASSSectionRaw } from '../lib/utils/ass.js';
+import { ASSFileSetMediaFile } from '../lib/utils/ass.js';
 import { resolvedPathRepos } from '../lib/utils/config.js';
-import { audioFileRegexp, getTagTypeName } from '../lib/utils/constants.js';
+import { getTagTypeName } from '../lib/utils/constants.js';
 import { ErrorKM } from '../lib/utils/error.js';
 import { fileExists, resolveFileInDirs } from '../lib/utils/files.js';
 import logger, { profile } from '../lib/utils/logger.js';
@@ -344,13 +344,7 @@ export async function openLyricsFile(kid: string) {
 			for (const repo of resolvedPathRepos('Medias', repository)) {
 				const mediaPath = resolve(repo, mediafile);
 				if (await fileExists(mediaPath, true)) {
-					const garbageBlock = `[Aegisub Project Garbage]
-Audio File: ${mediaPath}
-${!mediafile.match(audioFileRegexp) ? `Video File: ${mediaPath}` : ''}
-`;
-					let content: string = await fs.readFile(lyricsPath, { encoding: 'utf8' });
-					content = setASSSectionRaw(content, 'Aegisub Project Garbage', garbageBlock, 1); // add the garbage at the second position (default behavior)
-					await fs.writeFile(lyricsPath, content);
+					await ASSFileSetMediaFile(lyricsPath, mediaPath);
 					break;
 				}
 			}

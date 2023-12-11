@@ -1078,7 +1078,7 @@
 	"REFRESH": "Actualizar",
 	"CONFIRM_SURE": "¿Estás seguro?",
 	"DATABASE": {
-		"RESTORE_DATABASE_DESCRIPTION": "Restaura tu base de datos desde el archivo karaokemugen.sql si está presente en tu carpeta de datos. <2>**ATENCIÓN : Esto sobrescribirá TODOS los datos no guardados en tu base de datos: listas de reproducción, sesiones, etc.)</2>",
+		"RESTORE_DATABASE_DESCRIPTION": "Restaura tu base de datos desde el archivo karaokemugen.sql.gz si está presente en tu carpeta de datos. <2>**ATENCIÓN : Esto sobrescribirá TODOS los datos no guardados en tu base de datos: listas de reproducción, sesiones, etc.)</2>",
 		"UPDATE_REPOS_DESCRIPTION": "Fuerza una actualización del repositorio, esto puede ser útil si uno de los repositorios está en estado anormal.",
 		"CONFIRM_UPDATE": "Confirmación de actualización",
 		"REGENERATE_DB": "Regenerar la base de datos",
