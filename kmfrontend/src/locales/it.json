@@ -81,7 +81,7 @@
 	"FLAGS": {
 		"CURRENT_PUBLIC": "Attuale e pubblico",
 		"CURRENT": "Attuale",
-		"PUBLIC": "Pubblico"
+		"PUBLIC": "Pubblica"
 	},
 	"AUTOMIX_MODAL": {
 		"ALL_LOGGED_USERS": "<Tutti gli utenti connessi>",
@@ -1149,7 +1149,7 @@
 		"DELETE_KARA_MODAL": "Eliminare il karaoke?",
 		"DESC": {
 			"TITLES": "Imposta tutti i titoli del brano in diverse lingue. Di solito esiste un solo titolo.",
-			"PARENTS": "Se questo brano è una versione alternativa di un altro brano, seleziona quello principale per riempire questo campo.",
+			"PARENTS": "Se questo brano è una variante di un altro brano, inserisci quello principale.",
 			"TITLES_DEFAULT_LANGUAGE": "La lingua predefinita del titolo dovrebbe essere quella del titolo originale. Per titoli in lingue non latine (cinese, giapponese, arabo, coreano…), aggiungi un titolo \"romanizzato\" e impostalo come predefinito.",
 			"PARENTS_PUBLIC": "Quando un utente seleziona un brano principale nell'interfaccia pubblica, potrà vedere tutte le sue varianti.",
 			"ALIASES": "Se il brano è conosciuto con un altro nome (ad esempio il titolo abbreviato), impostalo qui per aiutare gli utenti a trovarlo tramite la ricerca. Non c'è bisogno di utilizzare parole già contenute nel titolo del brano."
@@ -1197,7 +1197,7 @@
 		"SONGWRITERS_BY": "Scritto da",
 		"PROBLEMATIC_TOOLTIP": "Questo brano contiene scene ({{tags}}) che potrebbero risultare problematiche per alcuni utenti.",
 		"SECTIONS": {
-			"PARENTS": "Brano/i Principale/i",
+			"PARENTS": "Brano principale",
 			"FILES": "File",
 			"TITLES": "Titolo/i",
 			"IDENTITY": "Identità",
@@ -1215,10 +1215,10 @@
 		"MEDIA_FILE_TOOLTIP": "Formati di file supportati: {{formats}}",
 		"MEDIA_FILE": "File multimediale",
 		"KARA_AUTHORS_REQUIRED": "È necessario inserire l'autore del karaoke",
-		"ALIASES_TOOLTIP": "Nomi alternativi o abbreviati, utili durante la ricerca.",
+		"ALIASES_TOOLTIP": "Nomi abbreviati o alternativi, usati durante la ricerca.",
 		"SONGWRITERS_TOOLTIP": "Compositori, arrangiatori e cantautori.",
 		"CREATORS_BY": "Creato da",
-		"PARENTS": "Versione principale",
+		"PARENTS": "Brano principale",
 		"COLLECTIONS_TOOLTIP": "Seleziona una collezione nella quale il karaoke dovrebbe apparire",
 		"TITLE": "Titoli",
 		"AUTHORS_BY": "Karaoke creato da",
@@ -1262,7 +1262,7 @@
 		"PREVIEW_HOOKS": "Controlla le tag aggiunte automaticamente",
 		"SERIES_SINGERS_REQUIRED": "Serie, Cantato da o Dalla band musicale non possono essere tutti vuoti.",
 		"REPOSITORY": "Archivio",
-		"PARENTS_TOOLTIP": "Se una versione principale è definita, questo karaoke verrà mostrato come alternativo alla versione principale selezionata. Si prega di selezionare l'archivio corretto prima di compilare questo campo per prevenire l'aggiunta di karaoke da altri archivi.",
+		"PARENTS_TOOLTIP": "Se un brano principale è definito, questo karaoke verrà mostrato come variante della versione principale selezionata. Si prega di selezionare l'archivio corretto prima di compilare questo campo per prevenire l'aggiunta di karaoke da altri archivi.",
 		"SYNC_WARNING_DESCRIPTION": "Sincronizzando i file multimediali, tutti i file multimediali contenuti in collezioni disabilitate verranno rimossi. Ciò potrebbe eliminare molti file se hai disabilitato temporaneamente una collezione che usi spesso.",
 		"QUEUE_LABEL_SONGS": "({{numberSongs}} brani):",
 		"ONLINE_REPOSITORIES": "Alcuni dei tuoi karaoke vengono da archivi remoti (come il server kara.moe) e non sono modificabili tramite questa interfaccia, così da mantenere sincronizzati gli archivi. Puoi abilitare la \"modalità mantenitore\" nelle impostazioni archivio, così facendo non riceverai più aggiornamenti ma potrai modificare o eliminare i karaoke.",
