@@ -54,6 +54,8 @@ export async function insertKara(kara: KaraFileV4): Promise<KaraOldData> {
 			download_status: 'DOWNLOADED', // Default
 			comment: kara.data.comment,
 			from_display_type: kara.data.from_display_type,
+			announce_position_x: kara.medias[0].lyrics[0]?.announcePositionX || null,
+			announce_position_y: kara.medias[0].lyrics[0]?.announcePositionY || null,
 			ignoreHooks: kara.data.ignoreHooks || false,
 		})
 	);

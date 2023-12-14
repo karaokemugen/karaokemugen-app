@@ -59,10 +59,11 @@ export async function postMigrationTasks(migrations: Postgrator.Migration[], did
 				break;
 			// 7.0 migrations
 			case 'addExternalDatabaseIds':
-				if (!didGeneration) doGenerate = true;
-				break;
 			// 8.0 migrations
+			// falls through
 			case 'addFromDisplayType':
+			// falls through
+			case 'addAnnouncePositionToKara':
 				if (!didGeneration) doGenerate = true;
 				break;
 			default:
