@@ -1,7 +1,8 @@
-import { MinusOutlined, PlusOutlined, QuestionCircleOutlined, UploadOutlined } from '@ant-design/icons';
+import { MinusOutlined, PlusOutlined, QuestionCircleOutlined, UploadOutlined, DeleteOutlined } from '@ant-design/icons';
 import {
 	Alert,
 	Button,
+	Card,
 	Checkbox,
 	Col,
 	Collapse,
@@ -11,6 +12,7 @@ import {
 	Input,
 	InputNumber,
 	Modal,
+	Radio,
 	Row,
 	Select,
 	Tag,
@@ -26,6 +28,7 @@ import { Component, createRef } from 'react';
 import { v4 as UUIDv4 } from 'uuid';
 
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
+import { PositionX, PositionY } from '../../../../../src/lib/types';
 import { DBKara } from '../../../../../src/lib/types/database/kara';
 import { KaraFileV4, MediaInfo } from '../../../../../src/lib/types/kara';
 import { Config } from '../../../../../src/types/config';
@@ -54,6 +57,7 @@ interface KaraFormState {
 	titlesIsTouched: boolean;
 	serieSingersRequired: boolean;
 	subfile: any[];
+	announcePosition: string | null | undefined;
 	mediafile: any[];
 	mediafileIsTouched: boolean;
 	subfileIsTouched: boolean;
@@ -110,6 +114,11 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 			karaSearch: [],
 			parentKara: null,
 			errors: [],
+			announcePosition:
+				(kara?.announce_position_x &&
+					kara?.announce_position_y &&
+					`${kara.announce_position_x},${kara.announce_position_y}`) ||
+				undefined,
 		};
 	}
 
@@ -260,6 +269,10 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		const mediaVersionArr = this.state.titles[this.state.defaultLanguage].split(' ~ ');
 		const mediaVersion =
 			mediaVersionArr.length > 1 ? mediaVersionArr[mediaVersionArr.length - 1].replace(' Vers', '') : 'Default';
+		const [announcePositionX, announcePositionY] = this.state.announcePosition?.split(',') || [
+			undefined,
+			undefined,
+		];
 		// Convert Kara to KaraFileV4
 		const karaFile: KaraFileV4 = {
 			header: {
@@ -274,15 +287,18 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					filesize: this.state.mediaInfo.size || this.props.kara?.mediasize,
 					duration: this.state.mediaInfo.duration || this.props.kara?.duration,
 					default: true,
-					lyrics: kara.subfile
-						? [
-								{
-									filename: kara.subfile,
-									default: true,
-									version: 'Default',
-								},
-						  ]
-						: [],
+					lyrics:
+						kara.subfile || announcePositionX
+							? [
+									{
+										filename: kara.subfile || null,
+										default: true,
+										version: 'Default',
+										announcePositionX: announcePositionX as PositionX,
+										announcePositionY: announcePositionY as PositionY,
+									},
+							  ]
+							: [],
 				},
 			],
 			data: {
@@ -1175,6 +1191,67 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					name="from_display_type"
 				>
 					<Select>{Object.keys(tagTypes).concat('').map(this.mapTagTypesToSelectOption)}</Select>
+				</Form.Item>
+				<Form.Item
+					className="wrap-label"
+					label={
+						<span>
+							{i18next.t('KARA.ANNOUNCE_POSITION')}&nbsp;
+							<Tooltip title={i18next.t('KARA.ANNOUNCE_POSITION_TOOLTIP')}>
+								<QuestionCircleOutlined />
+							</Tooltip>
+						</span>
+					}
+					labelCol={{ flex: '0 1 220px' }}
+					wrapperCol={{ span: 7 }}
+				>
+					{typeof this.state.announcePosition !== 'undefined' ? (
+						<div>
+							<Row>
+								<Card title="Karaoke Mugen Player" size="small" style={{ width: '200px' }}>
+									<Radio.Group
+										name="announce_position"
+										value={this.state.announcePosition}
+										onChange={e => this.setState({ announcePosition: e.target.value })}
+										style={{ width: '100%' }}
+									>
+										<Row
+											style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}
+										>
+											<Radio value="Left,Top" />
+											<Radio value="Center,Top" />
+											<Radio value="Right,Top" />
+										</Row>
+										<Row
+											style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}
+										>
+											<Radio value="Left,Center" />
+											<Radio value="Center,Center" />
+											<Radio value="Right,Center" />
+										</Row>
+										<Row
+											style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}
+										>
+											<Radio value="Left,Bottom" />
+											<Radio value="Center,Bottom" />
+											<Radio value="Right,Bottom" />
+										</Row>
+									</Radio.Group>
+								</Card>
+							</Row>
+							<br />
+							<Row>
+								<Button onClick={() => this.setState({ announcePosition: undefined })}>
+									<DeleteOutlined />
+									{i18next.t('KARA.ANNOUNCE_POSITION_SELECTION.UNSET')}
+								</Button>
+							</Row>
+						</div>
+					) : (
+						<Button onClick={() => this.setState({ announcePosition: null })}>
+							{i18next.t('KARA.ANNOUNCE_POSITION_SELECTION.SET')}
+						</Button>
+					)}
 				</Form.Item>
 				<Form.Item
 					label={

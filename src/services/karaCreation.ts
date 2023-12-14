@@ -121,17 +121,19 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 					throw new ErrorKM('KARA_EDIT_ERROR_UNMOVABLE_LYRICS', 409, false);
 				}
 			}
-		} else if (kara.medias[0].lyrics?.[0] && oldKara.subfile !== filenames.lyricsfile) {
+		} else if (kara.medias[0].lyrics?.[0]?.filename && oldKara.subfile !== filenames.lyricsfile) {
 			// Check if lyric name has changed BECAUSE WE'RE NOT USING UUIDS AS FILENAMES GRRRR.
 			kara.medias[0].lyrics[0].filename = filenames.lyricsfile;
 			const oldSubPath =
 				filenames.lyricsfile && oldKara.subfile
 					? (await resolveFileInDirs(oldKara.subfile, resolvedPathRepos('Lyrics', oldKara.repository)))[0]
 					: undefined;
-			try {
-				await smartMove(oldSubPath, subDest, { overwrite: true });
-			} catch (err) {
-				throw new ErrorKM('KARA_EDIT_ERROR_UNMOVABLE_LYRICS', 409, false);
+			if (filenames.lyricsfile) {
+				try {
+					await smartMove(oldSubPath, subDest, { overwrite: true });
+				} catch (err) {
+					throw new ErrorKM('KARA_EDIT_ERROR_UNMOVABLE_LYRICS', 409, false);
+				}
 			}
 		}
 		const karaPath = resolve(resolvedPathRepos('Karaokes', oldKara.repository)[0], oldKara.karafile);
@@ -151,7 +153,7 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 			(typeof editedKara.applyLyricsCleanup !== 'boolean' && // Fallback to setting when no value is sent
 				getConfig().Maintainer.ApplyLyricsCleanupOnKaraSave === true)
 		) {
-			if (kara.medias[0].lyrics?.[0]) await ASSFileCleanup(subDest, newKara);
+			if (kara.medias[0].lyrics?.[0]?.filename) await ASSFileCleanup(subDest, newKara);
 		}
 	} catch (err) {
 		logger.error('Error while editing kara', { service, obj: err });
@@ -195,7 +197,7 @@ export async function createKara(editedKara: EditedKara) {
 		const filenames = determineMediaAndLyricsFilenames(kara, karaFile);
 		const mediaDest = resolve(resolvedPathRepos('Medias', kara.data.repository)[0], filenames.mediafile);
 		let subDest: string;
-		if (kara.medias[0].lyrics?.[0]) {
+		if (kara.medias[0].lyrics?.[0]?.filename) {
 			const subPath = resolve(resolvedPath('Temp'), kara.medias[0].lyrics?.[0].filename);
 			const ext = await processSubfile(subPath);
 			filenames.lyricsfile = replaceExt(filenames.lyricsfile, ext);
@@ -220,7 +222,7 @@ export async function createKara(editedKara: EditedKara) {
 			(typeof editedKara.applyLyricsCleanup !== 'boolean' && // Fallback to setting when no value is sent
 				getConfig().Maintainer.ApplyLyricsCleanupOnKaraSave === true)
 		) {
-			if (kara.medias[0].lyrics?.[0]) await ASSFileCleanup(subDest, newKara);
+			if (kara.medias[0].lyrics?.[0]?.filename) await ASSFileCleanup(subDest, newKara);
 		}
 	} catch (err) {
 		logger.error('Error while creating kara', { service, obj: err });

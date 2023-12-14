@@ -92,8 +92,8 @@ export async function downloadKaraFromInbox(inid: string, repoName: string, toke
 		kara.kara.data.data.modified_at = new Date().toISOString();
 		const promises = [downloadMediaFromInbox(kara, repoName)];
 		// Code to integrate kara and download medias
-		let lyricsFile = null;
-		if (kara.lyrics) {
+		let lyricsFile = '';
+		if (kara.lyrics?.file) {
 			lyricsFile = resolve(resolvedPathRepos('Lyrics', repoName)[0], kara.lyrics.file);
 			await fs.writeFile(lyricsFile, kara.lyrics.data, 'utf-8');
 		}

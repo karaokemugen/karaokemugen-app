@@ -1,4 +1,5 @@
 import { PathType } from '../lib/types/config.js';
+import { PositionX, PositionY } from '../lib/types/index.js';
 import { PlaylistMediaType } from '../lib/types/playlistMedias.js';
 import { Repository } from '../lib/types/repo.js';
 import { endOfPlaylistActions } from '../utils/defaultSettings.js';
@@ -156,8 +157,8 @@ export interface Config {
 		mpvVideoOutput?: string;
 		PIP: {
 			Size?: number;
-			PositionX?: 'Left' | 'Right' | 'Center';
-			PositionY?: 'Top' | 'Bottom' | 'Center';
+			PositionX?: PositionX;
+			PositionY?: PositionY;
 		};
 		ExtraCommandLine?: string;
 		Borders?: boolean;

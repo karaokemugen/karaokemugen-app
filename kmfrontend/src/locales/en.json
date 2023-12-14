@@ -1110,7 +1110,13 @@
 		"COLLECTIONS_REQUIRED": "A collection is required",
 		"COLLECTIONS_TOOLTIP": "Select the collections in which the karaoke should appear",
 		"FROM_DISPLAY_TYPE": "From tag type display",
-		"FROM_DISPLAY_TYPE_TOOLTIP": "Select tag type to used when displaying the song"
+		"FROM_DISPLAY_TYPE_TOOLTIP": "Select tag type to used when displaying the song",
+		"ANNOUNCE_POSITION": "Announce position",
+		"ANNOUNCE_POSITION_TOOLTIP": "Overrides the default announce position (banner and song infos at the beginning and end of a song). Useful to prevent overlapping with the song text, if the subtitle position is different than usual",
+		"ANNOUNCE_POSITION_SELECTION": {
+			"SET": "Override default position",
+			"UNSET": "Remove custom position"
+		}
 	},
 	"MENU": {
 		"HOME": "Dashboard",
