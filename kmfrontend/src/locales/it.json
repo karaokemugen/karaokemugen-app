@@ -1072,7 +1072,7 @@
 		"DOWNLOADS_PAUSE_ERROR": "Errore durante la sospensione dei download",
 		"UPDATE_REPO_ALREADY_IN_PROGRESS": "Un aggiornamento di quest'archivio è già in corso",
 		"PIME_TARADOX": "Rilevato un Paradosso Temporale! Un brano principale non può essere la propria variante!",
-		"QUIZZ_ALREADY_IN_PROGRESS": "Impossibile iniziare il qui, ce n'è già uno in corso.",
+		"QUIZZ_ALREADY_IN_PROGRESS": "Impossibile iniziare il quiz, ce n'è già uno in corso.",
 		"FS_DELETE_ERROR": "Errore durante l'eliminazione del file",
 		"NICKNAME_ALREADY_IN_USE": "Soprannome già in uso",
 		"CRITERIAS_ADD_ERROR": "Non è stato possibile aggiungere il criterio",
@@ -1272,7 +1272,13 @@
 		"ADD_FILE_SUCCESS": "File {{name}} aggiunto correttamente",
 		"EDIT_KARA": "Modifica karaoke",
 		"ORDER": "Ordine dei brani",
-		"COMMENT_TOOLTIP": "Uno spazio per commenti come \"Dedicato a tutti i miei fan!\" o \"Non modificare gli effetti!\" o \"Fatto con tanto caffè\"."
+		"COMMENT_TOOLTIP": "Uno spazio per commenti come \"Dedicato a tutti i miei fan!\" o \"Non modificare gli effetti!\" o \"Fatto con tanto caffè\".",
+		"ANNOUNCE_POSITION_SELECTION": {
+			"UNSET": "Rimuovi la posizione predefinita",
+			"SET": "Sovrascrivi la posizione predefinita"
+		},
+		"ANNOUNCE_POSITION_TOOLTIP": "Sovrascrive la posizione predefinita degli annunci (banner e informazioni sul brano all'inizio o alla fine di un brano). Utile per evitare di sovrapporli al testo del brano se la posizione dei sottotitoli è diversa dal solito",
+		"ANNOUNCE_POSITION": "Posizione degli annunci"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_STARTED": "Avvio download",
