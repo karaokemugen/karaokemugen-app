@@ -242,7 +242,7 @@
 	},
 	"FULLSCREEN_TIP": "Premi F per uscire dallo schermo intero.",
 	"INIT_MIGRATION": "Aggiornando la struttura del database, si prega di attendere…",
-	"MENU_HELP_ABOUT": "&A proposito",
+	"MENU_HELP_ABOUT": "&A proposito di Karaoke Mugen",
 	"REQUESTED_AND_other": "e altri {{count}}",
 	"MENU_GOTO_SYSTEM": "Pannello di &sistema",
 	"NO_KARA_PLAYING": "Nessun brano in riproduzione",
