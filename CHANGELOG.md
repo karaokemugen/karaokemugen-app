@@ -290,7 +290,7 @@ Below are changes from 7.0.46 to 7.1.0 :
 
 -   Changed `moduleResolution` to `node16` in typescript to be more ESM-compliant (#1452)
 -   Removed Sentry DSN from codebase (#1434)
--   Switched from iso-ounctires-languages to i18n-iso-countries (#1420)
+-   Switched from iso-countries-languages to i18n-iso-countries (#1420)
 -   Removed temp path from config file (#1374)
 
 # v7.0.46 - 08/01/2023

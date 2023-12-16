@@ -2041,5 +2041,8 @@
 			"END_OF_PLAYLIST": "when the playlist reaches its end"
 		},
 		"PREVIOUS_KARAOKES": "Previous karaokes"
+	},
+	"LANGUAGES": {
+		"QRO": "Latin Alphabet (Romanization)"
 	}
 }

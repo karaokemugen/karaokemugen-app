@@ -78,5 +78,8 @@
 	"PREVIOUS_SONG": "Música anterior",
 	"SECURITY_CODE_MANDATORY": "O código de segurança é requerido para criar uma conta de operador",
 	"OR": "ou",
-	"BLURVIDEO_UNBLUR": "Focar vídeo"
+	"BLURVIDEO_UNBLUR": "Focar vídeo",
+	"LANGUAGES": {
+		"QRO": "Alfabeto latino (romanização)"
+	}
 }

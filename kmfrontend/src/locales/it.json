@@ -2035,5 +2035,8 @@
 	"REFRESH": "Ricarica",
 	"CONFIRM_SURE": "Sei sicuro?",
 	"ACTION": "Azione",
-	"ADD": "Aggiungi"
+	"ADD": "Aggiungi",
+	"LANGUAGES": {
+		"QRO": "Alfabeto Latino (Romanizzazione)"
+	}
 }

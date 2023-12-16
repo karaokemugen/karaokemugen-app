@@ -1,13 +1,14 @@
-import { alpha2ToAlpha3B, getAlpha3BCode, getName, getNames, registerLocale } from '@karaokemugen/i18n-iso-languages';
+import { alpha2ToAlpha3B, getAlpha3BCode, getName, getNames, registerLocale } from '@cospired/i18n-iso-languages';
 import countries from 'i18n-iso-countries';
+import i18next from 'i18next';
 
-import en from '@karaokemugen/i18n-iso-languages/langs/en.json';
-import es from '@karaokemugen/i18n-iso-languages/langs/es.json';
-import fr from '@karaokemugen/i18n-iso-languages/langs/fr.json';
-import id from '@karaokemugen/i18n-iso-languages/langs/id.json';
-import pt from '@karaokemugen/i18n-iso-languages/langs/pt.json';
-import de from '@karaokemugen/i18n-iso-languages/langs/de.json';
-import it from '@karaokemugen/i18n-iso-languages/langs/it.json';
+import en from '@cospired/i18n-iso-languages/langs/en.json';
+import es from '@cospired/i18n-iso-languages/langs/es.json';
+import fr from '@cospired/i18n-iso-languages/langs/fr.json';
+import id from '@cospired/i18n-iso-languages/langs/id.json';
+import pt from '@cospired/i18n-iso-languages/langs/pt.json';
+import de from '@cospired/i18n-iso-languages/langs/de.json';
+import it from '@cospired/i18n-iso-languages/langs/it.json';
 
 import countries_en from 'i18n-iso-countries/langs/en.json';
 import countries_es from 'i18n-iso-countries/langs/es.json';
@@ -85,10 +86,12 @@ export function getListLanguagesInLocale(userLang: string): { value: string; lab
 	for (const langInLocale of langs) {
 		result.push({ value: getAlpha3BCode(langInLocale, userLang), label: langInLocale });
 	}
+	result.push({ value: 'qro', label: i18next.t('LANGUAGES.QRO') });
 	return result;
 }
 
 export function getLanguagesInLocaleFromCode(code: string, userLang: string) {
+	if (code === 'qro') return i18next.t('LANGUAGES.QRO');
 	return getName(code, userLang);
 }
 

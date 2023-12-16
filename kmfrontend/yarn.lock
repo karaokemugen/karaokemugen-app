@@ -347,6 +347,11 @@
     "@babel/helper-validator-identifier" "^7.22.20"
     to-fast-properties "^2.0.0"
 
+"@cospired/i18n-iso-languages@^4.1.0":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/@cospired/i18n-iso-languages/-/i18n-iso-languages-4.1.0.tgz#af47d146b1e21d47038caa028c37e0b2ce57bc4d"
+  integrity sha512-5+JK7YiO9r/FmwtlEPL1tQNt04/9AuN1t9GO/0C2yitqhKwFRa1r7VohNNUnFgB84MW5v4Lwq8ZAUZexuJh1nQ==
+
 "@ctrl/tinycolor@^3.4.0":
   version "3.4.0"
   resolved "https://registry.yarnpkg.com/@ctrl/tinycolor/-/tinycolor-3.4.0.tgz#c3c5ae543c897caa9c2a68630bed355be5f9990f"
@@ -561,11 +566,6 @@
   dependencies:
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
-
-"@karaokemugen/i18n-iso-languages@^4.0.3":
-  version "4.0.3"
-  resolved "https://registry.yarnpkg.com/@karaokemugen/i18n-iso-languages/-/i18n-iso-languages-4.0.3.tgz#cc2608c888ad6de3c3c6c6964fba50b7290a629a"
-  integrity sha512-clnmB31P7UkhhpVAqzkd0QP5fYmFF2sVPUAmxTDUKb2fZQSu8KpS0GDGYzTnluZ8MCWi7WrqLb4ggEr2wcjTPA==
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"

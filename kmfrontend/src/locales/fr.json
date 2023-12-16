@@ -2041,5 +2041,8 @@
 			"END_OF_PLAYLIST": "lorsque la liste de lecture touche à sa fin"
 		},
 		"PREVIOUS_KARAOKES": "Karaokés précédents"
+	},
+	"LANGUAGES": {
+		"QRO": "Alphabet Latin (Romanisation)"
 	}
 }

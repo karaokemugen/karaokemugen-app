@@ -1783,5 +1783,8 @@
 	"SHOW-HIDE": "Mostrar/Ocultar",
 	"UNKNOWN": "Desconocido",
 	"BLURVIDEO_BLUR": "Desenfocar video",
-	"BLURVIDEO_UNBLUR": "Enfocar video"
+	"BLURVIDEO_UNBLUR": "Enfocar video",
+	"LANGUAGES": {
+		"QRO": "Alfabeto latino (romanización)"
+	}
 }

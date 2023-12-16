@@ -1719,5 +1719,8 @@
 	"TOOLTIP_KARA_ALREADY_ADDED": "Lagu ini telah ada di daftar putar.",
 	"SHOW-HIDE": "Munculkan/Sembunyikan",
 	"UNKNOWN": "Tidak diketahui",
-	"BLURVIDEO_BLUR": "Buramkan Vidio"
+	"BLURVIDEO_BLUR": "Buramkan Vidio",
+	"LANGUAGES": {
+		"QRO": "Alfabet Latin (Romanisasi)"
+	}
 }

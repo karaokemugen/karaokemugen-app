@@ -2035,5 +2035,8 @@
 	"COLLECTIONS": {
 		"ENABLED": "Aktiviert",
 		"NAME": "Kollektion Name"
+	},
+	"LANGUAGES": {
+		"QRO": "Lateinisches Alphabet (Romanisierung)"
 	}
 }
