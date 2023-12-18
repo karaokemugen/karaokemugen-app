@@ -434,7 +434,7 @@
 			"UNSET": "Individuelle Position entfernen",
 			"SET": "Überschreibe die Standard-Position"
 		},
-		"ANNOUNCE_POSITION_TOOLTIP": "Setzt die Standard-Ankündigungsposition außer Kraft (Banner und Song-Infos am Anfang und Ende eines Songs). Nützlich, um Überschneidungen mit dem Liedtext zu vermeiden, wenn die Position des Untertitels anders als mittig oben ist",
+		"ANNOUNCE_POSITION_TOOLTIP": "Setzt die Standard-Ankündigungsposition außer Kraft (Banner und Song-Infos am Anfang und Ende eines Songs). Nützlich, um Überschneidungen mit dem Liedtext zu vermeiden, wenn die Position des Untertitels anders als mittig oben ist.",
 		"ANNOUNCE_POSITION": "Ankündigungs Position"
 	},
 	"SETTINGS": {
