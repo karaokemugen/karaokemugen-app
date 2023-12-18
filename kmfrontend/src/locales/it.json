@@ -1277,7 +1277,7 @@
 			"UNSET": "Rimuovi la posizione predefinita",
 			"SET": "Sovrascrivi la posizione predefinita"
 		},
-		"ANNOUNCE_POSITION_TOOLTIP": "Sovrascrive la posizione predefinita degli annunci (banner e informazioni sul brano all'inizio o alla fine di un brano). Utile per evitare di sovrapporli al testo del brano se la posizione dei sottotitoli è diversa dal solito",
+		"ANNOUNCE_POSITION_TOOLTIP": "Sovrascrive la posizione predefinita degli annunci (banner e informazioni sul brano all'inizio o alla fine di un brano). Utile per evitare di sovrapporli al testo del brano se la posizione dei sottotitoli è diversa dal solito.",
 		"ANNOUNCE_POSITION": "Posizione degli annunci"
 	},
 	"SUCCESS_CODES": {
