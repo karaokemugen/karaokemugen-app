@@ -22,6 +22,7 @@ const service = 'RemoteUser';
 export async function remoteCheckAuth(instance: string, token: string) {
 	try {
 		const res = await HTTP.get(`https://${instance}/api/auth/check`, {
+			timeout: 2000,
 			headers: {
 				authorization: token,
 			},
