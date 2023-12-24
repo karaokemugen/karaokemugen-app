@@ -547,7 +547,14 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					versions: this.props.kara?.versions || this.state.parentKara?.versions,
 					comment: this.props.kara?.comment || '',
 					ignore_hooks: this.props.kara?.ignore_hooks || false,
-					repository: this.props.kara?.repository || this.state.parentKara?.repository || null,
+					repository:
+						this.props.kara?.repository ||
+						// Check if repo from parent is in the allowed list or take the default one
+						(this.state.repositoriesValue &&
+							((this.state.repositoriesValue?.includes(this.state.parentKara?.repository) &&
+								this.state.parentKara?.repository) ||
+								this.state.repositoriesValue[0])) ||
+						null,
 					mediafile: this.props.kara?.mediafile,
 					subfile: this.props.kara?.subfile,
 					parents: this.props.kara?.parents || (this.state.parentKara && [this.state.parentKara?.kid]) || [],
