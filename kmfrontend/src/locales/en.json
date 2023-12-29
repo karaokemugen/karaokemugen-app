@@ -1967,6 +1967,7 @@
 			"CREATION": "Creation",
 			"MODIFICATION": "Modification"
 		},
+		"REVIEW": "Review",
 		"LINK_TO_ISSUE": "Link to issue",
 		"CONTACT_INFOS": "Author contact informations",
 		"ISSUE": "Issue {{number}}",
