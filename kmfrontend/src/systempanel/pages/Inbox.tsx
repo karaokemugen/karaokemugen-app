@@ -1,9 +1,12 @@
 import { DeleteOutlined, DownloadOutlined, UserOutlined } from '@ant-design/icons';
 import { Alert, Button, Layout, Modal, Table } from 'antd';
-import Title from '../components/Title';
 import i18next from 'i18next';
 import { useContext, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import Title from '../components/Title';
 
+import { EditOutlined, PlayCircleOutlined } from '@ant-design/icons';
+import { Inbox as LibInbox } from '../../../../src/lib/types/inbox';
 import { User } from '../../../../src/lib/types/user';
 import GlobalContext from '../../store/context';
 import { commandBackend } from '../../utils/socket';
@@ -11,7 +14,7 @@ import { commandBackend } from '../../utils/socket';
 export default function Inbox() {
 	const context = useContext(GlobalContext);
 
-	const [inbox, setInbox] = useState([]);
+	const [inbox, setInbox] = useState([] as LibInbox[]);
 
 	const repoList = context.globalState.settings.data.config?.System?.Repositories.filter(
 		repo =>
@@ -229,8 +232,33 @@ export default function Inbox() {
 				),
 		},
 		{
+			title: i18next.t('INBOX.REVIEW'),
+			render: (_text, record: LibInbox) =>
+				record.available_locally &&
+				record.username_downloaded === context.globalState.auth.data.username.split('@')[0] ? (
+					<div style={{ display: 'flex' }}>
+						<Link to={`/system/karas/${record.edited_kid || record.kid}`} style={{ marginRight: '0.75em' }}>
+							<Button type="primary" icon={<EditOutlined />} title={i18next.t('KARA.EDIT_KARA')} />
+						</Link>
+						<Button
+							type="primary"
+							icon={<PlayCircleOutlined />}
+							onClick={() =>
+								commandBackend('playKara', {
+									kid: record.edited_kid || record.kid,
+								}).catch(() => {})
+							}
+							title={i18next.t('KARA.PLAY_KARAOKE')}
+						/>
+					</div>
+				) : (
+					''
+				),
+		},
+
+		{
 			title: i18next.t('ACTION'),
-			render: (_text, record) => (
+			render: (_text, record: LibInbox) => (
 				<div style={{ display: 'flex' }}>
 					<Button
 						type="primary"
