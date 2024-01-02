@@ -1857,7 +1857,8 @@
 		"CONTACT_INFOS": "Informazioni di contatto dell'autore",
 		"DOWNLOAD": "Scarica karaoke",
 		"USER": "Utente incaricato all'integrazione del problema",
-		"NO_REPOSITORY_ENABLED": "Nessun archivio abilitato in modalità mantenitore"
+		"NO_REPOSITORY_ENABLED": "Nessun archivio abilitato in modalità mantenitore",
+		"REVIEW": "Verifica"
 	},
 	"BACKGROUNDS_MGMT": {
 		"DESC": {
