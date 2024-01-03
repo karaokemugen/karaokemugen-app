@@ -23,9 +23,13 @@ export async function removeTagInKaras(tag: DBTag, karasWithTag: DBKara[]) {
 				if (karaWithTag[type]) karaWithTag[type] = karaWithTag[type].filter((t: DBTag) => t.tid !== tag.tid);
 			}
 			karaWithTag.modified_at = new Date();
-			await editKara({
-				kara: formatKaraV4(karaWithTag),
-			});
+			// We don't enable refresh on these edits because that'll be done later.
+			await editKara(
+				{
+					kara: formatKaraV4(karaWithTag),
+				},
+				false
+			);
 		}
 	} catch (err) {
 		throw err;
