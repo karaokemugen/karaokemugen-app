@@ -141,6 +141,7 @@
     "socket.io": "4.7.2",
     "socket.io-client": "4.7.2",
     "source-map-support": "^0.5.21",
+    "subsrt-ts": "^2.1.2",
     "systeminformation": "^5.21.20",
     "tasklist": "^5.0.0",
     "tmi.js": "^1.8.5",

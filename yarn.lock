@@ -6321,6 +6321,11 @@ strtok3@^7.0.0:
     "@tokenizer/token" "^0.3.0"
     peek-readable "^5.0.0"
 
+subsrt-ts@^2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/subsrt-ts/-/subsrt-ts-2.1.2.tgz#d219d1f8572dbecf695f6589d228c59c272ee031"
+  integrity sha512-45yNlK42Z0pz4lAaNYbR5P60M2jmHl+gfAaiJxDIXsXXqoE7TkDCzl/00HgWyZXKkdIU6s8FiNtRvrlOZb+5Qg==
+
 sumchecker@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/sumchecker/-/sumchecker-3.0.1.tgz#6377e996795abb0b6d348e9b3e1dfb24345a8e42"
