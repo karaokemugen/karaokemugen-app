@@ -997,6 +997,7 @@
 		"MEDIA_FILE_TOOLTIP": "Supported file formats: {{formats}}",
 		"MEDIA_REQUIRED": "Media file is required",
 		"MEDIA_IN_PROCESS": "The media file is being processed, please wait for the success notification.",
+		"MEDIA_REPOSITORY_RULES_UNMET": "The media file does not meet all mandatory repository requirements. Please encode the media first.",
 		"MEDIA_FILE_INFO": {
 			"OVERALL_BITRATE": "Overall bitrate",
 			"FILE_SIZE": "File size",
@@ -1005,7 +1006,8 @@
 			"VIDEO_RESOLUTION": "Resolution",
 			"VIDEO_COLORSPACE": "Colorspace",
 			"VIDEO_FRAMERATE": "Framerate",
-			"AUDIO_CODEC": "Audio codec"
+			"AUDIO_CODEC": "Audio codec",
+			"AUDIO_COVER_ART": "Cover art"
 		},
 		"LYRICS_FILE": "Lyrics file",
 		"LYRICS_FILE_TOOLTIP": "Supported file formats: {{formats}}",

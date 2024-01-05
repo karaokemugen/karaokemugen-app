@@ -247,6 +247,7 @@ export interface Config {
 		};
 	};
 	Maintainer: {
-		ApplyLyricsCleanupOnKaraSave: boolean; // Temporary setting until there's an unified way of defining base rules (media formats, lyrics cleanup)
+		// Temporary settings until there's an unified way of defining base rules (media formats, lyrics cleanup)
+		ApplyLyricsCleanupOnKaraSave: boolean;
 	};
 }
