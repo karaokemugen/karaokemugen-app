@@ -1,4 +1,11 @@
-import { MinusOutlined, PlusOutlined, QuestionCircleOutlined, UploadOutlined, DeleteOutlined } from '@ant-design/icons';
+import {
+	DeleteOutlined,
+	DoubleRightOutlined,
+	MinusOutlined,
+	PlusOutlined,
+	QuestionCircleOutlined,
+	UploadOutlined,
+} from '@ant-design/icons';
 import {
 	Alert,
 	Button,
@@ -26,11 +33,12 @@ import { filesize } from 'filesize';
 import i18next from 'i18next';
 import { Component, createRef } from 'react';
 import { v4 as UUIDv4 } from 'uuid';
+import './KaraForm.scss';
 
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { PositionX, PositionY } from '../../../../../src/lib/types';
 import { DBKara } from '../../../../../src/lib/types/database/kara';
-import { KaraFileV4, MediaInfo } from '../../../../../src/lib/types/kara';
+import { KaraFileV4, MediaInfo, MediaInfoValidationResult } from '../../../../../src/lib/types/kara';
 import { Config } from '../../../../../src/types/config';
 import GlobalContext from '../../../store/context';
 import { buildKaraTitle, getTagInLocale } from '../../../utils/kara';
@@ -63,6 +71,11 @@ interface KaraFormState {
 	subfileIsTouched: boolean;
 	applyLyricsCleanup: boolean;
 	mediaInfo?: MediaInfo;
+	mediaInfoValidationResult?: MediaInfoValidationResult[];
+	isEncodingMedia?: boolean;
+	encodeMediaOptions?: {
+		trim?: boolean;
+	};
 	repositoriesValue: string[];
 	repoToCopySong: string;
 	comment?: string;
@@ -108,6 +121,10 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 			subfileIsTouched: false,
 			applyLyricsCleanup: false,
 			mediaInfo: {} as unknown as MediaInfo, // Has to be defined for reactive things
+			isEncodingMedia: false,
+			encodeMediaOptions: {
+				trim: false,
+			},
 			repositoriesValue: null,
 			repoToCopySong: null,
 			comment: kara?.comment,
@@ -156,7 +173,103 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				60000
 			);
 			this.setState({ mediaInfo });
+			this.validateMediaRules();
 		}
+	};
+
+	validateMediaRules = async () => {
+		this.setState({ mediaInfoValidationResult: null });
+		const repo: string = this.formRef.current?.getFieldValue('repository');
+		if (this.state.mediaInfo && repo) {
+			const mediaInfoValidationResult: MediaInfoValidationResult[] = await commandBackend(
+				'validateMediaInfo',
+				{ mediaInfo: this.state.mediaInfo, repository: repo },
+				false,
+				60000
+			);
+			this.setState({ mediaInfoValidationResult });
+		}
+	};
+
+	renderMediaInfo = (mediaInfo: MediaInfo, mediaInfoValidationResults: MediaInfoValidationResult[]) => {
+		const propertiesToDisplay: Array<{
+			name: keyof MediaInfo;
+			title: string;
+			format?: (value: any) => string;
+			formatSuggestedValue?: (value: any) => string;
+		}> = [
+			{ name: 'fileExtension', title: 'KARA.MEDIA_FILE_INFO.FILE_FORMAT' },
+			{
+				name: 'size',
+				title: 'KARA.MEDIA_FILE_INFO.FILE_SIZE',
+				format: value => value && filesize(value).toString(),
+				formatSuggestedValue: value => value && 'max. ' + filesize(value).toString(),
+			},
+			{
+				name: 'overallBitrate',
+				title: 'KARA.MEDIA_FILE_INFO.OVERALL_BITRATE',
+				format: (value: number) => value && `${Math.round(value / 100)} kb/s`,
+				formatSuggestedValue: value => value && `max. ${Math.round(value / 100)} kb/s`,
+			},
+			{ name: 'videoCodec', title: 'KARA.MEDIA_FILE_INFO.VIDEO_CODEC' },
+			{ name: 'videoColorspace', title: 'KARA.MEDIA_FILE_INFO.VIDEO_COLORSPACE' },
+			{
+				name: 'videoResolution',
+				title: 'KARA.MEDIA_FILE_INFO.VIDEO_RESOLUTION',
+				format: (value: any) => value.formatted,
+			},
+			{
+				name: 'videoFramerate',
+				title: 'KARA.MEDIA_FILE_INFO.VIDEO_FRAMERATE',
+				format: (value: number) => `${value} fps`,
+			},
+			{ name: 'audioCodec', title: 'KARA.MEDIA_FILE_INFO.AUDIO_CODEC' },
+			{ name: 'hasCoverArt', title: 'KARA.MEDIA_FILE_INFO.AUDIO_COVER_ART' },
+		];
+
+		const rows = propertiesToDisplay
+			.map(property => ({
+				...property,
+				valueFormatted:
+					mediaInfo &&
+					mediaInfo[property.name] &&
+					((property.format && property.format(mediaInfo[property.name])) ||
+						String(mediaInfo[property.name])),
+				validationResult: mediaInfoValidationResults?.find(r => r.name === property.name),
+			}))
+			.map(property => ({
+				...property,
+				suggestedValueFormatted:
+					property.validationResult?.suggestedValue &&
+					((property.formatSuggestedValue &&
+						property.formatSuggestedValue(property.validationResult?.suggestedValue)) ||
+						(property.format && property.format(property.validationResult?.suggestedValue)) ||
+						String(property.validationResult?.suggestedValue)),
+				className:
+					property.validationResult?.mandatory === true
+						? 'unmet-required'
+						: property.validationResult
+						  ? 'unmet-warning'
+						  : '',
+			}));
+
+		return (
+			<table style={{ borderSpacing: '0 10px' }}>
+				<tbody className="media-info">
+					{rows.map(r => (
+						<tr className={r.className} key={r.name}>
+							<td>{i18next.t(r.title)}</td>
+							<td>{r.valueFormatted || '-'}</td>
+							{r.suggestedValueFormatted && (
+								<td>
+									<DoubleRightOutlined /> {r.suggestedValueFormatted}
+								</td>
+							)}
+						</tr>
+					))}
+				</tbody>
+			</table>
+		);
 	};
 
 	openChildrenModal = async (event, kid: string) => {
@@ -175,7 +288,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				content: (
 					<ul>
 						{childrens.content?.map(kara => (
-							<a href={`/system/karas/${kara.kid}`}>
+							<a href={`/system/karas/${kara.kid}`} key={kara.kid}>
 								<li key={kara.kid}>
 									{buildKaraTitle(this.context.globalState.settings.data, kara, true, childrens.i18n)}
 								</li>
@@ -248,6 +361,11 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		this.setState({ errors: [] });
 		if (this.state.mediafileIsTouched && !this.state.mediaInfo?.loudnorm) {
 			message.error(i18next.t('KARA.MEDIA_IN_PROCESS'));
+		} else if (
+			this.state.mediafileIsTouched &&
+			(!this.state.mediaInfoValidationResult || this.state.mediaInfoValidationResult?.some(r => r.mandatory))
+		) {
+			message.error(i18next.t('KARA.MEDIA_REPOSITORY_RULES_UNMET'));
 		} else if (
 			!this.state.defaultLanguage ||
 			!this.state.titles ||
@@ -364,7 +482,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		this.setState({ mediafile: fileList });
 		if (info.file.status === 'uploading') {
 			this.formRef.current.setFieldsValue({ mediafile: null });
-			this.setState({ mediaInfo: null });
+			this.setState({ mediaInfo: null, mediaInfoValidationResult: null });
 		} else if (info.file.status === 'done') {
 			if (this.isMediaFile(info.file.name)) {
 				this.setState({ mediafileIsTouched: true });
@@ -378,6 +496,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					60000
 				);
 				this.setState({ mediaInfo });
+				this.validateMediaRules();
 				this.formRef.current.setFieldsValue({ mediafile: mediaInfo.filename });
 				message.success(i18next.t('KARA.ADD_FILE_SUCCESS', { name: info.file.name }));
 			} else {
@@ -608,77 +727,13 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 								</Upload>
 							</Form.Item>
 						</Col>
-						<Col flex={'0 1 220px'}>
-							{this.props.kara?.download_status === 'DOWNLOADED' || this.state.mediaInfo?.size ? (
-								<table style={{ borderSpacing: '0 10px' }}>
-									<tbody>
-										<tr>
-											<td style={{ paddingRight: '10px' }}>
-												{i18next.t('KARA.MEDIA_FILE_INFO.FILE_FORMAT')}
-											</td>
-											<td>{this.state.mediaInfo?.fileExtension || '-'}</td>
-										</tr>
-										<tr>
-											<td style={{ paddingRight: '10px' }}>
-												{i18next.t('KARA.MEDIA_FILE_INFO.FILE_SIZE')}
-											</td>
-											<td>
-												{(this.state.mediaInfo?.size && filesize(this.state.mediaInfo?.size)) ||
-													'-'}
-											</td>
-										</tr>
-										<tr>
-											<td style={{ paddingRight: '10px' }}>
-												{i18next.t('KARA.MEDIA_FILE_INFO.OVERALL_BITRATE')}
-											</td>
-											<td>
-												{this.state.mediaInfo?.overallBitrate
-													? `${Math.round(this.state.mediaInfo?.overallBitrate / 100)} kb/s`
-													: '-'}
-											</td>
-										</tr>
-										<tr>
-											<td style={{ paddingRight: '10px' }}>
-												{i18next.t('KARA.MEDIA_FILE_INFO.VIDEO_CODEC')}
-											</td>
-											<td>{this.state.mediaInfo?.videoCodec || '-'}</td>
-										</tr>
-										<tr>
-											<td style={{ paddingRight: '10px' }}>
-												{i18next.t('KARA.MEDIA_FILE_INFO.VIDEO_COLORSPACE')}
-											</td>
-											<td>{this.state.mediaInfo?.videoColorspace || '-'}</td>
-										</tr>
-										<tr>
-											<td style={{ paddingRight: '10px' }}>
-												{i18next.t('KARA.MEDIA_FILE_INFO.VIDEO_RESOLUTION')}
-											</td>
-											<td>
-												{this.state.mediaInfo?.videoResolution
-													? `${this.state.mediaInfo?.videoResolution?.formatted}`
-													: '-'}
-											</td>
-										</tr>
-										<tr>
-											<td style={{ paddingRight: '10px' }}>
-												{i18next.t('KARA.MEDIA_FILE_INFO.VIDEO_FRAMERATE')}
-											</td>
-											<td>
-												{this.state.mediaInfo?.videoFramerate
-													? this.state.mediaInfo?.videoFramerate + ' fps'
-													: '-'}
-											</td>
-										</tr>
-										<tr>
-											<td style={{ paddingRight: '10px' }}>
-												{i18next.t('KARA.MEDIA_FILE_INFO.AUDIO_CODEC')}
-											</td>
-											<td>{this.state.mediaInfo?.audioCodec || '-'}</td>
-										</tr>
-									</tbody>
-								</table>
-							) : null}
-						</Col>
+						{this.props.kara?.download_status === 'DOWNLOADED' || this.state.mediaInfo?.size ? (
+							<Col flex={'0 1 280px'}>
+								<Card>
+									{this.renderMediaInfo(this.state.mediaInfo, this.state.mediaInfoValidationResult)}
+								</Card>
+							</Col>
+						) : null}
 					</Row>
 				</Form.Item>
 				<Form.Item

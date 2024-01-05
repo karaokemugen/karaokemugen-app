@@ -1,12 +1,13 @@
 import { Socket } from 'socket.io';
 
+import { validateMediaInfo } from '../../lib/dao/karafile.js';
 import { APIMessage } from '../../lib/services/frontend.js';
 import { previewHooks, processUploadedMedia } from '../../lib/services/karaCreation.js';
 import { APIData } from '../../lib/types/api.js';
 import { TagTypeNum } from '../../lib/types/tag.js';
 import { check, isUUID } from '../../lib/utils/validators.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
-import { getKara, getKaraLyrics, getKaraMediaInfo, getKaras, getKMStats } from '../../services/kara.js';
+import { getKMStats, getKara, getKaraLyrics, getKaraMediaInfo, getKaras } from '../../services/kara.js';
 import { createKara, editKara } from '../../services/karaCreation.js';
 import { playSingleSong } from '../../services/karaEngine.js';
 import { batchEditKaras, copyKaraToRepo, deleteMediaFile, removeKara } from '../../services/karaManagement.js';
@@ -51,11 +52,20 @@ export default function karaController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
+	router.route('validateMediaInfo', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'open');
+		try {
+			if (!req.body.mediaInfo || !req.body.repository) throw { code: 400 };
+			return await validateMediaInfo(req.body.mediaInfo, req.body.repository);
+		} catch (err) {
+			throw { code: err.code || 500, message: APIMessage(err.message) };
+		}
+	});
 	router.route('processUploadedMedia', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			const mediaInfo = await processUploadedMedia(req.body.filename, req.body.origFilename);
-			return mediaInfo;
+			return { ...mediaInfo, filePath: undefined };
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}

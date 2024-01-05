@@ -997,6 +997,7 @@
 		"MEDIA_FILE_TOOLTIP": "Formats de fichier acceptés : {{formats}}",
 		"MEDIA_REQUIRED": "Le fichier média est obligatoire",
 		"MEDIA_IN_PROCESS": "Le fichier média est en cours d'intégration, merci d'attendre la notification de succès.",
+		"MEDIA_REPOSITORY_RULES_UNMET": "Le fichier média ne répond pas à toutes les exigences obligatoires du dépôt. Veuillez d'abord réencoder le média.",
 		"LYRICS_FILE": "Fichier de sous-titres",
 		"LYRICS_FILE_TOOLTIP": "Format de fichier accepté : {{formats}}",
 		"LYRICS_FILE_OPEN": "Ouvrir le fichier",
@@ -1107,7 +1108,8 @@
 			"VIDEO_RESOLUTION": "Résolution",
 			"VIDEO_COLORSPACE": "Espace de couleur",
 			"VIDEO_FRAMERATE": "Fréquence d'images",
-			"FILE_SIZE": "Taille du fichier"
+			"FILE_SIZE": "Taille du fichier",
+			"AUDIO_COVER_ART" : "Pochette d'album"
 		},
 		"FROM_DISPLAY_TYPE": "Affichage du tag de la provenance de la chanson",
 		"FROM_DISPLAY_TYPE_TOOLTIP": "Choissisez le type de tag utilisé lors de l'affichage de la chanson",
