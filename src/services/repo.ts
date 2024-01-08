@@ -8,18 +8,12 @@ import { TopologicalSort } from 'topological-sort';
 import { compareKarasChecksum, generateDB } from '../dao/database.js';
 import { baseChecksum, editKaraInStore, getStoreChecksum, sortKaraStore } from '../dao/dataStore.js';
 import { updateDownloaded } from '../dao/download.js';
-import {
-	deleteRepo,
-	insertRepo,
-	readRepoManifest,
-	selectRepos,
-	selectRepositoryManifest,
-	updateRepo,
-} from '../dao/repo.js';
+import { deleteRepo, insertRepo, updateRepo } from '../dao/repo.js';
 import { getSettings, refreshAll, saveSetting } from '../lib/dao/database.js';
 import { initHooks } from '../lib/dao/hook.js';
 import { refreshKaras } from '../lib/dao/kara.js';
 import { parseKara, writeKara } from '../lib/dao/karafile.js';
+import { readRepoManifest, selectRepos, selectRepositoryManifest } from '../lib/dao/repo.js';
 import { APIMessage } from '../lib/services/frontend.js';
 import { readAllKaras } from '../lib/services/generation.js';
 import { DBTag } from '../lib/types/database/tag.js';
