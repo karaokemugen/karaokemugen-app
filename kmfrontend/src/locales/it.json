@@ -1184,7 +1184,8 @@
 			"OVERALL_BITRATE": "Bitrate totale",
 			"VIDEO_COLORSPACE": "Serie di colori",
 			"FILE_FORMAT": "Formato file",
-			"VIDEO_FRAMERATE": "Frequenza fotogrammi"
+			"VIDEO_FRAMERATE": "Frequenza fotogrammi",
+			"AUDIO_COVER_ART": "Copertina"
 		},
 		"COPY_SONG": "Copia brano in altro archivio",
 		"TAG_FILTER": "Filtra tag",
@@ -1278,7 +1279,8 @@
 			"SET": "Sovrascrivi la posizione predefinita"
 		},
 		"ANNOUNCE_POSITION_TOOLTIP": "Sovrascrive la posizione predefinita degli annunci (banner e informazioni sul brano all'inizio o alla fine di un brano). Utile per evitare di sovrapporli al testo del brano se la posizione dei sottotitoli è diversa dal solito.",
-		"ANNOUNCE_POSITION": "Posizione degli annunci"
+		"ANNOUNCE_POSITION": "Posizione degli annunci",
+		"MEDIA_REPOSITORY_RULES_UNMET": "Il file multimediale non soddisfa tutti i requisiti obbligatori dell'archivio. Si prega di codificare il file multimediale."
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_STARTED": "Avvio download",
