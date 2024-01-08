@@ -178,7 +178,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 	};
 
 	validateMediaRules = async () => {
-		this.setState({ mediaInfoValidationResult: null });
 		const repo: string = this.formRef.current?.getFieldValue('repository');
 		if (this.state.mediaInfo && repo) {
 			const mediaInfoValidationResult: MediaInfoValidationResult[] = await commandBackend(
