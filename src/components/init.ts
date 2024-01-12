@@ -127,18 +127,21 @@ async function checkPaths(config: Config) {
 	try {
 		profile('checkPaths');
 		await remove(resolvedPath('Temp')).catch();
+		await remove(resolvedPath('Fonts')).catch();
 		await remove(resolvedPath('BundledBackgrounds')).catch();
 		await remove(resolvedPath('Import')).catch();
 		// Checking paths
 		const checks = [];
 		const dataPath = getState().dataPath;
 		checks.push(asyncCheckOrMkdir(resolvedPath('Temp')));
+		checks.push(asyncCheckOrMkdir(resolvedPath('Fonts')));
 		checks.push(asyncCheckOrMkdir(resolvedPath('Logs')));
 		for (const repo of config.System.Repositories) {
 			try {
 				checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'karaokes')));
 				checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'lyrics')));
 				checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'tags')));
+				checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'fonts')));
 				checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'hooks')));
 				for (const path of repo.Path.Medias) {
 					try {

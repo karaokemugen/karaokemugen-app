@@ -209,6 +209,7 @@ export const defaults: Config = {
 			BundledBackgrounds: 'bundledBackgrounds',
 			Bin: 'bin',
 			DB: 'db',
+			Fonts: 'fonts',
 			Import: 'import',
 			Previews: 'previews',
 			SessionExports: 'sessionExports',
