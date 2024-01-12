@@ -662,6 +662,12 @@ async function applyChanges(changes: Change[], repo: Repository) {
 		const tagFiles = changes.filter(f => f.path.endsWith('.tag.json'));
 		const karaFiles = changes.filter(f => f.path.endsWith('.kara.json'));
 		const fontFiles = changes.filter(f => f.path.startsWith('fonts/'));
+		// If maintenance mode is disabled and fonts are detected we'll throw so the .zip gets downloaded instead. We *might* want to do it better sometime.
+		// Like you know, actually downloading the fonts from KMServer or something.
+		if (fontFiles.length > 0 && !repo.MaintainerMode) {
+			logger.warn('Changes include new font(s). Throwing so the .zip is downloaded instead.');
+			throw 'fonts? izok.';
+		}
 		const TIDsToDelete = [];
 		task = new Task({ text: 'UPDATING_REPO', total: karaFiles.length + tagFiles.length });
 		const tagFilesToProcess = [];
