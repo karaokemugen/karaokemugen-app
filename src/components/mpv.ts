@@ -416,9 +416,9 @@ class Player {
 			`--hwdec=${conf.Player.HardwareDecoding}`,
 			`--volume=${+conf.Player.Volume}`,
 			`--audio-delay=${(conf.Player.AudioDelay && +conf.Player.AudioDelay / 1000) || 0}`,
-			'--no-config',
 			'--autoload-files=no',
-			`--input-conf=${resolve(resolvedPath('Temp'), 'input.conf')}`,
+			`--config-dir=${resolvedPath('Temp')}`,
+			`--sub-fonts-dir=${resolvedPath('Fonts')}`,
 			'--sub-visibility',
 			'--sub-ass-vsfilter-aspect-compat=no',
 			'--loop-file=no',
@@ -988,7 +988,7 @@ class Players {
 				conf.Player.Display.ConnectionInfo.Enabled && conf.Player.Display.ConnectionInfo.QRCode
 					? {
 							'lavfi-complex': this.genLavfiComplexQRCode(),
-					  }
+						}
 					: {};
 			if (background.music[0]) {
 				await this.exec({
@@ -1294,8 +1294,8 @@ class Players {
 				mediaType === 'Jingles' || mediaType === 'Sponsors'
 					? this.displayInfo()
 					: conf.Playlist.Medias[mediaType].Message
-					  ? this.message(conf.Playlist.Medias[mediaType].Message, -1, 5, 'DI')
-					  : this.messages.removeMessage('DI');
+						? this.message(conf.Playlist.Medias[mediaType].Message, -1, 5, 'DI')
+						: this.messages.removeMessage('DI');
 				this.messages.removeMessages(['poll', 'pauseScreen']);
 				emitPlayerState();
 				return playerState;

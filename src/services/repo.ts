@@ -38,6 +38,7 @@ import { applyPatch, cleanFailedPatch, downloadAndExtractZip, writeFullPatchedFi
 import sentry from '../utils/sentry.js';
 import { getState } from '../utils/state.js';
 import { updateMedias } from './downloadMedias.js';
+import { addFont, deleteFont, initFonts } from './fonts.js';
 import { getKara, getKaras } from './kara.js';
 import { createKaraInDB, integrateKaraFile, removeKara } from './karaManagement.js';
 import { createProblematicSmartPlaylist, updateAllSmartPlaylists } from './smartPlaylist.js';
@@ -164,6 +165,7 @@ export async function updateAllRepos() {
 				} else if (await updateZipRepo(repo.Name)) {
 					// updateZipRepo returns true when the function has downloaded the entire base (either because it's new or because an error happened during the patch)
 					doGenerate = true;
+					initFonts();
 				}
 			} catch (err) {
 				logger.error(`Failed to update repository ${repo.Name}`, { service, obj: err });
@@ -659,6 +661,7 @@ async function applyChanges(changes: Change[], repo: Repository) {
 	try {
 		const tagFiles = changes.filter(f => f.path.endsWith('.tag.json'));
 		const karaFiles = changes.filter(f => f.path.endsWith('.kara.json'));
+		const fontFiles = changes.filter(f => f.path.startsWith('fonts/'));
 		const TIDsToDelete = [];
 		task = new Task({ text: 'UPDATING_REPO', total: karaFiles.length + tagFiles.length });
 		const tagFilesToProcess = [];
@@ -763,8 +766,20 @@ async function applyChanges(changes: Change[], repo: Repository) {
 			);
 		}
 		await Promise.all(deletePromises);
+		// Font downloads
+		for (const fontFile of fontFiles) {
+			if (fontFile.type === 'delete') {
+				deleteFont(fontFile.path, repo.Name).catch();
+			}
+			if (fontFile.type === 'new') {
+				await addFont(fontFile.path, repo.Name);
+			}
+		}
 		task.update({ text: 'REFRESHING_DATA', subtext: '', total: 0, value: 0 });
 		// Yes it's done in each action individually but since we're doing them asynchronously we need to re-sort everything and get the store checksum once again to make sure it doesn't re-generate database on next startup
+		if (fontFiles.length > 0) {
+			initFonts();
+		}
 		await saveSetting('baseChecksum', await baseChecksum());
 		if (tagFiles.length > 0 || karaFiles.length > 0) await refreshAll();
 		await checkDownloadStatus(KIDsToUpdate);

@@ -286,6 +286,7 @@ System:
     Avatars: avatars
     Backgrounds: backgrounds
     Bin: bin
+    Fonts: fonts
     Import: import
     Previews: previews
     SessionExports: sessionExports
