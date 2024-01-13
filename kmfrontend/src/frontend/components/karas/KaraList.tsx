@@ -108,13 +108,16 @@ function KaraList({ karas, scope, addKara = false }: KaraListProps) {
 											>
 												<i className="fas fa-eraser" />
 											</button>
-										) : kara?.public_plc_id.length === 0 ? (
+										) : kara?.public_plc_id.length === 0 ||
+										  context.globalState.settings.data.config.Playlist.AllowPublicDuplicates ===
+												'allowed' ? (
 											<button onClick={e => addKara(e, kara)} className="btn">
 												<i className="fas fa-plus" />
 											</button>
-										) : (
+										) : context.globalState.settings.data.config.Playlist.AllowPublicDuplicates ===
+										  'upvotes' ? (
 											<UpvoteKaraButton kara={kara} />
-										)}
+										) : null}
 									</div>
 								) : null}
 							</div>

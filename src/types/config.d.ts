@@ -6,6 +6,8 @@ import { endOfPlaylistActions } from '../utils/defaultSettings.js';
 import { MpvHardwareDecodingOptions } from './mpvIPC.js';
 import { SongModifiers } from './player.js';
 
+export type PublicDuplicateSetting = 'allowed' | 'upvotes' | 'disallowed';
+
 export interface QuizGameConfig {
 	EndGame: {
 		MaxScore: {
@@ -171,6 +173,7 @@ export interface Config {
 	};
 	Playlist: {
 		AllowDuplicates?: boolean;
+		AllowPublicDuplicates?: PublicDuplicateSetting;
 		MaxDejaVuTime?: number;
 		Medias: {
 			Jingles: {

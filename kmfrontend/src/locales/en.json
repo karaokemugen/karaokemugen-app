@@ -433,8 +433,15 @@
 			"FREE_UPVOTES_REQUIREDPERCENT_TOOLTIP": "Percentage of the number of logged in users",
 			"AUTOPLAY": "Autoplay on next song added",
 			"AUTOPLAY_TOOLTIP": "Autoplay begins as soon as a song is added to the playlist",
-			"ALLOW_DUPLICATES": "Allow duplicate songs in playlists",
-			"ALLOW_DUPLICATES_TOOLTIP": "With this option, a playlist can contain the same song twice (or more). Only operators can add the same song more than once to a playlist. The song can be added again only if it has already been played before.",
+			"ALLOW_DUPLICATES": "Allow duplicate songs in playlists (operator only)",
+			"ALLOW_DUPLICATES_TOOLTIP": "With this option, a playlist can contain the same song twice (or more). Only operators can add the same song more than once to a playlist.",
+			"ALLOW_PUBLIC_DUPLICATES": "Allow duplicate songs in playlists (public)",
+			"ALLOW_PUBLIC_DUPLICATES_TOOLTIP": "Allow or not the public to add a song multiple times. A user can't add a song they already added themselves, but can add one another user added before. Upvote only means users cannot add duplicates but can upvote songs already present. \"Allowed\" is good for Classic karaoke, \"Puvotes Only\" for Public karaoke.",
+			"ALLOW_PUBLIC_DUPLICATES_OPTIONS": {
+				"ALLOWED": "Allowed",
+				"UPVOTES_ONLY": "Upvotes only",
+				"DISALLOWED": "Disallowed"
+			},
 			"MEDIAS_SETTINGS": "Medias",
 			"MEDIAS_SETTINGS_TOOLTIP": "Intros, Sponsors, Jingles, Encores and Outros",
 			"PLAYLIST_RANDOMSONGSAFTERENDMESSAGE": "Display an on-screen message regularly to invite users to add a song when randomly playing song after the current playlist ended",

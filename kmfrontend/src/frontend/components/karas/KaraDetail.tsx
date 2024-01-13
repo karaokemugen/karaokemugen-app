@@ -258,10 +258,10 @@ export default function KaraDetail(props: IProps) {
 							? i18next.t('KARA_DETAIL.PLAYING_IN', {
 									time: secondsTimeSpanToHMS(kara.time_before_play, 'hm'),
 									date: playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2),
-							  })
+								})
 							: kara.lastplayed_ago
-							? getLastPlayed(kara.lastplayed_at, kara.lastplayed_ago)
-							: ''}
+								? getLastPlayed(kara.lastplayed_at, kara.lastplayed_ago)
+								: ''}
 					</span>
 				</div>
 				{kara.upvotes && props.scope === 'admin' ? (
@@ -462,9 +462,13 @@ export default function KaraDetail(props: IProps) {
 							context?.globalState.settings.data.config?.Frontend?.Mode === 2 &&
 							kara.plaid !== context.globalState.settings.data.state.publicPlaid &&
 							kara.plaid !== context.globalState.settings.data.state.currentPlaid &&
-							(!kara?.public_plc_id || !kara?.public_plc_id[0]) ? (
+							(!kara?.public_plc_id ||
+								!kara?.public_plc_id[0] ||
+								context.globalState.settings.data.config.Playlist.AllowPublicDuplicates ===
+									'allowed') ? (
 								addKaraButton
-							) : kara.my_public_plc_id.length === 0 ? (
+							) : kara.my_public_plc_id.length === 0 &&
+							  context.globalState.settings.data.config.Playlist.AllowPublicDuplicates === 'upvotes' ? (
 								<UpvoteKaraButton kara={kara} wide={true} updateKara={getKaraDetail} />
 							) : null}
 							{showVideoButton}
