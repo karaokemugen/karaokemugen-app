@@ -163,7 +163,7 @@
 		"KARAOKE": {
 			"SONGS_BY_USER": "Numero di brani per utente",
 			"PLAYLIST_INTRO_VIDEOS": "Video introduttivo alla playlist",
-			"ALLOW_DUPLICATES_TOOLTIP": "Con questa opzione, una playlist può contenere lo stesso brano più volte. Solo gli operatori possono aggiungere lo stesso brano più di una volta alla playlist. Il brano potrà essere aggiunto nuovamente solo dopo che sarà stato riprodotto.",
+			"ALLOW_DUPLICATES_TOOLTIP": "Con questa opzione, una playlist può contenere lo stesso brano più volte. Solo gli operatori possono aggiungere lo stesso brano più di una volta alla playlist.",
 			"QUOTA_TYPE_ONE": "Brani",
 			"TIME_BY_USER_TOOLTIP": "In secondi",
 			"FREE_AUTO_TIME_TOOLTIP": "Dopo X minuti, il brano verrà rimosso dalla quota dell'utente. Modificalo in base al numero di ospiti partecipanti.",
@@ -192,7 +192,7 @@
 			"TIME_BY_USER": "Tempo per utente",
 			"MESSAGE": "visualizzato a schermo",
 			"FREE_UPVOTES_TOOLTIP": "Se un suggerimento piace ad abbastanza persone, verrà rimosso dalla quota del richiedente.",
-			"ALLOW_DUPLICATES": "Consenti brani doppioni in playlist",
+			"ALLOW_DUPLICATES": "Consenti brani doppioni in playlist (solo operatore)",
 			"FREE_UPVOTES": "Consenti agli utenti di votare i brani per liberarli",
 			"PLAYLIST_OUTRO_VIDEOS": "Video finale della playlist",
 			"FREE_UPVOTES_REQUIREDPERCENT_TOOLTIP": "Percentuale del numero di utenti connessi",
@@ -256,7 +256,14 @@
 			"STREAM_SETTINGS": "Opzioni Stream",
 			"STREAM_TWITCH_OAUTH_ERROR": "Il token non è valido",
 			"LABELS_MYSTERY_SONGS": "Etichette dei brani misteriosi",
-			"STREAM_MODE_TOOLTIP": "Ci sarà una pausa (di durata configurabile) tra un brano e l'altro."
+			"STREAM_MODE_TOOLTIP": "Ci sarà una pausa (di durata configurabile) tra un brano e l'altro.",
+			"ALLOW_PUBLIC_DUPLICATES_OPTIONS": {
+				"ALLOWED": "Consenti",
+				"UPVOTES_ONLY": "Solo Voti",
+				"DISALLOWED": "Non consentire"
+			},
+			"ALLOW_PUBLIC_DUPLICATES": "Consenti brani doppioni in playlist (pubblico)",
+			"ALLOW_PUBLIC_DUPLICATES_TOOLTIP": "Scegli se consentire al pubblico di aggiungere un brano più volte. Un utente non può aggiungere un brano già aggiunto da sé stesso, ma può aggiungerne uno già aggiunto da un altro utente. Selezionando \"Solo Voti\", gli utenti non potranno aggiungere doppioni ma potranno votare brani già presenti. \"Consenti\" va bene per un Karaoke classico, \"Solo Voti\" per un Karaoke pubblico."
 		},
 		"PLAYLIST": {
 			"ENDOFPLAYLISTACTION": {
@@ -1482,7 +1489,7 @@
 		"NOT_VALID_URL_ERROR": "Questo non è un url valido",
 		"KARAFILETAG": "Tag opzionale del nome del file del karaoke",
 		"TYPES_REQUIRED": "Si prega di inserire un tipo",
-		"ROMANIZATION_WARNING": "Questo titolo/tag contiene un alfabeto non latino. Devi aggiungere anche la lingua \"Alfabeto Latino (Romanizzazione)\".",
+		"ROMANIZATION_WARNING": "Questo titolo/tag contiene un alfabeto non latino. Devi aggiungere anche la lingua \"Alfabeto Latino (Romanizzazione)\", a meno che il titolo in alfabeto non latino non sia una trascrizione di un'altra lingua.",
 		"I18N_DELETE": "Rimuovi nome",
 		"REPOSITORY": "Archivio",
 		"NOLIVEDOWNLOAD_TOOLTIP": "I brani con questa tag non potranno essere scaricati dal server di Karaoke Mugen",
