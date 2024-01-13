@@ -1221,7 +1221,7 @@
 		"I18N_NAME": "Nom dans cette langue",
 		"I18N_DELETE": "Supprimer le nom",
 		"I18N_SELECT": "Ajouter une langue",
-		"ROMANIZATION_WARNING": "Ce titre/tag contient une langue en alphabet non latin. Vous devez ajouter la langue “Alphabet Latin (Romanisation)” en plus.",
+		"ROMANIZATION_WARNING": "Ce titre/tag contient une langue en alphabet non latin. Vous devez ajouter la langue “Alphabet Latin (Romanisation)” en plus sauf si ce titre en alphabet non latin est intégralement une transcription d’une autre langue.",
 		"MERGE_TAGS": "Fusionner des tags",
 		"MERGE_WITH": "Fusionner avec",
 		"MERGE_WITH_TOOLTIP": "Fusionner le tag courant avec un autre",
