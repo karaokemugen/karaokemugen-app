@@ -433,8 +433,15 @@
 			"FREE_UPVOTES_REQUIREDPERCENT_TOOLTIP": "Pourcentage par rapport au nombre d'utilisateurs connectés",
 			"AUTOPLAY": "Lecture automatique sur premier ajout",
 			"AUTOPLAY_TOOLTIP": "La lecture commence dés qu'un ajout est fait à la liste de lecture",
-			"ALLOW_DUPLICATES": "Permettre les doublons dans les listes de lecture",
-			"ALLOW_DUPLICATES_TOOLTIP": "Avec cette option, une liste de lecture peut contenir deux fois (ou plus) la même chanson. Seuls les opérateurs peuvent ajouter des doublons. Un doublon ne peut être ajouté que si la chanson est déjà passée.",
+			"ALLOW_DUPLICATES": "Autoriser les doublons dans les listes de lecture (opérateur uniquement)",
+			"ALLOW_DUPLICATES_TOOLTIP": "Avec cette option, une liste de lecture peut contenir deux fois (ou plus) la même chanson. Seuls les opérateurs peuvent ajouter des doublons.",
+			"ALLOW_PUBLIC_DUPLICATES": "Autoriser les doublons dans les listes de lecture (public)",
+			"ALLOW_PUBLIC_DUPLICATES_TOOLTIP": "Permettre ou non au public d'ajouter une chanson plusieurs fois. Un utilisateur ne peut ajouter une chanson déjà présente que si ce n'est pas lui qui l'a déjà ajoutée. Soutiens uniquement veut dire que le public ne peut pas ajouter de doublons mais peut soutenir des chansons. \"Autoriser\" est bien pour le mode Karaoke Classique. \"Soutiens uniquement\" pour un karaoke en public.",
+			"ALLOW_PUBLIC_DUPLICATES_OPTIONS": {
+				"ALLOWED": "Autoriser",
+				"UPVOTES_ONLY": "Soutiens uniquement",
+				"DISALLOWED": "Interdire"
+			},
 			"PLAYLIST_RANDOMSONGSAFTERENDMESSAGE": "Afficher régulièrement un message à l'écran pour inviter les utilisateurs à ajouter une chanson lors de la lecture aléatoire d'une chanson après la fin de la liste de lecture en cours",
 			"PLAYLIST_RANDOMSONGSAFTERENDMESSAGE_TOOLTIP": "Le message sera affiché au milieu de l'écran lorsque Karaoke Mugen jouera des chansons aléatoires, invitant les utilisateurs à ajouter des chansons",
 			"MEDIAS_SETTINGS": "Intermissions",

@@ -120,31 +120,51 @@ UPDATE playlist SET time_left = (
 WHERE pk_plaid = $1;
 `;
 
-export const sqlgetPlaylistContentsMicro = `
+export const sqlgetPlaylistContentsMicro = (login: string) => `
 SELECT pc.fk_kid AS kid,
 	pc.pk_plcid AS plcid,
 	(CASE WHEN pl.fk_plcid_playing = pc.pk_plcid
 		THEN TRUE
 		ELSE FALSE
 	  END) AS flag_playing,
-	pc.pos AS pos,
+	pc.pos,
 	pc.fk_login AS username,
-	pc.nickname AS nickname,
-	pc.flag_free AS flag_free,
-	pc.flag_visible AS flag_visible,
-	pc.flag_accepted AS flag_accepted,
-	pc.flag_refused AS flag_refused,
+	pc.nickname,
+	pc.flag_free,
+	pc.flag_visible,
+	pc.flag_accepted,
+	pc.flag_refused,
 	pc.fk_plaid AS plaid,
-	ak.from_display_type AS from_display_type,
-	ak.mediafile AS mediafile,
-	ak.repository AS repository,
-	ak.mediasize AS mediasize,
-	ak.duration AS duration
+	MAX(p.played_at) AS lastplayed_at,
+	ak.from_display_type,
+	ak.mediafile,
+	ak.repository,
+	ak.mediasize,
+	ak.duration
 FROM playlist_content pc
 INNER JOIN all_karas ak ON pc.fk_kid = ak.pk_kid
 LEFT OUTER JOIN playlist pl ON pl.pk_plaid = pc.fk_plaid
+LEFT OUTER JOIN played AS p ON p.fk_kid = ak.pk_kid
 WHERE pc.fk_plaid = $1
+  ${login ? 'AND pc.fk_login = $2' : ''}
+GROUP BY 
+	pc.pk_plcid, 
+	pc.pos,
+	pc.fk_login,
+	pc.nickname,
+	pc.flag_free,
+	pc.flag_visible,
+	pc.flag_accepted,
+	pc.flag_refused,
+	pc.fk_plaid,
+	ak.from_display_type,
+	ak.mediafile,
+	ak.repository,
+	ak.mediasize,
+	ak.duration,
+	pl.fk_plcid_playing
 ORDER BY pc.pos, pc.created_at DESC
+
 `;
 
 export const sqlgetPlaylistContents = (

@@ -120,7 +120,8 @@ function ActionsButtons(props: IProps) {
 					context.globalState.settings.data.state.currentPlaid,
 				].includes(playlist?.plaid) &&
 				!context.globalState.settings.data.state.quiz.running &&
-				props.kara.public_plc_id?.length === 0 &&
+				(props.kara.public_plc_id?.length === 0 ||
+					context.globalState.settings.data.config.Playlist.AllowPublicDuplicates === 'allowed') &&
 				(playlist?.plaid !== nonStandardPlaylists.library ||
 					props.kara.children?.length === 0 ||
 					!context.globalState.settings.data.user.flag_parentsonly)) ? (
@@ -129,10 +130,10 @@ function ActionsButtons(props: IProps) {
 						addingIsForbidden
 							? i18next.t('TOOLTIP_KARA_ALREADY_ADDED')
 							: props.isHeader
-							? i18next.t('TOOLTIP_ADD_SELECT_KARA')
-							: `${i18next.t('TOOLTIP_ADDKARA')}${
-									props.scope === 'admin' ? i18next.t('TOOLTIP_ADDKARA_ADMIN') : ''
-							  }`
+								? i18next.t('TOOLTIP_ADD_SELECT_KARA')
+								: `${i18next.t('TOOLTIP_ADDKARA')}${
+										props.scope === 'admin' ? i18next.t('TOOLTIP_ADDKARA_ADMIN') : ''
+									}`
 					}
 					className={classValue}
 					onContextMenu={onRightClickAdd}
@@ -144,6 +145,7 @@ function ActionsButtons(props: IProps) {
 			) : null}
 
 			{props.scope !== 'admin' &&
+			context.globalState.settings.data.config.Playlist.AllowPublicDuplicates === 'upvotes' &&
 			((props.kara.public_plc_id?.length > 0 && props.kara.my_public_plc_id?.length === 0) ||
 				props.kara?.upvotes > 0) &&
 			(playlist?.plaid !== nonStandardPlaylists.library ||

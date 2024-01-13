@@ -136,6 +136,7 @@ export const defaults: Config = {
 	},
 	Playlist: {
 		AllowDuplicates: false,
+		AllowPublicDuplicates: 'upvotes',
 		MaxDejaVuTime: 60,
 		Medias: {
 			Sponsors: {

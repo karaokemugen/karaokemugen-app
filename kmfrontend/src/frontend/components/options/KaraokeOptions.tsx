@@ -83,8 +83,8 @@ function KaraokeOptions(props: IProps) {
 			e.target.type === 'checkbox'
 				? e.target.checked
 				: !isNaN(Number(e.target.value))
-				? Number(e.target.value)
-				: e.target.value;
+					? Number(e.target.value)
+					: e.target.value;
 		if (value === 'true') {
 			value = true;
 		} else if (value === 'false') {
@@ -383,6 +383,33 @@ function KaraokeOptions(props: IProps) {
 								handleChange={onChange}
 								isChecked={config['Playlist.AllowDuplicates']}
 							/>
+						</div>
+					</div>
+
+					<div className="settings-line">
+						<label htmlFor="Playlist.AllowPublicDuplicates">
+							<span className="title">{i18next.t('SETTINGS.KARAOKE.ALLOW_PUBLIC_DUPLICATES')}</span>
+							<br />
+							<span className="tooltip">
+								{i18next.t('SETTINGS.KARAOKE.ALLOW_PUBLIC_DUPLICATES_TOOLTIP')}
+							</span>
+						</label>
+						<div>
+							<select
+								id="Playlist.AllowPublicDuplicates"
+								onChange={onChange}
+								value={config['Playlist.AllowPublicDuplicates']}
+							>
+								<option value="allowed">
+									{i18next.t('SETTINGS.KARAOKE.ALLOW_PUBLIC_DUPLICATES_OPTIONS.ALLOWED')}
+								</option>
+								<option value="upvotesOnly">
+									{i18next.t('SETTINGS.KARAOKE.ALLOW_PUBLIC_DUPLICATES_OPTIONS.UPVOTES_ONLY')}
+								</option>
+								<option value="disallowed">
+									{i18next.t('SETTINGS.KARAOKE.ALLOW_PUBLIC_DUPLICATES_OPTIONS.DISALLOWED')}
+								</option>
+							</select>
 						</div>
 					</div>
 

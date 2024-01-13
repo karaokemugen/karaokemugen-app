@@ -155,7 +155,7 @@ export default function playlistsController(router: SocketIOApp) {
 	router.route('getPlaylistContentsMicro', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		try {
-			return await getPlaylistContentsMicro(req.body?.plaid, req.token);
+			return await getPlaylistContentsMicro(req.body?.plaid, req.body?.username, req.token);
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
