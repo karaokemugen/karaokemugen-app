@@ -510,8 +510,8 @@ function WelcomePage() {
 							<p>{catchphrase}</p>
 						</header>
 						<div>
-							{news.map(article => {
-								return <WelcomePageArticle key={article.date} article={article} />;
+							{news.map((article, index) => {
+								return <WelcomePageArticle key={index} article={article} />;
 							})}
 						</div>
 					</section>
