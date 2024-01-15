@@ -39,10 +39,16 @@ export async function remoteCheckAuth(instance: string, token: string) {
 export async function remoteLogin(username: string, password: string): Promise<string> {
 	const [login, instance] = username.split('@');
 	try {
-		const res = await HTTP.post<TokenResponseWithRoles>(`https://${instance}/api/auth/login`, {
-			username: login,
-			password,
-		});
+		const res = await HTTP.post<TokenResponseWithRoles>(
+			`https://${instance}/api/auth/login`,
+			{
+				username: login,
+				password,
+			},
+			{
+				timeout: 2000,
+			}
+		);
 		return res.data.token;
 	} catch (err) {
 		// Remote login returned 401 so we throw an error
