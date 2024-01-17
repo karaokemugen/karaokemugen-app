@@ -71,6 +71,11 @@ export default function PublicList(props: Props) {
 		}
 	}, [props.plaid, plaid]);
 
+	useEffect(() => {
+		setSearchFilter('');
+		setFilterValue(context.globalDispatch, '', 'left', context.globalState.frontendContext.playlistInfoLeft.plaid);
+	}, [props.plaid, plaid, tid, year, tagType]);
+
 	return (
 		<>
 			<KmAppHeaderDecorator mode="public">
