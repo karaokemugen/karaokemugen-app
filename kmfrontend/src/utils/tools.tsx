@@ -243,7 +243,7 @@ export async function decodeCriteriaReason(settings: SettingsStoreData, criteria
 	return i18next.t(...args);
 }
 
-export function PLCCallback(response, context: GlobalContextInterface, kara: DBKara) {
+export function PLCCallback(response, context: GlobalContextInterface, kara: DBKara, scope: 'admin' | 'public') {
 	if (response && response.plc) {
 		let message;
 		if (response.plc.time_before_play) {
@@ -289,24 +289,28 @@ export function PLCCallback(response, context: GlobalContextInterface, kara: DBK
 				</picture>
 				<span>
 					{message}
-					<br />
-					<button
-						className="btn"
-						onClick={e => {
-							e.preventDefault();
-							e.stopPropagation();
-							commandBackend('deleteKaraFromPlaylist', { plc_ids: [response.plc.plcid] })
-								.then(() => {
-									toast.dismiss(response.plc.plcid);
-									displayMessage('success', i18next.t('SUCCESS_CODES.KARA_DELETED'));
-								})
-								.catch(() => {
-									toast.dismiss(response.data.plc.plcid);
-								});
-						}}
-					>
-						{i18next.t('CANCEL')}
-					</button>
+					{scope !== 'admin' ? (
+						<>
+							<br />
+							<button
+								className="btn"
+								onClick={e => {
+									e.preventDefault();
+									e.stopPropagation();
+									commandBackend('deleteKaraFromPlaylist', { plc_ids: [response.plc.plcid] })
+										.then(() => {
+											toast.dismiss(response.plc.plcid);
+											displayMessage('success', i18next.t('SUCCESS_CODES.KARA_DELETED'));
+										})
+										.catch(() => {
+											toast.dismiss(response.data.plc.plcid);
+										});
+								}}
+							>
+								{i18next.t('CANCEL')}
+							</button>
+						</>
+					) : null}
 				</span>
 			</div>,
 			10000,
