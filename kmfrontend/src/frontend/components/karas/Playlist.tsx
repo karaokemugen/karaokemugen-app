@@ -477,7 +477,6 @@ function Playlist(props: IProps) {
 			} else {
 				setData(karas);
 			}
-			setPlaylistInProgress(false);
 		} catch (e) {
 			// already display
 		}
@@ -525,7 +524,10 @@ function Playlist(props: IProps) {
 	};
 
 	useEffect(() => {
-		gotToPlayingAfterPlaylistUpdate();
+		if (isPlaylistInProgress) {
+			gotToPlayingAfterPlaylistUpdate();
+			setPlaylistInProgress(false);
+		}
 	}, [data]);
 
 	useEffect(() => {
