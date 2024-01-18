@@ -1576,7 +1576,7 @@
 		"LOG_ERROR": "Identifiants invalides",
 		"NO_MORE_GUESTS_AVAILABLE": "Aucun compte invité disponible",
 		"GUESTS_NOT_ALLOWED": "Les comptes invités ne sont pas autorisés",
-		"USER_CREATION_DISABLED": "Ce karaoké n'accepte pas de novueaux participants pour le moment.",
+		"USER_CREATION_DISABLED": "Ce karaoké n'accepte pas de nouveaux participants pour le moment.",
 		"DOWNLOADS_QUEUED_ERROR": "Erreur à l'ajout de téléchargements à la file d'attente",
 		"DOWNLOADS_QUEUED_ALREADY_ADDED_ERROR": "Aucun téléchargement ajouté, tous sont déjà en file d'attente ou en cours d'exécution",
 		"DOWNLOADS_GET_ERROR": "Erreur lors de la récupération des téléchargements en file d'attente",
