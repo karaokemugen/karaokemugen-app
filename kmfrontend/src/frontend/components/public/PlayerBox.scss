@@ -50,7 +50,10 @@
 			flex-grow: 1;
 		}
 		p.next {
-			transition: color, transform ease 100ms, 200ms;
+			transition:
+				color,
+				transform ease 100ms,
+				200ms;
 		}
 	}
 	> .title {
@@ -62,7 +65,7 @@
 				gap: 0.25em;
 				flex-flow: column wrap;
 				.tag {
-					margin: 0;
+					margin: 0.2em;
 				}
 			}
 		}
@@ -106,7 +109,9 @@
 			height: 100%;
 			transition: width linear 0.5s;
 			&.long {
-				transition: width linear 1s, background-color ease 0.5s;
+				transition:
+					width linear 1s,
+					background-color ease 0.5s;
 			}
 			background-color: white;
 			border-radius: inherit;
