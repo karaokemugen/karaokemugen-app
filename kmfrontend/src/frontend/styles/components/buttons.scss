@@ -146,6 +146,24 @@ h5 > a {
 	}
 }
 
+.btn-select-group {
+	margin-left: 1em;
+	display: grid;
+	grid-template-columns: 1fr 2fr;
+	grid-column-gap: 0.5em;
+	.list-label {
+		&:first-child {
+			border-bottom: $mugen-btn-border;
+		}
+		font-size: 1.2em;
+		padding-top: 0.2em;
+	}
+
+	@media (max-width: $mugen-breakpoint-xl) {
+		display: none;
+	}
+}
+
 .volumeButton,
 .displayModifierButtons,
 .messageButton {

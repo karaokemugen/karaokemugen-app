@@ -60,7 +60,9 @@
 	"FAVORITES_EXPORT": "Exporter vos favoris",
 	"ADMIN_HEADER": {
 		"QUICK_ACCESS": "Accès rapide",
-		"QUIZ_RANKING": "Classement du quiz"
+		"QUIZ_RANKING": "Classement du quiz",
+		"CURRENT_PLAYLIST": "Liste courante",
+		"PUBLIC_PLAYLIST": "Liste publique"
 	},
 	"PLAYLIST_HEADER": {
 		"FILTERS": "Filtres",

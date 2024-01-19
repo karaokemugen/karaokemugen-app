@@ -58,7 +58,9 @@
 	},
 	"ADMIN_HEADER": {
 		"QUICK_ACCESS": "Quick access",
-		"QUIZ_RANKING": "Quiz ranking"
+		"QUIZ_RANKING": "Quiz ranking",
+		"CURRENT_PLAYLIST": "Current playlist",
+		"PUBLIC_PLAYLIST": "Public playlist"
 	},
 	"MESSAGE": "Message",
 	"PLAYLIST_HEADER": {
