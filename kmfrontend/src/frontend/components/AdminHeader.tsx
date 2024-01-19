@@ -19,11 +19,11 @@ import ProfilModal from './modals/ProfilModal';
 import QuizModal from './modals/QuizModal';
 import Tutorial from './modals/Tutorial';
 import UsersModal from './modals/UsersModal';
+import AdminMessageModal from './modals/AdminMessageModal';
 
 interface IProps {
 	currentPlaylist: PlaylistElem;
 	powerOff: (() => void) | undefined;
-	adminMessage: () => void;
 	putPlayerCommando: (event: any) => void;
 	updateQuizRanking: () => void;
 }
@@ -194,6 +194,10 @@ function AdminHeader(props: IProps) {
 		});
 	};
 
+	const adminMessage = () => {
+		showModal(context.globalDispatch, <AdminMessageModal />);
+	};
+
 	const quizInProgress = context.globalState.settings.data.state.quiz.running;
 
 	return (
@@ -293,7 +297,7 @@ function AdminHeader(props: IProps) {
 						<li className="buttonsMobileMenu">
 							<div
 								onClick={() => {
-									props.adminMessage();
+									adminMessage();
 									setDropDownMenu(!dropDownMenu);
 								}}
 							>
@@ -555,7 +559,7 @@ function AdminHeader(props: IProps) {
 				title={i18next.t('MESSAGE')}
 				id="adminMessage"
 				className="btn btn-dark messageButton"
-				onClick={props.adminMessage}
+				onClick={adminMessage}
 			>
 				<i className="fas fa-fw fa-comment" />
 			</button>
