@@ -55,6 +55,7 @@ export const defaults: Config = {
 		AllowCustomTemporaryGuests: false,
 		AllowUserCreation: true,
 		Mode: 2,
+		PublicPlayerControls: false,
 		ShowAvatarsOnPlaylist: true,
 		WelcomeMessage: '',
 	},

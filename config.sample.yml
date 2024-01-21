@@ -43,6 +43,7 @@ Frontend:
   # 1 : Current playlist/song only (restricted)
   # 2 : Opened (all features available)
   Mode: 2
+  PublicPlayerControls: false
   ShowAvatarsOnPlaylist: true
   # This message will be shown on the login page for your karaoke session
   WelcomeMessage: ''

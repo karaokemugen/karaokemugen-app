@@ -90,10 +90,6 @@
 	},
 	"VERSION": "Version",
 	"HOME_BUTTON": "Interface wechseln",
-	"REWIND": "Band zurückspulen",
-	"PREVIOUS_SONG": "Vorheriger Song",
-	"PLAY_PAUSE": "Abspielen/pausieren",
-	"NEXT_SONG": "Nächster Song",
 	"PASSWORDCONF": "Passwort bestätigen",
 	"PASSWORD": "Passwort (mindestens 8 Zeichen)",
 	"NEW_PASSWORD": "Neues Passwort",
@@ -180,11 +176,9 @@
 	"AND": "und",
 	"SUBMIT": "Speichern",
 	"LOGIN_MANDATORY": "Benutzername erforderlich",
-	"STOP_AFTER": "Nach diesem Song anhalten",
 	"SECURITY_CODE_MANDATORY": "Sicherheitscode ist erforderlich, um ein Benutzerkonto mit erhöhten Rechten zu erstellen",
 	"MUTE_UNMUTE": "Stummschalten / Stummschaltung aufheben",
 	"SHOW_SUBS": "Songtexte auf dem Bildschirm anzeigen",
-	"STOP_NOW": "JETZT anhalten (Gefährlich!)",
 	"PLAYLISTS": {
 		"LIBRARY": "Bibliothek",
 		"FAVORITES": "Favoriten",
@@ -2044,5 +2038,14 @@
 	},
 	"LANGUAGES": {
 		"QRO": "Lateinisches Alphabet (Romanisierung)"
+	},
+	"PLAYERS_CONTROLS": {
+		"STOP_AFTER": "Nach diesem Song anhalten",
+		"STOP_NOW": "JETZT anhalten (Gefährlich!)",
+		"REWIND": "Band zurückspulen",
+		"PREVIOUS_SONG": "Vorheriger Song",
+		"PLAY": "Abspielen",
+		"PAUSE": "Pausieren",
+		"NEXT_SONG": "Nächster Song"
 	}
 }

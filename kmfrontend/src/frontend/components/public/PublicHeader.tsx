@@ -15,11 +15,15 @@ import ProfilePicture from '../../../utils/components/ProfilePicture';
 import { useResizeListener } from '../../../utils/hooks';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { displayMessage, secondsTimeSpanToHMS } from '../../../utils/tools';
+import PlayerControls from '../PlayerControls';
+import type { PublicPlayerState } from '../../../../../src/types/state';
 
 interface IProps {
 	onResize: (top: string) => void;
 	publicVisible: boolean;
 	currentVisible: boolean;
+	statusPlayer: PublicPlayerState;
+	currentPlaylist: PlaylistElem;
 }
 
 function PublicHeader(props: IProps) {
@@ -98,6 +102,22 @@ function PublicHeader(props: IProps) {
 		}
 	};
 
+	const putPlayerCommando = (event: any) => {
+		const namecommand = event.currentTarget.getAttribute('data-namecommand');
+		let data: { command: string; options?: any };
+		if (namecommand === 'goTo') {
+			data = {
+				command: namecommand,
+				options: 0,
+			};
+		} else {
+			data = {
+				command: namecommand,
+			};
+		}
+		commandBackend('sendPlayerCommand', data).catch(() => {});
+	};
+
 	useEffect(() => {
 		getSocket().on('quotaAvailableUpdated', updateQuotaAvailable);
 		// This will emit a quotaAvailableUpdated event
@@ -127,6 +147,16 @@ function PublicHeader(props: IProps) {
 						<img src={nanamiPNG} alt="Nanamin logo" />
 					</picture>
 				</Link>
+				{context.globalState.settings.data.config.Frontend.PublicPlayerControls ? (
+					<div className="menu-controls">
+						<PlayerControls
+							currentPlaylist={props.currentPlaylist}
+							statusPlayer={props.statusPlayer}
+							scope="public"
+							putPlayerCommando={putPlayerCommando}
+						/>
+					</div>
+				) : null}
 				{isQuiz ? (
 					<div className="dropdown-container">
 						<div className="quota-bar quiz" tabIndex={0} onClick={() => setScoresDropDown(!scoresDropDown)}>
@@ -186,8 +216,8 @@ function PublicHeader(props: IProps) {
 								{quotaLeft === -1
 									? '∞'
 									: quotaType === 2
-									? secondsTimeSpanToHMS(quotaLeft, 'ms')
-									: quotaLeft}
+										? secondsTimeSpanToHMS(quotaLeft, 'ms')
+										: quotaLeft}
 							</div>
 						) : null}
 					</>

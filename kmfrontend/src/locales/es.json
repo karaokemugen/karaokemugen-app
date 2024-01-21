@@ -1,5 +1,4 @@
 {
-	"PREVIOUS_SONG": "Canción anterior",
 	"OPTIONS": "Opciones",
 	"SHUTDOWN_POPUP": "Conexión perdida con Karaoke Mugen",
 	"VERSION": "Versión",
@@ -141,11 +140,6 @@
 	"NEW_PASSWORD": "Contraseña nueva",
 	"PASSWORDCONF": "Confirmar contraseña",
 	"PASSWORD": "Contraseña (mínimo 8 caracteres)",
-	"NEXT_SONG": "Siguiente canción",
-	"PLAY_PAUSE": "Reproducir/Pausar",
-	"REWIND": "Rebobinar cinta",
-	"STOP_NOW": "Detente AHORA (Eso es peligroso!)",
-	"STOP_AFTER": "Detener después de canción actual",
 	"HIDE_SUBS": "Esconder letra en pantalla",
 	"SHOW_SUBS": "Mostrar letra en pantalla",
 	"HOME_BUTTON": "Cambiar interfaz",
@@ -1786,5 +1780,14 @@
 	"BLURVIDEO_UNBLUR": "Enfocar video",
 	"LANGUAGES": {
 		"QRO": "Alfabeto latino (romanización)"
+	},
+	"PLAYERS_CONTROLS": {
+		"STOP_AFTER": "Detener después de canción actual",
+		"STOP_NOW": "Detente AHORA (Eso es peligroso!)",
+		"REWIND": "Rebobinar cinta",
+		"PREVIOUS_SONG": "Canción anterior",
+		"PLAY": "Reproducir",
+		"PAUSE": "Pausar",
+		"NEXT_SONG": "Siguiente canción"
 	}
 }

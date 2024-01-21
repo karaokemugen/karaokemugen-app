@@ -89,6 +89,7 @@ export interface Config {
 		AllowCustomTemporaryGuests?: boolean;
 		AllowUserCreation?: boolean;
 		Mode?: number;
+		PublicPlayerControls?: boolean;
 		ShowAvatarsOnPlaylist?: boolean;
 		WelcomeMessage?: string;
 	};

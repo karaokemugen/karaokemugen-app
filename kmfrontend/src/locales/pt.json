@@ -18,11 +18,6 @@
 	"SHOW_SUBS": "Mostrar letras no ecrã",
 	"HIDE_SUBS": "Ocultar as letras no ecrã",
 	"OPTIONS": "Opções",
-	"STOP_AFTER": "Parar após a música atual",
-	"STOP_NOW": "Parar AGORA (Isto é perigoso!)",
-	"REWIND": "Rebobina a fita",
-	"PLAY_PAUSE": "Reproduzir/Pausa",
-	"NEXT_SONG": "Próxima música",
 	"PASSWORD": "Palavra-passe (Mínimo de 8 caracteres)",
 	"PASSWORDCONF": "Confirmação de palavra-passe",
 	"NEW_PASSWORD": "Nova palavra-passe",
@@ -75,11 +70,19 @@
 	"SHOW-HIDE": "Mostrar/Esconder",
 	"BLURVIDEO_BLUR": "Desfocar vídeo",
 	"UNKNOWN": "Desconhecido",
-	"PREVIOUS_SONG": "Música anterior",
 	"SECURITY_CODE_MANDATORY": "O código de segurança é requerido para criar uma conta de operador",
 	"OR": "ou",
 	"BLURVIDEO_UNBLUR": "Focar vídeo",
 	"LANGUAGES": {
 		"QRO": "Alfabeto latino (romanização)"
+	},
+	"PLAYERS_CONTROLS": {
+		"STOP_AFTER": "Parar após a música atual",
+		"STOP_NOW": "Parar AGORA (Isto é perigoso!)",
+		"REWIND": "Rebobina a fita",
+		"PREVIOUS_SONG": "Música anterior",
+		"PLAY": "Reproduzir",
+		"PAUSE": "Pausa",
+		"NEXT_SONG": "Próxima música"
 	}
 }
