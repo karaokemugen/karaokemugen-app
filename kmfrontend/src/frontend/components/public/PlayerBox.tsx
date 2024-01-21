@@ -176,7 +176,7 @@ function PlayerBox(props: IProps) {
 									(context.globalState.settings.data.config.Playlist.MysterySongs.Labels as string[])
 										.length |
 									0
-						  ]
+							]
 				);
 				setSubtitle(kara.flag_visible ? `${serieText} - ${songtypeText}${songorderText}` : '');
 				setLength(kara.duration);
@@ -268,7 +268,7 @@ function PlayerBox(props: IProps) {
 				<div className="title inline">
 					<div>
 						<h3 className="song">{title}</h3>
-						{karaVersions}
+						<div className="tagConteneur">{karaVersions}</div>
 					</div>
 					<h4 className="series">{subtitle}</h4>
 				</div>
@@ -276,7 +276,7 @@ function PlayerBox(props: IProps) {
 				<div className="title">
 					<div>
 						<h3 className="song">{title}</h3>
-						{karaVersions}
+						<div className="tagConteneur">{karaVersions}</div>
 					</div>
 					<h4 className="series">{subtitle}</h4>
 				</div>
