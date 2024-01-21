@@ -12,8 +12,8 @@ import { sendIPC } from '../../utils/electron';
 import { commandBackend, getSocket } from '../../utils/socket';
 import KmAppHeaderDecorator from './decorators/KmAppHeaderDecorator';
 import KmAppWrapperDecorator from './decorators/KmAppWrapperDecorator';
-import AdminButtons from './karas/AdminButtons';
 import ProgressBar from './karas/ProgressBar';
+import PlayerControls from './PlayerControls';
 
 function ChibiPage() {
 	const context = useContext(GlobalContext);
@@ -164,10 +164,11 @@ function ChibiPage() {
 								onInput={setVolume}
 							/>
 						</button>
-						<AdminButtons
+						<PlayerControls
 							putPlayerCommando={putPlayerCommando}
 							statusPlayer={statusPlayer}
 							currentPlaylist={playlistList.find(playlistElem => playlistElem.flag_current)}
+							scope="chibi"
 						/>
 						<button
 							title={i18next.t(statusPlayer?.showSubs ? 'HIDE_SUBS' : 'SHOW_SUBS')}

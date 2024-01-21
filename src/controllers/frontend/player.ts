@@ -2,6 +2,7 @@ import { Socket } from 'socket.io';
 
 import { APIMessage } from '../../lib/services/frontend.js';
 import { APIData } from '../../lib/types/api.js';
+import { getConfig } from '../../lib/utils/config.js';
 import { check } from '../../lib/utils/validators.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
 import { initPlayer, isPlayerRunning, playerMessage, playPlayer, sendCommand } from '../../services/player.js';
@@ -38,7 +39,7 @@ export default function playerController(router: SocketIOApp) {
 		}
 	});
 	router.route('sendPlayerCommand', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req);
+		await runChecklist(socket, req, getConfig().Frontend.PublicPlayerControls ? 'guest' : 'admin');
 		try {
 			const msg = await sendCommand(req.body.command, req.body.options);
 			return { code: 200, message: msg };

@@ -79,12 +79,6 @@
 	"NEW_PASSWORD": "Nytt passord",
 	"PASSWORDCONF": "Passordbekreftelse",
 	"PASSWORD": "Passord (minst 8 tegn)",
-	"NEXT_SONG": "Neste spor",
-	"PLAY_PAUSE": "Spill av/pause",
-	"PREVIOUS_SONG": "Forrige spor",
-	"REWIND": "Spol tilbake bånd",
-	"STOP_NOW": "Stopp NÅ (dette er farlig!)",
-	"STOP_AFTER": "Stopp etter nåværende spor",
 	"OPTIONS": "Innstillinger",
 	"HIDE_SUBS": "Skjul sangtekster på skjermen",
 	"SHOW_SUBS": "Vis sangtekster på skjermen",
@@ -366,5 +360,14 @@
 		"NAME": "Navn",
 		"FILE": "Fil",
 		"TYPE": "Type"
+	},
+	"PLAYERS_CONTROLS": {
+		"STOP_AFTER": "Stopp etter nåværende spor",
+		"STOP_NOW": "Stopp NÅ (dette er farlig!)",
+		"REWIND": "Spol tilbake bånd",
+		"PREVIOUS_SONG": "Forrige spor",
+		"PLAY": "Spill av",
+		"PAUSE": "Pause",
+		"NEXT_SONG": "Neste spor"
 	}
 }

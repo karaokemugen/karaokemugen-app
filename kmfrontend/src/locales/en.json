@@ -41,12 +41,6 @@
 	"PITCH_RESET": "Reset pitch",
 	"PITCH_DOWN": "Decrease pitch",
 	"OPTIONS": "Options",
-	"STOP_AFTER": "Stop after current song",
-	"STOP_NOW": "Stop NOW (That's dangerous!)",
-	"REWIND": "Rewind tape",
-	"PREVIOUS_SONG": "Previous song",
-	"PLAY_PAUSE": "Play/pause",
-	"NEXT_SONG": "Next song",
 	"PASSWORD": "Password (8 characters minimum)",
 	"PASSWORDCONF": "Password confirmation",
 	"NEW_PASSWORD": "New Password",
@@ -549,6 +543,8 @@
 			"WEBAPPMODE_OPEN": "Open (default): Users can add songs",
 			"SHOW_AVATARS_ON_PLAYLIST": "Show avatars on playlist",
 			"SHOW_AVATARS_ON_PLAYLIST_TOOLTIP": "To see who added what at a glance.",
+			"PUBLIC_PLAYER_CONTROLS": "Allow public to control the player",
+			"PUBLIC_PLAYER_CONTROLS_TOOLTIP": "Play/pause, stop, previosu and next controls will be visible in the public interface, allowing users to control the player from their devices. Use only in small groups!",
 			"DISPLAY_WELCOME_MESSAGE": "Show welcome message",
 			"DISPLAY_WELCOME_MESSAGE_TOOLTIP": "This message will be shown on your karaoke session's login page"
 		}
@@ -2054,5 +2050,18 @@
 	},
 	"LANGUAGES": {
 		"QRO": "Latin Alphabet (Romanization)"
+	},
+	"PLAYERS_CONTROLS": {
+		"STOP_AFTER": "Stop after current song",
+		"STOP_AFTER_SHORT": "Stop after",
+		"STOP_NOW": "Stop NOW (That's dangerous!)",
+		"STOP_NOW_SHORT": "Stop NOW",
+		"REWIND": "Rewind tape",
+		"PREVIOUS_SONG": "Previous song",
+		"PREVIOUS_SONG_SHORT":" Previous",
+		"NEXT_SONG": "Next song",	
+		"NEXT_SONG_SHORT": "Next",
+		"PLAY": "Play",
+		"PAUSE": "Pause"
 	}
 }

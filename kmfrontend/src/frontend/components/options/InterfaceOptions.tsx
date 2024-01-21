@@ -18,8 +18,8 @@ function InterfaceOptions(props: IProps) {
 			e.target.type === 'checkbox'
 				? e.target.checked
 				: Number(e.target.value)
-				? Number(e.target.value)
-				: e.target.value;
+					? Number(e.target.value)
+					: e.target.value;
 		if (value === 'true') {
 			value = true;
 		} else if (value === 'false') {
@@ -108,6 +108,21 @@ function InterfaceOptions(props: IProps) {
 						idInput="Frontend.ShowAvatarsOnPlaylist"
 						handleChange={onChange}
 						isChecked={config['Frontend.ShowAvatarsOnPlaylist']}
+					/>
+				</div>
+			</div>
+
+			<div className="settings-line">
+				<label htmlFor="Frontend.PublicPlayerControls">
+					<span className="title">{i18next.t('SETTINGS.INTERFACE.PUBLIC_PLAYER_CONTROLS')}</span>
+					<br />
+					<span className="tooltip">{i18next.t('SETTINGS.INTERFACE.PUBLIC_PLAYER_CONTROLS_TOOLTIP')}</span>
+				</label>
+				<div>
+					<Switch
+						idInput="Frontend.PublicPlayerControls"
+						handleChange={onChange}
+						isChecked={config['Frontend.PublicPlayerControls']}
 					/>
 				</div>
 			</div>

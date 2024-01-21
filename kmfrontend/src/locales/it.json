@@ -17,8 +17,6 @@
 	"MUTE_UNMUTE": "Muta/Smuta",
 	"SHOW_SUBS": "Mostra il testo a schermo",
 	"DURATION_REMAINING": "Rimanente",
-	"STOP_AFTER": "Interrompi dopo questo brano",
-	"PREVIOUS_SONG": "Brano precedente",
 	"INLINE_TAG": {
 		"SEARCH": "Karaoke con {{tag}}",
 		"COUNT_other": "{{count}} karaoke",
@@ -32,9 +30,7 @@
 		"REFRESH_LIBRARY_BANNER": "I criteri della libreria sono cambiati, si prega di <1>aggiornare</1>."
 	},
 	"LOGIN_MANDATORY": "È necessario accedere",
-	"NEXT_SONG": "Prossimo brano",
 	"PASSWORD_DIFFERENT": "Le password non corrispondono",
-	"STOP_NOW": "Interrompi ORA (È pericoloso!)",
 	"MESSAGE": "Messaggio",
 	"SECURITY_CODE_MANDATORY": "È necessario il codice di sicurezza per creare un account operatore",
 	"PASSWORD_MANDATORY": "È richiesta la password",
@@ -52,8 +48,6 @@
 	"SHUTDOWN_POPUP": "Connessione con Karaoke Mugen interrotta",
 	"SHUTDOWN": "Spegni Karaoke Mugen",
 	"HIDE_SUBS": "Nascondi il testo a schermo",
-	"REWIND": "Riavvolgi il nastro",
-	"PLAY_PAUSE": "Riproduci/Sospendi",
 	"ADMIN_HEADER": {
 		"QUICK_ACCESS": "Accesso rapido",
 		"QUIZ_RANKING": "Classifica Quiz"
@@ -2054,5 +2048,14 @@
 	"ADD": "Aggiungi",
 	"LANGUAGES": {
 		"QRO": "Alfabeto Latino (Romanizzazione)"
+	},
+	"PLAYERS_CONTROLS": {
+		"STOP_AFTER": "Interrompi dopo questo brano",
+		"STOP_NOW": "Interrompi ORA (È pericoloso!)",
+		"REWIND": "Riavvolgi il nastro",
+		"PREVIOUS_SONG": "Brano precedente",
+		"PLAY": "Riproduci",
+		"PAUSE": "Sospendi",
+		"NEXT_SONG": "Prossimo brano"
 	}
 }
