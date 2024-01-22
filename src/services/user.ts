@@ -6,7 +6,6 @@ import { sign, verify } from 'jsonwebtoken';
 import { deburr, merge, sample } from 'lodash';
 import { resolve } from 'path';
 import randomstring from 'randomstring';
-import slugify from 'slug';
 import { v4 as uuidV4 } from 'uuid';
 
 import { selectSongCountForUser, selectSongTimeSpentForUser } from '../dao/playlist.js';
@@ -389,10 +388,7 @@ async function updateGuestAvatar(user: DBUser, random?: boolean) {
 		const dir = await fs.readdir(bundledAvatarAssets);
 		bundledAvatarFile = sample(dir);
 	} else {
-		bundledAvatarFile = `${slugify(user.nickname, {
-			lower: true,
-			remove: /['"!,?()]/g,
-		})}.jpg`;
+		bundledAvatarFile = `${user.login}.jpg`;
 	}
 	const bundledAvatarPath = resolve(bundledAvatarAssets, bundledAvatarFile);
 	if (!(await fileExists(bundledAvatarPath))) {

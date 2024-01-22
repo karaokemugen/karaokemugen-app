@@ -1,5 +1,3 @@
-import slugify from 'slug';
-
 import { User } from '../../../src/lib/types/user';
 import blankAvatar from '../assets/blank.png';
 import { commandBackend, getSocket, isRemote } from './socket';
@@ -14,10 +12,7 @@ export function syncGenerateProfilePicLink(user: User) {
 			// Retrieve cache entry
 			return cache.get(user.login);
 		} else if (user.type === 2) {
-			return `/guests/${slugify(user.login, {
-				lower: true,
-				remove: /['"!,?()]/g,
-			})}.jpg`;
+			return `/guests/${user.login}.jpg`;
 		} else {
 			return blankAvatar;
 		}
@@ -49,10 +44,7 @@ export async function generateProfilePicLink(user: User): Promise<string> {
 				return blankAvatar;
 			}
 		} else if (user.type === 2) {
-			return `/guests/${slugify(user.login, {
-				lower: true,
-				remove: /['"!,?()]/g,
-			})}.jpg`;
+			return `/guests/${user.login}.jpg`;
 		} else {
 			return blankAvatar;
 		}
