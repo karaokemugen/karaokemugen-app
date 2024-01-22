@@ -544,7 +544,7 @@
 			"SHOW_AVATARS_ON_PLAYLIST": "Afficher les avatars sur les listes de lecture",
 			"SHOW_AVATARS_ON_PLAYLIST_TOOLTIP": "Pour savoir qui a ajouté quoi d'un coup d'oeil.",
 			"PUBLIC_PLAYER_CONTROLS": "Permettre au public de contrôler le lecteur",
-			"PUBLIC_PLAYER_CONTROLS_TOOLTIP": "Des boutons jouer/pause, stop, précédent et suivant seront visibles sur l'interface publique, permettant aux utilisateurs de contrôler le lecteur depuis leur appareil. A n'utiliser qu'en petits groupes!",			
+			"PUBLIC_PLAYER_CONTROLS_TOOLTIP": "Des boutons jouer/pause, stop, précédent et suivant seront visibles sur l'interface publique, permettant aux utilisateurs de contrôler le lecteur depuis leur appareil. A n'utiliser qu'en petits groupes !",
 			"DISPLAY_WELCOME_MESSAGE": "Afficher un message de bienvenue",
 			"DISPLAY_WELCOME_MESSAGE_TOOLTIP": "Ce message sera affiché sur la page de connexion de votre session de karaoké"
 		}
@@ -1112,7 +1112,7 @@
 			"VIDEO_COLORSPACE": "Espace de couleur",
 			"VIDEO_FRAMERATE": "Fréquence d'images",
 			"FILE_SIZE": "Taille du fichier",
-			"AUDIO_COVER_ART" : "Pochette d'album"
+			"AUDIO_COVER_ART": "Pochette d'album"
 		},
 		"FROM_DISPLAY_TYPE": "Affichage du tag de la provenance de la chanson",
 		"FROM_DISPLAY_TYPE_TOOLTIP": "Choissisez le type de tag utilisé lors de l'affichage de la chanson",
