@@ -107,6 +107,13 @@ export interface Config {
 			Width?: number;
 			Height?: number;
 		};
+		ChibiRanking?: {
+			Enabled?: boolean;
+			PositionX?: number;
+			PositionY?: number;
+			Width?: number;
+			Height?: number;
+		};
 	};
 	Karaoke: {
 		Collections?: Record<string, boolean>;

@@ -9,10 +9,10 @@ import { User } from '../../../../../src/lib/types/user';
 import { GameSong, GameState, GameTotalScore, TotalTimes } from '../../../../../src/types/quiz';
 import { PublicPlayerState } from '../../../../../src/types/state';
 import GlobalContext from '../../../store/context';
-import ProfilePicture from '../../../utils/components/ProfilePicture';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { acceptedAnswerToIcon } from '../../../utils/tagTypes';
 import KaraList from './KaraList';
+import QuizScore from './QuizScore';
 
 function QuizRanking() {
 	const context = useContext(GlobalContext);
@@ -183,82 +183,7 @@ function QuizRanking() {
 					</div>
 				</div>
 			</div>
-			<div id="nav-userlist" className="modal-body">
-				<div className="userlist list-group">
-					{userTotalScores?.map(userTotalScore => {
-						const points = quiz.currentSong?.winners?.find(s => s.login === userTotalScore.login);
-						const answer = quiz.currentSong?.answers?.find(a => a.login === userTotalScore.login);
-						return (
-							<li
-								key={userTotalScore.login}
-								className="list-group-item"
-								style={{ borderLeft: '6px solid ' + resultColor(userTotalScore.login) }}
-							>
-								<div
-									className="userLine"
-									style={{
-										display: 'flex',
-										flexWrap: 'wrap',
-										justifyContent: 'space-between',
-										height: '100%',
-									}}
-								>
-									<div style={{ display: 'flex', alignItems: 'center' }}>
-										<ProfilePicture user={userTotalScore} className="img-circle avatar" />
-										<span className="nickname">{userTotalScore.nickname}</span>
-									</div>
-									<div
-										style={{
-											flexGrow: 1,
-											textAlign: 'center',
-											paddingLeft: '1em',
-											paddingRight: '1em',
-										}}
-									>
-										{answer?.answer}
-									</div>
-									<div
-										style={{
-											lineHeight: 'normal',
-											textAlign: 'right',
-											marginLeft: 'auto',
-										}}
-									>
-										<div>
-											<span style={{ fontSize: 20 }}>{userTotalScore.total || 0}</span>
-											{points && points.awardedPoints > 0 ? (
-												<span>{' +' + points.awardedPoints}</span>
-											) : null}
-										</div>
-										<div>
-											{points?.awardedPoints > 0 ? '(' : null}
-											{points?.awardedPointsDetailed.typePoints ? (
-												<span>
-													{' '}
-													<i
-														className={`fas fa-${acceptedAnswerToIcon(
-															points.awardedPointsDetailed.type
-														)} fa-sm`}
-													></i>{' '}
-													{points?.awardedPointsDetailed.typePoints}
-												</span>
-											) : null}
-											{points?.awardedPointsDetailed.quickPoints ? (
-												<span>
-													{' '}
-													<i className={`fas fa-bolt fa-sm`}></i>{' '}
-													{points?.awardedPointsDetailed.quickPoints}
-												</span>
-											) : null}
-											{points?.awardedPoints > 0 ? ')' : null}
-										</div>
-									</div>
-								</div>
-							</li>
-						);
-					})}
-				</div>
-			</div>
+			<QuizScore />
 			<details className="rules">
 				<summary>{i18next.t('QUIZ.RULES.TITLE')}</summary>
 				<div>
@@ -302,8 +227,8 @@ function QuizRanking() {
 										possibleAnswerType === 'title'
 											? 'KARA.TITLE'
 											: possibleAnswerType === 'year'
-											? 'KARA.YEAR'
-											: `TAG_TYPES.${possibleAnswerType.toUpperCase()}_other`
+												? 'KARA.YEAR'
+												: `TAG_TYPES.${possibleAnswerType.toUpperCase()}_other`
 									)}{' '}
 									{i18next.t('QUIZ.RULES.ACCEPTED_ANSWERS_POINTS', { points: Points })}
 								</li>
