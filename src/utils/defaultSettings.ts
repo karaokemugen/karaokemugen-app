@@ -69,6 +69,11 @@ export const defaults: Config = {
 			Width: 475,
 			Height: 720,
 		},
+		ChibiRanking: {
+			Enabled: false,
+			Width: 500,
+			Height: 480,
+		},
 	},
 	Karaoke: {
 		Collections: {
@@ -330,10 +335,10 @@ export const defaultRepositories: Repository[] = [
 			process.platform === 'win32'
 				? {
 						Medias: ['repos\\kara.moe\\medias'],
-				  }
+					}
 				: {
 						Medias: ['repos/kara.moe/medias'],
-				  },
+					},
 	},
 	{
 		Name: 'My Custom Songs',
@@ -345,9 +350,9 @@ export const defaultRepositories: Repository[] = [
 			process.platform === 'win32'
 				? {
 						Medias: ['repos\\My Custom Songs\\medias'],
-				  }
+					}
 				: {
 						Medias: ['repos/My Custom Songs/medias'],
-				  },
+					},
 	},
 ];

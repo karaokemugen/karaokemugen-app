@@ -2003,6 +2003,7 @@
 		"DONATORS": "Thanks to <1>{{donators}}</1> for their donations to Karaoke Mugen"
 	},
 	"QUIZ": {
+		"NO_QUIZ": "No quiz in progress!",
 		"START": "Start a quiz",
 		"STOP": "Stop the quiz",
 		"CONTINUE": "Continue the song after the answer reveal",
