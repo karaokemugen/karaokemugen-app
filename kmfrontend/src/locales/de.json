@@ -439,7 +439,7 @@
 			"STREAM_MODE_LOCKED": "Deaktiviere den klassischen Karaoke Modus in den Karaoke Modi, um die Stream-Pause zu verwenden.",
 			"SONGS_BY_USER": "Anzahl der Songs pro Benutzer",
 			"STREAM_PAUSE_DURATION_TOOLTIP": "In Sekunden, 0 für unendlich (drücke Play, um das nächste Lied zu starten)",
-			"ALLOW_DUPLICATES_TOOLTIP": "Mit dieser Option kann eine Playlist den gleichen Song zweimal (oder öfter) enthalten. Nur Betreiber können denselben Song mehr als einmal zu einer Playlist hinzufügen. Das Lied kann nur dann erneut hinzugefügt werden, wenn es bereits zuvor abgespielt wurde.",
+			"ALLOW_DUPLICATES_TOOLTIP": "Mit dieser Option kann eine Playlist den gleichen Song zweimal (oder öfter) enthalten. Nur Betreiber können denselben Song mehr als einmal zu einer Playlist hinzufügen.",
 			"TIME_BY_USER_TOOLTIP": "In Sekunden",
 			"FREE_AUTO_TIME_TOOLTIP": "Nach X Minuten zählt der Song nicht mehr zum Wunsch Kontingent des Nutzers. Passe dies an die Anzahl der teilnehmenden Gäste an",
 			"LABELS_MYSTERY_SONGS_TOOLTIP": "Du kannst anpassen, wie Mystery-Songs der Öffentlichkeit angezeigt werden",
@@ -478,7 +478,7 @@
 			"FREE_UPVOTES_TOOLTIP": "Wenn genügend Leuten ein Songvorschlag gefällt, zählt er nicht mehr zum Wunsch Kontingent des Anforderers",
 			"STREAMER_MODE_LABEL": "Karaoke Mugen schreibt Textdateien, die du in deiner Streaming Software verwenden kannst, um ein benutzerdefiniertes Overlay zu erstellen.",
 			"SESSION_SETTINGS_TOOLTIP": "„Klassisches“ Karaoke, öffentliche Umfrage",
-			"ALLOW_DUPLICATES": "Erlaube doppelte Songs in Playlists",
+			"ALLOW_DUPLICATES": "Erlaube doppelte Songs in Playlists (nur von Bedienern)",
 			"FREE_UPVOTES": "Ermögliche Benutzern, Songs zu bewerten, um sie freizugeben",
 			"SESSION_SETTINGS": "Karaoke Modi",
 			"STREAM_TWITCH_TOOLTIP": "Fügt Befehle hinzu, um bei Umfragen abzustimmen oder den aktuell gespielten Song mit !song abzurufen",
@@ -528,7 +528,8 @@
 			"HIDE_INVISIBLE_SONGS_HIDDEN_OPTION": "Verstecken",
 			"ADDED_SONG_VISIBILITY_NORMAL_OPTION": "Normal",
 			"PLAYLIST_ENCORES_VIDEOS": "Playlist Zugaben Video",
-			"STREAM_TWITCH_OAUTH_ERROR": "Der Token ist ungültig"
+			"STREAM_TWITCH_OAUTH_ERROR": "Der Token ist ungültig",
+			"ALLOW_PUBLIC_DUPLICATES": "Erlaube mehrere gleiche Songs in Playlisten (für alle)"
 		},
 		"PLAYER": {
 			"TOP": "Oben",
