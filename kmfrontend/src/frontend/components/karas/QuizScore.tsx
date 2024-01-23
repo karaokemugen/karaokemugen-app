@@ -9,11 +9,10 @@ import ProfilePicture from '../../../utils/components/ProfilePicture';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { acceptedAnswerToIcon } from '../../../utils/tagTypes';
 import i18next from 'i18next';
+import './QuizScore.scss';
 
 function QuizScore() {
 	const context = useContext(GlobalContext);
-
-	const quiz = context.globalState.settings.data.state.quiz;
 
 	const [forceScore, setForceScore] = useState(false);
 
@@ -22,7 +21,7 @@ function QuizScore() {
 			const [users, scores]: [User[], GameTotalScore[]] = await Promise.all([
 				commandBackend('getUsers'),
 				commandBackend('getTotalGameScore', {
-					gamename: quiz.currentQuizGame,
+					gamename: context.globalState.settings.data.state.quiz.currentQuizGame,
 				}),
 			]);
 			const scoresToDisplay = scores
@@ -30,13 +29,13 @@ function QuizScore() {
 				.filter(score => score.nickname != null);
 			return scores ? scoresToDisplay : [];
 		},
-		[quiz.currentQuizGame, forceScore],
+		[context.globalState.settings.data.state.quiz.currentQuizGame, forceScore],
 		[]
 	);
 
 	useEffect(() => {
 		const updateQuizState = (gameState: GameState) => {
-			merge(quiz, gameState);
+			merge(context.globalState.settings.data.state.quiz, gameState);
 		};
 
 		const qResult = () => {
@@ -56,16 +55,20 @@ function QuizScore() {
 	}, []);
 
 	const resultColor = (username: string) => {
-		if (!quiz.running) {
+		if (!context.globalState.settings.data.state.quiz.running) {
 			const maxPoints = Math.max(...userTotalScores?.map(score => score.total));
 			const points = userTotalScores?.find(score => score.login === username)?.total;
 			return maxPoints === points ? 'gold' : 'grey';
 		}
-		if (quiz.currentSong == null) {
+		if (context.globalState.settings.data.state.quiz.currentSong == null) {
 			return 'white';
 		}
-		const maxPoints = Math.max(...quiz.currentSong?.winners.map(score => score.awardedPoints));
-		const points = quiz.currentSong?.winners?.find(score => score.login === username)?.awardedPoints;
+		const maxPoints = Math.max(
+			...context.globalState.settings.data.state.quiz.currentSong?.winners.map(score => score.awardedPoints)
+		);
+		const points = context.globalState.settings.data.state.quiz.currentSong?.winners?.find(
+			score => score.login === username
+		)?.awardedPoints;
 		if (!points) {
 			return 'grey';
 		} else if (points === maxPoints) {
@@ -78,44 +81,25 @@ function QuizScore() {
 		<div id="nav-userlist" className="modal-body">
 			<div className="userlist list-group">
 				{userTotalScores?.map(userTotalScore => {
-					const points = quiz.currentSong?.winners?.find(s => s.login === userTotalScore.login);
-					const answer = quiz.currentSong?.answers?.find(a => a.login === userTotalScore.login);
+					const points = context.globalState.settings.data.state.quiz.currentSong?.winners?.find(
+						s => s.login === userTotalScore.login
+					);
+					const answer = context.globalState.settings.data.state.quiz.currentSong?.answers?.find(
+						a => a.login === userTotalScore.login
+					);
 					return (
 						<li
 							key={userTotalScore.login}
 							className="list-group-item"
 							style={{ borderLeft: '6px solid ' + resultColor(userTotalScore.login) }}
 						>
-							<div
-								className="userLine"
-								style={{
-									display: 'flex',
-									flexWrap: 'wrap',
-									justifyContent: 'space-between',
-									height: '100%',
-								}}
-							>
-								<div style={{ display: 'flex', alignItems: 'center' }}>
+							<div className="userLine">
+								<div className="userNickname">
 									<ProfilePicture user={userTotalScore} className="img-circle avatar" />
 									<span className="nickname">{userTotalScore.nickname}</span>
 								</div>
-								<div
-									style={{
-										flexGrow: 1,
-										textAlign: 'center',
-										paddingLeft: '1em',
-										paddingRight: '1em',
-									}}
-								>
-									{answer?.answer}
-								</div>
-								<div
-									style={{
-										lineHeight: 'normal',
-										textAlign: 'right',
-										marginLeft: 'auto',
-									}}
-								>
+								<div className="userAnswer">{answer?.answer}</div>
+								<div className="userPoints">
 									<div>
 										<span style={{ fontSize: 20 }}>{userTotalScore.total || 0}</span>
 										{points && points.awardedPoints > 0 ? (
