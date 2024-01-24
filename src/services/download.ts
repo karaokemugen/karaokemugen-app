@@ -52,7 +52,7 @@ export function getDownloadQueueStatus() {
 
 async function emitQueueStatus(status: QueueStatus) {
 	downloadQueueStatus = status;
-	emitWS('downloadQueueStatus', await getDownloads());
+	emitWS('downloadQueueStatus');
 }
 
 export async function initDownloader() {
