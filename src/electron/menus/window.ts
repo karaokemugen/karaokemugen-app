@@ -60,6 +60,16 @@ const builder: MenuItemBuilderFunction = options => {
 				visible: !isReduced,
 			},
 			{
+				label: i18next.t('MENU_OPTIONS_CHIBIRANKING_LINK'),
+				click: async () => {
+					const state = getState();
+					clipboard.writeText(
+						`http://localhost:${port}/quiz/ranking?admpwd=${await generateAdminPassword()}`
+					);
+				},
+				visible: !isReduced,
+			},
+			{
 				label: i18next.t('MENU_WINDOW_PLAYERMONITOR'),
 				type: 'checkbox',
 				accelerator: 'CmdOrCtrl+E',
