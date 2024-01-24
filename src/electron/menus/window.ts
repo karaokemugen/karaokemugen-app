@@ -14,6 +14,17 @@ const builder: MenuItemBuilderFunction = options => {
 	return {
 		label: i18next.t('MENU_WINDOW'),
 		submenu: [
+			{
+				label: i18next.t('MENU_OPTIONS_CHIBIPLAYER'),
+				type: 'checkbox',
+				accelerator: 'CmdOrCtrl+I',
+				checked: getConfig().GUI.ChibiPlayer.Enabled,
+				click: () => {
+					updateChibiPlayerWindow(!getConfig().GUI.ChibiPlayer.Enabled);
+					setConfig({ GUI: { ChibiPlayer: { Enabled: !getConfig().GUI.ChibiPlayer.Enabled } } });
+				},
+				visible: !isReduced,
+			},
 			{ label: i18next.t('MENU_WINDOW_MINIMIZE'), role: 'minimize' },
 			!isReduced ? { type: 'separator' } : null,
 			{
@@ -24,17 +35,6 @@ const builder: MenuItemBuilderFunction = options => {
 				click: () => {
 					updateChibiRankingWindow(!getConfig().GUI.ChibiRanking.Enabled);
 					setConfig({ GUI: { ChibiRanking: { Enabled: !getConfig().GUI.ChibiRanking.Enabled } } });
-				},
-				visible: !isReduced,
-			},
-			{
-				label: i18next.t('MENU_OPTIONS_CHIBIPLAYER'),
-				type: 'checkbox',
-				accelerator: 'CmdOrCtrl+I',
-				checked: getConfig().GUI.ChibiPlayer.Enabled,
-				click: () => {
-					updateChibiPlayerWindow(!getConfig().GUI.ChibiPlayer.Enabled);
-					setConfig({ GUI: { ChibiPlayer: { Enabled: !getConfig().GUI.ChibiPlayer.Enabled } } });
 				},
 				visible: !isReduced,
 			},
