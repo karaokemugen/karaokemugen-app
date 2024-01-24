@@ -2,28 +2,34 @@ import i18next from 'i18next';
 import { merge } from 'lodash';
 import { ChangeEvent, MouseEvent, useContext, useState } from 'react';
 import { useAsyncMemo } from 'use-async-memo';
-import { QuizGameConfig } from '../../../../../src/types/config';
-import { BlindMode } from '../../../../../src/types/player';
-import { Game, GameTotalScore } from '../../../../../src/types/quiz';
+import type { QuizGameConfig } from '../../../../../src/types/config';
+import type { User } from '../../../../../src/lib/types/user';
+import type { BlindMode } from '../../../../../src/types/player';
+import type { Game, GameTotalScore } from '../../../../../src/types/quiz';
 import { closeModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 import { displayMessage } from '../../../utils/tools';
 import SelectWithIcon from '../generic/SelectWithIcon';
+import ProfilePicture from '../../../utils/components/ProfilePicture';
 import './QuizModal.scss';
 
 type RecursivePartial<T> = {
 	[P in keyof T]?: T[P] extends (infer U)[]
 		? RecursivePartial<U>[]
 		: // eslint-disable-next-line @typescript-eslint/ban-types
-		T[P] extends object
-		? RecursivePartial<T[P]>
-		: T[P];
+			T[P] extends object
+			? RecursivePartial<T[P]>
+			: T[P];
 };
 
 interface IProps {
 	gamePlaylist?: string;
+}
+
+interface GameUserTotalScore extends GameTotalScore {
+	nickname: string;
 }
 
 export default function QuizModal(props: IProps) {
@@ -79,13 +85,26 @@ export default function QuizModal(props: IProps) {
 	);
 	const [gameLoaded, setGameLoaded] = useState('');
 	const [gameEdition, setGameEdition] = useState(true);
-	const [gameLoadedResults, setGameLoadedResults] = useState<GameTotalScore[]>([]);
+	const [gameLoadedResults, setGameLoadedResults] = useState<GameUserTotalScore[]>([]);
 	const gameLoadedData = gameLoaded ? existingGames.find(e => e.gamename === gameLoaded) : null;
 
 	const setGameConfig = (changes: RecursivePartial<QuizGameConfig>) => {
 		rawSetGameConfig(g => {
 			return merge({}, g, changes);
 		});
+	};
+
+	const getUserTotalScores = async (gamename: string) => {
+		const [users, scores]: [User[], GameTotalScore[]] = await Promise.all([
+			commandBackend('getUsers'),
+			commandBackend('getTotalGameScore', {
+				gamename,
+			}),
+		]);
+		const scoresToDisplay = scores
+			.map(score => ({ ...score, nickname: users.find(u => u.login === score.login)?.nickname }))
+			.filter(score => score.nickname != null);
+		return scores ? scoresToDisplay : [];
 	};
 
 	const loadGameConfig = async (e: ChangeEvent<HTMLSelectElement>) => {
@@ -108,7 +127,7 @@ export default function QuizModal(props: IProps) {
 			setGameConfig(settings);
 			setGameName(e.target.value);
 			setGameEdition(false);
-			setGameLoadedResults(await commandBackend('getTotalGameScore', { gamename: e.target.value }));
+			setGameLoadedResults(await getUserTotalScores(e.target.value));
 		}
 	};
 
@@ -283,13 +302,23 @@ export default function QuizModal(props: IProps) {
 									{gameLoadedResults.length > 0
 										? i18next.t('MODAL.START_QUIZ.GAME_IN_PROGRESS.SCORES')
 										: null}
-									<ul>
-										{gameLoadedResults.map(result => (
-											<li key={result.login}>
-												{result.login} - {result.total}
-											</li>
-										))}
-									</ul>
+									{gameLoadedResults.map(user => {
+										return (
+											<div className="userLine" key={user.login}>
+												<div className="userNickname">
+													<ProfilePicture user={user} className="img-circle avatar" />
+													<span className="nickname">{user.nickname}</span>
+												</div>
+												<div className="userPoints">
+													<span>
+														{i18next.t('QUIZ.POINTS', {
+															count: user.total,
+														})}
+													</span>
+												</div>
+											</div>
+										);
+									})}
 								</p>
 							</>
 						) : (
