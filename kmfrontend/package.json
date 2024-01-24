@@ -4,7 +4,7 @@
 	"dependencies": {
 		"@cospired/i18n-iso-languages": "^4.1.0",
 		"@sentry/react": "^7.93.0",
-		"antd": "4.24.15",
+		"antd": "5.13.2",
 		"dayjs": "^1.11.10",
 		"dompurify": "^3.0.8",
 		"filesize": "^10.1.0",

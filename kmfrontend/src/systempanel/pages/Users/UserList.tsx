@@ -1,97 +1,20 @@
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Checkbox, Divider, Input, Layout, Modal, Table } from 'antd';
+import { Avatar, Button, Checkbox, Divider, Input, Layout, Modal, Table } from 'antd';
 import Title from '../../components/Title';
 import i18next from 'i18next';
-import { Component } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { User } from '../../../../../src/lib/types/user';
-import ProfilePicture from '../../../utils/components/ProfilePicture';
 import { commandBackend } from '../../../utils/socket';
 
-interface UserListState {
-	users: User[];
-	deleteModal: boolean;
-	user: User;
-	filter: string;
-}
+function UserList() {
+	const [users, setUsers] = useState([] as User[]);
+	const [deleteModal, setDeleteModal] = useState(false);
+	const [user, setUser] = useState({} as User);
+	const [filter, setFilter] = useState('');
 
-class UserList extends Component<unknown, UserListState> {
-	constructor(props) {
-		super(props);
-		this.state = {
-			users: [],
-			deleteModal: false,
-			user: {},
-			filter: '',
-		};
-	}
-
-	componentDidMount() {
-		this.refresh();
-	}
-
-	changeFilter(event) {
-		this.setState({ filter: event.target.value });
-	}
-
-	refresh = async () => {
-		const res = await commandBackend('getUsers');
-		this.setState({ users: res });
-	};
-
-	delete = async username => {
-		await commandBackend('deleteUser', { username }, true);
-		this.refresh();
-		this.setState({ deleteModal: false, user: {} });
-	};
-
-	render() {
-		return (
-			<>
-				<Title
-					title={i18next.t('HEADERS.USER_LIST.TITLE')}
-					description={i18next.t('HEADERS.USER_LIST.DESCRIPTION')}
-				/>
-				<Layout.Content>
-					<Link to={'/system/users/create'}>
-						<Button style={{ margin: '0.75em' }} type="primary">
-							{i18next.t('USERS.NEW_USER')}
-							<PlusOutlined />
-						</Button>
-					</Link>
-					<Input.Search
-						style={{ marginBottom: '0.75em' }}
-						placeholder={i18next.t('SEARCH_FILTER')}
-						value={this.state.filter}
-						onChange={event => this.changeFilter(event)}
-					/>
-					<Table
-						dataSource={this.state.users.filter(
-							user => user.login.includes(this.state.filter) || user.nickname.includes(this.state.filter)
-						)}
-						columns={this.columns}
-						rowKey="nickname"
-					/>
-					<Modal
-						title={i18next.t('USERS.USER_DELETED_CONFIRM')}
-						open={this.state.deleteModal}
-						onOk={() => this.delete(this.state.user.login)}
-						onCancel={() => this.setState({ deleteModal: false, user: {} })}
-						okText={i18next.t('YES')}
-						cancelText={i18next.t('NO')}
-					>
-						<p>
-							{i18next.t('USERS.DELETE_USER_CONFIRM')} <b>{this.state.user.login}</b>
-						</p>
-						<p>{i18next.t('CONFIRM_SURE')}</p>
-					</Modal>
-				</Layout.Content>
-			</>
-		);
-	}
-
-	columns = [
+	const columns = [
 		{
 			title: 'Type',
 			dataIndex: 'type',
@@ -114,11 +37,7 @@ class UserList extends Component<unknown, UserListState> {
 			dataIndex: 'avatar_file',
 			key: 'avatar_file',
 			// render: (text, record) => <Avatar shape="square" size="large" src={`/avatars/${record.avatar_file}`}/>,
-			render: (text, record) => (
-				<span className="ant-avatar ant-avatar-lg ant-avatar-square ant-avatar-image">
-					<ProfilePicture user={record} />
-				</span>
-			),
+			render: (text, record) => <Avatar shape="square" size="large" src={`/avatars/${record.avatar_file}`} />,
 			sorter: (a, b) => a.avatar_file.localeCompare(b.avatar_file),
 		},
 		{
@@ -167,12 +86,72 @@ class UserList extends Component<unknown, UserListState> {
 						type="primary"
 						danger
 						icon={<DeleteOutlined />}
-						onClick={() => this.setState({ deleteModal: true, user: record })}
+						onClick={() => {
+							setUser(record);
+							setDeleteModal(true);
+						}}
 					/>
 				</span>
 			),
 		},
 	];
+
+	useEffect(() => {
+		refresh();
+	});
+
+	const refresh = async () => {
+		const res = await commandBackend('getUsers');
+		setUsers(res);
+	};
+	const deleteUser = async username => {
+		await commandBackend('deleteUser', { username }, true);
+		refresh();
+	};
+
+	return (
+		<>
+			<Title
+				title={i18next.t('HEADERS.USER_LIST.TITLE')}
+				description={i18next.t('HEADERS.USER_LIST.DESCRIPTION')}
+			/>
+			<Layout.Content>
+				<Link to={'/system/users/create'}>
+					<Button style={{ margin: '0.75em' }} type="primary">
+						{i18next.t('USERS.NEW_USER')}
+						<PlusOutlined />
+					</Button>
+				</Link>
+				<Input.Search
+					style={{ marginBottom: '0.75em' }}
+					placeholder={i18next.t('SEARCH_FILTER')}
+					value={filter}
+					onChange={event => setFilter(event.target.value)}
+				/>
+				<Table
+					dataSource={users.filter(user => user.login.includes(filter) || user.nickname.includes(filter))}
+					columns={columns}
+					rowKey="nickname"
+				/>
+				<Modal
+					title={i18next.t('USERS.USER_DELETED_CONFIRM')}
+					open={deleteModal}
+					onOk={() => deleteUser(user.login)}
+					onCancel={() => {
+						setDeleteModal(false);
+						setUser(null);
+					}}
+					okText={i18next.t('YES')}
+					cancelText={i18next.t('NO')}
+				>
+					<p>
+						{i18next.t('USERS.DELETE_USER_CONFIRM')} <b>{user.login}</b>
+					</p>
+					<p>{i18next.t('CONFIRM_SURE')}</p>
+				</Modal>
+			</Layout.Content>
+		</>
+	);
 }
 
 export default UserList;

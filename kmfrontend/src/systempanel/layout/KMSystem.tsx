@@ -1,6 +1,6 @@
 import '../App.scss';
 
-import { ConfigProvider, Layout } from 'antd';
+import { ConfigProvider, Layout, theme } from 'antd';
 import enUS from 'antd/es/locale/en_US';
 import esES from 'antd/es/locale/es_ES';
 import frFR from 'antd/es/locale/fr_FR';
@@ -90,8 +90,19 @@ class KMSystem extends Component<unknown, unknown> {
 	render() {
 		const locale = this.getLocale();
 		return (
-			<ConfigProvider locale={locale}>
-				<Layout>
+			<ConfigProvider
+				locale={locale}
+				theme={{
+					algorithm: theme.darkAlgorithm,
+					components: {
+						Menu: {
+							darkItemBg: '#1f1f1f',
+							darkSubMenuItemBg: '#141414',
+						},
+					},
+				}}
+			>
+				<Layout style={{ minHeight: '100vh' }}>
 					<Layout.Sider>
 						<KMMenu />
 					</Layout.Sider>
