@@ -64,7 +64,7 @@ const builder: MenuItemBuilderFunction = options => {
 				click: async () => {
 					const state = getState();
 					clipboard.writeText(
-						`http://localhost:${port}/quiz/ranking?admpwd=${await generateAdminPassword()}`
+						`http://localhost:${state.frontendPort}/quiz/ranking?admpwd=${await generateAdminPassword()}`
 					);
 				},
 				visible: !isReduced,
