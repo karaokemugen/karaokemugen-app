@@ -6,6 +6,7 @@
 		"@sentry/react": "^7.93.0",
 		"antd": "5.13.2",
 		"dayjs": "^1.11.10",
+		"diff2html": "^3.4.47",
 		"dompurify": "^3.0.8",
 		"filesize": "^10.1.0",
 		"i18n-iso-countries": "^7.7.0",

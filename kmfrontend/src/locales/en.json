@@ -1439,7 +1439,10 @@
 		"GIT_UNSTASH": "Apply",
 		"GIT_DELETE": "Delete",
 		"GIT_CUSTOM_MESSAGE": "Custom message",
-		"DESELECT_ALL_COMMITS": "Deselect all commits"
+		"DESELECT_ALL_COMMITS": "Deselect all commits",
+		"GIT_EDIT_MESSAGE": "Edit commit's message",
+		"GIT_SEE_MODIFIED_FILES": "View modified files",
+		"GIT_SEE_DIFF_IN_FILE": "See differences in the file"
 	},
 	"COLLECTIONS": {
 		"NAME": "Collection name",
@@ -1547,6 +1550,7 @@
 		"UPDATE_REPO_ALREADY_IN_PROGRESS": "An update to this repository is already ongoing",
 		"REPO_NOT_UPDATEABLE": "The repository cannot be updated: it might be disabled, not in maintainer mode, offline, or its update setting is set to disabled",
 		"REPO_GIT_DROP_STASH_ERROR": "Error removing stash",
+		"REPO_GIT_DIFF_ERROR": "Error getting diff for file",
 		"TAG_REPOSITORY_INVALID_CHANGE": "You can't change a tag's repository. Use the copy function instead",
 		"GET_MEDIA_INFO_ERROR": "Failed to retrieve media information",
 		"INBOX_VIEW_FORBIDDEN_ERROR": "You don't have permission to view the song inbox",
