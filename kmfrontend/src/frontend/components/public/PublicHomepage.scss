@@ -49,6 +49,7 @@
 		text-decoration: unset;
 		font-size: 1.25em;
 		margin: 0.5em 0;
+		padding: 0;
 		transition: color ease-out 200ms;
 		font-family: inherit;
 		@each $name, $color in $mugen-colors {
