@@ -8,22 +8,29 @@ import {
 	ExceptionOutlined,
 	PullRequestOutlined,
 	RightOutlined,
+	UnorderedListOutlined,
+	PlusOutlined,
+	MinusOutlined,
+	DiffOutlined,
 } from '@ant-design/icons';
 import { Button, Checkbox, Divider, Input, Layout, List, Modal, Table } from 'antd';
 import Title from '../components/Title';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import i18next from 'i18next';
 import { RenderExpandIconProps } from 'rc-table/lib/interface';
-import { Dispatch, memo, useCallback, useEffect, useState } from 'react';
+import { Dispatch, MouseEvent, memo, useCallback, useEffect, useState } from 'react';
 import { Trans } from 'react-i18next';
+import { parse, html } from 'diff2html';
 
 import { GitLogResult, GitStatusResult } from '../../../../src/types/git';
 import { Commit, ModifiedMedia } from '../../../../src/types/repo';
 import { commandBackend, getSocket } from '../../utils/socket';
 import { displayMessage } from '../../utils/tools';
 import { Repository } from '../../../../src/lib/types/repo';
+import 'diff2html/bundles/css/diff2html.min.css';
+import { ColorSchemeType } from 'diff2html/lib/types';
 
-type CommitWithComment = Commit & { comment: string };
+type CommitWithComment = Commit & { comment: string; filesModified: boolean };
 
 interface PendingPush {
 	commits: { commits: CommitWithComment[]; modifiedMedias: ModifiedMedia[] };
@@ -253,6 +260,31 @@ export default function Git() {
 		setLoading(false);
 	}, []);
 
+	const diffFile = async (e: MouseEvent, file: string) => {
+		e.stopPropagation();
+		e.preventDefault();
+		const diff = await commandBackend('getFileDiff', {
+			file,
+			repoName: pendingPush.repoName,
+		});
+		const diffJson = parse(diff);
+		Modal.info({
+			icon: undefined,
+			width: '80%',
+			content: (
+				<div
+					dangerouslySetInnerHTML={{
+						__html: html(diffJson, {
+							drawFileList: false,
+							outputFormat: 'side-by-side',
+							colorScheme: ColorSchemeType.DARK,
+						}),
+					}}
+				/>
+			),
+		});
+	};
+
 	useEffect(() => {
 		getRepos().then(setRepos);
 	}, []);
@@ -358,6 +390,7 @@ export default function Git() {
 			</Layout.Content>
 			<Modal
 				title={i18next.t('REPOSITORIES.GIT_CONFIRM_PUSH')}
+				width={'50em'}
 				open={showPushModal}
 				onCancel={() => {
 					setExcludeList([]);
@@ -402,6 +435,7 @@ export default function Git() {
 									/>
 								) : (
 									<Button
+										title={i18next.t('REPOSITORIES.GIT_EDIT_MESSAGE')}
 										icon={<EditOutlined />}
 										style={{ marginRight: '0.5em' }}
 										disabled={excludeList.includes(i)}
@@ -420,6 +454,60 @@ export default function Git() {
 									/>
 								)}
 								<span>{commit.message}</span>
+								<Button
+									title={i18next.t('REPOSITORIES.GIT_SEE_MODIFIED_FILES')}
+									icon={<UnorderedListOutlined />}
+									style={{ marginLeft: '0.5em' }}
+									onClick={e => {
+										e.stopPropagation();
+										e.preventDefault();
+										setPendingPush(pPush => {
+											const commits = [...pPush.commits.commits];
+											commits[i] = {
+												...commits[i],
+												filesModified: !commit.filesModified,
+											};
+											return { ...pPush, commits: { ...pPush.commits, commits } };
+										});
+									}}
+								/>
+								{commit.filesModified ? (
+									<List size="small">
+										{commit.addedFiles.map(file => (
+											<List.Item
+												key={file}
+												style={{ display: 'flex', justifyContent: 'space-between' }}
+												onClick={e => diffFile(e, file)}
+											>
+												<span>
+													<PlusOutlined style={{ marginRight: '0.2em' }} />
+													{file}
+												</span>
+												<Button
+													title={i18next.t('REPOSITORIES.GIT_SEE_DIFF_IN_FILE')}
+													icon={<DiffOutlined />}
+													style={{ marginLeft: '0.5em' }}
+												/>
+											</List.Item>
+										))}
+										{commit.removedFiles.map(file => (
+											<List.Item
+												key={file}
+												style={{ display: 'flex', justifyContent: 'space-between' }}
+												onClick={e => diffFile(e, file)}
+											>
+												<span>
+													<MinusOutlined style={{ marginRight: '0.2em' }} />
+													{file}
+												</span>
+												<Button
+													title={i18next.t('REPOSITORIES.GIT_SEE_DIFF_IN_FILE')}
+													icon={<DiffOutlined />}
+												/>
+											</List.Item>
+										))}
+									</List>
+								) : null}
 							</Checkbox>
 						</li>
 					))}

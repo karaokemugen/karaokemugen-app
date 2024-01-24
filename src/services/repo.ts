@@ -1485,6 +1485,20 @@ export async function pushCommits(repoName: string, push: Push, ignoreFTP?: bool
 	}
 }
 
+/** Return a diff of a specified file using git */
+export async function getFileDiff(file: string, repoName: string) {
+	try {
+		const repo = getRepo(repoName);
+		if (!repo) throw new ErrorKM('UNKNOWN_REPOSITORY', 404, false);
+		const git = await setupGit(repo);
+		return await git.diffFile(file);
+	} catch (err) {
+		logger.error(`Unable to diff file ${file} for repo ${repoName}`, { service, obj: err });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('REPO_GIT_DIFF_ERROR');
+	}
+}
+
 function topologicalSort(karas: KaraMetaFile[]): KaraMetaFile[] {
 	const nodes = new Map();
 

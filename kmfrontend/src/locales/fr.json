@@ -1439,7 +1439,10 @@
 		"GIT_UNSTASH": "Appliquer",
 		"GIT_DELETE": "Supprimer",
 		"GIT_CUSTOM_MESSAGE": "Message personnalisé",
-		"DESELECT_ALL_COMMITS": "Désélectionner tous les commits"
+		"DESELECT_ALL_COMMITS": "Désélectionner tous les commits",
+		"GIT_EDIT_MESSAGE": "Editer le message du commit",
+		"GIT_SEE_MODIFIED_FILES": "Voir les fichiers modifiés",
+		"GIT_SEE_DIFF_IN_FILE": "Voir les différences dans le fichier"
 	},
 	"COLLECTIONS": {
 		"NAME": "Nom de la collection",
@@ -1653,6 +1656,7 @@
 		"REPO_GIT_CHECK_ERROR": "Impossible de vérifier l'état du dépôt",
 		"REPO_GIT_ABORT_ERROR": "Impossible d'abandonner le merge",
 		"REPO_GIT_STASH_ERROR": "Impossible de mettre de côté les modifications",
+		"REPO_GIT_DIFF_ERROR": "Impossible d'afficher les différences du fichier",
 		"REPO_GIT_UNSTASH_ERROR": "Impossible d'appliquer les modifications",
 		"REPO_GIT_UPDATE_ERROR": "Impossible de mettre à jour le dépôt git",
 		"REPO_GIT_GET_COMMITS_ERROR": "Impossible de préparer les commits",

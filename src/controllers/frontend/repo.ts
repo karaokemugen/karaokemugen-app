@@ -14,6 +14,7 @@ import {
 	findUnusedMedias,
 	findUnusedTags,
 	generateCommits,
+	getFileDiff,
 	getRepo,
 	getRepoFreeSpace,
 	getRepoManifest,
@@ -223,6 +224,15 @@ export default function repoController(router: SocketIOApp) {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			return await listRepoStashes(req.body.repoName);
+		} catch (err) {
+			throw { code: err.code || 500, message: APIMessage(err.message) };
+		}
+	});
+
+	router.route('getFileDiff', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'closed');
+		try {
+			return await getFileDiff(req.body.file, req.body.repoName);
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
