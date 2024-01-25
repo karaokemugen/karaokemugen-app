@@ -3,7 +3,7 @@ import { sample } from 'lodash';
 import { basename, resolve } from 'path';
 
 import { resolvedPath } from '../lib/utils/config.js';
-import { audioFileRegexp, backgroundFileRegexp } from '../lib/utils/constants.js';
+import { audioFileRegexp, backgroundFileRegexp, supportedFiles } from '../lib/utils/constants.js';
 import { replaceExt } from '../lib/utils/files.js';
 import logger from '../lib/utils/logger.js';
 import { BackgroundList, BackgroundType } from '../types/backgrounds.js';
@@ -20,9 +20,12 @@ export async function getBackgroundAndMusic(type: BackgroundType): Promise<Backg
 	// If no picture available, pick from bundled backgrounds
 	if (files.pictures.length === 0) files = await getBackgroundFiles('bundled');
 	const backgroundImageFile = sample(files.pictures);
-	// First, try to find a "neighbour" mp3
-	// FIXME: make it so it works with any audio file format, not just MP3
-	let backgroundMusicFile = files.music.find(f => f === replaceExt(backgroundImageFile, '.mp3'));
+	// First, try to find a "neighbour" audio file
+	let backgroundMusicFile = files.music.find(
+		f =>
+			replaceExt(f, '') === replaceExt(backgroundImageFile, '') &&
+			supportedFiles.audio.some(extension => f.endsWith(extension))
+	);
 	if (!backgroundMusicFile && files.music.length > 0) {
 		backgroundMusicFile = sample(files.music);
 	}
