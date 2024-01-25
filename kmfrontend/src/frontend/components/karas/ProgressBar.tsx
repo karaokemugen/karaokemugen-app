@@ -100,6 +100,14 @@ function ProgressBar() {
 	};
 
 	const refreshPlayerInfos = async (data: PublicPlayerState) => {
+		const element = refBar.current;
+		if (element && data.timeposition !== undefined) {
+			if (length !== 0) {
+				const newWidth = (element.offsetWidth * data.timeposition) / length;
+				setWidth(newWidth);
+				setTimePosition(data.timeposition);
+			}
+		}
 		if (data.playerStatus) {
 			if (data.playerStatus === 'stop') {
 				setWidth(0);
@@ -147,8 +155,8 @@ function ProgressBar() {
 				setKaraInfoText(karaInfo);
 				setLength(kara.duration);
 
-				if (refBar.current && data.timeposition !== undefined) {
-					const newWidth = (refBar.current.offsetWidth * data.timeposition) / kara.duration;
+				if (element && data.timeposition !== undefined && width === 0) {
+					const newWidth = (element.offsetWidth * data.timeposition) / kara.duration;
 					setWidth(newWidth);
 					setTimePosition(data.timeposition);
 				}
