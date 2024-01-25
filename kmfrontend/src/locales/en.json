@@ -1736,7 +1736,7 @@
 		"SESSION_DELETE_ACTIVE_ERROR": "The active session cannot be delete.",
 		"SESSION_GET_ERROR": "Error getting session",
 		"CANNOT_DELETE_LAST_REPOSITORY": "The last repository cannot be deleted",
-		"GIT_PULL_FAILED": "The Git pull have failed",
+		"GIT_PULL_FAILED": "The git pull has failed",
 		"UNKNOWN_STASH": "Unknown stash",
 		"QUIZZ_GET_GAMES_ERROR": "Error when getting games",
 		"QUIZZ_GET_GAME_SCORES_ERROR": "Error when getting game scores",
