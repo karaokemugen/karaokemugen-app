@@ -765,6 +765,7 @@ class Players {
 
 	/** Define lavfi-complex commands when we need to display stuff on screen or adjust audio volume. And it's... complex. */
 	private static async genLavfiComplex(song: CurrentSong, showVideo = true): Promise<string> {
+		const isMP3 = supportedFiles.audio.some(extension => song.mediafile.endsWith(extension));
 		// Loudnorm normalization scheme: https://ffmpeg.org/ffmpeg-filters.html#loudnorm
 		let audio: string;
 		if (song.loudnorm) {
@@ -786,8 +787,10 @@ class Players {
 					'\\',
 					'/'
 				)}\\',format=yuva420p,geq=lum='p(X,Y)':a='if(gt(abs(W/2-X),W/2-${cropRatio})*gt(abs(H/2-Y),H/2-${cropRatio}),if(lte(hypot(${cropRatio}-(W/2-abs(W/2-X)),${cropRatio}-(H/2-abs(H/2-Y))),${cropRatio}),255,0),255)'[logo]`,
+				isMP3 ? `nullsrc=size=1x1:duration=${song.duration}[emp]` : undefined,
+				isMP3 ? '[base][emp]overlay[ovrl]' : undefined,
 				'[logo][vid1]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base]',
-				`[base][logo1]overlay=x='if(between(t,0,8)+between(t,${song.duration - 8},${
+				`[${isMP3 ? 'ovrl' : 'base'}][logo1]overlay=x='if(between(t,0,8)+between(t,${song.duration - 8},${
 					song.duration
 				}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`,
 			]
