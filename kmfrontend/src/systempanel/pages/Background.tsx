@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import ReactAudioPlayer from 'react-audio-player';
 
 import { commandBackend } from '../../utils/socket';
+import { supportedFiles } from '../../../../src/lib/utils/constants';
 
 export type BackgroundType = 'pause' | 'stop' | 'poll';
 
@@ -25,8 +26,7 @@ export default function Background() {
 	const [file, setFile] = useState();
 	const [type, setType] = useState<BackgroundType>('pause');
 
-	const acceptFilesFormat = '.jpg, .jpeg, .png, .mp3';
-
+	const acceptFilesFormat = '.jpg, .jpeg, .png, '.concat(supportedFiles.audio.map(format => `.${format}`).join(', '));
 	const formatBgList = (bgList: { pictures: string[]; music: string[] }, type: string) => {
 		const result = { pictures: [], music: [] };
 		result.pictures = bgList?.pictures.map(pic => {
@@ -98,7 +98,7 @@ export default function Background() {
 		{
 			title: i18next.t('BACKGROUNDS_MGMT.PREVIEW'),
 			render: (_text, record) => {
-				if (record.file.endsWith('.mp3')) {
+				if (supportedFiles.audio.some(extension => record.file.endsWith(extension))) {
 					return (
 						<ReactAudioPlayer
 							src={`/backgrounds/${record.type}/${basename(record.file.replace(/\\/g, '/'))}`}
@@ -143,9 +143,7 @@ export default function Background() {
 						<ul>
 							{(
 								i18next.t<string>('BACKGROUNDS_MGMT.INFO', { returnObjects: true }) as any as string[]
-							)?.map((info, i) => (
-								<li key={i}>{info}</li>
-							))}
+							)?.map((info, i) => <li key={i}>{info}</li>)}
 						</ul>
 					}
 				/>

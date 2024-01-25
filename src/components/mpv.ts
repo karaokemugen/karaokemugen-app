@@ -1418,7 +1418,7 @@ class Players {
 			}
 			// Workaround for audio-only files: disable the lavfi-complex filter
 			if (
-				playerState.currentSong?.mediafile.endsWith('.mp3') &&
+				supportedFiles.audio.some(extension => playerState.currentSong?.mediafile.endsWith(extension)) &&
 				playerState.currentSong?.avatar &&
 				getConfig().Player.Display.Avatar
 			) {
@@ -1440,7 +1440,7 @@ class Players {
 			}
 			// Workaround for audio-only files: disable the lavfi-complex filter
 			if (
-				playerState.currentSong?.mediafile.endsWith('.mp3') &&
+				supportedFiles.audio.some(extension => playerState.currentSong?.mediafile.endsWith(extension)) &&
 				playerState.currentSong?.avatar &&
 				getConfig().Player.Display.Avatar
 			) {
