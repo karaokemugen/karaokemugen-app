@@ -53,6 +53,7 @@ export interface State {
 	defaultLocale?: string;
 	player?: PlayerState;
 	securityCode: number;
+	newAccountCode: number;
 	forceDisableAppUpdate?: boolean;
 	noAutoTest?: boolean;
 	singlePlay?: boolean;
@@ -117,6 +118,7 @@ export interface PublicState {
 	url: string;
 	songPoll?: boolean;
 	quiz: GameState;
+	newAccountCode?: number;
 }
 
 export interface PublicPlayerState extends PlayerState {

@@ -16,8 +16,8 @@ const service = 'Auth';
 export default function authController(router: SocketIOApp) {
 	router.route('login', async (_, req) => {
 		try {
-			let token = await checkLogin(req.body.username, req.body.password);
-			// Check if security code is correct
+			let token = await checkLogin(req.body.username, req.body.password, req.body.securityCode);
+			// Admin user - Check if security code is correct
 			if (req.body.securityCode === getState().securityCode) {
 				// Reset security code once it's been used
 				resetSecurityCode();
@@ -40,13 +40,14 @@ export default function authController(router: SocketIOApp) {
 			}
 			return token;
 		} catch (err) {
-			throw { code: 401, message: APIMessage('LOG_ERROR') };
+			throw err instanceof ErrorKM ? err : { code: 401, message: APIMessage('LOG_ERROR') };
 		}
 	});
 
 	router.route('loginGuest', async (_, req) => {
 		const conf = getConfig();
-		if (!conf.Frontend.AllowGuestLogin) throw { code: 403, message: APIMessage('GUESTS_NOT_ALLOWED') };
+		if (!conf.Frontend.AllowGuestLogin || conf.Frontend.RequireSecurityCodeForNewAccounts)
+			throw { code: 403, message: APIMessage('GUESTS_NOT_ALLOWED') };
 		try {
 			let guest: DBUserBase;
 			if (req.body?.name && conf.Frontend.AllowCustomTemporaryGuests) {
@@ -76,6 +77,7 @@ export default function authController(router: SocketIOApp) {
 				if (await remoteCheckAuth(req.token.username.split('@')[1], req.onlineAuthorization)) {
 					logger.debug('Fetched remote token', { service });
 					try {
+						// No need to ask user for new account security code here : user is already logged in as guest at minimum.
 						await fetchAndUpdateRemoteUser(req.token.username, null, req.onlineAuthorization, true);
 						await fetchAndAddFavorites(req.token.username, req.onlineAuthorization);
 					} catch (err) {

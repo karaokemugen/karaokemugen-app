@@ -54,6 +54,7 @@ export const defaults: Config = {
 		AllowGuestLogin: true,
 		AllowCustomTemporaryGuests: false,
 		AllowUserCreation: true,
+		RequireSecurityCodeForNewAccounts: false,
 		Mode: 2,
 		PublicPlayerControls: false,
 		ShowAvatarsOnPlaylist: true,

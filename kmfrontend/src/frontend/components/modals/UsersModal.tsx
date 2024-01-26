@@ -74,6 +74,13 @@ function UsersModal(props: IProps) {
 					</button>
 				) : null}
 				<h4 className="modal-title">{i18next.t('USERLIST')}</h4>
+				{props.scope === 'admin' &&
+				context.globalState.settings.data.config.Frontend.RequireSecurityCodeForNewAccounts ? (
+					<div>
+						<span>{i18next.t('NEW_ACCOUNT_CODE_SHORT')} : </span>
+						<span className="blur-hover">{context.globalState.settings.data.state.newAccountCode}</span>
+					</div>
+				) : null}
 				{props.scope === 'admin' ? ( // aka. it's a modal, otherwise it's a page and close button is not needed
 					<button className="closeModal" onClick={closeModalWithContext}>
 						<i className="fas fa-fw fa-times" />

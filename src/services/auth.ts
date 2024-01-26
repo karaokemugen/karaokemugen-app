@@ -7,11 +7,16 @@ import { getState, setState } from '../utils/state.js';
 import { fetchAndAddFavorites } from './favorites.js';
 import { checkPassword, createJwtToken, getUser, updateLastLoginName } from './user.js';
 import { fetchAndUpdateRemoteUser } from './userOnline.js';
+import { emitWS } from '../lib/utils/ws.js';
 
 const service = 'Auth';
 
 /** Check login and authenticates users */
-export async function checkLogin(username: string, password: string): Promise<OldTokenResponse> {
+export async function checkLogin(
+	username: string,
+	password: string,
+	newAccountSecurityCode?: number
+): Promise<OldTokenResponse> {
 	if (username) username = decodeURI(username.trim());
 	password = password ? decodeURI(password) : '';
 	const conf = getConfig();
@@ -23,13 +28,14 @@ export async function checkLogin(username: string, password: string): Promise<Ol
 			// If username has a @, check its instance for existence
 			// If OnlineUsers is disabled, accounts are connected with
 			// their local version if it exists already.
-			const res = await fetchAndUpdateRemoteUser(username, password, undefined, true);
+			const res = await fetchAndUpdateRemoteUser(username, password, undefined, true, newAccountSecurityCode);
 			onlineToken = res.onlineToken;
 			if (onlineToken) {
 				// Download and add all favorites
 				await fetchAndAddFavorites(username, onlineToken);
 			}
 		} catch (err) {
+			if (err.message === 'USER_CREATION_DISABLED') throw err;
 			logger.error(`Failed to authenticate ${username}`, { service, obj: err });
 		}
 	}
@@ -52,6 +58,13 @@ export function resetSecurityCode() {
 	setState({ securityCode: generateSecurityCode() });
 	const securityCodeStr = `${getState().securityCode}`.padStart(6, '0');
 	logger.warn(`SECURITY CODE : ${securityCodeStr}`, { service });
+}
+
+export function resetNewAccountCode() {
+	setState({ newAccountCode: generateSecurityCode() });
+	const newAccountCodeStr = `${getState().newAccountCode}`.padStart(6, '0');
+	logger.warn(`NEW ACCOUNT CODE : ${newAccountCodeStr}`, { service });
+	emitWS('settingsUpdated');
 }
 
 function generateSecurityCode(): number {

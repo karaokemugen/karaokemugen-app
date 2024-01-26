@@ -1,7 +1,7 @@
 import './Login.scss';
 
 import i18next from 'i18next';
-import { FormEvent, useContext, useEffect, useState } from 'react';
+import { FormEvent, useCallback, useContext, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { User } from '../../../../src/lib/types/user';
@@ -13,6 +13,7 @@ import { isElectron } from '../electron';
 import { langSupport } from '../isoLanguages';
 import { commandBackend } from '../socket';
 import { callModal, displayMessage, lastLocation } from '../tools';
+import { debounce } from 'lodash';
 
 interface UserApi extends User {
 	role: 'admin' | 'user';
@@ -37,8 +38,28 @@ function Login() {
 	const [password, setPassword] = useState('');
 	const [passwordConfirmation, setPasswordConfirmation] = useState<string>();
 	const [securityCode, setSecurityCode] = useState<number>();
+	const [isExistingOnlineAccountLocally, setExistingOnlineAccountLocally] = useState(false);
 
 	const isAdminPath = lastLocation && lastLocation !== '/' && !lastLocation.includes('/public');
+
+	useEffect(() => {
+		if (context.globalState.settings.data.config.Frontend.RequireSecurityCodeForNewAccounts && login)
+			debounceExistingOnlineAccountLocally(login);
+	}, [login]);
+
+	const debounceExistingOnlineAccountLocally = useCallback(
+		debounce(loginToCheck => updateIsExistingOnlineAccountLocally(loginToCheck), 2000),
+		[]
+	);
+
+	const updateIsExistingOnlineAccountLocally = async (loginToCheck: string) => {
+		try {
+			await commandBackend('getUser', { username: `${loginToCheck}@${serv}` }, false, 30000, true);
+			setExistingOnlineAccountLocally(true);
+		} catch (e) {
+			setExistingOnlineAccountLocally(false);
+		}
+	};
 
 	const loginCall = async (
 		username: string | undefined,
@@ -113,7 +134,7 @@ function Login() {
 			setErrorBackground('');
 		}
 		const username = login + (onlineSwitch ? '@' + serv : '');
-		loginCall(username, password);
+		loginCall(username, password, securityCode);
 	};
 
 	const signup = async () => {
@@ -133,6 +154,7 @@ function Login() {
 				password: password,
 				role: isAdminPath ? 'admin' : 'user',
 				language: langSupport,
+				securityCode: securityCode,
 			};
 			if (isAdminPath && !isElectron()) {
 				if (!securityCode) {
@@ -220,7 +242,9 @@ function Login() {
 			<div className="loginBox">
 				{activeView === 'welcome' ? (
 					<>
-						{!isAdminPath && context.globalState.settings.data.config?.Frontend.AllowGuestLogin ? (
+						{!isAdminPath &&
+						context.globalState.settings.data.config?.Frontend.AllowGuestLogin &&
+						!context.globalState.settings.data.config.Frontend.RequireSecurityCodeForNewAccounts ? (
 							<button className="btn largeButton guestButton" onClick={loginGuestContinue}>
 								{i18next.t('LOGIN.GUEST_CONTINUE')}
 							</button>
@@ -326,16 +350,25 @@ function Login() {
 										</div>
 									</>
 								) : null}
-								{isAdminPath &&
-								!isElectron() &&
-								((forgotPassword && activeView === 'login' && !onlineSwitch) ||
-									activeView === 'signup') ? (
+								{(isAdminPath &&
+									!isElectron() &&
+									((forgotPassword && activeView === 'login' && !onlineSwitch) ||
+										activeView === 'signup')) ||
+								(!isAdminPath &&
+									(activeView === 'signup' ||
+										(activeView === 'login' && onlineSwitch && !isExistingOnlineAccountLocally)) &&
+									context.globalState.settings.data.config.Frontend
+										.RequireSecurityCodeForNewAccounts) ? (
 									<>
-										<label className="loginLabel">{i18next.t('SECURITY_CODE')}</label>
+										<label className="loginLabel">
+											{i18next.t(isAdminPath ? 'SECURITY_CODE' : 'NEW_ACCOUNT_CODE')}
+										</label>
 										<div className="loginLine">
 											<input
 												type="text"
-												placeholder={i18next.t('SECURITY_CODE')}
+												placeholder={i18next.t(
+													isAdminPath ? 'SECURITY_CODE' : 'NEW_ACCOUNT_CODE_SHORT'
+												)}
 												defaultValue={securityCode}
 												required
 												autoFocus

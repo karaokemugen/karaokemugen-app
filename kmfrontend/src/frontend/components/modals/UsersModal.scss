@@ -52,3 +52,13 @@
 		border-radius: 15%;
 	}
 }
+
+.blur-hover {
+	filter: blur(5px);
+	transition: filter 1.5s ease;
+	margin-right: 0.5em;
+}
+
+.blur-hover:hover {
+	filter: unset;
+}

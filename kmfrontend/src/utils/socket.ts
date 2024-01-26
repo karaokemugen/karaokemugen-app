@@ -32,7 +32,13 @@ export function setAuthorization(authorizationParam: string, onlineAuthorization
 	if (!authorizationParam || onlineAuthorizationParam) onlineAuthorization = onlineAuthorizationParam;
 }
 
-export function commandBackend(name: string, body?: any, loading = false, timeout = 30000): Promise<any> {
+export function commandBackend(
+	name: string,
+	body?: any,
+	loading = false,
+	timeout = 30000,
+	silent = false
+): Promise<any> {
 	const bodyWithoutpwd = { ...body };
 	if (bodyWithoutpwd.password) bodyWithoutpwd.password = undefined;
 	addBreadcrumb({
@@ -86,7 +92,7 @@ export function commandBackend(name: string, body?: any, loading = false, timeou
 					typeof data.data !== 'object'
 				) {
 					displayMessage('success', i18next.t(`SUCCESS_CODES.${data.code}`, { data: data.data }));
-				} else if (err && data?.message?.code && typeof data.data !== 'object') {
+				} else if (err && data?.message?.code && typeof data.data !== 'object' && !silent) {
 					displayMessage(
 						data.code?.toString().startsWith('4') ? 'warning' : 'error',
 						i18next.t(`ERROR_CODES.${data.message.code}`, { data: data.data })
