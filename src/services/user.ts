@@ -33,6 +33,7 @@ import { defaultGuestNames } from '../utils/constants.js';
 import sentry from '../utils/sentry.js';
 import { getState } from '../utils/state.js';
 import { stopSub } from '../utils/userPubSub.js';
+import { resetNewAccountCode } from './auth.js';
 import { createRemoteUser, editRemoteUser, getUsersFetched } from './userOnline.js';
 
 const service = 'User';
@@ -262,8 +263,14 @@ export async function createUser(
 	}
 ) {
 	try {
-		if (!getConfig().Frontend.AllowUserCreation) {
+		if (!opts.admin && !getConfig().Frontend.AllowUserCreation) {
 			throw new ErrorKM('USER_CREATION_DISABLED', 403);
+		}
+		if (!opts.admin && getConfig().Frontend.RequireSecurityCodeForNewAccounts) {
+			if (user.securityCode !== getState().newAccountCode) {
+				throw new ErrorKM('USER_CREATION_WRONG_SECURITY_CODE', 403);
+			}
+			resetNewAccountCode();
 		}
 		user.login = user.login.trim().toLowerCase();
 		if (user.password) user.password = user.password.trim();
@@ -308,6 +315,12 @@ export async function createUser(
 			}
 			return newUserIntegrityChecks(user);
 		});
+		if (user.password) {
+			if (user.password.length < 8 && !opts.noPasswordCheck) {
+				throw new ErrorKM('PASSWORD_TOO_SHORT', 411, false);
+			}
+			user.password = await hashPasswordbcrypt(user.password);
+		}
 		if (user.login.includes('@')) {
 			if (user.login.split('@')[0] === 'admin') {
 				logger.error('Admin accounts are not allowed to be created online', { service });
@@ -318,12 +331,6 @@ export async function createUser(
 				throw new ErrorKM('USER_CREATE_ERROR_ONLINE_DISABLED', 403, false);
 			}
 			if (opts.createRemote) await createRemoteUser(user);
-		}
-		if (user.password) {
-			if (user.password.length < 8 && !opts.noPasswordCheck) {
-				throw new ErrorKM('PASSWORD_TOO_SHORT', 411, false);
-			}
-			user.password = await hashPasswordbcrypt(user.password);
 		}
 		await insertUser(user);
 		if (user.type < 2) logger.info(`Created user ${user.login}`, { service });

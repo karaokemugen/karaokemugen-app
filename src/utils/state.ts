@@ -35,6 +35,7 @@ let state: State = {
 	isTest: false,
 	defaultLocale: 'en',
 	securityCode: null,
+	newAccountCode: null,
 	noAutoTest: false,
 	singlePlay: false,
 	randomPlaying: false,
@@ -156,6 +157,7 @@ export function getPublicState(admin: boolean): PublicState {
 		url: state.osURL,
 		songPoll: state.songPoll,
 		quiz: getPublicCurrentGame(admin),
+		newAccountCode: admin ? state.newAccountCode : undefined,
 	};
 }
 

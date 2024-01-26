@@ -88,6 +88,7 @@ export interface Config {
 		AllowGuestLogin?: boolean;
 		AllowCustomTemporaryGuests?: boolean;
 		AllowUserCreation?: boolean;
+		RequireSecurityCodeForNewAccounts?: boolean;
 		Mode?: number;
 		PublicPlayerControls?: boolean;
 		ShowAvatarsOnPlaylist?: boolean;

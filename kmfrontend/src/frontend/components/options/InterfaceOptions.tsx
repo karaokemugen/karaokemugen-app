@@ -81,6 +81,21 @@ function InterfaceOptions(props: IProps) {
 			</div>
 
 			<div className="settings-line">
+				<label htmlFor="Frontend.RequireSecurityCodeForNewAccounts">
+					<span className="title">{i18next.t('SETTINGS.INTERFACE.REQUIRE_USER_CREATION_CODE')}</span>
+					<br />
+					<span className="tooltip">{i18next.t('SETTINGS.INTERFACE.REQUIRE_USER_CREATION_CODE')}</span>
+				</label>
+				<div>
+					<Switch
+						idInput="Frontend.RequireSecurityCodeForNewAccounts"
+						handleChange={onChange}
+						isChecked={config['Frontend.RequireSecurityCodeForNewAccounts']}
+					/>
+				</div>
+			</div>
+
+			<div className="settings-line">
 				<label htmlFor="Frontend.AllowCustomTemporaryGuests">
 					<span className="title">{i18next.t('SETTINGS.INTERFACE.ALLOW_CUSTOM_TEMPORARY_GUESTS')}</span>
 					<br />

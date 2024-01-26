@@ -41,7 +41,10 @@ export default function userController(router: SocketIOApp) {
 				if (req.body.role === 'admin' && req.user) {
 					await createAdminUser(req.body, req.body.login.includes('@'), req.user);
 				} else {
-					await createUser(req.body, { createRemote: req.body.login.includes('@') });
+					await createUser(req.body, {
+						admin: req.token?.role === 'admin',
+						createRemote: req.body.login.includes('@'),
+					});
 				}
 				return { code: 200, message: APIMessage('USER_CREATED') };
 			} catch (err) {
@@ -55,9 +58,9 @@ export default function userController(router: SocketIOApp) {
 	});
 
 	router.route('getUser', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'guest', 'limited');
+		await runChecklist(socket, req, 'guest', 'limited', { optionalAuth: true });
 		try {
-			return await getUser(req.body.username, true, false, req.token.role);
+			return await getUser(req.body.username, true, false, req.token?.role || 'guest');
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}

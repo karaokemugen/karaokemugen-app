@@ -11,7 +11,7 @@ import { PathType } from '../lib/types/config.js';
 import { configureLocale, getConfig, resolvedPath, setConfig } from '../lib/utils/config.js';
 import { asyncCheckOrMkdir, fileExists } from '../lib/utils/files.js';
 import logger, { configureLogger, profile } from '../lib/utils/logger.js';
-import { resetSecurityCode } from '../services/auth.js';
+import { resetNewAccountCode, resetSecurityCode } from '../services/auth.js';
 import { backgroundTypes } from '../services/backgrounds.js';
 import { editRepo } from '../services/repo.js';
 import { Config } from '../types/config.js';
@@ -55,6 +55,7 @@ export async function preInit() {
 	profile('preInit');
 	await configureLocale();
 	resetSecurityCode();
+	resetNewAccountCode();
 	setState({ os: process.platform });
 	setupFromCommandLineArgs(argv, app ? app.commandLine : null);
 	logger.debug(`AppPath : ${state.appPath}`, { service });
