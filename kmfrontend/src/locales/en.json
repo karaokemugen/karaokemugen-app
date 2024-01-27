@@ -1011,6 +1011,7 @@
 			"FILE_FORMAT": "File format",
 			"VIDEO_CODEC": "Video codec",
 			"VIDEO_RESOLUTION": "Resolution",
+			"VIDEO_ASPECT_RATIO": "Aspect ratio",
 			"VIDEO_COLORSPACE": "Colorspace",
 			"VIDEO_FRAMERATE": "Framerate",
 			"AUDIO_CODEC": "Audio codec",

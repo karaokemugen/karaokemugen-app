@@ -106,7 +106,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 							name: kara.subfile,
 							status: 'done',
 						},
-				  ]
+					]
 				: [],
 			mediafile: kara?.mediafile
 				? [
@@ -115,7 +115,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 							name: kara.mediafile,
 							status: 'done',
 						},
-				  ]
+					]
 				: [],
 			mediafileIsTouched: false,
 			subfileIsTouched: false,
@@ -213,6 +213,11 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 			{ name: 'videoCodec', title: 'KARA.MEDIA_FILE_INFO.VIDEO_CODEC' },
 			{ name: 'videoColorspace', title: 'KARA.MEDIA_FILE_INFO.VIDEO_COLORSPACE' },
 			{
+				name: 'videoAspectRatio',
+				title: 'KARA.MEDIA_FILE_INFO.VIDEO_ASPECT_RATIO',
+				format: (value: any) => `SAR ${value?.pixelAspectRatio} DAR ${value?.displayAspectRatio}`,
+			},
+			{
 				name: 'videoResolution',
 				title: 'KARA.MEDIA_FILE_INFO.VIDEO_RESOLUTION',
 				format: (value: any) => value.formatted,
@@ -248,8 +253,8 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					property.validationResult?.mandatory === true
 						? 'unmet-required'
 						: property.validationResult
-						  ? 'unmet-warning'
-						  : '',
+							? 'unmet-warning'
+							: '',
 			}));
 
 		return (
@@ -414,7 +419,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 										announcePositionX: announcePositionX as PositionX,
 										announcePositionY: announcePositionY as PositionY,
 									},
-							  ]
+								]
 							: [],
 				},
 			],
