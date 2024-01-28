@@ -1562,7 +1562,6 @@ class Players {
 				options.Speed = 100; // Reset speed
 			} else if (typeof options.Speed === 'number') {
 				await this.exec({ command: ['set_property', 'audio-pitch-correction', 'yes'] });
-				await this.exec({ command: ['set_property', 'af', 'loudnorm'] });
 				await this.exec({ command: ['set_property', 'speed', options.Speed / 100] });
 				options.Pitch = 0; // Reset pitch
 			}
