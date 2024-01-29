@@ -326,5 +326,7 @@
 	"MENU_TOOLS_DOWNLOADS": "&Scarica file multimediali",
 	"INIT_DONE": "Ecco fatto!",
 	"MENU_EDIT_UNDO": "Ann&ulla",
-	"MENU_GOTO_OPERATOR": "Interfaccia &operatore"
+	"MENU_GOTO_OPERATOR": "Interfaccia &operatore",
+	"MENU_OPTIONS_CHIBIRANKING": "Mostra la Classifica Chibi del Quiz",
+	"MENU_OPTIONS_CHIBIRANKING_LINK": "Copia il link della classifica staccata"
 }
