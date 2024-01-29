@@ -1599,6 +1599,7 @@
 		"FAVORITES_IMPORTED_BAD_DATA_ERROR": "Error importing favorites : invalid data in file",
 		"FAVORITES_IMPORTED_ERROR": "Error importing favorites",
 		"KARA_CREATED_ERROR": "Error creating the karaoke",
+		"KARA_FILE_EXISTS_ERROR": "Error saving files: A karaoke with the same filename already exists. Please make sure this is not a duplicate and the tags are set correctly",
 		"KARA_HISTORY_ERROR": "Error getting songs sorted by date played",
 		"KARA_RANKING_ERROR": "Error getting songs sorted by most requested",
 		"KARA_PLAYED_ERROR": "Error getting songs sorted by most played",

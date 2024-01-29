@@ -17,6 +17,7 @@ import { getKara } from './kara.js';
 import { integrateKaraFile } from './karaManagement.js';
 import { checkDownloadStatus } from './repo.js';
 import { consolidateTagsInRepo } from './tag.js';
+import { exists } from 'fs-extra';
 
 const service = 'KaraCreation';
 
@@ -50,6 +51,12 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 		}
 		if (!kara.data.ignoreHooks) await applyKaraHooks(kara);
 		const karaFile = await defineFilename(kara, oldKara);
+		const karaJsonFileOld = resolve(resolvedPathRepos('Karaokes', oldKara.repository)[0], oldKara.karafile);
+		const karaJsonFileDest = resolve(
+			resolvedPathRepos('Karaokes', kara.data.repository)[0],
+			`${karaFile}.kara.json`
+		);
+		if (await exists(karaJsonFileDest)) throw new ErrorKM('KARA_FILE_EXISTS_ERROR');
 		const filenames = determineMediaAndLyricsFilenames(kara, karaFile);
 		const mediaDest = resolve(resolvedPathRepos('Medias', kara.data.repository)[0], filenames.mediafile);
 		let oldMediaPath: string;
@@ -136,11 +143,9 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 				}
 			}
 		}
-		const karaPath = resolve(resolvedPathRepos('Karaokes', oldKara.repository)[0], oldKara.karafile);
-		const karaDest = resolve(resolvedPathRepos('Karaokes', kara.data.repository)[0], `${karaFile}.kara.json`);
-		await fs.unlink(karaPath);
-		await writeKara(karaDest, kara);
-		await integrateKaraFile(karaDest, kara, false, refresh);
+		await fs.unlink(karaJsonFileOld);
+		await writeKara(karaJsonFileDest, kara);
+		await integrateKaraFile(karaJsonFileDest, kara, false, refresh);
 		checkDownloadStatus([kara.data.kid]);
 		await consolidateTagsInRepo(kara);
 
@@ -178,6 +183,12 @@ export async function createKara(editedKara: EditedKara) {
 		verifyKaraData(kara);
 		if (!kara.data.ignoreHooks) await applyKaraHooks(kara);
 		const karaFile = await defineFilename(kara);
+		const karaJsonFileDest = resolve(
+			resolvedPathRepos('Karaokes', kara.data.repository)[0],
+			`${karaFile}.kara.json`
+		);
+		if (await exists(karaJsonFileDest)) throw new ErrorKM('KARA_FILE_EXISTS_ERROR');
+
 		const mediaPath = resolve(resolvedPath('Temp'), kara.medias[0].filename);
 		try {
 			const extractFile = await extractVideoSubtitles(mediaPath, kara.data.kid);
@@ -207,9 +218,8 @@ export async function createKara(editedKara: EditedKara) {
 		}
 		await smartMove(mediaPath, mediaDest, { overwrite: true });
 		kara.medias[0].filename = filenames.mediafile;
-		const karaDest = resolve(resolvedPathRepos('Karaokes', kara.data.repository)[0], `${karaFile}.kara.json`);
-		await writeKara(karaDest, kara);
-		await integrateKaraFile(karaDest, kara, false, true);
+		await writeKara(karaJsonFileDest, kara);
+		await integrateKaraFile(karaJsonFileDest, kara, false, true);
 		checkDownloadStatus([kara.data.kid]);
 		await consolidateTagsInRepo(kara);
 
