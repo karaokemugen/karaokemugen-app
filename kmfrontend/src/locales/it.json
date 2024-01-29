@@ -294,7 +294,11 @@
 			"WEBAPPMODE_LIMITED_SHORT": "Limitata",
 			"LABEL": "Interfaccia",
 			"DISPLAY_WELCOME_MESSAGE": "Mostra messaggio di benvenuto",
-			"ALLOW_GUEST_LOGIN": "Consenti ospiti"
+			"ALLOW_GUEST_LOGIN": "Consenti ospiti",
+			"PUBLIC_PLAYER_CONTROLS": "Consenti al pubblico di controllare il lettore multimediale",
+			"REQUIRE_USER_CREATION_CODE": "Richiedi un codice per la creazione utente",
+			"REQUIRE_USER_CREATION_CODE_TOOLTIP": "Agli utenti sarà richiesto un codice per creare nuovi account che solo gli operatori potranno vedere e comunicargli. Il codice verrà mostrato nella schermata Utenti del menu K.",
+			"PUBLIC_PLAYER_CONTROLS_TOOLTIP": "I comandi Riproduci/Sospendi, Interrompi, Precedente e Successivo saranno visibili nell'interfaccia pubblica, consentendo agli utenti di controllare il lettore multimediale dai loro dispositivi. Da utilizzare solo in piccoli gruppi!"
 		}
 	},
 	"KAROULETTE": {
@@ -919,7 +923,7 @@
 		"PL_LIST_ERROR": "Errore durante il recupero di una lista di playlist",
 		"SESSION_LIST_ERROR": "Errore durante il recupero della lista sessioni",
 		"INBOX_DELETE_FORBIDDEN_ERROR": "Eliminazione della posta vietata",
-		"REPO_GIT_UPDATE_ERROR": "Impossibile aggiornare l'archivio Git",
+		"REPO_GIT_UPDATE_ERROR": "Impossibile aggiornare il Git Repo",
 		"DOWNVOTE_ALREADY_DONE": "Hai già votato",
 		"C_SHORTER_THAN_CONFLICT": "Non puoi aggiungere un criterio \"Più breve di\" più alto del criterio \"Più lungo di\".",
 		"USER_UNKNOWN": "Utente connesso sconosciuto",
@@ -958,7 +962,7 @@
 		"LYRICS_FOLDER_OPEN_ERROR": "Errore durante l'apertura della cartella del testo",
 		"TIME_PARADOX": "Rilevato un Paradosso Temporale! Un brano non può essere il proprio brano principale!",
 		"PLAY_ERROR": "Errore durante la riproduzione del brano",
-		"REPO_GIT_GET_COMMITS_ERROR": "Impossibile preparare i Commit Git",
+		"REPO_GIT_GET_COMMITS_ERROR": "Impossibile preparare i Git Commit",
 		"NO_MORE_GUESTS_AVAILABLE": "Non sono disponibili altri account ospiti",
 		"QUIZZ_GET_LAST_SONGS_ERROR": "Errore durante il recupero degli ultimi brani riprodotti nel quiz",
 		"MOVING_MEDIAS_ERROR": "Errore durante lo spostamento dei file multimediali",
@@ -972,7 +976,7 @@
 		"ONLINE_CONVERT_ERROR": "Errore durante la conversione dell'account online",
 		"USER_DELETE_ERROR_ONLINE": "Errore durante l'eliminazione del tuo account online",
 		"CANNOT_DELETE_LAST_REPOSITORY": "L'ultimo archivio non può essere eliminato",
-		"REPO_GIT_ABORT_ERROR": "Impossibile annullare l'unione Git",
+		"REPO_GIT_ABORT_ERROR": "Impossibile annullare il Git Merge",
 		"DOWNLOADS_WIPE_ERROR": "Errore durante l'eliminazione dei download dalla coda",
 		"DOWNLOADS_START_ERROR": "Errore durante l'avvio dei download",
 		"USER_ALREADY_EXISTS": "L'utente esiste già",
@@ -1097,9 +1101,9 @@
 		"GUESTS_NOT_ALLOWED": "Account ospiti non consentiti",
 		"PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED": "Non puoi aggiungere alcun brano, hai raggiunto la quota.",
 		"TAG_EDIT_ERROR": "Errore durante la modifica della tag",
-		"REPO_GIT_CHECK_ERROR": "Impossibile controllare lo stato dell'archivio Git",
+		"REPO_GIT_CHECK_ERROR": "Impossibile controllare lo stato del Git Repo",
 		"REPO_GET_ERROR": "Errore durante il recupero dell'archivio",
-		"REPO_GIT_RESET_ERROR": "Impossibile reimpostare l'archivio Git",
+		"REPO_GIT_RESET_ERROR": "Impossibile reimpostare il Git Repo",
 		"REPO_SYNC_TAGS_ERROR": "Errore durante la sincronizzazione delle tag degli archivi",
 		"SESSION_CREATION_ERROR": "Errore durante la creazione della sessione",
 		"REPO_GIT_UNSTASH_ERROR": "Impossibile recuperare la Stash",
@@ -1131,14 +1135,17 @@
 		"INBOX_VIEW_ERROR": "Impossibile recuperare i karaoke dalla posta",
 		"CANNOT_INSTALL_REPO_AT_WINDOWS_ROOT_DRIVE": "L'archivio non può essere installato alla radice di un disco Windows.",
 		"REPO_GIT_STASH_ERROR": "Impossibile effettuare lo Stash dei cambiamenti",
-		"REPO_GIT_PUSH_ERROR": "Impossibile rilasciare i Commit Git",
+		"REPO_GIT_PUSH_ERROR": "Impossibile rilasciare i Git Commit",
 		"DOWNLOADS_GET_ERROR": "Errore durante il recupero dei download dalla coda",
 		"USER_CREATE_ERROR_ONLINE_DISABLED": "Impossibile creare l'account: è necessaria la modalità online",
 		"DELETE_PLAYLIST_ERROR_WHITELIST": "Impossibile eliminare la whitelist. Imposta prima un'altra playlist come whitelist.",
 		"ERROR_READING_LOGS": "Impossibile leggere i log evento",
 		"BACKGROUND_FILE_DELETE_ERROR_IN_USE": "Errore durante la rimozione del file, è utilizzato dal lettore!",
 		"REPO_LIST_ERROR": "Errore durante il recupero della lista archivi",
-		"UPVOTE_ALREADY_DONE": "Hai già votato"
+		"UPVOTE_ALREADY_DONE": "Hai già votato",
+		"REPO_GIT_DIFF_ERROR": "Errore durante il recupero delle differenze del file",
+		"USER_CREATION_WRONG_SECURITY_CODE": "Codice di sicurezza errato",
+		"KARA_FILE_EXISTS_ERROR": "Errore durante il salvataggio dei file: Esiste già un karaoke con lo stesso nome del file. Si prega di assicurarsi che non si tratta di un doppione e che le tag sono impostate correttamente."
 	},
 	"KARA": {
 		"PAUSE_DOWNLOAD_QUEUE": "Sospendi",
@@ -1186,7 +1193,8 @@
 			"VIDEO_COLORSPACE": "Serie di colori",
 			"FILE_FORMAT": "Formato file",
 			"VIDEO_FRAMERATE": "Frequenza fotogrammi",
-			"AUDIO_COVER_ART": "Copertina"
+			"AUDIO_COVER_ART": "Copertina",
+			"VIDEO_ASPECT_RATIO": "Rapporto d'aspetto"
 		},
 		"COPY_SONG": "Copia brano in altro archivio",
 		"TAG_FILTER": "Filtra tag",
@@ -1447,7 +1455,10 @@
 		"MOVING_MEDIA_BUTTON": "Sposta file multimediali…",
 		"MOVE_TOOLTIP": "Ciò ti permette di definire quali archivi hanno la priorità durante la creazione del database: gli archivi più in alto avranno la precedenza se più archivi hanno la stessa priorità",
 		"UPDATE_TOOLTIP": "Se disabilitati, l'app non aggiornerà più l'archivio.",
-		"AUTO_MEDIA_DOWNLOADS_TOOLTIP": "Se la tua connessione è troppo lenta, consigliamo l'opzione \"Tutti\" così da scaricare i file in anticipo. Ciò è anche consigliato per convenzione o per le dirette così da evitare potenziali errori nel mezzo di una sessione!"
+		"AUTO_MEDIA_DOWNLOADS_TOOLTIP": "Se la tua connessione è troppo lenta, consigliamo l'opzione \"Tutti\" così da scaricare i file in anticipo. Ciò è anche consigliato per convenzione o per le dirette così da evitare potenziali errori nel mezzo di una sessione!",
+		"GIT_SEE_DIFF_IN_FILE": "Vedi le differenze nel file",
+		"GIT_EDIT_MESSAGE": "Modifica il messaggio del Commit",
+		"GIT_SEE_MODIFIED_FILES": "Visualizza i file modificati"
 	},
 	"TAGS": {
 		"KITSU_SLUG_ERROR": "Kitsu Slug non valido",
@@ -1804,7 +1815,8 @@
 		"POINTS_other": "{{count}} punti",
 		"POINTS_one": "{{count}} punto",
 		"STOP": "Interrompi il quiz",
-		"CONTINUE": "Continua il brano dopo la rivelazione della risposta"
+		"CONTINUE": "Continua il brano dopo la rivelazione della risposta",
+		"NO_QUIZ": "Nessun quiz in corso!"
 	},
 	"LOGS": {
 		"LEVELS": {
@@ -2010,7 +2022,7 @@
 				"POLL_PUBLIC_PL_EMPTY": "Impossibile avviare il sondaggio: la playlist pubblica è vuota",
 				"DOWNLOAD": "Errore durante il download del brano",
 				"PLAYER_CLASSIC_PAUSE_SCREEN": "Impossibile preparare la schermata di pausa",
-				"UPDATE_GIT_REPO_ERROR": "Aggiornamento dell'archivio Git fallito",
+				"UPDATE_GIT_REPO_ERROR": "Aggiornamento del Git Repo fallito",
 				"PLAYER_PLAY": "Impossibile riprodurre il brano",
 				"SHORTENER": "Errore durante l'abilitazione dell'ULR corto",
 				"POLL_ALREADY_STARTED": "Un sondaggio è già in corso",
@@ -2056,6 +2068,12 @@
 		"PREVIOUS_SONG": "Brano precedente",
 		"PLAY": "Riproduci",
 		"PAUSE": "Sospendi",
-		"NEXT_SONG": "Prossimo brano"
-	}
+		"NEXT_SONG": "Prossimo brano",
+		"STOP_NOW_SHORT": "Interrompi ORA",
+		"PREVIOUS_SONG_SHORT": "Precedente",
+		"NEXT_SONG_SHORT": "Successivo",
+		"STOP_AFTER_SHORT": "Interrompi dopo"
+	},
+	"NEW_ACCOUNT_CODE_SHORT": "Nuovo codice account",
+	"NEW_ACCOUNT_CODE": "Nuovo codice account (chiedi all'operatore)"
 }
