@@ -1597,6 +1597,7 @@
 		"FAVORITES_IMPORTED_BAD_DATA_ERROR": "Erreur lors de l'import des favoris : données invalides dans le fichier",
 		"FAVORITES_IMPORTED_ERROR": "Erreur lors de l'import de favoris",
 		"KARA_CREATED_ERROR": "Erreur lors de la génération de la chanson",
+		"KARA_FILE_EXISTS_ERROR": "Impossible de sauvegarder: Un karaoké avec le même nom de fichier existe. Assurez-vous que ce n'est pas un doublon et que les tags soient correctement définis.",		
 		"KARA_HISTORY_ERROR": "Erreur lors de la récupération des chansons triés par date jouée",
 		"KARA_RANKING_ERROR": "Erreur lors de la récupération des chansons triés par les plus demandés",
 		"KARA_PLAYED_ERROR": "Erreur lors de la récupération des chansons triés par les plus joués",
