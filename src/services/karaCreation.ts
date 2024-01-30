@@ -56,7 +56,8 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 			resolvedPathRepos('Karaokes', kara.data.repository)[0],
 			`${karaFile}.kara.json`
 		);
-		if (await exists(karaJsonFileDest)) throw new ErrorKM('KARA_FILE_EXISTS_ERROR');
+		if (karaJsonFileOld !== karaJsonFileDest && (await exists(karaJsonFileDest)))
+			throw new ErrorKM('KARA_FILE_EXISTS_ERROR');
 		const filenames = determineMediaAndLyricsFilenames(kara, karaFile);
 		const mediaDest = resolve(resolvedPathRepos('Medias', kara.data.repository)[0], filenames.mediafile);
 		let oldMediaPath: string;
