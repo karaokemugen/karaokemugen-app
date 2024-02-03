@@ -755,45 +755,51 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					}
 					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 12 }}
-					name="subfile"
 				>
-					<Upload
-						headers={{
-							authorization: localStorage.getItem('kmToken'),
-							onlineAuthorization: localStorage.getItem('kmOnlineToken'),
-						}}
-						action="/api/importFile"
-						accept={this.context.globalState.settings.data.state?.supportedLyrics
-							.map(e => `.${e}`)
-							.join(',')}
-						multiple={false}
-						onChange={this.onSubUploadChange}
-						fileList={this.state.subfile}
-					>
-						<Button>
-							<UploadOutlined />
-							{i18next.t('KARA.LYRICS_FILE')}
-						</Button>
-					</Upload>
-					{this.state.subfile?.length > 0 && (
-						<Checkbox
-							checked={this.state.applyLyricsCleanup}
-							onChange={(e: CheckboxChangeEvent) => {
-								this.saveApplyLyricsCleanupSetting(e.target.checked);
-								this.setState({ applyLyricsCleanup: e.target.checked });
-							}}
-						>
-							{i18next.t('KARA.APPLY_LYRICS_CLEANUP')}&nbsp;
-							<Tooltip title={i18next.t('KARA.APPLY_LYRICS_CLEANUP_TOOLTIP')}>
-								<QuestionCircleOutlined />
-							</Tooltip>
-						</Checkbox>
-					)}
-					{this.state.subfile?.length > 0 && this.props.kara?.kid && (
-						<div style={{ marginTop: '1em' }}>
-							<OpenLyricsFileButton kara={this.props.kara} />
-						</div>
-					)}
+					<Row gutter={32}>
+						<Col>
+							<Form.Item name="subfile" style={{ marginBottom: '0' }}>
+								<Upload
+									headers={{
+										authorization: localStorage.getItem('kmToken'),
+										onlineAuthorization: localStorage.getItem('kmOnlineToken'),
+									}}
+									action="/api/importFile"
+									accept={this.context.globalState.settings.data.state?.supportedLyrics
+										.map(e => `.${e}`)
+										.join(',')}
+									multiple={false}
+									onChange={this.onSubUploadChange}
+									fileList={this.state.subfile}
+								>
+									<Button>
+										<UploadOutlined />
+										{i18next.t('KARA.LYRICS_FILE')}
+									</Button>
+								</Upload>
+							</Form.Item>
+
+							{this.state.subfile?.length > 0 && (
+								<Checkbox
+									checked={this.state.applyLyricsCleanup}
+									onChange={(e: CheckboxChangeEvent) => {
+										this.saveApplyLyricsCleanupSetting(e.target.checked);
+										this.setState({ applyLyricsCleanup: e.target.checked });
+									}}
+								>
+									{i18next.t('KARA.APPLY_LYRICS_CLEANUP')}&nbsp;
+									<Tooltip title={i18next.t('KARA.APPLY_LYRICS_CLEANUP_TOOLTIP')}>
+										<QuestionCircleOutlined />
+									</Tooltip>
+								</Checkbox>
+							)}
+							{this.state.subfile?.length > 0 && this.props.kara?.kid && (
+								<div style={{ marginTop: '1em' }}>
+									<OpenLyricsFileButton kara={this.props.kara} />
+								</div>
+							)}
+						</Col>
+					</Row>
 				</Form.Item>
 				<Divider orientation="left">{i18next.t('KARA.SECTIONS.PARENTS')}</Divider>
 				<Paragraph style={{ marginLeft: '200px' }}>{i18next.t('KARA.DESC.PARENTS')}</Paragraph>
