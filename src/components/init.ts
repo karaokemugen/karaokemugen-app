@@ -34,7 +34,7 @@ async function getAppCommitSHA(): Promise<string> {
 	let sha: string;
 	const SHAFile = resolve(getState().resourcePath, 'assets/sha.txt');
 	if (await fileExists(SHAFile)) {
-		sha = await fs.readFile(SHAFile, 'utf-8');
+		sha = (await fs.readFile(SHAFile, 'utf-8')).trimEnd();
 		setState({ version: { sha } });
 	} else {
 		const branch = getState().version.number.split('-')[1];
