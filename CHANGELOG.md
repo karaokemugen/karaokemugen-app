@@ -9,7 +9,7 @@ Happy new year! Late! But happy new year!
 -   For maintainers : Adding a media to the karaoke add form will show possible warnings or errors a media file might cause according to the repository's manifest. This is helpful to prevent people from updating faulty/bad quality stuff. (#1354)
 -   For maintainers : Display list of files and diffs for commits when pushing changes to a git repository (#1555)
 -   For maintainers : A check is made to avoid overwriting song files when saving a song with potentially a duplicate filename :uuid: (#1558)
--   Added a reset buttonf or search fields in public and operator intefaces (#1540)
+-   Added a reset button or search fields in public and operator intefaces (#1540)
 -   Added new subtitle formats thanks to subsrt (.srt, .lrc, .vtt). These will be converted to .ass
 -   Added custom font support. Fonts can be added to a repository and used in .ass files. They'll be copied to a directory on startup where mpv can find them. **As a result, the new minimum mpv version is 0.37** (#1453)
 -   Songs can be added more than once to the public playlists now (see options). This is useful for classic mode karaokes where two people might want to request the same song but not sing at the same time on it. (#1541)
@@ -20,7 +20,8 @@ Happy new year! Late! But happy new year!
 
 ## Changes
 
--   Updated italian, spanish and german translations
+-   Updated spanish and german translations
+-   Added Italian translation
 -   In operator panel, notification toasts are now stacked and cancel button is removed when adding a song (operators can remove them anyway) (#1549)
 -   Quiz answers when loading a previous game are now properly aligned in the setup modal (#1459)
 
