@@ -1,3 +1,54 @@
+# v7.1.50 - 05/02/2024
+
+Happy new year! Late! But happy new year!
+
+## New Features
+
+-   Banner position on player screen can now be customized if the lyrics you're using are at the bottom of the screen for example. (#1530)
+-   For maintainers : Edit and Play buttons added on inbox items once they are downloaded
+-   For maintainers : Adding a media to the karaoke add form will show possible warnings or errors a media file might cause according to the repository's manifest. This is helpful to prevent people from updating faulty/bad quality stuff. (#1354)
+-   For maintainers : Display list of files and diffs for commits when pushing changes to a git repository (#1555)
+-   For maintainers : A check is made to avoid overwriting song files when saving a song with potentially a duplicate filename :uuid: (#1558)
+-   Added a reset buttonf or search fields in public and operator intefaces (#1540)
+-   Added new subtitle formats thanks to subsrt (.srt, .lrc, .vtt). These will be converted to .ass
+-   Added custom font support. Fonts can be added to a repository and used in .ass files. They'll be copied to a directory on startup where mpv can find them. **As a result, the new minimum mpv version is 0.37** (#1453)
+-   Songs can be added more than once to the public playlists now (see options). This is useful for classic mode karaokes where two people might want to request the same song but not sing at the same time on it. (#1541)
+-   Added optional player controls in public interface. Useful for allowing everyone control of the player in a controlled environment (with friends, etc.) (#1526)
+-   Added detachable Score Window for twitch overlays during quizzes (#1467)
+-   mp3 isn't the only audio file format anymore (#1561)
+-   Added option to require a security code from operator in order to create new account/login from new online accounts (#1529)
+
+## Changes
+
+-   Updated italian, spanish and german translations
+-   In operator panel, notification toasts are now stacked and cancel button is removed when adding a song (operators can remove them anyway) (#1549)
+-   Quiz answers when loading a previous game are now properly aligned in the setup modal (#1459)
+
+## Fixes
+
+-   Fixed loudnorm filter not being applied when changing playback speed (#1563)
+-   Fixed avatar not disappearing sometimes after 8 seconds on player screen (#1559)
+-   Fixed quiz answers alignment in score panel (#1491)
+-   Fixed possible circular dependancy shenanigans with songs (#1553). Let's avoid pime taradoxes.
+-   Fixed guest names for online use. Some weren't sluggified correctly (#1554)
+-   Fixed playlist display and playing cursor on public playlist page (#1548)
+-   Avoid scrolling to playing song when dragging occurs
+-   Fixed playerbox display with multiple tags and versions
+-   Fixed public playlist page not using the entire window height (#1528)
+-   Fixed playlist and song search sharing the same search field in public interface (#1537)
+-   Fixed news sometimes not displaying correctly on welcome screen (#1411)
+-   Fixed online authentification a bit by increasing timeout on check
+-   Fixed subtitles cleaning that could remove \r tags (#1542)
+-   Fixed possible errors during Postgres dumps, making it fail while it didn't.
+-   Fixed various issues with ffmpeg and aegisub (#1545 #1546)
+-   Prevented query deadlocking when removing a tag with lots of karas using it
+
+## Misc
+
+-   Re-using @cospired/i18n-iso-languages instead of a fork. We now just add our private languages on top of it
+-   Upgraded backend and frontend dependencies
+-   Upgraded antd to version 5 (#1428)
+
 # v7.1.41 - 11/12/2023
 
 This is a hotfix release
