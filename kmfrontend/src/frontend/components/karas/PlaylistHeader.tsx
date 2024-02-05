@@ -56,6 +56,11 @@ function PlaylistHeader(props: IProps) {
 	const [activeFilterUUID, setActiveFilterUUID] = useState('');
 	const [orderByLikes, setOrderByLikes] = useState(false);
 	const [activeFilter, setActiveFilter] = useState<'search' | 'recent' | 'requested'>('search');
+	const [searchFilter, setSearchFilter] = useState(
+		props.side === 'left'
+			? context.globalState.frontendContext.filterValue1
+			: context.globalState.frontendContext.filterValue2
+	);
 
 	const getKarasList = (activeFilter: 'search' | 'recent' | 'requested', orderByLikes = false) => {
 		setActiveFilter(activeFilter);
@@ -164,6 +169,7 @@ function PlaylistHeader(props: IProps) {
 
 	let timer;
 	const changeFilterValue = e => {
+		setSearchFilter(e.target.value);
 		if (timer) clearTimeout(timer);
 		timer = setTimeout(
 			() => setFilterValue(context.globalDispatch, e.target.value, props.side, playlist?.plaid),
@@ -374,14 +380,19 @@ function PlaylistHeader(props: IProps) {
 					<input
 						type="text"
 						placeholder={`\uF002 ${i18next.t('SEARCH')}`}
-						defaultValue={
-							props.side === 'left'
-								? context.globalState.frontendContext.filterValue1
-								: context.globalState.frontendContext.filterValue2
-						}
+						value={searchFilter}
 						onChange={changeFilterValue}
 						disabled={props.criteriasOpen}
 					/>
+					<button
+						className="btn"
+						onClick={() => {
+							setSearchFilter('');
+							setFilterValue(context.globalDispatch, '', props.side, playlist?.plaid);
+						}}
+					>
+						<i className="fas fa-eraser" />
+					</button>
 				</div>
 				{plCommandsContainer}
 			</div>

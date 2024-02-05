@@ -561,12 +561,12 @@ export function getPlaylistContentsMini(plaid: string) {
 /** Get a tiny amount of data from a PLC
  * After Mini-PL, Micro-PL, we need the PL-C format.
  */
-export async function getPlaylistContentsMicro(plaid: string, token: OldJWTToken) {
+export async function getPlaylistContentsMicro(plaid: string, username?: string, token?: OldJWTToken) {
 	try {
 		const pl = await getPlaylistInfo(plaid, token);
 		// Playlist isn't visible to user, throw.
 		if (!pl) throw new ErrorKM('UNKNOWN_PLAYLIST', 404, false);
-		return await selectPlaylistContentsMicro(plaid);
+		return await selectPlaylistContentsMicro(plaid, username);
 	} catch (err) {
 		logger.error(`Error fetching playlist micro contents : ${err}`, { service });
 		sentry.error(err);
@@ -633,13 +633,6 @@ export async function getKaraFromPlaylist(plc_id: number, token: OldJWTToken) {
 /** Get PLC by KID and Username */
 function getPLCByKIDUser(kid: string, username: string, plaid: string) {
 	return selectPLCByKIDAndUser(kid, username, plaid);
-}
-
-/** Return all songs not present in specified playlist */
-export function isAllKarasInPlaylist(karas: PLCInsert[], playlist: DBPLCBase[]) {
-	return {
-		notPresent: karas.filter(k => !playlist.map(plc => plc.kid).includes(k.kid)),
-	};
 }
 
 /** Add song to playlist
@@ -719,28 +712,28 @@ export async function addKaraToPlaylist(params: AddKaraParams) {
 		const [playlistMaxPos] = await Promise.all([selectMaxPosInPlaylist(params.plaid)]);
 		profile('addKaraToPL-determinePos-queries');
 		const plContents = await selectPlaylistContentsMicro(params.plaid);
-		// Making a unique ID depending on if we're in public playlist or something else.
-		// Unique ID here is to determine if a song is already present or not
-		// A person cannot add a song a second time if it's already pending. However, if it's been already played, it won't count
+
+		profile('addKaraToPL-determinePos');
 		const playingObject = getPlayingPos(plContents);
 		const playingPos = playingObject?.plc_id_pos || 0;
-		profile('addKaraToPL-determinePos');
+
 		profile('addKaraToPL-checkDuplicates');
-		// If no song is currently playing, plContentsAfterPlay returns all songs in playlist. These are all songs not played yet.
-		const plContentsAfterPlay = plContents.filter((plc: DBPLCBase) => plc.pos >= playingPos);
-		const songs =
+		const duplicateCheckList =
 			user.type === 0
 				? // Admin can add a song multiple times in the current or any other playlist, even by the same user
 				  conf.Playlist.AllowDuplicates
-					? // If it's set we allow it only for songs after play cursor.
-					  // This means you can readd a song if it's already been played.
-					  // I hate this logic.
-					  isAllKarasInPlaylist(karaList, plContentsAfterPlay)
+					? []
 					: // Option to allow is not set : removing duplicates from songs to add
-					  isAllKarasInPlaylist(karaList, plContents)
+					  plContents
 				: // Not an admin adding these songs.
-				  isAllKarasInPlaylist(karaList, plContents);
-		karaList = songs.notPresent;
+				  conf.Playlist.AllowPublicDuplicates === 'allowed'
+				  ? // A user isn't allowed to add the same song twice
+				    // But several users can add the same song twice
+				    // So we remove all songs they haven't added already from the list that's going to be compared later.
+				    plContents.filter(plc => plc.username === requester)
+				  : plContents;
+		karaList = karaList.filter(k => !duplicateCheckList.map(plc => plc.kid).includes(k.kid));
+
 		profile('addKaraToPL-checkDuplicates');
 		if (karaList.length === 0) {
 			throw new ErrorKM('PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED', 409, false);

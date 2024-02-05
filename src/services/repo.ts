@@ -8,18 +8,12 @@ import { TopologicalSort } from 'topological-sort';
 import { compareKarasChecksum, generateDB } from '../dao/database.js';
 import { baseChecksum, editKaraInStore, getStoreChecksum, sortKaraStore } from '../dao/dataStore.js';
 import { updateDownloaded } from '../dao/download.js';
-import {
-	deleteRepo,
-	insertRepo,
-	readRepoManifest,
-	selectRepos,
-	selectRepositoryManifest,
-	updateRepo,
-} from '../dao/repo.js';
+import { deleteRepo, insertRepo, updateRepo } from '../dao/repo.js';
 import { getSettings, refreshAll, saveSetting } from '../lib/dao/database.js';
 import { initHooks } from '../lib/dao/hook.js';
 import { refreshKaras } from '../lib/dao/kara.js';
 import { parseKara, writeKara } from '../lib/dao/karafile.js';
+import { readRepoManifest, selectRepos, selectRepositoryManifest } from '../lib/dao/repo.js';
 import { APIMessage } from '../lib/services/frontend.js';
 import { readAllKaras } from '../lib/services/generation.js';
 import { DBTag } from '../lib/types/database/tag.js';
@@ -44,6 +38,7 @@ import { applyPatch, cleanFailedPatch, downloadAndExtractZip, writeFullPatchedFi
 import sentry from '../utils/sentry.js';
 import { getState } from '../utils/state.js';
 import { updateMedias } from './downloadMedias.js';
+import { addFont, deleteFont, initFonts } from './fonts.js';
 import { getKara, getKaras } from './kara.js';
 import { createKaraInDB, integrateKaraFile, removeKara } from './karaManagement.js';
 import { createProblematicSmartPlaylist, updateAllSmartPlaylists } from './smartPlaylist.js';
@@ -170,6 +165,7 @@ export async function updateAllRepos() {
 				} else if (await updateZipRepo(repo.Name)) {
 					// updateZipRepo returns true when the function has downloaded the entire base (either because it's new or because an error happened during the patch)
 					doGenerate = true;
+					initFonts();
 				}
 			} catch (err) {
 				logger.error(`Failed to update repository ${repo.Name}`, { service, obj: err });
@@ -665,6 +661,13 @@ async function applyChanges(changes: Change[], repo: Repository) {
 	try {
 		const tagFiles = changes.filter(f => f.path.endsWith('.tag.json'));
 		const karaFiles = changes.filter(f => f.path.endsWith('.kara.json'));
+		const fontFiles = changes.filter(f => f.path.startsWith('fonts/'));
+		// If maintenance mode is disabled and fonts are detected we'll throw so the .zip gets downloaded instead. We *might* want to do it better sometime.
+		// Like you know, actually downloading the fonts from KMServer or something.
+		if (fontFiles.length > 0 && !repo.MaintainerMode) {
+			logger.warn('Changes include new font(s). Throwing so the .zip is downloaded instead.');
+			throw 'fonts? izok.';
+		}
 		const TIDsToDelete = [];
 		task = new Task({ text: 'UPDATING_REPO', total: karaFiles.length + tagFiles.length });
 		const tagFilesToProcess = [];
@@ -769,8 +772,20 @@ async function applyChanges(changes: Change[], repo: Repository) {
 			);
 		}
 		await Promise.all(deletePromises);
+		// Font downloads
+		for (const fontFile of fontFiles) {
+			if (fontFile.type === 'delete') {
+				deleteFont(fontFile.path, repo.Name).catch();
+			}
+			if (fontFile.type === 'new') {
+				await addFont(fontFile.path, repo.Name);
+			}
+		}
 		task.update({ text: 'REFRESHING_DATA', subtext: '', total: 0, value: 0 });
 		// Yes it's done in each action individually but since we're doing them asynchronously we need to re-sort everything and get the store checksum once again to make sure it doesn't re-generate database on next startup
+		if (fontFiles.length > 0) {
+			initFonts();
+		}
 		await saveSetting('baseChecksum', await baseChecksum());
 		if (tagFiles.length > 0 || karaFiles.length > 0) await refreshAll();
 		await checkDownloadStatus(KIDsToUpdate);
@@ -1467,6 +1482,20 @@ export async function pushCommits(repoName: string, push: Push, ignoreFTP?: bool
 		);
 	} finally {
 		if (ftp) ftp.disconnect().catch(() => {});
+	}
+}
+
+/** Return a diff of a specified file using git */
+export async function getFileDiff(file: string, repoName: string) {
+	try {
+		const repo = getRepo(repoName);
+		if (!repo) throw new ErrorKM('UNKNOWN_REPOSITORY', 404, false);
+		const git = await setupGit(repo);
+		return await git.diffFile(file);
+	} catch (err) {
+		logger.error(`Unable to diff file ${file} for repo ${repoName}`, { service, obj: err });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('REPO_GIT_DIFF_ERROR');
 	}
 }
 

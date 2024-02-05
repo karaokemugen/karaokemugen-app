@@ -4,26 +4,25 @@ import { useContext, useEffect, useState } from 'react';
 import { render } from 'react-dom';
 import { useLocation, useNavigate } from 'react-router';
 
-import { CurrentSong } from '../../../../src/types/playlist';
 import { PublicPlayerState } from '../../../../src/types/state';
 import KLogo from '../../assets/Klogo.png';
 import { logout } from '../../store/actions/auth';
 import { showModal } from '../../store/actions/modal';
 import GlobalContext from '../../store/context';
 import { commandBackend, getSocket } from '../../utils/socket';
-import { callModal, displayMessage, expand, isNonStandardPlaylist } from '../../utils/tools';
+import { callModal, displayMessage, expand } from '../../utils/tools';
 import KmAppHeaderDecorator from './decorators/KmAppHeaderDecorator';
 import RadioButton from './generic/RadioButton';
-import PlayCurrentModal from './modals/PlayCurrentModal';
 import ProfilModal from './modals/ProfilModal';
 import QuizModal from './modals/QuizModal';
 import Tutorial from './modals/Tutorial';
 import UsersModal from './modals/UsersModal';
+import AdminMessageModal from './modals/AdminMessageModal';
+import PlayerControls from './PlayerControls';
 
 interface IProps {
 	currentPlaylist: PlaylistElem;
 	powerOff: (() => void) | undefined;
-	adminMessage: () => void;
 	putPlayerCommando: (event: any) => void;
 	updateQuizRanking: () => void;
 }
@@ -33,7 +32,6 @@ function AdminHeader(props: IProps) {
 	const [dropDownSettings, setDropDownSettings] = useState(false);
 	const [dropDownMenu, setDropDownMenu] = useState(false);
 	const [statusPlayer, setStatusPlayer] = useState<PublicPlayerState>();
-	const [gameContinue, setGameContinue] = useState(false);
 	const location = useLocation();
 	const navigate = useNavigate();
 
@@ -109,41 +107,6 @@ function AdminHeader(props: IProps) {
 		commandBackend('updateSettings', { setting: data }).catch(() => {});
 	};
 
-	const play = (event: any) => {
-		if (
-			props.currentPlaylist &&
-			(!statusPlayer || statusPlayer?.playerStatus === 'stop') &&
-			context.globalState.frontendContext.playlistInfoLeft.plaid !== props.currentPlaylist?.plaid &&
-			context.globalState.frontendContext.playlistInfoRight.plaid !== props.currentPlaylist?.plaid &&
-			(!isNonStandardPlaylist(context.globalState.frontendContext.playlistInfoLeft.plaid) ||
-				!isNonStandardPlaylist(context.globalState.frontendContext.playlistInfoRight.plaid))
-		) {
-			showModal(
-				context.globalDispatch,
-				<PlayCurrentModal
-					currentPlaylist={props.currentPlaylist}
-					displayedPlaylist={
-						!isNonStandardPlaylist(context.globalState.frontendContext.playlistInfoRight.plaid)
-							? context.globalState.frontendContext.playlistInfoRight
-							: context.globalState.frontendContext.playlistInfoLeft
-					}
-				/>
-			);
-		} else {
-			props.putPlayerCommando(event);
-		}
-	};
-
-	const toggleGameContinue = () => {
-		commandBackend('continueGameSong').then(setGameContinue);
-	};
-
-	useEffect(() => {
-		getSocket().on('quizStart', () => {
-			setGameContinue(false);
-		});
-	}, []);
-
 	const getPlayerStatus = async () => {
 		try {
 			const result = await commandBackend('getPlayerStatus');
@@ -154,9 +117,7 @@ function AdminHeader(props: IProps) {
 	};
 
 	useEffect(() => {
-		if (context.globalState.auth.isAuthenticated) {
-			getPlayerStatus();
-		}
+		if (context.globalState.auth.isAuthenticated) getPlayerStatus();
 		getSocket().on('playerStatus', playerUpdate);
 		document.getElementById('root').addEventListener('click', closeDropdownMenu);
 		return () => {
@@ -192,6 +153,10 @@ function AdminHeader(props: IProps) {
 			state.pitch = 0; // reset pitch
 			return state;
 		});
+	};
+
+	const adminMessage = () => {
+		showModal(context.globalDispatch, <AdminMessageModal />);
 	};
 
 	const quizInProgress = context.globalState.settings.data.state.quiz.running;
@@ -293,7 +258,7 @@ function AdminHeader(props: IProps) {
 						<li className="buttonsMobileMenu">
 							<div
 								onClick={() => {
-									props.adminMessage();
+									adminMessage();
 									setDropDownMenu(!dropDownMenu);
 								}}
 							>
@@ -324,7 +289,7 @@ function AdminHeader(props: IProps) {
 								data-namecommand="goTo"
 							>
 								<i className="fas fa-fw fa-undo-alt" />
-								&nbsp;{i18next.t('REWIND')}
+								&nbsp;{i18next.t('PLAYERS_CONTROLS.REWIND')}
 							</div>
 						</li>
 						<li className="buttonsMobileMenuSmaller">
@@ -361,7 +326,7 @@ function AdminHeader(props: IProps) {
 									data-namecommand="stopNow"
 								>
 									<i className="fas fa-fw fa-stop" />
-									&nbsp;{i18next.t('STOP_NOW')}
+									&nbsp;{i18next.t('PLAYERS_CONTROLS.STOP_NOW')}
 								</div>
 							) : (
 								<div
@@ -373,7 +338,7 @@ function AdminHeader(props: IProps) {
 									data-namecommand="stopAfter"
 								>
 									<i className="fas fa-fw fa-stop" />
-									&nbsp;{i18next.t('STOP_AFTER')}
+									&nbsp;{i18next.t('PLAYERS_CONTROLS.STOP_AFTER')}
 								</div>
 							)}
 						</li>
@@ -473,89 +438,19 @@ function AdminHeader(props: IProps) {
 			) : null}
 
 			<div className="header-group controls">
-				{statusPlayer?.stopping ||
-				statusPlayer?.mediaType !== 'song' ||
-				context?.globalState.settings.data.config?.Karaoke.ClassicMode ? (
-					<button
-						title={i18next.t('STOP_NOW')}
-						id="stopNow"
-						data-namecommand="stopNow"
-						className="btn btn-danger stopButton"
-						onClick={props.putPlayerCommando}
-					>
-						<i className="fas fa-fw fa-stop" />
-					</button>
-				) : (
-					<button
-						title={i18next.t('STOP_AFTER')}
-						id="stopAfter"
-						data-namecommand="stopAfter"
-						className="btn btn-danger-low stopButton"
-						onClick={props.putPlayerCommando}
-					>
-						<i className="fas fa-fw fa-stop" />
-					</button>
-				)}
-				<button
-					title={i18next.t('PREVIOUS_SONG')}
-					id="prev"
-					data-namecommand="prev"
-					className="btn btn-default"
-					onClick={props.putPlayerCommando}
-					disabled={(statusPlayer?.currentSong as CurrentSong)?.pos === 1}
-				>
-					<i className="fas fa-fw fa-fast-backward" />
-				</button>
-				<button
-					title={i18next.t('PLAY_PAUSE')}
-					id="status"
-					data-namecommand={statusPlayer && statusPlayer.playerStatus === 'play' ? 'pause' : 'play'}
-					className="btn btn-primary"
-					onClick={play}
-				>
-					{statusPlayer?.playerStatus === 'play' ? (
-						<i className="fas fa-fw fa-pause" />
-					) : (
-						<i className="fas fa-fw fa-play" />
-					)}
-				</button>
-				<button
-					title={i18next.t('NEXT_SONG')}
-					id="skip"
-					data-namecommand="skip"
-					className="btn btn-default"
-					onClick={props.putPlayerCommando}
-					disabled={(statusPlayer?.currentSong as CurrentSong)?.pos === props.currentPlaylist?.karacount}
-				>
-					<i className="fas fa-fw fa-fast-forward" />
-				</button>
-				{quizInProgress ? (
-					<button
-						title={i18next.t('QUIZ.CONTINUE')}
-						className={`btn ${gameContinue ? 'btn-primary' : ''}`}
-						onClick={toggleGameContinue}
-					>
-						<i className="fas fa-fw fa-forward" />
-					</button>
-				) : (
-					<button
-						title={i18next.t('REWIND')}
-						id="goTo"
-						data-namecommand="goTo"
-						defaultValue="0"
-						className="btn btn-danger-low rewindButton"
-						onClick={props.putPlayerCommando}
-					>
-						<i className="fas fa-fw fa-undo-alt" />
-					</button>
-				)}
+				<PlayerControls
+					currentPlaylist={props.currentPlaylist}
+					statusPlayer={statusPlayer}
+					scope="admin"
+					putPlayerCommando={props.putPlayerCommando}
+				/>
 			</div>
 
 			<button
 				title={i18next.t('MESSAGE')}
 				id="adminMessage"
 				className="btn btn-dark messageButton"
-				onClick={props.adminMessage}
+				onClick={adminMessage}
 			>
 				<i className="fas fa-fw fa-comment" />
 			</button>

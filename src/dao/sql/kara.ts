@@ -66,6 +66,8 @@ SELECT
   ak.comment AS comment,
   ak.ignore_hooks AS ignore_hooks,
   ak.from_display_type AS from_display_type,
+  ak.announce_position_x,
+  ak.announce_position_y,
   COUNT(p.*)::integer AS played,
   ${selectRequested}
   (CASE WHEN :dejavu_time < MAX(p.played_at)
@@ -121,9 +123,44 @@ ${
 ${filterClauses.map(clause => `${filterType} (${clause})`).reduce((a, b) => `${a} ${b}`, '')}
 ${whereClauses}
 ${blacklistClauses}
-GROUP BY ${groupClauses} ak.pk_kid, pc.fk_kid, ak.titles, ak.titles_aliases, ak.titles_default_language, ak.comment, ak.songorder, ak.serie_singergroup_singer_sortable, ak.subfile, ak.year, ak.tags, ak.mediafile, ak.karafile, ak.duration, ak.loudnorm, ak.created_at, ak.modified_at, ak.mediasize, ak.repository, ak.songtypes_sortable, f.fk_kid, ak.tid, ak.languages_sortable, ak.download_status, ak.ignore_hooks, ak.titles_sortable, ak.from_display_type ${groupClauseEnd}
+GROUP BY ${groupClauses} 
+	ak.pk_kid, 
+	pc.fk_kid, 
+	ak.titles, 
+	ak.titles_aliases, 
+	ak.titles_default_language, 
+	ak.comment, 
+	ak.announce_position_x,
+	ak.announce_position_y,
+	ak.songorder, 
+	ak.serie_singergroup_singer_sortable, 
+	ak.subfile, 
+	ak.year, 
+	ak.tags, 
+	ak.mediafile, 
+	ak.karafile, 
+	ak.duration, 
+	ak.loudnorm, 
+	ak.created_at, 
+	ak.modified_at, 
+	ak.mediasize, 
+	ak.repository, 
+	ak.songtypes_sortable, 
+	f.fk_kid, 
+	ak.tid, 
+	ak.languages_sortable, 
+	ak.download_status, 
+	ak.ignore_hooks, 
+	ak.titles_sortable, 
+	ak.from_display_type 
+	${groupClauseEnd}
 ${havingClause}
-ORDER BY ${orderClauses} ak.serie_singergroup_singer_sortable, ak.songtypes_sortable DESC, ak.songorder, ak.languages_sortable, ak.titles_sortable
+ORDER BY ${orderClauses} 
+	ak.serie_singergroup_singer_sortable, 
+	ak.songtypes_sortable DESC, 
+	ak.songorder, 
+	ak.languages_sortable, 
+	ak.titles_sortable
 ${limitClause}
 ${offsetClause}
 `;
@@ -182,7 +219,9 @@ INSERT INTO kara(
 	download_status,
 	comment,
 	from_display_type,
-	ignore_hooks
+	ignore_hooks,
+	announce_position_x,
+	announce_position_y
 )
 VALUES(
 	:titles,
@@ -203,7 +242,9 @@ VALUES(
 	:download_status,
 	:comment,
 	:from_display_type,
-	:ignoreHooks
+	:ignoreHooks,
+	:announce_position_x,
+	:announce_position_y
 )
 ON CONFLICT (pk_kid) DO
 UPDATE SET
@@ -225,7 +266,9 @@ UPDATE SET
  download_status = :download_status,
  comment = :comment,
  from_display_type = :from_display_type,
- ignore_hooks = :ignoreHooks
+ ignore_hooks = :ignoreHooks,
+ announce_position_x = :announce_position_x,
+ announce_position_y = :announce_position_y
 RETURNING
  (SELECT k2.karafile FROM kara k2 WHERE k2.pk_kid = kara.pk_kid) AS old_karafile,
  (SELECT k2.subfile FROM kara k2 WHERE k2.pk_kid = kara.pk_kid) AS old_subfile,
@@ -235,7 +278,7 @@ RETURNING
  (SELECT k2.download_status FROM kara k2 WHERE k2.pk_kid = kara.pk_kid) AS old_download_status,
  (SELECT array_remove(array_agg(DISTINCT kr.fk_kid_parent), null) FROM kara_relation kr, kara k2 WHERE kr.fk_kid_child = k2.pk_kid) AS old_parents,
  (SELECT array_remove(array_agg(DISTINCT kr.fk_kid_parent), null) FROM kara_relation kr WHERE kr.fk_kid_child = kara.pk_kid) AS parents,
- karafile, subfile, mediafile, modified_at, repository, download_status
+ karafile, subfile, mediafile, modified_at, repository, download_status, announce_position_x, announce_position_y
 ;
 `;
 

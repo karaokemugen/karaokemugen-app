@@ -22,6 +22,7 @@ import logger, { archiveOldLogs, enableWSLogging, profile } from '../lib/utils/l
 import { createImagePreviews } from '../lib/utils/previews.js';
 import { initDownloader, wipeDownloadQueue, wipeDownloads } from '../services/download.js';
 import { updateAllMedias } from '../services/downloadMedias.js';
+import { initFonts } from '../services/fonts.js';
 import { getKaras, initFetchPopularSongs } from '../services/kara.js';
 import { initPlayer, quitmpv } from '../services/player.js';
 import { initPlaylistSystem } from '../services/playlist.js';
@@ -223,6 +224,7 @@ export async function initEngine() {
 			postInit();
 			initHooks();
 			initRepos();
+			initFonts();
 			archiveOldLogs();
 			initUsageTimer();
 			if (conf.Player.KeyboardMediaShortcuts) registerShortcuts();

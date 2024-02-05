@@ -61,16 +61,12 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 		this.readKaraQueue();
 		this.getKaras();
 		this.getTags();
-		getSocket().on('downloadQueueStatus', this.downloadQueueStatus);
+		getSocket().on('downloadQueueStatus', this.readKaraQueue);
 	}
 
 	componentWillUnmount() {
-		getSocket().off('downloadQueueStatus', this.downloadQueueStatus);
+		getSocket().off('downloadQueueStatus', this.readKaraQueue);
 	}
-
-	downloadQueueStatus = (data?: any) => {
-		this.setState({ karasQueue: data });
-	};
 
 	async getTags() {
 		try {

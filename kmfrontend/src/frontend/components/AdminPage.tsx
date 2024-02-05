@@ -19,7 +19,6 @@ import PlaylistMainDecorator from './decorators/PlaylistMainDecorator';
 import KaraDetail from './karas/KaraDetail';
 import Playlist from './karas/Playlist';
 import ProgressBar from './karas/ProgressBar';
-import AdminMessageModal from './modals/AdminMessageModal';
 import QuizModal from './modals/QuizModal';
 import Tutorial from './modals/Tutorial';
 import Options from './options/Options';
@@ -69,10 +68,6 @@ function AdminPage(props: IProps) {
 
 	const toggleSearchMenuRight = () => {
 		setSearchMenuOpenRight(!searchMenuOpenRight);
-	};
-
-	const adminMessage = () => {
-		showModal(context.globalDispatch, <AdminMessageModal />);
 	};
 
 	const putPlayerCommando = (event: any) => {
@@ -193,7 +188,6 @@ function AdminPage(props: IProps) {
 			<KmAppWrapperDecorator>
 				<AdminHeader
 					powerOff={props.powerOff}
-					adminMessage={adminMessage}
 					putPlayerCommando={putPlayerCommando}
 					currentPlaylist={playlistList.filter(playlistElem => playlistElem.flag_current)[0]}
 					updateQuizRanking={() => setQuizRanking(!quizRanking)}

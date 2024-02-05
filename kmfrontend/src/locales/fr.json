@@ -41,12 +41,6 @@
 	"PITCH_RESET": "Revenir à la hauteur normale",
 	"PITCH_DOWN": "Diminuer la hauteur",
 	"OPTIONS": "Options",
-	"STOP_AFTER": "Arrêt après la chanson en cours",
-	"STOP_NOW": "Arrêt immédiat (C'est dangereux !)",
-	"REWIND": "Rembobiner la VHS",
-	"PREVIOUS_SONG": "Chanson précédente",
-	"PLAY_PAUSE": "Jouer/pause",
-	"NEXT_SONG": "Chanson suivante",
 	"PASSWORD": "Mot de passe (8 caractères minimum)",
 	"PASSWORDCONF": "Confirmation du mot de passe",
 	"NEW_PASSWORD": "Nouveau mot de passe",
@@ -433,8 +427,15 @@
 			"FREE_UPVOTES_REQUIREDPERCENT_TOOLTIP": "Pourcentage par rapport au nombre d'utilisateurs connectés",
 			"AUTOPLAY": "Lecture automatique sur premier ajout",
 			"AUTOPLAY_TOOLTIP": "La lecture commence dés qu'un ajout est fait à la liste de lecture",
-			"ALLOW_DUPLICATES": "Permettre les doublons dans les listes de lecture",
-			"ALLOW_DUPLICATES_TOOLTIP": "Avec cette option, une liste de lecture peut contenir deux fois (ou plus) la même chanson. Seuls les opérateurs peuvent ajouter des doublons. Un doublon ne peut être ajouté que si la chanson est déjà passée.",
+			"ALLOW_DUPLICATES": "Autoriser les doublons dans les listes de lecture (opérateur uniquement)",
+			"ALLOW_DUPLICATES_TOOLTIP": "Avec cette option, une liste de lecture peut contenir deux fois (ou plus) la même chanson. Seuls les opérateurs peuvent ajouter des doublons.",
+			"ALLOW_PUBLIC_DUPLICATES": "Autoriser les doublons dans les listes de lecture (public)",
+			"ALLOW_PUBLIC_DUPLICATES_TOOLTIP": "Permettre ou non au public d'ajouter une chanson plusieurs fois. Un utilisateur ne peut ajouter une chanson déjà présente que si ce n'est pas lui qui l'a déjà ajoutée. Soutiens uniquement veut dire que le public ne peut pas ajouter de doublons mais peut soutenir des chansons. \"Autoriser\" est bien pour le mode Karaoke Classique. \"Soutiens uniquement\" pour un karaoke en public.",
+			"ALLOW_PUBLIC_DUPLICATES_OPTIONS": {
+				"ALLOWED": "Autoriser",
+				"UPVOTES_ONLY": "Soutiens uniquement",
+				"DISALLOWED": "Interdire"
+			},
 			"PLAYLIST_RANDOMSONGSAFTERENDMESSAGE": "Afficher régulièrement un message à l'écran pour inviter les utilisateurs à ajouter une chanson lors de la lecture aléatoire d'une chanson après la fin de la liste de lecture en cours",
 			"PLAYLIST_RANDOMSONGSAFTERENDMESSAGE_TOOLTIP": "Le message sera affiché au milieu de l'écran lorsque Karaoke Mugen jouera des chansons aléatoires, invitant les utilisateurs à ajouter des chansons",
 			"MEDIAS_SETTINGS": "Intermissions",
@@ -529,6 +530,8 @@
 			"ALLOW_GUEST_LOGIN_TOOLTIP": "Si désactivé, un compte (local ou en ligne) sera requis pour se connecter à votre instance",
 			"ALLOW_USER_CREATION": "Autoriser la création d'utilisateurs",
 			"ALLOW_USER_CREATION_TOOLTIP": "Si désactivé, les utilisateurs ne pourront pas créer de nouveaux comptes locaux ou se connecter avec leur compte en ligne s'ils ne sont pas déjà connus de votre application Karaoke Mugen.",
+			"REQUIRE_USER_CREATION_CODE": "Code requis pour la création de nouveaux utilisateurs",
+			"REQUIRE_USER_CREATION_CODE_TOOLTIP": "Les utilisateurs auront besoin d'un code pour se créer un compte. Seuls les opérateurs peuvent le voir et le communiquer aux utilisateurs. Le code se situe dans la fenêtre \"Participants\" accessible depuis le menu K.",
 			"ALLOW_CUSTOM_TEMPORARY_GUESTS": "Comptes invités personnalisables",
 			"ALLOW_CUSTOM_TEMPORARY_GUESTS_TOOLTIP": "Laissez aux invités le loisir de choisir leur pseudo, plutôt que de subir un nom choisi au hasard par l'application.",
 			"WEBAPPMODE": "Mode de l'interface publique",
@@ -542,6 +545,8 @@
 			"WEBAPPMODE_OPEN": "Ouvert (par défaut) : Ajouts possibles",
 			"SHOW_AVATARS_ON_PLAYLIST": "Afficher les avatars sur les listes de lecture",
 			"SHOW_AVATARS_ON_PLAYLIST_TOOLTIP": "Pour savoir qui a ajouté quoi d'un coup d'oeil.",
+			"PUBLIC_PLAYER_CONTROLS": "Permettre au public de contrôler le lecteur",
+			"PUBLIC_PLAYER_CONTROLS_TOOLTIP": "Des boutons jouer/pause, stop, précédent et suivant seront visibles sur l'interface publique, permettant aux utilisateurs de contrôler le lecteur depuis leur appareil. A n'utiliser qu'en petits groupes !",
 			"DISPLAY_WELCOME_MESSAGE": "Afficher un message de bienvenue",
 			"DISPLAY_WELCOME_MESSAGE_TOOLTIP": "Ce message sera affiché sur la page de connexion de votre session de karaoké"
 		}
@@ -638,6 +643,8 @@
 	"SELECT_KARAS_REQUIRED": "Vous devez sélectionner au moins une chanson",
 	"PL_MULTIPLE_ADDED": "Ajout de {{count}} chansons",
 	"SECURITY_CODE": "Code de sécurité",
+	"NEW_ACCOUNT_CODE_SHORT": "Code de nouveau compte",
+	"NEW_ACCOUNT_CODE": "Code de nouveau compte (à demander à l'opérateur)",
 	"FORGOT_PASSWORD": "Mot de passe oublié ?",
 	"MAKE_ACCOUNT_ADMIN": "Promouvoir le compte en opérateur",
 	"MAKE_ACCOUNT_ADMIN_MESSAGE": "Si vous souhaitez promouvoir votre compte en opérateur, écrivez le code de sécurité à 6 chiffres et validez.",
@@ -997,6 +1004,7 @@
 		"MEDIA_FILE_TOOLTIP": "Formats de fichier acceptés : {{formats}}",
 		"MEDIA_REQUIRED": "Le fichier média est obligatoire",
 		"MEDIA_IN_PROCESS": "Le fichier média est en cours d'intégration, merci d'attendre la notification de succès.",
+		"MEDIA_REPOSITORY_RULES_UNMET": "Le fichier média ne répond pas à toutes les exigences obligatoires du dépôt. Veuillez d'abord réencoder le média.",
 		"LYRICS_FILE": "Fichier de sous-titres",
 		"LYRICS_FILE_TOOLTIP": "Format de fichier accepté : {{formats}}",
 		"LYRICS_FILE_OPEN": "Ouvrir le fichier",
@@ -1107,10 +1115,17 @@
 			"VIDEO_RESOLUTION": "Résolution",
 			"VIDEO_COLORSPACE": "Espace de couleur",
 			"VIDEO_FRAMERATE": "Fréquence d'images",
-			"FILE_SIZE": "Taille du fichier"
+			"FILE_SIZE": "Taille du fichier",
+			"AUDIO_COVER_ART": "Pochette d'album"
 		},
 		"FROM_DISPLAY_TYPE": "Affichage du tag de la provenance de la chanson",
-		"FROM_DISPLAY_TYPE_TOOLTIP": "Choissisez le type de tag utilisé lors de l'affichage de la chanson"
+		"FROM_DISPLAY_TYPE_TOOLTIP": "Choissisez le type de tag utilisé lors de l'affichage de la chanson",
+		"ANNOUNCE_POSITION": "Position des annonces",
+		"ANNOUNCE_POSITION_TOOLTIP": "Ecrase la position des annonces par défaut (bannière et informations sur la chanson au début et à la fin de celle-ci). Utile pour éviter que ces annonces n'écrivent par dessus des paroles si la position de ceux-ci est différente de d'habitude.",
+		"ANNOUNCE_POSITION_SELECTION": {
+			"SET": "Ecraser la position par défaut",
+			"UNSET": "Rétablir la position par défaut"
+		}
 	},
 	"MENU": {
 		"HOME": "Tableau de bord",
@@ -1206,7 +1221,7 @@
 		"I18N_NAME": "Nom dans cette langue",
 		"I18N_DELETE": "Supprimer le nom",
 		"I18N_SELECT": "Ajouter une langue",
-		"ROMANIZATION_WARNING": "Ce titre/tag contient une langue en alphabet non latin. Vous devez ajouter la langue “Alphabet Latin (Romanisation)” en plus.",
+		"ROMANIZATION_WARNING": "Ce titre/tag contient une langue en alphabet non latin. Vous devez ajouter la langue “Alphabet Latin (Romanisation)” en plus sauf si ce titre en alphabet non latin est intégralement une transcription d’une autre langue.",
 		"MERGE_TAGS": "Fusionner des tags",
 		"MERGE_WITH": "Fusionner avec",
 		"MERGE_WITH_TOOLTIP": "Fusionner le tag courant avec un autre",
@@ -1428,7 +1443,10 @@
 		"GIT_UNSTASH": "Appliquer",
 		"GIT_DELETE": "Supprimer",
 		"GIT_CUSTOM_MESSAGE": "Message personnalisé",
-		"DESELECT_ALL_COMMITS": "Désélectionner tous les commits"
+		"DESELECT_ALL_COMMITS": "Désélectionner tous les commits",
+		"GIT_EDIT_MESSAGE": "Editer le message du commit",
+		"GIT_SEE_MODIFIED_FILES": "Voir les fichiers modifiés",
+		"GIT_SEE_DIFF_IN_FILE": "Voir les différences dans le fichier"
 	},
 	"COLLECTIONS": {
 		"NAME": "Nom de la collection",
@@ -1561,7 +1579,8 @@
 		"LOG_ERROR": "Identifiants invalides",
 		"NO_MORE_GUESTS_AVAILABLE": "Aucun compte invité disponible",
 		"GUESTS_NOT_ALLOWED": "Les comptes invités ne sont pas autorisés",
-		"USER_CREATION_DISABLED": "Ce karaoké n'accepte pas de novueaux participants pour le moment.",
+		"USER_CREATION_DISABLED": "Ce karaoké n'accepte pas de nouveaux participants pour le moment.",
+		"USER_CREATION_WRONG_SECURITY_CODE": "Mauvais code de sécurité",
 		"DOWNLOADS_QUEUED_ERROR": "Erreur à l'ajout de téléchargements à la file d'attente",
 		"DOWNLOADS_QUEUED_ALREADY_ADDED_ERROR": "Aucun téléchargement ajouté, tous sont déjà en file d'attente ou en cours d'exécution",
 		"DOWNLOADS_GET_ERROR": "Erreur lors de la récupération des téléchargements en file d'attente",
@@ -1578,6 +1597,7 @@
 		"FAVORITES_IMPORTED_BAD_DATA_ERROR": "Erreur lors de l'import des favoris : données invalides dans le fichier",
 		"FAVORITES_IMPORTED_ERROR": "Erreur lors de l'import de favoris",
 		"KARA_CREATED_ERROR": "Erreur lors de la génération de la chanson",
+		"KARA_FILE_EXISTS_ERROR": "Impossible de sauvegarder: Un karaoké avec le même nom de fichier existe. Assurez-vous que ce n'est pas un doublon et que les tags soient correctement définis.",		
 		"KARA_HISTORY_ERROR": "Erreur lors de la récupération des chansons triés par date jouée",
 		"KARA_RANKING_ERROR": "Erreur lors de la récupération des chansons triés par les plus demandés",
 		"KARA_PLAYED_ERROR": "Erreur lors de la récupération des chansons triés par les plus joués",
@@ -1642,6 +1662,7 @@
 		"REPO_GIT_CHECK_ERROR": "Impossible de vérifier l'état du dépôt",
 		"REPO_GIT_ABORT_ERROR": "Impossible d'abandonner le merge",
 		"REPO_GIT_STASH_ERROR": "Impossible de mettre de côté les modifications",
+		"REPO_GIT_DIFF_ERROR": "Impossible d'afficher les différences du fichier",
 		"REPO_GIT_UNSTASH_ERROR": "Impossible d'appliquer les modifications",
 		"REPO_GIT_UPDATE_ERROR": "Impossible de mettre à jour le dépôt git",
 		"REPO_GIT_GET_COMMITS_ERROR": "Impossible de préparer les commits",
@@ -1961,6 +1982,7 @@
 			"CREATION": "Création",
 			"MODIFICATION": "Modification"
 		},
+		"REVIEW": "Révision",
 		"LINK_TO_ISSUE": "Lien vers le ticket",
 		"CONTACT_INFOS": "Informations de contact de l'auteur",
 		"ISSUE": "Ticket {{number}}",
@@ -1991,6 +2013,7 @@
 		"DONATORS": "Merci à <1>{{donators}}</1> pour leur don à Karaoke Mugen"
 	},
 	"QUIZ": {
+		"NO_QUIZ": "Aucun quiz en cours !",
 		"START": "Démarrer un quiz",
 		"STOP": "Arrêter le quiz",
 		"CONTINUE": "Continuer la chanson après la diffusion de la réponse",
@@ -2035,5 +2058,21 @@
 			"END_OF_PLAYLIST": "lorsque la liste de lecture touche à sa fin"
 		},
 		"PREVIOUS_KARAOKES": "Karaokés précédents"
+	},
+	"LANGUAGES": {
+		"QRO": "Alphabet Latin (Romanisation)"
+	},
+	"PLAYERS_CONTROLS": {
+		"STOP_AFTER": "Arrêt après la chanson en cours",
+		"STOP_AFTER_SHORT": "Arrêt après",
+		"STOP_NOW": "Arrêt immédiat (C'est dangereux !)",
+		"STOP_NOW_SHORT": "Arrêt immédiat",
+		"REWIND": "Rembobiner la VHS",
+		"PREVIOUS_SONG": "Chanson précédente",
+		"PREVIOUS_SONG_SHORT": "Précedente",
+		"NEXT_SONG": "Chanson suivante",
+		"NEXT_SONG_SHORT": "Suivante",
+		"PLAY": "Jouer",
+		"PAUSE": "Pause"
 	}
 }

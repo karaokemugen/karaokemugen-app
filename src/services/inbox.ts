@@ -18,7 +18,7 @@ import { emitWS } from '../lib/utils/ws.js';
 import { adminToken } from '../utils/constants.js';
 import { assignIssue } from '../utils/gitlab.js';
 import Sentry from '../utils/sentry.js';
-import { getKara } from './kara.js';
+import { getKara, getKarasMicro } from './kara.js';
 import { integrateKaraFile } from './karaManagement.js';
 import { checkDownloadStatus, getRepo } from './repo.js';
 import { updateAllSmartPlaylists } from './smartPlaylist.js';
@@ -30,12 +30,16 @@ export async function getInbox(repoName: string, token: string): Promise<Inbox[]
 	const repo = getRepo(repoName);
 	if (!repo) throw new ErrorKM('UNKNOWN_REPOSITORY', 404, false);
 	try {
-		const res = await HTTP.get(`https://${repoName}/api/inbox`, {
+		const res = await HTTP.get<Inbox[]>(`https://${repoName}/api/inbox`, {
 			headers: {
 				authorization: token,
 			},
 		});
-		return res.data;
+		const availableKaras = await getKarasMicro(res.data.flatMap(d => [d.kid, d.edited_kid]));
+		return res.data.map(resdata => ({
+			...resdata,
+			available_locally: availableKaras.some(kara => kara.kid === resdata.kid || kara.kid === resdata.edited_kid),
+		}));
 	} catch (err) {
 		if (err.response?.statusCode === 403) {
 			throw new ErrorKM('INBOX_VIEW_FORBIDDEN_ERROR', 403, false);
@@ -92,8 +96,8 @@ export async function downloadKaraFromInbox(inid: string, repoName: string, toke
 		kara.kara.data.data.modified_at = new Date().toISOString();
 		const promises = [downloadMediaFromInbox(kara, repoName)];
 		// Code to integrate kara and download medias
-		let lyricsFile = null;
-		if (kara.lyrics) {
+		let lyricsFile = '';
+		if (kara.lyrics?.file) {
 			lyricsFile = resolve(resolvedPathRepos('Lyrics', repoName)[0], kara.lyrics.file);
 			await fs.writeFile(lyricsFile, kara.lyrics.data, 'utf-8');
 		}

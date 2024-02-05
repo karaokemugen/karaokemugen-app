@@ -120,31 +120,51 @@ UPDATE playlist SET time_left = (
 WHERE pk_plaid = $1;
 `;
 
-export const sqlgetPlaylistContentsMicro = `
+export const sqlgetPlaylistContentsMicro = (login: string) => `
 SELECT pc.fk_kid AS kid,
 	pc.pk_plcid AS plcid,
 	(CASE WHEN pl.fk_plcid_playing = pc.pk_plcid
 		THEN TRUE
 		ELSE FALSE
 	  END) AS flag_playing,
-	pc.pos AS pos,
+	pc.pos,
 	pc.fk_login AS username,
-	pc.nickname AS nickname,
-	pc.flag_free AS flag_free,
-	pc.flag_visible AS flag_visible,
-	pc.flag_accepted AS flag_accepted,
-	pc.flag_refused AS flag_refused,
+	pc.nickname,
+	pc.flag_free,
+	pc.flag_visible,
+	pc.flag_accepted,
+	pc.flag_refused,
 	pc.fk_plaid AS plaid,
-	ak.from_display_type AS from_display_type,
-	ak.mediafile AS mediafile,
-	ak.repository AS repository,
-	ak.mediasize AS mediasize,
-	ak.duration AS duration
+	MAX(p.played_at) AS lastplayed_at,
+	ak.from_display_type,
+	ak.mediafile,
+	ak.repository,
+	ak.mediasize,
+	ak.duration
 FROM playlist_content pc
 INNER JOIN all_karas ak ON pc.fk_kid = ak.pk_kid
 LEFT OUTER JOIN playlist pl ON pl.pk_plaid = pc.fk_plaid
+LEFT OUTER JOIN played AS p ON p.fk_kid = ak.pk_kid
 WHERE pc.fk_plaid = $1
+  ${login ? 'AND pc.fk_login = $2' : ''}
+GROUP BY 
+	pc.pk_plcid, 
+	pc.pos,
+	pc.fk_login,
+	pc.nickname,
+	pc.flag_free,
+	pc.flag_visible,
+	pc.flag_accepted,
+	pc.flag_refused,
+	pc.fk_plaid,
+	ak.from_display_type,
+	ak.mediafile,
+	ak.repository,
+	ak.mediasize,
+	ak.duration,
+	pl.fk_plcid_playing
 ORDER BY pc.pos, pc.created_at DESC
+
 `;
 
 export const sqlgetPlaylistContents = (
@@ -304,6 +324,8 @@ SELECT
   ak.mediasize AS mediasize,
   ak.download_status AS download_status,
   ak.from_display_type AS from_display_type,
+  ak.announce_position_x,
+  ak.announce_position_y,
   COUNT(p.played_at)::integer AS played,
   COUNT(rq.requested_at)::integer AS requested,
   (CASE WHEN :dejavu_time < max(p.played_at)
@@ -362,7 +384,41 @@ LEFT OUTER JOIN playlist_content AS pc_pub ON pc_pub.fk_kid = pc.fk_kid AND pc_p
 LEFT OUTER JOIN playlist_content AS pc_self on pc_self.fk_kid = pc.fk_kid AND pc_self.fk_plaid = :public_plaid AND pc_self.fk_login = :username
 WHERE  pc.pk_plcid = :plcid
 ${forUser ? ' AND pl.flag_visible = TRUE' : ''}
-GROUP BY pl.fk_plcid_playing, ak.pk_kid, ak.titles, ak.titles_aliases, ak.titles_default_language, ak.songorder, ak.subfile, ak.year, ak.tags, ak.mediafile, ak.karafile, ak.duration, ak.loudnorm, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_plcid, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, u.type, ak.repository, ak.from_display_type, ak.download_status, pc.criterias
+GROUP BY 
+	pl.fk_plcid_playing, 
+	ak.pk_kid, 
+	ak.titles, 
+	ak.titles_aliases, 
+	ak.titles_default_language, 
+	ak.songorder,
+	ak.subfile, 
+	ak.year, 
+	ak.tags, 
+	ak.mediafile, 
+	ak.karafile, 
+	ak.duration, 
+	ak.loudnorm, 
+	ak.created_at, 
+	ak.modified_at, 
+	ak.mediasize, 
+	ak.languages_sortable, 
+	ak.songtypes_sortable, 
+	pc.created_at, 
+	pc.nickname, 
+	pc.fk_login, 
+	pc.pos, 
+	pc.pk_plcid, 
+	wl.fk_kid, 
+	bl.fk_kid, 
+	f.fk_kid, 
+	u.avatar_file, 
+	u.type, 
+	ak.repository, 
+	ak.from_display_type, 
+	ak.download_status, 
+	ak.announce_position_x,
+	ak.announce_position_y,
+	pc.criterias
 `;
 
 export const sqlgetPLCInfoMini = `

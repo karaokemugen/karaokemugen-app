@@ -13,8 +13,8 @@ import {
 	Table,
 	Tooltip,
 } from 'antd';
+import dayjs from 'dayjs';
 import i18next from 'i18next';
-import moment from 'moment';
 import { Component, createRef } from 'react';
 
 import { DBKara } from '../../../../../src/lib/types/database/kara';
@@ -197,8 +197,8 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 				>
 					<RangePicker
 						defaultValue={[
-							moment(this.props.session.started_at),
-							this.props.session.ended_at ? moment(this.props.session.ended_at) : null,
+							dayjs(this.props.session.started_at),
+							this.props.session.ended_at ? dayjs(this.props.session.ended_at) : null,
 						]}
 						showTime={{ format: 'HH:mm' }}
 						onChange={this.onSessionDateChange}

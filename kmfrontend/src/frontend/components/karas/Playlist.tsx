@@ -86,7 +86,7 @@ function Playlist(props: IProps) {
 	);
 	const [songsBeforeJingle, setSongsBeforeJingle] = useState<number>();
 	const [songsBeforeSponsor, setSongsBeforeSponsor] = useState<number>();
-	const [goToPlaying, setGotToPlaying] = useState<boolean>();
+	const [goToPlaying, setGotToPlaying] = useState<boolean>(props.scope === 'public');
 	// Avoid scroll event trigger
 	const [goToPlayingAvoidScroll, setGotToPlayingAvoidScroll] = useState<boolean>();
 	const [selectAllKarasChecked, setSelectAllKarasChecked] = useState(false);
@@ -456,15 +456,7 @@ function Playlist(props: IProps) {
 			const karas: KaraList = await commandBackend(url, param);
 			// Check if the plaid is still relevant after request
 			if (loadingPlaid !== plaid.current) return;
-			if (goToPlaying && !isNonStandardPlaylist(getPlaylistInfo(props.side, context)?.plaid)) {
-				const result = await commandBackend('findPlayingSongInPlaylist', {
-					plaid: getPlaylistInfo(props.side, context)?.plaid,
-				});
-				if (result?.index !== -1) {
-					scrollToIndex(result.index);
-					setGotToPlayingAvoidScroll(true);
-				}
-			}
+
 			if (karas.infos?.from > 0) {
 				if (karas.infos.from < data.content.length) {
 					for (let index = 0; index < karas.content.length; index++) {
@@ -485,7 +477,6 @@ function Playlist(props: IProps) {
 			} else {
 				setData(karas);
 			}
-			setPlaylistInProgress(false);
 		} catch (e) {
 			// already display
 		}
@@ -519,6 +510,25 @@ function Playlist(props: IProps) {
 		},
 		[goToPlaying]
 	);
+
+	const gotToPlayingAfterPlaylistUpdate = async () => {
+		if (data && goToPlaying && !isNonStandardPlaylist(getPlaylistInfo(props.side, context)?.plaid)) {
+			const result = await commandBackend('findPlayingSongInPlaylist', {
+				plaid: getPlaylistInfo(props.side, context)?.plaid,
+			});
+			if (result?.index !== -1) {
+				scrollToIndex(result.index);
+				setGotToPlayingAvoidScroll(true);
+			}
+		}
+	};
+
+	useEffect(() => {
+		if (isPlaylistInProgress) {
+			gotToPlayingAfterPlaylistUpdate();
+			setPlaylistInProgress(false);
+		}
+	}, [data]);
 
 	useEffect(() => {
 		getSocket().on('playingUpdated', playingUpdate);

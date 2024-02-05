@@ -18,6 +18,7 @@ import PlaylistPage from './components/PlaylistPage';
 import PublicPage from './components/public/PublicPage';
 import SetupPage from './components/setup/SetupPage';
 import WelcomePage from './components/WelcomePage';
+import QuizScore from './components/karas/QuizScore';
 
 function KMFrontend() {
 	const context = useContext(GlobalContext);
@@ -88,6 +89,7 @@ function KMFrontend() {
 				<Route path="/chibi" element={<ChibiPage />} />
 				<Route path="/public/*" element={<PublicPage />} />
 				<Route path="/about" element={<About />} />
+				<Route path="/quiz/ranking" element={<QuizScore />} />
 				<Route path="/quiz" element={<Navigate to={'/public/quiz'} />} />
 				<Route
 					path="/"

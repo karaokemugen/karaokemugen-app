@@ -99,9 +99,6 @@ function ProgressBar() {
 		}
 	};
 
-	/**
-	 * refresh the player infos
-	 */
 	const refreshPlayerInfos = async (data: PublicPlayerState) => {
 		const element = refBar.current;
 		if (element && data.timeposition !== undefined) {
@@ -157,6 +154,12 @@ function ProgressBar() {
 				const karaInfo = buildKaraTitle(context.globalState.settings.data, kara);
 				setKaraInfoText(karaInfo);
 				setLength(kara.duration);
+
+				if (element && data.timeposition !== undefined && width === 0) {
+					const newWidth = (element.offsetWidth * data.timeposition) / kara.duration;
+					setWidth(newWidth);
+					setTimePosition(data.timeposition);
+				}
 			}
 		}
 	};

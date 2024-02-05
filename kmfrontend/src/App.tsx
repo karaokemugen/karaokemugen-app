@@ -9,7 +9,7 @@ import GlobalContext from './store/context';
 import Loading from './utils/components/Loading';
 import PrivateRoute from './utils/PrivateRoute';
 import { getSocket } from './utils/socket';
-import { displayMessage } from './utils/tools';
+import { displayMessage, is_touch_device } from './utils/tools';
 
 const KMSystem = lazy(() => import('./systempanel/layout/KMSystem'));
 const KMFrontend = lazy(() => import('./frontend/KMFrontend'));
@@ -86,7 +86,7 @@ function App() {
 								<Route path="*" element={<PrivateRoute component={<KMFrontend />} />} />
 							</Routes>
 						</Suspense>
-						<ToastContainer icon={false} theme={'colored'} />
+						<ToastContainer icon={false} theme={'colored'} stacked={!is_touch_device()} />
 					</>
 				) : (
 					<Loading />

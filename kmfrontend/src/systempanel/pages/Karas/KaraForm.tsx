@@ -1,7 +1,15 @@
-import { MinusOutlined, PlusOutlined, QuestionCircleOutlined, UploadOutlined } from '@ant-design/icons';
+import {
+	DeleteOutlined,
+	DoubleRightOutlined,
+	MinusOutlined,
+	PlusOutlined,
+	QuestionCircleOutlined,
+	UploadOutlined,
+} from '@ant-design/icons';
 import {
 	Alert,
 	Button,
+	Card,
 	Checkbox,
 	Col,
 	Collapse,
@@ -11,6 +19,7 @@ import {
 	Input,
 	InputNumber,
 	Modal,
+	Radio,
 	Row,
 	Select,
 	Tag,
@@ -24,10 +33,12 @@ import { filesize } from 'filesize';
 import i18next from 'i18next';
 import { Component, createRef } from 'react';
 import { v4 as UUIDv4 } from 'uuid';
+import './KaraForm.scss';
 
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
+import { PositionX, PositionY } from '../../../../../src/lib/types';
 import { DBKara } from '../../../../../src/lib/types/database/kara';
-import { KaraFileV4, MediaInfo } from '../../../../../src/lib/types/kara';
+import { KaraFileV4, MediaInfo, MediaInfoValidationResult } from '../../../../../src/lib/types/kara';
 import { Config } from '../../../../../src/types/config';
 import GlobalContext from '../../../store/context';
 import { buildKaraTitle, getTagInLocale } from '../../../utils/kara';
@@ -54,11 +65,17 @@ interface KaraFormState {
 	titlesIsTouched: boolean;
 	serieSingersRequired: boolean;
 	subfile: any[];
+	announcePosition: string | null | undefined;
 	mediafile: any[];
 	mediafileIsTouched: boolean;
 	subfileIsTouched: boolean;
 	applyLyricsCleanup: boolean;
 	mediaInfo?: MediaInfo;
+	mediaInfoValidationResult?: MediaInfoValidationResult[];
+	isEncodingMedia?: boolean;
+	encodeMediaOptions?: {
+		trim?: boolean;
+	};
 	repositoriesValue: string[];
 	repoToCopySong: string;
 	comment?: string;
@@ -104,12 +121,21 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 			subfileIsTouched: false,
 			applyLyricsCleanup: false,
 			mediaInfo: {} as unknown as MediaInfo, // Has to be defined for reactive things
+			isEncodingMedia: false,
+			encodeMediaOptions: {
+				trim: false,
+			},
 			repositoriesValue: null,
 			repoToCopySong: null,
 			comment: kara?.comment,
 			karaSearch: [],
 			parentKara: null,
 			errors: [],
+			announcePosition:
+				(kara?.announce_position_x &&
+					kara?.announce_position_y &&
+					`${kara.announce_position_x},${kara.announce_position_y}`) ||
+				undefined,
 		};
 	}
 
@@ -147,7 +173,107 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				60000
 			);
 			this.setState({ mediaInfo });
+			this.validateMediaRules();
 		}
+	};
+
+	validateMediaRules = async () => {
+		const repo: string = this.formRef.current?.getFieldValue('repository');
+		if (this.state.mediaInfo && repo) {
+			const mediaInfoValidationResult: MediaInfoValidationResult[] = await commandBackend(
+				'validateMediaInfo',
+				{ mediaInfo: this.state.mediaInfo, repository: repo },
+				false,
+				60000
+			);
+			this.setState({ mediaInfoValidationResult });
+		}
+	};
+
+	renderMediaInfo = (mediaInfo: MediaInfo, mediaInfoValidationResults: MediaInfoValidationResult[]) => {
+		const propertiesToDisplay: Array<{
+			name: keyof MediaInfo;
+			title: string;
+			format?: (value: any) => string;
+			formatSuggestedValue?: (value: any) => string;
+		}> = [
+			{ name: 'fileExtension', title: 'KARA.MEDIA_FILE_INFO.FILE_FORMAT' },
+			{
+				name: 'size',
+				title: 'KARA.MEDIA_FILE_INFO.FILE_SIZE',
+				format: value => value && filesize(value).toString(),
+				formatSuggestedValue: value => value && 'max. ' + filesize(value).toString(),
+			},
+			{
+				name: 'overallBitrate',
+				title: 'KARA.MEDIA_FILE_INFO.OVERALL_BITRATE',
+				format: (value: number) => value && `${Math.round(value / 100)} kb/s`,
+				formatSuggestedValue: value => value && `max. ${Math.round(value / 100)} kb/s`,
+			},
+			{ name: 'videoCodec', title: 'KARA.MEDIA_FILE_INFO.VIDEO_CODEC' },
+			{ name: 'videoColorspace', title: 'KARA.MEDIA_FILE_INFO.VIDEO_COLORSPACE' },
+			{
+				name: 'videoAspectRatio',
+				title: 'KARA.MEDIA_FILE_INFO.VIDEO_ASPECT_RATIO',
+				format: (value: any) => `SAR ${value?.pixelAspectRatio} DAR ${value?.displayAspectRatio}`,
+			},
+			{
+				name: 'videoResolution',
+				title: 'KARA.MEDIA_FILE_INFO.VIDEO_RESOLUTION',
+				format: (value: any) => value.formatted,
+			},
+			{
+				name: 'videoFramerate',
+				title: 'KARA.MEDIA_FILE_INFO.VIDEO_FRAMERATE',
+				format: (value: number) => `${value} fps`,
+			},
+			{ name: 'audioCodec', title: 'KARA.MEDIA_FILE_INFO.AUDIO_CODEC' },
+			{ name: 'hasCoverArt', title: 'KARA.MEDIA_FILE_INFO.AUDIO_COVER_ART' },
+		];
+
+		const rows = propertiesToDisplay
+			.map(property => ({
+				...property,
+				valueFormatted:
+					mediaInfo &&
+					mediaInfo[property.name] &&
+					((property.format && property.format(mediaInfo[property.name])) ||
+						String(mediaInfo[property.name])),
+				validationResult: mediaInfoValidationResults?.find(r => r.name === property.name),
+			}))
+			.map(property => ({
+				...property,
+				suggestedValueFormatted:
+					property.validationResult?.suggestedValue &&
+					((property.formatSuggestedValue &&
+						property.formatSuggestedValue(property.validationResult?.suggestedValue)) ||
+						(property.format && property.format(property.validationResult?.suggestedValue)) ||
+						String(property.validationResult?.suggestedValue)),
+				className:
+					property.validationResult?.mandatory === true
+						? 'unmet-required'
+						: property.validationResult
+						  ? 'unmet-warning'
+						  : '',
+			}));
+
+		return (
+			<table style={{ borderSpacing: '0 10px' }}>
+				<tbody className="media-info">
+					{rows.map(r => (
+						<tr className={r.className} key={r.name}>
+							<td>{i18next.t(r.title)}</td>
+							<td>{r.valueFormatted || '-'}</td>
+							{r.suggestedValueFormatted && (
+								<td>
+									<DoubleRightOutlined /> {r.suggestedValueFormatted}
+								</td>
+							)}
+						</tr>
+					))}
+				</tbody>
+			</table>
+		);
 	};
 
 	openChildrenModal = async (event, kid: string) => {
@@ -166,7 +292,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				content: (
 					<ul>
 						{childrens.content?.map(kara => (
-							<a href={`/system/karas/${kara.kid}`}>
+							<a href={`/system/karas/${kara.kid}`} key={kara.kid}>
 								<li key={kara.kid}>
 									{buildKaraTitle(this.context.globalState.settings.data, kara, true, childrens.i18n)}
 								</li>
@@ -240,6 +366,11 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		if (this.state.mediafileIsTouched && !this.state.mediaInfo?.loudnorm) {
 			message.error(i18next.t('KARA.MEDIA_IN_PROCESS'));
 		} else if (
+			this.state.mediafileIsTouched &&
+			(!this.state.mediaInfoValidationResult || this.state.mediaInfoValidationResult?.some(r => r.mandatory))
+		) {
+			message.error(i18next.t('KARA.MEDIA_REPOSITORY_RULES_UNMET'));
+		} else if (
 			!this.state.defaultLanguage ||
 			!this.state.titles ||
 			Object.keys(this.state.titles).length === 0 ||
@@ -260,6 +391,10 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		const mediaVersionArr = this.state.titles[this.state.defaultLanguage].split(' ~ ');
 		const mediaVersion =
 			mediaVersionArr.length > 1 ? mediaVersionArr[mediaVersionArr.length - 1].replace(' Vers', '') : 'Default';
+		const [announcePositionX, announcePositionY] = this.state.announcePosition?.split(',') || [
+			undefined,
+			undefined,
+		];
 		// Convert Kara to KaraFileV4
 		const karaFile: KaraFileV4 = {
 			header: {
@@ -274,15 +409,18 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					filesize: this.state.mediaInfo.size || this.props.kara?.mediasize,
 					duration: this.state.mediaInfo.duration || this.props.kara?.duration,
 					default: true,
-					lyrics: kara.subfile
-						? [
-								{
-									filename: kara.subfile,
-									default: true,
-									version: 'Default',
-								},
-						  ]
-						: [],
+					lyrics:
+						kara.subfile || announcePositionX
+							? [
+									{
+										filename: kara.subfile || null,
+										default: true,
+										version: 'Default',
+										announcePositionX: announcePositionX as PositionX,
+										announcePositionY: announcePositionY as PositionY,
+									},
+							  ]
+							: [],
 				},
 			],
 			data: {
@@ -348,7 +486,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		this.setState({ mediafile: fileList });
 		if (info.file.status === 'uploading') {
 			this.formRef.current.setFieldsValue({ mediafile: null });
-			this.setState({ mediaInfo: null });
+			this.setState({ mediaInfo: null, mediaInfoValidationResult: null });
 		} else if (info.file.status === 'done') {
 			if (this.isMediaFile(info.file.name)) {
 				this.setState({ mediafileIsTouched: true });
@@ -362,6 +500,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					60000
 				);
 				this.setState({ mediaInfo });
+				this.validateMediaRules();
 				this.formRef.current.setFieldsValue({ mediafile: mediaInfo.filename });
 				message.success(i18next.t('KARA.ADD_FILE_SUCCESS', { name: info.file.name }));
 			} else {
@@ -531,7 +670,14 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					versions: this.props.kara?.versions || this.state.parentKara?.versions,
 					comment: this.props.kara?.comment || '',
 					ignore_hooks: this.props.kara?.ignore_hooks || false,
-					repository: this.props.kara?.repository || this.state.parentKara?.repository || null,
+					repository:
+						this.props.kara?.repository ||
+						// Check if repo from parent is in the allowed list or take the default one
+						(this.state.repositoriesValue &&
+							((this.state.repositoriesValue?.includes(this.state.parentKara?.repository) &&
+								this.state.parentKara?.repository) ||
+								this.state.repositoriesValue[0])) ||
+						null,
 					mediafile: this.props.kara?.mediafile,
 					subfile: this.props.kara?.subfile,
 					parents: this.props.kara?.parents || (this.state.parentKara && [this.state.parentKara?.kid]) || [],
@@ -585,77 +731,13 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 								</Upload>
 							</Form.Item>
 						</Col>
-						<Col flex={'0 1 220px'}>
-							{this.props.kara?.download_status === 'DOWNLOADED' || this.state.mediaInfo?.size ? (
-								<table style={{ borderSpacing: '0 10px' }}>
-									<tbody>
-										<tr>
-											<td style={{ paddingRight: '10px' }}>
-												{i18next.t('KARA.MEDIA_FILE_INFO.FILE_FORMAT')}
-											</td>
-											<td>{this.state.mediaInfo?.fileExtension || '-'}</td>
-										</tr>
-										<tr>
-											<td style={{ paddingRight: '10px' }}>
-												{i18next.t('KARA.MEDIA_FILE_INFO.FILE_SIZE')}
-											</td>
-											<td>
-												{(this.state.mediaInfo?.size && filesize(this.state.mediaInfo?.size)) ||
-													'-'}
-											</td>
-										</tr>
-										<tr>
-											<td style={{ paddingRight: '10px' }}>
-												{i18next.t('KARA.MEDIA_FILE_INFO.OVERALL_BITRATE')}
-											</td>
-											<td>
-												{this.state.mediaInfo?.overallBitrate
-													? `${Math.round(this.state.mediaInfo?.overallBitrate / 100)} kb/s`
-													: '-'}
-											</td>
-										</tr>
-										<tr>
-											<td style={{ paddingRight: '10px' }}>
-												{i18next.t('KARA.MEDIA_FILE_INFO.VIDEO_CODEC')}
-											</td>
-											<td>{this.state.mediaInfo?.videoCodec || '-'}</td>
-										</tr>
-										<tr>
-											<td style={{ paddingRight: '10px' }}>
-												{i18next.t('KARA.MEDIA_FILE_INFO.VIDEO_COLORSPACE')}
-											</td>
-											<td>{this.state.mediaInfo?.videoColorspace || '-'}</td>
-										</tr>
-										<tr>
-											<td style={{ paddingRight: '10px' }}>
-												{i18next.t('KARA.MEDIA_FILE_INFO.VIDEO_RESOLUTION')}
-											</td>
-											<td>
-												{this.state.mediaInfo?.videoResolution
-													? `${this.state.mediaInfo?.videoResolution?.formatted}`
-													: '-'}
-											</td>
-										</tr>
-										<tr>
-											<td style={{ paddingRight: '10px' }}>
-												{i18next.t('KARA.MEDIA_FILE_INFO.VIDEO_FRAMERATE')}
-											</td>
-											<td>
-												{this.state.mediaInfo?.videoFramerate
-													? this.state.mediaInfo?.videoFramerate + ' fps'
-													: '-'}
-											</td>
-										</tr>
-										<tr>
-											<td style={{ paddingRight: '10px' }}>
-												{i18next.t('KARA.MEDIA_FILE_INFO.AUDIO_CODEC')}
-											</td>
-											<td>{this.state.mediaInfo?.audioCodec || '-'}</td>
-										</tr>
-									</tbody>
-								</table>
-							) : null}
-						</Col>
+						{this.props.kara?.download_status === 'DOWNLOADED' || this.state.mediaInfo?.size ? (
+							<Col flex={'0 1 280px'}>
+								<Card>
+									{this.renderMediaInfo(this.state.mediaInfo, this.state.mediaInfoValidationResult)}
+								</Card>
+							</Col>
+						) : null}
 					</Row>
 				</Form.Item>
 				<Form.Item
@@ -673,45 +755,51 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					}
 					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 12 }}
-					name="subfile"
 				>
-					<Upload
-						headers={{
-							authorization: localStorage.getItem('kmToken'),
-							onlineAuthorization: localStorage.getItem('kmOnlineToken'),
-						}}
-						action="/api/importFile"
-						accept={this.context.globalState.settings.data.state?.supportedLyrics
-							.map(e => `.${e}`)
-							.join(',')}
-						multiple={false}
-						onChange={this.onSubUploadChange}
-						fileList={this.state.subfile}
-					>
-						<Button>
-							<UploadOutlined />
-							{i18next.t('KARA.LYRICS_FILE')}
-						</Button>
-					</Upload>
-					{this.state.subfile?.length > 0 && (
-						<Checkbox
-							checked={this.state.applyLyricsCleanup}
-							onChange={(e: CheckboxChangeEvent) => {
-								this.saveApplyLyricsCleanupSetting(e.target.checked);
-								this.setState({ applyLyricsCleanup: e.target.checked });
-							}}
-						>
-							{i18next.t('KARA.APPLY_LYRICS_CLEANUP')}&nbsp;
-							<Tooltip title={i18next.t('KARA.APPLY_LYRICS_CLEANUP_TOOLTIP')}>
-								<QuestionCircleOutlined />
-							</Tooltip>
-						</Checkbox>
-					)}
-					{this.state.subfile?.length > 0 && this.props.kara?.kid && (
-						<div style={{ marginTop: '1em' }}>
-							<OpenLyricsFileButton kara={this.props.kara} />
-						</div>
-					)}
+					<Row gutter={32}>
+						<Col>
+							<Form.Item name="subfile" style={{ marginBottom: '0' }}>
+								<Upload
+									headers={{
+										authorization: localStorage.getItem('kmToken'),
+										onlineAuthorization: localStorage.getItem('kmOnlineToken'),
+									}}
+									action="/api/importFile"
+									accept={this.context.globalState.settings.data.state?.supportedLyrics
+										.map(e => `.${e}`)
+										.join(',')}
+									multiple={false}
+									onChange={this.onSubUploadChange}
+									fileList={this.state.subfile}
+								>
+									<Button>
+										<UploadOutlined />
+										{i18next.t('KARA.LYRICS_FILE')}
+									</Button>
+								</Upload>
+							</Form.Item>
+
+							{this.state.subfile?.length > 0 && (
+								<Checkbox
+									checked={this.state.applyLyricsCleanup}
+									onChange={(e: CheckboxChangeEvent) => {
+										this.saveApplyLyricsCleanupSetting(e.target.checked);
+										this.setState({ applyLyricsCleanup: e.target.checked });
+									}}
+								>
+									{i18next.t('KARA.APPLY_LYRICS_CLEANUP')}&nbsp;
+									<Tooltip title={i18next.t('KARA.APPLY_LYRICS_CLEANUP_TOOLTIP')}>
+										<QuestionCircleOutlined />
+									</Tooltip>
+								</Checkbox>
+							)}
+							{this.state.subfile?.length > 0 && this.props.kara?.kid && (
+								<div style={{ marginTop: '1em' }}>
+									<OpenLyricsFileButton kara={this.props.kara} />
+								</div>
+							)}
+						</Col>
+					</Row>
 				</Form.Item>
 				<Divider orientation="left">{i18next.t('KARA.SECTIONS.PARENTS')}</Divider>
 				<Paragraph style={{ marginLeft: '200px' }}>{i18next.t('KARA.DESC.PARENTS')}</Paragraph>
@@ -1175,6 +1263,67 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					name="from_display_type"
 				>
 					<Select>{Object.keys(tagTypes).concat('').map(this.mapTagTypesToSelectOption)}</Select>
+				</Form.Item>
+				<Form.Item
+					className="wrap-label"
+					label={
+						<span>
+							{i18next.t('KARA.ANNOUNCE_POSITION')}&nbsp;
+							<Tooltip title={i18next.t('KARA.ANNOUNCE_POSITION_TOOLTIP')}>
+								<QuestionCircleOutlined />
+							</Tooltip>
+						</span>
+					}
+					labelCol={{ flex: '0 1 220px' }}
+					wrapperCol={{ span: 7 }}
+				>
+					{typeof this.state.announcePosition !== 'undefined' ? (
+						<div>
+							<Row>
+								<Card title="Karaoke Mugen Player" size="small" style={{ width: '200px' }}>
+									<Radio.Group
+										name="announce_position"
+										value={this.state.announcePosition}
+										onChange={e => this.setState({ announcePosition: e.target.value })}
+										style={{ width: '100%' }}
+									>
+										<Row
+											style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}
+										>
+											<Radio value="Left,Top" />
+											<Radio value="Center,Top" />
+											<Radio value="Right,Top" />
+										</Row>
+										<Row
+											style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}
+										>
+											<Radio value="Left,Center" />
+											<Radio value="Center,Center" />
+											<Radio value="Right,Center" />
+										</Row>
+										<Row
+											style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}
+										>
+											<Radio value="Left,Bottom" />
+											<Radio value="Center,Bottom" />
+											<Radio value="Right,Bottom" />
+										</Row>
+									</Radio.Group>
+								</Card>
+							</Row>
+							<br />
+							<Row>
+								<Button onClick={() => this.setState({ announcePosition: undefined })}>
+									<DeleteOutlined />
+									{i18next.t('KARA.ANNOUNCE_POSITION_SELECTION.UNSET')}
+								</Button>
+							</Row>
+						</div>
+					) : (
+						<Button onClick={() => this.setState({ announcePosition: null })}>
+							{i18next.t('KARA.ANNOUNCE_POSITION_SELECTION.SET')}
+						</Button>
+					)}
 				</Form.Item>
 				<Form.Item
 					label={

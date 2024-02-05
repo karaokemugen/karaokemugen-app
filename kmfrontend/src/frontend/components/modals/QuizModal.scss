@@ -117,4 +117,12 @@
 			flex: 1 0 auto;
 		}
 	}
+
+	.userLine {
+		margin: 1em;
+		.avatar {
+			height: 2em;
+			margin-right: 0.5em;
+		}
+	}
 }

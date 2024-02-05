@@ -1,7 +1,6 @@
 {
 	"YES": "Ya",
 	"NO": "Tidak",
-	"NEXT_SONG": "Lagu selanjutnya",
 	"SELECT_PLACEHOLDER": "Pilih sebuah daftar putar",
 	"AND": "dan",
 	"SEARCH": "Cari",
@@ -31,11 +30,6 @@
 	"SHOW_SUBS": "Tampilkan lirik di layar",
 	"HIDE_SUBS": "Sembunyikan lirik di layar",
 	"OPTIONS": "Pilihan",
-	"STOP_AFTER": "Berhenti setelah lagu saat ini",
-	"STOP_NOW": "Berhenti SEKARANG (Berbahaya!)",
-	"REWIND": "Putar ulang rekaman",
-	"PREVIOUS_SONG": "Lagu sebelumnya",
-	"PLAY_PAUSE": "Putar/Jeda",
 	"PASSWORD": "Kata sandi (minimal 8 karakter)",
 	"PASSWORDCONF": "Konfirmasi kata sandi",
 	"NEW_PASSWORD": "Kata Sandi Baru",
@@ -1719,5 +1713,17 @@
 	"TOOLTIP_KARA_ALREADY_ADDED": "Lagu ini telah ada di daftar putar.",
 	"SHOW-HIDE": "Munculkan/Sembunyikan",
 	"UNKNOWN": "Tidak diketahui",
-	"BLURVIDEO_BLUR": "Buramkan Vidio"
+	"BLURVIDEO_BLUR": "Buramkan Vidio",
+	"LANGUAGES": {
+		"QRO": "Alfabet Latin (Romanisasi)"
+	},
+	"PLAYERS_CONTROLS": {
+		"STOP_AFTER": "Berhenti setelah lagu saat ini",
+		"STOP_NOW": "Berhenti SEKARANG (Berbahaya!)",
+		"REWIND": "Putar ulang rekaman",
+		"PREVIOUS_SONG": "Lagu sebelumnya",
+		"PLAY": "Putar",
+		"PAUSE": "Jeda",
+		"NEXT_SONG": "Lagu selanjutnya"
+	}
 }

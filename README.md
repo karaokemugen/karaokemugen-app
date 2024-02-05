@@ -279,7 +279,7 @@ Thanks to the [Sentry error tracking](https://sentry.io/welcome?utm_source=Karao
 
 <img src="https://gitlab.com/karaokemugen/code/karaokemugen-app/uploads/dba8fa95d7b4f1fac5e5877c72257f36/image.png" alt="BrowserStack full logo" width="125" />
 
-Thanks to the [BrowserStack testing solution](https://browserstack.com), we can be sure that our interfaces will run just fine on al devices.
+Thanks to the [BrowserStack testing solution](https://browserstack.com), we can be sure that our interfaces will run just fine on all devices.
 
 <img src="https://uploads-ssl.webflow.com/5ac3c046c82724970fc60918/5c019d917bba312af7553b49_MacStadium-developerlogo.png" alt="MacStadium full logo" width="125"/>
 

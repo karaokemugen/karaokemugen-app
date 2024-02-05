@@ -1,9 +1,12 @@
 import { PathType } from '../lib/types/config.js';
+import { PositionX, PositionY } from '../lib/types/index.js';
 import { PlaylistMediaType } from '../lib/types/playlistMedias.js';
 import { Repository } from '../lib/types/repo.js';
 import { endOfPlaylistActions } from '../utils/defaultSettings.js';
 import { MpvHardwareDecodingOptions } from './mpvIPC.js';
 import { SongModifiers } from './player.js';
+
+export type PublicDuplicateSetting = 'allowed' | 'upvotes' | 'disallowed';
 
 export interface QuizGameConfig {
 	EndGame: {
@@ -85,7 +88,9 @@ export interface Config {
 		AllowGuestLogin?: boolean;
 		AllowCustomTemporaryGuests?: boolean;
 		AllowUserCreation?: boolean;
+		RequireSecurityCodeForNewAccounts?: boolean;
 		Mode?: number;
+		PublicPlayerControls?: boolean;
 		ShowAvatarsOnPlaylist?: boolean;
 		WelcomeMessage?: string;
 	};
@@ -97,6 +102,13 @@ export interface Config {
 			PositionY?: number;
 		};
 		ChibiPlaylist?: {
+			Enabled?: boolean;
+			PositionX?: number;
+			PositionY?: number;
+			Width?: number;
+			Height?: number;
+		};
+		ChibiRanking?: {
 			Enabled?: boolean;
 			PositionX?: number;
 			PositionY?: number;
@@ -156,8 +168,8 @@ export interface Config {
 		mpvVideoOutput?: string;
 		PIP: {
 			Size?: number;
-			PositionX?: 'Left' | 'Right' | 'Center';
-			PositionY?: 'Top' | 'Bottom' | 'Center';
+			PositionX?: PositionX;
+			PositionY?: PositionY;
 		};
 		ExtraCommandLine?: string;
 		Borders?: boolean;
@@ -170,6 +182,7 @@ export interface Config {
 	};
 	Playlist: {
 		AllowDuplicates?: boolean;
+		AllowPublicDuplicates?: PublicDuplicateSetting;
 		MaxDejaVuTime?: number;
 		Medias: {
 			Jingles: {
@@ -246,6 +259,7 @@ export interface Config {
 		};
 	};
 	Maintainer: {
-		ApplyLyricsCleanupOnKaraSave: boolean; // Temporary setting until there's an unified way of defining base rules (media formats, lyrics cleanup)
+		// Temporary settings until there's an unified way of defining base rules (media formats, lyrics cleanup)
+		ApplyLyricsCleanupOnKaraSave: boolean;
 	};
 }

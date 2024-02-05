@@ -11,7 +11,7 @@ import { PathType } from '../lib/types/config.js';
 import { configureLocale, getConfig, resolvedPath, setConfig } from '../lib/utils/config.js';
 import { asyncCheckOrMkdir, fileExists } from '../lib/utils/files.js';
 import logger, { configureLogger, profile } from '../lib/utils/logger.js';
-import { resetSecurityCode } from '../services/auth.js';
+import { resetNewAccountCode, resetSecurityCode } from '../services/auth.js';
 import { backgroundTypes } from '../services/backgrounds.js';
 import { editRepo } from '../services/repo.js';
 import { Config } from '../types/config.js';
@@ -55,6 +55,7 @@ export async function preInit() {
 	profile('preInit');
 	await configureLocale();
 	resetSecurityCode();
+	resetNewAccountCode();
 	setState({ os: process.platform });
 	setupFromCommandLineArgs(argv, app ? app.commandLine : null);
 	logger.debug(`AppPath : ${state.appPath}`, { service });
@@ -127,18 +128,21 @@ async function checkPaths(config: Config) {
 	try {
 		profile('checkPaths');
 		await remove(resolvedPath('Temp')).catch();
+		await remove(resolvedPath('Fonts')).catch();
 		await remove(resolvedPath('BundledBackgrounds')).catch();
 		await remove(resolvedPath('Import')).catch();
 		// Checking paths
 		const checks = [];
 		const dataPath = getState().dataPath;
 		checks.push(asyncCheckOrMkdir(resolvedPath('Temp')));
+		checks.push(asyncCheckOrMkdir(resolvedPath('Fonts')));
 		checks.push(asyncCheckOrMkdir(resolvedPath('Logs')));
 		for (const repo of config.System.Repositories) {
 			try {
 				checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'karaokes')));
 				checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'lyrics')));
 				checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'tags')));
+				checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'fonts')));
 				checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'hooks')));
 				for (const path of repo.Path.Medias) {
 					try {

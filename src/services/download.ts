@@ -44,7 +44,7 @@ export function getDownloadQueueStatus() {
 	try {
 		return downloadQueueStatus;
 	} catch (err) {
-		logger.error('Unable to queue new download', { service });
+		logger.error(`Unable to get download queue : ${err}`, { service });
 		Sentry.error(err);
 		throw err instanceof ErrorKM ? err : new ErrorKM('DOWNLOADS_GET_ERROR');
 	}
@@ -52,7 +52,7 @@ export function getDownloadQueueStatus() {
 
 async function emitQueueStatus(status: QueueStatus) {
 	downloadQueueStatus = status;
-	emitWS('downloadQueueStatus', await getDownloads());
+	emitWS('downloadQueueStatus');
 }
 
 export async function initDownloader() {
@@ -253,7 +253,7 @@ export async function addDownloads(downloads: KaraDownloadRequest[]): Promise<nu
 		dls.forEach(dl => dq.push(dl));
 		return dls.length;
 	} catch (err) {
-		logger.error('Unable to queue new download', { service });
+		logger.error(`Unable to queue new download : ${err}`, { service });
 		Sentry.error(err);
 		throw err instanceof ErrorKM ? err : new ErrorKM('DOWNLOADS_QUEUED_ERROR');
 	}

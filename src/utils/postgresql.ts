@@ -391,10 +391,15 @@ export async function initPG(relaunch = true) {
 			// Copy the dump too
 			const dumpFile = resolve(state.dataPath, 'karaokemugen.sql.gz');
 			const backupDumpFile = resolve(state.dataPath, `karaokemugen-pg${versions.data}.sql.gz`);
-			await fs.copyFile(dumpFile, backupDumpFile);
-			await initPGData();
-			// Restore is done once KM is connected to the database.
-			setConfig({ System: { Database: { RestoreNeeded: true } } });
+			try {
+				await fs.copyFile(dumpFile, backupDumpFile);
+				await initPGData();
+				// Restore is done once KM is connected to the database.
+				setConfig({ System: { Database: { RestoreNeeded: true } } });
+			} catch (err) {
+				// This is allowed to fail, it just means we won't get any dump restored.
+				await initPGData();
+			}
 		}
 	}
 	// Try to check if PG is running by conventionnal means.

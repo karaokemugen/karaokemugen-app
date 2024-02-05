@@ -1,0 +1,26 @@
+.userLine {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	height: 100%;
+
+	> div {
+		flex: 1;
+	}
+
+	.userNickname {
+		display: flex;
+		align-items: center;
+	}
+
+	.userAnswer {
+		text-align: center;
+		padding-left: 1em;
+		padding-right: 1em;
+	}
+
+	.userPoints {
+		line-height: normal;
+		text-align: right;
+	}
+}

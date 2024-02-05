@@ -165,6 +165,7 @@ export default function miscController(router: SocketIOApp) {
 		try {
 			await generateDatabase({
 				validateOnly: true,
+				skipParentsChecks: getState().opt.skipParentsCheck,
 			});
 			return { code: 200, message: APIMessage('FILES_VALIDATED') };
 		} catch (err) {

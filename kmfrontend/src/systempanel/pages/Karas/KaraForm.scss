@@ -1,0 +1,18 @@
+.media-info {
+	white-space: nowrap;
+	.unmet-required {
+		color: rgb(243, 88, 88);
+	}
+
+	.unmet-warning {
+		color: rgb(243, 181, 88);
+	}
+
+	tr td {
+		padding-right: 10px;
+	}
+
+	tr td:last-child {
+		padding-right: 0;
+	}
+}
