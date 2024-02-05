@@ -27,6 +27,7 @@ const service = 'Electron';
 export let win: Electron.BrowserWindow;
 let chibiPlayerWindow: Electron.BrowserWindow;
 let chibiPlaylistWindow: Electron.BrowserWindow;
+let chibiRankingWindow: Electron.BrowserWindow;
 let aboutWindow: Electron.BrowserWindow;
 
 let initDone = false;
@@ -113,6 +114,9 @@ export async function postInit() {
 		}
 		if (getConfig().GUI.ChibiPlaylist.Enabled) {
 			updateChibiPlaylistWindow(true);
+		}
+		if (getConfig().GUI.ChibiRanking.Enabled) {
+			updateChibiRankingWindow(true);
 		}
 		if (getConfig().App.FirstRun) {
 			applyMenu('REDUCED');
@@ -467,6 +471,58 @@ export async function updateChibiPlaylistWindow(show: boolean) {
 		);
 	} else {
 		chibiPlaylistWindow?.destroy();
+	}
+}
+
+export async function updateChibiRankingWindow(show: boolean) {
+	const state = getState();
+	const conf = getConfig();
+	if (show) {
+		chibiRankingWindow = new BrowserWindow({
+			width: conf.GUI.ChibiRanking.Width,
+			height: conf.GUI.ChibiRanking.Height,
+			x: conf.GUI.ChibiRanking.PositionX,
+			y: conf.GUI.ChibiRanking.PositionY,
+			show: false,
+			backgroundColor: '#36393f',
+			webPreferences: {
+				nodeIntegration: true,
+				contextIsolation: false,
+			},
+			resizable: true,
+			icon: resolve(state.resourcePath, 'build/icon1024.png'),
+		});
+		const port = state.frontendPort;
+		chibiRankingWindow.once('ready-to-show', () => {
+			chibiRankingWindow.show();
+		});
+		chibiRankingWindow.on('resized', () => {
+			const size = chibiRankingWindow.getSize();
+			setConfig({
+				GUI: {
+					ChibiRanking: {
+						Width: size[0],
+						Height: size[1],
+					},
+				},
+			});
+		});
+		chibiRankingWindow.on('moved', () => {
+			const pos = chibiRankingWindow.getPosition();
+			setConfig({
+				GUI: {
+					ChibiRanking: {
+						PositionX: pos[0],
+						PositionY: pos[1],
+					},
+				},
+			});
+		});
+		await chibiRankingWindow.loadURL(
+			`http://localhost:${port}/quiz/ranking?admpwd=${await generateAdminPassword()}`
+		);
+	} else {
+		chibiRankingWindow?.destroy();
 	}
 }
 

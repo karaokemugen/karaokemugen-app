@@ -6,7 +6,7 @@ import { generateAdminPassword } from '../../services/user.js';
 import { MenuItemBuilderFunction } from '../../types/electron.js';
 import { editSetting } from '../../utils/config.js';
 import { getState } from '../../utils/state.js';
-import { updateChibiPlayerWindow, updateChibiPlaylistWindow } from '../electron.js';
+import { updateChibiPlayerWindow, updateChibiPlaylistWindow, updateChibiRankingWindow } from '../electron.js';
 
 const builder: MenuItemBuilderFunction = options => {
 	const { layout } = options;
@@ -14,8 +14,6 @@ const builder: MenuItemBuilderFunction = options => {
 	return {
 		label: i18next.t('MENU_WINDOW'),
 		submenu: [
-			{ label: i18next.t('MENU_WINDOW_MINIMIZE'), role: 'minimize' },
-			!isReduced ? { type: 'separator' } : null,
 			{
 				label: i18next.t('MENU_OPTIONS_CHIBIPLAYER'),
 				type: 'checkbox',
@@ -24,6 +22,19 @@ const builder: MenuItemBuilderFunction = options => {
 				click: () => {
 					updateChibiPlayerWindow(!getConfig().GUI.ChibiPlayer.Enabled);
 					setConfig({ GUI: { ChibiPlayer: { Enabled: !getConfig().GUI.ChibiPlayer.Enabled } } });
+				},
+				visible: !isReduced,
+			},
+			{ label: i18next.t('MENU_WINDOW_MINIMIZE'), role: 'minimize' },
+			!isReduced ? { type: 'separator' } : null,
+			{
+				label: i18next.t('MENU_OPTIONS_CHIBIRANKING'),
+				type: 'checkbox',
+				accelerator: 'CmdOrCtrl+J',
+				checked: getConfig().GUI.ChibiRanking.Enabled,
+				click: () => {
+					updateChibiRankingWindow(!getConfig().GUI.ChibiRanking.Enabled);
+					setConfig({ GUI: { ChibiRanking: { Enabled: !getConfig().GUI.ChibiRanking.Enabled } } });
 				},
 				visible: !isReduced,
 			},
@@ -44,6 +55,16 @@ const builder: MenuItemBuilderFunction = options => {
 					const state = getState();
 					clipboard.writeText(
 						`http://localhost:${state.frontendPort}/chibiPlaylist?admpwd=${await generateAdminPassword()}`
+					);
+				},
+				visible: !isReduced,
+			},
+			{
+				label: i18next.t('MENU_OPTIONS_CHIBIRANKING_LINK'),
+				click: async () => {
+					const state = getState();
+					clipboard.writeText(
+						`http://localhost:${state.frontendPort}/quiz/ranking?admpwd=${await generateAdminPassword()}`
 					);
 				},
 				visible: !isReduced,

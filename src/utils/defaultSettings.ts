@@ -54,7 +54,9 @@ export const defaults: Config = {
 		AllowGuestLogin: true,
 		AllowCustomTemporaryGuests: false,
 		AllowUserCreation: true,
+		RequireSecurityCodeForNewAccounts: false,
 		Mode: 2,
+		PublicPlayerControls: false,
 		ShowAvatarsOnPlaylist: true,
 		WelcomeMessage: '',
 	},
@@ -67,6 +69,11 @@ export const defaults: Config = {
 			Enabled: false,
 			Width: 475,
 			Height: 720,
+		},
+		ChibiRanking: {
+			Enabled: false,
+			Width: 500,
+			Height: 480,
 		},
 	},
 	Karaoke: {
@@ -136,6 +143,7 @@ export const defaults: Config = {
 	},
 	Playlist: {
 		AllowDuplicates: false,
+		AllowPublicDuplicates: 'upvotes',
 		MaxDejaVuTime: 60,
 		Medias: {
 			Sponsors: {
@@ -209,6 +217,7 @@ export const defaults: Config = {
 			BundledBackgrounds: 'bundledBackgrounds',
 			Bin: 'bin',
 			DB: 'db',
+			Fonts: 'fonts',
 			Import: 'import',
 			Previews: 'previews',
 			SessionExports: 'sessionExports',

@@ -28,6 +28,7 @@ import PublicHomepage from './PublicHomepage';
 import PublicList from './PublicList';
 import NotfoundPage from '../NotfoundPage';
 import QuizPage from './QuizPage';
+import { merge } from 'lodash';
 
 let timer: any;
 
@@ -45,6 +46,8 @@ function PublicPage() {
 	const [bottom, setBottom] = useState('0px');
 	const [publicVisible, setPublicVisible] = useState(false);
 	const [currentVisible, setCurrentVisible] = useState(false);
+	const [statusPlayer, setStatusPlayer] = useState<PublicPlayerState>();
+	const [currentPlaylist, setCurrentPlaylist] = useState<PlaylistElem>();
 
 	const publicPlaylistUpdated = async (plaid: string) => {
 		if (plaid !== context.globalState.settings.data.state.publicPlaid) {
@@ -70,6 +73,7 @@ function PublicPage() {
 					setPublicVisible(playlist.flag_visible);
 				}
 				if (playlist.flag_current) {
+					setCurrentPlaylist(playlist);
 					setCurrentVisible(playlist.flag_visible);
 				}
 			});
@@ -149,7 +153,11 @@ function PublicPage() {
 		}
 	};
 
-	const displayClassicModeModal = (data: PublicPlayerState) => {
+	const playerUpdate = (data: PublicPlayerState) => {
+		setStatusPlayer(oldState => {
+			const state = { ...oldState };
+			return merge(state, data);
+		});
 		if (data.stopping !== undefined) setPlayerStopping(data.stopping);
 		if (data.playerStatus === 'stop') setPlayerStopped(true);
 		else if (typeof data.playerStatus === 'string') setPlayerStopped(false);
@@ -159,6 +167,15 @@ function PublicPage() {
 		} else if (!playerStopped && classicModeModal) {
 			closeModal(context.globalDispatch);
 			setClassicModeModal(false);
+		}
+	};
+
+	const getPlayerStatus = async () => {
+		try {
+			const result = await commandBackend('getPlayerStatus');
+			playerUpdate(result);
+		} catch (e) {
+			// already display
 		}
 	};
 
@@ -180,9 +197,10 @@ function PublicPage() {
 	]);
 
 	useEffect(() => {
+		if (context.globalState.auth.isAuthenticated) getPlayerStatus();
 		if (context.globalState.settings.data.state.songPoll) refreshPoll();
 		if (context?.globalState.settings.data.config?.Frontend?.Mode !== 0) getPlaylistList();
-		getSocket().on('playerStatus', displayClassicModeModal);
+		getSocket().on('playerStatus', playerUpdate);
 		getSocket().on('songPollStarted', songPollStarted);
 		getSocket().on('songPollEnded', songPollEnded);
 		getSocket().on('songPollResult', songPollResult);
@@ -190,7 +208,7 @@ function PublicPage() {
 		getSocket().on('userSongPlaysIn', userSongPlaysIn);
 		getSocket().on('nextSong', nextSong);
 		return () => {
-			getSocket().off('playerStatus', displayClassicModeModal);
+			getSocket().off('playerStatus', playerUpdate);
 			getSocket().off('songPollStarted', songPollStarted);
 			getSocket().off('songPollEnded', songPollEnded);
 			getSocket().off('songPollResult', songPollResult);
@@ -227,7 +245,13 @@ function PublicPage() {
 		</div>
 	) : (
 		<>
-			<PublicHeader onResize={top => setTop(top)} currentVisible={currentVisible} publicVisible={publicVisible} />
+			<PublicHeader
+				onResize={top => setTop(top)}
+				currentVisible={currentVisible}
+				publicVisible={publicVisible}
+				statusPlayer={statusPlayer}
+				currentPlaylist={currentPlaylist}
+			/>
 			{!context.globalState.settings.data.state.quiz.running ? (
 				<PlayerBox mode="fixed" currentVisible={currentVisible} onResize={bottom => setBottom(bottom)} />
 			) : null}

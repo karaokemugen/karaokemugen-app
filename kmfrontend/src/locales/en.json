@@ -41,12 +41,6 @@
 	"PITCH_RESET": "Reset pitch",
 	"PITCH_DOWN": "Decrease pitch",
 	"OPTIONS": "Options",
-	"STOP_AFTER": "Stop after current song",
-	"STOP_NOW": "Stop NOW (That's dangerous!)",
-	"REWIND": "Rewind tape",
-	"PREVIOUS_SONG": "Previous song",
-	"PLAY_PAUSE": "Play/pause",
-	"NEXT_SONG": "Next song",
 	"PASSWORD": "Password (8 characters minimum)",
 	"PASSWORDCONF": "Password confirmation",
 	"NEW_PASSWORD": "New Password",
@@ -433,8 +427,15 @@
 			"FREE_UPVOTES_REQUIREDPERCENT_TOOLTIP": "Percentage of the number of logged in users",
 			"AUTOPLAY": "Autoplay on next song added",
 			"AUTOPLAY_TOOLTIP": "Autoplay begins as soon as a song is added to the playlist",
-			"ALLOW_DUPLICATES": "Allow duplicate songs in playlists",
-			"ALLOW_DUPLICATES_TOOLTIP": "With this option, a playlist can contain the same song twice (or more). Only operators can add the same song more than once to a playlist. The song can be added again only if it has already been played before.",
+			"ALLOW_DUPLICATES": "Allow duplicate songs in playlists (operator only)",
+			"ALLOW_DUPLICATES_TOOLTIP": "With this option, a playlist can contain the same song twice (or more). Only operators can add the same song more than once to a playlist.",
+			"ALLOW_PUBLIC_DUPLICATES": "Allow duplicate songs in playlists (public)",
+			"ALLOW_PUBLIC_DUPLICATES_TOOLTIP": "Allow or not the public to add a song multiple times. A user can't add a song they already added themselves, but can add one another user added before. Upvote only means users cannot add duplicates but can upvote songs already present. \"Allowed\" is good for Classic karaoke, \"Puvotes Only\" for Public karaoke.",
+			"ALLOW_PUBLIC_DUPLICATES_OPTIONS": {
+				"ALLOWED": "Allowed",
+				"UPVOTES_ONLY": "Upvotes only",
+				"DISALLOWED": "Disallowed"
+			},
 			"MEDIAS_SETTINGS": "Medias",
 			"MEDIAS_SETTINGS_TOOLTIP": "Intros, Sponsors, Jingles, Encores and Outros",
 			"PLAYLIST_RANDOMSONGSAFTERENDMESSAGE": "Display an on-screen message regularly to invite users to add a song when randomly playing song after the current playlist ended",
@@ -529,6 +530,8 @@
 			"ALLOW_GUEST_LOGIN_TOOLTIP": "If disabled, a (local or online) account will be required to log into your instance",
 			"ALLOW_USER_CREATION": "Allow user creation",
 			"ALLOW_USER_CREATION_TOOLTIP": "If disabled, users will not be able to create new local accounts, or login with an online account that isn't already registered on your Karaoke Mugen application.",
+			"REQUIRE_USER_CREATION_CODE": "Require code for user creation",
+			"REQUIRE_USER_CREATION_CODE_TOOLTIP": "Users will require a code to create new accounts that only operators can see and communicate to them. The code is displayed in the Users window in the K menu.",
 			"ALLOW_CUSTOM_TEMPORARY_GUESTS": "Customizable guest accounts",
 			"ALLOW_CUSTOM_TEMPORARY_GUESTS_TOOLTIP": "Allow guests to choose their nickname, rather than being subjected to a name chosen at random by the application.",
 			"WEBAPPMODE": "Public interface mode",
@@ -542,6 +545,8 @@
 			"WEBAPPMODE_OPEN": "Open (default): Users can add songs",
 			"SHOW_AVATARS_ON_PLAYLIST": "Show avatars on playlist",
 			"SHOW_AVATARS_ON_PLAYLIST_TOOLTIP": "To see who added what at a glance.",
+			"PUBLIC_PLAYER_CONTROLS": "Allow public to control the player",
+			"PUBLIC_PLAYER_CONTROLS_TOOLTIP": "Play/pause, stop, previosu and next controls will be visible in the public interface, allowing users to control the player from their devices. Use only in small groups!",
 			"DISPLAY_WELCOME_MESSAGE": "Show welcome message",
 			"DISPLAY_WELCOME_MESSAGE_TOOLTIP": "This message will be shown on your karaoke session's login page"
 		}
@@ -638,6 +643,8 @@
 	"SELECT_KARAS_REQUIRED": "You have to select at least one song",
 	"PL_MULTIPLE_ADDED": "Add {{count}} songs",
 	"SECURITY_CODE": "Security code",
+	"NEW_ACCOUNT_CODE_SHORT": "New account code",
+	"NEW_ACCOUNT_CODE": "New account code (ask the operator)",
 	"FORGOT_PASSWORD": "Forgot your password?",
 	"MAKE_ACCOUNT_ADMIN": "Upgrade account to operator",
 	"MAKE_ACCOUNT_ADMIN_MESSAGE": "If you want to upgrade your account to operator, input the 6-numbers security code here.",
@@ -997,15 +1004,18 @@
 		"MEDIA_FILE_TOOLTIP": "Supported file formats: {{formats}}",
 		"MEDIA_REQUIRED": "Media file is required",
 		"MEDIA_IN_PROCESS": "The media file is being processed, please wait for the success notification.",
+		"MEDIA_REPOSITORY_RULES_UNMET": "The media file does not meet all mandatory repository requirements. Please encode the media first.",
 		"MEDIA_FILE_INFO": {
 			"OVERALL_BITRATE": "Overall bitrate",
 			"FILE_SIZE": "File size",
 			"FILE_FORMAT": "File format",
 			"VIDEO_CODEC": "Video codec",
 			"VIDEO_RESOLUTION": "Resolution",
+			"VIDEO_ASPECT_RATIO": "Aspect ratio",
 			"VIDEO_COLORSPACE": "Colorspace",
 			"VIDEO_FRAMERATE": "Framerate",
-			"AUDIO_CODEC": "Audio codec"
+			"AUDIO_CODEC": "Audio codec",
+			"AUDIO_COVER_ART": "Cover art"
 		},
 		"LYRICS_FILE": "Lyrics file",
 		"LYRICS_FILE_TOOLTIP": "Supported file formats: {{formats}}",
@@ -1110,7 +1120,13 @@
 		"COLLECTIONS_REQUIRED": "A collection is required",
 		"COLLECTIONS_TOOLTIP": "Select the collections in which the karaoke should appear",
 		"FROM_DISPLAY_TYPE": "From tag type display",
-		"FROM_DISPLAY_TYPE_TOOLTIP": "Select tag type to used when displaying the song"
+		"FROM_DISPLAY_TYPE_TOOLTIP": "Select tag type to used when displaying the song",
+		"ANNOUNCE_POSITION": "Announce position",
+		"ANNOUNCE_POSITION_TOOLTIP": "Overrides the default announce position (banner and song infos at the beginning and end of a song). Useful to prevent overlapping with the song text, if the subtitle position is different than usual.",
+		"ANNOUNCE_POSITION_SELECTION": {
+			"SET": "Override default position",
+			"UNSET": "Remove custom position"
+		}
 	},
 	"MENU": {
 		"HOME": "Dashboard",
@@ -1206,7 +1222,7 @@
 		"I18N_NAME": "Name in that language",
 		"I18N_DELETE": "Remove name",
 		"I18N_SELECT": "Add a language",
-		"ROMANIZATION_WARNING": "This title/tag contains a non-Latin alphabet language. You must add the language “Latin Alphabet (Romanization)” as well.",
+		"ROMANIZATION_WARNING": "This title/tag contains a non-Latin alphabet language. You must add the language “Latin Alphabet (Romanization)” as well unless the title in non-Latin alphabet is a transcription of another language in its entirety.",
 		"MERGE_TAGS": "Merge tags",
 		"MERGE_WITH": "Merge with",
 		"MERGE_WITH_TOOLTIP": "Merge the current tag with another one",
@@ -1428,7 +1444,10 @@
 		"GIT_UNSTASH": "Apply",
 		"GIT_DELETE": "Delete",
 		"GIT_CUSTOM_MESSAGE": "Custom message",
-		"DESELECT_ALL_COMMITS": "Deselect all commits"
+		"DESELECT_ALL_COMMITS": "Deselect all commits",
+		"GIT_EDIT_MESSAGE": "Edit commit's message",
+		"GIT_SEE_MODIFIED_FILES": "View modified files",
+		"GIT_SEE_DIFF_IN_FILE": "See differences in the file"
 	},
 	"COLLECTIONS": {
 		"NAME": "Collection name",
@@ -1536,6 +1555,7 @@
 		"UPDATE_REPO_ALREADY_IN_PROGRESS": "An update to this repository is already ongoing",
 		"REPO_NOT_UPDATEABLE": "The repository cannot be updated: it might be disabled, not in maintainer mode, offline, or its update setting is set to disabled",
 		"REPO_GIT_DROP_STASH_ERROR": "Error removing stash",
+		"REPO_GIT_DIFF_ERROR": "Error getting diff for file",
 		"TAG_REPOSITORY_INVALID_CHANGE": "You can't change a tag's repository. Use the copy function instead",
 		"GET_MEDIA_INFO_ERROR": "Failed to retrieve media information",
 		"INBOX_VIEW_FORBIDDEN_ERROR": "You don't have permission to view the song inbox",
@@ -1562,6 +1582,7 @@
 		"NO_MORE_GUESTS_AVAILABLE": "No more guest accounts available",
 		"GUESTS_NOT_ALLOWED": "Guests accounts not allowed",
 		"USER_CREATION_DISABLED": "This karaoke session doesn't accept new users for now.",
+		"USER_CREATION_WRONG_SECURITY_CODE": "Wrong security code",
 		"DOWNLOADS_QUEUED_ERROR": "Error adding downloads to the queue",
 		"DOWNLOADS_QUEUED_ALREADY_ADDED_ERROR": "No downloads added, all are already in queue or running",
 		"DOWNLOADS_GET_ERROR": "Error getting downloads from the queue",
@@ -1578,6 +1599,7 @@
 		"FAVORITES_IMPORTED_BAD_DATA_ERROR": "Error importing favorites : invalid data in file",
 		"FAVORITES_IMPORTED_ERROR": "Error importing favorites",
 		"KARA_CREATED_ERROR": "Error creating the karaoke",
+		"KARA_FILE_EXISTS_ERROR": "Error saving files: A karaoke with the same filename already exists. Please make sure this is not a duplicate and the tags are set correctly",
 		"KARA_HISTORY_ERROR": "Error getting songs sorted by date played",
 		"KARA_RANKING_ERROR": "Error getting songs sorted by most requested",
 		"KARA_PLAYED_ERROR": "Error getting songs sorted by most played",
@@ -1721,7 +1743,7 @@
 		"SESSION_DELETE_ACTIVE_ERROR": "The active session cannot be delete.",
 		"SESSION_GET_ERROR": "Error getting session",
 		"CANNOT_DELETE_LAST_REPOSITORY": "The last repository cannot be deleted",
-		"GIT_PULL_FAILED": "The Git pull have failed",
+		"GIT_PULL_FAILED": "The git pull has failed",
 		"UNKNOWN_STASH": "Unknown stash",
 		"QUIZZ_GET_GAMES_ERROR": "Error when getting games",
 		"QUIZZ_GET_GAME_SCORES_ERROR": "Error when getting game scores",
@@ -1961,6 +1983,7 @@
 			"CREATION": "Creation",
 			"MODIFICATION": "Modification"
 		},
+		"REVIEW": "Review",
 		"LINK_TO_ISSUE": "Link to issue",
 		"CONTACT_INFOS": "Author contact informations",
 		"ISSUE": "Issue {{number}}",
@@ -1991,6 +2014,7 @@
 		"DONATORS": "Thanks to <1>{{donators}}</1> for their donations to Karaoke Mugen"
 	},
 	"QUIZ": {
+		"NO_QUIZ": "No quiz in progress!",
 		"START": "Start a quiz",
 		"STOP": "Stop the quiz",
 		"CONTINUE": "Continue the song after the answer reveal",
@@ -2035,5 +2059,21 @@
 			"END_OF_PLAYLIST": "when the playlist reaches its end"
 		},
 		"PREVIOUS_KARAOKES": "Previous karaokes"
+	},
+	"LANGUAGES": {
+		"QRO": "Latin Alphabet (Romanization)"
+	},
+	"PLAYERS_CONTROLS": {
+		"STOP_AFTER": "Stop after current song",
+		"STOP_AFTER_SHORT": "Stop after",
+		"STOP_NOW": "Stop NOW (That's dangerous!)",
+		"STOP_NOW_SHORT": "Stop NOW",
+		"REWIND": "Rewind tape",
+		"PREVIOUS_SONG": "Previous song",
+		"PREVIOUS_SONG_SHORT": "Previous",
+		"NEXT_SONG": "Next song",
+		"NEXT_SONG_SHORT": "Next",
+		"PLAY": "Play",
+		"PAUSE": "Pause"
 	}
 }

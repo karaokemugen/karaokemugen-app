@@ -18,9 +18,9 @@ function KMMenu() {
 	return (
 		<Menu
 			mode="inline"
-			theme="dark"
 			inlineIndent={10}
-			style={{ minHeight: '100vh' }}
+			style={{ minHeight: '100%' }}
+			theme="dark"
 			onClick={() => window.scrollTo(0, 0)}
 		>
 			<Menu.Item key="change" onClick={() => window.location.assign('/welcome')}>

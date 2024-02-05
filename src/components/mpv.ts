@@ -45,6 +45,7 @@ import Timeout = NodeJS.Timeout;
 import { getSongSeriesSingers, getSongTitle } from '../lib/services/kara.js';
 import { getTagNameInLanguage } from '../lib/services/tag.js';
 import { emit } from '../lib/utils/pubsub.js';
+import { getRepoManifest } from '../services/repo.js';
 
 type PlayerType = 'main' | 'monitor';
 
@@ -415,9 +416,9 @@ class Player {
 			`--hwdec=${conf.Player.HardwareDecoding}`,
 			`--volume=${+conf.Player.Volume}`,
 			`--audio-delay=${(conf.Player.AudioDelay && +conf.Player.AudioDelay / 1000) || 0}`,
-			'--no-config',
 			'--autoload-files=no',
-			`--input-conf=${resolve(resolvedPath('Temp'), 'input.conf')}`,
+			`--config-dir=${resolvedPath('Temp')}`,
+			`--sub-fonts-dir=${resolvedPath('Fonts')}`,
 			'--sub-visibility',
 			'--sub-ass-vsfilter-aspect-compat=no',
 			'--loop-file=no',
@@ -764,6 +765,7 @@ class Players {
 
 	/** Define lavfi-complex commands when we need to display stuff on screen or adjust audio volume. And it's... complex. */
 	private static async genLavfiComplex(song: CurrentSong, showVideo = true): Promise<string> {
+		const isMP3 = supportedFiles.audio.some(extension => song.mediafile.endsWith(extension));
 		// Loudnorm normalization scheme: https://ffmpeg.org/ffmpeg-filters.html#loudnorm
 		let audio: string;
 		if (song.loudnorm) {
@@ -785,8 +787,10 @@ class Players {
 					'\\',
 					'/'
 				)}\\',format=yuva420p,geq=lum='p(X,Y)':a='if(gt(abs(W/2-X),W/2-${cropRatio})*gt(abs(H/2-Y),H/2-${cropRatio}),if(lte(hypot(${cropRatio}-(W/2-abs(W/2-X)),${cropRatio}-(H/2-abs(H/2-Y))),${cropRatio}),255,0),255)'[logo]`,
+				isMP3 ? `nullsrc=size=1x1:duration=${song.duration}[emp]` : undefined,
+				isMP3 ? '[base][emp]overlay[ovrl]' : undefined,
 				'[logo][vid1]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base]',
-				`[base][logo1]overlay=x='if(between(t,0,8)+between(t,${song.duration - 8},${
+				`[${isMP3 ? 'ovrl' : 'base'}][logo1]overlay=x='if(between(t,0,8)+between(t,${song.duration - 8},${
 					song.duration
 				}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`,
 			]
@@ -1417,7 +1421,7 @@ class Players {
 			}
 			// Workaround for audio-only files: disable the lavfi-complex filter
 			if (
-				playerState.currentSong?.mediafile.endsWith('.mp3') &&
+				supportedFiles.audio.some(extension => playerState.currentSong?.mediafile.endsWith(extension)) &&
 				playerState.currentSong?.avatar &&
 				getConfig().Player.Display.Avatar
 			) {
@@ -1439,7 +1443,7 @@ class Players {
 			}
 			// Workaround for audio-only files: disable the lavfi-complex filter
 			if (
-				playerState.currentSong?.mediafile.endsWith('.mp3') &&
+				supportedFiles.audio.some(extension => playerState.currentSong?.mediafile.endsWith(extension)) &&
 				playerState.currentSong?.avatar &&
 				getConfig().Player.Display.Avatar
 			) {
@@ -1558,7 +1562,6 @@ class Players {
 				options.Speed = 100; // Reset speed
 			} else if (typeof options.Speed === 'number') {
 				await this.exec({ command: ['set_property', 'audio-pitch-correction', 'yes'] });
-				await this.exec({ command: ['set_property', 'af', 'loudnorm'] });
 				await this.exec({ command: ['set_property', 'speed', options.Speed / 100] });
 				options.Pitch = 0; // Reset pitch
 			}
@@ -1664,10 +1667,31 @@ class Players {
 		}
 	}
 
+	getMessagePosition(): number {
+		// Returns a number from 1 to 9 depending on the position on screen. 1 is bottom left, 9 is top right.
+		let pos = 9;
+		// No song playing
+		if (!playerState.currentSong) return 1;
+		// Song playing
+		const manifest = getRepoManifest(playerState.currentSong.repository);
+		const X =
+			playerState.currentSong.announce_position_x || manifest?.rules?.lyrics?.defaultAnnouncePositionX || 'Left';
+		const Y =
+			playerState.currentSong.announce_position_y ||
+			manifest?.rules?.lyrics?.defaultAnnouncePositionY ||
+			'Bottom';
+		// We lower pos if X pos isn't right or Y pos isn't top since 9 is top right already.
+		if (X === 'Center') pos -= 1;
+		if (X === 'Left') pos -= 2;
+		if (Y === 'Center') pos -= 3;
+		if (Y === 'Bottom') pos -= 6;
+		return pos;
+	}
+
 	async displaySongInfo(infos: string, duration = -1, nextSong = false, warnings?: DBKaraTag[], visible = true) {
 		try {
 			const nextSongString = nextSong ? `${i18n.t('NEXT_SONG')}\\N\\N` : '';
-			const position = nextSong ? '{\\an5}' : '{\\an1}';
+			const position = nextSong ? '{\\an5}' : `{\\an${this.getMessagePosition()}}`;
 			let warningString = '';
 			if (warnings?.length > 0) {
 				const langs = [
@@ -1725,7 +1749,7 @@ class Players {
 					? sample(initializationCatchphrases)
 					: '';
 			const version = `Karaoke Mugen ${state.version.number} (${state.version.name}) - https://karaokes.moe`;
-			const message = `{\\an1}{\\fscx80}{\\fscy80}${text}\\N{\\fscx60}{\\fscy60}{\\i1}${version}{\\i0}\\N{\\fscx40}{\\fscy40}${catchphrase}`;
+			const message = `{\\an${this.getMessagePosition()}}{\\fscx80}{\\fscy80}${text}\\N{\\fscx60}{\\fscy60}{\\i1}${version}{\\i0}\\N{\\fscx40}{\\fscy40}${catchphrase}`;
 			this.messages?.addMessage('DI', message, duration === -1 ? 'infinite' : duration);
 		} catch (err) {
 			logger.error('Unable to display infos', { service, obj: err });

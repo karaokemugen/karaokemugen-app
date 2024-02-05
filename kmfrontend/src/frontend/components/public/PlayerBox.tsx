@@ -268,7 +268,7 @@ function PlayerBox(props: IProps) {
 				<div className="title inline">
 					<div>
 						<h3 className="song">{title}</h3>
-						{karaVersions}
+						<div className="tagConteneur">{karaVersions}</div>
 					</div>
 					<h4 className="series">{subtitle}</h4>
 				</div>
@@ -276,7 +276,7 @@ function PlayerBox(props: IProps) {
 				<div className="title">
 					<div>
 						<h3 className="song">{title}</h3>
-						{karaVersions}
+						<div className="tagConteneur">{karaVersions}</div>
 					</div>
 					<h4 className="series">{subtitle}</h4>
 				</div>

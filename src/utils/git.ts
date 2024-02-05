@@ -111,6 +111,10 @@ export default class Git {
 		await this.git.clean('f');
 	}
 
+	async diffFile(file: string) {
+		return this.git.diff(['--ignore-cr-at-eol', 'HEAD', file]);
+	}
+
 	reset(ref?: string) {
 		const options = ref ? [ref] : ['--hard', 'origin/master'];
 		if (!ref) {

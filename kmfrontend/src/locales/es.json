@@ -1,5 +1,4 @@
 {
-	"PREVIOUS_SONG": "Canción anterior",
 	"OPTIONS": "Opciones",
 	"SHUTDOWN_POPUP": "Conexión perdida con Karaoke Mugen",
 	"VERSION": "Versión",
@@ -21,24 +20,24 @@
 	"NO": "No",
 	"YES": "Sí",
 	"SELECT_PLACEHOLDER": "Escoger una playlist",
-	"LOGIN_MANDATORY": "Debes iniciar sesión",
+	"LOGIN_MANDATORY": "Es necesario iniciar sesión",
 	"CRITERIA": {
 		"DELETE": "Borrar este criterio",
 		"ADD_PLACEHOLDER": "Añadir un valor a criterios",
 		"CRITERIA_DESC": "Seleccionar y añadir criterios para incluir canciones específicas automáticamente.",
-		"EXPL": "La playlist inteligente se crea de <1>los criterios</1>, también puedes añadir canciones manualmente a la lista.",
+		"EXPL": "Las listas de reproducción inteligentes se crean a partir de <1>criterios</1>, también puedes añadir manualmente canciones a esta lista.",
 		"LABEL": {
-			"SHORTER": "Las canciones de menos de {{time}} segundos están en la lista.",
-			"LONGER": "Las canciones de más de {{time}} segundos están en la lista.",
+			"SHORTER": "Las canciones de menos de {{time}} segundos aparecen en la lista.",
+			"LONGER": "Las canciones de más de {{time}} segundos aparecen en la lista.",
 			"KID": "Esta canción está en la lista.",
 			"YEAR": "Las canciones del año {{year}} están en la lista.",
 			"TAG_VERBS": {
 				"14": "de la versión",
 				"7": "que son",
-				"13": "de la plataforma",
-				"12": "del género",
+				"13": "en la plataforma",
+				"12": "por género",
 				"11": "originado de",
-				"10": "de la familia",
+				"10": "contenido en",
 				"9": "del grupo",
 				"8": "escrito por",
 				"6": "de autoría de",
@@ -47,25 +46,25 @@
 				"3": "de tipo",
 				"1": "de",
 				"2": "cantado por",
-				"16": "incluido en la colección",
-				"17": "interpretado por banda de música",
-				"15": "con el aviso"
+				"16": "en la colección",
+				"17": "del grupo musical",
+				"15": "con la advertencia"
 			},
-			"TAG": "{{verb}} {{tag}} de esta canción está en la lista."
+			"TAG": "Canciones {{verb}} {{tag}} están en la lista."
 		},
-		"CRITERIA_TYPE_1006": "Ocultar canciones no disponibles fuera de línea",
+		"CRITERIA_TYPE_1006": "Ocultar canciones no disponibles sin conexión",
 		"CRITERIA_TYPE_1003": "Más corto que (mm:ss)",
 		"CRITERIA_TYPE_1002": "Más largo que (mm:ss)",
 		"CRITERIA_TYPE_1001": "Canción",
 		"AND": "Y",
-		"TYPE_SMART_DESC": "El criterio \"O\" se presta más a una lista negra. \"Y\" se presta más a playlists clásicas",
+		"TYPE_SMART_DESC": "El tipo \"OR\" es más adecuado para una lista negra. \"Y\" para listas de reproducción clásicas",
 		"OR": "O",
-		"TYPE_SMART": "Tipo de playlist inteligente",
+		"TYPE_SMART": "Tipo de lista de reproducción inteligente",
 		"PLAYLIST_DURATION": "<1/> Limitar a <2/> <3/> (<4/> orden)",
 		"PLAYLIST_DURATION_TYPE_MINUTES": "minutos",
 		"PLAYLIST_DURATION_TYPE_SONGS": "canciones",
 		"PLAYLIST_DURATION_ORDER_MORE_RECENT": "más reciente",
-		"PLAYLIST_DURATION_ORDER_LESS_RECENT": "menos reciente",
+		"PLAYLIST_DURATION_ORDER_LESS_RECENT": "más antiguo",
 		"ADD": "Agregar criterio",
 		"EXPL_OPEN": "Este es el criterio utilizado para generar <1>la lista de reproducción</1>, se actualizará automáticamente cada vez que se agreguen nuevas canciones a la base de datos."
 	},
@@ -100,8 +99,8 @@
 		"ADD_WHITELIST": "Agregar a la lista blanca",
 		"FREE": "Liberar esta canción del límite del usuario",
 		"BLACKLISTED": "Añadido a la lista negra!",
-		"SHUFFLE": "Mesclar canciones",
-		"SHUFFLED": "¡Canciones mescladas!"
+		"SHUFFLE": "Canciones aleatorias",
+		"SHUFFLED": "¡Canciones mezcladas!"
 	},
 	"ADVANCED": {
 		"DOWNLOAD_ALL": "Descargar todos",
@@ -113,7 +112,7 @@
 		"EDIT": "Editar playlist",
 		"DELETE": "Borrar playlist",
 		"EMPTY_LIST": "Playlist vacía",
-		"SELECT_ALL": "Seleccionar todos los elementos visibles",
+		"SELECT_ALL": "Seleccionar todas las canciones visibles",
 		"ADD_RANDOM": "Añadir canciones aleatorias",
 		"ADD_ALL": "Añadir todas las canciones a la otra lista",
 		"PLAYLIST_COMMANDS": "Comandos de playlist",
@@ -123,7 +122,8 @@
 		"EDIT_CRITERIA": "Editar criterios",
 		"ACTIVE_FILTER": "Filtro activo",
 		"FILTERS": "Filtros",
-		"SHOW_SONGS": "Mostrar canciones"
+		"SHOW_SONGS": "Mostrar canciones",
+		"REFRESH_LIBRARY_BANNER": "Los criterios de la biblioteca han cambiado, por favor <1>actualízala</1>."
 	},
 	"MESSAGE": "Mensaje",
 	"INLINE_TAG": {
@@ -135,24 +135,19 @@
 	"PLAYLISTS": {
 		"FAVORITES": "Favoritos",
 		"LIBRARY": "Librería",
-		"ANIME_LIST": "Mis animes"
+		"ANIME_LIST": "Canciones para mis animes"
 	},
 	"VOLUME_LEVEL": "Establecer volumen",
 	"NEW_PASSWORD": "Contraseña nueva",
 	"PASSWORDCONF": "Confirmar contraseña",
 	"PASSWORD": "Contraseña (mínimo 8 caracteres)",
-	"NEXT_SONG": "Siguiente canción",
-	"PLAY_PAUSE": "Reproducir/Pausar",
-	"REWIND": "Rebobinar cinta",
-	"STOP_NOW": "Detente AHORA (Eso es peligroso!)",
-	"STOP_AFTER": "Detener después de canción actual",
 	"HIDE_SUBS": "Esconder letra en pantalla",
 	"SHOW_SUBS": "Mostrar letra en pantalla",
 	"HOME_BUTTON": "Cambiar interfaz",
 	"SHUTDOWN": "Apagar Karaoke Mugen",
 	"DURATION_REMAINING": "restantes",
-	"SECURITY_CODE_MANDATORY": "Código de seguridad obligatorio para crear cuenta de operador",
-	"PASSWORD_MANDATORY": "Contraseña obligatoria",
+	"SECURITY_CODE_MANDATORY": "El código de seguridad es necesario para crear una cuenta de operador",
+	"PASSWORD_MANDATORY": "Se requiere contraseña",
 	"SETTINGS": {
 		"PLAYER": {
 			"PLAYER_MONITOR_TOOLTIP": "Muestra una segunda ventana para el operador si no puede ver la pantalla principal directamente",
@@ -387,17 +382,17 @@
 	"USERLIST": "Usuarios",
 	"ACCOUNT": "Mi cuenta",
 	"AVATAR_IMPORT": "Cambiar avatar",
-	"FAVORITES_EXPORT": "Exportar tus favoritos",
-	"FAVORITES_IMPORT": "Importar tus favoritos",
+	"FAVORITES_EXPORT": "Exportar favoritos",
+	"FAVORITES_IMPORT": "Importar favoritos",
 	"CONFIRM_FAV_IMPORT": "Sobreescribir tus favoritos con esta importación?",
 	"LOG_OFFLINE": {
-		"MESSAGE": "Los cambios a tu perfil no serán registrados",
+		"MESSAGE": "Los cambios en su perfil no se guardarán permanentemente",
 		"TITLE": "Modo Offline"
 	},
 	"LOG_SUCCESS": "Sesión iniciada como {{name}}",
-	"GOTO_BOTTOM": "Ir al final de la playlist",
+	"GOTO_BOTTOM": "Ir al final de la lista de reproducción",
 	"GOTO_PLAYING": "Ir a la canción actual",
-	"GOTO_TOP": "Ir al comienzo de la playlist",
+	"GOTO_TOP": "Ir al principio de la lista de reproducción",
 	"BACK_PLAYLISTS": "Volver a listas de canciones",
 	"CL_PLAYLISTS": "Listas de canciones",
 	"CL_EMPTY_LIST": "Lista vacía?",
@@ -411,30 +406,33 @@
 		"EMPTY": "Seleccionar criterios y una duración",
 		"MIX": "Crear AutoMix",
 		"DURATION": "Duración (en minutos)",
-		"DESCRIPTION": "Una AutoMix es una lista de reproducción creada con criterios y una duración. A diferencia de las listas de reproducción inteligentes, esta lista no se actualiza automáticamente. Para que una canción se incluya en la lista, tiene que coincidir un solo criterio.",
+		"DESCRIPTION": "Una AutoMix es una lista de reproducción creada con criterios y una duración. A diferencia de las listas de reproducción inteligentes, esta lista no se actualiza automáticamente. Para que una canción se incluya en la lista, debe coincidir un único criterio.",
 		"TITLE": "Crear un AutoMix",
 		"NAME": "Nombre de la lista de reproducción",
 		"NAME_PLACEHOLDER": "Nombre autogenerado",
 		"CRITERIA": "Criterios de mezcla",
-		"FAVOURITES": "Favoritos de",
+		"FAVOURITES": "Las favoritas de",
 		"LIMIT_TYPE": {
 			"DURATION": "Duración",
 			"SONGS": "Número de canciones"
 		},
 		"NUMBER_SONGS": "Número de canciones",
-		"FAVOURITES_OF": "Favoritos de {{name}}",
+		"FAVOURITES_OF": "Las favoritas de {{name}}",
 		"LIMIT": "Limitar la lista a…",
-		"IS_ADMIN_PLAYER": "Esta lista de reproducción es para un concurso, no me la enseñes."
+		"IS_ADMIN_PLAYER": "Esta lista de reproducción es para un concurso, no me la enseñes.",
+		"ANIMELISTS": "Listas de anime de",
+		"ANIMELISTS_OF": "Lista de animes de {{name}}",
+		"ALL_LOGGED_USERS": "<Todos los usuarios conectados>"
 	},
 	"ADMIN_MESSAGE": {
 		"CONFIRM": "Enviar mensaje",
-		"EMPTY": "El mensaje está vacío",
+		"EMPTY": "Mensaje vacío",
 		"MESSAGE": "Mensaje",
 		"DURATION": "Duración (en segundos)",
 		"CL_ALL": "Mostrar en ambas",
-		"CL_USERS": "Mostrar en la pantalla del usuario",
+		"CL_USERS": "Mostrar en pantallas de usuario",
 		"ESSENTIAL_MESSAGE": "Mensaje importante",
-		"CL_SCREEN": "Mostrar en la pantalla de reproducción"
+		"CL_SCREEN": "Mostrar en la pantalla del reproductor"
 	},
 	"PUBLIC_HOMEPAGE": {
 		"NEW_KARAOKES": "Canciones nuevas",
@@ -442,14 +440,14 @@
 		"OTHERS": "Otros…",
 		"EXPLORE": "Explorar",
 		"SONG_SEARCH_SHORT": "Buscar",
-		"SONG_SEARCH": "Buscar canción",
+		"SONG_SEARCH": "Buscar canciones",
 		"FAVORITES": "Favoritos",
 		"PUBLIC_SUGGESTIONS_SHORT": "Sugerencias",
 		"PUBLIC_SUGGESTIONS": "Sugerencias públicas",
 		"OPEN_POLL": "Votar por la siguiente canción",
 		"LYRICS_EXPL": {
-			"CURRENT": "La línea en negrita representa la línea que se canta en el momento.",
-			"LINES": "La letra de la canción actual se mostrará aquí."
+			"CURRENT": "La línea en negrita indica el verso cantado actualmente.",
+			"LINES": "Aquí se mostrará la letra de la canción actual."
 		},
 		"HIDE_LYRICS": "Ocultar letra",
 		"SHOW_ALL_LYRICS": "Mostrar toda la letra",
@@ -458,13 +456,18 @@
 		"NOW_PLAYING": "Reproduciendo ahora",
 		"HELLO": "Hola {{name}}!",
 		"QUOTA_TIME_DESCRIPTION": "Solo puedes sugerir {{time}} de tiempo de canción. Podrás sugerir más cuando el operador haya aceptado o rechazado tu sugerencia o cuando tu canción se reproduzca en la pantalla.",
-		"QUOTA_KARA_DESCRIPTION_one": "Solo puedes sugerir {{count}} canción. Serás capaz de sugerir canciones una vez que el operador haya aceptado o rechazado tu sugerencia, o cuando tu canción se reproduzca en la pantalla.",
+		"QUOTA_KARA_DESCRIPTION_one": "Sólo puedes sugerir {{count}} canciones. Podrás volver a sugerir canciones una vez que el operador haya aceptado o rechazado tus sugerencias o cuando tu canción se reproduzca en pantalla.",
 		"QUOTA_KARA_DESCRIPTION_other": "Solo puedes sugerir {{count}} canciones. Serás capaz de sugerir canciones una vez que el operador haya aceptado o rechazado tu sugerencia, o cuando tu canción se reproduzca en la pantalla.",
 		"RESTRICTED_DESCRIPTION": "El karaoke está en modo restringido, no puedes añadir canciones.",
-		"KARA_VERSIONS": "Esta canción está disponible en versiones de {{length}}, elige la que prefieres y añádela a tu playlist o a favoritos.",
+		"KARA_VERSIONS": "Esta canción está disponible en versiones de {{length}}, elige la que quieras añadir.",
 		"REQUESTED_KARAOKES": "Canciones pedidas",
 		"ANIME_LIST": "Mis animes",
-		"CURRENT": "Ver la lista de reproducción actual"
+		"CURRENT": "Ver la lista de reproducción actual",
+		"QUIZ": {
+			"POINTS_TOTAL": "{{count}} puntos",
+			"POINTS": "Puntos: {{count}}",
+			"ANSWERS_HISTORY": "Historial de respuestas"
+		}
 	},
 	"QUOTA_KARA": "Canciones restantes",
 	"QUOTA_TIME": "Tiempo restante",
@@ -495,7 +498,7 @@
 	},
 	"TOOLTIP_UPVOTE": "Votar por esta canción",
 	"MUTE_UNMUTE": "Silenciar/Desilenciar",
-	"CL_DELETE_CRITERIAS_PLAYLIST": "Borrar criterios del tipo '{{type}}' que contienen todas estas canciones :",
+	"CL_DELETE_CRITERIAS_PLAYLIST": "Eliminar el criterio '{{type}}' que contiene todas estas canciones :",
 	"KAROULETTE": {
 		"STATS_one": "{{count}} procesado ({{accepted}} / {{refused}})",
 		"PLAYLIST_REMAINING_one": "Tiempo restante de la lista actual: {{count}} minuto",
@@ -510,7 +513,8 @@
 		"REFUSED_other": "{{count}} rechazado"
 	},
 	"ADMIN_HEADER": {
-		"QUICK_ACCESS": "Acceso rápido"
+		"QUICK_ACCESS": "Acceso rápido",
+		"QUIZ_RANKING": "Clasificación del cuestionario"
 	},
 	"ONLINE_STATS": {
 		"DETAILS": {
@@ -758,13 +762,13 @@
 		"El final :(",
 		"¡Gracias a todos!"
 	],
-	"SPEED_DOWN": "Reproducir más lento",
-	"SPEED_UP": "Reproducción más rápida",
+	"SPEED_DOWN": "Reducir la velocidad",
+	"SPEED_UP": "Aumentar la velocidad",
 	"SPONSOR_TIME": "¡TIEMPO COMERCIAL!",
 	"WARNING": "Aviso!",
-	"PITCH_UP": "Tono más alto",
+	"PITCH_UP": "Aumentar el tono",
 	"PITCH_RESET": "Reestablecer tono",
-	"PITCH_DOWN": "Tono más bajo",
+	"PITCH_DOWN": "Reducir el tono",
 	"TOOLTIP_KARA_ALREADY_ADDED": "Esta canción ya está en la lista de reproducción opuesta.",
 	"INTRO_TIME": "Introducción de la lista de reproducción",
 	"OUTRO_TIME": "Final de la lista de reproducción",
@@ -1783,5 +1787,18 @@
 	"SHOW-HIDE": "Mostrar/Ocultar",
 	"UNKNOWN": "Desconocido",
 	"BLURVIDEO_BLUR": "Desenfocar video",
-	"BLURVIDEO_UNBLUR": "Enfocar video"
+	"BLURVIDEO_UNBLUR": "Enfocar video",
+	"LANGUAGES": {
+		"QRO": "Alfabeto latino (romanización)"
+	},
+	"PLAYERS_CONTROLS": {
+		"STOP_AFTER": "Detener después de canción actual",
+		"STOP_NOW": "Detente AHORA (Eso es peligroso!)",
+		"REWIND": "Rebobinar cinta",
+		"PREVIOUS_SONG": "Canción anterior",
+		"PLAY": "Reproducir",
+		"PAUSE": "Pausar",
+		"NEXT_SONG": "Siguiente canción"
+	},
+	"OR": "o"
 }

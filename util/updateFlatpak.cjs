@@ -52,12 +52,12 @@ async function main() {
 	libvipsSource['only-arches'] = '[x86_64]';
 
 	const sharpSource = karaokemugenModule.sources.find(
-		e => e.url && e.url.includes('https://github.com/lovell/sharp')
+		e => e.url && e.url.includes('https://github.com/lovell/sharp/releases')
 	);
 
 	sharpSource.url = `https://github.com/lovell/sharp/releases/download/v${sharpVersion}/sharp-v${sharpVersion}-napi-v7-linux-x64.tar.gz`;
-	libvipsSource.sha256 = sharpSHA;
-	libvipsSource['only-arches'] = '[x86_64]';
+	sharpSource.sha256 = sharpSHA;
+	sharpSource['only-arches'] = '[x86_64]';
 
 	/** Not tested yet
 	const sentryCliARM64Source = karaokemugenModule.sources.find(

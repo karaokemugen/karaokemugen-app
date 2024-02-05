@@ -29,6 +29,8 @@
 
 	.main {
 		padding-top: 1em;
+		max-width: calc(100vw - 2em);
+		max-height: calc(100vh - 100px - 2em);
 		display: grid;
 		grid-template-areas: 'actions news';
 		grid-template-columns: 1.5fr 1fr;

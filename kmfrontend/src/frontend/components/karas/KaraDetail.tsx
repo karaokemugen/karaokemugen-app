@@ -462,9 +462,13 @@ export default function KaraDetail(props: IProps) {
 							context?.globalState.settings.data.config?.Frontend?.Mode === 2 &&
 							kara.plaid !== context.globalState.settings.data.state.publicPlaid &&
 							kara.plaid !== context.globalState.settings.data.state.currentPlaid &&
-							(!kara?.public_plc_id || !kara?.public_plc_id[0]) ? (
+							(!kara?.public_plc_id ||
+								!kara?.public_plc_id[0] ||
+								context.globalState.settings.data.config.Playlist.AllowPublicDuplicates ===
+									'allowed') ? (
 								addKaraButton
-							) : kara.my_public_plc_id.length === 0 ? (
+							) : kara.my_public_plc_id.length === 0 &&
+							  context.globalState.settings.data.config.Playlist.AllowPublicDuplicates === 'upvotes' ? (
 								<UpvoteKaraButton kara={kara} wide={true} updateKara={getKaraDetail} />
 							) : null}
 							{showVideoButton}

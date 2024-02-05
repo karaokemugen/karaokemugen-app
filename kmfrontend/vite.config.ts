@@ -9,5 +9,9 @@ export default defineConfig({
 	plugins: [nodePolyfills(), react()],
 	server: {
 		port: 3000,
+		proxy: {
+			'/avatars': 'http://localhost:1337',
+			'/previews': 'http://localhost:1337',
+		},
 	},
 });

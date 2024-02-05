@@ -154,6 +154,8 @@
 	"MENU_OPTIONS_SYSTEMCONFIG": "Préférences &système",
 	"MENU_OPTIONS_OPERATORCONFIG_OSX": "Réglages…",
 	"MENU_OPTIONS_SYSTEMCONFIG_OSX": "Réglages système…",
+	"MENU_OPTIONS_CHIBIRANKING": "Afficher le Chibi Classement du Quiz",
+	"MENU_OPTIONS_CHIBIRANKING_LINK": "Copier le lien vers le classement détaché",
 	"MENU_OPTIONS_CHIBIPLAYER": "Afficher le Chibi Player",
 	"MENU_OPTIONS_CHIBIPLAYLIST": "Afficher la liste de lecture détachée",
 	"MENU_OPTIONS_CHIBIPLAYLIST_LINK": "Copier le lien vers la liste de lecture détachée",
@@ -179,7 +181,7 @@
 		"TITLE": "La base de données est dans le futur, Marty !",
 		"MESSAGE": "La base de données que Karaoke Mugen essaye de lire a été utilisée par une autre application plus récente et est donc incompatible. Essayons de régler cela.\n\nSi vous cliquez sur \"ANNULER\", l'application se fermera sans rien faire. Vous devriez lancer une version plus récente de Karaoke Mugen.\n\nSi vous cliquez sur \"SUPPRIMER toutes les données\", l'application va SUPPRIMER listes de lecture, utilisateurs locaux, statistiques, etc. et démarrer normalement.",
 		"DELETE_ALL_DATA": "SUPPRIMER toutesles données",
-		"CONTINUE_ANYWAY": "Continuer quand même (risqué!)"
+		"CONTINUE_ANYWAY": "Continuer quand même (risqué !)"
 	},
 	"REPO_DISABLED": {
 		"TITLE": "Dépôt désactivé",

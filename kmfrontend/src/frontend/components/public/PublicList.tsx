@@ -26,6 +26,7 @@ export default function PublicList(props: Props) {
 	const { plaid, tid, year, tagType } = useParams();
 
 	const [favoritesSort, setFavoritesSort] = useState<'search' | 'recent'>('search');
+	const [searchFilter, setSearchFilter] = useState(context.globalState.frontendContext.filterValue1);
 
 	const changeFilterValue = useMemo(
 		() =>
@@ -70,6 +71,11 @@ export default function PublicList(props: Props) {
 		}
 	}, [props.plaid, plaid]);
 
+	useEffect(() => {
+		setSearchFilter('');
+		setFilterValue(context.globalDispatch, '', 'left', context.globalState.frontendContext.playlistInfoLeft.plaid);
+	}, [props.plaid, plaid, tid, year, tagType]);
+
 	return (
 		<>
 			<KmAppHeaderDecorator mode="public">
@@ -80,9 +86,26 @@ export default function PublicList(props: Props) {
 					<input
 						placeholder={`\uF002 ${i18next.t('SEARCH')}`}
 						type="text"
-						defaultValue={context.globalState.frontendContext.filterValue1}
-						onChange={changeFilterValue}
+						value={searchFilter}
+						onChange={e => {
+							setSearchFilter(e.target.value);
+							changeFilterValue(e);
+						}}
 					/>
+					<button
+						className="btn"
+						onClick={() => {
+							setSearchFilter('');
+							setFilterValue(
+								context.globalDispatch,
+								'',
+								'left',
+								context.globalState.frontendContext.playlistInfoLeft.plaid
+							);
+						}}
+					>
+						<i className="fas fa-eraser" />
+					</button>
 				</div>
 				{props.plaid === nonStandardPlaylists.favorites ? (
 					<button

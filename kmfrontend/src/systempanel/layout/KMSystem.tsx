@@ -1,12 +1,13 @@
 import '../App.scss';
 
-import { ConfigProvider, Layout } from 'antd';
+import { ConfigProvider, Layout, theme } from 'antd';
 import enUS from 'antd/es/locale/en_US';
 import esES from 'antd/es/locale/es_ES';
 import frFR from 'antd/es/locale/fr_FR';
 import idID from 'antd/es/locale/id_ID';
 import ptPT from 'antd/es/locale/pt_PT';
 import deDE from 'antd/es/locale/de_DE';
+import itIT from 'antd/es/locale/it_IT';
 
 import i18next from 'i18next';
 import { Component } from 'react';
@@ -78,8 +79,10 @@ class KMSystem extends Component<unknown, unknown> {
 			locale = idID;
 		} else if (navigator.languages[0].includes('pt')) {
 			locale = ptPT;
-		} else if (navigator.languages[0].includes('DE')) {
+		} else if (navigator.languages[0].includes('de')) {
 			locale = deDE;
+		} else if (navigator.languages[0].includes('it')) {
+			locale = itIT;
 		}
 		return locale;
 	}
@@ -87,8 +90,19 @@ class KMSystem extends Component<unknown, unknown> {
 	render() {
 		const locale = this.getLocale();
 		return (
-			<ConfigProvider locale={locale}>
-				<Layout>
+			<ConfigProvider
+				locale={locale}
+				theme={{
+					algorithm: theme.darkAlgorithm,
+					components: {
+						Menu: {
+							darkItemBg: '#1f1f1f',
+							darkSubMenuItemBg: '#141414',
+						},
+					},
+				}}
+			>
+				<Layout style={{ minHeight: '100vh' }}>
 					<Layout.Sider>
 						<KMMenu />
 					</Layout.Sider>

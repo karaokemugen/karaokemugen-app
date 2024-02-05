@@ -235,10 +235,12 @@ export async function selectPlaylistContents(params: PLCParams): Promise<DBPLC[]
 	return res.rows.map(row => organizeTagsInKara(row));
 }
 
-export async function selectPlaylistContentsMicro(id: string): Promise<DBPLCBase[]> {
+export async function selectPlaylistContentsMicro(id: string, login?: string): Promise<DBPLCBase[]> {
 	try {
 		profile('selectPlaylistContentsMicro');
-		const res = await db().query(sqlgetPlaylistContentsMicro, [id]);
+		const params = [id];
+		if (login) params.push(login);
+		const res = await db().query(sqlgetPlaylistContentsMicro(login), params);
 		return res.rows;
 	} catch (err) {
 		throw err;
