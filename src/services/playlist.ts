@@ -721,17 +721,17 @@ export async function addKaraToPlaylist(params: AddKaraParams) {
 		const duplicateCheckList =
 			user.type === 0
 				? // Admin can add a song multiple times in the current or any other playlist, even by the same user
-					conf.Playlist.AllowDuplicates
+				  conf.Playlist.AllowDuplicates
 					? []
 					: // Option to allow is not set : removing duplicates from songs to add
-						plContents
+					  plContents
 				: // Not an admin adding these songs.
-					conf.Playlist.AllowPublicDuplicates === 'allowed'
-					? // A user isn't allowed to add the same song twice
-						// But several users can add the same song twice
-						// So we remove all songs they haven't added already from the list that's going to be compared later.
-						plContents.filter(plc => plc.username === requester)
-					: plContents;
+				  conf.Playlist.AllowPublicDuplicates === 'allowed'
+				  ? // A user isn't allowed to add the same song twice
+				    // But several users can add the same song twice
+				    // So we remove all songs they haven't added already from the list that's going to be compared later.
+				    plContents.filter(plc => plc.username === requester)
+				  : plContents;
 		karaList = karaList.filter(k => !duplicateCheckList.map(plc => plc.kid).includes(k.kid));
 
 		profile('addKaraToPL-checkDuplicates');
@@ -881,8 +881,12 @@ export async function copyKaraToPlaylist(plc_ids: number[], plaid: string, pos?:
 			if (!plcs.find(plc => plc.plcid === +plcid)) throw new ErrorKM('UNKNOWN_PLAYLIST_ITEM', 404, false);
 		}
 		for (const plc of plcs) {
-			// If source is public playlist and destination current playlist, free up PLCs from the public playlist.
-			if (plc.plaid === getState().publicPlaid && plaid === getState().currentPlaid) {
+			// If source is public playlist and destination current playlist, free up PLCs from the public playlist if option is enabled.
+			if (
+				plc.plaid === getState().publicPlaid &&
+				plaid === getState().currentPlaid &&
+				getConfig().Karaoke.Quota.FreeAcceptedSongs
+			) {
 				PLCsToFree.push(plc.plcid);
 			}
 			plc.added_at = new Date();
@@ -1133,7 +1137,7 @@ export async function editPLC(plc_ids: number[], params: PLCEditParams, refresh 
 			if (pl.flag_current && playerStatus && playerStatus !== 'stop') playPlayer(true);
 		}
 		if (params.flag_accepted === true) {
-			params.flag_free = true;
+			if (getConfig().Karaoke.Quota.FreeAcceptedSongs) params.flag_free = true;
 			// Just in case someone tries something stupid.
 			params.flag_refused = false;
 			try {

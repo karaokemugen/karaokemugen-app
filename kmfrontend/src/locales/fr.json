@@ -419,6 +419,8 @@
 			"SONGS_BY_USER_TOOLTIP": "Nombre de chansons qu'un utilisateur peut demander simultanément. Une chanson libérée ou qui vient de passer ne compte plus dans le quota",
 			"FREE_AUTO_TIME": "Temps avant libération d'une chanson (minutes)",
 			"FREE_AUTO_TIME_TOOLTIP": "Au bout de X minutes, la chanson ne comptera plus dans le quota de l'utilisateur. À régler selon le nombre de participants",
+			"FREE_ACCEPTED_SONGS": "Libérer les chansons acceptées",
+			"FREE_ACCEPTED_SONGS_TOOLTIP": "Lorsqu'un opérateur accepte une chanson depuis la liste de suggestion, celle-ci sera libérée et ne comptera plus dans le quota du demandeur.",
 			"FREE_UPVOTES": "Libération des chansons par like",
 			"FREE_UPVOTES_TOOLTIP": "Si suffisamment de gens soutiennent une suggestion de chanson, elle ne comptera plus dans le quota de son demandeur",
 			"FREE_UPVOTES_REQUIREDMIN": "Minimum de like requis pour libérer une chanson",

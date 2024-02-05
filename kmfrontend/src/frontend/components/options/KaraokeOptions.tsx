@@ -83,8 +83,8 @@ function KaraokeOptions(props: IProps) {
 			e.target.type === 'checkbox'
 				? e.target.checked
 				: !isNaN(Number(e.target.value))
-					? Number(e.target.value)
-					: e.target.value;
+				  ? Number(e.target.value)
+				  : e.target.value;
 		if (value === 'true') {
 			value = true;
 		} else if (value === 'false') {
@@ -203,6 +203,21 @@ function KaraokeOptions(props: IProps) {
 							</div>
 						</div>
 					) : null}
+
+					<div className="settings-line">
+						<label htmlFor="Karaoke.Quota.FreeAcceptedSongs">
+							<span className="title">{i18next.t('SETTINGS.KARAOKE.FREE_ACCEPTED_SONGS')}</span>
+							<br />
+							<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.FREE_ACCEPTED_SONGS_TOOLTIP')}</span>
+						</label>
+						<div>
+							<Switch
+								idInput="Karaoke.Quota.FreeAcceptedSongs"
+								handleChange={onChange}
+								isChecked={config['Karaoke.Quota.FreeAcceptedSongs']}
+							/>
+						</div>
+					</div>
 
 					<div className="settings-line">
 						<label htmlFor="Karaoke.Quota.FreeUpVote">

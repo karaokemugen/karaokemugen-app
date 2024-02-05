@@ -419,6 +419,8 @@
 			"SONGS_BY_USER_TOOLTIP": "Number of songs a user can request simultaneously. A freed or already played song no longer counts towards the quota",
 			"FREE_AUTO_TIME": "Songs are freed from quota after (min)",
 			"FREE_AUTO_TIME_TOOLTIP": "After X minutes, the song will no longer count towards the user's quota. Adjust this according to the number of guests participating",
+			"FREE_ACCEPTED_SONGS": "Free accepted songs",
+			"FREE_ACCEPTED_SONGS_TOOLTIP": "Songs will be freed when accepted by an operator from the public playlist. The song requester will regain quota.",
 			"FREE_UPVOTES": "Allow users to upvote songs to free them",
 			"FREE_UPVOTES_TOOLTIP": "If enough people like a song suggestion, it won't count anymore in the requester's quota",
 			"FREE_UPVOTES_REQUIREDMIN": "Minimum votes required to free a song",

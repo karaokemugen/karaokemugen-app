@@ -144,6 +144,7 @@ export interface Config {
 			FreeUpVotes?: boolean;
 			FreeUpVotesRequiredPercent?: number;
 			FreeUpVotesRequiredMin?: number;
+			FreeAcceptedSongs?: boolean;
 		};
 	};
 	Player: {
