@@ -36,8 +36,7 @@ export function parseArgs() {
 		.option('-u, --updateBase', 'Update karaoke base files')
 		.option('--updateMediasAll', 'Update karaoke media files only (no other data files)')
 		.option('--validate', 'Validates kara files and modify them if needed (no generation)')
-		.option('--verbose', 'Displays additional debug messages')
-		.option('-v, --version', 'Display version information')
+		.option('-v, --verbose', 'Displays additional debug messages')
 		.allowUnknownOption()
 		.parse();
 }
