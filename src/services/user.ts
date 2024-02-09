@@ -264,11 +264,11 @@ export async function createUser(
 ) {
 	try {
 		if (!opts.admin && !getConfig().Frontend.AllowUserCreation) {
-			throw new ErrorKM('USER_CREATION_DISABLED', 403);
+			throw new ErrorKM('USER_CREATION_DISABLED', 403, false);
 		}
 		if (!opts.admin && getConfig().Frontend.RequireSecurityCodeForNewAccounts) {
 			if (user.securityCode !== getState().newAccountCode) {
-				throw new ErrorKM('USER_CREATION_WRONG_SECURITY_CODE', 403);
+				throw new ErrorKM('USER_CREATION_WRONG_SECURITY_CODE', 403, false);
 			}
 			resetNewAccountCode();
 		}
