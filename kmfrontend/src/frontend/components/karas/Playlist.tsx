@@ -477,6 +477,7 @@ function Playlist(props: IProps) {
 			} else {
 				setData(karas);
 			}
+			setPlaylistInProgress(false);
 		} catch (e) {
 			// already display
 		}
@@ -524,10 +525,10 @@ function Playlist(props: IProps) {
 	};
 
 	useEffect(() => {
-		if (isPlaylistInProgress) {
+		if (!goToPlayingAvoidScroll) {
 			gotToPlayingAfterPlaylistUpdate();
-			setPlaylistInProgress(false);
 		}
+		setGotToPlayingAvoidScroll(false);
 	}, [data]);
 
 	useEffect(() => {
@@ -942,6 +943,7 @@ function Playlist(props: IProps) {
 			const oldIndex = result.source.index;
 			const newIndex = result.destination.index;
 			if (oldIndex !== newIndex) {
+				setGotToPlayingAvoidScroll(true);
 				setData(data => {
 					// extract plcid based on sorter index
 					const plcid = data.content[oldIndex].plcid;
