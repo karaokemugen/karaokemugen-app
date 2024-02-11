@@ -390,7 +390,7 @@ export async function selectKarasFromCriterias(
 						uniqueKIDsSQL === ''
 							? ''
 							: ` UNION (SELECT type_1001_1.kid, type_1001_1.duration, type_1001_1.created_at FROM (${uniqueKIDsSQL}) type_1001_1)`
-				  }`
+					}`
 				: uniqueKIDsSQL;
 	}
 	logger.debug(`SQL for Smart playlist: "${sql}" with params ${params}`, { service });
@@ -429,12 +429,12 @@ export function updateFreeOrphanedSongs(expireTime: number) {
 	return db().query(sqlupdateFreeOrphanedSongs, [new Date(expireTime * 1000)]);
 }
 
-export async function selectSongTimeSpentForUser(plaid: string, username: string): Promise<number> {
-	const res = await db().query(sqlgetTimeSpentPerUser, [plaid, username]);
+export async function selectSongTimeSpentForUser(plaids: string[], username: string): Promise<number> {
+	const res = await db().query(sqlgetTimeSpentPerUser, [plaids, username]);
 	return res.rows[0]?.time_spent || 0;
 }
 
-export async function selectSongCountForUser(plaid: string, username: string): Promise<number> {
-	const res = await db().query(sqlgetSongCountPerUser, [plaid, username]);
+export async function selectSongCountForUser(plaids: string[], username: string): Promise<number> {
+	const res = await db().query(sqlgetSongCountPerUser, [plaids, username]);
 	return res.rows[0]?.count || 0;
 }
