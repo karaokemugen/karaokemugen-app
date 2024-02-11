@@ -1714,6 +1714,7 @@
 		"REPO_COPY_LYRICS_ERROR": "Error copying lyrics between two repositories",
 		"ERROR_READING_LOGS": "Unable to read event logs",
 		"SUBFILE_FORMAT_UNKOWN": "Subfile format unknown",
+		"SUBFILE_PROCESS_ERROR": "Error when processing the subfile",
 		"POLL_VOTE_ERROR": "This song is not in the poll",
 		"USER_ONLINE_NOINTERNET": "You cannot edit your profile for now, your online server isn't working.",
 		"FAVORITES_ONLINE_NOINTERNET": "You cannot edit your favorites for now, your online server isn't working.",

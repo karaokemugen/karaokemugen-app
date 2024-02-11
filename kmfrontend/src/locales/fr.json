@@ -1713,6 +1713,7 @@
 		"REPO_COPY_LYRICS_ERROR": "Erreur lors de la copie des paroles entre deux dépôts",
 		"ERROR_READING_LOGS": "Impossible de lire les journaux d'évènements",
 		"SUBFILE_FORMAT_UNKOWN": "Format du fichier de sous-titres inconnus",
+		"SUBFILE_PROCESS_ERROR": "Erreur lors de l'analyse du fichier de sous-titres",
 		"POLL_VOTE_ERROR": "Cette chanson n'est pas dans le sondage",
 		"USER_ONLINE_NOINTERNET": "Vous ne pouvez pas éditer votre profil pour le moment, votre instance en ligne ne fonctionne pas.",
 		"FAVORITES_ONLINE_NOINTERNET": "Vous ne pouvez pas éditer vos favoris pour le moment, votre instance en ligne ne fonctionne pas.",
