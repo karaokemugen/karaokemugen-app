@@ -5,7 +5,7 @@ import { useRef } from 'react';
 interface IProps {
 	nameCommand?: string;
 	isChecked: boolean | undefined;
-	handleChange: (e: any) => void;
+	handleChange?: (e: any) => void;
 	idInput?: string;
 	disabled?: boolean;
 	onLabel?: string;
