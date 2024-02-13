@@ -1451,7 +1451,9 @@ export async function pushCommits(repoName: string, push: Push, ignoreFTP?: bool
 			if (!ignoreFTP && push.modifiedMedias.length > 0) {
 				await ftp.connect();
 				for (const media of push.modifiedMedias) {
-					if (media.new === null) {
+					if (media.old === null || media.old === media.new) {
+						// Upload, do nothing
+					} else if (media.new === null) {
 						// Deleted file
 						try {
 							await ftp.delete(media.old);
