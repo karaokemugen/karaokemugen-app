@@ -257,7 +257,9 @@
 				"DISALLOWED": "Non consentire"
 			},
 			"ALLOW_PUBLIC_DUPLICATES": "Consenti brani doppioni in playlist (pubblico)",
-			"ALLOW_PUBLIC_DUPLICATES_TOOLTIP": "Scegli se consentire al pubblico di aggiungere un brano più volte. Un utente non può aggiungere un brano già aggiunto da sé stesso, ma può aggiungerne uno già aggiunto da un altro utente. Selezionando \"Solo Voti\", gli utenti non potranno aggiungere doppioni ma potranno votare brani già presenti. \"Consenti\" va bene per un Karaoke classico, \"Solo Voti\" per un Karaoke pubblico."
+			"ALLOW_PUBLIC_DUPLICATES_TOOLTIP": "Scegli se consentire al pubblico di aggiungere un brano più volte. Un utente non può aggiungere un brano già aggiunto da sé stesso, ma può aggiungerne uno già aggiunto da un altro utente. Selezionando \"Solo Voti\", gli utenti non potranno aggiungere doppioni ma potranno votare brani già presenti. \"Consenti\" va bene per un Karaoke classico, \"Solo Voti\" per un Karaoke pubblico.",
+			"FREE_ACCEPTED_SONGS": "Libera i brani accettati",
+			"FREE_ACCEPTED_SONGS_TOOLTIP": "I brani verranno liberati una volta accettati da un operatore della playlist pubblica. Il richiedente del brano riotterrà la quota spesa."
 		},
 		"PLAYLIST": {
 			"ENDOFPLAYLISTACTION": {
@@ -1145,7 +1147,8 @@
 		"UPVOTE_ALREADY_DONE": "Hai già votato",
 		"REPO_GIT_DIFF_ERROR": "Errore durante il recupero delle differenze del file",
 		"USER_CREATION_WRONG_SECURITY_CODE": "Codice di sicurezza errato",
-		"KARA_FILE_EXISTS_ERROR": "Errore durante il salvataggio dei file: Esiste già un karaoke con lo stesso nome del file. Si prega di assicurarsi che non si tratta di un doppione e che le tag sono impostate correttamente."
+		"KARA_FILE_EXISTS_ERROR": "Errore durante il salvataggio dei file: Esiste già un karaoke con lo stesso nome del file. Si prega di assicurarsi che non si tratta di un doppione e che le tag sono impostate correttamente.",
+		"SUBFILE_PROCESS_ERROR": "Errore durante l'analisi del file dei sottotitoli"
 	},
 	"KARA": {
 		"PAUSE_DOWNLOAD_QUEUE": "Sospendi",
