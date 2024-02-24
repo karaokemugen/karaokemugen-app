@@ -93,11 +93,10 @@ function TagsDuplicate() {
 			title: i18next.t('ACTION'),
 			render: (_text, record) =>
 				isModifiable(context, record.repository) ? (
-					<span>
+					<div style={{ display: 'flex' }}>
 						<Link to={`/system/tags/${record.tid}`}>
-							<Button type="primary" icon={<EditOutlined />} />
+							<Button type="primary" style={{ marginRight: '0.75em' }} icon={<EditOutlined />} />
 						</Link>
-						{!is_touch_device() ? <Divider type="vertical" /> : null}
 						<Button
 							type="primary"
 							danger
@@ -107,7 +106,7 @@ function TagsDuplicate() {
 								setTag(record);
 							}}
 						/>
-					</span>
+					</div>
 				) : null,
 		},
 	];
