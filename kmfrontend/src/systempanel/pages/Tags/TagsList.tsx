@@ -1,5 +1,5 @@
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { Button, Divider, Input, Layout, Modal, Select, Table, Tag, Tooltip } from 'antd';
+import { Button, Input, Layout, Modal, Select, Table, Tag, Tooltip } from 'antd';
 import Title from '../../components/Title';
 import i18next from 'i18next';
 import { useContext, useEffect, useState } from 'react';
@@ -9,7 +9,7 @@ import { DBTag } from '../../../../../src/lib/types/database/tag';
 import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 import { getTagTypeName, tagTypes } from '../../../utils/tagTypes';
-import { is_touch_device, isModifiable } from '../../../utils/tools';
+import { isModifiable } from '../../../utils/tools';
 
 function TagsList() {
 	const context = useContext(GlobalContext);
