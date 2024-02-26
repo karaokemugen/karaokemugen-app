@@ -35,6 +35,7 @@ import { getRepo, getRepos } from './repo.js';
 import { updateAllSmartPlaylists } from './smartPlaylist.js';
 import { getTag } from './tag.js';
 import { APIMessage } from '../lib/services/frontend.js';
+import { emitWS } from '../lib/utils/ws.js';
 
 const service = 'KaraManager';
 
