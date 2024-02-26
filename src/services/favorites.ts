@@ -29,7 +29,7 @@ export async function getFavorites(params: KaraParams): Promise<KaraList> {
 		profile('getFavorites');
 		return await getKaras(params);
 	} catch (err) {
-		logger.error(`Failed to fetch favorites for user ${params.username}`, { service });
+		logger.error(`Failed to fetch favorites for user ${params.userFavorites}`, { service });
 		sentry.error(err);
 		throw new ErrorKM('FAVORITES_VIEW_ERROR', 500);
 	} finally {
