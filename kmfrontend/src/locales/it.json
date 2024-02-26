@@ -2036,7 +2036,8 @@
 				"POLL_WINNER": "Il pubblico ha votato un nuovo brano!",
 				"END_OF_SESSION_NEAR": "La sessione karaoke dovrebbe finire tra {{data}} minuti.",
 				"POLL_STARTING": "Avviando il sondaggio",
-				"PLAYER_RESTARTING": "Riavviando il lettore multimediale…"
+				"PLAYER_RESTARTING": "Riavviando il lettore multimediale…",
+				"BATCH_EDIT_COMPLETE": "Modifica in massa dei karaoke completata."
 			}
 		}
 	},
