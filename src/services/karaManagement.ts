@@ -246,6 +246,7 @@ export async function batchEditKaras(plaid: string, action: 'add' | 'remove', ti
 		await refreshKarasAfterDBChange('UPDATE', karas);
 		updateAllSmartPlaylists();
 		emitWS('operatorNotificationInfo', APIMessage('NOTIFICATION.OPERATOR.INFO.BATCH_EDIT_COMPLETE'));
+		saveSetting('baseChecksum', getStoreChecksum());
 	} catch (err) {
 		logger.info('Batch tag edit failed', { service, obj: err });
 	} finally {
