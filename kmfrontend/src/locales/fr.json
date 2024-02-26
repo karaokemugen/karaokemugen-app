@@ -971,6 +971,7 @@
 				"UPDATE_GIT_REPO_ERROR": "La mise à jour du dépot git a échouée"
 			},
 			"INFO": {
+				"BATCH_EDIT_COMPLETE": "Edition en masse de karaokés terminée.",
 				"PLAYER_RESTARTING": "Redémarrage du lecteur vidéo…",
 				"POLL_WINNER": "Le peuple a voté pour une nouvelle chanson !",
 				"POLL_STARTING": "Démarrage du sondage",

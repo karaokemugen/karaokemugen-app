@@ -971,6 +971,7 @@
 				"UPDATE_GIT_REPO_ERROR": "Updating git repository failed"
 			},
 			"INFO": {
+				"BATCH_EDIT_COMPLETE": "Karaoke batch edit complete.",
 				"PLAYER_RESTARTING": "Restarting media player…",
 				"POLL_WINNER": "People voted for a new song!",
 				"POLL_STARTING": "Starting poll",

@@ -34,6 +34,7 @@ import { editKara } from './karaCreation.js';
 import { getRepo, getRepos } from './repo.js';
 import { updateAllSmartPlaylists } from './smartPlaylist.js';
 import { getTag } from './tag.js';
+import { APIMessage } from '../lib/services/frontend.js';
 
 const service = 'KaraManager';
 
@@ -243,6 +244,7 @@ export async function batchEditKaras(plaid: string, action: 'add' | 'remove', ti
 		logger.info('Batch tag edit finished', { service });
 		await refreshKarasAfterDBChange('UPDATE', karas);
 		updateAllSmartPlaylists();
+		emitWS('operatorNotificationInfo', APIMessage('NOTIFICATION.OPERATOR.INFO.BATCH_EDIT_COMPLETE'));
 	} catch (err) {
 		logger.info('Batch tag edit failed', { service, obj: err });
 	} finally {
