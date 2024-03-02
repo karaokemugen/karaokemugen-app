@@ -14,6 +14,7 @@ export interface Change {
 export interface Push {
 	commits: Commit[];
 	modifiedMedias: ModifiedMedia[];
+	squash?: string;
 }
 
 export interface Commit {

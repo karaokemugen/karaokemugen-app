@@ -1441,8 +1441,11 @@ export async function pushCommits(repoName: string, push: Push, ignoreFTP?: bool
 						await git.rm(removedFile);
 					}
 				}
-				await git.commit(commit.message);
+				if (!push.squash) await git.commit(commit.message);
 				task.incr();
+			}
+			if (push.squash) {
+				await git.commit(push.squash);
 			}
 			// All our commits are hopefully done. Just in case we'll update repository now.
 			await updateGitRepo(repoName);

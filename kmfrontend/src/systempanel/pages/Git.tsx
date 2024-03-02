@@ -13,7 +13,7 @@ import {
 	MinusOutlined,
 	DiffOutlined,
 } from '@ant-design/icons';
-import { Button, Checkbox, Divider, Input, Layout, List, Modal, Table } from 'antd';
+import { Alert, Button, Checkbox, Divider, Input, Layout, List, Modal, Table } from 'antd';
 import Title from '../components/Title';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import i18next from 'i18next';
@@ -33,7 +33,7 @@ import { ColorSchemeType } from 'diff2html/lib/types';
 type CommitWithComment = Commit & { comment: string; filesModified: boolean };
 
 interface PendingPush {
-	commits: { commits: CommitWithComment[]; modifiedMedias: ModifiedMedia[] };
+	commits: { commits: CommitWithComment[]; modifiedMedias: ModifiedMedia[]; squash?: string };
 	repoName: string;
 }
 
@@ -160,6 +160,8 @@ export default function Git() {
 	const [loading, setLoading] = useState(false);
 	const [showPushModal, setShowPushModal] = useState(false);
 	const [showActionsModal, setShowActionsModal] = useState(false);
+	const [squash, setSquash] = useState(false);
+	const [squashMessage, setSquashMessage] = useState('');
 
 	const generateCommits = useCallback(async (repoName: string) => {
 		setLoading(true);
@@ -203,9 +205,14 @@ export default function Git() {
 		pendingPush.commits.modifiedMedias = pendingPush.commits.modifiedMedias.filter(
 			m => !excludedMessages.includes(m.commit)
 		);
-		await commandBackend('pushCommits', pendingPush);
-		setShowPushModal(false);
-	}, [pendingPush, excludeList]);
+		if (squash) pendingPush.commits.squash = squashMessage;
+		if (!squash || squashMessage !== '') {
+			await commandBackend('pushCommits', pendingPush);
+			setShowPushModal(false);
+		} else {
+			setLoading(false);
+		}
+	}, [pendingPush, excludeList, squash, squashMessage]);
 
 	const deselectAllCommits = () => setExcludeList([...Array(pendingPush.commits.commits.length).keys()]);
 
@@ -285,6 +292,10 @@ export default function Git() {
 		});
 	};
 
+	const operatorNotificationError = (data: { code: string; data: string }) => {
+		if (data.code === 'ERROR_CODES.REPO_GIT_PUSH_ERROR') setLoading(false);
+	};
+
 	useEffect(() => {
 		getRepos().then(setRepos);
 	}, []);
@@ -300,8 +311,10 @@ export default function Git() {
 				getRepos().then(setRepos);
 			}
 		};
+		getSocket().on('operatorNotificationError', operatorNotificationError);
 		getSocket().on('pushComplete', listener);
 		return () => {
+			getSocket().off('operatorNotificationError', operatorNotificationError);
 			getSocket().off('pushComplete', listener);
 		};
 	}, [pendingPush]);
@@ -402,43 +415,90 @@ export default function Git() {
 				okText={i18next.t('REPOSITORIES.GIT_PUSH')}
 				cancelText={i18next.t('CANCEL')}
 			>
+				{pendingPush?.commits?.commits?.length > 20 ? (
+					<Alert
+						style={{ marginBottom: '1em' }}
+						description={i18next.t('REPOSITORIES.GIT_TOO_MANY_CHANGES', {
+							changes: pendingPush.commits.commits.length,
+						})}
+						type="warning"
+					/>
+				) : null}
 				<Button
 					type="primary"
 					style={{ marginLeft: '1.7em', marginBottom: '1em' }}
 					onClick={deselectAllCommits}
+					disabled={squash}
 				>
 					{i18next.t('REPOSITORIES.DESELECT_ALL_COMMITS')}
 				</Button>
-				<ul>
-					{pendingPush?.commits?.commits?.map((commit, i) => (
-						<li key={commit.message}>
-							<Checkbox checked={!excludeList.includes(i)} name={commit.message} onChange={toggleExclude}>
-								{typeof commit.comment === 'string' ? (
-									<Input
-										placeholder={i18next.t('REPOSITORIES.GIT_CUSTOM_MESSAGE')}
-										disabled={excludeList.includes(i)}
-										onChange={e => {
-											setPendingPush(pPush => {
-												const commits = [...pPush.commits.commits];
-												commits[i] = {
-													...commits[i],
-													comment: e.target.value,
-												};
-												return { ...pPush, commits: { ...pPush.commits, commits } };
-											});
-										}}
-										onClick={e => {
-											e.stopPropagation();
-											e.preventDefault();
-										}}
-										autoFocus
-									/>
-								) : (
+				<Checkbox
+					style={{ marginLeft: '1.7em', marginBottom: '1em', userSelect: 'none' }}
+					onChange={() => setSquash(!squash)}
+				>
+					{i18next.t('REPOSITORIES.GIT_SQUASH_COMMITS')}
+				</Checkbox>
+				{squash ? (
+					<Input
+						required
+						placeholder={i18next.t('REPOSITORIES.GIT_SQUASH_MESSAGE')}
+						onChange={e => setSquashMessage(e.target.value)}
+						autoFocus
+					/>
+				) : (
+					<ul>
+						{pendingPush?.commits?.commits?.map((commit, i) => (
+							<li key={commit.message}>
+								<Checkbox
+									checked={!excludeList.includes(i)}
+									name={commit.message}
+									onChange={toggleExclude}
+								>
+									{typeof commit.comment === 'string' ? (
+										<Input
+											placeholder={i18next.t('REPOSITORIES.GIT_CUSTOM_MESSAGE')}
+											disabled={excludeList.includes(i)}
+											onChange={e => {
+												setPendingPush(pPush => {
+													const commits = [...pPush.commits.commits];
+													commits[i] = {
+														...commits[i],
+														comment: e.target.value,
+													};
+													return { ...pPush, commits: { ...pPush.commits, commits } };
+												});
+											}}
+											onClick={e => {
+												e.stopPropagation();
+												e.preventDefault();
+											}}
+											autoFocus
+										/>
+									) : (
+										<Button
+											title={i18next.t('REPOSITORIES.GIT_EDIT_MESSAGE')}
+											icon={<EditOutlined />}
+											style={{ marginRight: '0.5em' }}
+											disabled={excludeList.includes(i)}
+											onClick={e => {
+												e.stopPropagation();
+												e.preventDefault();
+												setPendingPush(pPush => {
+													const commits = [...pPush.commits.commits];
+													commits[i] = {
+														...commits[i],
+														comment: '',
+													};
+													return { ...pPush, commits: { ...pPush.commits, commits } };
+												});
+											}}
+										/>
+									)}
+									<span>{commit.message}</span>
 									<Button
-										title={i18next.t('REPOSITORIES.GIT_EDIT_MESSAGE')}
-										icon={<EditOutlined />}
-										style={{ marginRight: '0.5em' }}
-										disabled={excludeList.includes(i)}
+										title={i18next.t('REPOSITORIES.GIT_SEE_MODIFIED_FILES')}
+										icon={<UnorderedListOutlined />}
+										style={{ marginLeft: '0.5em' }}
 										onClick={e => {
 											e.stopPropagation();
 											e.preventDefault();
@@ -446,72 +506,54 @@ export default function Git() {
 												const commits = [...pPush.commits.commits];
 												commits[i] = {
 													...commits[i],
-													comment: '',
+													filesModified: !commit.filesModified,
 												};
 												return { ...pPush, commits: { ...pPush.commits, commits } };
 											});
 										}}
 									/>
-								)}
-								<span>{commit.message}</span>
-								<Button
-									title={i18next.t('REPOSITORIES.GIT_SEE_MODIFIED_FILES')}
-									icon={<UnorderedListOutlined />}
-									style={{ marginLeft: '0.5em' }}
-									onClick={e => {
-										e.stopPropagation();
-										e.preventDefault();
-										setPendingPush(pPush => {
-											const commits = [...pPush.commits.commits];
-											commits[i] = {
-												...commits[i],
-												filesModified: !commit.filesModified,
-											};
-											return { ...pPush, commits: { ...pPush.commits, commits } };
-										});
-									}}
-								/>
-								{commit.filesModified ? (
-									<List size="small">
-										{commit.addedFiles.map(file => (
-											<List.Item
-												key={file}
-												style={{ display: 'flex', justifyContent: 'space-between' }}
-												onClick={e => diffFile(e, file)}
-											>
-												<span>
-													<PlusOutlined style={{ marginRight: '0.2em' }} />
-													{file}
-												</span>
-												<Button
-													title={i18next.t('REPOSITORIES.GIT_SEE_DIFF_IN_FILE')}
-													icon={<DiffOutlined />}
-													style={{ marginLeft: '0.5em' }}
-												/>
-											</List.Item>
-										))}
-										{commit.removedFiles.map(file => (
-											<List.Item
-												key={file}
-												style={{ display: 'flex', justifyContent: 'space-between' }}
-												onClick={e => diffFile(e, file)}
-											>
-												<span>
-													<MinusOutlined style={{ marginRight: '0.2em' }} />
-													{file}
-												</span>
-												<Button
-													title={i18next.t('REPOSITORIES.GIT_SEE_DIFF_IN_FILE')}
-													icon={<DiffOutlined />}
-												/>
-											</List.Item>
-										))}
-									</List>
-								) : null}
-							</Checkbox>
-						</li>
-					))}
-				</ul>
+									{commit.filesModified ? (
+										<List size="small">
+											{commit.addedFiles.map(file => (
+												<List.Item
+													key={file}
+													style={{ display: 'flex', justifyContent: 'space-between' }}
+													onClick={e => diffFile(e, file)}
+												>
+													<span>
+														<PlusOutlined style={{ marginRight: '0.2em' }} />
+														{file}
+													</span>
+													<Button
+														title={i18next.t('REPOSITORIES.GIT_SEE_DIFF_IN_FILE')}
+														icon={<DiffOutlined />}
+														style={{ marginLeft: '0.5em' }}
+													/>
+												</List.Item>
+											))}
+											{commit.removedFiles.map(file => (
+												<List.Item
+													key={file}
+													style={{ display: 'flex', justifyContent: 'space-between' }}
+													onClick={e => diffFile(e, file)}
+												>
+													<span>
+														<MinusOutlined style={{ marginRight: '0.2em' }} />
+														{file}
+													</span>
+													<Button
+														title={i18next.t('REPOSITORIES.GIT_SEE_DIFF_IN_FILE')}
+														icon={<DiffOutlined />}
+													/>
+												</List.Item>
+											))}
+										</List>
+									) : null}
+								</Checkbox>
+							</li>
+						))}
+					</ul>
+				)}
 			</Modal>
 			<Modal
 				title={i18next.t('MODAL.GIT_DANGEROUS.TITLE')}
