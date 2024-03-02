@@ -1452,7 +1452,10 @@
 		"DESELECT_ALL_COMMITS": "Désélectionner tous les commits",
 		"GIT_EDIT_MESSAGE": "Editer le message du commit",
 		"GIT_SEE_MODIFIED_FILES": "Voir les fichiers modifiés",
-		"GIT_SEE_DIFF_IN_FILE": "Voir les différences dans le fichier"
+		"GIT_SEE_DIFF_IN_FILE": "Voir les différences dans le fichier",
+		"GIT_SQUASH_COMMITS": "Fusionner les changements",
+		"GIT_SQUASH_MESSAGE": "Message de commit",
+		"GIT_TOO_MANY_CHANGES": "On dirait que vous faites {{changes}} changements. Lorsque vous effectuez de nombreux changements liés au même type d'action, il est conseillé de regrouper vos commits en un seul."
 	},
 	"COLLECTIONS": {
 		"NAME": "Nom de la collection",
