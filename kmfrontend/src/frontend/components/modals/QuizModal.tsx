@@ -13,6 +13,7 @@ import { tagTypes } from '../../../utils/tagTypes';
 import { displayMessage } from '../../../utils/tools';
 import SelectWithIcon from '../generic/SelectWithIcon';
 import ProfilePicture from '../../../utils/components/ProfilePicture';
+import { getPlaylistIcon } from '../../../utils/playlist';
 import './QuizModal.scss';
 
 type RecursivePartial<T> = {
@@ -44,21 +45,6 @@ export default function QuizModal(props: IProps) {
 		if (!el.contains(e.target as Node)) {
 			closeModalWithContext();
 		}
-	};
-
-	const getPlaylistIcon = (playlist: PlaylistElem) => {
-		// public & current playlist :  play-circle & globe icons
-		if (playlist?.flag_public && playlist?.flag_current) return ['fa-play-circle', 'fa-globe'];
-		// public playlist : globe icon
-		if (playlist?.flag_public) return ['fa-globe'];
-		// current playlist : play-circle icon
-		if (playlist?.flag_current) return ['fa-play-circle'];
-		// blacklist : ban icon
-		if (playlist?.plaid === context.globalState.settings.data.state.blacklistPlaid) return ['fa-ban'];
-		// whitelist : check-circle icon
-		if (playlist?.plaid === context.globalState.settings.data.state.whitelistPlaid) return ['fa-check-circle'];
-		// others playlist : list-ol icon
-		return ['fa-list-ol'];
 	};
 
 	const playlists = useAsyncMemo<PlaylistElem[]>(
@@ -283,7 +269,7 @@ export default function QuizModal(props: IProps) {
 								list={playlists.map(p => ({
 									label: p.name,
 									value: p.plaid,
-									icons: getPlaylistIcon(p),
+									icons: getPlaylistIcon(p, context),
 								}))}
 								value={gamePlaylist}
 								onChange={v => setGamePlaylist(v)}
