@@ -193,7 +193,11 @@ function AdminHeader(props: IProps) {
 	return (
 		<KmAppHeaderDecorator mode="admin">
 			{location.pathname.includes('/options') ? (
-				<button title={i18next.t('BACK_PLAYLISTS')} className="btn btn-dark" onClick={() => navigate('/admin')}>
+				<button
+					title={i18next.t('BACK_PLAYLISTS')}
+					className="btn btn-dark backPlaylistsButton"
+					onClick={() => navigate('/admin')}
+				>
 					<i className="fas fa-fw fa-long-arrow-alt-left" />
 				</button>
 			) : null}

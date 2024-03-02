@@ -302,6 +302,7 @@ h5 > a {
 }
 
 @media (max-width: $mugen-breakpoint-smaller) {
+	.backPlaylistsButton,
 	.stopButton,
 	.volumeButton {
 		display: none;
