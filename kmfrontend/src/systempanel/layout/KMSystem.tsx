@@ -103,7 +103,7 @@ class KMSystem extends Component<unknown, unknown> {
 				}}
 			>
 				<Layout style={{ minHeight: '100vh' }}>
-					<Layout.Sider>
+					<Layout.Sider collapsible>
 						<KMMenu />
 					</Layout.Sider>
 					<Layout>

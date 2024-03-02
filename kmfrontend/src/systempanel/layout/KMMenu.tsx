@@ -1,4 +1,13 @@
-import { DashboardOutlined, HomeOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons';
+import {
+	DashboardOutlined,
+	HomeOutlined,
+	LogoutOutlined,
+	UserOutlined,
+	TagOutlined,
+	FileTextOutlined,
+	SettingOutlined,
+	PullRequestOutlined,
+} from '@ant-design/icons';
 import { Menu } from 'antd';
 import i18next from 'i18next';
 import { useContext } from 'react';
@@ -23,13 +32,13 @@ function KMMenu() {
 			theme="dark"
 			onClick={() => window.scrollTo(0, 0)}
 		>
-			<Menu.Item key="change" onClick={() => window.location.assign('/welcome')}>
-				<HomeOutlined /> {i18next.t('HOME_BUTTON')}
+			<Menu.Item key="change" icon={<HomeOutlined />}>
+				<Link to="/welcome">{i18next.t('HOME_BUTTON')}</Link>
 			</Menu.Item>
-			<Menu.Item key="home">
-				<DashboardOutlined /> <Link to="/system/home">{i18next.t('MENU.HOME')}</Link>
+			<Menu.Item key="home" icon={<DashboardOutlined />}>
+				<Link to="/system/home">{i18next.t('MENU.HOME')}</Link>
 			</Menu.Item>
-			<Menu.SubMenu key="system-dropdown" title={i18next.t('MENU.SYSTEM')}>
+			<Menu.SubMenu key="system-dropdown" title={i18next.t('MENU.SYSTEM')} icon={<SettingOutlined />}>
 				<Menu.Item key="log">
 					<Link to="/system/log">{i18next.t('MENU.LOGS')}</Link>
 				</Menu.Item>
@@ -62,7 +71,11 @@ function KMMenu() {
 				</Menu.Item>
 			</Menu.SubMenu>
 			{haveMaintainerModeRepo ? (
-				<Menu.SubMenu key="maintainer-dropdown" title={i18next.t('MENU.MAINTAINER')}>
+				<Menu.SubMenu
+					key="maintainer-dropdown"
+					title={i18next.t('MENU.MAINTAINER')}
+					icon={<PullRequestOutlined />}
+				>
 					<Menu.Item key="git">
 						<Link to="/system/git">{i18next.t('MENU.GIT')}</Link>
 					</Menu.Item>
@@ -71,7 +84,7 @@ function KMMenu() {
 					</Menu.Item>
 				</Menu.SubMenu>
 			) : null}
-			<Menu.SubMenu key="kara-dropdown" title={i18next.t('MENU.KARAS')}>
+			<Menu.SubMenu key="kara-dropdown" title={i18next.t('MENU.KARAS')} icon={<FileTextOutlined />}>
 				<Menu.Item key="karalist">
 					<Link to="/system/karas">{i18next.t('MENU.LIST')}</Link>
 				</Menu.Item>
@@ -97,7 +110,7 @@ function KMMenu() {
 					<Link to="/system/karas/batch">{i18next.t('MENU.BATCH_EDIT')}</Link>
 				</Menu.Item>
 			</Menu.SubMenu>
-			<Menu.SubMenu key="tags-dropdown" title={i18next.t('MENU.TAGS')}>
+			<Menu.SubMenu key="tags-dropdown" title={i18next.t('MENU.TAGS')} icon={<TagOutlined />}>
 				<Menu.Item key="tagsmanage">
 					<Link to="/system/tags">{i18next.t('MENU.LIST')}</Link>
 				</Menu.Item>
@@ -108,13 +121,11 @@ function KMMenu() {
 					<Link to="/system/tags/duplicate">{i18next.t('MENU.DUPLICATE')}</Link>
 				</Menu.Item>
 			</Menu.SubMenu>
-			<Menu.Item className="menuItemInactive" key="user">
-				<span>
-					<UserOutlined /> {context.globalState.auth.data.username}
-				</span>
+			<Menu.Item className="menuItemInactive" key="user" icon={<UserOutlined />}>
+				<span>{context.globalState.auth.data.username}</span>
 			</Menu.Item>
-			<Menu.Item key="logout" onClick={() => logout(context.globalDispatch)}>
-				<LogoutOutlined /> {i18next.t('LOGOUT')}
+			<Menu.Item key="logout" icon={<LogoutOutlined />} onClick={() => logout(context.globalDispatch)}>
+				{i18next.t('LOGOUT')}
 			</Menu.Item>
 		</Menu>
 	);
