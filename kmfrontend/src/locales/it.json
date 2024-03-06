@@ -50,7 +50,9 @@
 	"HIDE_SUBS": "Nascondi il testo a schermo",
 	"ADMIN_HEADER": {
 		"QUICK_ACCESS": "Accesso rapido",
-		"QUIZ_RANKING": "Classifica Quiz"
+		"QUIZ_RANKING": "Classifica Quiz",
+		"CURRENT_PLAYLIST": "Playlist attuale",
+		"PUBLIC_PLAYLIST": "Playlist pubblica"
 	},
 	"ADVANCED": {
 		"PLAYLIST_COMMANDS": "Comandi della playlist",
@@ -1461,7 +1463,10 @@
 		"AUTO_MEDIA_DOWNLOADS_TOOLTIP": "Se la tua connessione è troppo lenta, consigliamo l'opzione \"Tutti\" così da scaricare i file in anticipo. Ciò è anche consigliato per convenzione o per le dirette così da evitare potenziali errori nel mezzo di una sessione!",
 		"GIT_SEE_DIFF_IN_FILE": "Vedi le differenze nel file",
 		"GIT_EDIT_MESSAGE": "Modifica il messaggio del Commit",
-		"GIT_SEE_MODIFIED_FILES": "Visualizza i file modificati"
+		"GIT_SEE_MODIFIED_FILES": "Visualizza i file modificati",
+		"GIT_SQUASH_COMMITS": "Unisci i cambiamenti",
+		"GIT_SQUASH_MESSAGE": "Messaggio di Commit",
+		"GIT_TOO_MANY_CHANGES": "Pare che tu stia effettuando {{changes}} cambiamenti. Quando si effettuano molti cambiamenti dello stesso tipo, si consiglia di unirli tutti in un unico grande Commit."
 	},
 	"TAGS": {
 		"KITSU_SLUG_ERROR": "Kitsu Slug non valido",
