@@ -1020,7 +1020,10 @@
 			"VIDEO_COLORSPACE": "Colorspace",
 			"VIDEO_FRAMERATE": "Framerate",
 			"AUDIO_CODEC": "Audio codec",
-			"AUDIO_COVER_ART": "Cover art"
+			"AUDIO_COVER_ART": "Cover art",
+			"WARNINGS":  {
+				"LIBAVCODEC_ENCODER": "The audio is encoded with the libavcodec (ffmpeg reference aac) encoder, which is known to result in bad quality. Please make sure to use the libfdk_aac encoder or another codec like opus, to get the best quality."
+			}
 		},
 		"LYRICS_FILE": "Lyrics file",
 		"LYRICS_FILE_TOOLTIP": "Supported file formats: {{formats}}",

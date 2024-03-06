@@ -1122,7 +1122,10 @@
 			"VIDEO_FRAMERATE": "Fréquence d'images",
 			"FILE_SIZE": "Taille du fichier",
 			"AUDIO_COVER_ART": "Pochette d'album",
-			"VIDEO_ASPECT_RATIO": "Format d'image"
+			"VIDEO_ASPECT_RATIO": "Format d'image",
+			"WARNINGS":  {
+				"LIBAVCODEC_ENCODER" : "L'audio est encodé avec libavcodec (l'aac de référence dans ffmpeg), qui est connu pour donner une mauvaise qualité. Veillez à utiliser l'encodeur libfdk_aac ou un autre codec comme opus, pour obtenir la meilleure qualité possible."
+			}
 		},
 		"FROM_DISPLAY_TYPE": "Affichage du tag de la provenance de la chanson",
 		"FROM_DISPLAY_TYPE_TOOLTIP": "Choissisez le type de tag utilisé lors de l'affichage de la chanson",
