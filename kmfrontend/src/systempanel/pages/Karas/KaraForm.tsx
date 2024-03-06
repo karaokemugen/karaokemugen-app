@@ -735,6 +735,15 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 							<Col flex={'0 1 280px'}>
 								<Card>
 									{this.renderMediaInfo(this.state.mediaInfo, this.state.mediaInfoValidationResult)}
+									{this.state.mediaInfo?.warnings?.length > 0 && (
+										<div className="media-info warnings">
+											{this.state.mediaInfo.warnings.map(w => (
+												<div className="unmet-warning">
+													{i18next.t('KARA.MEDIA_FILE_INFO.WARNINGS.' + w)}
+												</div>
+											))}
+										</div>
+									)}
 								</Card>
 							</Col>
 						) : null}
