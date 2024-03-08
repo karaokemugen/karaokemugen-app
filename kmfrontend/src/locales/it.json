@@ -1199,7 +1199,10 @@
 			"FILE_FORMAT": "Formato file",
 			"VIDEO_FRAMERATE": "Frequenza fotogrammi",
 			"AUDIO_COVER_ART": "Copertina",
-			"VIDEO_ASPECT_RATIO": "Rapporto d'aspetto"
+			"VIDEO_ASPECT_RATIO": "Rapporto d'aspetto",
+			"WARNINGS": {
+				"LIBAVCODEC_ENCODER": "L'audio è codificato con il codificatore libavcodec (aac di riferimento di ffmpeg), conosciuto per la sua scarsa qualità. Si prega di utilizzare il codificatore libfdk_aac o altri come opus per ottenere la miglior qualità."
+			}
 		},
 		"COPY_SONG": "Copia brano in altro archivio",
 		"TAG_FILTER": "Filtra tag",
