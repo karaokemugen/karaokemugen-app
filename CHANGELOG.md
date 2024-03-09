@@ -1,3 +1,38 @@
+v v7.1.57 - 10/03/2024
+
+Mainly bugfixes and a few new features.
+
+# New features
+
+-   [Operators] Added a public/current list selector on the top bar for easier playlist changes
+-   [Maintainers] Added warning about libavcodec's aac encoder
+-   [Maintainers] Added ability to squash (merge) commits into one when there are many commits to make
+-   [Maintainers] Current commit is now displayed in git page in system panel
+
+# Changes
+
+-   [Users] Updated italian translation
+-   [Users] Better responsive design layout
+-   [Users] Upgraded backend and frontend dependencies
+-   [Users] Quota is now freed when song is played AND added to playlist
+-   [Maintainers] Added toast when batch edit is complete.
+-   [Maintainers] Batch edit of karaokes is now MUCH faster (quicker refresh)
+-   [Maintainers] Tag types are now sorted in tag files. It would create false modifications for some tag files during commits
+-   [Maintainers] FTP renames and deletes are now done AFTER a succesfull push.
+
+# Fixes
+
+-   [Users] Fixed mpv on some Windows versions
+-   [Users] Fixed first song played not having subtitles sometimes (thanks @sorc278!)
+-   [Users] Added a second attempt when failing SQL transactions.
+-   [Users] Fixed buttons alignment in tags list
+-   [Operators] Fixed scrolling updates with long playlists
+-   [Maintainers] Fixed FTP uploads
+-   [Maintainers] Update data store checksum on karaoke batch edit (avoids regeneration on startup)
+-   [Maintainers] Fixed edge case for sanitizeFilename
+-   [Maintainers] Errors caused by maintainers aren't sent to sentry.io anymore
+-   [Devs] Fixed some error messages when sent to sentry.io
+
 # v7.1.50 - 05/02/2024
 
 Happy new year! Late! But happy new year!
