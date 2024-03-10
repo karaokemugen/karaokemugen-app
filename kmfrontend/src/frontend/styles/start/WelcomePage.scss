@@ -2,7 +2,6 @@
 
 .start-page .wrapper.welcome {
 	min-height: 100vh;
-	max-height: 100vh;
 
 	grid-template-areas:
 		'logo tasks aside'
@@ -38,6 +37,10 @@
 		@media (max-width: $mugen-breakpoint-large) {
 			grid-template-areas: 'actions' 'news';
 			grid-template-columns: auto;
+			max-height: 100%;
+		}
+		@media screen and (max-height: $mugen-height-small) {
+			max-height: 100%;
 		}
 
 		section.tiles-panel {
@@ -185,6 +188,7 @@
 			overflow: auto;
 			@media (max-width: $mugen-breakpoint-large) {
 				border-radius: 0;
+				height: 500px;
 			}
 			border: 1px solid #ffffff80;
 			> div {

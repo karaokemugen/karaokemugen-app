@@ -96,6 +96,7 @@ export const defaults: Config = {
 			FreeUpVotes: true,
 			FreeUpVotesRequiredMin: 3,
 			FreeUpVotesRequiredPercent: 33,
+			FreeAcceptedSongs: true,
 			Songs: 10000,
 			Time: 10000,
 			Type: 0,
@@ -336,10 +337,10 @@ export const defaultRepositories: Repository[] = [
 			process.platform === 'win32'
 				? {
 						Medias: ['repos\\kara.moe\\medias'],
-				  }
+					}
 				: {
 						Medias: ['repos/kara.moe/medias'],
-				  },
+					},
 	},
 	{
 		Name: 'My Custom Songs',
@@ -351,9 +352,9 @@ export const defaultRepositories: Repository[] = [
 			process.platform === 'win32'
 				? {
 						Medias: ['repos\\My Custom Songs\\medias'],
-				  }
+					}
 				: {
 						Medias: ['repos/My Custom Songs/medias'],
-				  },
+					},
 	},
 ];

@@ -1,13 +1,11 @@
 import { execa } from 'execa';
 import fs from 'fs/promises';
 import i18n from 'i18next';
-import { debounce, sample } from 'lodash';
+import { sample } from 'lodash';
 import { Promise as id3, Tags } from 'node-id3';
 import retry from 'p-retry';
 import { dirname, resolve } from 'path';
-import randomstring from 'randomstring';
 import semver from 'semver';
-import { graphics } from 'systeminformation';
 import { setTimeout as sleep } from 'timers/promises';
 
 import { errorStep } from '../electron/electronLogger.js';
@@ -16,7 +14,7 @@ import { DBKaraTag } from '../lib/types/database/kara.js';
 import { PlaylistMediaType } from '../lib/types/playlistMedias.js';
 import { getConfig, resolvedPath, resolvedPathRepos, setConfig } from '../lib/utils/config.js';
 import { supportedFiles } from '../lib/utils/constants.js';
-import { date, time, Timer } from '../lib/utils/date.js';
+import { Timer } from '../lib/utils/date.js';
 import { getAvatarResolution } from '../lib/utils/ffmpeg.js';
 import { fileExists, replaceExt, resolveFileInDirs } from '../lib/utils/files.js';
 import HTTP, { fixedEncodeURIComponent } from '../lib/utils/http.js';
@@ -25,27 +23,22 @@ import logger, { profile } from '../lib/utils/logger.js';
 import { emitWS } from '../lib/utils/ws.js';
 import { getBackgroundAndMusic } from '../services/backgrounds.js';
 import { playerEnding } from '../services/karaEngine.js';
-import { getPromoMessage, next, pausePlayer, playPlayer, prev } from '../services/player.js';
-import { notificationNextSong } from '../services/playlist.js';
+import { getPromoMessage, next } from '../services/player.js';
 import { getSingleMedia } from '../services/playlistMedias.js';
-import { endPoll } from '../services/poll.js';
-import { getCurrentSongTimers } from '../services/quiz.js';
 import { BackgroundType } from '../types/backgrounds.js';
 import { MpvCommand } from '../types/mpvIPC.js';
-import { MpvOptions, PlayerState, SongModifiers } from '../types/player.js';
+import { PlayerState, SongModifiers } from '../types/player.js';
 import { CurrentSong } from '../types/playlist.js';
-import { editSetting } from '../utils/config.js';
 import { initializationCatchphrases, mpvRegex, requiredMPVVersion } from '../utils/constants.js';
 import { setDiscordActivity } from '../utils/discordRPC.js';
-import MpvIPC from '../utils/mpvIPC.js';
 import sentry from '../utils/sentry.js';
 import { getState, setState } from '../utils/state.js';
 import { isShutdownInProgress } from './engine.js';
 import Timeout = NodeJS.Timeout;
 import { getSongSeriesSingers, getSongTitle } from '../lib/services/kara.js';
 import { getTagNameInLanguage } from '../lib/services/tag.js';
-import { emit } from '../lib/utils/pubsub.js';
 import { getRepoManifest } from '../services/repo.js';
+import { Player } from './mpv/player.js';
 
 type PlayerType = 'main' | 'monitor';
 
@@ -53,7 +46,7 @@ type ProgressType = 'bar' | 'countdown';
 
 const service = 'mpv';
 
-const playerState: PlayerState = {
+export const playerState: PlayerState = {
 	volume: 100,
 	playing: false,
 	playerStatus: null,
@@ -316,7 +309,7 @@ function quickDiff() {
 	return diff;
 }
 
-function emitPlayerState() {
+export function emitPlayerState() {
 	setState({ player: quickDiff() });
 }
 
@@ -380,380 +373,7 @@ async function checkMpv() {
 	}
 }
 
-class Player {
-	mpv: MpvIPC;
-
-	configuration: any;
-
-	logFile: string;
-
-	options: MpvOptions;
-
-	control: Players;
-
-	constructor(options: MpvOptions, players: Players) {
-		this.options = options;
-		this.control = players;
-	}
-
-	async init() {
-		// Generate the configuration
-		this.configuration = await this.genConf(this.options);
-		// Instantiate mpv
-		this.mpv = new MpvIPC(this.configuration[0], this.configuration[1], this.configuration[2]);
-	}
-
-	private async genConf(options: MpvOptions) {
-		const conf = getConfig();
-		const state = getState();
-		const today = date();
-		const now = time().replaceAll(':', '.');
-		this.logFile = `mpv${options.monitor ? '-monitor' : ''}.${today}.${now}.log`;
-		const mpvArgs = [
-			'--keep-open=always',
-			'--osd-level=0',
-			`--log-file=${resolve(resolvedPath('Logs'), this.logFile)}`,
-			`--hwdec=${conf.Player.HardwareDecoding}`,
-			`--volume=${+conf.Player.Volume}`,
-			`--audio-delay=${(conf.Player.AudioDelay && +conf.Player.AudioDelay / 1000) || 0}`,
-			'--autoload-files=no',
-			`--config-dir=${resolvedPath('Temp')}`,
-			`--sub-fonts-dir=${resolvedPath('Fonts')}`,
-			'--sub-visibility',
-			'--sub-ass-vsfilter-aspect-compat=no',
-			'--loop-file=no',
-			`--title=${options.monitor ? '[MONITOR] ' : ''}\${force-media-title} - Karaoke Mugen Player`,
-			'--force-media-title=Loading...',
-			`--audio-device=${conf.Player.AudioDevice}`,
-			`--screenshot-directory=${resolve(state.dataPath)}`,
-			'--screenshot-format=png',
-			'--no-osc',
-			'--no-osd-bar',
-		];
-
-		if (options.monitor) {
-			mpvArgs.push('--mute=yes', '--reset-on-next-file=pause,loop-file,audio-files,aid,sid,mute', '--ao=null');
-		} else {
-			mpvArgs.push('--reset-on-next-file=pause,loop-file,audio-files,aid,sid');
-			if (!conf.Player.Borders) mpvArgs.push('--no-border');
-			if (conf.Player.FullScreen) {
-				mpvArgs.push('--fullscreen');
-			}
-		}
-
-		if (conf.Player.Screen) {
-			mpvArgs.push(`--screen=${conf.Player.Screen}`, `--fs-screen=${conf.Player.Screen}`);
-		}
-
-		if (conf.Player.StayOnTop) {
-			mpvArgs.push('--ontop');
-		}
-
-		// We want a 16/9
-		const screens = await graphics();
-		// Assume 1080p screen if systeminformation can't find the screen
-		const screen = (conf.Player.Screen
-			? screens.displays[conf.Player.Screen] || screens.displays[0]
-			: screens.displays[0]) || { currentResX: 1920, resolutionX: 1920 };
-		let targetResX = (screen.resolutionX || screen.currentResX) * (conf.Player.PIP.Size / 100);
-		if (isNaN(targetResX) || targetResX === 0) {
-			logger.warn('Cannot get a target res, defaulting to 480 (25% of 1080p display)', {
-				service,
-				obj: { screen, PIPSize: [conf.Player.PIP.Size, typeof conf.Player.PIP.Size] },
-			});
-			targetResX = 480;
-		}
-		const targetResolution = `${Math.round(targetResX)}x${Math.round(targetResX * 0.5625)}`;
-		// By default, center.
-		let positionX = 50;
-		let positionY = 50;
-		if (conf.Player.PIP.PositionX === 'Left') positionX = 1;
-		if (conf.Player.PIP.PositionX === 'Center') positionX = 50;
-		if (conf.Player.PIP.PositionX === 'Right') positionX = -1;
-		if (conf.Player.PIP.PositionY === 'Top') positionY = 1;
-		if (conf.Player.PIP.PositionY === 'Center') positionY = 50;
-		if (conf.Player.PIP.PositionY === 'Bottom') positionY = -1;
-		if (options.monitor) {
-			if (positionX >= 0) positionX += 10;
-			else positionX -= 10;
-			if (positionY >= 0) positionY += 10;
-			else positionY -= 10;
-		}
-		mpvArgs.push(
-			`--geometry=${targetResolution}${positionX > 0 ? `+${positionX}` : positionX}%${
-				positionY > 0 ? `+${positionY}` : positionY
-			}%`
-		);
-
-		if (conf.Player.mpvVideoOutput) {
-			mpvArgs.push(`--vo=${conf.Player.mpvVideoOutput}`);
-		}
-
-		// Testing if string exists or is not empty
-		if (conf.Player.ExtraCommandLine?.length > 0) {
-			conf.Player.ExtraCommandLine.split(' ').forEach(e => mpvArgs.push(e));
-		}
-
-		let socket: string;
-		// Name socket file accordingly depending on OS.
-		const random = randomstring.generate({
-			length: 3,
-			charset: 'numeric',
-		});
-		state.os === 'win32'
-			? (socket = `\\\\.\\pipe\\mpvsocket${random}`)
-			: (socket = `/tmp/km-node-mpvsocket${random}`);
-
-		const mpvOptions = {
-			binary: state.binPath.mpv,
-			socket,
-		};
-
-		logger.debug(`mpv${this.options.monitor ? ' monitor' : ''} options:`, {
-			obj: [mpvOptions, mpvArgs],
-			service,
-		});
-
-		return [state.binPath.mpv, socket, mpvArgs];
-	}
-
-	private debounceTimePosition(position: number | undefined) {
-		// position can be undefined when the video starts
-		// position can be negative, or equal to -0
-		if (position == null || position <= 0) {
-			position = 0;
-		}
-
-		// Returns the position in seconds in the current song
-		if (playerState.mediaType === 'song' && playerState.currentSong?.duration) {
-			playerState.timeposition = position;
-			playerState.quiz = getCurrentSongTimers();
-			const conf = getConfig();
-			// Send notification to frontend if timeposition is 15 seconds before end of song
-			if (
-				position >= playerState.currentSong.duration - 15 &&
-				playerState.mediaType === 'song' &&
-				!playerState.nextSongNotifSent &&
-				!getState().quiz.running
-			) {
-				playerState.nextSongNotifSent = true;
-				notificationNextSong();
-			}
-			if (getState().quiz.running) {
-				const game = getState().quiz;
-				if (game.running && game.currentSong.state === 'answer') {
-					this.control.displaySongInfo(playerState.currentSong.infos);
-				} else {
-					this.control.displayInfo();
-				}
-			} else if (
-				// Display informations if timeposition is 8 seconds before end of song
-				position >= playerState.currentSong.duration - 8 &&
-				playerState.mediaType === 'song' &&
-				!getState().quiz.running
-			) {
-				this.control.displaySongInfo(playerState.currentSong.infos);
-			} else if (position <= 8 && playerState.mediaType === 'song' && !getState().quiz.running) {
-				// Display informations if timeposition is 8 seconds after start of song
-				this.control.displaySongInfo(
-					playerState.currentSong.infos,
-					-1,
-					false,
-					playerState.currentSong?.warnings
-				);
-			} else if (
-				position >= Math.floor(playerState.currentSong.duration / 2) - 4 &&
-				// Display KM's banner if position reaches halfpoint in the song
-				position <= Math.floor(playerState.currentSong.duration / 2) + 4 &&
-				playerState.mediaType === 'song' &&
-				!getState().songPoll
-			) {
-				this.control.displayInfo();
-			} else {
-				this.control.messages.removeMessage('DI');
-			}
-			// Stop poll if position reaches 10 seconds before end of song
-			if (
-				Math.floor(position) >= Math.floor(playerState.currentSong.duration - 10) &&
-				playerState.mediaType === 'song' &&
-				conf.Karaoke.Poll.Enabled &&
-				!playerState.songNearEnd
-			) {
-				playerState.songNearEnd = true;
-				endPoll();
-			}
-			emit('playerPositionUpdated', position);
-			emitPlayerState();
-		}
-	}
-
-	// Time position happens very often so we don't update it as often, hence the debouncing.
-	debouncedTimePosition = debounce(this.debounceTimePosition, 125, { maxWait: 250, leading: true });
-
-	private bindEvents() {
-		if (!this.options.monitor) {
-			this.mpv.on('property-change', status => {
-				if (status.name !== 'playback-time') {
-					logger.debug('mpv status', { service, obj: status });
-					playerState[status.name] = status.data;
-				}
-				if (status.name === 'fullscreen') {
-					const fullScreen = !!status.data;
-					editSetting({ Player: { FullScreen: fullScreen } });
-					if (fullScreen) {
-						logger.info('Player going to full screen', { service });
-						this.control.messages.addMessage('fsTip', `{\\an7\\i1\\fs20}${i18n.t('FULLSCREEN_TIP')}`, 3000);
-					} else {
-						logger.info('Player going to windowed mode', { service });
-						this.control.messages.removeMessage('fsTip');
-					}
-				}
-				emitPlayerState();
-				// If we're displaying an image, it means it's the pause inbetween songs
-				if (
-					!playerState.isOperating &&
-					playerState.mediaType !== 'stop' &&
-					playerState.mediaType !== 'pause' &&
-					playerState.mediaType !== 'poll' &&
-					status.name === 'eof-reached' &&
-					status.data === true
-				) {
-					// Do not trigger 'pause' event from mpv
-					playerState._playing = false;
-					// Load up the next song
-					playerEnding();
-				} else if (status.name === 'playback-time') {
-					this.debouncedTimePosition(status.data);
-				}
-			});
-		}
-		// Handle client messages (skip/go-back)
-		this.mpv.on('client-message', async message => {
-			if (typeof message.args === 'object') {
-				try {
-					if (message.args[0] === 'skip') {
-						await next();
-					} else if (message.args[0] === 'go-back') {
-						await prev();
-					} else if (message.args[0] === 'seek') {
-						await this.control.seek(+message.args[1]);
-					} else if (message.args[0] === 'pause' && playerState.playerStatus !== 'stop') {
-						if (playerState.playerStatus === 'pause') {
-							playPlayer();
-						} else {
-							pausePlayer();
-						}
-					} else if (message.args[0] === 'subs') {
-						this.control.setSubs(!playerState.showSubs);
-					}
-				} catch (err) {
-					logger.warn('Cannot handle mpv script command', { service });
-					// Non fatal, do not report to Sentry.
-				}
-			}
-		});
-		// Handle manual exits/crashes
-		this.mpv.once('close', () => {
-			logger.debug('mpv closed (?)', { service: `${service}${this.options.monitor ? ' monitor' : ''}` });
-			// We set the state here to prevent the 'paused' event from triggering (because it will restart mpv at the same time)
-			playerState.playing = false;
-			playerState._playing = false;
-			playerState.playerStatus = 'stop';
-			this.control.exec(
-				{ command: ['set_property', 'pause', true] },
-				null,
-				this.options.monitor ? 'main' : 'monitor'
-			);
-			this.recreate();
-			emitPlayerState();
-		});
-	}
-
-	async start() {
-		if (!this.configuration) {
-			await this.init();
-		}
-		if (isShutdownInProgress()) return;
-		this.bindEvents();
-		await retry(
-			async () => {
-				try {
-					await this.mpv.start();
-					const promises = [];
-					promises.push(this.mpv.observeProperty('pause'));
-					if (!this.options.monitor) {
-						promises.push(this.mpv.observeProperty('eof-reached'));
-						promises.push(this.mpv.observeProperty('playback-time'));
-						promises.push(this.mpv.observeProperty('mute'));
-						promises.push(this.mpv.observeProperty('volume'));
-						promises.push(this.mpv.observeProperty('fullscreen'));
-					}
-					await Promise.all(promises);
-					return true;
-				} catch (err) {
-					if (err.message === 'MPV is already running') {
-						// It's already started!
-						logger.warn('A start command was executed, but the player is already running. Not normal.', {
-							service,
-						});
-						return;
-					}
-					throw err;
-				}
-			},
-			{
-				retries: 3,
-				onFailedAttempt: error => {
-					logger.warn(
-						`Failed to start mpv, attempt ${error.attemptNumber}, trying ${error.retriesLeft} more times...`,
-						{ service, obj: error }
-					);
-				},
-			}
-		).catch(err => {
-			logger.error('Cannot start MPV', { service, obj: err });
-			sentry.error(err, 'fatal');
-			throw err;
-		});
-		return true;
-	}
-
-	async recreate(options?: MpvOptions, restart = false) {
-		try {
-			if (this.isRunning) {
-				try {
-					await this.destroy();
-				} catch (err) {
-					// Non-fatal, should be already destroyed. Probably.
-				}
-			}
-			// Set options if supplied
-			if (options) this.options = options;
-			// Re-init the player
-			await this.init();
-			if (restart) await this.start();
-		} catch (err) {
-			logger.error('mpvAPI (recreate)', { service, obj: err });
-			throw err;
-		}
-	}
-
-	async destroy() {
-		try {
-			await this.mpv.stop();
-			return true;
-		} catch (err) {
-			logger.error('mpvAPI (quit)', { service, obj: err });
-			throw err;
-		}
-	}
-
-	get isRunning() {
-		return !!this.mpv?.isRunning;
-	}
-}
-
-class Players {
+export class Players {
 	players: {
 		main: Player;
 		monitor?: Player;
@@ -855,10 +475,7 @@ class Players {
 	async exec(cmd: string | MpvCommand, args: any[] = [], onlyOn?: PlayerType, ignoreLock = false, shutdown = false) {
 		try {
 			const mpv = typeof cmd === 'object';
-			if (!shutdown && isShutdownInProgress()) return;
-			// ensureRunning returns -1 if the player does not exist (eg. disabled monitor)
-			// ensureRunning isn't needed on non-mpv commands
-			if (mpv && (await this.ensureRunning(onlyOn, ignoreLock)) === -1) return;
+			if (await this.abortExec(mpv, onlyOn, ignoreLock, shutdown)) return;
 			if (!(typeof cmd !== 'string' && cmd?.command[1] === 'osd-overlay')) {
 				logger.debug(`${mpv ? 'mpv ' : ''}command: ${JSON.stringify(cmd)}, ${JSON.stringify(args)}`, {
 					service,
@@ -879,11 +496,34 @@ class Players {
 			}
 			await Promise.all(loads);
 		} catch (err) {
-			logger.error('mpvAPI (send)', { service, obj: err });
-			sentry.addErrorInfo('mpvLog', (await this.getmpvLog('main'))?.join('\n'));
-			if (this.players.monitor) sentry.addErrorInfo('mpvLog', (await this.getmpvLog('monitor'))?.join('\n'));
-			throw new Error(JSON.stringify(err));
+			await this.notifyAndThrow(err);
 		}
+	}
+
+	private async playOnPlayers(mediaFile: string, options: Record<string, any>) {
+		try {
+			if (await this.abortExec(true)) return;
+			const loads = [];
+			for (const player in this.players) {
+				loads.push(this.players[player].play(mediaFile, options));
+			}
+			await Promise.all(loads);
+		} catch (err) {
+			await this.notifyAndThrow(err);
+		}
+	}
+
+	private async abortExec(mpv: boolean, onlyOn?: PlayerType, ignoreLock = false, shutdown = false) {
+		// ensureRunning returns -1 if the player does not exist (eg. disabled monitor)
+		// ensureRunning isn't needed on non-mpv commands
+		return (!shutdown && isShutdownInProgress()) || (mpv && (await this.ensureRunning(onlyOn, ignoreLock)) === -1);
+	}
+
+	private async notifyAndThrow(err: any) {
+		logger.error('mpvAPI (send)', { service, obj: err });
+		sentry.addErrorInfo('mpvLog', (await this.getmpvLog('main'))?.join('\n'));
+		if (this.players.monitor) sentry.addErrorInfo('mpvLog', (await this.getmpvLog('monitor'))?.join('\n'));
+		throw new Error(JSON.stringify(err));
 	}
 
 	private startBackgroundMusic(tries = 0): void {
@@ -991,7 +631,7 @@ class Players {
 				conf.Player.Display.ConnectionInfo.Enabled && conf.Player.Display.ConnectionInfo.QRCode
 					? {
 							'lavfi-complex': this.genLavfiComplexQRCode(),
-					  }
+						}
 					: {};
 			if (background.music[0]) {
 				await this.exec({
@@ -1184,7 +824,7 @@ class Players {
 			options.sid = '1';
 		} else {
 			options['sub-file'] = '';
-			options.sid = 'none';
+			options.sid = 'no';
 		}
 		let id3tags: Tags;
 		if (mediaFile.endsWith('.mp3') && !onlineMedia) {
@@ -1212,7 +852,7 @@ class Players {
 				this.messages.removeMessages(['poll', 'pauseScreen', 'quizRules']);
 				if (!getState().quiz.running) this.displaySongInfo(song.infos, -1, false, song.warnings);
 			}
-			await retry(() => this.exec({ command: ['loadfile', mediaFile, 'replace', options] }), {
+			await retry(() => this.playOnPlayers(mediaFile, options), {
 				retries: 3,
 				onFailedAttempt: error => {
 					logger.warn(
@@ -1297,8 +937,8 @@ class Players {
 				mediaType === 'Jingles' || mediaType === 'Sponsors'
 					? this.displayInfo()
 					: conf.Playlist.Medias[mediaType].Message
-					  ? this.message(conf.Playlist.Medias[mediaType].Message, -1, 5, 'DI')
-					  : this.messages.removeMessage('DI');
+						? this.message(conf.Playlist.Medias[mediaType].Message, -1, 5, 'DI')
+						: this.messages.removeMessage('DI');
 				this.messages.removeMessages(['poll', 'pauseScreen']);
 				emitPlayerState();
 				return playerState;

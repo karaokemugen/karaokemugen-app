@@ -1,3 +1,38 @@
+v v7.1.57 - 10/03/2024
+
+Mainly bugfixes and a few new features.
+
+# New features
+
+-   [Operators] Added a public/current list selector on the top bar for easier playlist changes
+-   [Maintainers] Added warning about libavcodec's aac encoder
+-   [Maintainers] Added ability to squash (merge) commits into one when there are many commits to make
+-   [Maintainers] Current commit is now displayed in git page in system panel
+
+# Changes
+
+-   [Users] Updated italian translation
+-   [Users] Better responsive design layout
+-   [Users] Upgraded backend and frontend dependencies
+-   [Users] Quota is now freed when song is played AND added to playlist
+-   [Maintainers] Added toast when batch edit is complete.
+-   [Maintainers] Batch edit of karaokes is now MUCH faster (quicker refresh)
+-   [Maintainers] Tag types are now sorted in tag files. It would create false modifications for some tag files during commits
+-   [Maintainers] FTP renames and deletes are now done AFTER a succesfull push.
+
+# Fixes
+
+-   [Users] Fixed mpv on some Windows versions
+-   [Users] Fixed first song played not having subtitles sometimes (thanks @sorc278!)
+-   [Users] Added a second attempt when failing SQL transactions.
+-   [Users] Fixed buttons alignment in tags list
+-   [Operators] Fixed scrolling updates with long playlists
+-   [Maintainers] Fixed FTP uploads
+-   [Maintainers] Update data store checksum on karaoke batch edit (avoids regeneration on startup)
+-   [Maintainers] Fixed edge case for sanitizeFilename
+-   [Maintainers] Errors caused by maintainers aren't sent to sentry.io anymore
+-   [Devs] Fixed some error messages when sent to sentry.io
+
 # v7.1.50 - 05/02/2024
 
 Happy new year! Late! But happy new year!
@@ -9,7 +44,7 @@ Happy new year! Late! But happy new year!
 -   For maintainers : Adding a media to the karaoke add form will show possible warnings or errors a media file might cause according to the repository's manifest. This is helpful to prevent people from updating faulty/bad quality stuff. (#1354)
 -   For maintainers : Display list of files and diffs for commits when pushing changes to a git repository (#1555)
 -   For maintainers : A check is made to avoid overwriting song files when saving a song with potentially a duplicate filename :uuid: (#1558)
--   Added a reset buttonf or search fields in public and operator intefaces (#1540)
+-   Added a reset button or search fields in public and operator intefaces (#1540)
 -   Added new subtitle formats thanks to subsrt (.srt, .lrc, .vtt). These will be converted to .ass
 -   Added custom font support. Fonts can be added to a repository and used in .ass files. They'll be copied to a directory on startup where mpv can find them. **As a result, the new minimum mpv version is 0.37** (#1453)
 -   Songs can be added more than once to the public playlists now (see options). This is useful for classic mode karaokes where two people might want to request the same song but not sing at the same time on it. (#1541)
@@ -20,7 +55,8 @@ Happy new year! Late! But happy new year!
 
 ## Changes
 
--   Updated italian, spanish and german translations
+-   Updated spanish and german translations
+-   Added Italian translation
 -   In operator panel, notification toasts are now stacked and cancel button is removed when adding a song (operators can remove them anyway) (#1549)
 -   Quiz answers when loading a previous game are now properly aligned in the setup modal (#1459)
 

@@ -1,88 +1,52 @@
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { Button, Divider, Layout, Modal, Table, Tag, Tooltip } from 'antd';
+import { Button, Layout, Modal, Table, Tag, Tooltip } from 'antd';
 import Title from '../../components/Title';
 import i18next from 'i18next';
-import { Component } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { DBTag } from '../../../../../src/lib/types/database/tag';
 import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 import { getTagTypeName } from '../../../utils/tagTypes';
-import { is_touch_device, isModifiable } from '../../../utils/tools';
+import { isModifiable } from '../../../utils/tools';
 
-interface TagsListState {
-	tags: DBTag[];
-	tag?: DBTag;
-	deleteModal: boolean;
-}
+function TagsDuplicate() {
+	const context = useContext(GlobalContext);
 
-class TagsDuplicate extends Component<unknown, TagsListState> {
-	static contextType = GlobalContext;
-	context: React.ContextType<typeof GlobalContext>;
-	filter: string;
+	const [tags, setTags] = useState<DBTag[]>([]);
+	const [tag, setTag] = useState<DBTag>();
+	const [deleteModal, setDeleteModal] = useState(false);
 
-	constructor(props) {
-		super(props);
-		this.filter = '';
-		this.state = {
-			tags: [],
-			deleteModal: false,
-		};
-	}
-
-	componentDidMount() {
-		this.refresh();
-	}
-
-	refresh = async () => {
+	const refresh = async () => {
 		try {
 			const res = await commandBackend('getTags', { duplicates: true }, false, 300000);
-			this.setState({ tags: res.content });
+			setTags(res.content);
 		} catch (error) {
 			// already display
 		}
 	};
 
-	delete = async tid => {
+	const resetDelete = () => {
+		setDeleteModal(false);
+		setTag(undefined);
+	};
+
+	const deleteTag = async tid => {
 		try {
-			this.setState({ deleteModal: false, tag: undefined });
+			resetDelete();
 			await commandBackend('deleteTag', { tids: [tid] }, true);
-			this.refresh();
+			refresh();
 		} catch (err) {
-			this.setState({ deleteModal: false, tag: undefined });
+			resetDelete();
 		}
 	};
 
-	render() {
-		return (
-			<>
-				<Title
-					title={i18next.t('HEADERS.TAG_DUPLICATES.TITLE')}
-					description={i18next.t('HEADERS.TAG_DUPLICATES.DESCRIPTION')}
-				/>
-				<Layout.Content>
-					<Table dataSource={this.state.tags} columns={this.columns} rowKey="tid" />
-					<Modal
-						title={i18next.t('TAGS.TAG_DELETED_CONFIRM')}
-						open={this.state.deleteModal}
-						onOk={() => this.delete(this.state.tag.tid)}
-						onCancel={() => this.setState({ deleteModal: false, tag: undefined })}
-						okText={i18next.t('YES')}
-						cancelText={i18next.t('NO')}
-					>
-						<p>
-							{i18next.t('TAGS.DELETE_TAG_CONFIRM')} <b>{this.state.tag?.name}</b>
-						</p>
-						<p>{i18next.t('TAGS.DELETE_TAG_MESSAGE')}</p>
-						<p>{i18next.t('CONFIRM_SURE')}</p>
-					</Modal>
-				</Layout.Content>
-			</>
-		);
-	}
+	useEffect(() => {
+		refresh();
+	}, []);
 
-	columns = [
+	const columns = [
 		{
 			title: i18next.t('TAGS.NAME'),
 			dataIndex: 'name',
@@ -128,22 +92,50 @@ class TagsDuplicate extends Component<unknown, TagsListState> {
 		{
 			title: i18next.t('ACTION'),
 			render: (_text, record) =>
-				isModifiable(this.context, record.repository) ? (
-					<span>
+				isModifiable(context, record.repository) ? (
+					<div style={{ display: 'flex' }}>
 						<Link to={`/system/tags/${record.tid}`}>
-							<Button type="primary" icon={<EditOutlined />} />
+							<Button type="primary" style={{ marginRight: '0.75em' }} icon={<EditOutlined />} />
 						</Link>
-						{!is_touch_device() ? <Divider type="vertical" /> : null}
 						<Button
 							type="primary"
 							danger
 							icon={<DeleteOutlined />}
-							onClick={() => this.setState({ deleteModal: true, tag: record })}
+							onClick={() => {
+								setDeleteModal(true);
+								setTag(record);
+							}}
 						/>
-					</span>
+					</div>
 				) : null,
 		},
 	];
+
+	return (
+		<>
+			<Title
+				title={i18next.t('HEADERS.TAG_DUPLICATES.TITLE')}
+				description={i18next.t('HEADERS.TAG_DUPLICATES.DESCRIPTION')}
+			/>
+			<Layout.Content>
+				<Table dataSource={tags} columns={columns} rowKey="tid" />
+				<Modal
+					title={i18next.t('TAGS.TAG_DELETED_CONFIRM')}
+					open={deleteModal}
+					onOk={() => deleteTag(tag.tid)}
+					onCancel={resetDelete}
+					okText={i18next.t('YES')}
+					cancelText={i18next.t('NO')}
+				>
+					<p>
+						{i18next.t('TAGS.DELETE_TAG_CONFIRM')} <b>{tag?.name}</b>
+					</p>
+					<p>{i18next.t('TAGS.DELETE_TAG_MESSAGE')}</p>
+					<p>{i18next.t('CONFIRM_SURE')}</p>
+				</Modal>
+			</Layout.Content>
+		</>
+	);
 }
 
 export default TagsDuplicate;

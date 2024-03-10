@@ -1,5 +1,8 @@
 .media-info {
-	white-space: nowrap;
+	.tr {
+		white-space: nowrap;
+	}
+
 	.unmet-required {
 		color: rgb(243, 88, 88);
 	}
@@ -14,5 +17,9 @@
 
 	tr td:last-child {
 		padding-right: 0;
+	}
+
+	&.warnings {
+		padding-top: 20px;
 	}
 }

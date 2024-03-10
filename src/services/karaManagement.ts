@@ -34,6 +34,8 @@ import { editKara } from './karaCreation.js';
 import { getRepo, getRepos } from './repo.js';
 import { updateAllSmartPlaylists } from './smartPlaylist.js';
 import { getTag } from './tag.js';
+import { APIMessage } from '../lib/services/frontend.js';
+import { emitWS } from '../lib/utils/ws.js';
 
 const service = 'KaraManager';
 
@@ -202,9 +204,11 @@ export async function batchEditKaras(plaid: string, action: 'add' | 'remove', ti
 		logger.info(`Batch tag edit starting : adding ${tid} in type ${type} for all songs in playlist ${plaid}`, {
 			service,
 		});
+		const karas = [];
 		for (const plc of pl) {
 			profile('getKaraBatch');
 			const kara = await getKara(plc.kid, adminToken);
+			karas.push(kara);
 			profile('getKaraBatch');
 			if (!kara) {
 				logger.warn(`Batch tag edit : kara ${plc.kid} unknown. Ignoring.`, { service });
@@ -239,8 +243,10 @@ export async function batchEditKaras(plaid: string, action: 'add' | 'remove', ti
 			task.incr();
 		}
 		logger.info('Batch tag edit finished', { service });
-		await refreshKarasAfterDBChange('ALL');
+		await refreshKarasAfterDBChange('UPDATE', karas);
 		updateAllSmartPlaylists();
+		emitWS('operatorNotificationInfo', APIMessage('NOTIFICATION.OPERATOR.INFO.BATCH_EDIT_COMPLETE'));
+		saveSetting('baseChecksum', getStoreChecksum());
 	} catch (err) {
 		logger.info('Batch tag edit failed', { service, obj: err });
 	} finally {

@@ -10,7 +10,7 @@ import { logout } from '../../store/actions/auth';
 import { showModal } from '../../store/actions/modal';
 import GlobalContext from '../../store/context';
 import { commandBackend, getSocket } from '../../utils/socket';
-import { callModal, displayMessage, expand } from '../../utils/tools';
+import { callModal, displayMessage, expand, isNonStandardPlaylist } from '../../utils/tools';
 import KmAppHeaderDecorator from './decorators/KmAppHeaderDecorator';
 import RadioButton from './generic/RadioButton';
 import ProfilModal from './modals/ProfilModal';
@@ -19,9 +19,12 @@ import Tutorial from './modals/Tutorial';
 import UsersModal from './modals/UsersModal';
 import AdminMessageModal from './modals/AdminMessageModal';
 import PlayerControls from './PlayerControls';
+import SelectWithIcon from './generic/SelectWithIcon';
+import { getPlaylistIcon } from '../../utils/playlist';
 
 interface IProps {
 	currentPlaylist: PlaylistElem;
+	playlistList: PlaylistElem[];
 	powerOff: (() => void) | undefined;
 	putPlayerCommando: (event: any) => void;
 	updateQuizRanking: () => void;
@@ -159,12 +162,42 @@ function AdminHeader(props: IProps) {
 		showModal(context.globalDispatch, <AdminMessageModal />);
 	};
 
+	const getListToSelect = () => {
+		return props.playlistList
+			.filter(pl => !isNonStandardPlaylist(pl.plaid))
+			.map(playlist => {
+				return {
+					value: playlist?.plaid,
+					label: playlist?.name,
+					icons: getPlaylistIcon(playlist, context),
+				};
+			});
+	};
+
+	const editCurrentPlaylist = async (plaid: string) => {
+		await commandBackend('editPlaylist', {
+			flag_current: true,
+			plaid,
+		});
+	};
+
+	const editPublicPlaylist = async (plaid: string) => {
+		await commandBackend('editPlaylist', {
+			flag_public: true,
+			plaid,
+		});
+	};
+
 	const quizInProgress = context.globalState.settings.data.state.quiz.running;
 
 	return (
 		<KmAppHeaderDecorator mode="admin">
 			{location.pathname.includes('/options') ? (
-				<button title={i18next.t('BACK_PLAYLISTS')} className="btn btn-dark" onClick={() => navigate('/admin')}>
+				<button
+					title={i18next.t('BACK_PLAYLISTS')}
+					className="btn btn-dark backPlaylistsButton"
+					onClick={() => navigate('/admin')}
+				>
 					<i className="fas fa-fw fa-long-arrow-alt-left" />
 				</button>
 			) : null}
@@ -346,6 +379,46 @@ function AdminHeader(props: IProps) {
 				) : null}
 			</div>
 
+			{quizInProgress ? (
+				<button
+					className="btn btn-dark"
+					type="button"
+					title={i18next.t('ADMIN_HEADER.QUIZ_RANKING')}
+					onClick={props.updateQuizRanking}
+				>
+					<i className="fas fa-fw fa-user-graduate" />
+				</button>
+			) : null}
+
+			<div className="btn-select-group">
+				<label className="list-label">{i18next.t('ADMIN_HEADER.CURRENT_PLAYLIST')}</label>
+				<SelectWithIcon
+					list={getListToSelect()}
+					value={
+						props.playlistList.length > 0 &&
+						props.playlistList.find(playlistElem => playlistElem.flag_current).plaid
+					}
+					onChange={(value: any) => editCurrentPlaylist(value)}
+				/>
+				<label className="list-label">{i18next.t('ADMIN_HEADER.PUBLIC_PLAYLIST')}</label>
+				<SelectWithIcon
+					list={getListToSelect()}
+					value={
+						props.playlistList.length > 0 &&
+						props.playlistList.find(playlistElem => playlistElem.flag_public).plaid
+					}
+					onChange={(value: any) => editPublicPlaylist(value)}
+				/>
+			</div>
+
+			<div className="header-group controls">
+				<PlayerControls
+					currentPlaylist={props.currentPlaylist}
+					statusPlayer={statusPlayer}
+					scope="admin"
+					putPlayerCommando={props.putPlayerCommando}
+				/>
+			</div>
 			<div className={`btn btn-dark splitValueButton speedControl`} id="speedControl">
 				{statusPlayer?.speed === 100 && <i className={'icon fa-solid fa-gauge'}></i>}
 				{statusPlayer?.speed > 100 && <i className={'icon fa-solid fa-gauge-high'}></i>}
@@ -426,26 +499,6 @@ function AdminHeader(props: IProps) {
 					</button>
 				</div>
 			</div>
-			{quizInProgress ? (
-				<button
-					className="btn btn-dark"
-					type="button"
-					title={i18next.t('ADMIN_HEADER.QUIZ_RANKING')}
-					onClick={props.updateQuizRanking}
-				>
-					<i className="fas fa-fw fa-user-graduate" />
-				</button>
-			) : null}
-
-			<div className="header-group controls">
-				<PlayerControls
-					currentPlaylist={props.currentPlaylist}
-					statusPlayer={statusPlayer}
-					scope="admin"
-					putPlayerCommando={props.putPlayerCommando}
-				/>
-			</div>
-
 			<button
 				title={i18next.t('MESSAGE')}
 				id="adminMessage"

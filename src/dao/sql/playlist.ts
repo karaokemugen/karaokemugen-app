@@ -699,7 +699,7 @@ SELECT COALESCE(SUM(k.duration),0)::integer AS time_spent
 FROM kara AS k
 INNER JOIN playlist_content AS pc ON pc.fk_kid = k.pk_kid
 WHERE pc.fk_login = $2
-	AND pc.fk_plaid = $1
+	AND pc.fk_plaid = ANY ($1)
 	AND pc.flag_free = FALSE
 `;
 
@@ -713,6 +713,6 @@ export const sqlgetSongCountPerUser = `
 SELECT COUNT(1)::integer AS count
 FROM playlist_content AS pc
 WHERE pc.fk_login = $2
-	AND pc.fk_plaid = $1
+	AND pc.fk_plaid = ANY ($1)
 	AND pc.flag_free = FALSE
 `;

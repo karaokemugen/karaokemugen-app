@@ -164,7 +164,7 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 	} catch (err) {
 		logger.error('Error while editing kara', { service, obj: err });
 		sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
-		sentry.error(err);
+		if (err! instanceof ErrorKM) sentry.error(err);
 		throw err instanceof ErrorKM ? err : new ErrorKM('KARA_EDITED_ERROR');
 	} finally {
 		task.end();
@@ -239,7 +239,7 @@ export async function createKara(editedKara: EditedKara) {
 		logger.error('Error while creating kara', { service, obj: err });
 		sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
 		sentry.addErrorInfo('kara', JSON.stringify(kara, null, 2));
-		sentry.error(err);
+		if (err! instanceof ErrorKM) sentry.error(err);
 		throw err instanceof ErrorKM ? err : new ErrorKM('KARA_CREATED_ERROR');
 	} finally {
 		task.end();

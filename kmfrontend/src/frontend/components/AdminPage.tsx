@@ -189,6 +189,7 @@ function AdminPage(props: IProps) {
 				<AdminHeader
 					powerOff={props.powerOff}
 					putPlayerCommando={putPlayerCommando}
+					playlistList={playlistList}
 					currentPlaylist={playlistList.filter(playlistElem => playlistElem.flag_current)[0]}
 					updateQuizRanking={() => setQuizRanking(!quizRanking)}
 				/>

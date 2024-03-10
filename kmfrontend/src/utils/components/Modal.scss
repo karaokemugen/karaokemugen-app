@@ -12,6 +12,9 @@
 	> .modal-dialog {
 		position: relative;
 		top: 10%;
+		@media screen and (max-width: $mugen-breakpoint-xl) {
+			top: 1%;
+		}
 		margin: auto auto 100px;
 		width: 95vw;
 		max-width: 700px;
@@ -67,6 +70,9 @@
 			}
 		}
 		font-size: 2rem;
+		@media screen and (max-width: $mugen-breakpoint-xl) {
+			font-size: 1.5rem;
+		}
 		@media screen and (max-width: $mugen-breakpoint-small) {
 			font-size: 1.25rem;
 		}

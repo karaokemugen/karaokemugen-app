@@ -16,6 +16,7 @@ import { commandBackend } from '../../../utils/socket';
 import { displayMessage } from '../../../utils/tools';
 import CollectionsActivation from './CollectionsActivation';
 import { Repository } from '../../../../../src/lib/types/repo';
+import { ColumnsType } from 'antd/es/table';
 
 interface RepositoryListState {
 	repositories: Repository[];
@@ -100,13 +101,24 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 							{i18next.t('DATABASE.UPDATE_REPOS_DESCRIPTION')}
 						</Col>
 					</Row>
-					<Table dataSource={this.state.repositories} columns={this.columns} rowKey="Name" />
+					<Table
+						dataSource={this.state.repositories}
+						columns={this.columns}
+						rowKey="Name"
+						style={{ tableLayout: 'fixed' }}
+					/>
 				</Layout.Content>
 			</>
 		);
 	}
 
-	columns = [
+	columns: ColumnsType<any> = [
+		{
+			title: i18next.t('REPOSITORIES.ENABLED'),
+			dataIndex: 'Enabled',
+			key: 'enabled',
+			render: (_text, record) => <Checkbox disabled={true} checked={record.Enabled} />,
+		},
 		{
 			title: i18next.t('REPOSITORIES.NAME'),
 			dataIndex: 'Name',
@@ -121,6 +133,7 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 			title: i18next.t('REPOSITORIES.PATH_MEDIAS'),
 			dataIndex: 'Path.Medias',
 			key: 'path_medias',
+			hidden: true,
 			render: (_text, record: Repository) =>
 				record.Path.Medias.map(item => {
 					return (
@@ -143,21 +156,17 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 			render: (_text, record) => <Checkbox disabled={true} checked={record.Update} />,
 		},
 		{
-			title: i18next.t('REPOSITORIES.ENABLED'),
-			dataIndex: 'Enabled',
-			key: 'enabled',
-			render: (_text, record) => <Checkbox disabled={true} checked={record.Enabled} />,
-		},
-		{
 			title: i18next.t('REPOSITORIES.SENDSTATS'),
 			dataIndex: 'SendStats',
 			key: 'sendStats',
+			hidden: true,
 			render: (_text, record) => <Checkbox disabled={true} checked={record.SendStats} />,
 		},
 		{
 			title: i18next.t('REPOSITORIES.AUTO_MEDIA_DOWNLOADS'),
 			dataIndex: 'AutoMediaDownloads',
 			key: 'autoMediaDownloads',
+			hidden: true,
 			render: (_text, record) => {
 				if (record.AutoMediaDownloads === 'all') {
 					return i18next.t('REPOSITORIES.AUTO_MEDIA_DOWNLOADS_ALL');
@@ -172,9 +181,9 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 			title: i18next.t('REPOSITORIES.MAINTAINER_MODE'),
 			dataIndex: 'MaintainerMode',
 			key: 'maintainerMode',
+
 			render: (_text, record) => <Checkbox disabled={true} checked={record.MaintainerMode} />,
 		},
-		{},
 		{
 			title: (
 				<span>

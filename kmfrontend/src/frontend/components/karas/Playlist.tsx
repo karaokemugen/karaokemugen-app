@@ -477,6 +477,7 @@ function Playlist(props: IProps) {
 			} else {
 				setData(karas);
 			}
+			setPlaylistInProgress(false);
 		} catch (e) {
 			// already display
 		}
@@ -524,10 +525,10 @@ function Playlist(props: IProps) {
 	};
 
 	useEffect(() => {
-		if (isPlaylistInProgress) {
+		if (!goToPlayingAvoidScroll) {
 			gotToPlayingAfterPlaylistUpdate();
-			setPlaylistInProgress(false);
 		}
+		setGotToPlayingAvoidScroll(false);
 	}, [data]);
 
 	useEffect(() => {
@@ -550,10 +551,10 @@ function Playlist(props: IProps) {
 				' karas' +
 				(!isNonStandardPlaylist(playlist?.plaid) && playlist?.duration
 					? ` ~ ${is_touch_device() ? 'dur.' : i18next.t('DETAILS.DURATION')} ` +
-					  secondsTimeSpanToHMS(playlist?.duration, 'hm') +
-					  ` / ${secondsTimeSpanToHMS(playlist?.time_left, 'hm')} ${
+						secondsTimeSpanToHMS(playlist?.duration, 'hm') +
+						` / ${secondsTimeSpanToHMS(playlist?.time_left, 'hm')} ${
 							is_touch_device() ? 're.' : i18next.t('DURATION_REMAINING')
-					  } `
+						} `
 					: '');
 		}
 		return plInfos;
@@ -942,6 +943,7 @@ function Playlist(props: IProps) {
 			const oldIndex = result.source.index;
 			const newIndex = result.destination.index;
 			if (oldIndex !== newIndex) {
+				setGotToPlayingAvoidScroll(true);
 				setData(data => {
 					// extract plcid based on sorter index
 					const plcid = data.content[oldIndex].plcid;
