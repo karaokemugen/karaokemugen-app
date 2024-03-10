@@ -9,6 +9,7 @@ import GlobalContext from '../../../store/context';
 import { getPlaylistInfo, setPlaylistInfo } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { displayMessage } from '../../../utils/tools';
+import Switch from '../generic/Switch';
 
 interface IProps {
 	side: 'left' | 'right';
@@ -142,7 +143,7 @@ function PlaylistModal(props: IProps) {
 	const closeModalWithContext = () => closeModal(context.globalDispatch);
 
 	return (
-		<div className="modal modalPage">
+		<div id="playlistModal" className="modal modalPage">
 			<div className="modal-dialog">
 				<div className="modal-content">
 					<ul className="modal-header">
@@ -150,7 +151,7 @@ function PlaylistModal(props: IProps) {
 							{props.mode === 'edit'
 								? i18next.t('MODAL.PLAYLIST_MODAL.EDIT_PLAYLIST', {
 										playlist: playlist?.name,
-								  })
+									})
 								: i18next.t('MODAL.PLAYLIST_MODAL.CREATE_PLAYLIST')}
 						</h4>
 					</ul>
@@ -167,104 +168,152 @@ function PlaylistModal(props: IProps) {
 						</div>
 						<label className="error">{error}</label>
 						<div>
-							<button className="btn btn-default" type="button" onClick={toggleCurrent}>
-								<input
-									type="checkbox"
-									checked={flagCurrent}
-									disabled={props.mode === 'edit' && playlist?.flag_current}
-									onChange={toggleCurrent}
-								/>
+							<button
+								className="btn btn-default"
+								type="button"
+								onClick={e => {
+									e.preventDefault();
+									toggleCurrent();
+								}}
+							>
+								<i className="fas fa-globe fa-2x" />
 								<div className="btn-large-container">
 									<div className="title">{i18next.t('MODAL.PLAYLIST_MODAL.CURRENT')}</div>
 									<div className="desc">{i18next.t('MODAL.PLAYLIST_MODAL.CURRENT_DESC')}</div>
 								</div>
-							</button>
-						</div>
-						<div>
-							<button className="btn btn-default" type="button" onClick={togglePublic}>
-								<input
-									type="checkbox"
-									checked={flagPublic}
-									disabled={props.mode === 'edit' && playlist?.flag_public}
-									onChange={togglePublic}
+								<Switch
+									disabled={props.mode === 'edit' && playlist?.flag_current}
+									isChecked={flagCurrent}
+									onLabel={i18next.t('YES')}
+									offLabel={i18next.t('NO')}
 								/>
-								<div className="btn-large-container">
-									<div className="title">{i18next.t('MODAL.PLAYLIST_MODAL.PUBLIC')}</div>
-									<div className="desc">{i18next.t('MODAL.PLAYLIST_MODAL.PUBLIC_DESC')}</div>
-								</div>
-							</button>
-						</div>
-						<div>
-							<button className="btn btn-default" type="button" onClick={toggleSmart}>
-								<input
-									type="checkbox"
-									checked={flagSmart}
-									disabled={props.mode === 'edit'}
-									onChange={toggleSmart}
-								/>
-								<div className="btn-large-container">
-									<div className="title">{i18next.t('MODAL.PLAYLIST_MODAL.SMART')}</div>
-									<div className="desc">{i18next.t('MODAL.PLAYLIST_MODAL.SMART_DESC')}</div>
-								</div>
-							</button>
-						</div>
-						<div>
-							<button className="btn btn-default" type="button" onClick={toggleBlacklist}>
-								<input
-									type="checkbox"
-									checked={flagBlacklist}
-									disabled={props.mode === 'edit' || flagCurrent || flagPublic}
-									onChange={toggleBlacklist}
-								/>
-								<div className="btn-large-container">
-									<div className="title">{i18next.t('MODAL.PLAYLIST_MODAL.BLACKLIST')}</div>
-									<div className="desc">{i18next.t('MODAL.PLAYLIST_MODAL.BLACKLIST_DESC')}</div>
-								</div>
-							</button>
-						</div>
-						<div>
-							<button className="btn btn-default" type="button" onClick={toggleWhitelist}>
-								<input
-									type="checkbox"
-									checked={flagWhitelist}
-									disabled={props.mode === 'edit' || flagCurrent || flagPublic}
-									onChange={toggleWhitelist}
-								/>
-								<div className="btn-large-container">
-									<div className="title">{i18next.t('MODAL.PLAYLIST_MODAL.WHITELIST')}</div>
-									<div className="desc">{i18next.t('MODAL.PLAYLIST_MODAL.WHITELIST_DESC')}</div>
-								</div>
-							</button>
-						</div>
-						<div>
-							<button className="btn btn-default" type="button" onClick={toggleFallback}>
-								<input
-									type="checkbox"
-									checked={flagFallback}
-									disabled={playlist?.flag_blacklist || playlist?.flag_current}
-									onChange={toggleFallback}
-								/>
-								<div className="btn-large-container">
-									<div className="title">{i18next.t('MODAL.PLAYLIST_MODAL.FALLBACK')}</div>
-									<div className="desc">{i18next.t('MODAL.PLAYLIST_MODAL.FALLBACK_DESC')}</div>
-								</div>
 							</button>
 						</div>
 						<div>
 							<button
 								className="btn btn-default"
 								type="button"
-								onClick={() => setFlagVisible(!flagVisible)}
+								onClick={e => {
+									e.preventDefault();
+									togglePublic();
+								}}
 							>
-								<input
-									type="checkbox"
-									checked={flagVisible}
-									onChange={() => setFlagVisible(!flagVisible)}
+								<i className="fas fa-play-circle fa-2x" />
+								<div className="btn-large-container">
+									<div className="title">{i18next.t('MODAL.PLAYLIST_MODAL.PUBLIC')}</div>
+									<div className="desc">{i18next.t('MODAL.PLAYLIST_MODAL.PUBLIC_DESC')}</div>
+								</div>
+								<Switch
+									disabled={props.mode === 'edit' && playlist?.flag_public}
+									isChecked={flagPublic}
+									onLabel={i18next.t('YES')}
+									offLabel={i18next.t('NO')}
 								/>
+							</button>
+						</div>
+						<div>
+							<button
+								className="btn btn-default"
+								type="button"
+								onClick={e => {
+									e.preventDefault();
+									toggleSmart();
+								}}
+							>
+								<i className="fas fa-brain fa-2x" />
+								<div className="btn-large-container">
+									<div className="title">{i18next.t('MODAL.PLAYLIST_MODAL.SMART')}</div>
+									<div className="desc">{i18next.t('MODAL.PLAYLIST_MODAL.SMART_DESC')}</div>
+								</div>
+								<Switch
+									disabled={props.mode === 'edit'}
+									isChecked={flagSmart}
+									onLabel={i18next.t('YES')}
+									offLabel={i18next.t('NO')}
+								/>
+							</button>
+						</div>
+						<div>
+							<button
+								className="btn btn-default"
+								type="button"
+								onClick={e => {
+									e.preventDefault();
+									toggleBlacklist();
+								}}
+							>
+								<i className="fas fa-ban fa-2x" />
+								<div className="btn-large-container">
+									<div className="title">{i18next.t('MODAL.PLAYLIST_MODAL.BLACKLIST')}</div>
+									<div className="desc">{i18next.t('MODAL.PLAYLIST_MODAL.BLACKLIST_DESC')}</div>
+								</div>
+								<Switch
+									disabled={props.mode === 'edit' || flagCurrent || flagPublic}
+									isChecked={flagBlacklist}
+									onLabel={i18next.t('YES')}
+									offLabel={i18next.t('NO')}
+								/>
+							</button>
+						</div>
+						<div>
+							<button
+								className="btn btn-default"
+								type="button"
+								onClick={e => {
+									e.preventDefault();
+									toggleWhitelist();
+								}}
+							>
+								<i className="fas fa-check-circle fa-2x" />
+								<div className="btn-large-container">
+									<div className="title">{i18next.t('MODAL.PLAYLIST_MODAL.WHITELIST')}</div>
+									<div className="desc">{i18next.t('MODAL.PLAYLIST_MODAL.WHITELIST_DESC')}</div>
+								</div>
+								<Switch
+									disabled={props.mode === 'edit' || flagCurrent || flagPublic}
+									isChecked={flagWhitelist}
+									onLabel={i18next.t('YES')}
+									offLabel={i18next.t('NO')}
+								/>
+							</button>
+						</div>
+						<div>
+							<button
+								className="btn btn-default"
+								type="button"
+								onClick={e => {
+									e.preventDefault();
+									toggleFallback();
+								}}
+							>
+								<i className="fas fa-arrows-turn-to-dots fa-2x" />
+								<div className="btn-large-container">
+									<div className="title">{i18next.t('MODAL.PLAYLIST_MODAL.FALLBACK')}</div>
+									<div className="desc">{i18next.t('MODAL.PLAYLIST_MODAL.FALLBACK_DESC')}</div>
+								</div>
+								<Switch
+									disabled={playlist?.flag_blacklist || playlist?.flag_current}
+									isChecked={flagFallback}
+									onLabel={i18next.t('YES')}
+									offLabel={i18next.t('NO')}
+								/>
+							</button>
+						</div>
+						<div>
+							<button
+								className="btn btn-default"
+								type="button"
+								onClick={e => {
+									e.preventDefault();
+									setFlagVisible(!flagVisible);
+								}}
+							>
+								<i className="fas fa-eye fa-2x" />
 								<div className="btn-large-container">
 									<div className="title">{i18next.t('MODAL.PLAYLIST_MODAL.VISIBLE')}</div>
 									<div className="desc">{i18next.t('MODAL.PLAYLIST_MODAL.VISIBLE_DESC')}</div>
 								</div>
+								<Switch isChecked={flagVisible} onLabel={i18next.t('YES')} offLabel={i18next.t('NO')} />
 							</button>
 						</div>
 					</div>

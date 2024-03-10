@@ -1,5 +1,5 @@
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { Button, Divider, Input, Layout, Modal, Select, Table, Tag, Tooltip } from 'antd';
+import { Button, Input, Layout, Modal, Select, Table, Tag, Tooltip } from 'antd';
 import Title from '../../components/Title';
 import i18next from 'i18next';
 import { useContext, useEffect, useState } from 'react';
@@ -9,7 +9,7 @@ import { DBTag } from '../../../../../src/lib/types/database/tag';
 import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 import { getTagTypeName, tagTypes } from '../../../utils/tagTypes';
-import { is_touch_device, isModifiable } from '../../../utils/tools';
+import { isModifiable } from '../../../utils/tools';
 
 function TagsList() {
 	const context = useContext(GlobalContext);
@@ -23,8 +23,8 @@ function TagsList() {
 		searchParams.get('type')
 			? parseInt(searchParams.get('type'))
 			: localStorage.getItem('typeTagList')
-			? parseInt(localStorage.getItem('typeTagList'))
-			: undefined
+				? parseInt(localStorage.getItem('typeTagList'))
+				: undefined
 	);
 
 	const refresh = async () => {
@@ -115,11 +115,10 @@ function TagsList() {
 			title: i18next.t('ACTION'),
 			render: (_text, record) =>
 				isModifiable(context, record.repository) ? (
-					<span>
+					<div style={{ display: 'flex' }}>
 						<Link to={`/system/tags/${record.tid}`}>
-							<Button type="primary" icon={<EditOutlined />} />
+							<Button type="primary" style={{ marginRight: '0.75em' }} icon={<EditOutlined />} />
 						</Link>
-						{!is_touch_device() ? <Divider type="vertical" /> : null}
 						<Button
 							type="primary"
 							danger
@@ -129,7 +128,7 @@ function TagsList() {
 								setTag(record);
 							}}
 						/>
-					</span>
+					</div>
 				) : null,
 		},
 	];

@@ -58,7 +58,9 @@
 	},
 	"ADMIN_HEADER": {
 		"QUICK_ACCESS": "Quick access",
-		"QUIZ_RANKING": "Quiz ranking"
+		"QUIZ_RANKING": "Quiz ranking",
+		"CURRENT_PLAYLIST": "Current playlist",
+		"PUBLIC_PLAYLIST": "Public playlist"
 	},
 	"MESSAGE": "Message",
 	"PLAYLIST_HEADER": {
@@ -419,6 +421,8 @@
 			"SONGS_BY_USER_TOOLTIP": "Number of songs a user can request simultaneously. A freed or already played song no longer counts towards the quota",
 			"FREE_AUTO_TIME": "Songs are freed from quota after (min)",
 			"FREE_AUTO_TIME_TOOLTIP": "After X minutes, the song will no longer count towards the user's quota. Adjust this according to the number of guests participating",
+			"FREE_ACCEPTED_SONGS": "Free accepted songs",
+			"FREE_ACCEPTED_SONGS_TOOLTIP": "Songs will be freed when accepted by an operator from the public playlist. The song requester will regain quota.",
 			"FREE_UPVOTES": "Allow users to upvote songs to free them",
 			"FREE_UPVOTES_TOOLTIP": "If enough people like a song suggestion, it won't count anymore in the requester's quota",
 			"FREE_UPVOTES_REQUIREDMIN": "Minimum votes required to free a song",
@@ -969,6 +973,7 @@
 				"UPDATE_GIT_REPO_ERROR": "Updating git repository failed"
 			},
 			"INFO": {
+				"BATCH_EDIT_COMPLETE": "Karaoke batch edit complete.",
 				"PLAYER_RESTARTING": "Restarting media player…",
 				"POLL_WINNER": "People voted for a new song!",
 				"POLL_STARTING": "Starting poll",
@@ -1015,7 +1020,10 @@
 			"VIDEO_COLORSPACE": "Colorspace",
 			"VIDEO_FRAMERATE": "Framerate",
 			"AUDIO_CODEC": "Audio codec",
-			"AUDIO_COVER_ART": "Cover art"
+			"AUDIO_COVER_ART": "Cover art",
+			"WARNINGS":  {
+				"LIBAVCODEC_ENCODER": "The audio is encoded with the libavcodec (ffmpeg reference aac) encoder, which is known to result in bad quality. Please make sure to use the libfdk_aac encoder or another codec like opus, to get the best quality."
+			}
 		},
 		"LYRICS_FILE": "Lyrics file",
 		"LYRICS_FILE_TOOLTIP": "Supported file formats: {{formats}}",
@@ -1447,7 +1455,10 @@
 		"DESELECT_ALL_COMMITS": "Deselect all commits",
 		"GIT_EDIT_MESSAGE": "Edit commit's message",
 		"GIT_SEE_MODIFIED_FILES": "View modified files",
-		"GIT_SEE_DIFF_IN_FILE": "See differences in the file"
+		"GIT_SEE_DIFF_IN_FILE": "See differences in the file",
+		"GIT_SQUASH_COMMITS": "Squash changes",
+		"GIT_SQUASH_MESSAGE": "Commit message",
+		"GIT_TOO_MANY_CHANGES": "Looks like you're making {{changes}} changes. When making many changes that are related to the same kind of action, it's advisable to squash your commits into a big one."
 	},
 	"COLLECTIONS": {
 		"NAME": "Collection name",
@@ -1599,7 +1610,7 @@
 		"FAVORITES_IMPORTED_BAD_DATA_ERROR": "Error importing favorites : invalid data in file",
 		"FAVORITES_IMPORTED_ERROR": "Error importing favorites",
 		"KARA_CREATED_ERROR": "Error creating the karaoke",
-		"KARA_FILE_EXISTS_ERROR": "Error saving files: A karaoke with the same filename already exists. Please make sure this is not a duplicate and the tags are set correctly",
+		"KARA_FILE_EXISTS_ERROR": "Error saving files: A karaoke with the same filename already exists. Please make sure this is not a duplicate and the tags are set correctly.",
 		"KARA_HISTORY_ERROR": "Error getting songs sorted by date played",
 		"KARA_RANKING_ERROR": "Error getting songs sorted by most requested",
 		"KARA_PLAYED_ERROR": "Error getting songs sorted by most played",
@@ -1712,6 +1723,7 @@
 		"REPO_COPY_LYRICS_ERROR": "Error copying lyrics between two repositories",
 		"ERROR_READING_LOGS": "Unable to read event logs",
 		"SUBFILE_FORMAT_UNKOWN": "Subfile format unknown",
+		"SUBFILE_PROCESS_ERROR": "Error when processing the subfile",
 		"POLL_VOTE_ERROR": "This song is not in the poll",
 		"USER_ONLINE_NOINTERNET": "You cannot edit your profile for now, your online server isn't working.",
 		"FAVORITES_ONLINE_NOINTERNET": "You cannot edit your favorites for now, your online server isn't working.",

@@ -36,7 +36,7 @@
 				"7": "que son",
 				"13": "en la plataforma",
 				"12": "por género",
-				"11": "originado de",
+				"11": "desde",
 				"10": "contenido en",
 				"9": "del grupo",
 				"8": "escrito por",
@@ -514,7 +514,9 @@
 	},
 	"ADMIN_HEADER": {
 		"QUICK_ACCESS": "Acceso rápido",
-		"QUIZ_RANKING": "Clasificación del cuestionario"
+		"QUIZ_RANKING": "Clasificación del cuestionario",
+		"CURRENT_PLAYLIST": "Lista de reproducción actual",
+		"PUBLIC_PLAYLIST": "Lista de reproducción pública"
 	},
 	"ONLINE_STATS": {
 		"DETAILS": {

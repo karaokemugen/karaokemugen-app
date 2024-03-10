@@ -50,7 +50,9 @@
 	"HIDE_SUBS": "Nascondi il testo a schermo",
 	"ADMIN_HEADER": {
 		"QUICK_ACCESS": "Accesso rapido",
-		"QUIZ_RANKING": "Classifica Quiz"
+		"QUIZ_RANKING": "Classifica Quiz",
+		"CURRENT_PLAYLIST": "Playlist attuale",
+		"PUBLIC_PLAYLIST": "Playlist pubblica"
 	},
 	"ADVANCED": {
 		"PLAYLIST_COMMANDS": "Comandi della playlist",
@@ -257,7 +259,9 @@
 				"DISALLOWED": "Non consentire"
 			},
 			"ALLOW_PUBLIC_DUPLICATES": "Consenti brani doppioni in playlist (pubblico)",
-			"ALLOW_PUBLIC_DUPLICATES_TOOLTIP": "Scegli se consentire al pubblico di aggiungere un brano più volte. Un utente non può aggiungere un brano già aggiunto da sé stesso, ma può aggiungerne uno già aggiunto da un altro utente. Selezionando \"Solo Voti\", gli utenti non potranno aggiungere doppioni ma potranno votare brani già presenti. \"Consenti\" va bene per un Karaoke classico, \"Solo Voti\" per un Karaoke pubblico."
+			"ALLOW_PUBLIC_DUPLICATES_TOOLTIP": "Scegli se consentire al pubblico di aggiungere un brano più volte. Un utente non può aggiungere un brano già aggiunto da sé stesso, ma può aggiungerne uno già aggiunto da un altro utente. Selezionando \"Solo Voti\", gli utenti non potranno aggiungere doppioni ma potranno votare brani già presenti. \"Consenti\" va bene per un Karaoke classico, \"Solo Voti\" per un Karaoke pubblico.",
+			"FREE_ACCEPTED_SONGS": "Libera i brani accettati",
+			"FREE_ACCEPTED_SONGS_TOOLTIP": "I brani verranno liberati una volta accettati da un operatore della playlist pubblica. Il richiedente del brano riotterrà la quota spesa."
 		},
 		"PLAYLIST": {
 			"ENDOFPLAYLISTACTION": {
@@ -1145,7 +1149,8 @@
 		"UPVOTE_ALREADY_DONE": "Hai già votato",
 		"REPO_GIT_DIFF_ERROR": "Errore durante il recupero delle differenze del file",
 		"USER_CREATION_WRONG_SECURITY_CODE": "Codice di sicurezza errato",
-		"KARA_FILE_EXISTS_ERROR": "Errore durante il salvataggio dei file: Esiste già un karaoke con lo stesso nome del file. Si prega di assicurarsi che non si tratta di un doppione e che le tag sono impostate correttamente."
+		"KARA_FILE_EXISTS_ERROR": "Errore durante il salvataggio dei file: Esiste già un karaoke con lo stesso nome del file. Si prega di assicurarsi che non si tratta di un doppione e che le tag sono impostate correttamente.",
+		"SUBFILE_PROCESS_ERROR": "Errore durante l'analisi del file dei sottotitoli"
 	},
 	"KARA": {
 		"PAUSE_DOWNLOAD_QUEUE": "Sospendi",
@@ -1194,7 +1199,10 @@
 			"FILE_FORMAT": "Formato file",
 			"VIDEO_FRAMERATE": "Frequenza fotogrammi",
 			"AUDIO_COVER_ART": "Copertina",
-			"VIDEO_ASPECT_RATIO": "Rapporto d'aspetto"
+			"VIDEO_ASPECT_RATIO": "Rapporto d'aspetto",
+			"WARNINGS": {
+				"LIBAVCODEC_ENCODER": "L'audio è codificato con il codificatore libavcodec (aac di riferimento di ffmpeg), conosciuto per la sua scarsa qualità. Si prega di utilizzare il codificatore libfdk_aac o altri come opus per ottenere la miglior qualità."
+			}
 		},
 		"COPY_SONG": "Copia brano in altro archivio",
 		"TAG_FILTER": "Filtra tag",
@@ -1458,7 +1466,10 @@
 		"AUTO_MEDIA_DOWNLOADS_TOOLTIP": "Se la tua connessione è troppo lenta, consigliamo l'opzione \"Tutti\" così da scaricare i file in anticipo. Ciò è anche consigliato per convenzione o per le dirette così da evitare potenziali errori nel mezzo di una sessione!",
 		"GIT_SEE_DIFF_IN_FILE": "Vedi le differenze nel file",
 		"GIT_EDIT_MESSAGE": "Modifica il messaggio del Commit",
-		"GIT_SEE_MODIFIED_FILES": "Visualizza i file modificati"
+		"GIT_SEE_MODIFIED_FILES": "Visualizza i file modificati",
+		"GIT_SQUASH_COMMITS": "Unisci i cambiamenti",
+		"GIT_SQUASH_MESSAGE": "Messaggio di Commit",
+		"GIT_TOO_MANY_CHANGES": "Pare che tu stia effettuando {{changes}} cambiamenti. Quando si effettuano molti cambiamenti dello stesso tipo, si consiglia di unirli tutti in un unico grande Commit."
 	},
 	"TAGS": {
 		"KITSU_SLUG_ERROR": "Kitsu Slug non valido",
@@ -2033,7 +2044,8 @@
 				"POLL_WINNER": "Il pubblico ha votato un nuovo brano!",
 				"END_OF_SESSION_NEAR": "La sessione karaoke dovrebbe finire tra {{data}} minuti.",
 				"POLL_STARTING": "Avviando il sondaggio",
-				"PLAYER_RESTARTING": "Riavviando il lettore multimediale…"
+				"PLAYER_RESTARTING": "Riavviando il lettore multimediale…",
+				"BATCH_EDIT_COMPLETE": "Modifica in massa dei karaoke completata."
 			}
 		}
 	},

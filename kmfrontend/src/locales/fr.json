@@ -60,7 +60,9 @@
 	"FAVORITES_EXPORT": "Exporter vos favoris",
 	"ADMIN_HEADER": {
 		"QUICK_ACCESS": "Accès rapide",
-		"QUIZ_RANKING": "Classement du quiz"
+		"QUIZ_RANKING": "Classement du quiz",
+		"CURRENT_PLAYLIST": "Liste courante",
+		"PUBLIC_PLAYLIST": "Liste publique"
 	},
 	"PLAYLIST_HEADER": {
 		"FILTERS": "Filtres",
@@ -419,6 +421,8 @@
 			"SONGS_BY_USER_TOOLTIP": "Nombre de chansons qu'un utilisateur peut demander simultanément. Une chanson libérée ou qui vient de passer ne compte plus dans le quota",
 			"FREE_AUTO_TIME": "Temps avant libération d'une chanson (minutes)",
 			"FREE_AUTO_TIME_TOOLTIP": "Au bout de X minutes, la chanson ne comptera plus dans le quota de l'utilisateur. À régler selon le nombre de participants",
+			"FREE_ACCEPTED_SONGS": "Libérer les chansons acceptées",
+			"FREE_ACCEPTED_SONGS_TOOLTIP": "Lorsqu'un opérateur accepte une chanson depuis la liste de suggestion, celle-ci sera libérée et ne comptera plus dans le quota du demandeur.",
 			"FREE_UPVOTES": "Libération des chansons par like",
 			"FREE_UPVOTES_TOOLTIP": "Si suffisamment de gens soutiennent une suggestion de chanson, elle ne comptera plus dans le quota de son demandeur",
 			"FREE_UPVOTES_REQUIREDMIN": "Minimum de like requis pour libérer une chanson",
@@ -969,6 +973,7 @@
 				"UPDATE_GIT_REPO_ERROR": "La mise à jour du dépot git a échouée"
 			},
 			"INFO": {
+				"BATCH_EDIT_COMPLETE": "Edition en masse de karaokés terminée.",
 				"PLAYER_RESTARTING": "Redémarrage du lecteur vidéo…",
 				"POLL_WINNER": "Le peuple a voté pour une nouvelle chanson !",
 				"POLL_STARTING": "Démarrage du sondage",
@@ -1116,7 +1121,11 @@
 			"VIDEO_COLORSPACE": "Espace de couleur",
 			"VIDEO_FRAMERATE": "Fréquence d'images",
 			"FILE_SIZE": "Taille du fichier",
-			"AUDIO_COVER_ART": "Pochette d'album"
+			"AUDIO_COVER_ART": "Pochette d'album",
+			"VIDEO_ASPECT_RATIO": "Format d'image",
+			"WARNINGS":  {
+				"LIBAVCODEC_ENCODER" : "L'audio est encodé avec libavcodec (l'aac de référence dans ffmpeg), qui est connu pour donner une mauvaise qualité. Veillez à utiliser l'encodeur libfdk_aac ou un autre codec comme opus, pour obtenir la meilleure qualité possible."
+			}
 		},
 		"FROM_DISPLAY_TYPE": "Affichage du tag de la provenance de la chanson",
 		"FROM_DISPLAY_TYPE_TOOLTIP": "Choissisez le type de tag utilisé lors de l'affichage de la chanson",
@@ -1446,7 +1455,10 @@
 		"DESELECT_ALL_COMMITS": "Désélectionner tous les commits",
 		"GIT_EDIT_MESSAGE": "Editer le message du commit",
 		"GIT_SEE_MODIFIED_FILES": "Voir les fichiers modifiés",
-		"GIT_SEE_DIFF_IN_FILE": "Voir les différences dans le fichier"
+		"GIT_SEE_DIFF_IN_FILE": "Voir les différences dans le fichier",
+		"GIT_SQUASH_COMMITS": "Fusionner les changements",
+		"GIT_SQUASH_MESSAGE": "Message de commit",
+		"GIT_TOO_MANY_CHANGES": "On dirait que vous faites {{changes}} changements. Lorsque vous effectuez de nombreux changements liés au même type d'action, il est conseillé de regrouper vos commits en un seul."
 	},
 	"COLLECTIONS": {
 		"NAME": "Nom de la collection",
@@ -1597,7 +1609,7 @@
 		"FAVORITES_IMPORTED_BAD_DATA_ERROR": "Erreur lors de l'import des favoris : données invalides dans le fichier",
 		"FAVORITES_IMPORTED_ERROR": "Erreur lors de l'import de favoris",
 		"KARA_CREATED_ERROR": "Erreur lors de la génération de la chanson",
-		"KARA_FILE_EXISTS_ERROR": "Impossible de sauvegarder: Un karaoké avec le même nom de fichier existe. Assurez-vous que ce n'est pas un doublon et que les tags soient correctement définis.",		
+		"KARA_FILE_EXISTS_ERROR": "Impossible de sauvegarder : Un karaoké avec le même nom de fichier existe. Assurez-vous que ce n'est pas un doublon et que les tags soient correctement définis.",
 		"KARA_HISTORY_ERROR": "Erreur lors de la récupération des chansons triés par date jouée",
 		"KARA_RANKING_ERROR": "Erreur lors de la récupération des chansons triés par les plus demandés",
 		"KARA_PLAYED_ERROR": "Erreur lors de la récupération des chansons triés par les plus joués",
@@ -1711,6 +1723,7 @@
 		"REPO_COPY_LYRICS_ERROR": "Erreur lors de la copie des paroles entre deux dépôts",
 		"ERROR_READING_LOGS": "Impossible de lire les journaux d'évènements",
 		"SUBFILE_FORMAT_UNKOWN": "Format du fichier de sous-titres inconnus",
+		"SUBFILE_PROCESS_ERROR": "Erreur lors de l'analyse du fichier de sous-titres",
 		"POLL_VOTE_ERROR": "Cette chanson n'est pas dans le sondage",
 		"USER_ONLINE_NOINTERNET": "Vous ne pouvez pas éditer votre profil pour le moment, votre instance en ligne ne fonctionne pas.",
 		"FAVORITES_ONLINE_NOINTERNET": "Vous ne pouvez pas éditer vos favoris pour le moment, votre instance en ligne ne fonctionne pas.",

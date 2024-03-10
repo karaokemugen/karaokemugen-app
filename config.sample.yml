@@ -101,6 +101,8 @@ Karaoke:
     FreeUpVoteRequiredMin: 3
     # How many percent of the connected users are required to free a song
     FreeUpVoteRequiredPercent: 33
+    # Free songs once accepted by an operator from the public playlist
+    FreeAcceptedSongs: true
     # Number of songs per user
     Songs: 10000
     # Time allowed per user in seconds

@@ -106,7 +106,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 							name: kara.subfile,
 							status: 'done',
 						},
-				  ]
+					]
 				: [],
 			mediafile: kara?.mediafile
 				? [
@@ -115,7 +115,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 							name: kara.mediafile,
 							status: 'done',
 						},
-				  ]
+					]
 				: [],
 			mediafileIsTouched: false,
 			subfileIsTouched: false,
@@ -253,8 +253,8 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					property.validationResult?.mandatory === true
 						? 'unmet-required'
 						: property.validationResult
-						  ? 'unmet-warning'
-						  : '',
+							? 'unmet-warning'
+							: '',
 			}));
 
 		return (
@@ -419,7 +419,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 										announcePositionX: announcePositionX as PositionX,
 										announcePositionY: announcePositionY as PositionY,
 									},
-							  ]
+								]
 							: [],
 				},
 			],
@@ -735,6 +735,15 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 							<Col flex={'0 1 280px'}>
 								<Card>
 									{this.renderMediaInfo(this.state.mediaInfo, this.state.mediaInfoValidationResult)}
+									{this.state.mediaInfo?.warnings?.length > 0 && (
+										<div className="media-info warnings">
+											{this.state.mediaInfo.warnings.map(w => (
+												<div className="unmet-warning">
+													{i18next.t('KARA.MEDIA_FILE_INFO.WARNINGS.' + w)}
+												</div>
+											))}
+										</div>
+									)}
 								</Card>
 							</Col>
 						) : null}

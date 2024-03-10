@@ -264,11 +264,11 @@ export async function createUser(
 ) {
 	try {
 		if (!opts.admin && !getConfig().Frontend.AllowUserCreation) {
-			throw new ErrorKM('USER_CREATION_DISABLED', 403);
+			throw new ErrorKM('USER_CREATION_DISABLED', 403, false);
 		}
 		if (!opts.admin && getConfig().Frontend.RequireSecurityCodeForNewAccounts) {
 			if (user.securityCode !== getState().newAccountCode) {
-				throw new ErrorKM('USER_CREATION_WRONG_SECURITY_CODE', 403);
+				throw new ErrorKM('USER_CREATION_WRONG_SECURITY_CODE', 403, false);
 			}
 			resetNewAccountCode();
 		}
@@ -636,15 +636,19 @@ export async function updateSongsLeft(username: string, plaid?: string) {
 		const user = await getUser(username);
 		let quotaLeft: number;
 		if (!plaid) plaid = getState().publicPlaid;
+		const playlistsToConsider =
+			conf?.Karaoke?.Quota?.FreeAcceptedSongs === true
+				? [plaid]
+				: [getState().publicPlaid, getState().currentPlaid, plaid];
 		if (user.type >= 1 && +conf.Karaoke.Quota.Type > 0) {
 			switch (+conf.Karaoke.Quota.Type) {
 				case 2:
-					const time = await selectSongTimeSpentForUser(plaid, username);
+					const time = await selectSongTimeSpentForUser(playlistsToConsider, username);
 					quotaLeft = +conf.Karaoke.Quota.Time - time;
 					break;
 				case 1:
 				default:
-					const count = await selectSongCountForUser(plaid, username);
+					const count = await selectSongCountForUser(playlistsToConsider, username);
 					quotaLeft = +conf.Karaoke.Quota.Songs - count;
 					break;
 			}
