@@ -396,7 +396,7 @@ pkg_mac:
     - rm -Rf app/bin
     - wget -qO- http://mugen.karaokes.moe/downloads/$DIST_MAC | tar xvz
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
-    - echo $SENTRY_DSN >assets/sentry.txtnew
+    - echo $SENTRY_DSN >assets/sentry.txt
     - security unlock-keychain -p $MACOS_PASSWORD login.keychain
     - bash util/electronBuilder.sh -m
     - ls -la packages/
