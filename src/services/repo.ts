@@ -1417,6 +1417,14 @@ export async function pushCommits(repoName: string, push: Push, ignoreFTP?: bool
 				if (media.old === null || media.old === media.new) {
 					const path = await resolveFileInDirs(media.new, resolvedPathRepos('Medias', repoName));
 					await ftp.upload(path[0]);
+				} else if (media.new !== media.old && media.sizeDifference) {
+					const path = await resolveFileInDirs(media.new, resolvedPathRepos('Medias', repoName));
+					await ftp.upload(path[0]);
+					try {
+						await ftp.delete(media.old);
+					} catch (err) {
+						logger.warn(`File ${media.old} could not be deleted on FTP`, { service });
+					}
 				}
 			}
 			await ftp.disconnect();
@@ -1465,15 +1473,7 @@ export async function pushCommits(repoName: string, push: Push, ignoreFTP?: bool
 						}
 					} else if (media.new !== media.old) {
 						// Renamed file or new upload with different sizes, let's find out!
-						if (media.sizeDifference) {
-							const path = await resolveFileInDirs(media.new, resolvedPathRepos('Medias', repoName));
-							await ftp.upload(path[0]);
-							try {
-								await ftp.delete(media.old);
-							} catch (err) {
-								logger.warn(`File ${media.old} could not be deleted on FTP`, { service });
-							}
-						} else {
+						if (!media.sizeDifference) {
 							await ftp.rename(basename(media.old), basename(media.new));
 						}
 					}
