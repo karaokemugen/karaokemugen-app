@@ -1283,7 +1283,7 @@ export async function generateCommits(repoName: string) {
 				modifiedMedias.push({
 					old: oldKara.medias[0].filename,
 					new: kara.mediafile,
-					sizeDifference: oldKara.medias[0].filesize === kara.mediasize,
+					sizeDifference: oldKara.medias[0].filesize !== kara.mediasize,
 					commit: commit.message,
 				});
 			} else if (oldKara.medias[0].filesize !== kara.mediasize) {
