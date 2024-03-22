@@ -237,10 +237,10 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	config.Karaoke.StreamerMode.Twitch.Enabled
 		? initTwitch().catch(err => {
 				logger.warn('Could not start Twitch chat bot', { service, obj: err });
-			})
+		  })
 		: stopTwitch().catch(err => {
 				logger.warn('Could not stop Twitch chat bot', { service, obj: err });
-			});
+		  });
 	// Toggling random song after end message
 	config.Playlist.RandomSongsAfterEndMessage ? initAddASongMessage() : stopAddASongMessage();
 	// Toggling Discord RPC
@@ -345,7 +345,6 @@ export function backupConfig() {
 /** Return public configuration (without sensitive data) */
 export function getPublicConfig(removeSystem = true) {
 	const publicSettings = cloneDeep(getConfig());
-	delete publicSettings.App.InstanceID;
 	delete publicSettings.App.JwtSecret;
 	delete publicSettings.System.Database;
 	for (const repo of publicSettings.System.Repositories) {
