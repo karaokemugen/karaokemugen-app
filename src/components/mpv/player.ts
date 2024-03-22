@@ -171,7 +171,7 @@ export class Player {
 			socket,
 		};
 
-		this.log.debug(`options:`, { obj: [mpvOptions, mpvArgs] });
+		this.log.debug(`options:`, { obj: { options: mpvOptions, args: mpvArgs } });
 		return [state.binPath.mpv, socket, mpvArgs];
 	}
 
