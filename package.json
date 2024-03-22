@@ -78,7 +78,7 @@
     "sorc278 <19523514-sorc278@users.noreply.gitlab.com> (@sorc278)"
   ],
   "engines": {
-    "node": ">=18.12.0"
+    "node": ">=20"
   },
   "license": "MIT",
   "private": true,
