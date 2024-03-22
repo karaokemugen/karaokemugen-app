@@ -1544,6 +1544,7 @@
 		"UNKNOWN_USER": "Unknown user",
 		"UNKNOWN_SESSION": "Unknown session",
 		"UNKNOWN_TAG": "Unknown tag",
+		"DATABASE_DISK_FULL": "Database disk is full! Free up some space immediately!",
 		"USER_LOGIN_INVALID": "Invalid user name. Please only use alphanumeric characters (._- are allowed too)",
 		"USER_CREATE_ERROR_ONLINE_DISABLED": "Unable to create account : online mode is disabled",
 		"NICKNAME_ALREADY_IN_USE": "Nickname already in use",

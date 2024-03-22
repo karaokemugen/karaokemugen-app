@@ -1544,6 +1544,7 @@
 		"UNKNOWN_USER": "Utilisateur inconnu",
 		"UNKNOWN_SESSION": "Session inconnue",
 		"UNKNOWN_TAG": "Tag inconnu",
+		"DATABASE_DISK_FULL": "Disque de base de données plein ! Faites de la place immédiatement !",
 		"USER_LOGIN_INVALID": "Nom d'utilisateur invalide. N'utilisez que des caractères alphanumériques (ou avec ., _ ou -)",
 		"USER_CREATE_ERROR_ONLINE_DISABLED": "Impossible de créer l'utilisateur : le mode en ligne est désactivé",
 		"NICKNAME_ALREADY_IN_USE": "Pseudonyme déjà en cours d'utilisation",
