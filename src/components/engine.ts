@@ -214,7 +214,7 @@ export async function initEngine() {
 				}
 			}
 			// Update everything kara-related
-			updateBase(internet);
+			updateBase(internet).catch();
 			// Mark all migrations as done for the first run to
 			// avoid the user to have to do all the migrations from start
 			if (conf.App.FirstRun) await markAllMigrationsFrontendAsDone();
