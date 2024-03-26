@@ -253,8 +253,9 @@ export async function addCriteria(cs: Criteria[]) {
 		// BLC 1003 - 1002: 1
 		// Placed to true to check for multiples occurrences of the same type
 		const timeC = [false, false];
+		const yearC = [false, false];
 		for (const c of cs) {
-			if (c.type < 0 || c.type > 1006 || c.type === 1000) {
+			if (c.type < 0 || c.type > 1008 || c.type === 1000) {
 				logger.error(`Incorrect criteria type : ${c.type}`, { service });
 				throw new ErrorKM('INVALID_DATA', 400, false);
 			}
@@ -270,13 +271,13 @@ export async function addCriteria(cs: Criteria[]) {
 					throw new ErrorKM('INVALID_DATA', 400, false);
 				}
 			}
-			if (c.type === 1002 || c.type === 1003) {
+			if (c.type === 1002 || c.type === 1003 || c.type === 1007 || c.type === 1008) {
 				c.value = +c.value;
 				if (!isNumber(c.value)) {
 					logger.error(`Incorrect criteria data for type ${c.type} : ${c.value}`, { service });
 					throw new ErrorKM('INVALID_DATA', 400, false);
 				}
-				if (timeC[c.type - 1002]) {
+				if (timeC[c.type - 1002] || yearC[c.type - 1007]) {
 					logger.error(`Criteria type ${c.type} can only occur once`, { service });
 					throw new ErrorKM('INVALID_DATA', 400, false);
 				}
@@ -284,11 +285,19 @@ export async function addCriteria(cs: Criteria[]) {
 					// Find the C type 1003 (shorter than) when we add a 1002 C (longer than) and vice versa.
 					return crit.plaid === c.plaid && crit.type === (c.type === 1002 ? 1003 : 1002);
 				});
-				if (opposingC) {
+				const opposingYearC = cs.find(crit => {
+					// Find the C type 1008 (before year) when we add a 1007 C (after year) and vice versa.
+					return crit.plaid === c.plaid && crit.type === (c.type === 1007 ? 1008 : 1007);
+				});
+				if (opposingC || opposingYearC) {
 					if (c.type === 1002 && c.value <= opposingC.value) {
 						throw new ErrorKM('C_LONGER_THAN_CONFLICT', 409, false);
 					} else if (c.type === 1003 && c.value >= opposingC.value) {
 						throw new ErrorKM('C_SHORTER_THAN_CONFLICT', 409, false);
+					} else if (c.type === 1007 && c.value <= opposingYearC.value) {
+						throw new ErrorKM('C_AFTER_YEAR_CONFLICT', 409, false);
+					} else if (c.type === 1008 && c.value >= opposingYearC.value) {
+						throw new ErrorKM('C_BEFORE_YEAR_CONFLICT', 409, false);
 					}
 				}
 				const existingC = cs.find(crit => crit.type === c.type && crit.plaid === c.plaid);
@@ -297,6 +306,7 @@ export async function addCriteria(cs: Criteria[]) {
 					await deleteCriteria(existingC);
 				}
 				timeC[c.type - 1002] = true;
+				yearC[c.type - 1007] = true;
 			}
 		}
 		await insertCriteria(cs);

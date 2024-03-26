@@ -1,5 +1,7 @@
 // SQL for playlist management
 
+import { DownloadedStatus } from '../../lib/types/database/download.js';
+
 export const sqlupdatePlaylistLastEditTime = `
 UPDATE playlist SET
 	modified_at = :modified_at
@@ -601,7 +603,8 @@ export const sqlselectKarasFromCriterias = {
 		AND   fk_plaid = $1
 	`,
 
-	0: (value: any) => `
+	// Precise year
+	0: (value: number) => `
 	SELECT ak.pk_kid AS kid,
 		jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::smallint)) AS criterias,
 		ak.duration AS duration,
@@ -613,6 +616,7 @@ export const sqlselectKarasFromCriterias = {
 	AND   fk_plaid = $1
 	`,
 
+	// Specific song criteria
 	1001: `
 	SELECT ak.pk_kid AS kid,
 		jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::uuid)) AS criterias,
@@ -625,7 +629,8 @@ export const sqlselectKarasFromCriterias = {
 	AND   fk_plaid = $1
 	`,
 
-	1002: (value: any) => `
+	// Duration (longer than)
+	1002: (value: number) => `
 	SELECT ak.pk_kid AS kid,
 		jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::integer)) AS criterias,
 		ak.duration AS duration,
@@ -637,7 +642,8 @@ export const sqlselectKarasFromCriterias = {
 	AND   fk_plaid = $1
 	`,
 
-	1003: (value: any) => `
+	// Duration (shorter than)
+	1003: (value: number) => `
 	SELECT ak.pk_kid AS kid,
 		jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::integer)) AS criterias,
 		ak.duration AS duration,
@@ -649,7 +655,8 @@ export const sqlselectKarasFromCriterias = {
 	AND   fk_plaid = $1
 	`,
 
-	1006: (value: any) => `
+	// Download status
+	1006: (value: DownloadedStatus) => `
 	SELECT ak.pk_kid AS kid, 
 		jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::varchar)) AS criterias,
 		ak.duration AS duration,
@@ -657,6 +664,30 @@ export const sqlselectKarasFromCriterias = {
 	FROM playlist_criteria c
 	INNER JOIN all_karas ak ON ak.download_status = '${value}'
 	WHERE c.type = 1006
+	AND   ak.pk_kid NOT IN (select fk_kid from playlist_content where fk_plaid = $2)
+	AND   fk_plaid = $1
+	`,
+	// After year
+	1007: (value: number) => `
+	SELECT ak.pk_kid AS kid, 
+		jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::varchar)) AS criterias,
+		ak.duration AS duration,
+		ak.created_at AS created_at
+	FROM playlist_criteria c
+	INNER JOIN all_karas ak ON ak.year >= ${value}
+	WHERE c.type = 1007
+	AND   ak.pk_kid NOT IN (select fk_kid from playlist_content where fk_plaid = $2)
+	AND   fk_plaid = $1
+	`,
+	// Before year
+	1008: (value: number) => `
+	SELECT ak.pk_kid AS kid, 
+		jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::varchar)) AS criterias,
+		ak.duration AS duration,
+		ak.created_at AS created_at
+	FROM playlist_criteria c
+	INNER JOIN all_karas ak ON ak.year <= ${value}
+	WHERE c.type = 1008
 	AND   ak.pk_kid NOT IN (select fk_kid from playlist_content where fk_plaid = $2)
 	AND   fk_plaid = $1
 	`,

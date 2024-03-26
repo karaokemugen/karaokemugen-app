@@ -151,6 +151,8 @@
 		"CRITERIA_TYPE_1002": "Longer than (mm:ss)",
 		"CRITERIA_TYPE_1003": "Shorter than (mm:ss)",
 		"CRITERIA_TYPE_1006": "Hide songs unavailable offline",
+		"CRITERIA_TYPE_1007": "After (year included)",
+		"CRITERIA_TYPE_1008": "Before (year included)",		
 		"LABEL": {
 			"TAG": "Songs {{verb}} {{tag}} are in the list.",
 			"TAG_VERBS": {
@@ -173,6 +175,8 @@
 				"17": "from music band"
 			},
 			"YEAR": "Songs from year {{year}} are in the list.",
+			"AFTER_YEAR": "Songs after year {{year}} are in the list.",
+			"BEFORE_YEAR": "Songs before year {{year}} are in the list.",
 			"KID": "This song is in the list.",
 			"LONGER": "Songs longer than {{time}} seconds are in the list.",
 			"SHORTER": "Songs shorter than {{time}} seconds are in the list."
@@ -1582,6 +1586,8 @@
 		"CRITERIAS_REMOVE_ERROR": "Unable to delete criteria",
 		"C_SHORTER_THAN_CONFLICT": "You cannot add a \"Shorter than\" criteria higher than the \"Longer than\" criteria.",
 		"C_LONGER_THAN_CONFLICT": "You cannot add a \"Longer than\" criteria lower than the \"Shorter than\" criteria.",
+		"C_BEFORE_YEAR_CONFLICT": "You cannot add a \"Before year\" criteria higher than the \"After year\" criteria.",
+		"C_AFTER_YEAR_CONFLICT": "You cannot add a \"After year\" criteria lower than the \"Before year\" criteria.",
 		"USER_RESETPASSWORD_WRONGSECURITYCODE": "Wrong security code",
 		"PL_DELETE_SONG_ERROR": "You cannot delete that song",
 		"PL_DELETE_UPVOTED": "You cannot delete your suggestion, it's too late.",

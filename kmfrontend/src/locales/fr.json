@@ -152,6 +152,8 @@
 		"CRITERIA_TYPE_1002": "Plus long que (mm:ss)",
 		"CRITERIA_TYPE_1003": "Plus court que (mm:ss)",
 		"CRITERIA_TYPE_1006": "Cacher les chansons indisponibles hors ligne",
+		"CRITERIA_TYPE_1007": "Après l'année (année incluse)",
+		"CRITERIA_TYPE_1008": "Avant l'année (année incluse)",
 		"LABEL": {
 			"TAG": "Les chansons {{verb}} {{tag}} sont dans la liste.",
 			"TAG_VERBS": {
@@ -175,6 +177,8 @@
 			},
 			"YEAR": "Les chansons de l'année {{year}} sont dans la liste.",
 			"KID": "Cette chanson est dans la liste.",
+			"AFTER_YEAR": "Les chansons après l'année {{year}} sont dans la liste.",
+			"BEFORE_YEAR": "Les chansons avant l'année {{year}} sont dans la liste.",
 			"LONGER": "Les chansons de plus de {{time}} secondes sont dans la liste.",
 			"SHORTER": "Les chansons de moins de {{time}} secondes sont dans la liste."
 		},
@@ -1581,6 +1585,8 @@
 		"CRITERIAS_REMOVE_ERROR": "Erreur lors de la suppression du critère",
 		"C_SHORTER_THAN_CONFLICT": "Vous ne pouvez pas ajouter un critère \"Plus court que\" supérieur au critère \"Plus long que\".",
 		"C_LONGER_THAN_CONFLICT": "Vous ne pouvez pas ajouter un critère \"Plus long que\" inférieur au critère \"Plus court que\".",
+		"C_AFTER_YEAR_CONFLICT": "Vous ne pouvez pas ajouter un critère \"Après année\" supérieur au critère \"Avant année\".",
+		"C_BEFORE_YEAR_CONFLICT": "Vous ne pouvez pas ajouter un critère \"Avant année\" inférieur au critère \"Après année\".",
 		"USER_RESETPASSWORD_WRONGSECURITYCODE": "Mauvais code de sécurité",
 		"PL_DELETE_SONG_ERROR": "Vous ne pouvez pas supprimer ce morceau",
 		"PL_DELETE_UPVOTED": "Vous ne pouvez pas supprimer votre ajout, il est trop ancien.",

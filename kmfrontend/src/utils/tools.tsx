@@ -230,6 +230,14 @@ export async function decodeCriteriaReason(settings: SettingsStoreData, criteria
 			args[0] = 'SHORTER';
 			args[1] = { time: criteria.value };
 			break;
+		case 1007:
+			args[0] = 'AFTER_YEAR';
+			args[1] = { year: criteria.value };
+			break;
+		case 1008:
+			args[0] = 'BEFORE_YEAR';
+			args[1] = { year: criteria.value };
+			break;
 		default:
 			args[0] = 'TAG';
 			const tag = await commandBackend('getTag', { tid: criteria.value });
