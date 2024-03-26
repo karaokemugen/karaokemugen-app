@@ -564,8 +564,7 @@ INSERT INTO playlist_criteria(
 	fk_plaid
 )
 VALUES ($1,$2,$3)
-ON CONFLICT DO NOTHING
-;
+ON CONFLICT DO NOTHING;
 `;
 
 export const sqlgetCriterias = `

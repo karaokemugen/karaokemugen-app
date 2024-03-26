@@ -1651,6 +1651,7 @@
 		"PL_CREATE_ERROR": "Error creating a playlist",
 		"PL_VIEW_ERROR": "Error fetching info from a playlist",
 		"PL_UPDATE_ERROR": "Error updating playlist informations",
+		"TYPE_SMART_CHANGE_CONFLICTING_CRITERIAS_ERROR": "Error changing smart playlist type: you have conflicting criterias (year/duration?) Remove them and retry.",
 		"PL_DELETE_ERROR": "Error deleting a playlist",
 		"PL_EMPTY_ERROR": "Error emptying a playlist",
 		"PL_SET_CURRENT_ERROR": "Error setting a playlist to current",

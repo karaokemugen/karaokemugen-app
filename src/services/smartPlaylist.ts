@@ -31,6 +31,7 @@ import {
 	removeKaraFromPlaylist,
 } from './playlist.js';
 import { getTag, getTags } from './tag.js';
+import { DBPL } from '../types/database/playlist.js';
 
 const service = 'SmartPlaylist';
 
@@ -235,77 +236,37 @@ export async function removeCriteria(cs: Criteria[]) {
 	}
 }
 
-/** Add one or more criterias to smart playlists */
+/** Add one or more criterias to smart playlists
+ * I hereby declare this is one of the cursed functions of Karaoke Mugen
+ */
 export async function addCriteria(cs: Criteria[]) {
 	try {
 		profile('addCriteria');
 		if (!Array.isArray(cs)) throw new ErrorKM('INVALID_DATA', 400, false);
 		logger.info(`Adding criterias = ${JSON.stringify(cs)}`, { service });
+		const playlistsFromDB = await getPlaylists(adminToken);
 		const playlistsToUpdate = new Set<string>();
+		const playlists = new Map<string, Criteria[]>();
 		for (const c of cs) {
+			// Dispatch criterias by playlist
+			let criterias = playlists.get(c.plaid);
+			if (!criterias) criterias = [];
+			criterias.push(c);
+			playlists.set(c.plaid, criterias);
+			// Remember which smart playlists will need to be updated
 			if (playlistsToUpdate.has(c.plaid)) continue;
-			const pl = await getPlaylistInfo(c.plaid);
+			const pl = playlistsFromDB.find(p => p.plaid === c.plaid);
 			if (!pl) throw new ErrorKM('UNKNOWN_PLAYLIST', 404, false);
 			playlistsToUpdate.add(c.plaid);
 		}
-		// Validation
-		// BLC 1002 - 1002: 0
-		// BLC 1003 - 1002: 1
-		// Placed to true to check for multiples occurrences of the same type
-		const duplicateC = new Set();
-		for (const c of cs) {
-			if (c.type < 0 || c.type > 1008 || c.type === 1000) {
-				logger.error(`Incorrect criteria type : ${c.type}`, { service });
-				throw new ErrorKM('INVALID_DATA', 400, false);
-			}
-			if (c.type === 1006) {
-				if (!downloadStatuses.includes(c.value)) {
-					logger.error(`Incorrect criteria data for type ${c.type} : ${c.value}`, { service });
-					throw new ErrorKM('INVALID_DATA', 400, false);
-				}
-			}
-			if (c.type === 1001 || (c.type >= 1 && c.type < 1000)) {
-				if (!c.value.match(uuidRegexp)) {
-					logger.error(`Incorrect criteria data for type ${c.type} : ${c.value}`, { service });
-					throw new ErrorKM('INVALID_DATA', 400, false);
-				}
-			}
-			if (c.type === 1002 || c.type === 1003 || c.type === 1007 || c.type === 1008) {
-				c.value = +c.value;
-				if (!isNumber(c.value)) {
-					logger.error(`Incorrect criteria data for type ${c.type} : ${c.value}`, { service });
-					throw new ErrorKM('INVALID_DATA', 400, false);
-				}
-				if (duplicateC.has(c.type)) {
-					logger.error(`Criteria type ${c.type} can only occur once`, { service });
-					throw new ErrorKM('INVALID_DATA', 400, false);
-				}
-				duplicateC.add(c.type);
-				const opposingC = cs.find(crit => {
-					// Find the C type 1003 (shorter than) when we add a 1002 C (longer than) and vice versa.
-					return crit.plaid === c.plaid && crit.type === (c.type === 1002 ? 1003 : 1002);
-				});
-				const opposingYearC = cs.find(crit => {
-					// Find the C type 1008 (before year) when we add a 1007 C (after year) and vice versa.
-					return crit.plaid === c.plaid && crit.type === (c.type === 1007 ? 1008 : 1007);
-				});
-				if (opposingC || opposingYearC) {
-					if (c.type === 1002 && c.value <= opposingC.value) {
-						throw new ErrorKM('C_LONGER_THAN_CONFLICT', 409, false);
-					} else if (c.type === 1003 && c.value >= opposingC.value) {
-						throw new ErrorKM('C_SHORTER_THAN_CONFLICT', 409, false);
-					} else if (c.type === 1007 && c.value <= opposingYearC.value) {
-						throw new ErrorKM('C_AFTER_YEAR_CONFLICT', 409, false);
-					} else if (c.type === 1008 && c.value >= opposingYearC.value) {
-						throw new ErrorKM('C_BEFORE_YEAR_CONFLICT', 409, false);
-					}
-				}
-				const existingC = cs.find(crit => crit.type === c.type && crit.plaid === c.plaid);
-				if (existingC) {
-					// Replace the one
-					await deleteCriteria(existingC);
-				}
-			}
+		// Get criterias for all playlists and merge them with the existing ones
+		for (const plaid of playlists.keys()) {
+			const pl = playlistsFromDB.find(p => p.plaid === plaid);
+			const existingCriterias = await getCriterias(plaid, null, false);
+			let criterias = playlists.get(plaid);
+			criterias = [...criterias, ...existingCriterias];
+			playlists.set(plaid, criterias);
+			validateCriterias(criterias, pl);
 		}
 		await insertCriteria(cs);
 		if (playlistsToUpdate.has(getState().whitelistPlaid) || playlistsToUpdate.has(getState().blacklistPlaid)) {
@@ -321,6 +282,64 @@ export async function addCriteria(cs: Criteria[]) {
 		throw err instanceof ErrorKM ? err : new ErrorKM('CRITERIAS_ADD_ERROR');
 	} finally {
 		profile('addCriteria');
+	}
+}
+
+// Validate criterias from a playlist, throws on error
+export function validateCriterias(criterias: Criteria[], pl: DBPL) {
+	// Validation
+	// BLC 1002 - 1002: 0
+	// BLC 1003 - 1002: 1
+	// Placed to true to check for multiples occurrences of the same type
+	const duplicateC = new Set();
+	for (const c of criterias) {
+		if (c.type < 0 || c.type > 1008 || c.type === 1000) {
+			logger.error(`Incorrect criteria type : ${c.type}`, { service });
+			throw new ErrorKM('INVALID_DATA', 400, false);
+		}
+		if (c.type === 1006) {
+			if (!downloadStatuses.includes(c.value)) {
+				logger.error(`Incorrect criteria data for type ${c.type} : ${c.value}`, { service });
+				throw new ErrorKM('INVALID_DATA', 400, false);
+			}
+		}
+		if (c.type === 1001 || (c.type >= 1 && c.type < 1000)) {
+			if (!c.value.match(uuidRegexp)) {
+				logger.error(`Incorrect criteria data for type ${c.type} : ${c.value}`, { service });
+				throw new ErrorKM('INVALID_DATA', 400, false);
+			}
+		}
+		if (c.type === 1002 || c.type === 1003 || c.type === 1007 || c.type === 1008) {
+			c.value = +c.value;
+			if (!isNumber(c.value)) {
+				logger.error(`Incorrect criteria data for type ${c.type} : ${c.value}`, { service });
+				throw new ErrorKM('INVALID_DATA', 400, false);
+			}
+			if (duplicateC.has(c.type)) {
+				logger.error(`Criteria type ${c.type} can only occur once`, { service });
+				throw new ErrorKM('INVALID_DATA', 400, false);
+			}
+			duplicateC.add(c.type);
+			// Only do opposing checks on INTERSECT smart playlists. On UNION ones someone can want songs older than 2023 and younger than 1982 on the same playlist.
+			if (pl.type_smart === 'INTERSECT') {
+				// c.type should be 1002 or 1003 for time, and 1007 or 1008 for year
+				const opposingTimeC = c.type === 1002 ? 1003 : c.type === 1003 ? 1002 : null;
+				const opposingYearC = c.type === 1007 ? 1008 : c.type === 1008 ? 1007 : null;
+				const opposingC = criterias.find(c => c.type === opposingTimeC || c.type === opposingYearC);
+
+				if (opposingC) {
+					if (c.type === 1002 && c.value >= opposingC.value) {
+						throw new ErrorKM('C_LONGER_THAN_CONFLICT', 409, false);
+					} else if (c.type === 1003 && c.value <= opposingC.value) {
+						throw new ErrorKM('C_SHORTER_THAN_CONFLICT', 409, false);
+					} else if (c.type === 1007 && c.value >= opposingC.value) {
+						throw new ErrorKM('C_AFTER_YEAR_CONFLICT', 409, false);
+					} else if (c.type === 1008 && c.value <= opposingC.value) {
+						throw new ErrorKM('C_BEFORE_YEAR_CONFLICT', 409, false);
+					}
+				}
+			}
+		}
 	}
 }
 

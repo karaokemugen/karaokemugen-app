@@ -1649,6 +1649,7 @@
 		"PL_LIST_ERROR": "Erreur lors de la récupération des listes de lecture",
 		"PL_CREATE_ERROR": "Erreur lors de la création d'une liste de lecture",
 		"PL_VIEW_ERROR": "Erreur lors de la récupération des informations d'une liste de lecture",
+		"TYPE_SMART_CHANGE_CONFLICTING_CRITERIAS_ERROR": "Erreur de changement du type de liste intelligente : vous avez des critères en conflit (année/durée?) Retirez-en et réessayez.",
 		"PL_UPDATE_ERROR": "Erreur lors de la mise à jour des informations d'une liste de lecture",
 		"PL_DELETE_ERROR": "Erreur lors de la suppression d'une liste de lecture",
 		"PL_EMPTY_ERROR": "Erreur lors du vidage d'une liste de lecture",

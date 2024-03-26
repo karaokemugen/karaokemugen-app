@@ -76,6 +76,7 @@ import {
 	getCriterias,
 	updateAllSmartPlaylists,
 	updateSmartPlaylist,
+	validateCriterias,
 	whitelistHook,
 } from './smartPlaylist.js';
 import { getUser, getUsers, updateSongsLeft } from './user.js';
@@ -472,6 +473,17 @@ export async function editPlaylist(plaid: string, playlist: Partial<DBPL>) {
 				(newPL.flag_smartlimit && playlist.smart_limit_type)
 			) {
 				needsSmartUpdating = true;
+			}
+			// If type_smart switches from UNION to INTERSECT we must check criterias to see if they're still compatible.
+			if (pl.type_smart === 'UNION' && newPL.type_smart === 'INTERSECT') {
+				const cs = await getCriterias(newPL.plaid, null, false);
+				try {
+					validateCriterias(cs, newPL);
+				} catch (err) {
+					// We change the message to say you can't chagne the smart type due to conflicting criterias
+					if (err.code === 409) err.message === 'TYPE_SMART_CHANGE_CONFLICTING_CRITERIAS_ERROR';
+					throw err;
+				}
 			}
 		}
 		if (needsSmartUpdating) {
