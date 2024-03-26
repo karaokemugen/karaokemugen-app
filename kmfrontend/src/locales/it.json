@@ -408,7 +408,9 @@
 			"SHORTER": "I brani più brevi di {{time}} secondi sono in lista.",
 			"KID": "Questo brano è in lista.",
 			"LONGER": "I brani più lunghi di {{time}} secondi sono in lista.",
-			"TAG": "I brani {{verb}} {{tag}} sono in lista."
+			"TAG": "I brani {{verb}} {{tag}} sono in lista.",
+			"BEFORE_YEAR": "I brani rilasciati prima dell'anno {{year}} sono nella lista.",
+			"AFTER_YEAR": "I brani rilasciati dopo l'anno {{year}} sono nella lista."
 		},
 		"CRITERIA_TYPE_1003": "Più breve di (mm:ss)",
 		"EXPL_OPEN": "Questi sono i criteri usati per generare <1>la playlist</1>, verrà aggiornata automaticamente quando nuovi brani verranno aggiunti al database.",
@@ -427,7 +429,9 @@
 		"CRITERIA_TYPE_1006": "Nascondi brani non disponibili offline",
 		"PLAYLIST_DURATION_ORDER_MORE_RECENT": "più recente",
 		"CRITERIA_TYPE_1001": "Brano",
-		"PLAYLIST_DURATION_TYPE_SONGS": "brani"
+		"PLAYLIST_DURATION_TYPE_SONGS": "brani",
+		"CRITERIA_TYPE_1008": "Prima del (anno incluso)",
+		"CRITERIA_TYPE_1007": "Dopo il (anno incluso)"
 	},
 	"LOG_IN": "Accedi",
 	"ADMIN_MESSAGE": {
@@ -1150,7 +1154,11 @@
 		"REPO_GIT_DIFF_ERROR": "Errore durante il recupero delle differenze del file",
 		"USER_CREATION_WRONG_SECURITY_CODE": "Codice di sicurezza errato",
 		"KARA_FILE_EXISTS_ERROR": "Errore durante il salvataggio dei file: Esiste già un karaoke con lo stesso nome del file. Si prega di assicurarsi che non si tratta di un doppione e che le tag sono impostate correttamente.",
-		"SUBFILE_PROCESS_ERROR": "Errore durante l'analisi del file dei sottotitoli"
+		"SUBFILE_PROCESS_ERROR": "Errore durante l'analisi del file dei sottotitoli",
+		"C_AFTER_YEAR_CONFLICT": "Non puoi aggiungere un criterio \"Dopo l'anno\" minore del criterio \"Prima dell'anno\".",
+		"DATABASE_DISK_FULL": "Il disco che contiene il database è pieno! Libera subito un po' di spazio!",
+		"C_BEFORE_YEAR_CONFLICT": "Non puoi aggiungere un criterio \"Prima dell'anno\" maggiore del criterio \"Dopo l'anno\".",
+		"TYPE_SMART_CHANGE_CONFLICTING_CRITERIAS_ERROR": "Errore durante il cambiamento del tipo della playlist intelligente: hai impostato dei criteri in conflitto (anno/durata?). Rimuovili e riprova."
 	},
 	"KARA": {
 		"PAUSE_DOWNLOAD_QUEUE": "Sospendi",
