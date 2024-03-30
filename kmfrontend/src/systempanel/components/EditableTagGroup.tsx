@@ -8,6 +8,7 @@ import GlobalContext from '../../store/context';
 import { getTagInLocale } from '../../utils/kara';
 import { commandBackend } from '../../utils/socket';
 import { CreateTagModal } from './CreateTagModal';
+import './EditableTagGroup.scss';
 
 interface EditableTagGroupProps {
 	onChange: any;
@@ -143,9 +144,9 @@ export default class EditableTagGroup extends Component<EditableTagGroupProps, E
 							const desc = tagi18n.description || '';
 							return (
 								<Col span={8} key={tag.tid || tag.name} title={tag.aliases?.join(', ')}>
-									<Checkbox value={tag.tid}>
-										{tagi18n.i18n}
-										<br /> <div style={{ fontSize: 11 }}>{desc}</div>
+									<Checkbox value={tag.tid} style={{ height: '100%', paddingBottom: '0.3em' }}>
+										<div>{tagi18n.i18n}</div>
+										{desc ? <span style={{ fontSize: 11 }}>{desc}</span> : null}
 									</Checkbox>
 								</Col>
 							);
