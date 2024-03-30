@@ -1,4 +1,12 @@
-.ant-checkbox {
+.editable-tag-group-checkbox .ant-checkbox {
 	height: 100%;
 	margin-top: 0.5em;
+
+	.ant-checkbox-inner:after {
+		top: 0.5em;
+	}
+
+	.ant-wave {
+		display: none;
+	}
 }

@@ -137,7 +137,12 @@ export default class EditableTagGroup extends Component<EditableTagGroupProps, E
 		if (this.props.checkboxes) {
 			const tids = this.state.value.map(tag => tag.tid);
 			return (
-				<Checkbox.Group value={tids} style={{ width: '100%' }} onChange={this.onCheck}>
+				<Checkbox.Group
+					className="editable-tag-group-checkbox"
+					value={tids}
+					style={{ width: '100%' }}
+					onChange={this.onCheck}
+				>
 					<Row>
 						{this.state.tags.map((tag: DBKaraTag) => {
 							const tagi18n = getTagInLocale(this.context?.globalState.settings.data, tag);
