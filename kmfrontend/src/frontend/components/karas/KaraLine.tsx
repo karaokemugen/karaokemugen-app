@@ -54,45 +54,48 @@ interface IProps {
 
 function KaraLine(props: IProps) {
 	const context = useContext(GlobalContext);
+	const authData = context.globalState.auth.data;
+	const settings = context.globalState.settings.data;
+	const kara = props.kara;
 	const [karaMenu, setKaraMenu] = useState(false);
 
 	const upvoteKara = () => {
-		const plc_id = props.kara.plcid ? props.kara.plcid : props.kara.public_plc_id[0];
-		const data = props.kara.flag_upvoted ? { downvote: 'true', plc_id: plc_id } : { plc_id: plc_id };
+		const plc_id = kara.plcid ? kara.plcid : kara.public_plc_id[0];
+		const data = kara.flag_upvoted ? { downvote: 'true', plc_id: plc_id } : { plc_id: plc_id };
 		commandBackend('votePLC', data).catch(() => {});
 	};
 
 	const refuseKara = () => {
 		commandBackend('editPLC', {
-			flag_refused: !props.kara.flag_refused,
-			plc_ids: [props.kara.plcid],
+			flag_refused: !kara.flag_refused,
+			plc_ids: [kara.plcid],
 		}).catch(() => {});
 	};
 
 	const acceptKara = () => {
 		commandBackend('editPLC', {
-			flag_accepted: !props.kara.flag_accepted,
-			plc_ids: [props.kara.plcid],
+			flag_accepted: !kara.flag_accepted,
+			plc_ids: [kara.plcid],
 		}).catch(() => {});
 	};
 
 	const deleteKara = async () => {
 		if (getPlaylistInfo(props.side, context).flag_smart) {
-			if (props.kara) props.deleteCriteria(props.kara);
+			if (kara) props.deleteCriteria(kara);
 		} else {
 			await commandBackend('deleteKaraFromPlaylist', {
-				plc_ids: props.kara?.plcid ? [props.kara.plcid] : props.kara.my_public_plc_id,
+				plc_ids: kara?.plcid ? [kara.plcid] : kara.my_public_plc_id,
 			}).catch(() => {});
-			if (!props.kara?.plcid) {
-				toast.dismiss(props.kara.my_public_plc_id[0]);
+			if (!kara?.plcid) {
+				toast.dismiss(kara.my_public_plc_id[0]);
 			}
 		}
 	};
 
 	const deleteFavorite = () => {
-		if (context.globalState.auth.data.onlineAvailable !== false) {
+		if (authData.onlineAvailable !== false) {
 			commandBackend('deleteFavorites', {
-				kids: [props.kara.kid],
+				kids: [kara.kid],
 			}).catch(() => {});
 		} else {
 			displayMessage('warning', i18next.t('ERROR_CODES.FAVORITES_ONLINE_NOINTERNET'), 5000);
@@ -102,14 +105,14 @@ function KaraLine(props: IProps) {
 
 	const playKara = () => {
 		commandBackend('playKara', {
-			kid: props.kara.kid,
+			kid: kara.kid,
 		}).catch(() => {});
 	};
 
 	const editPlayingFlag = () => {
 		commandBackend('editPLC', {
 			flag_playing: true,
-			plc_ids: [props.kara.plcid],
+			plc_ids: [kara.plcid],
 		}).catch(() => {});
 	};
 
@@ -118,10 +121,10 @@ function KaraLine(props: IProps) {
 		let data;
 		const oppositePlaylist = getOppositePlaylistInfo(props.side, context);
 		if (oppositePlaylist?.plaid === nonStandardPlaylists.favorites) {
-			if (context.globalState.auth.data.onlineAvailable !== false) {
+			if (authData.onlineAvailable !== false) {
 				url = 'addFavorites';
 				data = {
-					kids: [props.kara.kid],
+					kids: [kara.kid],
 				};
 			} else {
 				displayMessage('warning', i18next.t('ERROR_CODES.FAVORITES_ONLINE_NOINTERNET'), 5000);
@@ -133,22 +136,22 @@ function KaraLine(props: IProps) {
 					url = 'copyKaraToPlaylist';
 					data = {
 						plaid: oppositePlaylist.plaid,
-						plc_ids: [props.kara.plcid],
+						plc_ids: [kara.plcid],
 					};
 				} else {
 					url = 'addKaraToPlaylist';
 					if (pos) {
 						data = {
 							plaid: oppositePlaylist.plaid,
-							requestedby: context.globalState.auth.data.username,
-							kids: [props.kara.kid],
+							requestedby: globalState.auth.data.username,
+							kids: [kara.kid],
 							pos: pos,
 						};
 					} else {
 						data = {
 							plaid: oppositePlaylist.plaid,
-							requestedby: context.globalState.auth.data.username,
-							kids: [props.kara.kid],
+							requestedby: authData.username,
+							kids: [kara.kid],
 						};
 					}
 				}
@@ -158,7 +161,7 @@ function KaraLine(props: IProps) {
 					criterias: [
 						{
 							type: 1001,
-							value: props.kara.kid,
+							value: kara.kid,
 							plaid: oppositePlaylist.plaid,
 						},
 					],
@@ -167,13 +170,13 @@ function KaraLine(props: IProps) {
 		} else {
 			url = 'addKaraToPublicPlaylist';
 			data = {
-				requestedby: context.globalState.auth.data.username,
-				kids: [props.kara.kid],
+				requestedby: authData.username,
+				kids: [kara.kid],
 			};
 		}
 		try {
 			const response = await commandBackend(url, data);
-			PLCCallback(response, context, props.kara, props.scope);
+			PLCCallback(response, context, kara, props.scope);
 		} catch (e: any) {
 			throw new Error(e?.message?.code ? e?.message?.code : e?.message);
 		}
@@ -190,40 +193,39 @@ function KaraLine(props: IProps) {
 
 	const checkKara = () => {
 		if (!isNonStandardPlaylist(getPlaylistInfo(props.side, context).plaid)) {
-			props.checkKara(props.kara.plcid);
+			props.checkKara(kara.plcid);
 		} else {
-			props.checkKara(props.kara.kid);
+			props.checkKara(kara.kid);
 		}
 	};
 
 	const changeVisibilityKara = () => {
 		commandBackend('editPLC', {
 			flag_visible: true,
-			plc_ids: [props.kara.plcid],
+			plc_ids: [kara.plcid],
 		}).catch(() => {});
 	};
 
 	const karaTags = (() => {
 		// Tags in the header
 		const karaTags: JSX.Element[] = [];
-		const data = props.kara;
 
 		for (const type of ['FAMILIES', 'ORIGINS', 'MISC', 'WARNINGS']) {
 			const typeData = tagTypes[type];
-			if (data[typeData.karajson]) {
+			if (kara[typeData.karajson]) {
 				karaTags.push(
-					...sortAndHideTags(data[typeData.karajson], props.scope).map(tag => {
+					...sortAndHideTags(kara[typeData.karajson], props.scope).map(tag => {
 						return (
 							<div
 								key={tag.tid}
 								className={`tag ${typeData.color}${type === 'WARNINGS' ? ' problematicTag' : ''}`}
-								title={getTagInLocale(context?.globalState.settings.data, tag, props.i18nTag).i18n}
+								title={getTagInLocale(settings, tag, props.i18nTag).i18n}
 							>
 								{props.scope === 'admin' && !is_touch_device()
 									? tag.short
 										? tag.short
 										: tag.name
-									: getTagInLocale(context?.globalState.settings.data, tag, props.i18nTag).i18n}
+									: getTagInLocale(settings, tag, props.i18nTag).i18n}
 							</div>
 						);
 					})
@@ -235,23 +237,15 @@ function KaraLine(props: IProps) {
 
 	const getSerieOrSingerGroupsOrSingers = (data: KaraElement) => {
 		if (data.from_display_type && data[data.from_display_type] && data[data.from_display_type].length > 0) {
-			return data[data.from_display_type]
-				.map(e => getTagInLocale(context?.globalState.settings.data, e, props.i18nTag).i18n)
-				.join(', ');
+			return data[data.from_display_type].map(e => getTagInLocale(settings, e, props.i18nTag).i18n).join(', ');
 		}
 		if (data.series?.length > 0) {
-			return data.series
-				.map(e => getTagInLocale(context?.globalState.settings.data, e, props.i18nTag).i18n)
-				.join(', ');
+			return data.series.map(e => getTagInLocale(settings, e, props.i18nTag).i18n).join(', ');
 		}
 		if (data.singergroups?.length > 0) {
-			return data.singergroups
-				.map(e => getTagInLocale(context?.globalState.settings.data, e, props.i18nTag).i18n)
-				.join(', ');
+			return data.singergroups.map(e => getTagInLocale(settings, e, props.i18nTag).i18n).join(', ');
 		}
-		return data.singers
-			.map(e => getTagInLocale(context?.globalState.settings.data, e, props.i18nTag).i18n)
-			.join(', ');
+		return data.singers.map(e => getTagInLocale(settings, e, props.i18nTag).i18n).join(', ');
 	};
 
 	const openKaraMenu = (event: MouseEvent) => {
@@ -261,7 +255,7 @@ function KaraLine(props: IProps) {
 			showModal(
 				context.globalDispatch,
 				<KaraMenuModal
-					kara={props.kara}
+					kara={kara}
 					side={props.side}
 					topKaraMenu={element.bottom}
 					leftKaraMenu={element.left}
@@ -280,11 +274,9 @@ function KaraLine(props: IProps) {
 
 	const downloadIcon = () => {
 		// Tags in the header
-		const data = props.kara;
-
-		if (data.download_status === 'MISSING' && props.scope === 'admin') {
+		if (kara.download_status === 'MISSING' && props.scope === 'admin') {
 			return <i className="fas fa-fw fa-cloud" title={i18next.t('KARA.MISSING_DOWNLOAD_TOOLTIP')} />;
-		} else if (data.download_status === 'DOWNLOADING' && props.scope === 'admin') {
+		} else if (kara.download_status === 'DOWNLOADING' && props.scope === 'admin') {
 			return (
 				<i className="fas fa-fw fa-cloud-download-alt" title={i18next.t('KARA.IN_PROGRESS_DOWNLOAD_TOOLTIP')} />
 			);
@@ -292,35 +284,27 @@ function KaraLine(props: IProps) {
 		return null;
 	};
 
-	const karaTitle = buildKaraTitle(context.globalState.settings.data, props.kara, false, props.i18nTag);
-	const karaSerieOrSingerGroupsOrSingers = getSerieOrSingerGroupsOrSingers(props.kara);
+	const karaTitle = buildKaraTitle(settings, kara, false, props.i18nTag);
+	const karaSerieOrSingerGroupsOrSingers = getSerieOrSingerGroupsOrSingers(kara);
 	const plaid = getPlaylistInfo(props.side, context).plaid;
-	const shouldShowProfile =
-		context.globalState.settings.data.config.Frontend?.ShowAvatarsOnPlaylist && props.avatar_file;
+	const shouldShowProfile = settings.config.Frontend?.ShowAvatarsOnPlaylist && props.avatar_file;
 	return (
 		<div {...props.draggable.draggableProps} ref={props.draggable.innerRef}>
 			<div
-				className={`list-group-item${props.kara.flag_playing ? ' currentlyplaying' : ''}${
-					props.kara.flag_dejavu ? ' dejavu' : ''
+				className={`list-group-item${kara.flag_playing ? ' currentlyplaying' : ''}${
+					kara.flag_dejavu ? ' dejavu' : ''
 				}
 				${props.indexInPL % 2 === 0 ? ' list-group-item-even' : ''} ${
 					(props.jingle || props.sponsor) && props.scope === 'admin' ? ' marker' : ''
 				}
 				${props.sponsor && props.scope === 'admin' ? ' green' : ''}${props.side === 'right' ? ' side-right' : ''}`}
 			>
-				{props.scope === 'public' &&
-				props.kara.username !== context.globalState.auth.data.username &&
-				props.kara.flag_visible === false ? (
+				{props.scope === 'public' && kara.username !== authData.username && kara.flag_visible === false ? (
 					<div className="contentDiv">
 						<div>
 							{
-								(context.globalState.settings.data.config.Playlist.MysterySongs.Labels as string[])[
-									props.kara.pos %
-										(
-											context.globalState.settings.data.config.Playlist.MysterySongs
-												.Labels as string[]
-										).length |
-										0
+								(settings.config.Playlist.MysterySongs.Labels as string[])[
+									kara.pos % (settings.config.Playlist.MysterySongs.Labels as string[]).length | 0
 								]
 							}
 						</div>
@@ -336,7 +320,7 @@ function KaraLine(props: IProps) {
 									title={i18next.t('KARA_MENU.PLAY_LIBRARY')}
 									className="btn btn-action playKara karaLineButton"
 									onClick={playKara}
-									disabled={context.globalState.settings.data.state.quiz.running}
+									disabled={settings.state.quiz.running}
 								>
 									<i className="fas fa-fw fa-play" />
 								</button>
@@ -355,7 +339,7 @@ function KaraLine(props: IProps) {
 									<i className="fas fa-fw fa-play-circle" />
 								</button>
 							) : null}
-							{props.scope === 'admin' && !isNonStandardPlaylist(plaid) && !props.kara.flag_visible ? (
+							{props.scope === 'admin' && !isNonStandardPlaylist(plaid) && !kara.flag_visible ? (
 								<button
 									type="button"
 									className={'btn btn-action btn-primary'}
@@ -368,48 +352,30 @@ function KaraLine(props: IProps) {
 						{is_touch_device() || props.scope === 'public' ? (
 							<div
 								className="contentDiv contentDivMobile"
-								onClick={() => props.openKara(props.kara)}
+								onClick={() => props.openKara(kara)}
 								tabIndex={1}
 							>
 								<div className="contentDivMobileTitle">
 									<span
 										className="tag inline green"
-										title={
-											getTagInLocale(
-												context?.globalState.settings.data,
-												props.kara.langs[0],
-												props.i18nTag
-											).i18n
-										}
+										title={getTagInLocale(settings, kara.langs[0], props.i18nTag).i18n}
 									>
-										{props.kara.langs[0].short?.toUpperCase() ||
-											props.kara.langs[0].name.toUpperCase()}
+										{kara.langs[0].short?.toUpperCase() || kara.langs[0].name.toUpperCase()}
 									</span>
-									{props.kara.flag_dejavu && !props.kara.flag_playing ? (
+									{kara.flag_dejavu && !kara.flag_playing ? (
 										<i
 											className="fas fa-fw fa-history dejavu-icon"
 											title={i18next.t('KARA.DEJAVU_TOOLTIP')}
 										/>
 									) : null}
-									{getTitleInLocale(
-										context.globalState.settings.data,
-										props.kara.titles,
-										props.kara.titles_default_language
-									)}
+									{getTitleInLocale(settings, kara.titles, kara.titles_default_language)}
 									{downloadIcon()}
-									{props.kara.warnings?.length > 0 ? (
+									{kara.warnings?.length > 0 ? (
 										<i
 											className="fas fa-fw fa-exclamation-triangle problematic"
 											title={i18next.t('KARA.PROBLEMATIC_TOOLTIP', {
-												tags: props.kara.warnings
-													.map(
-														t =>
-															getTagInLocale(
-																context?.globalState.settings.data,
-																t,
-																props.i18nTag
-															).i18n
-													)
+												tags: kara.warnings
+													.map(t => getTagInLocale(settings, t, props.i18nTag).i18n)
 													.join(', '),
 											})}
 										/>
@@ -418,57 +384,48 @@ function KaraLine(props: IProps) {
 								<div className="contentDivMobileSerie">
 									<span
 										className="tag inline green"
-										title={
-											getTagInLocale(
-												context?.globalState.settings.data,
-												props.kara.songtypes[0],
-												props.i18nTag
-											).i18n
-										}
+										title={getTagInLocale(settings, kara.songtypes[0], props.i18nTag).i18n}
 									>
-										{props.kara.songtypes[0].short?.toUpperCase() || props.kara.songtypes[0].name}{' '}
-										{props.kara.songorder}
+										{kara.songtypes[0].short?.toUpperCase() || kara.songtypes[0].name}{' '}
+										{kara.songorder}
 									</span>
 									{karaSerieOrSingerGroupsOrSingers}
 								</div>
-								{props.kara.upvotes && props.scope === 'admin' ? (
+								{kara.upvotes && props.scope === 'admin' ? (
 									<div className="upvoteCount">
 										<i className="fas fa-thumbs-up" />
-										{props.kara.upvotes}
+										{kara.upvotes}
 									</div>
 								) : null}
 								<div className="contentDivMobileTags">
 									<div>
-										{props.kara.children?.length > 0 &&
-										context.globalState.settings.data.user.flag_parentsonly &&
+										{kara.children?.length > 0 &&
+										settings.user.flag_parentsonly &&
 										plaid !== nonStandardPlaylists.favorites &&
 										props.scope === 'public' ? (
 											<>
 												<i className="far fa-fixed-width fa-list-alt" />
 												&nbsp;
 												{i18next.t('KARA.VERSION_AVAILABILITY', {
-													count: props.kara.children.length + 1,
+													count: kara.children.length + 1,
 												})}
 											</>
 										) : null}
 									</div>
 									<div className="tagConteneur">
 										{karaTags}
-										{sortAndHideTags(props.kara.versions, props.scope).map(t => (
+										{sortAndHideTags(kara.versions, props.scope).map(t => (
 											<span className="tag white" key={t.tid}>
-												{
-													getTagInLocale(context?.globalState.settings.data, t, props.i18nTag)
-														.i18n
-												}
+												{getTagInLocale(settings, t, props.i18nTag).i18n}
 											</span>
 										))}
 									</div>
 								</div>
 							</div>
 						) : (
-							<div className="contentDiv" onClick={() => props.openKara(props.kara)} tabIndex={1}>
+							<div className="contentDiv" onClick={() => props.openKara(kara)} tabIndex={1}>
 								<div className="disable-select karaTitle">
-									{props.kara.flag_dejavu && !props.kara.flag_playing ? (
+									{kara.flag_dejavu && !kara.flag_playing ? (
 										<i
 											className="fas fa-fw fa-history dejavu-icon"
 											title={i18next.t('KARA.DEJAVU_TOOLTIP')}
@@ -476,27 +433,20 @@ function KaraLine(props: IProps) {
 									) : null}
 									{karaTitle}
 									{downloadIcon()}
-									{props.kara.warnings?.length > 0 ? (
+									{kara.warnings?.length > 0 ? (
 										<i
 											className="fas fa-fw fa-exclamation-triangle problematic"
 											title={i18next.t('KARA.PROBLEMATIC_TOOLTIP', {
-												tags: props.kara.warnings
-													.map(
-														t =>
-															getTagInLocale(
-																context?.globalState.settings.data,
-																t,
-																props.i18nTag
-															).i18n
-													)
+												tags: kara.warnings
+													.map(t => getTagInLocale(settings, t, props.i18nTag).i18n)
 													.join(', '),
 											})}
 										/>
 									) : null}
-									{props.kara.upvotes && props.scope === 'admin' ? (
+									{kara.upvotes && props.scope === 'admin' ? (
 										<div className="upvoteCount" title={i18next.t('KARA_DETAIL.UPVOTE_NUMBER')}>
 											<i className="fas fa-thumbs-up" />
-											{props.kara.upvotes}
+											{kara.upvotes}
 										</div>
 									) : null}
 									<div className="tagConteneur">{karaTags}</div>
@@ -505,7 +455,7 @@ function KaraLine(props: IProps) {
 						)}
 						{props.scope === 'admin' ? (
 							<span className="checkboxKara" onClick={checkKara}>
-								{props.kara.checked ? (
+								{kara.checked ? (
 									<i className="far fa-check-square"></i>
 								) : (
 									<i className="far fa-square"></i>
@@ -518,20 +468,19 @@ function KaraLine(props: IProps) {
 									className={`img-circle${is_touch_device() ? ' mobile' : ''}`}
 									alt="User Pic"
 									user={{
-										login: props.kara.username,
+										login: kara.username,
 										avatar_file: props.avatar_file,
-										nickname: props.kara.nickname,
-										type: props.kara.user_type,
+										nickname: kara.nickname,
+										type: kara.user_type,
 									}}
 								/>
 							) : null}
 							<div className="btn-group">
-								{props.scope === 'admin' ||
-								context?.globalState.settings.data?.config?.Frontend?.Mode === 2 ? (
+								{props.scope === 'admin' || settings?.config?.Frontend?.Mode === 2 ? (
 									<ActionsButtons
 										side={props.side}
 										scope={props.scope}
-										kara={props.kara}
+										kara={kara}
 										addKara={addKara}
 										deleteKara={deleteKara}
 										deleteFavorite={deleteFavorite}
