@@ -68,12 +68,12 @@ function CriteriasList(props: IProps) {
 		getCriterias();
 	};
 
-	const editTypeSmart = (e: any) => {
+	const editTypeSmart = async (e: any) => {
 		const type = e.target.checked ? 'UNION' : 'INTERSECT';
-		setTypeSmart(type);
-		editPlaylist({
+		await editPlaylist({
 			type_smart: type,
 		});
+		setTypeSmart(type);
 	};
 
 	const editFlagSmartLimit = (e: any) => {
