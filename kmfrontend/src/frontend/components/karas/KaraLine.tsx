@@ -208,7 +208,7 @@ function KaraLine(props: IProps) {
 		const karaTags: JSX.Element[] = [];
 		const data = props.kara;
 
-		for (const type of ['FAMILIES', 'PLATFORMS', 'ORIGINS', 'MISC', 'WARNINGS']) {
+		for (const type of ['FAMILIES', 'ORIGINS', 'MISC', 'WARNINGS']) {
 			const typeData = tagTypes[type];
 			if (data[typeData.karajson]) {
 				karaTags.push(
