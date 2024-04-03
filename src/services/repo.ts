@@ -1558,7 +1558,7 @@ export async function openMediaFolder(repoName: string) {
 
 export async function initRepos() {
 	for (const repo of getRepos()) {
-		readRepoManifest(repo.Name);
+		await readRepoManifest(repo.Name);
 	}
 }
 

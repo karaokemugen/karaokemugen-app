@@ -71,6 +71,7 @@ export async function initEngine() {
 	if (state.opt.validate) {
 		try {
 			initStep(i18next.t('INIT_VALIDATION'));
+			await initRepos();
 			await generateKaraBase({
 				validateOnly: true,
 			});
