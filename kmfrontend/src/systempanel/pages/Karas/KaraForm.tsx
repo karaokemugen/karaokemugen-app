@@ -207,8 +207,9 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 			{
 				name: 'overallBitrate',
 				title: 'KARA.MEDIA_FILE_INFO.OVERALL_BITRATE',
-				format: (value: number) => value && `${Math.round(value / 100)} kb/s`,
-				formatSuggestedValue: value => value && `max. ${Math.round(value / 100)} kb/s`,
+				// Convert from MB/s to kb/s
+				format: (value: number) => value && `${Math.round((8 * value) / 1000)} kb/s`,
+				formatSuggestedValue: value => value && `max. ${Math.round((8 * value) / 1000)} kb/s`,
 			},
 			{ name: 'videoCodec', title: 'KARA.MEDIA_FILE_INFO.VIDEO_CODEC' },
 			{ name: 'videoColorspace', title: 'KARA.MEDIA_FILE_INFO.VIDEO_COLORSPACE' },
