@@ -450,15 +450,7 @@ export async function editPlaylist(plaid: string, playlist: Partial<DBPL>) {
 			...pl,
 			...playlist,
 		};
-		await updatePlaylist(newPL);
 		let needsSmartUpdating = false;
-		if (playlist.flag_current) currentHook(plaid, newPL.name);
-		if (playlist.flag_public) publicHook(plaid, newPL.name);
-		if (playlist.flag_whitelist) whitelistHook(plaid);
-		if (playlist.flag_blacklist) blacklistHook(plaid);
-		if (playlist.flag_fallback) fallbackPlaylistHook(plaid);
-		const isBlacklist = plaid === getState().blacklistPlaid;
-		const isWhitelist = plaid === getState().whitelistPlaid;
 
 		if (newPL.flag_smart) {
 			// Only update if :
@@ -486,6 +478,15 @@ export async function editPlaylist(plaid: string, playlist: Partial<DBPL>) {
 				}
 			}
 		}
+		await updatePlaylist(newPL);
+		if (playlist.flag_current) currentHook(plaid, newPL.name);
+		if (playlist.flag_public) publicHook(plaid, newPL.name);
+		if (playlist.flag_whitelist) whitelistHook(plaid);
+		if (playlist.flag_blacklist) blacklistHook(plaid);
+		if (playlist.flag_fallback) fallbackPlaylistHook(plaid);
+		const isBlacklist = plaid === getState().blacklistPlaid;
+		const isWhitelist = plaid === getState().whitelistPlaid;
+
 		if (needsSmartUpdating) {
 			await updateSmartPlaylist(plaid);
 		}
