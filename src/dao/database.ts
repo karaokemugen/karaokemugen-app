@@ -301,7 +301,7 @@ export async function generateDB(): Promise<boolean> {
 			return true;
 		}
 		generationInProgress = true;
-		const opts = { validateOnly: false, skipParentsChecks: getState().opt.skipParentsCheck };
+		const opts = { validateOnly: false };
 		await generateDatabase(opts);
 		const pls = await selectPlaylists(false);
 		for (const pl of pls) {
