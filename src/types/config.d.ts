@@ -81,6 +81,7 @@ export interface Config {
 		};
 		MediasHost?: string;
 		Remote?: boolean;
+		RemoteToken?: string;
 		FetchPopularSongs?: boolean;
 		AllowDownloads?: boolean;
 	};

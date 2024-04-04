@@ -1,0 +1,1 @@
+-- Do nothing here. We'll take care of it in migrations.ts

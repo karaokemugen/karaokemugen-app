@@ -3,11 +3,10 @@ import { Socket } from 'socket.io';
 
 import { initKaraBase, shutdown } from '../../components/engine.js';
 import { getMpvAudioOutputs } from '../../components/mpv.js';
-import { getSettings, saveSetting } from '../../lib/dao/database.js';
 import { APIMessage } from '../../lib/services/frontend.js';
 import { generateDatabase } from '../../lib/services/generation.js';
 import { APIData } from '../../lib/types/api.js';
-import { getConfig } from '../../lib/utils/config.js';
+import { getConfig, setConfig } from '../../lib/utils/config.js';
 import { enableWSLogging, readLog } from '../../lib/utils/logger.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
 import { getMigrationsFrontend, setMigrationsFrontend } from '../../services/migrationsFrontend.js';
@@ -54,8 +53,7 @@ export default function miscController(router: SocketIOApp) {
 		try {
 			const state = getState();
 			if (state.remoteAccess) {
-				const settings = await getSettings();
-				return { active: true, info: state.remoteAccess, token: settings.remoteToken };
+				return { active: true, info: state.remoteAccess, token: getConfig().Online.RemoteToken };
 			}
 			return { active: false };
 		} catch (err) {
@@ -66,7 +64,7 @@ export default function miscController(router: SocketIOApp) {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			await destroyRemote();
-			await saveSetting('remoteToken', '');
+			setConfig({ Online: { RemoteToken: null } });
 			await initRemote();
 		} catch (err) {
 			throw { code: 500 };

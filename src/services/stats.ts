@@ -6,7 +6,6 @@ import prettyBytes from 'pretty-bytes';
 import si from 'systeminformation';
 
 import { selectPlayed, selectRequests } from '../dao/stats.js';
-import { getInstanceID } from '../lib/dao/database.js';
 import { APIMessage } from '../lib/services/frontend.js';
 import { getConfig, resolvedPath } from '../lib/utils/config.js';
 import HTTP from '../lib/utils/http.js';
@@ -103,7 +102,7 @@ async function buildInstanceStats(minimal: boolean) {
 	if (minimal) {
 		conf = { minimal: true };
 	} else {
-		conf = cloneDeep(getPublicConfig());
+		conf = cloneDeep(getPublicConfig(true, false));
 		const [cpu, mem, gfx, os, disks] = await Promise.all([
 			si.cpu(),
 			si.mem(),
@@ -131,7 +130,7 @@ async function buildInstanceStats(minimal: boolean) {
 	}
 	return {
 		config: { ...conf },
-		instance_id: await getInstanceID(),
+		instance_id: getConfig().App.InstanceID,
 		version: state.version.number,
 		...extraStats,
 	};
