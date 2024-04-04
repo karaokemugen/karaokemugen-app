@@ -29,7 +29,7 @@
     "migrate": "postgrator",
     "dropDatabase": "node util/dropDatabase.js",
     "i18next-scanner": "i18next-scanner --config util/i18next-scanner.config.js",
-    "prepare": "husky install",
+    "prepare": "husky",
     "watch": "node util/esbuild.js watch",
     "typecheck": "tsc",
     "electron:start": "electron ."
