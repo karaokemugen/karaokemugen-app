@@ -10,6 +10,8 @@ import { editRepo, getRepo } from '../services/repo.js';
 import { migrateBLWLToSmartPLs } from '../utils/hokutoNoCode.js';
 import Sentry from '../utils/sentry.js';
 import { compareKarasChecksum, generateDB } from './database.js';
+import { db, getSettings } from '../lib/dao/database.js';
+import { setConfig } from '../lib/utils/config.js';
 
 const service = 'DBMigration';
 
@@ -65,6 +67,17 @@ export async function postMigrationTasks(migrations: Postgrator.Migration[], did
 			// falls through
 			case 'addAnnouncePositionToKara':
 				if (!didGeneration) doGenerate = true;
+				break;
+			case 'moveInstanceIDAndTokenFromDBToConfig':
+				const settings = await getSettings();
+				if (settings.remoteToken) {
+					setConfig({ Online: { RemoteToken: settings.remoteToken } });
+					await db().query("DELETE FROM settings WHERE option = 'remoteToken'");
+				}
+				if (settings.instanceID) {
+					setConfig({ App: { InstanceID: settings.instanceID } });
+					await db().query("DELETE FROM settings WHERE option = 'instanceID'");
+				}
 				break;
 			default:
 		}
