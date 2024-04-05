@@ -538,12 +538,14 @@ export async function dropStashInRepo(name: string, stash: number) {
 	}
 }
 
+/** Completely reset repository to initial state */
 export async function resetRepo(name: string) {
 	try {
 		const repo = getRepo(name);
 		if (!repo) throw new ErrorKM('UNKNOWN_REPOSITORY', 404, false);
 		const git = await setupGit(repo);
-		return await git.reset();
+		await git.reset(['--hard', 'origin/master']);
+		await git.wipeChanges();
 	} catch (err) {
 		logger.error(`Error git resetting ${name} : ${err}`, { service });
 		sentry.error(err);
@@ -627,7 +629,7 @@ export async function updateGitRepo(name: string) {
 					}
 				}
 				// We cancel the commit we just made so all files in it are now marked as new/modified
-				if (!firstCommit) await git.reset('HEAD~');
+				if (!firstCommit) await git.reset(['HEAD~']);
 			}
 		} catch (err) {
 			logger.info(`${repo.Name} pull failed`, { service, obj: err });
@@ -1103,6 +1105,7 @@ export async function generateCommits(repoName: string) {
 	try {
 		const repo = getRepo(repoName);
 		const git = await setupGit(repo, true);
+		await git.reset();
 		const status = await git.status();
 		const deletedSongs = status.deleted.filter(f => f.endsWith('kara.json'));
 		const deletedTags = status.deleted.filter(f => f.endsWith('tag.json'));

@@ -115,11 +115,8 @@ export default class Git {
 		return this.git.diff(['--ignore-cr-at-eol', 'HEAD', file]);
 	}
 
-	reset(ref?: string) {
-		const options = ref ? [ref] : ['--hard', 'origin/master'];
-		if (!ref) {
-			return this.git.reset(options).then(this.wipeChanges.bind(this));
-		}
+	reset(ref?: string[]) {
+		const options = ref || [''];
 		return this.git.reset(options);
 	}
 
