@@ -116,7 +116,7 @@ export default class Git {
 	}
 
 	reset(ref?: string[]) {
-		const options = ref || [''];
+		const options = ref || [];
 		return this.git.reset(options);
 	}
 
