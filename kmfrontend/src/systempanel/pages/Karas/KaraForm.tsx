@@ -803,11 +803,13 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 									</Tooltip>
 								</Checkbox>
 							)}
-							{this.state.subfile?.length > 0 && this.props.kara?.kid && (
-								<div style={{ marginTop: '1em' }}>
-									<OpenLyricsFileButton kara={this.props.kara} />
-								</div>
-							)}
+							{this.state.subfile?.length > 0 &&
+								this.props.kara?.kid &&
+								!this.state.mediafileIsTouched && (
+									<div style={{ marginTop: '1em' }}>
+										<OpenLyricsFileButton kara={this.props.kara} />
+									</div>
+								)}
 						</Col>
 					</Row>
 				</Form.Item>
