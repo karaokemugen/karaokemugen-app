@@ -1026,7 +1026,7 @@
 			"AUDIO_CODEC": "Audio codec",
 			"AUDIO_COVER_ART": "Cover art",
 			"WARNINGS":  {
-				"LIBAVCODEC_ENCODER": "The audio is encoded with the libavcodec (ffmpeg reference aac) encoder, which is known to result in bad quality. Please make sure to use the libfdk_aac encoder or another codec like opus, to get the best quality."
+				"LIBAVCODEC_ENCODER": "The audio is encoded with the libavcodec (ffmpeg reference aac) encoder, which can create audible artifacts and is discouraged to utilize. Please use the libfdk_aac encoder for aac or another codec like opus, to get the best possible quality."
 			}
 		},
 		"LYRICS_FILE": "Lyrics file",

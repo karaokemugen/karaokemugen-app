@@ -701,7 +701,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						</span>
 					}
 					labelCol={{ flex: '0 1 220px' }}
-					wrapperCol={{ span: 12 }}
+					wrapperCol={{ span: 20 }}
 				>
 					<Row gutter={32}>
 						<Col>
@@ -733,7 +733,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 							</Form.Item>
 						</Col>
 						{this.props.kara?.download_status === 'DOWNLOADED' || this.state.mediaInfo?.size ? (
-							<Col flex={'0 1 280px'}>
+							<Col flex={'0 1 400px'}>
 								<Card>
 									{this.renderMediaInfo(this.state.mediaInfo, this.state.mediaInfoValidationResult)}
 									{this.state.mediaInfo?.warnings?.length > 0 && (
