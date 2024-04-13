@@ -51,6 +51,7 @@ let state: State = {
 	systemMessages: [],
 	DBReady: false,
 	portable: false,
+	steamOS: false,
 	quiz: {
 		running: false,
 		quizGuessingTime: false,

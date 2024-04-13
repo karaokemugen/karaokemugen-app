@@ -91,8 +91,8 @@ sentry.init(process.argv.includes('--strict'));
 const dataPath = existsSync(resolve(appPath, 'portable'))
 	? resolve(appPath, 'app/')
 	: // Rewriting dataPath to point to user home directory
-	  // With Electron we get the handy app.getPath()
-	  resolve(app.getPath('home'), 'KaraokeMugen');
+		// With Electron we get the handy app.getPath()
+		resolve(app.getPath('home'), 'KaraokeMugen');
 
 if (!existsSync(dataPath)) mkdirpSync(dataPath);
 
@@ -108,6 +108,10 @@ process.env.NODE_ENV = 'production'; // Default
 const args = app.isPackaged ? process.argv.slice(1) : process.argv.slice(2);
 
 setState({ args });
+
+if (process.env.SteamDeck || process.env.SteamOS) {
+	setState({ steamOS: true });
+}
 
 // Let's go! This calls the functions below.
 // Start Electron -> Pre Init -> Main Init -> Engine Init -> Post Init
