@@ -1625,6 +1625,8 @@
 		"KARA_EDIT_ERROR_UNMOVABLE_LYRICS": "Impossible de renommer les paroles. Le fichier est-il utilisé par une autre application ?",
 		"KARA_EDIT_ERROR_UNMOVABLE_MEDIA": "Impossible de renommer le média. Le fichier est-il utilisé par une autre application ?",
 		"KARA_EDITED_ERROR": "Erreur lors de l'édition d'une chanson",
+		"REPOSITORY_MANIFEST_KARA_METADATA_RULE_VIOLATION_ERROR": "Erreur : Les métadonnées du karaoké violent une règle de son dépôt. Consultez le journal d'évènements pour en savoir plus.",
+		"REPOSITORY_MANIFEST_KARA_PARENTS_RULE_VIOLATION_ERROR": "Erreur : Les liaisons familiales du karaoké violent une règle de son dépôt. Consultez le journal d'évènements pour en savoir plus.",
 		"TIME_PARADOX": "Paradoxe Temporel Détecté ! Une chanson ne peut pas être son propre parent !",
 		"PIME_TARADOX": "Taradoxe Pemporel Détecté ! Une chanson ne peut pas avoir un parent qui soit aussi son enfant !",
 		"PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED": "Cette chanson a déjà été ajoutée.",
