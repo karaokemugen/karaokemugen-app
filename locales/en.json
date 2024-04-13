@@ -278,7 +278,7 @@
 	"RESTARTING_PLAYER": "RESTARTING PLAYER…",
 	"ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE": "ADD A SONG TO THE PLAYLIST!",
 	"NEW_SESSION_NAME": "Karaoke on {{date}}",
-	"FULLSCREEN_TIP": "Press F to exit fullscreen.",
+	"FULLSCREEN_TIP": "Press F or double-click to exit fullscreen.",
 	"NO_KARA_PLAYING": "No song is playing",
 	"INTERFACE_OPENED": "Open",
 	"INTERFACE_RESTRICTED": "No suggestions",

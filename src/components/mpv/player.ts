@@ -93,6 +93,7 @@ export class Player {
 			`--screenshot-directory=${resolve(state.dataPath)}`,
 			'--screenshot-format=png',
 			'--no-osc',
+			'--input-test',
 			'--no-osd-bar',
 		];
 

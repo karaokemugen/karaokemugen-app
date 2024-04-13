@@ -177,6 +177,7 @@ export async function initEngine() {
 			initSession();
 			if (conf.Karaoke.StreamerMode.Twitch.Enabled) initTwitch();
 			if (!conf.App.FirstRun && !state.isTest && !state.opt.noPlayer) {
+				if (state.steamOS) setConfig({ Online: { Remote: true } });
 				initPlayer();
 			}
 			if (conf.Online.Stats === true) initStats(false);

@@ -20,6 +20,7 @@ import { getState, setState } from '../utils/state.js';
 import { tip } from '../utils/tips.js';
 import { emitIPC } from './electronLogger.js';
 import { createMenu } from './electronMenu.js';
+import { initSteamDeck } from '../utils/steamDeck.js';
 
 const service = 'Electron';
 
@@ -91,7 +92,7 @@ export function startElectron() {
 			focusWindow();
 			const file = args[args.length - 1];
 			if (file && file !== '.' && !file.startsWith('--')) {
-				file.startsWith('km://') ? handleProtocol(file.substr(5).split('/')) : handleFile(file);
+				file.startsWith('km://') ? handleProtocol(file.substring(5).split('/')) : handleFile(file);
 			}
 		}
 	});
@@ -109,11 +110,15 @@ export async function postInit() {
 	const state = getState();
 	if (!state.opt.cli) {
 		win?.loadURL(await welcomeToYoukousoKaraokeMugen());
-		if (getConfig().GUI.ChibiPlayer.Enabled) {
-			updateChibiPlayerWindow(true);
-		}
-		if (getConfig().GUI.ChibiPlaylist.Enabled) {
-			updateChibiPlaylistWindow(true);
+		if (process.env.SteamDeck || process.env.SteamOS) {
+			initSteamDeck();
+		} else {
+			if (getConfig().GUI.ChibiPlayer.Enabled) {
+				updateChibiPlayerWindow(true);
+			}
+			if (getConfig().GUI.ChibiPlaylist.Enabled) {
+				updateChibiPlaylistWindow(true);
+			}
 		}
 		if (getConfig().GUI.ChibiRanking.Enabled) {
 			updateChibiRankingWindow(true);
@@ -316,6 +321,7 @@ async function createWindow() {
 		width: size_width,
 		height: size_height,
 		backgroundColor: '#36393f',
+		fullscreen: !!state.steamOS,
 		show: false,
 		icon: resolve(state.resourcePath, 'build/icon1024.png'),
 		webPreferences: {
@@ -332,6 +338,7 @@ async function createWindow() {
 	}
 
 	win.once('ready-to-show', () => {
+		win.setFullScreen(getState().steamOS);
 		win.show();
 	});
 	win.webContents.setWindowOpenHandler(handler => {
