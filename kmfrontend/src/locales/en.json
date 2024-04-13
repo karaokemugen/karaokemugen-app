@@ -152,7 +152,7 @@
 		"CRITERIA_TYPE_1003": "Shorter than (mm:ss)",
 		"CRITERIA_TYPE_1006": "Hide songs unavailable offline",
 		"CRITERIA_TYPE_1007": "After (year included)",
-		"CRITERIA_TYPE_1008": "Before (year included)",		
+		"CRITERIA_TYPE_1008": "Before (year included)",
 		"LABEL": {
 			"TAG": "Songs {{verb}} {{tag}} are in the list.",
 			"TAG_VERBS": {
@@ -1626,6 +1626,8 @@
 		"KARA_EDIT_ERROR_UNMOVABLE_LYRICS": "Unable to rename lyrics. Is the file busy in another app?",
 		"KARA_EDIT_ERROR_UNMOVABLE_MEDIA": "Unable to rename media. Is the file busy in another app?",
 		"KARA_EDITED_ERROR": "Error editing song",
+		"REPOSITORY_MANIFEST_KARA_METADATA_RULE_VIOLATION_ERROR": "Error : Karaoke metadata violates a rule from its repository. Check the Event Log for more information.",
+		"REPOSITORY_MANIFEST_KARA_PARENTS_RULE_VIOLATION_ERROR": "Error : Karaoke family violates a rule from its repository. Check the Event Log for more information.",
 		"TIME_PARADOX": "Time Paradox Detected ! A song cannot be its own parent!",
 		"PIME_TARADOX": "Pime Taradox Detected ! A song's parent cannot be its own child as well!",
 		"PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED": "This song has already been added.",
