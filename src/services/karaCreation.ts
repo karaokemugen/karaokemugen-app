@@ -40,7 +40,7 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 		try {
 			checkKaraMetadata([kara]);
 		} catch (err) {
-			throw new ErrorKM('REPOSITORY_MANIFEST_KARA_METADATA_RULE_VIOLATION_ERROR', 400);
+			throw new ErrorKM('REPOSITORY_MANIFEST_KARA_METADATA_RULE_VIOLATION_ERROR', 400, false);
 		}
 		if (kara.data.parents) {
 			if (kara.data.parents.includes(kara.data.kid)) {
@@ -60,7 +60,7 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 			try {
 				checkKaraParents(createKarasMap(karaFiles));
 			} catch (err) {
-				throw new ErrorKM('REPOSITORY_MANIFEST_KARA_PARENTS_RULE_VIOLATION_ERROR', 400);
+				throw new ErrorKM('REPOSITORY_MANIFEST_KARA_PARENTS_RULE_VIOLATION_ERROR', 400, false);
 			}
 		}
 		profile('editKaraFile');
@@ -205,7 +205,7 @@ export async function createKara(editedKara: EditedKara) {
 		try {
 			checkKaraMetadata([kara]);
 		} catch (err) {
-			throw new ErrorKM('REPOSITORY_MANIFEST_KARA_METADATA_RULE_VIOLATION_ERROR', 400);
+			throw new ErrorKM('REPOSITORY_MANIFEST_KARA_METADATA_RULE_VIOLATION_ERROR', 400, false);
 		}
 		if (kara.data.parents) {
 			const karas = await getKaras({});
@@ -214,7 +214,7 @@ export async function createKara(editedKara: EditedKara) {
 			try {
 				checkKaraParents(createKarasMap(karaFiles));
 			} catch (err) {
-				throw new ErrorKM('REPOSITORY_MANIFEST_KARA_PARENTS_RULE_VIOLATION_ERROR', 400);
+				throw new ErrorKM('REPOSITORY_MANIFEST_KARA_PARENTS_RULE_VIOLATION_ERROR', 400, false);
 			}
 		}
 		if (!kara.data.ignoreHooks) await applyKaraHooks(kara);
