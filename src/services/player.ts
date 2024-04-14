@@ -159,11 +159,7 @@ export async function next() {
 }
 
 async function toggleFullScreenPlayer() {
-	if (getState().steamOS) {
-		await mpv.minimize();
-	} else {
-		await mpv.toggleFullscreen();
-	}
+	await mpv.toggleFullscreen();
 }
 
 async function toggleOnTopPlayer() {
@@ -375,7 +371,7 @@ export function displayInfo() {
 
 let playerCommandLock = false;
 
-export async function sendCommand(command: PlayerCommand, options?: any) {
+export async function sendCommand(command: PlayerCommand, options: any) {
 	logger.info(`Received command from API : ${command} (${options})`, { service });
 	if (isShutdownInProgress()) return;
 	if (playerCommandLock) return;

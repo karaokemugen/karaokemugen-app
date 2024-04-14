@@ -58,7 +58,6 @@ export const playerState: PlayerState = {
 	showSubs: true,
 	onTop: false,
 	fullscreen: false,
-	minimized: false,
 	border: false,
 	url: null,
 	monitorEnabled: false,
@@ -1235,16 +1234,6 @@ export class Players {
 		}
 	}
 
-	async toggleMinimize(): Promise<void> {
-		try {
-			await this.exec({ command: ['set_property', 'window-minimized', !playerState.minimized] });
-		} catch (err) {
-			logger.error('Unable to toggle minimize', { service, obj: err });
-			sentry.error(err);
-			throw err;
-		}
-	}
-
 	async toggleFullscreen(): Promise<void> {
 		try {
 			await this.exec({ command: ['set_property', 'fullscreen', !playerState.fullscreen] });
@@ -1279,15 +1268,6 @@ export class Players {
 			sentry.error(err);
 			throw err;
 		}
-	}
-
-	async minimize() {
-		await this.exec({ command: ['set_property', 'window-minimize', 'yes'] }).catch(err => {
-			logger.error('Unable to set minimize', { service, obj: err });
-			sentry.error(err);
-			throw err;
-		});
-		return playerState;
 	}
 
 	async setHwDec(method: string) {

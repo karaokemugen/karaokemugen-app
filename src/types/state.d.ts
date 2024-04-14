@@ -83,7 +83,6 @@ export interface State {
 	systemMessages: SystemMessage[];
 	DBReady: boolean;
 	portable: boolean;
-	steamOS: boolean;
 	backgrounds?: {
 		picture: string;
 		music: string;

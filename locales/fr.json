@@ -278,7 +278,7 @@
 	"RESTARTING_PLAYER": "REDEMARRAGE DU LECTEUR…",
 	"ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE": "AJOUTEZ UNE CHANSON À LA LISTE DE LECTURE !",
 	"NEW_SESSION_NAME": "Karaoké du {{date}}",
-	"FULLSCREEN_TIP": "Appuyez sur F ou double-cliquez pour sortir du plein écran.",
+	"FULLSCREEN_TIP": "Appuyez sur F pour sortir du plein écran.",
 	"NO_KARA_PLAYING": "Aucune chanson en cours de lecture",
 	"INTERFACE_OPENED": "Ouvert",
 	"INTERFACE_RESTRICTED": "Pas de suggestions",
