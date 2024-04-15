@@ -110,7 +110,7 @@ export async function addRepo(repo: Repository) {
 					repo.Git.ProjectID = manifest.ProjectID;
 				}
 			} catch (err) {
-				throw new ErrorKM('REPOSITORY_UNREACHABLE', 404);
+				throw new ErrorKM('REPOSITORY_UNREACHABLE', 404, false);
 			}
 		}
 		if (repo.MaintainerMode && repo.Git?.URL) await checkGitInstalled();
@@ -406,7 +406,7 @@ export async function editRepo(
 				const manifest = await getRepoMetadata(repo.Name);
 				if (repo.MaintainerMode && repo.Git) repo.Git.ProjectID = manifest.ProjectID;
 			} catch (err) {
-				throw new ErrorKM('REPOSITORY_UNREACHABLE', 404);
+				throw new ErrorKM('REPOSITORY_UNREACHABLE', 404, false);
 			}
 		}
 		if (repo.MaintainerMode && repo.Git?.URL) await checkGitInstalled();
