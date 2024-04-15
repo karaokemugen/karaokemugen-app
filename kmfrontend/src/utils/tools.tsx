@@ -212,6 +212,11 @@ export function isRepoOnline(context: GlobalContextInterface, repoName: string):
 	return repo.Online;
 }
 
+export function isRepoOnlineAndMaintainer(context: GlobalContextInterface, repoName: string): boolean {
+	const repo = context.globalState.settings.data.config.System.Repositories.find(r => r.Name === repoName);
+	return repo.Online && repo.MaintainerMode;
+}
+
 export async function decodeCriteriaReason(settings: SettingsStoreData, criteria: Criteria) {
 	const args: [string, Record<string, string>] = ['', {}];
 	switch (criteria.type) {
