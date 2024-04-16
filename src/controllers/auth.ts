@@ -61,7 +61,7 @@ export default function authController(router: SocketIOApp) {
 				return token;
 			}
 		} catch (err) {
-			throw { code: 401, message: APIMessage('LOG_ERROR') };
+			throw { code: err.code || 401, message: APIMessage(err.message || 'LOG_ERROR') };
 		}
 		throw { code: 500, message: APIMessage('NO_MORE_GUESTS_AVAILABLE') };
 	});

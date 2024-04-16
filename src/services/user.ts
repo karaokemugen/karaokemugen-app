@@ -351,14 +351,13 @@ export async function createUser(
 
 /** Checks if a user can be created */
 async function newUserIntegrityChecks(user: User) {
-	if (!asciiRegexp.test(user.login)) throw { code: 400, msg: 'USER_ASCII_CHARACTERS_ONLY' };
-	if (user.type < 2 && !user.password) throw { code: 400, msg: 'USER_EMPTY_PASSWORD' };
-	if (user.type === 2 && user.password) throw { code: 400, msg: 'GUEST_WITH_PASSWORD' };
-
+	if (!asciiRegexp.test(user.login)) throw new ErrorKM('USER_ASCII_CHARACTERS_ONLY', 400, false);
+	if (user.type < 2 && !user.password) throw new ErrorKM('USER_EMPTY_PASSWORD', 400, false);
+	if (user.type === 2 && user.password) throw new ErrorKM('GUEST_WITH_PASSWORD', 400, false);
 	// Check if login already exists.
 	if ((await selectUsers({ singleUser: user.login }))[0] || (await checkNicknameExists(user.login))) {
 		logger.error(`User/nickname ${user.login} already exists, cannot create it`, { service });
-		throw { code: 409, msg: 'USER_ALREADY_EXISTS', data: { username: user.login } };
+		throw new ErrorKM('USER_ALREADY_EXISTS', 409, false);
 	}
 }
 
@@ -456,7 +455,7 @@ async function checkGuestAvatars() {
 
 export async function createTemporaryGuest(name: string) {
 	const user = {
-		login: deburr(name),
+		login: sanitizeLogin(name),
 		nickname: name,
 		type: 2,
 		flag_temporary: true,
