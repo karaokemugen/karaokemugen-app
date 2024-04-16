@@ -47,7 +47,7 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 				// Did you just try to make a song its own parent?
 				throw new ErrorKM('TIME_PARADOX', 409, false);
 			}
-			const karas = await getKaras({});
+			const karas = await getKaras({ ignoreCollections: true });
 			// We need to update the edited kara's parents in our set.
 			const DBKaraIndex = karas.content.findIndex(k => k.kid === kara.data.kid);
 			karas.content[DBKaraIndex].parents = kara.data.parents;
