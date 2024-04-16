@@ -4489,12 +4489,12 @@ kar-to-ass@^1.0.11:
     midi-file "^1.2.3"
     uuid "^9.0.0"
 
-kbp2ass@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/kbp2ass/-/kbp2ass-1.0.1.tgz#c55c5d92974c3b3ccb99aab1ced7a41b5821e74f"
-  integrity sha512-rOD75DbgsE+rCpZQK9gO4fOZ0XOZnBRydWoQ0FGkwkYkdaJB4tB2zDuS1EFnRR3NfSwWS93264cyKQx/8HS2Yg==
+kbp2ass@^1.1.3:
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/kbp2ass/-/kbp2ass-1.1.3.tgz#f9f709c65c4ac2a75005f67927899d0400775397"
+  integrity sha512-SXvwt4T2WCnECN9amLH13DwWi1MscWDwQeueCk8lKFEpmQZfVL1MI1SHDQsyh1eFW4+CJzIfA/5a6zRr4jQkDQ==
   dependencies:
-    ass-stringify "^0.1.3"
+    yargs "^17.6.2"
 
 keyv@^4.0.0, keyv@^4.5.3:
   version "4.5.4"
