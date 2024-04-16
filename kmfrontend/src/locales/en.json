@@ -438,10 +438,10 @@
 			"ALLOW_DUPLICATES": "Allow duplicate songs in playlists (operator only)",
 			"ALLOW_DUPLICATES_TOOLTIP": "With this option, a playlist can contain the same song twice (or more). Only operators can add the same song more than once to a playlist.",
 			"ALLOW_PUBLIC_DUPLICATES": "Allow duplicate songs in playlists (public)",
-			"ALLOW_PUBLIC_DUPLICATES_TOOLTIP": "Allow or not the public to add a song multiple times. A user can't add a song they already added themselves, but can add one another user added before. \"Upvote only\" means users cannot add duplicates but can upvote songs already present. \"Allowed\" is usually good for Classic karaoke, \"Upvotes Only\" for Public karaoke.",
+			"ALLOW_PUBLIC_DUPLICATES_TOOLTIP": "Allow or not the public to add a song multiple times. A user can't add a song they already added themselves, but can add one another user added before. \"Upvotes\" means users cannot add duplicates but can upvote songs already present. \"Allowed\" is usually good for Classic karaoke, \"Upvotes\" for Public karaoke.",
 			"ALLOW_PUBLIC_DUPLICATES_OPTIONS": {
 				"ALLOWED": "Allowed",
-				"UPVOTES_ONLY": "Upvotes only",
+				"UPVOTES_ONLY": "Upvotes",
 				"DISALLOWED": "Disallowed"
 			},
 			"MEDIAS_SETTINGS": "Medias",

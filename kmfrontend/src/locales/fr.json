@@ -438,10 +438,10 @@
 			"ALLOW_DUPLICATES": "Autoriser les doublons dans les listes de lecture (opérateur uniquement)",
 			"ALLOW_DUPLICATES_TOOLTIP": "Avec cette option, une liste de lecture peut contenir deux fois (ou plus) la même chanson. Seuls les opérateurs peuvent ajouter des doublons.",
 			"ALLOW_PUBLIC_DUPLICATES": "Autoriser les doublons dans les listes de lecture (public)",
-			"ALLOW_PUBLIC_DUPLICATES_TOOLTIP": "Permettre ou non au public d'ajouter une chanson plusieurs fois. Un utilisateur ne peut ajouter une chanson déjà présente que si ce n'est pas lui qui l'a déjà ajoutée. Soutiens uniquement veut dire que le public ne peut pas ajouter de doublons mais peut soutenir des chansons. \"Autoriser\" est bien pour le mode Karaoke Classique. \"Soutiens uniquement\" pour un karaoke en public.",
+			"ALLOW_PUBLIC_DUPLICATES_TOOLTIP": "Permettre ou non au public d'ajouter une chanson plusieurs fois. Un utilisateur ne peut ajouter une chanson déjà présente que si ce n'est pas lui qui l'a déjà ajoutée. \"Soutiens\" veut dire que le public ne peut pas ajouter de doublons mais peut soutenir des chansons. \"Autoriser\" est bien pour le mode Karaoke Classique. \"Soutiens\" pour un karaoke en public.",
 			"ALLOW_PUBLIC_DUPLICATES_OPTIONS": {
 				"ALLOWED": "Autoriser",
-				"UPVOTES_ONLY": "Soutiens uniquement",
+				"UPVOTES_ONLY": "Soutiens",
 				"DISALLOWED": "Interdire"
 			},
 			"PLAYLIST_RANDOMSONGSAFTERENDMESSAGE": "Afficher régulièrement un message à l'écran pour inviter les utilisateurs à ajouter une chanson lors de la lecture aléatoire d'une chanson après la fin de la liste de lecture en cours",
