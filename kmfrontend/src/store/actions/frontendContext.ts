@@ -97,7 +97,7 @@ export function setFutureTime(dispatch: Dispatch<FuturTime>, futurTime: string) 
 async function getPlaylistInfo(plaid: string) {
 	let playlist: DBPL;
 	let content: DBPLCBase[] = [];
-	if (!isNonStandardPlaylist(plaid)) {
+	if (plaid && !isNonStandardPlaylist(plaid)) {
 		try {
 			playlist = await commandBackend('getPlaylist', { plaid });
 			content = await commandBackend('getPlaylistContentsMicro', { plaid });

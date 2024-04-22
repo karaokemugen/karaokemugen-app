@@ -7,6 +7,7 @@ import i18next from 'i18next';
 import { address } from 'ip';
 import { cloneDeep, isEqual, merge } from 'lodash';
 import { resolve } from 'path';
+import { v4 as uuidV4 } from 'uuid';
 
 import { selectUsers } from '../dao/user.js';
 import { applyMenu } from '../electron/electron.js';
@@ -55,6 +56,7 @@ import sentry from './sentry.js';
 import { getState, setState } from './state.js';
 import { writeStreamFiles } from './streamerFiles.js';
 import { initTwitch, stopTwitch } from './twitch.js';
+import { uuidRegexp } from '../lib/utils/constants.js';
 
 const service = 'Config';
 
@@ -237,10 +239,10 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	config.Karaoke.StreamerMode.Twitch.Enabled
 		? initTwitch().catch(err => {
 				logger.warn('Could not start Twitch chat bot', { service, obj: err });
-		  })
+			})
 		: stopTwitch().catch(err => {
 				logger.warn('Could not stop Twitch chat bot', { service, obj: err });
-		  });
+			});
 	// Toggling random song after end message
 	config.Playlist.RandomSongsAfterEndMessage ? initAddASongMessage() : stopAddASongMessage();
 	// Toggling Discord RPC
@@ -267,6 +269,7 @@ export async function initConfig(argv: any) {
 		publicConfig.Karaoke.StreamerMode.Twitch.OAuth = 'xxxxx';
 		publicConfig.App.JwtSecret = 'xxxxx';
 		publicConfig.App.InstanceID = 'xxxxx';
+		publicConfig.Online.RemoteToken = 'xxxxx';
 		for (const repo of publicConfig.System.Repositories) {
 			if (repo.MaintainerMode) {
 				if (repo.FTP?.Password) repo.FTP.Password = 'xxxxx';
@@ -287,6 +290,17 @@ export async function initConfig(argv: any) {
 			}
 		}
 		changeLanguage(getConfig().App.Language);
+		const config = getConfig();
+		if (
+			config.App.InstanceID === 'Change me' ||
+			(config.App.InstanceID && !config.App.InstanceID.match(uuidRegexp))
+		)
+			setConfig({ App: { InstanceID: uuidV4() } });
+		if (
+			config.Online.RemoteToken === 'Change me' ||
+			(config.Online.RemoteToken && !config.Online.RemoteToken.match(uuidRegexp))
+		)
+			setConfig({ Online: { RemoteToken: null } });
 		return getConfig();
 	} catch (err) {
 		logger.error('InitConfig failed', { service, obj: err });
@@ -343,8 +357,10 @@ export function backupConfig() {
 }
 
 /** Return public configuration (without sensitive data) */
-export function getPublicConfig(removeSystem = true) {
+export function getPublicConfig(removeSystem = true, removeInstanceID = true) {
 	const publicSettings = cloneDeep(getConfig());
+	if (removeInstanceID) delete publicSettings.App.InstanceID;
+	delete publicSettings.Online.RemoteToken;
 	delete publicSettings.App.JwtSecret;
 	delete publicSettings.System.Database;
 	for (const repo of publicSettings.System.Repositories) {

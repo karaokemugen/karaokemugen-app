@@ -4,6 +4,7 @@ import { Socket } from 'net';
 
 import { defineMPVEnv } from '../components/mpv.js';
 import { MpvCommand } from '../types/mpvIPC.js';
+import { mpvIsRecentEnough } from './hokutoNoCode.js';
 
 class Mpv extends EventEmitter {
 	binary: string;
@@ -182,6 +183,10 @@ class Mpv extends EventEmitter {
 	}
 
 	send(command: MpvCommand) {
+		if (!mpvIsRecentEnough() && command.command[0] === 'loadfile') {
+			// Remove index in loadfile commands of the form loadfile <file> <command> <index> <options>
+			command.command.splice(3, 1);
+		}
 		if (this.isRunning) return this.ishukan(command);
 		throw new Error('MPV is not running');
 	}

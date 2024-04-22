@@ -212,6 +212,11 @@ export function isRepoOnline(context: GlobalContextInterface, repoName: string):
 	return repo.Online;
 }
 
+export function isRepoOnlineAndMaintainer(context: GlobalContextInterface, repoName: string): boolean {
+	const repo = context.globalState.settings.data.config.System.Repositories.find(r => r.Name === repoName);
+	return repo.Online && repo.MaintainerMode;
+}
+
 export async function decodeCriteriaReason(settings: SettingsStoreData, criteria: Criteria) {
 	const args: [string, Record<string, string>] = ['', {}];
 	switch (criteria.type) {
@@ -229,6 +234,14 @@ export async function decodeCriteriaReason(settings: SettingsStoreData, criteria
 		case 1003:
 			args[0] = 'SHORTER';
 			args[1] = { time: criteria.value };
+			break;
+		case 1007:
+			args[0] = 'AFTER_YEAR';
+			args[1] = { year: criteria.value };
+			break;
+		case 1008:
+			args[0] = 'BEFORE_YEAR';
+			args[1] = { year: criteria.value };
 			break;
 		default:
 			args[0] = 'TAG';

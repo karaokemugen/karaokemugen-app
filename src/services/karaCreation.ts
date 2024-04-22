@@ -13,11 +13,17 @@ import logger, { profile } from '../lib/utils/logger.js';
 import Task from '../lib/utils/taskManager.js';
 import { adminToken } from '../utils/constants.js';
 import sentry from '../utils/sentry.js';
-import { getKara } from './kara.js';
+import { getKara, getKaras } from './kara.js';
 import { integrateKaraFile } from './karaManagement.js';
 import { checkDownloadStatus } from './repo.js';
 import { consolidateTagsInRepo } from './tag.js';
 import { exists } from 'fs-extra';
+import {
+	checkKaraMetadata,
+	checkKaraParents,
+	convertDBKarasToKaraFiles,
+	createKarasMap,
+} from '../lib/services/karaValidation.js';
 
 const service = 'KaraCreation';
 
@@ -31,16 +37,30 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 	// No sentry triggered if validation fails
 	try {
 		verifyKaraData(kara);
-
+		try {
+			checkKaraMetadata([kara]);
+		} catch (err) {
+			throw new ErrorKM('REPOSITORY_MANIFEST_KARA_METADATA_RULE_VIOLATION_ERROR', 400, false);
+		}
 		if (kara.data.parents) {
 			if (kara.data.parents.includes(kara.data.kid)) {
-				throw new ErrorKM('TIME_PARADOX', 409, false);
 				// Did you just try to make a song its own parent?
+				throw new ErrorKM('TIME_PARADOX', 409, false);
 			}
-			const DBKara = await getKara(kara.data.kid, adminToken);
+			const karas = await getKaras({ ignoreCollections: true });
+			// We need to update the edited kara's parents in our set.
+			const DBKaraIndex = karas.content.findIndex(k => k.kid === kara.data.kid);
+			karas.content[DBKaraIndex].parents = kara.data.parents;
+			const DBKara = karas.content[DBKaraIndex];
 			if (DBKara.children.some(k => kara.data.parents.includes(k))) {
-				throw new ErrorKM('PIME_TARADOX', 409, false);
 				// Did you just try to destroy the universe by making a circular dependency?
+				throw new ErrorKM('PIME_TARADOX', 409, false);
+			}
+			const karaFiles = convertDBKarasToKaraFiles(karas.content);
+			try {
+				checkKaraParents(createKarasMap(karaFiles));
+			} catch (err) {
+				throw new ErrorKM('REPOSITORY_MANIFEST_KARA_PARENTS_RULE_VIOLATION_ERROR', 400, false);
 			}
 		}
 		profile('editKaraFile');
@@ -57,7 +77,7 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 			`${karaFile}.kara.json`
 		);
 		if (karaJsonFileOld !== karaJsonFileDest && (await exists(karaJsonFileDest)))
-			throw new ErrorKM('KARA_FILE_EXISTS_ERROR');
+			throw new ErrorKM('KARA_FILE_EXISTS_ERROR', 409, false);
 		const filenames = determineMediaAndLyricsFilenames(kara, karaFile);
 		const mediaDest = resolve(resolvedPathRepos('Medias', kara.data.repository)[0], filenames.mediafile);
 		let oldMediaPath: string;
@@ -182,13 +202,28 @@ export async function createKara(editedKara: EditedKara) {
 	try {
 		// Write kara file in place
 		verifyKaraData(kara);
+		try {
+			checkKaraMetadata([kara]);
+		} catch (err) {
+			throw new ErrorKM('REPOSITORY_MANIFEST_KARA_METADATA_RULE_VIOLATION_ERROR', 400, false);
+		}
+		if (kara.data.parents) {
+			const karas = await getKaras({});
+			const karaFiles = convertDBKarasToKaraFiles(karas.content);
+			karaFiles.push(kara);
+			try {
+				checkKaraParents(createKarasMap(karaFiles));
+			} catch (err) {
+				throw new ErrorKM('REPOSITORY_MANIFEST_KARA_PARENTS_RULE_VIOLATION_ERROR', 400, false);
+			}
+		}
 		if (!kara.data.ignoreHooks) await applyKaraHooks(kara);
 		const karaFile = await defineFilename(kara);
 		const karaJsonFileDest = resolve(
 			resolvedPathRepos('Karaokes', kara.data.repository)[0],
 			`${karaFile}.kara.json`
 		);
-		if (await exists(karaJsonFileDest)) throw new ErrorKM('KARA_FILE_EXISTS_ERROR');
+		if (await exists(karaJsonFileDest)) throw new ErrorKM('KARA_FILE_EXISTS_ERROR', 409, false);
 
 		const mediaPath = resolve(resolvedPath('Temp'), kara.medias[0].filename);
 		try {

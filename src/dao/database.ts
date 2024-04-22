@@ -4,14 +4,13 @@ import i18next from 'i18next';
 import { sample } from 'lodash';
 import { resolve } from 'path';
 import Postgrator from 'postgrator';
-import { v4 as uuidV4 } from 'uuid';
 
 import { exit, initKaraBase } from '../components/engine.js';
 import { errorStep, initStep } from '../electron/electronLogger.js';
-import { connectDB, db, getInstanceID, getSettings, saveSetting, setInstanceID } from '../lib/dao/database.js';
+import { connectDB, db, getSettings, saveSetting } from '../lib/dao/database.js';
 import { generateDatabase } from '../lib/services/generation.js';
 import { getConfig } from '../lib/utils/config.js';
-import { tagTypes, uuidRegexp } from '../lib/utils/constants.js';
+import { tagTypes } from '../lib/utils/constants.js';
 import { fileExists } from '../lib/utils/files.js';
 import logger, { profile } from '../lib/utils/logger.js';
 import Task from '../lib/utils/taskManager.js';
@@ -253,12 +252,6 @@ export async function initDBSystem(): Promise<Postgrator.Migration[]> {
 		if (!isShutdownPG()) sentry.error(err, 'fatal');
 		throw err;
 	}
-	if (!(await getInstanceID())) {
-		// Some interesting people actually copy/paste what's in the sample config file so we're going to be extra nice with them even though we shouldn't and set it correctly if the config's instanceID is wrong.
-		conf.App.InstanceID && uuidRegexp.test(conf.App.InstanceID)
-			? setInstanceID(conf.App.InstanceID)
-			: setInstanceID(uuidV4());
-	}
 	if (state.opt.reset) await resetUserData();
 
 	logger.debug('Database Interface is READY', { service });
@@ -301,7 +294,7 @@ export async function generateDB(): Promise<boolean> {
 			return true;
 		}
 		generationInProgress = true;
-		const opts = { validateOnly: false, skipParentsChecks: getState().opt.skipParentsCheck };
+		const opts = { validateOnly: false };
 		await generateDatabase(opts);
 		const pls = await selectPlaylists(false);
 		for (const pl of pls) {

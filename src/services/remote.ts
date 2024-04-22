@@ -1,7 +1,6 @@
-import { getInstanceID, getSettings, saveSetting } from '../lib/dao/database.js';
 import { APIDataProxied } from '../lib/types/api.js';
 import { RemoteSettings, RemoteSuccess } from '../lib/types/remote.js';
-import { getConfig } from '../lib/utils/config.js';
+import { getConfig, setConfig } from '../lib/utils/config.js';
 import logger, { profile } from '../lib/utils/logger.js';
 import { getWS } from '../lib/utils/ws.js';
 import { configureHost } from '../utils/config.js';
@@ -15,26 +14,26 @@ let errCount = 0;
 
 async function startRemote(): Promise<RemoteSuccess> {
 	try {
-		let { remoteToken } = await getSettings();
+		let remoteToken = await getConfig().Online.RemoteToken;
 		if (!remoteToken) {
 			remoteToken = '';
 		}
 		const result = await commandKMServer<RemoteSettings>('remote start', {
 			body: {
-				InstanceID: await getInstanceID(),
+				InstanceID: getConfig().App.InstanceID,
 				version: getState().version.number,
 				token: remoteToken,
 			},
 		});
 		if (result.err && result.reason === 'INVALID_TOKEN') {
 			// Ask for a new token by deleting the invalid one
-			await saveSetting('remoteToken', '');
+			setConfig({ Online: { RemoteToken: null } });
 			return await startRemote();
 		}
 		if (result.err) {
 			throw new Error(`Server refused to start remote: ${result.reason}`);
 		} else {
-			await saveSetting('remoteToken', result.token);
+			setConfig({ Online: { RemoteToken: result.token } });
 			errCount = 0;
 			return result;
 		}

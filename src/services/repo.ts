@@ -110,7 +110,7 @@ export async function addRepo(repo: Repository) {
 					repo.Git.ProjectID = manifest.ProjectID;
 				}
 			} catch (err) {
-				throw new ErrorKM('REPOSITORY_UNREACHABLE', 404);
+				throw new ErrorKM('REPOSITORY_UNREACHABLE', 404, false);
 			}
 		}
 		if (repo.MaintainerMode && repo.Git?.URL) await checkGitInstalled();
@@ -406,7 +406,7 @@ export async function editRepo(
 				const manifest = await getRepoMetadata(repo.Name);
 				if (repo.MaintainerMode && repo.Git) repo.Git.ProjectID = manifest.ProjectID;
 			} catch (err) {
-				throw new ErrorKM('REPOSITORY_UNREACHABLE', 404);
+				throw new ErrorKM('REPOSITORY_UNREACHABLE', 404, false);
 			}
 		}
 		if (repo.MaintainerMode && repo.Git?.URL) await checkGitInstalled();
@@ -538,12 +538,14 @@ export async function dropStashInRepo(name: string, stash: number) {
 	}
 }
 
+/** Completely reset repository to initial state */
 export async function resetRepo(name: string) {
 	try {
 		const repo = getRepo(name);
 		if (!repo) throw new ErrorKM('UNKNOWN_REPOSITORY', 404, false);
 		const git = await setupGit(repo);
-		return await git.reset();
+		await git.reset(['--hard', 'origin/master']);
+		await git.wipeChanges();
 	} catch (err) {
 		logger.error(`Error git resetting ${name} : ${err}`, { service });
 		sentry.error(err);
@@ -627,7 +629,7 @@ export async function updateGitRepo(name: string) {
 					}
 				}
 				// We cancel the commit we just made so all files in it are now marked as new/modified
-				if (!firstCommit) await git.reset('HEAD~');
+				if (!firstCommit) await git.reset(['HEAD~']);
 			}
 		} catch (err) {
 			logger.info(`${repo.Name} pull failed`, { service, obj: err });
@@ -1103,6 +1105,7 @@ export async function generateCommits(repoName: string) {
 	try {
 		const repo = getRepo(repoName);
 		const git = await setupGit(repo, true);
+		await git.reset();
 		const status = await git.status();
 		const deletedSongs = status.deleted.filter(f => f.endsWith('kara.json'));
 		const deletedTags = status.deleted.filter(f => f.endsWith('tag.json'));
@@ -1283,7 +1286,7 @@ export async function generateCommits(repoName: string) {
 				modifiedMedias.push({
 					old: oldKara.medias[0].filename,
 					new: kara.mediafile,
-					sizeDifference: oldKara.medias[0].filesize === kara.mediasize,
+					sizeDifference: oldKara.medias[0].filesize !== kara.mediasize,
 					commit: commit.message,
 				});
 			} else if (oldKara.medias[0].filesize !== kara.mediasize) {
@@ -1417,6 +1420,14 @@ export async function pushCommits(repoName: string, push: Push, ignoreFTP?: bool
 				if (media.old === null || media.old === media.new) {
 					const path = await resolveFileInDirs(media.new, resolvedPathRepos('Medias', repoName));
 					await ftp.upload(path[0]);
+				} else if (media.new !== media.old && media.sizeDifference) {
+					const path = await resolveFileInDirs(media.new, resolvedPathRepos('Medias', repoName));
+					await ftp.upload(path[0]);
+					try {
+						await ftp.delete(media.old);
+					} catch (err) {
+						logger.warn(`File ${media.old} could not be deleted on FTP`, { service });
+					}
 				}
 			}
 			await ftp.disconnect();
@@ -1465,15 +1476,7 @@ export async function pushCommits(repoName: string, push: Push, ignoreFTP?: bool
 						}
 					} else if (media.new !== media.old) {
 						// Renamed file or new upload with different sizes, let's find out!
-						if (media.sizeDifference) {
-							const path = await resolveFileInDirs(media.new, resolvedPathRepos('Medias', repoName));
-							await ftp.upload(path[0]);
-							try {
-								await ftp.delete(media.old);
-							} catch (err) {
-								logger.warn(`File ${media.old} could not be deleted on FTP`, { service });
-							}
-						} else {
+						if (!media.sizeDifference) {
 							await ftp.rename(basename(media.old), basename(media.new));
 						}
 					}
@@ -1558,7 +1561,7 @@ export async function openMediaFolder(repoName: string) {
 
 export async function initRepos() {
 	for (const repo of getRepos()) {
-		readRepoManifest(repo.Name);
+		await readRepoManifest(repo.Name);
 	}
 }
 

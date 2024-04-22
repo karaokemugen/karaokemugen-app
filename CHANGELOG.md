@@ -1,15 +1,61 @@
-v v7.1.57 - 10/03/2024
+# v7.1.65 - 22/04/2024
+
+## New features
+
+-   [Operators] Added before/after year criteria for smart playlists (#1585)
+-   [Users] Remote token (which assigns URLs to your Karaoke Mugen app) is now editable in the Advanced Configuration page in system panel.
+
+## Changes
+
+-   [Operators] Added proper validation when editing smart playlist criterias
+-   [Users] Change scrollbars to grey to be more visible
+-   [Users] ~~Improved stability and performance~~ Added a users cache so checkValidUser doesn't flood the database engine
+-   [Maintainers] Collections are now ignored when checking karaoke parent rules
+-   [Maintainers] Repository rules are now checked when adding/editing a karaoke
+-   [Maintainers] Disabled open lyrics button while media file is being uploaded
+-   [Maintainers] All files will be unstaged before trying to create commits (#1588)
+-   [Maintainers] Karaoke family line is now checked during generation and when added/edited (#1557 and #1556)
+
+## Fixes
+
+-   [Operators] Fixed incompatibility with mpv 0.38 and up (#1598)
+-   [Operators] Fixed "Allow Duplicates" option not working properly (#1597)
+-   [Operators] Fixed download and upload button display
+-   [Operators] Fixed getplaylistinfo without PLAIDs.
+-   [Operators] Fixed multiple smart playlist edits (#1586)
+-   [Operators] Smart playlist type should properly change now when hitting the switch button (#1586)
+-   [Operators] Fixed database deadlocks with smart playlists (#1577)
+-   [Users] Fixed typos
+-   [Users] Updated custom nickname/username requirements not being clear enough on the login screen (#1596)
+-   [Users] Do not display link to current playlist if not visible
+-   [Users] Fixed unhandled exceptions on startup for updateBase.
+-   [Users] Database "disk full" errors are now caught properly
+-   [Maintainers] Fixed media info card size in karaoke form
+-   [Maintainers] Fixed overall bitrate calculation (#1583)
+-   [Maintainers] Fixed checkbox display when there's a description for a tag in kara form
+-   [Maintainers] Fixed FTP file differences detection when pushing to a new base.
+-   [Devs] Fixed mpv options log (and other logs)
+
+## Misc
+
+-   Updated backend and frontend dependencies
+-   Updated italian translation (100%)
+-   Updated german translation (99.2%)
+-   Updated node requirement to 20.x
+-   Ignored some errors from Sentry
+
+# v7.1.57 - 10/03/2024
 
 Mainly bugfixes and a few new features.
 
-# New features
+## New features
 
 -   [Operators] Added a public/current list selector on the top bar for easier playlist changes
 -   [Maintainers] Added warning about libavcodec's aac encoder
 -   [Maintainers] Added ability to squash (merge) commits into one when there are many commits to make
 -   [Maintainers] Current commit is now displayed in git page in system panel
 
-# Changes
+## Changes
 
 -   [Users] Updated italian translation
 -   [Users] Better responsive design layout
@@ -20,7 +66,7 @@ Mainly bugfixes and a few new features.
 -   [Maintainers] Tag types are now sorted in tag files. It would create false modifications for some tag files during commits
 -   [Maintainers] FTP renames and deletes are now done AFTER a succesfull push.
 
-# Fixes
+## Fixes
 
 -   [Users] Fixed mpv on some Windows versions
 -   [Users] Fixed first song played not having subtitles sometimes (thanks @sorc278!)

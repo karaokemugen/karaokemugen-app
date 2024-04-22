@@ -40,6 +40,8 @@ const service = 'User';
 
 const userLoginTimes = new Map();
 
+const userCache: Map<string, DBUser> = new Map();
+
 export async function getAvailableGuest() {
 	const guest = (await selectUsers({ randomGuest: true }))[0];
 	if (!guest) return null;
@@ -149,6 +151,7 @@ export async function editUser(
 			logger.warn('Cannot push user changes to remote', { service, obj: err });
 			throw err;
 		}
+		userCache.set(updatedUser.login, updatedUser);
 		emitWS('userUpdated', username);
 		logger.debug(`${username} (${mergedUser.nickname}) profile updated`, { service });
 		return {
@@ -202,10 +205,12 @@ async function replaceAvatar(oldImageFile: string, avatar: Express.Multer.File):
 }
 
 /** Get user by its name, with non-public info like password and mail removed (or not) */
-export async function getUser(username: string, full = false, showPassword = false, role = 'admin') {
+export async function getUser(username: string, full = false, showPassword = false, role = 'admin', fromCache = false) {
 	try {
 		if (!username) throw new ErrorKM('INVALID_DATA', 400, false);
 		username = username.toLowerCase();
+		if (fromCache) return userCache.get(username);
+
 		// Check if user exists in db
 		const userdata = (
 			await selectUsers({
@@ -333,6 +338,7 @@ export async function createUser(
 			if (opts.createRemote) await createRemoteUser(user);
 		}
 		await insertUser(user);
+		userCache.set(user.login, user);
 		if (user.type < 2) logger.info(`Created user ${user.login}`, { service });
 		delete user.password;
 		return true;
@@ -345,14 +351,13 @@ export async function createUser(
 
 /** Checks if a user can be created */
 async function newUserIntegrityChecks(user: User) {
-	if (!asciiRegexp.test(user.login)) throw { code: 400, msg: 'USER_ASCII_CHARACTERS_ONLY' };
-	if (user.type < 2 && !user.password) throw { code: 400, msg: 'USER_EMPTY_PASSWORD' };
-	if (user.type === 2 && user.password) throw { code: 400, msg: 'GUEST_WITH_PASSWORD' };
-
+	if (!asciiRegexp.test(user.login)) throw new ErrorKM('USER_ASCII_CHARACTERS_ONLY', 400, false);
+	if (user.type < 2 && !user.password) throw new ErrorKM('USER_EMPTY_PASSWORD', 400, false);
+	if (user.type === 2 && user.password) throw new ErrorKM('GUEST_WITH_PASSWORD', 400, false);
 	// Check if login already exists.
 	if ((await selectUsers({ singleUser: user.login }))[0] || (await checkNicknameExists(user.login))) {
 		logger.error(`User/nickname ${user.login} already exists, cannot create it`, { service });
-		throw { code: 409, msg: 'USER_ALREADY_EXISTS', data: { username: user.login } };
+		throw new ErrorKM('USER_ALREADY_EXISTS', 409, false);
 	}
 }
 
@@ -376,7 +381,9 @@ export async function removeUser(username: string) {
 			const [login, instance] = username.split('@');
 			stopSub(login, instance);
 		}
-		if (getUsersFetched().has(username)) getUsersFetched().delete(username);
+		getUsersFetched().delete(username);
+		userCache.delete(username);
+
 		logger.debug(`Deleted user ${username}`, { service });
 		emitWS('usersUpdated');
 		return true;
@@ -448,7 +455,7 @@ async function checkGuestAvatars() {
 
 export async function createTemporaryGuest(name: string) {
 	const user = {
-		login: deburr(name),
+		login: sanitizeLogin(name),
 		nickname: name,
 		type: 2,
 		flag_temporary: true,
@@ -564,13 +571,18 @@ export async function initUserSystem() {
 	if (getState().opt.forceAdminPassword) await generateAdminPassword();
 	// Find admin users.
 	// We are querying again to be sure to have all users listed
-	users = await getUsers();
+	users = await getUsers({ full: true });
 	const adminUsers = users
 		.filter(u => u.type === 0 && u.login !== 'admin')
 		// Sort by last login at in descending order.
 		.sort((a, b) => (a.last_login_at < b.last_login_at ? 1 : -1));
 	logger.debug('Admin users', { service, obj: JSON.stringify(adminUsers) });
 	sentry.setUser(adminUsers[0]?.login || 'admin');
+
+	// Init user cache
+	for (const user of users) {
+		userCache.set(user.login, user);
+	}
 	profile('initUserSystem');
 }
 

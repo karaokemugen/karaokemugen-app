@@ -151,6 +151,8 @@
 		"CRITERIA_TYPE_1002": "Longer than (mm:ss)",
 		"CRITERIA_TYPE_1003": "Shorter than (mm:ss)",
 		"CRITERIA_TYPE_1006": "Hide songs unavailable offline",
+		"CRITERIA_TYPE_1007": "After (year included)",
+		"CRITERIA_TYPE_1008": "Before (year included)",
 		"LABEL": {
 			"TAG": "Songs {{verb}} {{tag}} are in the list.",
 			"TAG_VERBS": {
@@ -173,6 +175,8 @@
 				"17": "from music band"
 			},
 			"YEAR": "Songs from year {{year}} are in the list.",
+			"AFTER_YEAR": "Songs after year {{year}} are in the list.",
+			"BEFORE_YEAR": "Songs before year {{year}} are in the list.",
 			"KID": "This song is in the list.",
 			"LONGER": "Songs longer than {{time}} seconds are in the list.",
 			"SHORTER": "Songs shorter than {{time}} seconds are in the list."
@@ -434,10 +438,10 @@
 			"ALLOW_DUPLICATES": "Allow duplicate songs in playlists (operator only)",
 			"ALLOW_DUPLICATES_TOOLTIP": "With this option, a playlist can contain the same song twice (or more). Only operators can add the same song more than once to a playlist.",
 			"ALLOW_PUBLIC_DUPLICATES": "Allow duplicate songs in playlists (public)",
-			"ALLOW_PUBLIC_DUPLICATES_TOOLTIP": "Allow or not the public to add a song multiple times. A user can't add a song they already added themselves, but can add one another user added before. Upvote only means users cannot add duplicates but can upvote songs already present. \"Allowed\" is good for Classic karaoke, \"Puvotes Only\" for Public karaoke.",
+			"ALLOW_PUBLIC_DUPLICATES_TOOLTIP": "Allow or not the public to add a song multiple times. A user can't add a song they already added themselves, but can add one another user added before. \"Upvotes\" means users cannot add duplicates but can upvote songs already present. \"Allowed\" is usually good for Classic karaoke, \"Upvotes\" for Public karaoke.",
 			"ALLOW_PUBLIC_DUPLICATES_OPTIONS": {
 				"ALLOWED": "Allowed",
-				"UPVOTES_ONLY": "Upvotes only",
+				"UPVOTES_ONLY": "Upvotes",
 				"DISALLOWED": "Disallowed"
 			},
 			"MEDIAS_SETTINGS": "Medias",
@@ -1022,7 +1026,7 @@
 			"AUDIO_CODEC": "Audio codec",
 			"AUDIO_COVER_ART": "Cover art",
 			"WARNINGS":  {
-				"LIBAVCODEC_ENCODER": "The audio is encoded with the libavcodec (ffmpeg reference aac) encoder, which is known to result in bad quality. Please make sure to use the libfdk_aac encoder or another codec like opus, to get the best quality."
+				"LIBAVCODEC_ENCODER": "The audio is encoded with the libavcodec (ffmpeg reference aac) encoder, which can create audible artifacts and is discouraged to utilize. Please use the libfdk_aac encoder for aac or another codec like opus, to get the best possible quality."
 			}
 		},
 		"LYRICS_FILE": "Lyrics file",
@@ -1544,6 +1548,7 @@
 		"UNKNOWN_USER": "Unknown user",
 		"UNKNOWN_SESSION": "Unknown session",
 		"UNKNOWN_TAG": "Unknown tag",
+		"DATABASE_DISK_FULL": "Database disk is full! Free up some space immediately!",
 		"USER_LOGIN_INVALID": "Invalid user name. Please only use alphanumeric characters (._- are allowed too)",
 		"USER_CREATE_ERROR_ONLINE_DISABLED": "Unable to create account : online mode is disabled",
 		"NICKNAME_ALREADY_IN_USE": "Nickname already in use",
@@ -1581,6 +1586,8 @@
 		"CRITERIAS_REMOVE_ERROR": "Unable to delete criteria",
 		"C_SHORTER_THAN_CONFLICT": "You cannot add a \"Shorter than\" criteria higher than the \"Longer than\" criteria.",
 		"C_LONGER_THAN_CONFLICT": "You cannot add a \"Longer than\" criteria lower than the \"Shorter than\" criteria.",
+		"C_BEFORE_YEAR_CONFLICT": "You cannot add a \"Before year\" criteria higher than the \"After year\" criteria.",
+		"C_AFTER_YEAR_CONFLICT": "You cannot add a \"After year\" criteria lower than the \"Before year\" criteria.",
 		"USER_RESETPASSWORD_WRONGSECURITYCODE": "Wrong security code",
 		"PL_DELETE_SONG_ERROR": "You cannot delete that song",
 		"PL_DELETE_UPVOTED": "You cannot delete your suggestion, it's too late.",
@@ -1619,6 +1626,8 @@
 		"KARA_EDIT_ERROR_UNMOVABLE_LYRICS": "Unable to rename lyrics. Is the file busy in another app?",
 		"KARA_EDIT_ERROR_UNMOVABLE_MEDIA": "Unable to rename media. Is the file busy in another app?",
 		"KARA_EDITED_ERROR": "Error editing song",
+		"REPOSITORY_MANIFEST_KARA_METADATA_RULE_VIOLATION_ERROR": "Error : Karaoke metadata violates a rule from its repository. Check the Event Log for more information.",
+		"REPOSITORY_MANIFEST_KARA_PARENTS_RULE_VIOLATION_ERROR": "Error : Karaoke family violates a rule from its repository. Check the Event Log for more information.",
 		"TIME_PARADOX": "Time Paradox Detected ! A song cannot be its own parent!",
 		"PIME_TARADOX": "Pime Taradox Detected ! A song's parent cannot be its own child as well!",
 		"PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED": "This song has already been added.",
@@ -1644,6 +1653,7 @@
 		"PL_CREATE_ERROR": "Error creating a playlist",
 		"PL_VIEW_ERROR": "Error fetching info from a playlist",
 		"PL_UPDATE_ERROR": "Error updating playlist informations",
+		"TYPE_SMART_CHANGE_CONFLICTING_CRITERIAS_ERROR": "Error changing smart playlist type: you have conflicting criterias (year/duration?) Remove them and retry.",
 		"PL_DELETE_ERROR": "Error deleting a playlist",
 		"PL_EMPTY_ERROR": "Error emptying a playlist",
 		"PL_SET_CURRENT_ERROR": "Error setting a playlist to current",
