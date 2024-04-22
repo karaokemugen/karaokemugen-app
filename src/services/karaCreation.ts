@@ -208,7 +208,7 @@ export async function createKara(editedKara: EditedKara) {
 			throw new ErrorKM('REPOSITORY_MANIFEST_KARA_METADATA_RULE_VIOLATION_ERROR', 400, false);
 		}
 		if (kara.data.parents) {
-			const karas = await getKaras({});
+			const karas = await getKaras({ ignoreCollections: true });
 			const karaFiles = convertDBKarasToKaraFiles(karas.content);
 			karaFiles.push(kara);
 			try {
