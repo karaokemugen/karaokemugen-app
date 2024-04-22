@@ -354,6 +354,7 @@ async function checkMpv() {
 		logger.debug(`mpv stdout: ${output.stdout}`, { service });
 		const mpv = semver.valid(mpvRegex.exec(output.stdout)[1]);
 		mpvVersion = mpv.split('-')[0];
+		setState({ player: { ...getState().player, version: mpvVersion } });
 		logger.debug(`mpv version: ${mpvVersion}`, { service });
 	} catch (err) {
 		logger.warn('Unable to determine mpv version. Will assume this is a recent one', {
@@ -638,6 +639,7 @@ export class Players {
 					command: [
 						...options,
 						'replace',
+						'0',
 						{
 							'force-media-title': 'Background',
 							'audio-files-set': background.music[0],
@@ -652,6 +654,7 @@ export class Players {
 					command: [
 						...options,
 						'replace',
+						'0',
 						{
 							'force-media-title': 'Background',
 							'loop-file': 'inf',
@@ -923,7 +926,7 @@ export class Players {
 				playerState.currentSong = null;
 				playerState.mediaType = mediaType;
 				playerState.currentMedia = media;
-				await retry(() => this.exec({ command: ['loadfile', media.filename, 'replace', options] }), {
+				await retry(() => this.exec({ command: ['loadfile', media.filename, 'replace', '0', options] }), {
 					retries: 3,
 					onFailedAttempt: error => {
 						logger.warn(

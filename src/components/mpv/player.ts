@@ -53,7 +53,7 @@ export class Player {
 	}
 
 	async play(mediaFile: string, options: Record<string, any>) {
-		const cmd = { command: ['loadfile', mediaFile, 'replace', options] };
+		const cmd = { command: ['loadfile', mediaFile, 'replace', '0', options] };
 		this.log.debug(`mpv command: ${JSON.stringify(cmd)}}`);
 		await this.mpv.send(cmd);
 		this.mpvState.playbackTime$
