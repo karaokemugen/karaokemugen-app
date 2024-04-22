@@ -12,6 +12,7 @@ export interface SongModifiers {
 }
 
 export interface PlayerState {
+	version?: string;
 	volume?: number;
 	playing?: boolean;
 	playerStatus?: 'stop' | 'pause' | 'play';
