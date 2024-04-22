@@ -16,7 +16,7 @@ import { hmsToSecondsOnly, secondsTimeSpanToHMS } from '../../../utils/tools';
 import Autocomplete from '../generic/Autocomplete';
 import Switch from '../generic/Switch';
 
-const listTypeCriteria = [1002, 1003, 1006];
+const listTypeCriteria = [1002, 1003, 1006, 1007, 1008];
 
 interface IProps {
 	playlist: DBPL;
@@ -68,12 +68,12 @@ function CriteriasList(props: IProps) {
 		getCriterias();
 	};
 
-	const editTypeSmart = (e: any) => {
+	const editTypeSmart = async (e: any) => {
 		const type = e.target.checked ? 'UNION' : 'INTERSECT';
-		setTypeSmart(type);
-		editPlaylist({
+		await editPlaylist({
 			type_smart: type,
 		});
+		setTypeSmart(type);
 	};
 
 	const editFlagSmartLimit = (e: any) => {
@@ -192,6 +192,9 @@ function CriteriasList(props: IProps) {
 						setCriteriaVal('');
 					}}
 				>
+					<option key={YEARS.type} value={YEARS.type}>
+						{i18next.t('DETAILS.YEAR')}
+					</option>
 					{listTypeCriteria.map(value => {
 						return (
 							<option key={value} value={value}>
@@ -204,9 +207,6 @@ function CriteriasList(props: IProps) {
 							{i18next.t(`TAG_TYPES.${key}_other`)}
 						</option>
 					))}
-					<option key={YEARS.type} value={YEARS.type}>
-						{i18next.t('DETAILS.YEAR')}
-					</option>
 				</select>
 				<div className="criteriasValContainer">
 					{criteriaType === 1006 ? (
@@ -279,12 +279,12 @@ function CriteriasList(props: IProps) {
 															? criteria.value[0]
 															: criteria.value,
 														true
-												  )
+													)
 												: criteria.value_i18n
-												  ? criteria.value_i18n
-												  : [1002, 1003].includes(criteria.type)
-												    ? secondsTimeSpanToHMS(criteria.value, 'mm:ss')
-												    : criteria.value}
+													? criteria.value_i18n
+													: [1002, 1003].includes(criteria.type)
+														? secondsTimeSpanToHMS(criteria.value, 'mm:ss')
+														: criteria.value}
 										</div>
 									) : null}
 								</div>

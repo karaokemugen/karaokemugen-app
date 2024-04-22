@@ -123,43 +123,43 @@ ${
 ${filterClauses.map(clause => `${filterType} (${clause})`).reduce((a, b) => `${a} ${b}`, '')}
 ${whereClauses}
 ${blacklistClauses}
-GROUP BY ${groupClauses} 
-	ak.pk_kid, 
-	pc.fk_kid, 
-	ak.titles, 
-	ak.titles_aliases, 
-	ak.titles_default_language, 
-	ak.comment, 
+GROUP BY ${groupClauses}
+	ak.pk_kid,
+	pc.fk_kid,
+	ak.titles,
+	ak.titles_aliases,
+	ak.titles_default_language,
+	ak.comment,
 	ak.announce_position_x,
 	ak.announce_position_y,
-	ak.songorder, 
-	ak.serie_singergroup_singer_sortable, 
-	ak.subfile, 
-	ak.year, 
-	ak.tags, 
-	ak.mediafile, 
-	ak.karafile, 
-	ak.duration, 
-	ak.loudnorm, 
-	ak.created_at, 
-	ak.modified_at, 
-	ak.mediasize, 
-	ak.repository, 
-	ak.songtypes_sortable, 
-	f.fk_kid, 
-	ak.tid, 
-	ak.languages_sortable, 
-	ak.download_status, 
-	ak.ignore_hooks, 
-	ak.titles_sortable, 
-	ak.from_display_type 
+	ak.songorder,
+	ak.serie_singergroup_singer_sortable,
+	ak.subfile,
+	ak.year,
+	ak.tags,
+	ak.mediafile,
+	ak.karafile,
+	ak.duration,
+	ak.loudnorm,
+	ak.created_at,
+	ak.modified_at,
+	ak.mediasize,
+	ak.repository,
+	ak.songtypes_sortable,
+	f.fk_kid,
+	ak.tid,
+	ak.languages_sortable,
+	ak.download_status,
+	ak.ignore_hooks,
+	ak.titles_sortable,
+	ak.from_display_type
 	${groupClauseEnd}
 ${havingClause}
-ORDER BY ${orderClauses} 
-	ak.serie_singergroup_singer_sortable, 
-	ak.songtypes_sortable DESC, 
-	ak.songorder, 
-	ak.languages_sortable, 
+ORDER BY ${orderClauses}
+	ak.serie_singergroup_singer_sortable,
+	ak.songtypes_sortable DESC,
+	ak.songorder,
+	ak.languages_sortable,
 	ak.titles_sortable
 ${limitClause}
 ${offsetClause}

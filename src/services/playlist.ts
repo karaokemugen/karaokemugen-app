@@ -76,6 +76,7 @@ import {
 	getCriterias,
 	updateAllSmartPlaylists,
 	updateSmartPlaylist,
+	validateCriterias,
 	whitelistHook,
 } from './smartPlaylist.js';
 import { getUser, getUsers, updateSongsLeft } from './user.js';
@@ -449,15 +450,7 @@ export async function editPlaylist(plaid: string, playlist: Partial<DBPL>) {
 			...pl,
 			...playlist,
 		};
-		await updatePlaylist(newPL);
 		let needsSmartUpdating = false;
-		if (playlist.flag_current) currentHook(plaid, newPL.name);
-		if (playlist.flag_public) publicHook(plaid, newPL.name);
-		if (playlist.flag_whitelist) whitelistHook(plaid);
-		if (playlist.flag_blacklist) blacklistHook(plaid);
-		if (playlist.flag_fallback) fallbackPlaylistHook(plaid);
-		const isBlacklist = plaid === getState().blacklistPlaid;
-		const isWhitelist = plaid === getState().whitelistPlaid;
 
 		if (newPL.flag_smart) {
 			// Only update if :
@@ -473,7 +466,27 @@ export async function editPlaylist(plaid: string, playlist: Partial<DBPL>) {
 			) {
 				needsSmartUpdating = true;
 			}
+			// If type_smart switches from UNION to INTERSECT we must check criterias to see if they're still compatible.
+			if (pl.type_smart === 'UNION' && newPL.type_smart === 'INTERSECT') {
+				const cs = await getCriterias(newPL.plaid, null, false);
+				try {
+					validateCriterias(cs, newPL);
+				} catch (err) {
+					// We change the message to say you can't chagne the smart type due to conflicting criterias
+					if (err.code === 409) err.message === 'TYPE_SMART_CHANGE_CONFLICTING_CRITERIAS_ERROR';
+					throw err;
+				}
+			}
 		}
+		await updatePlaylist(newPL);
+		if (playlist.flag_current) currentHook(plaid, newPL.name);
+		if (playlist.flag_public) publicHook(plaid, newPL.name);
+		if (playlist.flag_whitelist) whitelistHook(plaid);
+		if (playlist.flag_blacklist) blacklistHook(plaid);
+		if (playlist.flag_fallback) fallbackPlaylistHook(plaid);
+		const isBlacklist = plaid === getState().blacklistPlaid;
+		const isWhitelist = plaid === getState().whitelistPlaid;
+
 		if (needsSmartUpdating) {
 			await updateSmartPlaylist(plaid);
 		}

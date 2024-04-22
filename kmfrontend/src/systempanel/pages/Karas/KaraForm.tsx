@@ -207,8 +207,9 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 			{
 				name: 'overallBitrate',
 				title: 'KARA.MEDIA_FILE_INFO.OVERALL_BITRATE',
-				format: (value: number) => value && `${Math.round(value / 100)} kb/s`,
-				formatSuggestedValue: value => value && `max. ${Math.round(value / 100)} kb/s`,
+				// Convert from MB/s to kb/s
+				format: (value: number) => value && `${Math.round((8 * value) / 1000)} kb/s`,
+				formatSuggestedValue: value => value && `max. ${Math.round((8 * value) / 1000)} kb/s`,
 			},
 			{ name: 'videoCodec', title: 'KARA.MEDIA_FILE_INFO.VIDEO_CODEC' },
 			{ name: 'videoColorspace', title: 'KARA.MEDIA_FILE_INFO.VIDEO_COLORSPACE' },
@@ -700,7 +701,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						</span>
 					}
 					labelCol={{ flex: '0 1 220px' }}
-					wrapperCol={{ span: 12 }}
+					wrapperCol={{ span: 20 }}
 				>
 					<Row gutter={32}>
 						<Col>
@@ -732,7 +733,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 							</Form.Item>
 						</Col>
 						{this.props.kara?.download_status === 'DOWNLOADED' || this.state.mediaInfo?.size ? (
-							<Col flex={'0 1 280px'}>
+							<Col flex={'0 1 400px'}>
 								<Card>
 									{this.renderMediaInfo(this.state.mediaInfo, this.state.mediaInfoValidationResult)}
 									{this.state.mediaInfo?.warnings?.length > 0 && (
@@ -802,11 +803,13 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 									</Tooltip>
 								</Checkbox>
 							)}
-							{this.state.subfile?.length > 0 && this.props.kara?.kid && (
-								<div style={{ marginTop: '1em' }}>
-									<OpenLyricsFileButton kara={this.props.kara} />
-								</div>
-							)}
+							{this.state.subfile?.length > 0 &&
+								this.props.kara?.kid &&
+								!this.state.mediafileIsTouched && (
+									<div style={{ marginTop: '1em' }}>
+										<OpenLyricsFileButton kara={this.props.kara} />
+									</div>
+								)}
 						</Col>
 					</Row>
 				</Form.Item>

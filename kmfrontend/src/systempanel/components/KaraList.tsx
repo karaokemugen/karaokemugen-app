@@ -26,7 +26,7 @@ import {
 	sortTagByPriority,
 } from '../../utils/kara';
 import { commandBackend, getSocket } from '../../utils/socket';
-import { isModifiable } from '../../utils/tools';
+import { isModifiable, isRepoOnline, isRepoOnlineAndMaintainer } from '../../utils/tools';
 import GlobalContext from '../../store/context';
 import { tagTypes } from '../../utils/tagTypes';
 import type { DBTag } from '../../../../src/lib/types/database/tag';
@@ -249,8 +249,12 @@ function KaraList(props: KaraListProps) {
 		}
 		if (record.download_status === 'DOWNLOADED') {
 			menu.push(showMediaButton);
-			menu.push(uploadMediaButton);
-			menu.push(deleteMediaButton);
+			if (isRepoOnlineAndMaintainer(context, record.repository)) {
+				menu.push(uploadMediaButton);
+			}
+			if (isRepoOnline(context, record.repository)) {
+				menu.push(deleteMediaButton);
+			}
 		}
 		menu.push(deleteButton);
 		return menu;
@@ -368,7 +372,7 @@ function KaraList(props: KaraListProps) {
 						/>
 					);
 
-					if (record.download_status !== 'MISSING') {
+					if (record.download_status !== 'MISSING' || !isRepoOnline(context, record.repository)) {
 						downloadVideoButton = null;
 					}
 					if (record.download_status !== 'DOWNLOADED') {

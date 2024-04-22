@@ -67,7 +67,8 @@ function checkAuthPresence(data: APIData) {
 export async function checkValidUser(token: OldJWTToken): Promise<User> {
 	// If user is remote, see if we have a remote token ready.
 	token.username = token.username.toLowerCase();
-	const user = await getUser(token.username, true, true);
+	// Checking via cache to avoid flooding SQL queries to the postgresql server and to KM logs when --sql is enabled.
+	const user = await getUser(token.username, true, true, null, true);
 	if (user) {
 		if (token.role === 'admin' && user.type > 0) throw { code: 403, message: APIMessage('ADMIN_PLEASE') };
 		return user;

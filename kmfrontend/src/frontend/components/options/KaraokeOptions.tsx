@@ -418,7 +418,7 @@ function KaraokeOptions(props: IProps) {
 								<option value="allowed">
 									{i18next.t('SETTINGS.KARAOKE.ALLOW_PUBLIC_DUPLICATES_OPTIONS.ALLOWED')}
 								</option>
-								<option value="upvotesOnly">
+								<option value="upvotes">
 									{i18next.t('SETTINGS.KARAOKE.ALLOW_PUBLIC_DUPLICATES_OPTIONS.UPVOTES_ONLY')}
 								</option>
 								<option value="disallowed">

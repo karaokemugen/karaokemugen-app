@@ -55,7 +55,7 @@ function PublicHomepage(props: IProps) {
 					context?.globalState.settings.data.config?.Karaoke?.Quota.Type === 1
 						? i18next.t('PUBLIC_HOMEPAGE.QUOTA_KARA_DESCRIPTION', {
 								count: context.globalState.settings.data.config?.Karaoke?.Quota?.Songs,
-						  })
+							})
 						: null}
 				</div>
 				<div>
@@ -66,7 +66,7 @@ function PublicHomepage(props: IProps) {
 									context.globalState.settings.data.config?.Karaoke?.Quota?.Time,
 									'ms'
 								),
-						  })
+							})
 						: null}
 				</div>
 			</div>
@@ -84,9 +84,11 @@ function PublicHomepage(props: IProps) {
 								<i className="fas fa-fw fa-chart-line" /> {i18next.t('PUBLIC_HOMEPAGE.OPEN_POLL')}
 							</button>
 						) : null}
-						<Link className="action green" to="/public/playlist/current">
-							<i className="fas fa-fw fa-play-circle" /> {i18next.t('PUBLIC_HOMEPAGE.CURRENT')}
-						</Link>
+						{props.currentVisible ? (
+							<Link className="action green" to="/public/playlist/current">
+								<i className="fas fa-fw fa-play-circle" /> {i18next.t('PUBLIC_HOMEPAGE.CURRENT')}
+							</Link>
+						) : null}
 						{props.publicVisible &&
 						context.globalState.settings.data.state.currentPlaid !==
 							context.globalState.settings.data.state.publicPlaid ? (

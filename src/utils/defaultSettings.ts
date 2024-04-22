@@ -24,6 +24,7 @@ export const dbConfig = {
 export const defaults: Config = {
 	App: {
 		FirstRun: true,
+		InstanceID: 'Change me',
 		JwtSecret: 'Change me',
 	},
 	Online: {
@@ -47,6 +48,7 @@ export const defaults: Config = {
 			App: true,
 		},
 		Remote: false,
+		RemoteToken: 'Change me',
 		FetchPopularSongs: true,
 		AllowDownloads: true,
 	},
@@ -236,11 +238,12 @@ export const endOfPlaylistActions = ['random', 'random_fallback', 'play_fallback
 /** Config constraints. */
 export const configConstraints = {
 	'App.FirstRun': { inclusion: bools },
-	// 'App.InstanceID': {presence: true, format: uuidRegexp}, // Broken on regular installations since InstanceID is stored in database
+	// 'App.InstanceID': {presence: true, format: uuidRegexp}, // Broken on regular installations since InstanceID is stored in database. We'll implement this in KM 10.0 aka KMX
 	'Online.Stats': { boolUndefinedValidator: true },
 	'Online.ErrorTracking': { boolUndefinedValidator: true },
 	'Online.Host': { presence: true, format: hostnameRegexp },
 	'Online.Port': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0 } },
+	// 'Online.RemoteToken': {presence: true, format: uuidRegexp}, // We'll implement this in KM 10.0
 	'Online.Users': { inclusion: bools },
 	'Online.Discord.DisplayActivity': { inclusion: bools },
 	'Online.Updates.Medias.Jingles': { inclusion: bools },
