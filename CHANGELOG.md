@@ -1,3 +1,11 @@
+# v7.1.66 - 22/04/2024
+
+This is a bug fix release.
+
+## Fixes
+
+-   [Maintainers] Fixed validation across collections on kara creation (#1601)
+
 # v7.1.65 - 22/04/2024
 
 ## New features
