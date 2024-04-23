@@ -234,7 +234,7 @@ function KaraLine(props: IProps) {
 	})();
 
 	const getSerieOrSingerGroupsOrSingers = (data: KaraElement) => {
-		if (data.from_display_type && data[data.from_display_type]) {
+		if (data.from_display_type && data[data.from_display_type] && data[data.from_display_type].length > 0) {
 			return data[data.from_display_type]
 				.map(e => getTagInLocale(context?.globalState.settings.data, e, props.i18nTag).i18n)
 				.join(', ');
