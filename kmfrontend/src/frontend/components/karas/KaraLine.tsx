@@ -143,7 +143,7 @@ function KaraLine(props: IProps) {
 					if (pos) {
 						data = {
 							plaid: oppositePlaylist.plaid,
-							requestedby: globalState.auth.data.username,
+							requestedby: authData.username,
 							kids: [kara.kid],
 							pos: pos,
 						};
