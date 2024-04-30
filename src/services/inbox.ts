@@ -72,7 +72,7 @@ export async function downloadKaraFromInbox(inid: string, repoName: string, toke
 					service,
 					obj: err,
 				});
-				throw new ErrorKM('INBOX_VIEW_ERROR');
+				throw new ErrorKM('INBOX_VIEW_ERROR', 500, false);
 			}
 		}
 		// If song has a parent in the inbox and we don't have it yet, download it first.
