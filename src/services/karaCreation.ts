@@ -45,7 +45,9 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 		}
 		// Let's find out which songs are in our family.
 		// Since we have possibly new parents we'll add them to the mix
-		const karas = await getAllKarasInFamily([...kara.data.parents, kara.data.kid]);
+		const karas = await getAllKarasInFamily(
+			kara.data.parents ? [...kara.data.parents, kara.data.kid] : [kara.data.kid]
+		);
 		if (kara.data.parents) {
 			if (kara.data.parents.includes(kara.data.kid)) {
 				// Did you just try to make a song its own parent?
