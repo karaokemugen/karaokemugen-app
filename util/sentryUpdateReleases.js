@@ -27,7 +27,7 @@ await sentry.releases.uploadSourceMaps(version, {
 	projects: ['km-app'],
 });
 await sentry.releases.setCommits(version, {
-	repo: 'Karaoke Mugen / Karaoke Mugen Application',
+	repo: 'Karaoke Mugen / Code / Karaoke Mugen Application',
 	commit: process.env.CI_COMMIT_SHA,
 });
 
