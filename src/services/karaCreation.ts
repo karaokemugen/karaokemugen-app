@@ -24,6 +24,7 @@ import {
 	convertDBKarasToKaraFiles,
 	createKarasMap,
 } from '../lib/services/karaValidation.js';
+import { getKaraFamily } from '../lib/services/kara.js';
 
 const service = 'KaraCreation';
 
@@ -42,12 +43,14 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 		} catch (err) {
 			throw new ErrorKM('REPOSITORY_MANIFEST_KARA_METADATA_RULE_VIOLATION_ERROR', 400, false);
 		}
+		// Let's find out which songs are in our family.
+		// Since we have possibly new parents we'll add them to the mix
+		const karas = await getAllKarasInFamily([...kara.data.parents, kara.data.kid]);
 		if (kara.data.parents) {
 			if (kara.data.parents.includes(kara.data.kid)) {
 				// Did you just try to make a song its own parent?
 				throw new ErrorKM('TIME_PARADOX', 409, false);
 			}
-			const karas = await getKaras({ ignoreCollections: true });
 			// We need to update the edited kara's parents in our set.
 			const DBKaraIndex = karas.content.findIndex(k => k.kid === kara.data.kid);
 			karas.content[DBKaraIndex].parents = kara.data.parents;
@@ -64,7 +67,8 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 			}
 		}
 		profile('editKaraFile');
-		const oldKara = await getKara(kara.data.kid, adminToken);
+		// Karas should contain our old kara.
+		const oldKara = karas.content.find(k => k.kid === kara.data.kid);
 		if (!oldKara) {
 			logger.error(`Old Kara not found when editing! KID: ${kara.data.kid}`, { service });
 			throw new ErrorKM('UNKNOWN_SONG', 404, false);
@@ -208,7 +212,10 @@ export async function createKara(editedKara: EditedKara) {
 			throw new ErrorKM('REPOSITORY_MANIFEST_KARA_METADATA_RULE_VIOLATION_ERROR', 400, false);
 		}
 		if (kara.data.parents) {
-			const karas = await getKaras({ ignoreCollections: true });
+			// Let's find out which songs are in our family.
+			// Since we don't have a KID we grab all parents.
+			// We then only get karaoke data of these songs.
+			const karas = await getAllKarasInFamily(kara.data.parents);
 			const karaFiles = convertDBKarasToKaraFiles(karas.content);
 			karaFiles.push(kara);
 			try {
@@ -279,4 +286,19 @@ export async function createKara(editedKara: EditedKara) {
 	} finally {
 		task.end();
 	}
+}
+
+async function getAllKarasInFamily(kidsToSearch: string[]) {
+	const family = await getKaraFamily(kidsToSearch);
+	const kids = new Set();
+	for (const relation of family) {
+		kids.add(relation.kid);
+		kids.add(relation.parent_kid);
+	}
+	// Flatten the result so we get it in a neat table
+	const karas = await getKaras({
+		ignoreCollections: true,
+		q: `k:${[...kids.values()].join(',')}`,
+	});
+	return karas;
 }
