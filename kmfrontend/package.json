@@ -42,6 +42,7 @@
 		"@types/react-dom": "18.3.0",
 		"@typescript-eslint/eslint-plugin": "^7.0.2",
 		"@typescript-eslint/parser": "^7.0.2",
+		"@vitejs/plugin-legacy": "^5.4.0",
 		"@vitejs/plugin-react": "^4.2.1",
 		"eslint": "^8.57.0",
 		"eslint-config-prettier": "^9.1.0",
@@ -52,6 +53,7 @@
 		"i18next-scanner": "^4.4.0",
 		"prettier": "^3.2.5",
 		"source-map-explorer": "^2.5.3",
+		"terser": "^5.31.0",
 		"typescript": "5.4.5",
 		"vite": "^5.2.10",
 		"vite-plugin-node-polyfills": "^0.21.0"
