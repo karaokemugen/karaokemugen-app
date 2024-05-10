@@ -420,11 +420,25 @@ function configuredBinariesForSystem(config: Config): BinariesConfig {
 				postgres_client: 'psql',
 			};
 		default:
+			// If we're running flatpak or appimages, then those env vars would be set.
+			const isInContainer = process.env.container || process.env.APPIMAGE;
+			const binaries = {
+				ffmpeg: isInContainer ? defaults.System.Binaries.ffmpeg.Linux : config.System.Binaries.ffmpeg.Linux,
+				mpv: isInContainer ? defaults.System.Binaries.Player.Linux : config.System.Binaries.Player.Linux,
+				postgres: isInContainer
+					? defaults.System.Binaries.Postgres.Linux
+					: config.System.Binaries.Postgres.Linux,
+				patch: isInContainer ? defaults.System.Binaries.patch.Linux : config.System.Binaries.patch.Linux,
+			};
+			if (isInContainer)
+				logger.debug('App is in an AppImage or Flatpak. Forcing default bianries to use bundled ones.', {
+					service,
+				});
 			return {
-				ffmpeg: resolve(getState().appPath, config.System.Binaries.ffmpeg.Linux),
-				mpv: resolve(getState().appPath, config.System.Binaries.Player.Linux),
-				postgres: resolve(getState().appPath, config.System.Binaries.Postgres.Linux),
-				patch: resolve(getState().appPath, config.System.Binaries.patch.Linux),
+				ffmpeg: resolve(getState().appPath, binaries.ffmpeg),
+				mpv: resolve(getState().appPath, binaries.mpv),
+				postgres: resolve(getState().appPath, binaries.postgres),
+				patch: resolve(getState().appPath, binaries.patch),
 				postgres_ctl: 'pg_ctl',
 				postgres_dump: 'pg_dump',
 				postgres_client: 'psql',
