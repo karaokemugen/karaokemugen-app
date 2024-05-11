@@ -22,10 +22,12 @@ export default function VideoPreview(props: Props) {
 				const { subchecksum, mediasize } = await fetch(
 					`https://${props.kara.repository}/api/karas/${props.kara.kid}`
 				).then(r => r.json());
-				if (props.kara.mediasize !== mediasize) return null;
-				else
-					return `https://${props.kara.repository}/hardsubs/${props.kara.kid}.${props.kara.mediasize}.${subchecksum}.mp4`;
-			} else return null;
+				return props.kara.mediasize !== mediasize
+					? videoLink
+					: `https://${props.kara.repository}/hardsubs/${props.kara.kid}.${props.kara.mediasize}.${subchecksum}.mp4`;
+			} else {
+				return videoLink;
+			}
 		},
 		[props.kara.kid],
 		isRemote() || props.kara.download_status !== 'DOWNLOADED'
