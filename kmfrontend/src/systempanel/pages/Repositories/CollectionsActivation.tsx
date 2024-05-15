@@ -61,7 +61,19 @@ function CollectionsActivation() {
 		},
 	];
 
-	return <Table dataSource={collections} columns={columns} rowKey="tid" />;
+	return (
+		<Table
+			dataSource={collections}
+			columns={columns}
+			rowKey="tid"
+			scroll={{
+				x: true,
+			}}
+			expandable={{
+				showExpandColumn: false,
+			}}
+		/>
+	);
 }
 
 export default CollectionsActivation;

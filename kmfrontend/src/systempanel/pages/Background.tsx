@@ -141,9 +141,13 @@ export default function Background() {
 					showIcon
 					message={
 						<ul>
-							{(
-								i18next.t<string>('BACKGROUNDS_MGMT.INFO', { returnObjects: true }) as any as string[]
-							)?.map((info, i) => <li key={i}>{info}</li>)}
+							{i18next
+								.t<
+									string,
+									{ returnObjects: true },
+									string[]
+								>('BACKGROUNDS_MGMT.INFO', { returnObjects: true })
+								?.map((info, i) => <li key={i}>{info}</li>)}
 						</ul>
 					}
 				/>
@@ -152,9 +156,29 @@ export default function Background() {
 					<PlusOutlined />
 				</Button>
 				<Typography.Title>{i18next.t('BACKGROUNDS_MGMT.PICTURES')}</Typography.Title>
-				<Table dataSource={bgList?.pictures} columns={columns} rowKey="file" />
+				<Table
+					dataSource={bgList?.pictures}
+					columns={columns}
+					rowKey="file"
+					scroll={{
+						x: true,
+					}}
+					expandable={{
+						showExpandColumn: false,
+					}}
+				/>
 				<Typography.Title>{i18next.t('BACKGROUNDS_MGMT.MUSIC')}</Typography.Title>
-				<Table dataSource={bgList?.music} columns={columns} rowKey="file" />
+				<Table
+					dataSource={bgList?.music}
+					columns={columns}
+					rowKey="file"
+					scroll={{
+						x: true,
+					}}
+					expandable={{
+						showExpandColumn: false,
+					}}
+				/>
 				<Modal
 					title={i18next.t('BACKGROUNDS_MGMT.NEW')}
 					open={addModal}

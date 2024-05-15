@@ -159,7 +159,17 @@ function TagsList() {
 						})}
 					</Select>
 				</div>
-				<Table dataSource={tags} columns={columns} rowKey="tid" />
+				<Table
+					dataSource={tags}
+					columns={columns}
+					rowKey="tid"
+					scroll={{
+						x: true,
+					}}
+					expandable={{
+						showExpandColumn: false,
+					}}
+				/>
 				<Modal
 					title={i18next.t('TAGS.TAG_DELETED_CONFIRM')}
 					open={deleteModal}
