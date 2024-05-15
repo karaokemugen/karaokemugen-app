@@ -292,7 +292,12 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 								},
 							]}
 							rowKey="lastplayed_at"
-							childrenColumnName="childrenColumnName"
+							scroll={{
+								x: true,
+							}}
+							expandable={{
+								showExpandColumn: false,
+							}}
 						/>
 						<h1>{i18next.t('SESSIONS.KARA_REQUESTED')}</h1>
 						<Table
@@ -321,7 +326,12 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 								},
 							]}
 							rowKey="lastplayed_at"
-							childrenColumnName="childrenColumnName"
+							scroll={{
+								x: true,
+							}}
+							expandable={{
+								showExpandColumn: false,
+							}}
 						/>
 					</>
 				) : null}

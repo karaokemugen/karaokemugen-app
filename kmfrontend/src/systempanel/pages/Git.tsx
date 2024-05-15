@@ -399,6 +399,9 @@ export default function Git() {
 						defaultExpandAllRows: true,
 					}}
 					rowKey={rec => rec.repo.Name}
+					scroll={{
+						x: true,
+					}}
 				/>
 			</Layout.Content>
 			<Modal

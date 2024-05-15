@@ -291,7 +291,17 @@ export default function Inbox() {
 		<>
 			<Title title={i18next.t('HEADERS.INBOX.TITLE')} description={i18next.t('HEADERS.INBOX.DESCRIPTION')} />
 			<Layout.Content>
-				<Table dataSource={inbox} columns={columns} rowKey="inid" />
+				<Table
+					dataSource={inbox}
+					columns={columns}
+					rowKey="inid"
+					scroll={{
+						x: true,
+					}}
+					expandable={{
+						showExpandColumn: false,
+					}}
+				/>
 			</Layout.Content>
 		</>
 	);

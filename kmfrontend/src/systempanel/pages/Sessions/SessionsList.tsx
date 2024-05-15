@@ -87,7 +87,17 @@ class SessionList extends Component<unknown, SessionListState> {
 							<PlusOutlined />
 						</Button>
 					</Link>
-					<Table dataSource={this.state.sessions} columns={this.columns} rowKey="seid" />
+					<Table
+						dataSource={this.state.sessions}
+						columns={this.columns}
+						rowKey="seid"
+						scroll={{
+							x: true,
+						}}
+						expandable={{
+							showExpandColumn: false,
+						}}
+					/>
 				</Layout.Content>
 			</>
 		);
