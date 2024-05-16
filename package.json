@@ -1,7 +1,7 @@
 {
   "name": "karaokemugen-app",
   "version": "7.1.70-next",
-  "versionName": "Rin Respectable",
+  "versionName": "Sakuya Splendide",
   "description": "Karaoke playlist manager / player",
   "bin": {
     "karaokemugen": "./dist/src/index.js"
