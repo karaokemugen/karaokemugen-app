@@ -35,7 +35,10 @@ export async function getInbox(repoName: string, token: string): Promise<Inbox[]
 				authorization: token,
 			},
 		});
-		const availableKaras = await getKarasMicro(res.data.flatMap(d => [d.kid, d.edited_kid]));
+		const availableKaras = await getKarasMicro(
+			res.data.flatMap(d => [d.kid, d.edited_kid]),
+			true
+		);
 		return res.data.map(resdata => ({
 			...resdata,
 			available_locally: availableKaras.some(kara => kara.kid === resdata.kid || kara.kid === resdata.edited_kid),

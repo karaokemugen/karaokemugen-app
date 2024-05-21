@@ -111,17 +111,13 @@ export async function getYears(): Promise<YearList> {
 	}
 }
 
-export async function getKarasMicro(kids: string[], notFromAllKaras = false) {
-	// The second argument prevents the query from looking into the all_karas table
-	// which might not be refreshed yet and might not contain the song you wish to find (integrateKaraFile uses this)
-	// This is akin to ignore collections.
-	// This might be a bit counter-intuitive but I felt like making a getKarasNano was worse.
-	// Let's go Gare du Nord to settle this.
+export async function getKarasMicro(kids: string[], ignoreCollectionsAndBlacklist = false) {
 	profile('getKarasMicro');
 	try {
 		const pl = await selectAllKarasMicro({
 			q: `k:${kids.join(',')}`,
-			ignoreCollections: notFromAllKaras,
+			ignoreCollections: ignoreCollectionsAndBlacklist,
+			blacklist: !ignoreCollectionsAndBlacklist,
 		});
 		return pl;
 	} catch (err) {

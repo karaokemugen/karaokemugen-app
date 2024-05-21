@@ -68,6 +68,8 @@ export async function removeKara(
 		const parents: Family[] = [];
 		const karas = await selectAllKaras({
 			q: `k:${kids.join(',')}`,
+			ignoreCollections: true,
+			blacklist: false,
 		});
 		if (karas.length === 0) throw new ErrorKM('UNKNOWN_SONG', 404, false);
 		for (const kara of karas) {
@@ -106,6 +108,8 @@ export async function removeKara(
 					parent: kara.kid,
 					children: await selectAllKaras({
 						q: `k:${kara.children.join(',')}`,
+						ignoreCollections: true,
+						blacklist: false,
 					}),
 				});
 			}

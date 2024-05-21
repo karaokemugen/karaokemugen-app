@@ -226,8 +226,8 @@ export async function exportSession(seid: string): Promise<SessionExports> {
 		const session = await findSession(seid);
 		if (!session) throw new ErrorKM('UNKNOWN_SESSION', 404);
 		const [requested, played] = await Promise.all([
-			selectAllKaras({ order: 'sessionRequested', q: `seid:${seid}` }),
-			selectAllKaras({ order: 'sessionPlayed', q: `seid:${seid}` }),
+			selectAllKaras({ order: 'sessionRequested', q: `seid:${seid}`, blacklist: false, ignoreCollections: true }),
+			selectAllKaras({ order: 'sessionPlayed', q: `seid:${seid}`, blacklist: false, ignoreCollections: true }),
 		]);
 		const sessionExports: SessionExports = {
 			requested: sanitizeFile(`${session.name}.${session.started_at.toISOString()}.requested.csv`),
