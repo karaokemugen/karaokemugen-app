@@ -6,8 +6,6 @@ import { v4 as uuidV4 } from 'uuid';
 import { formatKaraV4 } from '../src/lib/dao/karafile';
 import { formatTagFile } from '../src/lib/dao/tagfile';
 import { defineFilename } from '../src/lib/services/karaCreation';
-import { DBKara } from '../src/lib/types/database/kara';
-import { Tag } from '../src/lib/types/tag';
 import { supportedFiles, tagTypes } from '../src/lib/utils/constants';
 import { extractSubtitles, getMediaInfo } from '../src/lib/utils/ffmpeg';
 import { fileExists, sanitizeFile } from '../src/lib/utils/files';
