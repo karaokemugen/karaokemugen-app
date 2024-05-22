@@ -423,6 +423,7 @@ function currentHook(plaid: string, name: string) {
 	setState({ currentPlaid: plaid, introPlayed: false, introSponsorPlayed: false });
 	emitWS('currentPlaylistUpdated', plaid);
 	resetAllAcceptedPLCs();
+	writeStreamFiles('next_song_name_and_requester');
 	writeStreamFiles('current_kara_count');
 	writeStreamFiles('time_remaining_in_current_playlist');
 	downloadMediasInPlaylist(plaid);
@@ -828,6 +829,7 @@ export async function addKaraToPlaylist(params: AddKaraParams) {
 		const plc = await getPLCInfo(PLCsInserted[0].plcid, true, requester);
 		if (params.plaid === state.currentPlaid) {
 			checkMediaAndDownload(karas);
+			writeStreamFiles('next_song_name_and_requester');
 			writeStreamFiles('current_kara_count');
 			writeStreamFiles('time_remaining_in_current_playlist');
 			if (conf.Karaoke.Autoplay && (state.player?.mediaType === 'stop' || state.randomPlaying)) {
@@ -1046,6 +1048,7 @@ export async function removeKaraFromPlaylist(
 			}
 		}
 		await Promise.all([
+			writeStreamFiles('next_song_name_and_requester'),
 			writeStreamFiles('current_kara_count'),
 			writeStreamFiles('time_remaining_in_current_playlist'),
 			writeStreamFiles('public_kara_count'),
@@ -1221,6 +1224,7 @@ export async function editPLC(plc_ids: number[], params: PLCEditParams, refresh 
 			if (currentSong && currentSong.pos <= params.pos && plc.plaid === getState().currentPlaid) {
 				setState({ player: { currentSong: await getCurrentSong() } });
 			}
+			writeStreamFiles('next_song_name_and_requester');
 			writeStreamFiles('time_remaining_in_current_playlist');
 			songsLeftToUpdate.add({
 				username: plc.username,
