@@ -129,6 +129,6 @@ export default ts.config(
 		},
 	},
 	{
-		ignores: ['.yarn/', 'app/', 'initpage', '**/build/', '**/dist/', '**/eslint.config.js'],
+		ignores: ['.yarn/', 'app/', 'initpage', '**/build/', '**/dist/', '**/eslint.config.js', '**/eslint.config.mjs'],
 	}
 );
