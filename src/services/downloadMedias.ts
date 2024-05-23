@@ -162,7 +162,10 @@ export async function updateAllMedias() {
 		} catch (err) {
 			logger.warn(`Repository ${repo.Name} failed to update medias properly`, { service, obj: err });
 			Sentry.error(err);
-			emitWS('operatorNotificationError', APIMessage('ERROR_CODES.UPDATING_MEDIAS_ERROR', repo.Name));
+			emitWS(
+				'operatorNotificationError',
+				APIMessage('ERROR_CODES.UPDATING_MEDIAS_ERROR', { repo: repo.Name, err: err })
+			);
 		}
 	}
 	await checkDownloadStatus();

@@ -12,6 +12,8 @@
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
+	padding: 24px;
+	box-sizing: border-box;
 	> span.header {
 		font-size: 1.75em;
 	}
