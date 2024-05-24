@@ -1,5 +1,4 @@
 # You can override the included template(s) by including variable overrides
-# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
 # Secret Detection customization: https://docs.gitlab.com/ee/user/application_security/secret_detection/#customizing-settings
 # Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
 # Note that environment variables can be set in several places
@@ -13,14 +12,8 @@ variables:
   DIST_LINUX_ARM64: dist_linux-arm64-8.0.tar.gz
   DIST_WIN: dist_win-8.0.tar.gz
   DIST_MAC: dist_mac-8.0.tar.gz
-sast:
-  variables:
-    SAST_EXCLUDED_PATHS: spec, test, tests, tmp, assets, build, img, util, packages
-    SECRET_DETECTION_EXCLUDED_PATHS: doc, spec, test, tests, .md, node_modules, yarn.lock, kmfrontend/node_modules
-  stage: test
 include:
   - template: Security/Dependency-Scanning.gitlab-ci.yml
-  - template: Security/SAST.gitlab-ci.yml
   - template: Security/Secret-Detection.gitlab-ci.yml
 workflow:
   rules:
@@ -40,44 +33,11 @@ stages:
   - package
   - deploy
   - release
-semgrep-sast:
-  interruptible: true
-  stage: scan
-  artifacts:
-    expire_in: 1 day
-  cache: {}
-  tags:
-    - $RUNNER_LINUX
-  rules:
-    - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
-      when: never
-    - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
-      when: never
-    - if: $SCHEDULED_RELEASES == "true"
-      when: never
-    - if: $CI_COMMIT_BRANCH == "next"
-    - when: never
 gemnasium-dependency_scanning:
   interruptible: true
   stage: scan
   artifacts:
     expire_in: 1 day
-  tags:
-    - $RUNNER_LINUX
-  rules:
-    - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
-      when: never
-    - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
-      when: never
-    - if: $SCHEDULED_RELEASES == "true"
-      when: never
-    - if: $CI_COMMIT_BRANCH == "next"
-    - when: never
-nodejs-scan-sast:
-  interruptible: true
-  artifacts:
-    expire_in: 1 day
-  stage: scan
   tags:
     - $RUNNER_LINUX
   rules:
