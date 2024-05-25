@@ -1131,6 +1131,15 @@
 				"LIBAVCODEC_ENCODER": "L'audio est encodé avec libavcodec (l'aac de référence dans ffmpeg), qui peut créer des artefacts audibles et il est donc déconseillé de l'utiliser. Veillez à utiliser l'encodeur libfdk_aac pour l'aac ou un autre codec comme opus, pour obtenir la meilleure qualité possible."
 			}
 		},
+		"MEDIA_ENCODE" : {
+			"LABEL" : "Encoder les médias",
+			"OPTIONS" : {
+				"TRIM_MEDIA" : "Couper",
+				"TRIM_MEDIA_TOOLTIP" : "Détecter et supprimer les images noires et les silences au début et à la fin du média"
+			},
+			"TIMING_CHANGE_WARNING" : "Les options sélectionnées peuvent modifier le début et la fin du média. Vérifiez le minutage des paroles après l'encodage et l'enregistrement du média.",
+			"LEAVE_PAGE": "Le média est en cours d'encodage. Quitter la page maintenant annulera l'encodage, êtes-vous sûr de vouloir partir ?"
+		},
 		"FROM_DISPLAY_TYPE": "Affichage du tag de la provenance de la chanson",
 		"FROM_DISPLAY_TYPE_TOOLTIP": "Choissisez le type de tag utilisé lors de l'affichage de la chanson",
 		"ANNOUNCE_POSITION": "Position des annonces",
@@ -1533,6 +1542,8 @@
 		"PREPARING_CHANGES": "Préparation des modifications",
 		"REFRESHING_DATA": "Rafraichissement des données…",
 		"UPLOADING_FTP": "Envoi sur le FTP…",
+		"CALCULATING_MEDIA_ENCODING_PARAMETERS": "Calcul des paramètres d'encodage des médias…",
+		"ENCODING_MEDIA": "Encodage du fichier média…",
 		"EXPORTING_PLAYLIST_MEDIA": "Export des médias de la liste de lecture…",
 		"IMPORTING_PLAYLIST": "Importation de la liste de lecture…",
 		"DUMMY_TASK": "Aucune tâche en cours"
@@ -1750,6 +1761,7 @@
 		"LYRICS_FOLDER_OPEN_ERROR": "Erreur lors de l'ouverture du dossier des paroles",
 		"COLLECTIONS_GET_ERROR": "Erreur lors de la récupération des collections",
 		"UPLOADED_MEDIA_ERROR": "Erreur lors de l'envoi du média",
+		"ENCODE_MEDIA_ERROR": "Erreur lors de l'encodage du média",
 		"REPOSITORY_UNREACHABLE": "Dépôt inaccessible. Avez-vous mal orthographié son nom ?",
 		"CANNOT_INSTALL_REPO_AT_WINDOWS_ROOT_DRIVE": "Le dépôt ne peut pas être installé à la racine d'un lecteur Windows.",
 		"REFRESH_ANIME_LIST_ERROR": "Erreur lors du rafraichissement de la liste d'anime",

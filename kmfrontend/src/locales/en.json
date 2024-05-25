@@ -1024,10 +1024,20 @@
 			"VIDEO_COLORSPACE": "Colorspace",
 			"VIDEO_FRAMERATE": "Framerate",
 			"AUDIO_CODEC": "Audio codec",
+			"AUDIO_SAMPLE_RATE": "Audio sample rate",
 			"AUDIO_COVER_ART": "Cover art",
 			"WARNINGS":  {
 				"LIBAVCODEC_ENCODER": "The audio is encoded with the libavcodec (ffmpeg reference aac) encoder, which can create audible artifacts and is discouraged to utilize. Please use the libfdk_aac encoder for aac or another codec like opus, to get the best possible quality."
 			}
+		},
+		"MEDIA_ENCODE": {
+			"LABEL": "Encode media",
+			"OPTIONS": {
+				"TRIM_MEDIA": "Trim start/end",
+				"TRIM_MEDIA_TOOLTIP": "Detect and remove black frames and silence at the beginning and end of the media"
+			},
+			"TIMING_CHANGE_WARNING": "The selected options might change the start and end time of the media. Check the lyrics timings after the media is encoded and saved.",
+			"LEAVE_PAGE": "Media is being encoded. Leaving the page now will will discard any progress, are you sure you want to leave?"
 		},
 		"LYRICS_FILE": "Lyrics file",
 		"LYRICS_FILE_TOOLTIP": "Supported file formats: {{formats}}",
@@ -1534,6 +1544,8 @@
 		"REFRESHING_DATA": "Refreshing data…",
 		"UPLOADING_FTP": "Uploading to the FTP…",
 		"EXPORTING_PLAYLIST_MEDIA": "Exporting media from playlist…",
+		"CALCULATING_MEDIA_ENCODING_PARAMETERS": "Calculating media encoding parameters…",
+		"ENCODING_MEDIA": "Encoding media file…",
 		"IMPORTING_PLAYLIST": "Importing playlist…",
 		"DUMMY_TASK": "No ongoing tasks"
 	},
@@ -1750,6 +1762,7 @@
 		"LYRICS_FOLDER_OPEN_ERROR": "Error opening lyrics folder",
 		"COLLECTIONS_GET_ERROR": "Error fetching collections",
 		"UPLOADED_MEDIA_ERROR": "Error when uploading media",
+		"ENCODE_MEDIA_ERROR": "Error when encoding media",
 		"REPOSITORY_UNREACHABLE": "Repository unreachable. Did you misspell its name?",
 		"CANNOT_INSTALL_REPO_AT_WINDOWS_ROOT_DRIVE": "Repository cannot be installed at the root of a Windows drive.",
 		"REFRESH_ANIME_LIST_ERROR": "Error refreshing anime list",
