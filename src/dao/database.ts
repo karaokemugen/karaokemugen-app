@@ -185,7 +185,7 @@ async function migrateDB(): Promise<Postgrator.Migration[]> {
 				subtext: `${i18next.t('MIGRATION')} ${migrationNumber} / ${numberOfMigrationsNeeded} : ${sample(
 					migrationPhrases
 				)}...`,
-				value: migrationNumber,
+				value: migrationNumber - 1, // Technically we're running that migration.
 			});
 		}
 	});
