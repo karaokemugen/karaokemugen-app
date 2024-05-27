@@ -35,6 +35,7 @@ Changelog format changes from now on. See [https://keepachangelog.com/](Keep A C
 -   [Users] Fixed image previews for local karaokes
 -   [Users] Public interface should now work on some older browsers/phones (added polyfills)
 -   [Users] Fixed "from display type" being empty/invalid returning empty data
+-   [Users] Fixed singer groups not being sorted correctly with singers and series (#1589)
 -   [Operators] Mitigated a bug in ffmpeg >7.0 that prevents the scale2ref filter from working. This filter allows us to display QR Codes and avatars. Depending on the ffmpeg version mpv has been compiled against, scale2ref or scale filter is used. scale only works with master ffmpeg versions as of writing this. (#1608)
 -   [Operators] Fixed deleting a song from the database (#1613)
 -   [Operators] Fixed closing delete user modal
