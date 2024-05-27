@@ -72,6 +72,7 @@ export async function initEngine() {
 		try {
 			initStep(i18next.t('INIT_VALIDATION'));
 			await initRepos();
+			initHooks();
 			await generateKaraBase({
 				validateOnly: true,
 			});
@@ -134,6 +135,7 @@ export async function initEngine() {
 	} else if (state.opt.generateDB) {
 		try {
 			initStep(i18next.t('INIT_DB'));
+			initHooks();
 			await initDBSystem();
 			await initKaraBase();
 			await exit(0);
