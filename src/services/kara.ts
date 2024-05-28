@@ -35,6 +35,10 @@ export function initFetchPopularSongs() {
 	fetchPopularSongs();
 }
 
+export function stopFetchPopularSongs() {
+	if (popularKaraFetchIntervalID) clearInterval(popularKaraFetchIntervalID);
+}
+
 export async function getKara(kid: string, token: OldJWTToken | JWTTokenWithRoles, lang?: string): Promise<DBKara> {
 	try {
 		profile('getKaraInfo');

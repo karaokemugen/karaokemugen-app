@@ -43,7 +43,7 @@ import {
 } from '../services/player.js';
 import { setSongPoll } from '../services/poll.js';
 import { destroyRemote, initRemote } from '../services/remote.js';
-import { initStats, stopStats } from '../services/stats.js';
+import { initStats, stopStatsSystem } from '../services/stats.js';
 import { updateSongsLeft } from '../services/user.js';
 import { BinariesConfig } from '../types/binChecker.js';
 import { Config } from '../types/config.js';
@@ -248,7 +248,7 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	// Toggling Discord RPC
 	config.Online.Discord.DisplayActivity ? initDiscordRPC() : stopDiscordRPC();
 	// Toggling stats
-	config.Online.Stats ? initStats(newConfig.Online.Stats === oldConfig.Online.Stats) : stopStats();
+	config.Online.Stats ? initStats(newConfig.Online.Stats === oldConfig.Online.Stats) : stopStatsSystem();
 	// Streamer mode
 	if (config.Karaoke.StreamerMode.Enabled) writeStreamFiles();
 

@@ -83,6 +83,8 @@ import { getUser, getUsers, updateSongsLeft } from './user.js';
 
 const service = 'Playlist';
 
+let freeOrphanedSongsIntervalID;
+
 /** Test if basic playlists exist */
 export async function testPlaylists() {
 	profile('testPlaylists');
@@ -1675,13 +1677,17 @@ async function freeOrphanedSongs() {
 /** Initialize playlist tasks */
 export async function initPlaylistSystem() {
 	profile('initPL');
-	setInterval(freeOrphanedSongs, 60 * 1000);
+	freeOrphanedSongsIntervalID = setInterval(freeOrphanedSongs, 60 * 1000);
 	const pls = await selectPlaylists(false);
 	pls.forEach(pl => reorderPlaylist(pl.plaid));
 	await testPlaylists();
 	updateAllSmartPlaylists();
 	logger.debug('Playlists initialized', { service });
 	profile('initPL');
+}
+
+export function stopPlaylistSystem() {
+	if (freeOrphanedSongsIntervalID) clearInterval(freeOrphanedSongsIntervalID);
 }
 
 /** Update all user quotas affected by a PLC getting freed/played */

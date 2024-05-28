@@ -23,17 +23,17 @@ import { createImagePreviews } from '../lib/utils/previews.js';
 import { initDownloader, wipeDownloadQueue, wipeDownloads } from '../services/download.js';
 import { updateAllMedias } from '../services/downloadMedias.js';
 import { initFonts } from '../services/fonts.js';
-import { getKaras, initFetchPopularSongs } from '../services/kara.js';
+import { getKaras, initFetchPopularSongs, stopFetchPopularSongs } from '../services/kara.js';
 import { initPlayer, quitmpv } from '../services/player.js';
-import { initPlaylistSystem } from '../services/playlist.js';
+import { initPlaylistSystem, stopPlaylistSystem } from '../services/playlist.js';
 import { buildAllMediasList, updatePlaylistMedias } from '../services/playlistMedias.js';
 import { stopGame } from '../services/quiz.js';
 import { initRemote } from '../services/remote.js';
 import { checkDownloadStatus, initRepos, updateAllRepos } from '../services/repo.js';
-import { initSession } from '../services/session.js';
-import { initStats } from '../services/stats.js';
+import { initSession, stopSessionSystem } from '../services/session.js';
+import { initStats, stopStatsSystem } from '../services/stats.js';
 import { generateAdminPassword, initUserSystem } from '../services/user.js';
-import { initDiscordRPC } from '../utils/discordRPC.js';
+import { initDiscordRPC, stopDiscordRPC } from '../utils/discordRPC.js';
 import { initKMServerCommunication } from '../utils/kmserver.js';
 import { checkPG, dumpPG, restorePG, stopPG } from '../utils/postgresql.js';
 import sentry from '../utils/sentry.js';
@@ -262,22 +262,22 @@ export async function updateBase(internet: boolean) {
 
 export async function exit(rc = 0, update = false) {
 	// App Update need the app to be alive, so we're not shutting ti down completely if an update is requested
-	if (getState().shutdownInProgress) return;
+	const c = getConfig();
+	const s = getState();
+	if (s.shutdownInProgress) return;
 	logger.info('Shutdown in progress', { service });
 	setState({ shutdownInProgress: true });
-	clearInterval(usageTimeInterval);
 	closeAllWindows();
 	wipeDownloadQueue();
+	clearInterval(usageTimeInterval);
+	stopFetchPopularSongs();
+	stopPlaylistSystem();
+	stopSessionSystem();
+	stopStatsSystem();
+	stopDiscordRPC();
+	const promises = [];
+	if (getState().player?.playerStatus) promises.push(quitmpv());
 	await stopGame(false);
-	try {
-		if (getState().player?.playerStatus) {
-			await quitmpv();
-			logger.info('Player has shutdown', { service });
-		}
-	} catch (err) {
-		logger.warn('mpv error', { service, obj: err });
-		// Non fatal.
-	}
 	if (
 		getState().DBReady &&
 		getConfig().System.Database.bundledPostgresBinary &&
@@ -288,9 +288,8 @@ export async function exit(rc = 0, update = false) {
 	try {
 		await closeDB();
 	} catch (err) {
-		logger.warn('Shutting down database failed', { service, obj: err });
+		logger.warn('Disconnecting from database failed', { service, obj: err });
 	}
-	const c = getConfig();
 	if (getTwitchClient() || c?.Karaoke?.StreamerMode?.Twitch?.Enabled) await stopTwitch();
 	// CheckPG returns if postgresql has been started by Karaoke Mugen or not.
 	try {
@@ -310,6 +309,8 @@ export async function exit(rc = 0, update = false) {
 		logger.error('Failed to shutdown PostgreSQL', { service, obj: err });
 		sentry.error(err);
 		if (!update) mataNe(1);
+	} finally {
+		await Promise.all(promises);
 	}
 }
 

@@ -18,18 +18,16 @@ import { getSessions } from './session.js';
 
 const service = 'Stats';
 
-let intervalID: any;
+let uploadIntervalID: any;
 
 /** Initialize stats upload */
 export function initStats(sendLater: boolean) {
-	if (!intervalID) intervalID = setInterval(sendAllPayloads, 3600000);
+	if (!uploadIntervalID) uploadIntervalID = setInterval(sendAllPayloads, 3600000);
 	if (!sendLater) sendAllPayloads();
 }
 
-/** Stop stats upload */
-export function stopStats() {
-	if (intervalID) clearInterval(intervalID);
-	intervalID = undefined;
+export function stopStatsSystem() {
+	if (uploadIntervalID) clearInterval(uploadIntervalID);
 }
 
 export async function sendAllPayloads() {

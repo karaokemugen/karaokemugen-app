@@ -481,6 +481,11 @@ export async function initPlayer() {
 	}
 }
 
-export function quitmpv() {
-	return mpv.quit();
+export async function quitmpv() {
+	try {
+		await mpv.quit();
+		logger.info('Player has shutdown', { service });
+	} catch (err) {
+		logger.warn(`Player shutdown failed : ${err}`);
+	}
 }
