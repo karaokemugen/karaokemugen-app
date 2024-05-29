@@ -106,6 +106,12 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 						columns={this.columns}
 						rowKey="Name"
 						style={{ tableLayout: 'fixed' }}
+						scroll={{
+							x: true,
+						}}
+						expandable={{
+							showExpandColumn: false,
+						}}
 					/>
 				</Layout.Content>
 			</>

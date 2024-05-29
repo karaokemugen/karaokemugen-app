@@ -77,6 +77,9 @@ export default class Git {
 		this.git = simpleGit({
 			baseDir: this.opts.baseDir,
 			binary: await getGitPath(),
+			unsafe: {
+				allowUnsafeCustomBinary: true,
+			},
 			progress: this.progressHandler.bind(this),
 		});
 		if (configChanged) {

@@ -112,6 +112,9 @@
 .wrap-label {
 	.ant-form-item-label {
 		white-space: normal;
+		label {
+			height: 100%;
+		}
 	}
 }
 

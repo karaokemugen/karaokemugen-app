@@ -492,7 +492,12 @@ function KaraList(props: KaraListProps) {
 					total: totalCount,
 					showQuickJumper: true,
 				}}
-				childrenColumnName="childrenColumnName"
+				scroll={{
+					x: true,
+				}}
+				expandable={{
+					showExpandColumn: false,
+				}}
 			/>
 		</>
 	);

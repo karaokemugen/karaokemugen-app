@@ -69,6 +69,7 @@ export async function playSingleSong(kid?: string, randomPlaying = false) {
 		await mpv.play(current);
 		writeStreamFiles('song_name');
 		writeStreamFiles('requester');
+		writeStreamFiles('next_song_name_and_requester');
 		setState({ singlePlay: !randomPlaying, randomPlaying });
 		emit('newSong', current);
 	} catch (err) {
@@ -237,6 +238,7 @@ export async function playCurrentSong(now: boolean) {
 			writeStreamFiles('time_remaining_in_current_playlist');
 			writeStreamFiles('song_name');
 			writeStreamFiles('requester');
+			writeStreamFiles('next_song_name_and_requester');
 			await updatePlaylistDuration(kara.plaid);
 			updatePlaylistLastEditTime(kara.plaid);
 			emitWS('playlistInfoUpdated', kara.plaid);

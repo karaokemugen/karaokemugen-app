@@ -1,7 +1,7 @@
 import { Socket } from 'socket.io';
 
 import { validateMediaInfo } from '../../lib/dao/karafile.js';
-import { APIMessage } from '../../lib/services/frontend.js';
+import { APIMessage, errMessage } from '../../lib/services/frontend.js';
 import { previewHooks, processUploadedMedia } from '../../lib/services/karaCreation.js';
 import { APIData } from '../../lib/types/api.js';
 import { TagTypeNum } from '../../lib/types/tag.js';
@@ -10,9 +10,16 @@ import { SocketIOApp } from '../../lib/utils/ws.js';
 import { getKMStats, getKara, getKaraLyrics, getKaraMediaInfo, getKaras } from '../../services/kara.js';
 import { createKara, editKara } from '../../services/karaCreation.js';
 import { playSingleSong } from '../../services/karaEngine.js';
-import { batchEditKaras, copyKaraToRepo, deleteMediaFile, removeKara } from '../../services/karaManagement.js';
+import {
+	batchEditKaras,
+	copyKaraToRepo,
+	deleteMediaFile,
+	encodeMediaFileToRepoDefaults,
+	removeKara,
+} from '../../services/karaManagement.js';
 import { addKaraToPlaylist } from '../../services/playlist.js';
 import { runChecklist } from '../middlewares.js';
+import { abortAllMediaEncodingProcesses } from '../../lib/utils/ffmpeg.js';
 
 export default function karaController(router: SocketIOApp) {
 	router.route('getKaras', async (socket: Socket, req: APIData) => {
@@ -68,6 +75,31 @@ export default function karaController(router: SocketIOApp) {
 			return { ...mediaInfo, filePath: undefined };
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
+		}
+	});
+	router.route('encodeMediaFileToRepoDefaults', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'open');
+		try {
+			return await encodeMediaFileToRepoDefaults(
+				req.body.kid,
+				req.body.filename,
+				req.body.repo,
+				req.body.encodeOptions
+			);
+		} catch (err) {
+			const code = 'ENCODE_MEDIA_ERROR';
+			errMessage(code, err);
+			throw { code: err?.code || 500, message: APIMessage(code) };
+		}
+	});
+	router.route('abortMediaEncoding', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'open');
+		try {
+			return abortAllMediaEncodingProcesses();
+		} catch (err) {
+			const code = 'ENCODE_MEDIA_ERROR';
+			errMessage(code, err);
+			throw { code: err?.code || 500, message: APIMessage(code) };
 		}
 	});
 	router.route('previewHooks', async (socket: Socket, req: APIData) => {

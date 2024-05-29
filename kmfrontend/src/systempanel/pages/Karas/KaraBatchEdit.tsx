@@ -153,7 +153,12 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 						dataSource={this.state.karas}
 						columns={this.columns}
 						rowKey="kid"
-						childrenColumnName="childrenColumnName"
+						scroll={{
+							x: true,
+						}}
+						expandable={{
+							showExpandColumn: false,
+						}}
 					/>
 				</Layout.Content>
 			</>

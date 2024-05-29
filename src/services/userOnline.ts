@@ -15,6 +15,7 @@ import sentry from '../utils/sentry.js';
 import { startSub, stopSub } from '../utils/userPubSub.js';
 import { convertToRemoteFavorites } from './favorites.js';
 import { checkPassword, createJwtToken, createUser, editUser, getUser } from './user.js';
+import { testJSON } from '../lib/utils/validators.js';
 
 const service = 'RemoteUser';
 
@@ -54,6 +55,11 @@ export async function remoteLogin(username: string, password: string): Promise<s
 		// Remote login returned 401 so we throw an error
 		// For other errors, no error is thrown
 		if (err.statusCode === 401) throw 'Unauthorized';
+		if (testJSON(err.config.data)) {
+			const data = JSON.parse(err.config.data);
+			if (data.password) data.password = 'xxx';
+			err.config.data = JSON.stringify(data);
+		}
 		logger.debug(`Got error when connecting user ${username}`, { service, obj: err });
 		return null;
 	}

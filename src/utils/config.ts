@@ -43,7 +43,7 @@ import {
 } from '../services/player.js';
 import { setSongPoll } from '../services/poll.js';
 import { destroyRemote, initRemote } from '../services/remote.js';
-import { initStats, stopStats } from '../services/stats.js';
+import { initStats, stopStatsSystem } from '../services/stats.js';
 import { updateSongsLeft } from '../services/user.js';
 import { BinariesConfig } from '../types/binChecker.js';
 import { Config } from '../types/config.js';
@@ -248,7 +248,7 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	// Toggling Discord RPC
 	config.Online.Discord.DisplayActivity ? initDiscordRPC() : stopDiscordRPC();
 	// Toggling stats
-	config.Online.Stats ? initStats(newConfig.Online.Stats === oldConfig.Online.Stats) : stopStats();
+	config.Online.Stats ? initStats(newConfig.Online.Stats === oldConfig.Online.Stats) : stopStatsSystem();
 	// Streamer mode
 	if (config.Karaoke.StreamerMode.Enabled) writeStreamFiles();
 
@@ -420,11 +420,25 @@ function configuredBinariesForSystem(config: Config): BinariesConfig {
 				postgres_client: 'psql',
 			};
 		default:
+			// If we're running flatpak or appimages, then those env vars would be set.
+			const isInContainer = process.env.container || process.env.APPIMAGE;
+			const binaries = {
+				ffmpeg: isInContainer ? defaults.System.Binaries.ffmpeg.Linux : config.System.Binaries.ffmpeg.Linux,
+				mpv: isInContainer ? defaults.System.Binaries.Player.Linux : config.System.Binaries.Player.Linux,
+				postgres: isInContainer
+					? defaults.System.Binaries.Postgres.Linux
+					: config.System.Binaries.Postgres.Linux,
+				patch: isInContainer ? defaults.System.Binaries.patch.Linux : config.System.Binaries.patch.Linux,
+			};
+			if (isInContainer)
+				logger.debug('App is in an AppImage or Flatpak. Forcing default bianries to use bundled ones.', {
+					service,
+				});
 			return {
-				ffmpeg: resolve(getState().appPath, config.System.Binaries.ffmpeg.Linux),
-				mpv: resolve(getState().appPath, config.System.Binaries.Player.Linux),
-				postgres: resolve(getState().appPath, config.System.Binaries.Postgres.Linux),
-				patch: resolve(getState().appPath, config.System.Binaries.patch.Linux),
+				ffmpeg: resolve(getState().appPath, binaries.ffmpeg),
+				mpv: resolve(getState().appPath, binaries.mpv),
+				postgres: resolve(getState().appPath, binaries.postgres),
+				patch: resolve(getState().appPath, binaries.patch),
 				postgres_ctl: 'pg_ctl',
 				postgres_dump: 'pg_dump',
 				postgres_client: 'psql',

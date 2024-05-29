@@ -208,6 +208,23 @@ CREATE EXTENSION unaccent;
 GRANT CREATE ON SCHEMA public TO public;
 ```
 
+#### User auth setup
+
+On some Linux distributions, PostgreSQL is configured to use an Ident server to authorize users, even from localhost. Fedora 40 for example does that.
+
+Under the `postgres` or `root` user, edit `/var/lib/pgsql/data/pg_hba.conf` (or wherever that file is on your system)
+
+You should find two lines like this :
+
+```
+# IPv4 local connections:
+host    all             all             127.0.0.1/32            ident
+# IPv6 local connections:
+host    all             all             ::1/128                 ident
+```
+
+For both lines, change `ident` to `scram-sha-256`. Save and restart your postgresql service.
+
 All done!
 
 ### Launch

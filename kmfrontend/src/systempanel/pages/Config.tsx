@@ -273,6 +273,12 @@ class Config extends Component<ConfigProps, ConfigState> {
 								(property.key as string).toLowerCase().includes(this.state.filter.toLowerCase())
 							)}
 							pagination={false}
+							scroll={{
+								x: true,
+							}}
+							expandable={{
+								showExpandColumn: false,
+							}}
 						/>
 					</Layout.Content>
 				</>

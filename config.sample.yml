@@ -30,6 +30,8 @@ Online:
     DisplayActivity: true
   # Remote URL xxxx.kara.moe enabled ?
   Remote: true
+  # Remote token for online URL
+  RemoteToken: uuid_here
   # Fetch popular songs from remote repos ?
   FetchPopularSongs: true
   # Disallow ALL video downloads; We'll give you crepes if you keep this to true

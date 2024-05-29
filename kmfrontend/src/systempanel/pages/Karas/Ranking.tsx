@@ -50,7 +50,17 @@ class Ranking extends Component<unknown, RankingState> {
 					<Button style={{ margin: '1em' }} type="primary" onClick={this.refresh}>
 						{i18next.t('REFRESH')}
 					</Button>
-					<Table dataSource={this.state.karas} columns={this.columns} rowKey="requested" />
+					<Table
+						dataSource={this.state.karas}
+						columns={this.columns}
+						rowKey="requested"
+						scroll={{
+							x: true,
+						}}
+						expandable={{
+							showExpandColumn: false,
+						}}
+					/>
 				</Layout.Content>
 			</>
 		);

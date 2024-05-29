@@ -106,6 +106,7 @@ function UserList() {
 	};
 	const deleteUser = async username => {
 		await commandBackend('deleteUser', { username }, true);
+		setDeleteModal(false);
 		refresh();
 	};
 
@@ -132,15 +133,18 @@ function UserList() {
 					dataSource={users.filter(user => user.login.includes(filter) || user.nickname.includes(filter))}
 					columns={columns}
 					rowKey="nickname"
+					scroll={{
+						x: true,
+					}}
+					expandable={{
+						showExpandColumn: false,
+					}}
 				/>
 				<Modal
 					title={i18next.t('USERS.USER_DELETED_CONFIRM')}
 					open={deleteModal}
 					onOk={() => deleteUser(user.login)}
-					onCancel={() => {
-						setDeleteModal(false);
-						setUser(null);
-					}}
+					onCancel={() => setDeleteModal(false)}
 					okText={i18next.t('YES')}
 					cancelText={i18next.t('NO')}
 				>
