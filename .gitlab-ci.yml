@@ -584,6 +584,8 @@ release:
           url: https://mugen.karaokes.moe/downloads/Karaoke%20Mugen-$VERSION-mac-x86.dmg
         - name: macOS ZIP (Intel)
           url: https://mugen.karaokes.moe/downloads/Karaoke%20Mugen-$VERSION-mac-x86.zip
+        - name: Linux Flatpak (x86)
+          url: https://flathub.org/apps/moe.karaokes.mugen
         - name: Linux DEB (x86)
           url: https://mugen.karaokes.moe/downloads/Karaoke%20Mugen-$VERSION-linux-amd64.deb
         - name: Linux DEB (arm64)
