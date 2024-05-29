@@ -308,7 +308,12 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 							total: this.state.karasCount,
 							showQuickJumper: true,
 						}}
-						childrenColumnName="childrenColumnName"
+						scroll={{
+							x: true,
+						}}
+						expandable={{
+							showExpandColumn: false,
+						}}
 					/>
 				</Layout.Content>
 				{this.state.preview ? (

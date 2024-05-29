@@ -4,24 +4,27 @@ import { debounce } from 'lodash';
 import { resolve } from 'path';
 
 import { getSongSeriesSingers, getSongTitle, getSongVersion } from '../lib/services/kara.js';
+import { DBKara } from '../lib/types/database/kara.js';
 import { getConfig, resolvedPath } from '../lib/utils/config.js';
 import { asyncCheckOrMkdir } from '../lib/utils/files.js';
 import logger from '../lib/utils/logger.js';
-import { getPlaylistInfo } from '../services/playlist.js';
+import { getNextSong, getPlaylistInfo } from '../services/playlist.js';
 import { StreamFileType } from '../types/streamerFiles.js';
 import sentry from './sentry.js';
 import { getState } from './state.js';
 
 const service = 'StreamerFiles';
 
+function toPrettySong(song: DBKara): string {
+	return `${getSongSeriesSingers(song)}\n${song.songtypes.map(s => s.name).join(' ')}${!song.songorder || song.songorder === 0 ? '' : song.songorder.toString()} - ${getSongTitle(song)} ${getSongVersion(song)}`;
+}
+
 async function writeCurrentSong() {
 	let output: string;
 	const song = getState().player.currentSong;
 	const media = getState().player.currentMedia;
 	if (song) {
-		output = `${getSongSeriesSingers(song)}\n${song.songtypes.map(s => s.name).join(' ')}${
-			!song.songorder || song.songorder === 0 ? '' : song.songorder.toString()
-		} - ${getSongTitle(song)} ${getSongVersion(song)}`;
+		output = toPrettySong(song);
 	} else if (media) {
 		output = getState().player.mediaType;
 	} else {
@@ -31,11 +34,18 @@ async function writeCurrentSong() {
 }
 
 async function writeRequester() {
+	const song = getState().player.currentSong;
+	await fs.writeFile(resolve(resolvedPath('StreamFiles'), 'requester.txt'), song?.nickname || '', 'utf-8');
+}
+
+async function writeNextSongAndRequester() {
+	const song = await getNextSong();
 	await fs.writeFile(
-		resolve(resolvedPath('StreamFiles'), 'requester.txt'),
-		getState().player.currentSong?.nickname || '',
+		resolve(resolvedPath('StreamFiles'), 'next_song_name.txt'),
+		song ? toPrettySong(song) : '',
 		'utf-8'
 	);
+	await fs.writeFile(resolve(resolvedPath('StreamFiles'), 'next_requester.txt'), song?.nickname || '', 'utf-8');
 }
 
 async function writeURL() {
@@ -113,6 +123,7 @@ const debounceSettings: [number, { maxWait: number; leading: boolean }] = [1500,
 const fnMap: Map<StreamFileType, () => Promise<void>> = new Map([
 	['song_name', debounce(writeCurrentSong, ...debounceSettings)],
 	['requester', debounce(writeRequester, ...debounceSettings)],
+	['next_song_name_and_requester', debounce(writeNextSongAndRequester, ...debounceSettings)],
 	['km_url', debounce(writeURL, ...debounceSettings)],
 	['frontend_state', debounce(writeFrontendStatus, ...debounceSettings)],
 	['current_kara_count', debounce(writeKarasInCurrentPL, ...debounceSettings)],

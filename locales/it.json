@@ -1,6 +1,7 @@
 {
 	"YES": "Sì",
 	"NO": "No",
+	"UNKNOWN": "Sconosciuto",
 	"CANCEL": "Annulla",
 	"NEXT_SONG": "Prossimo brano",
 	"TAG_TYPES": {

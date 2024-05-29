@@ -46,7 +46,17 @@ class KaraList extends Component<unknown, KaraListState> {
 					<Button style={{ margin: '1em' }} type="primary" onClick={this.refresh}>
 						{i18next.t('REFRESH')}
 					</Button>
-					<Table dataSource={this.state.karas} columns={this.columns} rowKey="lastplayed_at" />
+					<Table
+						dataSource={this.state.karas}
+						columns={this.columns}
+						rowKey="lastplayed_at"
+						scroll={{
+							x: true,
+						}}
+						expandable={{
+							showExpandColumn: false,
+						}}
+					/>
 				</Layout.Content>
 			</>
 		);

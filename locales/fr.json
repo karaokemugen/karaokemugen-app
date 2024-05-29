@@ -162,6 +162,7 @@
 	"ERROR": "Erreur",
 	"YES": "Oui",
 	"NO": "Non",
+	"UNKNOWN": "Inconnu",
 	"UPDATE_FOUND": "Mise à jour disponible",
 	"UPDATE_PROMPT": "Voulez-vous mettre à jour Karaoke Mugen ?",
 	"UPDATE_CHECK_ERROR": "Une erreur s'est produite lors de la recherche de mises à jour",

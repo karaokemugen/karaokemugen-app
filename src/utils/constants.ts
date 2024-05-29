@@ -6,7 +6,9 @@ import { QuizGameConfig } from '../types/config.js';
 export const discordClientID = '718211141033263145';
 
 export const requiredMPVVersion = '>=0.33.0';
-
+export const requiredMPVFFmpegVersion = '>=7.1';
+// We don't know if it's the right version it starts to work with, but hey.
+export const requiredMPVFFmpegMasterVersion = 115182;
 export const expectedPGVersion = 16;
 
 export const supportedLanguages = ['en', 'fr', 'es', 'id', 'pt', 'de', 'it'];
@@ -304,6 +306,7 @@ export const logo = `
 `;
 
 export const mpvRegex = /mpv ([A-Za-z0-9.]+)/;
+export const FFmpegRegex = /FFmpeg version: n?(N?[A-Za-z0-9-.]+)/;
 export const pgctlRegex = /pg_ctl \(PostgreSQL\) ([A-Za-z0-9.]+)/;
 
 export const adminToken: OldJWTToken = {

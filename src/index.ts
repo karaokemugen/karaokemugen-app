@@ -91,8 +91,8 @@ sentry.init(process.argv.includes('--strict'));
 const dataPath = existsSync(resolve(appPath, 'portable'))
 	? resolve(appPath, 'app/')
 	: // Rewriting dataPath to point to user home directory
-	  // With Electron we get the handy app.getPath()
-	  resolve(app.getPath('home'), 'KaraokeMugen');
+		// With Electron we get the handy app.getPath()
+		resolve(app.getPath('home'), 'KaraokeMugen');
 
 if (!existsSync(dataPath)) mkdirpSync(dataPath);
 

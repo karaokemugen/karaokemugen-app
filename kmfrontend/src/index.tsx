@@ -1,8 +1,9 @@
+import './common.scss';
+import './utils/electron';
 import './utils/i18n';
 import './utils/isoLanguages';
-import './utils/electron';
+import './utils/polyfills';
 import './utils/socket';
-import './common.scss';
 
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';

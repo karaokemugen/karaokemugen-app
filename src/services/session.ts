@@ -27,6 +27,8 @@ import { getState, setState } from '../utils/state.js';
 
 const service = 'Sessions';
 
+let sessionCheckIntervalID;
+
 export async function getSessions() {
 	try {
 		const sessions = await selectSessions();
@@ -195,9 +197,13 @@ export async function initSession() {
 	}
 	await autoFillSessionEndedAt(getState().currentSessionID);
 	// Check every minute if we should be notifying the end of session to the operator
-	setInterval(checkSessionEnd, 1000 * 60);
+	sessionCheckIntervalID = setInterval(checkSessionEnd, 1000 * 60);
 	logger.debug('Sessions initialized', { service });
 	profile('initSession');
+}
+
+export function stopSessionSystem() {
+	if (sessionCheckIntervalID) clearInterval(sessionCheckIntervalID);
 }
 
 function checkSessionEnd() {
@@ -226,8 +232,8 @@ export async function exportSession(seid: string): Promise<SessionExports> {
 		const session = await findSession(seid);
 		if (!session) throw new ErrorKM('UNKNOWN_SESSION', 404);
 		const [requested, played] = await Promise.all([
-			selectAllKaras({ order: 'sessionRequested', q: `seid:${seid}` }),
-			selectAllKaras({ order: 'sessionPlayed', q: `seid:${seid}` }),
+			selectAllKaras({ order: 'sessionRequested', q: `seid:${seid}`, blacklist: false, ignoreCollections: true }),
+			selectAllKaras({ order: 'sessionPlayed', q: `seid:${seid}`, blacklist: false, ignoreCollections: true }),
 		]);
 		const sessionExports: SessionExports = {
 			requested: sanitizeFile(`${session.name}.${session.started_at.toISOString()}.requested.csv`),

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-unused-vars */
 const yaml = require('js-yaml');
 const xml = require('xml-js');
 const path = require('path');
@@ -7,6 +9,7 @@ const { mainModule } = require('process');
 
 const [
 	_,
+	// eslint-disable-next-line no-redeclare
 	__,
 	sentrycliVersion,
 	sentrycliX64SHA,

@@ -820,7 +820,11 @@ export async function stashGitRepo(repoName: string) {
 	try {
 		const repo = getRepo(repoName);
 		const git = await setupGit(repo, true);
-		await git.abortPull();
+		try {
+			await git.abortPull();
+		} catch (err) {
+			// rebase not in progress is normal
+		}
 		return await git.stash();
 	} catch (err) {
 		logger.error(`Error stashing commits for repo ${repoName} : ${err}`, { service });

@@ -1,3 +1,57 @@
+# [8.0.3] - 2024-06-03
+
+This is a major version, but a minor one compared to 7.1.66. Please read previous changelogs for more information on what's changed since the last major version (7.1)
+
+Changelog format changes from now on. See [https://keepachangelog.com/](Keep A Changelog) for details.
+
+## Added
+
+-   [Users] New wallpaper we commissioned.
+-   [Operators] Added new streamer text files for next song and who requested it (#1606)
+-   [Maintainers] The alpha character has been added to sanitized filenames.
+-   [Maintainers] Media can be reencoded from Karaoke Mugen if it doesn't meet the repository standards. (#1354)
+
+## Changed
+
+-   [Users] Upgraded frontend and backend dependencies
+-   [Operators] mpv has been updated to 0.38
+-   [Operators] Electron has been updated to version 30.
+-   [Operators] Flatpak versions of Karaoke Mugen now force use of their bundled binaries (ignores config) (#1604)
+-   [Maintainers] The entire karaoke base isn't validated anymore when a new song is added (#1602)
+-   [Maintainers] Repository description isn't mandatory anymore
+-   [Maintainers] Logged karafile overwrite errors
+-   [Developers] Inbox errors do not trigger a Sentry call anymore
+-   [Developers] Updated README with better info on PostgreSQL authentification
+-   [Developers] ESLint has been updated to 9.0.0 (#1595)
+-   [Developers] Merged linux packaging jobs in CI
+
+## Removed
+
+-   [Operators] Removed platforms from karaoke lists. They can still be seen in karaoke details.
+-   [Developers] Removed SAST CI jobs for now
+
+## Fixed
+
+-   [Users] Fixed image previews for local karaokes
+-   [Users] Public interface should now work on some older browsers/phones (added polyfills)
+-   [Users] Fixed "from display type" being empty/invalid returning empty data
+-   [Users] Fixed singer groups not being sorted correctly with singers and series (#1589)
+-   [Operators] Mitigated a bug in ffmpeg >7.0 that prevents the scale2ref filter from working. This filter allows us to display QR Codes and avatars. Depending on the ffmpeg version mpv has been compiled against, scale2ref or scale filter is used. scale only works with master ffmpeg versions as of writing this. (#1608)
+-   [Operators] Fixed deleting a song from the database (#1613)
+-   [Operators] Fixed closing delete user modal
+-   [Maintainers] Fixed custom binary git errors
+-   [Maintainers] Fixed the family line check when using a song from another repository as parent (#1609)
+-   [Maintainers] Fixed editing karaokes with multiple parents
+-   [Maintainers] Fixed display issue in karaoke list on system panel (#1600)
+-   [Maintainers] Fixed icon display in karaoke form (#1599)
+-   [Maintainers] Fixed repository manifests with no rules set
+-   [Maintainers] Fixed getAllKarasMicro in some cases
+
+## Security
+
+-   [Users] Removed passwords from logs when erroring out on userOnlineAuth
+-   [Developers] Removed useless packages and files
+
 # v7.1.66 - 22/04/2024
 
 This is a bug fix release.

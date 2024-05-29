@@ -170,17 +170,16 @@ export const sqlgetAllKarasMicro = (
 	additionalFrom: string[],
 	collectionClauses: string[]
 ) => `SELECT
-  k.pk_kid AS kid,
-  k.duration AS duration,
-  k.mediafile AS mediafile,
-  k.mediasize AS mediasize,
-  k.repository AS repository,
-  k.subfile AS subfile,
-  k.karafile AS karafile,
-  k.from_display_type AS from_display_type,
-  k.download_status AS download_status
-FROM kara AS k
-${collectionClauses.length > 0 ? 'LEFT JOIN all_karas ak ON ak.pk_kid = k.pk_kid' : ''}
+  ak.pk_kid AS kid,
+  ak.duration AS duration,
+  ak.mediafile AS mediafile,
+  ak.mediasize AS mediasize,
+  ak.repository AS repository,
+  ak.subfile AS subfile,
+  ak.karafile AS karafile,
+  ak.from_display_type AS from_display_type,
+  ak.download_status AS download_status
+FROM all_karas AS ak
 ${additionalFrom.join('')}
 WHERE true
 ${

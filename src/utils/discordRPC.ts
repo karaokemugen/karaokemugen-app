@@ -85,6 +85,7 @@ export async function stopDiscordRPC() {
 		rpc = null;
 	}
 	if (!getConfig().Online.Discord.DisplayActivity) stopCheckingDiscordRPC();
+	if (intervalIDDiscordRPCSetup) clearInterval(intervalIDDiscordRPCSetup);
 }
 
 let intervalIDDiscordRPCSetup: any;

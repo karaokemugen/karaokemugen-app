@@ -67,7 +67,11 @@ We're listing specific tools, but remember you can also choose your own preferre
 
 Generally, git bash (bundled with git for Windows) is a good terminal. You can also use Windows Terminal or Tabby on Windows. Other OSes have proper terminals already installed.
 
+On Windows you might want to use [Posh-git](https://github.com/dahlbyk/posh-git), a Powershell git auto-completion and prompt similar to what you'd find on UNIX systems.
+
 ### Install Visual Studio Code
+
+If you don't already have an IDE of choice, use Visual Studio Code.
 
 -   [Install Visual Studio Code](https://code.visualstudio.com/)
 
@@ -108,7 +112,7 @@ Let's create our database user for KM App. Refer to [this section in the README]
 
 [Install NodeJS from its website](https://nodejs.org/)
 
-You should download the latest LTS version. The latest should normally work unless specified otherwise.
+You should download the LTS version. The latest version should normally work unless specified otherwise.
 
 ### Install Yarn
 
@@ -175,7 +179,7 @@ Check `package.json` for a list of script commands you can use.
 
 Check out [README's required binaries section](README.md#required-binaries) to download them manually (except for postgres since you installed it already earlier)
 
-You can also download one of the "dist" archives we make in [Karaoke Mugen's website's download folder](https://mugen.karaokes.moe/downloads). Pick one for your OS and KM version and untar it in your current folder.
+You can also download one of the "dist" archives we make in [Karaoke Mugen's website's download folder](https://mugen.karaokes.moe/downloads). Pick one for your OS and KM version and extract it in your current folder.
 
 ### Configure KM
 
@@ -195,7 +199,7 @@ System:
     username: karaokemugen_app
 ```
 
-Stats won't be sent out so not to flood KM with your own tests.
+Stats won't be sent out so not to flood KM Server with your own tests.
 
 ### Launch
 
@@ -218,7 +222,7 @@ You can also launch from the VS Code's debugger, as we provide a `launch.json` i
 KM is divided into two parts :
 
 -   A React Frontend :
-    -   `kmfrontend` is the mobile and PC interface dedicated to managing your Karaoke session, for you or y our guests.
+    -   `kmfrontend` is the mobile and PC interface dedicated to managing your Karaoke session, for you or your guests.
 -   A NodeJS backend in `src`.
 
 For those two parts, we use Typescript to manage type definitions within the app.
