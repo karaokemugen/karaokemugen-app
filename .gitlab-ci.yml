@@ -213,11 +213,11 @@ pkg_linux_x64:
     - bash util/electronBuilder.sh -l --x64
     - ls -la packages/
     - mkdir release_linux
+    - rm -Rf packages/*arm64*
     - mv packages/*.deb release_linux/
     - mv packages/*.tar.gz release_linux/
     - mv packages/*.yml release_linux/
     - mv packages/*.AppImage release_linux/
-    - rm -Rf packages/*arm64*
     - ls -la release_linux/*
   rules:
     - if: $SCHEDULED_RELEASES == "true"
@@ -259,13 +259,13 @@ pkg_linux_arm64:
     - bash util/electronBuilder.sh -l --arm64
     - ls -la packages/
     - mkdir release_linux
+    - rm -Rf packages/*amd64*
+    - rm -Rf packages/*x64*
+    - rm -Rf packages/*x86_64*
     - mv packages/*.deb release_linux/
     - mv packages/*.tar.gz release_linux/
     - mv packages/*.yml release_linux/
     - mv packages/*.AppImage release_linux/
-    - rm -Rf packages/*amd64*
-    - rm -Rf packages/*x64*
-    - rm -Rf packages/*x86_64*
     - ls -la release_linux/*
   rules:
     - if: $SCHEDULED_RELEASES == "true"
