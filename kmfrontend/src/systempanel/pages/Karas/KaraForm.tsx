@@ -136,7 +136,7 @@ function KaraForm(props: KaraFormProps) {
 
 	useEffect(() => {
 		const repository = props.kara?.repository || (repositoriesValue ? repositoriesValue[0] : null);
-		form.setFieldsValue({
+		formRef.current.setFieldsValue({
 			repository,
 		});
 		getRepoManifest(repository);
