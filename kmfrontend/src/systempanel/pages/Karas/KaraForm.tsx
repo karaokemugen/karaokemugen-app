@@ -52,6 +52,7 @@ import EditableGroupAlias from '../../components/EditableGroupAlias';
 import EditableTagGroup from '../../components/EditableTagGroup';
 import LanguagesList from '../../components/LanguagesList';
 import OpenLyricsFileButton from '../../components/OpenLyricsFileButton';
+import type { RepositoryManifestV2 } from '../../../../../src/lib/types/repo';
 
 const { Paragraph } = Typography;
 const { Panel } = Collapse;
@@ -102,6 +103,7 @@ function KaraForm(props: KaraFormProps) {
 	const [isEncodingMedia, setIsEncodingMedia] = useState(false);
 	const [encodeMediaOptions, setEncodeMediaOptions] = useState<{ trim: boolean }>({ trim: false });
 	const [repositoriesValue, setRepositoriesValue] = useState<string[]>(null);
+	const [repositoryManifest, setRepositoryManifest] = useState<RepositoryManifestV2>();
 	const [repoToCopySong, setRepoToCopySong] = useState<string>(null);
 	const [karaSearch, setKaraSearch] = useState<{ label: string; value: string }[]>([]);
 	const [parentKara, setParentKara] = useState<DBKara>(null);
@@ -133,9 +135,11 @@ function KaraForm(props: KaraFormProps) {
 	}, []);
 
 	useEffect(() => {
-		formRef.current.setFieldsValue({
-			repository: props.kara?.repository || (repositoriesValue ? repositoriesValue[0] : null),
+		const repository = props.kara?.repository || (repositoriesValue ? repositoriesValue[0] : null);
+		form.setFieldsValue({
+			repository,
 		});
+		getRepoManifest(repository);
 	}, [repositoriesValue]);
 
 	useEffect(() => {
@@ -147,6 +151,13 @@ function KaraForm(props: KaraFormProps) {
 	useEffect(() => {
 		validateMediaRules();
 	}, [mediaInfo]);
+
+	const getRepoManifest = async (repository: string) => {
+		if (repository) {
+			const res = await commandBackend('getRepoManifest', { name: repository });
+			setRepositoryManifest(res);
+		}
+	};
 
 	const getParents = async () => {
 		if (formRef.current.getFieldValue('parents') !== null) {
@@ -575,9 +586,15 @@ function KaraForm(props: KaraFormProps) {
 			if (karas.content) {
 				setKaraSearch(
 					karas.content
-						.filter(k => k.kid !== props.kara?.kid)
-						.filter(k => !k.parents.includes(props.kara?.kid))
-						.map(k => {
+						.filter((k: DBKara) => k.kid !== props.kara?.kid)
+						.filter((k: DBKara) => !k.parents.includes(props.kara?.kid))
+						.filter(
+							(k: DBKara) =>
+								k.parents.length === 0 ||
+								!repositoryManifest?.rules?.karaFile?.maxParentDepth ||
+								repositoryManifest.rules.karaFile.maxParentDepth !== 1
+						)
+						.map((k: DBKara) => {
 							return {
 								label: buildKaraTitle(context.globalState.settings.data, k, true, karas.i18n),
 								value: k.kid,
@@ -1481,7 +1498,11 @@ function KaraForm(props: KaraFormProps) {
 					]}
 					name="repository"
 				>
-					<Select disabled={props.kara?.repository !== undefined} placeholder={i18next.t('KARA.REPOSITORY')}>
+					<Select
+						disabled={props.kara?.repository !== undefined}
+						placeholder={i18next.t('KARA.REPOSITORY')}
+						onChange={value => getRepoManifest(value)}
+					>
 						{repositoriesValue.map(mapRepoToSelectOption)}
 					</Select>
 				</Form.Item>
