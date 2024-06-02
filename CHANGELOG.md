@@ -4,14 +4,14 @@ This is a bugfix version, but also a version in memory of Axel's cat Shami who s
 
 ## Changed
 
-- [Maintainers] Add type in TagsForm
-- [Maintainers] Add rule to filter kara with parents with maxParentDepth equal to 1 in manifest
-- [Operators] Upgraded backend deps
+-   [Maintainers] Add type in TagsForm
+-   [Maintainers] Add rule to filter kara with parents with maxParentDepth equal to 1 in manifest
+-   [Operators] Upgraded backend deps
 
 ## Fixed
 
-- [Users] Fix filter by tag for children karaoke
-- [Operators] Fixed unhandled exception for writeStreamFiles on next song when playlist is empty
+-   [Users] Fix filter by tag for children karaoke
+-   [Operators] Fixed unhandled exception for writeStreamFiles on next song when playlist is empty
 
 # [8.0.3] - 2024-05-29
 
