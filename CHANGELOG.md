@@ -1,4 +1,4 @@
-# [8.0.4] - 2024-06-02
+# [8.0.5] - 2024-06-02
 
 This is a bugfix version, but also a version in memory of Axel's cat Shami who sadly passed away two weeks ago. We will miss you.
 

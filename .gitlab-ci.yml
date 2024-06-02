@@ -367,7 +367,6 @@ pkg_mac:
     - mkdir release_mac
     - mv packages/*-mac.yml release_mac
     - mv packages/*.dmg release_mac/
-    - mv packages/*.zip release_mac/
     - ls -la release_mac/*
   rules:
     - if: $SCHEDULED_RELEASES == "true"
@@ -577,12 +576,8 @@ gitlab_release:
           url: https://mugen.karaokes.moe/downloads/Karaoke%20Mugen-$CI_COMMIT_TAG-win.zip
         - name: macOS DMG (Apple Silicon)
           url: https://mugen.karaokes.moe/downloads/Karaoke%20Mugen-$CI_COMMIT_TAG-mac-arm64.dmg
-        - name: macOS ZIP (Apple Silicon)
-          url: https://mugen.karaokes.moe/downloads/Karaoke%20Mugen-$CI_COMMIT_TAG-mac-arm64.zip
         - name: macOS DMG (Intel)
           url: https://mugen.karaokes.moe/downloads/Karaoke%20Mugen-$CI_COMMIT_TAG-mac-x86.dmg
-        - name: macOS ZIP (Intel)
-          url: https://mugen.karaokes.moe/downloads/Karaoke%20Mugen-$CI_COMMIT_TAG-mac-x86.zip
         - name: Linux Flatpak (x86)
           url: https://flathub.org/apps/moe.karaokes.mugen
         - name: Linux DEB (x86)
