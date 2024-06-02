@@ -39,13 +39,17 @@ async function writeRequester() {
 }
 
 async function writeNextSongAndRequester() {
-	const song = await getNextSong();
-	await fs.writeFile(
-		resolve(resolvedPath('StreamFiles'), 'next_song_name.txt'),
-		song ? toPrettySong(song) : '',
-		'utf-8'
-	);
-	await fs.writeFile(resolve(resolvedPath('StreamFiles'), 'next_requester.txt'), song?.nickname || '', 'utf-8');
+	try {
+		const song = await getNextSong();
+		await fs.writeFile(
+			resolve(resolvedPath('StreamFiles'), 'next_song_name.txt'),
+			song ? toPrettySong(song) : '',
+			'utf-8'
+		);
+		await fs.writeFile(resolve(resolvedPath('StreamFiles'), 'next_requester.txt'), song?.nickname || '', 'utf-8');
+	} catch (err) {
+		// Not fatal
+	}
 }
 
 async function writeURL() {

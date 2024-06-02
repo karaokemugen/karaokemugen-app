@@ -442,6 +442,7 @@ function Playlist(props: IProps) {
 		param.blacklist = true;
 		param.parentsOnly =
 			props.scope === 'public' &&
+			searchCriteria !== 'tag' &&
 			context.globalState.settings.data.user.flag_parentsonly &&
 			param.plaid !== nonStandardPlaylists.favorites;
 		if (search) {

@@ -1,4 +1,19 @@
-# [8.0.3] - 2024-06-03
+# [8.0.4] - 2024-06-02
+
+This is a bugfix version, but also a version in memory of Axel's cat Shami who sadly passed away two weeks ago. We will miss you.
+
+## Changed
+
+-   [Maintainers] Add type in TagsForm
+-   [Maintainers] Add rule to filter kara with parents with maxParentDepth equal to 1 in manifest
+-   [Operators] Upgraded backend deps
+
+## Fixed
+
+-   [Users] Fix filter by tag for children karaoke
+-   [Operators] Fixed unhandled exception for writeStreamFiles on next song when playlist is empty
+
+# [8.0.3] - 2024-05-29
 
 This is a major version, but a minor one compared to 7.1.66. Please read previous changelogs for more information on what's changed since the last major version (7.1)
 

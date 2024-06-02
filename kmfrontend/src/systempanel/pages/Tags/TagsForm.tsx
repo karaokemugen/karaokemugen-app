@@ -43,6 +43,12 @@ interface TagsFormState {
 	displayDescription: boolean;
 }
 
+interface TagForForm extends Tag {
+	malID: string;
+	anilistID: string;
+	kitsuID: string;
+}
+
 const myanimelistUrlRegexp = /myanimelist.net\/anime\/(\d+)/;
 const anilistUrlRegexp = /anilist.co\/anime\/(\d+)/;
 const kitsuUrlRegexp = /kitsu.io\/anime\/([a-zA-Z0-9-&(%20)]+)/;
@@ -69,20 +75,18 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 
 	getRepositories = async () => {
 		const res = await commandBackend('getRepos');
-		this.setState(
-			{ repositoriesValue: res.map(repo => repo.Name) },
-			() =>
-				this.formRef.current?.setFieldsValue({
-					repository: this.props.tag?.repository
-						? this.props.tag.repository
-						: this.state.repositoriesValue
-						  ? this.state.repositoriesValue[0]
-						  : null,
-				})
+		this.setState({ repositoriesValue: res.map(repo => repo.Name) }, () =>
+			this.formRef.current?.setFieldsValue({
+				repository: this.props.tag?.repository
+					? this.props.tag.repository
+					: this.state.repositoriesValue
+						? this.state.repositoriesValue[0]
+						: null,
+			})
 		);
 	};
 
-	handleSubmit = values => {
+	handleSubmit = (values: TagForForm) => {
 		if (Object.keys(this.state.i18n).length > 0) {
 			values.i18n = this.state.i18n;
 			values.description =
@@ -165,8 +169,8 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 					repository: this.props.tag?.repository
 						? this.props.tag.repository
 						: this.state.repositoriesValue
-						  ? this.state.repositoriesValue[0]
-						  : null,
+							? this.state.repositoriesValue[0]
+							: null,
 					aliases: this.props.tag?.aliases,
 					noLiveDownload: this.props.tag?.noLiveDownload,
 					priority: this.props.tag?.priority ? this.props.tag?.priority : 10,
