@@ -1,7 +1,7 @@
 {
   "name": "karaokemugen-app",
   "version": "8.0.4-next",
-  "versionName": "Sakuya Splendide",
+  "versionName": "in memory of Shami Sauvage",
   "description": "Karaoke playlist manager / player",
   "bin": {
     "karaokemugen": "./dist/src/index.js"
