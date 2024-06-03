@@ -204,7 +204,7 @@ export default class Git {
 			total: 100,
 		});
 		try {
-			const ret = await this.git.clone(this.opts.url, '.');
+			const ret = await this.git.clone(this.opts.url, '.', { '--depth': 1 });
 			return ret;
 		} catch (err) {
 			throw err;
