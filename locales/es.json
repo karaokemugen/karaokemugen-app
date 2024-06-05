@@ -252,9 +252,14 @@
 		"VERSIONS": "Versión",
 		"WARNINGS": "Advertencia",
 		"FRANCHISES": "Franquicia",
-		"COLLECTIONS": "Colección"
+		"COLLECTIONS": "Colección",
+		"FAMILIES": "Contenido del vídeo"
 	},
 	"MIGRATION": "Migración",
 	"YEAR": "Año",
-	"TITLE": "Título"
+	"TITLE": "Título",
+	"MIGRATION_MESSAGES": [
+		"Alinear los micrófonos"
+	],
+	"FALLBACK": "Retroceder"
 }
