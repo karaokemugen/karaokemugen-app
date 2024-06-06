@@ -259,7 +259,12 @@
 	"YEAR": "Año",
 	"TITLE": "Título",
 	"MIGRATION_MESSAGES": [
-		"Alinear los micrófonos"
+		"Alinear los micrófonos",
+		"Cálculo de las ondas sonoras de normalización",
+		null,
+		"Afinar las cuerdas vocales",
+		"Descubriendo la ciudad perdida de Karaokum Mugen-la",
+		"La respuesta de la informática a la vida, el universo y todo lo demás"
 	],
 	"FALLBACK": "Retroceder"
 }
