@@ -1,7 +1,7 @@
 import i18next from 'i18next';
 import { debounce } from 'lodash';
 import { createElement, useCallback, useContext, useEffect, useState } from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { Route, Routes } from 'react-router';
 
 import { useSearchParams } from 'react-router-dom';
@@ -167,7 +167,9 @@ function AdminPage(props: IProps) {
 			getPlaylistList();
 		}
 		if (!context?.globalState.settings.data.user?.flag_tutorial_done) {
-			ReactDOM.render(createElement(Tutorial), document.getElementById('tuto'));
+			const container = document.getElementById('tuto');
+			const root = createRoot(container);
+			root.render(createElement(Tutorial));
 		}
 		getSocket().on('playlistsUpdated', getPlaylistList);
 		getSocket().on('operatorNotificationInfo', operatorNotificationInfo);
