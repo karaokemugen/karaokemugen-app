@@ -1,6 +1,6 @@
 {
   "name": "karaokemugen-app",
-  "version": "8.0.5-next",
+  "version": "8.0.6-next",
   "versionName": "in memory of Shami Sauvage",
   "description": "Karaoke playlist manager / player",
   "bin": {
