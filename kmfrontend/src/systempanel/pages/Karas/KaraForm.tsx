@@ -16,7 +16,6 @@ import {
 	Collapse,
 	Divider,
 	Form,
-	FormInstance,
 	Input,
 	InputNumber,
 	Modal,
@@ -53,6 +52,7 @@ import EditableTagGroup from '../../components/EditableTagGroup';
 import LanguagesList from '../../components/LanguagesList';
 import OpenLyricsFileButton from '../../components/OpenLyricsFileButton';
 import type { RepositoryManifestV2 } from '../../../../../src/lib/types/repo';
+import { useForm } from 'antd/es/form/Form';
 
 const { Paragraph } = Typography;
 const { Panel } = Collapse;
@@ -65,7 +65,7 @@ interface KaraFormProps {
 }
 
 function KaraForm(props: KaraFormProps) {
-	const formRef = useRef<FormInstance>(null);
+	const [form] = useForm();
 	const context = useContext(GlobalContext);
 
 	// State
@@ -124,7 +124,7 @@ function KaraForm(props: KaraFormProps) {
 
 	useEffect(() => {
 		getRepositories();
-		formRef.current.validateFields();
+		form.validateFields();
 		getParents();
 		loadMediaInfo();
 		setApplyLyricsCleanup(context.globalState.settings.data.config?.Maintainer?.ApplyLyricsCleanupOnKaraSave);
@@ -136,21 +136,27 @@ function KaraForm(props: KaraFormProps) {
 
 	useEffect(() => {
 		const repository = props.kara?.repository || (repositoriesValue ? repositoriesValue[0] : null);
-		formRef.current.setFieldsValue({
+		form.setFieldsValue({
 			repository,
 		});
 		getRepoManifest(repository);
 	}, [repositoriesValue]);
 
 	useEffect(() => {
-		formRef.current.validateFields(['series']);
-		formRef.current.validateFields(['singergroups']);
-		formRef.current.validateFields(['singers']);
+		form.validateFields(['series']);
+		form.validateFields(['singergroups']);
+		form.validateFields(['singers']);
 	}, [serieSingersRequired]);
 
 	useEffect(() => {
 		validateMediaRules();
 	}, [mediaInfo]);
+
+	useEffect(() => {
+		const oldFormFields = form.getFieldsValue(['mediafile', 'subfile']); // Fields to take over to the applied kara
+		form.resetFields();
+		form.setFieldsValue(oldFormFields); // Re-sets media and lyrics file, if already uploaded
+	}, [parentKara]);
 
 	const getRepoManifest = async (repository: string) => {
 		if (repository) {
@@ -160,8 +166,8 @@ function KaraForm(props: KaraFormProps) {
 	};
 
 	const getParents = async () => {
-		if (formRef.current.getFieldValue('parents') !== null) {
-			const parents: string[] = formRef.current.getFieldValue('parents');
+		if (form.getFieldValue('parents') !== null) {
+			const parents: string[] = form.getFieldValue('parents');
 			if (parents.length > 0) {
 				const res = await commandBackend('getKaras', { q: `k:${parents.join()}`, ignoreCollections: true });
 				const karaSearch = res.content.map(kara => {
@@ -183,14 +189,14 @@ function KaraForm(props: KaraFormProps) {
 				false,
 				60000
 			);
-			if (!props.kara.mediafile || mediaInfo.filename === formRef.current.getFieldValue('mediafile'))
+			if (!props.kara.mediafile || mediaInfo.filename === form.getFieldValue('mediafile'))
 				// Avoid showing wrong mediaInfo when mediafile is changed too quickly
 				setMediaInfo(mediaInfo);
 		}
 	};
 
 	const validateMediaRules = async () => {
-		const repo: string = formRef.current?.getFieldValue('repository');
+		const repo: string = form?.getFieldValue('repository');
 		if (mediaInfo && repo) {
 			const mediaInfoValidationResults: MediaInfoValidationResult[] = await commandBackend(
 				'validateMediaInfo',
@@ -215,7 +221,7 @@ function KaraForm(props: KaraFormProps) {
 					{
 						kid: props.kara?.kid,
 						filename: mediafileIsTouched && mediaInfo?.filename,
-						repo: formRef.current.getFieldValue('repository'),
+						repo: form.getFieldValue('repository'),
 						encodeOptions: encodeMediaOptions,
 					},
 					false,
@@ -224,8 +230,8 @@ function KaraForm(props: KaraFormProps) {
 				setMediaInfo(newMediaInfo);
 				setIsEncodingMedia(false);
 				setMediafileIsTouched(true);
-				formRef.current.setFieldsValue({ mediafile: newMediaInfo.filename });
-				formRef.current.validateFields();
+				form.setFieldsValue({ mediafile: newMediaInfo.filename });
+				form.validateFields();
 			} catch (e) {
 				setIsEncodingMedia(false);
 				throw e;
@@ -367,12 +373,7 @@ function KaraForm(props: KaraFormProps) {
 		if (!defaultLanguage || !titles || Object.keys(titles).length === 0 || !titles[defaultLanguage]) {
 			message.error(i18next.t('KARA.TITLE_REQUIRED'));
 		} else {
-			const data = await commandBackend(
-				'previewHooks',
-				getKaraToSend(formRef.current.getFieldsValue()),
-				false,
-				300000
-			);
+			const data = await commandBackend('previewHooks', getKaraToSend(form.getFieldsValue()), false, 300000);
 			Modal.info({
 				title: i18next.t('KARA.PREVIEW_HOOKS_MODAL'),
 				content: (
@@ -513,7 +514,7 @@ function KaraForm(props: KaraFormProps) {
 		const fileList = info.fileList.slice(-1);
 		setMediafile(fileList);
 		if (info.file.status === 'uploading') {
-			formRef.current.setFieldsValue({ mediafile: null });
+			form.setFieldsValue({ mediafile: null });
 			setMediaInfo(null);
 			setMediaInfoValidationResults([]);
 		} else if (info.file.status === 'done') {
@@ -529,48 +530,48 @@ function KaraForm(props: KaraFormProps) {
 					60000
 				);
 				setMediaInfo(mediaInfo);
-				formRef.current.setFieldsValue({ mediafile: mediaInfo.filename });
+				form.setFieldsValue({ mediafile: mediaInfo.filename });
 				message.success(i18next.t('KARA.ADD_FILE_SUCCESS', { name: info.file.name }));
 			} else {
-				formRef.current.setFieldsValue({ mediafile: null });
+				form.setFieldsValue({ mediafile: null });
 				message.error(i18next.t('KARA.ADD_FILE_MEDIA_ERROR', { name: info.file.name }));
 				info.file.status = 'error';
 				setMediafile([]);
 			}
 		} else if (info.file.status === 'error' || info.file.status === 'removed') {
-			formRef.current.setFieldsValue({ mediafile: null });
+			form.setFieldsValue({ mediafile: null });
 			setMediafile([]);
 		}
-		formRef.current.validateFields();
+		form.validateFields();
 	};
 
 	const onSubUploadChange = info => {
 		const fileList = info.fileList.slice(-1);
 		setSubfile(fileList);
 		if (info.file.status === 'uploading') {
-			formRef.current.setFieldsValue({ subfile: null });
+			form.setFieldsValue({ subfile: null });
 		} else if (info.file.status === 'done') {
 			if (isSubFile(info.file.name)) {
 				setSubfileIsTouched(true);
-				formRef.current.setFieldsValue({ subfile: info.file.response.filename });
+				form.setFieldsValue({ subfile: info.file.response.filename });
 				message.success(i18next.t('KARA.ADD_FILE_SUCCESS', { name: info.file.name }));
 			} else {
-				formRef.current.setFieldsValue({ subfile: null });
+				form.setFieldsValue({ subfile: null });
 				message.error(i18next.t('KARA.ADD_FILE_LYRICS_ERROR', { name: info.file.name }));
 				info.file.status = 'error';
 				setSubfile([]);
 			}
 		} else if (info.file.status === 'error' || info.file.status === 'removed') {
-			formRef.current.setFieldsValue({ subfile: null });
+			form.setFieldsValue({ subfile: null });
 			setSubfile([]);
 		}
 	};
 
 	const onChangeSingersSeries = () => {
 		setSerieSingersRequired(
-			formRef.current.getFieldValue('singers')?.length === 0 &&
-				formRef.current.getFieldValue('singergroups')?.length === 0 &&
-				formRef.current.getFieldValue('series')?.length === 0
+			form.getFieldValue('singers')?.length === 0 &&
+				form.getFieldValue('singergroups')?.length === 0 &&
+				form.getFieldValue('series')?.length === 0
 		);
 	};
 
@@ -623,14 +624,11 @@ function KaraForm(props: KaraFormProps) {
 			if (
 				!props.kara?.kid &&
 				titlesIsTouched !== true &&
-				formRef.current.isFieldsTouched(['versions', 'series', 'language']) !== true
+				form.isFieldsTouched(['versions', 'series', 'language']) !== true
 			) {
 				setTitles(parentKara.titles);
 				setDefaultLanguage(parentKara.titles_default_language);
 				setParentKara(parentKara);
-				const oldFormFields = formRef.current.getFieldsValue(['mediafile', 'subfile']); // Fields to take over to the applied kara
-				formRef.current.resetFields();
-				formRef.current.setFieldsValue(oldFormFields); // Re-sets media and lyrics file, if already uploaded
 				onChangeSingersSeries();
 			}
 		}
@@ -664,7 +662,7 @@ function KaraForm(props: KaraFormProps) {
 
 	return (
 		<Form
-			ref={formRef}
+			form={form}
 			onFinish={handleSubmit}
 			onFinishFailed={handleSubmitFailed}
 			className="kara-form"
@@ -960,7 +958,7 @@ function KaraForm(props: KaraFormProps) {
 				onFieldIsTouched={isFieldTouched => titlesIsTouched !== true && setTitlesIsTouched(isFieldTouched)}
 				onChange={titles => {
 					setTitles(titles);
-					formRef.current.validateFields(['titles']);
+					form.validateFields(['titles']);
 				}}
 				defaultLanguage={defaultLanguage}
 				onDefaultLanguageSelect={setDefaultLanguage}
@@ -978,9 +976,7 @@ function KaraForm(props: KaraFormProps) {
 				labelCol={{ flex: '0 1 220px' }}
 				name="titles_aliases"
 			>
-				<EditableGroupAlias
-					onChange={aliases => formRef.current?.setFieldsValue({ titles_aliases: aliases })}
-				/>
+				<EditableGroupAlias onChange={aliases => form?.setFieldsValue({ titles_aliases: aliases })} />
 			</Form.Item>
 			<Divider orientation="left">{i18next.t('KARA.SECTIONS.IDENTITY')}</Divider>
 			<Form.Item
@@ -995,11 +991,7 @@ function KaraForm(props: KaraFormProps) {
 				]}
 				name="langs"
 			>
-				<EditableTagGroup
-					form={formRef.current}
-					tagType={5}
-					onChange={tags => formRef.current.setFieldsValue({ langs: tags })}
-				/>
+				<EditableTagGroup form={form} tagType={5} onChange={tags => form.setFieldsValue({ langs: tags })} />
 			</Form.Item>
 			<Form.Item
 				label={
@@ -1021,10 +1013,10 @@ function KaraForm(props: KaraFormProps) {
 				name="series"
 			>
 				<EditableTagGroup
-					form={formRef.current}
+					form={form}
 					tagType={1}
 					onChange={tags => {
-						formRef.current.setFieldsValue({ series: tags });
+						form.setFieldsValue({ series: tags });
 						onChangeSingersSeries();
 					}}
 				/>
@@ -1043,9 +1035,9 @@ function KaraForm(props: KaraFormProps) {
 				name="franchises"
 			>
 				<EditableTagGroup
-					form={formRef.current}
+					form={form}
 					tagType={18}
-					onChange={tags => formRef.current.setFieldsValue({ franchises: tags })}
+					onChange={tags => form.setFieldsValue({ franchises: tags })}
 				/>
 			</Form.Item>
 			<Form.Item
@@ -1061,10 +1053,10 @@ function KaraForm(props: KaraFormProps) {
 				]}
 			>
 				<EditableTagGroup
-					form={formRef.current}
+					form={form}
 					tagType={3}
 					checkboxes={true}
-					onChange={tags => formRef.current.setFieldsValue({ songtypes: tags })}
+					onChange={tags => form.setFieldsValue({ songtypes: tags })}
 				/>
 			</Form.Item>
 			<Form.Item
@@ -1096,10 +1088,10 @@ function KaraForm(props: KaraFormProps) {
 				name="versions"
 			>
 				<EditableTagGroup
-					form={formRef.current}
+					form={form}
 					tagType={14}
 					checkboxes={true}
-					onChange={tags => formRef.current.setFieldsValue({ versions: tags })}
+					onChange={tags => form.setFieldsValue({ versions: tags })}
 				/>
 			</Form.Item>
 			<Form.Item
@@ -1115,10 +1107,10 @@ function KaraForm(props: KaraFormProps) {
 				name="singers"
 			>
 				<EditableTagGroup
-					form={formRef.current}
+					form={form}
 					tagType={2}
 					onChange={tags => {
-						formRef.current.setFieldsValue({ singer: tags });
+						form.setFieldsValue({ singer: tags });
 						onChangeSingersSeries();
 					}}
 				/>
@@ -1136,10 +1128,10 @@ function KaraForm(props: KaraFormProps) {
 				name="singergroups"
 			>
 				<EditableTagGroup
-					form={formRef.current}
+					form={form}
 					tagType={17}
 					onChange={tags => {
-						formRef.current.setFieldsValue({ singergroup: tags });
+						form.setFieldsValue({ singergroup: tags });
 						onChangeSingersSeries();
 					}}
 				/>
@@ -1158,9 +1150,9 @@ function KaraForm(props: KaraFormProps) {
 				name="songwriters"
 			>
 				<EditableTagGroup
-					form={formRef.current}
+					form={form}
 					tagType={8}
-					onChange={tags => formRef.current.setFieldsValue({ songwriters: tags })}
+					onChange={tags => form.setFieldsValue({ songwriters: tags })}
 				/>
 			</Form.Item>
 			<Form.Item
@@ -1176,11 +1168,7 @@ function KaraForm(props: KaraFormProps) {
 				wrapperCol={{ span: 7 }}
 				name="creators"
 			>
-				<EditableTagGroup
-					form={formRef.current}
-					tagType={4}
-					onChange={tags => formRef.current.setFieldsValue({ creators: tags })}
-				/>
+				<EditableTagGroup form={form} tagType={4} onChange={tags => form.setFieldsValue({ creators: tags })} />
 			</Form.Item>
 			<Form.Item
 				hasFeedback
@@ -1226,10 +1214,10 @@ function KaraForm(props: KaraFormProps) {
 				]}
 			>
 				<EditableTagGroup
-					form={formRef.current}
+					form={form}
 					tagType={16}
 					checkboxes={true}
-					onChange={tags => formRef.current.setFieldsValue({ collections: tags })}
+					onChange={tags => form.setFieldsValue({ collections: tags })}
 				/>
 			</Form.Item>
 
@@ -1247,10 +1235,10 @@ function KaraForm(props: KaraFormProps) {
 				name="families"
 			>
 				<EditableTagGroup
-					form={formRef.current}
+					form={form}
 					tagType={10}
 					checkboxes={true}
-					onChange={tags => formRef.current.setFieldsValue({ families: tags })}
+					onChange={tags => form.setFieldsValue({ families: tags })}
 				/>
 			</Form.Item>
 			<Form.Item
@@ -1266,10 +1254,10 @@ function KaraForm(props: KaraFormProps) {
 					<Panel header={i18next.t('SHOW-HIDE')} key="1" forceRender={true}>
 						<EditableTagGroup
 							value={props.kara?.platforms || parentKara?.platforms}
-							form={formRef.current}
+							form={form}
 							tagType={13}
 							checkboxes={true}
-							onChange={tags => formRef.current.setFieldsValue({ platforms: tags })}
+							onChange={tags => form.setFieldsValue({ platforms: tags })}
 						/>
 					</Panel>
 				</Collapse>
@@ -1281,10 +1269,10 @@ function KaraForm(props: KaraFormProps) {
 				name="genres"
 			>
 				<EditableTagGroup
-					form={formRef.current}
+					form={form}
 					tagType={12}
 					checkboxes={true}
-					onChange={tags => formRef.current.setFieldsValue({ genres: tags })}
+					onChange={tags => form.setFieldsValue({ genres: tags })}
 				/>
 			</Form.Item>
 			<Form.Item
@@ -1294,10 +1282,10 @@ function KaraForm(props: KaraFormProps) {
 				name="origins"
 			>
 				<EditableTagGroup
-					form={formRef.current}
+					form={form}
 					tagType={11}
 					checkboxes={true}
-					onChange={tags => formRef.current.setFieldsValue({ origins: tags })}
+					onChange={tags => form.setFieldsValue({ origins: tags })}
 				/>
 			</Form.Item>
 			<Form.Item
@@ -1307,10 +1295,10 @@ function KaraForm(props: KaraFormProps) {
 				name="misc"
 			>
 				<EditableTagGroup
-					form={formRef.current}
+					form={form}
 					tagType={7}
 					checkboxes={true}
-					onChange={tags => formRef.current.setFieldsValue({ misc: tags })}
+					onChange={tags => form.setFieldsValue({ misc: tags })}
 				/>
 			</Form.Item>
 			<Form.Item
@@ -1320,10 +1308,10 @@ function KaraForm(props: KaraFormProps) {
 				name="warnings"
 			>
 				<EditableTagGroup
-					form={formRef.current}
+					form={form}
 					tagType={15}
 					checkboxes={true}
-					onChange={tags => formRef.current.setFieldsValue({ warnings: tags })}
+					onChange={tags => form.setFieldsValue({ warnings: tags })}
 				/>
 			</Form.Item>
 			<Form.Item
@@ -1340,10 +1328,10 @@ function KaraForm(props: KaraFormProps) {
 				name="groups"
 			>
 				<EditableTagGroup
-					form={formRef.current}
+					form={form}
 					tagType={9}
 					checkboxes={true}
-					onChange={tags => formRef.current.setFieldsValue({ groups: tags })}
+					onChange={tags => form.setFieldsValue({ groups: tags })}
 				/>
 			</Form.Item>
 			<Divider orientation="left">{i18next.t('KARA.SECTIONS.META')}</Divider>
@@ -1437,11 +1425,7 @@ function KaraForm(props: KaraFormProps) {
 				]}
 				name="authors"
 			>
-				<EditableTagGroup
-					form={formRef.current}
-					tagType={6}
-					onChange={tags => formRef.current.setFieldsValue({ author: tags })}
-				/>
+				<EditableTagGroup form={form} tagType={6} onChange={tags => form.setFieldsValue({ author: tags })} />
 			</Form.Item>
 			<Form.Item
 				hasFeedback

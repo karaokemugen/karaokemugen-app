@@ -3,15 +3,15 @@ import { Form, FormInstance, Input, Modal, Select, Tooltip } from 'antd';
 import i18next from 'i18next';
 import { useRef, useState } from 'react';
 
-import { Tag } from '../../../../src/lib/types/tag';
 import { commandBackend } from '../../utils/socket';
 import { tagTypes } from '../../utils/tagTypes';
+import type { DBKaraTag } from '../../../../src/lib/types/database/kara';
 
 interface CreateTagModalProps {
 	initialTagTypes?: number[];
 	initialName?: string;
 	onClose: () => void;
-	onCreate: (tag: Tag) => void;
+	onCreate: (tag: DBKaraTag) => void;
 	repo: string;
 }
 
