@@ -228,8 +228,7 @@
 		},
 		"STAGES": {
 			"resolving": "Resolving delta",
-			"receiving": "Receiving data",
-			"updating": "Updating files"
+			"receiving": "Receiving data"
 		}
 	},
 	"OFFICIAL_WEBSITE": "Sitio web oficial",

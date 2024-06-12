@@ -206,8 +206,7 @@
 		},
 		"STAGES": {
 			"resolving": "Menyelesaikan delta",
-			"receiving": "Menerima data",
-			"updating": "Memperbarui berkas"
+			"receiving": "Menerima data"
 		}
 	},
 	"OFFICIAL_WEBSITE": "Situs Web Resmi",

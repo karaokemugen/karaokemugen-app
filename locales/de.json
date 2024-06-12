@@ -282,8 +282,7 @@
 		},
 		"STAGES": {
 			"resolving": "Delta-Änderungen auflösen",
-			"receiving": "Empfange Daten",
-			"updating": "Aktualisiere Dateien"
+			"receiving": "Empfange Daten"
 		},
 		"CURRENT_ACTION": "Git Aktionen"
 	},
