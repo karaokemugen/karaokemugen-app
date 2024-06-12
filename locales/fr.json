@@ -297,7 +297,8 @@
 		"STAGES": {
 			"resolving": "Résolution des deltas",
 			"receiving": "Réception des données",
-			"updating": "Mise à jour des fichiers"
+			"writing": "Écriture des fichiers",
+			"counting": "Comptage des fichiers"
 		}
 	},
 	"OFFICIAL_WEBSITE": "Site officiel",

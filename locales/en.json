@@ -297,7 +297,8 @@
 		"STAGES": {
 			"resolving": "Resolving delta",
 			"receiving": "Receiving data",
-			"updating": "Updating files"
+			"writing": "Writing files",
+			"counting": "Counting files"
 		}
 	},
 	"OFFICIAL_WEBSITE": "Official Website",
