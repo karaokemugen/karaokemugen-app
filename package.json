@@ -83,6 +83,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
+    "@hiogawa/flac-picture": "^1.0.0-pre.5",
     "@sentry/electron": "^5.1.0",
     "agentkeepalive": "^4.5.0",
     "ass-compiler": "^0.1.11",
