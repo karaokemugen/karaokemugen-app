@@ -8,11 +8,11 @@ import { commandBackend } from '../../utils/socket';
 
 class Database extends Component<unknown, unknown> {
 	dbregen = async () => {
-		commandBackend('generateDatabase', undefined, true, 300000).catch(() => {});
+		commandBackend('generateDatabase', undefined, false, 300000).catch(() => {});
 	};
 
 	dbvalidateFiles = async () => {
-		commandBackend('validateFiles', undefined, true, 300000).catch(() => {});
+		commandBackend('validateFiles', undefined, false, 300000).catch(() => {});
 	};
 
 	dbdump = async () => {
