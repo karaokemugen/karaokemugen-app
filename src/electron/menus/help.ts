@@ -24,14 +24,6 @@ const builder: MenuItemBuilderFunction = options => {
 				click: urls.forum,
 			},
 			{
-				label: i18next.t('MENU_HELP_TWITTER'),
-				click: urls.twitter,
-			},
-			{
-				label: i18next.t('MENU_HELP_MASTODON'),
-				click: urls.mastodon,
-			},
-			{
 				label: i18next.t('MENU_HELP_BLUESKY'),
 				click: urls.bluesky,
 			},
@@ -39,7 +31,14 @@ const builder: MenuItemBuilderFunction = options => {
 				label: i18next.t('MENU_HELP_DISCORD'),
 				click: urls.discord,
 			},
-
+			{
+				label: i18next.t('MENU_HELP_MASTODON'),
+				click: urls.mastodon,
+			},
+			{
+				label: i18next.t('MENU_HELP_TWITTER'),
+				click: urls.twitter,
+			},
 			{
 				label: i18next.t('MENU_HELP_GITLAB'),
 				click: urls.gitlab,

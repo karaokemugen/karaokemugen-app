@@ -22,7 +22,7 @@ function TasksEvent(props: IProps) {
 						percentage: 0,
 						time: Infinity,
 					},
-			  ]
+				]
 			: []
 	);
 	const [i, setI] = useState(0);
@@ -66,7 +66,7 @@ function TasksEvent(props: IProps) {
 				tCount++;
 
 				return (
-					<blockquote key={index}>
+					<blockquote key={index} className={item.text === 'DUMMY_TASK' && 'hide-border'}>
 						<p className="text">
 							{i18next.t(`TASKS.${item.text}`) !== `TASKS.${item.text}`
 								? i18next.t(`TASKS.${item.text}`, { data: item.data })

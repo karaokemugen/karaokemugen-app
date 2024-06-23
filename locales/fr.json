@@ -128,7 +128,7 @@
 	"MENU_HELP_WEBSITE": "Site &Web",
 	"MENU_HELP_DISCORD": "&Discord",
 	"MENU_HELP_FORUM": "&Forum",
-	"MENU_HELP_TWITTER": "&Twitter",
+	"MENU_HELP_TWITTER": "&𝕏 (anciennement Twitter)",
 	"MENU_HELP_MASTODON": "&Mastodon",
 	"MENU_HELP_BLUESKY": "&Bluesky",
 	"MENU_HELP_CHANGELOG": "&Notes de version",
@@ -297,7 +297,8 @@
 		"STAGES": {
 			"resolving": "Résolution des deltas",
 			"receiving": "Réception des données",
-			"updating": "Mise à jour des fichiers"
+			"writing": "Écriture des fichiers",
+			"counting": "Comptage des fichiers"
 		}
 	},
 	"OFFICIAL_WEBSITE": "Site officiel",

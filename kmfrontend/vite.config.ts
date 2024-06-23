@@ -13,6 +13,7 @@ export default defineConfig({
 		proxy: {
 			'/avatars': 'http://localhost:1337',
 			'/previews': 'http://localhost:1337',
+			'/api': 'http://localhost:1337',
 		},
 	},
 });

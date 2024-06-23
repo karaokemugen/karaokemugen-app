@@ -71,7 +71,7 @@
 	"MENU_HELP_WEBSITE": "&Sitio Web",
 	"MENU_HELP_DISCORD": "&Discord",
 	"MENU_HELP_FORUM": "&Foro",
-	"MENU_HELP_TWITTER": "&Twitter",
+	"MENU_HELP_TWITTER": "&𝕏",
 	"MENU_HELP_MASTODON": "&Mastodon",
 	"MENU_HELP_BLUESKY": "&Bluesky",
 	"MENU_HELP_CHANGELOG": "&Notas de lanzamiento",
@@ -228,8 +228,7 @@
 		},
 		"STAGES": {
 			"resolving": "Resolving delta",
-			"receiving": "Receiving data",
-			"updating": "Updating files"
+			"receiving": "Receiving data"
 		}
 	},
 	"OFFICIAL_WEBSITE": "Sitio web oficial",
@@ -252,9 +251,19 @@
 		"VERSIONS": "Versión",
 		"WARNINGS": "Advertencia",
 		"FRANCHISES": "Franquicia",
-		"COLLECTIONS": "Colección"
+		"COLLECTIONS": "Colección",
+		"FAMILIES": "Contenido del vídeo"
 	},
 	"MIGRATION": "Migración",
 	"YEAR": "Año",
-	"TITLE": "Título"
+	"TITLE": "Título",
+	"MIGRATION_MESSAGES": [
+		"Alinear los micrófonos",
+		"Cálculo de las ondas sonoras de normalización",
+		null,
+		"Afinar las cuerdas vocales",
+		"Descubriendo la ciudad perdida de Karaokum Mugen-la",
+		"La respuesta de la informática a la vida, el universo y todo lo demás"
+	],
+	"FALLBACK": "Retroceder"
 }

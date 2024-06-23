@@ -160,6 +160,7 @@ ORDER BY ${orderClauses}
 	ak.songtypes_sortable DESC,
 	ak.songorder,
 	ak.languages_sortable,
+	parents, 
 	ak.titles_sortable
 ${limitClause}
 ${offsetClause}

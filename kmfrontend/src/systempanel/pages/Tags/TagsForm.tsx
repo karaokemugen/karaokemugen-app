@@ -75,14 +75,16 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 
 	getRepositories = async () => {
 		const res = await commandBackend('getRepos');
-		this.setState({ repositoriesValue: res.map(repo => repo.Name) }, () =>
-			this.formRef.current?.setFieldsValue({
-				repository: this.props.tag?.repository
-					? this.props.tag.repository
-					: this.state.repositoriesValue
-						? this.state.repositoriesValue[0]
-						: null,
-			})
+		this.setState(
+			{ repositoriesValue: res.filter(repo => repo.MaintainerMode || !repo.Online).map(repo => repo.Name) },
+			() =>
+				this.formRef.current?.setFieldsValue({
+					repository: this.props.tag?.repository
+						? this.props.tag.repository
+						: this.state.repositoriesValue
+							? this.state.repositoriesValue[0]
+							: null,
+				})
 		);
 	};
 

@@ -214,8 +214,7 @@
 		},
 		"STAGES": {
 			"resolving": "Risolvendo delta",
-			"receiving": "Ricevendo i dati",
-			"updating": "Aggiornando i file"
+			"receiving": "Ricevendo i dati"
 		},
 		"CURRENT_ACTION": "Azione Git"
 	},
@@ -236,7 +235,7 @@
 	"MENU_VIEW_TOGGLEDEVTOOLS": "Mostra &strumenti per sviluppatori",
 	"REQUESTED_WITH": "(con {{names}})",
 	"MENU_EDIT_STOPSPEECH": "Smetti di parlare",
-	"MENU_HELP_TWITTER": "&Twitter",
+	"MENU_HELP_TWITTER": "&𝕏",
 	"REPO_DISABLED": {
 		"TITLE": "Archivio disabilitato",
 		"MESSAGE": "L'archivio {{repo}} è stato disabilitato perché una delle sue cartelle non è disponibile. Se alcune cartelle sono in un disco esterno, assicurati che sia collegato e vai nel Pannello di Sistema > Archivi per riabilitarlo."
