@@ -80,8 +80,17 @@
 		background: transparent;
 		color: white;
 		padding: 0.25em;
-		border-right: 1px solid grey;
+
 		&:last-child {
+			border-right: none;
+		}
+
+		&,
+		&:first-child {
+			border-right: 1px solid grey;
+		}
+
+		&.hide-border {
 			border-right: none;
 		}
 

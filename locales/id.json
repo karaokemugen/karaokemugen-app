@@ -54,7 +54,7 @@
 	"MENU_HELP_DONATIONS": "&Memberikan Donasi",
 	"MENU_HELP_WEBSITE": "&Situs web",
 	"MENU_HELP_DISCORD": "Discord",
-	"MENU_HELP_TWITTER": "&Twitter",
+	"MENU_HELP_TWITTER": "&𝕏",
 	"MENU_HELP_MASTODON": "M&astodon",
 	"MENU_HELP_BLUESKY": "&Bluesky",
 	"MENU_HELP_CHANGELOG": "&Catatan Rilis",
@@ -206,8 +206,7 @@
 		},
 		"STAGES": {
 			"resolving": "Menyelesaikan delta",
-			"receiving": "Menerima data",
-			"updating": "Memperbarui berkas"
+			"receiving": "Menerima data"
 		}
 	},
 	"OFFICIAL_WEBSITE": "Situs Web Resmi",
