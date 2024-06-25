@@ -1129,15 +1129,16 @@
 			"VIDEO_ASPECT_RATIO": "Format d'image",
 			"WARNINGS": {
 				"LIBAVCODEC_ENCODER": "L'audio est encodé avec libavcodec (l'aac de référence dans ffmpeg), qui peut créer des artefacts audibles et il est donc déconseillé de l'utiliser. Veillez à utiliser l'encodeur libfdk_aac pour l'aac ou un autre codec comme opus, pour obtenir la meilleure qualité possible."
-			}
-		},
-		"MEDIA_ENCODE" : {
-			"LABEL" : "Encoder les médias",
-			"OPTIONS" : {
-				"TRIM_MEDIA" : "Couper",
-				"TRIM_MEDIA_TOOLTIP" : "Détecter et supprimer les images noires et les silences au début et à la fin du média"
 			},
-			"TIMING_CHANGE_WARNING" : "Les options sélectionnées peuvent modifier le début et la fin du média. Vérifiez le minutage des paroles après l'encodage et l'enregistrement du média.",
+			"AUDIO_SAMPLE_RATE": "Taux d’échantillonnage audio"
+		},
+		"MEDIA_ENCODE": {
+			"LABEL": "Encoder les médias",
+			"OPTIONS": {
+				"TRIM_MEDIA": "Couper",
+				"TRIM_MEDIA_TOOLTIP": "Détecter et supprimer les images noires et les silences au début et à la fin du média"
+			},
+			"TIMING_CHANGE_WARNING": "Les options sélectionnées peuvent modifier le début et la fin du média. Vérifiez le minutage des paroles après l'encodage et l'enregistrement du média.",
 			"LEAVE_PAGE": "Le média est en cours d'encodage. Quitter la page maintenant annulera l'encodage, êtes-vous sûr de vouloir partir ?"
 		},
 		"FROM_DISPLAY_TYPE": "Affichage du tag de la provenance de la chanson",
