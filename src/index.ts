@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import { app } from 'electron';
-import { existsSync, readFileSync } from 'fs';
-import { mkdirpSync } from 'fs-extra';
+import fs from 'fs/promises';
+import { exists, mkdirpSync } from 'fs-extra';
 import { dirname, resolve } from 'path';
 import { createInterface } from 'readline';
 import sourceMapSupport from 'source-map-support';
@@ -78,7 +78,8 @@ if (app.isPackaged) {
 }
 
 try {
-	process.env.SENTRY_DSN = readFileSync(resolve(resourcePath, 'assets/sentry.txt'), 'utf-8').replaceAll('\n', '');
+	const sentryDSN = await fs.readFile(resolve(resourcePath, 'assets/sentry.txt'), 'utf-8');
+	process.env.SENTRY_DSN = sentryDSN.replaceAll('\n', '');
 } catch (err) {
 	// Non-fatal, continue
 }
@@ -88,15 +89,15 @@ try {
 sentry.init(process.argv.includes('--strict'));
 
 // dataPath is appPath + /app. This is default when running from source
-const dataPath = existsSync(resolve(appPath, 'portable'))
+const dataPath = (await exists(resolve(appPath, 'portable')))
 	? resolve(appPath, 'app/')
 	: // Rewriting dataPath to point to user home directory
 		// With Electron we get the handy app.getPath()
 		resolve(app.getPath('home'), 'KaraokeMugen');
 
-if (!existsSync(dataPath)) mkdirpSync(dataPath);
+if (!(await exists(dataPath))) mkdirpSync(dataPath);
 
-if (existsSync(resolve(appPath, 'disableAppUpdate'))) setState({ forceDisableAppUpdate: true });
+if (await exists(resolve(appPath, 'disableAppUpdate'))) setState({ forceDisableAppUpdate: true });
 
 const portable = dataPath === resolve(appPath, 'app/');
 
