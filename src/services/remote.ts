@@ -14,7 +14,7 @@ let errCount = 0;
 
 async function startRemote(): Promise<RemoteSuccess> {
 	try {
-		let remoteToken = await getConfig().Online.RemoteToken;
+		let remoteToken = getConfig().Online.RemoteToken;
 		if (!remoteToken) {
 			remoteToken = '';
 		}

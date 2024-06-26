@@ -47,7 +47,7 @@ export const defaults: Config = {
 			},
 			App: true,
 		},
-		Remote: false,
+		Remote: true,
 		RemoteToken: 'Change me',
 		FetchPopularSongs: true,
 		AllowDownloads: true,
