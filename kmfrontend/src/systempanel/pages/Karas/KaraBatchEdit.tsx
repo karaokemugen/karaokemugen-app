@@ -4,11 +4,12 @@ import i18next from 'i18next';
 import { Component } from 'react';
 import { Link } from 'react-router-dom';
 
-import { DBKara } from '../../../../../src/lib/types/database/kara';
+import type { DBKara } from '../../../../../src/lib/types/database/kara';
 import GlobalContext from '../../../store/context';
 import { getSeriesSingersFull, getTagInLocaleList, getTitleInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
+import type { TagTypeNum } from '../../../../../src/lib/types/tag';
 
 interface PlaylistElem {
 	plaid: string;
@@ -24,8 +25,8 @@ interface KaraBatchEditState {
 	tid?: string;
 	playlists: PlaylistElem[];
 	plaid?: string;
-	action?: 'add' | 'remove';
-	type?: number;
+	action?: 'add' | 'remove' | 'fromDisplayType';
+	type?: TagTypeNum | '';
 	i18nTag: { [key: string]: { [key: string]: string } };
 }
 
@@ -79,16 +80,20 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 		}
 	};
 
-	batchEdit = () => {
-		if (this.state.plaid && this.state.action && this.state.tid) {
-			commandBackend('editKaras', {
-				plaid: this.state.plaid,
-				action: this.state.action,
-				tid: this.state.tid,
-				type: this.state.type,
-			});
-		}
+	batchEdit = async () => {
+		await commandBackend('editKaras', {
+			plaid: this.state.plaid,
+			action: this.state.action,
+			tid: this.state.tid,
+			type: this.state.type,
+		});
 	};
+
+	mapTagTypesToSelectOption = (tagType: string) => (
+		<Select.Option key={tagType} value={tagType ? tagTypes[tagType].type : null}>
+			{i18next.t(tagType ? `TAG_TYPES.${tagType}_one` : 'TAG_TYPES.DEFAULT')}
+		</Select.Option>
+	);
 
 	render() {
 		return (
@@ -98,14 +103,14 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 					description={i18next.t('HEADERS.KARATAG_BATCH_EDIT.DESCRIPTION')}
 				/>
 				<Layout.Content>
-					<Row justify="space-between" style={{ flexWrap: 'nowrap' }}>
-						<Col flex={'15%'}>
+					<Row justify="space-between" style={{ flexWrap: 'nowrap', marginBottom: '0.5em' }}>
+						<Col flex={'15%'} style={{ marginRight: '0.5em' }}>
 							<Link to="/admin">{i18next.t('KARA.BATCH_EDIT.CREATE_PLAYLIST')}</Link>
 						</Col>
 						<Col flex={4} style={{ display: 'flex', flexDirection: 'column' }}>
 							<label>{i18next.t('KARA.BATCH_EDIT.SELECT_PLAYLIST')}</label>
 							<Select
-								style={{ maxWidth: '20%', minWidth: '150px' }}
+								style={{ maxWidth: '20%', minWidth: '150px', marginTop: '0.5em' }}
 								onChange={this.changePlaylist}
 								placeholder={i18next.t('KARA.BATCH_EDIT.SELECT')}
 							>
@@ -132,21 +137,53 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 							>
 								{i18next.t('KARA.BATCH_EDIT.REMOVE_TAG')}
 							</Radio>
+							<Radio
+								checked={this.state.action === 'fromDisplayType'}
+								onChange={() => this.setState({ action: 'fromDisplayType' })}
+							>
+								{i18next.t('KARA.BATCH_EDIT.EDIT_DISPLAY_TYPE')}
+							</Radio>
 						</Col>
-						<Col flex={4} style={{ display: 'flex', flexDirection: 'column' }}>
-							<label>{i18next.t('KARA.BATCH_EDIT.SELECT_TAG')}</label>
-							<Cascader
-								style={{ maxWidth: '250px' }}
-								options={this.state.tags}
-								placeholder={i18next.t('KARA.BATCH_EDIT.SELECT')}
-								showSearch={{ filter: this.FilterTagCascaderFilter, matchInputWidth: false }}
-								onChange={value => {
-									if (value) this.setState({ tid: value[1] as string, type: value[0] as number });
-								}}
-							/>
-						</Col>
+						{this.state.action === 'fromDisplayType' ? (
+							<Col flex={4} style={{ display: 'flex', flexDirection: 'column' }}>
+								<label>{i18next.t('KARA.BATCH_EDIT.SELECT_TAG_TYPE')}</label>
+								<Select
+									defaultValue={null}
+									style={{ maxWidth: '180px', marginTop: '0.5em' }}
+									onChange={(value: TagTypeNum | '') => {
+										console.log(value);
+										this.setState({ type: value });
+									}}
+								>
+									{Object.keys(tagTypes).concat('').map(this.mapTagTypesToSelectOption)}
+								</Select>
+							</Col>
+						) : (
+							<Col flex={4} style={{ display: 'flex', flexDirection: 'column' }}>
+								<label>{i18next.t('KARA.BATCH_EDIT.SELECT_TAG')}</label>
+								<Cascader
+									style={{ maxWidth: '250px', marginTop: '0.5em' }}
+									options={this.state.tags}
+									placeholder={i18next.t('KARA.BATCH_EDIT.SELECT')}
+									showSearch={{ filter: this.FilterTagCascaderFilter, matchInputWidth: false }}
+									onChange={value => {
+										if (value)
+											this.setState({ tid: value[1] as string, type: value[0] as TagTypeNum });
+									}}
+								/>
+							</Col>
+						)}
 						<Col flex={1}>
-							<Button onClick={this.batchEdit}>{i18next.t('KARA.BATCH_EDIT.EDIT')}</Button>
+							<Button
+								disabled={
+									!this.state.plaid ||
+									!this.state.action ||
+									(!this.state.tid && this.state.action !== 'fromDisplayType')
+								}
+								onClick={this.batchEdit}
+							>
+								{i18next.t('KARA.BATCH_EDIT.EDIT')}
+							</Button>
 						</Col>
 					</Row>
 					<Table

@@ -1108,10 +1108,12 @@
 		"BATCH_EDIT": {
 			"ADD_TAG": "Add tag",
 			"REMOVE_TAG": "Remove tag",
+			"EDIT_DISPLAY_TYPE": "Edit from tag type display",
 			"CREATE_PLAYLIST": "First, you need to create a playlist in the operator panel.",
 			"SELECT_PLAYLIST": "Select a playlist:",
 			"SELECT_ACTION": "Select an operation:",
 			"SELECT_TAG": "Select a tag:",
+			"SELECT_TAG_TYPE": "Select a tag type :",
 			"EDIT": "Batch edit",
 			"SELECT": "Select"
 		},
