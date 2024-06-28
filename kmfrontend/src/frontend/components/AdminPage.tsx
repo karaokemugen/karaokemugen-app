@@ -169,7 +169,7 @@ function AdminPage(props: IProps) {
 		if (!context?.globalState.settings.data.user?.flag_tutorial_done) {
 			const container = document.getElementById('tuto');
 			const root = createRoot(container);
-			root.render(createElement(Tutorial));
+			root.render(createElement(Tutorial, { unmount: () => root.unmount() }));
 		}
 		getSocket().on('playlistsUpdated', getPlaylistList);
 		getSocket().on('operatorNotificationInfo', operatorNotificationInfo);
