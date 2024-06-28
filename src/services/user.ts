@@ -343,7 +343,7 @@ export async function createUser(
 		delete user.password;
 		return true;
 	} catch (err) {
-		logger.error(`Error creating user : ${err}`, { service });
+		logger.error(`Error creating user : ${err.message ? err.message : err}`, { service });
 		sentry.error(err);
 		throw err instanceof ErrorKM ? err : new ErrorKM('USER_CREATE_ERROR');
 	}
