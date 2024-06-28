@@ -423,7 +423,7 @@ export class Players {
 			song.avatar &&
 			getConfig().Player.Display.SongInfo &&
 			getConfig().Player.Display.Avatar &&
-			!(playerState.ffmpegVersion.includes('.') && playerState.ffmpegVersion === '7.0');
+			!(playerState.ffmpegVersion.includes('.') && semver.satisfies(playerState.ffmpegVersion, '7.0.x'));
 		const cropRatio = shouldDisplayAvatar ? Math.floor((await getAvatarResolution(song.avatar)) * 0.5) : 0;
 		let avatar = '';
 
@@ -627,7 +627,7 @@ export class Players {
 
 	private genLavfiComplexQRCode(): string {
 		// Disable this for mpvs with ffmpeg version 7.0
-		if (playerState.ffmpegVersion.includes('.') && playerState.ffmpegVersion === '7.0') return '';
+		if (playerState.ffmpegVersion.includes('.') && semver.satisfies(playerState.ffmpegVersion, '7.0.x')) return '';
 		const scaleAvailable = isScaleAvailable();
 		return [
 			`movie=\\'${resolve(resolvedPath('Temp'), 'qrcode.png').replaceAll('\\', '/')}\\'[logo]`,

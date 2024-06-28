@@ -2,7 +2,6 @@ import './Tutorial.scss';
 
 import i18next from 'i18next';
 import { useState } from 'react';
-import { unmountComponentAtNode } from 'react-dom';
 import { Trans } from 'react-i18next';
 
 import KLogo from '../../../assets/Klogo.png';
@@ -11,7 +10,11 @@ import { useResizeListener } from '../../../utils/hooks';
 import { commandBackend } from '../../../utils/socket';
 import { is_large_device } from '../../../utils/tools';
 
-function Tutorial() {
+interface IProps {
+	unmount: () => void;
+}
+
+function Tutorial(props: IProps) {
 	const [stepIndex, setStepIndex] = useState(0);
 	const [isLargeDevice, setLargeDevice] = useState(is_large_device());
 
@@ -23,7 +26,7 @@ function Tutorial() {
 		try {
 			if (stepIndex === 2) {
 				commandBackend('editMyAccount', { flag_tutorial_done: true });
-				unmountComponentAtNode(document.getElementById('tuto'));
+				props.unmount();
 			}
 			setStepIndex(stepIndex + 1);
 		} catch (e) {

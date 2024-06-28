@@ -1,7 +1,6 @@
 import i18next from 'i18next';
 import { merge } from 'lodash';
-import { useContext, useEffect, useState } from 'react';
-import { render } from 'react-dom';
+import { createElement, useContext, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 
 import { PublicPlayerState } from '../../../../src/types/state';
@@ -21,6 +20,7 @@ import AdminMessageModal from './modals/AdminMessageModal';
 import PlayerControls from './PlayerControls';
 import SelectWithIcon from './generic/SelectWithIcon';
 import { getPlaylistIcon } from '../../utils/playlist';
+import { createRoot } from 'react-dom/client';
 
 interface IProps {
 	currentPlaylist: PlaylistElem;
@@ -265,7 +265,9 @@ function AdminHeader(props: IProps) {
 						<li>
 							<div
 								onClick={() => {
-									render(<Tutorial />, document.getElementById('tuto'));
+									const container = document.getElementById('tuto');
+									const root = createRoot(container);
+									root.render(createElement(Tutorial, { unmount: () => root.unmount() }));
 									setDropDownMenu(!dropDownMenu);
 								}}
 							>

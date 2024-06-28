@@ -18,7 +18,6 @@ export async function checkLogin(
 	newAccountSecurityCode?: number
 ): Promise<OldTokenResponse> {
 	if (username) username = decodeURI(username.trim());
-	password = password ? decodeURI(password) : '';
 	const conf = getConfig();
 	let onlineToken: string;
 	username = username.toLowerCase().trim();

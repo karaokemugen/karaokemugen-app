@@ -191,26 +191,31 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 	}
 }
 
-export async function batchEditKaras(plaid: string, action: 'add' | 'remove', tid: string, type: TagTypeNum) {
+export async function batchEditKaras(
+	plaid: string,
+	action: 'add' | 'remove' | 'fromDisplayType',
+	tid: string,
+	type: TagTypeNum
+) {
 	// Checks
 	const task = new Task({
 		text: 'EDITING_KARAS_BATCH_TAGS',
 	});
 	try {
 		const tagType = getTagTypeName(type);
-		if (!tagType) throw 'Type unknown';
+		if (!tagType && action !== 'fromDisplayType') throw 'Type unknown';
 		const pl = await selectPlaylistContentsMicro(plaid);
 		if (pl.length === 0) throw 'Playlist unknown or empty';
 		task.update({
 			value: 0,
 			total: pl.length,
 		});
-		if (action !== 'add' && action !== 'remove') throw 'Unkown action';
-		const tag = await getTag(tid);
+		if (action !== 'add' && action !== 'remove' && action !== 'fromDisplayType') throw 'Unkown action';
+		const karas = [];
 		logger.info(`Batch tag edit starting : adding ${tid} in type ${type} for all songs in playlist ${plaid}`, {
 			service,
 		});
-		const karas = [];
+
 		for (const plc of pl) {
 			profile('getKaraBatch');
 			const kara = await getKara(plc.kid, adminToken);
@@ -224,14 +229,18 @@ export async function batchEditKaras(plaid: string, action: 'add' | 'remove', ti
 				subtext: kara.karafile,
 			});
 			let modified = false;
-			if (kara[tagType].length > 0 && action === 'remove') {
+			if (action === 'fromDisplayType' && kara.from_display_type !== tagType) {
+				modified = true;
+				kara.from_display_type = tagType;
+			}
+			if (kara[tagType]?.length > 0 && action === 'remove') {
 				if (kara[tagType].find((t: KaraTag) => t.tid === tid)) modified = true;
 				kara[tagType] = kara[tagType].filter((t: KaraTag) => t.tid !== tid);
 			}
-			if (action === 'add' && !kara[tagType].find((t: KaraTag) => t.tid === tid)) {
+			if (action === 'add' && kara[tagType] && !kara[tagType].find((t: KaraTag) => t.tid === tid)) {
 				modified = true;
 				kara[tagType].push({
-					tid: tag.tid,
+					tid,
 				} as DBKaraTag);
 			}
 			if (modified) {
