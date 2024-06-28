@@ -324,7 +324,6 @@ export async function createUser(
 			if (user.password.length < 8 && !opts.noPasswordCheck) {
 				throw new ErrorKM('PASSWORD_TOO_SHORT', 411, false);
 			}
-			user.password = await hashPasswordbcrypt(user.password);
 		}
 		if (user.login.includes('@')) {
 			if (user.login.split('@')[0] === 'admin') {
@@ -336,6 +335,10 @@ export async function createUser(
 				throw new ErrorKM('USER_CREATE_ERROR_ONLINE_DISABLED', 403, false);
 			}
 			if (opts.createRemote) await createRemoteUser(user);
+		}
+
+		if (user.password) {
+			user.password = await hashPasswordbcrypt(user.password);
 		}
 		await insertUser(user);
 		userCache.set(user.login, user);
