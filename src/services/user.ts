@@ -324,7 +324,6 @@ export async function createUser(
 			if (user.password.length < 8 && !opts.noPasswordCheck) {
 				throw new ErrorKM('PASSWORD_TOO_SHORT', 411, false);
 			}
-			user.password = await hashPasswordbcrypt(user.password);
 		}
 		if (user.login.includes('@')) {
 			if (user.login.split('@')[0] === 'admin') {
@@ -337,13 +336,17 @@ export async function createUser(
 			}
 			if (opts.createRemote) await createRemoteUser(user);
 		}
+
+		if (user.password) {
+			user.password = await hashPasswordbcrypt(user.password);
+		}
 		await insertUser(user);
 		userCache.set(user.login, user);
 		if (user.type < 2) logger.info(`Created user ${user.login}`, { service });
 		delete user.password;
 		return true;
 	} catch (err) {
-		logger.error(`Error creating user : ${err}`, { service });
+		logger.error(`Error creating user : ${err.message ? err.message : err}`, { service });
 		sentry.error(err);
 		throw err instanceof ErrorKM ? err : new ErrorKM('USER_CREATE_ERROR');
 	}

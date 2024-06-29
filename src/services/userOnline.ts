@@ -4,7 +4,7 @@ import { resolve } from 'path';
 import { Stream } from 'stream';
 
 import { OldJWTToken, TokenResponseWithRoles, User } from '../lib/types/user.js';
-import { resolvedPath } from '../lib/utils/config.js';
+import { getConfig, resolvedPath } from '../lib/utils/config.js';
 import { ErrorKM } from '../lib/utils/error.js';
 import { writeStreamToFile } from '../lib/utils/files.js';
 import HTTP, { fixedEncodeURIComponent } from '../lib/utils/http.js';
@@ -23,7 +23,7 @@ const service = 'RemoteUser';
 export async function remoteCheckAuth(instance: string, token: string) {
 	try {
 		const res = await HTTP.get(`https://${instance}/api/auth/check`, {
-			timeout: 2000,
+			timeout: getConfig().Online.Timeout,
 			headers: {
 				authorization: token,
 			},
@@ -47,7 +47,7 @@ export async function remoteLogin(username: string, password: string): Promise<s
 				password,
 			},
 			{
-				timeout: 2000,
+				timeout: getConfig().Online.Timeout,
 			}
 		);
 		return res.data.token;

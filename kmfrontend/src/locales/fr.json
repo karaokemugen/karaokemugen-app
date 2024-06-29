@@ -1083,10 +1083,12 @@
 		"BATCH_EDIT": {
 			"ADD_TAG": "Ajout de tag",
 			"REMOVE_TAG": "Suppression de tag",
+			"EDIT_DISPLAY_TYPE": "Editer l'affichage du tag de la provenance de la chanson",
 			"CREATE_PLAYLIST": "Tout d'abord, vous devez créer dans la vue opérateur une liste de lecture.",
 			"SELECT_PLAYLIST": "Sélectionnez une liste de lecture :",
 			"SELECT_ACTION": "Sélectionnez une action :",
 			"SELECT_TAG": "Sélectionnez un tag :",
+			"SELECT_TAG_TYPE": "Sélectionnez un type de tag :",
 			"EDIT": "Edition en masse",
 			"SELECT": "Sélectionnez"
 		},
@@ -1129,15 +1131,16 @@
 			"VIDEO_ASPECT_RATIO": "Format d'image",
 			"WARNINGS": {
 				"LIBAVCODEC_ENCODER": "L'audio est encodé avec libavcodec (l'aac de référence dans ffmpeg), qui peut créer des artefacts audibles et il est donc déconseillé de l'utiliser. Veillez à utiliser l'encodeur libfdk_aac pour l'aac ou un autre codec comme opus, pour obtenir la meilleure qualité possible."
-			}
-		},
-		"MEDIA_ENCODE" : {
-			"LABEL" : "Encoder les médias",
-			"OPTIONS" : {
-				"TRIM_MEDIA" : "Couper",
-				"TRIM_MEDIA_TOOLTIP" : "Détecter et supprimer les images noires et les silences au début et à la fin du média"
 			},
-			"TIMING_CHANGE_WARNING" : "Les options sélectionnées peuvent modifier le début et la fin du média. Vérifiez le minutage des paroles après l'encodage et l'enregistrement du média.",
+			"AUDIO_SAMPLE_RATE": "Taux d’échantillonnage audio"
+		},
+		"MEDIA_ENCODE": {
+			"LABEL": "Encoder les médias",
+			"OPTIONS": {
+				"TRIM_MEDIA": "Couper",
+				"TRIM_MEDIA_TOOLTIP": "Détecter et supprimer les images noires et les silences au début et à la fin du média"
+			},
+			"TIMING_CHANGE_WARNING": "Les options sélectionnées peuvent modifier le début et la fin du média. Vérifiez le minutage des paroles après l'encodage et l'enregistrement du média.",
 			"LEAVE_PAGE": "Le média est en cours d'encodage. Quitter la page maintenant annulera l'encodage, êtes-vous sûr de vouloir partir ?"
 		},
 		"FROM_DISPLAY_TYPE": "Affichage du tag de la provenance de la chanson",

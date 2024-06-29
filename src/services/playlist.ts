@@ -1,5 +1,5 @@
 // Utils
-import { copyFile } from 'node:fs/promises';
+import { promises as fs } from 'fs';
 
 import i18n from 'i18next';
 import { shuffle } from 'lodash';
@@ -51,7 +51,7 @@ import { OldJWTToken, User } from '../lib/types/user.js';
 import { getConfig, resolvedPathRepos } from '../lib/utils/config.js';
 import { date, now, time as time2 } from '../lib/utils/date.js';
 import { ErrorKM } from '../lib/utils/error.js';
-import { resolveFileInDirs } from '../lib/utils/files.js';
+import { fileExists, resolveFileInDirs } from '../lib/utils/files.js';
 import logger, { profile } from '../lib/utils/logger.js';
 import { generateM3uFileFromPlaylist } from '../lib/utils/m3u.js';
 import Task from '../lib/utils/taskManager.js';
@@ -376,10 +376,13 @@ export async function exportPlaylistMedia(
 				task.update({
 					subtext: kara.mediafile,
 				});
-				await copyFile(karaMediaPath[0], join(exportDir, kara.mediafile));
+				const exportPath = join(exportDir, kara.mediafile);
+				const existingFileSize = (await fileExists(exportPath)) && (await fs.stat(exportPath)).size;
+				if (!existingFileSize || existingFileSize !== kara.mediasize)
+					await fs.copyFile(karaMediaPath[0], exportPath);
 				if (karaLyricsPath[0]) {
 					// Kara can have no lyrics file
-					await copyFile(karaLyricsPath[0], join(exportDir, kara.subfile));
+					await fs.copyFile(karaLyricsPath[0], join(exportDir, kara.subfile));
 					task.update({
 						subtext: kara.subfile,
 					});
