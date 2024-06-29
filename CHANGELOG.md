@@ -1,3 +1,42 @@
+# [8.0.10] - 2024-06-29
+
+This is mainly a bugfix release.
+
+## Added
+
+-   [Users] Added Japanese translation (partial)
+-   [Operators] Added configurable timeout for communication with KMServer (see config sample)
+-   [Maintainers] Added editing display type in batch edit mode for karaokes (#1625)
+-   [Maintainers] Added `docsURL` to manifest (#1623)
+
+## Changed
+
+-   [Users] Changed karaoke list order so karaokes without parents come first (#1621)
+-   [Users] Restored Sakuya Splendide's wallpaper
+-   [Users] Updated Spanish translation (78.4%)
+-   [Operators] Enabled remote access by default because getting an IP address was confusing everyone.
+-   [Operators] Navigation isn't blocked anymore when generation is in progress
+-   [Operators] Added border on single tasks
+-   [Maintainers] A shallow clone is now made when cloning the repository for the first time to make it lighter and faster (#1620)
+-   [Maintainers] Allowed 3 different version tags in filenames (GLORY TO UUIDs!)
+-   [Maintainers] Repository selector in tag form now only contains maintainable repositories
+-   [Developers] Removed download progress trick now that Axios has a built-in event for Node
+-   [Developers] Updated to React 18 syntax for rendering (#1612)
+-   [Developers] Upgraded backend dependencies
+
+## Fixed
+
+-   [Users] Fixed online user creation : password was incorrectly sent to Karaoke Mugen Server, resulting in people not being able to log in to their newly created accounts from elsewhere.
+-   [Users] Fixed login with users having `%` in their password.
+-   [Users] Removed tildes (`~`) in searches because they were breaking and not retrieving good results
+-   [Operators] Fixed some menu links
+-   [Operators] Fixed closing tutorial on mobile
+-   [Operators] Fixed error when creating user logs
+-   [Operators] Fixed certain mpvs crashing with qR Code/Avatar display on Linux (#1635)
+-   [Operators] Fixed download task not ending properly when media download failed (#1636)
+-   [Maintainers] Fixed some missing GIT locales
+-   [Maintainers] Fixed overwriting media files with same names when editing a song
+
 # [8.0.5] - 2024-06-02
 
 This is a bugfix version, but also a version in memory of Axel's cat Shami who sadly passed away two weeks ago. We will miss you.
