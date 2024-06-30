@@ -544,7 +544,7 @@ export async function getPlaylistInfo(plaid: string, token?: OldJWTToken) {
 		const pl = (await selectPlaylists(false, plaid))[0];
 		// We're testing this here instead of in the above function
 		if (token) {
-			if (token.role === 'admin' || pl.flag_visible) return pl;
+			if (token.role === 'admin' || pl?.flag_visible) return pl;
 			throw new ErrorKM('UNKNOWN_PLAYLIST', 404, false);
 		}
 		return pl;
@@ -610,12 +610,7 @@ export async function getPlaylistContents(
 ) {
 	try {
 		profile('getPLC');
-		const plInfo = await getPlaylistInfo(plaid, token);
-		if (!plInfo) throw new ErrorKM('UNKNOWN_PLAYLIST', 404, false);
-		if (!plInfo.flag_visible && token.role !== 'admin') {
-			throw new ErrorKM('UNKNOWN_PLAYLIST', 404, false);
-		}
-
+		await getPlaylistInfo(plaid, token);
 		const pl = await selectPlaylistContents({
 			plaid,
 			username: token.username.toLowerCase(),
