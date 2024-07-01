@@ -18,7 +18,7 @@ import { Config } from '../types/config.js';
 import { initConfig } from '../utils/config.js';
 import { logo } from '../utils/constants.js';
 import { defaultRepositories } from '../utils/defaultSettings.js';
-import { updateKaraMoeRepoConfig } from '../utils/hokutoNoCode.js';
+import { updateKaraMoeRepoConfig, updateKaraMoeSecureConfig } from '../utils/hokutoNoCode.js';
 import Sentry from '../utils/sentry.js';
 import { getState, setState } from '../utils/state.js';
 import { parseArgs, setupFromCommandLineArgs } from './args.js';
@@ -75,6 +75,7 @@ export async function preInit() {
 		setConfig({ System: { Repositories: [...defaultRepositories] } });
 	} else {
 		updateKaraMoeRepoConfig();
+		updateKaraMoeSecureConfig();
 	}
 	// Test if network ports are available
 	await verifyOpenPort(getConfig().System.FrontendPort, getConfig().App.FirstRun);

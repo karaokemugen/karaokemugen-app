@@ -17,7 +17,7 @@ function connectToKMServer() {
 			reject(new Error('Connection timed out'));
 			socket.disconnect();
 		}, 5000);
-		socket = io(`https://${conf.Online.Host}`, {
+		socket = io(`${conf.Online.Secure ? 'https' : 'http'}://${conf.Online.Host}`, {
 			transports: ['websocket'],
 		});
 		socket.on('connect', () => {

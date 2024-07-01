@@ -29,8 +29,8 @@ export const defaults: Config = {
 	},
 	Online: {
 		Host: 'kara.moe',
+		Secure: true,
 		MediasHost: null,
-		Port: 80,
 		Timeout: 2000,
 		Stats: undefined,
 		ErrorTracking: undefined,
@@ -244,7 +244,6 @@ export const configConstraints = {
 	'Online.ErrorTracking': { boolUndefinedValidator: true },
 	'Online.Host': { presence: true, format: hostnameRegexp },
 	'Online.Timeout': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0 } },
-	'Online.Port': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0 } },
 	// 'Online.RemoteToken': {presence: true, format: uuidRegexp}, // We'll implement this in KM 10.0
 	'Online.Users': { inclusion: bools },
 	'Online.Discord.DisplayActivity': { inclusion: bools },
@@ -332,6 +331,7 @@ export const defaultRepositories: Repository[] = [
 	{
 		Name: 'kara.moe',
 		Online: true,
+		Secure: true,
 		Update: true,
 		Enabled: true,
 		SendStats: true,

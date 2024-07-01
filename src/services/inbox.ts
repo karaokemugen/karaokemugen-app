@@ -30,7 +30,7 @@ export async function getInbox(repoName: string, token: string): Promise<Inbox[]
 	const repo = getRepo(repoName);
 	if (!repo) throw new ErrorKM('UNKNOWN_REPOSITORY', 404, false);
 	try {
-		const res = await HTTP.get<Inbox[]>(`https://${repoName}/api/inbox`, {
+		const res = await HTTP.get<Inbox[]>(`${repo.Secure ? 'https' : 'http'}://${repoName}/api/inbox`, {
 			headers: {
 				authorization: token,
 			},
@@ -61,7 +61,7 @@ export async function downloadKaraFromInbox(inid: string, repoName: string, toke
 		let kara: Inbox;
 		logger.info(`Downloading song ${inid} from inbox at ${repoName}`, { service });
 		try {
-			const res = await HTTP.get(`https://${repoName}/api/inbox/${inid}`, {
+			const res = await HTTP.get(`${repo.Secure ? 'https' : 'http'}://${repoName}/api/inbox/${inid}`, {
 				headers: {
 					authorization: token,
 				},
@@ -161,9 +161,10 @@ async function downloadMediaFromInbox(kara: Inbox, repoName: string) {
 		if (kara.mediafile) {
 			const localMedia = resolve(resolvedPathRepos('Medias', repoName)[0], kara.mediafile);
 			const tempMedia = resolve(resolvedPath('Temp'), kara.mediafile);
+			const repo = getRepo(repoName);
 			const downloadItem = {
 				filename: tempMedia,
-				url: `https://${repoName}/inbox/${fixedEncodeURIComponent(kara.name)}/${fixedEncodeURIComponent(
+				url: `${repo.Secure ? 'https' : 'http'}://${repoName}/inbox/${fixedEncodeURIComponent(kara.name)}/${fixedEncodeURIComponent(
 					kara.mediafile
 				)}`,
 				id: kara.name,
@@ -195,7 +196,7 @@ export async function deleteKaraInInbox(inid: string, repoName: string, token: s
 		const inbox = await getInbox(repoName, token);
 		const inboxItem = inbox.find(i => i.inid === inid);
 		try {
-			await HTTP.delete(`https://${repoName}/api/inbox/${inid}`, {
+			await HTTP.delete(`${repo.Secure ? 'https' : 'http'}://${repoName}/api/inbox/${inid}`, {
 				headers: {
 					authorization: token,
 				},
@@ -228,8 +229,9 @@ export async function deleteKaraInInbox(inid: string, repoName: string, token: s
 export async function markKaraAsDownloadedInInbox(inid: string, repoName: string, token: string) {
 	const inbox = await getInbox(repoName, token);
 	const inboxItem = inbox.find(i => i.inid === inid);
+	const repo = getRepo(repoName);
 	try {
-		await HTTP.post(`https://${repoName}/api/inbox/${inid}/downloaded`, null, {
+		await HTTP.post(`${repo.Secure ? 'https' : 'http'}://${repoName}/api/inbox/${inid}/downloaded`, null, {
 			headers: {
 				authorization: token,
 			},

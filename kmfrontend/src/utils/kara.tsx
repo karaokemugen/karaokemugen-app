@@ -10,6 +10,7 @@ import { SettingsStoreData } from '../store/types/settings';
 import { getLanguageIn3B, langSupport } from './isoLanguages';
 import { isRemote } from './socket';
 import { tagTypes } from './tagTypes';
+import { getProtocolForOnline } from './tools';
 
 export function getDescriptionInLocale(settings: SettingsStoreData, description: Record<string, string>): string {
 	if (!description) return '';
@@ -271,9 +272,9 @@ export function formatLyrics(lyrics: ASSLine[]) {
 	}
 }
 
-export function getPreviewLink(kara: DBKara) {
+export function getPreviewLink(kara: DBKara, context: GlobalContextInterface) {
 	if (isRemote() || kara.download_status !== 'DOWNLOADED') {
-		return `https://${kara.repository}/previews/${kara.kid}.${kara.mediasize}.25.jpg`;
+		return `${getProtocolForOnline(context, kara.repository)}://${kara.repository}/previews/${kara.kid}.${kara.mediasize}.25.jpg`;
 	} else {
 		return `/previews/${kara.kid}.${kara.mediasize}.25.jpg`;
 	}

@@ -516,7 +516,9 @@ export async function checkCollections() {
 				if (repo.Online && internet) {
 					try {
 						const tags = (
-							await HTTP.get(`https://${repo.Name}/api/karas/tags?type=${tagTypes.collections}`)
+							await HTTP.get(
+								`${repo.Secure ? 'https' : 'http'}://${repo.Name}/api/karas/tags?type=${tagTypes.collections}`
+							)
 						).data;
 						for (const tag of tags.content) {
 							if (!availableCollections.find(t => t.tid === tag.tid)) availableCollections.push(tag);

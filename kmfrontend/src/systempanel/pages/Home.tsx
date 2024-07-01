@@ -37,7 +37,9 @@ function Home() {
 			displayMessage('error', i18next.t('HOME.EGG_3'));
 		}
 		if (clickCount === 60) {
-			window.location.assign('https://live.karaokes.moe/?video=5a8f26ed-e387-4169-ad8a-4ce8c31b65d9');
+			window.location.assign(
+				'https://kara.moe/kara/zankoku-na-tenshi-no-these/5a8f26ed-e387-4169-ad8a-4ce8c31b65d9/theater'
+			);
 		}
 	};
 

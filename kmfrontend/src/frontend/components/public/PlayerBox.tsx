@@ -181,7 +181,7 @@ function PlayerBox(props: IProps) {
 				setSubtitle(kara.flag_visible ? `${serieText} - ${songtypeText}${songorderText}` : '');
 				setLength(kara.duration);
 				setKid(kara.kid);
-				setImg(`url(${getPreviewLink(kara)})`);
+				setImg(`url(${getPreviewLink(kara, context)})`);
 				setKaraVersions(kara.flag_visible ? karaVersions : []);
 			}
 		}

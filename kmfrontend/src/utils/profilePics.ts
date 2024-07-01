@@ -1,6 +1,8 @@
 import { User } from '../../../src/lib/types/user';
 import blankAvatar from '../assets/blank.png';
+import { GlobalContextInterface } from '../store/context';
 import { commandBackend, getSocket, isRemote } from './socket';
+import { getProtocolForOnline } from './tools';
 
 const cache: Map<string, string> = new Map();
 
@@ -25,18 +27,18 @@ export function syncGenerateProfilePicLink(user: User) {
 	}
 }
 
-export async function generateProfilePicLink(user: User): Promise<string> {
+export async function generateProfilePicLink(user: User, context: GlobalContextInterface): Promise<string> {
 	// Retrieve cache entry
 	if (cache.has(user.login)) {
 		return cache.get(user.login);
 	} else if (isRemote()) {
 		if (user?.login.includes('@')) {
 			const [login, instance] = user.login.split('@');
-			const data: User = await fetch(`https://${instance}/api/users/${encodeURIComponent(login.trim())}`).then(
-				res => res.json()
-			);
+			const data: User = await fetch(
+				`${getProtocolForOnline(context, instance)}://${instance}/api/users/${encodeURIComponent(login.trim())}`
+			).then(res => res.json());
 			if (data.avatar_file) {
-				const url = `https://${instance}/avatars/${data.avatar_file}`;
+				const url = `${getProtocolForOnline(context, instance)}://${instance}/avatars/${data.avatar_file}`;
 				cache.set(user.login, url);
 				return url;
 			} else {

@@ -359,7 +359,7 @@ function Playlist(props: IProps) {
 								{context?.globalState.settings.data.config.System.Repositories.filter(
 									value => value.Enabled && value.Online
 								).map(value => (
-									<a key={value.Name} href={`https://${value.Name}/`}>
+									<a key={value.Name} href={`http${value.Secure && 's'}://${value.Name}/`}>
 										{value.Name}
 									</a>
 								))}

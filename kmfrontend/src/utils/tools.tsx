@@ -332,3 +332,9 @@ export function PLCCallback(response, context: GlobalContextInterface, kara: DBK
 		);
 	}
 }
+
+export function getProtocolForOnline(context: GlobalContextInterface, repository: String) {
+	return context.globalState.settings.data.config.System.Repositories.find(value => value.Name === repository).Secure
+		? 'https'
+		: 'http';
+}

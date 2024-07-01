@@ -132,9 +132,10 @@ async function processDownload(download: KaraDownload) {
 		const tempDir = resolvedPath('Temp');
 		const localMedia = resolve(resolvedPathRepos('Medias', download.repository)[0], download.mediafile);
 		const tempMedia = resolve(tempDir, download.mediafile);
+		const repo = getRepo(download.repository);
 		const downloadItem = {
 			filename: tempMedia,
-			url: `https://${download.repository}/downloads/medias/${fixedEncodeURIComponent(download.mediafile)}`,
+			url: `${repo.Secure ? 'https' : 'http'}://${download.repository}/downloads/medias/${fixedEncodeURIComponent(download.mediafile)}`,
 			id: download.name,
 		};
 		await downloadFile(downloadItem, downloadTask);

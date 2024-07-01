@@ -1399,6 +1399,8 @@
 		"NEW_REPOSITORY": "New repository",
 		"ONLINE": "Online",
 		"ENABLED": "Enabled",
+		"SECURE": "Secure",
+		"SECURE_TOOLTIP": "Enable HTTPS access to the repository",
 		"SENDSTATS": "Send statistics",
 		"UPDATE": "Automatic updates",
 		"UPDATE_TOOLTIP": "If disabled, the application will not update the repository anymore.",

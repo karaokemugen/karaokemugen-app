@@ -324,7 +324,7 @@ export async function updateZipRepo(name: string) {
 		if (LatestCommit !== localCommit) {
 			try {
 				const patch = await HTTP.get(
-					`https://${repo.Name}/api/karas/repository/diff?commit=${fixedEncodeURIComponent(localCommit)}`,
+					`${repo.Secure ? 'https' : 'http'}://${repo.Name}/api/karas/repository/diff?commit=${fixedEncodeURIComponent(localCommit)}`,
 					{
 						responseType: 'text',
 					}
@@ -338,7 +338,7 @@ export async function updateZipRepo(name: string) {
 					await cleanFailedPatch(repo);
 					logger.info('Trying to download full files instead', { service });
 					const fullFiles = await HTTP.get(
-						`https://${repo.Name}/api/karas/repository/diff/full?commit=${fixedEncodeURIComponent(
+						`${repo.Secure ? 'https' : 'http'}://${repo.Name}/api/karas/repository/diff/full?commit=${fixedEncodeURIComponent(
 							localCommit
 						)}`
 					);
@@ -426,7 +426,7 @@ export async function editRepo(
 async function hookEditedRepo(oldRepo: Repository, repo: Repository, refresh = false, onlineCheck = true) {
 	let doGenerate = false;
 	if (!oldRepo.SendStats && repo.Online && repo.Enabled && repo.SendStats && getState().DBReady && onlineCheck) {
-		sendPayload(repo.Name, repo.Name === getConfig().Online.Host).catch();
+		sendPayload(repo.Name, repo.Name === getConfig().Online.Host, repo.Secure).catch();
 	}
 	// Repo is online so we have stuff to do
 	if (repo.Enabled && repo.Online && repo.Update) {
@@ -1032,15 +1032,16 @@ export async function findUnusedMedias(repo: string): Promise<string[]> {
 }
 
 /** Get metadata. Throws if KM Server is not up to date */
-export async function getRepoMetadata(repo: string) {
+export async function getRepoMetadata(repoName: string) {
 	try {
 		// FIXME : This should be depracted in KM 9.0
 		// Repository metadata will have to come from the manifest file provided by each repository, not from their online server.
 		// Only LastCommit will need to be fetched from KM Server.
-		const ret = await HTTP.get(`https://${repo}/api/karas/repository`);
+		const repo = getRepo(repoName);
+		const ret = await HTTP.get(`${repo.Secure ? 'https' : 'http'}://${repoName}/api/karas/repository`);
 		return ret.data as RepositoryManifest;
 	} catch (err) {
-		logger.error(`Error fetching repository manifest for ${repo} : ${err}`);
+		logger.error(`Error fetching repository manifest for ${repoName} : ${err}`);
 		throw err;
 	}
 }

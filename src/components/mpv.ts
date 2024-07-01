@@ -44,7 +44,7 @@ import { isShutdownInProgress } from './engine.js';
 import Timeout = NodeJS.Timeout;
 import { getSongSeriesSingers, getSongTitle } from '../lib/services/kara.js';
 import { getTagNameInLanguage } from '../lib/services/tag.js';
-import { getRepoManifest } from '../services/repo.js';
+import { getRepo, getRepoManifest } from '../services/repo.js';
 import { Player } from './mpv/player.js';
 
 type PlayerType = 'main' | 'monitor';
@@ -80,15 +80,16 @@ export const playerState: PlayerState = {
 	speed: 100,
 };
 
-async function resolveMediaURL(file: string, repo: string): Promise<string> {
+async function resolveMediaURL(file: string, repoName: string): Promise<string> {
 	const conf = getConfig();
+	const repo = getRepo(repoName);
 	let up = false;
 	let mediaFile = `${conf.Online.MediasHost}/${fixedEncodeURIComponent(file)}`;
 	// We test if the MediasHost allows us to reach a file. If not we try the song's repository.
 	if (conf.Online.MediasHost) {
 		if (await HTTP.head(mediaFile)) up = true;
 	} else {
-		mediaFile = `https://${repo}/downloads/medias/${fixedEncodeURIComponent(file)}`;
+		mediaFile = `${repo.Secure ? 'https' : 'http'}://${repoName}/downloads/medias/${fixedEncodeURIComponent(file)}`;
 		if (await HTTP.head(mediaFile)) up = true;
 	}
 	if (up) {
