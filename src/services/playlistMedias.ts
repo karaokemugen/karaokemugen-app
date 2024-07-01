@@ -50,7 +50,8 @@ export async function updatePlaylistMedias() {
 
 async function listRemoteMedias(type: PlaylistMediaType): Promise<PlaylistMediaFile[]> {
 	try {
-		const res = await HTTP.get(`https://${getConfig().Online.Host}/api/playlistMedias/${type}`);
+		const conf = getConfig().Online;
+		const res = await HTTP.get(`${conf.Secure ? 'https' : 'http'}://${conf.Host}/api/playlistMedias/${type}`);
 		return res.data as PlaylistMediaFile[];
 	} catch (err) {
 		logger.warn(`Unable to fetch remote playlist medias list : ${err}`, { service, obj: err });
@@ -145,10 +146,11 @@ export async function updateMediasHTTP(type: PlaylistMediaType, task: Task) {
 }
 
 async function downloadMedias(files: PlaylistMediaFile[], dir: string, type: PlaylistMediaType, task: Task) {
+	const conf = getConfig().Online;
 	const list = files.map(file => {
 		return {
 			filename: resolve(dir, file.basename),
-			url: `https://${getConfig().Online.Host}/playlistMedias/${type}/${fixedEncodeURIComponent(file.basename)}`,
+			url: `${conf.Secure ? 'https' : 'http'}://${conf.Host}/playlistMedias/${type}/${fixedEncodeURIComponent(file.basename)}`,
 			size: file.size,
 		};
 	});

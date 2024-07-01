@@ -9,6 +9,7 @@ App:
 Online:
   # Host for your KM Server
   Host: kara.moe
+  Secure: true
   # Timeout (in ms) when calling the KM Server
   Timeout: 2000
   # Should your instance sends stats? True/false. Non-existant means the app will ask the user a question if it wants to send stats to KM Server.
@@ -241,6 +242,7 @@ System:
   Repositories:
     - Name: kara.moe
       Online: true
+      Secure: true
       Enabled: true
       Update: true
       Git:

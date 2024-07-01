@@ -182,7 +182,7 @@
 			"PLAYER_LANGUAGE": "Idioma de mensajes y el reproductor",
 			"DISPLAY_AVATAR_TOOLTIP": "El avatar del solicitante de la canción es mostrado al principio y final de la canción en la esquina inferior derecha de la esquina de la pantalla del reproductor.",
 			"DISPLAY_RANDOMQUOTES": "Mostrar citas aleatorias",
-			"DISPLAY_CONNECTION_INFO_TOOLTIP": "Es el \"Ve a https://xxx !\"",
+			"DISPLAY_CONNECTION_INFO_TOOLTIP": "Es el \"Ve a http://xxx !\"",
 			"DISPLAY_NICKNAME_TOOLTIP": "Muestra al pie de la pantalla al principio y final de una canción",
 			"LIVE_COMMENTS_TOOLTIP": "Los mensajes del chat se mostrarán en el reproductor (Cuidado, configurar correctamente AutoMod).",
 			"DISPLAY_CONNECTION_INFO_MESSAGE_TOOLTIP": "Personalizar el mensaje antes del link de acceso, para motivar a tu audiencia o darles más direcciones. Usa $url para indicar la URL para acceder a tu karaoke. Así: \"¡Ir a $url!\"",

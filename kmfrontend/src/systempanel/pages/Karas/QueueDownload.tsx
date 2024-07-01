@@ -19,6 +19,7 @@ import {
 } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
+import { getProtocolForOnline } from '../../../utils/tools';
 
 interface KaraDownloadState {
 	karas: DBKara[];
@@ -202,7 +203,9 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 		return this.state.karasQueue.find(item => item.mediafile === kara.mediafile);
 	};
 	showPreview = kara => {
-		this.setState({ preview: `https://${kara.repository}/downloads/medias/${encodeURIComponent(kara.mediafile)}` });
+		this.setState({
+			preview: `${getProtocolForOnline(this.context, kara.repository)}://${kara.repository}/downloads/medias/${encodeURIComponent(kara.mediafile)}`,
+		});
 		document.addEventListener('keyup', this.closeVideo);
 	};
 

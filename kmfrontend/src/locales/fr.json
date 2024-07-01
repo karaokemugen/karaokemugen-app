@@ -1401,6 +1401,8 @@
 		"UPDATE": "Mise à jour automatique",
 		"UPDATE_TOOLTIP": "Si désactivé, le dépôt ne sera jamais mis à jour par l'application.",
 		"ENABLED": "Actif",
+		"SECURE": "Sécurisé",
+		"SECURE_TOOLTIP": "Active l'accès au dépôt par HTTPS",
 		"SENDSTATS": "Envoyer des statistiques",
 		"SENDSTATS_TOOLTIP": "Chansons jouées, demandées, et sessions",
 		"AUTO_MEDIA_DOWNLOADS": "Télécharger automatiquement les médias",

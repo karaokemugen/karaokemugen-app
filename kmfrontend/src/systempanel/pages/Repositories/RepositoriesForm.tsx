@@ -78,6 +78,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 			Name: values.Name,
 			Online: values.Online,
 			Enabled: values.Enabled,
+			Secure: values.Secure,
 			SendStats: values.SendStats,
 			BaseDir: values.BaseDir,
 			Update: values.Update,
@@ -93,7 +94,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 						Password: values.GitPassword,
 						Author: values.GitAuthor,
 						Email: values.GitEmail,
-				  }
+					}
 				: undefined,
 			FTP: values.FTPHost
 				? {
@@ -102,7 +103,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 						Username: values.FTPUsername,
 						Password: values.FTPPassword,
 						BaseDir: values.FTPBaseDir,
-				  }
+					}
 				: undefined,
 		};
 		this.props.save(repository);
@@ -130,6 +131,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 					Online: this.props.repository?.Online,
 					Update: this.props.repository?.Update,
 					Enabled: this.props.repository?.Enabled,
+					Secure: this.props.repository?.Secure,
 					SendStats: this.props.repository?.SendStats,
 					AutoMediaDownloads: this.props.repository?.AutoMediaDownloads,
 					MaintainerMode: this.props.repository?.MaintainerMode,
@@ -190,6 +192,23 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 				>
 					<Checkbox />
 				</Form.Item>
+				{this.state.onlineMode ? (
+					<Form.Item
+						label={
+							<span>
+								{i18next.t('REPOSITORIES.SECURE')}&nbsp;
+								<Tooltip title={i18next.t('REPOSITORIES.SECURE_TOOLTIP')}>
+									<QuestionCircleOutlined />
+								</Tooltip>
+							</span>
+						}
+						labelCol={{ flex: '0 1 300px' }}
+						valuePropName="checked"
+						name="Secure"
+					>
+						<Checkbox />
+					</Form.Item>
+				) : null}
 				<Form.Item
 					label={
 						<span>

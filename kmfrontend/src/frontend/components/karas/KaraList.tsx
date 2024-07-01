@@ -49,7 +49,7 @@ function KaraList({ karas, scope, addKara = false }: KaraListProps) {
 				return (
 					<div key={kara.kid} className={`song${kara.kid === kidOpened ? ' open' : ''}`}>
 						<div
-							style={{ ['--img' as any]: `url('${getPreviewLink(kara)}')` }}
+							style={{ ['--img' as any]: `url('${getPreviewLink(kara, context)}')` }}
 							className="modal-header img-background"
 							onClick={() => openKara(kara.kid)}
 						>

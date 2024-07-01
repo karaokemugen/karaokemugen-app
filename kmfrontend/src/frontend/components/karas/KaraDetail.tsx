@@ -65,7 +65,7 @@ export default function KaraDetail(props: IProps) {
 		if (props.scope === 'admin') {
 			return;
 		}
-		const generated = kara ? `url('${getPreviewLink(kara)}')` : 'none';
+		const generated = kara ? `url('${getPreviewLink(kara, context)}')` : 'none';
 		if (generated !== context.globalState.frontendContext.backgroundImg) {
 			setBgImage(context.globalDispatch, generated);
 		}
@@ -372,7 +372,9 @@ export default function KaraDetail(props: IProps) {
 		const header = (
 			<div
 				className={`modal-header img-background${props.scope === 'public' ? ' fixed' : ''}`}
-				style={{ ['--img' as any]: props.scope === 'admin' ? `url('${getPreviewLink(kara)}')` : 'none' }}
+				style={{
+					['--img' as any]: props.scope === 'admin' ? `url('${getPreviewLink(kara, context)}')` : 'none',
+				}}
 			>
 				<div className="modal-header-title">
 					{props.scope === 'public' ? (

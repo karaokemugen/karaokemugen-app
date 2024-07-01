@@ -315,7 +315,7 @@ export async function configureHost() {
 	const URLPort = +config.System.FrontendPort === 80 ? '' : `:${config.System.FrontendPort}`;
 	setState({ osHost: { v4: address(undefined, 'ipv4'), v6: address(undefined, 'ipv6') } });
 	if (state.remoteAccess && 'host' in state.remoteAccess) {
-		setState({ osURL: `https://${state.remoteAccess.host}` });
+		setState({ osURL: `${config.Online.Secure ? 'https' : 'http'}://${state.remoteAccess.host}` });
 	} else if (!config.Player.Display.ConnectionInfo.Host) {
 		setState({ osURL: `http://${getState().osHost.v4}${URLPort}` }); // v6 is too long to show anyway
 	} else {

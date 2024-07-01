@@ -25,12 +25,12 @@ export default function Inbox() {
 			repo.Name === context.globalState.auth.data.username.split('@')[1]
 	);
 
-	const instance = repoList[0]?.Name;
+	const instance = repoList[0];
 
 	const getInbox = async () => {
 		if (repoList.length > 0) {
 			try {
-				const res = await commandBackend('getInbox', { repoName: instance });
+				const res = await commandBackend('getInbox', { repoName: instance.Name });
 				setInbox(res);
 			} catch (e) {
 				// already display
@@ -40,7 +40,7 @@ export default function Inbox() {
 
 	const downloadKaraFromInbox = async (inid: string) => {
 		try {
-			await commandBackend('downloadKaraFromInbox', { repoName: instance, inid });
+			await commandBackend('downloadKaraFromInbox', { repoName: instance.Name, inid });
 		} catch (e) {
 			// already display
 		}
@@ -54,7 +54,7 @@ export default function Inbox() {
 			cancelText: i18next.t('NO'),
 			onOk: async close => {
 				try {
-					await commandBackend('deleteKaraFromInbox', { repoName: instance, inid });
+					await commandBackend('deleteKaraFromInbox', { repoName: instance.Name, inid });
 				} catch (e) {
 					// already display
 				}
@@ -66,7 +66,7 @@ export default function Inbox() {
 
 	const getContactInformations = async (text: string) => {
 		const userDetails: User = await fetch(
-			`https://${instance}/api/users/${encodeURIComponent(text.replace(`@${instance}`, ''))}?forcePublic=true`,
+			`http${instance.Secure && 's'}://${instance.Name}/api/users/${encodeURIComponent(text.replace(`@${instance.Name}`, ''))}?forcePublic=true`,
 			{
 				headers: {
 					authorization: localStorage.getItem('kmOnlineToken'),
@@ -80,7 +80,10 @@ export default function Inbox() {
 					<div>
 						<label>{i18next.t('INBOX.CONTACT_INFOS_MODAL.USERNAME')}</label>
 						{userDetails.flag_public ? (
-							<a href={`https://${instance}/user/${userDetails.login}`} rel="noreferrer noopener">
+							<a
+								href={`http${instance.Secure && 's'}://${instance.Name}/user/${userDetails.login}`}
+								rel="noreferrer noopener"
+							>
 								{userDetails.login}
 							</a>
 						) : (
@@ -173,7 +176,7 @@ export default function Inbox() {
 		const getInbox = async () => {
 			if (repoList.length > 0) {
 				try {
-					const res = await commandBackend('getInbox', { repoName: instance });
+					const res = await commandBackend('getInbox', { repoName: instance.Name });
 					setInbox(res);
 				} catch (e) {
 					// already display
@@ -214,7 +217,7 @@ export default function Inbox() {
 			dataIndex: 'contact',
 			key: 'contact',
 			render: (text: string) =>
-				text?.endsWith(`@${instance}`) ? (
+				text?.endsWith(`@${instance.Name}`) ? (
 					<Button onClick={() => getContactInformations(text)} icon={<UserOutlined />} />
 				) : (
 					text

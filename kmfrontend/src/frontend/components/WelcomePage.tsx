@@ -270,13 +270,13 @@ function WelcomePage() {
 					<nav>
 						<ul>
 							<li>
-								<a href="http://mugen.karaokes.moe/contact.html">
+								<a href="https://mugen.karaokes.moe/contact.html">
 									<i className="fas fa-fw fa-pencil-alt" />
 									{i18next.t('WELCOME_PAGE.CONTACT')}
 								</a>
 							</li>
 							<li>
-								<a href="http://mugen.karaokes.moe/">
+								<a href="https://mugen.karaokes.moe/">
 									<i className="fas fa-fw fa-link" />
 									{i18next.t('WELCOME_PAGE.SITE')}
 								</a>
@@ -416,7 +416,12 @@ function WelcomePage() {
 										<span>
 											{remoteStatus?.active ? (
 												'host' in remoteStatus.info ? (
-													<a href={`https://${remoteStatus.info.host}`}>
+													<a
+														href={`http${
+															context.globalState.settings.data.config.Online.Secure &&
+															's'
+														}://${remoteStatus.info.host}`}
+													>
 														{remoteStatus.info.host}
 													</a>
 												) : (

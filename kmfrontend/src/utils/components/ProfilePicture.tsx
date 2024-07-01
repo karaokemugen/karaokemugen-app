@@ -1,7 +1,8 @@
-import { ImgHTMLAttributes, memo, useEffect, useState } from 'react';
+import { ImgHTMLAttributes, memo, useContext, useEffect, useState } from 'react';
 
 import { User } from '../../../../src/lib/types/user';
 import { generateProfilePicLink, syncGenerateProfilePicLink } from '../profilePics';
+import GlobalContext from '../../store/context';
 
 interface IProps extends ImgHTMLAttributes<HTMLImageElement> {
 	user: User;
@@ -9,9 +10,10 @@ interface IProps extends ImgHTMLAttributes<HTMLImageElement> {
 
 function ProfilePicture(props: IProps) {
 	const [url, setUrl] = useState(syncGenerateProfilePicLink(props.user));
+	const context = useContext(GlobalContext);
 
 	const updateUrl = async () => {
-		const newUrl = await generateProfilePicLink(props.user);
+		const newUrl = await generateProfilePicLink(props.user, context);
 		setUrl(newUrl);
 	};
 

@@ -40,7 +40,8 @@ export async function getFavorites(params: KaraParams): Promise<KaraList> {
 export async function fetchAndAddFavorites(username: string, token: string) {
 	try {
 		const instance = username.split('@')[1];
-		const res = await HTTP(`https://${instance}/api/favorites`, {
+		const conf = getConfig();
+		const res = await HTTP(`${conf.Online.Secure ? 'https' : 'http'}://${instance}/api/favorites`, {
 			headers: {
 				authorization: token,
 			},
@@ -127,10 +128,11 @@ export async function removeFavorites(username: string, kids: string[], token: s
 
 async function manageFavoriteInInstance(action: 'POST' | 'DELETE', username: string, kid: string, token: string) {
 	// If OnlineUsers is disabled, we return early and do not try to update favorites online.
-	if (!getConfig().Online.Users) return true;
+	const conf = getConfig();
+	if (!conf.Online.Users) return true;
 	const instance = username.split('@')[1];
 	try {
-		return await HTTP(`https://${instance}/api/favorites/${kid}`, {
+		return await HTTP(`${conf.Online.Secure ? 'https' : 'http'}://${instance}/api/favorites/${kid}`, {
 			method: action,
 			headers: {
 				authorization: token,
