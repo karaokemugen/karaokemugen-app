@@ -9,18 +9,17 @@ import { GlobalContextInterface } from '../store/context';
 import { SettingsStoreData } from '../store/types/settings';
 import { getLanguageIn3B, langSupport } from './isoLanguages';
 import { isRemote } from './socket';
-import { tagTypes } from './tagTypes';
+import { getTagTypeName, tagTypes } from './tagTypes';
 import { getProtocolForOnline } from './tools';
+import { DBTag } from '../../../src/lib/types/database/tag';
 
 export function getDescriptionInLocale(settings: SettingsStoreData, description: Record<string, string>): string {
 	if (!description) return '';
 	const user = settings?.user;
-	if (user?.main_series_lang && user?.fallback_series_lang) {
-		return description[user.main_series_lang]
-			? description[user.main_series_lang]
-			: description[user.fallback_series_lang]
-				? description[user.fallback_series_lang]
-				: description.eng;
+	if (user?.language) {
+		return description[getLanguageIn3B(user?.language)]
+			? description[getLanguageIn3B(user?.language)]
+			: description.eng;
 	} else {
 		return description[getLanguageIn3B(langSupport)] ? description[getLanguageIn3B(langSupport)] : description.eng;
 	}
@@ -75,10 +74,15 @@ export function getTagInLocale(
 	tag: DBKaraTag,
 	i18nParam?: any
 ): { i18n: string; description: string } | undefined {
-	const user = settings?.user;
 	if (!tag) {
 		return undefined;
-	} else if (user?.main_series_lang && user?.fallback_series_lang) {
+	}
+	const user = settings?.user;
+	const tagLang =
+		tagTypes[getTagTypeName(tag.type_in_kara ? tag.type_in_kara : (tag as unknown as DBTag).types[0])].language;
+	if (tagLang === 'user' && user?.language) {
+		return getTagInLanguage(tag, getLanguageIn3B(user.language), 'eng', i18nParam);
+	} else if (tagLang === 'song_name' && user?.main_series_lang && user?.fallback_series_lang) {
 		return getTagInLanguage(tag, user.main_series_lang, user.fallback_series_lang, i18nParam);
 	} else {
 		return getTagInLanguage(tag, getLanguageIn3B(langSupport), 'eng', i18nParam);
