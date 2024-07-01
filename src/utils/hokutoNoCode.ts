@@ -3,13 +3,9 @@
 //
 // When removing code here, remember to go see if all functions called are still useful.
 
-import i18next from 'i18next';
 import semver from 'semver';
 
-import { insertCriteria, insertKaraIntoPlaylist, insertPlaylist } from '../dao/playlist.js';
-import { db } from '../lib/dao/database.js';
 import { editRepo, getRepo } from '../services/repo.js';
-import { updateAllSmartPlaylists } from '../services/smartPlaylist.js';
 import { Repository } from '../lib/types/repo.js';
 import { getState } from './state.js';
 
