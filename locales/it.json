@@ -251,10 +251,6 @@
 	"MENU_TOOLS": "&Strumenti",
 	"INIT_USER": "Inizializzando gli utenti…",
 	"MENU_HELP_DISCORD": "&Discord",
-	"WORLD_REPOSITORY_DISABLED": {
-		"TITLE": "L'archivio World è stato disabilitato",
-		"MESSAGE": "A causa dell'aggiunta delle Collezioni, gli archivi World e kara.moe sono stati uniti. L'archivio World quindi non è più necessario, è stato disabilitato e ti consigliamo di rimuoverlo completamente dal Pannello di Sistema."
-	},
 	"GO_TO": "Vai su $url per suggerire i brani!",
 	"MENU_VIEW_ZOOMIN": "&Ingrandisci",
 	"MY_PLAYLIST": "La mia playlist",

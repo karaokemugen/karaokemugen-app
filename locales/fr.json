@@ -174,10 +174,6 @@
 	"ABOUT": {
 		"TITLE": "À propos de Karaoke Mugen"
 	},
-	"WORLD_REPOSITORY_DISABLED": {
-		"TITLE": "Dépôt World désactivé",
-		"MESSAGE": "Avec l'ajout des Collections, les dépôts World et Kara.moe ont été fusionnés. Le dépôt World n'est donc plus nécessaire et a été désactivé. Nous vous conseillons de le supprimer entièrement depuis le panneau système."
-	},
 	"DATABASE_IN_THE_FUTURE_ERROR": {
 		"TITLE": "La base de données est dans le futur, Marty !",
 		"MESSAGE": "La base de données que Karaoke Mugen essaye de lire a été utilisée par une autre application plus récente et est donc incompatible. Essayons de régler cela.\n\nSi vous cliquez sur \"ANNULER\", l'application se fermera sans rien faire. Vous devriez lancer une version plus récente de Karaoke Mugen.\n\nSi vous cliquez sur \"SUPPRIMER toutes les données\", l'application va SUPPRIMER listes de lecture, utilisateurs locaux, statistiques, etc. et démarrer normalement.",

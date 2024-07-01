@@ -299,10 +299,6 @@
 	},
 	"FULLSCREEN_TIP": "Drücke F um den Vollbild-Modus zu beenden.",
 	"NO_KARA_PLAYING": "Es wird gerade kein Song abgespielt",
-	"WORLD_REPOSITORY_DISABLED": {
-		"TITLE": "Das World Repository wurde deaktiviert",
-		"MESSAGE": "Aufgrund der Hinzufügung von Sammlungen wurden die Repositorys World und kara.moe zusammengeführt. Somit ist das Welt-Repository nicht mehr notwendig. Es wurde deaktiviert und wir empfehlen dir, es vollständig im Systemfenster zu entfernen."
-	},
 	"INTERFACE_CLOSED": "Schließen",
 	"CURRENT_VERSION_OK": "Du verwendest bereits die neueste Version von Karaoke Mugen!",
 	"GENERATING_READING": "Schritt 1/2 - Lese Daten ein…",

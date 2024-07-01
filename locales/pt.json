@@ -115,9 +115,6 @@
 	"UPDATE_PROMPT": "Queres atualizar o Karaoke Mugen?",
 	"UPDATE_CHECK_ERROR": "Ocorreu um erro ao tentar verificar as atualizações do Karaoke Mugen",
 	"UPDATE_ERROR": "Ocorreu um erro ao tentar atualizar o Karaoke Mugen: ",
-	"WORLD_REPOSITORY_DISABLED": {
-		"TITLE": "O repositório mundial foi desativado"
-	},
 	"REPO_DISABLED": {
 		"MESSAGE": "O repositório {{repo}} foi desativado porque uma das suas pastas não está disponível. Se alguma das suas pastas estiver numa drive externa, certifique-se de que está ligada e entre no Painel do Sistema > Repositórios para a voltar a ativar.",
 		"TITLE": "Repositório desativado"

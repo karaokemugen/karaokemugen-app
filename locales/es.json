@@ -114,10 +114,6 @@
 	"ABOUT": {
 		"TITLE": "Acerca de Karaoke Mugen"
 	},
-	"WORLD_REPOSITORY_DISABLED": {
-		"TITLE": "El repositorio mundial ha sido deshabilitado",
-		"MESSAGE": "El repositorio mundial ha sido deshabilitado por el administrador del sistema. Por favor, contacte con él para más información."
-	},
 	"REPO_DISABLED": {
 		"TITLE": "Repositorio deshabilitado",
 		"MESSAGE": "El repositorio {{repo}} ha sido deshabilitado por el administrador del sistema. Por favor, contacte con él para más información."
