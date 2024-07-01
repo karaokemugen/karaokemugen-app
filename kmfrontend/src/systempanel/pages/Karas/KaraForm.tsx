@@ -703,6 +703,11 @@ function KaraForm(props: KaraFormProps) {
 				collections: props.kara?.collections || parentKara?.collections,
 			}}
 		>
+			{repositoryManifest?.docsURL && (
+				<Button type="link" style={{ fontWeight: 'bold', fontSize: 17 }} href={repositoryManifest.docsURL}>
+					{i18next.t('KARA.REPOSITORY_DOCUMENTATION', { instance: repositoryManifest.name })}
+				</Button>
+			)}
 			<Divider orientation="left">{i18next.t('KARA.SECTIONS.FILES')}</Divider>
 			<Form.Item
 				label={

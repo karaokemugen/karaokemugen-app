@@ -1150,7 +1150,8 @@
 		"ANNOUNCE_POSITION_SELECTION": {
 			"SET": "Ecraser la position par défaut",
 			"UNSET": "Rétablir la position par défaut"
-		}
+		},
+		"REPOSITORY_DOCUMENTATION": "Accéder aux règles de {{instance}}"
 	},
 	"MENU": {
 		"HOME": "Tableau de bord",

@@ -1150,7 +1150,8 @@
 		"ANNOUNCE_POSITION_SELECTION": {
 			"SET": "Override default position",
 			"UNSET": "Remove custom position"
-		}
+		},
+		"REPOSITORY_DOCUMENTATION": "See {{instance}}'s rules here"
 	},
 	"MENU": {
 		"HOME": "Dashboard",
