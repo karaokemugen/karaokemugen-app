@@ -686,6 +686,13 @@ export async function addKaraToPlaylist(params: AddKaraParams) {
 		if (karasUnknown.length > 0 && params.throwOnMissingKara) {
 			throw new ErrorKM('UNKNOWN_SONG', 404, false);
 		}
+		const karasLeftToAdd = params.kids.filter(kid => !karasUnknown.includes(kid));
+		if (karasLeftToAdd.length === 0) {
+			logger.warn(`No song left to add to playlist ${pl.name || 'unknown'}. All songs supplied are unknown.`, {
+				service,
+			});
+			return;
+		}
 		profile('addKaraToPL-checkKIDExistence');
 		// Sort karas from our database by the list that was provided to this function, so songs are added in the correct order
 		profile('addKaraToPL-sort');
@@ -751,7 +758,6 @@ export async function addKaraToPlaylist(params: AddKaraParams) {
 						plContents.filter(plc => plc.username === requester)
 					: plContents;
 		karaList = karaList.filter(k => !duplicateCheckList.map(plc => plc.kid).includes(k.kid));
-
 		profile('addKaraToPL-checkDuplicates');
 		if (karaList.length === 0) {
 			throw new ErrorKM('PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED', 409, false);
