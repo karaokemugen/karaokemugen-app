@@ -1145,6 +1145,7 @@
 		},
 		"FROM_DISPLAY_TYPE": "Affichage du tag de la provenance de la chanson",
 		"FROM_DISPLAY_TYPE_TOOLTIP": "Choissisez le type de tag utilisé lors de l'affichage de la chanson",
+		"FROM_DISPLAY_TYPE_COLUMN": "Provenance affichée",
 		"ANNOUNCE_POSITION": "Position des annonces",
 		"ANNOUNCE_POSITION_TOOLTIP": "Ecrase la position des annonces par défaut (bannière et informations sur la chanson au début et à la fin de celle-ci). Utile pour éviter que ces annonces n'écrivent par dessus des paroles si la position de ceux-ci est différente de d'habitude.",
 		"ANNOUNCE_POSITION_SELECTION": {

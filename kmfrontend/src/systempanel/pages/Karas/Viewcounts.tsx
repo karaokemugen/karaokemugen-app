@@ -5,7 +5,7 @@ import { Component } from 'react';
 
 import { DBKara } from '../../../../../src/lib/types/database/kara';
 import GlobalContext from '../../../store/context';
-import { getSeriesSingersFull, getTagInLocaleList, getTitleInLocale } from '../../../utils/kara';
+import { getSerieOrSingerGroupsOrSingers, getTagInLocaleList, getTitleInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 
 interface ViewcountsState {
@@ -75,11 +75,11 @@ class Viewcounts extends Component<unknown, ViewcountsState> {
 				getTagInLocaleList(this.context.globalState.settings.data, langs, this.state.i18n).join(', '),
 		},
 		{
-			title: `${i18next.t('TAG_TYPES.SERIES_other')} / ${i18next.t('KARA.SINGERS_BY')}`,
+			title: i18next.t('KARA.FROM_DISPLAY_TYPE_COLUMN'),
 			dataIndex: 'series',
 			key: 'series',
 			render: (_series, record) =>
-				getSeriesSingersFull(this.context?.globalState.settings.data, record, this.state.i18n),
+				getSerieOrSingerGroupsOrSingers(this.context?.globalState.settings.data, record, this.state.i18n),
 		},
 		{
 			title: i18next.t('TAG_TYPES.SONGTYPES_other'),

@@ -5,7 +5,7 @@ import { Component } from 'react';
 
 import { DBKara } from '../../../../../src/lib/types/database/kara';
 import GlobalContext from '../../../store/context';
-import { getTagInLocaleList, getTitleInLocale } from '../../../utils/kara';
+import { getSerieOrSingerGroupsOrSingers, getTagInLocaleList, getTitleInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 
 interface KaraListState {
@@ -71,28 +71,11 @@ class KaraList extends Component<unknown, KaraListState> {
 				getTagInLocaleList(this.context.globalState.settings.data, langs, this.state.i18n).join(', '),
 		},
 		{
-			title: `${i18next.t('TAG_TYPES.SERIES_other')} / ${i18next.t('KARA.SINGERS_BY')}`,
+			title: i18next.t('KARA.FROM_DISPLAY_TYPE_COLUMN'),
 			dataIndex: 'series',
 			key: 'series',
-			render: (series, record) => {
-				if (series?.length > 0) {
-					return getTagInLocaleList(this.context?.globalState.settings.data, series, this.state.i18n).join(
-						','
-					);
-				} else if (record.singergroups?.length > 0) {
-					return getTagInLocaleList(
-						this.context.globalState.settings.data,
-						record.singergroups,
-						this.state.i18n
-					).join(', ');
-				} else {
-					return getTagInLocaleList(
-						this.context.globalState.settings.data,
-						record.singers,
-						this.state.i18n
-					).join(', ');
-				}
-			},
+			render: (_series, record: DBKara) =>
+				getSerieOrSingerGroupsOrSingers(this.context.globalState.settings.data, record, this.state.i18n),
 		},
 		{
 			title: i18next.t('TAG_TYPES.SONGTYPES_other'),

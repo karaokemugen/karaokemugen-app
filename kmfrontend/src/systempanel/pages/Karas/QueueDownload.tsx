@@ -12,7 +12,7 @@ import { KaraDownloadRequest } from '../../../../../src/types/download';
 import GlobalContext from '../../../store/context';
 import {
 	buildKaraTitle,
-	getSeriesSingersFull,
+	getSerieOrSingerGroupsOrSingers,
 	getTagInLocale,
 	getTagInLocaleList,
 	getTitleInLocale,
@@ -344,11 +344,11 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 			},
 		},
 		{
-			title: `${i18next.t('TAG_TYPES.SERIES_other')} / ${i18next.t('KARA.SINGERS_BY')}`,
+			title: i18next.t('KARA.FROM_DISPLAY_TYPE_COLUMN'),
 			dataIndex: 'series',
 			key: 'series',
 			render: (_series, record) =>
-				getSeriesSingersFull(this.context?.globalState.settings.data, record, this.state.i18nTag),
+				getSerieOrSingerGroupsOrSingers(this.context?.globalState.settings.data, record, this.state.i18nTag),
 		},
 		{
 			title: i18next.t('TAG_TYPES.SONGTYPES_other'),

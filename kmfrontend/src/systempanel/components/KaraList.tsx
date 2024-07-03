@@ -19,7 +19,7 @@ import { DBKara, DBKaraTag } from '../../../../src/lib/types/database/kara';
 import { KaraDownloadRequest } from '../../../../src/types/download';
 import {
 	buildKaraTitle,
-	getSeriesSingersFull,
+	getSerieOrSingerGroupsOrSingers,
 	getTagInLocale,
 	getTagInLocaleList,
 	getTitleInLocale,
@@ -268,11 +268,11 @@ function KaraList(props: KaraListProps) {
 			render: langs => getTagInLocaleList(context.globalState.settings.data, langs, i18nTag).join(', '),
 		},
 		{
-			title: `${i18next.t('TAG_TYPES.SERIES_other')} / ${i18next.t('KARA.SINGERS_BY')}`,
+			title: i18next.t('KARA.FROM_DISPLAY_TYPE_COLUMN'),
 			dataIndex: 'series',
 			key: 'series',
 			render: (_series, record: DBKara) =>
-				getSeriesSingersFull(context?.globalState.settings.data, record, i18nTag),
+				getSerieOrSingerGroupsOrSingers(context?.globalState.settings.data, record, i18nTag),
 		},
 		{
 			title: i18next.t('TAG_TYPES.SONGTYPES_other'),

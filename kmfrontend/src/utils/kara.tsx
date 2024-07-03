@@ -122,14 +122,17 @@ export function sortAndHideTags(tags: any[], scope: Scope = 'public') {
 		: [];
 }
 
-export function getSeriesSingersFull(settings: SettingsStoreData, data: DBKara, i18nParam?: any) {
-	return data?.series?.length > 0
-		? data.series.map(e => getTagInLocale(settings, e, i18nParam).i18n).join(', ')
-		: data?.singergroups?.length > 0
-			? data.singergroups.map(e => getTagInLocale(settings, e, i18nParam).i18n).join(', ')
-			: data?.singers?.length > 0
-				? data.singers.map(e => getTagInLocale(settings, e, i18nParam).i18n).join(', ')
-				: ''; // wtf?;
+export function getSerieOrSingerGroupsOrSingers(settings: SettingsStoreData, data: DBKara, i18nParam?: any) {
+	if (data.from_display_type && data[data.from_display_type] && data[data.from_display_type].length > 0) {
+		return data[data.from_display_type].map(e => getTagInLocale(settings, e, i18nParam).i18n).join(', ');
+	}
+	if (data.series?.length > 0) {
+		return data.series.map(e => getTagInLocale(settings, e, i18nParam).i18n).join(', ');
+	}
+	if (data.singergroups?.length > 0) {
+		return data.singergroups.map(e => getTagInLocale(settings, e, i18nParam).i18n).join(', ');
+	}
+	return data.singers.map(e => getTagInLocale(settings, e, i18nParam).i18n).join(', ');
 }
 
 /**
