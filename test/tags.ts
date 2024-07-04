@@ -117,8 +117,6 @@ describe('Tags', () => {
 	it('Merge tags', async () => {
 		const data = await commandBackend(token, 'mergeTags', { tid1: tag1.tid, tid2: tag2.tid });
 		expect(data.code).to.be.equal(200);
-		// During the transition to numbered tag types, change `` to a real number
-		// Probably remove in KM 8.1 or 9.0 or something
 		expect(data.message.data.types).to.include(tag1.types[0]);
 		expect(data.message.data.types).to.include(tag2.types[0]);
 		tagToDelete = data.message.data;
