@@ -44,8 +44,9 @@ import { isShutdownInProgress } from './engine.js';
 import Timeout = NodeJS.Timeout;
 import { getSongSeriesSingers, getSongTitle } from '../lib/services/kara.js';
 import { getTagNameInLanguage } from '../lib/services/tag.js';
-import { getRepo, getRepoManifest } from '../services/repo.js';
+import { getRepo } from '../services/repo.js';
 import { Player } from './mpv/player.js';
+import { getRepoManifest } from '../lib/services/repo.js';
 
 type PlayerType = 'main' | 'monitor';
 

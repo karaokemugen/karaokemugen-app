@@ -34,10 +34,11 @@ import { getState } from '../utils/state.js';
 import { checkMediaAndDownload } from './download.js';
 import { getKara, getKaras } from './kara.js';
 import { editKara } from './karaCreation.js';
-import { getRepo, getRepoManifest, getRepos } from './repo.js';
+import { getRepo, getRepos } from './repo.js';
 import { updateAllSmartPlaylists } from './smartPlaylist.js';
 import { getTag } from './tag.js';
 import i18next from 'i18next';
+import { getRepoManifest } from '../lib/services/repo.js';
 
 const service = 'KaraManager';
 

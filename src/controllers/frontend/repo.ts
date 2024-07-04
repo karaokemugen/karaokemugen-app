@@ -17,7 +17,6 @@ import {
 	getFileDiff,
 	getRepo,
 	getRepoFreeSpace,
-	getRepoManifest,
 	getRepos,
 	listRepoStashes,
 	movingMediaRepo,
@@ -33,6 +32,7 @@ import {
 } from '../../services/repo.js';
 import { syncTagsFromRepo } from '../../services/tag.js';
 import { runChecklist } from '../middlewares.js';
+import { getRepoManifest } from '../../lib/services/repo.js';
 
 export default function repoController(router: SocketIOApp) {
 	router.route('getRepos', async (socket: Socket, req: APIData) => {

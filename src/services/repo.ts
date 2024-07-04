@@ -13,7 +13,7 @@ import { getSettings, refreshAll, saveSetting } from '../lib/dao/database.js';
 import { initHooks } from '../lib/dao/hook.js';
 import { refreshKaras } from '../lib/dao/kara.js';
 import { parseKara, writeKara } from '../lib/dao/karafile.js';
-import { readRepoManifest, selectRepos, selectRepositoryManifest } from '../lib/dao/repo.js';
+import { selectRepos } from '../lib/dao/repo.js';
 import { APIMessage } from '../lib/services/frontend.js';
 import { readAllKaras } from '../lib/services/generation.js';
 import { DBTag } from '../lib/types/database/tag.js';
@@ -1563,11 +1563,3 @@ export async function openMediaFolder(repoName: string) {
 		throw err instanceof ErrorKM ? err : new ErrorKM('OPEN_MEDIA_FOLDER_ERROR');
 	}
 }
-
-export async function initRepos() {
-	for (const repo of getRepos()) {
-		await readRepoManifest(repo.Name);
-	}
-}
-
-export const getRepoManifest = selectRepositoryManifest;

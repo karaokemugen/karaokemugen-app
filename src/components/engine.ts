@@ -29,7 +29,7 @@ import { initPlaylistSystem, stopPlaylistSystem } from '../services/playlist.js'
 import { buildAllMediasList, updatePlaylistMedias } from '../services/playlistMedias.js';
 import { stopGame } from '../services/quiz.js';
 import { initRemote } from '../services/remote.js';
-import { checkDownloadStatus, initRepos, updateAllRepos } from '../services/repo.js';
+import { checkDownloadStatus, updateAllRepos } from '../services/repo.js';
 import { initSession, stopSessionSystem } from '../services/session.js';
 import { initStats, stopStatsSystem } from '../services/stats.js';
 import { generateAdminPassword, initUserSystem } from '../services/user.js';
@@ -42,6 +42,7 @@ import { writeStreamFiles } from '../utils/streamerFiles.js';
 import { getTwitchClient, initTwitch, stopTwitch } from '../utils/twitch.js';
 import { subRemoteUsers } from '../utils/userPubSub.js';
 import initFrontend from './frontend.js';
+import { readAllRepoManifests } from '../lib/services/repo.js';
 
 let usageTime = 0;
 let usageTimeInterval;
@@ -71,7 +72,7 @@ export async function initEngine() {
 	if (state.opt.validate) {
 		try {
 			initStep(i18next.t('INIT_VALIDATION'));
-			await initRepos();
+			await readAllRepoManifests();
 			initHooks();
 			await generateKaraBase({
 				validateOnly: true,
@@ -226,7 +227,7 @@ export async function initEngine() {
 			initStep(i18next.t('INIT_DONE'), true);
 			postInit();
 			initHooks();
-			initRepos();
+			readAllRepoManifests();
 			initFonts();
 			archiveOldLogs();
 			initUsageTimer();
