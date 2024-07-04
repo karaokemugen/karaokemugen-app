@@ -963,6 +963,7 @@
 	"NOTIFICATION": {
 		"OPERATOR": {
 			"ERROR": {
+				"STATS_PAYLOAD": "Impossible d'envoyer les statistiques au serveur.",
 				"DOWNLOAD": "Erreur lors du téléchargement",
 				"SHORTENER": "Erreur d'activation de l'URL raccourcie",
 				"PLAYER_PLAY": "Erreur de lecture de karaoké",

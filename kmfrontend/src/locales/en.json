@@ -963,6 +963,7 @@
 	"NOTIFICATION": {
 		"OPERATOR": {
 			"ERROR": {
+				"STATS_PAYLOAD": "Error sending stats to server",
 				"DOWNLOAD": "Song download error",
 				"SHORTENER": "Error enabling URL shortener",
 				"PLAYER_PLAY": "Unable to play song",
