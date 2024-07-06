@@ -62,7 +62,7 @@
 		"analyze": "source-map-explorer 'build/static/js/*.js'",
 		"start": "vite",
 		"build": "vite build",
-		"lint": "eslint . --ext .ts,.tsx",
+		"lint": "eslint . --ext .ts,.mts,.tsx",
 		"i18next-scanner": "i18next-scanner --config src/utils/i18next-scanner.config.js"
 	},
 	"proxy": "http://localhost:1337",
