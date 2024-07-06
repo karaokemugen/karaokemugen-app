@@ -173,6 +173,17 @@
 	"ABOUT": {
 		"TITLE": "About Karaoke Mugen"
 	},
+	"MOVED_USER_DIR_DIALOG": {
+		"TITLE": "User folder moved!",
+		"MESSAGE": "In order to be compliant with your operating system's standards, the User Data folder has been moved. Before, it was:\n\n{{oldDir}}\n\nNow it's:\n\n{{newDir}}\n\nIf you are a streamer, you might want to update your OBS layout to point to the right text files at their new location.",
+		"UNDERSTOOD": "Got it!"
+	},
+	"MOVING_USER_DIR_ERROR_DIALOG": {
+		"TITLE": "Unable to move the Karaoke Mugen data folder",
+		"MESSAGE": "Karaoke Mugen's data folder has been moved. Before it was this:\n\n{{oldDir}}\n\nNow it's this:\n\n{{newDir}}\n\nAn error occured when trying to move that folder. You should click on \"Quit\" and move the folder yourself.\n\nYou can also click on \"Continue\". If yuou do, you'll start over with a brand new data folder. We suggest you then delete the old folder shown above.",
+		"CONTINUE": "Continue",
+		"QUIT": "Quit"
+	},
 	"DATABASE_IN_THE_FUTURE_ERROR": {
 		"TITLE": "Database is in the future, Marty!",
 		"MESSAGE": "The database Karaoke Mugen is trying to access has been used by a later version of the application and is incompatible. Let's try to fix that.\n\nIf you click \"CANCEL\", the application will close without doing anything. You should launch a newer version of Karaoke Mugen.\n\nIf you click \"DELETE all data\", the application will DELETE playlists, local users, stats, etc. and start up normally.",
