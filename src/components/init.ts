@@ -18,7 +18,7 @@ import { Config } from '../types/config.js';
 import { initConfig } from '../utils/config.js';
 import { logo } from '../utils/constants.js';
 import { defaultRepositories } from '../utils/defaultSettings.js';
-import { updateKaraMoeRepoConfig, updateKaraMoeSecureConfig } from '../utils/hokutoNoCode.js';
+import { checkMovedUserDir, updateKaraMoeRepoConfig, updateKaraMoeSecureConfig } from '../utils/hokutoNoCode.js';
 import Sentry from '../utils/sentry.js';
 import { getState, setState } from '../utils/state.js';
 import { parseArgs, setupFromCommandLineArgs } from './args.js';
@@ -54,6 +54,7 @@ export async function preInit() {
 	await configureLogger(argv.opts().verbose || app?.commandLine.hasSwitch('verbose'), true);
 	profile('preInit');
 	await configureLocale();
+	await checkMovedUserDir();
 	resetSecurityCode();
 	resetNewAccountCode();
 	setState({ os: process.platform });

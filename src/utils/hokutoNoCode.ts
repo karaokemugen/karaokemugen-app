@@ -3,11 +3,16 @@
 //
 // When removing code here, remember to go see if all functions called are still useful.
 
+import { app, dialog } from 'electron';
+import { existsSync, readdirSync, rmdirSync } from 'fs';
+import { moveSync } from 'fs-extra';
+import { resolve } from 'path';
 import semver from 'semver';
 
 import { editRepo, getRepo } from '../services/repo.js';
 import { Repository } from '../lib/types/repo.js';
-import { getState } from './state.js';
+import { getState, setState } from './state.js';
+import i18next from 'i18next';
 
 /** Remove when we drop support for mpv <0.38.0 */
 export function mpvIsRecentEnough() {
@@ -16,6 +21,43 @@ export function mpvIsRecentEnough() {
 		return false;
 	}
 	return true;
+}
+
+/** Remove in KM 10.0 */
+export async function checkMovedUserDir() {
+	if (getState().movedUserDir) {
+		await dialog.showMessageBox({
+			type: 'warning',
+			title: i18next.t('MOVED_USER_DIR_DIALOG.TITLE'),
+			message: `${i18next.t('MOVED_USER_DIR_DIALOG.MESSAGE', { newDir: getState().dataPath, oldDir: resolve(app.getPath('home'), 'KaraokeMugen/') })}`,
+			buttons: [i18next.t('MOVED_USER_DIR_DIALOG.UNDERSTOOD')],
+		});
+	}
+	if (getState().errorMovingUserDir) {
+		const buttons = await dialog.showMessageBox({
+			type: 'error',
+			title: i18next.t('MOVING_USER_DIR_ERROR_DIALOG.TITLE'),
+			message: `${i18next.t('MOVING_USER_DIR_ERROR_DIALOG.MESSAGE', { newDir: getState().dataPath, oldDir: resolve(app.getPath('home'), 'KaraokeMugen/') })}`,
+			buttons: [
+				i18next.t('MOVING_USER_DIR_ERROR_DIALOG.CONTINUE'),
+				i18next.t('MOVING_USER_DIR_ERROR_DIALOG.QUIT'),
+			],
+		});
+		if (buttons.response === 1) {
+			app.exit(0);
+		}
+	}
+}
+
+/** Remove in KM 10.0 */
+export function moveUserDir(newDir: string) {
+	const oldDir = resolve(app.getPath('home'), 'KaraokeMugen');
+	if (existsSync(oldDir) && readdirSync(newDir).length === 0 && oldDir !== newDir) {
+		// Removing dir first so moveSync stops complaining destination exists. It has to be empty anyways.
+		rmdirSync(newDir);
+		moveSync(oldDir, newDir);
+		setState({ movedUserDir: true });
+	}
 }
 
 /** Remove in KM 10.0 */
