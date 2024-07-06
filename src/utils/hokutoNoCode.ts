@@ -32,6 +32,14 @@ export async function checkMovedUserDir() {
 			message: `${i18next.t('MOVED_USER_DIR_DIALOG.MESSAGE', { newDir: getState().dataPath, oldDir: resolve(app.getPath('home'), 'KaraokeMugen/') })}`,
 			buttons: [i18next.t('MOVED_USER_DIR_DIALOG.UNDERSTOOD')],
 		});
+		if (process.env.container) {
+			await dialog.showMessageBox({
+				type: 'info',
+				title: i18next.t('MOVED_USER_DIR_FLATPAK_DIALOG.TITLE'),
+				message: `${i18next.t('MOVED_USER_DIR_FLATPAK_DIALOG.MESSAGE', { oldDir: resolve(app.getPath('home'), 'KaraokeMugen/') })}`,
+				buttons: [i18next.t('MOVED_USER_DIR_FLATPAK_DIALOG.UNDERSTOOD')],
+			});
+		}
 	}
 	if (getState().errorMovingUserDir) {
 		const buttons = await dialog.showMessageBox({
@@ -55,7 +63,14 @@ export function moveUserDir(newDir: string) {
 	if (existsSync(oldDir) && readdirSync(newDir).length === 0 && oldDir !== newDir) {
 		// Removing dir first so moveSync stops complaining destination exists. It has to be empty anyways.
 		rmdirSync(newDir);
-		moveSync(oldDir, newDir);
+		const files = readdirSync(oldDir);
+		for (const file of files) {
+			moveSync(resolve(oldDir, file), resolve(newDir, file));
+		}
+		// Remove folder if not in a flatpak, because we can't do that with flatpaks
+		if (!process.env.container) {
+			rmdirSync(oldDir);
+		}
 		setState({ movedUserDir: true });
 	}
 }

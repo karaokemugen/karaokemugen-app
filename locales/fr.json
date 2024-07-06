@@ -178,6 +178,11 @@
 		"MESSAGE": "Afin de correspondre aux standards de votre système d'exploitation, le dossier des données de Karaoke Mugen a été déplacé. Avant c'était :\n\n{{oldDir}}\n\nMaintenant c'est :\n\n{{newDir}}\n\nSi vous êtes streameur/euse, vous voudrez peut-être mettre à jour votre layout OBS pour pointer vers le nouvel emplacement des fichiers texte de streaming.",
 		"UNDERSTOOD": "J'ai bien compris !"
 	},
+	"MOVED_USER_DIR_FLATPAK_DIALOG": {
+		"TITLE": "Utilisateurs de Flatpak !",
+		"MESSAGE": "Le contenu du dossier a bien été déplacé, mais vous utilisez Karaoke Mugen en version Flatpak. L'application ne peut pas supprimer l'ancien dossier utilisateur à cause de cela. Nous vous invitons à le supprimer vous-même :\n\n{{oldDir}}\n\n(Il devrait être vide !)",
+		"UNDERSTOOD": "D'accord ! Je fais ça maintenant avant d'oublier !"
+	},
 	"MOVING_USER_DIR_ERROR_DIALOG": {
 		"TITLE": "Impossible de déplacer le dossier de données de Karaoke Mugen",
 		"MESSAGE": "Le dossier de données de Karaoke Mugen a changé. Avant c'était :\n\n{{oldDir}}\n\nMaintenant c'est :\n\n{{newDir}}\n\nUne erreur est survenue durant le déplacement des données. Nous vous suggérons de cliquer sur \"Quitter\" pour faire le déplacement vous-même.\n\nVous pouvez aussi cliquer sur \"Continuer\". Dans ce cas vous repartirez avec des données neuves. Nous vous suggérons alors de supprimer l'ancien dossier indiqué ci-dessus.",
