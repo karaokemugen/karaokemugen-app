@@ -120,6 +120,7 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	// Change language
 	if (newConfig.App.Language !== oldConfig.App.Language) {
 		changeLanguage(newConfig.App.Language);
+		applyMenu('DEFAULT');
 	}
 	// Updating quotas
 	if (
