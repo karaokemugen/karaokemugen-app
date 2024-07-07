@@ -1,7 +1,7 @@
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { Alert, Button, Checkbox, Divider, Form, FormInstance, Input, Select, Tooltip } from 'antd';
+import { Alert, Button, Checkbox, Divider, Form, Input, Select, Tooltip } from 'antd';
 import i18next from 'i18next';
-import { Component, createRef, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { TaskItem } from '../../../../../src/lib/types/taskItem';
 import { commandBackend, getSocket } from '../../../utils/socket';
@@ -29,6 +29,7 @@ function RepositoryForm(props: RepositoriesFormProps) {
 	const [maintainerMode, setMaintainerMode] = useState(props.repository?.MaintainerMode);
 	const [onlineMode, setOnlineMode] = useState(props.repository?.Online);
 	const [update, setUpdate] = useState(props.repository?.Update);
+	const [sshKey, setSshKey] = useState<string>();
 
 	const getRepositories = async () => {
 		const res = await commandBackend('getRepos');
@@ -38,6 +39,31 @@ function RepositoryForm(props: RepositoriesFormProps) {
 	if (props.repository) {
 		getRepositories();
 	}
+
+	const getSshkey = async () => {
+		if (form?.getFieldValue('GitURL')?.toLowerCase().startsWith('git@')) {
+			try {
+				const res = await commandBackend('getSSHPubKey', { repoName: form.getFieldValue('Name') });
+				setSshKey(res);
+			} catch (e) {
+				setSshKey(undefined);
+			}
+		}
+	};
+
+	async function createSshKey(): Promise<void> {
+		await commandBackend('generateSSHKey', { repoName: form.getFieldValue('Name') });
+		getSshkey();
+	}
+
+	async function removeSshKey(): Promise<void> {
+		await commandBackend('removeSSHKey', { repoName: form.getFieldValue('Name') });
+		getSshkey();
+	}
+
+	useEffect(() => {
+		getSshkey();
+	}, [form?.getFieldValue('GitURL')]);
 
 	useEffect(() => {
 		getSocket().on('tasksUpdated', isZipUpdateInProgress);
@@ -75,8 +101,8 @@ function RepositoryForm(props: RepositoriesFormProps) {
 			Git: values.GitURL
 				? {
 						URL: values.GitURL,
-						Username: values.GitUsername,
-						Password: values.GitPassword,
+						Username: values.GitURL.toLowerCase().startsWith('git@') ? undefined : values.GitUsername,
+						Password: values.GitURL.toLowerCase().startsWith('git@') ? undefined : values.GitPassword,
 						Author: values.GitAuthor,
 						Email: values.GitEmail,
 					}
@@ -285,30 +311,51 @@ function RepositoryForm(props: RepositoriesFormProps) {
 			</Form.Item>
 			{maintainerMode && onlineMode ? (
 				<>
-					<Form.Item
-						label={i18next.t('REPOSITORIES.GIT.URL')}
-						labelCol={{ flex: '0 1 300px' }}
-						name="GitURL"
-						rules={[{ required: update }]}
-					>
-						<Input placeholder={i18next.t('REPOSITORIES.GIT.URL')} />
+					<Form.Item label={i18next.t('REPOSITORIES.GIT.URL')} labelCol={{ flex: '0 1 300px' }}>
+						<Form.Item name="GitURL" rules={[{ required: update }]}>
+							<Input placeholder={i18next.t('REPOSITORIES.GIT.URL')} />
+						</Form.Item>
+						{form?.getFieldValue('GitURL')?.toLowerCase().startsWith('git@') ? (
+							sshKey ? (
+								<>
+									<Button
+										type="primary"
+										style={{ marginRight: '1em' }}
+										onClick={() => window.navigator.clipboard.writeText(sshKey)}
+									>
+										{i18next.t('REPOSITORIES.GIT.COPY_SSH_KEY')}
+									</Button>
+									<Button type="primary" danger onClick={removeSshKey}>
+										{i18next.t('REPOSITORIES.GIT.DELETE_SSH_KEY')}
+									</Button>
+								</>
+							) : (
+								<Button type="primary" onClick={createSshKey}>
+									{i18next.t('REPOSITORIES.GIT.CREATE_SSH_KEY')}
+								</Button>
+							)
+						) : null}
 					</Form.Item>
-					<Form.Item
-						label={i18next.t('REPOSITORIES.GIT.USERNAME')}
-						labelCol={{ flex: '0 1 300px' }}
-						name="GitUsername"
-						rules={[{ required: update }]}
-					>
-						<Input placeholder={i18next.t('REPOSITORIES.GIT.USERNAME')} />
-					</Form.Item>
-					<Form.Item
-						label={i18next.t('REPOSITORIES.GIT.PASSWORD')}
-						labelCol={{ flex: '0 1 300px' }}
-						name="GitPassword"
-						rules={[{ required: update }]}
-					>
-						<Input type="password" placeholder={i18next.t('REPOSITORIES.GIT.PASSWORD')} />
-					</Form.Item>
+					{form?.getFieldValue('GitURL')?.toLowerCase().startsWith('git@') ? null : (
+						<>
+							<Form.Item
+								label={i18next.t('REPOSITORIES.GIT.USERNAME')}
+								labelCol={{ flex: '0 1 300px' }}
+								name="GitUsername"
+								rules={[{ required: update }]}
+							>
+								<Input placeholder={i18next.t('REPOSITORIES.GIT.USERNAME')} />
+							</Form.Item>
+							<Form.Item
+								label={i18next.t('REPOSITORIES.GIT.PASSWORD')}
+								labelCol={{ flex: '0 1 300px' }}
+								name="GitPassword"
+								rules={[{ required: update }]}
+							>
+								<Input type="password" placeholder={i18next.t('REPOSITORIES.GIT.PASSWORD')} />
+							</Form.Item>
+						</>
+					)}
 					<Form.Item
 						label={
 							<span>

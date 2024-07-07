@@ -14,15 +14,18 @@ import {
 	findUnusedMedias,
 	findUnusedTags,
 	generateCommits,
+	generateSSHKey,
 	getFileDiff,
 	getRepo,
 	getRepoFreeSpace,
 	getRepos,
+	getSSHPubKey,
 	listRepoStashes,
 	movingMediaRepo,
 	openMediaFolder,
 	pushCommits,
 	removeRepo,
+	removeSSHKey,
 	resetRepo,
 	stashGitRepo,
 	unstashInRepo,
@@ -35,6 +38,30 @@ import { runChecklist } from '../middlewares.js';
 import { getRepoManifest } from '../../lib/services/repo.js';
 
 export default function repoController(router: SocketIOApp) {
+	router.route('getSSHPubKey', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'closed');
+		try {
+			return getSSHPubKey(req.body.repoName);
+		} catch (err) {
+			throw { code: err.code || 500, message: APIMessage(err.message) };
+		}
+	});
+	router.route('generateSSHKey', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'closed');
+		try {
+			return generateSSHKey(req.body.repoName);
+		} catch (err) {
+			throw { code: err.code || 500, message: APIMessage(err.message) };
+		}
+	});
+	router.route('removeSSHKey', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'closed');
+		try {
+			return removeSSHKey(req.body.repoName);
+		} catch (err) {
+			throw { code: err.code || 500, message: APIMessage(err.message) };
+		}
+	});
 	router.route('getRepos', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest', 'closed', { optionalAuth: true });
 		try {

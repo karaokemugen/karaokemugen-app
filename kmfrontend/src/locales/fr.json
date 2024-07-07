@@ -1446,7 +1446,10 @@
 			"AUTHOR": "Identité Git",
 			"AUTHOR_TOOLTIP": "Nom affiché lors de vos commits",
 			"EMAIL": "E-Mail Git",
-			"EMAIL_TOOLTIP": "Email associé à vos commits"
+			"EMAIL_TOOLTIP": "Email associé à vos commits",
+			"COPY_SSH_KEY": "Copier la clé ssh dans le presse-papier",
+			"CREATE_SSH_KEY": "Créer une clé ssh",
+			"DELETE_SSH_KEY": "Supprimer la clé ssh"
 		},
 		"FTP": {
 			"HOST": "Hôte FTP",
