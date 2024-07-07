@@ -1448,7 +1448,7 @@
 			"EMAIL": "Git E-Mail",
 			"EMAIL_TOOLTIP": "Email associated with your commits",
 			"COPY_SSH_KEY": "Copy the ssh in clipboard",
-			"CREATE_SSH_KEY": "Create a ssh key",
+			"GENERATE_SSH_KEY": "Generate a ssh key",
 			"DELETE_SSH_KEY": "Delete the ssh key"
 		},
 		"FTP": {

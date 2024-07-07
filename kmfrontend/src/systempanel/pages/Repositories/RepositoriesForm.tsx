@@ -331,7 +331,7 @@ function RepositoryForm(props: RepositoriesFormProps) {
 								</>
 							) : (
 								<Button type="primary" onClick={createSshKey}>
-									{i18next.t('REPOSITORIES.GIT.CREATE_SSH_KEY')}
+									{i18next.t('REPOSITORIES.GIT.GENERATE_SSH_KEY')}
 								</Button>
 							)
 						) : null}
