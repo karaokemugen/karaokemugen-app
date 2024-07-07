@@ -1,3 +1,5 @@
+import { execa } from 'execa';
+import { readFile, unlink } from 'fs/promises';
 import i18next from 'i18next';
 import { resolve } from 'path';
 import { DefaultLogFields, ListLogLine, SimpleGit, simpleGit, SimpleGitProgressEvent } from 'simple-git';
@@ -40,6 +42,8 @@ export default class Git {
 
 	opts: GitOptions;
 
+	keyFile: string;
+
 	task: Task;
 
 	constructor(opts: GitOptions) {
@@ -50,6 +54,7 @@ export default class Git {
 			password: opts.password,
 			repoName: opts.repoName,
 		};
+		this.keyFile = resolve(process.env.HOME, '.ssh/', `id_rsa_KaraokeMugen_${opts.repoName}`);
 	}
 
 	progressHandler({ method, stage, progress }: SimpleGitProgressEvent) {
@@ -65,11 +70,19 @@ export default class Git {
 		}
 	}
 
+	isSshUrl() {
+		return this.opts.url.toLowerCase().startsWith('git@');
+	}
+
 	private getFormattedURL() {
-		const url = new URL(this.opts.url);
-		url.username = this.opts.username;
-		url.password = this.opts.password;
-		return url.href;
+		if (this.isSshUrl()) {
+			return this.opts.url;
+		} else {
+			const url = new URL(this.opts.url);
+			url.username = this.opts.username;
+			url.password = this.opts.password;
+			return url.href;
+		}
 	}
 
 	/** Prepare git instance */
@@ -100,6 +113,11 @@ export default class Git {
 				await this.setRemote();
 				await this.git.branch(['--set-upstream-to=origin/master', 'master']);
 			}
+			if (await fileExists(this.keyFile)) {
+				await this.git.addConfig('core.sshCommand', `ssh -i ${this.keyFile}`);
+			} else {
+				await this.git.raw(['config', '--unset', 'core.sshCommand']);
+			}
 		}
 	}
 
@@ -107,6 +125,25 @@ export default class Git {
 	async getCurrentCommit() {
 		const show = await this.git.show();
 		return show.split('\n')[0].split(' ')[1];
+	}
+
+	async generateSSHKey() {
+		await this.removeSSHKey();
+		await execa('ssh-keygen', ['-b', '2048', '-t', 'rsa', '-f', this.keyFile, '-q', '-N', '""']);
+	}
+
+	async removeSSHKey() {
+		if (await fileExists(this.keyFile, true)) {
+			await unlink(this.keyFile);
+		}
+		if (await fileExists(`${this.keyFile}.pub`, true)) {
+			await unlink(`${this.keyFile}.pub`);
+		}
+	}
+
+	async getSSHPubKey(): Promise<string> {
+		const pubKey = await readFile(`${this.keyFile}.pub`, 'utf-8');
+		return pubKey;
 	}
 
 	async wipeChanges() {
@@ -223,7 +260,7 @@ export default class Git {
 
 	/** Call this when repo has changed its settings */
 	async setRemote() {
-		if (!this.opts.username || !this.opts.password) throw 'Username and/or password empty';
+		if (!this.isSshUrl() && (!this.opts.username || !this.opts.password)) throw 'Username and/or password empty';
 		return this.git.remote(['set-url', 'origin', this.getFormattedURL()]);
 	}
 
