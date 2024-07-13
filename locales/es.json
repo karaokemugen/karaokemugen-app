@@ -246,18 +246,19 @@
 		"WARNINGS": "Advertencia",
 		"FRANCHISES": "Franquicia",
 		"COLLECTIONS": "Colección",
-		"FAMILIES": "Contenido del vídeo"
+		"FAMILIES": "Contenido de vídeo"
 	},
 	"MIGRATION": "Migración",
 	"YEAR": "Año",
 	"TITLE": "Título",
 	"MIGRATION_MESSAGES": [
-		"Alinear los micrófonos",
+		"Alineamiento de micrófonos",
 		"Cálculo de las ondas sonoras de normalización",
 		null,
 		"Afinar las cuerdas vocales",
 		"Descubriendo la ciudad perdida de Karaokum Mugen-la",
 		"La respuesta de la informática a la vida, el universo y todo lo demás"
 	],
-	"FALLBACK": "Retroceder"
+	"FALLBACK": "Retroceder",
+	"UNKNOWN": "Desconocido"
 }
