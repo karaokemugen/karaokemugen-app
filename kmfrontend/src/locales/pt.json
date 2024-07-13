@@ -126,5 +126,8 @@
 	"SPEED_DOWN": "Diminuir velocidade",
 	"PITCH_UP": "Aumentar tom",
 	"PITCH_RESET": "Reestabelecer tom",
-	"PITCH_DOWN": "Diminuir tom"
+	"PITCH_DOWN": "Diminuir tom",
+	"KAROULETTE": {
+		"START": "Revisar sugestões do público"
+	}
 }
