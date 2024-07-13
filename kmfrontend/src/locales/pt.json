@@ -8,8 +8,8 @@
 		"404_3": "Tu estás aqui",
 		"404_4": "Voltar ao início"
 	},
-	"LOGIN_MANDATORY": "O login é obrigatório",
-	"PASSWORD_MANDATORY": "A palavra-passe é obrigatória",
+	"LOGIN_MANDATORY": "Login obrigatório",
+	"PASSWORD_MANDATORY": "Senha é obrigatória",
 	"PASSWORD_DIFFERENT": "As palavras-passe não coincidem",
 	"SHUTDOWN": "Encerrar o Karaoke Mugen",
 	"SHUTDOWN_POPUP": "Ligação com o Karaoke Mugen foi perdida",
@@ -21,7 +21,7 @@
 	"PASSWORD": "Palavra-passe (Mínimo de 8 caracteres)",
 	"PASSWORDCONF": "Confirmação de palavra-passe",
 	"NEW_PASSWORD": "Nova palavra-passe",
-	"VOLUME_LEVEL": "Definir volume",
+	"VOLUME_LEVEL": "Ajustar volume",
 	"PLAYLISTS": {
 		"LIBRARY": "Biblioteca",
 		"FAVORITES": "Favoritos",
@@ -33,7 +33,10 @@
 		"SEARCH": "Karaokês com {{tag}}"
 	},
 	"ADMIN_HEADER": {
-		"QUICK_ACCESS": "Acesso rápido"
+		"QUICK_ACCESS": "Acesso rápido",
+		"CURRENT_PLAYLIST": "Playlist atual",
+		"PUBLIC_PLAYLIST": "Playlist pública",
+		"QUIZ_RANKING": "Classificação do Quiz"
 	},
 	"PLAYLIST_HEADER": {
 		"FILTERS": "Filtros",
@@ -45,14 +48,18 @@
 	"ADVANCED": {
 		"ADD_ALL": "Adicionar todas as músicas à outra lista",
 		"ADD_RANDOM": "Adicionar músicas aleatórias",
-		"SELECT_ALL": "Seleccionar todos os elementos visíveis",
+		"SELECT_ALL": "Selecionar todas as músicas visíveis",
 		"EMPTY_LIST": "Playlist vazia",
 		"DELETE": "Eliminar playlist",
 		"EDIT": "Editar playlist",
 		"ADD": "Adicionar uma nova playlist",
 		"AUTOMIX": "Crie um automix",
 		"IMPORT": "Importar playlist",
-		"EXPORT": "Exportar playlist"
+		"EXPORT": "Exportar playlist",
+		"PLAYLIST_COMMANDS": "Comandos da playlist",
+		"EXPORT_MEDIA": "Exportar todas mídias da playlist",
+		"SHUFFLE": "Mesclar / Ordenar…",
+		"DOWNLOAD_ALL": "Download de todos"
 	},
 	"SELECT_PLACEHOLDER": "Selecione uma playlist",
 	"YES": "Sim",
@@ -84,5 +91,40 @@
 		"PLAY": "Reproduzir",
 		"PAUSE": "Pausa",
 		"NEXT_SONG": "Próxima música"
-	}
+	},
+	"KARA_MENU": {
+		"FAV": "Adicionar aos favoritos",
+		"PLAY_LIBRARY": "Reproduzir agora",
+		"FAVORITES_REMOVED": "Removido dos favoritos",
+		"FREE_SHORT": "Liberar",
+		"VISIBLE_OFF": "Ocultar da playlist",
+		"TRANSFER_KARA_AFTER_PLAYING": "Transferir após a música sendo reproduzida atualmente",
+		"MOVE_KARA": "Mover após a música atual",
+		"SHUFFLE": "Músicas aleatórias",
+		"SHUFFLED": "Músicas embaralhadas!",
+		"ADD_WHITELIST": "Adicionar na whitelist",
+		"PLAY": "Marcar como 'reproduzindo agora'",
+		"VISIBLE_ON_SHORT": "Mostrar",
+		"FAV_DEL": "Remover dos favoritos",
+		"KARA_COMMANDS": "Comandos de música",
+		"SHOWN": "Visível!",
+		"WHITELISTED": "Adicionada na whitelist!",
+		"TRANSFER_KARA": "Transferir esta música",
+		"ADD_BLACKLIST": "Adicionar na blacklist",
+		"BLACKLISTED": "Adicionada na blacklist!",
+		"HIDDEN": "Ocultada!",
+		"TRANSFER_SELECT_KARA": "Transferir música selecionada",
+		"FREE": "Liberar esta música da cota do usuário",
+		"FREED": "Liberada!",
+		"VISIBLE_ON": "Mostrar na playlist",
+		"TRANSFER_SELECT_KARA_AFTER_PLAYING": "Transferir após a música atualmente sendo reproduzida",
+		"FAVORITES_ADDED": "Adicionado aos favoritos",
+		"VISIBLE_OFF_SHORT": "Ocultar"
+	},
+	"SPEED_UP": "Aumentar velocidade",
+	"SPEED_RESET": "Velocidade normal",
+	"SPEED_DOWN": "Diminuir velocidade",
+	"PITCH_UP": "Aumentar tom",
+	"PITCH_RESET": "Reestabelecer tom",
+	"PITCH_DOWN": "Diminuir tom"
 }
