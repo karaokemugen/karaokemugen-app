@@ -302,7 +302,7 @@
 		"MAX_SONGS": "- In <1>$t(QUIZ_RULES.SONGS, {\"conta\": {{songs}} })</1>",
 		"MINUTES_one": "<1>{{count}} minuto</1>",
 		"MINUTES_other": "<1>{{count}} minutos</1>",
-		"DURATION": "- In <1>$t(QUIZ_RULES.MINUTES, {\"conta\": {{duration}} })</1>",
+		"DURATION": "- In <1>$t(QUIZ_RULES.MINUTES, {\"count\": {{duration}} })</1>",
 		"TITLE": "REGRAS",
 		"ACCEPTED_ANSWERS": "Respostas aceitas:",
 		"QUICK_ANSWER": "- Boa resposta rápida ( < <1>$t(QUIZ_RULES.SECONDS, {\"conta\": {{seconds}} })</1>): <1>$t(QUIZ_RULES.BONUS_POINTS, {\"conta\": {{points}} })</1>."
