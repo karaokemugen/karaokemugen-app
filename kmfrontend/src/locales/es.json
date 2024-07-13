@@ -357,7 +357,7 @@
 	"TOOLTIP_DELETE_FAVS": "Quitar canción de favoritos",
 	"TOOLTIP_DELETEKARA": "Quitar esta canción",
 	"TOOLTIP_ADD_SELECT_KARA": "Añadir canciones seleccionadas a la playlist - click derecho para añadir después de la canción actual",
-	"TOOLTIP_ADDKARA_ADMIN": "click derecho para añadirlo luego de la canción actual",
+	"TOOLTIP_ADDKARA_ADMIN": " click derecho para añadirlo luego de la canción actual",
 	"TOOLTIP_ADDKARA": "Añadir esta canción a la lista de reproducción",
 	"PROFILE_PASSWORDCONF": "Confirmar",
 	"PROFILE_PASSWORD_AGAIN": "Escribe tu contraseña",
@@ -1197,7 +1197,7 @@
 		"SINGERGROUPS_one": "Banda",
 		"WARNINGS_one": "Advertencia",
 		"GROUPS_other": "Grupos",
-		"FAMILIES_one": "Familia",
+		"FAMILIES_one": "Contenido de vídeo",
 		"SINGERS_one": "Cantante",
 		"SONGTYPES_one": "Tipo de canción",
 		"MISC_one": "Misceláneas",
@@ -1221,7 +1221,7 @@
 		"GROUPS_one": "Grupo",
 		"FRANCHISES_one": "Franquicia",
 		"SINGERGROUPS_other": "Bandas",
-		"FAMILIES_other": "Familias"
+		"FAMILIES_other": "Contenidos de vídeo"
 	},
 	"SESSIONS": {
 		"NAME": "Nombre",
