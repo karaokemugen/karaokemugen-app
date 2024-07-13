@@ -430,7 +430,7 @@
 		"MESSAGE": "Mensaje",
 		"DURATION": "Duración (en segundos)",
 		"CL_ALL": "Mostrar en ambas",
-		"CL_USERS": "Mostrar en pantallas de usuario",
+		"CL_USERS": "Mostrar en las pantallas de los usuario",
 		"ESSENTIAL_MESSAGE": "Mensaje importante",
 		"CL_SCREEN": "Mostrar en la pantalla del reproductor"
 	},
