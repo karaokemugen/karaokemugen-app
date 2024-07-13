@@ -30,7 +30,8 @@
 			"O Monitor permite-lhe ver a canção que está a tocar atualmente mesmo se você não puder ver a tela de onde você está.",
 			"O modo Karaokê clássico emula o que você encontra em cabines de karaokê japonesas, concursos de karaokê ou eventos de anime: uma pausa é feita entre cada canção e o título e solicitante da próxima canção são exibidos na tela.",
 			"A sua sessão de karaokê vai terminar em breve? Mude a interface para o modo restrito: os usuários não poderão adicionar mais músicas, mas poderão ver o que vem a seguir.",
-			"Precisas de enviar uma mensagem ao seu público? A opção de enviar uma mensagem irá mostrar o que enviares para todos os dispositivos móveis e/ou no ecrã do karaokê!"
+			"Precisas de enviar uma mensagem ao seu público? A opção de enviar uma mensagem irá mostrar o que enviares para todos os dispositivos móveis e/ou no ecrã do karaokê!",
+			"Ao pesquisar, você pode digitar “-word” para excluir karaokês que contenham essa palavra (seja no título, na série, nos cantores, etc.) dos resultados da pesquisa."
 		],
 		"ERRORS": [
 			"Se precisares de ajuda, venha ao nosso servidor de Discord: https://karaokes.moe/discord",
@@ -237,9 +238,30 @@
 		"SONGTYPES": "Tipo de música",
 		"PLATFORMS": "Plataforma",
 		"SERIES": "Série",
-		"LANGS": "Linguagem"
+		"LANGS": "Linguagem",
+		"SINGERS": "Cantor",
+		"FAMILIES": "Conteúdo em Vídeo"
 	},
 	"LIBRARY": "Biblioteca",
 	"YEAR": "Ano",
-	"TITLE": "Título"
+	"TITLE": "Título",
+	"MIGRATION_MESSAGES": [
+		"Alinhando microfones",
+		"Calculando normalização das ondas sonoras",
+		"Gelando as bebidas",
+		"Calibrando cordas vocais",
+		"Descobrindo a cidade perdida de Karaokum Mugen-la",
+		"Calculando resposta para a vida, o universo, e todo o resto",
+		"Iniciando o convetor de tempo",
+		"resolvendo equações sinfônicas",
+		"Configurando condutos supra-sônicos",
+		"Tirando o lixo",
+		"Encomendando bebidas e lanches",
+		"Melhorando o desempenho musical",
+		"Carregando Wikipedia",
+		"Alimentando o gato",
+		"Configurando nadadeiras",
+		"Absorvendo erros luminescentes"
+	],
+	"MIGRATION": "Migração"
 }
