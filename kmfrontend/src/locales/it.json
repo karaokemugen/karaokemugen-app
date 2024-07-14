@@ -1186,7 +1186,9 @@
 			"SELECT_ACTION": "Seleziona un'operazione:",
 			"SELECT_PLAYLIST": "Seleziona una playlist:",
 			"REMOVE_TAG": "Rimuovi tag",
-			"ADD_TAG": "Aggiungi tag"
+			"ADD_TAG": "Aggiungi tag",
+			"SELECT_TAG_TYPE": "Seleziona un tipo di tag:",
+			"EDIT_DISPLAY_TYPE": "Modifica in base al tipo di tag"
 		},
 		"MEDIA_IN_PROCESS": "Il file multimediale sta venendo processato, si prega di attendere la notifica del completamento.",
 		"FAMILIES_TOOLTIP": "Definisce il tipo di contenuto del video.",
@@ -1318,7 +1320,9 @@
 			"LEAVE_PAGE": "Codifica del file multimediale in corso. Lasciando la pagina, tutti i progressi verranno persi, sei sicuro di volerlo fare?",
 			"LABEL": "Codifica file multimediali",
 			"TIMING_CHANGE_WARNING": "Le opzioni selezionate potrebbero cambiare l'inizio e la fine del file multimediale. Controlla la sincronizzazione del testo dopo la codifica e il salvataggio del file multimediale."
-		}
+		},
+		"FROM_DISPLAY_TYPE_COLUMN": "Da",
+		"REPOSITORY_DOCUMENTATION": "Vedi le regole {{instance}} qui"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_STARTED": "Avvio download",
@@ -1425,7 +1429,10 @@
 			"AUTHOR_TOOLTIP": "Nome visualizzato per i tuoi Commit",
 			"AUTHOR": "Identità Git",
 			"USERNAME": "Nome utente Git",
-			"PASSWORD": "Password Git (o token Gitlab/Github)"
+			"PASSWORD": "Password Git (o token Gitlab/Github)",
+			"COPY_SSH_KEY": "Copia la chiave SSH negli appunti",
+			"DELETE_SSH_KEY": "Elimina la chiave SSH",
+			"GENERATE_SSH_KEY": "Genera una chiave SSH"
 		},
 		"MOVE": "Definisci la priorità degli archivi",
 		"DELETE_ALL_MEDIAS": "Elimina tutti i file multimediali",
@@ -1490,7 +1497,9 @@
 		"GIT_SEE_MODIFIED_FILES": "Visualizza i file modificati",
 		"GIT_SQUASH_COMMITS": "Unisci i cambiamenti",
 		"GIT_SQUASH_MESSAGE": "Messaggio di Commit",
-		"GIT_TOO_MANY_CHANGES": "Pare che tu stia effettuando {{changes}} cambiamenti. Quando si effettuano molti cambiamenti dello stesso tipo, si consiglia di unirli tutti in un unico grande Commit."
+		"GIT_TOO_MANY_CHANGES": "Pare che tu stia effettuando {{changes}} cambiamenti. Quando si effettuano molti cambiamenti dello stesso tipo, si consiglia di unirli tutti in un unico grande Commit.",
+		"SECURE": "Sicuro",
+		"SECURE_TOOLTIP": "Abilita l'accesso HTTPS all'archivio"
 	},
 	"TAGS": {
 		"KITSU_SLUG_ERROR": "Kitsu Slug non valido",
@@ -2061,7 +2070,8 @@
 				"SHORTENER": "Errore durante l'abilitazione dell'ULR corto",
 				"POLL_ALREADY_STARTED": "Un sondaggio è già in corso",
 				"POLL_NOT_ENOUGH_SONGS": "Impossibile avviare il sondaggio: non sono disponibili abbastanza brani",
-				"PLAYLIST_FREE_ORPHANED_SONGS": "Impossibile liberare i brani orfani"
+				"PLAYLIST_FREE_ORPHANED_SONGS": "Impossibile liberare i brani orfani",
+				"STATS_PAYLOAD": "Errore durante l'invio delle statistiche al server"
 			},
 			"INFO": {
 				"POLL_WINNER": "Il pubblico ha votato un nuovo brano!",
