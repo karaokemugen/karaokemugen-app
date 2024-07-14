@@ -292,23 +292,23 @@
 		"BONUS_POINTS_other": "{{count}} pontos bônus",
 		"GUESS_TIME": "Adivinhe a música tocando em menos de <1>$t(QUIZ_RULES.SECONDS, {\"count\": {{seconds}} })</1>.",
 		"SCORE": "PONTUAÇÃO",
-		"ACCEPTED_ANSWERS_POINTS": "($t(QUIZ_RULES.POINTS, {\"conta\": {{points}} }))",
+		"ACCEPTED_ANSWERS_POINTS": "($t(QUIZ_RULES.POINTS, {\"count\": {{points}} }))",
 		"SECONDS_other": "{{count}} segundos",
 		"SECONDS_one": "{{count}} segundo",
 		"POINTS_other": "{{count}} pontos",
 		"MAX_SCORE": "- Quando alguém ganha <1>$t(QUIZ_RULES.POINTS, {\"conta\": {{points}} })</1>",
 		"SONGS_one": "<1>{{count}} música</1>",
 		"SONGS_other": "<1>{{count}} músicas</1>",
-		"MAX_SONGS": "- In <1>$t(QUIZ_RULES.SONGS, {\"conta\": {{songs}} })</1>",
+		"MAX_SONGS": "- In <1>$t(QUIZ_RULES.SONGS, {\"count\": {{songs}} })</1>",
 		"MINUTES_one": "<1>{{count}} minuto</1>",
 		"MINUTES_other": "<1>{{count}} minutos</1>",
 		"DURATION": "- In <1>$t(QUIZ_RULES.MINUTES, {\"count\": {{duration}} })</1>",
 		"TITLE": "REGRAS",
 		"ACCEPTED_ANSWERS": "Respostas aceitas:",
-		"QUICK_ANSWER": "- Boa resposta rápida ( < <1>$t(QUIZ_RULES.SECONDS, {\"conta\": {{seconds}} })</1>): <1>$t(QUIZ_RULES.BONUS_POINTS, {\"conta\": {{points}} })</1>."
+		"QUICK_ANSWER": "- Boa resposta rápida ( < <1>$t(QUIZ_RULES.SECONDS, {\"count\": {{seconds}} })</1>): <1>$t(QUIZ_RULES.BONUS_POINTS, {\"count\": {{points}} })</1>."
 	},
 	"QUIZ_SCORES": {
-		"PLAYER_POINTS": "$t(QUIZ_RULES.POINTS, {\"conta\": {{points}} })",
+		"PLAYER_POINTS": "$t(QUIZ_RULES.POINTS, {\"count\": {{points}} })",
 		"SCORES": "PONTUAÇÕES"
 	},
 	"FALLBACK": "Retroceder",
