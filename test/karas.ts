@@ -42,7 +42,7 @@ describe('Karas information', () => {
 
 	it('Get songs in most recent order', async () => {
 		console.log('Calling backend');
-		const data = await commandBackend(token, 'getKaras', { order: 'recent' });
+		const data = await commandBackend(token, 'getKaras', { order: 'recent', size: 400 });
 		console.log('Got karas');
 		const dateList = data.content.map((k: DBKara) => k.created_at);
 		console.log('copied array');
