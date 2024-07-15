@@ -41,17 +41,11 @@ describe('Karas information', () => {
 	});
 
 	it('Get songs in most recent order', async () => {
-		console.log('Calling backend');
 		const data = await commandBackend(token, 'getKaras', { order: 'recent', size: 400 });
-		console.log('Got karas');
 		const dateList = data.content.map((k: DBKara) => k.created_at);
-		console.log('copied array');
-		let dateList2 = [].concat(dateList);
+		const dateList2 = [].concat(dateList);
 		dateList2.sort();
-		console.log('Sorted array');
-		dateList2 = dateList2.reverse();
-		console.log('Reversed array');
-		expect(JSON.stringify(dateList)).to.be.equal(JSON.stringify(dateList2));
+		expect(JSON.stringify(dateList)).to.be.equal(JSON.stringify(dateList2.reverse()));
 	});
 
 	it('Get complete list of karaokes with Dragon Ball in their name', async () => {
