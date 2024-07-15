@@ -368,7 +368,7 @@ async function preFlightCheck(): Promise<boolean> {
 
 async function runTests() {
 	try {
-		const ret = await execa('mocha', ['--timeout', '600000'], {
+		const ret = await execa('mocha', {
 			cwd: getState().appPath,
 		});
 		console.log(ret.stdout);
