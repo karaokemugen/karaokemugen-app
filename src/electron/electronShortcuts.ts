@@ -6,13 +6,15 @@ import mpris from 'mpris-service';
 
 import { getSongSeriesSingers } from '../lib/services/kara.js';
 import { getConfig } from '../lib/utils/config.js';
-import { profile } from '../lib/utils/logger.js';
+import logger, { profile } from '../lib/utils/logger.js';
 import { on } from '../lib/utils/pubsub.js';
 import { next, pausePlayer, playPlayer, prev, setVolumePlayer, stopPlayer } from '../services/player.js';
 import { getCurrentSong, getPlaylistInfo } from '../services/playlist.js';
 import { CurrentSong } from '../types/playlist.js';
 import { adminToken } from '../utils/constants.js';
 import { getState, setState } from '../utils/state.js';
+
+const service = 'MediaShortcuts';
 
 export async function registerShortcuts() {
 	if (process.platform === 'darwin') {
@@ -25,7 +27,9 @@ export async function registerShortcuts() {
 	}
 	profile('initKeyboardShortcuts');
 	if (process.platform === 'linux') {
-		mprisService();
+		mprisService().catch(err => {
+			logger.warn(`Failed to start MPRIS service: ${err}`, { service, obj: err });
+		});
 	}
 	globalShortcut.register('MediaPlayPause', () => {
 		getState().player.playerStatus === 'play' ? pausePlayer() : playPlayer().catch(() => {});
