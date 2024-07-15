@@ -252,13 +252,14 @@ export async function updateBase(internet: boolean) {
 	initFetchPopularSongs();
 	await checkDownloadStatus();
 	if (!state.forceDisableAppUpdate) initAutoUpdate();
-	createImagePreviews(
-		await getKaras({
-			q: 'm:downloaded',
-			ignoreCollections: true,
-		}),
-		'single'
-	).catch(() => {}); // Non-fatal
+	if (!state.isTest)
+		createImagePreviews(
+			await getKaras({
+				q: 'm:downloaded',
+				ignoreCollections: true,
+			}),
+			'single'
+		).catch(() => {}); // Non-fatal
 }
 
 export async function exit(rc = 0, update = false) {
