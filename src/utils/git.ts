@@ -129,7 +129,7 @@ export default class Git {
 
 	async generateSSHKey() {
 		await this.removeSSHKey();
-		await execa('ssh-keygen', ['-b', '2048', '-t', 'rsa', '-f', this.keyFile, '-q']);
+		await execa('ssh-keygen', ['-b', '2048', '-t', 'rsa', '-f', this.keyFile, '-q', '-N', '']);
 	}
 
 	async removeSSHKey() {
