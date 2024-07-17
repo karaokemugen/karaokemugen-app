@@ -129,15 +129,26 @@ export default class Git {
 
 	async generateSSHKey() {
 		await this.removeSSHKey();
-		await execa('ssh-keygen', ['-b', '2048', '-t', 'rsa', '-f', this.keyFile, '-q', '-N', '']);
+		try {
+			await execa('ssh-keygen', ['-b', '2048', '-t', 'rsa', '-f', this.keyFile, '-q', '-N', '']);
+		} catch (err) {
+			logger.error('Unable to generate SSH keypair : ${err}', { service, obj: err });
+			logger.error(`ssh-keygen STDERR: ${err.stderr}`, { service });
+			logger.error(`ssh-keygen STDOUT: ${err.stdout}`, { service });
+			throw err;
+		}
 	}
 
 	async removeSSHKey() {
+		logger.debug(`Trying to remove ${this.keyFile}`, { service });
 		if (await fileExists(this.keyFile, true)) {
 			await unlink(this.keyFile);
+			logger.debug(`Removed ${this.keyFile}`, { service });
 		}
+		logger.debug(`Trying to remove ${this.keyFile}.pub`, { service });
 		if (await fileExists(`${this.keyFile}.pub`, true)) {
 			await unlink(`${this.keyFile}.pub`);
+			logger.debug(`Removed ${this.keyFile}.pub`, { service });
 		}
 	}
 
