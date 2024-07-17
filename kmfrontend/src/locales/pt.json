@@ -893,7 +893,8 @@
 			"AUDIO_SAMPLE_RATE": "Taxa de amostragem de áudio",
 			"WARNINGS": {
 				"LIBAVCODEC_ENCODER": "O áudio é codificado com o codificador libavcodec (ffmpeg reference aac), que pode criar artefatos audíveis e sua utilização é desencorajada."
-			}
+			},
+			"DURATION": "Duração"
 		},
 		"MEDIA_ENCODE": {
 			"OPTIONS": {
