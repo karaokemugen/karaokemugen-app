@@ -30,18 +30,15 @@ function RepositoryForm(props: RepositoriesFormProps) {
 	const [onlineMode, setOnlineMode] = useState(props.repository?.Online);
 	const [update, setUpdate] = useState(props.repository?.Update);
 	const [sshKey, setSshKey] = useState<string>();
+	const [isSshUrl, setIsSShUrl] = useState(props.repository?.Git?.URL.toLowerCase().startsWith('git@'));
 
 	const getRepositories = async () => {
 		const res = await commandBackend('getRepos');
 		setRepositoriesValue(res.filter(repo => repo.Name !== props.repository.Name).map(repo => repo.Name));
 	};
 
-	if (props.repository) {
-		getRepositories();
-	}
-
 	const getSshkey = async () => {
-		if (form?.getFieldValue('GitURL')?.toLowerCase().startsWith('git@')) {
+		if (isSshUrl) {
 			try {
 				const res = await commandBackend('getSSHPubKey', { repoName: form.getFieldValue('Name') });
 				setSshKey(res);
@@ -66,6 +63,9 @@ function RepositoryForm(props: RepositoriesFormProps) {
 	}, [form?.getFieldValue('GitURL')]);
 
 	useEffect(() => {
+		if (props.repository) {
+			getRepositories();
+		}
 		getSocket().on('tasksUpdated', isZipUpdateInProgress);
 		return () => {
 			getSocket().off('tasksUpdated', isZipUpdateInProgress);
@@ -313,9 +313,12 @@ function RepositoryForm(props: RepositoriesFormProps) {
 				<>
 					<Form.Item label={i18next.t('REPOSITORIES.GIT.URL')} labelCol={{ flex: '0 1 300px' }}>
 						<Form.Item name="GitURL" rules={[{ required: update }]}>
-							<Input placeholder={i18next.t('REPOSITORIES.GIT.URL')} />
+							<Input
+								placeholder={i18next.t('REPOSITORIES.GIT.URL')}
+								onChange={event => setIsSShUrl(event.target.value?.toLowerCase().startsWith('git@'))}
+							/>
 						</Form.Item>
-						{form?.getFieldValue('GitURL')?.toLowerCase().startsWith('git@') ? (
+						{isSshUrl ? (
 							sshKey ? (
 								<>
 									<Button
@@ -336,7 +339,7 @@ function RepositoryForm(props: RepositoriesFormProps) {
 							)
 						) : null}
 					</Form.Item>
-					{form?.getFieldValue('GitURL')?.toLowerCase().startsWith('git@') ? null : (
+					{isSshUrl ? null : (
 						<>
 							<Form.Item
 								label={i18next.t('REPOSITORIES.GIT.USERNAME')}

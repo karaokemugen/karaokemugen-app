@@ -74,7 +74,7 @@ export default class Git {
 	}
 
 	isSshUrl() {
-		return /(?:([a-z_][a-z0-9_]{0,30})@)?((?:[a-z0-9-_]+\.)+[a-z0-9]+)(?::([0-9]{0,5}))?([^\0\n]+)?/.test(
+		return /^(?:([a-z_][a-z0-9_]{0,30})@)?((?:[a-z0-9-_]+\.)+[a-z0-9]+)(?::([0-9]{0,5}))?([^\0\n]+)?$/.test(
 			this.opts.url.toLowerCase()
 		);
 	}
@@ -118,12 +118,12 @@ export default class Git {
 				await this.setRemote();
 				await this.git.branch(['--set-upstream-to=origin/master', 'master']);
 			}
-			if (await fileExists(this.keyFile)) {
+			if (this.isSshUrl() && (await fileExists(this.keyFile))) {
 				await this.git.addConfig(
 					'core.sshCommand',
 					`ssh -o UserKnownHostsFile="${this.knownHostsFile}" -i "${this.keyFile}"`
 				);
-				await this.updateKnownHostsFile(repo.Git.URL);
+				await this.updateKnownHostsFile(url);
 			} else {
 				await this.git.raw(['config', '--unset', 'core.sshCommand']);
 			}
@@ -154,7 +154,7 @@ export default class Git {
 		try {
 			await execa('ssh-keygen', ['-b', '2048', '-t', 'rsa', '-f', this.keyFile, '-q', '-N', '']);
 		} catch (err) {
-			logger.error('Unable to generate SSH keypair : ${err}', { service, obj: err });
+			logger.error(`Unable to generate SSH keypair : ${err}`, { service, obj: err });
 			logger.error(`ssh-keygen STDERR: ${err.stderr}`, { service });
 			logger.error(`ssh-keygen STDOUT: ${err.stdout}`, { service });
 			throw err;
