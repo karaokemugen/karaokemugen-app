@@ -131,11 +131,15 @@ export default class Git {
 
 	async updateKnownHostsFile(repoURL: string) {
 		const host = repoURL.split('@')[1].split(':')[0];
-		logger.debug(`Scanning key for host ${host}`, { service });
-		const { stdout } = await execa('ssh-keyscan', ['-t', 'rsa', host]);
-		const hostSignature = stdout;
-		logger.debug(`Finished scanning key for host ${host}`, { service });
-		await writeFile(this.knownHostsFile, hostSignature, 'utf-8');
+		try {
+			await execa('ssh-keygen', ['-q', '-f', this.knownHostsFile, '-F', host]);
+		} catch (_) {
+			logger.debug(`Scanning key for host ${host}`, { service });
+			const { stdout } = await execa('ssh-keyscan', ['-t', 'rsa', host]);
+			const hostSignature = stdout;
+			logger.debug(`Finished scanning key for host ${host}`);
+			await writeFile(this.knownHostsFile, hostSignature, 'utf-8');
+		}
 	}
 
 	/** Returns the second word of the first line of a git show to determine latest commit */
