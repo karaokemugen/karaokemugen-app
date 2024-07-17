@@ -1187,9 +1187,9 @@
 		"GIT": {
 			"AUTHOR": "Identidade Git",
 			"USERNAME": "Nome de usuário Git",
-			"COPY_SSH_KEY": "Copie o ssh na área de transferência",
-			"DELETE_SSH_KEY": "Exclua a chave ssh",
-			"GENERATE_SSH_KEY": "Gere uma chave ssh",
+			"COPY_SSH_KEY": "Copie o chave SSH na área de transferência",
+			"DELETE_SSH_KEY": "Exclua a chave SSH",
+			"GENERATE_SSH_KEY": "Gere uma chave SSH",
 			"EMAIL_TOOLTIP": "Email associado aos seus commits",
 			"URL": "Repositório Git",
 			"PASSWORD": "Senha do Git (ou token do Gitlab/Github)",
