@@ -120,7 +120,7 @@ export default class Git {
 			if (await fileExists(this.keyFile)) {
 				await this.git.addConfig(
 					'core.sshCommand',
-					`ssh -o UserKnownHostsFile="${this.knownHostsFile}" -i ${this.keyFile}`
+					`ssh -o UserKnownHostsFile="${this.knownHostsFile}" -i "${this.keyFile}"`
 				);
 				await this.updateKnownHostsFile(repo.Git.URL);
 			} else {
@@ -134,7 +134,7 @@ export default class Git {
 		logger.debug(`Scanning key for host ${host}`, { service });
 		const { stdout } = await execa('ssh-keyscan', ['-t', 'rsa', host]);
 		const hostSignature = stdout;
-		logger.debug(`Finished scanning key for host ${host}`);
+		logger.debug(`Finished scanning key for host ${host}`, { service });
 		await writeFile(this.knownHostsFile, hostSignature, 'utf-8');
 	}
 
