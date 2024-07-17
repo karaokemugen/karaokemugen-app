@@ -73,7 +73,9 @@ export default class Git {
 	}
 
 	isSshUrl() {
-		return this.opts.url.toLowerCase().startsWith('git@');
+		return /(?:([a-z_][a-z0-9_]{0,30})@)?((?:[a-z0-9-_]+\.)+[a-z0-9]+)(?::([0-9]{0,5}))?([^\0\n]+)?/.test(
+			this.opts.url.toLowerCase()
+		);
 	}
 
 	private getFormattedURL() {
