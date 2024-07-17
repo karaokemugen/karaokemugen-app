@@ -1,5 +1,5 @@
 import { execa } from 'execa';
-import { readFile, unlink } from 'fs/promises';
+import { readFile, unlink, writeFile } from 'fs/promises';
 import i18next from 'i18next';
 import { resolve } from 'path';
 import { DefaultLogFields, ListLogLine, SimpleGit, simpleGit, SimpleGitProgressEvent } from 'simple-git';
@@ -43,6 +43,7 @@ export default class Git {
 	opts: GitOptions;
 
 	keyFile: string;
+	knownHostsFile: string;
 
 	task: Task;
 
@@ -55,6 +56,7 @@ export default class Git {
 			repoName: opts.repoName,
 		};
 		this.keyFile = resolve(process.env.HOME, '.ssh/', `id_rsa_KaraokeMugen_${opts.repoName}`);
+		this.knownHostsFile = resolve(process.env.HOME, '.ssh/', `known_hosts_KaraokeMugen_${opts.repoName}`);
 	}
 
 	progressHandler({ method, stage, progress }: SimpleGitProgressEvent) {
@@ -114,11 +116,24 @@ export default class Git {
 				await this.git.branch(['--set-upstream-to=origin/master', 'master']);
 			}
 			if (await fileExists(this.keyFile)) {
-				await this.git.addConfig('core.sshCommand', `ssh -i ${this.keyFile}`);
+				await this.git.addConfig(
+					'core.sshCommand',
+					`ssh -o UserKnownHostsFile="${this.knownHostsFile}" -i ${this.keyFile}`
+				);
+				await this.updateKnownHostsFile(repo.Git.URL);
 			} else {
 				await this.git.raw(['config', '--unset', 'core.sshCommand']);
 			}
 		}
+	}
+
+	async updateKnownHostsFile(repoURL: string) {
+		const host = repoURL.split('@')[1].split(':')[0];
+		logger.debug(`Scanning key for host ${host}`, { service });
+		const { stdout } = await execa('ssh-keyscan', ['-t', 'rsa', host]);
+		const hostSignature = stdout;
+		logger.debug(`Finished scanning key for host ${host}`);
+		await writeFile(this.knownHostsFile, hostSignature, 'utf-8');
 	}
 
 	/** Returns the second word of the first line of a git show to determine latest commit */
