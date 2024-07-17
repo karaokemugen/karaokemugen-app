@@ -139,6 +139,7 @@ async function checkPaths(config: Config) {
 		checks.push(asyncCheckOrMkdir(resolvedPath('Temp')));
 		checks.push(asyncCheckOrMkdir(resolvedPath('Fonts')));
 		checks.push(asyncCheckOrMkdir(resolvedPath('Logs')));
+		checks.push(asyncCheckOrMkdir(resolvedPath('SSHKeys')));
 		for (const repo of config.System.Repositories) {
 			try {
 				checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'karaokes')));

@@ -13,6 +13,7 @@ import Task from '../lib/utils/taskManager.js';
 import { getRepo } from '../services/repo.js';
 import { Commit } from '../types/repo.js';
 import { getState } from './state.js';
+import { resolvedPath } from '../lib/utils/config.js';
 
 const service = 'Git';
 
@@ -55,8 +56,8 @@ export default class Git {
 			password: opts.password,
 			repoName: opts.repoName,
 		};
-		this.keyFile = resolve(process.env.HOME, '.ssh/', `id_rsa_KaraokeMugen_${opts.repoName}`);
-		this.knownHostsFile = resolve(process.env.HOME, '.ssh/', `known_hosts_KaraokeMugen_${opts.repoName}`);
+		this.keyFile = resolve(resolvedPath('SSHKeys'), `id_rsa_KaraokeMugen_${opts.repoName}`);
+		this.knownHostsFile = resolve(resolvedPath('SSHKeys'), `known_hosts_KaraokeMugen_${opts.repoName}`);
 	}
 
 	progressHandler({ method, stage, progress }: SimpleGitProgressEvent) {

@@ -226,6 +226,7 @@ export const defaults: Config = {
 			Previews: 'previews',
 			SessionExports: 'sessionExports',
 			StreamFiles: 'streamFiles',
+			SSHKeys: 'sshKeys',
 		},
 	},
 	Maintainer: { ApplyLyricsCleanupOnKaraSave: true },
