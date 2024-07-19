@@ -205,13 +205,14 @@ export async function playCurrentSong(now: boolean) {
 			logger.debug('Karaoke selected', { service, obj: kara });
 
 			// If we're in quiz mode, we need to make a check before playing
+			let startTime = 0;
+			let modifiers = null;
 			if (getState().quiz.running) {
 				checkIfSongIsQuizzable(kara);
+				modifiers = setQuizModifier();
+				startTime = startQuizRound(kara);
 			}
 			logger.info(`Playing ${kara.mediafile.substring(0, kara.mediafile.length - 4)}`, { service });
-			const modifiers = getState().quiz.running ? setQuizModifier() : null;
-			let startTime = 0;
-			if (getState().quiz.running) startTime = startQuizRound(kara);
 			await mpv.play(kara, modifiers, startTime);
 			setState({ randomPlaying: false });
 			updateUserQuotas(kara);
