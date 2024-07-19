@@ -1133,7 +1133,8 @@
 			"WARNINGS": {
 				"LIBAVCODEC_ENCODER": "L'audio est encodé avec libavcodec (l'aac de référence dans ffmpeg), qui peut créer des artefacts audibles et il est donc déconseillé de l'utiliser. Veillez à utiliser l'encodeur libfdk_aac pour l'aac ou un autre codec comme opus, pour obtenir la meilleure qualité possible."
 			},
-			"AUDIO_SAMPLE_RATE": "Taux d’échantillonnage audio"
+			"AUDIO_SAMPLE_RATE": "Taux d’échantillonnage audio",
+			"DURATION": "Durée"
 		},
 		"MEDIA_ENCODE": {
 			"LABEL": "Encoder les médias",
@@ -1447,9 +1448,9 @@
 			"AUTHOR_TOOLTIP": "Nom affiché lors de vos commits",
 			"EMAIL": "E-Mail Git",
 			"EMAIL_TOOLTIP": "Email associé à vos commits",
-			"COPY_SSH_KEY": "Copier la clé ssh dans le presse-papier",
-			"GENERATE_SSH_KEY": "Générer une clé ssh",
-			"DELETE_SSH_KEY": "Supprimer la clé ssh"
+			"COPY_SSH_KEY": "Copier la clé SSH dans le presse-papier",
+			"GENERATE_SSH_KEY": "Générer une clé SSH",
+			"DELETE_SSH_KEY": "Supprimer la clé SSH"
 		},
 		"FTP": {
 			"HOST": "Hôte FTP",

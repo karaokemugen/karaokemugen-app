@@ -47,6 +47,7 @@ import GlobalContext from '../../../store/context';
 import { buildKaraTitle, getTagInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { getTagTypeName, tagTypes, tagTypesKaraFileV4Order } from '../../../utils/tagTypes';
+import { secondsTimeSpanToHMS } from '../../../utils/tools';
 import EditableGroupAlias from '../../components/EditableGroupAlias';
 import EditableTagGroup from '../../components/EditableTagGroup';
 import LanguagesList from '../../components/LanguagesList';
@@ -247,6 +248,11 @@ function KaraForm(props: KaraFormProps) {
 			formatSuggestedValue?: (value: any) => string;
 		}> = [
 			{ name: 'fileExtension', title: 'KARA.MEDIA_FILE_INFO.FILE_FORMAT' },
+			{
+				name: 'duration',
+				title: 'KARA.MEDIA_FILE_INFO.DURATION',
+				format: (value: number) => value && `${secondsTimeSpanToHMS(value, 'mm:ss')}`,
+			},
 			{
 				name: 'size',
 				title: 'KARA.MEDIA_FILE_INFO.FILE_SIZE',

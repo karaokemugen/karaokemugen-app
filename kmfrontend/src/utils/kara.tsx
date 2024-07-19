@@ -213,6 +213,7 @@ export function buildKaraTitle(
 }
 
 export function formatLyrics(lyrics: ASSLine[]) {
+	let computedLyrics = lyrics;
 	if (lyrics.length > 100) {
 		// Merge lines with the same text in it to mitigate karaokes with many effects
 		const map = new Map<string, ASSLine[][]>();
@@ -239,6 +240,7 @@ export function formatLyrics(lyrics: ASSLine[]) {
 				fixedLyrics.push({
 					start: lyricGroup[0].start,
 					text: lyric,
+					fullText: lyricGroup[0].fullText,
 					end: lyricGroup[lyricGroup.length - 1].end,
 				});
 			}
@@ -246,37 +248,36 @@ export function formatLyrics(lyrics: ASSLine[]) {
 		fixedLyrics.sort((el1, el2) => {
 			return el1.start - el2.start;
 		});
-		return fixedLyrics;
-	} else {
-		// Compute karaoke timings for public LyricsBox
-		const mappedLyrics: ASSLine[] = [];
-		for (const lyric of lyrics) {
-			if (lyric.fullText) {
-				const newFullText = lyric.fullText
-					.map(value => {
-						// Crush down tags
-						const tags = value.tags.reduce((acc, tagCollec) => {
-							const newK = (acc.k || 0) + (tagCollec.k || tagCollec.kf || tagCollec.ko || 0);
-							return Object.assign(acc, { ...tagCollec, k: newK });
-						}, {});
-						return { ...value, tags };
-					})
-					.map((block, i, blocks) => {
-						let KTime = 0;
-						for (let i2 = 0; i2 < i; i2++) {
-							KTime += blocks[i2].tags?.k || 0;
-						}
-						KTime = KTime * 0.01;
-						return { ...block, tags: [{ ...block.tags, k: KTime }] };
-					});
-				mappedLyrics.push({ ...lyric, fullText: newFullText });
-			} else {
-				// Push as-is, no support
-				mappedLyrics.push({ ...lyric, fullText: undefined });
-			}
-		}
-		return mappedLyrics;
+		computedLyrics = fixedLyrics;
 	}
+	// Compute karaoke timings for public LyricsBox
+	const mappedLyrics: ASSLine[] = [];
+	for (const lyric of lyrics) {
+		if (lyric.fullText) {
+			const newFullText = lyric.fullText
+				.map(value => {
+					// Crush down tags
+					const tags = value.tags.reduce((acc, tagCollec) => {
+						const newK = (acc.k || 0) + (tagCollec.k || tagCollec.kf || tagCollec.ko || 0);
+						return Object.assign(acc, { ...tagCollec, k: newK });
+					}, {});
+					return { ...value, tags };
+				})
+				.map((block, i, blocks) => {
+					let KTime = 0;
+					for (let i2 = 0; i2 < i; i2++) {
+						KTime += blocks[i2].tags?.k || 0;
+					}
+					KTime = KTime * 0.01;
+					return { ...block, tags: [{ ...block.tags, k: KTime }] };
+				});
+			mappedLyrics.push({ ...lyric, fullText: newFullText });
+		} else {
+			// Push as-is, no support
+			mappedLyrics.push({ ...lyric, fullText: undefined });
+		}
+	}
+	return mappedLyrics;
 }
 
 export function getPreviewLink(kara: DBKara, context: GlobalContextInterface) {
