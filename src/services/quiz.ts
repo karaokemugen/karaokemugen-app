@@ -16,7 +16,7 @@ import {
 } from '../dao/quiz.js';
 import { formatKaraV4 } from '../lib/dao/karafile.js';
 import { defineFilename } from '../lib/services/karaCreation.js';
-import { DBKaraTag } from '../lib/types/database/kara.js';
+import { DBKara, DBKaraTag } from '../lib/types/database/kara.js';
 import { KaraList } from '../lib/types/kara.js';
 import { getConfig } from '../lib/utils/config.js';
 import { tagTypes } from '../lib/utils/constants.js';
@@ -41,6 +41,27 @@ import { createUser, editUser, getUser, getUsers } from './user.js';
 const service = 'Quiz';
 
 export const acceptedAnswers = [...Object.keys(tagTypes), 'year', 'title'];
+
+export function checkIfSongIsQuizzable(kara: DBKara) {
+	// Check if the song has at least one answer possible from possible answer types
+	// Whichever answer type we get to first that exists in a song breaks the loop.
+	let answerPossible = false;
+	for (const [possibleAnswerType, { Enabled }] of Object.entries(getState().quiz.settings.Answers.Accepted)) {
+		if (!Enabled) {
+			continue;
+		}
+		// Skipping title as all songs have titles... right? RIGHT?
+		if (possibleAnswerType === 'title') {
+			answerPossible = true;
+		} else if (possibleAnswerType === 'year' && kara.year) {
+			answerPossible = true;
+		} else if (possibleAnswerType !== 'year' && kara[possibleAnswerType]?.length > 0) {
+			answerPossible = true;
+		}
+		if (answerPossible) break;
+	}
+	if (!answerPossible) throw '[Quiz Mode] Song has no possible answer for the criterias selected for this game';
+}
 
 function translateQuizAnswers(quizAnswer: QuizAnswers) {
 	switch (quizAnswer) {
@@ -95,7 +116,7 @@ export function buildRulesString() {
 			? i18next.t('QUIZ_RULES.QUICK_ANSWER', {
 					seconds: gameSettings.TimeSettings.QuickGuessingTime,
 					points: gameSettings.Answers.QuickAnswer.Points,
-			  })
+				})
 			: null,
 		'',
 		`${i18next.t('QUIZ_RULES.ACCEPTED_ANSWERS')} ${Object.keys(gameSettings.Answers.Accepted)
@@ -116,12 +137,12 @@ export function buildRulesString() {
 		gameSettings.EndGame.Duration.Enabled
 			? i18next.t('QUIZ_RULES.DURATION', {
 					duration: gameSettings.EndGame.Duration.Minutes - getState().quiz.currentTotalDuration / 60,
-			  })
+				})
 			: null,
 		gameSettings.EndGame.MaxSongs.Enabled
 			? i18next.t('QUIZ_RULES.MAX_SONGS', {
 					songs: gameSettings.EndGame.MaxSongs.Songs - getState().quiz.currentSongNumber,
-			  })
+				})
 			: null,
 		i18next.t('QUIZ_RULES.END_OF_PLAYLIST'),
 		'',
