@@ -803,6 +803,7 @@ export class Players {
 
 	async play(song: CurrentSong, modifiers?: SongModifiers, start = 0): Promise<PlayerState> {
 		logger.debug('Play event triggered', { service });
+		await this.ensureRunning();
 		playerState.playing = true;
 		profile('mpvPlay');
 		let mediaFile: string;
