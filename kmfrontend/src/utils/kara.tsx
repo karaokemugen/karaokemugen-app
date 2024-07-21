@@ -281,11 +281,16 @@ export function formatLyrics(lyrics: ASSLine[]) {
 }
 
 export function getPreviewLink(kara: DBKara, context: GlobalContextInterface) {
+	const path = getPreviewPath({ contentid: kara.kid, mediasize: kara.mediasize });
 	if (isRemote() || kara.download_status !== 'DOWNLOADED') {
-		return `${getProtocolForOnline(context, kara.repository)}://${kara.repository}/previews/${kara.kid}.${kara.mediasize}.25.jpg`;
+		return `${getProtocolForOnline(context, kara.repository)}://${kara.repository}${path}`;
 	} else {
-		return `/previews/${kara.kid}.${kara.mediasize}.25.jpg`;
+		return path;
 	}
+}
+
+export function getPreviewPath(options: { contentid: string; mediasize: number }) {
+	return `/previews/${options.contentid}.${options.mediasize}.25.jpg`;
 }
 
 export function getPlaylistInfo(side: 'left' | 'right', context: GlobalContextInterface) {

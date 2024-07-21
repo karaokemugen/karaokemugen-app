@@ -1013,6 +1013,13 @@
 		"MEDIA_FILE": "Media file",
 		"MEDIA_FILE_TOOLTIP": "Supported file formats: {{formats}}",
 		"MEDIA_REQUIRED": "Media file is required",
+		"AUDIO_COVER": {
+			"UPLOAD": "Upload cover art",
+			"REPLACE": "Replace cover art",
+			"UPLOAD_TOOLTIP": "Change the picture that will be shown as background when playing this karaoke",
+			"EMBED_COVER_SUCCESS": "New cover art has been uploaded and embedded",
+			"EMBED_COVER_ERROR": "Error while embedding a new cover art"
+		},
 		"MEDIA_IN_PROCESS": "The media file is being processed, please wait for the success notification.",
 		"MEDIA_REPOSITORY_RULES_UNMET": "The media file does not meet all mandatory repository requirements. Please encode the media first.",
 		"MEDIA_FILE_INFO": {

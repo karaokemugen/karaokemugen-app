@@ -38,6 +38,7 @@ import { getRepo, getRepos } from './repo.js';
 import { updateAllSmartPlaylists } from './smartPlaylist.js';
 import { getTag } from './tag.js';
 import i18next from 'i18next';
+import { embedCoverImage } from '../lib/utils/ffmpeg.js';
 import { getRepoManifest } from '../lib/services/repo.js';
 
 const service = 'KaraManager';
@@ -356,6 +357,19 @@ export async function deleteMediaFile(file: string, repo: string) {
 		sentry.error(err);
 		throw new ErrorKM('MEDIA_DELETE_ERROR');
 	}
+}
+
+export async function embedAudioFileCoverArt(coverFilename: string, source: { kid?: string; tempFileName?: string }) {
+	if (!source.kid && !source.tempFileName)
+		throw new Error('Neither kid nor mediaFilename has been received but atleast one needs to be set');
+	const kara = source.kid && (await getKara(source.kid, adminToken));
+	const mediaFilePaths =
+		(source.tempFileName && [resolve(resolvedPath('Temp'), basename(source.tempFileName))]) ||
+		(await resolveFileInDirs(kara?.mediafile, resolvedPathRepos('Medias', kara?.repository)));
+	const coverFilePath = resolve(resolvedPath('Temp'), basename(coverFilename));
+	const newMediaPath = await embedCoverImage(mediaFilePaths[0], coverFilePath, resolvedPath('Temp'));
+	const mediaInfo = await extractMediaTechInfos(newMediaPath); // Shouldn't last long as it's audio only
+	return mediaInfo;
 }
 
 export async function encodeMediaFileToRepoDefaults(

@@ -16,6 +16,7 @@ import {
 	batchEditKaras,
 	copyKaraToRepo,
 	deleteMediaFile,
+	embedAudioFileCoverArt,
 	encodeMediaFileToRepoDefaults,
 	removeKara,
 } from '../../services/karaManagement.js';
@@ -73,6 +74,18 @@ export default function karaController(router: SocketIOApp) {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			const mediaInfo = await processUploadedMedia(req.body.filename, req.body.origFilename);
+			return { ...mediaInfo, filePath: undefined };
+		} catch (err) {
+			throw { code: err.code || 500, message: APIMessage(err.message) };
+		}
+	});
+	router.route('embedAudioFileCoverArt', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'open');
+		try {
+			const mediaInfo = await embedAudioFileCoverArt(req.body.coverPictureFilename, {
+				kid: req.body.kid,
+				tempFileName: req.body.tempFilename,
+			});
 			return { ...mediaInfo, filePath: undefined };
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
