@@ -483,7 +483,14 @@ export default function QuizModal(props: IProps) {
 											type="checkbox"
 											id="quiz-hide-video"
 											checked={blindModeChecked}
-											onChange={e => setBlindMode(e.target.checked)}
+											onChange={e => {
+												if (e.target.checked) {
+													setGameConfig({ Modifiers: { Blind: 'blur' } });
+												} else {
+													setGameConfig({ Modifiers: { Blind: '' } });
+												}
+												setBlindMode(e.target.checked);
+											}}
 										/>
 									</div>
 									<label className="filterLabel" htmlFor="quiz-hide-video">
@@ -497,11 +504,11 @@ export default function QuizModal(props: IProps) {
 										value={gameConfig.Modifiers.Blind}
 										disabled={!blindModeChecked}
 									>
-										<option value="black">
-											{i18next.t('MODAL.START_QUIZ.DISPLAY.BLACK_SCREEN')}
-										</option>
 										<option value="blur">
 											{i18next.t('MODAL.START_QUIZ.DISPLAY.BLURRED_SCREEN')}
+										</option>
+										<option value="black">
+											{i18next.t('MODAL.START_QUIZ.DISPLAY.BLACK_SCREEN')}
 										</option>
 									</select>
 								</div>
