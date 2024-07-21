@@ -5,6 +5,8 @@ import { APIMessage, errMessage } from '../../lib/services/frontend.js';
 import { previewHooks, processUploadedMedia } from '../../lib/services/karaCreation.js';
 import { APIData } from '../../lib/types/api.js';
 import { TagTypeNum } from '../../lib/types/tag.js';
+import { ErrorKM } from '../../lib/utils/error.js';
+import { abortAllMediaEncodingProcesses } from '../../lib/utils/ffmpeg.js';
 import { check, isUUID } from '../../lib/utils/validators.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
 import { getKMStats, getKara, getKaraLyrics, getKaraMediaInfo, getKaras } from '../../services/kara.js';
@@ -19,7 +21,6 @@ import {
 } from '../../services/karaManagement.js';
 import { addKaraToPlaylist } from '../../services/playlist.js';
 import { runChecklist } from '../middlewares.js';
-import { abortAllMediaEncodingProcesses } from '../../lib/utils/ffmpeg.js';
 
 export default function karaController(router: SocketIOApp) {
 	router.route('getKaras', async (socket: Socket, req: APIData) => {
@@ -87,9 +88,9 @@ export default function karaController(router: SocketIOApp) {
 				req.body.encodeOptions
 			);
 		} catch (err) {
-			const code = 'ENCODE_MEDIA_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			const errMessageCode = (err instanceof ErrorKM && err.message) || 'ENCODE_MEDIA_ERROR';
+			errMessage(errMessageCode, err);
+			throw { code: err?.code || 500, message: APIMessage(errMessageCode) };
 		}
 	});
 	router.route('abortMediaEncoding', async (socket: Socket, req: APIData) => {

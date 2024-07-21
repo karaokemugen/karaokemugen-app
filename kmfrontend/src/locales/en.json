@@ -1597,6 +1597,8 @@
 		"REPO_GIT_DIFF_ERROR": "Error getting diff for file",
 		"TAG_REPOSITORY_INVALID_CHANGE": "You can't change a tag's repository. Use the copy function instead",
 		"GET_MEDIA_INFO_ERROR": "Failed to retrieve media information",
+		"MEDIA_VALIDATION_ERROR": "Failed to validate media info by repo manifest",
+		"MEDIA_ENCODING_ABORTED": "Media encoding was cancelled",
 		"INBOX_VIEW_FORBIDDEN_ERROR": "You don't have permission to view the song inbox",
 		"INBOX_VIEW_ERROR": "Unable to fetch karaokes from inbox",
 		"INBOX_DOWNLOAD_ERROR": "Unable to download karaoke from inbox",

@@ -379,7 +379,7 @@ export async function encodeMediaFileToRepoDefaults(
 			(tempFileName && [resolve(resolvedPath('Temp'), basename(tempFileName))]) ||
 			(await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', kara.repository)));
 		const mediaFileExists = mediaFilePaths.length > 0 && (await fileExists(mediaFilePaths[0]));
-		if (!mediaFileExists) throw new ErrorKM('Mediafile not found');
+		if (!mediaFileExists) throw new Error('Mediafile not found');
 		const currentMediaInfo =
 			mediaFilePaths.length > 0 &&
 			(await fileExists(mediaFilePaths[0])) &&

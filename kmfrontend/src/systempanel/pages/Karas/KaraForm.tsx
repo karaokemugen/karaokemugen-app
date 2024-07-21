@@ -1,4 +1,5 @@
 import {
+	CloseOutlined,
 	DeleteOutlined,
 	DoubleRightOutlined,
 	MinusOutlined,
@@ -131,7 +132,7 @@ function KaraForm(props: KaraFormProps) {
 		setApplyLyricsCleanup(context.globalState.settings.data.config?.Maintainer?.ApplyLyricsCleanupOnKaraSave);
 		return () => {
 			// i18next.t('KARA.MEDIA_ENCODE.LEAVE_PAGE') // No detection for unsaved changes yet
-			if (isEncodingMediaRef.current) commandBackend('abortMediaEncoding');
+			if (isEncodingMediaRef.current) abortEncoding();
 		};
 	}, []);
 
@@ -238,6 +239,10 @@ function KaraForm(props: KaraFormProps) {
 				throw e;
 			}
 		}
+	};
+
+	const abortEncoding = async () => {
+		await commandBackend('abortMediaEncoding');
 	};
 
 	const renderMediaInfo = (mediaInfo: MediaInfo, mediaInfoValidationResults: MediaInfoValidationResult[]) => {
@@ -799,20 +804,28 @@ function KaraForm(props: KaraFormProps) {
 											style={{ width: '100%' }} // Shoud be block={true} but seems not supported
 											direction="vertical"
 										>
-											<Button
-												block={true}
-												type="primary"
-												icon={
-													<SyncOutlined
-														spin={isEncodingMedia}
-														style={{ lineHeight: 0 }} // Spinning icon fix
-													/>
-												}
-												disabled={!mediaInfo?.overallBitrate || isEncodingMedia}
-												onClick={encodeMedia}
-											>
-												{i18next.t('KARA.MEDIA_ENCODE.LABEL')}
-											</Button>
+											<Flex gap={'5px'}>
+												<Button
+													block={true}
+													type="primary"
+													icon={
+														<SyncOutlined
+															spin={isEncodingMedia}
+															style={{ lineHeight: 0 }} // Spinning icon fix
+														/>
+													}
+													disabled={!mediaInfo?.overallBitrate || isEncodingMedia}
+													onClick={encodeMedia}
+												>
+													{i18next.t('KARA.MEDIA_ENCODE.LABEL')}
+												</Button>
+												<Button
+													icon={<CloseOutlined />}
+													disabled={!isEncodingMedia}
+													onClick={abortEncoding}
+													danger
+												></Button>
+											</Flex>
 											<TaskProgress
 												taskTextTypes={[
 													'CALCULATING_MEDIA_ENCODING_PARAMETERS',
