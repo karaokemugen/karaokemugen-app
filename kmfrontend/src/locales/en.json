@@ -1035,7 +1035,7 @@
 			"AUDIO_CODEC": "Audio codec",
 			"AUDIO_SAMPLE_RATE": "Audio sample rate",
 			"AUDIO_COVER_ART": "Cover art",
-			"WARNINGS":  {
+			"WARNINGS": {
 				"LIBAVCODEC_ENCODER": "The audio is encoded with the libavcodec (ffmpeg reference aac) encoder, which can create audible artifacts and is discouraged to utilize. Please use the libfdk_aac encoder for aac or another codec like opus, to get the best possible quality."
 			}
 		},
@@ -1604,7 +1604,7 @@
 		"REPO_GIT_DIFF_ERROR": "Error getting diff for file",
 		"TAG_REPOSITORY_INVALID_CHANGE": "You can't change a tag's repository. Use the copy function instead",
 		"GET_MEDIA_INFO_ERROR": "Failed to retrieve media information",
-		"MEDIA_VALIDATION_ERROR": "Failed to validate media info by repo manifest",
+		"MEDIA_VALIDATION_ERROR": "Unable to validate media info",
 		"MEDIA_ENCODING_ABORTED": "Media encoding was cancelled",
 		"INBOX_VIEW_FORBIDDEN_ERROR": "You don't have permission to view the song inbox",
 		"INBOX_VIEW_ERROR": "Unable to fetch karaokes from inbox",
