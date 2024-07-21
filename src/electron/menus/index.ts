@@ -26,7 +26,7 @@ export const urls = {
 	forum: () => shell.openExternal('https://discourse.karaokes.moe'),
 	gitlab: () => shell.openExternal('https://gitlab.com/karaokemugen/code/karaokemugen-app'),
 	changelog: () => shell.openExternal('https://gitlab.com/karaokemugen/code/karaokemugen-app/-/releases'),
-	contribDoc: () => shell.openExternal('https://docs.karaokes.moe/contrib-guide/base/'),
+	contribDoc: () => shell.openExternal('https://docs.karaokes.moe/contrib-guide/create-karaoke/'),
 	reportBug: () => shell.openExternal('https://discourse.karaokes.moe/c/help/8'),
 	translations: () => shell.openExternal('https://hosted.weblate.org/projects/karaoke-mugen/'),
 	donations: {
