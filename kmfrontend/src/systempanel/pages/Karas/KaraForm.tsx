@@ -483,6 +483,13 @@ function KaraForm(props: KaraFormProps) {
 								{i18next.t(`TAG_TYPES.${getTagTypeName(tag.types[0])}_other`)})
 							</div>
 						))}
+						{data.fromDisplayTypeChange ? (
+							<div title={data.fromDisplayTypeChange}>
+								{`${i18next.t('KARA.FROM_DISPLAY_TYPE')} : ${i18next.t(
+									`TAG_TYPES.${getTagTypeName(data.fromDisplayTypeChange)}_one`
+								)}`}
+							</div>
+						) : null}
 					</ul>
 				),
 			});
