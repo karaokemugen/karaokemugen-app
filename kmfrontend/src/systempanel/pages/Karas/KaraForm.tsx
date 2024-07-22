@@ -311,10 +311,11 @@ function KaraForm(props: KaraFormProps) {
 				title: 'KARA.MEDIA_FILE_INFO.AUDIO_SAMPLE_RATE',
 				format: (value: number) => `${value} Hz`,
 			},
-			mediaInfo?.mediaType === 'audio' && {
-				name: 'hasCoverArt',
-				title: 'KARA.MEDIA_FILE_INFO.AUDIO_COVER_ART',
-			},
+			mediaInfo?.mediaType === 'audio' &&
+				({
+					name: 'hasCoverArt',
+					title: 'KARA.MEDIA_FILE_INFO.AUDIO_COVER_ART',
+				} as any),
 		].filter(i => !!i);
 
 		const rows = propertiesToDisplay
@@ -344,21 +345,30 @@ function KaraForm(props: KaraFormProps) {
 			}));
 
 		return (
-			<table style={{ borderSpacing: '0 10px' }}>
-				<tbody className="media-info">
-					{rows.map(r => (
-						<tr className={r.className} key={r.name}>
-							<td>{i18next.t(r.title)}</td>
-							<td>{r.valueFormatted || '-'}</td>
-							{r.suggestedValueFormatted && (
-								<td>
-									<DoubleRightOutlined /> {r.suggestedValueFormatted}
-								</td>
-							)}
-						</tr>
-					))}
-				</tbody>
-			</table>
+			<>
+				<table style={{ borderSpacing: '0 10px' }}>
+					<tbody className="media-info">
+						{rows.map(r => (
+							<tr className={r.className} key={r.name}>
+								<td>{i18next.t(r.title)}</td>
+								<td>{r.valueFormatted || '-'}</td>
+								{r.suggestedValueFormatted && (
+									<td>
+										<DoubleRightOutlined /> {r.suggestedValueFormatted}
+									</td>
+								)}
+							</tr>
+						))}
+					</tbody>
+				</table>
+				{mediaInfo?.warnings?.length > 0 && (
+					<div className="media-info warnings">
+						{mediaInfo.warnings.map(w => (
+							<div className="unmet-warning ">{i18next.t('KARA.MEDIA_FILE_INFO.WARNINGS.' + w)}</div>
+						))}
+					</div>
+				)}
+			</>
 		);
 	};
 
@@ -900,7 +910,7 @@ function KaraForm(props: KaraFormProps) {
 						</Form.Item>
 					</Col>
 					{props.kara?.download_status === 'DOWNLOADED' || mediaInfo?.size ? (
-						<Card style={{ minWidth: '400px' }}>
+						<Card style={{ minWidth: '400px', maxWidth: '700px' }}>
 							{!mediaInfo?.overallBitrate ? (
 								<Flex
 									gap="small"
@@ -921,15 +931,6 @@ function KaraForm(props: KaraFormProps) {
 								''
 							)}
 							{renderMediaInfo(mediaInfo, mediaInfoValidationResults)}
-							{mediaInfo?.warnings?.length > 0 && (
-								<div className="media-info warnings">
-									{mediaInfo.warnings.map(w => (
-										<div className="unmet-warning">
-											{i18next.t('KARA.MEDIA_FILE_INFO.WARNINGS.' + w)}
-										</div>
-									))}
-								</div>
-							)}
 							{mediaInfo?.mediaType === 'audio' && (
 								<>
 									<Divider></Divider>
