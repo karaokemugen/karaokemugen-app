@@ -546,6 +546,21 @@ function ProfilModal(props: IProps) {
 									autoComplete="off"
 								/>
 							</div>
+							<div className="profileLine">
+								<div className="profileLabel">
+									<i className="fab fa-fw fa-gitlab" />
+									<label>{i18next.t('MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.GITLAB')}</label>
+								</div>
+								<input
+									name="social_networks.gitlab"
+									type="text"
+									placeholder={i18next.t('MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.GITLAB_PLACEHOLDER')}
+									defaultValue={user.social_networks.gitlab}
+									onKeyUp={onChange}
+									onChange={onChange}
+									autoComplete="off"
+								/>
+							</div>
 							{logInfos?.onlineToken ? (
 								<>
 									<div className="profileLine">
