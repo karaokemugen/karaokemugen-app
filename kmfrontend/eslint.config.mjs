@@ -7,12 +7,13 @@ import globals from 'globals';
 
 export default ts.config(
 	js.configs.recommended,
-	ts.configs.recommended,
-	react.configs.recommended,
+	...ts.configs.recommended,
+	react.configs.flat.recommended,
 	security.configs.recommended,
 	prettierConfig,
 	{
-		ignores: ['dist/'],
+		files: ['**/*.ts', '**/*.tsx', '**/*.mts'],
+		ignores: ['dist/**'],
 		languageOptions: {
 			globals: {
 				...globals.browser,
