@@ -16,13 +16,13 @@ import logger from '../lib/utils/logger.js';
 import Task from '../lib/utils/taskManager.js';
 import { emitWS } from '../lib/utils/ws.js';
 import { adminToken } from '../utils/constants.js';
-import { assignIssue } from '../utils/gitlab.js';
 import Sentry from '../utils/sentry.js';
 import { getKara, getKarasMicro } from './kara.js';
 import { integrateKaraFile } from './karaManagement.js';
 import { checkDownloadStatus, getRepo } from './repo.js';
 import { updateAllSmartPlaylists } from './smartPlaylist.js';
 import { integrateTagFile } from './tag.js';
+import { getUser } from './user.js';
 
 const service = 'Inbox';
 
@@ -54,11 +54,12 @@ export async function getInbox(repoName: string, token: string): Promise<Inbox[]
 	}
 }
 
-export async function downloadKaraFromInbox(inid: string, repoName: string, token: string) {
+export async function downloadKaraFromInbox(inid: string, repoName: string, token: string, username: string) {
 	try {
 		const repo = getRepo(repoName);
 		if (!repo) throw new ErrorKM('UNKNOWN_REPOSITORY', 404, false);
 		let kara: Inbox;
+		const user = await getUser(username, true);
 		logger.info(`Downloading song ${inid} from inbox at ${repoName}`, { service });
 		try {
 			const res = await HTTP.get(`${repo.Secure ? 'https' : 'http'}://${repoName}/api/inbox/${inid}`, {
@@ -93,7 +94,7 @@ export async function downloadKaraFromInbox(inid: string, repoName: string, toke
 		for (const unknownKara of unknownKaras) {
 			const parentFromInbox = inbox.find(i => i.kid === unknownKara);
 			if (!parentFromInbox) throw new ErrorKM('UNKNOWN_PARENT_FROM_INBOX', 404, false);
-			await downloadKaraFromInbox(parentFromInbox.inid, repoName, token);
+			await downloadKaraFromInbox(parentFromInbox.inid, repoName, token, username);
 		}
 		if (!kara.edited_kid) kara.kara.data.data.created_at = new Date().toISOString();
 		kara.kara.data.data.modified_at = new Date().toISOString();
@@ -137,7 +138,7 @@ export async function downloadKaraFromInbox(inid: string, repoName: string, toke
 		}
 
 		checkDownloadStatus([kara.kara.data.data.kid]);
-		markKaraAsDownloadedInInbox(inid, repoName, token);
+		markKaraAsDownloadedInInbox(inid, repoName, token, user.social_networks.gitlab);
 		logger.info(`Song ${basename(kara.kara.file, '.kara.json')} from inbox at ${repoName} downloaded`, {
 			service: 'Inbox',
 		});
@@ -226,7 +227,12 @@ export async function deleteKaraInInbox(inid: string, repoName: string, token: s
 	}
 }
 
-export async function markKaraAsDownloadedInInbox(inid: string, repoName: string, token: string) {
+export async function markKaraAsDownloadedInInbox(
+	inid: string,
+	repoName: string,
+	token: string,
+	gitlabUsername: string
+) {
 	const inbox = await getInbox(repoName, token);
 	const inboxItem = inbox.find(i => i.inid === inid);
 	const repo = getRepo(repoName);
@@ -241,9 +247,21 @@ export async function markKaraAsDownloadedInInbox(inid: string, repoName: string
 		Sentry.error(err);
 		return;
 	}
-	if (inboxItem.gitlab_issue) {
+	if (inboxItem.gitlab_issue && gitlabUsername) {
 		const issueArr = inboxItem.gitlab_issue.split('/');
-		await assignIssue(+issueArr[issueArr.length - 1], repoName).catch(err => {
+		await HTTP.post(
+			`${repo.Secure ? 'https' : 'http'}://${repoName}/api/inbox/${inid}/assignToUser`,
+			{
+				gitlabUsername,
+				repoName,
+				issue: +issueArr[issueArr.length - 1],
+			},
+			{
+				headers: {
+					authorization: token,
+				},
+			}
+		).catch(err => {
 			logger.warn(`Unable to assign issue : ${err}`, { service, obj: err });
 			Sentry.error(err);
 		});

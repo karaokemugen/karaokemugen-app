@@ -706,7 +706,9 @@
 				"ANILIST": "AniList",
 				"ANILIST_PLACEHOLDER": "karaokemugen",
 				"KITSU": "Kitsu",
-				"KITSU_PLACEHOLDER": "karaokemugen"
+				"KITSU_PLACEHOLDER": "karaokemugen",
+				"GITLAB": "Gitlab",
+				"GITLAB_PLACEHOLDER": "karaokemugen"
 			},
 			"ANIME_LIST_TO_FETCH": "Site de liste d'animés à récupérer",
 			"REFRESH_ANIME_LIST": "Mettre à jour la liste d'animés",

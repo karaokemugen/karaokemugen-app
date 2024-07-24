@@ -18,7 +18,7 @@ export default function inboxController(router: SocketIOApp) {
 	router.route('downloadKaraFromInbox', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'user', 'closed');
 		try {
-			await downloadKaraFromInbox(req.body.inid, req.body.repoName, req.onlineAuthorization);
+			await downloadKaraFromInbox(req.body.inid, req.body.repoName, req.onlineAuthorization, req.token.username);
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
