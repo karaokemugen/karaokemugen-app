@@ -99,14 +99,7 @@ function setSentry(state: PublicState, version: Version, config: Config, user: U
 				'DELETE_PLAYLIST_ERROR_BLACKLIST',
 			],
 		});
-		Sentry.configureScope(scope => {
-			scope.setUser({
-				username: user?.login,
-			});
-		});
-		if (version.sha)
-			Sentry.configureScope(scope => {
-				scope.setTag('commit', version.sha as string);
-			});
+		Sentry.getCurrentScope().setUser({ username: user?.login });
+		if (version.sha) Sentry.getCurrentScope().setTag('commit', version.sha as string);
 	}
 }
