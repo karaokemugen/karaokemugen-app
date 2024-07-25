@@ -1805,7 +1805,8 @@
 		"QUIZZ_GET_GAMES_ERROR": "Error when getting games",
 		"QUIZZ_GET_GAME_SCORES_ERROR": "Error when getting game scores",
 		"PLAYER_DISABLED_IN_TEST_MODE_SORRYMASEN_PLEASE_UNDERSTAND": "Player is disabled in test mode",
-		"MEDIAS_FOLDER_OPEN_ERROR": "Failed to open media folder"
+		"MEDIAS_FOLDER_OPEN_ERROR": "Failed to open media folder",
+		"UNKNOWN_PARENT_FROM_INBOX": "Unknown parent for this inbox song"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Added {{data}} downloads to the queue",
