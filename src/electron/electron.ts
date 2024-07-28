@@ -548,7 +548,6 @@ export async function showAbout() {
 			aboutWindow.show();
 		});
 		aboutWindow.on('close', () => {
-			aboutWindow.destroy();
 			aboutWindow = undefined;
 		});
 		aboutWindow.loadURL(`http://localhost:${state.frontendPort}/about?admpwd=${await generateAdminPassword()}`);
