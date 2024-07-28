@@ -266,7 +266,13 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 					}
 					labelCol={{ flex: '0 1 300px' }}
 					name="types"
-					required={true}
+					rules={[
+						{
+							validator: (_, value: string[]) =>
+								value?.length > 0 ? Promise.resolve() : Promise.reject(),
+							required: true,
+						},
+					]}
 				>
 					<Select
 						style={{ maxWidth: '40%', minWidth: '150px' }}
