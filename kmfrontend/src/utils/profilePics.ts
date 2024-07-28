@@ -10,7 +10,7 @@ getSocket().on('userUpdated', login => cache.delete(login));
 
 export function syncGenerateProfilePicLink(user: User) {
 	if (isRemote()) {
-		if (user?.login.includes('@') && cache.has(user.login)) {
+		if ((user?.login.includes('@') || user.type === 2) && cache.has(user.login)) {
 			// Retrieve cache entry
 			return cache.get(user.login);
 		} else if (user.type === 2) {
