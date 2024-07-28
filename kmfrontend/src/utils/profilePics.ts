@@ -65,3 +65,7 @@ export async function generateProfilePicLink(user: User, context: GlobalContextI
 		}
 	}
 }
+
+export function updateCache(user: User, url: string) {
+	cache.set(user.login, url);
+}

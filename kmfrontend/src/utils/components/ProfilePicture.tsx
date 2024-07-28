@@ -1,7 +1,7 @@
 import { ImgHTMLAttributes, memo, useContext, useEffect, useState } from 'react';
 
 import { User } from '../../../../src/lib/types/user';
-import { generateProfilePicLink, syncGenerateProfilePicLink } from '../profilePics';
+import { generateProfilePicLink, syncGenerateProfilePicLink, updateCache } from '../profilePics';
 import GlobalContext from '../../store/context';
 import blankAvatar from '../../assets/blank.png';
 
@@ -34,7 +34,10 @@ function ProfilePicture(props: IProps) {
 			src={url}
 			alt={props.user?.nickname}
 			title={props.user?.nickname}
-			onError={() => setUrl(blankAvatar)}
+			onError={() => {
+				setUrl(blankAvatar);
+				updateCache(props.user, blankAvatar);
+			}}
 			{...htmlProps}
 		/>
 	);
