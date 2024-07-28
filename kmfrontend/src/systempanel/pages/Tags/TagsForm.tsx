@@ -89,7 +89,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 	};
 
 	handleSubmit = (values: TagForForm) => {
-		if (Object.keys(this.state.i18n).length > 0) {
+		if (Object.keys(this.state.i18n).length > 0 && Object.values(this.state.i18n).filter(v => v).length > 0) {
 			values.i18n = this.state.i18n;
 			values.description =
 				Object.values(this.state.description).filter(value => value).length > 0
@@ -341,6 +341,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 							</Tooltip>
 						</span>
 					}
+					required={true}
 				></Form.Item>
 				<div style={{ marginLeft: '3em', marginRight: '8em' }}>
 					<LanguagesList value={this.state.i18n} onChange={i18n => this.setState({ i18n })} />
