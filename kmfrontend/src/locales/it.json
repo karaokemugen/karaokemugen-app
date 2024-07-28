@@ -758,7 +758,9 @@
 				"BLUESKY": "Bluesky",
 				"ANILIST": "AniList",
 				"DISCORD_PLACEHOLDER": "Karak#1423",
-				"INSTAGRAM_PLACEHOLDER": "karaokemugen"
+				"INSTAGRAM_PLACEHOLDER": "karaokemugen",
+				"GITLAB": "Gitlab",
+				"GITLAB_PLACEHOLDER": "karaokemugen"
 			},
 			"INTERFACE_LANGUAGE": "Lingua dell'interfaccia",
 			"CHOOSE_ANIME_LIST": "Scegli una lista anime",
@@ -1161,7 +1163,10 @@
 		"TYPE_SMART_CHANGE_CONFLICTING_CRITERIAS_ERROR": "Errore durante il cambiamento del tipo della playlist intelligente: hai impostato dei criteri in conflitto (anno/durata?). Rimuovili e riprova.",
 		"REPOSITORY_MANIFEST_KARA_METADATA_RULE_VIOLATION_ERROR": "Errore: I metadata del karaoke violano una regola dell'archivio. Controlla il Log Eventi per informazioni aggiuntive.",
 		"REPOSITORY_MANIFEST_KARA_PARENTS_RULE_VIOLATION_ERROR": "Errore: La famiglia del karaoke viola una regola dell'archivio. Controlla il Log Eventi per informazioni aggiuntive.",
-		"ENCODE_MEDIA_ERROR": "Errore durante la codifica del file multimediale"
+		"ENCODE_MEDIA_ERROR": "Errore durante la codifica del file multimediale",
+		"MEDIA_ENCODING_ABORTED": "La codifica del file multimediale è stata annullata",
+		"MEDIA_VALIDATION_ERROR": "Impossibile validare le informazioni del file multimediale",
+		"UNKNOWN_PARENT_FROM_INBOX": "Versione principale di questo brano sconosciuta"
 	},
 	"KARA": {
 		"PAUSE_DOWNLOAD_QUEUE": "Sospendi",
@@ -1216,7 +1221,8 @@
 			"WARNINGS": {
 				"LIBAVCODEC_ENCODER": "L'audio è codificato con il codificatore libavcodec (aac di riferimento di ffmpeg), il quale può creare difetti udibili. Si prega di utilizzare il codificatore libfdk_aac per aac o altri come opus per ottenere la miglior qualità possibile."
 			},
-			"AUDIO_SAMPLE_RATE": "Frequenza campionamento audio"
+			"AUDIO_SAMPLE_RATE": "Frequenza campionamento audio",
+			"DURATION": "Durata"
 		},
 		"COPY_SONG": "Copia brano in altro archivio",
 		"TAG_FILTER": "Filtra tag",
@@ -1322,7 +1328,14 @@
 			"TIMING_CHANGE_WARNING": "Le opzioni selezionate potrebbero cambiare l'inizio e la fine del file multimediale. Controlla la sincronizzazione del testo dopo la codifica e il salvataggio del file multimediale."
 		},
 		"FROM_DISPLAY_TYPE_COLUMN": "Da",
-		"REPOSITORY_DOCUMENTATION": "Vedi le regole {{instance}} qui"
+		"REPOSITORY_DOCUMENTATION": "Vedi le regole {{instance}} qui",
+		"AUDIO_COVER": {
+			"UPLOAD_TOOLTIP": "Cambia l'immagine che verrà mostrata durante la riproduzione di questo karaoke",
+			"EMBED_COVER_SUCCESS": "La nuova immagine di copertina è stata caricata e allegata",
+			"UPLOAD": "Carica l'immagine di copertina",
+			"EMBED_COVER_ERROR": "Errore durante l'allegamento della nuova immagine di copertina",
+			"REPLACE": "Sostituisci l'immagine di copertina"
+		}
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_STARTED": "Avvio download",
