@@ -3,7 +3,7 @@ import { ImgHTMLAttributes, memo, useContext, useEffect, useState } from 'react'
 import { User } from '../../../../src/lib/types/user';
 import { generateProfilePicLink, syncGenerateProfilePicLink } from '../profilePics';
 import GlobalContext from '../../store/context';
-import blankAvatar from '../assets/blank.png';
+import blankAvatar from '../../assets/blank.png';
 
 interface IProps extends ImgHTMLAttributes<HTMLImageElement> {
 	user: User;
