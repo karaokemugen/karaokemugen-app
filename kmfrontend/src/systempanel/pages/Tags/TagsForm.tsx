@@ -40,7 +40,7 @@ interface TagForForm extends Tag {
 
 const myanimelistUrlRegexp = /myanimelist.net\/anime\/(\d+)/;
 const anilistUrlRegexp = /anilist.co\/anime\/(\d+)/;
-const kitsuUrlRegexp = /kitsu.io\/anime\/([a-zA-Z0-9-&(%20)]+)/;
+const kitsuUrlRegexp = /kitsu.io\/anime\/([a-zA-Z0-9-_&(%20)]+)/;
 const validExternalAnimeIdRegexp = /^(?:[1-9]|\d\d+)$/; // strictly positive
 
 function TagForm(props: TagsFormProps) {
