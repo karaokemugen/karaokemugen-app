@@ -10,7 +10,6 @@ import { getConfig, resolvedPath, resolvedPathRepos } from '../lib/utils/config.
 import { downloadFile } from '../lib/utils/downloader.js';
 import { ErrorKM } from '../lib/utils/error.js';
 import { smartMove } from '../lib/utils/files.js';
-import { closeIssue } from '../lib/utils/gitlab.js';
 import HTTP, { fixedEncodeURIComponent } from '../lib/utils/http.js';
 import logger from '../lib/utils/logger.js';
 import Task from '../lib/utils/taskManager.js';
@@ -194,8 +193,6 @@ export async function deleteKaraInInbox(inid: string, repoName: string, token: s
 	try {
 		const repo = getRepo(repoName);
 		if (!repo) throw new ErrorKM('UNKNOWN_REPOSITORY', 404, false);
-		const inbox = await getInbox(repoName, token);
-		const inboxItem = inbox.find(i => i.inid === inid);
 		try {
 			await HTTP.delete(`${repo.Secure ? 'https' : 'http'}://${repoName}/api/inbox/${inid}`, {
 				headers: {
@@ -212,13 +209,6 @@ export async function deleteKaraInInbox(inid: string, repoName: string, token: s
 				});
 				throw err;
 			}
-		}
-		if (inboxItem.gitlab_issue) {
-			const numberIssue = +inboxItem.gitlab_issue.split('/')[inboxItem.gitlab_issue.split('/').length - 1];
-			closeIssue(numberIssue, repoName).catch(err => {
-				logger.warn(`Unable to close issue : ${err}`, { service, obj: err });
-				Sentry.error(err);
-			});
 		}
 	} catch (err) {
 		logger.warn(`Unable to delete inbox item ${inid} on ${repoName} : ${err}`, { service, obj: err });
