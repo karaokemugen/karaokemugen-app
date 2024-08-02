@@ -32,7 +32,7 @@ import {
 	UploadFile,
 	message,
 } from 'antd';
-import { SelectValue } from 'antd/lib/select';
+import { DefaultOptionType, SelectValue } from 'antd/lib/select';
 import { filesize } from 'filesize';
 import i18next from 'i18next';
 import { useContext, useEffect, useRef, useState } from 'react';
@@ -113,6 +113,7 @@ function KaraForm(props: KaraFormProps) {
 	const [karaSearch, setKaraSearch] = useState<{ label: string; value: string }[]>([]);
 	const [parentKara, setParentKara] = useState<DBKara>(null);
 	const [errors, setErrors] = useState<string[]>([]);
+	const [displayTypeOptions, setDisplayTypeOptions] = useState<DefaultOptionType[]>();
 
 	const [coverImageEmbedRunning, setCoverImageEmbedRunning] = useState<boolean>(false);
 	const [coverImagePreviewOpen, setCoverImagePreviewOpen] = useState(false);
@@ -141,6 +142,7 @@ function KaraForm(props: KaraFormProps) {
 	useEffect(() => {
 		getRepositories();
 		form.validateFields();
+		updateDisplayTypeOptions();
 		getParents();
 		loadMediaInfo();
 		setApplyLyricsCleanup(context.globalState.settings.data.config?.Maintainer?.ApplyLyricsCleanupOnKaraSave);
@@ -522,9 +524,7 @@ function KaraForm(props: KaraFormProps) {
 		}
 	};
 
-	const handleDelete = e => {
-		props.handleDelete(props.kara.kid);
-	};
+	const handleDelete = () => props.handleDelete(props.kara.kid);
 
 	const getKaraToSend = values => {
 		const kara: DBKara = values;
@@ -792,11 +792,19 @@ function KaraForm(props: KaraFormProps) {
 		e.key === 'Enter' && e.preventDefault();
 	};
 
-	const mapTagTypesToSelectOption = (tagType: string) => (
-		<Select.Option key={tagType} value={tagType.toLowerCase()}>
-			{i18next.t(tagType ? `TAG_TYPES.${tagType}_one` : 'TAG_TYPES.DEFAULT')}
-		</Select.Option>
-	);
+	const updateDisplayTypeOptions = () => {
+		setDisplayTypeOptions(
+			Object.keys(tagTypes)
+				.filter(tagType => form.getFieldValue(tagType.toLowerCase())?.length > 0)
+				.concat('')
+				.map(tagType => {
+					return {
+						label: i18next.t(tagType ? `TAG_TYPES.${tagType}_one` : 'TAG_TYPES.DEFAULT'),
+						value: tagType.toLowerCase(),
+					};
+				})
+		);
+	};
 
 	const mapRepoToSelectOption = (repo: string) => (
 		<Select.Option key={repo} value={repo}>
@@ -819,6 +827,7 @@ function KaraForm(props: KaraFormProps) {
 			form={form}
 			onFinish={handleSubmit}
 			onFinishFailed={handleSubmitFailed}
+			onValuesChange={updateDisplayTypeOptions}
 			className="kara-form"
 			initialValues={{
 				series: props.kara?.series || parentKara?.series,
@@ -1509,7 +1518,7 @@ function KaraForm(props: KaraFormProps) {
 				wrapperCol={{ span: 7 }}
 				name="from_display_type"
 			>
-				<Select>{Object.keys(tagTypes).concat('').map(mapTagTypesToSelectOption)}</Select>
+				<Select options={displayTypeOptions} />
 			</Form.Item>
 			<Form.Item
 				className="wrap-label"

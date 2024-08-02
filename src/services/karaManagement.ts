@@ -231,13 +231,20 @@ export async function batchEditKaras(
 				subtext: kara.karafile,
 			});
 			let modified = false;
-			if (action === 'fromDisplayType' && kara.from_display_type !== tagType) {
+			// We also test if karaoke has elements in that tagtype when modifying the fromDisplayType
+			if (action === 'fromDisplayType' && kara.from_display_type !== tagType && kara[tagType].length > 0) {
 				modified = true;
 				kara.from_display_type = tagType;
 			}
-			if (kara[tagType]?.length > 0 && action === 'remove') {
-				if (kara[tagType].find((t: KaraTag) => t.tid === tid)) modified = true;
-				kara[tagType] = kara[tagType].filter((t: KaraTag) => t.tid !== tid);
+			if (action === 'remove' && kara[tagType]?.length > 0) {
+				if (kara[tagType].find((t: KaraTag) => t.tid === tid)) {
+					modified = true;
+					kara[tagType] = kara[tagType].filter((t: KaraTag) => t.tid !== tid);
+					// We remove the from_display_type if kara[tagType] becomes empty
+					if (kara.from_display_type === tagType && kara[tagType].length === 0) {
+						kara.from_display_type = null;
+					}
+				}
 			}
 			if (action === 'add' && kara[tagType] && !kara[tagType].find((t: KaraTag) => t.tid === tid)) {
 				modified = true;
