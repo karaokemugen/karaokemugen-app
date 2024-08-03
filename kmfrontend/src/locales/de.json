@@ -631,15 +631,15 @@
 		"ADDED_2": "am ",
 		"DOWNLOAD_MEDIA": "Download Media",
 		"CREATED": "Karaoke erstellt ",
-		"TIME_BEFORE_PLAY": "Wird gezeigt um {{time}} am ({{date}})",
+		"TIME_BEFORE_PLAY": "Wird gezeigt in {{time}} um ({{date}})",
 		"LAST_PLAYED_2": "Wurde zuletzt vor {{time}} abgespielt",
-		"PLAYING_IN": "Spielt ab um {{time}} am ({{date}})",
+		"PLAYING_IN": "Spielt ab in {{time}} um ({{date}})",
 		"MODIFY_KARAOKE": "Song modifizieren",
 		"JINGLE_SPONSOR": "Jingle & Sponsoren",
 		"UPVOTE_NUMBER": "Daumen hoch",
 		"SHOW_VIDEO": "Zeige Vorschau Video",
 		"HIDE_VIDEO": "Schließe die Vorschau",
-		"LAST_PLAYED": "Zuletzt abgespielt am {{date}}"
+		"LAST_PLAYED": "Zuletzt abgespielt um {{date}}"
 	},
 	"WELCOME_PAGE": {
 		"STATS_TAGS": "Stichwörter",
