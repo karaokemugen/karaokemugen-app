@@ -3,10 +3,10 @@ import './CropAvatarModal.scss';
 
 import i18next from 'i18next';
 import { useState } from 'react';
+import { createRoot } from 'react-dom/client';
 import ReactCrop, { Crop } from 'react-image-crop';
 
 import { commandBackend, isRemote } from '../../../utils/socket';
-import { createRoot } from 'react-dom/client';
 
 interface IProps {
 	src: any;

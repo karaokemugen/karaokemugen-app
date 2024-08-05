@@ -1,13 +1,13 @@
 import {
 	ClearOutlined,
 	DeleteOutlined,
-	EditOutlined,
-	FontColorsOutlined,
-	FolderViewOutlined,
-	UploadOutlined,
 	DownloadOutlined,
 	DownOutlined,
+	EditOutlined,
+	FolderViewOutlined,
+	FontColorsOutlined,
 	PlayCircleOutlined,
+	UploadOutlined,
 } from '@ant-design/icons';
 import { Alert, Button, Cascader, Col, Dropdown, Input, Menu, Modal, Row, Table } from 'antd';
 import { ItemType } from 'antd/lib/menu/hooks/useItems';
@@ -15,8 +15,11 @@ import i18next from 'i18next';
 import { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import type { DownloadedStatus } from '../../../../src/lib/types/database/download';
 import { DBKara, DBKaraTag } from '../../../../src/lib/types/database/kara';
+import type { DBTag } from '../../../../src/lib/types/database/tag';
 import { KaraDownloadRequest } from '../../../../src/types/download';
+import GlobalContext from '../../store/context';
 import {
 	buildKaraTitle,
 	getSerieOrSingerGroupsOrSingers,
@@ -26,11 +29,8 @@ import {
 	sortTagByPriority,
 } from '../../utils/kara';
 import { commandBackend, getSocket } from '../../utils/socket';
-import { isModifiable, isRepoOnline, isRepoOnlineAndMaintainer } from '../../utils/tools';
-import GlobalContext from '../../store/context';
 import { tagTypes } from '../../utils/tagTypes';
-import type { DBTag } from '../../../../src/lib/types/database/tag';
-import type { DownloadedStatus } from '../../../../src/lib/types/database/download';
+import { isModifiable, isRepoOnline, isRepoOnlineAndMaintainer } from '../../utils/tools';
 
 interface KaraListProps {
 	tagFilter?: string;

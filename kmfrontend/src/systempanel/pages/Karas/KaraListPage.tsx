@@ -1,7 +1,8 @@
 import { Layout } from 'antd';
-import Title from '../../components/Title';
 import i18next from 'i18next';
+
 import KaraList from '../../components/KaraList';
+import Title from '../../components/Title';
 
 function KaraListPage() {
 	return (

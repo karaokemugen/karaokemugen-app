@@ -4,12 +4,12 @@ import i18next from 'i18next';
 import { ReactNode, useContext, useEffect, useRef, useState } from 'react';
 
 import { PublicPlayerState } from '../../../../../src/types/state';
+import { setFutureTime } from '../../../store/actions/frontendContext';
 import GlobalContext from '../../../store/context';
 import { useResizeListener } from '../../../utils/hooks';
 import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { secondsTimeSpanToHMS } from '../../../utils/tools';
-import { setFutureTime } from '../../../store/actions/frontendContext';
 
 function ProgressBar() {
 	const context = useContext(GlobalContext);

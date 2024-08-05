@@ -1,6 +1,7 @@
 import i18next from 'i18next';
 import { merge } from 'lodash';
 import { createElement, useContext, useEffect, useState } from 'react';
+import { createRoot } from 'react-dom/client';
 import { useLocation, useNavigate } from 'react-router';
 
 import { PublicPlayerState } from '../../../../src/types/state';
@@ -8,19 +9,18 @@ import KLogo from '../../assets/Klogo.png';
 import { logout } from '../../store/actions/auth';
 import { showModal } from '../../store/actions/modal';
 import GlobalContext from '../../store/context';
+import { getPlaylistIcon } from '../../utils/playlist';
 import { commandBackend, getSocket } from '../../utils/socket';
 import { callModal, displayMessage, expand, isNonStandardPlaylist } from '../../utils/tools';
 import KmAppHeaderDecorator from './decorators/KmAppHeaderDecorator';
 import RadioButton from './generic/RadioButton';
+import SelectWithIcon from './generic/SelectWithIcon';
+import AdminMessageModal from './modals/AdminMessageModal';
 import ProfilModal from './modals/ProfilModal';
 import QuizModal from './modals/QuizModal';
 import Tutorial from './modals/Tutorial';
 import UsersModal from './modals/UsersModal';
-import AdminMessageModal from './modals/AdminMessageModal';
 import PlayerControls from './PlayerControls';
-import SelectWithIcon from './generic/SelectWithIcon';
-import { getPlaylistIcon } from '../../utils/playlist';
-import { createRoot } from 'react-dom/client';
 
 interface IProps {
 	currentPlaylist: PlaylistElem;

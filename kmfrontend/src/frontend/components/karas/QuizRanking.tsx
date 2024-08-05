@@ -1,9 +1,9 @@
-import { RefObject, useContext, useEffect, useRef, useState } from 'react';
-import { useAsyncMemo } from 'use-async-memo';
-
 import i18next from 'i18next';
 import { merge } from 'lodash';
+import { RefObject, useContext, useEffect, useRef, useState } from 'react';
 import { Trans } from 'react-i18next';
+import { useAsyncMemo } from 'use-async-memo';
+
 import { KaraList as IKaraList } from '../../../../../src/lib/types/kara';
 import { User } from '../../../../../src/lib/types/user';
 import { GameSong, GameState, GameTotalScore, TotalTimes } from '../../../../../src/types/quiz';

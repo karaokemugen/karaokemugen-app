@@ -1,11 +1,11 @@
 import { Layout } from 'antd';
-import Title from '../../components/Title';
 import i18next from 'i18next';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { Session } from '../../../../../src/types/session';
 import { commandBackend } from '../../../utils/socket';
+import Title from '../../components/Title';
 import SessionForm from './SessionsForm';
 
 const newsession: Session = {

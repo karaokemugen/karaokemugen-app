@@ -1,5 +1,4 @@
 import { Button, Layout, Table, TableColumnProps } from 'antd';
-import Title from '../../components/Title';
 import i18next from 'i18next';
 import { Component } from 'react';
 
@@ -7,6 +6,7 @@ import { DBKara } from '../../../../../src/lib/types/database/kara';
 import GlobalContext from '../../../store/context';
 import { getSerieOrSingerGroupsOrSingers, getTagInLocaleList, getTitleInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
+import Title from '../../components/Title';
 
 interface KaraListState {
 	karas: DBKara[];

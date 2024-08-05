@@ -1,3 +1,5 @@
+import './KaraForm.scss';
+
 import {
 	CloseOutlined,
 	DeleteOutlined,
@@ -20,6 +22,7 @@ import {
 	Image,
 	Input,
 	InputNumber,
+	message,
 	Modal,
 	Radio,
 	Row,
@@ -30,18 +33,16 @@ import {
 	Typography,
 	Upload,
 	UploadFile,
-	message,
 } from 'antd';
+import { useForm } from 'antd/es/form/Form';
+import { Flex, Spin } from 'antd/lib';
+import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { DefaultOptionType, SelectValue } from 'antd/lib/select';
 import { filesize } from 'filesize';
 import i18next from 'i18next';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { v4 as UUIDv4 } from 'uuid';
-import './KaraForm.scss';
 
-import { useForm } from 'antd/es/form/Form';
-import { Flex, Spin } from 'antd/lib';
-import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { PositionX, PositionY } from '../../../../../src/lib/types';
 import { DBKara } from '../../../../../src/lib/types/database/kara';
 import { KaraFileV4, MediaInfo, MediaInfoValidationResult } from '../../../../../src/lib/types/kara';

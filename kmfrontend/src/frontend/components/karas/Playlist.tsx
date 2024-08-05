@@ -10,6 +10,7 @@ import { DownloadedStatus } from '../../../../../src/lib/types/database/download
 import { KaraDownloadRequest } from '../../../../../src/types/download';
 import { PublicPlayerState } from '../../../../../src/types/state';
 import GlobalContext from '../../../store/context';
+import TasksEvent from '../../../TasksEvent';
 import { useDeferredEffect, useResizeListener } from '../../../utils/hooks';
 import { buildKaraTitle, getOppositePlaylistInfo, getPlaylistInfo } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
@@ -26,7 +27,6 @@ import { KaraElement } from '../../types/kara';
 import CriteriasList from './CriteriasList';
 import KaraLine from './KaraLine';
 import PlaylistHeader from './PlaylistHeader';
-import TasksEvent from '../../../TasksEvent';
 import QuizRanking from './QuizRanking';
 
 // Virtuoso's resize observer can this error,

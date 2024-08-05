@@ -2,6 +2,7 @@ import './TagsList.scss';
 
 import i18next from 'i18next';
 import { useCallback, useContext, useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { ListRange, Virtuoso } from 'react-virtuoso';
 
 import { DBKaraTag, DBYear } from '../../../../../src/lib/types/database/kara';
@@ -11,7 +12,6 @@ import { useDeferredEffect } from '../../../utils/hooks';
 import { getTagInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { YEARS } from '../../../utils/tagTypes';
-import { useNavigate, useParams } from 'react-router-dom';
 
 const chunksize = 100;
 let timer: any;
@@ -120,7 +120,7 @@ function TagsList() {
 										).length > 0
 											? (tag.karacount as unknown as { count: number; type: number }[])?.filter(
 													value => value.type === tagType
-											  )[0].count
+												)[0].count
 											: 0,
 								})}
 							</em>

@@ -10,7 +10,7 @@ import GlobalContext from '../../../store/context';
 import { useLocalSearch, useTagSearch } from '../../../utils/hooks';
 import { setPlaylistInfo } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
-import { ANIMELISTS, FAVORITES, YEARS, getTagTypeName, tagTypes } from '../../../utils/tagTypes';
+import { ANIMELISTS, FAVORITES, getTagTypeName, tagTypes, YEARS } from '../../../utils/tagTypes';
 import Autocomplete, { AutocompleteOption } from '../generic/Autocomplete';
 import QuizModal from './QuizModal';
 

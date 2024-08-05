@@ -1,15 +1,15 @@
 import { DeleteOutlined, DownloadOutlined, UserOutlined } from '@ant-design/icons';
+import { EditOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import { Alert, Button, Layout, Modal, Table } from 'antd';
 import i18next from 'i18next';
 import { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import Title from '../components/Title';
 
-import { EditOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import { Inbox as LibInbox } from '../../../../src/lib/types/inbox';
 import { User } from '../../../../src/lib/types/user';
 import GlobalContext from '../../store/context';
 import { commandBackend } from '../../utils/socket';
+import Title from '../components/Title';
 
 export default function Inbox() {
 	const context = useContext(GlobalContext);

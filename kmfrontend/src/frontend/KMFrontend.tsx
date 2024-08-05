@@ -11,6 +11,7 @@ import { callModal, is_touch_device } from '../utils/tools';
 import About from './components/About';
 import AdminPage from './components/AdminPage';
 import ChibiPage from './components/ChibiPage';
+import QuizScore from './components/karas/QuizScore';
 import MigratePage from './components/MigratePage';
 import ShutdownModal from './components/modals/ShutdownModal';
 import NotFoundPage from './components/NotfoundPage';
@@ -18,7 +19,6 @@ import PlaylistPage from './components/PlaylistPage';
 import PublicPage from './components/public/PublicPage';
 import SetupPage from './components/setup/SetupPage';
 import WelcomePage from './components/WelcomePage';
-import QuizScore from './components/karas/QuizScore';
 
 function KMFrontend() {
 	const context = useContext(GlobalContext);

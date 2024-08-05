@@ -1,5 +1,5 @@
-import { Criteria } from '../../../../src/lib/types/playlist';
 import { DBPLC } from '../../../../src/lib/types/database/playlist';
+import { Criteria } from '../../../../src/lib/types/playlist';
 
 interface KaraElement extends DBPLC {
 	checked: boolean;

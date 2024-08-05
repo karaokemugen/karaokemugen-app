@@ -1,13 +1,13 @@
 import { Layout, Modal } from 'antd';
-import Title from '../../components/Title';
 import i18next from 'i18next';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { Repository } from '../../../../../src/lib/types/repo';
 import { DifferentChecksumReport } from '../../../../../src/types/repo';
 import { commandBackend } from '../../../utils/socket';
+import Title from '../../components/Title';
 import RepositoryForm from './RepositoriesForm';
-import { Repository } from '../../../../../src/lib/types/repo';
 
 const newrepository: Repository = {
 	Name: undefined,

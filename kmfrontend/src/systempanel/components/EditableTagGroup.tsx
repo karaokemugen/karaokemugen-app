@@ -1,3 +1,5 @@
+import './EditableTagGroup.scss';
+
 import { PlusOutlined } from '@ant-design/icons';
 import { AutoComplete, Button, Checkbox, Col, Form, FormInstance, Row, Tag } from 'antd';
 import i18next from 'i18next';
@@ -8,7 +10,6 @@ import GlobalContext from '../../store/context';
 import { getTagInLocale } from '../../utils/kara';
 import { commandBackend } from '../../utils/socket';
 import { CreateTagModal } from './CreateTagModal';
-import './EditableTagGroup.scss';
 
 interface EditableTagGroupProps {
 	onChange: any;

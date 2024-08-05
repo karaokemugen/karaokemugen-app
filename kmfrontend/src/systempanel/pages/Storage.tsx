@@ -1,11 +1,11 @@
 import { ClearOutlined, DeleteOutlined, FolderOpenOutlined } from '@ant-design/icons';
 import { Alert, Button, Layout, Table } from 'antd';
-import Title from '../components/Title';
 import i18next from 'i18next';
 import prettyBytes from 'pretty-bytes';
 import { Component } from 'react';
 
 import { commandBackend } from '../../utils/socket';
+import Title from '../components/Title';
 
 interface StorageState {
 	repositories: { name: string; freeSpace: number }[];

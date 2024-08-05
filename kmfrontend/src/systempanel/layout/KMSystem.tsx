@@ -1,14 +1,13 @@
 import '../App.scss';
 
 import { ConfigProvider, Layout, theme } from 'antd';
+import deDE from 'antd/es/locale/de_DE';
 import enUS from 'antd/es/locale/en_US';
 import esES from 'antd/es/locale/es_ES';
 import frFR from 'antd/es/locale/fr_FR';
 import idID from 'antd/es/locale/id_ID';
-import ptPT from 'antd/es/locale/pt_PT';
-import deDE from 'antd/es/locale/de_DE';
 import itIT from 'antd/es/locale/it_IT';
-
+import ptPT from 'antd/es/locale/pt_PT';
 import i18next from 'i18next';
 import { Component } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';

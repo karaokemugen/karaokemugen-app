@@ -8,10 +8,10 @@ import { Navigate, Route, Routes } from 'react-router';
 import logo from '../../../assets/Logo-final-fond-transparent.png';
 import GlobalContext from '../../../store/context';
 import SetupLoading from './SetupLoading';
+import SetupPageCollections from './SetupPageCollections';
 import SetupPageRepo from './SetupPageRepo';
 import SetupPageStats from './SetupPageStats';
 import SetupPageUser from './SetupPageUser';
-import SetupPageCollections from './SetupPageCollections';
 
 function SetupPage() {
 	const context = useContext(GlobalContext);

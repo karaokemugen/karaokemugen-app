@@ -1,7 +1,9 @@
 import i18next from 'i18next';
 import { ReactNode } from 'react';
+
 import { ASSLine } from '../../../src/lib/types/ass';
 import { DBKara, DBKaraTag } from '../../../src/lib/types/database/kara';
+import { DBTag } from '../../../src/lib/types/database/tag';
 import InlineTag from '../frontend/components/karas/InlineTag';
 import { Scope } from '../frontend/types/scope';
 import { setPlaylistInfoLeft, setPlaylistInfoRight } from '../store/actions/frontendContext';
@@ -11,7 +13,6 @@ import { getLanguageIn3B, langSupport } from './isoLanguages';
 import { isRemote } from './socket';
 import { getTagTypeName, tagTypes } from './tagTypes';
 import { getProtocolForOnline } from './tools';
-import { DBTag } from '../../../src/lib/types/database/tag';
 
 export function getDescriptionInLocale(settings: SettingsStoreData, description: Record<string, string>): string {
 	if (!description) return '';

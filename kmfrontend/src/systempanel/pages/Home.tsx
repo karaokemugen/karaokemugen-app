@@ -12,13 +12,13 @@ import {
 	SettingOutlined,
 } from '@ant-design/icons';
 import { Button, Card, Col, Layout, Row } from 'antd';
-import Title from '../components/Title';
 import i18next from 'i18next';
 import { useContext } from 'react';
 import { Link } from 'react-router-dom';
 
 import GlobalContext from '../../store/context';
 import { displayMessage } from '../../utils/tools';
+import Title from '../components/Title';
 
 function Home() {
 	const context = useContext(GlobalContext);

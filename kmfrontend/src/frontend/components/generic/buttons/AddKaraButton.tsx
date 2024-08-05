@@ -1,10 +1,10 @@
 import i18next from 'i18next';
 import { useContext } from 'react';
 
+import { DBKara } from '../../../../../../src/lib/types/database/kara';
 import GlobalContext from '../../../../store/context';
 import { commandBackend } from '../../../../utils/socket';
 import { PLCCallback } from '../../../../utils/tools';
-import { DBKara } from '../../../../../../src/lib/types/database/kara';
 
 interface Props {
 	kara: DBKara;

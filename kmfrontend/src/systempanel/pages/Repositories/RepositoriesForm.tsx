@@ -1,13 +1,13 @@
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Alert, Button, Checkbox, Divider, Form, Input, Select, Tooltip } from 'antd';
+import { useForm } from 'antd/es/form/Form';
 import i18next from 'i18next';
 import { useEffect, useState } from 'react';
 
+import { Repository } from '../../../../../src/lib/types/repo';
 import { TaskItem } from '../../../../../src/lib/types/taskItem';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import FoldersElement from '../../components/FoldersElement';
-import { Repository } from '../../../../../src/lib/types/repo';
-import { useForm } from 'antd/es/form/Form';
 
 interface RepositoriesFormProps {
 	repository: Repository;

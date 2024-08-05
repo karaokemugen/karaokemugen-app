@@ -2,6 +2,7 @@ import './ProfilModal.scss';
 
 import i18next from 'i18next';
 import { useContext, useEffect, useMemo, useState } from 'react';
+import { createRoot } from 'react-dom/client';
 
 import { DBKara } from '../../../../../src/lib/types/database/kara';
 import { User } from '../../../../../src/lib/types/user';
@@ -24,7 +25,6 @@ import { callModal, displayMessage } from '../../../utils/tools';
 import Autocomplete from '../generic/Autocomplete';
 import CropAvatarModal from './CropAvatarModal';
 import OnlineProfileModal from './OnlineProfileModal';
-import { createRoot } from 'react-dom/client';
 
 interface IProps {
 	scope?: 'public' | 'admin';

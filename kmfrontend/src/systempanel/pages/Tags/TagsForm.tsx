@@ -13,15 +13,16 @@ import {
 	Select,
 	Tooltip,
 } from 'antd';
+import { useForm } from 'antd/es/form/Form';
 import i18next from 'i18next';
 import { useEffect, useState } from 'react';
+
 import type { Tag, TagTypeNum } from '../../../../../src/lib/types/tag';
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 import EditableGroupAlias from '../../components/EditableGroupAlias';
 import KaraList from '../../components/KaraList';
 import LanguagesList from '../../components/LanguagesList';
-import { useForm } from 'antd/es/form/Form';
 
 interface TagsFormProps {
 	tags: Tag[];

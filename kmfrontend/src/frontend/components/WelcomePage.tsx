@@ -5,6 +5,8 @@ import i18next from 'i18next';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { Repository } from '../../../../src/lib/types/repo';
+import { Tag } from '../../../../src/lib/types/tag';
 import { DBStats } from '../../../../src/types/database/database';
 import { Feed } from '../../../../src/types/feeds';
 import { Session } from '../../../../src/types/session';
@@ -15,16 +17,14 @@ import GlobalContext from '../../store/context';
 import TasksEvent from '../../TasksEvent';
 import { useLocalSearch } from '../../utils/hooks';
 import { commandBackend, getSocket } from '../../utils/socket';
+import { secondsTimeSpanToHMS } from '../../utils/tools';
 import { News } from '../types/news';
+import { RemoteStatusData } from '../types/remote';
 import Autocomplete from './generic/Autocomplete';
 import OnlineStatsModal from './modals/OnlineStatsModal';
 import ProfilModal from './modals/ProfilModal';
 import RestartDownloadsModal from './modals/RestartDownloadsModal';
 import WelcomePageArticle from './WelcomePageArticle';
-import { Tag } from '../../../../src/lib/types/tag';
-import { Repository } from '../../../../src/lib/types/repo';
-import { RemoteStatusData } from '../types/remote';
-import { secondsTimeSpanToHMS } from '../../utils/tools';
 
 function WelcomePage() {
 	const context = useContext(GlobalContext);

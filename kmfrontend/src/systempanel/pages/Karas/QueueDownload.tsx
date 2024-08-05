@@ -1,6 +1,5 @@
 import { ClockCircleTwoTone, InfoCircleTwoTone, SyncOutlined, WarningTwoTone } from '@ant-design/icons';
 import { Button, Cascader, Col, Input, Layout, Row, Select, Table } from 'antd';
-import Title from '../../components/Title';
 import i18next from 'i18next';
 import prettyBytes from 'pretty-bytes';
 import { Component } from 'react';
@@ -20,6 +19,7 @@ import {
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 import { getProtocolForOnline } from '../../../utils/tools';
+import Title from '../../components/Title';
 
 interface KaraDownloadState {
 	karas: DBKara[];
