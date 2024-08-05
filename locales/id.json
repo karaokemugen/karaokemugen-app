@@ -174,8 +174,8 @@
 		"TITLE": "Repositori tidak diketahui",
 		"MESSAGE": "Kamu baru saja akan menambahkan repositori {{repoName}} ke Karaoke Mugen. Apakah kamu yakin?"
 	},
-	"GENERATING_READING": "Langkah 1/2 - Membaca data…",
-	"GENERATING_DATABASE": "Langkah 2/2 - Memperbarui basis data…",
+	"GENERATING_READING": "Langkah 1 / 2 - Membaca data…",
+	"GENERATING_DATABASE": "Langkah 2 / 2 - Memperbarui basis data…",
 	"TWITCH": {
 		"CHAT": {
 			"VOTE": "Cara memberikan suara baru: gunakan !vote x, dengan x merupakan nomor lagu:",

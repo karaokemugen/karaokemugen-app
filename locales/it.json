@@ -27,7 +27,7 @@
 	"LIBRARY": "Libreria",
 	"YEAR": "Anno",
 	"PUBLIC_PLAYLIST": "Suggerimenti del pubblico",
-	"GENERATING_DATABASE": "Passo 2/2 - Aggiornando il database…",
+	"GENERATING_DATABASE": "Passo 2 / 2 - Aggiornando il database…",
 	"TIPS": {
 		"NORMAL": [
 			"Puoi usare i tasti multimediali sulla tua tastiera per controllare il tuo karaoke!",
@@ -262,7 +262,7 @@
 	"MENU_HELP_CONTRIB_DOC": "&Crea il tuo Karaoke",
 	"CURRENT_VERSION_OK": "Stai già usando la versione più recente di Karaoke Mugen!",
 	"MENU_EDIT_STARTSPEECH": "Inizia a parlare",
-	"GENERATING_READING": "Passo 1/2 - Leggendo i dati…",
+	"GENERATING_READING": "Passo 1 / 2 - Leggendo i dati…",
 	"MENU_GOTO_OSX": "Vai",
 	"ERROR_UNKNOWN": "Si è appena verificato un errore sconosciuto! Dai un'occhiata ai log per maggior dettagli.",
 	"REQUESTED_BY": "Richiesto da {{name}}",

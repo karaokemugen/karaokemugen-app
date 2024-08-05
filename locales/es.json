@@ -192,8 +192,8 @@
 		"TITLE": "Repositorio desconocido",
 		"MESSAGE": "Está a punto de agregar el repositorio {{repoName}} a Karaoke Mugen. ¿Está seguro?"
 	},
-	"GENERATING_READING": "Paso 1/2 - Lectura de datos…",
-	"GENERATING_DATABASE": "Paso 2/2: Actualizando la base de datos…",
+	"GENERATING_READING": "Paso 1 / 2 - Lectura de datos…",
+	"GENERATING_DATABASE": "Paso 2 / 2 - Actualizando la base de datos…",
 	"TWITCH": {
 		"CHAT": {
 			"VOTE": "Nuevo voto: usa !vote x donde x es el número de la canción:",

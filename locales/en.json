@@ -276,8 +276,8 @@
 		"TITLE": "Unknown repository",
 		"MESSAGE": "You're about to add the {{repoName}} repository to Karaoke Mugen. Are you sure?"
 	},
-	"GENERATING_READING": "Step 1/2 - Reading data…",
-	"GENERATING_DATABASE": "Step 2/2 - Updating database…",
+	"GENERATING_READING": "Step 1 / 2 - Reading data…",
+	"GENERATING_DATABASE": "Step 2 / 2 - Updating database…",
 	"TWITCH": {
 		"CHAT": {
 			"VOTE": "New vote : use !vote x where x is the song number:",

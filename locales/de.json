@@ -151,7 +151,7 @@
 	"MENU_TOOLS_DATABASE": "Daten&bank",
 	"REQUESTED_WITH": "(mit {{names}})",
 	"MENU_OPTIONS": "&Optionen",
-	"GENERATING_DATABASE": "Schritt 2/2 - Aktualisiere Datenbank…",
+	"GENERATING_DATABASE": "Schritt 2 / 2 - Aktualisiere Datenbank…",
 	"TIPS": {
 		"NORMAL": [
 			"Mit den Multimedia-Tasten deiner Tastatur kannst Du das Karaoke ebenfalls steuern!",
@@ -299,7 +299,7 @@
 	"NO_KARA_PLAYING": "Es wird gerade kein Song abgespielt",
 	"INTERFACE_CLOSED": "Schließen",
 	"CURRENT_VERSION_OK": "Du verwendest bereits die neueste Version von Karaoke Mugen!",
-	"GENERATING_READING": "Schritt 1/2 - Lese Daten ein…",
+	"GENERATING_READING": "Schritt 1 / 2 - Lese Daten ein…",
 	"ERROR": "Fehler",
 	"MENU_OPTIONS_CHIBIPLAYER": "Zeige kleinen Player",
 	"UPDATE_ERROR": "Beim Versuch, Karaoke Mugen zu aktualisieren, ist ein Fehler aufgetreten: ",

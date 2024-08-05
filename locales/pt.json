@@ -219,13 +219,13 @@
 	"MENU_TOOLS_LOGS": "&Registro de eventos",
 	"CURRENT_VERSION_OK": "Você já está a utilizar a versão mais recente do Karaoke Mugen!",
 	"INTERFACE_RESTRICTED": "Sem sugestões",
-	"GENERATING_DATABASE": "Passo 2/2 - Atualizando a base de dados…",
+	"GENERATING_DATABASE": "Passo 2 / 2 - Atualizando a base de dados…",
 	"RESTARTING_PLAYER": "REINICIANDO O PLAYER…",
 	"MISSING_BINARIES": {
 		"TITLE": "Binários em falta",
 		"MESSAGE": "Um ou mais binários necessários ao Karaoke Mugen não foram encontrados.\n\nEdite seu config.yml e defina as variáveis System.Binaries.ffmpeg, System.Binaries.Player e System.Binaries.Postgres corretamente para o seu sistema operacional.\n\nVocê pode baixar mpv para o seu sistema operacional em http://mpv.io/\n\nVocê pode baixar o postgreSQL para o seu sistema operacional em http://postgresql.org/\n\nVocê pode baixar o ffmpeg para o seu sistema operacional em http://ffmpeg.org\n\nVocê pode baixar o utilitário patch em https://mugen.karaokes.moe/downloads/patch.exe (Windows) ou https://mugen.karaokes.moe/downloads/patch (macOS) ou pacote GNU Patch 2.7+ (Linux )\n\nDetalhes do erro: "
 	},
-	"GENERATING_READING": "Passo 1/2 - A ler os dados…",
+	"GENERATING_READING": "Passo 1 / 2 - A ler os dados…",
 	"SUGGEST_SONGS": "Sugerir canções!",
 	"REQUESTED_AND_other": "e {{count}} outros",
 	"REQUESTED_WITH": "(com {{names}})",
