@@ -1372,7 +1372,6 @@
 		"DATABASE_DUMPED_ERROR": "Erro ao despejar banco de dados",
 		"CONFIG_BACKUPED_ERROR": "Erro durante backup do arquivo de configuração",
 		"FILES_VALIDATED_ERROR": "Erro ao validar arquivos",
-		"BACKGROUND_FILE_DELETE_ERROR_IN_USE": "Não foi possível remover o arquivo, ele está em uso pelo player!",
 		"FS_ERROR": "Erro ao navegar no sistema de arquivos",
 		"UPVOTE_NO_SELF": "Não é possível votar positivamente em uma de suas próprias solicitações",
 		"UPVOTE_ALREADY_DONE": "Voto positivo já feito",

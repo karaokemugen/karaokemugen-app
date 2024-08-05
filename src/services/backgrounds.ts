@@ -9,7 +9,7 @@ import logger from '../lib/utils/logger.js';
 import { BackgroundList, BackgroundType } from '../types/backgrounds.js';
 import Sentry from '../utils/sentry.js';
 import { getState } from '../utils/state.js';
-import { ErrorKM } from '../lib/utils/error.js';
+import { initPlayer, quitmpv } from './player.js';
 
 const service = 'Backgrounds';
 
@@ -56,10 +56,14 @@ export async function getBackgroundFiles(type: BackgroundType = 'pause'): Promis
 }
 
 export async function removeBackgroundFile(type: BackgroundType, file: string) {
+	let restartMpv = false;
 	if (!backgroundTypes.includes(type)) throw { code: 400 };
-	if (getState().backgrounds.picture === file || getState().backgrounds.music === file)
-		throw new ErrorKM('BACKGROUND_FILE_DELETE_ERROR_IN_USE', 409);
+	if (getState().backgrounds.picture === file || getState().backgrounds.music === file) {
+		restartMpv = true;
+		await quitmpv();
+	}
 	await fs.unlink(resolve(resolvedPath('Backgrounds'), type, file));
+	if (restartMpv) initPlayer().catch();
 }
 
 export async function addBackgroundFile(type: BackgroundType, file: Express.Multer.File) {

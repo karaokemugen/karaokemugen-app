@@ -839,7 +839,6 @@
 		"REPO_GIT_PUSH_ERROR": "Git-Commits können nicht gepusht werden",
 		"DOWNLOADS_GET_ERROR": "Fehler beim Abrufen von Downloads aus der Warteschlange",
 		"ERROR_READING_LOGS": "Ereignisprotokolle können nicht gelesen werden",
-		"BACKGROUND_FILE_DELETE_ERROR_IN_USE": "Die Datei konnte nicht entfernt werden, sie wird vom Player verwendet!",
 		"REPO_LIST_ERROR": "Fehler beim Abrufen der Repository-Liste",
 		"UPVOTE_ALREADY_DONE": "Up-Vote bereits gesendet",
 		"INBOX_DELETE_FORBIDDEN_ERROR": "Löschen des Posteingangs untersagt",

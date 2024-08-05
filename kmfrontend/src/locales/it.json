@@ -1150,7 +1150,6 @@
 		"USER_CREATE_ERROR_ONLINE_DISABLED": "Impossibile creare l'account: è necessaria la modalità online",
 		"DELETE_PLAYLIST_ERROR_WHITELIST": "Impossibile eliminare la whitelist. Imposta prima un'altra playlist come whitelist.",
 		"ERROR_READING_LOGS": "Impossibile leggere i log evento",
-		"BACKGROUND_FILE_DELETE_ERROR_IN_USE": "Errore durante la rimozione del file, è utilizzato dal lettore!",
 		"REPO_LIST_ERROR": "Errore durante il recupero della lista archivi",
 		"UPVOTE_ALREADY_DONE": "Hai già votato",
 		"REPO_GIT_DIFF_ERROR": "Errore durante il recupero delle differenze del file",

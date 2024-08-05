@@ -1674,7 +1674,6 @@
 		"FILES_VALIDATED_ERROR": "Erreur lors de la validation des fichiers",
 		"DATABASE_DUMPED_ERROR": "Erreur lors de l'export de la base de données",
 		"DATABASE_RESTORED_ERROR": "Erreur lors de la restauration de la base de données",
-		"BACKGROUND_FILE_DELETE_ERROR_IN_USE": "Impossible de supprimer le fichier, il est utilisé par le lecteur !",
 		"FS_ERROR": "Erreur lors de la recherche dans l'explorateur de fichiers",
 		"USER_DELETE_ADMIN_DAMEDESU": "Vous ne pouvez pas supprimer le compte admin !",
 		"USER_NOT_ALLOWED_TO_SING": "Cet utilisateur ne peut pas démarrer la chanson",

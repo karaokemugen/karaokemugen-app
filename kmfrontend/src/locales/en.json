@@ -1677,7 +1677,6 @@
 		"FILES_VALIDATED_ERROR": "Error validating files",
 		"DATABASE_DUMPED_ERROR": "Error dumping database",
 		"DATABASE_RESTORED_ERROR": "Error restoring database",
-		"BACKGROUND_FILE_DELETE_ERROR_IN_USE": "Unable to remove file, it's in use by the player!",
 		"FS_ERROR": "Error browsing filesystem",
 		"USER_DELETE_ADMIN_DAMEDESU": "You can't remove the admin user!",
 		"USER_NOT_ALLOWED_TO_SING": "User not allowed to start the song",

@@ -1278,7 +1278,6 @@
 		"SETTINGS_UPDATE_ERROR": "Error al actualizar la configuración",
 		"CONFIG_BACKUPED_ERROR": "Error durante la copia de seguridad del archivo de configuración",
 		"DATABASE_GENERATED_ERROR": "Ocurrió un error durante la generación en la base de datos",
-		"BACKGROUND_FILE_DELETE_ERROR_IN_USE": "No se puede eliminar el archivo, ¡está siendo utilizado por el reproductor!",
 		"USER_DELETE_ADMIN_DAMEDESU": "¡No puedes eliminar al usuario administrador!",
 		"USER_NOT_ALLOWED_TO_SING": "El usuario no puede iniciar la canción",
 		"PL_SONG_COPY_ERROR": "Error al copiar una canción en la lista de reproducción de destino",

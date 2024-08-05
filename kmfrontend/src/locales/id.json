@@ -1283,7 +1283,6 @@
 		"GUESTS_NOT_ALLOWED": "Akun tamu tidak diperbolehkan",
 		"DELETE_PLAYLIST_ERROR_PUBLIC": "Tidak bisa menghapus daftar putar publik. Buat dulu daftar putar publik lain.",
 		"DELETE_PLAYLIST_ERROR_BLACKLIST": "Tidak dapat menghapus daftar hitam. Jadikan daftar putar lain sebagai daftar hitam terlebih dahulu.",
-		"BACKGROUND_FILE_DELETE_ERROR_IN_USE": "Tidak dapat menghapus file, file sedang digunakan oleh pemutar!",
 		"PREVIEW_HOOKS_ERROR": "Galat pratinjau kait"
 	},
 	"SUCCESS_CODES": {
