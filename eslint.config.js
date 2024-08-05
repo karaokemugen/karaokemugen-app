@@ -62,15 +62,6 @@ export default ts.config(
 					disallowArithmeticOperators: false,
 				},
 			],
-			'no-unused-vars': [
-				'error',
-				{
-					caughtErrors: 'none',
-					argsIgnorePattern: '^_',
-					varsIgnorePattern: '^_',
-					destructuredArrayIgnorePattern: '^_',
-				},
-			],
 			'no-useless-catch': 0,
 			'no-var': 2,
 			'prefer-const': 1,
@@ -87,7 +78,16 @@ export default ts.config(
 			'@typescript-eslint/no-explicit-any': 0,
 			'@typescript-eslint/no-this-alias': 0,
 			'@typescript-eslint/no-unused-expressions': 0,
-			'@typescript-eslint/no-unused-vars': 0, // already used in js.
+			'@typescript-eslint/no-unused-vars': [
+				'error',
+				{
+					caughtErrors: 'none',
+					argsIgnorePattern: '^_',
+					varsIgnorePattern: '^_',
+					destructuredArrayIgnorePattern: '^_',
+					ignoreRestSiblings: true,
+				},
+			],
 			'@typescript-eslint/no-use-before-define': 0,
 			'@typescript-eslint/no-var-requires': 0,
 			'security/detect-non-literal-fs-filename': 0,
