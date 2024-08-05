@@ -7,7 +7,7 @@ const buildOptions = {
 	outfile: 'dist/index.cjs',
 	entryPoints: ['src/index.ts'],
 	platform: 'node',
-	target: 'node16',
+	target: 'node20',
 	format: 'cjs',
 	bundle: true,
 	sourcemap: true,
