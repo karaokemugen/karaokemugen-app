@@ -177,13 +177,13 @@ export async function selectPlaylistContentsMini(id: string): Promise<DBPLC[]> {
 		for (const tagType of miniTypes) {
 			rowWithoutTags[tagType] = [];
 		}
-		if (tags == null) {
+		if (tags === null) {
 			return rowWithoutTags;
 		}
 		for (const tag of tags) {
-			if (tag?.type_in_kara == null) continue;
+			if (tag?.type_in_kara === null) continue;
 			const type = getTagTypeName(tag.type_in_kara);
-			if (type == null || !miniTypes.includes(type)) continue;
+			if (!type || !miniTypes.includes(type)) continue;
 			rowWithoutTags[type].push(tag);
 		}
 		return rowWithoutTags;

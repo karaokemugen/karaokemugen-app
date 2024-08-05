@@ -9,9 +9,9 @@ import sourceMapSupport from 'source-map-support';
 import { exit } from './components/engine.js';
 import { startElectron } from './electron/electron.js';
 import logger from './lib/utils/logger.js';
+import { moveUserDir } from './utils/hokutoNoCode.js';
 import sentry from './utils/sentry.js';
 import { setState } from './utils/state.js';
-import { moveUserDir } from './utils/hokutoNoCode.js';
 
 /** Welcome to Karaoke Mugen's beginning and end.
  * Emergency exits are on your left and right.

@@ -6,13 +6,13 @@
 import { app, dialog } from 'electron';
 import { existsSync, readdirSync, rmdirSync } from 'fs';
 import { moveSync } from 'fs-extra';
+import i18next from 'i18next';
 import { resolve } from 'path';
 import semver from 'semver';
 
-import { editRepo, getRepo } from '../services/repo.js';
 import { Repository } from '../lib/types/repo.js';
+import { editRepo, getRepo } from '../services/repo.js';
 import { getState, setState } from './state.js';
-import i18next from 'i18next';
 
 /** Remove when we drop support for mpv <0.38.0 */
 export function mpvIsRecentEnough() {

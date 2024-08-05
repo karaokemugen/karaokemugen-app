@@ -1,9 +1,17 @@
 import { promises as fs } from 'fs';
+import { exists } from 'fs-extra';
 import { basename, extname, resolve } from 'path';
 
 import { applyKaraHooks } from '../lib/dao/hook.js';
 import { extractVideoSubtitles, trimKaraData, verifyKaraData, writeKara } from '../lib/dao/karafile.js';
+import { getKaraFamily } from '../lib/services/kara.js';
 import { defineFilename, determineMediaAndLyricsFilenames, processSubfile } from '../lib/services/karaCreation.js';
+import {
+	checkKaraMetadata,
+	checkKaraParents,
+	convertDBKarasToKaraFiles,
+	createKarasMap,
+} from '../lib/services/karaValidation.js';
 import { EditedKara } from '../lib/types/kara.d.js';
 import { ASSFileCleanup } from '../lib/utils/ass.js';
 import { getConfig, resolvedPath, resolvedPathRepos } from '../lib/utils/config.js';
@@ -17,14 +25,6 @@ import { getKara, getKaras } from './kara.js';
 import { integrateKaraFile } from './karaManagement.js';
 import { checkDownloadStatus } from './repo.js';
 import { consolidateTagsInRepo } from './tag.js';
-import { exists } from 'fs-extra';
-import {
-	checkKaraMetadata,
-	checkKaraParents,
-	convertDBKarasToKaraFiles,
-	createKarasMap,
-} from '../lib/services/karaValidation.js';
-import { getKaraFamily } from '../lib/services/kara.js';
 
 const service = 'KaraCreation';
 
@@ -110,7 +110,7 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 			try {
 				const extractFile = await extractVideoSubtitles(mediaPath, kara.data.kid);
 				if (extractFile) {
-					if (kara.medias[0].lyrics == null) {
+					if (kara.medias[0] && !kara.medias[0].lyrics) {
 						kara.medias[0].lyrics = [];
 					}
 					kara.medias[0].lyrics[0] = {
@@ -244,7 +244,7 @@ export async function createKara(editedKara: EditedKara) {
 		try {
 			const extractFile = await extractVideoSubtitles(mediaPath, kara.data.kid);
 			if (extractFile) {
-				if (kara.medias[0].lyrics == null) {
+				if (kara.medias[0] && !kara.medias[0].lyrics) {
 					kara.medias[0].lyrics = [];
 				}
 				kara.medias[0].lyrics[0] = {

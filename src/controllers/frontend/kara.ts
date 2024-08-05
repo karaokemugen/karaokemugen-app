@@ -9,7 +9,7 @@ import { ErrorKM } from '../../lib/utils/error.js';
 import { abortAllMediaEncodingProcesses } from '../../lib/utils/ffmpeg.js';
 import { check, isUUID } from '../../lib/utils/validators.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
-import { getKMStats, getKara, getKaraLyrics, getKaraMediaInfo, getKaras } from '../../services/kara.js';
+import { getKara, getKaraLyrics, getKaraMediaInfo, getKaras, getKMStats } from '../../services/kara.js';
 import { createKara, editKara } from '../../services/karaCreation.js';
 import { playSingleSong } from '../../services/karaEngine.js';
 import {

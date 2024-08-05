@@ -1,6 +1,7 @@
 import { Socket } from 'socket.io';
 
 import { APIMessage } from '../../lib/services/frontend.js';
+import { getRepoManifest } from '../../lib/services/repo.js';
 import { APIData } from '../../lib/types/api.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
 import {
@@ -35,7 +36,6 @@ import {
 } from '../../services/repo.js';
 import { syncTagsFromRepo } from '../../services/tag.js';
 import { runChecklist } from '../middlewares.js';
-import { getRepoManifest } from '../../lib/services/repo.js';
 
 export default function repoController(router: SocketIOApp) {
 	router.route('getSSHPubKey', async (socket: Socket, req: APIData) => {

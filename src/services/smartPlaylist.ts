@@ -17,6 +17,7 @@ import { ErrorKM } from '../lib/utils/error.js';
 import logger, { profile } from '../lib/utils/logger.js';
 import { isNumber } from '../lib/utils/validators.js';
 import { emitWS } from '../lib/utils/ws.js';
+import { DBPL } from '../types/database/playlist.js';
 import { adminToken } from '../utils/constants.js';
 import Sentry from '../utils/sentry.js';
 import { getState, setState } from '../utils/state.js';
@@ -31,7 +32,6 @@ import {
 	removeKaraFromPlaylist,
 } from './playlist.js';
 import { getTag, getTags } from './tag.js';
-import { DBPL } from '../types/database/playlist.js';
 
 const service = 'SmartPlaylist';
 

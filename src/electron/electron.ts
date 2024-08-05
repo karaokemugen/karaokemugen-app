@@ -23,7 +23,6 @@ import { createMenu } from './electronMenu.js';
 
 const service = 'Electron';
 
-// eslint-disable-next-line import/no-mutable-exports
 export let win: Electron.BrowserWindow;
 let chibiPlayerWindow: Electron.BrowserWindow;
 let chibiPlaylistWindow: Electron.BrowserWindow;

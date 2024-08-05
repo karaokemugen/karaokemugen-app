@@ -10,8 +10,8 @@ import { playerComment } from '../services/player.js';
 import { getCurrentSong } from '../services/playlist.js';
 import { addPollVoteIndex } from '../services/poll.js';
 import { registerTwitchAnswer } from '../services/quiz.js';
-import { getState } from './state.js';
 import { getRepo } from '../services/repo.js';
+import { getState } from './state.js';
 
 const service = 'Twitch';
 

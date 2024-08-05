@@ -15,6 +15,7 @@ import { registerShortcuts, unregisterShortcuts } from '../electron/electronShor
 import { closeDB, getSettings, saveSetting, vacuum } from '../lib/dao/database.js';
 import { initHooks } from '../lib/dao/hook.js';
 import { generateDatabase as generateKaraBase } from '../lib/services/generation.js';
+import { readAllRepoManifests } from '../lib/services/repo.js';
 // Utils
 import { getConfig, setConfig } from '../lib/utils/config.js';
 import { duration } from '../lib/utils/date.js';
@@ -42,7 +43,6 @@ import { writeStreamFiles } from '../utils/streamerFiles.js';
 import { getTwitchClient, initTwitch, stopTwitch } from '../utils/twitch.js';
 import { subRemoteUsers } from '../utils/userPubSub.js';
 import initFrontend from './frontend.js';
-import { readAllRepoManifests } from '../lib/services/repo.js';
 
 let usageTime = 0;
 let usageTimeInterval;

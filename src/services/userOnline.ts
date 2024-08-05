@@ -9,13 +9,13 @@ import { ErrorKM } from '../lib/utils/error.js';
 import { writeStreamToFile } from '../lib/utils/files.js';
 import HTTP, { fixedEncodeURIComponent } from '../lib/utils/http.js';
 import logger from '../lib/utils/logger.js';
+import { testJSON } from '../lib/utils/validators.js';
 import { emitWS } from '../lib/utils/ws.js';
 import { SingleToken, Tokens } from '../types/user.js';
 import sentry from '../utils/sentry.js';
 import { startSub, stopSub } from '../utils/userPubSub.js';
 import { convertToRemoteFavorites } from './favorites.js';
 import { checkPassword, createJwtToken, createUser, editUser, getUser } from './user.js';
-import { testJSON } from '../lib/utils/validators.js';
 
 const service = 'RemoteUser';
 

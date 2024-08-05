@@ -6,6 +6,7 @@ import { DefaultLogFields, ListLogLine, SimpleGit, simpleGit, SimpleGitProgressE
 import which from 'which';
 
 import { Repository } from '../lib/types/repo.js';
+import { resolvedPath } from '../lib/utils/config.js';
 import { ErrorKM } from '../lib/utils/error.js';
 import { fileExists } from '../lib/utils/files.js';
 import logger from '../lib/utils/logger.js';
@@ -13,7 +14,6 @@ import Task from '../lib/utils/taskManager.js';
 import { getRepo } from '../services/repo.js';
 import { Commit } from '../types/repo.js';
 import { getState } from './state.js';
-import { resolvedPath } from '../lib/utils/config.js';
 
 const service = 'Git';
 
@@ -74,6 +74,7 @@ export default class Git {
 	}
 
 	isSshUrl() {
+		/* eslint security/detect-unsafe-regex: 0 */
 		return /^(?:([a-z_][a-z0-9_]{0,30})@)?((?:[a-z0-9-_]+\.)+[a-z0-9]+)(?::([0-9]{0,5}))?([^\0\n]+)?$/.test(
 			this.opts.url.toLowerCase()
 		);

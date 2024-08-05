@@ -1,6 +1,7 @@
 import { shell } from 'electron';
 import { promises as fs } from 'fs';
 import { copy } from 'fs-extra';
+import i18next from 'i18next';
 import { basename, extname, resolve } from 'path';
 
 import { getStoreChecksum, removeKaraInStore } from '../dao/dataStore.js';
@@ -14,6 +15,7 @@ import { refreshTags } from '../lib/dao/tag.js';
 import { writeTagFile } from '../lib/dao/tagfile.js';
 import { APIMessage } from '../lib/services/frontend.js';
 import { refreshKarasAfterDBChange, updateTags } from '../lib/services/karaManagement.js';
+import { getRepoManifest } from '../lib/services/repo.js';
 import { DBKara, DBKaraTag } from '../lib/types/database/kara.js';
 import { DBTag } from '../lib/types/database/tag.js';
 import { KaraFileV4, KaraTag } from '../lib/types/kara.js';
@@ -22,6 +24,7 @@ import { ASSFileSetMediaFile } from '../lib/utils/ass.js';
 import { resolvedPath, resolvedPathRepos } from '../lib/utils/config.js';
 import { getTagTypeName } from '../lib/utils/constants.js';
 import { ErrorKM } from '../lib/utils/error.js';
+import { embedCoverImage } from '../lib/utils/ffmpeg.js';
 import { fileExists, resolveFileInDirs } from '../lib/utils/files.js';
 import logger, { profile } from '../lib/utils/logger.js';
 import { encodeMediaToRepoDefault } from '../lib/utils/mediaInfoValidation.js';
@@ -37,9 +40,6 @@ import { editKara } from './karaCreation.js';
 import { getRepo, getRepos } from './repo.js';
 import { updateAllSmartPlaylists } from './smartPlaylist.js';
 import { getTag } from './tag.js';
-import i18next from 'i18next';
-import { embedCoverImage } from '../lib/utils/ffmpeg.js';
-import { getRepoManifest } from '../lib/services/repo.js';
 
 const service = 'KaraManager';
 

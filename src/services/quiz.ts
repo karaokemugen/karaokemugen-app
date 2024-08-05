@@ -81,7 +81,7 @@ export async function buildEndGameScoreString(): Promise<string> {
 	// Build leaderboard for the first only 10
 	const scoresToDisplay = scores
 		.map(score => ({ ...score, nickname: users.find(u => u.login === score.login)?.nickname }))
-		.filter(score => score.nickname != null)
+		.filter(score => score.nickname)
 		.slice(0, 10);
 
 	for (const [pos, score] of scoresToDisplay.entries()) {
@@ -461,9 +461,9 @@ export async function startGame(gamename: string, playlist: string, settings?: Q
 		if (!playlist) {
 			throw new ErrorKM('INVALID_DATA', 400, false);
 		}
-		if (settings != null) {
+		if (settings) {
 			for (const answer of Object.values(settings.Answers.Accepted)) {
-				if (answer.Enabled && answer.Points == null) {
+				if (answer.Enabled && !answer.Points) {
 					throw new ErrorKM('INVALID_DATA', 400, false);
 				}
 			}
@@ -472,7 +472,7 @@ export async function startGame(gamename: string, playlist: string, settings?: Q
 		const game = games.find(g => g.gamename === gamename);
 		if (!game) {
 			// Load default game settings if not provided
-			if (settings == null) {
+			if (!settings) {
 				settings = getState().quiz.settings;
 			}
 			setState({
@@ -494,7 +494,7 @@ export async function startGame(gamename: string, playlist: string, settings?: Q
 			});
 		} else {
 			// Load game settings
-			if (settings == null) {
+			if (!settings) {
 				settings = game.settings;
 			}
 			setState({

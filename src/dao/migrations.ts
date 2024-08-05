@@ -1,9 +1,9 @@
 import { profile } from 'console';
 import Postgrator from 'postgrator';
 
-import { compareKarasChecksum, generateDB } from './database.js';
 import { db, getSettings } from '../lib/dao/database.js';
 import { setConfig } from '../lib/utils/config.js';
+import { compareKarasChecksum, generateDB } from './database.js';
 
 export async function postMigrationTasks(migrations: Postgrator.Migration[], didGeneration: boolean) {
 	profile('postMigrationTasks');

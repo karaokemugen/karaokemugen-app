@@ -1,6 +1,5 @@
 // Utils
 import { promises as fs } from 'fs';
-
 import i18n from 'i18next';
 import { shuffle } from 'lodash';
 import { join } from 'path/posix';

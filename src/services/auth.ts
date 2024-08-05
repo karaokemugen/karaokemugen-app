@@ -3,11 +3,11 @@ import randomstring from 'randomstring';
 import { OldTokenResponse, Role, User } from '../lib/types/user.js';
 import { getConfig } from '../lib/utils/config.js';
 import logger from '../lib/utils/logger.js';
+import { emitWS } from '../lib/utils/ws.js';
 import { getState, setState } from '../utils/state.js';
 import { fetchAndAddFavorites } from './favorites.js';
 import { checkPassword, createJwtToken, getUser, updateLastLoginName } from './user.js';
 import { fetchAndUpdateRemoteUser } from './userOnline.js';
-import { emitWS } from '../lib/utils/ws.js';
 
 const service = 'Auth';
 

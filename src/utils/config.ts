@@ -25,6 +25,7 @@ import {
 	setConfigConstraints,
 	verifyConfig,
 } from '../lib/utils/config.js';
+import { uuidRegexp } from '../lib/utils/constants.js';
 import { ErrorKM } from '../lib/utils/error.js';
 import { fileRequired, relativePath } from '../lib/utils/files.js';
 // KM Imports
@@ -56,7 +57,6 @@ import sentry from './sentry.js';
 import { getState, setState } from './state.js';
 import { writeStreamFiles } from './streamerFiles.js';
 import { initTwitch, stopTwitch } from './twitch.js';
-import { uuidRegexp } from '../lib/utils/constants.js';
 
 const service = 'Config';
 
