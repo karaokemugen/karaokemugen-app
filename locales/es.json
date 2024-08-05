@@ -192,7 +192,7 @@
 		"TITLE": "Repositorio desconocido",
 		"MESSAGE": "Está a punto de agregar el repositorio {{repoName}} a Karaoke Mugen. ¿Está seguro?"
 	},
-	"GENERATING_READING": "Paso 1 / 2 - Lectura de datos…",
+	"GENERATING_READING": "Paso 1 / 2 - Leyendo los datos…",
 	"GENERATING_DATABASE": "Paso 2 / 2 - Actualizando la base de datos…",
 	"TWITCH": {
 		"CHAT": {
@@ -257,7 +257,8 @@
 		"Bebidas refrescantes",
 		"Afinar las cuerdas vocales",
 		"Descubriendo la ciudad perdida de Karaokum Mugen-la",
-		"La respuesta de la informática a la vida, el universo y todo lo demás"
+		"La respuesta de la informática a la vida, el universo y todo lo demás",
+		"Iniciando el convector de tiempo"
 	],
 	"FALLBACK": "Retroceder",
 	"UNKNOWN": "Desconocido"
