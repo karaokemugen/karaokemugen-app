@@ -13,7 +13,11 @@
 
 body {
 	font-family: Lato, 'Helvetica Neue', Cantarell, sans-serif;
-	background: $mugen-background;
+
+	// Don't set the background here
+	// It's defined in index.html instead, so it can be easily overridden by tools like OBS
+	// background: $mugen-background;
+
 	color: white;
 	&.no-scroll {
 		overflow: hidden;
