@@ -218,7 +218,9 @@ export default function Inbox() {
 			key: 'contact',
 			render: (text: string) =>
 				text?.endsWith(`@${instance.Name}`) ? (
-					<Button onClick={() => getContactInformations(text)} icon={<UserOutlined />} />
+					<Button onClick={() => getContactInformations(text)} icon={<UserOutlined />}>
+						{text?.replace(`@${instance.Name}`, '')}
+					</Button>
 				) : (
 					text
 				),
