@@ -1047,14 +1047,11 @@
 				"TRIM_MEDIA": "Trim start/end",
 				"TRIM_MEDIA_TOOLTIP": "Detect and remove black frames and silence at the beginning and end of the media"
 			},
-			"TIMING_CHANGE_WARNING": "The selected options might change the start and end time of the media. Check the lyrics timings after the media is encoded and saved.",
-			"LEAVE_PAGE": "Media is being encoded. Leaving the page now will will discard any progress, are you sure you want to leave?"
+			"TIMING_CHANGE_WARNING": "The selected options might change the start and end time of the media. Check the lyrics timings after the media is encoded and saved."
 		},
 		"LYRICS_FILE": "Lyrics file",
 		"LYRICS_FILE_TOOLTIP": "Supported file formats: {{formats}}",
 		"LYRICS_FILE_OPEN": "Open file",
-		"APPLY_LYRICS_CLEANUP": "Cleanup lyrics file after saving",
-		"APPLY_LYRICS_CLEANUP_TOOLTIP": "Cleans lyrics file up from unused styles & comments and saves the title & author of the kara in the properties",
 		"ADD_FILE_SUCCESS": "{{name}} file added successfully",
 		"ADD_FILE_MEDIA_ERROR": "{{name}} is not a media file",
 		"ADD_FILE_LYRICS_ERROR": "{{name}} is not a subtitle file",

@@ -14,7 +14,7 @@ import {
 } from '../lib/services/karaValidation.js';
 import { EditedKara } from '../lib/types/kara.d.js';
 import { ASSFileCleanup } from '../lib/utils/ass.js';
-import { getConfig, resolvedPath, resolvedPathRepos } from '../lib/utils/config.js';
+import { resolvedPath, resolvedPathRepos } from '../lib/utils/config.js';
 import { ErrorKM } from '../lib/utils/error.js';
 import { replaceExt, resolveFileInDirs, smartMove } from '../lib/utils/files.js';
 import logger, { profile } from '../lib/utils/logger.js';
@@ -186,13 +186,7 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 		const newKara = await getKara(kara.data.kid, adminToken);
 
 		// ASS file post processing
-		if (
-			editedKara.applyLyricsCleanup === true ||
-			(typeof editedKara.applyLyricsCleanup !== 'boolean' && // Fallback to setting when no value is sent
-				getConfig().Maintainer.ApplyLyricsCleanupOnKaraSave === true)
-		) {
-			if (kara.medias[0].lyrics?.[0]?.filename) await ASSFileCleanup(subDest, newKara);
-		}
+		if (kara.medias[0].lyrics?.[0]?.filename) await ASSFileCleanup(subDest, newKara);
 	} catch (err) {
 		logger.error('Error while editing kara', { service, obj: err });
 		sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
@@ -278,13 +272,7 @@ export async function createKara(editedKara: EditedKara) {
 		const newKara = await getKara(kara.data.kid, adminToken);
 
 		// ASS file post processing
-		if (
-			editedKara.applyLyricsCleanup === true ||
-			(typeof editedKara.applyLyricsCleanup !== 'boolean' && // Fallback to setting when no value is sent
-				getConfig().Maintainer.ApplyLyricsCleanupOnKaraSave === true)
-		) {
-			if (kara.medias[0].lyrics?.[0]?.filename) await ASSFileCleanup(subDest, newKara);
-		}
+		if (kara.medias[0].lyrics?.[0]?.filename) await ASSFileCleanup(subDest, newKara);
 	} catch (err) {
 		logger.error('Error while creating kara', { service, obj: err });
 		sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));

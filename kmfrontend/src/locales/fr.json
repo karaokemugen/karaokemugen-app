@@ -1027,8 +1027,6 @@
 		"LYRICS_FILE": "Fichier de sous-titres",
 		"LYRICS_FILE_TOOLTIP": "Format de fichier accepté : {{formats}}",
 		"LYRICS_FILE_OPEN": "Ouvrir le fichier",
-		"APPLY_LYRICS_CLEANUP": "Nettoyer le fichier de paroles après envoi",
-		"APPLY_LYRICS_CLEANUP_TOOLTIP": "Nettoie le fichier de ses commentaires et styles inutilisés, et enregistre le titre et l'auteur du karaoké dans les propriétés",
 		"ADD_FILE_SUCCESS": "Le fichier {{name}} a été ajouté avec succès",
 		"ADD_FILE_MEDIA_ERROR": "{{name}} n'est pas un média",
 		"ADD_FILE_LYRICS_ERROR": "{{name}} n'est pas un fichier de sous-titres",
@@ -1151,8 +1149,7 @@
 				"TRIM_MEDIA": "Couper",
 				"TRIM_MEDIA_TOOLTIP": "Détecter et supprimer les images noires et les silences au début et à la fin du média"
 			},
-			"TIMING_CHANGE_WARNING": "Les options sélectionnées peuvent modifier le début et la fin du média. Vérifiez le minutage des paroles après l'encodage et l'enregistrement du média.",
-			"LEAVE_PAGE": "Le média est en cours d'encodage. Quitter la page maintenant annulera l'encodage, êtes-vous sûr de vouloir partir ?"
+			"TIMING_CHANGE_WARNING": "Les options sélectionnées peuvent modifier le début et la fin du média. Vérifiez le minutage des paroles après l'encodage et l'enregistrement du média."
 		},
 		"FROM_DISPLAY_TYPE": "Affichage du tag de la provenance de la chanson",
 		"FROM_DISPLAY_TYPE_TOOLTIP": "Choissisez le type de tag utilisé lors de l'affichage de la chanson",

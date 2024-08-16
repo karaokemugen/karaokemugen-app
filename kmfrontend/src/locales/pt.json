@@ -902,13 +902,11 @@
 				"TRIM_MEDIA": "Início/fim do corte"
 			},
 			"TIMING_CHANGE_WARNING": "As opções selecionadas podem alterar o horário de início e término da mídia.",
-			"LEAVE_PAGE": "A mídia está sendo codificada. Sair da página agora descartará qualquer progresso. Tem certeza de que deseja sair?",
 			"LABEL": "Codificar mídia"
 		},
 		"LYRICS_FILE": "Arquivo de letras",
 		"LYRICS_FILE_TOOLTIP": "Formatos de arquivo suportados: {{formats}}",
 		"LYRICS_FILE_OPEN": "Abrir arquivo",
-		"APPLY_LYRICS_CLEANUP_TOOLTIP": "Limpa o arquivo de letras de estilos e comentários não utilizados e salva o título e o autor da kara nas propriedades",
 		"ADD_FILE_LYRICS_ERROR": "{{name}} não é um arquivo de legenda",
 		"CREATORS_TOOLTIP": "Entidade que criou a série.",
 		"KARA_AUTHORS_REQUIRED": "O autor do karaokê é obrigatório",
@@ -947,7 +945,6 @@
 		"TITLE_REQUIRED": "Por favor insira um título de música",
 		"DEFAULT_LANGUAGE": "Idioma padrão a ser usado",
 		"ALIASES": "Apelido",
-		"APPLY_LYRICS_CLEANUP": "Limpar arquivo de letras após salvar",
 		"SONGWRITERS_TOOLTIP": "Compositores, Arranjadores e Letristas.",
 		"VERSION_AVAILABILITY": "Disponível em {{count}} versões.",
 		"COLLECTIONS_REQUIRED": "É necessária uma coleção",
