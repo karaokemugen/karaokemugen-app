@@ -1267,7 +1267,6 @@
 		"PREVIEW_HOOKS_MODAL": "I seguenti cambiamenti verranno applicati alle tag di questo brano",
 		"FILTER_MEDIA_STATUS": "Stato file multimediale: ",
 		"DELETE_MEDIA_TOOLTIP": "Elimina i file multimediali del karaoke",
-		"APPLY_LYRICS_CLEANUP": "Pulisci file del testo dopo il salvataggio",
 		"IGNOREHOOKS": "Ignora tag automatiche",
 		"SINGERGROUPS_TOOLTIP": "Se i cantanti appartengono ad una band, inseriscili qui. La band verrà visualizzata al posto del singolo cantante nel lettore e nella playlist.",
 		"FRANCHISES_TOOLTIP": "Se la serie fa parte di un franchise (ad esempio Gundam, Mario, Zelda, Naruto, ecc...), indicalo qui.",
@@ -1294,7 +1293,6 @@
 		"GROUPS_TOOLTIP": "Gruppi di download per questo brano. Il brano sarà incluso in questi pacchetti",
 		"LYRICS_FILE_OPEN": "Apri file",
 		"VERSIONS_TOOLTIP": "Le versioni permettono di identificare meglio i brani con lo stesso titolo. Se nessuna versione corrisponde a questo brano perché troppo specifica (esempi: Ver. Futura o Ver. Chihaya) indicala nel titolo aggiungendo \" ~Ver. Chihaya\" alla fine.",
-		"APPLY_LYRICS_CLEANUP_TOOLTIP": "Pulisce il file del testo rimuovendo stili inutilizzati e i commenti e salva il titolo e l'autore del karaoke nelle proprietà",
 		"SINGERGROUPS_BY": "dalla band musicale",
 		"PREVIEW_HOOKS": "Controlla le tag aggiunte automaticamente",
 		"SERIES_SINGERS_REQUIRED": "Serie, Cantato da o Dalla band musicale non possono essere tutti vuoti.",
@@ -1322,7 +1320,6 @@
 				"TRIM_MEDIA_TOOLTIP": "Individua e rimuovi i fotogrammi neri e i momenti di silenzio all'inizio e alla fine del file multimediale",
 				"TRIM_MEDIA": "Inizio/fine taglio"
 			},
-			"LEAVE_PAGE": "Codifica del file multimediale in corso. Lasciando la pagina, tutti i progressi verranno persi, sei sicuro di volerlo fare?",
 			"LABEL": "Codifica file multimediali",
 			"TIMING_CHANGE_WARNING": "Le opzioni selezionate potrebbero cambiare l'inizio e la fine del file multimediale. Controlla la sincronizzazione del testo dopo la codifica e il salvataggio del file multimediale."
 		},

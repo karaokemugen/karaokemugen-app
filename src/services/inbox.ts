@@ -6,7 +6,7 @@ import { baseChecksum } from '../dao/dataStore.js';
 import { saveSetting } from '../lib/dao/database.js';
 import { Inbox } from '../lib/types/inbox.js';
 import { ASSFileCleanup } from '../lib/utils/ass.js';
-import { getConfig, resolvedPath, resolvedPathRepos } from '../lib/utils/config.js';
+import { resolvedPath, resolvedPathRepos } from '../lib/utils/config.js';
 import { downloadFile } from '../lib/utils/downloader.js';
 import { ErrorKM } from '../lib/utils/error.js';
 import { smartMove } from '../lib/utils/files.js';
@@ -132,7 +132,7 @@ export async function downloadKaraFromInbox(inid: string, repoName: string, toke
 
 		const newDbKara = await getKara(newKaraKid, adminToken);
 		// ASS file post processing
-		if (lyricsFile && getConfig().Maintainer.ApplyLyricsCleanupOnKaraSave === true) {
+		if (lyricsFile) {
 			await ASSFileCleanup(lyricsFile, newDbKara);
 		}
 

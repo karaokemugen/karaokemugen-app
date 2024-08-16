@@ -229,7 +229,6 @@ export const defaults: Config = {
 			SSHKeys: 'sshKeys',
 		},
 	},
-	Maintainer: { ApplyLyricsCleanupOnKaraSave: true },
 };
 
 export const horizontalPosArray = ['Left', 'Right', 'Center'];
@@ -325,7 +324,6 @@ export const configConstraints = {
 	'System.Path.Previews': { presence: true },
 	'System.Path.Import': { presence: true },
 	'System.Repositories': { repositoriesValidator: true },
-	'Maintainer.ApplyLyricsCleanupOnKaraSave': { inclusion: bools },
 };
 
 export const defaultRepositories: Repository[] = [

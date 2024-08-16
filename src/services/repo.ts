@@ -44,6 +44,8 @@ import { createKaraInDB, integrateKaraFile, removeKara } from './karaManagement.
 import { createProblematicSmartPlaylist, updateAllSmartPlaylists } from './smartPlaylist.js';
 import { sendPayload } from './stats.js';
 import { getTags, integrateTagFile, removeTag } from './tag.js';
+import { getRepoManifest } from '../lib/services/repo.js';
+import { ASSFileCleanup } from '../lib/utils/ass.js';
 
 const service = 'Repo';
 
@@ -1133,6 +1135,7 @@ export async function generateCommits(repoName: string) {
 	});
 	try {
 		const repo = getRepo(repoName);
+		const repoManifest = getRepoManifest(repoName);
 		const git = await setupGit(repo, true);
 		await git.reset();
 		const status = await git.status();
@@ -1354,6 +1357,10 @@ export async function generateCommits(repoName: string) {
 					lyricsFile = modifiedLyrics.find(f => basename(f) === kara.subfile);
 					if (lyricsFile) {
 						modifiedLyrics = modifiedLyrics.filter(f => f !== lyricsFile);
+						if (repoManifest?.rules?.lyrics?.cleanup) {
+							const lyricsPath = resolve(repo.BaseDir, lyricsFile);
+							ASSFileCleanup(lyricsPath, kara);
+						}
 						commit.addedFiles.push(lyricsFile);
 					}
 				}
