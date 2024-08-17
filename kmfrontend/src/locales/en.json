@@ -1755,6 +1755,8 @@
 		"USER_DELETE_ERROR_ONLINE": "Error deleting your online account",
 		"USER_RESETPASSWORD_ONLINE_ERROR": "Could not reset your password: contact the the server's administrator your account belongs to.",
 		"UPDATING_MEDIAS_ERROR": "Repository {{repo}} failed to update medias properly: {{err}}",
+		"UPDATING_MEDIAS_MULTIPLE_USED_MEDIA_PATH_ERROR": "Multiple repositories share the same primary media path, which will cause unwanted deletions. Please change the primary media on these repositories: {{repos}}",
+		"REPOS_MULTIPLE_USED_MEDIA_PATH_ERROR": "The primary media path is already used on another repository",
 		"USER_UNKNOWN": "User logged in unknown",
 		"ADMIN_PLEASE": "Please use an operator account",
 		"NOT_GUEST": "Guests cannot use this function",
