@@ -60,13 +60,13 @@ class KMSystem extends Component<unknown, unknown> {
 	}
 
 	operatorNotificationInfo = (data: { code: string; data: string }) =>
-		displayMessage('info', i18next.t(data.code, { data: data }));
+		displayMessage('info', i18next.t(data.code, data.data));
 	operatorNotificationError = (data: { code: string; data: string }) =>
-		displayMessage('error', i18next.t(data.code, { data: data }));
+		displayMessage('error', i18next.t(data.code, data.data));
 	operatorNotificationWarning = (data: { code: string; data: string }) =>
-		displayMessage('warning', i18next.t(data.code, { data: data }));
+		displayMessage('warning', i18next.t(data.code, data.data));
 	operatorNotificationSuccess = (data: { code: string; data: string }) =>
-		displayMessage('success', i18next.t(data.code, { data: data }));
+		displayMessage('success', i18next.t(data.code, data.data));
 
 	getLocale() {
 		let locale = enUS;
