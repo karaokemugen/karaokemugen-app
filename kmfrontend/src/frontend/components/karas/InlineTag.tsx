@@ -50,7 +50,6 @@ export default function InlineTag(props: Props) {
 	};
 
 	useEffect(() => {
-		getTag();
 		// add when mounted
 		document.addEventListener('mousedown', handleClick);
 		// return function to be called when unmounted
@@ -82,9 +81,10 @@ export default function InlineTag(props: Props) {
 		>
 			<span
 				className={props.className}
-				onClick={e => {
+				onClick={async e => {
 					if (props.scope === 'public' && context?.globalState.settings.data.config?.Frontend?.Mode !== 0) {
 						e.stopPropagation();
+						if (count === 0) await getTag();
 						setShowPopup(!showPopup);
 					}
 				}}
