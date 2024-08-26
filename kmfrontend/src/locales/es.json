@@ -920,7 +920,8 @@
 		"MEDIA_FILE_INFO": {
 			"AUDIO_CODEC": "Códec de audio",
 			"VIDEO_FRAMERATE": "Fotogramas por segundo"
-		}
+		},
+		"PREVIEW_HOOKS_MODAL": "Los siguientes cambios serán aplicados a los tags para esta canción"
 	},
 	"SETUP_PAGE": {
 		"LOCAL_ACCOUNT_DESC": "Ha elegido una cuenta local. Escriba un nombre de cuenta y una contraseña a continuación:",
