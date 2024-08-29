@@ -39,9 +39,9 @@ interface TagForForm extends Tag {
 	kitsuID: string;
 }
 
-const myanimelistUrlRegexp = /myanimelist.net\/anime\/(\d+)/;
-const anilistUrlRegexp = /anilist.co\/anime\/(\d+)/;
-const kitsuUrlRegexp = /kitsu.io\/anime\/([a-zA-Z0-9-_&(%20)]+)/;
+const myanimelistUrlRegexp = /myanimelist\.net\/anime\/(\d+)/;
+const anilistUrlRegexp = /anilist\.co\/anime\/(\d+)/;
+const kitsuUrlRegexp = /kitsu\.(io|app)\/anime\/([a-zA-Z0-9-_&(%20)]+)/;
 const validExternalAnimeIdRegexp = /^(?:[1-9]|\d\d+)$/; // strictly positive
 
 function TagForm(props: TagsFormProps) {
@@ -176,8 +176,8 @@ function TagForm(props: TagsFormProps) {
 			return event.target.value;
 		}
 		fetch(
-			`https://kitsu.io/api/edge/anime?fields[anime]=id&filter[slug]=${encodeURIComponent(
-				decodeURIComponent(res[1])
+			`https://kitsu.app/api/edge/anime?fields[anime]=id&filter[slug]=${encodeURIComponent(
+				decodeURIComponent(res[2])
 			)}`
 		)
 			.then(res => res.json())

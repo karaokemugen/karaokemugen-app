@@ -1033,7 +1033,7 @@
 		"MERGE_WITH_TOOLTIP": "Mesclar a tag atual com outra",
 		"MERGE_WITH_BUTTON": "Mesclar!",
 		"PRIORITY_TOOLTIP": "Tags com valor mais alto serão exibidas primeiro.",
-		"KITSU_ID_TOOLTIP": "Se for um anime, indique sua url em kitsu.io",
+		"KITSU_ID_TOOLTIP": "Se for um anime, indique sua url em kitsu.app",
 		"LANG_ERROR": "Uma tag deve ter pelo menos um nome traduzido.",
 		"KARAOKES_WITH_TAGS": "Karaokês com esta tag",
 		"NOT_VALID_URL_ERROR": "Este não é um URL válido",

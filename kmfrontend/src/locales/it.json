@@ -1563,7 +1563,7 @@
 		"I18N_TOOLTIP": "Deve esserci almeno un nome per ogni lingua (inserisci il nome originale in inglese se non ce ne sono altri)",
 		"PRIORITY_TOOLTIP": "Le tag con un valore più alto verranno visualizzate prima. 10 è predefinito, -1 nasconde la tag all'interfaccia pubblica, -2 la nasconde ovunque (viene comunque usata durante la ricerca).",
 		"DELETE_TAG_MESSAGE": "Ciò rimuoverà la tag anche da tutti i brani nel tuo database!",
-		"KITSU_ID_TOOLTIP": "Se è un anime, si prega di inserire il suo id/url di kitsu.io",
+		"KITSU_ID_TOOLTIP": "Se è un anime, si prega di inserire il suo id/url di kitsu.app",
 		"MERGE_ABOUT_MESSAGE": "La tag finale avrà il nome attuale e quello abbreviato. Tipi, alias e traduzioni verranno uniti e la tag finale conterrà tutte le informazioni delle tag unite.",
 		"KARAFILETAG_TOOLTIP": "Questa verrà aggiunta nella sezione tipi del nome del file del karaoke"
 	},

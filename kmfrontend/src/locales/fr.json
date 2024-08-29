@@ -1285,7 +1285,7 @@
 		"ANILIST_ID": "Identifiant/URL Anilist",
 		"ANILIST_ID_TOOLTIP": "Si c'est un anime, indiquez son ID/url sur anilist.co",
 		"KITSU_ID": "Identifiant/URL Kitsu",
-		"KITSU_ID_TOOLTIP": "Si c'est un anime, indiquez son url sur kitsu.io",
+		"KITSU_ID_TOOLTIP": "Si c'est un anime, indiquez son url sur kitsu.app",
 		"NOT_MAL_URL_ERROR": "C'est une url myanimelist",
 		"NOT_ANILIST_URL_ERROR": "C'est une url anilist",
 		"NOT_KITSU_URL_ERROR": "C'est une url kitsu",
