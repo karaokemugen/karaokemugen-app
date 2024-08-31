@@ -1036,6 +1036,7 @@
 			"VIDEO_FRAMERATE": "Framerate",
 			"AUDIO_CODEC": "Audio codec",
 			"AUDIO_SAMPLE_RATE": "Audio sample rate",
+			"AUDIO_CHANNEL_LAYOUT": "Audio channel layout",
 			"AUDIO_COVER_ART": "Cover art",
 			"WARNINGS": {
 				"LIBAVCODEC_ENCODER": "The audio is encoded with the libavcodec (ffmpeg reference aac) encoder, which can create audible artifacts and is discouraged to utilize. Please use the libfdk_aac encoder for aac or another codec like opus, to get the best possible quality."
