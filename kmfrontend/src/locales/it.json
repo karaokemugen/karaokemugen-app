@@ -1221,7 +1221,8 @@
 				"LIBAVCODEC_ENCODER": "L'audio è codificato con il codificatore libavcodec (aac di riferimento di ffmpeg), il quale può creare difetti udibili. Si prega di utilizzare il codificatore libfdk_aac per aac o altri come opus per ottenere la miglior qualità possibile."
 			},
 			"AUDIO_SAMPLE_RATE": "Frequenza campionamento audio",
-			"DURATION": "Durata"
+			"DURATION": "Durata",
+			"AUDIO_CHANNEL_LAYOUT": "Layout canali audio"
 		},
 		"COPY_SONG": "Copia brano in altro archivio",
 		"TAG_FILTER": "Filtra tag",
