@@ -12,7 +12,6 @@ Karaoke Mugen will take care of moving this for you and warn you if it failed to
 
 ## Added
 
--   [Users] Added japanese translation (for the app)
 -   [Operators] Added support for non-HTTPS repositories. #1628
 -   [Maintainers] Added a link to documentation and rules on the karaoke creation form. #1623
 -   [Maintainers] Added media duration on karaoke creation form
@@ -32,7 +31,7 @@ Karaoke Mugen will take care of moving this for you and warn you if it failed to
 -   [Operators] Differential download of updates has been disabled since it's not being used.
 -   [Operators] MPRIS errors on Linux are now caught properly
 -   [Operators] End of preview generation is now properly logged
--   [Maintainers] "From display type" is now used in song list on systme panel
+-   [Maintainers] "From display type" is now used in song list on system panel
 -   [Maintainers] 3 version tags are allowed now in filenames. Other tag types stay at 2.
 -   [Maintainers] Tags cannot be saved anymore if their translations (i18n) are empty. #1655
 -   [Maintainers] Tag types are now required when creating/editing a tag. #1656
