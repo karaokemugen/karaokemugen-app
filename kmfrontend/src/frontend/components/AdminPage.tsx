@@ -3,12 +3,12 @@ import { debounce } from 'lodash';
 import { createElement, useCallback, useContext, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Route, Routes } from 'react-router';
-
 import { useSearchParams } from 'react-router-dom';
-import TasksEvent from '../../TasksEvent';
+
 import { setPlaylistInfoLeft, setPlaylistInfoRight } from '../../store/actions/frontendContext';
 import { showModal } from '../../store/actions/modal';
 import GlobalContext from '../../store/context';
+import TasksEvent from '../../TasksEvent';
 import { commandBackend, getSocket } from '../../utils/socket';
 import { decodeCriteriaReason, displayMessage, is_touch_device, nonStandardPlaylists } from '../../utils/tools';
 import { KaraElement } from '../types/kara';

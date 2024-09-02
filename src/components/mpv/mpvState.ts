@@ -1,5 +1,5 @@
-import { Observable, Subscriber } from 'rxjs';
 import { EventEmitter } from 'events';
+import { Observable, Subscriber } from 'rxjs';
 
 import Mpv from '../../utils/mpvIPC.js';
 

@@ -3,8 +3,8 @@ import './PlayCurrentModal.scss';
 import i18next from 'i18next';
 import { useContext, useEffect, useState } from 'react';
 import { Trans } from 'react-i18next';
-import { KaraList } from '../../../../../src/lib/types/kara';
 
+import { KaraList } from '../../../../../src/lib/types/kara';
 import { closeModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import { buildKaraTitle } from '../../../utils/kara';
@@ -17,7 +17,7 @@ interface IProps {
 
 function PlayCurrentModal(props: IProps) {
 	const context = useContext(GlobalContext);
-	const [nextSong, setNextSong] = useState<String>();
+	const [nextSong, setNextSong] = useState<string>();
 
 	const playCurrentPlaylist = async () => {
 		try {

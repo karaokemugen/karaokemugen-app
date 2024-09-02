@@ -41,7 +41,7 @@ describe('Karas information', () => {
 	});
 
 	it('Get songs in most recent order', async () => {
-		const data = await commandBackend(token, 'getKaras', { order: 'recent' });
+		const data = await commandBackend(token, 'getKaras', { order: 'recent', size: 400 });
 		const dateList = data.content.map((k: DBKara) => k.created_at);
 		const dateList2 = [].concat(dateList);
 		dateList2.sort();

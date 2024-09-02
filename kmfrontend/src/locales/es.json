@@ -182,7 +182,7 @@
 			"PLAYER_LANGUAGE": "Idioma de mensajes y el reproductor",
 			"DISPLAY_AVATAR_TOOLTIP": "El avatar del solicitante de la canción es mostrado al principio y final de la canción en la esquina inferior derecha de la esquina de la pantalla del reproductor.",
 			"DISPLAY_RANDOMQUOTES": "Mostrar citas aleatorias",
-			"DISPLAY_CONNECTION_INFO_TOOLTIP": "Es el \"Ve a https://xxx !\"",
+			"DISPLAY_CONNECTION_INFO_TOOLTIP": "Es el \"Ve a http://xxx !\"",
 			"DISPLAY_NICKNAME_TOOLTIP": "Muestra al pie de la pantalla al principio y final de una canción",
 			"LIVE_COMMENTS_TOOLTIP": "Los mensajes del chat se mostrarán en el reproductor (Cuidado, configurar correctamente AutoMod).",
 			"DISPLAY_CONNECTION_INFO_MESSAGE_TOOLTIP": "Personalizar el mensaje antes del link de acceso, para motivar a tu audiencia o darles más direcciones. Usa $url para indicar la URL para acceder a tu karaoke. Así: \"¡Ir a $url!\"",
@@ -357,7 +357,7 @@
 	"TOOLTIP_DELETE_FAVS": "Quitar canción de favoritos",
 	"TOOLTIP_DELETEKARA": "Quitar esta canción",
 	"TOOLTIP_ADD_SELECT_KARA": "Añadir canciones seleccionadas a la playlist - click derecho para añadir después de la canción actual",
-	"TOOLTIP_ADDKARA_ADMIN": "click derecho para añadirlo luego de la canción actual",
+	"TOOLTIP_ADDKARA_ADMIN": " click derecho para añadirlo luego de la canción actual",
 	"TOOLTIP_ADDKARA": "Añadir esta canción a la lista de reproducción",
 	"PROFILE_PASSWORDCONF": "Confirmar",
 	"PROFILE_PASSWORD_AGAIN": "Escribe tu contraseña",
@@ -430,7 +430,7 @@
 		"MESSAGE": "Mensaje",
 		"DURATION": "Duración (en segundos)",
 		"CL_ALL": "Mostrar en ambas",
-		"CL_USERS": "Mostrar en pantallas de usuario",
+		"CL_USERS": "Mostrar en las pantallas de los usuario",
 		"ESSENTIAL_MESSAGE": "Mensaje importante",
 		"CL_SCREEN": "Mostrar en la pantalla del reproductor"
 	},
@@ -920,7 +920,8 @@
 		"MEDIA_FILE_INFO": {
 			"AUDIO_CODEC": "Códec de audio",
 			"VIDEO_FRAMERATE": "Fotogramas por segundo"
-		}
+		},
+		"PREVIEW_HOOKS_MODAL": "Los siguientes cambios serán aplicados a los tags para esta canción"
 	},
 	"SETUP_PAGE": {
 		"LOCAL_ACCOUNT_DESC": "Ha elegido una cuenta local. Escriba un nombre de cuenta y una contraseña a continuación:",
@@ -1050,7 +1051,7 @@
 		"COPY_TAG": "Copiar etiqueta a otro repositorio",
 		"DESCRIPTION_TOOLTIP": "Una descripción de la etiqueta, utilizada solo para colecciones.",
 		"KITSU_ID": "Kitsu ID/URL",
-		"KITSU_ID_TOOLTIP": "Si se trata de un anime, indique su url en kitsu.io",
+		"KITSU_ID_TOOLTIP": "Si se trata de un anime, indique su url en kitsu.app",
 		"TYPES_TOOLTIP": "Este es el tipo de etiqueta, para que pueda ser buscada correctamente por los usuarios",
 		"ALIASES_TOOLTIP": "Nombres cortos o nombres alternativos, utilizados para búsqueda.",
 		"I18N_TOOLTIP": "Debe haber al menos un nombre en cualquier idioma (introduzca el nombre original en inglés si no hay otros)",
@@ -1197,7 +1198,7 @@
 		"SINGERGROUPS_one": "Banda",
 		"WARNINGS_one": "Advertencia",
 		"GROUPS_other": "Grupos",
-		"FAMILIES_one": "Familia",
+		"FAMILIES_one": "Contenido de vídeo",
 		"SINGERS_one": "Cantante",
 		"SONGTYPES_one": "Tipo de canción",
 		"MISC_one": "Misceláneas",
@@ -1221,7 +1222,7 @@
 		"GROUPS_one": "Grupo",
 		"FRANCHISES_one": "Franquicia",
 		"SINGERGROUPS_other": "Bandas",
-		"FAMILIES_other": "Familias"
+		"FAMILIES_other": "Contenidos de vídeo"
 	},
 	"SESSIONS": {
 		"NAME": "Nombre",
@@ -1278,7 +1279,6 @@
 		"SETTINGS_UPDATE_ERROR": "Error al actualizar la configuración",
 		"CONFIG_BACKUPED_ERROR": "Error durante la copia de seguridad del archivo de configuración",
 		"DATABASE_GENERATED_ERROR": "Ocurrió un error durante la generación en la base de datos",
-		"BACKGROUND_FILE_DELETE_ERROR_IN_USE": "No se puede eliminar el archivo, ¡está siendo utilizado por el reproductor!",
 		"USER_DELETE_ADMIN_DAMEDESU": "¡No puedes eliminar al usuario administrador!",
 		"USER_NOT_ALLOWED_TO_SING": "El usuario no puede iniciar la canción",
 		"PL_SONG_COPY_ERROR": "Error al copiar una canción en la lista de reproducción de destino",

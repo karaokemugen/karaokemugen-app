@@ -16,6 +16,7 @@ let updateRunning = false;
 export function initAutoUpdate() {
 	autoUpdater.logger = logger;
 	autoUpdater.autoDownload = false;
+	autoUpdater.disableDifferentialDownload = true;
 	autoUpdater.on('error', error => {
 		if (error.message === 'net::ERR_INTERNET_DISCONNECTED') {
 			// Not yet handled cleanly by the electron-updater package

@@ -46,13 +46,13 @@ export default function MigratePage() {
 					<nav>
 						<ul>
 							<li>
-								<a href="http://mugen.karaokes.moe/contact.html">
+								<a href="https://mugen.karaokes.moe/contact.html">
 									<i className="fas fa-pencil-alt" />
 									{i18next.t('WELCOME_PAGE.CONTACT')}
 								</a>
 							</li>
 							<li>
-								<a href="http://mugen.karaokes.moe/">
+								<a href="https://mugen.karaokes.moe/">
 									<i className="fas fa-link" />
 									{i18next.t('WELCOME_PAGE.SITE')}
 								</a>

@@ -1,11 +1,11 @@
 import { DeleteOutlined } from '@ant-design/icons';
 import { Button, Col, Layout, Radio, Row, Select, Table } from 'antd';
-import Title from '../components/Title';
 import i18next from 'i18next';
 import { Component } from 'react';
 
 import { commandBackend } from '../../utils/socket';
 import { getTagTypeName, tagTypes } from '../../utils/tagTypes';
+import Title from '../components/Title';
 
 interface SessionListState {
 	unused: any[];
@@ -39,7 +39,7 @@ class SessionList extends Component<unknown, SessionListState> {
 			unused: res
 				? res.map(value => {
 						return { name: value.name, types: value.types, file: value.tagfile, tid: value.tid };
-				  })
+					})
 				: [],
 		});
 	};
@@ -50,7 +50,7 @@ class SessionList extends Component<unknown, SessionListState> {
 			unused: res
 				? res.map(value => {
 						return { file: value };
-				  })
+					})
 				: [],
 		});
 	};

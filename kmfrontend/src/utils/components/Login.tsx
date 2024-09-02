@@ -1,6 +1,7 @@
 import './Login.scss';
 
 import i18next from 'i18next';
+import { debounce } from 'lodash';
 import { FormEvent, useCallback, useContext, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
@@ -13,7 +14,6 @@ import { isElectron } from '../electron';
 import { langSupport } from '../isoLanguages';
 import { commandBackend } from '../socket';
 import { callModal, displayMessage, lastLocation } from '../tools';
-import { debounce } from 'lodash';
 
 interface UserApi extends User {
 	role: 'admin' | 'user';

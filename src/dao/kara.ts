@@ -219,13 +219,13 @@ export function organizeTagsInKara<T extends DBKara>(row: T & { tags: any }): T 
 	for (const tagType of Object.keys(tagTypes)) {
 		rowWithoutTags[tagType] = [];
 	}
-	if (tags == null) {
+	if (tags === null) {
 		return <any>rowWithoutTags;
 	}
 	for (const tag of tags) {
-		if (tag?.type_in_kara == null) continue;
+		if (tag?.type_in_kara === null) continue;
 		const type = getTagTypeName(tag.type_in_kara);
-		if (type == null) continue;
+		if (!type) continue;
 		rowWithoutTags[type].push(tag);
 	}
 	return <any>rowWithoutTags;

@@ -1,12 +1,12 @@
 import './QuizPage.scss';
 
+import i18next from 'i18next';
 import { debounce, merge, uniqBy } from 'lodash';
 import { RefObject, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { useAsyncMemo } from 'use-async-memo';
-
-import i18next from 'i18next';
 import { Trans } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { useAsyncMemo } from 'use-async-memo';
+
 import { KaraList as IKaraList } from '../../../../../src/lib/types/kara';
 import { User } from '../../../../../src/lib/types/user';
 import {
@@ -489,8 +489,8 @@ export default function QuizPage() {
 										possibleAnswerType === 'title'
 											? 'KARA.TITLE'
 											: possibleAnswerType === 'year'
-											? 'KARA.YEAR'
-											: `TAG_TYPES.${possibleAnswerType.toUpperCase()}_other`
+												? 'KARA.YEAR'
+												: `TAG_TYPES.${possibleAnswerType.toUpperCase()}_other`
 									)}{' '}
 									{i18next.t('QUIZ.RULES.ACCEPTED_ANSWERS_POINTS', { points: Points })}
 								</li>

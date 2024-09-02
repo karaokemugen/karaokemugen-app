@@ -4,9 +4,10 @@ import i18next from 'i18next';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import ResizeObserver from 'resize-observer-polyfill';
-
 import { useAsyncMemo } from 'use-async-memo';
+
 import { GameScore } from '../../../../../src/types/quiz';
+import type { PublicPlayerState } from '../../../../../src/types/state';
 import nanamiPNG from '../../../assets/nanami.png';
 import nanamiWebP from '../../../assets/nanami.webp';
 import { logout } from '../../../store/actions/auth';
@@ -16,7 +17,6 @@ import { useResizeListener } from '../../../utils/hooks';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { displayMessage, secondsTimeSpanToHMS } from '../../../utils/tools';
 import PlayerControls from '../PlayerControls';
-import type { PublicPlayerState } from '../../../../../src/types/state';
 
 interface IProps {
 	onResize: (top: string) => void;
@@ -123,7 +123,7 @@ function PublicHeader(props: IProps) {
 		// This will emit a quotaAvailableUpdated event
 		commandBackend('refreshUserQuotas');
 		props.onResize(`${ref.current.scrollHeight}px`);
-		let observer = new ResizeObserver(resizeCheck);
+		const observer = new ResizeObserver(resizeCheck);
 		observer.observe(document.getElementById('menu-supp-root'));
 		return () => {
 			getSocket().off('quotaAvailableUpdated', updateQuotaAvailable);
@@ -216,8 +216,8 @@ function PublicHeader(props: IProps) {
 								{quotaLeft === -1
 									? '∞'
 									: quotaType === 2
-									  ? secondsTimeSpanToHMS(quotaLeft, 'ms')
-									  : quotaLeft}
+										? secondsTimeSpanToHMS(quotaLeft, 'ms')
+										: quotaLeft}
 							</div>
 						) : null}
 					</>

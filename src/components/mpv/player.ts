@@ -2,10 +2,14 @@ import i18n from 'i18next';
 import retry from 'p-retry';
 import { resolve } from 'path';
 import randomstring from 'randomstring';
+import { from } from 'rxjs';
+import { concatMap, first, throttleTime } from 'rxjs/operators';
 import { graphics } from 'systeminformation';
+
 import { getConfig, resolvedPath } from '../../lib/utils/config.js';
 import { date, time } from '../../lib/utils/date.js';
 import logger from '../../lib/utils/logger.js';
+import { emit } from '../../lib/utils/pubsub.js';
 import { playerEnding } from '../../services/karaEngine.js';
 import { next, pausePlayer, playPlayer, prev } from '../../services/player.js';
 import { notificationNextSong } from '../../services/playlist.js';
@@ -17,11 +21,8 @@ import MpvIPC from '../../utils/mpvIPC.js';
 import sentry from '../../utils/sentry.js';
 import { getState } from '../../utils/state.js';
 import { isShutdownInProgress } from '../engine.js';
-import { emit } from '../../lib/utils/pubsub.js';
-import { Players, playerState, emitPlayerState } from '../mpv.js';
+import { emitPlayerState, Players, playerState } from '../mpv.js';
 import { MpvState } from './mpvState.js';
-import { from } from 'rxjs';
-import { concatMap, first, throttleTime } from 'rxjs/operators';
 
 export class Player {
 	private readonly log: logger.Logger;

@@ -1,15 +1,15 @@
 import { Button, Cascader, Col, Layout, Radio, Row, Select, Table } from 'antd';
-import Title from '../../components/Title';
 import i18next from 'i18next';
 import { Component } from 'react';
 import { Link } from 'react-router-dom';
 
 import type { DBKara } from '../../../../../src/lib/types/database/kara';
+import type { TagTypeNum } from '../../../../../src/lib/types/tag';
 import GlobalContext from '../../../store/context';
-import { getSeriesSingersFull, getTagInLocaleList, getTitleInLocale } from '../../../utils/kara';
+import { getSerieOrSingerGroupsOrSingers, getTagInLocaleList, getTitleInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
-import type { TagTypeNum } from '../../../../../src/lib/types/tag';
+import Title from '../../components/Title';
 
 interface PlaylistElem {
 	plaid: string;
@@ -212,11 +212,11 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 			},
 		},
 		{
-			title: `${i18next.t('TAG_TYPES.SERIES_other')} / ${i18next.t('KARA.SINGERS_BY')}`,
+			title: i18next.t('KARA.FROM_DISPLAY_TYPE_COLUMN'),
 			dataIndex: 'series',
 			key: 'series',
 			render: (_series, record: DBKara) =>
-				getSeriesSingersFull(this.context?.globalState.settings.data, record, this.state.i18nTag),
+				getSerieOrSingerGroupsOrSingers(this.context?.globalState.settings.data, record, this.state.i18nTag),
 		},
 		{
 			title: i18next.t('TAG_TYPES.SONGTYPES_other'),

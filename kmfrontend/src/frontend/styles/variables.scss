@@ -71,3 +71,8 @@ $block-border-width: 4px solid;
 @mixin shadow($color: rgba(0, 0, 0, 0.75)) {
 	text-shadow: 2px 2px 2px $color;
 }
+
+// Export vars for global usage
+:root {
+	--mugen-background: #{$mugen-background};
+}

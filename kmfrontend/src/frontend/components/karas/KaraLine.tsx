@@ -12,6 +12,7 @@ import {
 	buildKaraTitle,
 	getOppositePlaylistInfo,
 	getPlaylistInfo,
+	getSerieOrSingerGroupsOrSingers,
 	getTagInLocale,
 	getTitleInLocale,
 	sortAndHideTags,
@@ -235,19 +236,6 @@ function KaraLine(props: IProps) {
 		return karaTags.filter(el => !!el);
 	})();
 
-	const getSerieOrSingerGroupsOrSingers = (data: KaraElement) => {
-		if (data.from_display_type && data[data.from_display_type] && data[data.from_display_type].length > 0) {
-			return data[data.from_display_type].map(e => getTagInLocale(settings, e, props.i18nTag).i18n).join(', ');
-		}
-		if (data.series?.length > 0) {
-			return data.series.map(e => getTagInLocale(settings, e, props.i18nTag).i18n).join(', ');
-		}
-		if (data.singergroups?.length > 0) {
-			return data.singergroups.map(e => getTagInLocale(settings, e, props.i18nTag).i18n).join(', ');
-		}
-		return data.singers.map(e => getTagInLocale(settings, e, props.i18nTag).i18n).join(', ');
-	};
-
 	const openKaraMenu = (event: MouseEvent) => {
 		document.getElementById('root').click();
 		if (event?.currentTarget) {
@@ -285,7 +273,7 @@ function KaraLine(props: IProps) {
 	};
 
 	const karaTitle = buildKaraTitle(settings, kara, false, props.i18nTag);
-	const karaSerieOrSingerGroupsOrSingers = getSerieOrSingerGroupsOrSingers(kara);
+	const karaSerieOrSingerGroupsOrSingers = getSerieOrSingerGroupsOrSingers(settings, kara, props.i18nTag);
 	const plaid = getPlaylistInfo(props.side, context).plaid;
 	const shouldShowProfile = settings.config.Frontend?.ShowAvatarsOnPlaylist && props.avatar_file;
 	return (

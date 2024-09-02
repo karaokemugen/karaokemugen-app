@@ -1,12 +1,12 @@
 import { ArrowRightOutlined } from '@ant-design/icons';
 import { Button, Collapse, Layout, Select, Timeline } from 'antd';
-import Title from '../components/Title';
 import i18next from 'i18next';
 import { Component } from 'react';
 
 import GlobalContext from '../../store/context';
 import i18n from '../../utils/i18n';
 import { commandBackend, getSocket, isRemote } from '../../utils/socket';
+import Title from '../components/Title';
 
 interface LogState {
 	log: { level: string; message: string; timestamp: string; service: string; obj?: any }[];

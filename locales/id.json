@@ -60,7 +60,6 @@
 	"MENU_HELP_CHANGELOG": "&Catatan Rilis",
 	"MENU_HELP_GITLAB": "&GitLab",
 	"MENU_HELP_GUIDE": "&Petunjuk",
-	"MENU_HELP_SEND_KARAOKE": "&Kirim Lagu karaokemu",
 	"MENU_HELP_REPORT_BUG": "Laporkan &bug",
 	"MENU_GOTO": "&Pergi ke",
 	"MENU_GOTO_OSX": "Pergi",
@@ -103,7 +102,6 @@
 			"Kamu bisa menggunakan tombol multimedia di papan ketikmu untuk mengendalikan karaoke!",
 			"Jangan lupa untuk memasang sabuk pengaman sebelum melakukan karaoke. Nyanyilah dengan aman dan hati-hati pengeras suara jatuh!",
 			"Jangan lupa untuk menyinkronkan basis data sewaktu-waktu; kamu mungkin menemukan beberapa lagu karaoke baru!",
-			"Tidak dapat menemukan sebuah lagu di basis data? Jangan ragu untuk mengunjungi https://kara.moe/suggest/, mungkin saja ada di sana!",
 			"Karaoke Mugen merupakan 100% proyek kolaboratif dengan sumber terbuka, semuanya dapat berpartisipasi!",
 			"kamu dapat mengimpor berkas melalui menu berkas -> impor, menarik dan meletakannya atau mengasosiasikannya dengan program Karaoke Mugen untuk memperbolehkan KM untuk membuka dan menggunakannya pada: daftar putarm favorit…",
 			"Aku Nanamin, maskot Karaoke Mugen, dan aku dibuat oleh si hebat, Sedeto! http://www.sedeto.fr",
@@ -176,8 +174,8 @@
 		"TITLE": "Repositori tidak diketahui",
 		"MESSAGE": "Kamu baru saja akan menambahkan repositori {{repoName}} ke Karaoke Mugen. Apakah kamu yakin?"
 	},
-	"GENERATING_READING": "Langkah 1/2 - Membaca data…",
-	"GENERATING_DATABASE": "Langkah 2/2 - Memperbarui basis data…",
+	"GENERATING_READING": "Langkah 1 / 2 - Membaca data…",
+	"GENERATING_DATABASE": "Langkah 2 / 2 - Memperbarui basis data…",
 	"TWITCH": {
 		"CHAT": {
 			"VOTE": "Cara memberikan suara baru: gunakan !vote x, dengan x merupakan nomor lagu:",
@@ -221,10 +219,6 @@
 	"MENU_VIEW_ZOOMIN": "&Perbesar",
 	"MENU_EDIT_SPEECH": "Kata-kata",
 	"MENU_TOOLS_DATABASE": "Basis&data",
-	"WORLD_REPOSITORY_DISABLED": {
-		"MESSAGE": "Dikarenakan penambahan Koleksi, repositori World dan kara.moe telah digabung. Dengan begitu, repositori World tidak dibutuhkan lagi. Itu telah dimatikan dan kami menyarankan kamu untuk menghapus seluruhnya di Bilah Sistem.",
-		"TITLE": "Repositori World telah dimatikan"
-	},
 	"PERMISSIONS_KEYBOARD_INFO_MACOS": {
 		"TITLE": "Permintaan izin",
 		"MESSAGE": "macOS akan meminta kamu untuk menambahkan Karaoke Mugen ke perizinan aksesibilitas sistem. Izin ini memperbolehkan kamu untuk menggunakan kunci media papan tik kamu untuk mengontrol pemutar video. Kamu bisa menolak untuk menambahkan izini ini, tapi kunci media tidak akan bekerja."
@@ -275,5 +269,6 @@
 		"COLLECTIONS": "Koleksi"
 	},
 	"YEAR": "Tahun",
-	"TITLE": "Judul"
+	"TITLE": "Judul",
+	"UNKNOWN": "Tidak diketahui"
 }

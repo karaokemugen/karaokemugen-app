@@ -21,7 +21,9 @@ const dbConfig = {
 };
 
 async function main() {
-	const configFile = readFileSync('app/config.yml', 'utf-8');
+	const defaultConfigFilePath = 'app/config.yml';
+	const configFilePath = process.argv[2] || process.env.KMCONFIG || defaultConfigFilePath;
+	const configFile = readFileSync(configFilePath, 'utf-8');
 	const configData = load(configFile);
 	const config = merge(dbConfig, configData.System.Database);
 	const databaseConfig = {

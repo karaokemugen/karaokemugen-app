@@ -9,6 +9,7 @@ import sourceMapSupport from 'source-map-support';
 import { exit } from './components/engine.js';
 import { startElectron } from './electron/electron.js';
 import logger from './lib/utils/logger.js';
+import { moveUserDir } from './utils/hokutoNoCode.js';
 import sentry from './utils/sentry.js';
 import { setState } from './utils/state.js';
 
@@ -87,14 +88,27 @@ try {
 
 sentry.init(process.argv.includes('--strict'));
 
-// dataPath is appPath + /app. This is default when running from source
-const dataPath = existsSync(resolve(appPath, 'portable'))
-	? resolve(appPath, 'app/')
-	: // Rewriting dataPath to point to user home directory
-		// With Electron we get the handy app.getPath()
-		resolve(app.getPath('home'), 'KaraokeMugen');
+// dataPath is appPath + /app. This is default when running from source or in portable mode
+let dataPath = '';
+if (existsSync(resolve(appPath, 'portable'))) {
+	dataPath = resolve(appPath, 'app/');
+} else {
+	if (process.platform === 'linux') {
+		// appData for Electron is XDG_CONFIG_HOME but we'll prefer XDG_DATA_HOME for config and stuff
+		app.setPath('appData', process.env.XDG_DATA_HOME || resolve(process.env.HOME, '.local/share'));
+	}
+	dataPath = resolve(app.getPath('userData'), 'app/');
+}
 
 if (!existsSync(dataPath)) mkdirpSync(dataPath);
+
+try {
+	moveUserDir(dataPath);
+} catch (err) {
+	setState({ errorMovingUserDir: true });
+	console.log(err);
+	// Non-fatal, but users might panic.
+}
 
 if (existsSync(resolve(appPath, 'disableAppUpdate'))) setState({ forceDisableAppUpdate: true });
 

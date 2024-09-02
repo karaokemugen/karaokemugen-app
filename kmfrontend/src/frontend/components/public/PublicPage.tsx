@@ -1,10 +1,10 @@
 import i18next from 'i18next';
+import { merge } from 'lodash';
 import { useContext, useEffect, useState } from 'react';
 import { Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
 
-import { DBPLCInfo } from '../../../../../src/types/database/playlist';
 import { DBPLC } from '../../../../../src/lib/types/database/playlist';
-
+import { DBPLCInfo } from '../../../../../src/types/database/playlist';
 import { PublicPlayerState } from '../../../../../src/types/state';
 import nanamiSingingPng from '../../../assets/nanami-sing.png';
 import nanamiSingingWebP from '../../../assets/nanami-sing.webp';
@@ -22,13 +22,12 @@ import ClassicModeModal from '../modals/ClassicModeModal';
 import PollModal from '../modals/PollModal';
 import ProfilModal from '../modals/ProfilModal';
 import UsersModal from '../modals/UsersModal';
+import NotfoundPage from '../NotfoundPage';
 import PlayerBox from './PlayerBox';
 import PublicHeader from './PublicHeader';
 import PublicHomepage from './PublicHomepage';
 import PublicList from './PublicList';
-import NotfoundPage from '../NotfoundPage';
 import QuizPage from './QuizPage';
-import { merge } from 'lodash';
 
 let timer: any;
 

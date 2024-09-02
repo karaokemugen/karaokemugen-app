@@ -1,9 +1,12 @@
+import { execa } from 'execa';
+import { readFile, unlink, writeFile } from 'fs/promises';
 import i18next from 'i18next';
 import { resolve } from 'path';
 import { DefaultLogFields, ListLogLine, SimpleGit, simpleGit, SimpleGitProgressEvent } from 'simple-git';
 import which from 'which';
 
 import { Repository } from '../lib/types/repo.js';
+import { resolvedPath } from '../lib/utils/config.js';
 import { ErrorKM } from '../lib/utils/error.js';
 import { fileExists } from '../lib/utils/files.js';
 import logger from '../lib/utils/logger.js';
@@ -40,6 +43,9 @@ export default class Git {
 
 	opts: GitOptions;
 
+	keyFile: string;
+	knownHostsFile: string;
+
 	task: Task;
 
 	constructor(opts: GitOptions) {
@@ -50,6 +56,8 @@ export default class Git {
 			password: opts.password,
 			repoName: opts.repoName,
 		};
+		this.keyFile = resolve(resolvedPath('SSHKeys'), `id_rsa_KaraokeMugen_${opts.repoName}`);
+		this.knownHostsFile = resolve(resolvedPath('SSHKeys'), `known_hosts_KaraokeMugen_${opts.repoName}`);
 	}
 
 	progressHandler({ method, stage, progress }: SimpleGitProgressEvent) {
@@ -65,11 +73,22 @@ export default class Git {
 		}
 	}
 
+	isSshUrl() {
+		/* eslint security/detect-unsafe-regex: 0 */
+		return /^(?:([a-z_][a-z0-9_]{0,30})@)?((?:[a-z0-9-_]+\.)+[a-z0-9]+)(?::([0-9]{0,5}))?([^\0\n]+)?$/.test(
+			this.opts.url.toLowerCase()
+		);
+	}
+
 	private getFormattedURL() {
-		const url = new URL(this.opts.url);
-		url.username = this.opts.username;
-		url.password = this.opts.password;
-		return url.href;
+		if (this.isSshUrl()) {
+			return this.opts.url;
+		} else {
+			const url = new URL(this.opts.url);
+			url.username = this.opts.username;
+			url.password = this.opts.password;
+			return url.href;
+		}
 	}
 
 	/** Prepare git instance */
@@ -100,6 +119,28 @@ export default class Git {
 				await this.setRemote();
 				await this.git.branch(['--set-upstream-to=origin/master', 'master']);
 			}
+			if (this.isSshUrl() && (await fileExists(this.keyFile))) {
+				await this.git.addConfig(
+					'core.sshCommand',
+					`ssh -o UserKnownHostsFile="${this.knownHostsFile}" -i "${this.keyFile}"`
+				);
+				await this.updateKnownHostsFile(url);
+			} else {
+				await this.git.raw(['config', '--unset', 'core.sshCommand']);
+			}
+		}
+	}
+
+	async updateKnownHostsFile(repoURL: string) {
+		const host = repoURL.split('@')[1].split(':')[0];
+		try {
+			await execa('ssh-keygen', ['-q', '-f', this.knownHostsFile, '-F', host]);
+		} catch (_) {
+			logger.debug(`Scanning key for host ${host}`, { service });
+			const { stdout } = await execa('ssh-keyscan', ['-t', 'rsa', host]);
+			const hostSignature = stdout;
+			logger.debug(`Finished scanning key for host ${host}`);
+			await writeFile(this.knownHostsFile, hostSignature, 'utf-8');
 		}
 	}
 
@@ -107,6 +148,36 @@ export default class Git {
 	async getCurrentCommit() {
 		const show = await this.git.show();
 		return show.split('\n')[0].split(' ')[1];
+	}
+
+	async generateSSHKey() {
+		await this.removeSSHKey();
+		try {
+			await execa('ssh-keygen', ['-b', '2048', '-t', 'rsa', '-f', this.keyFile, '-q', '-N', '']);
+		} catch (err) {
+			logger.error(`Unable to generate SSH keypair : ${err}`, { service, obj: err });
+			logger.error(`ssh-keygen STDERR: ${err.stderr}`, { service });
+			logger.error(`ssh-keygen STDOUT: ${err.stdout}`, { service });
+			throw err;
+		}
+	}
+
+	async removeSSHKey() {
+		logger.debug(`Trying to remove ${this.keyFile}`, { service });
+		if (await fileExists(this.keyFile, true)) {
+			await unlink(this.keyFile);
+			logger.debug(`Removed ${this.keyFile}`, { service });
+		}
+		logger.debug(`Trying to remove ${this.keyFile}.pub`, { service });
+		if (await fileExists(`${this.keyFile}.pub`, true)) {
+			await unlink(`${this.keyFile}.pub`);
+			logger.debug(`Removed ${this.keyFile}.pub`, { service });
+		}
+	}
+
+	async getSSHPubKey(): Promise<string> {
+		const pubKey = await readFile(`${this.keyFile}.pub`, 'utf-8');
+		return pubKey;
 	}
 
 	async wipeChanges() {
@@ -223,7 +294,7 @@ export default class Git {
 
 	/** Call this when repo has changed its settings */
 	async setRemote() {
-		if (!this.opts.username || !this.opts.password) throw 'Username and/or password empty';
+		if (!this.isSshUrl() && (!this.opts.username || !this.opts.password)) throw 'Username and/or password empty';
 		return this.git.remote(['set-url', 'origin', this.getFormattedURL()]);
 	}
 

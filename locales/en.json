@@ -135,7 +135,6 @@
 	"MENU_HELP_GITLAB": "&GitLab",
 	"MENU_HELP_GUIDE": "&Guide",
 	"MENU_HELP_CONTRIB_DOC": "&Create your Karaoke",
-	"MENU_HELP_SEND_KARAOKE": "&Send your Karaoke",
 	"MENU_HELP_REPORT_BUG": "Report a &bug",
 	"MENU_GOTO": "&Go to",
 	"MENU_GOTO_OSX": "Go",
@@ -174,9 +173,21 @@
 	"ABOUT": {
 		"TITLE": "About Karaoke Mugen"
 	},
-	"WORLD_REPOSITORY_DISABLED": {
-		"TITLE": "World repository has been disabled",
-		"MESSAGE": "Due to the addition of Collections, the World and kara.moe repositories have been merged. Thus, the World repository is not necessary anymore. It has been disabled, and we advise you to remove it entirely in the System Panel."
+	"MOVED_USER_DIR_DIALOG": {
+		"TITLE": "User folder moved!",
+		"MESSAGE": "In order to be compliant with your operating system's standards, the User Data folder has been moved. Before, it was:\n\n{{oldDir}}\n\nNow it's:\n\n{{newDir}}\n\nIf you are a streamer, you might want to update your OBS layout to point to the right text files at their new location.",
+		"UNDERSTOOD": "Got it!"
+	},
+	"MOVED_USER_DIR_FLATPAK_DIALOG": {
+		"TITLE": "Flatpak users!",
+		"MESSAGE": "The user folder's contents have been moved, but since you're using a Flatpak version of Karaoke Mugen, the app cannot remove the old folder. You should remove it yourself here:\n\n{{oldDir}}\n\n(It should be empty!)",
+		"UNDERSTOOD": "Got it! I'll do that before I forget!"
+	},
+	"MOVING_USER_DIR_ERROR_DIALOG": {
+		"TITLE": "Unable to move the Karaoke Mugen data folder",
+		"MESSAGE": "Karaoke Mugen's data folder has been moved. Before it was this:\n\n{{oldDir}}\n\nNow it's this:\n\n{{newDir}}\n\nAn error occured when trying to move that folder. You should click on \"Quit\" and move the folder yourself.\n\nYou can also click on \"Continue\". If yuou do, you'll start over with a brand new data folder. We suggest you then delete the old folder shown above.",
+		"CONTINUE": "Continue",
+		"QUIT": "Quit"
 	},
 	"DATABASE_IN_THE_FUTURE_ERROR": {
 		"TITLE": "Database is in the future, Marty!",
@@ -197,7 +208,6 @@
 			"You can use the multimedia keys on your keyboard to control your karaoke !",
 			"Don't forget to put your safety belt before doing karaoke. Sing safely and be careful of speaker drops !",
 			"Don't forget to sync the base sometimes: you may discover some new karaokes!",
-			"Can't find a song in the database? Don't hesitate to look on https://kara.moe/suggest/, it may be there!",
 			"Karaoke Mugen is a 100% open source and collaborative project, everyone can participate!",
 			"You can import files via the File Menu -> Import, drag & drop them or associate the Karaoke Mugen executable to it to allow KM to open them and use them : playlists, favorites…",
 			"I'm Nanamin, Karaoke Mugen's mascott, and I was created by the wonderful Sedeto! http://www.sedeto.fr",
@@ -266,8 +276,8 @@
 		"TITLE": "Unknown repository",
 		"MESSAGE": "You're about to add the {{repoName}} repository to Karaoke Mugen. Are you sure?"
 	},
-	"GENERATING_READING": "Step 1/2 - Reading data…",
-	"GENERATING_DATABASE": "Step 2/2 - Updating database…",
+	"GENERATING_READING": "Step 1 / 2 - Reading data…",
+	"GENERATING_DATABASE": "Step 2 / 2 - Updating database…",
 	"TWITCH": {
 		"CHAT": {
 			"VOTE": "New vote : use !vote x where x is the song number:",

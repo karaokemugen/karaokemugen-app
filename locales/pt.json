@@ -11,7 +11,6 @@
 			"Podes utilizar as teclas multimédia do seu teclado para controlar o seu karaokê!",
 			"Não se esqueça de colocar seu cinto de segurança antes de fazer karaokê. Cante com segurança e tenha cuidado os altifalantes!",
 			"Não se esqueça de sincronizar a base de vez em quando: Podes descobrir novos karaokês!",
-			"Não consegue encontrar uma música na base de dados? Procure em https://kara.moe/suggest/, pode estar lá!",
 			"Karaoke Mugen é um projeto de código 100% aberto e colaborativo, todos podem participar!",
 			"Você pode importar arquivos através do Menu Arquivo -> Importar, arraste e solte ou associe o executável Karaokê Mugen a ele para permitir que KM os abra e use: listas de reprodução, favoritos…",
 			"Sou a Nanamin, a mascote do Karaoke Mugen, fui criado pela maravilhosa Sedeto! http://www.sedeto.fr",
@@ -31,13 +30,17 @@
 			"O Monitor permite-lhe ver a canção que está a tocar atualmente mesmo se você não puder ver a tela de onde você está.",
 			"O modo Karaokê clássico emula o que você encontra em cabines de karaokê japonesas, concursos de karaokê ou eventos de anime: uma pausa é feita entre cada canção e o título e solicitante da próxima canção são exibidos na tela.",
 			"A sua sessão de karaokê vai terminar em breve? Mude a interface para o modo restrito: os usuários não poderão adicionar mais músicas, mas poderão ver o que vem a seguir.",
-			"Precisas de enviar uma mensagem ao seu público? A opção de enviar uma mensagem irá mostrar o que enviares para todos os dispositivos móveis e/ou no ecrã do karaokê!"
+			"Precisas de enviar uma mensagem ao seu público? A opção de enviar uma mensagem irá mostrar o que enviares para todos os dispositivos móveis e/ou no ecrã do karaokê!",
+			"Ao pesquisar, você pode digitar “-word” para excluir karaokês que contenham essa palavra (seja no título, na série, nos cantores, etc.) dos resultados da pesquisa.",
+			"Você pode aceitar ou recusar músicas da playlist pública. Para fazer isso, exiba a playlist pública e a atual lado a lado.",
+			"Aceitar ou recusar uma sugestão pública devolve a cota de músicas ao usuário que a solicitou e adiciona a música à playlist atual!",
+			"Ao pesquisar, você pode colocar um grupo de palavras entre aspas duplas para solicitar exatamente aquele texto. Digite \"love live\" para ter karaokês apenas da série Love Live."
 		],
 		"ERRORS": [
 			"Se precisares de ajuda, venha ao nosso servidor de Discord: https://karaokes.moe/discord",
 			"Por favor, verifique se uma outra instância do Karaoke Mugen está em execução.",
 			"Dê uma vista de olhos nos registros, a razão por trás do erro pode estar explicado dentro deles!",
-			"Não entre em pânico! Tudo vai estar daijoubom!"
+			"Não entre em pânico, tudo vai estar daijoubom"
 		],
 		"TITLES": {
 			"NORMAL": "Truques e Dicas com a Nanamin",
@@ -93,14 +96,13 @@
 	"MENU_HELP_WEBSITE": "&Website",
 	"MENU_HELP_DISCORD": "&Discord",
 	"MENU_HELP_FORUM": "&Fórum",
-	"MENU_HELP_TWITTER": "&𝕏",
+	"MENU_HELP_TWITTER": "&𝕏 (antigo Twitter)",
 	"MENU_HELP_MASTODON": "&Mastodon",
 	"MENU_HELP_BLUESKY": "&Bluesky",
 	"MENU_HELP_CHANGELOG": "&Notas de lançamento",
 	"MENU_HELP_GITLAB": "&GitLab",
 	"MENU_HELP_GUIDE": "&Guia",
 	"MENU_HELP_CONTRIB_DOC": "&Crie o seu Karaokê",
-	"MENU_HELP_SEND_KARAOKE": "&Envie o seu Karaokê",
 	"MENU_HELP_REPORT_BUG": "Reportar um &erro",
 	"MENU_GOTO": "&Ir para",
 	"MENU_GOTO_HOME": "&Início",
@@ -115,9 +117,6 @@
 	"UPDATE_PROMPT": "Queres atualizar o Karaoke Mugen?",
 	"UPDATE_CHECK_ERROR": "Ocorreu um erro ao tentar verificar as atualizações do Karaoke Mugen",
 	"UPDATE_ERROR": "Ocorreu um erro ao tentar atualizar o Karaoke Mugen: ",
-	"WORLD_REPOSITORY_DISABLED": {
-		"TITLE": "O repositório mundial foi desativado"
-	},
 	"REPO_DISABLED": {
 		"MESSAGE": "O repositório {{repo}} foi desativado porque uma das suas pastas não está disponível. Se alguma das suas pastas estiver numa drive externa, certifique-se de que está ligada e entre no Painel do Sistema > Repositórios para a voltar a ativar.",
 		"TITLE": "Repositório desativado"
@@ -141,12 +140,14 @@
 			"prepara listas de reprodução",
 			"prepara os favoritos",
 			"a configurar tudo",
-			"RTFMs (não)",
+			"RTFM (não)",
 			"a espreguiçar!",
 			"a fazer absolutamente nada",
 			"numa convenção (dentro da cabeça)",
 			"a ver os comboios a passar"
-		]
+		],
+		"QUIZ_IN_PROGRESS": "Quiz Musical em andamento!",
+		"QUIET!": "Sshh...!"
 	},
 	"UNKNOWN_ARTIST": "Artista desconhecido",
 	"REPOSITORY_ALREADY_EXISTS": {
@@ -179,7 +180,9 @@
 		},
 		"STAGES": {
 			"resolving": "Resolvendo delta",
-			"receiving": "Recebendo dados"
+			"receiving": "Recebendo dados",
+			"writing": "Gravando arquivos",
+			"counting": "Contando arquivos"
 		}
 	},
 	"OFFICIAL_WEBSITE": "Website oficial",
@@ -216,12 +219,13 @@
 	"MENU_TOOLS_LOGS": "&Registro de eventos",
 	"CURRENT_VERSION_OK": "Você já está a utilizar a versão mais recente do Karaoke Mugen!",
 	"INTERFACE_RESTRICTED": "Sem sugestões",
-	"GENERATING_DATABASE": "Passo 2/2 - Atualizando a base de dados…",
+	"GENERATING_DATABASE": "Passo 2 / 2 - Atualizando a base de dados…",
 	"RESTARTING_PLAYER": "REINICIANDO O PLAYER…",
 	"MISSING_BINARIES": {
-		"TITLE": "Binários em falta"
+		"TITLE": "Binários em falta",
+		"MESSAGE": "Um ou mais binários necessários ao Karaoke Mugen não foram encontrados.\n\nEdite seu config.yml e defina as variáveis System.Binaries.ffmpeg, System.Binaries.Player e System.Binaries.Postgres corretamente para o seu sistema operacional.\n\nVocê pode baixar mpv para o seu sistema operacional em http://mpv.io/\n\nVocê pode baixar o postgreSQL para o seu sistema operacional em http://postgresql.org/\n\nVocê pode baixar o ffmpeg para o seu sistema operacional em http://ffmpeg.org\n\nVocê pode baixar o utilitário patch em https://mugen.karaokes.moe/downloads/patch.exe (Windows) ou https://mugen.karaokes.moe/downloads/patch (macOS) ou pacote GNU Patch 2.7+ (Linux )\n\nDetalhes do erro: "
 	},
-	"GENERATING_READING": "Passo 1/2 - A ler os dados…",
+	"GENERATING_READING": "Passo 1 / 2 - A ler os dados…",
 	"SUGGEST_SONGS": "Sugerir canções!",
 	"REQUESTED_AND_other": "e {{count}} outros",
 	"REQUESTED_WITH": "(com {{names}})",
@@ -242,9 +246,99 @@
 		"SONGTYPES": "Tipo de música",
 		"PLATFORMS": "Plataforma",
 		"SERIES": "Série",
-		"LANGS": "Linguagem"
+		"LANGS": "Linguagem",
+		"SINGERS": "Cantor",
+		"FAMILIES": "Conteúdo em Vídeo"
 	},
 	"LIBRARY": "Biblioteca",
 	"YEAR": "Ano",
-	"TITLE": "Título"
+	"TITLE": "Título",
+	"MIGRATION_MESSAGES": [
+		"Alinhando microfones",
+		"Calculando normalização das ondas sonoras",
+		"Gelando as bebidas",
+		"Calibrando cordas vocais",
+		"Descobrindo a cidade perdida de Karaokum Mugen-la",
+		"Calculando resposta para a vida, o universo, e todo o resto",
+		"Iniciando o convetor de tempo",
+		"resolvendo equações sinfônicas",
+		"Configurando condutos supra-sônicos",
+		"Tirando o lixo",
+		"Encomendando bebidas e lanches",
+		"Melhorando o desempenho musical",
+		"Carregando Wikipedia",
+		"Alimentando o gato",
+		"Configurando nadadeiras",
+		"Absorvendo erros luminescentes",
+		"Gerenciando ataques de fígado",
+		"Espalhando chocolate",
+		"Cozinhando pizzas",
+		"Cozinhando hambúrguer",
+		"Aquecendo queijo raclette",
+		"Grelhando salsichas",
+		"Cortando salsichas",
+		"Removendo bytes quânticos",
+		"Gerenciando vizinhos",
+		"Manipulando barómetro",
+		"Acelerando partículas cantoras",
+		"Aumentando nanobots no ar"
+	],
+	"MIGRATION": "Migração",
+	"QUIZ_RULES": {
+		"END_OF_PLAYLIST": "- Quando a lista de reprodução chega ao fim",
+		"END_GAME": "FIM DO JOGO",
+		"POINTS_one": "{{count}} ponto",
+		"BONUS_POINTS_one": "{{count}} ponto bonus",
+		"BONUS_POINTS_other": "{{count}} pontos bônus",
+		"GUESS_TIME": "Adivinhe a música tocando em menos de <1>$t(QUIZ_RULES.SECONDS, {\"count\": {{seconds}} })</1>.",
+		"SCORE": "PONTUAÇÃO",
+		"ACCEPTED_ANSWERS_POINTS": "($t(QUIZ_RULES.POINTS, {\"count\": {{points}} }))",
+		"SECONDS_other": "{{count}} segundos",
+		"SECONDS_one": "{{count}} segundo",
+		"POINTS_other": "{{count}} pontos",
+		"MAX_SCORE": "- Quando alguém ganha <1>$t(QUIZ_RULES.POINTS, {\"conta\": {{points}} })</1>",
+		"SONGS_one": "<1>{{count}} música</1>",
+		"SONGS_other": "<1>{{count}} músicas</1>",
+		"MAX_SONGS": "- In <1>$t(QUIZ_RULES.SONGS, {\"count\": {{songs}} })</1>",
+		"MINUTES_one": "<1>{{count}} minuto</1>",
+		"MINUTES_other": "<1>{{count}} minutos</1>",
+		"DURATION": "- In <1>$t(QUIZ_RULES.MINUTES, {\"count\": {{duration}} })</1>",
+		"TITLE": "REGRAS",
+		"ACCEPTED_ANSWERS": "Respostas aceitas:",
+		"QUICK_ANSWER": "- Boa resposta rápida ( < <1>$t(QUIZ_RULES.SECONDS, {\"count\": {{seconds}} })</1>): <1>$t(QUIZ_RULES.BONUS_POINTS, {\"count\": {{points}} })</1>."
+	},
+	"QUIZ_SCORES": {
+		"PLAYER_POINTS": "$t(QUIZ_RULES.POINTS, {\"count\": {{points}} })",
+		"SCORES": "PONTUAÇÕES"
+	},
+	"FALLBACK": "Retroceder",
+	"GO_TO_QUIZ_MODE": "Vá para $url jogar!",
+	"MENU_VIEW_TOGGLEDEVTOOLS": "&Show Ferramentas Dev",
+	"MENU_WINDOW_PLAYERMONITOR": "Mostrar Monitor Pl&ayer",
+	"GOOD_ANSWER": "Boa resposta",
+	"MENU_OPTIONS_CHIBIRANKING": "Mostrar classificação do quiz separada",
+	"MOVED_USER_DIR_DIALOG": {
+		"TITLE": "Pasta do usuário movida!",
+		"MESSAGE": "Para estar em conformidade com os padrões do seu sistema operacional, a pasta User Data foi movida. Antes era:\n\n{{oldDir}}\n\nAgora é:\n\n{{newDir}}\n\nSe você é um streamer, talvez queira atualizar o layout do OBS para apontar para os arquivos de texto corretos em seu novo local.",
+		"UNDERSTOOD": "Conseguiu!"
+	},
+	"MOVING_USER_DIR_ERROR_DIALOG": {
+		"TITLE": "Não foi possível mover a pasta de dados do Karaoke Mugen",
+		"MESSAGE": "A pasta de dados do Karaokê Mugen foi movida. Antes era isso:\n\n{{oldDir}}\n\nAgora é isso:\n\n{{newDir}}\n\nOcorreu um erro ao tentar mover essa pasta. Você deve clicar em \"Sair\" e mover a pasta você mesmo.\n\nVocê também pode clicar em “Continuar”. Se fizer isso, você começará de novo com uma nova pasta de dados. Sugerimos que você exclua a pasta antiga mostrada acima.",
+		"QUIT": "Fechar",
+		"CONTINUE": "Continuar"
+	},
+	"DATABASE_IN_THE_FUTURE_ERROR": {
+		"TITLE": "O banco de dados está no futuro, Marty!",
+		"DELETE_ALL_DATA": "EXCLUIR todos os dados",
+		"CONTINUE_ANYWAY": "Continue por sua conta e risco",
+		"MESSAGE": "O banco de dados que o Karaokê Mugen está tentando acessar foi usado por uma versão posterior do aplicativo e é incompatível. Vamos tentar consertar isso.\n\nSe você clicar em “CANCELAR”, o aplicativo será fechado sem fazer nada. Você deve lançar uma versão mais recente do Karaoke Mugen.\n\nSe você clicar em \"Excluir todos os dados\", o aplicativo excluirá listas de reprodução, usuários locais, estatísticas, etc. e iniciará normalmente."
+	},
+	"MOVED_USER_DIR_FLATPAK_DIALOG": {
+		"TITLE": "Usuários Flatpak!",
+		"MESSAGE": "O conteúdo da pasta do usuário foi movido, mas como você está usando uma versão Flatpak do Karaoke Mugen, o aplicativo não pode remover a pasta antiga. Você mesmo deve removê-lo aqui:\n\n{{oldDir}}\n\n(Deve estar vazio!)",
+		"UNDERSTOOD": "Entendi! Eu vou fazer isto antes que eu me esqueça!"
+	},
+	"INIT_MIGRATION": "Atualizando estrutura do banco de dados, por favor espere…",
+	"MENU_OPTIONS_CHIBIRANKING_LINK": "Copiar link para classificação do quiz separado"
 }

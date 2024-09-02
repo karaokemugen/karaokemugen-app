@@ -1,8 +1,8 @@
 import i18next from 'i18next';
 
-import { commandBackend } from '../../../../utils/socket';
 import { DBKara } from '../../../../../../src/lib/types/database/kara';
 import { DBPLCInfo } from '../../../../../../src/types/database/playlist';
+import { commandBackend } from '../../../../utils/socket';
 
 interface Props {
 	kara: DBKara | DBPLCInfo;

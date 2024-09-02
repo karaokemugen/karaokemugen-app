@@ -3,15 +3,16 @@
 //
 // When removing code here, remember to go see if all functions called are still useful.
 
+import { app, dialog } from 'electron';
+import { existsSync, readdirSync, rmdirSync } from 'fs';
+import { moveSync } from 'fs-extra';
 import i18next from 'i18next';
+import { resolve } from 'path';
 import semver from 'semver';
 
-import { insertCriteria, insertKaraIntoPlaylist, insertPlaylist } from '../dao/playlist.js';
-import { db } from '../lib/dao/database.js';
-import { editRepo, getRepo } from '../services/repo.js';
-import { updateAllSmartPlaylists } from '../services/smartPlaylist.js';
 import { Repository } from '../lib/types/repo.js';
-import { getState } from './state.js';
+import { editRepo, getRepo } from '../services/repo.js';
+import { getState, setState } from './state.js';
 
 /** Remove when we drop support for mpv <0.38.0 */
 export function mpvIsRecentEnough() {
@@ -20,6 +21,73 @@ export function mpvIsRecentEnough() {
 		return false;
 	}
 	return true;
+}
+
+/** Remove in KM 10.0 */
+export async function checkMovedUserDir() {
+	if (getState().movedUserDir) {
+		await dialog.showMessageBox({
+			type: 'warning',
+			title: i18next.t('MOVED_USER_DIR_DIALOG.TITLE'),
+			message: `${i18next.t('MOVED_USER_DIR_DIALOG.MESSAGE', { newDir: getState().dataPath, oldDir: resolve(app.getPath('home'), 'KaraokeMugen/') })}`,
+			buttons: [i18next.t('MOVED_USER_DIR_DIALOG.UNDERSTOOD')],
+		});
+		if (process.env.container) {
+			await dialog.showMessageBox({
+				type: 'info',
+				title: i18next.t('MOVED_USER_DIR_FLATPAK_DIALOG.TITLE'),
+				message: `${i18next.t('MOVED_USER_DIR_FLATPAK_DIALOG.MESSAGE', { oldDir: resolve(app.getPath('home'), 'KaraokeMugen/') })}`,
+				buttons: [i18next.t('MOVED_USER_DIR_FLATPAK_DIALOG.UNDERSTOOD')],
+			});
+		}
+	}
+	if (getState().errorMovingUserDir) {
+		const buttons = await dialog.showMessageBox({
+			type: 'error',
+			title: i18next.t('MOVING_USER_DIR_ERROR_DIALOG.TITLE'),
+			message: `${i18next.t('MOVING_USER_DIR_ERROR_DIALOG.MESSAGE', { newDir: getState().dataPath, oldDir: resolve(app.getPath('home'), 'KaraokeMugen/') })}`,
+			buttons: [
+				i18next.t('MOVING_USER_DIR_ERROR_DIALOG.CONTINUE'),
+				i18next.t('MOVING_USER_DIR_ERROR_DIALOG.QUIT'),
+			],
+		});
+		if (buttons.response === 1) {
+			app.exit(0);
+		}
+	}
+}
+
+/** Remove in KM 10.0 */
+export function moveUserDir(newDir: string) {
+	const oldDir = resolve(app.getPath('home'), 'KaraokeMugen');
+	if (existsSync(oldDir) && readdirSync(newDir).length === 0 && oldDir !== newDir) {
+		// Removing dir first so moveSync stops complaining destination exists. It has to be empty anyways.
+		rmdirSync(newDir);
+		const files = readdirSync(oldDir);
+		for (const file of files) {
+			moveSync(resolve(oldDir, file), resolve(newDir, file));
+		}
+		// Remove folder if not in a flatpak, because we can't do that with flatpaks
+		if (!process.env.container) {
+			rmdirSync(oldDir);
+		}
+		setState({ movedUserDir: true });
+	}
+}
+
+/** Remove in KM 10.0 */
+export function updateKaraMoeSecureConfig() {
+	let repo: Repository;
+	try {
+		repo = getRepo('kara.moe');
+	} catch (err) {
+		// No repository found. It's daijoubou.
+		return;
+	}
+	if (repo && repo.Secure === undefined) {
+		repo.Secure = true;
+		editRepo('kara.moe', repo, false, false);
+	}
 }
 
 /** Remove in KM 9.0 */
@@ -40,70 +108,5 @@ export function updateKaraMoeRepoConfig() {
 	if (repo && !repo.BaseDir) {
 		repo.BaseDir = process.platform === 'win32' ? 'repos\\kara.moe\\json' : 'repos/kara.moe/json';
 		editRepo('kara.moe', repo, false, false);
-	}
-}
-
-/** Remove in KM 8.0 */
-export async function migrateBLWLToSmartPLs() {
-	const [BLCSets, BLCs, WL] = await Promise.all([
-		db().query('SELECT * FROM blacklist_criteria_set'),
-		db().query('SELECT * FROM blacklist_criteria'),
-		db().query('SELECT * FROM whitelist'),
-	]);
-	// Convert whitelist, that's the easiest part.
-	if (WL.rows.length > 0) {
-		const plaid = await insertPlaylist({
-			name: i18next.t('WHITELIST'),
-			flag_whitelist: true,
-			flag_visible: true,
-			created_at: new Date(),
-			modified_at: new Date(),
-			username: 'admin',
-		});
-		let pos = 0;
-		const songs = WL.rows.map(s => {
-			pos += 1;
-			return {
-				plaid,
-				username: 'admin',
-				nickname: 'Dummy Plug System',
-				kid: s.fk_kid,
-				added_at: new Date(),
-				pos,
-				criteria: null,
-				flag_visible: true,
-			};
-		});
-		await insertKaraIntoPlaylist(songs);
-	}
-	// Blacklist(s)
-	for (const set of BLCSets.rows) {
-		const blc = BLCs.rows.filter(e => e.fk_id_blc_set === set.pk_id_blc_set);
-		// No need to import an empty BLC set.
-		if (blc.length === 0) continue;
-		const plaid = await insertPlaylist({
-			...set,
-			flag_current: false,
-			flag_visible: true,
-			flag_blacklist: set.flag_current,
-			flag_smart: true,
-			username: 'admin',
-			type_smart: 'UNION',
-		});
-		await insertCriteria(
-			blc.map(e => ({
-				plaid,
-				type: e.type,
-				value: e.value,
-			}))
-		);
-	}
-	await updateAllSmartPlaylists();
-	try {
-		await db().query('DROP TABLE IF EXISTS whitelist');
-		await db().query('DROP TABLE IF EXISTS blacklist_criteria');
-		await db().query('DROP TABLE IF EXISTS blacklist_criteria_set');
-	} catch (err) {
-		// Everything is daijokay
 	}
 }

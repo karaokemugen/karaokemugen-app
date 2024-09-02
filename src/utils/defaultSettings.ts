@@ -29,8 +29,8 @@ export const defaults: Config = {
 	},
 	Online: {
 		Host: 'kara.moe',
+		Secure: true,
 		MediasHost: null,
-		Port: 80,
 		Timeout: 2000,
 		Stats: undefined,
 		ErrorTracking: undefined,
@@ -226,9 +226,9 @@ export const defaults: Config = {
 			Previews: 'previews',
 			SessionExports: 'sessionExports',
 			StreamFiles: 'streamFiles',
+			SSHKeys: 'sshKeys',
 		},
 	},
-	Maintainer: { ApplyLyricsCleanupOnKaraSave: true },
 };
 
 export const horizontalPosArray = ['Left', 'Right', 'Center'];
@@ -244,7 +244,6 @@ export const configConstraints = {
 	'Online.ErrorTracking': { boolUndefinedValidator: true },
 	'Online.Host': { presence: true, format: hostnameRegexp },
 	'Online.Timeout': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0 } },
-	'Online.Port': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0 } },
 	// 'Online.RemoteToken': {presence: true, format: uuidRegexp}, // We'll implement this in KM 10.0
 	'Online.Users': { inclusion: bools },
 	'Online.Discord.DisplayActivity': { inclusion: bools },
@@ -325,13 +324,13 @@ export const configConstraints = {
 	'System.Path.Previews': { presence: true },
 	'System.Path.Import': { presence: true },
 	'System.Repositories': { repositoriesValidator: true },
-	'Maintainer.ApplyLyricsCleanupOnKaraSave': { inclusion: bools },
 };
 
 export const defaultRepositories: Repository[] = [
 	{
 		Name: 'kara.moe',
 		Online: true,
+		Secure: true,
 		Update: true,
 		Enabled: true,
 		SendStats: true,

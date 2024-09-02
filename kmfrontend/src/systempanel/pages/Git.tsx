@@ -1,34 +1,35 @@
+import 'diff2html/bundles/css/diff2html.min.css';
+
 import {
 	CloudDownloadOutlined,
 	CloudSyncOutlined,
 	CloudUploadOutlined,
 	ControlOutlined,
+	DiffOutlined,
 	DownOutlined,
 	EditOutlined,
 	ExceptionOutlined,
+	MinusOutlined,
+	PlusOutlined,
 	PullRequestOutlined,
 	RightOutlined,
 	UnorderedListOutlined,
-	PlusOutlined,
-	MinusOutlined,
-	DiffOutlined,
 } from '@ant-design/icons';
 import { Alert, Button, Checkbox, Divider, Input, Layout, List, Modal, Table } from 'antd';
-import Title from '../components/Title';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
+import { html, parse } from 'diff2html';
+import { ColorSchemeType } from 'diff2html/lib/types';
 import i18next from 'i18next';
 import { RenderExpandIconProps } from 'rc-table/lib/interface';
-import { Dispatch, MouseEvent, memo, useCallback, useEffect, useState } from 'react';
+import { Dispatch, memo, MouseEvent, useCallback, useEffect, useState } from 'react';
 import { Trans } from 'react-i18next';
-import { parse, html } from 'diff2html';
 
+import { Repository } from '../../../../src/lib/types/repo';
 import { GitLogResult, GitStatusResult } from '../../../../src/types/git';
 import { Commit, ModifiedMedia } from '../../../../src/types/repo';
 import { commandBackend, getSocket } from '../../utils/socket';
 import { displayMessage } from '../../utils/tools';
-import { Repository } from '../../../../src/lib/types/repo';
-import 'diff2html/bundles/css/diff2html.min.css';
-import { ColorSchemeType } from 'diff2html/lib/types';
+import Title from '../components/Title';
 
 type CommitWithComment = Commit & { comment: string; filesModified: boolean };
 

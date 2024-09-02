@@ -34,12 +34,12 @@ export async function sendAllPayloads() {
 	const repos = getConfig().System.Repositories.filter(r => r.Online && r.Enabled && r.SendStats);
 	for (const repo of repos) {
 		const minimal = getConfig().Online.Host !== repo.Name;
-		sendPayload(repo.Name, minimal);
+		sendPayload(repo.Name, minimal, repo.Secure);
 	}
 }
 
 /** Send stats payload to KM Server */
-export async function sendPayload(host: string, minimal: boolean) {
+export async function sendPayload(host: string, minimal: boolean, secure: boolean) {
 	let payload: any;
 	try {
 		try {
@@ -53,7 +53,7 @@ export async function sendPayload(host: string, minimal: boolean) {
 			service,
 		});
 		savePayload(payload, host);
-		await HTTP.post(`https://${host}/api/stats`, payload);
+		await HTTP.post(`${secure ? 'https' : 'http'}://${host}/api/stats`, payload);
 
 		logger.info(`Payload sent successfully to ${host}`, { service });
 	} catch (err) {

@@ -43,8 +43,9 @@ import { getState, setState } from '../utils/state.js';
 import { isShutdownInProgress } from './engine.js';
 import Timeout = NodeJS.Timeout;
 import { getSongSeriesSingers, getSongTitle } from '../lib/services/kara.js';
+import { getRepoManifest } from '../lib/services/repo.js';
 import { getTagNameInLanguage } from '../lib/services/tag.js';
-import { getRepoManifest } from '../services/repo.js';
+import { getRepo } from '../services/repo.js';
 import { Player } from './mpv/player.js';
 
 type PlayerType = 'main' | 'monitor';
@@ -80,15 +81,16 @@ export const playerState: PlayerState = {
 	speed: 100,
 };
 
-async function resolveMediaURL(file: string, repo: string): Promise<string> {
+async function resolveMediaURL(file: string, repoName: string): Promise<string> {
 	const conf = getConfig();
+	const repo = getRepo(repoName);
 	let up = false;
 	let mediaFile = `${conf.Online.MediasHost}/${fixedEncodeURIComponent(file)}`;
 	// We test if the MediasHost allows us to reach a file. If not we try the song's repository.
 	if (conf.Online.MediasHost) {
 		if (await HTTP.head(mediaFile)) up = true;
 	} else {
-		mediaFile = `https://${repo}/downloads/medias/${fixedEncodeURIComponent(file)}`;
+		mediaFile = `${repo.Secure ? 'https' : 'http'}://${repoName}/downloads/medias/${fixedEncodeURIComponent(file)}`;
 		if (await HTTP.head(mediaFile)) up = true;
 	}
 	if (up) {
@@ -362,7 +364,7 @@ async function checkMpv() {
 		const mpv = semver.valid(mpvRegex.exec(output.stdout)[1]);
 		mpvVersion = mpv.split('-')[0];
 
-		let ffmpegVersion = FFmpegRegex.exec(output.stdout)[1];
+		const ffmpegVersion = FFmpegRegex.exec(output.stdout)[1];
 		setState({ player: { ...getState().player, version: mpvVersion, ffmpegVersion } });
 		playerState.version = mpvVersion;
 		playerState.ffmpegVersion = ffmpegVersion;
@@ -758,7 +760,7 @@ export class Players {
 	async quit() {
 		if (this.players.main.isRunning || this.players.monitor?.isRunning) {
 			// needed to wait for lock release
-			// eslint-disable-next-line no-return-await
+
 			return this.exec('destroy', undefined, undefined, true, true).catch(err => {
 				// Non fatal. Idiots sometimes close mpv instead of KM, this avoids an uncaught exception.
 				logger.warn('Failed to quit mpv', { service, obj: err });
@@ -801,6 +803,7 @@ export class Players {
 
 	async play(song: CurrentSong, modifiers?: SongModifiers, start = 0): Promise<PlayerState> {
 		logger.debug('Play event triggered', { service });
+		await this.ensureRunning();
 		playerState.playing = true;
 		profile('mpvPlay');
 		let mediaFile: string;

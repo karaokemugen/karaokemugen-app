@@ -135,7 +135,6 @@
 	"MENU_HELP_GITLAB": "&GitLab",
 	"MENU_HELP_GUIDE": "&Documentation",
 	"MENU_HELP_CONTRIB_DOC": "&Créez votre Karaoké",
-	"MENU_HELP_SEND_KARAOKE": "&Envoyez votre Karaoké",
 	"MENU_HELP_REPORT_BUG": "&Signaler un problème",
 	"MENU_GOTO": "A&ller à",
 	"MENU_GOTO_OSX": "Aller",
@@ -174,9 +173,21 @@
 	"ABOUT": {
 		"TITLE": "À propos de Karaoke Mugen"
 	},
-	"WORLD_REPOSITORY_DISABLED": {
-		"TITLE": "Dépôt World désactivé",
-		"MESSAGE": "Avec l'ajout des Collections, les dépôts World et Kara.moe ont été fusionnés. Le dépôt World n'est donc plus nécessaire et a été désactivé. Nous vous conseillons de le supprimer entièrement depuis le panneau système."
+	"MOVED_USER_DIR_DIALOG": {
+		"TITLE": "Dossier utilisateur déplacé !",
+		"MESSAGE": "Afin de correspondre aux standards de votre système d'exploitation, le dossier des données de Karaoke Mugen a été déplacé. Avant c'était :\n\n{{oldDir}}\n\nMaintenant c'est :\n\n{{newDir}}\n\nSi vous êtes streameur/euse, vous voudrez peut-être mettre à jour votre layout OBS pour pointer vers le nouvel emplacement des fichiers texte de streaming.",
+		"UNDERSTOOD": "J'ai bien compris !"
+	},
+	"MOVED_USER_DIR_FLATPAK_DIALOG": {
+		"TITLE": "Utilisateurs de Flatpak !",
+		"MESSAGE": "Le contenu du dossier a bien été déplacé, mais vous utilisez Karaoke Mugen en version Flatpak. L'application ne peut pas supprimer l'ancien dossier utilisateur à cause de cela. Nous vous invitons à le supprimer vous-même :\n\n{{oldDir}}\n\n(Il devrait être vide !)",
+		"UNDERSTOOD": "D'accord ! Je fais ça maintenant avant d'oublier !"
+	},
+	"MOVING_USER_DIR_ERROR_DIALOG": {
+		"TITLE": "Impossible de déplacer le dossier de données de Karaoke Mugen",
+		"MESSAGE": "Le dossier de données de Karaoke Mugen a changé. Avant c'était :\n\n{{oldDir}}\n\nMaintenant c'est :\n\n{{newDir}}\n\nUne erreur est survenue durant le déplacement des données. Nous vous suggérons de cliquer sur \"Quitter\" pour faire le déplacement vous-même.\n\nVous pouvez aussi cliquer sur \"Continuer\". Dans ce cas vous repartirez avec des données neuves. Nous vous suggérons alors de supprimer l'ancien dossier indiqué ci-dessus.",
+		"CONTINUE": "Continuer",
+		"QUIT": "Quitter"
 	},
 	"DATABASE_IN_THE_FUTURE_ERROR": {
 		"TITLE": "La base de données est dans le futur, Marty !",
@@ -197,7 +208,6 @@
 			"Vous pouvez utiliser les touches multimédia de votre clavier pour contrôler le karaoké !",
 			"N'oubliez pas de mettre votre ceinture de sécurité avant de faire du karaoké. Chantez prudemment et attention aux chutes d'enceintes !",
 			"N'oubliez pas de synchroniser la base de temps en temps : vous découvrirez peut-être de nouveaux karaokés !",
-			"Vous ne trouvez pas une chanson dans la base ? N'hésitez pas à regarder sur https://kara.moe/suggest, elle s'y trouve peut-être !",
 			"Karaoke Mugen est un projet 100% open source et collaboratif, tout le monde peut apporter sa pierre à l'édifice !",
 			"Vous pouvez glisser-déposer des fichiers dans cette fenêtre, utiliser le menu Fichier -> Importer, ou associer le programme Karaoke Mugen à ceux-ci pour les intégrer directement : listes de lecture, favoris, etc…",
 			"Je suis Nanamin, mascotte de Karaoke Mugen crée par la talentueuse Sedeto ! http://www.sedeto.fr",
@@ -266,8 +276,8 @@
 		"TITLE": "Dépôt inconnu",
 		"MESSAGE": "Vous êtes sur le point d'ajouter le dépôt {{repoName}}, êtes-vous sûr ?"
 	},
-	"GENERATING_READING": "Etape 1/2 - Lecture des données…",
-	"GENERATING_DATABASE": "Etape 2/2 - Mise à jour de la base de données…",
+	"GENERATING_READING": "Etape 1 / 2 - Lecture des données…",
+	"GENERATING_DATABASE": "Etape 2 / 2 - Mise à jour de la base de données…",
 	"TWITCH": {
 		"CHAT": {
 			"VOTE": "Nouveau vote : utilisez !vote x où x est le numéro de la chanson :",

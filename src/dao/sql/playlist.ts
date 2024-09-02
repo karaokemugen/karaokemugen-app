@@ -149,8 +149,8 @@ LEFT OUTER JOIN playlist pl ON pl.pk_plaid = pc.fk_plaid
 LEFT OUTER JOIN played AS p ON p.fk_kid = ak.pk_kid
 WHERE pc.fk_plaid = $1
   ${login ? 'AND pc.fk_login = $2' : ''}
-GROUP BY 
-	pc.pk_plcid, 
+GROUP BY
+	pc.pk_plcid,
 	pc.pos,
 	pc.fk_login,
 	pc.nickname,
@@ -386,38 +386,38 @@ LEFT OUTER JOIN playlist_content AS pc_pub ON pc_pub.fk_kid = pc.fk_kid AND pc_p
 LEFT OUTER JOIN playlist_content AS pc_self on pc_self.fk_kid = pc.fk_kid AND pc_self.fk_plaid = :public_plaid AND pc_self.fk_login = :username
 WHERE  pc.pk_plcid = :plcid
 ${forUser ? ' AND pl.flag_visible = TRUE' : ''}
-GROUP BY 
-	pl.fk_plcid_playing, 
-	ak.pk_kid, 
-	ak.titles, 
-	ak.titles_aliases, 
-	ak.titles_default_language, 
+GROUP BY
+	pl.fk_plcid_playing,
+	ak.pk_kid,
+	ak.titles,
+	ak.titles_aliases,
+	ak.titles_default_language,
 	ak.songorder,
-	ak.subfile, 
-	ak.year, 
-	ak.tags, 
-	ak.mediafile, 
-	ak.karafile, 
-	ak.duration, 
-	ak.loudnorm, 
-	ak.created_at, 
-	ak.modified_at, 
-	ak.mediasize, 
-	ak.languages_sortable, 
-	ak.songtypes_sortable, 
-	pc.created_at, 
-	pc.nickname, 
-	pc.fk_login, 
-	pc.pos, 
-	pc.pk_plcid, 
-	wl.fk_kid, 
-	bl.fk_kid, 
-	f.fk_kid, 
-	u.avatar_file, 
-	u.type, 
-	ak.repository, 
-	ak.from_display_type, 
-	ak.download_status, 
+	ak.subfile,
+	ak.year,
+	ak.tags,
+	ak.mediafile,
+	ak.karafile,
+	ak.duration,
+	ak.loudnorm,
+	ak.created_at,
+	ak.modified_at,
+	ak.mediasize,
+	ak.languages_sortable,
+	ak.songtypes_sortable,
+	pc.created_at,
+	pc.nickname,
+	pc.fk_login,
+	pc.pos,
+	pc.pk_plcid,
+	wl.fk_kid,
+	bl.fk_kid,
+	f.fk_kid,
+	u.avatar_file,
+	u.type,
+	ak.repository,
+	ak.from_display_type,
+	ak.download_status,
 	ak.announce_position_x,
 	ak.announce_position_y,
 	pc.criterias
@@ -588,7 +588,7 @@ WHERE type = $1
 `;
 
 export const sqlselectKarasFromCriterias = {
-	tagTypes: (type: string, value: any) => `
+	tagTypes: (type: string, value: any, collectionClauses: string[]) => `
 	SELECT kt.fk_kid AS kid,
 		jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::uuid)) AS criterias,
 		ak.duration AS duration,
@@ -600,10 +600,20 @@ export const sqlselectKarasFromCriterias = {
 	WHERE c.type ${type} AND c.value = '${value}'
 		AND   kt.fk_kid NOT IN (select fk_kid from playlist_content where fk_plaid = $2)
 		AND   fk_plaid = $1
+		${
+			collectionClauses.length > 0
+				? `AND ((${collectionClauses
+						.map(clause => `(${clause})`)
+						.join(
+							' OR '
+						)}) OR jsonb_array_length(jsonb_path_query_array( ak.tags, '$[*] ? (@.type_in_kara == 16)')) = 0)`
+				: ''
+		}
+
 	`,
 
 	// Precise year
-	0: (value: number) => `
+	0: (value: number, collectionClauses: string[]) => `
 	SELECT ak.pk_kid AS kid,
 		jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::smallint)) AS criterias,
 		ak.duration AS duration,
@@ -613,10 +623,19 @@ export const sqlselectKarasFromCriterias = {
 	WHERE c.type = 0
 	AND   ak.pk_kid NOT IN (select fk_kid from playlist_content where fk_plaid = $2)
 	AND   fk_plaid = $1
+	${
+		collectionClauses.length > 0
+			? `AND ((${collectionClauses
+					.map(clause => `(${clause})`)
+					.join(
+						' OR '
+					)}) OR jsonb_array_length(jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 16)')) = 0)`
+			: ''
+	}
 	`,
 
 	// Specific song criteria
-	1001: `
+	1001: (collectionClauses: string[]) => `
 	SELECT ak.pk_kid AS kid,
 		jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::uuid)) AS criterias,
 		ak.duration AS duration,
@@ -626,10 +645,20 @@ export const sqlselectKarasFromCriterias = {
 	WHERE c.type = 1001
 	AND   c.value::uuid NOT IN (select fk_kid from playlist_content where fk_plaid = $2)
 	AND   fk_plaid = $1
+	${
+		collectionClauses.length > 0
+			? `AND ((${collectionClauses
+					.map(clause => `(${clause})`)
+					.join(
+						' OR '
+					)}) OR jsonb_array_length(jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 16)')) = 0)`
+			: ''
+	}
+
 	`,
 
 	// Duration (longer than)
-	1002: (value: number) => `
+	1002: (value: number, collectionClauses: string[]) => `
 	SELECT ak.pk_kid AS kid,
 		jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::integer)) AS criterias,
 		ak.duration AS duration,
@@ -639,10 +668,20 @@ export const sqlselectKarasFromCriterias = {
 	WHERE c.type = 1002
 	AND   ak.pk_kid NOT IN (select fk_kid from playlist_content where fk_plaid = $2)
 	AND   fk_plaid = $1
+	${
+		collectionClauses.length > 0
+			? `AND ((${collectionClauses
+					.map(clause => `(${clause})`)
+					.join(
+						' OR '
+					)}) OR jsonb_array_length(jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 16)')) = 0)`
+			: ''
+	}
+
 	`,
 
 	// Duration (shorter than)
-	1003: (value: number) => `
+	1003: (value: number, collectionClauses: string[]) => `
 	SELECT ak.pk_kid AS kid,
 		jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::integer)) AS criterias,
 		ak.duration AS duration,
@@ -652,11 +691,21 @@ export const sqlselectKarasFromCriterias = {
 	WHERE c.type = 1003
 	AND   ak.pk_kid NOT IN (select fk_kid from playlist_content where fk_plaid = $2)
 	AND   fk_plaid = $1
+	${
+		collectionClauses.length > 0
+			? `AND ((${collectionClauses
+					.map(clause => `(${clause})`)
+					.join(
+						' OR '
+					)}) OR jsonb_array_length(jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 16)')) = 0)`
+			: ''
+	}
+
 	`,
 
 	// Download status
-	1006: (value: DownloadedStatus) => `
-	SELECT ak.pk_kid AS kid, 
+	1006: (value: DownloadedStatus, collectionClauses: string[]) => `
+	SELECT ak.pk_kid AS kid,
 		jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::varchar)) AS criterias,
 		ak.duration AS duration,
 		ak.created_at AS created_at
@@ -665,10 +714,20 @@ export const sqlselectKarasFromCriterias = {
 	WHERE c.type = 1006
 	AND   ak.pk_kid NOT IN (select fk_kid from playlist_content where fk_plaid = $2)
 	AND   fk_plaid = $1
+	${
+		collectionClauses.length > 0
+			? `AND ((${collectionClauses
+					.map(clause => `(${clause})`)
+					.join(
+						' OR '
+					)}) OR jsonb_array_length(jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 16)')) = 0)`
+			: ''
+	}
+
 	`,
 	// After year
-	1007: (value: number) => `
-	SELECT ak.pk_kid AS kid, 
+	1007: (value: number, collectionClauses: string[]) => `
+	SELECT ak.pk_kid AS kid,
 		jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::varchar)) AS criterias,
 		ak.duration AS duration,
 		ak.created_at AS created_at
@@ -677,10 +736,20 @@ export const sqlselectKarasFromCriterias = {
 	WHERE c.type = 1007
 	AND   ak.pk_kid NOT IN (select fk_kid from playlist_content where fk_plaid = $2)
 	AND   fk_plaid = $1
+	${
+		collectionClauses.length > 0
+			? `AND ((${collectionClauses
+					.map(clause => `(${clause})`)
+					.join(
+						' OR '
+					)}) OR jsonb_array_length(jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 16)')) = 0)`
+			: ''
+	}
+
 	`,
 	// Before year
-	1008: (value: number) => `
-	SELECT ak.pk_kid AS kid, 
+	1008: (value: number, collectionClauses: string[]) => `
+	SELECT ak.pk_kid AS kid,
 		jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::varchar)) AS criterias,
 		ak.duration AS duration,
 		ak.created_at AS created_at
@@ -689,6 +758,16 @@ export const sqlselectKarasFromCriterias = {
 	WHERE c.type = 1008
 	AND   ak.pk_kid NOT IN (select fk_kid from playlist_content where fk_plaid = $2)
 	AND   fk_plaid = $1
+	${
+		collectionClauses.length > 0
+			? `AND ((${collectionClauses
+					.map(clause => `(${clause})`)
+					.join(
+						' OR '
+					)}) OR jsonb_array_length(jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 16)')) = 0)`
+			: ''
+	}
+
 	`,
 };
 

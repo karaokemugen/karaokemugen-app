@@ -706,7 +706,9 @@
 				"ANILIST": "AniList",
 				"ANILIST_PLACEHOLDER": "karaokemugen",
 				"KITSU": "Kitsu",
-				"KITSU_PLACEHOLDER": "karaokemugen"
+				"KITSU_PLACEHOLDER": "karaokemugen",
+				"GITLAB": "Gitlab",
+				"GITLAB_PLACEHOLDER": "karaokemugen"
 			},
 			"ANIME_LIST_TO_FETCH": "Anime list provider to use",
 			"REFRESH_ANIME_LIST": "Refresh anime list",
@@ -963,6 +965,7 @@
 	"NOTIFICATION": {
 		"OPERATOR": {
 			"ERROR": {
+				"STATS_PAYLOAD": "Error sending stats to server",
 				"DOWNLOAD": "Song download error",
 				"SHORTENER": "Error enabling URL shortener",
 				"PLAYER_PLAY": "Unable to play song",
@@ -1012,6 +1015,13 @@
 		"MEDIA_FILE": "Media file",
 		"MEDIA_FILE_TOOLTIP": "Supported file formats: {{formats}}",
 		"MEDIA_REQUIRED": "Media file is required",
+		"AUDIO_COVER": {
+			"UPLOAD": "Upload cover art",
+			"REPLACE": "Replace cover art",
+			"UPLOAD_TOOLTIP": "Change the picture that will be shown as background when playing this karaoke",
+			"EMBED_COVER_SUCCESS": "New cover art has been uploaded and embedded",
+			"EMBED_COVER_ERROR": "Error while embedding a new cover art"
+		},
 		"MEDIA_IN_PROCESS": "The media file is being processed, please wait for the success notification.",
 		"MEDIA_REPOSITORY_RULES_UNMET": "The media file does not meet all mandatory repository requirements. Please encode the media first.",
 		"MEDIA_FILE_INFO": {
@@ -1019,14 +1029,16 @@
 			"FILE_SIZE": "File size",
 			"FILE_FORMAT": "File format",
 			"VIDEO_CODEC": "Video codec",
+			"DURATION": "Duration",
 			"VIDEO_RESOLUTION": "Resolution",
 			"VIDEO_ASPECT_RATIO": "Aspect ratio",
 			"VIDEO_COLORSPACE": "Colorspace",
 			"VIDEO_FRAMERATE": "Framerate",
 			"AUDIO_CODEC": "Audio codec",
 			"AUDIO_SAMPLE_RATE": "Audio sample rate",
+			"AUDIO_CHANNEL_LAYOUT": "Audio channel layout",
 			"AUDIO_COVER_ART": "Cover art",
-			"WARNINGS":  {
+			"WARNINGS": {
 				"LIBAVCODEC_ENCODER": "The audio is encoded with the libavcodec (ffmpeg reference aac) encoder, which can create audible artifacts and is discouraged to utilize. Please use the libfdk_aac encoder for aac or another codec like opus, to get the best possible quality."
 			}
 		},
@@ -1036,14 +1048,11 @@
 				"TRIM_MEDIA": "Trim start/end",
 				"TRIM_MEDIA_TOOLTIP": "Detect and remove black frames and silence at the beginning and end of the media"
 			},
-			"TIMING_CHANGE_WARNING": "The selected options might change the start and end time of the media. Check the lyrics timings after the media is encoded and saved.",
-			"LEAVE_PAGE": "Media is being encoded. Leaving the page now will will discard any progress, are you sure you want to leave?"
+			"TIMING_CHANGE_WARNING": "The selected options might change the start and end time of the media. Check the lyrics timings after the media is encoded and saved."
 		},
 		"LYRICS_FILE": "Lyrics file",
 		"LYRICS_FILE_TOOLTIP": "Supported file formats: {{formats}}",
 		"LYRICS_FILE_OPEN": "Open file",
-		"APPLY_LYRICS_CLEANUP": "Cleanup lyrics file after saving",
-		"APPLY_LYRICS_CLEANUP_TOOLTIP": "Cleans lyrics file up from unused styles & comments and saves the title & author of the kara in the properties",
 		"ADD_FILE_SUCCESS": "{{name}} file added successfully",
 		"ADD_FILE_MEDIA_ERROR": "{{name}} is not a media file",
 		"ADD_FILE_LYRICS_ERROR": "{{name}} is not a subtitle file",
@@ -1145,12 +1154,14 @@
 		"COLLECTIONS_TOOLTIP": "Select the collections in which the karaoke should appear",
 		"FROM_DISPLAY_TYPE": "From tag type display",
 		"FROM_DISPLAY_TYPE_TOOLTIP": "Select tag type to used when displaying the song",
+		"FROM_DISPLAY_TYPE_COLUMN": "From",
 		"ANNOUNCE_POSITION": "Announce position",
 		"ANNOUNCE_POSITION_TOOLTIP": "Overrides the default announce position (banner and song infos at the beginning and end of a song). Useful to prevent overlapping with the song text, if the subtitle position is different than usual.",
 		"ANNOUNCE_POSITION_SELECTION": {
 			"SET": "Override default position",
 			"UNSET": "Remove custom position"
-		}
+		},
+		"REPOSITORY_DOCUMENTATION": "See {{instance}}'s rules here"
 	},
 	"MENU": {
 		"HOME": "Dashboard",
@@ -1275,7 +1286,7 @@
 		"ANILIST_ID": "Anilist ID/URL",
 		"ANILIST_ID_TOOLTIP": "If this is an anime, please indicate its id/url on anilist.co",
 		"KITSU_ID": "Kitsu ID/URL",
-		"KITSU_ID_TOOLTIP": "If this is an anime, please indicate its url on kitsu.io",
+		"KITSU_ID_TOOLTIP": "If this is an anime, please indicate its url on kitsu.app",
 		"NOT_MAL_URL_ERROR": "This is a myanimelist url",
 		"NOT_ANILIST_URL_ERROR": "This is a anilist url",
 		"NOT_KITSU_URL_ERROR": "This is a kitsu url",
@@ -1399,6 +1410,8 @@
 		"NEW_REPOSITORY": "New repository",
 		"ONLINE": "Online",
 		"ENABLED": "Enabled",
+		"SECURE": "Secure",
+		"SECURE_TOOLTIP": "Enable HTTPS access to the repository",
 		"SENDSTATS": "Send statistics",
 		"UPDATE": "Automatic updates",
 		"UPDATE_TOOLTIP": "If disabled, the application will not update the repository anymore.",
@@ -1441,7 +1454,10 @@
 			"AUTHOR": "Git Identity",
 			"AUTHOR_TOOLTIP": "Name displayed for your commits",
 			"EMAIL": "Git E-Mail",
-			"EMAIL_TOOLTIP": "Email associated with your commits"
+			"EMAIL_TOOLTIP": "Email associated with your commits",
+			"COPY_SSH_KEY": "Copy the SSH key in clipboard",
+			"GENERATE_SSH_KEY": "Generate a SSH key",
+			"DELETE_SSH_KEY": "Delete the SSH key"
 		},
 		"FTP": {
 			"HOST": "FTP Host",
@@ -1588,6 +1604,8 @@
 		"REPO_GIT_DIFF_ERROR": "Error getting diff for file",
 		"TAG_REPOSITORY_INVALID_CHANGE": "You can't change a tag's repository. Use the copy function instead",
 		"GET_MEDIA_INFO_ERROR": "Failed to retrieve media information",
+		"MEDIA_VALIDATION_ERROR": "Unable to validate media info",
+		"MEDIA_ENCODING_ABORTED": "Media encoding was cancelled",
 		"INBOX_VIEW_FORBIDDEN_ERROR": "You don't have permission to view the song inbox",
 		"INBOX_VIEW_ERROR": "Unable to fetch karaokes from inbox",
 		"INBOX_DOWNLOAD_ERROR": "Unable to download karaoke from inbox",
@@ -1657,7 +1675,6 @@
 		"FILES_VALIDATED_ERROR": "Error validating files",
 		"DATABASE_DUMPED_ERROR": "Error dumping database",
 		"DATABASE_RESTORED_ERROR": "Error restoring database",
-		"BACKGROUND_FILE_DELETE_ERROR_IN_USE": "Unable to remove file, it's in use by the player!",
 		"FS_ERROR": "Error browsing filesystem",
 		"USER_DELETE_ADMIN_DAMEDESU": "You can't remove the admin user!",
 		"USER_NOT_ALLOWED_TO_SING": "User not allowed to start the song",
@@ -1785,7 +1802,8 @@
 		"QUIZZ_GET_GAMES_ERROR": "Error when getting games",
 		"QUIZZ_GET_GAME_SCORES_ERROR": "Error when getting game scores",
 		"PLAYER_DISABLED_IN_TEST_MODE_SORRYMASEN_PLEASE_UNDERSTAND": "Player is disabled in test mode",
-		"MEDIAS_FOLDER_OPEN_ERROR": "Failed to open media folder"
+		"MEDIAS_FOLDER_OPEN_ERROR": "Failed to open media folder",
+		"UNKNOWN_PARENT_FROM_INBOX": "Unknown parent for this inbox song"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Added {{data}} downloads to the queue",
