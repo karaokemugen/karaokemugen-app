@@ -1,15 +1,16 @@
+import './QuizScore.scss';
+
+import i18next from 'i18next';
+import { merge } from 'lodash';
 import { useContext, useEffect, useState } from 'react';
 import { useAsyncMemo } from 'use-async-memo';
 
-import { merge } from 'lodash';
 import { User } from '../../../../../src/lib/types/user';
 import { GameState, GameTotalScore } from '../../../../../src/types/quiz';
 import GlobalContext from '../../../store/context';
 import ProfilePicture from '../../../utils/components/ProfilePicture';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { acceptedAnswerToIcon } from '../../../utils/tagTypes';
-import i18next from 'i18next';
-import './QuizScore.scss';
 
 function QuizScore() {
 	const context = useContext(GlobalContext);

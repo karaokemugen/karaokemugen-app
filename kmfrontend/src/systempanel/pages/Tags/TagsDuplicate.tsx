@@ -1,6 +1,5 @@
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { Button, Layout, Modal, Table, Tag, Tooltip } from 'antd';
-import Title from '../../components/Title';
 import i18next from 'i18next';
 import { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -10,6 +9,7 @@ import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 import { getTagTypeName } from '../../../utils/tagTypes';
 import { isModifiable } from '../../../utils/tools';
+import Title from '../../components/Title';
 
 function TagsDuplicate() {
 	const context = useContext(GlobalContext);

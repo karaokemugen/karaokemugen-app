@@ -6,7 +6,7 @@ import { PublicPlayerState } from '../../../../src/types/state';
 import { showModal } from '../../store/actions/modal';
 import GlobalContext from '../../store/context';
 import { commandBackend, getSocket } from '../../utils/socket';
-import { isNonStandardPlaylist, is_touch_device } from '../../utils/tools';
+import { is_touch_device, isNonStandardPlaylist } from '../../utils/tools';
 import PlayCurrentModal from './modals/PlayCurrentModal';
 
 interface IProps {

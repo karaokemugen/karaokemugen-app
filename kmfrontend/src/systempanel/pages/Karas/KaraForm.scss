@@ -21,5 +21,6 @@
 
 	&.warnings {
 		padding-top: 20px;
+		max-width: 350px; // Prevent the text from expanding the card to 100%
 	}
 }

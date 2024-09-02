@@ -9,21 +9,22 @@ import { ErrorKM } from '../lib/utils/error.js';
 import { writeStreamToFile } from '../lib/utils/files.js';
 import HTTP, { fixedEncodeURIComponent } from '../lib/utils/http.js';
 import logger from '../lib/utils/logger.js';
+import { testJSON } from '../lib/utils/validators.js';
 import { emitWS } from '../lib/utils/ws.js';
 import { SingleToken, Tokens } from '../types/user.js';
 import sentry from '../utils/sentry.js';
 import { startSub, stopSub } from '../utils/userPubSub.js';
 import { convertToRemoteFavorites } from './favorites.js';
 import { checkPassword, createJwtToken, createUser, editUser, getUser } from './user.js';
-import { testJSON } from '../lib/utils/validators.js';
 
 const service = 'RemoteUser';
 
 /** Check if the online token we have is still valid on KM Server */
 export async function remoteCheckAuth(instance: string, token: string) {
 	try {
-		const res = await HTTP.get(`https://${instance}/api/auth/check`, {
-			timeout: getConfig().Online.Timeout,
+		const conf = getConfig().Online;
+		const res = await HTTP.get(`${conf.Secure ? 'https' : 'http'}://${instance}/api/auth/check`, {
+			timeout: conf.Timeout,
 			headers: {
 				authorization: token,
 			},
@@ -39,15 +40,16 @@ export async function remoteCheckAuth(instance: string, token: string) {
 /** Function called when you enter a login/password and login contains an @. We're checking login/password pair against KM Server  */
 export async function remoteLogin(username: string, password: string): Promise<string> {
 	const [login, instance] = username.split('@');
+	const conf = getConfig().Online;
 	try {
 		const res = await HTTP.post<TokenResponseWithRoles>(
-			`https://${instance}/api/auth/login`,
+			`${conf.Secure ? 'https' : 'http'}://${instance}/api/auth/login`,
 			{
 				username: login,
 				password,
 			},
 			{
-				timeout: getConfig().Online.Timeout,
+				timeout: conf.Timeout,
 			}
 		);
 		return res.data.token;
@@ -67,8 +69,9 @@ export async function remoteLogin(username: string, password: string): Promise<s
 
 export async function resetRemotePassword(user: string) {
 	const [username, instance] = user.split('@');
+	const conf = getConfig().Online;
 	try {
-		await HTTP.post(`https://${instance}/api/users/${username}/resetpassword`);
+		await HTTP.post(`${conf.Secure ? 'https' : 'http'}://${instance}/api/users/${username}/resetpassword`);
 	} catch (err) {
 		logger.error(`Could not trigger reset password for ${user}`, { service, obj: err });
 		sentry.error(err);
@@ -79,7 +82,8 @@ export async function resetRemotePassword(user: string) {
 /** Get a user from KM Server */
 async function getARemoteUser(login: string, instance: string): Promise<User> {
 	try {
-		const user = await HTTP.get(`https://${instance}/api/users/${login}`);
+		const conf = getConfig().Online;
+		const user = await HTTP.get(`${conf.Secure ? 'https' : 'http'}://${instance}/api/users/${login}`);
 		return user.data as User;
 	} catch (err) {
 		if ([404].includes(err.response?.status)) return null;
@@ -95,6 +99,7 @@ async function getARemoteUser(login: string, instance: string): Promise<User> {
 /** Create a user on KM Server */
 export async function createRemoteUser(user: User) {
 	const [login, instance] = user.login.split('@');
+	const conf = getConfig().Online;
 	if (await getARemoteUser(login, instance)) {
 		throw {
 			code: 409,
@@ -103,7 +108,7 @@ export async function createRemoteUser(user: User) {
 		};
 	}
 	try {
-		await HTTP.post(`https://${instance}/api/users`, {
+		await HTTP.post(`${conf.Secure ? 'https' : 'http'}://${instance}/api/users`, {
 			login,
 			password: user.password,
 		});
@@ -121,8 +126,9 @@ export async function createRemoteUser(user: User) {
 /** Get user data from KM Server */
 export async function getRemoteUser(username: string, token: string): Promise<User> {
 	const instance = username.split('@')[1];
+	const conf = getConfig().Online;
 	try {
-		const res = await HTTP(`https://${instance}/api/myaccount`, {
+		const res = await HTTP(`${conf.Secure ? 'https' : 'http'}://${instance}/api/myaccount`, {
 			headers: {
 				authorization: token,
 			},
@@ -141,6 +147,7 @@ export async function editRemoteUser(user: User, token: string, avatar = true) {
 	instance = instance.trim();
 	login = login.trim();
 	await stopSub(login, instance);
+	const conf = getConfig().Online;
 
 	try {
 		if (user.avatar_file !== 'blank.png' && avatar) {
@@ -150,12 +157,12 @@ export async function editRemoteUser(user: User, token: string, avatar = true) {
 				createReadStream(resolve(resolvedPath('Avatars'), user.avatar_file)),
 				user.avatar_file
 			);
-			await HTTP.patch(`https://${instance}/api/users/${login}`, form, {
+			await HTTP.patch(`${conf.Secure ? 'https' : 'http'}://${instance}/api/users/${login}`, form, {
 				headers: form.getHeaders({ authorization: token }),
 			});
 		}
 		const res = await HTTP.patch(
-			`https://${instance}/api/users/${login}`,
+			`${conf.Secure ? 'https' : 'http'}://${instance}/api/users/${login}`,
 			{
 				...user,
 				// Removing non-supported properties on App
@@ -181,8 +188,8 @@ export async function editRemoteUser(user: User, token: string, avatar = true) {
 
 /** Get remote avatar from KM Server */
 export async function fetchRemoteAvatar(instance: string, avatarFile: string): Promise<string> {
-	// If this stops working, use got() and a stream: true property again
-	const res = await HTTP.get(`https://${instance}/avatars/${avatarFile}`, {
+	const conf = getConfig().Online;
+	const res = await HTTP.get(`${conf.Secure ? 'https' : 'http'}://${instance}/avatars/${avatarFile}`, {
 		responseType: 'stream',
 	});
 	let avatarPath: string;
@@ -300,7 +307,8 @@ export async function removeRemoteUser(token: OldJWTToken, password: string): Pr
 			editRemote: false,
 			renameUser: true,
 		});
-		await HTTP(`https://${instance}/api/users`, {
+		const conf = getConfig().Online;
+		await HTTP(`${conf.Secure ? 'https' : 'http'}://${instance}/api/users`, {
 			method: 'DELETE',
 			headers: {
 				authorization: onlineToken,
@@ -351,7 +359,8 @@ export async function convertToRemoteUser(token: OldJWTToken, password: string, 
 export async function refreshAnimeList(username: string, token: string): Promise<void> {
 	try {
 		const instance = username.split('@')[1];
-		await HTTP.post(`https://${instance}/api/myaccount/myanime`, null, {
+		const conf = getConfig().Online;
+		await HTTP.post(`${conf.Secure ? 'https' : 'http'}://${instance}/api/myaccount/myanime`, null, {
 			headers: {
 				authorization: token,
 			},

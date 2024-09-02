@@ -3,9 +3,9 @@ import { Form, FormInstance, Input, Modal, Select, Tooltip } from 'antd';
 import i18next from 'i18next';
 import { useRef, useState } from 'react';
 
+import type { DBKaraTag } from '../../../../src/lib/types/database/kara';
 import { commandBackend } from '../../utils/socket';
 import { tagTypes } from '../../utils/tagTypes';
-import type { DBKaraTag } from '../../../../src/lib/types/database/kara';
 
 interface CreateTagModalProps {
 	initialTagTypes?: number[];

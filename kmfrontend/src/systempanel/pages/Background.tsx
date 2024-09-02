@@ -1,13 +1,13 @@
 import { DeleteOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
 import { Alert, Button, Image, Layout, Modal, Select, Table, Typography, Upload } from 'antd';
-import Title from '../components/Title';
 import i18next from 'i18next';
 import { basename } from 'path-browserify';
 import { useEffect, useState } from 'react';
 import ReactAudioPlayer from 'react-audio-player';
 
-import { commandBackend } from '../../utils/socket';
 import { supportedFiles } from '../../../../src/lib/utils/constants';
+import { commandBackend } from '../../utils/socket';
+import Title from '../components/Title';
 
 export type BackgroundType = 'pause' | 'stop' | 'poll';
 

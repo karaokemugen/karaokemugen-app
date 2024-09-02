@@ -2,7 +2,7 @@ import './PublicHomepage.scss';
 
 import i18next from 'i18next';
 import { useContext, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';

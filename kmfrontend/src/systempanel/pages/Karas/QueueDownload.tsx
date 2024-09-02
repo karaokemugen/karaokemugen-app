@@ -1,6 +1,5 @@
 import { ClockCircleTwoTone, InfoCircleTwoTone, SyncOutlined, WarningTwoTone } from '@ant-design/icons';
 import { Button, Cascader, Col, Input, Layout, Row, Select, Table } from 'antd';
-import Title from '../../components/Title';
 import i18next from 'i18next';
 import prettyBytes from 'pretty-bytes';
 import { Component } from 'react';
@@ -12,13 +11,15 @@ import { KaraDownloadRequest } from '../../../../../src/types/download';
 import GlobalContext from '../../../store/context';
 import {
 	buildKaraTitle,
-	getSeriesSingersFull,
+	getSerieOrSingerGroupsOrSingers,
 	getTagInLocale,
 	getTagInLocaleList,
 	getTitleInLocale,
 } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
+import { getProtocolForOnline } from '../../../utils/tools';
+import Title from '../../components/Title';
 
 interface KaraDownloadState {
 	karas: DBKara[];
@@ -202,7 +203,9 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 		return this.state.karasQueue.find(item => item.mediafile === kara.mediafile);
 	};
 	showPreview = kara => {
-		this.setState({ preview: `https://${kara.repository}/downloads/medias/${encodeURIComponent(kara.mediafile)}` });
+		this.setState({
+			preview: `${getProtocolForOnline(this.context, kara.repository)}://${kara.repository}/downloads/medias/${encodeURIComponent(kara.mediafile)}`,
+		});
 		document.addEventListener('keyup', this.closeVideo);
 	};
 
@@ -341,11 +344,11 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 			},
 		},
 		{
-			title: `${i18next.t('TAG_TYPES.SERIES_other')} / ${i18next.t('KARA.SINGERS_BY')}`,
+			title: i18next.t('KARA.FROM_DISPLAY_TYPE_COLUMN'),
 			dataIndex: 'series',
 			key: 'series',
 			render: (_series, record) =>
-				getSeriesSingersFull(this.context?.globalState.settings.data, record, this.state.i18nTag),
+				getSerieOrSingerGroupsOrSingers(this.context?.globalState.settings.data, record, this.state.i18nTag),
 		},
 		{
 			title: i18next.t('TAG_TYPES.SONGTYPES_other'),

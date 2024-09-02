@@ -3,7 +3,7 @@ import './PlayerBox.scss';
 import i18next from 'i18next';
 import { sample } from 'lodash';
 import { ReactNode, RefObject, useContext, useEffect, useRef, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import ResizeObserver from 'resize-observer-polyfill';
 
 import { PublicPlayerState } from '../../../../../src/types/state';
@@ -176,12 +176,12 @@ function PlayerBox(props: IProps) {
 									(context.globalState.settings.data.config.Playlist.MysterySongs.Labels as string[])
 										.length |
 									0
-						  ]
+							]
 				);
 				setSubtitle(kara.flag_visible ? `${serieText} - ${songtypeText}${songorderText}` : '');
 				setLength(kara.duration);
 				setKid(kara.kid);
-				setImg(`url(${getPreviewLink(kara)})`);
+				setImg(`url(${getPreviewLink(kara, context)})`);
 				setKaraVersions(kara.flag_visible ? karaVersions : []);
 			}
 		}

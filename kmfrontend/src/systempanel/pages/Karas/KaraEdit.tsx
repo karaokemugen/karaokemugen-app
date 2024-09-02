@@ -1,5 +1,4 @@
 import { Layout } from 'antd';
-import Title from '../../components/Title';
 import i18next from 'i18next';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -7,6 +6,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { DBKara } from '../../../../../src/lib/types/database/kara';
 import { addListener, removeListener } from '../../../utils/electron';
 import { commandBackend } from '../../../utils/socket';
+import Title from '../../components/Title';
 import KaraForm from './KaraForm';
 
 function KaraEdit() {

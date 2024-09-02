@@ -1,7 +1,7 @@
 import './NotfoundPage.scss';
 
 import i18next from 'i18next';
-import { useLocation, Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import image404 from '../../assets/nanami-surpris.png';
 

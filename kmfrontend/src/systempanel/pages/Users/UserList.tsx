@@ -1,12 +1,12 @@
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import { Avatar, Button, Checkbox, Divider, Input, Layout, Modal, Table } from 'antd';
-import Title from '../../components/Title';
 import i18next from 'i18next';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { User } from '../../../../../src/lib/types/user';
 import { commandBackend } from '../../../utils/socket';
+import Title from '../../components/Title';
 
 function UserList() {
 	const [users, setUsers] = useState([] as User[]);

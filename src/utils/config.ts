@@ -25,6 +25,7 @@ import {
 	setConfigConstraints,
 	verifyConfig,
 } from '../lib/utils/config.js';
+import { uuidRegexp } from '../lib/utils/constants.js';
 import { ErrorKM } from '../lib/utils/error.js';
 import { fileRequired, relativePath } from '../lib/utils/files.js';
 // KM Imports
@@ -56,7 +57,6 @@ import sentry from './sentry.js';
 import { getState, setState } from './state.js';
 import { writeStreamFiles } from './streamerFiles.js';
 import { initTwitch, stopTwitch } from './twitch.js';
-import { uuidRegexp } from '../lib/utils/constants.js';
 
 const service = 'Config';
 
@@ -120,6 +120,7 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	// Change language
 	if (newConfig.App.Language !== oldConfig.App.Language) {
 		changeLanguage(newConfig.App.Language);
+		applyMenu('DEFAULT');
 	}
 	// Updating quotas
 	if (
@@ -315,7 +316,7 @@ export async function configureHost() {
 	const URLPort = +config.System.FrontendPort === 80 ? '' : `:${config.System.FrontendPort}`;
 	setState({ osHost: { v4: address(undefined, 'ipv4'), v6: address(undefined, 'ipv6') } });
 	if (state.remoteAccess && 'host' in state.remoteAccess) {
-		setState({ osURL: `https://${state.remoteAccess.host}` });
+		setState({ osURL: `${config.Online.Secure ? 'https' : 'http'}://${state.remoteAccess.host}` });
 	} else if (!config.Player.Display.ConnectionInfo.Host) {
 		setState({ osURL: `http://${getState().osHost.v4}${URLPort}` }); // v6 is too long to show anyway
 	} else {

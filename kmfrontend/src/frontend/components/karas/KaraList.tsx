@@ -1,4 +1,7 @@
+import './KaraList.scss';
+
 import { MouseEvent as ReactMouseEvent, useCallback, useContext, useState } from 'react';
+
 import { DBKara } from '../../../../../src/lib/types/database/kara';
 import { KaraList as IKaraList } from '../../../../../src/lib/types/kara';
 import GlobalContext from '../../../store/context';
@@ -12,13 +15,12 @@ import {
 import { commandBackend } from '../../../utils/socket';
 import { YEARS } from '../../../utils/tagTypes';
 import { secondsTimeSpanToHMS } from '../../../utils/tools';
-import VideoPreview from '../generic/VideoPreview';
 import AddKaraButton from '../generic/buttons/AddKaraButton';
 import MakeFavButton from '../generic/buttons/MakeFavButton';
 import ShowVideoButton from '../generic/buttons/ShowVideoButton';
 import UpvoteKaraButton from '../generic/buttons/UpvoteKaraButton';
+import VideoPreview from '../generic/VideoPreview';
 import InlineTag from './InlineTag';
-import './KaraList.scss';
 
 interface KaraListProps {
 	karas: IKaraList;
@@ -49,7 +51,7 @@ function KaraList({ karas, scope, addKara = false }: KaraListProps) {
 				return (
 					<div key={kara.kid} className={`song${kara.kid === kidOpened ? ' open' : ''}`}>
 						<div
-							style={{ ['--img' as any]: `url('${getPreviewLink(kara)}')` }}
+							style={{ ['--img' as any]: `url('${getPreviewLink(kara, context)}')` }}
 							className="modal-header img-background"
 							onClick={() => openKara(kara.kid)}
 						>

@@ -5,6 +5,7 @@ import { Fragment, MouseEvent, ReactNode, useContext, useEffect, useState } from
 import { createPortal } from 'react-dom';
 import { useParams } from 'react-router-dom';
 
+import { ASSLine } from '../../../../../src/lib/types/ass';
 import { lastplayed_ago } from '../../../../../src/lib/types/database/kara';
 import { DBPLCInfo } from '../../../../../src/types/database/playlist';
 import { KaraDownloadRequest } from '../../../../../src/types/download';
@@ -23,13 +24,12 @@ import {
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { YEARS } from '../../../utils/tagTypes';
 import { is_touch_device, secondsTimeSpanToHMS } from '../../../utils/tools';
+import AddKaraButton from '../generic/buttons/AddKaraButton';
 import MakeFavButton from '../generic/buttons/MakeFavButton';
 import ShowVideoButton from '../generic/buttons/ShowVideoButton';
-import InlineTag from './InlineTag';
-import AddKaraButton from '../generic/buttons/AddKaraButton';
-import VideoPreview from '../generic/VideoPreview';
 import UpvoteKaraButton from '../generic/buttons/UpvoteKaraButton';
-import { ASSLine } from '../../../../../src/lib/types/ass';
+import VideoPreview from '../generic/VideoPreview';
+import InlineTag from './InlineTag';
 
 interface IProps {
 	kid?: string;
@@ -65,7 +65,7 @@ export default function KaraDetail(props: IProps) {
 		if (props.scope === 'admin') {
 			return;
 		}
-		const generated = kara ? `url('${getPreviewLink(kara)}')` : 'none';
+		const generated = kara ? `url('${getPreviewLink(kara, context)}')` : 'none';
 		if (generated !== context.globalState.frontendContext.backgroundImg) {
 			setBgImage(context.globalDispatch, generated);
 		}
@@ -258,10 +258,10 @@ export default function KaraDetail(props: IProps) {
 							? i18next.t('KARA_DETAIL.PLAYING_IN', {
 									time: secondsTimeSpanToHMS(kara.time_before_play, 'hm'),
 									date: playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2),
-							  })
+								})
 							: kara.lastplayed_ago
-							  ? getLastPlayed(kara.lastplayed_at, kara.lastplayed_ago)
-							  : ''}
+								? getLastPlayed(kara.lastplayed_at, kara.lastplayed_ago)
+								: ''}
 					</span>
 				</div>
 				{kara.upvotes && props.scope === 'admin' ? (
@@ -372,7 +372,9 @@ export default function KaraDetail(props: IProps) {
 		const header = (
 			<div
 				className={`modal-header img-background${props.scope === 'public' ? ' fixed' : ''}`}
-				style={{ ['--img' as any]: props.scope === 'admin' ? `url('${getPreviewLink(kara)}')` : 'none' }}
+				style={{
+					['--img' as any]: props.scope === 'admin' ? `url('${getPreviewLink(kara, context)}')` : 'none',
+				}}
 			>
 				<div className="modal-header-title">
 					{props.scope === 'public' ? (

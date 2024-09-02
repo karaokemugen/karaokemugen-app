@@ -1,7 +1,9 @@
 import i18next from 'i18next';
 import { ReactNode } from 'react';
+
 import { ASSLine } from '../../../src/lib/types/ass';
 import { DBKara, DBKaraTag } from '../../../src/lib/types/database/kara';
+import { DBTag } from '../../../src/lib/types/database/tag';
 import InlineTag from '../frontend/components/karas/InlineTag';
 import { Scope } from '../frontend/types/scope';
 import { setPlaylistInfoLeft, setPlaylistInfoRight } from '../store/actions/frontendContext';
@@ -9,17 +11,16 @@ import { GlobalContextInterface } from '../store/context';
 import { SettingsStoreData } from '../store/types/settings';
 import { getLanguageIn3B, langSupport } from './isoLanguages';
 import { isRemote } from './socket';
-import { tagTypes } from './tagTypes';
+import { getTagTypeName, tagTypes } from './tagTypes';
+import { getProtocolForOnline } from './tools';
 
 export function getDescriptionInLocale(settings: SettingsStoreData, description: Record<string, string>): string {
 	if (!description) return '';
 	const user = settings?.user;
-	if (user?.main_series_lang && user?.fallback_series_lang) {
-		return description[user.main_series_lang]
-			? description[user.main_series_lang]
-			: description[user.fallback_series_lang]
-				? description[user.fallback_series_lang]
-				: description.eng;
+	if (user?.language) {
+		return description[getLanguageIn3B(user?.language)]
+			? description[getLanguageIn3B(user?.language)]
+			: description.eng;
 	} else {
 		return description[getLanguageIn3B(langSupport)] ? description[getLanguageIn3B(langSupport)] : description.eng;
 	}
@@ -74,10 +75,15 @@ export function getTagInLocale(
 	tag: DBKaraTag,
 	i18nParam?: any
 ): { i18n: string; description: string } | undefined {
-	const user = settings?.user;
 	if (!tag) {
 		return undefined;
-	} else if (user?.main_series_lang && user?.fallback_series_lang) {
+	}
+	const user = settings?.user;
+	const tagLang =
+		tagTypes[getTagTypeName(tag.type_in_kara ? tag.type_in_kara : (tag as unknown as DBTag).types[0])].language;
+	if (tagLang === 'user' && user?.language) {
+		return getTagInLanguage(tag, getLanguageIn3B(user.language), 'eng', i18nParam);
+	} else if (tagLang === 'song_name' && user?.main_series_lang && user?.fallback_series_lang) {
 		return getTagInLanguage(tag, user.main_series_lang, user.fallback_series_lang, i18nParam);
 	} else {
 		return getTagInLanguage(tag, getLanguageIn3B(langSupport), 'eng', i18nParam);
@@ -117,14 +123,17 @@ export function sortAndHideTags(tags: any[], scope: Scope = 'public') {
 		: [];
 }
 
-export function getSeriesSingersFull(settings: SettingsStoreData, data: DBKara, i18nParam?: any) {
-	return data?.series?.length > 0
-		? data.series.map(e => getTagInLocale(settings, e, i18nParam).i18n).join(', ')
-		: data?.singergroups?.length > 0
-			? data.singergroups.map(e => getTagInLocale(settings, e, i18nParam).i18n).join(', ')
-			: data?.singers?.length > 0
-				? data.singers.map(e => getTagInLocale(settings, e, i18nParam).i18n).join(', ')
-				: ''; // wtf?;
+export function getSerieOrSingerGroupsOrSingers(settings: SettingsStoreData, data: DBKara, i18nParam?: any) {
+	if (data.from_display_type && data[data.from_display_type] && data[data.from_display_type].length > 0) {
+		return data[data.from_display_type].map(e => getTagInLocale(settings, e, i18nParam).i18n).join(', ');
+	}
+	if (data.series?.length > 0) {
+		return data.series.map(e => getTagInLocale(settings, e, i18nParam).i18n).join(', ');
+	}
+	if (data.singergroups?.length > 0) {
+		return data.singergroups.map(e => getTagInLocale(settings, e, i18nParam).i18n).join(', ');
+	}
+	return data.singers.map(e => getTagInLocale(settings, e, i18nParam).i18n).join(', ');
 }
 
 /**
@@ -205,6 +214,7 @@ export function buildKaraTitle(
 }
 
 export function formatLyrics(lyrics: ASSLine[]) {
+	let computedLyrics = lyrics;
 	if (lyrics.length > 100) {
 		// Merge lines with the same text in it to mitigate karaokes with many effects
 		const map = new Map<string, ASSLine[][]>();
@@ -231,6 +241,7 @@ export function formatLyrics(lyrics: ASSLine[]) {
 				fixedLyrics.push({
 					start: lyricGroup[0].start,
 					text: lyric,
+					fullText: lyricGroup[0].fullText,
 					end: lyricGroup[lyricGroup.length - 1].end,
 				});
 			}
@@ -238,45 +249,49 @@ export function formatLyrics(lyrics: ASSLine[]) {
 		fixedLyrics.sort((el1, el2) => {
 			return el1.start - el2.start;
 		});
-		return fixedLyrics;
-	} else {
-		// Compute karaoke timings for public LyricsBox
-		const mappedLyrics: ASSLine[] = [];
-		for (const lyric of lyrics) {
-			if (lyric.fullText) {
-				const newFullText = lyric.fullText
-					.map(value => {
-						// Crush down tags
-						const tags = value.tags.reduce((acc, tagCollec) => {
-							const newK = (acc.k || 0) + (tagCollec.k || tagCollec.kf || tagCollec.ko || 0);
-							return Object.assign(acc, { ...tagCollec, k: newK });
-						}, {});
-						return { ...value, tags };
-					})
-					.map((block, i, blocks) => {
-						let KTime = 0;
-						for (let i2 = 0; i2 < i; i2++) {
-							KTime += blocks[i2].tags?.k || 0;
-						}
-						KTime = KTime * 0.01;
-						return { ...block, tags: [{ ...block.tags, k: KTime }] };
-					});
-				mappedLyrics.push({ ...lyric, fullText: newFullText });
-			} else {
-				// Push as-is, no support
-				mappedLyrics.push({ ...lyric, fullText: undefined });
-			}
+		computedLyrics = fixedLyrics;
+	}
+	// Compute karaoke timings for public LyricsBox
+	const mappedLyrics: ASSLine[] = [];
+	for (const lyric of lyrics) {
+		if (lyric.fullText) {
+			const newFullText = lyric.fullText
+				.map(value => {
+					// Crush down tags
+					const tags = value.tags.reduce((acc, tagCollec) => {
+						const newK = (acc.k || 0) + (tagCollec.k || tagCollec.kf || tagCollec.ko || 0);
+						return Object.assign(acc, { ...tagCollec, k: newK });
+					}, {});
+					return { ...value, tags };
+				})
+				.map((block, i, blocks) => {
+					let KTime = 0;
+					for (let i2 = 0; i2 < i; i2++) {
+						KTime += blocks[i2].tags?.k || 0;
+					}
+					KTime = KTime * 0.01;
+					return { ...block, tags: [{ ...block.tags, k: KTime }] };
+				});
+			mappedLyrics.push({ ...lyric, fullText: newFullText });
+		} else {
+			// Push as-is, no support
+			mappedLyrics.push({ ...lyric, fullText: undefined });
 		}
-		return mappedLyrics;
+	}
+	return mappedLyrics;
+}
+
+export function getPreviewLink(kara: DBKara, context: GlobalContextInterface) {
+	const path = getPreviewPath({ contentid: kara.kid, mediasize: kara.mediasize });
+	if (isRemote() || kara.download_status !== 'DOWNLOADED') {
+		return `${getProtocolForOnline(context, kara.repository)}://${kara.repository}${path}`;
+	} else {
+		return path;
 	}
 }
 
-export function getPreviewLink(kara: DBKara) {
-	if (isRemote() || kara.download_status !== 'DOWNLOADED') {
-		return `https://${kara.repository}/previews/${kara.kid}.${kara.mediasize}.25.jpg`;
-	} else {
-		return `/previews/${kara.kid}.${kara.mediasize}.25.jpg`;
-	}
+export function getPreviewPath(options: { contentid: string; mediasize: number }) {
+	return `/previews/${options.contentid}.${options.mediasize}.25.jpg`;
 }
 
 export function getPlaylistInfo(side: 'left' | 'right', context: GlobalContextInterface) {

@@ -1,12 +1,12 @@
 import {
 	DashboardOutlined,
+	FileTextOutlined,
 	HomeOutlined,
 	LogoutOutlined,
-	UserOutlined,
-	TagOutlined,
-	FileTextOutlined,
-	SettingOutlined,
 	PullRequestOutlined,
+	SettingOutlined,
+	TagOutlined,
+	UserOutlined,
 } from '@ant-design/icons';
 import { Menu } from 'antd';
 import i18next from 'i18next';

@@ -12,7 +12,7 @@ import toolsMenu from './menus/tools.js';
 import viewMenu from './menus/view.js';
 import windowMenu from './menus/window.js';
 
-export function initMenu(layout: MenuLayout) {
+function initMenu(layout: MenuLayout) {
 	const options: MenuItemBuilderOptions = {
 		isMac: process.platform === 'darwin',
 		layout,

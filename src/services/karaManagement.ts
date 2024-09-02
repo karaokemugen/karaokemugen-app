@@ -1,6 +1,7 @@
 import { shell } from 'electron';
 import { promises as fs } from 'fs';
 import { copy } from 'fs-extra';
+import i18next from 'i18next';
 import { basename, extname, resolve } from 'path';
 
 import { getStoreChecksum, removeKaraInStore } from '../dao/dataStore.js';
@@ -14,6 +15,7 @@ import { refreshTags } from '../lib/dao/tag.js';
 import { writeTagFile } from '../lib/dao/tagfile.js';
 import { APIMessage } from '../lib/services/frontend.js';
 import { refreshKarasAfterDBChange, updateTags } from '../lib/services/karaManagement.js';
+import { getRepoManifest } from '../lib/services/repo.js';
 import { DBKara, DBKaraTag } from '../lib/types/database/kara.js';
 import { DBTag } from '../lib/types/database/tag.js';
 import { KaraFileV4, KaraTag } from '../lib/types/kara.js';
@@ -22,6 +24,7 @@ import { ASSFileSetMediaFile } from '../lib/utils/ass.js';
 import { resolvedPath, resolvedPathRepos } from '../lib/utils/config.js';
 import { getTagTypeName } from '../lib/utils/constants.js';
 import { ErrorKM } from '../lib/utils/error.js';
+import { embedCoverImage } from '../lib/utils/ffmpeg.js';
 import { fileExists, resolveFileInDirs } from '../lib/utils/files.js';
 import logger, { profile } from '../lib/utils/logger.js';
 import { encodeMediaToRepoDefault } from '../lib/utils/mediaInfoValidation.js';
@@ -34,10 +37,9 @@ import { getState } from '../utils/state.js';
 import { checkMediaAndDownload } from './download.js';
 import { getKara, getKaras } from './kara.js';
 import { editKara } from './karaCreation.js';
-import { getRepo, getRepoManifest, getRepos } from './repo.js';
+import { getRepo, getRepos } from './repo.js';
 import { updateAllSmartPlaylists } from './smartPlaylist.js';
 import { getTag } from './tag.js';
-import i18next from 'i18next';
 
 const service = 'KaraManager';
 
@@ -229,13 +231,20 @@ export async function batchEditKaras(
 				subtext: kara.karafile,
 			});
 			let modified = false;
-			if (action === 'fromDisplayType' && kara.from_display_type !== tagType) {
+			// We also test if karaoke has elements in that tagtype when modifying the fromDisplayType
+			if (action === 'fromDisplayType' && kara.from_display_type !== tagType && kara[tagType].length > 0) {
 				modified = true;
 				kara.from_display_type = tagType;
 			}
-			if (kara[tagType]?.length > 0 && action === 'remove') {
-				if (kara[tagType].find((t: KaraTag) => t.tid === tid)) modified = true;
-				kara[tagType] = kara[tagType].filter((t: KaraTag) => t.tid !== tid);
+			if (action === 'remove' && kara[tagType]?.length > 0) {
+				if (kara[tagType].find((t: KaraTag) => t.tid === tid)) {
+					modified = true;
+					kara[tagType] = kara[tagType].filter((t: KaraTag) => t.tid !== tid);
+					// We remove the from_display_type if kara[tagType] becomes empty
+					if (kara.from_display_type === tagType && kara[tagType].length === 0) {
+						kara.from_display_type = null;
+					}
+				}
 			}
 			if (action === 'add' && kara[tagType] && !kara[tagType].find((t: KaraTag) => t.tid === tid)) {
 				modified = true;
@@ -357,6 +366,19 @@ export async function deleteMediaFile(file: string, repo: string) {
 	}
 }
 
+export async function embedAudioFileCoverArt(coverFilename: string, source: { kid?: string; tempFileName?: string }) {
+	if (!source.kid && !source.tempFileName)
+		throw new Error('Neither kid nor mediaFilename has been received but atleast one needs to be set');
+	const kara = source.kid && (await getKara(source.kid, adminToken));
+	const mediaFilePaths =
+		(source.tempFileName && [resolve(resolvedPath('Temp'), basename(source.tempFileName))]) ||
+		(await resolveFileInDirs(kara?.mediafile, resolvedPathRepos('Medias', kara?.repository)));
+	const coverFilePath = resolve(resolvedPath('Temp'), basename(coverFilename));
+	const newMediaPath = await embedCoverImage(mediaFilePaths[0], coverFilePath, resolvedPath('Temp'));
+	const mediaInfo = await extractMediaTechInfos(newMediaPath); // Shouldn't last long as it's audio only
+	return mediaInfo;
+}
+
 export async function encodeMediaFileToRepoDefaults(
 	kid?: string,
 	tempFileName?: string,
@@ -378,7 +400,7 @@ export async function encodeMediaFileToRepoDefaults(
 			(tempFileName && [resolve(resolvedPath('Temp'), basename(tempFileName))]) ||
 			(await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', kara.repository)));
 		const mediaFileExists = mediaFilePaths.length > 0 && (await fileExists(mediaFilePaths[0]));
-		if (!mediaFileExists) throw new ErrorKM('Mediafile not found');
+		if (!mediaFileExists) throw new Error('Mediafile not found');
 		const currentMediaInfo =
 			mediaFilePaths.length > 0 &&
 			(await fileExists(mediaFilePaths[0])) &&

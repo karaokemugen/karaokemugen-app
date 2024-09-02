@@ -27,13 +27,12 @@
 	"LIBRARY": "Libreria",
 	"YEAR": "Anno",
 	"PUBLIC_PLAYLIST": "Suggerimenti del pubblico",
-	"GENERATING_DATABASE": "Passo 2/2 - Aggiornando il database…",
+	"GENERATING_DATABASE": "Passo 2 / 2 - Aggiornando il database…",
 	"TIPS": {
 		"NORMAL": [
 			"Puoi usare i tasti multimediali sulla tua tastiera per controllare il tuo karaoke!",
 			"Non dimenticare di allacciare la cintura prima di avviare il karaoke. Canta in sicurezza e stai attento alle casse cadenti!",
 			"Non dimenticare di sincronizzare l'archivio di tanto in tanto: potresti scoprire nuovi karaoke!",
-			"Non trovi un brano nel database? Non esitare a controllare https://kara.moe/suggest/, potrebbe essere lì!",
 			"Karaoke Mugen è un progetto di squadra 100% open source, tutti possono partecipare!",
 			"Puoi importare i file tramite il Menu File -> Importa, trascinali a schermo o associali all'eseguibile di Karaoke Mugen per consentire a KM di aprirli ed usarli in: playlist, preferiti, ecc…",
 			"Io sono Nanamin, la mascotte di Karaoke Mugen, e sono stata creata dal magnifico Sedeto! http://www.sedeto.fr",
@@ -214,7 +213,9 @@
 		},
 		"STAGES": {
 			"resolving": "Risolvendo delta",
-			"receiving": "Ricevendo i dati"
+			"receiving": "Ricevendo i dati",
+			"counting": "Contando i file",
+			"writing": "Scrivendo i file"
 		},
 		"CURRENT_ACTION": "Azione Git"
 	},
@@ -235,7 +236,7 @@
 	"MENU_VIEW_TOGGLEDEVTOOLS": "Mostra &strumenti per sviluppatori",
 	"REQUESTED_WITH": "(con {{names}})",
 	"MENU_EDIT_STOPSPEECH": "Smetti di parlare",
-	"MENU_HELP_TWITTER": "&𝕏",
+	"MENU_HELP_TWITTER": "&𝕏 (precedentemente Twitter)",
 	"REPO_DISABLED": {
 		"TITLE": "Archivio disabilitato",
 		"MESSAGE": "L'archivio {{repo}} è stato disabilitato perché una delle sue cartelle non è disponibile. Se alcune cartelle sono in un disco esterno, assicurati che sia collegato e vai nel Pannello di Sistema > Archivi per riabilitarlo."
@@ -251,10 +252,6 @@
 	"MENU_TOOLS": "&Strumenti",
 	"INIT_USER": "Inizializzando gli utenti…",
 	"MENU_HELP_DISCORD": "&Discord",
-	"WORLD_REPOSITORY_DISABLED": {
-		"TITLE": "L'archivio World è stato disabilitato",
-		"MESSAGE": "A causa dell'aggiunta delle Collezioni, gli archivi World e kara.moe sono stati uniti. L'archivio World quindi non è più necessario, è stato disabilitato e ti consigliamo di rimuoverlo completamente dal Pannello di Sistema."
-	},
 	"GO_TO": "Vai su $url per suggerire i brani!",
 	"MENU_VIEW_ZOOMIN": "&Ingrandisci",
 	"MY_PLAYLIST": "La mia playlist",
@@ -265,7 +262,7 @@
 	"MENU_HELP_CONTRIB_DOC": "&Crea il tuo Karaoke",
 	"CURRENT_VERSION_OK": "Stai già usando la versione più recente di Karaoke Mugen!",
 	"MENU_EDIT_STARTSPEECH": "Inizia a parlare",
-	"GENERATING_READING": "Passo 1/2 - Leggendo i dati…",
+	"GENERATING_READING": "Passo 1 / 2 - Leggendo i dati…",
 	"MENU_GOTO_OSX": "Vai",
 	"ERROR_UNKNOWN": "Si è appena verificato un errore sconosciuto! Dai un'occhiata ai log per maggior dettagli.",
 	"REQUESTED_BY": "Richiesto da {{name}}",
@@ -318,7 +315,6 @@
 	"MENU_HELP_MASTODON": "&Mastodon",
 	"INIT_BASEUPDATE": "Aggiornando i brani…",
 	"GO_TO_QUIZ_MODE": "Vai su $url per giocare!",
-	"MENU_HELP_SEND_KARAOKE": "&Invia il tuo Karaoke",
 	"INIT_RESTOREDB": "Ripristinando il database…",
 	"MENU_HELP": "Ai&uto",
 	"SUGGEST_SONGS": "Suggerisci dei brani!",
@@ -328,5 +324,21 @@
 	"MENU_EDIT_UNDO": "Ann&ulla",
 	"MENU_GOTO_OPERATOR": "Interfaccia &operatore",
 	"MENU_OPTIONS_CHIBIRANKING": "Mostra la classifica staccata del quiz",
-	"MENU_OPTIONS_CHIBIRANKING_LINK": "Copia il link della classifica staccata del quiz"
+	"MENU_OPTIONS_CHIBIRANKING_LINK": "Copia il link della classifica staccata del quiz",
+	"MOVED_USER_DIR_DIALOG": {
+		"TITLE": "Cartella utente spostata!",
+		"MESSAGE": "La cartella User Data è stata spostata per soddisfare gli standard del tuo sistema operativo. Prima era:\n\n{{oldDir}}\n\nAdesso è:\n\n{{newDir}}\n\nSe sei uno streamer, dovresti aggiornare il tuo layout di OBS e selezionare i file di testo corretti nella loro nuova posizione.",
+		"UNDERSTOOD": "Ho capito!"
+	},
+	"MOVING_USER_DIR_ERROR_DIALOG": {
+		"CONTINUE": "Continua",
+		"TITLE": "Impossibile spostare la cartella dei dati di Karaoke Mugen",
+		"MESSAGE": "La cartella dei dati di Karaoke Mugen è stata spostata. Prima era:\n\n{{oldDir}}\n\nAdesso è:\n\n{{newDir}}\n\nErrore durante lo spostamento della cartella. Dovresti cliccare su \"Esci\" e spostare tu stesso la cartella.\n\nPuoi anche cliccare su \"Continua\". Se lo fai, ricomincerai da capo con una nuova cartella dei dati. Ti consigliamo di eliminare la vecchia cartella mostrata sopra.",
+		"QUIT": "Esci"
+	},
+	"MOVED_USER_DIR_FLATPAK_DIALOG": {
+		"TITLE": "Utenti Flatpak!",
+		"MESSAGE": "Il contenuto della cartella utente è stato spostato, ma l'app non può rimuovere la vecchia cartella poiché stai usando la versione Flatpak di Karaoke Mugen. Dovresti eliminarla tu:\n\n{{oldDir}}\n\n(Dovrebbe essere vuota!)",
+		"UNDERSTOOD": "Ho capito! Lo farò prima di dimenticarmene!"
+	}
 }

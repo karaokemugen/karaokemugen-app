@@ -81,10 +81,6 @@ export interface GameScore extends PlayerScore {
 	gamename: string;
 }
 
-interface CurrentGameRoundAnswers extends GameScore {
-	quickAnswer: boolean;
-}
-
 export interface GameTotalScore {
 	login: string;
 	total: number;

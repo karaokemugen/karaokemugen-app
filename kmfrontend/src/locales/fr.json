@@ -706,7 +706,9 @@
 				"ANILIST": "AniList",
 				"ANILIST_PLACEHOLDER": "karaokemugen",
 				"KITSU": "Kitsu",
-				"KITSU_PLACEHOLDER": "karaokemugen"
+				"KITSU_PLACEHOLDER": "karaokemugen",
+				"GITLAB": "Gitlab",
+				"GITLAB_PLACEHOLDER": "karaokemugen"
 			},
 			"ANIME_LIST_TO_FETCH": "Site de liste d'animés à récupérer",
 			"REFRESH_ANIME_LIST": "Mettre à jour la liste d'animés",
@@ -963,6 +965,7 @@
 	"NOTIFICATION": {
 		"OPERATOR": {
 			"ERROR": {
+				"STATS_PAYLOAD": "Impossible d'envoyer les statistiques au serveur",
 				"DOWNLOAD": "Erreur lors du téléchargement",
 				"SHORTENER": "Erreur d'activation de l'URL raccourcie",
 				"PLAYER_PLAY": "Erreur de lecture de karaoké",
@@ -1012,13 +1015,18 @@
 		"MEDIA_FILE": "Fichier média",
 		"MEDIA_FILE_TOOLTIP": "Formats de fichier acceptés : {{formats}}",
 		"MEDIA_REQUIRED": "Le fichier média est obligatoire",
+		"AUDIO_COVER": {
+			"UPLOAD": "Intégrer une pochette d'album",
+			"UPLOAD_TOOLTIP": "Change l'image qui est visible en fond d'écran lorsque le karaoké est joué",
+			"EMBED_COVER_SUCCESS": "Une nouvelle pochette d'album a été intégrée",
+			"EMBED_COVER_ERROR": "Erreur lors de l'intégration de la nouvelle pochette d'album",
+			"REPLACE": "Remplacer la pochette d'album"
+		},
 		"MEDIA_IN_PROCESS": "Le fichier média est en cours d'intégration, merci d'attendre la notification de succès.",
 		"MEDIA_REPOSITORY_RULES_UNMET": "Le fichier média ne répond pas à toutes les exigences obligatoires du dépôt. Veuillez d'abord réencoder le média.",
 		"LYRICS_FILE": "Fichier de sous-titres",
 		"LYRICS_FILE_TOOLTIP": "Format de fichier accepté : {{formats}}",
 		"LYRICS_FILE_OPEN": "Ouvrir le fichier",
-		"APPLY_LYRICS_CLEANUP": "Nettoyer le fichier de paroles après envoi",
-		"APPLY_LYRICS_CLEANUP_TOOLTIP": "Nettoie le fichier de ses commentaires et styles inutilisés, et enregistre le titre et l'auteur du karaoké dans les propriétés",
 		"ADD_FILE_SUCCESS": "Le fichier {{name}} a été ajouté avec succès",
 		"ADD_FILE_MEDIA_ERROR": "{{name}} n'est pas un média",
 		"ADD_FILE_LYRICS_ERROR": "{{name}} n'est pas un fichier de sous-titres",
@@ -1132,7 +1140,9 @@
 			"WARNINGS": {
 				"LIBAVCODEC_ENCODER": "L'audio est encodé avec libavcodec (l'aac de référence dans ffmpeg), qui peut créer des artefacts audibles et il est donc déconseillé de l'utiliser. Veillez à utiliser l'encodeur libfdk_aac pour l'aac ou un autre codec comme opus, pour obtenir la meilleure qualité possible."
 			},
-			"AUDIO_SAMPLE_RATE": "Taux d’échantillonnage audio"
+			"AUDIO_SAMPLE_RATE": "Taux d’échantillonnage audio",
+			"DURATION": "Durée",
+			"AUDIO_CHANNEL_LAYOUT": "Agencement des canaux audio"
 		},
 		"MEDIA_ENCODE": {
 			"LABEL": "Encoder les médias",
@@ -1140,17 +1150,18 @@
 				"TRIM_MEDIA": "Couper",
 				"TRIM_MEDIA_TOOLTIP": "Détecter et supprimer les images noires et les silences au début et à la fin du média"
 			},
-			"TIMING_CHANGE_WARNING": "Les options sélectionnées peuvent modifier le début et la fin du média. Vérifiez le minutage des paroles après l'encodage et l'enregistrement du média.",
-			"LEAVE_PAGE": "Le média est en cours d'encodage. Quitter la page maintenant annulera l'encodage, êtes-vous sûr de vouloir partir ?"
+			"TIMING_CHANGE_WARNING": "Les options sélectionnées peuvent modifier le début et la fin du média. Vérifiez le minutage des paroles après l'encodage et l'enregistrement du média."
 		},
 		"FROM_DISPLAY_TYPE": "Affichage du tag de la provenance de la chanson",
 		"FROM_DISPLAY_TYPE_TOOLTIP": "Choissisez le type de tag utilisé lors de l'affichage de la chanson",
+		"FROM_DISPLAY_TYPE_COLUMN": "Provenance affichée",
 		"ANNOUNCE_POSITION": "Position des annonces",
 		"ANNOUNCE_POSITION_TOOLTIP": "Ecrase la position des annonces par défaut (bannière et informations sur la chanson au début et à la fin de celle-ci). Utile pour éviter que ces annonces n'écrivent par dessus des paroles si la position de ceux-ci est différente de d'habitude.",
 		"ANNOUNCE_POSITION_SELECTION": {
 			"SET": "Ecraser la position par défaut",
 			"UNSET": "Rétablir la position par défaut"
-		}
+		},
+		"REPOSITORY_DOCUMENTATION": "Accéder aux règles de {{instance}}"
 	},
 	"MENU": {
 		"HOME": "Tableau de bord",
@@ -1275,7 +1286,7 @@
 		"ANILIST_ID": "Identifiant/URL Anilist",
 		"ANILIST_ID_TOOLTIP": "Si c'est un anime, indiquez son ID/url sur anilist.co",
 		"KITSU_ID": "Identifiant/URL Kitsu",
-		"KITSU_ID_TOOLTIP": "Si c'est un anime, indiquez son url sur kitsu.io",
+		"KITSU_ID_TOOLTIP": "Si c'est un anime, indiquez son url sur kitsu.app",
 		"NOT_MAL_URL_ERROR": "C'est une url myanimelist",
 		"NOT_ANILIST_URL_ERROR": "C'est une url anilist",
 		"NOT_KITSU_URL_ERROR": "C'est une url kitsu",
@@ -1401,6 +1412,8 @@
 		"UPDATE": "Mise à jour automatique",
 		"UPDATE_TOOLTIP": "Si désactivé, le dépôt ne sera jamais mis à jour par l'application.",
 		"ENABLED": "Actif",
+		"SECURE": "Sécurisé",
+		"SECURE_TOOLTIP": "Active l'accès au dépôt par HTTPS",
 		"SENDSTATS": "Envoyer des statistiques",
 		"SENDSTATS_TOOLTIP": "Chansons jouées, demandées, et sessions",
 		"AUTO_MEDIA_DOWNLOADS": "Télécharger automatiquement les médias",
@@ -1441,7 +1454,10 @@
 			"AUTHOR": "Identité Git",
 			"AUTHOR_TOOLTIP": "Nom affiché lors de vos commits",
 			"EMAIL": "E-Mail Git",
-			"EMAIL_TOOLTIP": "Email associé à vos commits"
+			"EMAIL_TOOLTIP": "Email associé à vos commits",
+			"COPY_SSH_KEY": "Copier la clé SSH dans le presse-papier",
+			"GENERATE_SSH_KEY": "Générer une clé SSH",
+			"DELETE_SSH_KEY": "Supprimer la clé SSH"
 		},
 		"FTP": {
 			"HOST": "Hôte FTP",
@@ -1656,7 +1672,6 @@
 		"FILES_VALIDATED_ERROR": "Erreur lors de la validation des fichiers",
 		"DATABASE_DUMPED_ERROR": "Erreur lors de l'export de la base de données",
 		"DATABASE_RESTORED_ERROR": "Erreur lors de la restauration de la base de données",
-		"BACKGROUND_FILE_DELETE_ERROR_IN_USE": "Impossible de supprimer le fichier, il est utilisé par le lecteur !",
 		"FS_ERROR": "Erreur lors de la recherche dans l'explorateur de fichiers",
 		"USER_DELETE_ADMIN_DAMEDESU": "Vous ne pouvez pas supprimer le compte admin !",
 		"USER_NOT_ALLOWED_TO_SING": "Cet utilisateur ne peut pas démarrer la chanson",
@@ -1785,7 +1800,10 @@
 		"QUIZZ_GET_GAMES_ERROR": "Erreur lors de l'obtention des parties",
 		"QUIZZ_GET_GAME_SCORES_ERROR": "Erreur lors de l'obtention des scores des parties",
 		"PLAYER_DISABLED_IN_TEST_MODE_SORRYMASEN_PLEASE_UNDERSTAND": "Le lecteur est désactivé en mode test",
-		"MEDIAS_FOLDER_OPEN_ERROR": "Échec de l'ouverture du dossier média"
+		"MEDIAS_FOLDER_OPEN_ERROR": "Échec de l'ouverture du dossier média",
+		"MEDIA_VALIDATION_ERROR": "Impossible de valider les informations du média",
+		"MEDIA_ENCODING_ABORTED": "L'encodage du média a été annulé",
+		"UNKNOWN_PARENT_FROM_INBOX": "Parent inconnu pour ce karaoké venant de la boîte de réception"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Ajout de {{data}} téléchargements à la file d'attente",

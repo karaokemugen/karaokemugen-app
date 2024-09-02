@@ -62,7 +62,7 @@ export interface Config {
 	};
 	Online: {
 		Host?: string;
-		Port?: number;
+		Secure?: boolean;
 		Timeout?: number;
 		Users?: boolean;
 		Stats?: boolean;
@@ -260,9 +260,5 @@ export interface Config {
 		Path: {
 			[p in PathType]?: string;
 		};
-	};
-	Maintainer: {
-		// Temporary settings until there's an unified way of defining base rules (media formats, lyrics cleanup)
-		ApplyLyricsCleanupOnKaraSave: boolean;
 	};
 }

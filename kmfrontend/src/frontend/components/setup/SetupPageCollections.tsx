@@ -1,8 +1,8 @@
 import i18next from 'i18next';
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Tag } from '../../../../../src/lib/types/tag';
 
+import { Tag } from '../../../../../src/lib/types/tag';
 import GlobalContext from '../../../store/context';
 import { getDescriptionInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';

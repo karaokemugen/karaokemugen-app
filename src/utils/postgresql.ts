@@ -461,8 +461,8 @@ export async function initPG(relaunch = true) {
 							clearInterval(detectingPostgres);
 							PGStarted(true);
 						})
-						.catch(() => {
-							if (retries > 10) PGNotStarted();
+						.catch(err => {
+							if (retries > 10) PGNotStarted(err);
 						});
 				}, 1000);
 			});

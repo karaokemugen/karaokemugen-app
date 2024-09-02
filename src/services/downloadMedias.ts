@@ -15,19 +15,20 @@ import { emitWS } from '../lib/utils/ws.js';
 import { File } from '../types/download.js';
 import Sentry from '../utils/sentry.js';
 import { addDownloads } from './download.js';
-import { checkDownloadStatus } from './repo.js';
+import { checkDownloadStatus, getRepo } from './repo.js';
 
 const service = 'MediasUpdater';
 
 let updateRunning = false;
 
-async function getRemoteMedias(repo: string) {
+async function getRemoteMedias(repoName: string) {
 	const collections = getConfig().Karaoke.Collections;
 	const enabledCollections = [];
+	const repo = getRepo(repoName);
 	for (const collection of Object.keys(collections)) {
 		if (collections[collection] === true) enabledCollections.push(collection);
 	}
-	const res = await HTTP.post(`https://${repo}/api/karas/medias`, {
+	const res = await HTTP.post(`${repo.Secure ? 'https' : 'http'}://${repoName}/api/karas/medias`, {
 		collections: enabledCollections,
 	});
 	return res.data as DBMedia[];

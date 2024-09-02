@@ -2,8 +2,8 @@ import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { Alert, Col, Form, Input, Row, Select, Tag, Tooltip } from 'antd';
 import i18next from 'i18next';
 import { useContext, useEffect, useState } from 'react';
-import GlobalContext from '../../store/context';
 
+import GlobalContext from '../../store/context';
 import { getLanguagesInLocaleFromCode, getListLanguagesInLocale, langWithRomanization } from '../../utils/isoLanguages';
 
 interface IProps {

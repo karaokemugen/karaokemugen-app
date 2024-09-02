@@ -1,26 +1,27 @@
+import './QuizModal.scss';
+
 import i18next from 'i18next';
 import { merge } from 'lodash';
 import { ChangeEvent, MouseEvent, useContext, useState } from 'react';
 import { useAsyncMemo } from 'use-async-memo';
-import type { QuizGameConfig } from '../../../../../src/types/config';
+
 import type { User } from '../../../../../src/lib/types/user';
+import type { QuizGameConfig } from '../../../../../src/types/config';
 import type { BlindMode } from '../../../../../src/types/player';
 import type { Game, GameTotalScore } from '../../../../../src/types/quiz';
 import { closeModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
+import ProfilePicture from '../../../utils/components/ProfilePicture';
+import { getPlaylistIcon } from '../../../utils/playlist';
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 import { displayMessage } from '../../../utils/tools';
 import SelectWithIcon from '../generic/SelectWithIcon';
-import ProfilePicture from '../../../utils/components/ProfilePicture';
-import { getPlaylistIcon } from '../../../utils/playlist';
-import './QuizModal.scss';
 
 type RecursivePartial<T> = {
 	[P in keyof T]?: T[P] extends (infer U)[]
 		? RecursivePartial<U>[]
-		: // eslint-disable-next-line @typescript-eslint/ban-types
-			T[P] extends object
+		: T[P] extends object
 			? RecursivePartial<T[P]>
 			: T[P];
 };
@@ -483,7 +484,14 @@ export default function QuizModal(props: IProps) {
 											type="checkbox"
 											id="quiz-hide-video"
 											checked={blindModeChecked}
-											onChange={e => setBlindMode(e.target.checked)}
+											onChange={e => {
+												if (e.target.checked) {
+													setGameConfig({ Modifiers: { Blind: 'blur' } });
+												} else {
+													setGameConfig({ Modifiers: { Blind: '' } });
+												}
+												setBlindMode(e.target.checked);
+											}}
 										/>
 									</div>
 									<label className="filterLabel" htmlFor="quiz-hide-video">
@@ -497,11 +505,11 @@ export default function QuizModal(props: IProps) {
 										value={gameConfig.Modifiers.Blind}
 										disabled={!blindModeChecked}
 									>
-										<option value="black">
-											{i18next.t('MODAL.START_QUIZ.DISPLAY.BLACK_SCREEN')}
-										</option>
 										<option value="blur">
 											{i18next.t('MODAL.START_QUIZ.DISPLAY.BLURRED_SCREEN')}
+										</option>
+										<option value="black">
+											{i18next.t('MODAL.START_QUIZ.DISPLAY.BLACK_SCREEN')}
 										</option>
 									</select>
 								</div>

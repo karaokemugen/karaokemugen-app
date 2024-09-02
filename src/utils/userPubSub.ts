@@ -2,6 +2,7 @@ import { debounce } from 'lodash';
 import { io, Socket } from 'socket.io-client';
 
 import { DBUser } from '../lib/types/database/user.js';
+import { getConfig } from '../lib/utils/config.js';
 import logger, { profile } from '../lib/utils/logger.js';
 import { importFavorites } from '../services/favorites.js';
 import { editUser, getUser, getUsers, removeUser } from '../services/user.js';
@@ -60,8 +61,8 @@ function userDebounceFactory(user) {
 	return debounceMap.get(user);
 }
 
-function setupUserWatch(server: string) {
-	const socket = io(`https://${server}`, { multiplex: true });
+function setupUserWatch(server: string, secure: boolean) {
+	const socket = io(`${secure ? 'https' : 'http'}://${server}`, { multiplex: true });
 	ioMap.set(server, socket);
 	socket.on('user updated', async payload => {
 		const login = `${payload.user.login}@${server}`;
@@ -83,8 +84,9 @@ function setupUserWatch(server: string) {
 }
 
 export function startSub(user: string, server: string) {
+	const conf = getConfig().Online;
 	if (!ioMap.has(server)) {
-		setupUserWatch(server);
+		setupUserWatch(server, conf.Secure);
 	}
 	const socket = ioMap.get(server);
 	socket.emit('subscribe user', { body: user }, res => {

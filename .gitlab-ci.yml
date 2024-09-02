@@ -79,7 +79,7 @@ test:
   tags:
     - $RUNNER_LINUX
   services:
-    - postgres:13
+    - postgres:16
   variables:
     POSTGRES_USER: karaokemugen_app
     POSTGRES_PASSWORD: musubi

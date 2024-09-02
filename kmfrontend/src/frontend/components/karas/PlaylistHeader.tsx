@@ -14,6 +14,7 @@ import {
 	setOppositePlaylistInfo,
 	setPlaylistInfo,
 } from '../../../utils/kara';
+import { getPlaylistIcon } from '../../../utils/playlist';
 import { tagTypes, YEARS } from '../../../utils/tagTypes';
 import { isNonStandardPlaylist, nonStandardPlaylists } from '../../../utils/tools';
 import { KaraElement } from '../../types/kara';
@@ -23,7 +24,6 @@ import CheckedKaraMenuModal from '../modals/CheckedKaraMenuModal';
 import PlaylistCommandsModal from '../modals/PlaylistCommandsModal';
 import ActionsButtons from './ActionsButtons';
 import KaraReviews from './KaraReviews';
-import { getPlaylistIcon } from '../../../utils/playlist';
 
 interface IProps {
 	side: 'left' | 'right';

@@ -147,7 +147,7 @@ export async function mergeTags(tid1: string, tid2: string) {
 			karafile_tag: tag1.karafile_tag || tag2.karafile_tag,
 			priority: tag1.priority,
 			external_database_ids:
-				tag1.external_database_ids == null && tag2.external_database_ids == null
+				!tag1.external_database_ids && !tag2.external_database_ids
 					? null
 					: { ...tag1.external_database_ids, ...tag2.external_database_ids },
 		};
@@ -516,7 +516,9 @@ export async function checkCollections() {
 				if (repo.Online && internet) {
 					try {
 						const tags = (
-							await HTTP.get(`https://${repo.Name}/api/karas/tags?type=${tagTypes.collections}`)
+							await HTTP.get(
+								`${repo.Secure ? 'https' : 'http'}://${repo.Name}/api/karas/tags?type=${tagTypes.collections}`
+							)
 						).data;
 						for (const tag of tags.content) {
 							if (!availableCollections.find(t => t.tid === tag.tid)) availableCollections.push(tag);

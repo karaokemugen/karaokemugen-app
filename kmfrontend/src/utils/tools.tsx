@@ -2,8 +2,8 @@ import { EventEmitter } from 'events';
 import i18next from 'i18next';
 import { createElement, Dispatch, ReactNode } from 'react';
 import { toast, ToastPosition, TypeOptions } from 'react-toastify';
-import { DBKara } from '../../../src/lib/types/database/kara';
 
+import { DBKara } from '../../../src/lib/types/database/kara';
 import { Criteria } from '../../../src/lib/types/playlist';
 import nanamiCryPNG from '../assets/nanami-cry.png';
 import nanamiCryWebP from '../assets/nanami-cry.webp';
@@ -331,4 +331,10 @@ export function PLCCallback(response, context: GlobalContextInterface, kara: DBK
 			response.plc.plcid
 		);
 	}
+}
+
+export function getProtocolForOnline(context: GlobalContextInterface, repository: string) {
+	return context.globalState.settings.data.config.System.Repositories.find(value => value.Name === repository).Secure
+		? 'https'
+		: 'http';
 }

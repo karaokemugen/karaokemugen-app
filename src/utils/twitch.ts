@@ -10,6 +10,7 @@ import { playerComment } from '../services/player.js';
 import { getCurrentSong } from '../services/playlist.js';
 import { addPollVoteIndex } from '../services/poll.js';
 import { registerTwitchAnswer } from '../services/quiz.js';
+import { getRepo } from '../services/repo.js';
 import { getState } from './state.js';
 
 const service = 'Twitch';
@@ -82,9 +83,10 @@ function listenChat(chat: Client) {
 			}
 		} else if (msg === '!song') {
 			const song = await getCurrentSong();
+			const repo = getRepo(song.repository);
 			const str = `@${context.username} : ${getSongTitle(song)} - ${getSongSeriesSingers(song)} (${
 				/\./.test(song.repository)
-					? `https://${song.repository}/base/kara/${song.kid}`
+					? `${repo.Secure ? 'https' : 'http'}://${song.repository}/base/kara/${song.kid}`
 					: `${getState().osURL}/public/plc/${song.plcid}`
 			})`;
 			chat.say(target, str);

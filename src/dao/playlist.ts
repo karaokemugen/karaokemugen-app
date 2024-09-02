@@ -5,7 +5,7 @@ import { WhereClause } from '../lib/types/database.js';
 import { DBPLC, DBPLCBase, PLCInsert } from '../lib/types/database/playlist.js';
 import { Criteria, PLCParams, UnaggregatedCriteria } from '../lib/types/playlist.js';
 import { getConfig } from '../lib/utils/config.js';
-import { getTagTypeName } from '../lib/utils/constants.js';
+import { getTagTypeName, tagTypes } from '../lib/utils/constants.js';
 import { now } from '../lib/utils/date.js';
 import logger, { profile } from '../lib/utils/logger.js';
 import { DBPL, DBPLCInfo, SmartPlaylistType } from '../types/database/playlist.js';
@@ -177,13 +177,13 @@ export async function selectPlaylistContentsMini(id: string): Promise<DBPLC[]> {
 		for (const tagType of miniTypes) {
 			rowWithoutTags[tagType] = [];
 		}
-		if (tags == null) {
+		if (tags === null) {
 			return rowWithoutTags;
 		}
 		for (const tag of tags) {
-			if (tag?.type_in_kara == null) continue;
+			if (tag?.type_in_kara === null) continue;
 			const type = getTagTypeName(tag.type_in_kara);
-			if (type == null || !miniTypes.includes(type)) continue;
+			if (!type || !miniTypes.includes(type)) continue;
 			rowWithoutTags[type].push(tag);
 		}
 		return rowWithoutTags;
@@ -339,14 +339,19 @@ export async function selectKarasFromCriterias(
 	const criterias = await selectCriterias(plaid);
 	if (criterias.length === 0) return [];
 	logger.debug(`Criterias selected for playlist ${plaid}: ${JSON.stringify(criterias)}`, { service, obj: criterias });
+	const collections = getConfig().Karaoke.Collections;
+	const collectionClauses = [];
+	for (const collection of Object.keys(collections)) {
+		if (collection) collectionClauses.push(`'${collection}~${tagTypes.collections}' = ANY(ak.tid)`);
+	}
 	if (smartPlaylistType === 'UNION') {
 		for (const c of criterias) {
 			// Ignore if criteria is not found
 			if (c.type > 999 && !sqlselectKarasFromCriterias[c.type]) continue;
 			if (c.type > 0 && c.type < 1000) {
-				queryArr.push(sqlselectKarasFromCriterias.tagTypes(`= ${c.type}`, c.value));
+				queryArr.push(sqlselectKarasFromCriterias.tagTypes(`= ${c.type}`, c.value, collectionClauses));
 			} else if (c.type === 1001) {
-				queryArr.push(sqlselectKarasFromCriterias[c.type]);
+				queryArr.push(sqlselectKarasFromCriterias[c.type](collectionClauses));
 			} else {
 				queryArr.push(sqlselectKarasFromCriterias[c.type](c.value));
 			}
@@ -367,18 +372,18 @@ export async function selectKarasFromCriterias(
 				queryArr.push(
 					`SELECT type${c.type}_${i}.kid, type${c.type}_${i}.duration, type${
 						c.type
-					}_${i}.created_at FROM (${sqlselectKarasFromCriterias.tagTypes(`= ${c.type}`, c.value)}) type${
+					}_${i}.created_at FROM (${sqlselectKarasFromCriterias.tagTypes(`= ${c.type}`, c.value, collectionClauses)}) type${
 						c.type
 					}_${i}`
 				);
 			} else if (c.type === 1001) {
 				// Only need to add this criteria once.
-				if (uniqueKIDsSQL === '') uniqueKIDsSQL = sqlselectKarasFromCriterias[1001];
+				if (uniqueKIDsSQL === '') uniqueKIDsSQL = sqlselectKarasFromCriterias[1001](collectionClauses);
 			} else {
 				queryArr.push(
 					`SELECT type${c.type}_${i}.kid, type${c.type}_${i}.duration, type${
 						c.type
-					}_${i}.created_at FROM (${sqlselectKarasFromCriterias[c.type](c.value)}) type${c.type}_${i}`
+					}_${i}.created_at FROM (${sqlselectKarasFromCriterias[c.type](c.value, collectionClauses)}) type${c.type}_${i}`
 				);
 			}
 		}

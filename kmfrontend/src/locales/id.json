@@ -129,7 +129,7 @@
 		"CRITERIA_TYPE_1006": "Sembunyikan lagu yang tidak tersedia secara luring",
 		"ADD_PLACEHOLDER": "Tambahkan nilai ke kriteria",
 		"EXPL": "Daftar putar pintar dibuat dari <1>kriteria</1>, kamu juga bisa menambahkan secara manual karaoke ke daftar ini.",
-		"PLAYLIST_DURATION": "<1/> Limit to <2/> <3/> (<4/> order)",
+		"PLAYLIST_DURATION": "",
 		"ADD": "Tambahkan kriteria",
 		"EXPL_OPEN": "Ini adalah kriteria yang digunakan untuk membuat <1>daftar putar</1>, akan diperbarui secara otomatis apabila lagu baru ditambahkan ke basis data."
 	},
@@ -1283,7 +1283,6 @@
 		"GUESTS_NOT_ALLOWED": "Akun tamu tidak diperbolehkan",
 		"DELETE_PLAYLIST_ERROR_PUBLIC": "Tidak bisa menghapus daftar putar publik. Buat dulu daftar putar publik lain.",
 		"DELETE_PLAYLIST_ERROR_BLACKLIST": "Tidak dapat menghapus daftar hitam. Jadikan daftar putar lain sebagai daftar hitam terlebih dahulu.",
-		"BACKGROUND_FILE_DELETE_ERROR_IN_USE": "Tidak dapat menghapus file, file sedang digunakan oleh pemutar!",
 		"PREVIEW_HOOKS_ERROR": "Galat pratinjau kait"
 	},
 	"SUCCESS_CODES": {
@@ -1543,7 +1542,7 @@
 		"ANILIST_ID": "URL/ID Anilist",
 		"ANILIST_ID_TOOLTIP": "Jika ini adalah anime, indikasikan ID-nya di anilist.co",
 		"KITSU_ID": "URL/ID Kitsu",
-		"KITSU_ID_TOOLTIP": "Jika ini adalah anime, indikasikan ID-nya di kitsu.io",
+		"KITSU_ID_TOOLTIP": "Jika ini adalah anime, indikasikan ID-nya di kitsu.app",
 		"NOT_MAL_URL_ERROR": "Ini adalah URL MyAnimeList",
 		"NOT_ANILIST_URL_ERROR": "Ini adalah URL Anilist",
 		"NOT_KITSU_URL_ERROR": "Ini adalah URL Kitsu",
@@ -1697,7 +1696,7 @@
 	"LOADING_SUBTITLE_ELECTRON": "Seharusnya tidak memakan waktu yang lama, coba mulai ulang Karaoke Mugen atau perbarui itu jika kamu terjebak di sini.",
 	"LOADING_SUBTITLE": "Seharusnya tidak memakan waktu yang lama, coba bersihkan tembolok atau perbarui peramban jika kamu terjebak di sini.",
 	"TOOLTIP_REFUSE_SELECT_KARA": "Tolak lagu (bebaskan lagu)",
-	"TOOLTIP_ADDKARA_ADMIN": "klik kanan untuk menambahkannya setelah lagu yang saat ini diputar",
+	"TOOLTIP_ADDKARA_ADMIN": " klik kanan untuk menambahkannya setelah lagu yang saat ini diputar",
 	"TOOLTIP_ACCEPT_KARA": "Terima lagu (bebaskan lagu dan salin ke daftar saat ini)",
 	"TOOLTIP_REFUSE_KARA": "Tolak lagu (bebaskan lagu)",
 	"CHECKED": "Dipilih:",

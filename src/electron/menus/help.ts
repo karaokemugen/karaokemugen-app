@@ -53,10 +53,6 @@ const builder: MenuItemBuilderFunction = options => {
 				label: i18next.t('MENU_HELP_CONTRIB_DOC'),
 				click: urls.contribDoc,
 			},
-			{
-				label: i18next.t('MENU_HELP_SEND_KARAOKE'),
-				click: urls.sendKaraoke,
-			},
 			{ type: 'separator' },
 			{
 				label: i18next.t('MENU_HELP_REPORT_BUG'),

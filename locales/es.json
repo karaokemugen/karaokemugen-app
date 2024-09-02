@@ -78,7 +78,6 @@
 	"MENU_HELP_GITLAB": "&GitLab",
 	"MENU_HELP_GUIDE": "&Guía de usuario",
 	"MENU_HELP_CONTRIB_DOC": "&Crea tu Karaoke",
-	"MENU_HELP_SEND_KARAOKE": "&Envía tu Karaoke",
 	"MENU_HELP_REPORT_BUG": "Reportar un &error",
 	"MENU_GOTO": "&Ir a",
 	"MENU_GOTO_OSX": "Ir a",
@@ -114,10 +113,6 @@
 	"ABOUT": {
 		"TITLE": "Acerca de Karaoke Mugen"
 	},
-	"WORLD_REPOSITORY_DISABLED": {
-		"TITLE": "El repositorio mundial ha sido deshabilitado",
-		"MESSAGE": "El repositorio mundial ha sido deshabilitado por el administrador del sistema. Por favor, contacte con él para más información."
-	},
 	"REPO_DISABLED": {
 		"TITLE": "Repositorio deshabilitado",
 		"MESSAGE": "El repositorio {{repo}} ha sido deshabilitado por el administrador del sistema. Por favor, contacte con él para más información."
@@ -131,7 +126,6 @@
 			"¡Puedes usar las teclas multimedia de tu teclado para controlar tu karaoke!",
 			"No olvides ponerte el cinturón de seguridad antes de hacer karaoke. ¡Canta con seguridad y ten cuidado con las caídas de los altavoces!",
 			"No olvides sincronizar la base de vez en cuando: ¡puedes descubrir nuevos karaokes!",
-			"¿No encuentras una canción en la base de datos? No dude en consultar https://kara.moe/suggest/, ¡puede que esté allí!",
 			"Karaoke Mugen es un proyecto 100% de código abierto y colaborativo, ¡todos pueden participar!",
 			"Puede importar archivos a través del menú Archivo -> Importar, arrastrar y soltar o asociar el ejecutable Karaoke Mugen para permitir que KM los abra y los use: listas de reproducción, favoritos…",
 			"Soy Nanamin, la mascota de Karaoke Mugen, ¡y fui creada por la maravillosa Sedeto! http://www.sedeto.fr",
@@ -198,8 +192,8 @@
 		"TITLE": "Repositorio desconocido",
 		"MESSAGE": "Está a punto de agregar el repositorio {{repoName}} a Karaoke Mugen. ¿Está seguro?"
 	},
-	"GENERATING_READING": "Paso 1/2 - Lectura de datos…",
-	"GENERATING_DATABASE": "Paso 2/2: Actualizando la base de datos…",
+	"GENERATING_READING": "Paso 1 / 2 - Leyendo los datos…",
+	"GENERATING_DATABASE": "Paso 2 / 2 - Actualizando la base de datos…",
 	"TWITCH": {
 		"CHAT": {
 			"VOTE": "Nuevo voto: usa !vote x donde x es el número de la canción:",
@@ -252,18 +246,39 @@
 		"WARNINGS": "Advertencia",
 		"FRANCHISES": "Franquicia",
 		"COLLECTIONS": "Colección",
-		"FAMILIES": "Contenido del vídeo"
+		"FAMILIES": "Contenido de vídeo"
 	},
 	"MIGRATION": "Migración",
 	"YEAR": "Año",
 	"TITLE": "Título",
 	"MIGRATION_MESSAGES": [
-		"Alinear los micrófonos",
+		"Alineamiento de micrófonos",
 		"Cálculo de las ondas sonoras de normalización",
-		null,
-		"Afinar las cuerdas vocales",
+		"Enfriando las bebidas",
+		"Afinando las cuerdas vocales",
 		"Descubriendo la ciudad perdida de Karaokum Mugen-la",
-		"La respuesta de la informática a la vida, el universo y todo lo demás"
+		"Calculando la respuesta a la vida, el universo y todo lo demás",
+		"Iniciando el convector de tiempo",
+		"Resolviendo ecuaciones sinfónicas",
+		"Colocando conductos supersónicos",
+		"Sacando la basura",
+		"Pidiendo bebidas y snacks",
+		"Aumentando el rendimiento musical",
+		"Descargando Wikipedia",
+		"Dándole de comer al gato",
+		"Configurando alerón",
+		"Absorbiendo errores luminiscentes",
+		"Gestionando posibles ataques al hígado",
+		"Esparciendo chocolate",
+		"Cocinando pizzas",
+		"Cocinando hamburguesas",
+		"Calentando queso raclette",
+		"Poniendo las salchichas a la parrilla",
+		"Cortando Salchichas",
+		"Removiendo bytes cuánticos",
+		"Lidiando con los vecinos",
+		"Manipulando barómetro"
 	],
-	"FALLBACK": "Retroceder"
+	"FALLBACK": "Retroceder",
+	"UNKNOWN": "Desconocido"
 }
