@@ -86,7 +86,7 @@
 			"POINTS": "Punkte: {{count}}"
 		},
 		"QUOTA_KARA_DESCRIPTION_other": "Du kannst nur {{count}} Lieder vorschlagen. Du kannst erneut ein Lied vorschlagen, sobald die Operator deine Vorschläge angenommen oder abgelehnt hat oder wenn ein Lied abgespielt wurde.",
-		"QUOTA_KARA_DESCRIPTION_one": "Du kannst nur {{count}} Lied vorschlagen. Du kannst erneut ein Lied vorschlagen, sobald die Operator deinen Vorschlag angenommen oder abgelehnt hat oder wenn das Lied abgespielt wird."
+		"QUOTA_KARA_DESCRIPTION_one": "Du kannst nur {{count}} Lied vorschlagen. Du kannst erneut ein Lied vorschlagen, sobald ein Operator deinen Vorschlag angenommen oder abgelehnt hat oder wenn das Lied abgespielt wird."
 	},
 	"VERSION": "Version",
 	"HOME_BUTTON": "Interface wechseln",
