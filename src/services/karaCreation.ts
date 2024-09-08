@@ -140,6 +140,7 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 				await smartMove(oldMediaPath, mediaDest);
 			} catch (err) {
 				// Most probable error is that media is unmovable since busy
+				logger.error('Error while moving file', { service, obj: err });
 				throw new ErrorKM('KARA_EDIT_ERROR_UNMOVABLE_MEDIA', 409, false);
 			}
 		}
@@ -158,6 +159,7 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 				try {
 					await smartMove(subPath, subDest, { overwrite: true });
 				} catch (err) {
+					logger.error('Error while moving file', { service, obj: err });
 					throw new ErrorKM('KARA_EDIT_ERROR_UNMOVABLE_LYRICS', 409, false);
 				}
 			}
@@ -172,6 +174,7 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 				try {
 					await smartMove(oldSubPath, subDest, { overwrite: true });
 				} catch (err) {
+					logger.error('Error while moving file', { service, obj: err });
 					throw new ErrorKM('KARA_EDIT_ERROR_UNMOVABLE_LYRICS', 409, false);
 				}
 			}
