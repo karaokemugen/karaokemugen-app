@@ -1001,6 +1001,26 @@ export async function copyLyricsRepo(report: DifferentChecksumReport[]) {
 	}
 }
 
+export function checkRepoMediaPaths(repo?: Repository) {
+	const reposWithPath = getConfig().System.Repositories.map(r => ({
+		...(repo && repo.Name === r.Name ? repo : r),
+		mediasPath: resolvedPathRepos('Medias', r.Name)[0],
+	}));
+	const enabledRepos = reposWithPath.filter(r => r.Enabled);
+	const reposWithSameMediaPath = enabledRepos
+		.map(or => ({
+			repo: or,
+			repoWithSameMediaPath: reposWithPath.find(r => r.Name !== or.Name && r.mediasPath === or.mediasPath),
+		}))
+		.filter(or => !!or.repoWithSameMediaPath);
+	return {
+		reposWithSameMediaPath,
+		reposWithSameMediaPathText:
+			reposWithSameMediaPath.length > 0 &&
+			reposWithSameMediaPath.map(r => `${r.repo.Name}, ${r.repoWithSameMediaPath.Name}`).join(', '),
+	};
+}
+
 function checkRepoPaths(repo: Repository) {
 	if (windowsDriveRootRegexp.test(repo.BaseDir)) {
 		throw new ErrorKM('REPO_PATH_ERROR_IN_WINDOWS_ROOT_DIR', 400, false);
@@ -1027,6 +1047,16 @@ function checkRepoPaths(repo: Repository) {
 			throw new ErrorKM('REPO_PATH_ERROR_IN_WINDOWS_ROOT_DIR', 400, false);
 		}
 	}
+
+	const mediaPathErrors = checkRepoMediaPaths(repo);
+	if (mediaPathErrors.reposWithSameMediaPath.length > 0) {
+		logger.error(
+			`Multiple repositories share the same media path, which will cause sync errors: ${mediaPathErrors.reposWithSameMediaPathText}`,
+			{ service }
+		);
+		throw new ErrorKM('REPOS_MULTIPLE_USED_MEDIA_PATH_ERROR', 400, false);
+	}
+
 	const checks = [];
 	for (const path of Object.keys(repo.Path)) {
 		repo.Path[path].forEach((dir: string) => checks.push(asyncCheckOrMkdir(resolve(getState().dataPath, dir))));
