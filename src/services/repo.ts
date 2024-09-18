@@ -107,7 +107,7 @@ export async function addRepo(repo: Repository) {
 		if (repo.Online) {
 			// Testing if repository is reachable
 			try {
-				const manifest = await getRepoMetadata(repo.Name);
+				const manifest = await getRepoMetadata(repo);
 				if (repo.MaintainerMode && repo.Git) {
 					repo.Git.ProjectID = manifest.ProjectID;
 				}
@@ -321,7 +321,7 @@ export async function updateZipRepo(name: string) {
 			return true;
 		}
 		// Check if update is necessary by fetching the remote last commit sha
-		const { LatestCommit } = await getRepoMetadata(repo.Name);
+		const { LatestCommit } = await getRepoMetadata(repo);
 		logger.debug(`Update ${repo.Name}: ours is ${localCommit}, theirs is ${LatestCommit}`, { service });
 		if (LatestCommit !== localCommit) {
 			try {
@@ -376,7 +376,7 @@ async function getLocalRepoLastCommit(repo: Repository): Promise<string | null> 
 }
 
 async function newZipRepo(repo: Repository): Promise<string> {
-	const { FullArchiveURL, LatestCommit } = await getRepoMetadata(repo.Name);
+	const { FullArchiveURL, LatestCommit } = await getRepoMetadata(repo);
 	await downloadAndExtractZip(FullArchiveURL, resolve(getState().dataPath, repo.BaseDir), repo.Name);
 	if (repo.AutoMediaDownloads === 'all') {
 		updateMedias(repo.Name).catch(e => {
@@ -405,7 +405,7 @@ export async function editRepo(
 		if (repo.Online && onlineCheck) {
 			// Testing if repository is reachable
 			try {
-				const manifest = await getRepoMetadata(repo.Name);
+				const manifest = await getRepoMetadata(repo);
 				if (repo.MaintainerMode && repo.Git) repo.Git.ProjectID = manifest.ProjectID;
 			} catch (err) {
 				throw new ErrorKM('REPOSITORY_UNREACHABLE', 404, false);
@@ -1058,16 +1058,14 @@ export async function findUnusedMedias(repo: string): Promise<string[]> {
 }
 
 /** Get metadata. Throws if KM Server is not up to date */
-export async function getRepoMetadata(repoName: string) {
+export async function getRepoMetadata(repo: Repository) {
 	try {
 		// FIXME : This should be depracted in KM 9.0
 		// Repository metadata will have to come from the manifest file provided by each repository, not from their online server.
 		// Only LastCommit will need to be fetched from KM Server.
-		const repo = getRepo(repoName);
-		const ret = await HTTP.get(`${repo.Secure ? 'https' : 'http'}://${repoName}/api/karas/repository`);
+		const ret = await HTTP.get(`${repo.Secure ? 'https' : 'http'}://${repo.Name}/api/karas/repository`);
 		return ret.data as RepositoryManifest;
 	} catch (err) {
-		logger.error(`Error fetching repository manifest for ${repoName} : ${err}`);
 		throw err;
 	}
 }
