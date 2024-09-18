@@ -1753,6 +1753,8 @@
 		"USER_DELETE_ERROR_ONLINE": "Erreur lors de la suppression du compte en ligne",
 		"USER_RESETPASSWORD_ONLINE_ERROR": "Impossible de vous envoyer un email de réinitialisation : contactez l'administrateur du serveur dont vous dépendez.",
 		"UPDATING_MEDIAS_ERROR": "Le dépôt {{repo}} n'a pas mis à jour les medias correctement : {{err}}",
+		"UPDATING_MEDIAS_MULTIPLE_USED_MEDIA_PATH_ERROR": "Plusieurs dépôts ont le même dossier de médias, ce qui peut occassioner des suppressions de fichiers non voulues. Veuillez changer le dossier principal de médias de ces dépôts : {{repos}}",
+		"REPOS_MULTIPLE_USED_MEDIA_PATH_ERROR": "Le dossier de médias principal est déjà utilisé par un autre dépôt.",
 		"USER_UNKNOWN": "Utilisateur connecté inconnu",
 		"ADMIN_PLEASE": "Merci d'utiliser un compte opérateur",
 		"NOT_GUEST": "Les comptes invités ne peuvent pas utiliser cette fonction",
