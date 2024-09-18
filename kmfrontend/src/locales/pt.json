@@ -516,7 +516,9 @@
 				"MYANIMELIST_PLACEHOLDER": "karaokêmugen",
 				"ANILIST_PLACEHOLDER": "karaokêmugen",
 				"KITSU": "Kitsu",
-				"KITSU_PLACEHOLDER": "karaokêmugen"
+				"KITSU_PLACEHOLDER": "karaokêmugen",
+				"GITLAB": "Gitlab",
+				"GITLAB_PLACEHOLDER": "karaokemugen"
 			},
 			"LOCAL_DELETE": "Exclua esta conta localmente",
 			"FLAG_SENDSTATS": "Use meus favoritos e solicitações de músicas para obter estatísticas",
@@ -1033,7 +1035,7 @@
 		"MERGE_WITH_TOOLTIP": "Mesclar a tag atual com outra",
 		"MERGE_WITH_BUTTON": "Mesclar!",
 		"PRIORITY_TOOLTIP": "Tags com valor mais alto serão exibidas primeiro.",
-		"KITSU_ID_TOOLTIP": "Se for um anime, indique sua url em kitsu.io",
+		"KITSU_ID_TOOLTIP": "Se for um anime, indique sua url em kitsu.app",
 		"LANG_ERROR": "Uma tag deve ter pelo menos um nome traduzido.",
 		"KARAOKES_WITH_TAGS": "Karaokês com esta tag",
 		"NOT_VALID_URL_ERROR": "Este não é um URL válido",

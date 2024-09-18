@@ -1542,7 +1542,7 @@
 		"ANILIST_ID": "URL/ID Anilist",
 		"ANILIST_ID_TOOLTIP": "Jika ini adalah anime, indikasikan ID-nya di anilist.co",
 		"KITSU_ID": "URL/ID Kitsu",
-		"KITSU_ID_TOOLTIP": "Jika ini adalah anime, indikasikan ID-nya di kitsu.io",
+		"KITSU_ID_TOOLTIP": "Jika ini adalah anime, indikasikan ID-nya di kitsu.app",
 		"NOT_MAL_URL_ERROR": "Ini adalah URL MyAnimeList",
 		"NOT_ANILIST_URL_ERROR": "Ini adalah URL Anilist",
 		"NOT_KITSU_URL_ERROR": "Ini adalah URL Kitsu",

@@ -86,7 +86,7 @@
 			"POINTS": "Punkte: {{count}}"
 		},
 		"QUOTA_KARA_DESCRIPTION_other": "Du kannst nur {{count}} Lieder vorschlagen. Du kannst erneut ein Lied vorschlagen, sobald die Operator deine Vorschläge angenommen oder abgelehnt hat oder wenn ein Lied abgespielt wurde.",
-		"QUOTA_KARA_DESCRIPTION_one": "Du kannst nur {{count}} Lied vorschlagen. Du kannst erneut ein Lied vorschlagen, sobald die Operator deinen Vorschlag angenommen oder abgelehnt hat oder wenn das Lied abgespielt wird."
+		"QUOTA_KARA_DESCRIPTION_one": "Du kannst nur {{count}} Lied vorschlagen. Du kannst erneut ein Lied vorschlagen, sobald ein Operator deinen Vorschlag angenommen oder abgelehnt hat oder wenn das Lied abgespielt wird."
 	},
 	"VERSION": "Version",
 	"HOME_BUTTON": "Interface wechseln",
@@ -1687,7 +1687,7 @@
 		"I18N_TOOLTIP": "Es muss mindestens einen Namen in einer beliebigen Sprache geben (gib den Originalnamen in Englisch ein, wenn es keine anderen gibt)",
 		"PRIORITY_TOOLTIP": "Tags mit einem höheren Wert werden zuerst angezeigt. Standardmäßig 10. Bei -1 wird das Tag in der öffentlichen Schnittstelle nicht angezeigt, bei -2 wird es überall ausgeblendet (wird aber weiterhin für die Suche verwendet).",
 		"DELETE_TAG_MESSAGE": "Dadurch wird der Tag ebenso entfernt wie in jedem Lied in deiner Datenbank!",
-		"KITSU_ID_TOOLTIP": "Wenn es sich um einen Anime handelt, gib bitte seine URL auf kitsu.io an",
+		"KITSU_ID_TOOLTIP": "Wenn es sich um einen Anime handelt, gib bitte seine URL auf kitsu.app an",
 		"MERGE_ABOUT_MESSAGE": "Das Ergebnis ist ein Tag mit dem aktuellen Namen und Kurznamen. Typen, Aliasnamen und Übersetzungen werden zusammengeführt und der resultierende Tag enthält alle Informationen aus den Quell- und Ziel-Tags.",
 		"KARAFILETAG_TOOLTIP": "Dies wird im Abschnitt Typen der Karaoke-Dateinamen hinzugefügt"
 	},

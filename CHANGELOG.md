@@ -1,3 +1,74 @@
+# [8.0.22] - 2024-09-01
+
+This release was long overdue ot fix some heinous bugs. It's also been two months, meaning we slowed down development during summer.
+
+**IMPORTANT** : For non-portable users (installer) the folder where Karaoke Mugen stores its data has been moved from `~/KaraokeMugen` to someplace else depending on your OS :
+
+-   Windows : `%APPDATA%/Roaming/karaokemugen-app/app/`
+-   MacOS : `~/Library/Application Support/karaokemugen-app/app`
+-   Linux : `~/$XDG_DATA_HOME/karaokemugen-app/app` or `~/.local/share/karaokemugen-app/app` if XDG env vars aren't set properly.
+
+Karaoke Mugen will take care of moving this for you and warn you if it failed to do so.
+
+## Added
+
+-   [Operators] Added support for non-HTTPS repositories. #1628
+-   [Maintainers] Added a link to documentation and rules on the karaoke creation form. #1623
+-   [Maintainers] Added media duration on karaoke creation form
+-   [Maintainers] Added SSH Key auth with gitlab for repositories. #1640
+-   [Maintainers] Added audio channel layout to media info box when adding a new media.
+-   [Maintainers] Usernames added to author info buttons on inboxes.
+-   [Maintainers] Added a tagPresence condition for hooks. #1603
+-   [Maintainers] Added a negation of tagPresence and from display type modification in hooks. #1624
+-   [Maintainers] Covers for audio media can now be embedded directly from the karaoke submission form.
+-   [Maintainers] Added cancel button when encoding media. #1630
+
+## Changed
+
+-   [Users] User data is now moved to comply with each OS structure. #1626
+-   [Users] Updated indonesian, spanish, protugese, german and italian translations
+-   [Users] Updated backend and frontend dependencies
+-   [Operators] Differential download of updates has been disabled since it's not being used.
+-   [Operators] MPRIS errors on Linux are now caught properly
+-   [Operators] End of preview generation is now properly logged
+-   [Maintainers] "From display type" is now used in song list on system panel
+-   [Maintainers] 3 version tags are allowed now in filenames. Other tag types stay at 2.
+-   [Maintainers] Tags cannot be saved anymore if their translations (i18n) are empty. #1655
+-   [Maintainers] Tag types are now required when creating/editing a tag. #1656
+-   [Maintainers] Issues being assigned to gitlab users when downloading inbox items is now done via Karaoke Mugen Server, not the client anymore. #1650
+-   [Maintainers] Lyrics cleanup is applied on commit if repository manifest has it enabled #1533]
+-   [Developers] ESBuild should output newer JS code now
+-   [Developers] dropDatabase script now uses env vars or arguments for config location.
+-   [Developers] Cleaned up some code by removing obsolete stuff.
+-   [Developers] Refactored some quizz and repository manifest code
+
+## Removed
+
+-   [Users] Removed unused config options from config sample
+-   [Operators] Removed tip about suggesting a song if you don't find it in the database
+-   [Operators] Removed send karaoke from menu
+-   [Operators] Removed preview creation spam in logs
+-   [Developers] Removed Hokuto No Code for 6.0
+
+## Fixed
+
+-   [Users] Fixed smart playlists not taking collections into account when checking their criterias.
+-   [Users] Fixed some edge cases where adding karaokes to a playlist could error out
+-   [Users] Fixed some tags not using user language. #1631
+-   [Users] Menus are now updated on language change during runtime. #1643
+-   [Users] Updated Kitsu URL to new domain (.io -> .app) #1660
+-   [Users] Empty text searches won't error out anymore #1659
+-   [Users] Fixed some toast notifications
+-   [Users] Fixed closing windows
+-   [Users] Fixed avatars not falling back to the default avatar when missing
+-   [Users] Lyrics with more than 100 lines are now shown properly on the public interface
+-   [Operators] A check for mpv running is now made before playing a song. #1644
+-   [Operators] Fixed creating a quizz without blind modifiers.
+-   [Operators] Fixed background issues on Chibi Playlist
+-   [Operators] mpv now quits before deleting the last custom background listed so it can be safely removed. #1642
+-   [Maintainers] Fixed "from display type" dropdown can't point to a non-existing type anymore
+-   [Developers] Fixed ESLint rules to make them work again
+
 # [8.0.10] - 2024-06-29
 
 This is mainly a bugfix release.

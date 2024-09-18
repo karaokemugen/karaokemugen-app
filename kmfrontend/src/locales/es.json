@@ -920,7 +920,8 @@
 		"MEDIA_FILE_INFO": {
 			"AUDIO_CODEC": "Códec de audio",
 			"VIDEO_FRAMERATE": "Fotogramas por segundo"
-		}
+		},
+		"PREVIEW_HOOKS_MODAL": "Los siguientes cambios serán aplicados a los tags para esta canción"
 	},
 	"SETUP_PAGE": {
 		"LOCAL_ACCOUNT_DESC": "Ha elegido una cuenta local. Escriba un nombre de cuenta y una contraseña a continuación:",
@@ -1050,7 +1051,7 @@
 		"COPY_TAG": "Copiar etiqueta a otro repositorio",
 		"DESCRIPTION_TOOLTIP": "Una descripción de la etiqueta, utilizada solo para colecciones.",
 		"KITSU_ID": "Kitsu ID/URL",
-		"KITSU_ID_TOOLTIP": "Si se trata de un anime, indique su url en kitsu.io",
+		"KITSU_ID_TOOLTIP": "Si se trata de un anime, indique su url en kitsu.app",
 		"TYPES_TOOLTIP": "Este es el tipo de etiqueta, para que pueda ser buscada correctamente por los usuarios",
 		"ALIASES_TOOLTIP": "Nombres cortos o nombres alternativos, utilizados para búsqueda.",
 		"I18N_TOOLTIP": "Debe haber al menos un nombre en cualquier idioma (introduzca el nombre original en inglés si no hay otros)",

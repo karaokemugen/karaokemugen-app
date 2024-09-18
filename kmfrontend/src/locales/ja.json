@@ -1,1 +1,84 @@
-{}
+{
+	"YES": "はい",
+	"NO": "いいえ",
+	"PASSWORD_MANDATORY": "パスワードが必要",
+	"PITCH_DOWN": "ピッチを下げる",
+	"OPTIONS": "オプション",
+	"PASSWORD": "パスワード（最低8文字）",
+	"AND": "と",
+	"DURATION_REMAINING": "残り",
+	"SHUTDOWN_POPUP": "カラオケ無限との接続が切れた",
+	"PASSWORDCONF": "パスワードの確認",
+	"ADMIN_HEADER": {
+		"PUBLIC_PLAYLIST": "公開プレイリスト",
+		"QUICK_ACCESS": "クイックアクセス",
+		"QUIZ_RANKING": "クイズランキング",
+		"CURRENT_PLAYLIST": "現在のプレイリスト"
+	},
+	"INLINE_TAG": {
+		"COUNT_other": "{{count}}カラオケ",
+		"COUNT_one": "{{count}}カラオケ",
+		"SEARCH": "{{tag}}とカラオケする"
+	},
+	"PLAYLIST_HEADER": {
+		"FILTERS": "フィルター",
+		"ACTIVE_FILTER": "使用中のフィルター",
+		"EDIT_CRITERIA": "基準を編集",
+		"SHOW_SONGS": "曲を表示する",
+		"REFRESH_LIBRARY_BANNER": "ライブラリーの基準が変更されましたので、<1>リフレッシュ</1>してください。"
+	},
+	"ADVANCED": {
+		"DELETE": "プレイリストを削除する",
+		"EMPTY_LIST": "プレイリストをリセットする",
+		"PLAYLIST_COMMANDS": "プレイリストコマンド",
+		"ADD_ALL": "全曲を他のプレイリストに追加する",
+		"ADD_RANDOM": "ランダムに曲を追加する",
+		"SELECT_ALL": "表示されているすべての曲を選択",
+		"EDIT": "プレイリストを編集する",
+		"EXPORT": "プレイリストをエクスポートする",
+		"EXPORT_MEDIA": "すべてのプレイリストメディアをエクスポート"
+	},
+	"SELECT_PLACEHOLDER": "プレイリストを選択",
+	"OR": "または",
+	"UNKNOWN": "不明",
+	"SEARCH": "検索",
+	"SUBMIT": "セーブ",
+	"CANCEL": "キャンセル",
+	"WARNING": "警告！",
+	"SHOW-HIDE": "表示/非表示",
+	"NOT_FOUND_PAGE": {
+		"404": "カラオケ無限で迷子？",
+		"404_3": "あなたがここにいる",
+		"404_2": "慌てないで、手伝うよ。",
+		"404_4": "ホームページに戻る"
+	},
+	"LOGIN_MANDATORY": "ログインが必要",
+	"SECURITY_CODE_MANDATORY": "Operatorアカウントを作成するには、セキュリティ・コードが必要です",
+	"PASSWORD_DIFFERENT": "パスワードが一致しない",
+	"DETAILS": {
+		"DURATION": "持続時間",
+		"YEAR": "年"
+	},
+	"VERSION": "バージョン",
+	"SHUTDOWN": "カラオケ無限を閉じる",
+	"HOME_BUTTON": "ホーム",
+	"MUTE_UNMUTE": "ミュート/ミュート解除",
+	"SHOW_SUBS": "画面に歌詞を表示",
+	"HIDE_SUBS": "画面に歌詞を隠す",
+	"SPEED_UP": "スピードアップ",
+	"SPEED_RESET": "通常速度に戻す",
+	"SPEED_DOWN": "スピードを落とす",
+	"BLURVIDEO_BLUR": "ブラービデオ",
+	"BLURVIDEO_UNBLUR": "アンブラービデオ",
+	"PITCH_UP": "ピッチを上げる",
+	"PITCH_RESET": "ピッチをリセット",
+	"NEW_PASSWORD": "新しいパスワード",
+	"VOLUME_LEVEL": "音量をセット",
+	"PLAYLISTS": {
+		"LIBRARY": "ライブラリ",
+		"FAVORITES": "好きの曲",
+		"ANIME_LIST": "自分のアニメの曲"
+	},
+	"WEBAPPMODE_CLOSED_MESSAGE": "インターフェイスを閉じたため、しばらくお待ちください。",
+	"MESSAGE": "メッセージ"
+}

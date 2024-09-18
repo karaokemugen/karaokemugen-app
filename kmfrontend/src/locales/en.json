@@ -1036,6 +1036,7 @@
 			"VIDEO_FRAMERATE": "Framerate",
 			"AUDIO_CODEC": "Audio codec",
 			"AUDIO_SAMPLE_RATE": "Audio sample rate",
+			"AUDIO_CHANNEL_LAYOUT": "Audio channel layout",
 			"AUDIO_COVER_ART": "Cover art",
 			"WARNINGS": {
 				"LIBAVCODEC_ENCODER": "The audio is encoded with the libavcodec (ffmpeg reference aac) encoder, which can create audible artifacts and is discouraged to utilize. Please use the libfdk_aac encoder for aac or another codec like opus, to get the best possible quality."
@@ -1285,7 +1286,7 @@
 		"ANILIST_ID": "Anilist ID/URL",
 		"ANILIST_ID_TOOLTIP": "If this is an anime, please indicate its id/url on anilist.co",
 		"KITSU_ID": "Kitsu ID/URL",
-		"KITSU_ID_TOOLTIP": "If this is an anime, please indicate its url on kitsu.io",
+		"KITSU_ID_TOOLTIP": "If this is an anime, please indicate its url on kitsu.app",
 		"NOT_MAL_URL_ERROR": "This is a myanimelist url",
 		"NOT_ANILIST_URL_ERROR": "This is a anilist url",
 		"NOT_KITSU_URL_ERROR": "This is a kitsu url",

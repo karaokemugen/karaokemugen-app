@@ -305,6 +305,7 @@ function KaraForm(props: KaraFormProps) {
 				format: (value: number) => `${value} fps`,
 			},
 			{ name: 'audioCodec', title: 'KARA.MEDIA_FILE_INFO.AUDIO_CODEC' },
+			{ name: 'audioChannelLayout', title: 'KARA.MEDIA_FILE_INFO.AUDIO_CHANNEL_LAYOUT' },
 			{
 				name: 'audioSampleRate',
 				title: 'KARA.MEDIA_FILE_INFO.AUDIO_SAMPLE_RATE',

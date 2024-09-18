@@ -1141,7 +1141,8 @@
 				"LIBAVCODEC_ENCODER": "L'audio est encodé avec libavcodec (l'aac de référence dans ffmpeg), qui peut créer des artefacts audibles et il est donc déconseillé de l'utiliser. Veillez à utiliser l'encodeur libfdk_aac pour l'aac ou un autre codec comme opus, pour obtenir la meilleure qualité possible."
 			},
 			"AUDIO_SAMPLE_RATE": "Taux d’échantillonnage audio",
-			"DURATION": "Durée"
+			"DURATION": "Durée",
+			"AUDIO_CHANNEL_LAYOUT": "Agencement des canaux audio"
 		},
 		"MEDIA_ENCODE": {
 			"LABEL": "Encoder les médias",
@@ -1285,7 +1286,7 @@
 		"ANILIST_ID": "Identifiant/URL Anilist",
 		"ANILIST_ID_TOOLTIP": "Si c'est un anime, indiquez son ID/url sur anilist.co",
 		"KITSU_ID": "Identifiant/URL Kitsu",
-		"KITSU_ID_TOOLTIP": "Si c'est un anime, indiquez son url sur kitsu.io",
+		"KITSU_ID_TOOLTIP": "Si c'est un anime, indiquez son url sur kitsu.app",
 		"NOT_MAL_URL_ERROR": "C'est une url myanimelist",
 		"NOT_ANILIST_URL_ERROR": "C'est une url anilist",
 		"NOT_KITSU_URL_ERROR": "C'est une url kitsu",
