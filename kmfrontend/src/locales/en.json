@@ -1724,6 +1724,7 @@
 		"REPO_PATH_ERROR_IN_APP_PATH": "Repository media or base path is not allowed to be in the application's path",
 		"REPO_PATH_ERROR_IN_BASE_PATH": "Repository media path cannot be under its base path",
 		"REPO_PATH_ERROR_IN_WINDOWS_ROOT_DIR": "Repository base or media cannot be at the root of a disk drive",
+		"REPO_MANIFEST_GET_ERROR": "Repository manifest could not be found",
 		"SESSION_LIST_ERROR": "Error fetching sessions list",
 		"SESSION_CREATION_ERROR": "Error creating session",
 		"SESSION_MERGE_ERROR": "Error merging sessions",
