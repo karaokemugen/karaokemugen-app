@@ -23,6 +23,15 @@ export function mpvIsRecentEnough() {
 	return true;
 }
 
+/** Remove when we drop support for mpv <0.39.0 */
+export function isMpvGreaterThan39() {
+	const mpvVersion = getState().player?.version;
+	if (mpvVersion && !semver.satisfies(mpvVersion, '>=0.39.0')) {
+		return false;
+	}
+	return true;
+}
+
 /** Remove in KM 10.0 */
 export async function checkMovedUserDir() {
 	if (getState().movedUserDir) {
