@@ -1,3 +1,4 @@
+@use 'sass:color';
 @import '../../styles/variables';
 
 .public-homepage {
@@ -57,13 +58,13 @@
 				&.#{$name} {
 					&:hover,
 					&:focus {
-						color: saturate(lighten($color, 25), 10);
+						color: color.adjust($color, $lightness: 25%, $saturation: 10%, $space: hsl);
 					}
 					&.big {
-						color: saturate(lighten($color, 10), 20);
+						color: color.adjust($color, $lightness: 10%, $saturation: 20%, $space: hsl);
 					}
 					> i {
-						color: saturate(lighten($color, 10), 20);
+						color: color.adjust($color, $lightness: 10%, $saturation: 20%, $space: hsl);
 					}
 				}
 			}

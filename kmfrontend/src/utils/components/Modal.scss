@@ -1,3 +1,4 @@
+@use 'sass:color';
 @import '../../frontend/styles/variables';
 
 .modal {
@@ -228,11 +229,11 @@
 		flex-grow: 1;
 		&.active {
 			> a {
-				background-color: darken($mugen-nav-background, 10);
+				background-color: color.adjust($mugen-nav-background, $lightness: -10%, $space: hsl);
 				&:focus,
 				&:active:focus,
 				&:hover {
-					background-color: darken($mugen-nav-background, 10);
+					background-color: color.adjust($mugen-nav-background, $lightness: -10%, $space: hsl);
 				}
 			}
 		}
@@ -244,7 +245,7 @@
 			color: white;
 			background-color: $mugen-nav-background;
 			&:hover {
-				background-color: lighten($mugen-nav-background, 5);
+				background-color: color.adjust($mugen-nav-background, $lightness: 5%, $space: hsl);
 			}
 		}
 	}
