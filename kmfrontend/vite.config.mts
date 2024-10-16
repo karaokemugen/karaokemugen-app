@@ -7,6 +7,14 @@ export default defineConfig({
 	build: {
 		sourcemap: true,
 	},
+	css: {
+		preprocessorOptions: {
+			scss: {
+				api: 'modern-compiler',
+				silenceDeprecations: ['mixed-decls'],
+			},
+		},
+	},
 	plugins: [nodePolyfills(), react(), legacy()],
 	server: {
 		port: 3000,
