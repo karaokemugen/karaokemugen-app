@@ -31,7 +31,9 @@
 			"YEAR": "Songs vom Jahr {{year}} sind in der liste.",
 			"LONGER": "Songs länger als {{time}} Sekunden sind in der Liste.",
 			"KID": "Dieses Karaoke ist in der Liste.",
-			"SHORTER": "Songs kürzer als {{time}} Sekunden sind in der Liste."
+			"SHORTER": "Songs kürzer als {{time}} Sekunden sind in der Liste.",
+			"AFTER_YEAR": "Lieder nach dem Jahr {{year}} sind nun in der Liste.",
+			"BEFORE_YEAR": "Lieder vor dem Jahr {{year}} sind nun in der Liste."
 		},
 		"ADD_PLACEHOLDER": "Einen Wert zum Kriterium hinzufügen",
 		"CRITERIA_TYPE_1006": "Songs ausblenden, die offline nicht verfügbar sind",
@@ -51,7 +53,9 @@
 		"PLAYLIST_DURATION_TYPE_SONGS": "Songs",
 		"EXPL_OPEN": "Das sind die Kriterien, nach denen <1>die Wiedergabeliste</1> erstellt wird. Sie wird automatisch aktualisiert, wenn neue Lieder zur Datenbank hinzugefügt werden.",
 		"PLAYLIST_DURATION": "<1/> Limitierung zu <2/> <3/> (<4/> order)",
-		"TYPE_SMART_DESC": "Der Typ „OR“ eignet sich besser für eine Blacklist. „AND“ für klassische Playlists"
+		"TYPE_SMART_DESC": "Der Typ „OR“ eignet sich besser für eine Blacklist. „AND“ für klassische Playlists",
+		"CRITERIA_TYPE_1007": "Nach (Jahrzahl)",
+		"CRITERIA_TYPE_1008": "Bevor (Jahrzahl)"
 	},
 	"PUBLIC_HOMEPAGE": {
 		"NOW_PLAYING": "Derzeit am Abspielen",
@@ -212,7 +216,7 @@
 		"START": "Überprüfe die öffentlichen Vorschläge",
 		"STATS_one": "{{count}} verarbeitet ({{accepted}} / {{refused}})"
 	},
-	"LOGIN_SLOGAN": "Bitte anmelden, um Lieder vorzuschlagen.",
+	"LOGIN_SLOGAN": "Bitte melde Dich an, um Lieder zu wünschen.",
 	"CL_DELETE_CRITERIAS_PLAYLIST": "Lösche das Kriterium „{{type}}“, das alle diese Songs enthält:",
 	"GOTO_PLAYING": "Zum aktuell gespielten Lied springen",
 	"PROFILE_PASSWORDCONF": "Bestätigen",
@@ -274,7 +278,9 @@
 	"CL_INFORMATIVE_MESSAGE": "Information",
 	"ADMIN_HEADER": {
 		"QUICK_ACCESS": "Schnellzugriff",
-		"QUIZ_RANKING": "Quiz-Ranking"
+		"QUIZ_RANKING": "Quiz-Ranking",
+		"PUBLIC_PLAYLIST": "Öffentliche Playlist",
+		"CURRENT_PLAYLIST": "Aktuelle Playlist"
 	},
 	"PROFILE_PASSWORD_AGAIN": "Passwort eingeben",
 	"TOOLTIP_DELETEKARA": "Diesen Song löschen",
