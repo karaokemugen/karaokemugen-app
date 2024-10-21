@@ -1755,7 +1755,7 @@
 		"USER_RESETPASSWORD_ONLINE_ERROR": "Impossible de vous envoyer un email de réinitialisation : contactez l'administrateur du serveur dont vous dépendez.",
 		"UPDATING_MEDIAS_ERROR": "Le dépôt {{repo}} n'a pas mis à jour les medias correctement : {{err}}",
 		"UPDATING_MEDIAS_MULTIPLE_USED_MEDIA_PATH_ERROR": "Plusieurs dépôts ont le même dossier de médias, ce qui peut occassioner des suppressions de fichiers non voulues. Veuillez changer le dossier principal de médias de ces dépôts : {{repos}}",
-		"REPOS_MULTIPLE_USED_MEDIA_PATH_ERROR": "Le dossier de médias principal est déjà utilisé par un autre dépôt.",
+		"REPOS_MULTIPLE_USED_MEDIA_PATH_ERROR": "Le dossier de médias principal est déjà utilisé par un autre dépôt",
 		"USER_UNKNOWN": "Utilisateur connecté inconnu",
 		"ADMIN_PLEASE": "Merci d'utiliser un compte opérateur",
 		"NOT_GUEST": "Les comptes invités ne peuvent pas utiliser cette fonction",
@@ -1805,7 +1805,8 @@
 		"MEDIAS_FOLDER_OPEN_ERROR": "Échec de l'ouverture du dossier média",
 		"MEDIA_VALIDATION_ERROR": "Impossible de valider les informations du média",
 		"MEDIA_ENCODING_ABORTED": "L'encodage du média a été annulé",
-		"UNKNOWN_PARENT_FROM_INBOX": "Parent inconnu pour ce karaoké venant de la boîte de réception"
+		"UNKNOWN_PARENT_FROM_INBOX": "Parent inconnu pour ce karaoké venant de la boîte de réception",
+		"REPO_MANIFEST_GET_ERROR": "Le manifeste du dépôt n'a pas été trouvé"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Ajout de {{data}} téléchargements à la file d'attente",
