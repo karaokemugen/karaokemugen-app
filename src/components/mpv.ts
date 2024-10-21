@@ -46,6 +46,7 @@ import { getSongSeriesSingers, getSongTitle } from '../lib/services/kara.js';
 import { getRepoManifest } from '../lib/services/repo.js';
 import { getTagNameInLanguage } from '../lib/services/tag.js';
 import { getRepo } from '../services/repo.js';
+import { writeStreamFiles } from '../utils/streamerFiles.js';
 import { Player } from './mpv/player.js';
 
 type PlayerType = 'main' | 'monitor';
@@ -320,6 +321,7 @@ function quickDiff() {
 
 export function emitPlayerState() {
 	setState({ player: quickDiff() });
+	writeStreamFiles('player_status');
 }
 
 export function defineMPVEnv() {

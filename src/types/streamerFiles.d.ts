@@ -6,4 +6,5 @@ export type StreamFileType =
 	| 'frontend_state'
 	| 'public_kara_count'
 	| 'current_kara_count'
+	| 'player_status'
 	| 'time_remaining_in_current_playlist';
