@@ -1167,7 +1167,8 @@
 		"MEDIA_VALIDATION_ERROR": "Impossibile validare le informazioni del file multimediale",
 		"UNKNOWN_PARENT_FROM_INBOX": "Versione principale di questo brano sconosciuta",
 		"REPOS_MULTIPLE_USED_MEDIA_PATH_ERROR": "La cartella dei file multimediali è già utilizzata da un altro archivio",
-		"UPDATING_MEDIAS_MULTIPLE_USED_MEDIA_PATH_ERROR": "Diversi archivi condividono la stessa cartella dei file multimediali, ciò causerà rimozioni indesiderate. Si prega di cambiare la cartella dei file multimediali di questi archivi: {{repos}}"
+		"UPDATING_MEDIAS_MULTIPLE_USED_MEDIA_PATH_ERROR": "Diversi archivi condividono la stessa cartella dei file multimediali, ciò causerà rimozioni indesiderate. Si prega di cambiare la cartella dei file multimediali di questi archivi: {{repos}}",
+		"REPO_MANIFEST_GET_ERROR": "Manifesto dell'archivio non trovato"
 	},
 	"KARA": {
 		"PAUSE_DOWNLOAD_QUEUE": "Sospendi",
