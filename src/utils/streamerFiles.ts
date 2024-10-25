@@ -53,7 +53,11 @@ async function writeNextSongAndRequester() {
 }
 
 async function writePlayerStatus() {
-	await fs.writeFile(resolve(resolvedPath('StreamFiles'), 'player_status.txt'), getState().player?.playerStatus, 'utf-8');
+	await fs.writeFile(
+		resolve(resolvedPath('StreamFiles'), 'player_status.txt'),
+		getState().player?.playerStatus || 'stopped',
+		'utf-8'
+	);
 }
 
 async function writeURL() {
