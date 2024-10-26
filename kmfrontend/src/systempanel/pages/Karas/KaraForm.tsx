@@ -36,7 +36,6 @@ import {
 } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import { Flex, Spin } from 'antd/lib';
-import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { DefaultOptionType, SelectValue } from 'antd/lib/select';
 import { filesize } from 'filesize';
 import i18next from 'i18next';
@@ -668,7 +667,6 @@ function KaraForm(props: KaraFormProps) {
 	};
 
 	const onAudioCoverUploadChange = async info => {
-		const fileList = info.fileList.slice(-1);
 		try {
 			if (info.file.status === 'uploading') {
 				setCoverImageEmbedRunning(true);
@@ -759,24 +757,17 @@ function KaraForm(props: KaraFormProps) {
 	};
 
 	const applyFieldsFromKara = async (kid: string) => {
-		const karas = await commandBackend('getKaras', {
-			q: 'k:' + kid,
-			size: 1,
-			ignoreCollections: true,
-		});
-		const parentKara = karas && (karas.content[0] as DBKara);
-		if (parentKara && parentKara.kid === kid) {
-			// Check if user has already started doing input, or if it's an edit of existing kara
-			if (
-				!props.kara?.kid &&
-				titlesIsTouched !== true &&
-				form.isFieldsTouched(['versions', 'series', 'language']) !== true
-			) {
-				setTitles(parentKara.titles);
-				setDefaultLanguage(parentKara.titles_default_language);
-				setParentKara(parentKara);
-				onChangeSingersSeries();
-			}
+		const parentKara = await commandBackend('getKara', { kid });
+		// Check if user has already started doing input, or if it's an edit of existing kara
+		if (
+			!props.kara?.kid &&
+			titlesIsTouched !== true &&
+			form.isFieldsTouched(['versions', 'series', 'language']) !== true
+		) {
+			setTitles(parentKara.titles);
+			setDefaultLanguage(parentKara.titles_default_language);
+			setParentKara(parentKara);
+			onChangeSingersSeries();
 		}
 	};
 
