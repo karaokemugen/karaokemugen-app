@@ -92,7 +92,7 @@
 	"MENU_EDIT_REDO": "&Wiederholen",
 	"MENU_VIEW_TOGGLEDEVTOOLS": "&Entwicklungstools anzeigen",
 	"MENU_EDIT_STOPSPEECH": "Beende Rede",
-	"MENU_HELP_TWITTER": "&𝕏",
+	"MENU_HELP_TWITTER": "&𝕏 (vormals Twitter)",
 	"INIT_MIGRATION": "Aktualisiere die Datenbank Struktur, bitte warten…",
 	"MENU_HELP_ABOUT": "&Über",
 	"REQUESTED_AND_other": "und {{count}} anderen",
@@ -280,7 +280,9 @@
 		},
 		"STAGES": {
 			"resolving": "Delta-Änderungen auflösen",
-			"receiving": "Empfange Daten"
+			"receiving": "Empfange Daten",
+			"writing": "Schreibe Dateien",
+			"counting": "Zähle Dateien"
 		},
 		"CURRENT_ACTION": "Git Aktionen"
 	},
@@ -320,5 +322,23 @@
 	"RESTARTING_PLAYER": "STARTE PLAYER NEU…",
 	"OFFICIAL_WEBSITE": "Offizielle Webseite",
 	"MENU_OPTIONS_CHECKFORUPDATES": "Beim Start na&ch Aktualisierungen suchen",
-	"SUGGEST_SONGS": "Schlage Songs vor!"
+	"SUGGEST_SONGS": "Schlage Songs vor!",
+	"MENU_OPTIONS_CHIBIRANKING_LINK": "Kopiere den Link zum losgelösten Quiz-Rang",
+	"MENU_OPTIONS_CHIBIRANKING": "Zeige losgelöst den Quiz-Rang",
+	"MOVED_USER_DIR_DIALOG": {
+		"TITLE": "Benutzerordner verschoben!",
+		"UNDERSTOOD": "Alles klar!",
+		"MESSAGE": "Um den Anforderungen deines Betriebssystems zu entsprechen, wurde der Benutzerordner verschoben. Vorher:\n\n{{oldDir}}\n\nJetzt:\n\n{{newDir}}\n\nFalls du streamst, musst du vielleicht dein OBS-Layout aktualisieren, damit sie auf die entsprechenden Textdateien in dem neuen Verzeichnis verweisen."
+	},
+	"MOVING_USER_DIR_ERROR_DIALOG": {
+		"TITLE": "Das Datenverzeichnis von Karaoke Mugen kann nicht verschoben werden",
+		"CONTINUE": "Fortsetzen",
+		"QUIT": "Abbrechen",
+		"MESSAGE": "Karaoke Mugens Datenverzeichnis wurde verschoben. Vorher:\n\n{{oldDir}}\n\nJetzt:\n\n{{newDir}}\n\nBeim Verschieben ist ein Fehler aufgetreten. Du solltest auf \"Abbrechen\" klicken und den Ordner manuell verschieben.\n\nDu kannst auch auf \"Fortsetzen\" klicken. In diesem Fall wird mit einem neuen (leeren) Datenverzeichnis fortgefahren. Wir empfehlen dann, den alten Order unter dem oben gezeigten Pfad zu löschen."
+	},
+	"MOVED_USER_DIR_FLATPAK_DIALOG": {
+		"TITLE": "Flatpak-Nutzer!",
+		"MESSAGE": "Der Inhalt des Benutzerorderners wurde verschoben. Da du Karaoke Mugen über Flatpak installiert hast, kann das Programm den alten Ordner nicht löschen. Daher solltest du diesen Ordner hier manuell löschen:\n\n{{oldDir}}\n\n(Er sollte leer sein!)",
+		"UNDERSTOOD": "Alles klar! Mache ich, bevor ich es vergesse!"
+	}
 }
