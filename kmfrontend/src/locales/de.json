@@ -327,7 +327,8 @@
 			"SELECT_ACTION": "Wähle einen Vorgang aus:",
 			"SELECT_PLAYLIST": "Wähle eine Wiedergabeliste aus:",
 			"REMOVE_TAG": "Tag entfernen",
-			"ADD_TAG": "Tag hinzufügen"
+			"ADD_TAG": "Tag hinzufügen",
+			"SELECT_TAG_TYPE": "Wähle einen Tag-Typ aus:"
 		},
 		"MEDIA_IN_PROCESS": "Die Mediendatei wird gerade verarbeitet, bitte warte auf die Bestätigung.",
 		"FAMILIES_TOOLTIP": "Legt fest, welche Art von Inhalt das Video hat.",
@@ -349,7 +350,12 @@
 			"OVERALL_BITRATE": "Gesamt-Bitrate",
 			"VIDEO_COLORSPACE": "Farbraum",
 			"FILE_FORMAT": "Dateiformat",
-			"VIDEO_FRAMERATE": "Bildwiederholrate"
+			"VIDEO_FRAMERATE": "Bildwiederholrate",
+			"AUDIO_COVER_ART": "Cover Art",
+			"VIDEO_ASPECT_RATIO": "Höhen-/Seitenverhältnis",
+			"DURATION": "Dauer",
+			"AUDIO_SAMPLE_RATE": "Tonfrequenz",
+			"AUDIO_CHANNEL_LAYOUT": "Audiokanal-Layout"
 		},
 		"COPY_SONG": "Song in ein anderes Repository kopieren",
 		"TAG_FILTER": "Tag-Filter",
@@ -433,7 +439,24 @@
 			"SET": "Überschreibe die Standard-Position"
 		},
 		"ANNOUNCE_POSITION_TOOLTIP": "Setzt die Standard-Ankündigungsposition außer Kraft (Banner und Song-Infos am Anfang und Ende eines Songs). Nützlich, um Überschneidungen mit dem Liedtext zu vermeiden, wenn die Position des Untertitels anders als mittig oben ist.",
-		"ANNOUNCE_POSITION": "Ankündigungs Position"
+		"ANNOUNCE_POSITION": "Ankündigungs Position",
+		"AUDIO_COVER": {
+			"EMBED_COVER_SUCCESS": "Ein neues Cover Art wurde hochgeladen und eingebettet",
+			"EMBED_COVER_ERROR": "Fehler während des Einbettens des neuen Cover Arts",
+			"REPLACE": "Cover Art ersetzen",
+			"UPLOAD_TOOLTIP": "Ändere das Bild, was als Hintergrund angezeigt wird, wenn dieses Lied läuft",
+			"UPLOAD": "Cover Art hochladen"
+		},
+		"MEDIA_REPOSITORY_RULES_UNMET": "Die Mediendatei erfüllt nicht alle erforderlichen Anforderungen. Bitte encode das Medium zuerst.",
+		"FROM_DISPLAY_TYPE_COLUMN": "Von",
+		"REPOSITORY_DOCUMENTATION": "Sie finden {{instance}}s Regeln hier",
+		"MEDIA_ENCODE": {
+			"OPTIONS": {
+				"TRIM_MEDIA": "Start/Ende zurechtschneiden",
+				"TRIM_MEDIA_TOOLTIP": "Finde und entferne schwarze Bilder und Stille zu Beginn und Ende des Mediums"
+			},
+			"TIMING_CHANGE_WARNING": "Die gewählte Option kann die Start- und Endzeit des Mediums verändern. Prüfe das Timing der Lyrics, nachdem das Medium encodet und gespeichert wurde."
+		}
 	},
 	"SETTINGS": {
 		"KARAOKE": {
@@ -533,7 +556,15 @@
 			"ADDED_SONG_VISIBILITY_NORMAL_OPTION": "Normal",
 			"PLAYLIST_ENCORES_VIDEOS": "Playlist Zugaben Video",
 			"STREAM_TWITCH_OAUTH_ERROR": "Der Token ist ungültig",
-			"ALLOW_PUBLIC_DUPLICATES": "Erlaube mehrere gleiche Songs in Playlisten (für alle)"
+			"ALLOW_PUBLIC_DUPLICATES": "Erlaube mehrere gleiche Songs in Playlisten (für alle)",
+			"ALLOW_PUBLIC_DUPLICATES_OPTIONS": {
+				"UPVOTES_ONLY": "Unterstützt",
+				"DISALLOWED": "Nicht gestattet",
+				"ALLOWED": "Gestattet"
+			},
+			"FREE_ACCEPTED_SONGS_TOOLTIP": "Lieder werden freigegeben, wenn sie von einem Betreiber aus der öffentlichen Playlist übernommen werden. Die Person, die sich das Lied gewünscht hat, gewinnt Quote zurück.",
+			"FREE_ACCEPTED_SONGS": "Freigegebene, angenommene Lieder",
+			"ALLOW_PUBLIC_DUPLICATES_TOOLTIP": "Gestatte/Nicht gestatte dem Publikum ein Lied mehr als einmal hinzuzufügen. Ein Nutzer kann ein Lied, das er selbst bereits hinzugefügt hat, nicht ein zweites Mal hinzufügen, aber wiederum ein Lied, das ein anderer bereits hinzugefügt hat. \"Unterstützt\" bedeutet, dass ein Nutzer das gleiche Lied nicht nochmal hinzufügen kann, aber bereits hinzugefügte Lieder unterstützen kann. \"Gestattet\" ist üblicherweise gut für klassisches Karaoke, \"Unterstützt\" für öffentliches Karaoke."
 		},
 		"PLAYER": {
 			"TOP": "Oben",
@@ -623,7 +654,11 @@
 			"WEBAPPMODE_LIMITED_SHORT": "Eingeschränkt",
 			"LABEL": "Oberfläche",
 			"DISPLAY_WELCOME_MESSAGE": "Willkommensnachricht anzeigen",
-			"ALLOW_GUEST_LOGIN": "Gäste zulassen"
+			"ALLOW_GUEST_LOGIN": "Gäste zulassen",
+			"REQUIRE_USER_CREATION_CODE": "Code nötig für die Benutzererstellung",
+			"PUBLIC_PLAYER_CONTROLS": "Publikumskontrolle über den Player zulassen",
+			"REQUIRE_USER_CREATION_CODE_TOOLTIP": "Benutzer benötigen einen Code, um ein neues Konto zu erstellen, das ausschließlich der Veranstalter sehen kann und der Kommunikation mit diesem dient. Der Code wird im Benutzerfenster im K-Menü angezeigt.",
+			"PUBLIC_PLAYER_CONTROLS_TOOLTIP": "Start/Pause, stopp, vor und zurück wird im Bedienfeld des Publikums sichtbar und gestattet den Benutzern den Player von ihrem Gerät aus zu steuern. Nur in kleinen Gruppen benutzen!"
 		}
 	},
 	"KARA_DETAIL": {
@@ -908,7 +943,15 @@
 		"INBOX_VIEW_ERROR": "Lieder können nicht aus dem Posteingang abgerufen werden",
 		"CANNOT_INSTALL_REPO_AT_WINDOWS_ROOT_DRIVE": "Das Repository kann nicht im Stammverzeichnis eines Windows-Laufwerks installiert werden.",
 		"USER_CREATE_ERROR_ONLINE_DISABLED": "Das Konto konnte nicht erstellt werden: Der Online-Modus wurde deaktiviert",
-		"DELETE_PLAYLIST_ERROR_WHITELIST": "Du kannst eine Whitelist nicht löschen. Mache zuerst eine andere Wiedergabeliste zur Whitelist."
+		"DELETE_PLAYLIST_ERROR_WHITELIST": "Du kannst eine Whitelist nicht löschen. Mache zuerst eine andere Wiedergabeliste zur Whitelist.",
+		"SUBFILE_PROCESS_ERROR": "Fehler beim Verarbeiten der Untertiteldatei",
+		"DATABASE_DISK_FULL": "Der Speicherplatz für die Datenbank ist voll! Schaffe sofort Platz!",
+		"REPO_GIT_DIFF_ERROR": "Fehler beim Erstellen der Diff für diese Datei",
+		"USER_CREATION_WRONG_SECURITY_CODE": "Falscher Sicherheitscode",
+		"REPOSITORY_MANIFEST_KARA_METADATA_RULE_VIOLATION_ERROR": "Fehler: Karaoke-Metadaten verstößt gegen eine Regel seiner Quelle. Prüfe den Event-Log für mehr Informationen.",
+		"ENCODE_MEDIA_ERROR": "Fehler beim Medien-Encode",
+		"MEDIA_VALIDATION_ERROR": "Medieninfo kann nicht verifiziert werden",
+		"MEDIA_ENCODING_ABORTED": "Medien-Encodierung abgebrochen"
 	},
 	"HEADERS": {
 		"DATABASE": {
@@ -1080,7 +1123,9 @@
 				"BLUESKY": "Bluesky",
 				"ANILIST": "AniList",
 				"DISCORD_PLACEHOLDER": "Karak#1423",
-				"INSTAGRAM_PLACEHOLDER": "karaokemugen"
+				"INSTAGRAM_PLACEHOLDER": "karaokemugen",
+				"GITLAB_PLACEHOLDER": "karaokemugen",
+				"GITLAB": "Gitlab"
 			},
 			"INTERFACE_LANGUAGE": "Oberflächen Sprache",
 			"CHOOSE_ANIME_LIST": "Wähle eine Anime-Liste",
@@ -1457,13 +1502,15 @@
 				"SHORTENER": "Fehler beim Aktivieren der URL-Verkürzung",
 				"POLL_ALREADY_STARTED": "Eine Umfrage ist bereits im Gange",
 				"POLL_NOT_ENOUGH_SONGS": "Umfrage kann nicht gestartet werden: nicht genügend Lieder verfügbar",
-				"PLAYLIST_FREE_ORPHANED_SONGS": "Verwaiste Lieder können nicht freigegeben werden"
+				"PLAYLIST_FREE_ORPHANED_SONGS": "Verwaiste Lieder können nicht freigegeben werden",
+				"STATS_PAYLOAD": "Fehler beim Übermitteln der Daten an den Server"
 			},
 			"INFO": {
 				"POLL_WINNER": "Die Leute haben für einen neuen Song gestimmt!",
 				"END_OF_SESSION_NEAR": "Die Karaoke-Session wird aktuell in {{data}} Minuten enden.",
 				"POLL_STARTING": "Start der Umfrage",
-				"PLAYER_RESTARTING": "Neustart des Media Players…"
+				"PLAYER_RESTARTING": "Neustart des Media Players…",
+				"BATCH_EDIT_COMPLETE": "Karaoke-Bulk-Änderungen abgeschlossen."
 			}
 		}
 	},
@@ -1579,7 +1626,10 @@
 			"AUTHOR_TOOLTIP": "Angezeigter Name für deine Commits/Änderungen",
 			"AUTHOR": "Git-Identität",
 			"USERNAME": "Git-Benutzername",
-			"PASSWORD": "Git-Passwort (oder Gitlab/Github-Token)"
+			"PASSWORD": "Git-Passwort (oder Gitlab/Github-Token)",
+			"COPY_SSH_KEY": "Kopiere den SSH-Schlüssel in die Zwischenablage",
+			"DELETE_SSH_KEY": "Lösche den SSH-Schlüssel",
+			"GENERATE_SSH_KEY": "Generiere den SSH-Schlüssel"
 		},
 		"MOVE": "Definiere die Priorität der Repositories",
 		"DELETE_ALL_MEDIAS": "Alle Medien löschen",
@@ -1638,7 +1688,12 @@
 		"MOVING_MEDIA_BUTTON": "Medien verschieben…",
 		"MOVE_TOOLTIP": "Damit kannst du festlegen, welche Repositories bei der Erstellung deiner Datenbank Priorität haben: Die höchsten Repositories werden zuerst berücksichtigt, wenn zwei Repositories die gleiche Lieder haben",
 		"UPDATE_TOOLTIP": "Wenn diese Option deaktiviert ist, wird die Anwendung das Repository nicht mehr aktualisieren.",
-		"AUTO_MEDIA_DOWNLOADS_TOOLTIP": "Wenn deine Internetverbindung langsam ist, empfehlen wir, dass du \"Alle\" auswählst, damit die Medien vorher heruntergeladen werden. Dies empfiehlt sich auch für den Einsatz auf Events oder bei Streams, um mögliche Fehler mitten in einer Karaoke Session zu vermeiden!"
+		"AUTO_MEDIA_DOWNLOADS_TOOLTIP": "Wenn deine Internetverbindung langsam ist, empfehlen wir, dass du \"Alle\" auswählst, damit die Medien vorher heruntergeladen werden. Dies empfiehlt sich auch für den Einsatz auf Events oder bei Streams, um mögliche Fehler mitten in einer Karaoke Session zu vermeiden!",
+		"GIT_SEE_MODIFIED_FILES": "Zeige geänderte Dateien an",
+		"GIT_SEE_DIFF_IN_FILE": "Zeige Unterschiede zwischen den Dateien an",
+		"GIT_SQUASH_COMMITS": "Lehne Änderungen ab",
+		"SECURE": "Sicher",
+		"SECURE_TOOLTIP": "Erlaube HTTPS-Zugriff auf diese Quelle"
 	},
 	"TAGS": {
 		"KITSU_SLUG_ERROR": "Ungültiger Kitsu-Slug",
@@ -1830,7 +1885,8 @@
 		"POINTS_other": "{{count}} Punkte",
 		"POINTS_one": "{{count}} Punkt",
 		"STOP": "Stoppe das Quiz",
-		"CONTINUE": "Fahre mit dem Lied fort, nachdem die Antwort enthüllt wurde"
+		"CONTINUE": "Fahre mit dem Lied fort, nachdem die Antwort enthüllt wurde",
+		"NO_QUIZ": "Es läuft gerade kein Quiz!"
 	},
 	"LOGS": {
 		"LEVELS": {
@@ -1886,7 +1942,8 @@
 		"CONTACT_INFOS": "Kontaktinformationen zum Autor",
 		"DOWNLOAD": "Karaoke/Lied herunterladen",
 		"USER": "Zuständiger Benutzer für die Integration von Meldungen",
-		"NO_REPOSITORY_ENABLED": "Du hast Kein Online-Repository im Betreuer-Modus aktiviert"
+		"NO_REPOSITORY_ENABLED": "Du hast Kein Online-Repository im Betreuer-Modus aktiviert",
+		"REVIEW": "Review"
 	},
 	"BACKGROUNDS_MGMT": {
 		"DESC": {
@@ -2024,7 +2081,9 @@
 		"MERGING_TAGS_IN_PROGRESS": "Tags zusammenführen…",
 		"CREATING_TAG_IN_PROGRESS": "Tag erstellen…",
 		"GENERATING_READING": "Daten einlesen…",
-		"UPDATING_MEDIAS": "Medien aktualisieren…"
+		"UPDATING_MEDIAS": "Medien aktualisieren…",
+		"CALCULATING_MEDIA_ENCODING_PARAMETERS": "Medien-Encode-Parameter werden berechnet …",
+		"ENCODING_MEDIA": "Medium wird encodet …"
 	},
 	"ABOUT": {
 		"DONATORS": "Danke an <1>1{{donators}}</1> für ihre Spenden an Karaoke Mugen",
@@ -2050,6 +2109,12 @@
 		"PREVIOUS_SONG": "Vorheriger Song",
 		"PLAY": "Abspielen",
 		"PAUSE": "Pausieren",
-		"NEXT_SONG": "Nächster Song"
-	}
+		"NEXT_SONG": "Nächster Song",
+		"NEXT_SONG_SHORT": "Danach",
+		"STOP_AFTER_SHORT": "Stoppe nach",
+		"STOP_NOW_SHORT": "Stoppe JETZT",
+		"PREVIOUS_SONG_SHORT": "Davor"
+	},
+	"NEW_ACCOUNT_CODE_SHORT": "Neuer Benutzer-Code",
+	"NEW_ACCOUNT_CODE": "Neuer Benutzer-Code (beim Veranstalter melden)"
 }
