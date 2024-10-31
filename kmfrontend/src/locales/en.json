@@ -260,7 +260,7 @@
 	"CL_EMPTY_LIST": "Empty list?",
 	"CL_PLAYLISTS": "Song lists",
 	"BACK_PLAYLISTS": "Back to song lists",
-	"CL_DELETE_CRITERIAS_PLAYLIST": "Delete '{{type}}' criteria  that contains all these songs :",
+	"CL_DELETE_CRITERIAS_PLAYLIST": "Delete '{{type}}' criteria that contains all these songs :",
 	"GOTO_TOP": "Go to top of the playlist",
 	"GOTO_PLAYING": "Go to currently playing song",
 	"GOTO_BOTTOM": "Go to bottom of the playlist",
