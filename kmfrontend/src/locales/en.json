@@ -18,7 +18,7 @@
 	},
 	"LOGIN_MANDATORY": "Login is required",
 	"PASSWORD_MANDATORY": "Password is required",
-	"SECURITY_CODE_MANDATORY": "Security code is required for create an operator account",
+	"SECURITY_CODE_MANDATORY": "Security code is required to create an operator account",
 	"PASSWORD_DIFFERENT": "Passwords do not match",
 	"DETAILS": {
 		"DURATION": "Duration",
@@ -68,7 +68,7 @@
 		"ACTIVE_FILTER": "Active filter",
 		"EDIT_CRITERIA": "Edit criteria",
 		"SHOW_SONGS": "Show songs",
-		"REFRESH_LIBRARY_BANNER": "The library criterias have changed, please <1>refresh</1> it."
+		"REFRESH_LIBRARY_BANNER": "The library criteria have changed, please <1>refresh</1> it."
 	},
 	"ADVANCED": {
 		"PLAYLIST_COMMANDS": "Playlist commands",
@@ -79,7 +79,7 @@
 		"DELETE": "Delete playlist",
 		"EDIT": "Edit playlist",
 		"EXPORT": "Export playlist",
-		"EXPORT_MEDIA": "Export all playlist medias",
+		"EXPORT_MEDIA": "Export all playlist media",
 		"ADD": "Add new playlist",
 		"AUTOMIX": "Create an automix",
 		"IMPORT": "Import playlist",
@@ -125,7 +125,7 @@
 		"REFUSED_other": "{{count}} refused",
 		"ACCEPT": "Accept",
 		"REFUSE": "Deny",
-		"PLAYLIST_REMAINING_one": "Current list remaining time: {{count}} minute",
+		"PLAYLIST_REMAINING_one": "Current list remaining time: {{count}} minutes",
 		"PLAYLIST_REMAINING_other": "Current list remaining time: {{count}} minutes"
 	},
 	"FLAGS": {
