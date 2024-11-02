@@ -444,7 +444,7 @@
 				"UPVOTES_ONLY": "Upvotes",
 				"DISALLOWED": "Disallowed"
 			},
-			"MEDIAS_SETTINGS": "Medias",
+			"MEDIAS_SETTINGS": "Media",
 			"MEDIAS_SETTINGS_TOOLTIP": "Intros, Sponsors, Jingles, Encores and Outros",
 			"PLAYLIST_RANDOMSONGSAFTERENDMESSAGE": "Display an on-screen message regularly to invite users to add a song when randomly playing song after the current playlist ended",
 			"PLAYLIST_RANDOMSONGSAFTERENDMESSAGE_TOOLTIP": "The message will be displayed at the center of the screen when Karaoke Mugen will play random songs, inviting users to add songs to the playlist",
