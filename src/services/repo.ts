@@ -16,11 +16,13 @@ import { parseKara, writeKara } from '../lib/dao/karafile.js';
 import { selectRepos } from '../lib/dao/repo.js';
 import { APIMessage } from '../lib/services/frontend.js';
 import { readAllKaras } from '../lib/services/generation.js';
+import { getRepoManifest } from '../lib/services/repo.js';
 import { DBTag } from '../lib/types/database/tag.js';
 import { KaraMetaFile } from '../lib/types/downloads.js';
 import { KaraFileV4 } from '../lib/types/kara.js';
 import { DiffChanges, Repository, RepositoryBasic, RepositoryManifest } from '../lib/types/repo.js';
 import { TagFile } from '../lib/types/tag.js';
+import { ASSFileCleanup } from '../lib/utils/ass.js';
 import { getConfig, resolvedPathRepos } from '../lib/utils/config.js';
 import { ErrorKM } from '../lib/utils/error.js';
 import { asyncCheckOrMkdir, listAllFiles, moveAll, relativePath, resolveFileInDirs } from '../lib/utils/files.js';
@@ -45,8 +47,6 @@ import { createKaraInDB, integrateKaraFile, removeKara } from './karaManagement.
 import { createProblematicSmartPlaylist, updateAllSmartPlaylists } from './smartPlaylist.js';
 import { sendPayload } from './stats.js';
 import { getTags, integrateTagFile, removeTag } from './tag.js';
-import { getRepoManifest } from '../lib/services/repo.js';
-import { ASSFileCleanup } from '../lib/utils/ass.js';
 
 const service = 'Repo';
 
@@ -352,6 +352,7 @@ export async function updateZipRepo(name: string) {
 				logger.debug('Applying changes', { service, obj: { changes } });
 				await applyChanges(changes, repo);
 				await saveSetting(`commit-${repo.Name}`, LatestCommit);
+				initHooks().catch(() => {});
 				return false;
 			} catch (err) {
 				logger.warn('Cannot use patch method to update repository, downloading full zip again.', {
@@ -390,6 +391,7 @@ async function newZipRepo(repo: Repository): Promise<string> {
 			}
 		});
 	}
+	initHooks().catch(() => {});
 	return LatestCommit;
 }
 
@@ -903,7 +905,7 @@ export async function newGitRepo(repo: Repository) {
 			}
 		});
 	}
-	await initHooks();
+	initHooks().catch(() => {});
 }
 
 export async function compareLyricsChecksums(repo1Name: string, repo2Name: string): Promise<DifferentChecksumReport[]> {
