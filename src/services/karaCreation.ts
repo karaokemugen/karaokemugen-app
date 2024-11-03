@@ -5,7 +5,7 @@ import { basename, extname, resolve } from 'path';
 import { applyKaraHooks } from '../lib/dao/hook.js';
 import { extractVideoSubtitles, trimKaraData, verifyKaraData, writeKara } from '../lib/dao/karafile.js';
 import { getKaraFamily } from '../lib/services/kara.js';
-import { defineFilename, determineMediaAndLyricsFilenames, processSubfile } from '../lib/services/karaCreation.js';
+import { defineSongname, determineMediaAndLyricsFilenames, processSubfile } from '../lib/services/karaCreation.js';
 import {
 	checkKaraMetadata,
 	checkKaraParents,
@@ -76,11 +76,12 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 			throw new ErrorKM('UNKNOWN_SONG', 404, false);
 		}
 		if (!kara.data.ignoreHooks) await applyKaraHooks(kara);
-		const karaFile = await defineFilename(kara, oldKara);
+		const { sanitizedFilename, songname } = await defineSongname(kara, oldKara);
+		kara.data.songname = songname;
 		const karaJsonFileOld = resolve(resolvedPathRepos('Karaokes', oldKara.repository)[0], oldKara.karafile);
 		const karaJsonFileDest = resolve(
 			resolvedPathRepos('Karaokes', kara.data.repository)[0],
-			`${karaFile}.kara.json`
+			`${sanitizedFilename}.kara.json`
 		);
 		if (karaJsonFileOld !== karaJsonFileDest && (await exists(karaJsonFileDest))) {
 			logger.error(`Cannot save kara since it would overwrite the existing file ${karaJsonFileDest}`, {
@@ -90,7 +91,7 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 			});
 			throw new ErrorKM('KARA_FILE_EXISTS_ERROR', 409, false);
 		}
-		const filenames = determineMediaAndLyricsFilenames(kara, karaFile);
+		const filenames = determineMediaAndLyricsFilenames(kara, sanitizedFilename);
 		const mediaDest = resolve(resolvedPathRepos('Medias', kara.data.repository)[0], filenames.mediafile);
 		let oldMediaPath: string;
 		if (editedKara.modifiedMedia || oldKara.mediafile !== filenames.mediafile) {
@@ -118,7 +119,7 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 						default: true,
 						version: 'Default',
 					};
-					filenames.lyricsfile = karaFile + extname(kara.medias[0].lyrics[0].filename);
+					filenames.lyricsfile = sanitizedFilename + extname(kara.medias[0].lyrics[0].filename);
 					editedKara.modifiedLyrics = true;
 				}
 			} catch (err) {
@@ -230,10 +231,11 @@ export async function createKara(editedKara: EditedKara) {
 			}
 		}
 		if (!kara.data.ignoreHooks) await applyKaraHooks(kara);
-		const karaFile = await defineFilename(kara);
+		const { sanitizedFilename, songname } = await defineSongname(kara);
+		kara.data.songname = songname;
 		const karaJsonFileDest = resolve(
 			resolvedPathRepos('Karaokes', kara.data.repository)[0],
-			`${karaFile}.kara.json`
+			`${sanitizedFilename}.kara.json`
 		);
 		if (await exists(karaJsonFileDest)) throw new ErrorKM('KARA_FILE_EXISTS_ERROR', 409, false);
 
@@ -253,7 +255,7 @@ export async function createKara(editedKara: EditedKara) {
 		} catch (err) {
 			// Not lethal
 		}
-		const filenames = determineMediaAndLyricsFilenames(kara, karaFile);
+		const filenames = determineMediaAndLyricsFilenames(kara, sanitizedFilename);
 		const mediaDest = resolve(resolvedPathRepos('Medias', kara.data.repository)[0], filenames.mediafile);
 		let subDest: string;
 		if (kara.medias[0].lyrics?.[0]?.filename) {
