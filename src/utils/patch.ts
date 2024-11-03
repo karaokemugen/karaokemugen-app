@@ -5,7 +5,6 @@ import { move, remove } from 'fs-extra';
 import parallel from 'p-map';
 import { resolve } from 'path';
 
-import { initHooks } from '../lib/dao/hook.js';
 import { DiffChanges, Repository } from '../lib/types/repo.js';
 import { resolvedPath } from '../lib/utils/config.js';
 import { downloadFile } from '../lib/utils/downloader.js';
@@ -53,7 +52,6 @@ export async function downloadAndExtractZip(zipURL: string, outDir: string, repo
 		const dir = await extractZip(target, tempDir, task);
 		await remove(outDir);
 		await move(resolve(tempDir, dir), outDir);
-		await initHooks();
 	} catch (err) {
 		logger.error(`Unable to download and extract ${repo} zip`, { service, obj: err });
 		throw err;

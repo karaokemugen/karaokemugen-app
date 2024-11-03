@@ -34,6 +34,7 @@ import { adminToken } from '../utils/constants.js';
 import { getFreeSpace, pathIsContainedInAnother } from '../utils/files.js';
 import FTP from '../utils/ftp.js';
 import Git, { checkGitInstalled, isGit } from '../utils/git.js';
+import { oldFilenameFormatKillSwitch } from '../utils/hokutoNoCode.js';
 import { applyPatch, cleanFailedPatch, downloadAndExtractZip, writeFullPatchedFiles } from '../utils/patch.js';
 import sentry from '../utils/sentry.js';
 import { getState } from '../utils/state.js';
@@ -163,6 +164,7 @@ export async function updateAllRepos() {
 				if (repo.MaintainerMode) {
 					if (repo.Git?.URL) {
 						if (await updateGitRepo(repo.Name)) doGenerate = true;
+						initFonts();
 					}
 				} else if (await updateZipRepo(repo.Name)) {
 					// updateZipRepo returns true when the function has downloaded the entire base (either because it's new or because an error happened during the patch)
@@ -378,6 +380,7 @@ async function getLocalRepoLastCommit(repo: Repository): Promise<string | null> 
 async function newZipRepo(repo: Repository): Promise<string> {
 	const { FullArchiveURL, LatestCommit } = await getRepoMetadata(repo);
 	await downloadAndExtractZip(FullArchiveURL, resolve(getState().dataPath, repo.BaseDir), repo.Name);
+	await oldFilenameFormatKillSwitch(repo.Name);
 	if (repo.AutoMediaDownloads === 'all') {
 		updateMedias(repo.Name).catch(e => {
 			if (e?.code === 409) {
@@ -663,6 +666,7 @@ export async function updateGitRepo(name: string) {
 async function applyChanges(changes: Change[], repo: Repository) {
 	let task: Task;
 	try {
+		await oldFilenameFormatKillSwitch(repo.Name);
 		const tagFiles = changes.filter(f => f.path.endsWith('.tag.json'));
 		const karaFiles = changes.filter(f => f.path.endsWith('.kara.json'));
 		const fontFiles = changes.filter(f => f.path.startsWith('fonts/'));
@@ -889,6 +893,7 @@ export async function newGitRepo(repo: Repository) {
 	const git = await setupGit(repo, false, true);
 	await git.clone();
 	git.setup(true);
+	await oldFilenameFormatKillSwitch(repo.Name);
 	if (repo.AutoMediaDownloads === 'all') {
 		updateMedias(repo.Name).catch(e => {
 			if (e?.code === 409) {

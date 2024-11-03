@@ -5,12 +5,20 @@
 
 import { app, dialog } from 'electron';
 import { existsSync, readdirSync, rmdirSync } from 'fs';
+import { readdir, rename } from 'fs/promises';
 import { moveSync } from 'fs-extra';
 import i18next from 'i18next';
-import { resolve } from 'path';
+import { extname, resolve } from 'path';
 import semver from 'semver';
 
+import { getSettings, saveSetting } from '../lib/dao/database.js';
+import { readRepoManifest, selectRepositoryManifest } from '../lib/dao/repo.js';
+import { readAllKaras } from '../lib/services/generation.js';
 import { Repository } from '../lib/types/repo.js';
+import { resolvedPathRepos } from '../lib/utils/config.js';
+import { uuidRegexp } from '../lib/utils/constants.js';
+import { listAllFiles, sanitizeFile } from '../lib/utils/files.js';
+import logger from '../lib/utils/logger.js';
 import { editRepo, getRepo } from '../services/repo.js';
 import { getState, setState } from './state.js';
 
@@ -63,6 +71,51 @@ export async function checkMovedUserDir() {
 		if (buttons.response === 1) {
 			app.exit(0);
 		}
+	}
+}
+
+/** Remove in KM 10.0 */
+export async function oldFilenameFormatKillSwitch(repoName: string) {
+	const service = 'GloryToUUIDs';
+	await readRepoManifest(repoName);
+	const manifest = selectRepositoryManifest(repoName);
+	if (manifest.oldFormatKillSwitch === true) {
+		// The fun begins here.
+		const mediaDir = resolvedPathRepos('Medias', repoName)[0];
+		const mediaFiles = await readdir(mediaDir);
+		// Doing nothing if no mediafiles found or if one mediafile isn't a UUID
+		if (mediaFiles.length === 0) return;
+		if (mediaFiles.every(m => m.split('.')[0].match(uuidRegexp))) return;
+		// Same if the setting is set in database.
+		const settings = await getSettings();
+		if (settings[`oldFormatKillSwitchDone-${repoName}`]) return;
+		const UUIDMediaMap = new Map();
+		const karaFiles = await listAllFiles('Karaokes');
+		const karas = await readAllKaras(karaFiles, false);
+		for (const kara of karas) {
+			if (!kara.data.songname) {
+				logger.warn(`No songname set for ${kara.data.kid}!`);
+				continue;
+			}
+			const mediafile = `${kara.data.songname}${extname(kara.medias[0].filename)}`;
+			UUIDMediaMap.set(sanitizeFile(mediafile), kara.data.kid);
+		}
+		for (const mediaFile of mediaFiles) {
+			// If we encounter mediafiles being UUIDs, they're ignored.
+			if (mediaFile.split('.')[0].match(uuidRegexp)) continue;
+			const UUID = UUIDMediaMap.get(mediaFile);
+			// If a UUID is found for the mediafile in the folder, we rename it.
+			if (UUID) {
+				try {
+					await rename(resolve(mediaDir, mediaFile), resolve(mediaDir, `${UUID}${extname(mediaFile)}`));
+				} catch (err) {
+					logger.warn(`UUID found for ${mediaFile} but renaming failed : ${err}`, { service });
+				}
+			} else {
+				logger.warn(`No UUID found for ${mediaFile}, no action taken`, { service });
+			}
+		}
+		await saveSetting(`oldFormatKillSwitchDone-${repoName}`, 'true');
 	}
 }
 
