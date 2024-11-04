@@ -93,7 +93,7 @@
 		"QUOTA_KARA_DESCRIPTION_one": "Du kannst nur {{count}} Lied vorschlagen. Du kannst erneut ein Lied vorschlagen, sobald ein Betreiber deinen Vorschlag angenommen oder abgelehnt hat oder nachdem dein Lied gespielt wurde."
 	},
 	"VERSION": "Version",
-	"HOME_BUTTON": "Interface wechseln",
+	"HOME_BUTTON": "Home",
 	"PASSWORDCONF": "Passwort bestätigen",
 	"PASSWORD": "Passwort (mindestens 8 Zeichen)",
 	"NEW_PASSWORD": "Neues Passwort",
