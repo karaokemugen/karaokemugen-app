@@ -385,7 +385,7 @@
 			"MONITOR_NUMBER": "Écran sur lequel afficher le lecteur",
 			"MONITOR_NUMBER_TOOLTIP": "Écran sur lequel afficher le lecteur au démarrage",
 			"WINDOWBORDERS": "Activer les bordures sur la fenêtre du lecteur",
-			"WINDOWBORDERS_TOOLTIP": "Les désactiver n'affecte pas la fenêtre du moniteur, où elles seront toujours activées.",
+			"WINDOWBORDERS_TOOLTIP": "Les désactiver n'affecte pas la fenêtre du moniteur de l'opérateur, où elles seront toujours activées.",
 			"PLAYER_MONITOR": "Seconde fenêtre du lecteur vidéo (moniteur)",
 			"PLAYER_MONITOR_TOOLTIP": "Affiche un second lecteur pour l'opérateur s'il ne peut pas voir l'écran principal directement",
 			"PLAYER_LANGUAGE": "Langue des messages et du lecteur vidéo",
