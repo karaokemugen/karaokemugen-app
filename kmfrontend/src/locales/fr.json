@@ -126,7 +126,7 @@
 		"REFUSED_other": "{{count}} refusés",
 		"ACCEPT": "Accepter",
 		"REFUSE": "Refuser",
-		"PLAYLIST_REMAINING_one": "Temps restant de la liste courante : {{count}} minute",
+		"PLAYLIST_REMAINING_one": "Temps restant de la liste courante : {{count}} minutes",
 		"PLAYLIST_REMAINING_other": "Temps restant de la liste courante : {{count}} minutes"
 	},
 	"FLAGS": {
@@ -268,7 +268,7 @@
 	"CL_EMPTY_LIST": "Vider la liste ?",
 	"CL_PLAYLISTS": "Listes de chansons",
 	"BACK_PLAYLISTS": "Retourner aux listes de chansons",
-	"CL_DELETE_CRITERIAS_PLAYLIST": "Suppression du critère '{{type}}' qui contient toutes les chansons suivantes :",
+	"CL_DELETE_CRITERIAS_PLAYLIST": "Suppression du critère '{{type}}' qui contient toutes les chansons suivantes :",
 	"GOTO_TOP": "Aller au début de la liste",
 	"GOTO_PLAYING": "Aller à la chanson en cours de lecture",
 	"GOTO_BOTTOM": "Aller à la fin de la liste",
