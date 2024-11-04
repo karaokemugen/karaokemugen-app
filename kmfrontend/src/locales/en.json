@@ -484,7 +484,7 @@
 			"STREAM_MODE_TOOLTIP": "A pause (with a configurable duration) will happen between each song.",
 			"STREAM_MODE_LOCKED": "Disable Classic Karaoke Mode in Karaoke modes to use Stream Pause.",
 			"STREAMER_MODE_LABEL": "Karaoke Mugen is writing text files that you can use in your streaming software, to create a custom overlay.",
-			"OPEN_STREAMER_FILES": "Show files",
+			"OPEN_STREAMER_FILES": "Show files.",
 			"STREAM_PAUSE_DURATION": "Pause duration",
 			"STREAM_PAUSE_DURATION_TOOLTIP": "In seconds, 0 for infinite (press play to start next song)",
 			"STREAM_TWITCH": "Use Twitch Chat",
