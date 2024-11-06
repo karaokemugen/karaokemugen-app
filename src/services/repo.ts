@@ -1394,7 +1394,7 @@ export async function generateCommits(repoName: string) {
 						modifiedLyrics = modifiedLyrics.filter(f => f !== lyricsFile);
 						if (repoManifest?.rules?.lyrics?.cleanup) {
 							const lyricsPath = resolve(repo.BaseDir, lyricsFile);
-							ASSFileCleanup(lyricsPath, kara);
+							await ASSFileCleanup(lyricsPath, kara);
 						}
 						commit.addedFiles.push(lyricsFile);
 					}
@@ -1428,6 +1428,7 @@ export async function generateCommits(repoName: string) {
 		// Modified lyrics (they don't trigger modified songs)
 		for (const file of modifiedLyrics) {
 			const lyrics = parse(file).name;
+			await ASSFileCleanup(file, null, repoName);
 			const commit: Commit = {
 				addedFiles: [file],
 				removedFiles: [],
