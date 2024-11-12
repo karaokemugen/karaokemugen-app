@@ -117,7 +117,6 @@
 		"TITLE": "L'archivio esiste già",
 		"MESSAGE": "L'archivio che stai cercando di aggiungere esiste già nel tuo database di Karaoke Mugen."
 	},
-	"UPDATE_CHECK_ERROR": "Si è verificato un errore durante il controllo di aggiornamenti per Karaoke Mugen",
 	"MIGRATION_MESSAGES": [
 		"Allineando i microfoni",
 		"Calcolando la normalizzazione delle onde audio",

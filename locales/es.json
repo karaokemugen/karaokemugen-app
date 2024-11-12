@@ -103,7 +103,6 @@
 	"NO": "No",
 	"UPDATE_FOUND": "Se ha encontrado una actualización",
 	"UPDATE_PROMPT": "¿Desea descargar e instalar la actualización de Karaoke Mugen?",
-	"UPDATE_CHECK_ERROR": "Se produjo un error al intentar buscar actualizaciones de Karaoke Mugen",
 	"UPDATE_ERROR": "Ocurrió un error al intentar actualizar Karaoke Mugen: ",
 	"UPDATE_NOT_AVAILABLE": "Actualización no disponible",
 	"CURRENT_VERSION_OK": "¡Ya estás usando la última versión de Karaoke Mugen!",

@@ -163,7 +163,6 @@
 	"UNKNOWN": "Unknown",
 	"UPDATE_FOUND": "Update available",
 	"UPDATE_PROMPT": "Do you want to update Karaoke Mugen?",
-	"UPDATE_CHECK_ERROR": "An error occured when trying to check for Karaoke Mugen updates",
 	"UPDATE_ERROR": "An error occured when trying to update Karaoke Mugen: ",
 	"UPDATE_NOT_AVAILABLE": "No update available",
 	"CURRENT_VERSION_OK": "You already are using the latest version of Karaoke Mugen!",

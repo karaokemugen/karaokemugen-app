@@ -236,7 +236,6 @@
 		"TITLE": "Repository bereits vorhanden",
 		"MESSAGE": "Das Repository was du versuchst hinzuzufügen, gibt es bereits in deiner Karaoke Mugen Datenbank."
 	},
-	"UPDATE_CHECK_ERROR": "Bei der Suche nach Karaoke Mugen-Updates ist ein Fehler aufgetreten",
 	"UNKNOWN_REPOSITORY_ADD": {
 		"TITLE": "Unbekanntes Repository",
 		"MESSAGE": "Du bist dabei, das {{repoName}}-Repository zu Karaoke Mugen hinzuzufügen. Bist du sicher?"
