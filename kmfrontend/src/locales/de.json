@@ -531,33 +531,33 @@
 			"PLAYLIST_INTRO_VIDEOS": "Playlist-Intro-Video",
 			"STREAM_TWITCH_OAUTH_SUCCESS": "Erfolgreich verbunden ({{login}})",
 			"SONGPOLL": "Öffentliche Umfrage",
-			"REMOTE": "Fernzugriff zulassen (<code>.kara.moe)",
-			"MYSTERY_SONG_SETTINGS_TOOLTIP": "Verstecke Songs vor der Öffentlichkeit, um zu überraschen!",
-			"SONGPOLLTIMEOUT_TOOLTIP": "In Sekunden. Es ist besser, wenn es niedriger ist als der Pausentimer des Stream-Modus!",
-			"MYSTERY_SONG_SETTINGS": "Mystery-Lieder",
-			"HIDE_INVISIBLE_SONGS_TOOLTIP": "Die Art und Weise, wie Mystery-Songs der Öffentlichkeit präsentiert werden. Am besten für Überraschungen!",
-			"ONLINE_SETTINGS_TOOLTIP": "Verbinde dein Karaoke mit dem Internet, damit die Welt Lieder für dich auswählen kann!",
+			"REMOTE": "Fernzugriff gestatten (<code>.kara.moe)",
+			"MYSTERY_SONG_SETTINGS_TOOLTIP": "Verbirg Lieder vor der Öffentlichkeit, um sie zu überraschen!",
+			"SONGPOLLTIMEOUT_TOOLTIP": "In Sekunden. Sollte am besten niedriger sein als die Pausenzeit im Streaming-Modus!",
+			"MYSTERY_SONG_SETTINGS": "Verborgene Lieder",
+			"HIDE_INVISIBLE_SONGS_TOOLTIP": "Die Art und Weise, wie verborgene Lieder der Öffentlichkeit angezeigt werden. Die beste Art für Überraschungen zu sorgen!",
+			"ONLINE_SETTINGS_TOOLTIP": "Verbinde deine Karaoke mit dem Internet, damit die Welt Lieder für dich auswählen kann!",
 			"MINUTES_BEFORE_SESSION_ENDS_WARNING_TOOLTIP": "Eine Benachrichtigung warnt dich X Minuten vor Ende deiner geplanten Sitzung",
 			"PLAYLIST_JINGLES_VIDEOS_TOOLTIP": "Jingle-Videos werden alle X Lieder abgespielt",
 			"ADDED_SONG_VISIBILITY_ADMIN_SHORT": "Sichtbarkeit von Lieder-Ergänzungen",
 			"PLAYLIST_INTRO_VIDEOS_TOOLTIP": "Intro-Videos werden nur einmal abgespielt, wenn das erste Lied der aktuellen Playlist abspielt wird. Danach folgt das Sponsoren-Jingle-Video, falls verfügbar.",
 			"STREAM_TWITCH_OAUTH_TOKEN": "Twitch-OAuth-Token",
-			"SONGPOLLCHOICES": "Anzahl der Songs, aus denen Benutzer während der öffentlichen Umfrage auswählen können",
+			"SONGPOLLCHOICES": "Anzahl der Lieder, aus denen die Benutzer während der öffentlichen Umfrage wählen können",
 			"ENABLE_AUTOBALANCE": "Automatisches Ausgleichen der Playlist aktivieren",
 			"STREAM_TWITCH_CHANNEL": "Name des Twitch-Kanals",
 			"MINUTES_BEFORE_SESSION_ENDS_WARNING": "Warnung X Minuten vor Ende der Playlist anzeigen",
 			"ONLINE_SETTINGS": "Online",
 			"ENABLE_AUTOBALANCE_TOOLTIP": "Die Playlist wird regelmäßig neu geordnet, sodass sich die Benutzeranfragen abwechseln.",
-			"HIDE_INVISIBLE_SONGS": "Mystery-Songs werden angezeigt als",
+			"HIDE_INVISIBLE_SONGS": "Verborgene Lieder werden angezeigt als",
 			"PLAYLIST_JINGLES_VIDEOS": "Playlist-Jingle-Video",
 			"ADDED_SONG_VISIBILITY_MYSTERY_OPTION": "Verborgenes Lied",
-			"SONGPOLL_TOOLTIP": "Zu Beginn jedes Songs findet auf den Geräten deiner Benutzer oder im Twitch-Chat eine Umfrage statt. Im Stream-Modus findet die Umfrage in Pausen statt",
+			"SONGPOLL_TOOLTIP": "Zu Beginn jedes Liedes findet auf den Geräten deiner Benutzer oder im Twitch-Chat eine Umfrage statt. Im Streaming-Modus findet die Umfrage in den Pausen statt",
 			"PLAYLIST_OUTRO_VIDEOS": "Playlist-Outro-Video",
-			"REMOTE_TOOLTIP": "Aktiviere dies, damit deine Freunde Lieder für deine Karaoke-Session vorschlagen können!",
+			"REMOTE_TOOLTIP": "Aktivieren, um deinen Freunde zu gestatten, Lieder für deine Karaoke-Sitzung vorzuschlagen!",
 			"SONGPOLLTIMEOUT": "Dauer der öffentlichen Umfrage",
 			"SONGPOLLCHOICES_TOOLTIP": "Jede Auswahl wird aus der Vorschlags-Playlist ausgewählt",
-			"HIDE_INVISIBLE_SONGS_VISIBLE_OPTION": "Mystery-Etiketten",
-			"HIDE_INVISIBLE_SONGS_HIDDEN_OPTION": "Verstecken",
+			"HIDE_INVISIBLE_SONGS_VISIBLE_OPTION": "Verborgen-Etiketten",
+			"HIDE_INVISIBLE_SONGS_HIDDEN_OPTION": "Verbergen",
 			"ADDED_SONG_VISIBILITY_NORMAL_OPTION": "Normal",
 			"PLAYLIST_ENCORES_VIDEOS": "Playlist-Zugaben-Video",
 			"STREAM_TWITCH_OAUTH_ERROR": "Das Token ist ungültig",
@@ -627,43 +627,43 @@
 		"PLAYLIST": {
 			"ENDOFPLAYLISTACTION": {
 				"OPTIONS": {
-					"REPEAT": "Wiedergabeliste wiederholen",
-					"NONE": "Beende die Karaoke-Sitzung",
-					"RANDOM_FALLBACK": "Spiele zufällige Songs aus der Fallback-Playlist ab",
-					"RANDOM": "Spiele zufällige Songs aus der Bibliothek",
-					"PLAY_FALLBACK": "Spiele die Fallback-Playlist ab"
+					"REPEAT": "Playlist wiederholen",
+					"NONE": "Karaoke-Sitzung beenden",
+					"RANDOM_FALLBACK": "Spiele zufällige Lieder aus der Reserve-Playlist",
+					"RANDOM": "Spiele zufällige Lieder aus der Bibliothek",
+					"PLAY_FALLBACK": "Spiele die Reserve-Playlist ab"
 				},
 				"NAME": "Aktion am Ende der Playlist",
-				"TOOLTIP": "Wenn Du „Zufällige Songs“ auswählst, werden diese aus deiner Songbibliothek ausgewählt. In Kombination mit AutoPlay kann deine Playlist fortgesetzt werden, sobald jemand einen neuen Song hinzufügt."
+				"TOOLTIP": "Wenn du „Zufällige Lieder“ auswählst, werden diese aus deiner Liederbibliothek gewählt. In Kombination mit der automatischen Wiedergabe kann deine Playlist fortgesetzt werden, sobald jemand ein neues Lied hinzufügt."
 			},
 			"PLAYLIST_SETTINGS": "Playlisten",
 			"PLAYLIST_SETTINGS_TOOLTIP": "Ändere das Verhalten von Playlisten, erlaube doppelte Lieder und wähle die Aktion am Ende der Playlist."
 		},
 		"INTERFACE": {
-			"WEBAPPMODE_CLOSED": "Geschlossen: „Entschuldigung, wir sind geschlossen“. Nachricht",
+			"WEBAPPMODE_CLOSED": "Geschlossen: „Entschuldigung, es ist geschlossen“-Nachricht",
 			"SHOW_AVATARS_ON_PLAYLIST": "Avatare in der Playlist anzeigen",
 			"ALLOW_CUSTOM_TEMPORARY_GUESTS": "Anpassbare Gastkonten",
 			"DISPLAY_WELCOME_MESSAGE_TOOLTIP": "Diese Nachricht wird auf der Anmeldeseite deiner Karaoke-Sitzung angezeigt",
-			"SHOW_AVATARS_ON_PLAYLIST_TOOLTIP": "Du siehst auf einen Blick, wer was hinzugefügt hat.",
-			"WEBAPPMODE_SHORT": "Oberflächen Modus",
+			"SHOW_AVATARS_ON_PLAYLIST_TOOLTIP": "So siehst du auf einen Blick, wer was hinzugefügt hat.",
+			"WEBAPPMODE_SHORT": "Interface-Modus",
 			"WEBAPPMODE_CLOSED_SHORT": "Geschlossen",
-			"ALLOW_GUEST_LOGIN_TOOLTIP": "Wenn die Option deaktiviert ist, ist ein (lokales oder Online-)Konto erforderlich, um sich bei deiner Instanz anzumelden",
-			"WEBAPPMODE": "Öffentlicher Oberflächen Modus",
+			"ALLOW_GUEST_LOGIN_TOOLTIP": "Wenn diese Option deaktiviert ist, wird ein (lokales oder Online-)Benutzerkonto benötigt, um sich anzumelden",
+			"WEBAPPMODE": "Öffentlicher Interface-Modus",
 			"WEBAPPMODE_LIMITED": "Eingeschränkt: Schreibgeschützt",
 			"ALLOW_USER_CREATION": "Benutzererstellung zulassen",
-			"WEBAPPMODE_OPEN": "Offen (Standard): Benutzer können Songs hinzufügen",
-			"WEBAPPMODE_TOOLTIP": "Was deine Gäste sehen, wenn sie sich in die Oberfläche einloggen",
+			"WEBAPPMODE_OPEN": "Offen (Standard): Benutzer können Lieder hinzufügen",
+			"WEBAPPMODE_TOOLTIP": "Was deine Gäste sehen, wenn sie sich im Interface einloggen",
 			"WEBAPPMODE_OPEN_SHORT": "Offen",
-			"ALLOW_CUSTOM_TEMPORARY_GUESTS_TOOLTIP": "Ermögliche es den Gästen, ihren Spitznamen zu wählen, anstatt einem von der Anwendung zufällig gewählten Namen zugewiesen zu sein.",
-			"ALLOW_USER_CREATION_TOOLTIP": "Wenn die Funktion deaktiviert ist, können Benutzer keine neuen lokalen Konten erstellen oder sich mit einem Online-Konto anmelden, welche noch nicht in deiner Karaoke Mugen-Anwendung registriert wurden.",
+			"ALLOW_CUSTOM_TEMPORARY_GUESTS_TOOLTIP": "Ermögliche es den Gästen, ihren Benutzernamen zu wählen, anstatt einen von der Anwendung zufällig gewählten Namen zugewiesen zu bekommen.",
+			"ALLOW_USER_CREATION_TOOLTIP": "Wenn diese Option deaktiviert ist, können Benutzer keine neuen lokalen Benutzerkonten erstellen oder sich mit einem Online-Benutzerkonto anmelden, welches noch nicht in deiner Karaoke-Mugen-Anwendung registriert wurden.",
 			"WEBAPPMODE_LIMITED_SHORT": "Eingeschränkt",
-			"LABEL": "Oberfläche",
+			"LABEL": "Interface",
 			"DISPLAY_WELCOME_MESSAGE": "Willkommensnachricht anzeigen",
 			"ALLOW_GUEST_LOGIN": "Gäste zulassen",
-			"REQUIRE_USER_CREATION_CODE": "Code nötig für die Benutzererstellung",
-			"PUBLIC_PLAYER_CONTROLS": "Publikumskontrolle über den Player zulassen",
-			"REQUIRE_USER_CREATION_CODE_TOOLTIP": "Benutzer benötigen einen Code, um ein neues Konto zu erstellen, das ausschließlich der Veranstalter sehen kann und der Kommunikation mit diesem dient. Der Code wird im Benutzerfenster im K-Menü angezeigt.",
-			"PUBLIC_PLAYER_CONTROLS_TOOLTIP": "Start/Pause, stopp, vor und zurück wird im Bedienfeld des Publikums sichtbar und gestattet den Benutzern den Player von ihrem Gerät aus zu steuern. Nur in kleinen Gruppen benutzen!"
+			"REQUIRE_USER_CREATION_CODE": "Code notwendig für die Benutzererstellung",
+			"PUBLIC_PLAYER_CONTROLS": "Publikumskontrolle des Player zulassen",
+			"REQUIRE_USER_CREATION_CODE_TOOLTIP": "Benutzer benötigen einen Code, um ein neues Benutzerkonto zu erstellen, den ausschließlich der Betreiber sehen und weitergeben kann. Der Code wird im Benutzerfenster im K-Menü angezeigt.",
+			"PUBLIC_PLAYER_CONTROLS_TOOLTIP": "Start/Pause, stopp, vor und zurück wird im Publikums-Interface sichtbar und gestattet den Benutzern den Player von ihrem Gerät aus zu steuern. Nur in kleinen Gruppen benutzen!"
 		}
 	},
 	"KARA_DETAIL": {
@@ -1100,11 +1100,11 @@
 			"TITLE": "Sitzungsmanagement"
 		}
 	},
-	"KARA_PAUSED_WAITING": "Es wird noch kein Song abgespielt",
+	"KARA_PAUSED_WAITING": "Es wird noch kein Lied abgespielt",
 	"KARA_PAUSED_TAGLINES": [
-		"…aber dies sollte nicht lange andauern!",
+		"… aber das sollte nicht lange so bleiben!",
 		"Wir werden deinem Wunsch nachgehen.",
-		"Deine Wartezeit wird geschätzt ermittelt und kann etwas abweichen.",
+		"Deine Wartezeit beträgt ca. einige Minuten.",
 		"Zu ruhig, das gefällt mir nicht …",
 		"Die Vorbereitungen laufen!"
 	],
@@ -1390,19 +1390,19 @@
 		"OUTDATED_CLIENT": "Inkompatible Anwendung (bitte aktualisiere deine Anwendung)"
 	},
 	"ENCORES_TAGLINES": [
-		"Nun, es liegt nicht daran, dass ich dich mag oder so …",
-		"Letzter?",
-		"Letzter Song, gibt noch mal alles!"
+		"Also es liegt nicht daran, dass ich euch mag oder so …",
+		"Letztes Lied?",
+		"Letztes Lied, gebt noch mal alles!"
 	],
 	"VIEW_POPULAR": "Beliebt",
-	"QUOTA_AVAILABLE": "Du kannst jetzt wieder Songs hinzufügen!",
+	"QUOTA_AVAILABLE": "Du kannst jetzt wieder Lieder hinzufügen!",
 	"VIEW_LIKES": "Likes",
-	"REPO_IN_PROGRESS": "Karaoke Mugen ist noch nicht ganz fertig. Bitte warte, bis die folgenden Aufgaben abgeschlossen sind.",
+	"REPO_IN_PROGRESS": "Karaoke Mugen ist noch nicht ganz fertig. Bitte warte, bis die folgenden Vorgänge abgeschlossen sind.",
 	"ONLINE_STATS": {
 		"DETAILS": {
 			"1": "Welche Karaokes wurden gespielt",
-			"3": "Informationen zum Computer (CPU, verfügbarer RAM, Betriebssystemname und -version…)",
-			"TITLE": "Gesendete Informationsdetails",
+			"3": "Informationen zum Computer (CPU, verfügbarer RAM, Betriebssystem inkl. Version …)",
+			"TITLE": "Gesendete Informationen",
 			"OUTRO": "Statistiken werden bei jedem Start und dann bei jeder Nutzungsstunde gesendet. Du kannst die gesendeten Informationen im Protokollverzeichnis von Karaoke Mugen jederzeit einsehen.",
 			"2": "Welche Karaokes wurden angefragt (aber nicht von wem)",
 			"4": "Anwendungseinstellungen (ausgenommen private Informationen wie Passwörter oder Schlüssel)"
@@ -1416,11 +1416,11 @@
 	},
 	"INSTANCE_NAME_SHORT": "Server",
 	"INTRO_TAGLINES": [
-		"Auf geht's!",
-		"Starte…",
-		"Initialisiere…",
-		"Bereite dein Mikro vor!",
-		"*räuspern*"
+		"Los geht's!",
+		"Starte …",
+		"Initialisiere …",
+		"Halte dein Mirko bereit!",
+		"*räusper*"
 	],
 	"OUTRO_TAGLINES": [
 		"Das Ende :(",
@@ -1428,48 +1428,48 @@
 	],
 	"POLLENDED": "{{kara}} gewinnt mit {{votes}} Stimmen!",
 	"PAUSE_TAGLINES": [
-		"Mache eine Pause!",
-		"Zeit etwas zu trinken!",
-		"Wir sind gleich zurück!"
+		"Mach eine Pause!",
+		"Zeit, etwas zu trinken!",
+		"Wir sind gleich wieder da!"
 	],
 	"INSTANCE_NAME": "Server Name",
 	"REMOTE_TOKEN_TOOLTIP": "(Nur einem Serveradministrator offenlegen)",
 	"POLL_TAGLINES": [
 		"Abstimmen! Abstimmen!",
-		"Es ist deine Entscheidung."
+		"Du hast die Wahl."
 	],
 	"JINGLE_TIME": "Jingle-Zeit!",
 	"REMOTE_RESET": "Token zurücksetzen",
 	"SECURITY_CODE": "Sicherheitscode",
-	"VIEW_LIKES_TOOLTIP": "Der Song mit den meisten Likes wird zuerst angezeigt, die Reihenfolge der Playlist ändert sich dadurch nicht.",
+	"VIEW_LIKES_TOOLTIP": "Das Lied mit den meisten Likes wird zuerst angezeigt, die Reihenfolge der Playlist ändert sich dadurch nicht.",
 	"PL_MULTIPLE_ADDED": "Füge {{count}} Songs hinzu",
-	"REMOTE_RESET_CONFIRM": "Dein Zugangscode wird freigegeben und ein neuer generiert. Bist du wirklich sicher?",
-	"KARA_SUGGESTION_NOT_FOUND": "Du kannst dein Lieblingslied nicht finden? Überprüfe deine konfigurierten Online-Repositories sowie die Vorschlagsseite, falls dein Wunsch noch nicht erfüllt wurde:",
+	"REMOTE_RESET_CONFIRM": "Dein Zugangscode wird freigegeben und ein neuer generiert. Fortfahren?",
+	"KARA_SUGGESTION_NOT_FOUND": "Du kannst dein Lieblingslied nicht finden? Prüfe deine konfigurierten Online-Repositories sowie die Vorschlagsseite, falls dein Wunsch noch nicht erfüllt wurde:",
 	"USER_SONG_PLAYS_IN": "Dein Song {{kara}} wurde hinzugefügt und wird um {{time}} am ({{date}}) voraussichtlich abgespielt",
 	"REMOTE_TOKEN": "Fernzugriffstoken",
 	"VIEW_FAVORITES": "Favoriten",
 	"SPONSOR_TIME": "WERBEZEIT!",
-	"CLEAR_FILTER": "Frei",
+	"CLEAR_FILTER": "Löschen",
 	"INTRO_TIME": "Playlist-Intro",
 	"VIEW_RECENT": "Neueste",
 	"ENCORES_TIME": "Zugabe! Zugabe!",
 	"MAKE_ACCOUNT_ADMIN": "Dieses Konto auf den Operator-Modus upgraden",
 	"POLL_TIME": "Abstimmen",
 	"NEXT_SONG_MESSAGE": "Als nächstes :",
-	"REMOTE_RESET_TOOLTIP": "Erzeugt ein neues Token.",
+	"REMOTE_RESET_TOOLTIP": "Generiert ein neues Token, damit verlierst du deinen Zugangscode.",
 	"SPONSOR_TAGLINES": [
 		"Kono bangumi wa…",
-		"Und danke für das Geld."
+		"Und danke für die finanzielle Unterstützung."
 	],
 	"FORGOT_PASSWORD": "Hast du dein Passwort vergessen?",
-	"OUTRO_TIME": "Ende der Playlist",
+	"OUTRO_TIME": "Playlist-Ende",
 	"VIEW_STANDARD": "Standard",
 	"MAKE_ACCOUNT_ADMIN_MESSAGE": "Wenn du dein Konto zum Operator-Modus hochstufen möchtest, gebe hier den 6-stelligen Sicherheitscode ein.",
 	"JINGLE_TAGLINES": [
 		"Wir sind gleich zurück!"
 	],
 	"PAUSE_TIME": "Pause",
-	"REMOTE_URL": "URL für den Fernzugriff auf das System",
+	"REMOTE_URL": "URL für Fernzugriff",
 	"LOADING_SUBTITLE_ELECTRON": "Es sollte nicht allzu lange dauern. Versuche, Karaoke Mugen neu zu starten oder zu aktualisieren, wenn du hier nicht weiterkommst.",
 	"SETUP_PAGE": {
 		"CHOOSE_DIRECTORY": "Einen Ordner auswählen",
