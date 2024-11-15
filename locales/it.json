@@ -32,7 +32,7 @@
 		"NORMAL": [
 			"Puoi usare i tasti multimediali sulla tua tastiera per controllare il tuo karaoke!",
 			"Non dimenticare di allacciare la cintura prima di avviare il karaoke. Canta in sicurezza e stai attento alle casse cadenti!",
-			"Non dimenticare di sincronizzare l'archivio di tanto in tanto: potresti scoprire nuovi karaoke!",
+			"Non dimenticare di sincronizzare l'archivio di tanto in tanto: potresti scoprire nuovi brani!",
 			"Karaoke Mugen è un progetto di squadra 100% open source, tutti possono partecipare!",
 			"Puoi importare i file tramite il Menu File -> Importa, trascinali a schermo o associali all'eseguibile di Karaoke Mugen per consentire a KM di aprirli ed usarli in: playlist, preferiti, ecc…",
 			"Io sono Nanamin, la mascotte di Karaoke Mugen, e sono stata creata dal magnifico Sedeto! http://www.sedeto.fr",
@@ -53,10 +53,10 @@
 			"La modalità classica simula i karaoke giapponesi o le gare di karaoke agli eventi anime: ci sarà una pausa tra un brano e l'altro e il titolo del prossimo brano ed il suo richiedente sono visualizzati a schermo.",
 			"La tua sessione sta per finire? Imposta l'interfaccia pubblica in modalità limitata: gli utenti non potranno più aggiungere brani ma potranno vedere i prossimi.",
 			"Devi inviare un messaggio al tuo pubblico? L'opzione Messaggio mostrerà un messaggio sui loro dispositivi mobili e/o sullo schermo del karaoke!",
-			"Durante la ricerca, puoi inserire \"-parola\" per escludere i karaoke contenenti (nel titolo, nome della serie, cantante, ecc...) quella parola dai risultati.",
+			"Durante la ricerca, puoi inserire \"-parola\" per escludere i brani contenenti (nel titolo, nome della serie, cantante, ecc...) quella parola dai risultati.",
 			"Puoi accettare o rifiutare i brani nella playlist pubblica. Per farlo, visualizza la playlist pubblica e quella attuale fianco a fianco.",
 			"Accettare o rifiutare una richiesta del pubblico rimborsa la quota all'utente richiedente e aggiunge il brano alla playlist attuale!",
-			"Durante una ricerca, puoi inserire un insieme di parole nelle virgolette per richiedere esattamente quelle parole. Inserisci \"love live\" per visualizzare solo i karaoke della serie Love Live."
+			"Durante una ricerca, puoi inserire un insieme di parole nelle virgolette per richiedere esattamente quelle parole. Inserisci \"love live\" per visualizzare solo i brani della serie Love Live."
 		],
 		"ERRORS": [
 			"Vieni a trovarci su Discord se ti serve una mano: https://karaokes.moe/discord",
