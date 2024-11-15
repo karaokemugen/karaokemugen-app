@@ -588,7 +588,6 @@ export async function updateGitRepo(name: string) {
 		logger.info(`Update ${repo.Name}: is a git repo, pulling`, { service });
 		await git.fetch();
 		const originalCommit = await git.getCurrentCommit();
-		logger.info('Got commits?');
 		try {
 			const status = await git.status();
 			if (status.behind === 0) {
