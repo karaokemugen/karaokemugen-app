@@ -588,6 +588,7 @@ export async function updateGitRepo(name: string) {
 		logger.info(`Update ${repo.Name}: is a git repo, pulling`, { service });
 		await git.fetch();
 		const originalCommit = await git.getCurrentCommit();
+		logger.info('Got commits?');
 		try {
 			const status = await git.status();
 			if (status.behind === 0) {
@@ -1393,7 +1394,7 @@ export async function generateCommits(repoName: string) {
 					if (lyricsFile) {
 						modifiedLyrics = modifiedLyrics.filter(f => f !== lyricsFile);
 						if (repoManifest?.rules?.lyrics?.cleanup) {
-							const lyricsPath = resolve(repo.BaseDir, lyricsFile);
+							const lyricsPath = resolve(resolvedPathRepos('Lyrics', repoName)[0], kara.subfile);
 							await ASSFileCleanup(lyricsPath, kara);
 						}
 						commit.addedFiles.push(lyricsFile);
