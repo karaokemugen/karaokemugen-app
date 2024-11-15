@@ -18,9 +18,9 @@
 	"SHOW_SUBS": "Mostra il testo a schermo",
 	"DURATION_REMAINING": "Rimanente",
 	"INLINE_TAG": {
-		"SEARCH": "Karaoke con {{tag}}",
-		"COUNT_other": "{{count}} karaoke",
-		"COUNT_one": "{{count}} karaoke"
+		"SEARCH": "Brani con {{tag}}",
+		"COUNT_other": "{{count}} brani",
+		"COUNT_one": "{{count}} brano"
 	},
 	"PLAYLIST_HEADER": {
 		"ACTIVE_FILTER": "Filtri attivi",
@@ -151,7 +151,7 @@
 			"LIVE_COMMENTS": "Commenti live",
 			"PLAYER_LANGUAGE": "Lingua dei messaggi e del lettore",
 			"DISPLAY_AVATAR": "Mostra l'avatar del richiedente durante la riproduzione",
-			"WINDOWBORDERS_TOOLTIP": "Disabilitarli non li disabiliterà per il monitor, in cui saranno sempre abilitati.",
+			"WINDOWBORDERS_TOOLTIP": "Disabilitarli non li disabiliterà per il monitor dell'operatore, in cui saranno sempre abilitati.",
 			"DISPLAY_CONNECTION_INFO_TOOLTIP": "È il messaggio \"Vai su http://xxx !\"",
 			"DISPLAY_AVATAR_TOOLTIP": "L'avatar del richiedente del brano verrà visualizzato all'inizio e alla fine del brano nell'angolo in basso a destra della schermata del lettore."
 		},
@@ -220,7 +220,7 @@
 			"ADDED_SONG_VISIBILITY_ADMIN_SHORT": "Visibilità dei brani aggiunti",
 			"ADDED_SONG_VISIBILITY_ADMIN_OFF": "I brani verranno aggiunti normalmente (visibili al pubblico)",
 			"CLASSIC_MODE_LOCKED": "Disabilita la Pausa Stream nelle opzioni Stream per usare la modalità Classica.",
-			"OPEN_STREAMER_FILES": "Vedi i file.",
+			"OPEN_STREAMER_FILES": "Mostra i file.",
 			"STREAM_TWITCH_OAUTH_TOKEN": "Twitch OAuth Token",
 			"SONGPOLLCHOICES": "Numero dei brani da cui gli utenti possono scegliere durante il sondaggio al pubblico",
 			"STREAM_PAUSE_DURATION": "Durata della pausa",
@@ -450,7 +450,7 @@
 		"STATS_SERIES": "Serie",
 		"QUIZ": "INIZIA QUIZ",
 		"COLLECTIONS": "COLLEZIONI",
-		"STATS_KARAS": "Karaoke",
+		"STATS_KARAS": "Brani",
 		"MASTODON_UPDATE": "Novità di Karaoke Mugen",
 		"EDIT_SESSION": "Modifica sessione",
 		"STATS_USAGETIME": "Tempo di utilizzo",
@@ -520,7 +520,7 @@
 	"CL_ADD_RANDOM_TITLE": "Quanti brani casuali vuoi aggiungere?",
 	"GOTO_BOTTOM": "Vai in fondo alla playlist",
 	"BLURVIDEO_BLUR": "Sfoca il video",
-	"KARAOKE_one": "{{count}} karaoke",
+	"KARAOKE_one": "{{count}} brano",
 	"PROFILE_BIO": "Biografia",
 	"FAVORITES_EXPORT": "Esporta preferiti",
 	"TOOLTIP_DELETE_SELECT_FAVS": "Rimuovi i brani selezionati dai preferiti",
@@ -558,7 +558,7 @@
 	"BLURVIDEO_UNBLUR": "Metti a fuoco il video",
 	"SPEED_RESET": "Reimposta la velocità normale",
 	"CONFIRM_FAV_IMPORT": "Sovrascrivere i tuoi preferiti con quelli importati?",
-	"KARAOKE_other": "{{count}} karaoke",
+	"KARAOKE_other": "{{count}} brani",
 	"REMOTE_STATUS": {
 		"LABEL": "Stato della connessione",
 		"CONNECTED": "Connesso",
@@ -614,7 +614,7 @@
 		"Kono bangumi wa…",
 		"E grazie per i soldi."
 	],
-	"OUTRO_TIME": "Fine della playlist",
+	"OUTRO_TIME": "La playlist è terminata",
 	"JINGLE_TAGLINES": [
 		"Torniamo subito!"
 	],
@@ -725,13 +725,13 @@
 			"KARAOKE_PLAYING": "La riga con uno sfondo <1>blu</1> significa che il brano è stato selezionato per la riproduzione.",
 			"TITLE": "Tutorial",
 			"PLAY_BUTTONS": "Il tasto <1/> riproduce subito il brano <3>(Il tasto <4/> muove il cursore)</3>.",
-			"LIBRARY": "La libreria mostra tutti i brani karaoke disponibili.",
+			"LIBRARY": "La libreria mostra tutti i brani disponibili.",
 			"PLAYLIST": "La schermata mostra due playlist. Puoi aggiungere un brano dalla playlist di sinistra a quella di destra e viceversa cliccando su <2/>.",
 			"PLAYER_BAR": "Il lettore di Karaoke Mugen può essere controllato dalla barra superiore.",
 			"MESSAGE": "Puoi inviare un messaggio al tuo pubblico (sui loro dispositivi o sulla schermata del lettore) tramite il tasto Messaggio.",
 			"PUBLIC_DESC": "la playlist <1>pubblica </1> è quella contenente le richieste degli utenti.",
 			"CURRENT_PUBLIC_DESC": "Le playlist <1>attuale</1> e <3>pubblica</3> possono essere la stessa playlist.",
-			"TITLE_CLICK": "Clicca sul titolo del karaoke per altre informazioni <1>(cantanti, autori, ecc...)</1>.",
+			"TITLE_CLICK": "Clicca sul titolo del brano per altre informazioni <1>(cantanti, autori, ecc...)</1>.",
 			"PLAYER_STOP": "Il tasto \"Interrompi\" interromperà la riproduzione alla fine del brano attuale. Puoi cliccarlo nuovamente per interrompere <1>subito</1>.",
 			"CURRENT_DESC": "La playlist <1>attuale</1> è quella utilizzata dal lettore."
 		},
@@ -792,8 +792,8 @@
 			"TITLE": "Creazione rapida di tag"
 		},
 		"STATS_MODAL": {
-			"DESC": "Utilizziamo i tuoi preferiti e le tue richieste karaoke per creare statistiche sul consumo (ad esempio per definire i karaoke più richiesti).",
-			"TITLE": "Utilizza i miei preferiti e le mie richieste karaoke per le statistiche",
+			"DESC": "Utilizziamo i tuoi preferiti e le tue richieste di brani per creare statistiche sul consumo (ad esempio per definire i brani più richiesti).",
+			"TITLE": "Utilizza i miei preferiti e le mie richieste di brani per le statistiche",
 			"REFUSE_DESC": "Se non vuoi partecipare, nonostante l'anonimato, a queste statistiche, si prega di farcelo sapere. Se rifiuti, i tuoi dati verranno ignorati e non saranno inviati dall'app di Karaoke Mugen.",
 			"CHANGE": "Puoi cambiare opzione in qualsiasi momento sul tuo profilo. Acconsenti all'utilizzo della tua cronologia dei brani per le statistiche?"
 		},
@@ -899,11 +899,11 @@
 	"REPO_IN_PROGRESS": "Karaoke Mugen non è ancora pronto, si prega di attendere il termine delle seguenti attività.",
 	"ONLINE_STATS": {
 		"DETAILS": {
-			"1": "I karaoke che sono stati riprodotti",
+			"1": "I brani che sono stati riprodotti",
 			"3": "Informazioni sul computer (CPU, RAM disponibile, nome e versione del Sistema Operativo…)",
 			"TITLE": "Dettagli informativi inviati",
 			"OUTRO": "Le statistiche vengono inviate ad ogni avvio e ad ogni ora di utilizzo. Puoi leggere le informazioni inviate tramite la cartella dei log di Karaoke Mugen.",
-			"2": "I karaoke che sono stati richiesti (ma non da chi)",
+			"2": "I brani che sono stati richiesti (ma non da chi)",
 			"4": "Impostazioni dell'applicazione (escluse informazioni private come password o chiavi)"
 		},
 		"INTRO": "Karaoke Mugen può inviare informazioni anonime sulla tua sessione al server di Karaoke Mugen per creare statistiche sul consumo.",
@@ -1142,7 +1142,7 @@
 		"KARA_HISTORY_ERROR": "Errore durante il recupero dei brani ordinati per data di riproduzione",
 		"MEDIA_DELETE_ERROR": "Errore durante l'eliminazione del file multimediale",
 		"UNKNOW_CONVERT_ERROR": "Utente sconosciuto",
-		"INBOX_VIEW_ERROR": "Impossibile recuperare i karaoke dalla posta",
+		"INBOX_VIEW_ERROR": "Impossibile recuperare i brani dalla posta",
 		"CANNOT_INSTALL_REPO_AT_WINDOWS_ROOT_DRIVE": "L'archivio non può essere installato alla radice di un disco Windows.",
 		"REPO_GIT_STASH_ERROR": "Impossibile effettuare lo Stash dei cambiamenti",
 		"REPO_GIT_PUSH_ERROR": "Impossibile rilasciare i Git Commit",
@@ -1173,11 +1173,11 @@
 	"KARA": {
 		"PAUSE_DOWNLOAD_QUEUE": "Sospendi",
 		"IN_PROGRESS_DOWNLOAD_TOOLTIP": "Download in corso",
-		"DELETE_KARA": "Elimina karaoke",
+		"DELETE_KARA": "Elimina brano",
 		"LYRICS_FILE": "File del testo",
-		"DELETE_ALL_TOOLTIP": "Rimuovi subito tutti i karaoke visualizzati",
+		"DELETE_ALL_TOOLTIP": "Rimuovi subito tutti i brani visualizzati",
 		"TITLE_REQUIRED": "Si prega di inserire il titolo del brano",
-		"DELETE_KARA_MODAL": "Eliminare il karaoke?",
+		"DELETE_KARA_MODAL": "Eliminare il brano?",
 		"DESC": {
 			"TITLES": "Imposta tutti i titoli del brano in diverse lingue. Di solito esiste un solo titolo.",
 			"PARENTS": "Se questo brano è una variante di un altro brano, inserisci quello principale.",
@@ -1260,7 +1260,7 @@
 		"SONGWRITERS_TOOLTIP": "Compositori, arrangiatori e cantautori.",
 		"CREATORS_BY": "Creato da",
 		"PARENTS": "Brano principale",
-		"COLLECTIONS_TOOLTIP": "Seleziona una collezione nella quale il karaoke dovrebbe apparire",
+		"COLLECTIONS_TOOLTIP": "Seleziona una collezione nella quale il brano dovrebbe apparire",
 		"TITLE": "Titoli",
 		"AUTHORS_BY": "Karaoke creato da",
 		"SERIES_TOOLTIP": "Serie TV, film, videogioco, ecc...",
@@ -1289,10 +1289,10 @@
 		"VIDEO_PREVIEW": "Anteprima video",
 		"TITLE_TOOLTIP": "Se non sei sicuro, inserisci anche il nome della serie.",
 		"SHOWING": "Mostrando {{from}}-{{to}} su {{total}} brani",
-		"MISSING_DOWNLOAD_TOOLTIP": "Questo karaoke non è stato scaricato, avrai bisogno di internet per riprodurlo. Puoi farlo funzionare offline scaricando il file multimediale.",
+		"MISSING_DOWNLOAD_TOOLTIP": "Questo brano non è stato scaricato, avrai bisogno di internet per riprodurlo. Puoi farlo funzionare offline scaricando il file multimediale.",
 		"IGNOREHOOKS_TOOLTIP": "Alcune tag possono essere aggiunte automaticamente a questo brano se soddisfa alcuni requisiti.",
 		"REQUESTED": "Richiesto",
-		"DELETE_KARA_TITLE": "Stai per rimuovere {{count}} karaoke visualizzati, sei sicuro?",
+		"DELETE_KARA_TITLE": "Stai per rimuovere {{count}} brani visualizzati, sei sicuro?",
 		"START_DOWNLOAD_QUEUE": "Avvia",
 		"GROUPS_TOOLTIP": "Gruppi di download per questo brano. Il brano sarà incluso in questi pacchetti",
 		"LYRICS_FILE_OPEN": "Apri file",
@@ -1301,15 +1301,15 @@
 		"PREVIEW_HOOKS": "Controlla le tag aggiunte automaticamente",
 		"SERIES_SINGERS_REQUIRED": "Serie, Cantato da o Dalla band musicale non possono essere tutti vuoti.",
 		"REPOSITORY": "Archivio",
-		"PARENTS_TOOLTIP": "Se un brano principale è definito, questo karaoke verrà mostrato come variante della versione principale selezionata. Si prega di selezionare l'archivio corretto prima di compilare questo campo per prevenire l'aggiunta di karaoke da altri archivi.",
+		"PARENTS_TOOLTIP": "Se un brano principale è definito, questo brano verrà mostrato come variante della versione principale selezionata. Si prega di selezionare l'archivio corretto prima di compilare questo campo per prevenire l'aggiunta di brani da altri archivi.",
 		"SYNC_WARNING_DESCRIPTION": "Sincronizzando i file multimediali, tutti i file multimediali contenuti in collezioni disabilitate verranno rimossi. Ciò potrebbe eliminare molti file se hai disabilitato temporaneamente una collezione che usi spesso.",
 		"QUEUE_LABEL_SONGS": "({{numberSongs}} brani):",
-		"ONLINE_REPOSITORIES": "Alcuni dei tuoi karaoke vengono da archivi remoti (come il server kara.moe) e non sono modificabili tramite questa interfaccia, così da mantenere sincronizzati gli archivi. Puoi abilitare la \"modalità mantenitore\" nelle impostazioni archivio, così facendo non riceverai più aggiornamenti ma potrai modificare o eliminare i karaoke.",
+		"ONLINE_REPOSITORIES": "Alcuni dei tuoi brani vengono da archivi remoti (come il server kara.moe) e non sono modificabili tramite questa interfaccia, così da mantenere sincronizzati gli archivi. Puoi abilitare la \"modalità mantenitore\" nelle impostazioni archivio, così facendo non riceverai più aggiornamenti ma potrai modificare o eliminare i brani.",
 		"SHOW_LYRICS_IN_FOLDER": "Mostra il testo nella cartella",
 		"VERSION_AVAILABILITY": "Disponibile in {{count}} versioni.",
 		"ORDER_TOOLTIP": "Numero della opening/ending. Se questa è l'unica opening/ending della serie, lascia vuoto.",
 		"ADD_FILE_SUCCESS": "File {{name}} aggiunto correttamente",
-		"EDIT_KARA": "Modifica karaoke",
+		"EDIT_KARA": "Modifica brano",
 		"ORDER": "Ordine dei brani",
 		"COMMENT_TOOLTIP": "Uno spazio per commenti come \"Dedicato a tutti i miei fan!\" o \"Non modificare gli effetti!\" o \"Fatto con tanto caffè\".",
 		"ANNOUNCE_POSITION_SELECTION": {
@@ -1330,7 +1330,7 @@
 		"FROM_DISPLAY_TYPE_COLUMN": "Da",
 		"REPOSITORY_DOCUMENTATION": "Vedi le regole {{instance}} qui",
 		"AUDIO_COVER": {
-			"UPLOAD_TOOLTIP": "Cambia l'immagine che verrà mostrata durante la riproduzione di questo karaoke",
+			"UPLOAD_TOOLTIP": "Cambia l'immagine che verrà mostrata durante la riproduzione di questo brano",
 			"EMBED_COVER_SUCCESS": "La nuova immagine di copertina è stata caricata e allegata",
 			"UPLOAD": "Carica l'immagine di copertina",
 			"EMBED_COVER_ERROR": "Errore durante l'allegamento della nuova immagine di copertina",
@@ -1532,7 +1532,7 @@
 		"ANILIST_ID": "ID/URL Anilist",
 		"TYPES_TOOLTIP": "Questo è il tipo della tag che può essere cercato dagli utenti",
 		"MERGE_WITH_BUTTON": "Unisci!",
-		"SHORT_NAME_TOOLTIP": "Questo è il nome abbreviato visualizzato accanto al titolo del karaoke nell'interfaccia operatore",
+		"SHORT_NAME_TOOLTIP": "Questo è il nome abbreviato visualizzato accanto al titolo del brano nell'interfaccia operatore",
 		"ANILIST_ID_TOOLTIP": "Se è un anime, si prega di inserire il suo id/url di anilist.co",
 		"TAG_DELETED_CONFIRM": "Conferma eliminazione tag",
 		"NAME_TOOLTIP": "Questo è il nome interno di riferimento usato dalle tag nel database di Karaoke Mugen",
@@ -1554,7 +1554,7 @@
 		"NOLIVEDOWNLOAD_TOOLTIP": "I brani con questa tag non potranno essere scaricati dal server di Karaoke Mugen",
 		"MERGE_WITH_SELECT": "Seleziona una tag",
 		"ADD_DESCRIPTION": "Aggiungi una descrizione",
-		"KARAOKES_WITH_TAGS": "Karaoke con questa tag",
+		"KARAOKES_WITH_TAGS": "Brani con questa tag",
 		"TYPES": "Tipi di tag",
 		"KITSU_REQUEST_ERROR": "Errore network",
 		"MERGE_ABOUT": "Riguardo il processo di unione",
@@ -1621,11 +1621,11 @@
 			"DESCRIPTION": "Modulo di modifica della sessione karaoke."
 		},
 		"TAG_LIST": {
-			"DESCRIPTION": "Solo per mantenitori: lista dei tag assegnati ai tuoi karaoke.",
+			"DESCRIPTION": "Solo per mantenitori: lista dei tag assegnati ai tuoi brani.",
 			"TITLE": "Lista di tag"
 		},
 		"INBOX": {
-			"TITLE": "Posta per l'integrazione di karaoke",
+			"TITLE": "Posta per l'integrazione di brani",
 			"DESCRIPTION": "In qualità di mantenitore di questo archivio, il tuo compito è quello di svuotare questa lista."
 		},
 		"UNUSED_FILES": {
@@ -1633,7 +1633,7 @@
 			"TITLE": "File inutilizzati"
 		},
 		"KARATAG_BATCH_EDIT": {
-			"DESCRIPTION": "Solo per mantenitori: questa pagina ti permette di aggiungere o rimuovere una tag da più karaoke contemporaneamente.",
+			"DESCRIPTION": "Solo per mantenitori: questa pagina ti permette di aggiungere o rimuovere una tag da più brani contemporaneamente.",
 			"TITLE": "Aggiungi/rimuovi tag in massa"
 		},
 		"SESSIONS_NEW": {
@@ -1641,8 +1641,8 @@
 			"DESCRIPTION": "Modulo di creazione della sessione karaoke."
 		},
 		"KARAOKE_LIST": {
-			"TITLE": "Lista dei karaoke",
-			"DESCRIPTION": "Da qui puoi modificare, aggiungere o eliminare karaoke. Solitamente serve solo ai mantenitori degli archivi karaoke."
+			"TITLE": "Lista dei brani",
+			"DESCRIPTION": "Da qui puoi modificare, aggiungere o eliminare brani. Solitamente serve solo ai mantenitori degli archivi karaoke."
 		},
 		"STORAGE": {
 			"DESCRIPTION": "Gestione dello spazio su disco occupato dai file multimediali",
@@ -1715,10 +1715,10 @@
 			"CREATE": "Crea una tag"
 		},
 		"KARAS": {
-			"MOST_PLAYED": "Cronologia dei karaoke più riprodotti",
+			"MOST_PLAYED": "Cronologia dei brani più riprodotti",
 			"CREATE": "Crea un karaoke",
-			"BROWSE": "Esplora karaoke",
-			"HISTORY": "Cronologia dei karaoke riprodotti",
+			"BROWSE": "Esplora brani",
+			"HISTORY": "Cronologia dei brani riprodotti",
 			"DOWNLOAD": "Scarica file multimediali"
 		},
 		"SYSTEM": {
@@ -1788,7 +1788,7 @@
 		"VIEWCOUNTS": "Più riprodotti",
 		"CONFIGURATION": "Configurazione avanzata",
 		"DOWNLOAD": "Centro file multimediali",
-		"KARAS": "Karaoke",
+		"KARAS": "Brani",
 		"BATCH_EDIT": "Modifica le tag in massa",
 		"DUPLICATE": "Doppioni",
 		"RANKING": "Più richiesti"
@@ -1858,7 +1858,7 @@
 			"GUESSING_one": "Rimane solo {{count}} secondo!"
 		},
 		"BONUS_POINTS_other": "{{count}} punti bonus",
-		"PREVIOUS_KARAOKES": "Karaoke precedenti",
+		"PREVIOUS_KARAOKES": "Brani precedenti",
 		"QUIT": "Esci dal quiz",
 		"TITLE": "Modalità quiz",
 		"END": "Il quiz è giunto al termine!",
@@ -2091,7 +2091,7 @@
 				"END_OF_SESSION_NEAR": "La sessione karaoke dovrebbe finire tra {{data}} minuti.",
 				"POLL_STARTING": "Avviando il sondaggio",
 				"PLAYER_RESTARTING": "Riavviando il lettore multimediale…",
-				"BATCH_EDIT_COMPLETE": "Modifica in massa dei karaoke completata."
+				"BATCH_EDIT_COMPLETE": "Modifica in massa dei brani completata."
 			}
 		}
 	},
