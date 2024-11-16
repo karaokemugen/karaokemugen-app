@@ -1177,7 +1177,7 @@
 		"DOWNLOAD_QUEUE": "Download queue",
 		"DOWNLOAD": "Media download",
 		"HISTORY": "History",
-		"RANKING": "Most requested",
+		"RANKING": "Most popular",
 		"VIEWCOUNTS": "Most played",
 		"TAGS": "Tags",
 		"DATABASE": "Database",
@@ -1498,7 +1498,7 @@
 	},
 	"HOME": {
 		"SYSTEM_DESCRIPTION": "See logs, change configuration options, backup/restore your database, trigger a manual generation and manage karaoke session",
-		"KARAS_DESCRIPTION": "List, edit, and create karaoke data files. You can also download media and view most requested, most played, and karaoke history",
+		"KARAS_DESCRIPTION": "List, edit, and create karaoke data files. You can also download media and view most popular, most played, and karaoke history",
 		"TAGS_DESCRIPTION": "List, create, edit tags (singers, songwriters, creators, song types, etc.)",
 		"USERS_DESCRIPTION": "List, edit, create users, change their password, create new guests accounts.",
 		"SYSTEM": {
@@ -1651,7 +1651,7 @@
 		"KARA_CREATED_ERROR": "Error creating the karaoke",
 		"KARA_FILE_EXISTS_ERROR": "Error saving files: A karaoke with the same filename already exists. Please make sure this is not a duplicate and the tags are set correctly.",
 		"KARA_HISTORY_ERROR": "Error getting songs sorted by date played",
-		"KARA_RANKING_ERROR": "Error getting songs sorted by most requested",
+		"KARA_RANKING_ERROR": "Error sorting songs by popularity",
 		"KARA_PLAYED_ERROR": "Error getting songs sorted by most played",
 		"SONG_VIEW_ERROR": "Error getting song information",
 		"KARA_DELETED_ERROR": "Error deleting song",
@@ -1940,7 +1940,7 @@
 		},
 		"MOST_REQUESTED": {
 			"TITLE": "Most Popular Songs",
-			"DESCRIPTION": "Lists the most requested songs on your application. Only takes into account karaoke songs added from the public interface.",
+			"DESCRIPTION": "Lists the most popular songs on your application. Only takes into account songs added from the public interface.",
 			"DESCRIPTION_ONLINE": "You're seeing the ONLINE popular song list right now. Disable the \"Fetch popular songs online\" setting to only see those from your instance."
 		},
 		"MOST_PLAYED": {
