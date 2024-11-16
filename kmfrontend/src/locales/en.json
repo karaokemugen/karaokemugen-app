@@ -1417,7 +1417,7 @@
 		"UPDATE_TOOLTIP": "If disabled, the application will not update the repository anymore.",
 		"SENDSTATS_TOOLTIP": "Sessions and played/requested songs",
 		"AUTO_MEDIA_DOWNLOADS": "Automatically download media",
-		"AUTO_MEDIA_DOWNLOADS_TOOLTIP": "If your connection is too slow, we recommend that you select \"All\" so that the media are downloaded beforehand. This is also recommended for convention use or for streams to avoid potential errors in the middle of a song!",
+		"AUTO_MEDIA_DOWNLOADS_TOOLTIP": "If your connection is too slow, we recommend that you select \"All\" so that the media are downloaded beforehand. This is also recommended for convention use or for streams to avoid potential errors in the middle of a karaoke!",
 		"AUTO_MEDIA_DOWNLOADS_NONE": "None",
 		"AUTO_MEDIA_DOWNLOADS_UPDATE_ONLY": "Update only",
 		"AUTO_MEDIA_DOWNLOADS_ALL": "All",
@@ -2068,7 +2068,7 @@
 	},
 	"ABOUT": {
 		"DESCRIPTION": "A karaoke player and a party organizer, between friends or in public. MIT-licensed.",
-		"CONTRIBUTORS": "The songs were created by awesome people, like <1>{{contributors}}</1> for example.",
+		"CONTRIBUTORS": "The karaoke were created by awesome people, like <1>{{contributors}}</1> for example.",
 		"DONATORS": "Thanks to <1>{{donators}}</1> for their donations to Karaoke Mugen"
 	},
 	"QUIZ": {
