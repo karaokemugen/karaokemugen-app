@@ -1177,7 +1177,7 @@
 		"DOWNLOAD_QUEUE": "File d'attente des téléchargements",
 		"DOWNLOAD": "Téléchargement des médias",
 		"HISTORY": "Historique",
-		"RANKING": "Plus demandés",
+		"RANKING": "Plus populaire",
 		"VIEWCOUNTS": "Plus joués",
 		"TAGS": "Tags",
 		"DATABASE": "Base de données",
@@ -1243,7 +1243,7 @@
 		"NAME_REQUIRED": "Entrez un nom",
 		"NAME_TOOLTIP": "Ceci est le nom interne utilisé pour référencer les tags dans la base de données de Karaoke Mugen",
 		"SHORT_NAME": "Nom court",
-		"SHORT_NAME_TOOLTIP": "Ceci est le nom court utilisé pour afficher le tag à côté des karaokés dans l'interface opérateur",
+		"SHORT_NAME_TOOLTIP": "Ceci est le nom court utilisé pour afficher le tag à côté des chansons dans l'interface opérateur",
 		"KARAFILETAG": "Etiquette optionnelle du fichier karaoké",
 		"KARAFILETAG_TOOLTIP": "Ceci sera ajouté à la section type des noms de fichiers des chansons",
 		"TYPES": "Types du tag",
@@ -1280,7 +1280,7 @@
 		"DESCRIPTION": "Description",
 		"DESCRIPTION_TOOLTIP": "Une description du tag, utilisé uniquement pour les collections.",
 		"ADD_DESCRIPTION": "Ajouter une description",
-		"KARAOKES_WITH_TAGS": "Karaokés ayant ce tag",
+		"KARAOKES_WITH_TAGS": "Chansons ayant ce tag",
 		"MAL_ID": "Identifiant/URL MyAnimeList",
 		"MAL_ID_TOOLTIP": "Si c'est un anime, indiquez son ID/url sur myanimelist.net",
 		"ANILIST_ID": "Identifiant/URL Anilist",
@@ -1417,7 +1417,7 @@
 		"SENDSTATS": "Envoyer des statistiques",
 		"SENDSTATS_TOOLTIP": "Chansons jouées, demandées, et sessions",
 		"AUTO_MEDIA_DOWNLOADS": "Télécharger automatiquement les médias",
-		"AUTO_MEDIA_DOWNLOADS_TOOLTIP": "Si votre connexion est trop lente, nous vous recommandons de selectionner \"Tous\" afin que les médias soient téléchargées au préalable. C'est aussi recommandé pour les utilisations en convention ou pour les streams afin d'éviter les erreurs potentielles en plein milieu d'un karaoké !",
+		"AUTO_MEDIA_DOWNLOADS_TOOLTIP": "Si votre connexion est trop lente, nous vous recommandons de selectionner \"Tous\" afin que les médias soient téléchargées au préalable. C'est aussi recommandé pour les utilisations en convention ou pour les streams afin d'éviter les erreurs potentielles en plein milieu d'un karaoké !",
 		"AUTO_MEDIA_DOWNLOADS_NONE": "Aucun",
 		"AUTO_MEDIA_DOWNLOADS_UPDATE_ONLY": "Mise à jour uniquement",
 		"AUTO_MEDIA_DOWNLOADS_ALL": "Tous",
@@ -1498,7 +1498,7 @@
 	},
 	"HOME": {
 		"SYSTEM_DESCRIPTION": "Voir les journaux, changer les options de configuration, sauvegarder et restaurer votre base de données, lancer une génération manuelle et gérer les sessions de karaokés",
-		"KARAS_DESCRIPTION": "Lister, modifier, et créer des fichiers de karaokés. Vous pouvez aussi télécharger des médias, voir les karaokés les plus demandés, joués et l'historique",
+		"KARAS_DESCRIPTION": "Lister, modifier, et créer des fichiers de karaokés. Vous pouvez aussi télécharger des médias, voir les karaokés les plus populaires, joués et l'historique",
 		"TAGS_DESCRIPTION": "Créer, lister, éditer les tags (œuvres, chanteurs, compositeurs, créateurs, types de chanson, etc.)",
 		"USERS_DESCRIPTION": "Lister, créer et modifier les utilisateurs, changer leur mot de passe, créer de nouveaux comptes invités.",
 		"SYSTEM": {
@@ -1510,10 +1510,10 @@
 		},
 		"KARAS": {
 			"DOWNLOAD": "Télécharger des médias",
-			"BROWSE": "Parcourir les karaokés",
+			"BROWSE": "Parcourir les chansons",
 			"CREATE": "Créer un karaoké",
-			"HISTORY": "Historique des karaokés joués",
-			"MOST_PLAYED": "Historique des karaokés les plus joués"
+			"HISTORY": "Historique des chansons joués",
+			"MOST_PLAYED": "Historique des chansons les plus joués"
 		},
 		"TAGS": {
 			"CREATE": "Créer un tag",
@@ -1648,7 +1648,7 @@
 		"KARA_CREATED_ERROR": "Erreur lors de la génération de la chanson",
 		"KARA_FILE_EXISTS_ERROR": "Impossible de sauvegarder : Un karaoké avec le même nom de fichier existe. Assurez-vous que ce n'est pas un doublon et que les tags soient correctement définis.",
 		"KARA_HISTORY_ERROR": "Erreur lors de la récupération des chansons triés par date jouée",
-		"KARA_RANKING_ERROR": "Erreur lors de la récupération des chansons triés par les plus demandés",
+		"KARA_RANKING_ERROR": "Erreur lors de la récupération des chansons triés par popularité",
 		"KARA_PLAYED_ERROR": "Erreur lors de la récupération des chansons triés par les plus joués",
 		"SONG_VIEW_ERROR": "Erreur lors de la récupération d'une chanson",
 		"KARA_DELETED_ERROR": "Erreur lors de la suppression d'une chanson",
@@ -1680,7 +1680,7 @@
 		"PL_LIST_ERROR": "Erreur lors de la récupération des listes de lecture",
 		"PL_CREATE_ERROR": "Erreur lors de la création d'une liste de lecture",
 		"PL_VIEW_ERROR": "Erreur lors de la récupération des informations d'une liste de lecture",
-		"TYPE_SMART_CHANGE_CONFLICTING_CRITERIAS_ERROR": "Erreur de changement du type de liste intelligente : vous avez des critères en conflit (année/durée ?) Retirez-en et réessayez.",
+		"TYPE_SMART_CHANGE_CONFLICTING_CRITERIAS_ERROR": "Erreur de changement du type de liste intelligente : vous avez des critères en conflit (année/durée ?) Retirez-en et réessayez.",
 		"PL_UPDATE_ERROR": "Erreur lors de la mise à jour des informations d'une liste de lecture",
 		"PL_DELETE_ERROR": "Erreur lors de la suppression d'une liste de lecture",
 		"PL_EMPTY_ERROR": "Erreur lors du vidage d'une liste de lecture",
@@ -1753,7 +1753,7 @@
 		"PASSWORD_TOO_SHORT": "Mot de passe trop court (8 caractères minimum)",
 		"USER_DELETE_ERROR_ONLINE": "Erreur lors de la suppression du compte en ligne",
 		"USER_RESETPASSWORD_ONLINE_ERROR": "Impossible de vous envoyer un email de réinitialisation : contactez l'administrateur du serveur dont vous dépendez.",
-		"UPDATING_MEDIAS_ERROR": "Le dépôt {{repo}} n'a pas mis à jour les medias correctement : {{err}}",
+		"UPDATING_MEDIAS_ERROR": "Le dépôt {{repo}} n'a pas mis à jour les medias correctement : {{err}}",
 		"UPDATING_MEDIAS_MULTIPLE_USED_MEDIA_PATH_ERROR": "Plusieurs dépôts ont le même dossier de médias, ce qui peut occassioner des suppressions de fichiers non voulues. Veuillez changer le dossier principal de médias de ces dépôts : {{repos}}",
 		"REPOS_MULTIPLE_USED_MEDIA_PATH_ERROR": "Le dossier de médias principal est déjà utilisé par un autre dépôt",
 		"USER_UNKNOWN": "Utilisateur connecté inconnu",
@@ -1811,7 +1811,7 @@
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Ajout de {{data}} téléchargements à la file d'attente",
 		"DOWNLOADS_STARTED": "Démarrage des téléchargements",
-		"UPDATING_MEDIAS_IN_PROGRESS": "Mise à jour des medias en cours",
+		"UPDATING_MEDIAS_IN_PROGRESS": "Mise à jour des médias en cours",
 		"KARA_CREATED": "Chanson créée avec succès",
 		"KARA_EDITED": "Chanson éditée avec succès",
 		"KARA_DELETED": "Chanson supprimée avec succès",
@@ -1915,8 +1915,8 @@
 			"DESCRIPTION": "Gérer les dépôts Git (pousser, fusionner les conflits)"
 		},
 		"KARAOKE_LIST": {
-			"TITLE": "Liste des karaokés",
-			"DESCRIPTION": "D'ici vous pouvez éditer, ajouter ou supprimer des karaokés. Habituellement réservé aux mainteneurs de dépôts de karaokés."
+			"TITLE": "Liste des chansons",
+			"DESCRIPTION": "D'ici vous pouvez éditer, ajouter ou supprimer des chansons. Habituellement réservé aux mainteneurs de dépôts de karaokés."
 		},
 		"KARAOKE_NEW": {
 			"TITLE": "Ajouter un karaoké",
@@ -1940,7 +1940,7 @@
 		},
 		"MOST_REQUESTED": {
 			"TITLE": "Chansons les plus populaires",
-			"DESCRIPTION": "Liste les chansons les plus populaires sur votre application. Ne prend en compte que les karaokés ajoutés depuis l'interface publique.",
+			"DESCRIPTION": "Liste les chansons les plus populaires sur votre application. Ne prend en compte que les chansons ajoutés depuis l'interface publique.",
 			"DESCRIPTION_ONLINE": "Vous voyez actuellement la liste des karaokés populaires EN LIGNE. Désactivez l'option \"Récupérer les chansons populaires en ligne\" pour voir celles de votre instance uniquement."
 		},
 		"MOST_PLAYED": {
@@ -1949,11 +1949,11 @@
 		},
 		"KARATAG_BATCH_EDIT": {
 			"TITLE": "Ajout/suppression de tag en masse",
-			"DESCRIPTION": "Réservé aux mainteneurs : cette page vous permet d'ajouter ou supprimer un tag sur plusieurs karaokés simultanément."
+			"DESCRIPTION": "Réservé aux mainteneurs : cette page vous permet d'ajouter ou supprimer un tag sur plusieurs chansons simultanément."
 		},
 		"TAG_LIST": {
 			"TITLE": "Liste des tags",
-			"DESCRIPTION": "Liste des tags composant les métadonnées d'un karaoké, réservé aux mainteneurs."
+			"DESCRIPTION": "Liste des tags composant les métadonnées d'une chanson, réservé aux mainteneurs."
 		},
 		"TAG_NEW": {
 			"TITLE": "Créer un tag",
@@ -1984,7 +1984,7 @@
 			"DESCRIPTION": "Gestion de l'espace disque des medias"
 		},
 		"INBOX": {
-			"TITLE": "Boîte de réception des karaokés à intégrer",
+			"TITLE": "Boîte de réception des chansons à intégrer",
 			"DESCRIPTION": "En tant que mainteneur de cette base de karaokés, votre devoir est de faire en sorte que cette liste soit vide."
 		}
 	},
@@ -2116,7 +2116,7 @@
 			"DURATION_other": "dans <1>{{count}} minutes</1> de jeu",
 			"END_OF_PLAYLIST": "lorsque la liste de lecture touche à sa fin"
 		},
-		"PREVIOUS_KARAOKES": "Karaokés précédents"
+		"PREVIOUS_KARAOKES": "Chansons précédentes"
 	},
 	"LANGUAGES": {
 		"QRO": "Alphabet Latin (Romanisation)"
