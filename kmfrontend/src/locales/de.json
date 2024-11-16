@@ -99,9 +99,9 @@
 	"NEW_PASSWORD": "Neues Passwort",
 	"WEBAPPMODE_CLOSED_MESSAGE": "Das Interface ist geschlossen, bitte warten.",
 	"INLINE_TAG": {
-		"SEARCH": "Karaokes mit {{tag}}",
-		"COUNT_one": "{{count}} Karaoke",
-		"COUNT_other": "{{count}} Karaokes"
+		"SEARCH": "Lieder mit {{tag}}",
+		"COUNT_one": "{{count}} Lied",
+		"COUNT_other": "{{count}} Lieder"
 	},
 	"PLAYLIST_HEADER": {
 		"FILTERS": "Filter",
@@ -256,7 +256,7 @@
 		"BUTTON_LOGIN": "Anmelden",
 		"GO_BACK": "Zurück"
 	},
-	"KARAOKE_one": "{{count}} Karaoke",
+	"KARAOKE_one": "{{count}} Lied",
 	"CL_CONGRATS": "Glückwunsch",
 	"FAVORITES_EXPORT": "Favoriten exportieren",
 	"USERLIST": "Benutzer",
@@ -274,7 +274,7 @@
 	"CL_ADD_RANDOM_TITLE": "Wie viele zufällige Lieder sollen hinzugefügt werden?",
 	"CL_EMPTY_LIST": "Liste leeren?",
 	"CONFIRM_FAV_IMPORT": "Favoriten mit diesem Import überschreiben?",
-	"KARAOKE_other": "{{count}} Karaokes",
+	"KARAOKE_other": "{{count}} Lieder",
 	"CL_INFORMATIVE_MESSAGE": "Information",
 	"ADMIN_HEADER": {
 		"QUICK_ACCESS": "Schnellzugriff",
@@ -696,7 +696,7 @@
 		"ACTIVE_SESSION": "Aktive Sitzung: ",
 		"QUIZ": "QUIZ STARTEN",
 		"COLLECTIONS": "KOLLEKTIONEN",
-		"STATS_KARAS": "Karaokes",
+		"STATS_KARAS": "Lieder",
 		"MASTODON_UPDATE": "Neuigkeiten von Karaoke Mugen",
 		"EDIT_SESSION": "Sitzung bearbeiten",
 		"STATS_USAGETIME": "Nutzungszeit",
@@ -1176,13 +1176,13 @@
 			"ADD_TO_OTHER_PLAYLIST": "Die Taste <1/> fügt den Titel zur anderen Wiedergabeliste hinzu.",
 			"KARAOKE_PLAYING": "Die Zeile mit <1>blauem</1> Hintergrund bedeutet, dass das Lied für die Wiedergabe ausgewählt ist.",
 			"PLAY_BUTTONS": "Die Taste <1/> spielt das Lied sofort ab <3>(Die Taste <4/> bewegt den Wiedergabecursor)</3>.",
-			"LIBRARY": "Die Bibliothek zeigt alle verfügbaren Karaoke-Lieder an.",
+			"LIBRARY": "Die Bibliothek zeigt alle verfügbaren Lieder an.",
 			"PLAYLIST": "Auf dem Bildschirm werden zwei Playlisten angezeigt. Du kannst ein Lied aus der linken Playlist zur rechten Playlist hinzufügen und umgekehrt, indem du einfach auf <2/> klickst.",
 			"PLAYER_BAR": "Der Karaoke Mugen Player kann über die obere Leiste gesteuert werden.",
 			"MESSAGE": "Mit der Schaltfläche Nachricht kannst Du eine Nachricht an dein Publikum (auf dessen Geräten oder auf dem Bildschirm des Players) senden.",
 			"PUBLIC_DESC": "Die <1>öffentliche</1> Wiedergabeliste ist der Ort, an dem sich die Anfragen deiner Nutzer befinden.",
 			"CURRENT_PUBLIC_DESC": "Die <1>aktuelle</1> und die <3>öffentliche</3> Wiedergabeliste können die gleiche sein.",
-			"TITLE_CLICK": "Klicke auf den Karaoke-Titel, um weitere Informationen <1>(Sänger, Songwriter usw.)</1> zu erhalten.",
+			"TITLE_CLICK": "Klicke auf den Lied-Titel, um weitere Informationen <1>(Sänger, Songwriter usw.)</1> zu erhalten.",
 			"PLAYER_STOP": "Die Schaltfläche \"Stop\" stoppt die Wiedergabe, sobald der aktuelle Song endet. Du kannst ihn erneut anklicken, um <1>sofort</1> zu stoppen.",
 			"CURRENT_DESC": "Die <1>aktuelle</1> Wiedergabeliste ist diejenige, die der Player verwendet."
 		},
@@ -1400,11 +1400,11 @@
 	"REPO_IN_PROGRESS": "Karaoke Mugen ist noch nicht ganz fertig. Bitte warte, bis die folgenden Vorgänge abgeschlossen sind.",
 	"ONLINE_STATS": {
 		"DETAILS": {
-			"1": "Welche Karaokes wurden gespielt",
+			"1": "Welche Lieder wurden gespielt",
 			"3": "Informationen zum Computer (CPU, verfügbarer RAM, Betriebssystem inkl. Version …)",
 			"TITLE": "Gesendete Informationen",
 			"OUTRO": "Statistiken werden bei jedem Start und dann bei jeder Nutzungsstunde gesendet. Du kannst die gesendeten Informationen im Protokollverzeichnis von Karaoke Mugen jederzeit einsehen.",
-			"2": "Welche Karaokes wurden angefragt (aber nicht von wem)",
+			"2": "Welche Lieder wurden angefragt (aber nicht von wem)",
 			"4": "Anwendungseinstellungen (ausgenommen private Informationen wie Passwörter oder Schlüssel)"
 		},
 		"INTRO": "Karaoke Mugen kann anonyme Informationen über deine Instanz an den Karaoke Mugen Server senden, um Nutzungsstatistiken zu erstellen.",
