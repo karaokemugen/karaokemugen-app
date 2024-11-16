@@ -342,7 +342,7 @@
 			"CURRENT": "Il testo in grassetto indica il testo attualmente cantato."
 		},
 		"HIDE_LYRICS": "Nascondi il testo",
-		"REQUESTED_KARAOKES": "Brani richiesti",
+		"REQUESTED_KARAOKES": "Brani popolari",
 		"QUOTA_KARA_DESCRIPTION_other": "Puoi suggerire solo {{count}} brani. Potrai suggerirne altri dopo che l'operatore avrà accettato o rifiutato i tuoi suggerimenti o quando il tuo brano verrà riprodotto a schermo.",
 		"HELLO": "Ciao, {{name}}!",
 		"FAVORITES": "Preferiti",
