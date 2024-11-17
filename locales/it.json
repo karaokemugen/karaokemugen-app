@@ -214,7 +214,8 @@
 			"resolving": "Risolvendo delta",
 			"receiving": "Ricevendo i dati",
 			"counting": "Contando i file",
-			"writing": "Scrivendo i file"
+			"writing": "Scrivendo i file",
+			"updating": "Aggiornando i file"
 		},
 		"CURRENT_ACTION": "Azione Git"
 	},
