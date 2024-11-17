@@ -52,7 +52,7 @@
 	},
 	"WEBAPPMODE_CLOSED_MESSAGE": "L'interface est fermée, merci de patienter.",
 	"INLINE_TAG": {
-		"COUNT_one": "{{count}} chansons",
+		"COUNT_one": "{{count}} chanson",
 		"COUNT_other": "{{count}} chansons",
 		"SEARCH": "Chansons avec {{tag}}"
 	},
