@@ -306,7 +306,8 @@
 			"resolving": "Resolving delta",
 			"receiving": "Receiving data",
 			"writing": "Writing files",
-			"counting": "Counting files"
+			"counting": "Counting files",
+			"updating": "Updating files"
 		}
 	},
 	"OFFICIAL_WEBSITE": "Official Website",

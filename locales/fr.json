@@ -306,7 +306,8 @@
 			"resolving": "Résolution des deltas",
 			"receiving": "Réception des données",
 			"writing": "Écriture des fichiers",
-			"counting": "Comptage des fichiers"
+			"counting": "Comptage des fichiers",
+			"updating": "Mise à jour des fichiers"
 		}
 	},
 	"OFFICIAL_WEBSITE": "Site officiel",
