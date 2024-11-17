@@ -889,7 +889,7 @@ function KaraForm(props: KaraFormProps) {
 									onlineAuthorization: localStorage.getItem('kmOnlineToken'),
 								}}
 								action="/api/importFile"
-								accept="video/*,audio/*,.mkv"
+								accept="video/*,audio/*,.mkv,.aac"
 								multiple={false}
 								onChange={onMediaUploadChange}
 								fileList={mediafile as any[]}
