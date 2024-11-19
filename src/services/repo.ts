@@ -858,25 +858,9 @@ async function setupGit(repo: Repository, configChanged = false, clone = false) 
 	return git;
 }
 
-export async function generateSSHKey(repoName: string) {
-	const repo = getRepo(repoName);
-	const git = await setupGit(repo);
-	await git.generateSSHKey();
-	await git.setup(true);
-}
-
-export async function removeSSHKey(repoName: string) {
-	const repo = getRepo(repoName);
-	const git = await setupGit(repo);
-	await git.removeSSHKey();
-	await git.setup(true);
-}
-
 export async function getSSHPubKey(repoName: string) {
-	const repo = getRepo(repoName);
-	const git = await setupGit(repo);
 	try {
-		return await git.getSSHPubKey();
+		return await getSSHPubKey(repoName);
 	} catch (err) {
 		throw new ErrorKM('SSH_PUBLIC_KEY_NOT_FOUND', 404, false);
 	}

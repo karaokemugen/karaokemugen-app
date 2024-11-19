@@ -15,7 +15,6 @@ import {
 	findUnusedMedias,
 	findUnusedTags,
 	generateCommits,
-	generateSSHKey,
 	getFileDiff,
 	getRepo,
 	getRepoFreeSpace,
@@ -26,7 +25,6 @@ import {
 	openMediaFolder,
 	pushCommits,
 	removeRepo,
-	removeSSHKey,
 	resetRepo,
 	stashGitRepo,
 	unstashInRepo,
@@ -35,6 +33,7 @@ import {
 	uploadMedia,
 } from '../../services/repo.js';
 import { syncTagsFromRepo } from '../../services/tag.js';
+import { generateSSHKey, removeSSHKey } from '../../utils/ssh.js';
 import { runChecklist } from '../middlewares.js';
 
 export default function repoController(router: SocketIOApp) {
