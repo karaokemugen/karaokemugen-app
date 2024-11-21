@@ -280,7 +280,8 @@
 			"resolving": "Delta-Änderungen auflösen",
 			"receiving": "Empfange Daten",
 			"writing": "Schreibe Dateien",
-			"counting": "Zähle Dateien"
+			"counting": "Zähle Dateien",
+			"updating": "Aktualisiere Dateien"
 		},
 		"CURRENT_ACTION": "Git Aktionen"
 	},
