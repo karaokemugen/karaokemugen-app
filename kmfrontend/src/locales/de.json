@@ -448,7 +448,7 @@
 			"EMBED_COVER_SUCCESS": "Ein neues Cover Art wurde hochgeladen und eingebettet",
 			"EMBED_COVER_ERROR": "Fehler während des Einbettens des neuen Cover Arts",
 			"REPLACE": "Cover Art ersetzen",
-			"UPLOAD_TOOLTIP": "Ändere das Bild, was als Hintergrund angezeigt wird, wenn dieses Lied läuft",
+			"UPLOAD_TOOLTIP": "Ändere das Bild, das als Hintergrund angezeigt wird, wenn dieses Lied läuft",
 			"UPLOAD": "Cover Art hochladen"
 		},
 		"MEDIA_REPOSITORY_RULES_UNMET": "Die Mediendatei erfüllt nicht alle erforderlichen Anforderungen. Bitte encode das Medium zuerst.",
@@ -1333,8 +1333,8 @@
 			"TITLE": "Schnelles Erstellen von Tags"
 		},
 		"STATS_MODAL": {
-			"DESC": "Wir verwenden deine Favoriten sowie die Karaoke, die du während einer Sitzung gewünscht hast, um Nutzungsstatistiken zu erstellen (z. B. um herauszufinden, welche Songs am häufigsten gewünscht wurden).",
-			"TITLE": "Verwende meine Favoriten und Karaoke-Anfragen für Statistiken",
+			"DESC": "Wir verwenden deine Favoriten sowie die Lieder, die während einer Sitzung gewünscht wurden, um Nutzungsstatistiken zu erstellen (z. B. um herauszufinden, welche Lieder am häufigsten gewünscht wurden).",
+			"TITLE": "Verwende meine Favoriten und Lieder-Anfragen für Statistiken",
 			"REFUSE_DESC": "Wenn du nicht an diesen Nutzungsstatistiken teilnehmen möchtest, auch wenn sie anonym sind, lass es uns bitte wissen. Wenn du dich weigerst, werden deine Daten ignoriert und nicht an den Karaoke Mugen Server gesendet.",
 			"CHANGE": "Du kannst dies jederzeit in deinem Profil ändern. Bist du damit einverstanden, dass dein Liedverlauf für Statistiken verwendet wird?"
 		},
@@ -1524,7 +1524,7 @@
 				"END_OF_SESSION_NEAR": "Die Karaoke-Session wird aktuell in {{data}} Minuten enden.",
 				"POLL_STARTING": "Start der Umfrage",
 				"PLAYER_RESTARTING": "Neustart des Media Players…",
-				"BATCH_EDIT_COMPLETE": "Karaoke-Bulk-Änderungen abgeschlossen."
+				"BATCH_EDIT_COMPLETE": "Lieder-Bulk-Änderung abgeschlossen."
 			}
 		}
 	},
