@@ -1427,8 +1427,9 @@ export async function generateCommits(repoName: string) {
 		}
 		// Modified lyrics (they don't trigger modified songs)
 		for (const file of modifiedLyrics) {
-			const lyrics = parse(file).name;
-			await ASSFileCleanup(file, null, repoName);
+			const lyrics = parse(file).base;
+			const lyricsPath = resolve(resolvedPathRepos('Lyrics', repoName)[0], lyrics);
+			await ASSFileCleanup(lyricsPath, null, repoName);
 			const commit: Commit = {
 				addedFiles: [file],
 				removedFiles: [],
@@ -1439,7 +1440,7 @@ export async function generateCommits(repoName: string) {
 		}
 		// Deleted lyrics (you never know)
 		for (const file of deletedLyrics) {
-			const lyrics = parse(file).name;
+			const lyrics = parse(file).base;
 			const commit: Commit = {
 				addedFiles: [],
 				removedFiles: [file],
