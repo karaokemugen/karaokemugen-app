@@ -1324,7 +1324,10 @@ export async function generateCommits(repoName: string) {
 			if (kara.subfile) {
 				const lyricsFile = addedLyrics.find(f => basename(f) === kara.subfile);
 				addedLyrics = addedLyrics.filter(f => f !== lyricsFile);
-				commit.addedFiles.push(lyricsFile);
+				// Didn't search that much, but if the .ass was cleaned up it wouldn't end up here...
+				if (lyricsFile) {
+					commit.addedFiles.push(lyricsFile);
+				}
 			}
 			commits.push(commit);
 			task.incr();
