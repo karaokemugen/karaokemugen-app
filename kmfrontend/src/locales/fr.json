@@ -1122,7 +1122,7 @@
 		"ONLINE_REPOSITORIES": "Certaines de vos chansons proviennent de dépôts distants (le serveur kara.moe par exemple), ces chansons ne sont pas modifiables via cette interface, afin d'assurer la bonne synchronisation des dépôts. Vous pouvez cocher la case \"Mode mainteneur\" dans les paramètres du dépôt, vous ne recevrez alors plus de mises à jour des chansons mais vous serez en mesure de les modifier ou les supprimer.",
 		"PARENTS": "Parents",
 		"CHILDRENS": "Enfant de {{parent}}",
-		"PARENTS_TOOLTIP": "Si un parent est défini, cette chanson apparaîtra comme une alternative au(x) chanson(s) parent(s) renseigné(s). Veillez à définir le dépôt avant de remplir ce tableau pour éviter d'ajouter des chansons d'autres dépôts.",
+		"PARENTS_TOOLTIP": "Si un parent est défini, cette chanson apparaîtra comme une alternative au parent. Veillez à définir le dépôt avant de remplir ce tableau pour éviter d'ajouter des chansons d'autres dépôts.",
 		"VERSION_AVAILABILITY": "Disponible en {{count}} versions.",
 		"COLLECTIONS_REQUIRED": "Une collection est obligatoire",
 		"COLLECTIONS_TOOLTIP": "Sélectionnez les collections dans lesquelles la chanson doit apparaître",
