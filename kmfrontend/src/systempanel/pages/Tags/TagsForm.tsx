@@ -597,20 +597,22 @@ function TagForm(props: TagsFormProps) {
 					</>
 				) : null}
 			</Form>
-			<Modal
-				title={i18next.t('TAGS.TAG_DELETED_CONFIRM')}
-				open={deleteModal}
-				onOk={handleTagDelete}
-				onCancel={() => setDeleteModal(false)}
-				okText={i18next.t('YES')}
-				cancelText={i18next.t('NO')}
-			>
-				<p>
-					{i18next.t('TAGS.DELETE_TAG_CONFIRM')} <b>{props.tag.name}</b>
-				</p>
-				<p>{i18next.t('TAGS.DELETE_TAG_MESSAGE')}</p>
-				<p>{i18next.t('CONFIRM_SURE')}</p>
-			</Modal>
+			{props.tag ? (
+				<Modal
+					title={i18next.t('TAGS.TAG_DELETED_CONFIRM')}
+					open={deleteModal}
+					onOk={handleTagDelete}
+					onCancel={() => setDeleteModal(false)}
+					okText={i18next.t('YES')}
+					cancelText={i18next.t('NO')}
+				>
+					<p>
+						{i18next.t('TAGS.DELETE_TAG_CONFIRM')} <b>{props.tag.name}</b>
+					</p>
+					<p>{i18next.t('TAGS.DELETE_TAG_MESSAGE')}</p>
+					<p>{i18next.t('CONFIRM_SURE')}</p>
+				</Modal>
+			) : null}
 		</>
 	);
 }
