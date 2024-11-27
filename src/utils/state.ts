@@ -1,7 +1,7 @@
 // Node modules
 import { merge } from 'lodash';
 
-import packageJSON from '../../package.json';
+import packageJSON from '../../package.json' with { type: 'json' };
 import { RecursivePartial } from '../lib/types/index.js';
 // KM Imports
 import { getConfig } from '../lib/utils/config.js';
