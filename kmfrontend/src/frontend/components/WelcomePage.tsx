@@ -113,11 +113,10 @@ function WelcomePage() {
 			const mast = data.find(d => d.name === 'mastodon');
 			const system = data.find(d => d.name === 'system');
 			const news: News[] = [];
-			if (base?.body && appli?.body) {
+			if (base?.body) {
 				base.body = JSON.parse(base.body);
-				appli.body = JSON.parse(appli.body);
-				news.push(
-					{
+				if (base.body.feed.entry[0].content?._text) {
+					news.push({
 						html: base.body.feed.entry[0].content._text,
 						date: base.body.feed.entry[0].updated._text,
 						dateStr: new Date(base.body.feed.entry[0].updated._text).toLocaleDateString(),
@@ -130,23 +129,26 @@ function WelcomePage() {
 								: ''),
 						link: base.body.feed.entry[0].link._attributes.href,
 						type: 'base',
-					},
-					{
-						html: appli.body.feed.entry[0].content._text,
-						date: appli.body.feed.entry[0].updated._text,
-						dateStr: new Date(appli.body.feed.entry[0].updated._text).toLocaleDateString(),
-						title:
-							i18next.t('WELCOME_PAGE.APP_UPDATE') +
-							' : ' +
-							appli.body.feed.entry[0].title._text +
-							(appli.body.feed.entry[0].summary._text
-								? ' - ' + appli.body.feed.entry[0].summary._text
-								: ''),
-						link: appli.body.feed.entry[0].link._attributes.href,
-						type: 'app',
-					}
-				);
+					});
+				}
 			}
+
+			if (appli?.body) {
+				appli.body = JSON.parse(appli.body);
+				news.push({
+					html: appli.body.feed.entry[0].content._text,
+					date: appli.body.feed.entry[0].updated._text,
+					dateStr: new Date(appli.body.feed.entry[0].updated._text).toLocaleDateString(),
+					title:
+						i18next.t('WELCOME_PAGE.APP_UPDATE') +
+						' : ' +
+						appli.body.feed.entry[0].title._text +
+						(appli.body.feed.entry[0].summary._text ? ' - ' + appli.body.feed.entry[0].summary._text : ''),
+					link: appli.body.feed.entry[0].link._attributes.href,
+					type: 'app',
+				});
+			}
+
 			if (mast?.body) {
 				mast.body = JSON.parse(mast.body);
 				const max = mast.body.rss.channel.item.length > 3 ? 3 : mast.body.rss.channel.item.length;
