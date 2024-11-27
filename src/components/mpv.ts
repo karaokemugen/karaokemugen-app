@@ -423,6 +423,8 @@ export class Players {
 
 		// Avatar
 		const shouldDisplayAvatar =
+			// Does not work on macOS at the moment (November 2024) due to mpv versions not including a good ffmpeg.
+			process.platform !== 'darwin' &&
 			showVideo &&
 			song.avatar &&
 			getConfig().Player.Display.SongInfo &&
@@ -431,11 +433,11 @@ export class Players {
 		const cropRatio = shouldDisplayAvatar ? Math.floor((await getAvatarResolution(song.avatar)) * 0.5) : 0;
 		let avatar = '';
 
-		// Checking if ffmpeg's version in mpv is either a semver or a version revision and if it's better or not than the required versions we have.
-		// This is a fix for people using mpvs with ffmpeg < 7.1 or a certain commit version.
-		const scaleAvailable = isScaleAvailable();
-
 		if (shouldDisplayAvatar) {
+			// Checking if ffmpeg's version in mpv is either a semver or a version revision and if it's better or not than the required versions we have.
+			// This is a fix for people using mpvs with ffmpeg < 7.1 or a certain commit version.
+			const scaleAvailable = isScaleAvailable();
+
 			// Again, lavfi-complex expert @nah comes to the rescue!
 			avatar = [
 				`movie=\\'${song.avatar.replaceAll(
@@ -631,7 +633,12 @@ export class Players {
 
 	private genLavfiComplexQRCode(): string {
 		// Disable this for mpvs with ffmpeg version 7.0
-		if (playerState.ffmpegVersion.includes('.') && semver.satisfies(playerState.ffmpegVersion, '7.0.x')) return '';
+		// Also disable for macOS as of November 2024 no mpv version seems to work with this.
+		if (
+			process.platform === 'darwin' ||
+			(playerState.ffmpegVersion.includes('.') && semver.satisfies(playerState.ffmpegVersion, '7.0.x'))
+		)
+			return '';
 		const scaleAvailable = isScaleAvailable();
 		return [
 			`movie=\\'${resolve(resolvedPath('Temp'), 'qrcode.png').replaceAll('\\', '/')}\\'[logo]`,
