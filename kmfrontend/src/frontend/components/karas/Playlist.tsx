@@ -28,6 +28,7 @@ import CriteriasList from './CriteriasList';
 import KaraLine from './KaraLine';
 import PlaylistHeader from './PlaylistHeader';
 import QuizRanking from './QuizRanking';
+import { TagTypeNum } from '../../../../../src/lib/types/tag';
 
 // Virtuoso's resize observer can this error,
 // which is caught by DnD and aborts dragging.
@@ -883,7 +884,7 @@ function Playlist(props: IProps) {
 			} else if (criteria.type > 1000) {
 				typeLabel = i18next.t(`CRITERIA.CRITERIA_TYPE_${criteria.type}`);
 			} else {
-				typeLabel = i18next.t(`TAG_TYPES.${getTagTypeName(criteria.type)}_other`);
+				typeLabel = i18next.t(`TAG_TYPES.${getTagTypeName(criteria.type as TagTypeNum)}_other`);
 			}
 			callModal(
 				context.globalDispatch,
@@ -1009,7 +1010,7 @@ function Playlist(props: IProps) {
 	}, [data === null]);
 
 	useDeferredEffect(() => {
-		getPlaylist('search');
+		getPlaylist(searchType);
 	}, [searchValue]);
 
 	useDeferredEffect(() => {
