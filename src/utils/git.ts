@@ -1,18 +1,16 @@
-import { execa } from 'execa';
-import { readFile, unlink, writeFile } from 'fs/promises';
 import i18next from 'i18next';
 import { resolve } from 'path';
 import { DefaultLogFields, ListLogLine, SimpleGit, simpleGit, SimpleGitProgressEvent } from 'simple-git';
 import which from 'which';
 
 import { Repository } from '../lib/types/repo.js';
-import { resolvedPath } from '../lib/utils/config.js';
 import { ErrorKM } from '../lib/utils/error.js';
 import { fileExists } from '../lib/utils/files.js';
 import logger from '../lib/utils/logger.js';
 import Task from '../lib/utils/taskManager.js';
 import { getRepo } from '../services/repo.js';
 import { Commit } from '../types/repo.js';
+import { updateKnownHostsFile } from './ssh.js';
 import { getState } from './state.js';
 
 const service = 'Git';
@@ -56,8 +54,6 @@ export default class Git {
 			password: opts.password,
 			repoName: opts.repoName,
 		};
-		this.keyFile = resolve(resolvedPath('SSHKeys'), `id_rsa_KaraokeMugen_${opts.repoName}`);
-		this.knownHostsFile = resolve(resolvedPath('SSHKeys'), `known_hosts_KaraokeMugen_${opts.repoName}`);
 	}
 
 	progressHandler({ method, stage, progress }: SimpleGitProgressEvent) {
@@ -124,23 +120,10 @@ export default class Git {
 					'core.sshCommand',
 					`ssh -o UserKnownHostsFile="${this.knownHostsFile}" -i "${this.keyFile}"`
 				);
-				await this.updateKnownHostsFile(url);
+				await updateKnownHostsFile(url, this.opts.repoName);
 			} else {
 				await this.git.raw(['config', '--unset', 'core.sshCommand']);
 			}
-		}
-	}
-
-	async updateKnownHostsFile(repoURL: string) {
-		const host = repoURL.split('@')[1].split(':')[0];
-		try {
-			await execa('ssh-keygen', ['-q', '-f', this.knownHostsFile, '-F', host]);
-		} catch (_) {
-			logger.debug(`Scanning key for host ${host}`, { service });
-			const { stdout } = await execa('ssh-keyscan', ['-t', 'rsa', host]);
-			const hostSignature = stdout;
-			logger.debug(`Finished scanning key for host ${host}`);
-			await writeFile(this.knownHostsFile, hostSignature, 'utf-8');
 		}
 	}
 
@@ -148,36 +131,6 @@ export default class Git {
 	async getCurrentCommit() {
 		const show = await this.git.show();
 		return show.split('\n')[0].split(' ')[1];
-	}
-
-	async generateSSHKey() {
-		await this.removeSSHKey();
-		try {
-			await execa('ssh-keygen', ['-b', '2048', '-t', 'rsa', '-f', this.keyFile, '-q', '-N', '']);
-		} catch (err) {
-			logger.error(`Unable to generate SSH keypair : ${err}`, { service, obj: err });
-			logger.error(`ssh-keygen STDERR: ${err.stderr}`, { service });
-			logger.error(`ssh-keygen STDOUT: ${err.stdout}`, { service });
-			throw err;
-		}
-	}
-
-	async removeSSHKey() {
-		logger.debug(`Trying to remove ${this.keyFile}`, { service });
-		if (await fileExists(this.keyFile, true)) {
-			await unlink(this.keyFile);
-			logger.debug(`Removed ${this.keyFile}`, { service });
-		}
-		logger.debug(`Trying to remove ${this.keyFile}.pub`, { service });
-		if (await fileExists(`${this.keyFile}.pub`, true)) {
-			await unlink(`${this.keyFile}.pub`);
-			logger.debug(`Removed ${this.keyFile}.pub`, { service });
-		}
-	}
-
-	async getSSHPubKey(): Promise<string> {
-		const pubKey = await readFile(`${this.keyFile}.pub`, 'utf-8');
-		return pubKey;
 	}
 
 	async wipeChanges() {
