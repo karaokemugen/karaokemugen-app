@@ -38,6 +38,7 @@ Hey, at least you have mpv working now. :)
 - [Users] macOS versions of mpv bundled with the app required Python. This is now fixed. #1682
 - [Users] Fixed login page not appearing with a guest account on admin page
 - [Users] Fixed adding online repositories
+- [Operators] Fixed news feeds not showing up anymore
 - [Operators] Fixed duplicate creation of problematic playlist in some cases.
 - [Maintainers] Throw error on multiple identical media paths for a repository
 - [Maintainers] Fixed display of tag translations when applying tags from parent karaokes. #1669
