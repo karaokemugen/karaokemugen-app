@@ -1301,7 +1301,7 @@
 		"PREVIEW_HOOKS": "Controlla le tag aggiunte automaticamente",
 		"SERIES_SINGERS_REQUIRED": "Serie, Cantato da o Dalla band musicale non possono essere tutti vuoti.",
 		"REPOSITORY": "Archivio",
-		"PARENTS_TOOLTIP": "Se un brano principale è definito, questo brano verrà mostrato come variante della versione principale selezionata. Si prega di selezionare l'archivio corretto prima di compilare questo campo per prevenire l'aggiunta di brani da altri archivi.",
+		"PARENTS_TOOLTIP": "Se un brano principale è definito, questo brano verrà mostrato come sua variante. Si prega di selezionare l'archivio corretto prima di compilare questo campo per prevenire l'aggiunta di brani da altri archivi.",
 		"SYNC_WARNING_DESCRIPTION": "Sincronizzando i file multimediali, tutti i file multimediali contenuti in collezioni disabilitate verranno rimossi. Ciò potrebbe eliminare molti file se hai disabilitato temporaneamente una collezione che usi spesso.",
 		"QUEUE_LABEL_SONGS": "({{numberSongs}} brani):",
 		"ONLINE_REPOSITORIES": "Alcuni dei tuoi brani vengono da archivi remoti (come il server kara.moe) e non sono modificabili tramite questa interfaccia, così da mantenere sincronizzati gli archivi. Puoi abilitare la \"modalità mantenitore\" nelle impostazioni archivio, così facendo non riceverai più aggiornamenti ma potrai modificare o eliminare i brani.",
