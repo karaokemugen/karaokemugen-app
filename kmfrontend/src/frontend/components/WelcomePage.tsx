@@ -133,7 +133,9 @@ function WelcomePage() {
 							(base.body.feed.entry[0].summary._text
 								? ' - ' + base.body.feed.entry[0].summary._text
 								: ''),
-						link: base.body.feed.entry[0].link._attributes.href,
+						link: (base.body.feed.entry[0].link._attributes.href as string)
+							.replace('tags', 'blob')
+							.concat('/CHANGELOG.md'),
 						type: 'base',
 					});
 				}
