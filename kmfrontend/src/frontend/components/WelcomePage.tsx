@@ -115,11 +115,17 @@ function WelcomePage() {
 			const news: News[] = [];
 			if (base?.body) {
 				base.body = JSON.parse(base.body);
-				if (base.body.feed.entry[0].content?._text) {
+				if (base.body.feed.entry[0].summary?._text) {
+					// Gitlab's feed doesn't report date anymore so we have to calculate it. We name base tags with the previous month as in 'the situation at the end of this month'. So when we have a tagname of 202410, the date it's created is actually 2024-11-01.
+					const date = base.body.feed.entry[0].title._text;
+					const year = date.substring(0, 4);
+					const month = date.substring(4);
+					const dateObj = new Date(`${year}-${month}-01`);
+					const realDate = new Date(dateObj.setMonth(dateObj.getMonth() + 1));
 					news.push({
-						html: base.body.feed.entry[0].content._text,
-						date: base.body.feed.entry[0].updated._text,
-						dateStr: new Date(base.body.feed.entry[0].updated._text).toLocaleDateString(),
+						html: base.body.feed.entry[0].summary._text,
+						date,
+						dateStr: realDate.toLocaleDateString(),
 						title:
 							i18next.t('WELCOME_PAGE.BASE_UPDATE') +
 							' : ' +
