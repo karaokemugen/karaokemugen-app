@@ -27,11 +27,11 @@ import LanguagesList from '../../components/LanguagesList';
 
 interface TagsFormProps {
 	tags: Tag[];
-	tag: Tag;
+	tag?: Tag;
 	save: (tag: Tag) => void;
-	handleCopy: (tid, repo) => void;
-	mergeAction: (tid1: string, tid2: string) => void;
-	deleteAction: (tid: string) => void;
+	handleCopy?: (tid, repo) => void;
+	mergeAction?: (tid1: string, tid2: string) => void;
+	deleteAction?: (tid: string) => void;
 }
 
 interface TagForForm extends Tag {

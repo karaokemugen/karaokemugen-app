@@ -116,7 +116,7 @@ function Home() {
 						<Card title={i18next.t('MENU.TAGS')}>
 							{i18next.t('HOME.TAGS_DESCRIPTION')}
 							<div className="km-system-btn-group">
-								<Link to="/system/tags/new">
+								<Link to="/system/tags/create">
 									<Button block type="primary">
 										<PlusOutlined /> {i18next.t('HOME.TAGS.CREATE')}
 									</Button>

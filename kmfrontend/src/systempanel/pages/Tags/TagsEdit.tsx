@@ -16,15 +16,6 @@ function TagEdit() {
 	const [tags, setTags] = useState<Tag[]>([]);
 	const [loaded, setLoaded] = useState(false);
 
-	const saveNew = async (tag: Tag) => {
-		try {
-			await commandBackend('addTag', tag, true, 300000);
-			navigate('/system/tags');
-		} catch (e) {
-			// already display
-		}
-	};
-
 	const saveUpdate = async (tag: Tag) => {
 		try {
 			await commandBackend('editTag', tag, true, 300000);
@@ -53,17 +44,15 @@ function TagEdit() {
 	};
 
 	const loadTag = async () => {
-		if (tid) {
-			try {
-				let res = await commandBackend('getTag', { tid }, true);
-				const tagData = { ...res };
-				tagData.tid = tid;
-				res = await commandBackend('getTags');
-				setTags(res.content);
-				setTag(tagData);
-			} catch (e) {
-				// already display
-			}
+		try {
+			let res = await commandBackend('getTag', { tid }, true);
+			const tagData = { ...res };
+			tagData.tid = tid;
+			res = await commandBackend('getTags');
+			setTags(res.content);
+			setTag(tagData);
+		} catch (e) {
+			// already display
 		}
 		setLoaded(true);
 	};
@@ -80,15 +69,15 @@ function TagEdit() {
 	return (
 		<>
 			<Title
-				title={i18next.t(tid ? 'HEADERS.TAG_EDIT.TITLE' : 'HEADERS.TAG_NEW.TITLE')}
-				description={i18next.t(tid ? 'HEADERS.TAG_EDIT.DESCRIPTION' : 'HEADERS.TAG_NEW.DESCRIPTION')}
+				title={i18next.t('HEADERS.TAG_EDIT.TITLE')}
+				description={i18next.t('HEADERS.TAG_EDIT.DESCRIPTION')}
 			/>
 			<Layout.Content>
 				{loaded && (
 					<TagsForm
 						tag={tag}
 						tags={tags}
-						save={tid ? saveUpdate : saveNew}
+						save={saveUpdate}
 						mergeAction={handleTagMerge}
 						deleteAction={handleTagDelete}
 						handleCopy={handleCopy}

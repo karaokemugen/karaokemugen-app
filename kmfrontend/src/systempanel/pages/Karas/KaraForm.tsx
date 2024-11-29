@@ -62,10 +62,10 @@ const { Paragraph } = Typography;
 const { Panel } = Collapse;
 
 interface KaraFormProps {
-	kara: DBKara;
+	kara?: DBKara;
 	save: any;
-	handleCopy: (kid: string, repo: string) => void;
-	handleDelete: (kid: string) => void;
+	handleCopy?: (kid: string, repo: string) => void;
+	handleDelete?: (kid: string) => void;
 }
 
 function KaraForm(props: KaraFormProps) {
