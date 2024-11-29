@@ -884,7 +884,8 @@ export class Players {
 		if (mediaFile.endsWith('.mp3') && !onlineMedia) {
 			id3tags = await id3.read(mediaFile);
 		}
-		if (!id3tags?.image) {
+
+		if (id3tags && !id3tags.image) {
 			const defaultImageFile = (await getBackgroundAndMusic('pause')).pictures[0];
 			options['external-file'] = defaultImageFile.replaceAll('\\', '/');
 			options['force-window'] = 'yes';
