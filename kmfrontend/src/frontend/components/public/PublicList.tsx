@@ -143,8 +143,6 @@ export default function PublicList(props: Props) {
 						openKara={openKara}
 						searchValue={tid || year}
 						searchCriteria={tid || year ? (tid ? 'tag' : 'year') : null}
-						indexKaraDetail={context.globalState.frontendContext.indexKaraDetail}
-						clearIndexKaraDetail={() => setIndexKaraDetail(context.globalDispatch, 0)}
 						searchType={props.plaid === nonStandardPlaylists.favorites ? favoritesSort : props.sort}
 					/>
 				)}
