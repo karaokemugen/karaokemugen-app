@@ -357,6 +357,8 @@
 	"QUOTA_TIME": "Time left",
 	"QUOTA_KARA": "Songs left",
 	"SETTINGS": {
+		"FILTER_SETTINGS": "Search settings",
+		"FILTER_SETTINGS_TOOLTIP": "Quickly find the setting you need with this search bar.",
 		"SYSTEMPANEL_TIP": "You can't find the options you seek? <2>Some options are in the <3>system panel</3>.</2>",
 		"PLAYER": {
 			"LABEL": "Player",

@@ -358,6 +358,8 @@
 	"QUOTA_KARA": "Karaokés restants",
 	"SETTINGS": {
 		"SYSTEMPANEL_TIP": "Vous ne trouvez pas ce que vous cherchez ? <2>Certaines options se trouvent dans le <3>panneau système</3>.</2>",
+		"FILTER_SETTINGS": "Rechercher des paramètres",
+		"FILTER_SETTINGS_TOOLTIP": "Trouvez rapidement les paramètres que vous cherchez avec cette barre de recherche.",
 		"PLAYER": {
 			"LABEL": "Lecteur",
 			"WINDOW_SETTINGS": "Fenêtre",
