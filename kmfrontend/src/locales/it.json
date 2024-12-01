@@ -303,7 +303,9 @@
 			"REQUIRE_USER_CREATION_CODE": "Richiedi un codice per la creazione utente",
 			"REQUIRE_USER_CREATION_CODE_TOOLTIP": "Agli utenti sarà richiesto un codice per creare nuovi account che solo gli operatori potranno vedere e comunicargli. Il codice verrà mostrato nella schermata Utenti del menu K.",
 			"PUBLIC_PLAYER_CONTROLS_TOOLTIP": "I comandi Riproduci/Sospendi, Interrompi, Precedente e Successivo saranno visibili nell'interfaccia pubblica, consentendo agli utenti di controllare il lettore multimediale dai loro dispositivi. Da utilizzare solo in piccoli gruppi!"
-		}
+		},
+		"FILTER_SETTINGS": "Cerca impostazioni",
+		"FILTER_SETTINGS_TOOLTIP": "Trova rapidamente l'impostazione che ti serve tramite questa barra di ricerca."
 	},
 	"KAROULETTE": {
 		"PLAYLIST_REMAINING_other": "Tempo rimanente di questa lista: {{count}} minuti",
