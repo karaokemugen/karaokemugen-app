@@ -81,7 +81,7 @@ class SessionList extends Component<unknown, SessionListState> {
 					description={i18next.t('HEADERS.SESSIONS.DESCRIPTION')}
 				/>
 				<Layout.Content>
-					<Link to={'/system/sessions/new'}>
+					<Link to={'/system/sessions/create'}>
 						<Button style={{ margin: '0.75em' }} type="primary">
 							{i18next.t('SESSIONS.NEW_SESSION')}
 							<PlusOutlined />

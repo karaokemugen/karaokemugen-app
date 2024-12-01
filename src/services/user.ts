@@ -526,6 +526,26 @@ export async function initUserSystem() {
 				admin: true,
 			}
 		);
+
+		// User initialisation for headless installations
+		if (process.env.INITIAL_USER_NAME && process.env.INITIAL_USER_PASSWORD) {
+			try {
+				await createUser(
+					{
+						login: process.env.INITIAL_USER_NAME,
+						password: process.env.INITIAL_USER_PASSWORD,
+					},
+					{
+						admin: true,
+					}
+				);
+			} catch (err) {
+				logger.error(`Unable to create initial user : ${err}`, { service });
+				// This should be fatal because the user will never be re-created with these env vars since the admin user was created one function ago.
+				throw err;
+			}
+		}
+
 		setConfig({ App: { FirstRun: true } });
 	}
 

@@ -115,7 +115,7 @@ function KMMenu() {
 					<Link to="/system/tags">{i18next.t('MENU.LIST')}</Link>
 				</Menu.Item>
 				<Menu.Item key="tagsnew">
-					<Link to="/system/tags/new">{i18next.t('MENU.NEW')}</Link>
+					<Link to="/system/tags/create">{i18next.t('MENU.NEW')}</Link>
 				</Menu.Item>
 				<Menu.Item key="tagsduplicate">
 					<Link to="/system/tags/duplicate">{i18next.t('MENU.DUPLICATE')}</Link>

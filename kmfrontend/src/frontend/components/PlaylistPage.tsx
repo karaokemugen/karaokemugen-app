@@ -27,6 +27,8 @@ export default function PlaylistPage() {
 		});
 	};
 
+	const requestFullScreen = (element: HTMLDivElement) => element.requestFullscreen();
+
 	useEffect(() => {
 		getSocket().on('playlistContentsUpdated', updatePlaylist);
 		getSocket().on('currentPlaylistUpdated', updatePlaylist);
@@ -43,7 +45,7 @@ export default function PlaylistPage() {
 	}, []);
 
 	return (
-		<div className="chibi-playlist">
+		<div className="chibi-playlist" onClick={m => requestFullScreen(m.currentTarget)}>
 			<PlayerBox
 				mode="playlist"
 				currentVisible={false}

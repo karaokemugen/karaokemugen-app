@@ -1,3 +1,4 @@
+@use 'sass:color';
 @import '../../styles/variables';
 
 .searchMenuContainer {
@@ -218,12 +219,12 @@
 }
 .plInfos,
 .plBrowse {
-	background-color: darken(map-get($mugen-colors, 'blue'), 20);
+	background-color: color.adjust(map-get($mugen-colors, 'blue'), $lightness: -20%, $space: hsl);
 	float: right;
 	padding: 0.25em;
 }
 .plQuota {
-	background-color: darken(map-get($mugen-colors, 'green'), 10);
+	background-color: color.adjust(map-get($mugen-colors, 'green'), $lightness: -10%, $space: hsl);
 	padding: 0.25em;
 	&.selection {
 		float: right;

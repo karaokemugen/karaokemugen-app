@@ -1,3 +1,4 @@
+@use 'sass:color';
 @import '../../frontend/styles/variables';
 
 .modal {
@@ -63,7 +64,7 @@
 			display: flex;
 			justify-content: center;
 			> img {
-				width: 75%;
+				width: 50%;
 				// Safari Mac height hack: https://stackoverflow.com/a/61196907
 				object-fit: contain;
 				align-self: flex-start;
@@ -228,11 +229,11 @@
 		flex-grow: 1;
 		&.active {
 			> a {
-				background-color: darken($mugen-nav-background, 10);
+				background-color: color.adjust($mugen-nav-background, $lightness: -10%, $space: hsl);
 				&:focus,
 				&:active:focus,
 				&:hover {
-					background-color: darken($mugen-nav-background, 10);
+					background-color: color.adjust($mugen-nav-background, $lightness: -10%, $space: hsl);
 				}
 			}
 		}
@@ -244,7 +245,7 @@
 			color: white;
 			background-color: $mugen-nav-background;
 			&:hover {
-				background-color: lighten($mugen-nav-background, 5);
+				background-color: color.adjust($mugen-nav-background, $lightness: 5%, $space: hsl);
 			}
 		}
 	}

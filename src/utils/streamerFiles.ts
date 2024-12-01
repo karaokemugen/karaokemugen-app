@@ -52,6 +52,14 @@ async function writeNextSongAndRequester() {
 	}
 }
 
+async function writePlayerStatus() {
+	await fs.writeFile(
+		resolve(resolvedPath('StreamFiles'), 'player_status.txt'),
+		getState().player?.playerStatus || 'stopped',
+		'utf-8'
+	);
+}
+
 async function writeURL() {
 	await fs.writeFile(resolve(resolvedPath('StreamFiles'), 'km_url.txt'), getState().osURL, 'utf-8');
 }
@@ -133,6 +141,7 @@ const fnMap: Map<StreamFileType, () => Promise<void>> = new Map([
 	['current_kara_count', debounce(writeKarasInCurrentPL, ...debounceSettings)],
 	['public_kara_count', debounce(writeKarasInPublicPL, ...debounceSettings)],
 	['time_remaining_in_current_playlist', debounce(writeTimeRemaining, ...debounceSettings)],
+	['player_status', debounce(writePlayerStatus, ...debounceSettings)],
 ]);
 
 export async function writeStreamFiles(only?: StreamFileType): Promise<void> {

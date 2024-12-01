@@ -221,7 +221,8 @@ INSERT INTO kara(
 	from_display_type,
 	ignore_hooks,
 	announce_position_x,
-	announce_position_y
+	announce_position_y,
+	songname
 )
 VALUES(
 	:titles,
@@ -244,7 +245,8 @@ VALUES(
 	:from_display_type,
 	:ignoreHooks,
 	:announce_position_x,
-	:announce_position_y
+	:announce_position_y,
+	:songname
 )
 ON CONFLICT (pk_kid) DO
 UPDATE SET
@@ -268,7 +270,8 @@ UPDATE SET
  from_display_type = :from_display_type,
  ignore_hooks = :ignoreHooks,
  announce_position_x = :announce_position_x,
- announce_position_y = :announce_position_y
+ announce_position_y = :announce_position_y,
+ songname = :songname
 RETURNING
  (SELECT k2.karafile FROM kara k2 WHERE k2.pk_kid = kara.pk_kid) AS old_karafile,
  (SELECT k2.subfile FROM kara k2 WHERE k2.pk_kid = kara.pk_kid) AS old_subfile,

@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { DBKara } from '../src/lib/types/database/kara.js';
 import { allKIDs, commandBackend, getToken, testKara } from './util/util.js';
 
-const jpnTag = '4dcf9614-7914-42aa-99f4-dbce2e059133~5';
+const freTag = 'fd8072b7-4d9b-45d4-8f5b-a931a830edef~5';
 
 describe('Karas information', () => {
 	let token: string;
@@ -18,10 +18,10 @@ describe('Karas information', () => {
 		//expect(data.content[0].kid).to.be.oneOf(allKIDs);
 	});
 
-	it('Get all japanese songs', async () => {
-		const data = await commandBackend(token, 'getKaras', { q: `t:${jpnTag}` });
+	it('Get all french songs', async () => {
+		const data = await commandBackend(token, 'getKaras', { q: `t:${freTag}` });
 		for (const kara of data.content) {
-			expect(kara.tid).to.include(jpnTag);
+			expect(kara.tid).to.include(freTag);
 		}
 	});
 
@@ -32,11 +32,11 @@ describe('Karas information', () => {
 		}
 	});
 
-	it('Get songs from 2004 AND japanese', async () => {
-		const data = await commandBackend(token, 'getKaras', { q: `y:2004!t:${jpnTag}` });
+	it('Get songs from 2004 AND french', async () => {
+		const data = await commandBackend(token, 'getKaras', { q: `y:2004!t:${freTag}` });
 		for (const kara of data.content) {
 			expect(kara.year).to.be.equal(2004);
-			expect(kara.tid).to.include(jpnTag);
+			expect(kara.tid).to.include(freTag);
 		}
 	});
 

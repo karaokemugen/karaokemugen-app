@@ -8,6 +8,7 @@ import {
 	insertPlaylist,
 	selectCriterias,
 	selectKarasFromCriterias,
+	selectPlaylists,
 	truncateCriterias,
 	updatePlaylistLastEditTime,
 } from '../dao/playlist.js';
@@ -377,8 +378,7 @@ async function translateCriterias(cList: Criteria[], lang: string): Promise<Crit
 
 export async function createProblematicSmartPlaylist() {
 	try {
-		const tags = await getTags({ type: 15 });
-		const plaid = await insertPlaylist({
+		const playlist: DBPL = {
 			name: i18next.t('PROBLEMATIC_SONGS'),
 			created_at: new Date(),
 			modified_at: new Date(),
@@ -386,7 +386,14 @@ export async function createProblematicSmartPlaylist() {
 			flag_smart: true,
 			username: 'admin',
 			type_smart: 'UNION',
-		});
+		};
+		const tags = await getTags({ type: 15 });
+		const allPlaylists = await selectPlaylists();
+		const existingProblematicPlaylist = allPlaylists.find(
+			pl =>
+				pl.name === playlist.name && pl.username === playlist.username && pl.flag_smart === playlist.flag_smart
+		);
+		const plaid = existingProblematicPlaylist?.plaid || (await insertPlaylist(playlist));
 		const blcs: Criteria[] = [];
 
 		for (const tag of tags.content) {

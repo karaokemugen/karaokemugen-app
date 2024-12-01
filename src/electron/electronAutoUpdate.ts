@@ -24,12 +24,6 @@ export function initAutoUpdate() {
 			return;
 		}
 		logger.error('', { service, obj: error });
-		const errMsg = error === null ? 'unknown' : (error.stack || error).toString();
-		dialog.showMessageBox({
-			type: 'none',
-			title: i18next.t('ERROR'),
-			message: `${i18next.t('UPDATE_CHECK_ERROR')}: ${errMsg}`,
-		});
 	});
 	autoUpdater.on('update-available', async () => {
 		logger.info('Update detected', { service });

@@ -16,16 +16,6 @@ function KaraEdit() {
 	const [kara, setKara] = useState<DBKara>();
 	const [loaded, setLoaded] = useState(false);
 
-	const saveNew = async kara => {
-		try {
-			await commandBackend('createKara', kara, true, 300000);
-			addListener();
-			navigate('/system/karas');
-		} catch (e) {
-			// already display
-		}
-	};
-
 	const saveUpdate = async kara => {
 		try {
 			await commandBackend('editKara', kara, true, 300000);
@@ -38,10 +28,8 @@ function KaraEdit() {
 
 	const loadKara = async () => {
 		removeListener();
-		if (kid) {
-			const res = await commandBackend('getKara', { kid }, true);
-			setKara(res);
-		}
+		const res = await commandBackend('getKara', { kid }, true);
+		setKara(res);
 		setLoaded(true);
 	};
 
@@ -66,17 +54,12 @@ function KaraEdit() {
 	return (
 		<>
 			<Title
-				title={i18next.t(kid ? 'HEADERS.KARAOKE_EDIT.TITLE' : 'HEADERS.KARAOKE_NEW.TITLE')}
-				description={i18next.t(kid ? 'HEADERS.KARAOKE_EDIT.DESCRIPTION' : 'HEADERS.KARAOKE_NEW.DESCRIPTION')}
+				title={i18next.t('HEADERS.KARAOKE_EDIT.TITLE')}
+				description={i18next.t('HEADERS.KARAOKE_EDIT.DESCRIPTION')}
 			/>
 			<Layout.Content>
 				{loaded && (
-					<KaraForm
-						kara={kara}
-						save={kid ? saveUpdate : saveNew}
-						handleCopy={handleCopy}
-						handleDelete={handleDelete}
-					/>
+					<KaraForm kara={kara} save={saveUpdate} handleCopy={handleCopy} handleDelete={handleDelete} />
 				)}
 			</Layout.Content>
 		</>

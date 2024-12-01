@@ -1,3 +1,4 @@
+@use 'sass:color';
 @import '../../styles/variables';
 
 .lyrics-box {
@@ -19,7 +20,7 @@
 	}
 	> .lyrics {
 		width: 100%;
-		background-color: lighten($mugen-background, 10);
+		background-color: color.adjust($mugen-background, $lightness: 10%, $space: hsl);
 		padding: 1em;
 		margin: 0 0.5em;
 		border-radius: 15px;
@@ -33,14 +34,14 @@
 				200ms;
 			span {
 				&.singing {
-					color: scale-color(skyblue, $saturation: 100%, $lightness: -15%);
+					color: color.scale(skyblue, $saturation: 100%, $lightness: -15%);
 				}
 			}
 			&.hidden {
 				font-size: 0;
 			}
 			&.greyed {
-				color: lighten($mugen-background, 65);
+				color: color.adjust($mugen-background, $lightness: 65%, $space: hsl);
 			}
 			&.current {
 				font-size: 1.25em;

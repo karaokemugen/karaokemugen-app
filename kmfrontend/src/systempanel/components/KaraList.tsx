@@ -124,6 +124,7 @@ function KaraList(props: KaraListProps) {
 				option.children.push({
 					value: tag.tid,
 					label: getTagInLocale(context?.globalState.settings.data, tag as unknown as DBKaraTag).i18n,
+					search: [tag.name].concat(tag.aliases, Object.values(tag.i18n)),
 				});
 			}
 			return option;
@@ -132,7 +133,9 @@ function KaraList(props: KaraListProps) {
 	};
 
 	const filterTagCascaderFilter = (inputValue, path) => {
-		return path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1);
+		return path.some((option: { search: string[] }) => {
+			return option.search?.filter(value => value.toLowerCase().includes(inputValue.toLowerCase())).length > 0;
+		});
 	};
 
 	const handleFilterTagSelection = value => {

@@ -5,6 +5,16 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
+			"name": "Electron: Debug",
+			"type": "node", //use the node debugger that comes with VS Code
+			"request": "launch",
+			"cwd": "${workspaceFolder}",
+			"runtimeExecutable": "yarn",
+			"runtimeArgs": ["start"],
+			"args": ["."],
+			"outputCapture": "std"
+		},
+		{
 			"name": "Electron: Main",
 			"type": "pwa-node", //use the node debugger that comes with VS Code
 			"request": "launch",

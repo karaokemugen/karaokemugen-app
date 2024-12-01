@@ -128,7 +128,6 @@
 	"MENU_HELP_WEBSITE": "Site &Web",
 	"MENU_HELP_DISCORD": "&Discord",
 	"MENU_HELP_FORUM": "&Forum",
-	"MENU_HELP_TWITTER": "&𝕏 (anciennement Twitter)",
 	"MENU_HELP_MASTODON": "&Mastodon",
 	"MENU_HELP_BLUESKY": "&Bluesky",
 	"MENU_HELP_CHANGELOG": "&Notes de version",
@@ -164,7 +163,6 @@
 	"UNKNOWN": "Inconnu",
 	"UPDATE_FOUND": "Mise à jour disponible",
 	"UPDATE_PROMPT": "Voulez-vous mettre à jour Karaoke Mugen ?",
-	"UPDATE_CHECK_ERROR": "Une erreur s'est produite lors de la recherche de mises à jour",
 	"UPDATE_ERROR": "Une erreur s'est produite lors de la mise à jour de Karaoke Mugen : ",
 	"UPDATE_NOT_AVAILABLE": "Aucune mise à jour disponible",
 	"CURRENT_VERSION_OK": "Vous avez déjà la dernière version de Karaoke Mugen !",
@@ -207,7 +205,7 @@
 		"NORMAL": [
 			"Vous pouvez utiliser les touches multimédia de votre clavier pour contrôler le karaoké !",
 			"N'oubliez pas de mettre votre ceinture de sécurité avant de faire du karaoké. Chantez prudemment et attention aux chutes d'enceintes !",
-			"N'oubliez pas de synchroniser la base de temps en temps : vous découvrirez peut-être de nouveaux karaokés !",
+			"N'oubliez pas de synchroniser la base de temps en temps : vous découvrirez peut-être de nouveaux chansons !",
 			"Karaoke Mugen est un projet 100% open source et collaboratif, tout le monde peut apporter sa pierre à l'édifice !",
 			"Vous pouvez glisser-déposer des fichiers dans cette fenêtre, utiliser le menu Fichier -> Importer, ou associer le programme Karaoke Mugen à ceux-ci pour les intégrer directement : listes de lecture, favoris, etc…",
 			"Je suis Nanamin, mascotte de Karaoke Mugen crée par la talentueuse Sedeto ! http://www.sedeto.fr",
@@ -228,10 +226,10 @@
 			"Le mode Karaoké Classique permet de simuler un box karaoké japonais ou un concours de karaoké en convention : une pause avec affichage de la piste suivante aura lieu entre chaque chanson.",
 			"Votre session de karaoké se termine bientôt ? Passez l'interface en mode restreint : le public ne pourra plus ajouter de chansons mais pourra consulter la liste de lecture en cours.",
 			"Vous avez besoin d'envoyer un message à votre public ? L'option message permettra d'afficher un texte sur leurs appareils mobiles ou sur l'écran du karaoké !",
-			"Dans la recherche, vous pouvez taper \"-mot\" pour exclure les karaokés contenant ce mot (que ce soit dans le titre, l'œuvre, les chanteurs, etc.) de vos résultats de recherche.",
+			"Dans la recherche, vous pouvez taper \"-mot\" pour exclure les chansons contenant ce mot (que ce soit dans le titre, l'œuvre, les chanteurs, etc.) de vos résultats de recherche.",
 			"Vous pouvez accepter ou refuser des chansons du public en mettant côte à côte votre liste de lecture publique et courante.",
 			"Accepter ou refuser une suggestion publique redonne le quota de chanson à l'utilisateur qui l'a demandée, et ajoute la chanson dans la liste de lecture actuelle !",
-			"Lorsque vous effectuez une recherche, vous pouvez mettre un groupe de mots entre guillemets pour demander précisément ce texte. Tapez \"love live\" pour obtenir uniquement les karaokés de l'œuvre Love Live."
+			"Lorsque vous effectuez une recherche, vous pouvez mettre un groupe de mots entre guillemets pour demander précisément ce texte. Tapez \"love live\" pour obtenir uniquement les chansons de l'œuvre Love Live."
 		],
 		"ERRORS": [
 			"N'hésitez pas à venir nous voir sur Discord si vous avez besoin d'aide : https://karaokes.moe/discord",
@@ -308,7 +306,8 @@
 			"resolving": "Résolution des deltas",
 			"receiving": "Réception des données",
 			"writing": "Écriture des fichiers",
-			"counting": "Comptage des fichiers"
+			"counting": "Comptage des fichiers",
+			"updating": "Mise à jour des fichiers"
 		}
 	},
 	"OFFICIAL_WEBSITE": "Site officiel",

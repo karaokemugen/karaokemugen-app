@@ -25,6 +25,7 @@ import {
 	isNonStandardPlaylist,
 	nonStandardPlaylists,
 	PLCCallback,
+	secondsTimeSpanToHMS,
 } from '../../../utils/tools';
 import { KaraElement } from '../../types/kara';
 import KaraMenuModal from '../modals/KaraMenuModal';
@@ -384,7 +385,7 @@ function KaraLine(props: IProps) {
 										<i className="fas fa-thumbs-up" />
 										{kara.upvotes}
 									</div>
-								) : null}
+								) : null}{' '}
 								<div className="contentDivMobileTags">
 									<div>
 										{kara.children?.length > 0 &&
@@ -398,7 +399,12 @@ function KaraLine(props: IProps) {
 													count: kara.children.length + 1,
 												})}
 											</>
-										) : null}
+										) : (
+											<span>
+												<i className="fas fa-fw fa-clock" />
+												{secondsTimeSpanToHMS(kara.duration, 'mm:ss')}
+											</span>
+										)}
 									</div>
 									<div className="tagConteneur">
 										{karaTags}
@@ -438,6 +444,10 @@ function KaraLine(props: IProps) {
 										</div>
 									) : null}
 									<div className="tagConteneur">{karaTags}</div>
+									<div>
+										<i className="fas fa-fw fa-clock" />
+										{secondsTimeSpanToHMS(kara.duration, 'mm:ss')}
+									</div>
 								</div>
 							</div>
 						)}

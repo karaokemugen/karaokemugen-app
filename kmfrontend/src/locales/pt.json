@@ -516,7 +516,9 @@
 				"MYANIMELIST_PLACEHOLDER": "karaokêmugen",
 				"ANILIST_PLACEHOLDER": "karaokêmugen",
 				"KITSU": "Kitsu",
-				"KITSU_PLACEHOLDER": "karaokêmugen"
+				"KITSU_PLACEHOLDER": "karaokêmugen",
+				"GITLAB": "Gitlab",
+				"GITLAB_PLACEHOLDER": "karaokemugen"
 			},
 			"LOCAL_DELETE": "Exclua esta conta localmente",
 			"FLAG_SENDSTATS": "Use meus favoritos e solicitações de músicas para obter estatísticas",

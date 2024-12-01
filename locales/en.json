@@ -76,7 +76,7 @@
 	"INIT_VALIDATION": "Validating your files…",
 	"INIT_MIGRATION": "Updating database structure, please wait…",
 	"INIT_GEN": "Generating database, please wait…",
-	"INIT_UPDATEMEDIAS": "Updating medias…",
+	"INIT_UPDATEMEDIAS": "Updating media…",
 	"INIT_BASEUPDATE": "Updating songs…",
 	"INIT_USER": "Initializing users…",
 	"INIT_ONLINEURL": "Connecting to Karaoke Mugen Server…",
@@ -128,7 +128,6 @@
 	"MENU_HELP_WEBSITE": "&Website",
 	"MENU_HELP_DISCORD": "&Discord",
 	"MENU_HELP_FORUM": "&Forum",
-	"MENU_HELP_TWITTER": "&𝕏 (formerly Twitter)",
 	"MENU_HELP_MASTODON": "&Mastodon",
 	"MENU_HELP_BLUESKY": "&Bluesky",
 	"MENU_HELP_CHANGELOG": "&Release Notes",
@@ -144,7 +143,7 @@
 	"MENU_GOTO_SYSTEM": "&System panel",
 	"MENU_TOOLS": "&Tools",
 	"MENU_TOOLS_LOGS": "&Event log",
-	"MENU_TOOLS_DOWNLOADS": "&Download medias",
+	"MENU_TOOLS_DOWNLOADS": "&Download media",
 	"MENU_TOOLS_KARAOKES": "&Song list",
 	"MENU_TOOLS_DATABASE": "Data&base",
 	"MENU_OPTIONS": "&Options",
@@ -164,7 +163,6 @@
 	"UNKNOWN": "Unknown",
 	"UPDATE_FOUND": "Update available",
 	"UPDATE_PROMPT": "Do you want to update Karaoke Mugen?",
-	"UPDATE_CHECK_ERROR": "An error occured when trying to check for Karaoke Mugen updates",
 	"UPDATE_ERROR": "An error occured when trying to update Karaoke Mugen: ",
 	"UPDATE_NOT_AVAILABLE": "No update available",
 	"CURRENT_VERSION_OK": "You already are using the latest version of Karaoke Mugen!",
@@ -207,7 +205,7 @@
 		"NORMAL": [
 			"You can use the multimedia keys on your keyboard to control your karaoke !",
 			"Don't forget to put your safety belt before doing karaoke. Sing safely and be careful of speaker drops !",
-			"Don't forget to sync the base sometimes: you may discover some new karaokes!",
+			"Don't forget to sync the base sometimes: you may discover some new songs!",
 			"Karaoke Mugen is a 100% open source and collaborative project, everyone can participate!",
 			"You can import files via the File Menu -> Import, drag & drop them or associate the Karaoke Mugen executable to it to allow KM to open them and use them : playlists, favorites…",
 			"I'm Nanamin, Karaoke Mugen's mascott, and I was created by the wonderful Sedeto! http://www.sedeto.fr",
@@ -228,10 +226,10 @@
 			"Classic Karaoke mode emulates what you find in japanese karaoke booths or during karaoke contests at anime events : a pause is made between each song and the next song's title and requester are displayed on screen.",
 			"Does your karaoke session end soon? Switch the interface to restricted mode: users won't be able to add songs anymore but will be able to see what's coming next.",
 			"Need to send a message to your public? The message option will show a text on their mobile devices and/or on the karaoke screen!",
-			"When searching, you can type \"-word\" to exclude karaokes containing that word (whether it's in the title, the series, the singers, etc.) from your search results.",
+			"When searching, you can type \"-word\" to exclude songs containing that word (whether it's in the title, the series, the singers, etc.) from your search results.",
 			"You can accept or refuse songs in the public playlist. To do this, display the public and current playlist side by side.",
 			"Accepting or refusing a public suggestion gives back song quota to the user who requested it, and adds the song in the current playlist!",
-			"When you search, you can put a word group between double quotes to ask precisely for that text. Type in \"love live\" to have karaokes from Love Live series only."
+			"When you search, you can put a word group between double quotes to ask precisely for that text. Type in \"love live\" to have songs from Love Live series only."
 		],
 		"ERRORS": [
 			"Come see us on Discord if you need help: https://karaokes.moe/discord",
@@ -308,7 +306,8 @@
 			"resolving": "Resolving delta",
 			"receiving": "Receiving data",
 			"writing": "Writing files",
-			"counting": "Counting files"
+			"counting": "Counting files",
+			"updating": "Updating files"
 		}
 	},
 	"OFFICIAL_WEBSITE": "Official Website",

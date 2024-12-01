@@ -16,11 +16,13 @@ import { parseKara, writeKara } from '../lib/dao/karafile.js';
 import { selectRepos } from '../lib/dao/repo.js';
 import { APIMessage } from '../lib/services/frontend.js';
 import { readAllKaras } from '../lib/services/generation.js';
+import { getRepoManifest } from '../lib/services/repo.js';
 import { DBTag } from '../lib/types/database/tag.js';
 import { KaraMetaFile } from '../lib/types/downloads.js';
 import { KaraFileV4 } from '../lib/types/kara.js';
 import { DiffChanges, Repository, RepositoryBasic, RepositoryManifest } from '../lib/types/repo.js';
 import { TagFile } from '../lib/types/tag.js';
+import { ASSFileCleanup } from '../lib/utils/ass.js';
 import { getConfig, resolvedPathRepos } from '../lib/utils/config.js';
 import { ErrorKM } from '../lib/utils/error.js';
 import { asyncCheckOrMkdir, listAllFiles, moveAll, relativePath, resolveFileInDirs } from '../lib/utils/files.js';
@@ -34,6 +36,7 @@ import { adminToken } from '../utils/constants.js';
 import { getFreeSpace, pathIsContainedInAnother } from '../utils/files.js';
 import FTP from '../utils/ftp.js';
 import Git, { checkGitInstalled, isGit } from '../utils/git.js';
+import { oldFilenameFormatKillSwitch } from '../utils/hokutoNoCode.js';
 import { applyPatch, cleanFailedPatch, downloadAndExtractZip, writeFullPatchedFiles } from '../utils/patch.js';
 import sentry from '../utils/sentry.js';
 import { getState } from '../utils/state.js';
@@ -44,8 +47,6 @@ import { createKaraInDB, integrateKaraFile, removeKara } from './karaManagement.
 import { createProblematicSmartPlaylist, updateAllSmartPlaylists } from './smartPlaylist.js';
 import { sendPayload } from './stats.js';
 import { getTags, integrateTagFile, removeTag } from './tag.js';
-import { getRepoManifest } from '../lib/services/repo.js';
-import { ASSFileCleanup } from '../lib/utils/ass.js';
 
 const service = 'Repo';
 
@@ -107,7 +108,7 @@ export async function addRepo(repo: Repository) {
 		if (repo.Online) {
 			// Testing if repository is reachable
 			try {
-				const manifest = await getRepoMetadata(repo.Name);
+				const manifest = await getRepoMetadata(repo);
 				if (repo.MaintainerMode && repo.Git) {
 					repo.Git.ProjectID = manifest.ProjectID;
 				}
@@ -163,6 +164,7 @@ export async function updateAllRepos() {
 				if (repo.MaintainerMode) {
 					if (repo.Git?.URL) {
 						if (await updateGitRepo(repo.Name)) doGenerate = true;
+						initFonts();
 					}
 				} else if (await updateZipRepo(repo.Name)) {
 					// updateZipRepo returns true when the function has downloaded the entire base (either because it's new or because an error happened during the patch)
@@ -321,7 +323,7 @@ export async function updateZipRepo(name: string) {
 			return true;
 		}
 		// Check if update is necessary by fetching the remote last commit sha
-		const { LatestCommit } = await getRepoMetadata(repo.Name);
+		const { LatestCommit } = await getRepoMetadata(repo);
 		logger.debug(`Update ${repo.Name}: ours is ${localCommit}, theirs is ${LatestCommit}`, { service });
 		if (LatestCommit !== localCommit) {
 			try {
@@ -350,6 +352,7 @@ export async function updateZipRepo(name: string) {
 				logger.debug('Applying changes', { service, obj: { changes } });
 				await applyChanges(changes, repo);
 				await saveSetting(`commit-${repo.Name}`, LatestCommit);
+				initHooks().catch(() => {});
 				return false;
 			} catch (err) {
 				logger.warn('Cannot use patch method to update repository, downloading full zip again.', {
@@ -376,8 +379,9 @@ async function getLocalRepoLastCommit(repo: Repository): Promise<string | null> 
 }
 
 async function newZipRepo(repo: Repository): Promise<string> {
-	const { FullArchiveURL, LatestCommit } = await getRepoMetadata(repo.Name);
+	const { FullArchiveURL, LatestCommit } = await getRepoMetadata(repo);
 	await downloadAndExtractZip(FullArchiveURL, resolve(getState().dataPath, repo.BaseDir), repo.Name);
+	await oldFilenameFormatKillSwitch(repo.Name);
 	if (repo.AutoMediaDownloads === 'all') {
 		updateMedias(repo.Name).catch(e => {
 			if (e?.code === 409) {
@@ -387,6 +391,7 @@ async function newZipRepo(repo: Repository): Promise<string> {
 			}
 		});
 	}
+	initHooks().catch(() => {});
 	return LatestCommit;
 }
 
@@ -405,7 +410,7 @@ export async function editRepo(
 		if (repo.Online && onlineCheck) {
 			// Testing if repository is reachable
 			try {
-				const manifest = await getRepoMetadata(repo.Name);
+				const manifest = await getRepoMetadata(repo);
 				if (repo.MaintainerMode && repo.Git) repo.Git.ProjectID = manifest.ProjectID;
 			} catch (err) {
 				throw new ErrorKM('REPOSITORY_UNREACHABLE', 404, false);
@@ -663,6 +668,7 @@ export async function updateGitRepo(name: string) {
 async function applyChanges(changes: Change[], repo: Repository) {
 	let task: Task;
 	try {
+		await oldFilenameFormatKillSwitch(repo.Name);
 		const tagFiles = changes.filter(f => f.path.endsWith('.tag.json'));
 		const karaFiles = changes.filter(f => f.path.endsWith('.kara.json'));
 		const fontFiles = changes.filter(f => f.path.startsWith('fonts/'));
@@ -852,30 +858,6 @@ async function setupGit(repo: Repository, configChanged = false, clone = false) 
 	return git;
 }
 
-export async function generateSSHKey(repoName: string) {
-	const repo = getRepo(repoName);
-	const git = await setupGit(repo);
-	await git.generateSSHKey();
-	await git.setup(true);
-}
-
-export async function removeSSHKey(repoName: string) {
-	const repo = getRepo(repoName);
-	const git = await setupGit(repo);
-	await git.removeSSHKey();
-	await git.setup(true);
-}
-
-export async function getSSHPubKey(repoName: string) {
-	const repo = getRepo(repoName);
-	const git = await setupGit(repo);
-	try {
-		return await git.getSSHPubKey();
-	} catch (err) {
-		throw new ErrorKM('SSH_PUBLIC_KEY_NOT_FOUND', 404, false);
-	}
-}
-
 export async function newGitRepo(repo: Repository) {
 	// Hello, we're going to lift stuff.
 	// First, let's empty the basedir folder
@@ -889,6 +871,7 @@ export async function newGitRepo(repo: Repository) {
 	const git = await setupGit(repo, false, true);
 	await git.clone();
 	git.setup(true);
+	await oldFilenameFormatKillSwitch(repo.Name);
 	if (repo.AutoMediaDownloads === 'all') {
 		updateMedias(repo.Name).catch(e => {
 			if (e?.code === 409) {
@@ -898,7 +881,7 @@ export async function newGitRepo(repo: Repository) {
 			}
 		});
 	}
-	await initHooks();
+	initHooks().catch(() => {});
 }
 
 export async function compareLyricsChecksums(repo1Name: string, repo2Name: string): Promise<DifferentChecksumReport[]> {
@@ -1001,6 +984,26 @@ export async function copyLyricsRepo(report: DifferentChecksumReport[]) {
 	}
 }
 
+export function checkRepoMediaPaths(repo?: Repository) {
+	const reposWithPath = getConfig().System.Repositories.map(r => ({
+		...(repo && repo.Name === r.Name ? repo : r),
+		mediasPath: resolvedPathRepos('Medias', r.Name)[0],
+	}));
+	const enabledRepos = reposWithPath.filter(r => r.Enabled);
+	const reposWithSameMediaPath = enabledRepos
+		.map(or => ({
+			repo: or,
+			repoWithSameMediaPath: reposWithPath.find(r => r.Name !== or.Name && r.mediasPath === or.mediasPath),
+		}))
+		.filter(or => !!or.repoWithSameMediaPath);
+	return {
+		reposWithSameMediaPath,
+		reposWithSameMediaPathText:
+			reposWithSameMediaPath.length > 0 &&
+			reposWithSameMediaPath.map(r => `${r.repo.Name}, ${r.repoWithSameMediaPath.Name}`).join(', '),
+	};
+}
+
 function checkRepoPaths(repo: Repository) {
 	if (windowsDriveRootRegexp.test(repo.BaseDir)) {
 		throw new ErrorKM('REPO_PATH_ERROR_IN_WINDOWS_ROOT_DIR', 400, false);
@@ -1027,6 +1030,16 @@ function checkRepoPaths(repo: Repository) {
 			throw new ErrorKM('REPO_PATH_ERROR_IN_WINDOWS_ROOT_DIR', 400, false);
 		}
 	}
+
+	const mediaPathErrors = checkRepoMediaPaths(repo);
+	if (mediaPathErrors.reposWithSameMediaPath.length > 0) {
+		logger.error(
+			`Multiple repositories share the same media path, which will cause sync errors: ${mediaPathErrors.reposWithSameMediaPathText}`,
+			{ service }
+		);
+		throw new ErrorKM('REPOS_MULTIPLE_USED_MEDIA_PATH_ERROR', 400, false);
+	}
+
 	const checks = [];
 	for (const path of Object.keys(repo.Path)) {
 		repo.Path[path].forEach((dir: string) => checks.push(asyncCheckOrMkdir(resolve(getState().dataPath, dir))));
@@ -1058,16 +1071,14 @@ export async function findUnusedMedias(repo: string): Promise<string[]> {
 }
 
 /** Get metadata. Throws if KM Server is not up to date */
-export async function getRepoMetadata(repoName: string) {
+export async function getRepoMetadata(repo: Repository) {
 	try {
 		// FIXME : This should be depracted in KM 9.0
 		// Repository metadata will have to come from the manifest file provided by each repository, not from their online server.
 		// Only LastCommit will need to be fetched from KM Server.
-		const repo = getRepo(repoName);
-		const ret = await HTTP.get(`${repo.Secure ? 'https' : 'http'}://${repoName}/api/karas/repository`);
+		const ret = await HTTP.get(`${repo.Secure ? 'https' : 'http'}://${repo.Name}/api/karas/repository`);
 		return ret.data as RepositoryManifest;
 	} catch (err) {
-		logger.error(`Error fetching repository manifest for ${repoName} : ${err}`);
 		throw err;
 	}
 }
@@ -1289,7 +1300,10 @@ export async function generateCommits(repoName: string) {
 			if (kara.subfile) {
 				const lyricsFile = addedLyrics.find(f => basename(f) === kara.subfile);
 				addedLyrics = addedLyrics.filter(f => f !== lyricsFile);
-				commit.addedFiles.push(lyricsFile);
+				// Didn't search that much, but if the .ass was cleaned up it wouldn't end up here...
+				if (lyricsFile) {
+					commit.addedFiles.push(lyricsFile);
+				}
 			}
 			commits.push(commit);
 			task.incr();
@@ -1358,8 +1372,8 @@ export async function generateCommits(repoName: string) {
 					if (lyricsFile) {
 						modifiedLyrics = modifiedLyrics.filter(f => f !== lyricsFile);
 						if (repoManifest?.rules?.lyrics?.cleanup) {
-							const lyricsPath = resolve(repo.BaseDir, lyricsFile);
-							ASSFileCleanup(lyricsPath, kara);
+							const lyricsPath = resolve(resolvedPathRepos('Lyrics', repoName)[0], kara.subfile);
+							await ASSFileCleanup(lyricsPath, kara);
 						}
 						commit.addedFiles.push(lyricsFile);
 					}
@@ -1392,7 +1406,9 @@ export async function generateCommits(repoName: string) {
 		}
 		// Modified lyrics (they don't trigger modified songs)
 		for (const file of modifiedLyrics) {
-			const lyrics = parse(file).name;
+			const lyrics = parse(file).base;
+			const lyricsPath = resolve(resolvedPathRepos('Lyrics', repoName)[0], lyrics);
+			await ASSFileCleanup(lyricsPath, null, repoName);
 			const commit: Commit = {
 				addedFiles: [file],
 				removedFiles: [],
@@ -1403,7 +1419,7 @@ export async function generateCommits(repoName: string) {
 		}
 		// Deleted lyrics (you never know)
 		for (const file of deletedLyrics) {
-			const lyrics = parse(file).name;
+			const lyrics = parse(file).base;
 			const commit: Commit = {
 				addedFiles: [],
 				removedFiles: [file],
