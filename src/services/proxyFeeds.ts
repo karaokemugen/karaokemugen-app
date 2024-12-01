@@ -66,7 +66,7 @@ async function fetchFeed(url: string, name: string): Promise<Feed> {
 		// For Mastodon, we filter out #KaraokeMugen toots because we don't want to be spammed.
 		if (name === 'mastodon') {
 			feed.rss.channel.item = feed.rss.channel.item.filter(
-				(item: any) => !item.category.find(c => c._text === 'karaokemugen')
+				(item: any) => !item.category?.find(c => c._text === 'karaokemugen')
 			);
 		} else {
 			feed.feed.entry.forEach((element: any) => {
