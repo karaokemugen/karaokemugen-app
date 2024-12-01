@@ -11,6 +11,7 @@ Hey, at least you have mpv working now. :)
 - [Users] Added `player_status.txt` file for streamers. #1661
 - [Users] [Operators] Added duration of songs in song lists
 - [Users] A kill-switch has been added for when we'll migrate filenames to UUIDs. #1658
+- [Operators] Added a search bar in operator settings. #1487 (by new contributor @mitune_e)
 - [Operators] Admin users can now be created using environment variable for headless setups.
 - [Operators] Added fullscreen mode for chibi playlist on touch devices
 - [Maintainers] Added a confirm tag delete modal. #1653
@@ -34,6 +35,7 @@ Hey, at least you have mpv working now. :)
 
 ## Fixed
 
+- [Users] Fixed public interface not going back to your previous position in the list when going to the previous page.
 - [Users] Deprecated flag prevented mpv from launching on some configurations.
 - [Users] macOS versions of mpv bundled with the app required Python. This is now fixed. #1682
 - [Users] Fixed login page not appearing with a guest account on admin page
