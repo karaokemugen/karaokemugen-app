@@ -43,7 +43,7 @@ function Login() {
 	const isAdminPath = lastLocation && lastLocation !== '/' && !lastLocation.includes('/public');
 
 	useEffect(() => {
-		if (context.globalState.settings.data.config.Frontend.RequireSecurityCodeForNewAccounts && login)
+		if (context.globalState.settings.data.config?.Frontend.RequireSecurityCodeForNewAccounts && login)
 			debounceExistingOnlineAccountLocally(login);
 	}, [login]);
 
@@ -393,8 +393,8 @@ function Login() {
 
 				<div className="versionKM">
 					<div>Karaoke Mugen</div>
-					<div>{`${i18next.t('VERSION')} ${context.globalState.settings.data.version.number} - ${
-						context.globalState.settings.data.version.name
+					<div>{`${i18next.t('VERSION')} ${context.globalState.settings.data.version?.number} - ${
+						context.globalState.settings.data.version?.name
 					}`}</div>
 				</div>
 			</div>

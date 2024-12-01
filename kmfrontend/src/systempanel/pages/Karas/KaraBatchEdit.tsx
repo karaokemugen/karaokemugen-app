@@ -10,6 +10,7 @@ import { getSerieOrSingerGroupsOrSingers, getTagInLocaleList, getTitleInLocale }
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 import Title from '../../components/Title';
+import { DBTag } from '../../../../../src/lib/types/database/tag';
 
 interface PlaylistElem {
 	plaid: string;
@@ -55,11 +56,12 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 				label: i18next.t(`TAG_TYPES.${type}_other`),
 				children: [],
 			};
-			for (const tag of tags.content) {
+			for (const tag of tags.content as DBTag[]) {
 				if (tag.types.length && tag.types.indexOf(typeID) >= 0)
 					option.children.push({
 						value: tag.tid,
 						label: tag.name,
+						search: [tag.name].concat(tag.aliases, Object.values(tag.i18n)),
 					});
 			}
 			return option;
@@ -67,8 +69,10 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 		this.setState({ tags: options, playlists: playlists });
 	}
 
-	FilterTagCascaderFilter = function (inputValue, path) {
-		return path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1);
+	filterTagCascaderFilter = function (inputValue, path) {
+		return path.some((option: { search: string[] }) => {
+			return option.search?.filter(value => value.toLowerCase().includes(inputValue.toLowerCase())).length > 0;
+		});
 	};
 
 	changePlaylist = async (plaid: string) => {
@@ -150,10 +154,7 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 								<Select
 									defaultValue={null}
 									style={{ maxWidth: '180px', marginTop: '0.5em' }}
-									onChange={(value: TagTypeNum | '') => {
-										console.log(value);
-										this.setState({ type: value });
-									}}
+									onChange={(value: TagTypeNum | '') => this.setState({ type: value })}
 								>
 									{Object.keys(tagTypes).concat('').map(this.mapTagTypesToSelectOption)}
 								</Select>
@@ -165,7 +166,7 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 									style={{ maxWidth: '250px', marginTop: '0.5em' }}
 									options={this.state.tags}
 									placeholder={i18next.t('KARA.BATCH_EDIT.SELECT')}
-									showSearch={{ filter: this.FilterTagCascaderFilter, matchInputWidth: false }}
+									showSearch={{ filter: this.filterTagCascaderFilter, matchInputWidth: false }}
 									onChange={value => {
 										if (value)
 											this.setState({ tid: value[1] as string, type: value[0] as TagTypeNum });

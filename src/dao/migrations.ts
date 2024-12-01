@@ -36,6 +36,11 @@ export async function postMigrationTasks(migrations: Postgrator.Migration[], did
 					await db().query("DELETE FROM settings WHERE option = 'instanceID'");
 				}
 				break;
+			// 9.0 migrations
+			// UUIDs Medias rename
+			case 'addSongname':
+				if (!didGeneration) doGenerate = true;
+				break;
 			default:
 		}
 		if (breakFromLoop) break;

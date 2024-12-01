@@ -154,6 +154,11 @@
 	margin-bottom: 10px;
 }
 
+// Hide settings groups that may be empty after filtering
+.settingsGroupPanel:empty {
+	display: none;
+}
+
 .systempanel-tooltip {
 	text-align: center;
 	padding: 1em;

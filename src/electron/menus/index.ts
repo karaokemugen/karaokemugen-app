@@ -19,7 +19,6 @@ export const urls = {
 	database: () => openURL('/system/db'),
 	helpGuide: () => shell.openExternal('https://docs.karaokes.moe/user-guide/getting-started/'),
 	website: () => shell.openExternal('https://karaokes.moe'),
-	twitter: () => shell.openExternal('https://x.com/KaraokeMugen'),
 	mastodon: () => shell.openExternal('https://shelter.moe/@KaraokeMugen'),
 	bluesky: () => shell.openExternal('https://bsky.app/profile/karaokes.moe'),
 	discord: () => shell.openExternal('https://karaokes.moe/discord'),

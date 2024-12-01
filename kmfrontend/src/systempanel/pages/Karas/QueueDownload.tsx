@@ -157,6 +157,7 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 				option.children.push({
 					value: tag.tid,
 					label: getTagInLocale(this.context?.globalState.settings.data, tag as unknown as DBKaraTag).i18n,
+					search: [tag.name].concat(tag.aliases, Object.values(tag.i18n)),
 				});
 			}
 			return option;
@@ -179,7 +180,9 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 	};
 
 	filterTagCascaderFilter = function (inputValue, path) {
-		return path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1);
+		return path.some((option: { search: string[] }) => {
+			return option.search?.filter(value => value.toLowerCase().includes(inputValue.toLowerCase())).length > 0;
+		});
 	};
 
 	// START karas download queue

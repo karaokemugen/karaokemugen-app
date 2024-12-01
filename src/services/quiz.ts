@@ -15,7 +15,7 @@ import {
 	updateGame,
 } from '../dao/quiz.js';
 import { formatKaraV4 } from '../lib/dao/karafile.js';
-import { defineFilename } from '../lib/services/karaCreation.js';
+import { defineSongname } from '../lib/services/karaCreation.js';
 import { DBKara, DBKaraTag } from '../lib/types/database/kara.js';
 import { KaraList } from '../lib/types/kara.js';
 import { getConfig } from '../lib/utils/config.js';
@@ -312,7 +312,7 @@ export async function stopAcceptingAnswers() {
 	const twitchEnabled = streamConfig.Twitch.Enabled && streamConfig.Twitch.Channel && conf.Players.Twitch;
 	// Copying song object so we can avoid people submitting answers late.
 	const song = { ...gameState.currentSong };
-	const songString = await defineFilename(formatKaraV4(song.song));
+	const songString = (await defineSongname(formatKaraV4(song.song))).songname;
 	if (gameState.currentSong.answers.length > 0) {
 		if (twitchEnabled) computeTwitchAnswer();
 		const winners: {

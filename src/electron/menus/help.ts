@@ -36,10 +36,6 @@ const builder: MenuItemBuilderFunction = options => {
 				click: urls.mastodon,
 			},
 			{
-				label: i18next.t('MENU_HELP_TWITTER'),
-				click: urls.twitter,
-			},
-			{
 				label: i18next.t('MENU_HELP_GITLAB'),
 				click: urls.gitlab,
 			},

@@ -23,6 +23,7 @@ import { getState } from '../../utils/state.js';
 import { isShutdownInProgress } from '../engine.js';
 import { emitPlayerState, Players, playerState } from '../mpv.js';
 import { MpvState } from './mpvState.js';
+import { isMpvGreaterThan39 } from '../../utils/hokutoNoCode.js';
 
 export class Player {
 	private readonly log: logger.Logger;
@@ -86,7 +87,7 @@ export class Player {
 			`--config-dir=${resolvedPath('Temp')}`,
 			`--sub-fonts-dir=${resolvedPath('Fonts')}`,
 			'--sub-visibility',
-			'--sub-ass-vsfilter-aspect-compat=no',
+			isMpvGreaterThan39() ? '--sub-ass-use-video-data=none' : '--sub-ass-vsfilter-aspect-compat=no',
 			'--loop-file=no',
 			`--title=${options.monitor ? '[MONITOR] ' : ''}\${force-media-title} - Karaoke Mugen Player`,
 			'--force-media-title=Loading...',

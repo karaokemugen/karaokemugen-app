@@ -57,6 +57,7 @@ export async function insertKara(kara: KaraFileV4): Promise<KaraOldData> {
 			announce_position_x: kara.medias[0].lyrics[0]?.announcePositionX || null,
 			announce_position_y: kara.medias[0].lyrics[0]?.announcePositionY || null,
 			ignoreHooks: kara.data.ignoreHooks || false,
+			songname: kara.data.songname || null,
 		})
 	);
 	return data.rows[0];

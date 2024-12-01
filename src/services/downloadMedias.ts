@@ -15,7 +15,7 @@ import { emitWS } from '../lib/utils/ws.js';
 import { File } from '../types/download.js';
 import Sentry from '../utils/sentry.js';
 import { addDownloads } from './download.js';
-import { checkDownloadStatus, getRepo } from './repo.js';
+import { checkDownloadStatus, getRepo, checkRepoMediaPaths } from './repo.js';
 
 const service = 'MediasUpdater';
 
@@ -156,6 +156,21 @@ async function removeFiles(files: string[], dir: string): Promise<void> {
 
 /** Updates medias for all repositories */
 export async function updateAllMedias() {
+	const checkMediaPathErrors = checkRepoMediaPaths();
+	if (checkMediaPathErrors.reposWithSameMediaPath.length > 0) {
+		logger.error(
+			`Multiple repositories share the same media path, which will cause sync errors: ${checkMediaPathErrors.reposWithSameMediaPathText}`,
+			{ service }
+		);
+		emitWS(
+			'operatorNotificationError',
+			APIMessage('ERROR_CODES.UPDATING_MEDIAS_MULTIPLE_USED_MEDIA_PATH_ERROR', {
+				repos: checkMediaPathErrors.reposWithSameMediaPathText,
+			})
+		);
+		return;
+	}
+
 	for (const repo of getConfig().System.Repositories.filter(r => r.Online && r.Enabled)) {
 		try {
 			logger.info(`Updating medias from repository ${repo.Name}`, { service });

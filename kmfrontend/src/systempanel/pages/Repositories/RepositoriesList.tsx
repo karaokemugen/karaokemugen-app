@@ -85,7 +85,7 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 				/>
 				<Layout.Content>
 					<CollectionsActivation />
-					<Link to={'/system/repositories/new'}>
+					<Link to={'/system/repositories/create'}>
 						<Button style={{ margin: '0.75em' }} type="primary">
 							{i18next.t('REPOSITORIES.NEW_REPOSITORY')}
 							<PlusOutlined />

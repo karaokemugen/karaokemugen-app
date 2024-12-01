@@ -1,3 +1,4 @@
+@use 'sass:color';
 @import '../variables';
 
 .btn-group {
@@ -32,11 +33,11 @@ h5 > a {
 }
 
 .btn:disabled {
-	background-color: scale-color($mugen-btn-background, $lightness: +20%);
+	background-color: color.scale($mugen-btn-background, $lightness: 20%, $space: hsl);
 	color: gray;
 	cursor: not-allowed;
 	&:hover {
-		background-color: scale-color($mugen-btn-background, $lightness: +20%);
+		background-color: color.scale($mugen-btn-background, $lightness: 20%, $space: hsl);
 		color: gray;
 		cursor: not-allowed;
 	}
@@ -47,7 +48,7 @@ h5 > a {
 	color: #eee;
 }
 .btn-default:hover {
-	background-color: lighten($mugen-btn-background, 5);
+	background-color: color.adjust($mugen-btn-background, $lightness: 5%, $space: hsl);
 }
 
 .btn-default:active:focus,
@@ -61,7 +62,7 @@ h5 > a {
 	background-color: $mugen-btn-danger-background;
 }
 .btn-danger:hover {
-	background-color: lighten($mugen-btn-danger-background, 5);
+	background-color: color.adjust($mugen-btn-danger-background, $lightness: 5%, $space: hsl);
 }
 
 .btn-danger-low:hover {
@@ -82,7 +83,7 @@ h5 > a {
 }
 
 .btn-primary:hover {
-	background-color: lighten($mugen-btn-primary-background, 5);
+	background-color: color.adjust($mugen-btn-primary-background, $lightness: 5%, $space: hsl);
 }
 
 .btn-success,
@@ -93,7 +94,7 @@ h5 > a {
 }
 
 .btn-success:hover {
-	background-color: lighten($mugen-btn-success-background, 5);
+	background-color: color.adjust($mugen-btn-success-background, $lightness: 5%, $space: hsl);
 }
 
 .btn-dark,

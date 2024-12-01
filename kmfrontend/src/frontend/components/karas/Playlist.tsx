@@ -28,6 +28,8 @@ import CriteriasList from './CriteriasList';
 import KaraLine from './KaraLine';
 import PlaylistHeader from './PlaylistHeader';
 import QuizRanking from './QuizRanking';
+import { TagTypeNum } from '../../../../../src/lib/types/tag';
+import { setIndexKaraDetail } from '../../../store/actions/frontendContext';
 
 // Virtuoso's resize observer can this error,
 // which is caught by DnD and aborts dragging.
@@ -52,8 +54,6 @@ interface IProps {
 	openKara: (kara: KaraElement, index?: number) => void;
 	searchValue?: string;
 	searchCriteria?: 'year' | 'tag';
-	indexKaraDetail?: number;
-	clearIndexKaraDetail?: () => void;
 	searchType?: 'search' | 'recent' | 'requested';
 	quizRanking?: boolean;
 }
@@ -192,14 +192,8 @@ function Playlist(props: IProps) {
 	const initCall = async () => {
 		getPlayerStatus();
 		setCriteriasOpen(false);
-		if (isNonStandardPlaylist(getPlaylistInfo(props.side, context)?.plaid)) {
-			scrollToIndex(0, false);
-		}
 		await getPlaylist();
-		if (!isNonStandardPlaylist(getPlaylistInfo(props.side, context)?.plaid)) {
-			scrollToPlaying();
-		}
-		setTimeout(props.clearIndexKaraDetail, 0);
+		setTimeout(() => setIndexKaraDetail(context.globalDispatch, 0), 100);
 	};
 
 	const toggleSearchMenu = () => {
@@ -519,14 +513,13 @@ function Playlist(props: IProps) {
 				plaid: getPlaylistInfo(props.side, context)?.plaid,
 			});
 			if (result?.index !== -1) {
-				scrollToIndex(result.index);
-				setGotToPlayingAvoidScroll(true);
+				setTimeout(() => scrollToIndex(result.index), 200);
 			}
 		}
 	};
 
 	useEffect(() => {
-		if (!goToPlayingAvoidScroll) {
+		if (!goToPlayingAvoidScroll && !context.globalState.frontendContext.indexKaraDetail) {
 			gotToPlayingAfterPlaylistUpdate();
 		}
 		setGotToPlayingAvoidScroll(false);
@@ -883,7 +876,7 @@ function Playlist(props: IProps) {
 			} else if (criteria.type > 1000) {
 				typeLabel = i18next.t(`CRITERIA.CRITERIA_TYPE_${criteria.type}`);
 			} else {
-				typeLabel = i18next.t(`TAG_TYPES.${getTagTypeName(criteria.type)}_other`);
+				typeLabel = i18next.t(`TAG_TYPES.${getTagTypeName(criteria.type as TagTypeNum)}_other`);
 			}
 			callModal(
 				context.globalDispatch,
@@ -1009,7 +1002,7 @@ function Playlist(props: IProps) {
 	}, [data === null]);
 
 	useDeferredEffect(() => {
-		getPlaylist('search');
+		getPlaylist(searchType);
 	}, [searchValue]);
 
 	useDeferredEffect(() => {
@@ -1141,7 +1134,7 @@ function Playlist(props: IProps) {
 											{provided => <Item provided={provided} index={index} isDragging={false} />}
 										</Draggable>
 									)}
-									initialTopMostItemIndex={props.indexKaraDetail || 0}
+									initialTopMostItemIndex={context.globalState.frontendContext.indexKaraDetail || 0}
 									totalCount={data.infos.count}
 									rangeChanged={scrollHandler}
 									increaseViewportBy={10}

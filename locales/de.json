@@ -7,20 +7,20 @@
 	"GO_TO": "Gehe zu $url um Songs vorzuschlagen!",
 	"LIBRARY": "Bibliothek",
 	"TAG_TYPES": {
-		"MISC": "Verschieden",
+		"MISC": "Verschiedenes",
 		"COLLECTIONS": "Kollektion",
 		"WARNINGS": "Warnung",
 		"ORIGINS": "Herkunft",
-		"FAMILIES": "Video Inhalt",
+		"FAMILIES": "Video-Inhalt",
 		"SINGERS": "Sänger",
 		"FRANCHISES": "Franchise",
 		"VERSIONS": "Version",
-		"AUTHORS": "Karaoke Verfasser",
+		"AUTHORS": "Karaoke-Verfasser",
 		"SINGERGROUPS": "Band",
-		"SONGWRITERS": "Liedermacher",
+		"SONGWRITERS": "Liedschreiber",
 		"GROUPS": "Gruppe",
-		"GENRES": "Gene",
-		"SONGTYPES": "Song Typ",
+		"GENRES": "Genre",
+		"SONGTYPES": "Lied-Typ",
 		"CREATORS": "Ersteller",
 		"PLATFORMS": "Plattform",
 		"SERIES": "Serie",
@@ -71,7 +71,7 @@
 	"INIT_LAST": "Fast bereit…",
 	"MENU_EDIT_SELECT_ALL": "&Alles auswählen",
 	"MENU_FILE_QUIT": "&Beenden",
-	"INIT_UPDATEMEDIAS": "Aktualisiere Medien…",
+	"INIT_UPDATEMEDIAS": "Aktualisiere Medien …",
 	"MENU_HELP_CHANGELOG": "&Änderungs Informationen",
 	"ERROR_START_PLAYER": "Fehler beim starten des Media-Players",
 	"INIT_ERROR": "Initialisierung fehlgeschlagen!",
@@ -92,7 +92,6 @@
 	"MENU_EDIT_REDO": "&Wiederholen",
 	"MENU_VIEW_TOGGLEDEVTOOLS": "&Entwicklungstools anzeigen",
 	"MENU_EDIT_STOPSPEECH": "Beende Rede",
-	"MENU_HELP_TWITTER": "&𝕏",
 	"INIT_MIGRATION": "Aktualisiere die Datenbank Struktur, bitte warten…",
 	"MENU_HELP_ABOUT": "&Über",
 	"REQUESTED_AND_other": "und {{count}} anderen",
@@ -133,7 +132,7 @@
 	"MENU_FILE_UPDATE": "&Suche nach Updates…",
 	"MENU_HELP_BLUESKY": "&Bluesky",
 	"INIT_ONLINEURL": "Verbindungsaufbau mit dem Karaoke Mugen Server…",
-	"CURRENT_PLAYLIST": "Play Liste",
+	"CURRENT_PLAYLIST": "Liste abspielen",
 	"MENU_FILE_QUIT_OSX": "Beende Karaoke Mugen",
 	"MENU_VIEW_RELOAD": "Aktualisie&ren",
 	"MENU_EDIT_COPY": "&Kopieren",
@@ -156,7 +155,7 @@
 		"NORMAL": [
 			"Mit den Multimedia-Tasten deiner Tastatur kannst Du das Karaoke ebenfalls steuern!",
 			"Vergesse nicht, deinen Sicherheitsgurt anzulegen, bevor du Karaoke spielst. Singe sicher und achte darauf, dass kein Lautsprecher herunterfällt!",
-			"Vergesse nicht, die Repository's ab und zu zu synchronisieren: Vielleicht entdeckst du ja neue Lieder!",
+			"Vergiss nicht, die Repositorys ab und zu zu synchronisieren: Vielleicht entdeckst du ja neue Lieder!",
 			"Karaoke Mugen ist ein 100 % Open-Source- und Gemeinschaftsprojekt, an dem jeder teilnehmen kann!",
 			"Du kannst Dateien über das Menü „Datei“ -> „Importieren“ importieren, per Drag & Drop importieren oder die ausführbare Datei „Karaoke Mugen“ damit verknüpfen, damit KM sie öffnen und verwenden kann: Wiedergabelisten, Favoriten …",
 			"Ich bin Nanamin, das Maskottchen von Karaoke Mugen, und ich wurde von der wunderbaren Sedeto erschaffen! http://www.sedeto.fr",
@@ -177,10 +176,10 @@
 			"Der klassische Karaoke-Modus emuliert das, was du in japanischen Karaoke-Kabinen oder bei Karaoke-Wettbewerben bei Anime-Events findest: Zwischen jedem Lied wird eine Pause eingelegt und der Titel und die wünschende Person des nächsten Liedes werden auf dem Bildschirm angezeigt.",
 			"Ist deine Karaoke-Session bald zu Ende? Schalte in der Benutzeroberfläche in den eingeschränkten Modus um: Benutzer können dann keine Songs mehr hinzufügen, können aber sehen, was als nächstes kommt.",
 			"Möchtest du eine Nachricht anzeigen lassen? Mit der Nachrichten Option wird auf allen Handys und im Player dein Text ausgegeben!",
-			"Bei der Suche kannst du „-word“ eingeben, um Karaokes, die dieses Wort enthalten (sei es im Titel, in der Serie, in den Sängern usw.), aus den Suchergebnissen auszuschließen.",
+			"Bei der Suche kannst du „-wort“ eingeben, um Lieder, die dieses Wort enthalten (sei es im Titel, in der Serie, in den Sängern usw.), aus den Suchergebnissen auszuschließen.",
 			"Du kannst Songs in der öffentlichen Playlist akzeptieren oder ablehnen. Zeige dazu die öffentliche und die aktuelle Playlist nebeneinander an.",
 			"Wenn du einen öffentlichen Vorschlag annimmst oder ablehnst, erhält der Benutzer, der ihn angefordert hat, sein Song-Kontingent zurück und der Song wird zur aktuellen Playlist hinzugefügt!",
-			"Bei der Suche kannst du eine Wortgruppe in doppelte Anführungszeichen setzen, um genau nach diesem Text zu suchen. Gebe z.B. „Love Live“ ein, um nur Karaokes aus der Love Live-Serie zu hören."
+			"Bei der Suche kannst du eine Wortgruppe in doppelte Anführungszeichen setzen, um genau nach diesem Text zu suchen. Gib z. B. „Love Live“ ein, um nur Lieder aus der Love-Live-Serie angezeigt zu bekommen."
 		],
 		"ERRORS": [
 			"Besuche uns auf Discord, wenn du Hilfe brauchst: https://karaokes.moe/discord",
@@ -237,7 +236,6 @@
 		"TITLE": "Repository bereits vorhanden",
 		"MESSAGE": "Das Repository was du versuchst hinzuzufügen, gibt es bereits in deiner Karaoke Mugen Datenbank."
 	},
-	"UPDATE_CHECK_ERROR": "Bei der Suche nach Karaoke Mugen-Updates ist ein Fehler aufgetreten",
 	"UNKNOWN_REPOSITORY_ADD": {
 		"TITLE": "Unbekanntes Repository",
 		"MESSAGE": "Du bist dabei, das {{repoName}}-Repository zu Karaoke Mugen hinzuzufügen. Bist du sicher?"
@@ -280,7 +278,10 @@
 		},
 		"STAGES": {
 			"resolving": "Delta-Änderungen auflösen",
-			"receiving": "Empfange Daten"
+			"receiving": "Empfange Daten",
+			"writing": "Schreibe Dateien",
+			"counting": "Zähle Dateien",
+			"updating": "Aktualisiere Dateien"
 		},
 		"CURRENT_ACTION": "Git Aktionen"
 	},
@@ -320,5 +321,23 @@
 	"RESTARTING_PLAYER": "STARTE PLAYER NEU…",
 	"OFFICIAL_WEBSITE": "Offizielle Webseite",
 	"MENU_OPTIONS_CHECKFORUPDATES": "Beim Start na&ch Aktualisierungen suchen",
-	"SUGGEST_SONGS": "Schlage Songs vor!"
+	"SUGGEST_SONGS": "Schlage Songs vor!",
+	"MENU_OPTIONS_CHIBIRANKING_LINK": "Kopiere den Link zum losgelösten Quiz-Rang",
+	"MENU_OPTIONS_CHIBIRANKING": "Zeige losgelöst den Quiz-Rang",
+	"MOVED_USER_DIR_DIALOG": {
+		"TITLE": "Benutzerordner verschoben!",
+		"UNDERSTOOD": "Alles klar!",
+		"MESSAGE": "Um den Anforderungen deines Betriebssystems zu entsprechen, wurde der Benutzerordner verschoben. Vorher:\n\n{{oldDir}}\n\nJetzt:\n\n{{newDir}}\n\nFalls du streamst, musst du vielleicht dein OBS-Layout aktualisieren, damit sie auf die entsprechenden Textdateien in dem neuen Verzeichnis verweisen."
+	},
+	"MOVING_USER_DIR_ERROR_DIALOG": {
+		"TITLE": "Das Datenverzeichnis von Karaoke Mugen kann nicht verschoben werden",
+		"CONTINUE": "Fortsetzen",
+		"QUIT": "Abbrechen",
+		"MESSAGE": "Karaoke Mugens Datenverzeichnis wurde verschoben. Vorher:\n\n{{oldDir}}\n\nJetzt:\n\n{{newDir}}\n\nBeim Verschieben ist ein Fehler aufgetreten. Du solltest auf \"Abbrechen\" klicken und den Ordner manuell verschieben.\n\nDu kannst auch auf \"Fortsetzen\" klicken. In diesem Fall wird mit einem neuen (leeren) Datenverzeichnis fortgefahren. Wir empfehlen dann, den alten Order unter dem oben gezeigten Pfad zu löschen."
+	},
+	"MOVED_USER_DIR_FLATPAK_DIALOG": {
+		"TITLE": "Flatpak-Nutzer!",
+		"MESSAGE": "Der Inhalt des Benutzerorderners wurde verschoben. Da du Karaoke Mugen über Flatpak installiert hast, kann das Programm den alten Ordner nicht löschen. Daher solltest du diesen Ordner hier manuell löschen:\n\n{{oldDir}}\n\n(Er sollte leer sein!)",
+		"UNDERSTOOD": "Alles klar! Mache ich, bevor ich es vergesse!"
+	}
 }
