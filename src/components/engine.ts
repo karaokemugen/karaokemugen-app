@@ -29,7 +29,6 @@ import { initPlayer, quitmpv } from '../services/player.js';
 import { initPlaylistSystem, stopPlaylistSystem } from '../services/playlist.js';
 import { buildAllMediasList, updatePlaylistMedias } from '../services/playlistMedias.js';
 import { stopGame } from '../services/quiz.js';
-import { initRemote } from '../services/remote.js';
 import { checkDownloadStatus, updateAllRepos } from '../services/repo.js';
 import { initSession, stopSessionSystem } from '../services/session.js';
 import { initStats, stopStatsSystem } from '../services/stats.js';
@@ -41,7 +40,6 @@ import sentry from '../utils/sentry.js';
 import { getState, setState } from '../utils/state.js';
 import { writeStreamFiles } from '../utils/streamerFiles.js';
 import { getTwitchClient, initTwitch, stopTwitch } from '../utils/twitch.js';
-import { subRemoteUsers } from '../utils/userPubSub.js';
 import initFrontend from './frontend.js';
 
 let usageTime = 0;
@@ -58,17 +56,6 @@ export async function initEngine() {
 	const conf = getConfig();
 	const state = getState();
 	if (conf.Karaoke.Poll.Enabled) setState({ songPoll: true });
-	const internet = await (async () => {
-		try {
-			profile('InternetCheck');
-			await internetAvailable();
-			return true;
-		} catch (err) {
-			return false;
-		} finally {
-			profile('InternetCheck');
-		}
-	})();
 	if (state.opt.validate) {
 		try {
 			initStep(i18next.t('INIT_VALIDATION'));
@@ -148,7 +135,6 @@ export async function initEngine() {
 	} else {
 		initStep(i18next.t('INIT_DB'));
 		const migrations = await initDBSystem();
-		const didGeneration = await preFlightCheck();
 		checkIfAppHasBeenUpdated();
 		initStep(i18next.t('INIT_USER'));
 		await initUserSystem();
@@ -157,22 +143,6 @@ export async function initEngine() {
 			setConfig({ System: { FrontendPort: port } });
 			// Reinit menu since we switched ports. Only if first run has already been done.
 			if (!conf.App.FirstRun) applyMenu('DEFAULT');
-		}
-		if (internet) {
-			try {
-				initStep(i18next.t('INIT_ONLINEURL'));
-				await initKMServerCommunication();
-				const onlinePromises = [
-					// TODO: add config item for this?
-					subRemoteUsers(),
-				];
-				if (conf.Online.Remote) onlinePromises.push(initRemote());
-				await Promise.all(onlinePromises);
-			} catch (err) {
-				// Non-blocking
-				logger.error('Failed to init online system', { service, obj: err });
-				sentry.error(err, 'warning');
-			}
 		}
 		try {
 			await initPlaylistSystem();
@@ -187,7 +157,8 @@ export async function initEngine() {
 			enableWSLogging(state.opt.debug ? 'debug' : 'info');
 			// Easter egg
 			const ready = Math.floor(Math.random() * 10) >= 9 ? 'LADY' : 'READY';
-			if (!state.isTest && state.opt.cli) await welcomeToYoukousoKaraokeMugen();
+			if (!state.isTest && state.opt.cli) welcomeToYoukousoKaraokeMugen();
+			const didGeneration = await preFlightCheck();
 			await postMigrationTasks(migrations, didGeneration);
 			if (state.args.length > 0) {
 				// Let's try the last argument
@@ -199,26 +170,8 @@ export async function initEngine() {
 					handleProtocol(state.args[0].substr(5).split('/')).catch(() => {});
 				}
 			}
-			// If we are testing, we're awaiting updateAllGitRepos
-			if (state.isTest) {
-				await updateAllRepos();
-			}
-			if (state.isTest && !state.opt.noAutoTest) {
-				runTests();
-			}
 			if (conf.System.Database.bundledPostgresBinary) dumpPG().catch(() => {});
 			if (!state.isTest && getConfig().Online.Discord.DisplayActivity) initDiscordRPC();
-			if (!state.isTest) {
-				if (internet) {
-					updatePlaylistMedias()
-						.then(buildAllMediasList)
-						.catch(() => {});
-				} else {
-					buildAllMediasList().catch(() => {});
-				}
-			}
-			// Update everything kara-related
-			updateBase(internet).catch();
 			// Mark all migrations as done for the first run to
 			// avoid the user to have to do all the migrations from start
 			if (conf.App.FirstRun) await markAllMigrationsFrontendAsDone();
@@ -232,6 +185,30 @@ export async function initEngine() {
 			archiveOldLogs();
 			initUsageTimer();
 			if (conf.Player.KeyboardMediaShortcuts) registerShortcuts();
+			if (state.isTest) {
+				await updateAllRepos();
+			}
+			internetCheck().then(internet => {
+				if (internet) {
+					initStep(i18next.t('INIT_ONLINEURL'));
+					initKMServerCommunication(getConfig().Online.Remote);
+				}
+				if (!state.isTest) {
+					if (internet) {
+						updatePlaylistMedias()
+							.then(buildAllMediasList)
+							.catch(() => {});
+					} else {
+						buildAllMediasList().catch(() => {});
+					}
+				}
+				// Update everything kara-related
+				// If we are testing, we're awaiting updateAllGitRepos
+				updateBase(internet).catch();
+			});
+			if (state.isTest && !state.opt.noAutoTest) {
+				runTests();
+			}
 			logger.info(`Karaoke Mugen is ${ready}`, { service });
 		} catch (err) {
 			logger.error('Karaoke Mugen IS NOT READY', { service, obj: err });
@@ -243,6 +220,19 @@ export async function initEngine() {
 	}
 }
 
+async function internetCheck(): Promise<boolean> {
+	try {
+		profile('InternetCheck');
+		await internetAvailable();
+		return true;
+	} catch (err) {
+		return false;
+	} finally {
+		profile('InternetCheck');
+	}
+}
+
+/** Updates KM's app base as a whole. It adds checks and other inits to updateAllRepos() that are not needed when doing tests. */
 export async function updateBase(internet: boolean) {
 	const state = getState();
 	const conf = getConfig();
@@ -328,6 +318,7 @@ export async function shutdown() {
 	exit(0);
 }
 
+/** Checks if files have changed and if so triggers a generation with progressbar and such for the user */
 async function preFlightCheck(): Promise<boolean> {
 	const state = getState();
 	profile('preFlightCheck');

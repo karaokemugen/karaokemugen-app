@@ -1,11 +1,13 @@
+import { copy } from 'fs-extra';
 import i18n from 'i18next';
+import { resolve } from 'path';
 import { setTimeout as sleep } from 'timers/promises';
 
 import { isShutdownInProgress } from '../components/engine.js';
 import Players, { switchToPollScreen } from '../components/mpv.js';
 import { updatePlaylistLastEditTime, updatePLCVisible } from '../dao/playlist.js';
 import { APIMessage } from '../lib/services/frontend.js';
-import { getConfig, setConfig } from '../lib/utils/config.js';
+import { getConfig, resolvedPath, setConfig } from '../lib/utils/config.js';
 import { ErrorKM } from '../lib/utils/error.js';
 import logger, { profile } from '../lib/utils/logger.js';
 import { emit, on } from '../lib/utils/pubsub.js';
@@ -472,6 +474,18 @@ export async function hideQRCode() {
 export async function initPlayer() {
 	try {
 		profile('initPlayer');
+		profile('copyBackgrounds');
+		const state = getState();
+		// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel
+		const tempInput = resolve(resolvedPath('Temp'), 'input.conf');
+		logger.debug(`Copying input.conf to ${tempInput}`, { service });
+		await copy(resolve(state.resourcePath, 'assets/input.conf'), tempInput);
+
+		const bundledBackgrounds = resolvedPath('BundledBackgrounds');
+		logger.debug(`Copying default backgrounds to ${bundledBackgrounds}`, { service });
+		await copy(resolve(state.resourcePath, 'assets/backgrounds'), `${bundledBackgrounds}/`, { overwrite: true });
+		profile('copyBackgrounds');
+
 		await mpv.initPlayerSystem();
 	} catch (err) {
 		logger.error('Failed mpv init', { service, obj: err });
