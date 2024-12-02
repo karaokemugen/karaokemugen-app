@@ -98,20 +98,11 @@ export async function init() {
 
 	// Checking paths, create them if needed.
 	await checkPaths(getConfig());
-	profile('copyBackgrounds');
-	// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel
-	const tempInput = resolve(resolvedPath('Temp'), 'input.conf');
-	logger.debug(`Copying input.conf to ${tempInput}`, { service });
-	await copy(resolve(state.resourcePath, 'assets/input.conf'), tempInput);
-
-	const bundledBackgrounds = resolvedPath('BundledBackgrounds');
-	logger.debug(`Copying default backgrounds to ${bundledBackgrounds}`, { service });
-	await copy(resolve(state.resourcePath, 'assets/backgrounds'), `${bundledBackgrounds}/`, { overwrite: true });
-
 	// Copy avatar blank.png if it doesn't exist to the avatar path
 	logger.debug(`Copying blank.png to ${resolvedPath('Avatars')}`, { service });
-	await copy(resolve(state.resourcePath, 'assets/blank.png'), resolve(resolvedPath('Avatars'), 'blank.png'));
-	profile('copyBackgrounds');
+	copy(resolve(state.resourcePath, 'assets/blank.png'), resolve(resolvedPath('Avatars'), 'blank.png')).catch(() =>
+		logger.error('Unable to copy blank avatar', { service })
+	);
 	// Gentlemen, start your engines.
 	try {
 		await initEngine();

@@ -3,6 +3,9 @@ import { io, Socket } from 'socket.io-client';
 import { APIData } from '../lib/types/api.js';
 import { getConfig } from '../lib/utils/config.js';
 import logger, { profile } from '../lib/utils/logger.js';
+import { initRemote } from '../services/remote.js';
+import Sentry from './sentry.js';
+import { subRemoteUsers } from './userPubSub.js';
 
 let socket: Socket;
 
@@ -34,16 +37,17 @@ function connectToKMServer() {
 	});
 }
 
-export async function initKMServerCommunication() {
+export async function initKMServerCommunication(remote: boolean) {
 	try {
 		profile('initKMServerComms');
 		logger.debug('Connecting to KMServer via socket.io', { service });
 		await connectToKMServer();
-		// Hooks?
-		// What Hooks? :)
-	} catch (e) {
-		logger.error('Cannot establish socket connection to KMServer', { service, obj: e });
-		throw e;
+		subRemoteUsers();
+		if (remote) initRemote();
+	} catch (err) {
+		logger.error('Cannot establish socket connection to KMServer', { service, obj: err });
+		Sentry.error(err, 'warning');
+		// Non fatal.
 	} finally {
 		profile('initKMServerComms');
 	}

@@ -82,7 +82,7 @@ import { getUser, getUsers, updateSongsLeft } from './user.js';
 
 const service = 'Playlist';
 
-let freeOrphanedSongsIntervalID;
+let freeOrphanedSongsIntervalID: NodeJS.Timeout;
 
 /** Test if basic playlists exist */
 export async function testPlaylists() {
