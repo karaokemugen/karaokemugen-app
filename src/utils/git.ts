@@ -10,7 +10,7 @@ import logger from '../lib/utils/logger.js';
 import Task from '../lib/utils/taskManager.js';
 import { getRepo } from '../services/repo.js';
 import { Commit } from '../types/repo.js';
-import { updateKnownHostsFile } from './ssh.js';
+import { getKeyFileName, getKnownHostsFileName, updateKnownHostsFile } from './ssh.js';
 import { getState } from './state.js';
 
 const service = 'Git';
@@ -97,6 +97,20 @@ export default class Git {
 			},
 			progress: this.progressHandler.bind(this),
 		});
+		const url = this.getFormattedURL();
+		if (this.isSshUrl()) {
+			this.keyFile = getKeyFileName(this.opts.repoName);
+			this.knownHostsFile = getKnownHostsFileName(this.opts.repoName);
+		}
+		if (await fileExists(this.keyFile)) {
+			await this.git.addConfig(
+				'core.sshCommand',
+				`ssh -o UserKnownHostsFile="${this.knownHostsFile}" -i "${this.keyFile}"`
+			);
+			await updateKnownHostsFile(url, this.opts.repoName);
+		} else {
+			await this.git.raw(['config', '--unset', 'core.sshCommand']);
+		}
 		if (configChanged) {
 			logger.info('Setting up git repository settings', { service });
 			// Set email and stuff
@@ -108,21 +122,11 @@ export default class Git {
 			// Check if Remote is correctly configured
 			const remotes = await this.git.getRemotes(true);
 			const origin = remotes.find(r => r.name === 'origin');
-			const url = this.getFormattedURL();
 			if (!origin) await this.git.addRemote('origin', url);
 			if (origin && (origin.refs.fetch !== url || origin.refs.push !== url)) {
 				logger.debug(`${this.opts.repoName}: Rebuild remote`, { service });
 				await this.setRemote();
 				await this.git.branch(['--set-upstream-to=origin/master', 'master']);
-			}
-			if (this.isSshUrl() && (await fileExists(this.keyFile))) {
-				await this.git.addConfig(
-					'core.sshCommand',
-					`ssh -o UserKnownHostsFile="${this.knownHostsFile}" -i "${this.keyFile}"`
-				);
-				await updateKnownHostsFile(url, this.opts.repoName);
-			} else {
-				await this.git.raw(['config', '--unset', 'core.sshCommand']);
 			}
 		}
 	}
