@@ -2099,7 +2099,8 @@
 	},
 	"ABOUT": {
 		"DONATORS": "Grazie a <1>{{donators}}</1> per aver donato a Karaoke Mugen",
-		"DESCRIPTION": "Un lettore karaoke ed un organizzatore di feste, tra amici o in pubblico. Licenza MIT.",
+		"DESCRIPTION": "Un lettore karaoke ed un organizzatore di feste, tra amici o in pubblico.",
+		"LICENSE": "Licenza MIT.",
 		"CONTRIBUTORS": "I karaoke sono stati creati da persone meravigliose, come <1>{{contributors}}</1>, per esempio."
 	},
 	"SEARCH_FILTER": "Cerca filtro",

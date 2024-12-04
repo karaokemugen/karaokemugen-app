@@ -2069,7 +2069,8 @@
 		"ONLINE_USER_REQUIRED": "Un utilisateur en ligne est requis pour la boîte de réception"
 	},
 	"ABOUT": {
-		"DESCRIPTION": "Un lecteur de karaoké et un outil d'organisation de soirées entre amis ou en public. Sous licence MIT.",
+		"DESCRIPTION": "Un lecteur de karaoké et un outil d'organisation de soirées entre amis ou en public.",
+		"LICENSE": "Sous licence MIT.",
 		"CONTRIBUTORS": "Les karaokés ont été créés par des gens géniaux, comme par exemple <1>{{contributors}}</1>.",
 		"DONATORS": "Merci à <1>{{donators}}</1> pour leur don à Karaoke Mugen"
 	},

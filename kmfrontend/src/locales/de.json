@@ -2104,7 +2104,8 @@
 	},
 	"ABOUT": {
 		"DONATORS": "Danke an <1>1{{donators}}</1> für ihre Spenden an Karaoke Mugen",
-		"DESCRIPTION": "Ein Karaoke-Spieler und ein Partyveranstalter, unter Freunden oder in der Öffentlichkeit. MIT-lizenziert.",
+		"DESCRIPTION": "Ein Karaoke-Spieler und ein Partyveranstalter, unter Freunden oder in der Öffentlichkeit.",
+		"LICENSE": "MIT-lizenziert.",
 		"CONTRIBUTORS": "Die Karaoke wurden von großartigen Menschen erstellt, wie zum Beispiel <1>{{contributors}}</1>."
 	},
 	"CHIBI": {

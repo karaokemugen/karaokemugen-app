@@ -44,6 +44,7 @@ export default function About() {
 			<div className="app-presentation">
 				<img src={imgMugenFullLogo} alt="Karaoke Mugen logo" />
 				<p>{i18n.t('ABOUT.DESCRIPTION')}</p>
+				<p>{i18n.t('ABOUT.LICENSE')}</p>
 			</div>
 			<p className="version">
 				v{context.globalState.settings.data.version.number}{' '}

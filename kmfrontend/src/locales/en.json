@@ -2069,7 +2069,8 @@
 		"ONLINE_USER_REQUIRED": "A online user is required for inbox"
 	},
 	"ABOUT": {
-		"DESCRIPTION": "A karaoke player and a party organizer, between friends or in public. MIT-licensed.",
+		"DESCRIPTION": "A karaoke player and a party organizer, between friends or in public.",
+		"LICENSE": "MIT-licensed.",
 		"CONTRIBUTORS": "The karaoke were created by awesome people, like <1>{{contributors}}</1> for example.",
 		"DONATORS": "Thanks to <1>{{donators}}</1> for their donations to Karaoke Mugen"
 	},
