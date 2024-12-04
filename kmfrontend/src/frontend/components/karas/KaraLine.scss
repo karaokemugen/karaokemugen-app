@@ -151,6 +151,9 @@ body:not(.touch) {
 			display: inline-block;
 			height: min-content;
 			overflow-wrap: break-word;
+			&.empty {
+				height: 1.5rem;
+			}
 		}
 		.contentDivMobileSerie,
 		.contentDivMobileTitle {
