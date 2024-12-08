@@ -427,10 +427,10 @@
 		"PREVIEW_HOOKS": "Vorschau-Tags automatisch hinzugefügt",
 		"SERIES_SINGERS_REQUIRED": "Serie, Gesungen von oder Von der Musikband kann nicht gleichzeitig leer sein.",
 		"REPOSITORY": "Repository",
-		"PARENTS_TOOLTIP": "Wenn ein Bezugslied definiert ist, wird dieses Lied als Alternative zu dem/den ausgewählten Bezugslied angezeigt. Bitte wähle das richtige Repository aus, bevor du das Feld ausfüllst, damit keine Lied aus anderen Repositorys hinzugefügt wird.",
+		"PARENTS_TOOLTIP": "Wenn ein Bezugslied definiert ist, wird dieses Lied als Alternative angezeigt. Bitte wähle das richtige Repository aus, bevor du das Feld ausfüllst, damit keine Lied aus anderen Repositorys hinzugefügt wird.",
 		"SYNC_WARNING_DESCRIPTION": "Beim Synchronisieren von Medien werden alle Medien aus deaktivierten Sammlungen entfernt, wenn sie zuvor heruntergeladen wurden. Dadurch können viele Dateien gelöscht werden, wenn du eine Sammlung, die du normalerweise benutzt, vorübergehend deaktiviert hast.",
 		"QUEUE_LABEL_SONGS": "({{numberSongs}} Lieder):",
-		"ONLINE_REPOSITORIES": "Einige deiner Karaoke stammen aus anderen Repositories (z. B. kara.moe server). Diese Karaoke können über diese Schnittstelle nicht bearbeitet werden, um sicherzustellen, dass die Repositories synchronisiert bleiben. Du kannst das Kontrollkästchen \"Maintainer-Modus\" in den Repository-Einstellungen aktivieren. Dann erhältst du keine Updates mehr, kannst aber Karaoke bearbeiten oder löschen.",
+		"ONLINE_REPOSITORIES": "Einige deiner Lieder stammen aus anderen Repositorys (z. B. vom kara.moe-Server). Diese Lieder können über diese Schnittstelle nicht bearbeitet werden, um sicherzustellen, dass die Repositorys synchronisiert bleiben. Du kannst das Kontrollkästchen \"Maintainer-Modus\" in den Repository-Einstellungen aktivieren. Dann erhältst du keine Updates mehr, kannst aber Lieder bearbeiten oder löschen.",
 		"SHOW_LYRICS_IN_FOLDER": "Songtext im Ordner anzeigen",
 		"VERSION_AVAILABILITY": "Verfügbar in {{count}} Versionen.",
 		"ORDER_TOOLTIP": "Nummer des Openings/Endings. Wenn dies das einzige Opening/Ending der Reihe ist, lass diese Info leer.",
@@ -664,7 +664,9 @@
 			"PUBLIC_PLAYER_CONTROLS": "Publikumskontrolle des Player zulassen",
 			"REQUIRE_USER_CREATION_CODE_TOOLTIP": "Benutzer benötigen einen Code, um ein neues Benutzerkonto zu erstellen, den ausschließlich der Betreiber sehen und weitergeben kann. Der Code wird im Benutzerfenster im K-Menü angezeigt.",
 			"PUBLIC_PLAYER_CONTROLS_TOOLTIP": "Start/Pause, stopp, vor und zurück wird im Publikums-Interface sichtbar und gestattet den Benutzern den Player von ihrem Gerät aus zu steuern. Nur in kleinen Gruppen benutzen!"
-		}
+		},
+		"FILTER_SETTINGS": "Sucheinstellungen",
+		"FILTER_SETTINGS_TOOLTIP": "Finde schnell die Einstellung, die du möchtest, mit dieser Suchleiste."
 	},
 	"KARA_DETAIL": {
 		"JINGLE": "Jingle",
@@ -837,7 +839,7 @@
 		"KARA_PLAYED_ERROR": "Fehler beim Sortieren der Songs nach den am häufigsten gespielten Titeln",
 		"USER_GET_ERROR_ONLINE": "Fehler beim Abrufen von Online-Benutzern",
 		"USER_CREATE_ERROR": "Fehler beim Erstellen des Benutzers",
-		"AUTOMIX_NO_SONGS_MEET_CRITERIAS_ERROR": "Keine Songs erfüllten die für diesen AutoMix ausgewählten Kriterien",
+		"AUTOMIX_NO_SONGS_MEET_CRITERIAS_ERROR": "Keine Lieder erfüllen die ausgewählten Kriterien für diesen AutoMix",
 		"DOWNLOADS_PAUSE_ERROR": "Fehler beim Anhalten der Downloads",
 		"PIME_TARADOX": "Zeitparadoxon entdeckt! Ein Lied kann nicht dasselbe Bezugs- und untergeordnete Lied haben!",
 		"FS_DELETE_ERROR": "Fehler beim Löschen der Datei",
@@ -868,7 +870,7 @@
 		"REPO_UPLOAD_MEDIA_ERROR": "Fehler beim Senden der Medien an das Repository",
 		"TAG_DELETE_ERROR": "Fehler beim Löschen des Tags",
 		"FILES_VALIDATED_ERROR": "Fehler beim Validieren der Dateien",
-		"KARA_RANKING_ERROR": "Fehler beim Sortieren der Songs nach den am häufigsten gewünschten Titeln",
+		"KARA_RANKING_ERROR": "Fehler beim Sortieren der Lieder nach Beliebtheit",
 		"REPO_PATH_ERROR_IN_APP_PATH": "Die Repository-Medien oder der Basispfad darf sich nicht im Pfad der Anwendung befinden",
 		"USER_DELETE_ERROR": "Fehler beim Löschen des Benutzers",
 		"USER_EDIT_ERROR": "Fehler beim Bearbeiten des Benutzers",
@@ -989,8 +991,8 @@
 			"TITLE": "Unbenutzte Dateien"
 		},
 		"KARAOKE_LIST": {
-			"TITLE": "Liste der Karaokes",
-			"DESCRIPTION": "Von hier aus kannst du Karaokes bearbeiten, hinzufügen oder löschen. Normalerweise nur für Karaoke-Repository-Betreuer."
+			"TITLE": "Liste der Lieder",
+			"DESCRIPTION": "Von hier aus kannst du Lieder bearbeiten, hinzufügen oder löschen. Normalerweise nur für Karaoke-Repository-Maintainer."
 		},
 		"BACKGROUNDS": {
 			"DESCRIPTION": "Nur eine Möglichkeit, deinen Player ein wenig anzupassen.",
@@ -1027,7 +1029,7 @@
 		},
 		"DOWNLOAD": {
 			"DESCRIPTION": "Finde Medien, die mit Songs aus deinen konfigurierten Repositories verknüpft sind, und rufe sie ab.",
-			"TITLE": "Medien Download Manager"
+			"TITLE": "Medien-Download-Manager"
 		},
 		"LOGS": {
 			"TITLE": "Protokolle",
@@ -1042,8 +1044,8 @@
 			"TITLE": "Liste der Tags"
 		},
 		"INBOX": {
-			"TITLE": "Posteingang für Karaoke/Lieder zum Integrieren",
-			"DESCRIPTION": "Als Betreuer dieser Karaoke-Basis ist es deine Aufgabe, diese Liste abzuarbeiten."
+			"TITLE": "Posteingang für Lieder zum Integrieren",
+			"DESCRIPTION": "Als Maintainer dieser Karaoke-Datenbank ist es deine Aufgabe, diese Liste abzuarbeiten."
 		},
 		"KARATAG_BATCH_EDIT": {
 			"DESCRIPTION": "Nur für Maintainer: Auf dieser Seite kannst du ein Tag für mehrere Karaoke gleichzeitig hinzufügen oder entfernen.",
@@ -1553,7 +1555,7 @@
 		"SESSION_EDITED": "Sitzung erfolgreich bearbeitet",
 		"REPOS_ALL_UPDATED": "Alle Repositories aktualisiert",
 		"CONFIG_BACKUPED": "Sicherung der Konfigurationsdatei in config.yml.backup erfolgreich",
-		"REPO_MOVING_MEDIA_IN_PROGRESS": "Verschiebung von Medien-Dateien in Gange",
+		"REPO_MOVING_MEDIA_IN_PROGRESS": "Verschieben von Medien-Dateien läuft",
 		"USER_RESETPASSWORD_ONLINE": "Du hast eine E-Mail mit einem Link erhalten, mit dem du dein Passwort zurücksetzen kannst.",
 		"KARA_CREATED": "Karaoke/Lied erstellt",
 		"USER_CONVERTED": "Dein Konto ist jetzt online",
@@ -1562,7 +1564,7 @@
 		"REPO_CREATED": "Repository erfolgreich hinzugefügt",
 		"USER_DELETED": "Benutzer erfolgreich gelöscht",
 		"TAG_EDITED": "Tag erfolgreich bearbeitet",
-		"UPDATING_MEDIAS_IN_PROGRESS": "Medien-Update im Gange",
+		"UPDATING_MEDIAS_IN_PROGRESS": "Medien-Update läuft",
 		"SESSION_CREATED": "Sitzung erfolgreich erstellt",
 		"FILES_VALIDATED": "Dateien erfolgreich validiert",
 		"FAVORITES_IMPORTED": "Favoriten importiert",
@@ -1699,7 +1701,7 @@
 		"STORAGE_INFO": "Es gibt mehrere Möglichkeiten, den von deinen Repositories genutzten Speicherplatz zu verwalten:",
 		"MAINTAINER_MODE": "Maintainer-Modus",
 		"STORAGE_INFO_MOVE": "Auf der Seite Repository's hast du außerdem die Möglichkeit, die Dateien eines Repositorys an einen anderen Ort zu verschieben, z. B. auf ein externes Laufwerk, einen USB-Stick oder eine Netzwerkfreigabe, um Platz auf deinem Hauptlaufwerk zu schaffen.",
-		"MOVING_MEDIA_BUTTON": "Medien verschieben…",
+		"MOVING_MEDIA_BUTTON": "Medien verschieben …",
 		"MOVE_TOOLTIP": "Damit kannst du festlegen, welche Repositories bei der Erstellung deiner Datenbank Priorität haben: Die höchsten Repositories werden zuerst berücksichtigt, wenn zwei Repositories die gleiche Lieder haben",
 		"UPDATE_TOOLTIP": "Wenn diese Option deaktiviert ist, wird die Anwendung das Repository nicht mehr aktualisieren.",
 		"AUTO_MEDIA_DOWNLOADS_TOOLTIP": "Wenn deine Internetverbindung langsam ist, empfehlen wir, dass du \"Alle\" auswählst, damit die Medien vorher heruntergeladen werden. Dies empfiehlt sich auch für den Einsatz auf Events oder bei Streams, um mögliche Fehler mitten in einer Karaoke Session zu vermeiden!",
@@ -1730,7 +1732,7 @@
 		"ANILIST_ID": "Anilist ID/URL",
 		"TYPES_TOOLTIP": "Dies ist der Tag-Typ, damit er von den Nutzern richtig gesucht werden kann",
 		"MERGE_WITH_BUTTON": "Zusammenführen!",
-		"SHORT_NAME_TOOLTIP": "Dies ist der Kurzname, der in der Benutzeroberfläche verwendet wird, wenn Karaoke-Titel angezeigt werden",
+		"SHORT_NAME_TOOLTIP": "Dies ist der Kurzname, der im Betreiber-Interface als Liedtitel angezeigt wird",
 		"ANILIST_ID_TOOLTIP": "Wenn es sich um einen Anime handelt, gib bitte seine ID/URL auf anilist.co an",
 		"TAG_DELETED_CONFIRM": "Bestätige die Löschung des Tags",
 		"NAME_TOOLTIP": "Dies ist der interne Name, der verwendet wird, um die Tags in der Datenbank von Karaoke Mugen zu referenzieren",
@@ -1842,7 +1844,7 @@
 		"REPOSITORIES": "Sammlungen und Repositories",
 		"ADVANCED_OPTIONS": "Systemeinstellungen",
 		"GIT": "Git",
-		"MAINTAINER": "Betreuer",
+		"MAINTAINER": "Maintainer",
 		"HOME": "Dashboard",
 		"UNUSED_FILES": "Unbenutzte Dateien",
 		"TAGS": "Tags",
@@ -1891,7 +1893,7 @@
 			"GUESSING_one": "Nur{{count}} Sekunde verbleibend!"
 		},
 		"BONUS_POINTS_other": "{{count}} Bonus Punkte",
-		"PREVIOUS_KARAOKES": "Vorhergehende Karaoke/Lieder",
+		"PREVIOUS_KARAOKES": "Vorhergehende Lieder",
 		"QUIT": "Verlasse das Quiz",
 		"TITLE": "Quiz Modus",
 		"END": "Das Quiz ist vorbei!",
@@ -1959,7 +1961,7 @@
 		"CONTACT_INFOS": "Kontaktinformationen zum Autor",
 		"DOWNLOAD": "Karaoke/Lied herunterladen",
 		"USER": "Zuständiger Benutzer für die Integration von Meldungen",
-		"NO_REPOSITORY_ENABLED": "Du hast Kein Online-Repository im Betreuer-Modus aktiviert",
+		"NO_REPOSITORY_ENABLED": "Du hast kein Online-Repository im Maintainer-Modus aktiviert",
 		"REVIEW": "Review"
 	},
 	"BACKGROUNDS_MGMT": {
@@ -2068,11 +2070,11 @@
 		"UPDATING_WORKDIR": "Arbeitsverzeichnis aktualisieren",
 		"CREATING_SONG": "Lieder erstellen…",
 		"COMMITING_CHANGES": "Änderungen übertragen",
-		"MOVING_MEDIAS_REPO": "Medien für Repositorys verschieben…",
-		"FINDING_UNUSED_MEDIAS": "Die Suche nach ungenutzten Medien…",
+		"MOVING_MEDIAS_REPO": "Medien für Repositorys verschieben …",
+		"FINDING_UNUSED_MEDIAS": "Suche nach ungenutzten Medien …",
 		"GENERATING": "Datenbank generieren…",
 		"DUMMY_TASK": "Keine laufenden Aufgaben",
-		"UPDATING_PLMEDIAS": "Aktualisieren der Wiedergabelisten-Medien…",
+		"UPDATING_PLMEDIAS": "Aktualisiere Wiedergabelisten-Medien …",
 		"EXTRACTING_ZIP": "Extrahieren der Datenbank",
 		"EDITING_SONG": "Lieder bearbeiten…",
 		"EDITING_TAG_IN_PROGRESS": "Tag bearbeiten…",
@@ -2094,11 +2096,11 @@
 		"DOWNLOADING": "Herunterladen…",
 		"DOWNLOADING_ZIP": "Herunterladen der Datenbank",
 		"REFRESHING_DATA": "Daten aktualisieren…",
-		"UPLOADING_FTP": "Hochladen auf den FTP Server…",
+		"UPLOADING_FTP": "Hochladen auf den FTP-Server …",
 		"MERGING_TAGS_IN_PROGRESS": "Tags zusammenführen…",
 		"CREATING_TAG_IN_PROGRESS": "Tag erstellen…",
 		"GENERATING_READING": "Daten einlesen…",
-		"UPDATING_MEDIAS": "Medien aktualisieren…",
+		"UPDATING_MEDIAS": "Medien aktualisieren …",
 		"CALCULATING_MEDIA_ENCODING_PARAMETERS": "Medien-Encode-Parameter werden berechnet …",
 		"ENCODING_MEDIA": "Medium wird encodet …"
 	},
