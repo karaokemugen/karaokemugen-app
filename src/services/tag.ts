@@ -525,13 +525,13 @@ export async function checkCollections() {
 						}
 					} catch (err) {
 						// Fallback to what the repository has locally
-						const tags = await getTags({ type: tagTypes.collections });
+						const tags = await getTags({ type: [tagTypes.collections] });
 						for (const tag of tags.content) {
 							if (!availableCollections.find(t => t.tid === tag.tid)) availableCollections.push(tag);
 						}
 					}
 				} else {
-					const tags = await getTags({ type: tagTypes.collections });
+					const tags = await getTags({ type: [tagTypes.collections] });
 					for (const tag of tags.content) {
 						if (!availableCollections.find(t => t.tid === tag.tid)) availableCollections.push(tag);
 					}
