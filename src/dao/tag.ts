@@ -22,7 +22,7 @@ export async function selectAllTags(params: TagParams): Promise<DBTag[]> {
 	const filterClauses: WhereClause = params.filter
 		? buildTagClauses(params.filter)
 		: { sql: [], params: {}, additionalFrom: [] };
-	const typeClauses = params.type ? ` AND t.types @> ARRAY[${params.type}]` : '';
+	const typeClauses = params.type ? ` AND t.types && ARRAY[${params.type.join(',')}]` : '';
 	let limitClause = '';
 	let offsetClause = '';
 	const orderClause = '';
@@ -40,7 +40,10 @@ export async function selectAllTags(params: TagParams): Promise<DBTag[]> {
 		 `;
 		stripClause = ' AND karacounttype::int2 > 0';
 	}
-	if (params.duplicates) whereClause = ' AND t.name IN (SELECT name FROM tag GROUP BY name HAVING COUNT(name) > 1)';
+	if (params.duplicates) {
+		const duplicateTypeClause = params.type ? ` AND types && ARRAY[${params.type.join(',')}]` : '';
+		whereClause = ` AND t.name IN (SELECT name FROM tag WHERE true ${duplicateTypeClause} GROUP BY name HAVING COUNT(name) > 1)`;
+	}
 	if (params.tid) {
 		if (!params.tid.match(uuidRegexp)) throw 'Invalid TID';
 		whereClause = `AND t.pk_tid = '${params.tid}'`;

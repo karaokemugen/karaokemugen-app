@@ -28,7 +28,7 @@ export default function About() {
 			);
 			setDonators(shuffle(donators));
 		});
-		commandBackend('getTags', { type: 6 }).then(res => {
+		commandBackend('getTags', { type: [6] }).then(res => {
 			setContributors(shuffle(res.content.map(c => c.name)));
 		});
 		commandBackend('getElectronVersions').then(setVersions);
