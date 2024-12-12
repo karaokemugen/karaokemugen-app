@@ -34,7 +34,7 @@ function TagsList() {
 	const getTags = async (from: number) => {
 		try {
 			const response = await commandBackend('getTags', {
-				type: tagType,
+				type: [tagType],
 				from,
 				size: chunksize,
 				filter: context.globalState.frontendContext.filterValue1,
