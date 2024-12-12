@@ -532,24 +532,24 @@ function KaraForm(props: KaraFormProps) {
 			},
 			medias: [
 				{
-					version: mediaVersion,
-					filename: mediaInfo?.filename ?? props.kara?.mediafile,
-					loudnorm: mediaInfo?.loudnorm ?? props.kara?.loudnorm,
-					filesize: mediaInfo?.size ?? props.kara?.mediasize,
-					duration: mediaInfo?.duration ?? props.kara?.duration,
 					default: true,
+					duration: mediaInfo?.duration ?? props.kara?.duration,
+					filename: mediaInfo?.filename ?? props.kara?.mediafile,
+					filesize: mediaInfo?.size ?? props.kara?.mediasize,
+					loudnorm: mediaInfo?.loudnorm ?? props.kara?.loudnorm,
 					lyrics:
 						kara.subfile || announcePositionX
 							? [
 									{
-										filename: kara.subfile || null,
+										announce_position_x: announcePositionX as PositionX,
+										announce_position_y: announcePositionY as PositionY,
 										default: true,
+										filename: kara.subfile || null,
 										version: 'Default',
-										announcePositionX: announcePositionX as PositionX,
-										announcePositionY: announcePositionY as PositionY,
 									},
 								]
 							: [],
+					version: mediaVersion,
 				},
 			],
 			data: {
