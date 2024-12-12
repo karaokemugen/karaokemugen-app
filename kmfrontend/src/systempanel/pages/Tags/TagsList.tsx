@@ -31,7 +31,7 @@ function TagsList() {
 
 	const refresh = async () => {
 		try {
-			const res = await commandBackend('getTags', { filter, type: [typeTag] });
+			const res = await commandBackend('getTags', { filter, type: typeTag ? [typeTag] : undefined });
 			setTags(res.content);
 		} catch (e) {
 			//already display
