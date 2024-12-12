@@ -46,7 +46,7 @@ describe('Tags', () => {
 	});
 	it('Get tag list for type 5', async () => {
 		const data = await commandBackend(token, 'getTags', {
-			type: 5,
+			type: [5],
 		});
 		const tags: DBTag[] = data.content;
 		for (const tag of tags) {
