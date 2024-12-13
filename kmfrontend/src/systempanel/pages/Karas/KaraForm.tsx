@@ -762,7 +762,15 @@ function KaraForm(props: KaraFormProps) {
 		if (
 			!props.kara?.kid &&
 			titlesIsTouched !== true &&
-			form.isFieldsTouched(['versions', 'series', 'language']) !== true
+			form.isFieldsTouched([
+				'versions',
+				'series',
+				'language',
+				'songtypes',
+				'singers',
+				'singergroups',
+				'authors',
+			]) !== true
 		) {
 			setTitles(parentKara.titles);
 			setDefaultLanguage(parentKara.titles_default_language);
