@@ -29,6 +29,7 @@ import { commandBackend, getSocket } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 import { getProtocolForOnline } from '../../../utils/tools';
 import Title from '../../components/Title';
+import { KaraList } from '../../../../../src/lib/types/kara';
 interface KaraDownloadState {
 	karas: DBKara[];
 	i18nTag: any;
@@ -112,7 +113,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 		const p = Math.max(0, this.state.currentPage - 1);
 		const psz = this.state.currentPageSize;
 		const pfrom = p * psz;
-		const response = await commandBackend(
+		const response: KaraList = await commandBackend(
 			'getKaras',
 			{
 				filter: this.state.filter,
@@ -130,7 +131,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 				mediafile: kara.mediafile,
 				kid: kara.kid,
 				size: kara.mediasize,
-				name: kara.karafile.replace('.kara.json', ''),
+				name: kara.songname,
 				repository: kara.repository,
 			});
 		}
