@@ -184,7 +184,7 @@ SELECT
   ak.titles_aliases AS titles_aliases,
   ak.titles_default_language AS titles_default_language,
   ak.songorder AS songorder,
-  ak.subfile AS subfile,
+  ak.lyrics_infos AS lyrics_infos,
   ak.year AS year,
   ak.mediafile AS mediafile,
   ak.karafile AS karafile,
@@ -250,7 +250,7 @@ ${additionalFrom}
 WHERE pc.fk_plaid = :plaid
 ${filterClauses.map(clause => `AND (${clause})`).join(' ')}
 ${whereClause}
-GROUP BY pl.fk_plcid_playing, ak.pk_kid, ak.titles, ak.titles_aliases, ak.titles_default_language, ak.songorder, ak.tags, ak.subfile, ak.year, ak.mediafile, ak.karafile, ak.from_display_type, ak.duration, ak.mediasize, pc.created_at, pc.nickname, ak.download_status, pc.fk_login, pc.pos, pc.pk_plcid, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, u.type, ak.repository, pc.criterias
+GROUP BY pl.fk_plcid_playing, ak.pk_kid, ak.titles, ak.titles_aliases, ak.titles_default_language, ak.songorder, ak.tags, ak.lyrics_infos, ak.year, ak.mediafile, ak.karafile, ak.from_display_type, ak.duration, ak.mediasize, pc.created_at, pc.nickname, ak.download_status, pc.fk_login, pc.pos, pc.pk_plcid, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, u.type, ak.repository, pc.criterias
 ORDER BY ${orderClause}
 ${limitClause}
 ${offsetClause}
@@ -267,7 +267,7 @@ SELECT ak.pk_kid AS kid,
 	pc.created_at AS added_at,
 	ak.mediafile AS mediafile,
     ak.mediasize AS mediasize,
-	ak.subfile AS subfile,
+	ak.lyrics_infos AS lyrics_infos,
 	ak.tags AS tags,
 	ak.from_display_type AS from_display_type,
 	pc.pos AS pos,
@@ -314,7 +314,7 @@ SELECT
   ak.titles_aliases AS titles_aliases,
   ak.titles_default_language AS titles_default_language,
   ak.songorder AS songorder,
-  ak.subfile AS subfile,
+  ak.lyrics_infos AS lyrics_infos,
   ak.year AS year,
   ak.mediafile AS mediafile,
   ak.karafile AS karafile,
@@ -326,8 +326,6 @@ SELECT
   ak.mediasize AS mediasize,
   ak.download_status AS download_status,
   ak.from_display_type AS from_display_type,
-  ak.announce_position_x,
-  ak.announce_position_y,
   COUNT(p.played_at)::integer AS played,
   COUNT(rq.requested_at)::integer AS requested,
   (CASE WHEN :dejavu_time < max(p.played_at)
@@ -393,7 +391,7 @@ GROUP BY
 	ak.titles_aliases,
 	ak.titles_default_language,
 	ak.songorder,
-	ak.subfile,
+	ak.lyrics_infos,
 	ak.year,
 	ak.tags,
 	ak.mediafile,
@@ -418,8 +416,6 @@ GROUP BY
 	ak.repository,
 	ak.from_display_type,
 	ak.download_status,
-	ak.announce_position_x,
-	ak.announce_position_y,
 	pc.criterias
 `;
 

@@ -184,7 +184,7 @@ export default function KaraDetail(props: IProps) {
 
 	useDeferredEffect(() => {
 		setBg();
-		if (kara?.subfile) fetchLyrics();
+		if (kara?.lyrics_infos[0]) fetchLyrics();
 	}, [kara]);
 
 	useEffect(() => {
@@ -353,7 +353,7 @@ export default function KaraDetail(props: IProps) {
 			</a>
 		) : null;
 
-		const lyricsKara = kara.subfile ? (
+		const lyricsKara = kara.lyrics_infos[0] ? (
 			<div className="lyricsKara detailsKaraLine">
 				{lyrics?.length > 0 ? (
 					<div className="boldDetails">
