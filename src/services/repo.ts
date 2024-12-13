@@ -854,7 +854,7 @@ async function setupGit(repo: Repository, configChanged = false, clone = false) 
 		password: repo.Git.Password,
 		repoName: repo.Name,
 	});
-	await git.setup(configChanged);
+	await git.setup(configChanged, true);
 	return git;
 }
 

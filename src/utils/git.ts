@@ -88,7 +88,7 @@ export default class Git {
 	}
 
 	/** Prepare git instance */
-	async setup(configChanged = false) {
+	async setup(configChanged = false, cloning = false) {
 		this.git = simpleGit({
 			baseDir: this.opts.baseDir,
 			binary: await getGitPath(),
@@ -102,14 +102,15 @@ export default class Git {
 			this.keyFile = getKeyFileName(this.opts.repoName);
 			this.knownHostsFile = getKnownHostsFileName(this.opts.repoName);
 		}
-		if (await fileExists(this.keyFile)) {
+		// Config can't be done if cloning is in effect.
+		if ((await fileExists(this.keyFile)) && !cloning) {
 			await this.git.addConfig(
 				'core.sshCommand',
 				`ssh -o UserKnownHostsFile="${this.knownHostsFile}" -i "${this.keyFile}"`
 			);
 			await updateKnownHostsFile(url, this.opts.repoName);
 		} else {
-			await this.git.raw(['config', '--unset', 'core.sshCommand']);
+			if (!cloning) await this.git.raw(['config', '--unset', 'core.sshCommand']);
 		}
 		if (configChanged) {
 			logger.info('Setting up git repository settings', { service });
