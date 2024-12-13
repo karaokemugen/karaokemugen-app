@@ -835,13 +835,13 @@ export class Players {
 					// At least, loudnorm
 					options['lavfi-complex'] = '[aid1]loudnorm[ao]';
 				}),
-			resolveFileInDirs(song.subfile, resolvedPathRepos('Lyrics', song.repository))
+			resolveFileInDirs(song.lyrics_infos[0]?.filename, resolvedPathRepos('Lyrics', song.repository))
 				.then(res => (subFile = res[0]))
 				.catch(err => {
-					if (song.subfile) {
+					if (song.lyrics_infos[0]?.filename) {
 						// No need to log if there's no subfile to begin with, not an error.
 						logger.debug('Error while resolving subs path', { service, obj: err });
-						logger.warn(`Subs NOT FOUND : ${song.subfile}`, { service });
+						logger.warn(`Subs NOT FOUND : ${song.lyrics_infos[0].filename}`, { service });
 					}
 					subFile = '';
 				}),
@@ -1370,11 +1370,14 @@ export class Players {
 		// Song playing
 		const manifest = getRepoManifest(playerState.currentSong.repository);
 		const X =
-			playerState.currentSong.announce_position_x || manifest?.rules?.lyrics?.defaultAnnouncePositionX || 'Left';
+			playerState.currentSong.lyrics_infos[0]?.announce_position_x ??
+			manifest?.rules?.lyrics?.defaultAnnouncePositionX ??
+			'Left';
 		const Y =
-			playerState.currentSong.announce_position_y ||
-			manifest?.rules?.lyrics?.defaultAnnouncePositionY ||
+			playerState.currentSong.lyrics_infos[0]?.announce_position_y ??
+			manifest?.rules?.lyrics?.defaultAnnouncePositionY ??
 			'Bottom';
+
 		// We lower pos if X pos isn't right or Y pos isn't top since 9 is top right already.
 		if (X === 'Center') pos -= 1;
 		if (X === 'Left') pos -= 2;

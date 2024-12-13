@@ -64,10 +64,10 @@ export async function getKaraLyrics(kid: string): Promise<ASSLine[]> {
 	try {
 		const kara = await getKara(kid, adminToken);
 		if (!kara) throw new ErrorKM('UNKNOWN_SONG', 404, false);
-		if (!kara.subfile) return;
+		if (!kara.lyrics_infos[0]?.filename) return;
 		// FIXME: add support for converting lrc/vtt on the fly here
-		const ext = parse(kara.subfile).ext;
-		let lyrics = await getLyrics(kara.subfile, kara.repository);
+		const ext = parse(kara.lyrics_infos[0].filename).ext;
+		let lyrics = await getLyrics(kara.lyrics_infos[0].filename, kara.repository);
 		// If any other format we return.
 		if (ext === '.srt') {
 			lyrics = srt2ass(lyrics);

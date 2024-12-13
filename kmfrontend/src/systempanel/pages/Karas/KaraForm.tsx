@@ -78,11 +78,11 @@ function KaraForm(props: KaraFormProps) {
 	const [titlesIsTouched, setTitlesIsTouched] = useState(false);
 	const [serieSingersRequired, setSerieSingersRequired] = useState(props.kara ? false : true);
 	const [subfile, setSubfile] = useState(
-		props.kara?.subfile
+		props.kara?.lyrics_infos[0]
 			? [
 					{
 						uid: -1,
-						name: props.kara.subfile,
+						name: props.kara.lyrics_infos[0].filename,
 						status: 'done',
 					},
 				]
@@ -120,9 +120,9 @@ function KaraForm(props: KaraFormProps) {
 	const [mediaEditLocked, setMediaEditLocked] = useState<boolean>(false);
 
 	const [announcePosition, setAnnouncePosition] = useState(
-		(props.kara?.announce_position_x &&
-			props.kara?.announce_position_y &&
-			`${props.kara.announce_position_x},${props.kara.announce_position_y}`) ||
+		(props.kara?.lyrics_infos[0]?.announce_position_x &&
+			props.kara?.lyrics_infos[0]?.announce_position_y &&
+			`${props.kara.lyrics_infos[0].announce_position_x},${props.kara.lyrics_infos[0].announce_position_y}`) ||
 			undefined
 	);
 
@@ -167,7 +167,7 @@ function KaraForm(props: KaraFormProps) {
 	}, [mediaInfo]);
 
 	useEffect(() => {
-		const oldFormFields = form.getFieldsValue(['mediafile', 'subfile']); // Fields to take over to the applied kara
+		const oldFormFields = form.getFieldsValue(['mediafile', 'lyrics_infos']); // Fields to take over to the applied kara
 		form.resetFields();
 		form.setFieldsValue(oldFormFields); // Re-sets media and lyrics file, if already uploaded
 	}, [parentKara]);
@@ -538,13 +538,13 @@ function KaraForm(props: KaraFormProps) {
 					filesize: mediaInfo?.size ?? props.kara?.mediasize,
 					loudnorm: mediaInfo?.loudnorm ?? props.kara?.loudnorm,
 					lyrics:
-						kara.subfile || announcePositionX
+						kara.lyrics_infos[0]?.filename || announcePositionX
 							? [
 									{
 										announce_position_x: announcePositionX as PositionX,
 										announce_position_y: announcePositionY as PositionY,
 										default: true,
-										filename: kara.subfile || null,
+										filename: kara.lyrics_infos[0]?.filename,
 										version: 'Default',
 									},
 								]
@@ -648,20 +648,20 @@ function KaraForm(props: KaraFormProps) {
 		const fileList = info.fileList.slice(-1);
 		setSubfile(fileList);
 		if (info.file.status === 'uploading') {
-			form.setFieldsValue({ subfile: null });
+			form.setFieldsValue({ lyrics_infos: [] });
 		} else if (info.file.status === 'done') {
 			if (isSubFile(info.file.name)) {
 				setSubfileIsTouched(true);
-				form.setFieldsValue({ subfile: info.file.response.filename });
+				form.setFieldsValue({ lyrics_infos: [{ filename: info.file.response.filename }] });
 				message.success(i18next.t('KARA.ADD_FILE_SUCCESS', { name: info.file.name }));
 			} else {
-				form.setFieldsValue({ subfile: null });
+				form.setFieldsValue({ lyrics_infos: [] });
 				message.error(i18next.t('KARA.ADD_FILE_LYRICS_ERROR', { name: info.file.name }));
 				info.file.status = 'error';
 				setSubfile([]);
 			}
 		} else if (info.file.status === 'error' || info.file.status === 'removed') {
-			form.setFieldsValue({ subfile: null });
+			form.setFieldsValue({ lyrics_infos: [] });
 			setSubfile([]);
 		}
 	};
@@ -851,7 +851,7 @@ function KaraForm(props: KaraFormProps) {
 							repositoriesValue[0])) ||
 					null,
 				mediafile: props.kara?.mediafile,
-				subfile: props.kara?.subfile,
+				lyrics_infos: props.kara?.lyrics_infos,
 				parents: props.kara?.parents || (parentKara && [parentKara?.kid]) || [],
 				titles_aliases: props.kara?.titles_aliases || parentKara?.titles_aliases,
 				collections: props.kara?.collections || parentKara?.collections,
@@ -1021,7 +1021,7 @@ function KaraForm(props: KaraFormProps) {
 			>
 				<Row gutter={32}>
 					<Col>
-						<Form.Item name="subfile" style={{ marginBottom: '0' }}>
+						<Form.Item name="lyrics_infos" style={{ marginBottom: '0' }}>
 							<Upload
 								headers={{
 									authorization: localStorage.getItem('kmToken'),

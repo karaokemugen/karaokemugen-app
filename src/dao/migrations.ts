@@ -41,6 +41,9 @@ export async function postMigrationTasks(migrations: Postgrator.Migration[], did
 			case 'addSongname':
 				if (!didGeneration) doGenerate = true;
 				break;
+			case 'migrateLyricInfos':
+				if (!didGeneration) doGenerate = true;
+				break;
 			default:
 		}
 		if (breakFromLoop) break;
