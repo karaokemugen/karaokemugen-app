@@ -17,7 +17,14 @@ function TagsDuplicate() {
 	const [tags, setTags] = useState<DBTag[]>([]);
 	const [tag, setTag] = useState<DBTag>();
 	const [deleteModal, setDeleteModal] = useState(false);
-	const [typesTag, setTypeTag] = useState([]);
+	const [typesTag, setTypeTag] = useState(
+		localStorage.getItem('typeTagDuplicate')
+			? localStorage
+					.getItem('typeTagDuplicate')
+					.split(',')
+					.map(value => parseInt(value))
+			: []
+	);
 
 	const refresh = async () => {
 		try {
@@ -51,6 +58,7 @@ function TagsDuplicate() {
 	const changeType = value => setTypeTag(value);
 
 	useEffect(() => {
+		localStorage.setItem('typeTagDuplicate', typesTag ? typesTag.toString() : '');
 		refresh();
 	}, [typesTag]);
 
