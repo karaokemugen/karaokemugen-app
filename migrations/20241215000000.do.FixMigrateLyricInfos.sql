@@ -1,2 +1,2 @@
 ALTER TABLE all_karas
-ADD lyrics_infos jsonb;
+ADD COLUMN IF NOT EXISTS lyrics_infos jsonb;
