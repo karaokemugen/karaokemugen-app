@@ -328,18 +328,23 @@ export async function integrateKaraFile(
 				logger.warn(`Failed to remove ${oldKara.old_mediafile}, does it still exist?`, { service });
 			}
 		}
-		if (oldKara.old_subfile && oldKara.old_subfile !== karaData.medias[0].lyrics?.[0]?.filename) {
+		if (
+			oldKara.old_lyrics_infos[0] &&
+			oldKara.old_lyrics_infos[0]?.filename !== karaData.medias[0].lyrics?.[0]?.filename
+		) {
 			try {
 				await fs.unlink(
 					(
 						await resolveFileInDirs(
-							oldKara.old_subfile,
+							oldKara.old_lyrics_infos[0].filename,
 							resolvedPathRepos('Lyrics', oldKara.old_repository)
 						)
 					)[0]
 				);
 			} catch (err) {
-				logger.warn(`Failed to remove ${oldKara.old_subfile}, does it still exist?`, { service });
+				logger.warn(`Failed to remove ${oldKara.old_lyrics_infos[0]?.filename}, does it still exist?`, {
+					service,
+				});
 			}
 		}
 	}
