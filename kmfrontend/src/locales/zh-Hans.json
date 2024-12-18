@@ -26,7 +26,11 @@
 		"MOVE_KARA": "移动到本首歌之后",
 		"FAVORITES_REMOVED": "已从收藏夹移除",
 		"ADD_WHITELIST": "添加到白名单",
-		"SHUFFLE": "随机打乱歌曲"
+		"SHUFFLE": "随机打乱歌曲",
+		"TRANSFER_SELECT_KARA": "转移选择歌曲",
+		"TRANSFER_SELECT_KARA_AFTER_PLAYING": "转移到当前播放的歌曲之后",
+		"TRANSFER_KARA": "转移这首歌",
+		"TRANSFER_KARA_AFTER_PLAYING": "转移到当前播放的歌曲之后"
 	},
 	"PLAYLIST_HEADER": {
 		"FILTERS": "过滤器",
@@ -48,7 +52,8 @@
 		"ADD": "添加新的播放列表",
 		"DOWNLOAD_ALL": "下载所有",
 		"IMPORT": "导入播放列表",
-		"SHUFFLE": "打乱 / 排序…"
+		"SHUFFLE": "打乱 / 排序…",
+		"AUTOMIX": "创建AutoMix"
 	},
 	"MESSAGE": "消息",
 	"KAROULETTE": {
@@ -184,7 +189,8 @@
 		"EXPLORE": "浏览",
 		"OTHERS": "其他…",
 		"GET_LUCKY": "获得好运",
-		"REQUESTED_KARAOKES": "热门歌曲"
+		"REQUESTED_KARAOKES": "热门歌曲",
+		"RESTRICTED_DESCRIPTION": "卡拉OK限制模式开启，无法添加歌曲。"
 	},
 	"CL_EMPTY_LIST": "空列表？",
 	"CL_PLAYLISTS": "歌曲列表",
