@@ -394,10 +394,6 @@ function WelcomePage() {
 										<strong>{i18next.t('WELCOME_PAGE.STATS_KARAS')}</strong>
 										<span>{stats?.karas}</span>
 									</li>
-									<li onClick={() => navigate('/system/tags?type=1')}>
-										<strong>{i18next.t('WELCOME_PAGE.STATS_SERIES')}</strong>
-										<span>{stats?.series}</span>
-									</li>
 									<li onClick={() => navigate('/system/tags')}>
 										<strong>{i18next.t('WELCOME_PAGE.STATS_TAGS')}</strong>
 										<span>{stats?.tags}</span>
