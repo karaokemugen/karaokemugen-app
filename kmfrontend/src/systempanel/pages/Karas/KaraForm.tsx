@@ -78,7 +78,7 @@ function KaraForm(props: KaraFormProps) {
 	const [titlesIsTouched, setTitlesIsTouched] = useState(false);
 	const [serieSingersRequired, setSerieSingersRequired] = useState(props.kara ? false : true);
 	const [subfile, setSubfile] = useState(
-		props.kara?.lyrics_infos[0]
+		props.kara?.lyrics_infos?.[0]
 			? [
 					{
 						uid: -1,
@@ -120,8 +120,8 @@ function KaraForm(props: KaraFormProps) {
 	const [mediaEditLocked, setMediaEditLocked] = useState<boolean>(false);
 
 	const [announcePosition, setAnnouncePosition] = useState(
-		(props.kara?.lyrics_infos[0]?.announce_position_x &&
-			props.kara?.lyrics_infos[0]?.announce_position_y &&
+		(props.kara?.lyrics_infos?.[0]?.announce_position_x &&
+			props.kara?.lyrics_infos?.[0]?.announce_position_y &&
 			`${props.kara.lyrics_infos[0].announce_position_x},${props.kara.lyrics_infos[0].announce_position_y}`) ||
 			undefined
 	);
@@ -538,13 +538,13 @@ function KaraForm(props: KaraFormProps) {
 					filesize: mediaInfo?.size ?? props.kara?.mediasize,
 					loudnorm: mediaInfo?.loudnorm ?? props.kara?.loudnorm,
 					lyrics:
-						kara.lyrics_infos[0]?.filename || announcePositionX
+						kara.lyrics_infos?.[0]?.filename || announcePositionX
 							? [
 									{
 										announce_position_x: announcePositionX as PositionX,
 										announce_position_y: announcePositionY as PositionY,
 										default: true,
-										filename: kara.lyrics_infos[0]?.filename,
+										filename: kara.lyrics_infos?.[0]?.filename,
 										version: 'Default',
 									},
 								]
