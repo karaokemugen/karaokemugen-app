@@ -101,6 +101,7 @@ export default class Git {
 		if (this.isSshUrl()) {
 			this.keyFile = getKeyFileName(this.opts.repoName);
 			this.knownHostsFile = getKnownHostsFileName(this.opts.repoName);
+			await updateKnownHostsFile(url, this.opts.repoName);
 		}
 		// Config can't be done if cloning is in effect.
 		if ((await fileExists(this.keyFile)) && !cloning) {
@@ -108,7 +109,6 @@ export default class Git {
 				'core.sshCommand',
 				`ssh -o UserKnownHostsFile="${this.knownHostsFile}" -i "${this.keyFile}"`
 			);
-			await updateKnownHostsFile(url, this.opts.repoName);
 		} else {
 			if (!cloning) await this.git.raw(['config', '--unset', 'core.sshCommand']);
 		}
