@@ -1954,7 +1954,7 @@
 		},
 		"TAG_LIST": {
 			"TITLE": "Tags list",
-			"DESCRIPTION": "Maintainers only: list of tags your songs are made of."
+			"DESCRIPTION": "Maintainers only: list of tags you can define your metadata for a song with."
 		},
 		"TAG_NEW": {
 			"TITLE": "Create a tag",
@@ -2070,7 +2070,7 @@
 	"ABOUT": {
 		"DESCRIPTION": "A karaoke player and a party organizer, between friends or in public.",
 		"LICENSE": "MIT-licensed.",
-		"CONTRIBUTORS": "The karaoke were created by awesome people, like <1>{{contributors}}</1> for example.",
+		"CONTRIBUTORS": "The karaoke subs were created by awesome people, like <1>{{contributors}}</1> for example.",
 		"DONATORS": "Thanks to <1>{{donators}}</1> for their donations to Karaoke Mugen"
 	},
 	"QUIZ": {
