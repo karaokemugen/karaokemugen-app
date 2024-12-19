@@ -1039,7 +1039,7 @@
 			"DESCRIPTION": "Formular zur Erstellung von Tags. Denke daran, mindestens eine englische Übersetzung hinzuzufügen."
 		},
 		"TAG_LIST": {
-			"DESCRIPTION": "Nur für Maintainer: Liste der Tags, aus denen deine Karaoke besteht.",
+			"DESCRIPTION": "Nur für Maintainer: Liste der Tags, die zur Eingabe der Metadaten für deine Lieder genutzt werden können.",
 			"TITLE": "Liste der Tags"
 		},
 		"INBOX": {
@@ -1047,7 +1047,7 @@
 			"DESCRIPTION": "Als Maintainer dieser Karaoke-Datenbank ist es deine Aufgabe, diese Liste abzuarbeiten."
 		},
 		"KARATAG_BATCH_EDIT": {
-			"DESCRIPTION": "Nur für Maintainer: Auf dieser Seite kannst du ein Tag für mehrere Karaoke gleichzeitig hinzufügen oder entfernen.",
+			"DESCRIPTION": "Nur für Maintainer: Auf dieser Seite kannst du einen Tag für mehrere Lieder gleichzeitig hinzufügen oder entfernen.",
 			"TITLE": "Massenhaftes Hinzufügen / Entfernen von Tags"
 		},
 		"SESSIONS_NEW": {
@@ -1060,7 +1060,7 @@
 		},
 		"MOST_REQUESTED": {
 			"TITLE": "Beliebteste Lieder",
-			"DESCRIPTION": "Listet die meistgefragten Lieder in deiner Anwendung auf. Berücksichtigt nur Karaoke-Lieder, die über die öffentliche Schnittstelle hinzugefügt wurden.",
+			"DESCRIPTION": "Listet die beliebten Lieder in deiner Anwendung. Berücksichtigt nur Lieder, die über die öffentliche Schnittstelle hinzugefügt wurden.",
 			"DESCRIPTION_ONLINE": "Im Moment siehst du die Liste der beliebten ONLINE-Lieder. Deaktiviere die Einstellung \"Beliebte Lieder online abrufen\", um nur die Lieder aus deiner Instanz zu sehen."
 		},
 		"USER_EDIT": {
@@ -1800,7 +1800,7 @@
 			"CREATE": "Einen Benutzer erstellen",
 			"BROWSE": "Benutzer durchsuchen"
 		},
-		"KARAS_DESCRIPTION": "Listen, bearbeiten und erstellen Karaoke-Dateien. Du kannst auch Medien herunterladen und die am meisten angeforderten, am meisten gespielten und die Karaoke-Historie einsehen",
+		"KARAS_DESCRIPTION": "Liste, bearbeite und erstelle Karaoke-Dateien. Du kannst auch Medien herunterladen und die beliebtesten, am meisten gespielten Lieder sowie die Karaoke-Historie einsehen",
 		"EGG_2": "Nun ja.",
 		"EGG_1": "Hör auf, auf die Version zu klicken.",
 		"USERS_DESCRIPTION": "Benutzer auflisten, bearbeiten, erstellen, ihr Passwort ändern, neue Gästekonten erstellen.",
@@ -2107,7 +2107,7 @@
 		"DONATORS": "Danke an <1>1{{donators}}</1> für ihre Spenden an Karaoke Mugen",
 		"DESCRIPTION": "Ein Karaoke-Spieler und ein Partyveranstalter, unter Freunden oder in der Öffentlichkeit.",
 		"LICENSE": "MIT-lizenziert.",
-		"CONTRIBUTORS": "Die Karaoke wurden von großartigen Menschen erstellt, wie zum Beispiel <1>{{contributors}}</1>."
+		"CONTRIBUTORS": "Die Karaoke-Untertitel wurden von großartigen Menschen wie beispielsweise <1>{{contributors}}</1> erstellt."
 	},
 	"CHIBI": {
 		"FOCUS": "Zurück zu Karaoke Mugen",
