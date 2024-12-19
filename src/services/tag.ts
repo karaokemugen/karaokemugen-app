@@ -134,9 +134,8 @@ export async function mergeTags(tid1: string, tid2: string) {
 		aliases = aliases.filter((e, pos) => aliases.indexOf(e) === pos);
 		if (aliases[0] === null) aliases = null;
 		const i18n = { ...tag2.i18n, ...tag1.i18n };
-		const tid = uuidV4();
-		let tagObj: Tag = {
-			tid,
+		const tagObj: Tag = {
+			tid: tag1.tid,
 			name: tag1.name,
 			types,
 			i18n,
@@ -151,26 +150,19 @@ export async function mergeTags(tid1: string, tid2: string) {
 					? null
 					: { ...tag1.external_database_ids, ...tag2.external_database_ids },
 		};
-		tagObj = await addTag(tagObj, { silent: true, refresh: false });
-		const newTagFiles = resolve(resolvedPathRepos('Tags', tagObj.repository)[0], tagObj.tagfile);
-		await addTagToStore(newTagFiles);
+		await editTag(tag1.tid, tagObj, { silent: true, refresh: false, repoCheck: false, writeFile: true });
+		const tagFile = await resolveFileInDirs(tag1.tagfile, resolvedPathRepos('Tags', tag1.repository));
+		await editTagInStore(tagFile[0]);
 		sortTagsStore();
 		// We're not asyncing these because after the first one passes, if the new TID already has the same songs registered in the kara_tag table, it'll break the unique constraint on the table and destroy the universe.
 		// So we don't do that.
 		// The query updates only rows where KIDs aren't already listed as belonging to the new TID.
 		// The remaining rows will disappear thanks to the removal of the old TIDs just after, thanks to ON DELETE CASCADE.
-		await updateKaraTagsTID(tid1, tagObj.tid);
 		await updateKaraTagsTID(tid2, tagObj.tid);
-		await Promise.all([
-			deleteTag([tid1, tid2]),
-			removeTagFile(tag1.tagfile, tag1.repository),
-			removeTagFile(tag2.tagfile, tag2.repository),
-			removeTagInStore(tid1),
-			removeTagInStore(tid2),
-		]);
-		let karas = await getKarasWithTags([tag1, tag2]);
+		await Promise.all([deleteTag([tid2]), removeTagFile(tag2.tagfile, tag2.repository), removeTagInStore(tid2)]);
+		let karas = await getKarasWithTags([tag2]);
 		if (karas.length > 0) {
-			await replaceTagInKaras(tid1, tid2, tagObj, karas);
+			await replaceTagInKaras(tid2, tagObj, karas);
 			karas = await getKarasWithTags([tagObj]);
 			for (const kara of karas) {
 				const karafile = await resolveFileInDirs(kara.karafile, resolvedPathRepos('Karaokes', kara.repository));
@@ -409,26 +401,27 @@ export async function copyTagToRepo(tid: string, repoName: string) {
 	}
 }
 
-async function replaceTagInKaras(oldTID1: string, oldTID2: string, newTag: Tag, karas: DBKara[]) {
-	logger.info(
-		`Replacing tag ${oldTID1} and ${oldTID2} by ${newTag.tid} in kara(s) ${karas.map(k => k.kid).join(', ')}`,
-		{ service }
-	);
+async function replaceTagInKaras(oldTID: string, newTag: Tag, karas: DBKara[]) {
+	logger.info(`Replacing tag ${oldTID} by ${newTag.tid} in kara(s) ${karas.map(k => k.kid).join(', ')}`, { service });
 	for (const kara of karas) {
 		kara.modified_at = new Date();
 		for (const type of Object.keys(tagTypes)) {
-			if (
-				kara[type]?.find((t: DBTag) => t.tid === oldTID1) ||
-				kara[type]?.find((t: DBTag) => t.tid === oldTID2)
-			) {
-				kara[type] = kara[type].filter((t: any) => t.tid !== oldTID1 && t.tid !== oldTID2);
+			if (kara[type]?.find((t: DBTag) => t.tid === oldTID)) {
+				kara[type] = kara[type].filter((t: any) => t.tid !== oldTID);
 				kara[type].push(newTag);
 			}
 		}
-		await editKara({
-			kara: formatKaraV4(kara),
-		});
+		await editKara(
+			{
+				kara: formatKaraV4(kara),
+			},
+			false
+		);
 	}
+	await refreshKarasAfterDBChange(
+		'UPDATE',
+		karas.map(k => formatKaraV4(k).data)
+	);
 }
 
 export async function syncTagsFromRepo(repoSourceName: string, repoDestName: string) {
