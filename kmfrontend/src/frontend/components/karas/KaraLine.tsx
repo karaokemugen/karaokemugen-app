@@ -346,14 +346,14 @@ function KaraLine(props: IProps) {
 							>
 								<div className="contentDivMobileTitle">
 									<span
-										className={`tag inline green ${kara.children.length > 0 && settings.user.flag_parentsonly ? 'empty' : undefined}`}
+										className={`tag inline green ${kara.children?.length > 0 && settings.user.flag_parentsonly ? 'empty' : undefined}`}
 										title={
-											kara.children.length > 0 && settings.user.flag_parentsonly
+											kara.children?.length > 0 && settings.user.flag_parentsonly
 												? ''
 												: getTagInLocale(settings, kara.langs[0], props.i18nTag).i18n
 										}
 									>
-										{kara.children.length > 0 && settings.user.flag_parentsonly
+										{kara.children?.length > 0 && settings.user.flag_parentsonly
 											? ''
 											: kara.langs[0].short?.toUpperCase() || kara.langs[0].name.toUpperCase()}
 									</span>
