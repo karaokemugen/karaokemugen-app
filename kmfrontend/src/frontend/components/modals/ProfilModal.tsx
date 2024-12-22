@@ -15,7 +15,7 @@ import { useLocalSearch } from '../../../utils/hooks';
 import {
 	getLanguagesInLangFromCode,
 	getListLanguagesInLocale,
-	languagesSupport,
+	supportedLanguages,
 	listCountries,
 } from '../../../utils/isoLanguages';
 import { getTagInLanguage, sortAndHideTags } from '../../../utils/kara';
@@ -695,7 +695,7 @@ function ProfilModal(props: IProps) {
 									</label>
 								</div>
 								<select name="language" onChange={onChange} defaultValue={user.language}>
-									{languagesSupport.map(lang => {
+									{supportedLanguages.map(lang => {
 										return (
 											<option key={lang} value={lang}>
 												{getLanguagesInLangFromCode(lang)}

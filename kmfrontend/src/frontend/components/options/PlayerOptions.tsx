@@ -2,7 +2,7 @@ import i18next from 'i18next';
 import { useContext, useEffect, useMemo, useState } from 'react';
 
 import GlobalContext from '../../../store/context';
-import { getLanguagesInLangFromCode, languagesSupport } from '../../../utils/isoLanguages';
+import { getLanguagesInLangFromCode, supportedLanguages } from '../../../utils/isoLanguages';
 import { commandBackend } from '../../../utils/socket';
 import { dotify } from '../../../utils/tools';
 import Switch from '../generic/Switch';
@@ -330,7 +330,7 @@ function PlayerOptions(props: IProps) {
 						</label>
 						<div>
 							<select id="App.Language" onChange={onChange} defaultValue={config['App.Language']}>
-								{languagesSupport.map(lang => {
+								{supportedLanguages.map(lang => {
 									return (
 										<option key={lang} value={lang}>
 											{getLanguagesInLangFromCode(lang)}
