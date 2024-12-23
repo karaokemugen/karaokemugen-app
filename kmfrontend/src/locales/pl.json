@@ -795,7 +795,11 @@
 				"TWITTER_PLACEHOLDER": "@KaraokeMugen",
 				"MASTODON_PLACEHOLDER": "KaraokeMugen@shelter.moe",
 				"BLUESKY_PLACEHOLDER": "karaoke.bsky.social",
-				"TWITCH": "Twitch"
+				"TWITCH": "Twitch",
+				"TWITCH_PLACEHOLDER": "Karaoke na żywo",
+				"INSTAGRAM": "Instagram",
+				"INSTAGRAM_PLACEHOLDER": "karaokemugen",
+				"DISCORD": "Discord"
 			},
 			"MISSING_EMAIL": "Uwaga: bez adresu e-mail nie będzie można zresetować hasła!",
 			"FLAG_SENDSTATS": "Korzystaj z moich ulubionych i żądań utworów w celu uzyskania statystyk",
