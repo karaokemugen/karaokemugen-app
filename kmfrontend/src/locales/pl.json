@@ -796,16 +796,244 @@
 				"MASTODON_PLACEHOLDER": "KaraokeMugen@shelter.moe",
 				"BLUESKY_PLACEHOLDER": "karaoke.bsky.social",
 				"TWITCH": "Twitch",
-				"TWITCH_PLACEHOLDER": "Karaoke na żywo",
+				"TWITCH_PLACEHOLDER": "KaraokeLive",
 				"INSTAGRAM": "Instagram",
 				"INSTAGRAM_PLACEHOLDER": "karaokemugen",
-				"DISCORD": "Discord"
+				"DISCORD": "Discord",
+				"DISCORD_PLACEHOLDER": "Karak#1423",
+				"MYANIMELIST": "MyAnimeList",
+				"ANILIST": "AniList",
+				"ANILIST_PLACEHOLDER": "karaokemugen",
+				"KITSU": "Kitsu",
+				"KITSU_PLACEHOLDER": "karaokemugen",
+				"GITLAB": "Gitlab",
+				"GITLAB_PLACEHOLDER": "karaokemugen",
+				"MYANIMELIST_PLACEHOLDER": "karaokemugen"
 			},
 			"MISSING_EMAIL": "Uwaga: bez adresu e-mail nie będzie można zresetować hasła!",
 			"FLAG_SENDSTATS": "Korzystaj z moich ulubionych i żądań utworów w celu uzyskania statystyk",
 			"INTERFACE_LANGUAGE": "Język interfejsu",
 			"MAIN_SONG_NAME_LANG": "Preferencje wyświetlania nazwy utworu",
-			"FLAG_DISPLAYFAVORITES": "Udostępnij swoje ulubione publicznie"
+			"FLAG_DISPLAYFAVORITES": "Udostępnij swoje ulubione publicznie",
+			"ANIME_LIST_TO_FETCH": "Dostawca listy anime do wykorzystania",
+			"REFRESH_ANIME_LIST": "Odśwież listę anime",
+			"CHOOSE_ANIME_LIST": "Wybierz listę anime"
+		},
+		"SHUFFLE_MODAL": {
+			"TITLE": "Losowa lista odtwarzania",
+			"LABEL": "Wybierz metodę odtwarzania losowego, której chcesz użyć:",
+			"MIX_ALREADY_PASSED_SONGS": "Losuj również, już odtwarzane utwory.",
+			"SMART_SHUFFLE": "Inteligentne",
+			"SMART_SHUFFLE_DESC": "Zapobiega następowaniu po sobie długich piosenek lub piosenek tej samej osoby",
+			"BALANCE": "Zrównoważony",
+			"BALANCE_DESC": "Zmienia kolejność utworów według pul użytkowników (A-B-C, B-A-C, C-B-A itp.)",
+			"SORTUPVOTES_DESC": "Sortuj według największej liczby polubień (najpierw najpopularniejsze utwory)",
+			"SHUFFLE": "Losowy",
+			"SHUFFLE_DESC": "Lista odtwarzania będzie losowo tasowana, bez żadnego wpływu na miks.",
+			"SORTUPVOTES": "Sortuj według polubień"
+		},
+		"PLAYLIST_MODAL": {
+			"NAME": "Nazwa",
+			"CURRENT": "Aktualny",
+			"CURRENT_DESC": "Bieżąca lista to lista odczytana przez odtwarzacz multimedialny",
+			"PUBLIC": "Publiczny",
+			"BLACKLIST_DESC": "Utwory z tej listy będą ukryte przed użytkownikami (chyba że znajdują się również na białej liście)",
+			"WHITELIST": "Biała lista",
+			"WHITELIST_DESC": "Utwory z tej listy nie zostaną ukryte, nawet jeśli znajdują się również na czarnej liście.",
+			"FALLBACK": "Rezerwowa",
+			"FALLBACK_DESC": "Utwory z tej listy będą odtwarzane po zakończeniu listy odtwarzania, jeśli jest włączona w ustawieniach",
+			"VISIBLE": "Widoczny",
+			"VISIBLE_DESC": "Widoczne dla publiczności",
+			"EDIT_PLAYLIST": "Edytuj {{playlist}}",
+			"CREATE_PLAYLIST": "Utwórz nową listę odtwarzania",
+			"CREATE": "Stwórz",
+			"EDIT": "Edytuj",
+			"CANNOT_SMART": "Nie można usunąć atrybutu smart z listy odtwarzania.",
+			"CANNOT_FALLBACK": "Nie możesz mieć opcji rezerwowej, zamiast tego edytuj tę, którą chcesz ustawić jako nową rezerwę.",
+			"CANNOT_WHITELIST": "Nie możesz mieć żadnej białej listy, zamiast tego edytuj tę, którą chcesz ustawić jako nową białą listę.",
+			"SMART_DESC": "Zdefiniuj kryteria, które będą decydować o tym, które utwory zostaną automatycznie dodane do listy odtwarzania",
+			"BLACKLIST": "Czarna lista",
+			"PUBLIC_DESC": "Wykaz publiczny to wykaz, na który otrzymuje, się sugestie od ogółu społeczeństwa",
+			"SMART": "Inteligentne",
+			"CANNOT_CURRENT_PLAYLIST": "Nie możesz mieć żadnej bieżącej listy odtwarzania, zamiast tego edytuj tę, którą chcesz ustawić jako nową bieżącą listę odtwarzania.",
+			"CANNOT_BLACKLIST": "Nie możesz mieć żadnej czarnej listy, zamiast tego edytuj tę, którą chcesz ustawić jako nową czarną listę.",
+			"CANNOT_PUBLIC": "Nie możesz mieć żadnej publicznej listy odtwarzania, zamiast tego edytuj tę, którą chcesz ustawić jako nową publiczną listę odtwarzania.",
+			"NAME_MANDATORY": "Nazwa listy odtwarzania jest wymagana"
+		},
+		"TUTORIAL": {
+			"BACK": "Wstecz",
+			"END": "Gotowe",
+			"PLAYLIST": "Na ekranie pojawią się dwie listy odtwarzania. Możesz dodać utwór z lewej listy odtwarzania do prawej listy odtwarzania i odwrotnie, klikając <2/>.",
+			"TITLE_CLICK": "Kliknij na tytuł utworu, aby uzyskać więcej informacji <1>(piosenkarze, autorzy piosenek itp.)</1>.",
+			"PLAY_BUTTONS": "Przycisk <1/> odtwarza utwór natychmiast <3>(Przycisk <4/> przesuwa kursor odtwarzania)</3>.",
+			"CHECK_CASE": "Sprawdź <1/>, aby działać na wielu utworach <3>jednocześnie</3>.",
+			"KARAOKE_PLAYING": "Linia z tłem <1>niebieskim</1> oznacza, że utwór jest wybrany do odtwarzania.",
+			"CREATE_PLAYLIST_BUTTON": "Twórz i edytuj swoje listy odtwarzania z menu czynności",
+			"LIBRARY": "Biblioteka pokazuje wszystkie dostępne utwory.",
+			"PLAYER_GO_BACK": "Przycisk Przewiń do tyłu umożliwia powrót do <1>początku bieżącego</1> utworu.",
+			"K_MENU": "\"K menu\" umożliwia modyfikację profilu i innych ustawień karaoke.",
+			"NEXT": "Następny",
+			"WELCOME": "Witamy w Karaoke Mugen! Oto, co musisz wiedzieć.",
+			"PLAYER_CURRENT_HINT": "Odtwarzacz odtworzy wybrany utwór z <1>bieżącej listy odtwarzania</1>.",
+			"PLAYER_STOP": "Przycisk Stop zatrzyma odtwarzanie po zakończeniu bieżącego utworu. Możesz kliknąć na niego ponownie, aby zatrzymać <1>natychmiast</1>.",
+			"CURRENT_DESC": "Lista odtwarzania <1>current</1> to lista odtwarzania używana przez odtwarzacz.",
+			"PLAYER_BAR": "Odtwarzaczem Karaoke Mugen można sterować z górnego paska.",
+			"BLACKLIST_DESC": "lista zawiera wszystkie wykluczone utwory.",
+			"SELECT_PLAYLIST_BUTTON": "Listy odtwarzania są dostępne w selektorze:",
+			"PLAYLIST_ATTRIBUTES": "Podczas tworzenia listy odtwarzania możesz ustawić ją jako <1>bieżącą</1> i/lub <3>publiczna</3>.",
+			"TITLE": "Samouczek",
+			"ADD_TO_OTHER_PLAYLIST": "Przycisk <1/> dodaje utwór do drugiej listy odtwarzania.",
+			"WRENCH_BUTTON": "Klucz <1/> umożliwia inne działania na piosence.",
+			"CURRENT_PUBLIC_DESC": "Playlisty <1>current</1> i <3>public</3> mogą być takie same.",
+			"KARAOKE_PLAYED": "Linie z ikoną <1><2/> pomarańczową</1> oznaczają, że ten utwór był ostatnio odtwarzany.",
+			"PUBLIC_DESC": "Playlista <1>public</1> to miejsce, w którym znajdują się żądania użytkowników.",
+			"MESSAGE": "Możesz wysłać wiadomość do swoich odbiorców (na ich urządzeniach lub na ekranie odtwarzacza) za pomocą przycisku Wiadomość."
+		},
+		"RESTART_DOWNLOADS_MODAL": {
+			"TITLE": "Oczekiwanie na pobranie",
+			"DELETE": "Przerwij wszystkie oczekujące na pobranie",
+			"LABEL": "Niektóre pliki do pobrania z ostatniej sesji oczekują na pobranie. Co chcesz zrobić?",
+			"LATER": "Zapytaj mnie później",
+			"CONTINUE": "Wznów pobieranie"
+		},
+		"DELETE_PLAYLIST_MODAL": {
+			"IMPOSSIBLE": "Nie można usunąć jedynej listy odtwarzania.",
+			"DELETE_CURRENT": "Ta lista to bieżąca lista odtwarzania, ustaw inną listę odtwarzania jako bieżącą, aby usunąć tę.",
+			"DELETE_CURRENT_PUBLIC": "Ta lista jest zdefiniowana jako bieżąca i publiczna. Ustaw inną listę odtwarzania z tymi atrybutami przed usunięciem tej.",
+			"DELETE_BLACKLIST": "Ta lista jest czarną listą, ustaw inną listę odtwarzania jako czarną listę, aby usunąć tę.",
+			"TITLE": "Usunąć {{playlist}} na zawsze?",
+			"DELETE_WHITELIST": "Ta lista to biała lista, ustaw inną listę odtwarzania jako białą listę, aby usunąć tę.",
+			"DELETE_PUBLIC": "Ta lista to publiczna lista odtwarzania, ustaw inną listę odtwarzania jako publiczną, aby usunąć tę."
+		},
+		"EXPORT_PLAYLIST_MEDIA": {
+			"START": "Pliki multimedialne są eksportowane…",
+			"DONE": "Pliki multimedialne z listy odtwarzania zostały wyeksportowane",
+			"NOT_ALL_MEDIA_DOWNLOADED": "Nie wszystkie multimedia są dostępne lokalnie. Upewnij się, że pobrałeś wszystkie multimedia przed wyeksportowaniem listy odtwarzania",
+			"DONE_PARTIALLY": "Pliki multimedialne z listami odtwarzania zostały wyeksportowane, chociaż nie powiodło się:"
+		},
+		"STATS_MODAL": {
+			"CHANGE": "Możesz to zmienić w dowolnym momencie w swoim profilu. Czy zgadzasz się na wykorzystanie historii swoich utworów do statystyk?",
+			"TITLE": "Użyj moich ulubionych i próśb o piosenki do statystyk",
+			"DESC": "Używamy Twoich ulubionych, jak również utworów, o które prosiłeś podczas sesji, aby tworzyć statystyki użytkowania (na przykład, aby znaleźć najpopularniejsze utwory).",
+			"REFUSE_DESC": "Jeśli nie chcesz brać udziału, nawet jeśli jest to anonimowe, w tych statystykach użytkowania, poinformuj nas o tym. W przypadku odmowy, Twoje dane zostaną zignorowane i nie zostaną przesłane przez Aplikację Karaoke Mugen."
+		},
+		"CLASSIC_MODE": {
+			"TITLE": "Twoja kolej na śpiewanie!",
+			"TEXT": "Kliknij przycisk Odtwórz, aby rozpocząć piosenkę."
+		},
+		"GIT_DANGEROUS": {
+			"TITLE": "Niebezpieczne działania",
+			"STASH": {
+				"BTN": "Przechowuj zmiany",
+				"DESC": "Odłóż swoje zmiany, aby użyć ich ponownie później."
+			},
+			"RESET": {
+				"BTN": "Resetuj",
+				"DESC": "Usuń wszystkie edycje, które nie zostały wypchnięte."
+			},
+			"DONE": "Zadanie wykonane pomyślnie.",
+			"DESCRIPTION": "Welcome to the dangerous actions corner. It appears that you can mess a lot around here. Here's a quick summary of the edits detected :",
+			"EMPTY": "Nic się nie zmieniło!"
+		},
+		"POLL": {
+			"VOTE": "Czas na głosowanie!",
+			"VOTED": "Przegłosowane!",
+			"VOTES_other": "{{count}} głosów ({{percent}}%)",
+			"REMAINING_other": "Pozostało sekund {{count}}",
+			"VOTES_one": "{{count}} głosów ({{percent}}%)",
+			"REMAINING_one": "{{count}} sekunda w lewo"
+		},
+		"CREATE_TAG": {
+			"OPEN": "Tworzenie tagu",
+			"TITLE": "Szybkie tworzenie tagów"
+		},
+		"START_QUIZ": {
+			"NEW_GAME": "Nowa gra",
+			"COPIED_GAME": "{{gameName}} (kopia)",
+			"LAST_PLAYED_GAME": "{{gameName}} (ostatnio rozpoczęta gra)",
+			"GAME_IN_PROGRESS": {
+				"SONG_COUNT_zero": "Żadna piosenka nie została jeszcze odtworzona.",
+				"SONG_COUNT_one": "Utwór {{count}} został odtworzony.",
+				"SONG_COUNT_other": "{{count}} piosenek zostało odtworzonych.",
+				"SCORES": "Oto wyniki."
+			},
+			"PLAYER_MESSAGE_PLACEHOLDER": "Przejdź do $url, aby zagrać!",
+			"EMPTY_NAME": "Wprowadź nazwę gry",
+			"EMPTY_PLAYLIST": "Wybierz listę odtwarzania",
+			"END_GAME": {
+				"DESCRIPTION": "Gra się kończy…",
+				"MAX_SCORE": "Gdy gracz dotrze do",
+				"MAX_SCORE_PLACEHOLDER": "10",
+				"POINTS": "punktów",
+				"MAX_SONGS": "kiedy",
+				"MAX_SONGS_PLACEHOLDER": "30",
+				"SONGS": "piosenek będzie odtworzone.",
+				"DURATION": "po",
+				"MINUTES": "minutach gry.",
+				"TITLE": "Długość gry",
+				"DURATION_PLACEHOLDER": "60"
+			},
+			"PLAYERS": {
+				"ALLOW_GUESTS": "Zezwalanie gościom na uczestnictwo",
+				"TWITCH_CHAT_PLACEHOLDER": "Twitcherzy",
+				"TWITCH_CHAT": "Spraw, aby czat Twitch był odtwarzany z nazwą",
+				"TITLE": "Kto gra?",
+				"DESCRIPTION": "Wszyscy użytkownicy posiadający swoje konta mogą uczestniczyć (jeśli interfejs jest otwarty), możesz zezwolić na grę kontom gości lub dodać gracza reprezentującego czat Twitcha, jeśli Twój kanał jest połączony."
+			},
+			"DISPLAY": {
+				"TITLE": "Jak wyświetlić utwory?",
+				"BEGINNING": "na początku",
+				"END": "na końcu",
+				"BLIND": "Ukryj wideo",
+				"BLURRED_SCREEN": "Rozmyty ekran",
+				"MUTE": "Wyłącz dźwięk multimediów",
+				"DESCRIPTION": "Aby zadanie było trudniejsze, możliwe jest rozpoczęcie utworu w zaawansowanym punkcie, a nie na początku. Możliwe jest również ukrycie wideo, wyłączenie dźwięku i/lub niewyświetlanie napisów.",
+				"TIME": "Rozpocznij utwór",
+				"BLACK_SCREEN": "Czarny ekran",
+				"NO_LYRICS": "Nie wyświetlaj tekstów piosenek"
+			},
+			"ANSWERS": {
+				"VIEW_ALL_ANSWERS": "Zobacz wszystkie możliwe typy",
+				"ANSWER_TITLE": "Tytuł",
+				"TOLERANCE": "Tolerancja literówek",
+				"PERFECT": "Doskonała pisownia",
+				"TITLE": "Zaakceptowane odpowiedzi",
+				"VIEW_LESS_ANSWERS": "Zobacz mniej typów",
+				"DESCRIPTION": "Możesz wybrać, które odpowiedzi są akceptowane (tytuły, piosenkarze, seriale itp.) oraz ile punktów gracze zdobywają za dobrą odpowiedź. Można również zdefiniować tolerancję dla literówek. Auto-uzupełnianie jest dostępne dla osób korzystających z interfejsu publicznego.",
+				"LAX": "Laksysta"
+			},
+			"TIME": {
+				"GUESS_DURATION": "Czas zgadywania (sekundy)",
+				"ANSWER_DURATION": "Czas odpowiedzi (sekundy)",
+				"QUICK_GUESS_DURATION": "Szybki czas odgadnięcia (sekundy)",
+				"QUICK_AWARD_POINTS": "Punkty za szybką poprawną odpowiedź",
+				"TITLE": "Godzina odpowiedzi",
+				"DESCRIPTION": "Uczestnicy będą mieli czas na udzielenie odpowiedzi. Po upływie czasu odpowiedź zostanie wyświetlona na ekranie z włączonym dźwiękiem, tekstem i wideo. Szybka odpowiedź może przyznać więcej punktów, jeśli opcja jest włączona."
+			},
+			"BUTTONS": {
+				"RESUME": "Wznów",
+				"DELETE_SCORES": "Usuwanie wyników",
+				"DELETE": "Usuń grę",
+				"CANCEL_EDIT": "Anuluj zmiany",
+				"EDIT": "Edytowanie ustawień gry",
+				"COPY": "Kopiuj grę",
+				"CREATE_START": "Stwórz i uruchom grę"
+			},
+			"GAME_NAME_PLACEHOLDER": "Moja gra",
+			"LOAD_GAME": "Załaduj grę",
+			"PLAYER_MESSAGE": "Komunikat wyświetlany na ekranie",
+			"TITLE": "Rozpocznij quiz",
+			"DESCRIPTION": "Postaw uczestników przeciwko sobie w ślepym teście! Uczestnicy będą musieli jak najszybciej odgadnąć piosenki odtwarzane na ekranie. Możesz skonfigurować nową grę lub wznowić istniejącą.",
+			"GAME_NAME": "Nazwa gry",
+			"PLAYLIST": "Lista odtwarzania do użycia"
+		},
+		"CROP_AVATAR_MODAL": {
+			"HELP": "Zmień rozmiar kwadratu, aby uzyskać idealne zdjęcie profilowe.",
+			"TITLE": "Dopasuj swój awatar"
+		},
+		"STOP_QUIZ": {
+			"TITLE": "Przerwać quiz?",
+			"DESCRIPTION": "Gra zostanie natychmiast zatrzymana. Można go wznowić za pomocą menu Rozpocznij quiz."
 		}
 	},
 	"ENCORES_TAGLINES": [
@@ -843,5 +1071,432 @@
 	"VIEW_FAVORITES": "Ulubione",
 	"KARA_SUGGESTION_NOT_FOUND": "Nie możesz znaleźć swojej ulubionej piosenki? Sprawdź skonfigurowane repozytoria online, a także witrynę z sugestiami, jeśli Twoje życzenie nie zostało jeszcze spełnione:",
 	"PL_MULTIPLE_ADDED": "Dodaj {{count}} utworów",
-	"MAKE_ACCOUNT_ADMIN_MESSAGE": "Jeśli chcesz uaktualnić swoje konto do poziomu operatora, wpisz tutaj 6-cyfrowy kod zabezpieczający."
+	"MAKE_ACCOUNT_ADMIN_MESSAGE": "Jeśli chcesz uaktualnić swoje konto do poziomu operatora, wpisz tutaj 6-cyfrowy kod zabezpieczający.",
+	"SETUP_PAGE": {
+		"LOCAL_ACCOUNT": "Lokalny",
+		"ONLINE_ACCOUNT": "Online",
+		"ONLINE_ACCOUNT_DESC": "Konto online umożliwia:",
+		"LOCAL_ACCOUNT_DESC": "Wybrano konto lokalne. Wpisz poniżej nazwę konta i hasło:",
+		"ONLINE_ACCOUNT_INSTANCE_DESC": "Instancja jest serwerem online świadczącym kilka usług dla Karaoke Mugen. Jeśli nie masz pewności, pozostaw domyślną instancję ({{instance}}) lub, jeśli wiesz, co robisz, zmień ją na wybraną instancję.",
+		"CREATE_ONLINE_ACCOUNT": "Chcę założyć nowe konto",
+		"LOGIN_ONLINE_ACCOUNT": "Mam już konto",
+		"CREATE_ONLINE_ACCOUNT_DESC": "Wpisz nazwę konta i hasło, aby je utworzyć.",
+		"SECURITY_CODE_USE": "Ten kod upewnia się, że to naprawdę Ty wykonujesz te czynności. Zmienia się po każdym użyciu.",
+		"CONNECTED_MESSAGE": "Gratulacje, jesteś zalogowany do Karaoke Mugen, {{user}}!",
+		"DEFAULT_REPOSITORY_DESC_2": ". Jego pliki multimedialne zostaną pobrane zgodnie z potrzebami.",
+		"DEFAULT_REPOSITORY_QUESTION": "Gdzie chcesz przechowywać te pobrane pliki? Domyślnie będą one znajdować się w:",
+		"REPOSITORY_LATER": "Możesz zmienić ten folder w dowolnym momencie.",
+		"MODIFY_DIRECTORY": "Zmień folder",
+		"CHOOSE_DIRECTORY": "Wybierz folder",
+		"ADD_DIRECTORY": "Dodawanie folderu",
+		"COLLECTIONS_CHOICE": "Wybór kolekcji",
+		"NEED_ACCOUNT": "Zanim zaczniesz śpiewać, musisz mieć konto, aby korzystać z aplikacji.",
+		"SAVE_PARAMETER": "Zapisz",
+		"COLLECTIONS_CHOICE_DESC_2": "W każdej chwili możesz zmienić swoje kolekcje w panelu systemowym.",
+		"SECURITY_CODE_DESC_CONSOLE": "Wprowadź również 6-cyfrowy kod zabezpieczający, który można znaleźć, szukając \"KOD ZABEZPIECZAJĄCY DLA TEJ SESJI\" w pliku dziennika Karaoke Mugen lub w konsoli.",
+		"DEFAULT_REPOSITORY_DESC_1": "Karaoke Mugen posiada domyślne repozytorium karaoke, ",
+		"TITLE": "Kreator konfiguracji",
+		"WELCOME": "Witamy w Karaoke Mugen!",
+		"ACCOUNT_QUESTION": "Czy chcesz korzystać z konta lokalnego (tylko na komputerze) czy konta online (wymagany dostęp do Internetu)?",
+		"COLLECTIONS_CHOICE_DESC_1": "Kolekcje piosenek są przeznaczone dla różnych grup odbiorców. Wybierz kolekcje, które chcesz zobaczyć w swojej bazie danych karaoke.",
+		"ONLINE_ACCOUNT_SAVE_INFOS": "Utwórz kopię zapasową swoich ulubionych utworów, awatara i informacji o profilu, aby użyć ich w innej aplikacji Karaoke Mugen.",
+		"ONLINE_ACCOUNT_LOST_PASSWORD": "Jeśli podasz adres e-mail, będziesz mógł odzyskać swoje konto, jeśli zapomnisz hasła.",
+		"ONLINE_ACCOUNT_INSTANCE": "Twoje konto online będzie hostowane w instancji {{instance}}"
+	},
+	"NOTIFICATION": {
+		"OPERATOR": {
+			"ERROR": {
+				"DOWNLOAD": "Błąd pobierania utworu",
+				"SHORTENER": "Błąd podczas włączania skracania adresów URL",
+				"PLAYER_PLAY": "Nie można odtworzyć utworu",
+				"PLAYER_NO_ONLINE_MEDIA": "Mediów nie można czytać ze źródeł internetowych. Sprawdź swoje połączenie internetowe.",
+				"PLAYER_RANDOM_SONG_AFTER_PLAYLIST": "Nie można wybrać losowego utworu do odtworzenia po zakończeniu listy odtwarzania",
+				"PLAYER_PLMEDIA": "Nie można odtworzyć multimediów z listy odtwarzania",
+				"POLL_ALREADY_STARTED": "Ankieta jest już w toku",
+				"POLL_PUBLIC_PL_EMPTY": "Nie można rozpocząć ankiety: publiczna lista odtwarzania jest pusta",
+				"UPDATE_GIT_REPO_ERROR": "Aktualizowanie repozytorium git nie powiodło się",
+				"STATS_PAYLOAD": "Błąd podczas wysyłania statystyk na serwer",
+				"PLAYLIST_FREE_ORPHANED_SONGS": "Nie można uwolnić osieroconych utworów",
+				"PLAYER_CLASSIC_PAUSE_SCREEN": "Nie można przygotować ekranu pauzy",
+				"POLL_NOT_ENOUGH_SONGS": "Nie można rozpocząć ankiety: nie ma wystarczającej liczby dostępnych utworów"
+			},
+			"INFO": {
+				"PLAYER_RESTARTING": "Restart odtwarzacza multimedialnego…",
+				"POLL_WINNER": "Ludzie głosowali na nową piosenkę!",
+				"POLL_STARTING": "Rozpoczęcie ankiety",
+				"END_OF_SESSION_NEAR": "Sesja karaoke powinna zakończyć się za {{data}} minut.",
+				"BATCH_EDIT_COMPLETE": "Edycja wsadowa utworu zakończona."
+			}
+		}
+	},
+	"LOADING": "Wczytywanie…",
+	"LOADING_SUBTITLE_ELECTRON": "Nie powinno to zająć zbyt dużo czasu, spróbuj ponownie uruchomić Karaoke Mugen lub zaktualizuj go, jeśli utkniesz tutaj.",
+	"ADD": "Dodać",
+	"SEARCH_FILTER": "Filtr wyszukiwania",
+	"REFRESH": "Odśwież",
+	"CONFIRM_SURE": "Czy na pewno?",
+	"ACTION": "Akcja",
+	"KARA": {
+		"SECTIONS": {
+			"FILES": "Pliki",
+			"PARENTS": "Piosenka nadrzędna",
+			"TITLES": "Tytuł(y)",
+			"IDENTITY": "Tożsamość",
+			"CATEGORIZATION": "Kategoryzacja",
+			"META": "Metadane"
+		},
+		"DESC": {
+			"PARENTS": "Jeśli ta piosenka jest alternatywną wersją innej, wybierz jej rodzica (rodziców), aby wstępnie wypełnić ten formularz.",
+			"PARENTS_PUBLIC": "Gdy użytkownik wybierze piosenkę nadrzędną w interfejsie publicznym, zobaczy wszystkie swoje wersje podrzędne / alternatywne.",
+			"TITLES": "Ustaw wszystkie tytuły utworu w różnych językach. Zazwyczaj jest tylko jeden tytuł.",
+			"TITLES_DEFAULT_LANGUAGE": "Domyślnym językiem tytułu powinien być oryginalny tytuł utworu. W przypadku tytułów w językach innych niż łacińskie (chińskim, japońskim, arabskim, koreańskim...) dodaj tytuł \"Romanizacja\" i ustaw go jako domyślny.",
+			"ALIASES": "Jeśli utwór jest znany jako coś innego (na przykład skróty), ustaw je tutaj, aby ułatwić ludziom znalezienie go za pomocą wyszukiwania. Nie ma potrzeby używania słów już zawartych w tytule (tytułach) utworu."
+		},
+		"MEDIA_FILE": "Plik multimedialny",
+		"MEDIA_FILE_TOOLTIP": "Obsługiwane formaty plików: {{formats}}",
+		"MEDIA_REQUIRED": "Plik multimedialny jest wymagany",
+		"AUDIO_COVER": {
+			"REPLACE": "Zastąp okładkę",
+			"EMBED_COVER_SUCCESS": "Nowa okładka została przesłana i osadzona",
+			"EMBED_COVER_ERROR": "Błąd podczas osadzania nowej okładki",
+			"UPLOAD": "Prześlij okładkę",
+			"UPLOAD_TOOLTIP": "Zmień obraz, który będzie wyświetlany jako tło podczas odtwarzania tego utworu"
+		},
+		"MEDIA_REPOSITORY_RULES_UNMET": "Plik multimedialny nie spełnia wszystkich obowiązkowych wymagań dotyczących repozytorium. Najpierw zakoduj nośnik.",
+		"MEDIA_FILE_INFO": {
+			"FILE_SIZE": "Rozmiar pliku",
+			"FILE_FORMAT": "Format pliku",
+			"VIDEO_CODEC": "Kodek wideo",
+			"DURATION": "Czas trwania",
+			"VIDEO_ASPECT_RATIO": "Współczynnik proporcji",
+			"AUDIO_CODEC": "Kodek audio",
+			"AUDIO_SAMPLE_RATE": "Częstotliwość próbkowania dźwięku",
+			"AUDIO_CHANNEL_LAYOUT": "Układ kanałów audio",
+			"AUDIO_COVER_ART": "Okładka",
+			"WARNINGS": {
+				"LIBAVCODEC_ENCODER": "Dźwięk jest kodowany za pomocą kodera libavcodec (ffmpeg reference aac), który może tworzyć słyszalne artefakty i nie jest zalecany do używania. Użyj kodera libfdk_aac dla aac lub innego kodeka, takiego jak opus, aby uzyskać najlepszą możliwą jakość."
+			},
+			"OVERALL_BITRATE": "Ogólna przepływność bitów",
+			"VIDEO_RESOLUTION": "Rozdzielczość",
+			"VIDEO_COLORSPACE": "Przestrzeń kolorów",
+			"VIDEO_FRAMERATE": "Liczba klatek na sekundę"
+		},
+		"MEDIA_ENCODE": {
+			"LABEL": "Kodowanie multimediów",
+			"OPTIONS": {
+				"TRIM_MEDIA": "Początek/koniec przycinania",
+				"TRIM_MEDIA_TOOLTIP": "Wykrywanie i usuwanie czarnych ramek oraz wyciszenia na początku i na końcu nośnika"
+			},
+			"TIMING_CHANGE_WARNING": "Wybrane opcje mogą zmienić czas rozpoczęcia i zakończenia nośnika. Sprawdź czas tekstu po zakodowaniu i zapisaniu multimediów."
+		},
+		"LYRICS_FILE": "Plik z tekstami piosenek",
+		"LYRICS_FILE_TOOLTIP": "Obsługiwane formaty plików: {{formats}}",
+		"LYRICS_FILE_OPEN": "Otwórz plik",
+		"ADD_FILE_LYRICS_ERROR": "{{name}} nie jest plikiem z napisami",
+		"TITLE": "Tytuły",
+		"TITLE_TOOLTIP": "Jeśli nie wiesz, wpisz tutaj również nazwę serii",
+		"TITLE_REQUIRED": "Podaj tytuł utworu",
+		"DEFAULT_LANGUAGE": "Domyślny język do użycia",
+		"SERIES_TOOLTIP": "Serial telewizyjny, tytuł filmu, tytuł gry wideo itp.",
+		"SERIES_SINGERS_REQUIRED": "Serie, Śpiewane przez lub Z zespołu muzycznego nie mogą być puste w tym samym czasie.",
+		"TYPE_REQUIRED": "Typ utworu jest wymagany",
+		"ORDER": "Kolejność utworów",
+		"ORDER_TOOLTIP": "Numer początkowy/końcowy. Jeśli jest to jedyny opening/ending w serii, pozostaw to pole puste.",
+		"LANGUAGES_REQUIRED": "Proszę wybrać język",
+		"YEAR": "Rok emisji",
+		"SONGWRITERS_TOOLTIP": "Kompozytorzy, aranżerzy i tekściarze.",
+		"KARA_AUTHORS_REQUIRED": "Wymagany jest autor karaoke",
+		"KARA_AUTHORS_TOOLTIP": "Powinieneś dodać tutaj siebie ^^",
+		"COMMENT": "Jakieś komentarze?",
+		"IGNOREHOOKS": "Ignoruj tagi automatyczne",
+		"PREVIEW_HOOKS": "Podgląd tagów dodawanych automatycznie",
+		"PREVIEW_HOOKS_MODAL": "Następujące zmiany zostaną wprowadzone w tagach tej piosenki",
+		"CREATED_AT": "Data utworzenia",
+		"MODIFIED_AT": "Data ostatniej aktualizacji",
+		"PLAYED": "Liczba wyświetleń",
+		"PLAYED_AT": "Zagrano dalej",
+		"REQUESTED": "Żądany",
+		"TAG_FILTER": "Filtr tagów",
+		"TAG_GROUP_FILTER": "Filtr grupowy",
+		"SYNCHRONIZE": "Synchronizuj",
+		"SYNCHRONIZE_DESC": "Pobierz wszystkie multimedia",
+		"QUEUE_LABEL": "Kolejka pobierania",
+		"QUEUE_LABEL_SONGS": "({{numberSongs}} utworów):",
+		"START_DOWNLOAD_QUEUE": "Start",
+		"PAUSE_DOWNLOAD_QUEUE": "Pauza",
+		"DOWNLOAD": "Pobierz",
+		"DOWNLOAD_ALL_TOOLTIP": "Pobierz wszystkie pobrane multimedia naraz",
+		"SHOWING": "Wyświetlanie {{from}}-{{to}} z {{total}} piosenek",
+		"FILTER_MEDIA_STATUS": "Status nośnika: ",
+		"FILTER_ALL": "Wszystkie",
+		"COPY_SONG": "Kopiowanie utworu do innego repozytorium",
+		"VIDEO_PREVIEW": "Podgląd wideo",
+		"TOTAL_MEDIA_SIZE": "Całkowity rozmiar nośnika:",
+		"SYNC_WARNING_TITLE": "Ostrzeżenie dotyczące synchronizowania multimediów",
+		"REPOSITORY_REQUIRED": "Repozytorium jest obowiązkowe",
+		"BATCH_EDIT": {
+			"ADD_TAG": "Dodaj tag",
+			"REMOVE_TAG": "Usuń tag",
+			"CREATE_PLAYLIST": "Najpierw musisz utworzyć listę odtwarzania w panelu operatora.",
+			"EDIT_DISPLAY_TYPE": "Edytuj wyświetlanie typu tag"
+		},
+		"MEDIA_IN_PROCESS": "Plik multimedialny jest przetwarzany, poczekaj na powiadomienie o powodzeniu.",
+		"ALIASES_TOOLTIP": "Nazwy krótkie lub alternatywne, używane do wyszukiwania.",
+		"ADD_FILE_MEDIA_ERROR": "{{name}} nie jest plikiem multimedialnym",
+		"ADD_FILE_SUCCESS": "Plik {{name}} został dodany pomyślnie",
+		"FRANCHISES_TOOLTIP": "Jeśli seria jest częścią serii (np. Gundam, Mario, Zelda, Naruto itp.), wskaż to tutaj.",
+		"CREATORS_TOOLTIP": "Podmiot, który utworzył serię. Może to być studio animacji, studio filmowe lub studio gier.",
+		"ALIASES": "Aliasy",
+		"SINGERGROUPS_TOOLTIP": "Jeśli piosenkarze należą do zespołu muzycznego, umieść ich tutaj. Zespół będzie wyświetlany na listach odtwarzaczy i utworów, a nie poszczególni wokaliści.",
+		"YEAR_TOOLTIP": "Rok, w którym serial został wyemitowany lub film został wyprodukowany",
+		"FAMILIES_TOOLTIP": "Określa, jakiego rodzaju treści zawiera film.",
+		"WIPE_DOWNLOAD_QUEUE": "Wymaż",
+		"COMMENT_TOOLTIP": "Pole komentarza dla takich rzeczy jak \"Do wszystkich moich fanów!\" lub \"Nie modyfikuj efektów!\" lub \"Zrobione z dużą ilością kawy\".",
+		"IGNOREHOOKS_TOOLTIP": "Niektóre tagi mogą być dodawane automatycznie do tego utworu, jeśli spełnia on pewne warunki.",
+		"GROUPS_TOOLTIP": "Pobierz grupy dla tej piosenki. Utwór zostanie dołączony do tych pakietów do pobrania",
+		"SYNC_WARNING_DESCRIPTION": "Synchronizacja multimediów spowoduje usunięcie wszystkich multimediów z wyłączonych kolekcji, jeśli zostały one wcześniej pobrane. Może to spowodować usunięcie wielu plików, jeśli tymczasowo wyłączyłeś kolekcję, której zwykle używasz.",
+		"VIEW_DOWNLOAD_QUEUE": "Widok",
+		"VERSIONS_TOOLTIP": "Wersje pozwalają na lepszą identyfikację utworów o tym samym tytule. Jeśli żadna wersja nie odnosi się do tej piosenki, ponieważ jest zbyt szczegółowa (np. Future Vers. lub Chihaya Vers.), wskaż ją w tytule, dodając do niej \" ~Chihaya Vers.\"",
+		"FILTER_IN_PROGRESS": "Pobieranie w toku",
+		"FILTER_NOT_DOWNLOADED": "Nie pobrano",
+		"REPOSITORY": "Repozytorium"
+	},
+	"HEADERS": {
+		"SESSIONS": {
+			"DESCRIPTION": "Dodawaj, usuwaj lub przeglądaj dane z różnych sesji karaoke, które odbyłeś.",
+			"TITLE": "Zarządzanie sesjami"
+		},
+		"REPOSITORIES": {
+			"TITLE": "Zarządzanie kolekcjami i repozytoriami",
+			"DESCRIPTION_COLLECTION": "Kolekcje piosenek są przeznaczone dla różnych grup odbiorców. Wybierz kolekcje, które chcesz zobaczyć w swojej bazie danych karaoke.",
+			"DESCRIPTION": "Repozytoria są źródłem karaoke. Dodawaj, włączaj lub usuwaj repozytoria z tej strony."
+		},
+		"SESSIONS_EDIT": {
+			"DESCRIPTION": "Formularz modyfikacji sesji karaoke.",
+			"TITLE": "Edytowanie sesji karaoke"
+		},
+		"BACKGROUNDS": {
+			"TITLE": "Zarządzanie tłami",
+			"DESCRIPTION": "To tylko środek, aby trochę dostosować swój odtwarzacz."
+		},
+		"REPOSITORIES_NEW": {
+			"DESCRIPTION": "Formularz tworzenia repozytorium.",
+			"TITLE": "Dodawanie repozytorium"
+		},
+		"KARAOKE_LIST": {
+			"TITLE": "Lista utworów",
+			"DESCRIPTION": "W tym miejscu możesz edytować, dodawać lub usuwać utwory. Zazwyczaj tylko dla opiekunów repozytoriów karaoke."
+		},
+		"GIT": {
+			"TITLE": "Integracja z Git",
+			"DESCRIPTION": "Zarządzanie repozytoriami Git (wypychanie, scalanie konfliktów)"
+		},
+		"DATABASE": {
+			"DESCRIPTION": "Narzędzia do zarządzania bazami danych. Baza danych, baza danych, po prostu życie w bazie danych wow wow.",
+			"TITLE": "Baza danych"
+		},
+		"UNUSED_FILES": {
+			"DESCRIPTION": "Tutaj możesz wyświetlić listę niepotrzebnych plików (nieużywanych przez żadne karaoke) w swoich repozytoriach.",
+			"TITLE": "Nieużywane pliki"
+		},
+		"DOWNLOAD_QUEUE": {
+			"TITLE": "Kolejka pobierania multimediów",
+			"DESCRIPTION": "Zobacz listę bieżących i oczekujących plików do pobrania."
+		},
+		"KARAOKE_EDIT": {
+			"DESCRIPTION": "Formularz modyfikacji karaoke.",
+			"TITLE": "Edytowanie karaoke"
+		},
+		"HISTORY": {
+			"TITLE": "Historia odczytu",
+			"DESCRIPTION": "Wyświetla listę wszystkich karaoke odtwarzanych w aplikacji, w malejącej kolejności chronologicznej."
+		},
+		"MOST_REQUESTED": {
+			"TITLE": "Najpopularniejsze piosenki",
+			"DESCRIPTION_ONLINE": "Widzisz teraz listę popularnych piosenek ONLINE. Wyłącz ustawienie \"Pobierz popularne utwory online\", aby zobaczyć tylko te z Twojej instancji.",
+			"DESCRIPTION": "Wyświetla listę najpopularniejszych utworów w aplikacji. Uwzględnia tylko utwory dodane z interfejsu publicznego."
+		},
+		"TAG_LIST": {
+			"TITLE": "Lista tagów",
+			"DESCRIPTION": "Tylko dla opiekunów: lista tagów, za pomocą których możesz zdefiniować swoje metadane dla utworu."
+		},
+		"MOST_PLAYED": {
+			"DESCRIPTION": "Wyświetlanie listy najczęściej odtwarzanych utworów w aplikacji",
+			"TITLE": "Najczęściej odtwarzane utwory"
+		},
+		"TAG_NEW": {
+			"TITLE": "Tworzenie tagu",
+			"DESCRIPTION": "Formularz tworzenia tagu. Pamiętaj, aby dodać co najmniej tłumaczenie na język angielski."
+		},
+		"TAG_EDIT": {
+			"TITLE": "Modyfikowanie tagu",
+			"DESCRIPTION": "Formularz modyfikacji tagu. Tylko oryginalna zmiana nazwy powoduje zmianę nazwy pliku."
+		},
+		"TAG_DUPLICATES": {
+			"DESCRIPTION": "Na tej stronie możesz zobaczyć tagi o tej samej nazwie, ale nie tej samej kategorii, aby w razie potrzeby je scalić.",
+			"TITLE": "Lista zduplikowanych tagów"
+		},
+		"USER_NEW": {
+			"DESCRIPTION": "Formularz tworzenia użytkownika lokalnego",
+			"TITLE": "Tworzenie użytkownika"
+		},
+		"INBOX": {
+			"DESCRIPTION": "Jako opiekun tej bazy karaoke, Twoim obowiązkiem jest uczynienie tej listy pustą.",
+			"TITLE": "Skrzynka odbiorcza dla utworów do zintegrowania"
+		},
+		"STORAGE": {
+			"TITLE": "Zarządzanie pamięcią dyskową",
+			"DESCRIPTION": "Zarządzanie magazynem dyskowym na nośnikach"
+		},
+		"DOWNLOAD": {
+			"TITLE": "Menedżer pobierania multimediów",
+			"DESCRIPTION": "Znajdź i pobierz multimedia połączone z karaoke ze skonfigurowanych repozytoriów."
+		},
+		"USER_EDIT": {
+			"DESCRIPTION": "Formularz modyfikacji użytkownika",
+			"TITLE": "Modyfikowanie użytkownika"
+		},
+		"KARATAG_BATCH_EDIT": {
+			"DESCRIPTION": "Tylko dla opiekunów: ta strona pozwala na dodawanie lub usuwanie tagów w kilku utworach jednocześnie.",
+			"TITLE": "Zbiorcze dodawanie/usuwanie tagu"
+		},
+		"USER_LIST": {
+			"TITLE": "Zarządzanie użytkownikami",
+			"DESCRIPTION": "Z tego miejsca możesz tworzyć, usuwać, modyfikować użytkowników, ale także resetować ich hasła lub zmieniać ich uprawnienia."
+		},
+		"KARAOKE_NEW": {
+			"DESCRIPTION": "Ten formularz pozwala na dodanie już istniejącego karaoke do jednego z repozytoriów.",
+			"TITLE": "Dodaj karaoke"
+		},
+		"REPOSITORIES_EDIT": {
+			"TITLE": "Edytowanie repozytorium",
+			"DESCRIPTION": "Formularz modyfikacji repozytorium."
+		},
+		"SESSIONS_NEW": {
+			"TITLE": "Dodawanie sesji karaoke",
+			"DESCRIPTION": "Formularz tworzenia sesji karaoke."
+		},
+		"CONFIGURATION": {
+			"DESCRIPTION": "Tylko dla ekspertów. Wszystkie ustawienia Karaoke Mugen są tutaj, uważaj, gdzie kładziesz palce."
+		}
+	},
+	"LOGS": {
+		"LEVELS": {
+			"INFO": "Informacje",
+			"DEBUG": "Debuguj",
+			"ERROR": "Błędy",
+			"WARNING": "Ostrzeżenia"
+		},
+		"SELECT_LOG": "Wybierz logi w menadżerze plików",
+		"SHOW_DETAILS": "Pokaż szczegóły"
+	},
+	"CHIBI": {
+		"FOCUS": "Wróć do Karaoke Mugen",
+		"ONTOP": "Pokaż na wierzchu innych okien",
+		"CLOSE": "Zamknij odtwarzacz chibi"
+	},
+	"BACKGROUNDS_MGMT": {
+		"EXPL": "Istnieją 3 kategorie tła. Jeśli kategoria nie ma żadnego tła, zostanie użyta kategoria dołączona (te ze znakiem, który nadaje jego nazwę wersji aplikacji).",
+		"DESC": {
+			"POLL": "Gdy ankieta jest uruchomiona.",
+			"STOP": "Gdy odtwarzacz jest w stanie zatrzymania.",
+			"PAUSE": "Między utworami (streamer/tryb klasyczny)."
+		},
+		"TYPE": {
+			"POLL": "Ankieta",
+			"STOP": "Stop",
+			"PAUSE": "Pauza"
+		},
+		"MUSIC": "Muzyka",
+		"PICTURES": "Obrazki",
+		"CATEGORY": "Kategoria",
+		"PREVIEW": "Podgląd",
+		"FILE": "Nazwa pliku",
+		"SAVE": "Zapisz",
+		"CHOOSE_FILE": "Wybierz plik",
+		"NEW": "Nowe tło lub muzyka",
+		"INFO": [
+			"Jeśli chcesz użyć tego samego tła dla 2 różnych kategorii (lub więcej), musisz umieścić je w każdej kategorii.",
+			"Możesz także dodać muzykę! W ten sam sposób każda kategoria ma swoją własną muzykę.",
+			"Możesz powiązać tło z muzyką, nadając jej tę samą nazwę. Na przykład back1.jpg i back1.mp3 w tej samej kategorii zawsze będą połączone. W przeciwnym razie, jeśli back2.jpg nie ma dźwięku o tej samej nazwie, zostanie wybrany losowo."
+		]
+	},
+	"MIGRATE": {
+		"TITLE": "Migracja",
+		"CONTINUE": "Kontynuuj."
+	},
+	"INBOX": {
+		"TYPES": {
+			"MODIFICATION": "Modyfikacji",
+			"CREATION": "Kreacja"
+		},
+		"TYPE": "Rodzaj wniosku",
+		"USER": "Użytkownik odpowiedzialny za integrację zgłoszeń",
+		"ISSUE": "Wydanie {{number}}",
+		"CONTACT_INFOS": "Informacje kontaktowe autora",
+		"LINK_TO_ISSUE": "Link do problemu",
+		"CONTACT_INFOS_MODAL": {
+			"USERNAME": "Nazwa użytkownika: ",
+			"SOCIAL_NETWORKS": {
+				"BLUESKY": "Bluesky: ",
+				"MASTODON": "Mastodon: ",
+				"DISCORD": "Niezgoda: ",
+				"INSTAGRAM": "Instagram: ",
+				"TWITCH": "Twitch: ",
+				"TWITTER": "Twitter: "
+			},
+			"URL": "Website: ",
+			"MAIL": "Email: "
+		},
+		"DELETE": "Czy na pewno chcesz usunąć karaoke ze skrzynki odbiorczej, a także jego pliki na serwerze?",
+		"SONG_DOWNLOADED_FROM_INBOX_FAILED": "Nie można pobrać utworu ze skrzynki odbiorczej!",
+		"DOWNLOAD": "Pobierz karaoke",
+		"ONLINE_USER_REQUIRED": "Do skrzynki odbiorczej wymagany jest użytkownik online",
+		"TIMESTAMP": "Sygnatury czasowej",
+		"NO_REPOSITORY_ENABLED": "Brak włączonego repozytorium online w trybie opiekuna",
+		"NAME": "Nazwa karaoke",
+		"SONG_DOWNLOADED_FROM_INBOX": "Piosenka {{song}} została pomyślnie pobrana ze skrzynki odbiorczej",
+		"REVIEW": "Recenzja"
+	},
+	"QUIZ": {
+		"CONTINUE": "Kontynuuj piosenkę po ujawnieniu odpowiedzi",
+		"STOP": "Zatrzymaj quiz",
+		"BONUS_POINTS_other": "{{count}} punktów bonusowych",
+		"BONUS_POINTS_one": "{{count}} punktów bonusowych",
+		"POINTS_one": "{{count}} punkt",
+		"TAGLINE": "Co to za piosenka?",
+		"STATES": {
+			"QUICK_GUESSING_other": "Odpowiedz w mniej niż {{count}} sekund, aby zdobyć więcej punktów!",
+			"QUICK_GUESSING_one": "Odpowiedz w mniej niż {{count}} sekundy, aby zdobyć więcej punktów!",
+			"GUESSING_other": "Zostało tylko {{count}} sekund!",
+			"GUESSING_one": "Zostało tylko {{count}} sekund!",
+			"NEXT_SONG_other": "Skończona, następna piosenka w {{count}} sekund.",
+			"NO_ANSWER": "Nie zarejestrowano żadnej odpowiedzi.",
+			"TOO_LATE": "Za późno! Ostatnią zarejestrowaną odpowiedzią było \"{{answer}}\".",
+			"REGISTERED": "Odpowiedź \"{{answer}}\" została nagrana.",
+			"WAITING": "Czekam na następną piosenkę…",
+			"SORRY": "\"{{answer}}\" było złą odpowiedzią.",
+			"NICE_ONE_QUICK": "To jest prawidłowa odpowiedź! Dostajesz $t(QUIZ. POINTS, {\"count\": {{points}} }) (bonus za szybką odpowiedź)",
+			"NEXT_SONG_one": "Skończony, następna piosenka w {{count}} sekundzie.",
+			"NICE_ONE": "To jest prawidłowa odpowiedź! Dostajesz $t(QUIZ.POINTS, {\"count\": {{points}} })."
+		},
+		"RULES": {
+			"TITLE": "Zasady",
+			"SECONDS_one": "{{count}} sekunda"
+		},
+		"END": "Quiz dobiegł końca!",
+		"POINTS_other": "{{count}} punktów",
+		"NO_QUIZ": "Nie ma quizu w toku!",
+		"TITLE": "Tryb quizu",
+		"START": "Rozpocznij quiz",
+		"QUIT": "Wyjdź z quizu",
+		"PLACEHOLDER": "Wiem!"
+	},
+	"ABOUT": {
+		"DESCRIPTION": "Graj karaoke i organizuj imprezy, między przyjaciółmi lub publicznie.",
+		"CONTRIBUTORS": "Subskrypcje karaoke zostały stworzone przez niesamowitych ludzi, takich jak na przykład <1>{{contributors}}</1>.",
+		"LICENSE": "Licencja MIT.",
+		"DONATORS": "Podziękowania dla <1>{{donators}}</1> za darowizny na rzecz Karaoke Mugen"
+	},
+	"LOADING_SUBTITLE": "Nie powinno to zająć zbyt dużo czasu, spróbuj wyczyścić pamięć podręczną lub zaktualizować przeglądarkę, jeśli utkniesz tutaj."
 }
