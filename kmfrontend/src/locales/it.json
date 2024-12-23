@@ -1622,7 +1622,7 @@
 			"DESCRIPTION": "Modulo di modifica della sessione karaoke."
 		},
 		"TAG_LIST": {
-			"DESCRIPTION": "Solo per mantenitori: lista dei tag assegnati ai tuoi brani.",
+			"DESCRIPTION": "Solo per mantenitori: lista di tag che descrivono il brano.",
 			"TITLE": "Lista di tag"
 		},
 		"INBOX": {
