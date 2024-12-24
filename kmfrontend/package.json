@@ -62,7 +62,7 @@
 	"scripts": {
 		"analyze": "source-map-explorer 'build/static/js/*.js'",
 		"start": "vite",
-		"build": "vite build",
+		"build": "NODE_OPTIONS=--max-old-space-size=4096 vite build",
 		"lint": "eslint .",
 		"i18next-scanner": "i18next-scanner --config src/utils/i18next-scanner.config.js"
 	},
