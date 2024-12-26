@@ -408,7 +408,7 @@ async function replaceTagInKaras(oldTID: string, newTag: Tag, karas: DBKara[]) {
 		for (const type of Object.keys(tagTypes)) {
 			if (kara[type]?.find((t: DBTag) => t.tid === oldTID)) {
 				kara[type] = kara[type].filter((t: any) => t.tid !== oldTID);
-				kara[type].push(newTag);
+				if (!kara[type].find((t: DBTag) => t.tid === newTag.tid)) kara[type].push(newTag);
 			}
 		}
 		await editKara(
@@ -510,7 +510,9 @@ export async function checkCollections() {
 					try {
 						const tags = (
 							await HTTP.get(
-								`${repo.Secure ? 'https' : 'http'}://${repo.Name}/api/karas/tags?type=${tagTypes.collections}`
+								`${repo.Secure ? 'https' : 'http'}://${repo.Name}/api/karas/tags?type=${
+									tagTypes.collections
+								}`
 							)
 						).data;
 						for (const tag of tags.content) {
