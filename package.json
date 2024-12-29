@@ -1,6 +1,6 @@
 {
   "name": "karaokemugen-app",
-  "version": "8.0.45-next",
+  "version": "8.0.46-next",
   "versionName": "Sakuya Splendide",
   "description": "Karaoke playlist manager / player",
   "bin": {
