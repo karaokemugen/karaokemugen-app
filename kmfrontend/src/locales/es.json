@@ -1723,7 +1723,7 @@
 		"DESC": {
 			"POLL": "Cuando se está ejecutando una encuesta.",
 			"STOP": "Cuando el reproductor está detenido.",
-			"PAUSE": "Entre canciones (modo streamer/clásico)"
+			"PAUSE": "Entre canciones (modo streamer/clásico)."
 		},
 		"PREVIEW": "Vista previa",
 		"PICTURES": "Fotos",
