@@ -1965,7 +1965,7 @@
 	},
 	"BACKGROUNDS_MGMT": {
 		"DESC": {
-			"PAUSE": "Zwischen den Liedern (Streamer/Klassik-Modus.)",
+			"PAUSE": "Zwischen den Liedern (Streamer/Klassik-Modus).",
 			"STOP": "Wenn sich der Spieler in einem angehaltenen Zustand befindet.",
 			"POLL": "Wenn eine Umfrage läuft."
 		},
