@@ -147,7 +147,8 @@
 	"ADMIN_HEADER": {
 		"QUICK_ACCESS": "快速访问",
 		"PUBLIC_PLAYLIST": "公开播放列表",
-		"CURRENT_PLAYLIST": "当前播放列表"
+		"CURRENT_PLAYLIST": "当前播放列表",
+		"QUIZ_RANKING": "测验排名"
 	},
 	"FLAGS": {
 		"PUBLIC": "公开",
