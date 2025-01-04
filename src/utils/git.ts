@@ -87,37 +87,29 @@ export default class Git {
 	}
 
 	/** Prepare git instance */
-	async setup(configChanged = false, cloning = false) {
-		this.git = simpleGit({
+	async setup(configChanged = false) {
+		const repo = getRepo(this.opts.repoName);
+		const simpleGitOpts = {
 			baseDir: this.opts.baseDir,
 			unsafe: {
 				allowUnsafeCustomBinary: true,
 			},
 			progress: this.progressHandler.bind(this),
-		});
+			config: ['core.autocrlf=true', `user.name=${repo.Git.Author}`, `user.email=${repo.Git.Email}`],
+		};
 		const url = this.getFormattedURL();
 		if (this.isSshUrl()) {
 			this.keyFile = getKeyFileName(this.opts.repoName);
 			this.knownHostsFile = getKnownHostsFileName(this.opts.repoName);
 			await updateKnownHostsFile(url, this.opts.repoName);
-		}
-		// Config can't be done if cloning is in effect.
-		if ((await fileExists(this.keyFile)) && !cloning) {
-			await this.git.addConfig(
-				'core.sshCommand',
-				`ssh -o UserKnownHostsFile="${this.knownHostsFile}" -i "${this.keyFile}"`
+			simpleGitOpts.config.push(
+				`core.sshCommand=ssh -o UserKnownHostsFile="${this.knownHostsFile}" -i "${this.keyFile}"`
 			);
-		} else {
-			if (!cloning) await this.git.raw(['config', '--unset', 'core.sshCommand']);
 		}
+		logger.debug(`Git options: ${JSON.stringify(simpleGitOpts)}`, { service, obj: simpleGitOpts });
+		this.git = simpleGit(simpleGitOpts);
 		if (configChanged) {
-			logger.info('Setting up git repository settings', { service });
-			// Set email and stuff
-			// This is done on each setup because when these are modified in the repo setting, git might not be ready yet.
-			const repo = getRepo(this.opts.repoName);
-			await this.configUser(repo.Git.Author, repo.Git.Email);
-			// Avoid crlf conflicts
-			await this.git.addConfig('core.autocrlf', 'true');
+			logger.info('Setting remotes', { service });
 			// Check if Remote is correctly configured
 			const remotes = await this.git.getRemotes(true);
 			const origin = remotes.find(r => r.name === 'origin');
@@ -231,7 +223,8 @@ export default class Git {
 			total: 100,
 		});
 		try {
-			const ret = await this.git.clone(this.opts.url, '.', { '--depth': 1 });
+			const cmdlineOpts = { '--depth': 1 };
+			const ret = await this.git.clone(this.opts.url, '.', cmdlineOpts);
 			return ret;
 		} catch (err) {
 			throw err;
@@ -240,9 +233,7 @@ export default class Git {
 		}
 	}
 
-	/** Call this when user */
-	// When user what? Are you drunk?
-	// It's obviously called when user changes their name/mail.
+	// Call when user changes their name/mail.
 	async configUser(author: string, email: string) {
 		await this.git.addConfig('user.name', author);
 		await this.git.addConfig('user.email', email);
@@ -297,9 +288,9 @@ export async function checkGitInstalled() {
 	const git = simpleGit();
 	const version = await git.version();
 	if (version.installed) {
-		logger.debug(`Git installed as version : ${JSON.stringify(version)}`);
+		logger.debug(`Git installed as version : ${JSON.stringify(version)}`, { service });
 	} else {
-		logger.error('Git NOT installed (not foudn in path');
+		logger.error('Git NOT installed (not foudn in path', { service });
 		throw new ErrorKM('GIT_BINARY_NOT_FOUND', 500, false);
 	}
 }

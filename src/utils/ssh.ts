@@ -43,7 +43,9 @@ export function getKeyFileName(repoName: string) {
 }
 
 export function getKnownHostsFileName(repoName: string) {
-	return resolve(resolvedPath('SSHKeys'), `known_hosts_KaraokeMugen_${repoName}`);
+	const knownHostsFile = resolve(resolvedPath('SSHKeys'), `known_hosts_KaraokeMugen_${repoName}`);
+	logger.debug(`Known hosts file selected: ${knownHostsFile}`);
+	return knownHostsFile;
 }
 
 export async function getSSHPubKey(repoName: string): Promise<string> {
