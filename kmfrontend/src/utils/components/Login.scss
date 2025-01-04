@@ -1,3 +1,5 @@
+@use 'sass:color';
+@use 'sass:map';
 @import '../../frontend/styles/variables';
 @import '../../toast';
 @import '../../frontend/styles/components/buttons';
@@ -31,13 +33,13 @@ body {
 			background-color: $mugen-btn-primary-background;
 		}
 		&.guestButton {
-			background-color: scale-color(map-get($mugen-colors, 'blue'), $lightness: 20%);
+			background-color: color.scale(map.get($mugen-colors, 'blue'), $lightness: 20%);
 		}
 		&.loginButton {
-			background-color: scale-color(map-get($mugen-colors, 'green'), $lightness: 10%);
+			background-color: color.scale(map.get($mugen-colors, 'green'), $lightness: 10%);
 		}
 		&.signupButton {
-			background-color: scale-color(map-get($mugen-colors, 'green'), $lightness: 15%);
+			background-color: color.scale(map.get($mugen-colors, 'green'), $lightness: 15%);
 		}
 	}
 

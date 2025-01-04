@@ -1,22 +1,23 @@
+@use 'sass:color';
 @import '../../styles/variables';
 
 // Hover events only for PCs
 body:not(.touch) {
 	.playlist-main .list-group-item:hover {
-		background-color: scale-color($mugen-playlist-odd, $lightness: -35%);
+		background-color: color.scale($mugen-playlist-odd, $lightness: -35%);
 		&.list-group-item-even {
-			background-color: scale-color($mugen-playlist-even, $lightness: -25%);
+			background-color: color.scale($mugen-playlist-even, $lightness: -25%);
 		}
 		&.dejavu {
-			background-color: scale-color($mugen-playlist-dejavu-odd, $lightness: -35%);
+			background-color: color.scale($mugen-playlist-dejavu-odd, $lightness: -35%);
 			&.list-group-item-even {
-				background-color: scale-color($mugen-playlist-dejavu-even, $lightness: -25%);
+				background-color: color.scale($mugen-playlist-dejavu-even, $lightness: -25%);
 			}
 		}
 		&.currentlyplaying {
-			background-color: scale-color($mugen-playlist-currently-playing, $lightness: -55%, $saturation: -25%);
+			background-color: color.scale($mugen-playlist-currently-playing, $lightness: -55%, $saturation: -25%);
 			&.list-group-item-even {
-				background-color: scale-color($mugen-playlist-currently-playing, $lightness: -45%, $saturation: -25%);
+				background-color: color.scale($mugen-playlist-currently-playing, $lightness: -45%, $saturation: -25%);
 			}
 		}
 	}
@@ -30,7 +31,7 @@ body:not(.touch) {
 		}
 		.contentDiv {
 			i.fas.dejavu-icon {
-				color: scale-color($mugen-playlist-dejavu-odd, $lightness: 20%, $saturation: 15%);
+				color: color.scale($mugen-playlist-dejavu-odd, $lightness: 20%, $saturation: 15%);
 				margin-left: unset;
 				margin-right: 0.25em;
 			}
@@ -40,7 +41,7 @@ body:not(.touch) {
 	&.dejavu.currentlyplaying,
 	&.list-group-item-even.currentlyplaying,
 	&.list-group-item-even.dejavu.currentlyplaying {
-		background-color: scale-color(
+		background-color: color.scale(
 			$mugen-playlist-currently-playing,
 			$lightness: -50%,
 			$saturation: -15%,
@@ -273,12 +274,12 @@ body:not(.touch) {
 
 @keyframes btn-pulse {
 	0% {
-		background-color: scale-color($mugen-playlist-currently-playing, $lightness: -55%);
+		background-color: color.scale($mugen-playlist-currently-playing, $lightness: -55%);
 	}
 	50% {
-		background-color: scale-color($mugen-playlist-currently-playing, $lightness: -65%, $saturation: -5%);
+		background-color: color.scale($mugen-playlist-currently-playing, $lightness: -65%, $saturation: -5%);
 	}
 	100% {
-		background-color: scale-color($mugen-playlist-currently-playing, $lightness: -55%);
+		background-color: color.scale($mugen-playlist-currently-playing, $lightness: -55%);
 	}
 }

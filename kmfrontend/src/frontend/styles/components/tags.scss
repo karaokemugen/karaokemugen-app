@@ -1,3 +1,4 @@
+@use 'sass:color';
 @import '../variables';
 
 .tagConteneur {
@@ -30,7 +31,7 @@
 			}
 		} @else {
 			&.#{$name} {
-				background-color: scale-color($color, $lightness: -10%, $saturation: -40%);
+				background-color: color.scale($color, $lightness: -10%, $saturation: -40%);
 				color: white;
 			}
 		}
@@ -46,7 +47,10 @@
 	text-align: center;
 	font-weight: bold;
 	color: #aaa;
-	box-shadow: 0 6px 8px 2px #00000005, 0 1px 5px 2px #00000004, 0 2px 3px -1px #00000005;
+	box-shadow:
+		0 6px 8px 2px #00000005,
+		0 1px 5px 2px #00000004,
+		0 2px 3px -1px #00000005;
 	text-shadow: none;
 	border-radius: 5px;
 }

@@ -1,3 +1,5 @@
+@use 'sass:color';
+@use 'sass:map';
 @import '../variables';
 
 .settings-panel {
@@ -49,7 +51,7 @@
 			text-align: justify;
 			display: inline-block;
 			max-width: 50em;
-			color: scale-color(map-get($mugen-colors, 'yellow'), $lightness: 55%, $saturation: 10%);
+			color: color.scale(map.get($mugen-colors, 'yellow'), $lightness: 55%, $saturation: 10%);
 			@media screen and (max-width: $mugen-breakpoint-large) {
 				max-width: 80%;
 			}
@@ -78,7 +80,7 @@
 		}
 
 		input:not([type='range']) {
-			background-color: scale-color($mugen-playlist-odd, $lightness: 15%);
+			background-color: color.scale($mugen-playlist-odd, $lightness: 15%);
 			color: white;
 			border: darkgrey 1px solid;
 			padding: 0.5em;
@@ -96,7 +98,7 @@
 .settings-line:not(.subCategoryGroupPanel):nth-child(even) {
 	background-color: $mugen-playlist-even;
 	> div input:not([type='range']) {
-		background-color: scale-color($mugen-playlist-even, $lightness: 15%);
+		background-color: color.scale($mugen-playlist-even, $lightness: 15%);
 	}
 }
 
@@ -124,8 +126,8 @@
 	flex-direction: column;
 	align-items: flex-start;
 	justify-content: center;
-	background-color: scale-color($mugen-background, $lightness: 5%);
-	border: solid scale-color($mugen-background, $lightness: 15%);
+	background-color: color.scale($mugen-background, $lightness: 5%);
+	border: solid color.scale($mugen-background, $lightness: 15%);
 	border-width: 1px 0;
 	padding: 0.5em;
 	user-select: none;

@@ -1,4 +1,5 @@
 @use 'sass:color';
+@use 'sass:map';
 @import '../../styles/variables';
 @import '../../styles/components/blurred-bg';
 
@@ -136,7 +137,7 @@
 		}
 	}
 	.favorites {
-		background-color: color.adjust(map-get($mugen-colors, 'yellow'), $lightness: -10%, $space: hsl);
+		background-color: color.adjust(map.get($mugen-colors, 'yellow'), $lightness: -10%, $space: hsl);
 		width: max-content;
 		margin: 0.5em 0;
 		text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.25);
@@ -147,7 +148,7 @@
 			margin-right: 0.25em;
 		}
 		&:hover {
-			background-color: color.adjust(map-get($mugen-colors, 'yellow'), $lightness: -15%, $space: hsl);
+			background-color: color.adjust(map.get($mugen-colors, 'yellow'), $lightness: -15%, $space: hsl);
 		}
 	}
 }

@@ -1,3 +1,5 @@
+@use 'sass:color';
+@use 'sass:map';
 @import '../../styles/variables';
 
 #profilModal {
@@ -40,12 +42,12 @@
 		}
 		button.btn-save {
 			font-size: 1.5em;
-			background-color: map-get($mugen-colors, 'green');
+			background-color: map.get($mugen-colors, 'green');
 			&:hover {
-				background-color: scale-color(map-get($mugen-colors, 'green'), $lightness: 5%);
+				background-color: color.scale(map.get($mugen-colors, 'green'), $lightness: 5%);
 			}
 			&:active {
-				background-color: scale-color(map-get($mugen-colors, 'green'), $lightness: 10%);
+				background-color: color.scale(map.get($mugen-colors, 'green'), $lightness: 10%);
 			}
 		}
 	}

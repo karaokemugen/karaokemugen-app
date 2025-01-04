@@ -1,3 +1,4 @@
+@use 'sass:color';
 @import '../../styles/variables';
 
 .scores-popup {
@@ -19,7 +20,7 @@
 	padding: 1em;
 	border-radius: 16px;
 
-	background-color: scale-color($mugen-background, $lightness: -75%);
+	background-color: color.scale($mugen-background, $lightness: -75%);
 	font-size: 1.125rem;
 
 	> hr {
