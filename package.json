@@ -151,7 +151,6 @@
     "ultrastar2ass": "^1.1.2",
     "uuid": "^11.0.3",
     "validate.js": "^0.13.1",
-    "which": "^5.0.0",
     "winston": "^3.17.0",
     "winston-daily-rotate-file": "^5.0.0",
     "winston-transport": "^4.9.0",

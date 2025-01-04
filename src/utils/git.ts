@@ -1,7 +1,6 @@
 import i18next from 'i18next';
 import { resolve } from 'path';
 import { DefaultLogFields, ListLogLine, SimpleGit, simpleGit, SimpleGitProgressEvent } from 'simple-git';
-import which from 'which';
 
 import { Repository } from '../lib/types/repo.js';
 import { ErrorKM } from '../lib/utils/error.js';
@@ -91,7 +90,6 @@ export default class Git {
 	async setup(configChanged = false, cloning = false) {
 		this.git = simpleGit({
 			baseDir: this.opts.baseDir,
-			binary: await getGitPath(),
 			unsafe: {
 				allowUnsafeCustomBinary: true,
 			},
@@ -294,16 +292,14 @@ export default class Git {
 	}
 }
 
-async function getGitPath() {
-	try {
-		return await which(`git${process.platform === 'win32' ? '.exe' : ''}`);
-	} catch (err) {
-		if (err.code === 'ENOENT') throw new ErrorKM('GIT_BINARY_NOT_FOUND', 500, false);
-		throw err;
-	}
-}
-
 export async function checkGitInstalled() {
 	// Throws an error if git not installed
-	return !!(await getGitPath());
+	const git = simpleGit();
+	const version = await git.version();
+	if (version.installed) {
+		logger.debug(`Git installed as version : ${JSON.stringify(version)}`);
+	} else {
+		logger.error('Git NOT installed (not foudn in path');
+		throw new ErrorKM('GIT_BINARY_NOT_FOUND', 500, false);
+	}
 }
