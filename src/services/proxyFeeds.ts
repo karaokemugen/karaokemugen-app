@@ -65,9 +65,13 @@ async function fetchFeed(url: string, name: string): Promise<Feed> {
 		const feed: any = xml2js(response.data as any, { compact: true });
 		// For Mastodon, we filter out #KaraokeMugen toots because we don't want to be spammed.
 		if (name === 'mastodon') {
-			feed.rss.channel.item = feed.rss.channel.item.filter(
-				(item: any) => !item.category?.find(c => c._text === 'karaokemugen')
-			);
+			feed.rss.channel.item = feed.rss.channel.item.filter((item: any) => {
+				if (item.category) {
+					if (Array.isArray(item.category)) return !item.category.find(c => c._text === 'karaokemugen');
+					return item.category._text !== 'karaokemugen';
+				}
+				return true;
+			});
 		} else {
 			feed.feed.entry.forEach((element: any) => {
 				if (element.content._text)
