@@ -13,7 +13,7 @@
     "qstart": "node util/esbuild.js && yarn electron:start",
     "startHeadless": "yarn build && electron --no-sandbox . --cli",
     "test": "yarn build && electron . --test",
-    "testCI": "yarn build && electron --no-sandbox . --test --cli",
+    "testCI": "yarn build && electron . --test --cli",
     "manualTest": "mocha",
     "test:unit": "vitest run --config testUnit/vitest.config.ts",
     "build": "yarn typecheck && node util/esbuild.js",
