@@ -170,7 +170,7 @@ export async function fetchPopularSongs() {
 		for (const repo of repos) {
 			try {
 				const res = await HTTP.get(
-					`${repo.Secure ? 'https' : 'http'}://${repo.Name}/api/karas/search?order=requested`
+					`${repo.Secure ? 'https' : 'http'}://${repo.Name}/api/karas/search?order=requested&size=100`
 				);
 				const karas = res.data as any;
 				for (const kara of karas.content) {
