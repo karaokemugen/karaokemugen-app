@@ -147,11 +147,7 @@ function WelcomePage() {
 					html: appli.body.feed.entry[0].content._text,
 					date: appli.body.feed.entry[0].updated._text,
 					dateStr: new Date(appli.body.feed.entry[0].updated._text).toLocaleDateString(),
-					title:
-						i18next.t('WELCOME_PAGE.APP_UPDATE') +
-						' : ' +
-						appli.body.feed.entry[0].title._text +
-						(appli.body.feed.entry[0].summary._text ? ' - ' + appli.body.feed.entry[0].summary._text : ''),
+					title: i18next.t('WELCOME_PAGE.APP_UPDATE') + ' : ' + appli.body.feed.entry[0].title._text,
 					link: appli.body.feed.entry[0].link._attributes.href,
 					type: 'app',
 				});
