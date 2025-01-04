@@ -478,7 +478,8 @@ async function hookEditedRepo(oldRepo: Repository, repo: Repository, refresh = f
 			logger.warn(`Could not update Git settings for repository : ${err}`, { service, obj: err });
 		}
 	}
-	if (oldRepo.Enabled !== repo.Enabled || (refresh && getState().DBReady)) {
+	if ((oldRepo.Enabled !== repo.Enabled || refresh) && getState().DBReady) {
+		// We check if DB is ready to do this or else it'll throw. If it's not ready yet it means we're editing a repo during init (likely disabling it because media path is unreachable) and kara checksum compare will happen later anyway.
 		await compareKarasChecksum();
 		doGenerate = true;
 	}
