@@ -1,4 +1,4 @@
-@import '../../styles/variables.scss';
+@use '../../styles/variables.scss';
 
 .radiobutton-ui {
 	display: flex;
@@ -13,14 +13,16 @@
 		padding: 0;
 		margin: 1px;
 		border: none;
-		background: $mugen-radio-btn-background;
-		color: $mugen-radio-btn-color;
+		background: variables.$mugen-radio-btn-background;
+		color: variables.$mugen-radio-btn-color;
 		outline: none;
-		transition: color ease 0.5s, background ease 0.5s;
+		transition:
+			color ease 0.5s,
+			background ease 0.5s;
 		cursor: pointer;
 		&.active {
-			background: $mugen-radio-btn-default-active-background;
-			color: $mugen-radio-btn-default-active-color;
+			background: variables.$mugen-radio-btn-default-active-background;
+			color: variables.$mugen-radio-btn-default-active-color;
 		}
 	}
 }

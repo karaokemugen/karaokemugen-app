@@ -1,11 +1,11 @@
 @use 'sass:color';
-@import '../variables';
+@use '../variables';
 
 .tagConteneur {
 	display: flex;
 	align-items: flex-start;
 	flex-wrap: wrap;
-	@media screen and (max-width: $mugen-breakpoint-large) {
+	@media screen and (max-width: variables.$mugen-breakpoint-large) {
 		margin: 0;
 		flex-wrap: wrap;
 		.tag {
@@ -22,8 +22,8 @@
 }
 
 .tag {
-	background-color: $mugen-tag-default;
-	@each $name, $color in $mugen-colors {
+	background-color: variables.$mugen-tag-default;
+	@each $name, $color in variables.$mugen-colors {
 		@if $name == 'white' {
 			&.#{$name} {
 				background-color: $color;
