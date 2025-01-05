@@ -1,6 +1,6 @@
 @use 'sass:color';
 @use 'sass:map';
-@use '../variables';
+@import '../variables';
 
 .settings-panel {
 	width: 75vw;
@@ -12,7 +12,7 @@
 	margin: 0 auto;
 }
 
-@media screen and (max-width: variables.$mugen-breakpoint-small) {
+@media screen and (max-width: $mugen-breakpoint-small) {
 	.settings-panel {
 		width: 100%;
 		margin: 0;
@@ -29,7 +29,7 @@
 	align-items: center;
 	padding: 0.75em;
 	gap: 0.75em;
-	background-color: variables.$mugen-playlist-odd;
+	background-color: $mugen-playlist-odd;
 
 	> label {
 		flex-grow: 1;
@@ -51,8 +51,8 @@
 			text-align: justify;
 			display: inline-block;
 			max-width: 50em;
-			color: color.scale(map.get(variables.$mugen-colors, 'yellow'), $lightness: 55%, $saturation: 10%);
-			@media screen and (max-width: variables.$mugen-breakpoint-large) {
+			color: color.scale(map.get($mugen-colors, 'yellow'), $lightness: 55%, $saturation: 10%);
+			@media screen and (max-width: $mugen-breakpoint-large) {
 				max-width: 80%;
 			}
 		}
@@ -80,7 +80,7 @@
 		}
 
 		input:not([type='range']) {
-			background-color: color.scale(variables.$mugen-playlist-odd, $lightness: 15%);
+			background-color: color.scale($mugen-playlist-odd, $lightness: 15%);
 			color: white;
 			border: darkgrey 1px solid;
 			padding: 0.5em;
@@ -96,9 +96,9 @@
 }
 
 .settings-line:not(.subCategoryGroupPanel):nth-child(even) {
-	background-color: variables.$mugen-playlist-even;
+	background-color: $mugen-playlist-even;
 	> div input:not([type='range']) {
-		background-color: color.scale(variables.$mugen-playlist-even, $lightness: 15%);
+		background-color: color.scale($mugen-playlist-even, $lightness: 15%);
 	}
 }
 
@@ -126,8 +126,8 @@
 	flex-direction: column;
 	align-items: flex-start;
 	justify-content: center;
-	background-color: color.scale(variables.$mugen-background, $lightness: 5%);
-	border: solid color.scale(variables.$mugen-background, $lightness: 15%);
+	background-color: color.scale($mugen-background, $lightness: 5%);
+	border: solid color.scale($mugen-background, $lightness: 15%);
 	border-width: 1px 0;
 	padding: 0.5em;
 	user-select: none;

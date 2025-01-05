@@ -1,4 +1,4 @@
-@use '../variables';
+@import '../variables';
 
 .start-page .wrapper.migrate {
 	font-weight: 300;
@@ -8,7 +8,7 @@
 		'logo title aside'
 		'other main main';
 
-	@media (max-width: variables.$mugen-breakpoint-large) {
+	@media (max-width: $mugen-breakpoint-large) {
 		grid-template-columns: auto 200px;
 		grid-template-rows: auto auto 100%;
 		grid-template-areas:
@@ -17,7 +17,7 @@
 			'main main';
 	}
 
-	@media (max-width: variables.$mugen-breakpoint-small) {
+	@media (max-width: $mugen-breakpoint-small) {
 		grid-template-columns: auto;
 		grid-template-rows: auto;
 		grid-template-areas:

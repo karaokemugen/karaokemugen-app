@@ -1,8 +1,8 @@
-@use '../variables';
+@import '../variables';
 
 .dropdown-menu {
-	background-color: variables.$mugen-btn-background;
-	border: variables.$mugen-btn-border;
+	background-color: $mugen-btn-background;
+	border: $mugen-btn-border;
 	cursor: pointer;
 	position: absolute;
 	list-style: none;
@@ -27,5 +27,5 @@
 }
 .dropdown-menu > li:hover > a,
 .dropdown-menu > li:hover > div:not(.radiobutton-ui) {
-	background-color: variables.$mugen-select-focus;
+	background-color: $mugen-select-focus;
 }

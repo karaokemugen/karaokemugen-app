@@ -1,16 +1,12 @@
-@use '../../styles/components/blurred-bg';
+@import '../../styles/components/blurred-bg';
 
 .song-list {
 	.song {
 		position: relative;
-		@include blurred-bg.blurred-bg;
+		@include blurred-bg;
 		.img-background::before {
 			border-radius: 16px;
-			transition:
-				border-radius,
-				filter 300ms,
-				300ms ease,
-				ease;
+			transition: border-radius, filter 300ms, 300ms ease, ease;
 		}
 		margin: 1.5em 1em;
 		.modal-header {

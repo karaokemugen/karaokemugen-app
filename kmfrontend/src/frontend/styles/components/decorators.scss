@@ -1,5 +1,5 @@
 @use 'sass:color';
-@use '../../styles/variables';
+@import '../../styles/variables';
 
 .KmAppBodyDecorator {
 	overflow: hidden;
@@ -15,7 +15,7 @@
 			flex-basis: 60%;
 		}
 
-		@media screen and (max-width: variables.$mugen-breakpoint-small) {
+		@media screen and (max-width: $mugen-breakpoint-small) {
 			.contentDivMobile {
 				flex-basis: 40%;
 			}
@@ -76,7 +76,7 @@
 	}
 }
 
-@media screen and (min-width: variables.$mugen-breakpoint-large) {
+@media screen and (min-width: $mugen-breakpoint-large) {
 	.KmAppWrapperDecorator.single,
 	.KmAppWrapperDecorator.single.hmargin {
 		width: 75%;
@@ -89,7 +89,7 @@
 	min-height: 4.5em;
 	width: 100%;
 
-	background-color: color.adjust(variables.$mugen-btn-background, $lightness: -3%, $space: hsl);
+	background-color: color.adjust($mugen-btn-background, $lightness: -3%, $space: hsl);
 
 	display: flex;
 	flex-direction: row;
@@ -103,7 +103,7 @@
 	.btn {
 		position: relative;
 		min-width: 3em;
-		border: variables.$mugen-btn-border;
+		border: $mugen-btn-border;
 		border-bottom: none;
 		border-top: none;
 		border-radius: 0;
@@ -203,7 +203,7 @@
 			}
 		}
 
-		@media screen and (min-width: variables.$mugen-breakpoint-large) {
+		@media screen and (min-width: $mugen-breakpoint-large) {
 			&.mobile {
 				display: none;
 			}

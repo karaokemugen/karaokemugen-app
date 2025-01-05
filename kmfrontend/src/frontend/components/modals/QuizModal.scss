@@ -1,9 +1,9 @@
-@use '../../styles/variables';
+@import '../../styles/variables';
 
 @keyframes warn {
 	from {
-		background-color: variables.$mugen-select-background;
-		border: variables.$mugen-select-border;
+		background-color: $mugen-select-background;
+		border: $mugen-select-border;
 	}
 	to {
 		background-color: palevioletred;

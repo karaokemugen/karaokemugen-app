@@ -1,6 +1,6 @@
 @use 'sass:color';
-@use '../../styles/variables';
-@use '../../styles/components/blurred-bg';
+@import '../../styles/variables';
+@import '../../styles/components/blurred-bg';
 
 .modal-content.detailsKara {
 	overflow: auto;
@@ -10,12 +10,12 @@
 	flex-direction: column;
 	position: relative;
 	--img: none;
-	@include blurred-bg.blurred-bg;
+	@include blurred-bg;
 
 	&.fixed {
 		width: 95%;
 		margin: auto;
-		@media screen and (min-width: variables.$mugen-breakpoint-large) {
+		@media screen and (min-width: $mugen-breakpoint-large) {
 			width: 75%;
 		}
 	}
@@ -59,7 +59,7 @@
 		border: none;
 		color: white;
 		font-size: 2rem;
-		@media screen and (max-width: variables.$mugen-breakpoint-small) {
+		@media screen and (max-width: $mugen-breakpoint-small) {
 			font-size: 1.25rem;
 		}
 		cursor: pointer;
@@ -139,7 +139,7 @@
 	width: 100%;
 
 	&.public {
-		@media screen and (min-width: variables.$mugen-breakpoint-large) {
+		@media screen and (min-width: $mugen-breakpoint-large) {
 			width: 33%;
 			margin: 1em 33% 0 33%;
 		}
@@ -151,7 +151,7 @@
 }
 
 .colored {
-	@each $name, $color in variables.$mugen-colors {
+	@each $name, $color in $mugen-colors {
 		&.#{$name} {
 			color: color.adjust($color, $lightness: 40%, $saturation: 10%, $space: hsl);
 

@@ -1,9 +1,9 @@
 @use 'sass:color';
-@use '../../styles/variables';
+@import '../../styles/variables';
 
 .public-homepage {
 	display: flex;
-	@media screen and (max-width: variables.$mugen-breakpoint-large) {
+	@media screen and (max-width: $mugen-breakpoint-large) {
 		display: unset;
 	}
 	> .public-homepage-wrapper {
@@ -14,7 +14,7 @@
 		flex-basis: 45%;
 		flex-grow: 0;
 		flex-shrink: 0;
-		@media screen and (max-width: variables.$mugen-breakpoint-large) {
+		@media screen and (max-width: $mugen-breakpoint-large) {
 			display: none;
 		}
 	}
@@ -29,14 +29,14 @@
 		font-size: 2em;
 		text-align: start;
 		margin: 0.5em 0;
-		@media screen and (max-width: variables.$mugen-breakpoint-large) {
+		@media screen and (max-width: $mugen-breakpoint-large) {
 			text-align: unset;
 		}
 	}
 	> .action {
 		width: 50%;
 		text-align: start;
-		@media screen and (max-width: variables.$mugen-breakpoint-large) {
+		@media screen and (max-width: $mugen-breakpoint-large) {
 			width: 100%;
 		}
 		> i {
@@ -53,7 +53,7 @@
 		padding: 0;
 		transition: color ease-out 200ms;
 		font-family: inherit;
-		@each $name, $color in variables.$mugen-colors {
+		@each $name, $color in $mugen-colors {
 			@if $name != 'black' {
 				&.#{$name} {
 					&:hover,

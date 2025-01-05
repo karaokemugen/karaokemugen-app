@@ -1,9 +1,9 @@
 // Common CSS for green-blue gradient pages (setup, migrations, welcome)
 
-@use '../variables';
+@import '../variables';
 
 .start-page {
-	background: variables.$mugen-welcome-page-background;
+	background: $mugen-welcome-page-background;
 	min-height: 100vh;
 
 	.wrapper {
@@ -39,7 +39,7 @@
 			flex-wrap: wrap;
 
 			margin: 0.5em 0;
-			border-left: variables.$block-border-width white;
+			border-left: $block-border-width white;
 			padding: 0.5em 1em;
 			background: #0000004d;
 
@@ -107,7 +107,7 @@
 				max-width: 100%;
 			}
 
-			@media (max-width: variables.$mugen-breakpoint-large) {
+			@media (max-width: $mugen-breakpoint-large) {
 				text-align: center;
 				img {
 					max-width: 250px;
@@ -118,7 +118,7 @@
 
 		.page-tasks-wrapper {
 			grid-area: tasks;
-			@media (max-width: variables.$mugen-breakpoint-large) {
+			@media (max-width: $mugen-breakpoint-large) {
 				position: fixed;
 				z-index: 100;
 				top: 1em;
@@ -137,7 +137,7 @@
 					display: flex;
 					flex-direction: row;
 					justify-content: flex-end;
-					@media (max-width: variables.$mugen-breakpoint-large) {
+					@media (max-width: $mugen-breakpoint-large) {
 						justify-content: center;
 						flex-wrap: wrap;
 					}

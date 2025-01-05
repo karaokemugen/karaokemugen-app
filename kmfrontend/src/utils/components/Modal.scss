@@ -1,5 +1,5 @@
 @use 'sass:color';
-@use '../../frontend/styles/variables';
+@import '../../frontend/styles/variables';
 
 .modal {
 	position: fixed;
@@ -13,7 +13,7 @@
 	> .modal-dialog {
 		position: relative;
 		top: 10%;
-		@media screen and (max-width: variables.$mugen-breakpoint-xl) {
+		@media screen and (max-width: $mugen-breakpoint-xl) {
 			top: 1%;
 		}
 		margin: auto auto 100px;
@@ -71,10 +71,10 @@
 			}
 		}
 		font-size: 2rem;
-		@media screen and (max-width: variables.$mugen-breakpoint-xl) {
+		@media screen and (max-width: $mugen-breakpoint-xl) {
 			font-size: 1.5rem;
 		}
-		@media screen and (max-width: variables.$mugen-breakpoint-small) {
+		@media screen and (max-width: $mugen-breakpoint-small) {
 			font-size: 1.25rem;
 		}
 		font-weight: bold;
@@ -82,7 +82,7 @@
 	.modal-series,
 	.modal-right {
 		font-size: 1.5rem;
-		@media screen and (max-width: variables.$mugen-breakpoint-small) {
+		@media screen and (max-width: $mugen-breakpoint-small) {
 			font-size: 1rem;
 		}
 		font-weight: normal;
@@ -175,7 +175,7 @@
 }
 
 .closeModal {
-	background-color: variables.$mugen-btn-background;
+	background-color: $mugen-btn-background;
 	color: whitesmoke;
 	font-size: 1.75em;
 	width: 1.75em;
@@ -183,7 +183,7 @@
 	cursor: pointer;
 	z-index: 1;
 	padding: 0.25em;
-	border: variables.$mugen-btn-border;
+	border: $mugen-btn-border;
 }
 .closeModal:hover {
 	color: #e6e6e6fa;
@@ -202,7 +202,7 @@
 #manage .modalPage {
 	padding: 0;
 	.closeModal {
-		background-color: variables.$mugen-nav-background;
+		background-color: $mugen-nav-background;
 		position: unset;
 		margin: 0;
 		color: #dbdbdbde;
@@ -229,11 +229,11 @@
 		flex-grow: 1;
 		&.active {
 			> a {
-				background-color: color.adjust(variables.$mugen-nav-background, $lightness: -10%, $space: hsl);
+				background-color: color.adjust($mugen-nav-background, $lightness: -10%, $space: hsl);
 				&:focus,
 				&:active:focus,
 				&:hover {
-					background-color: color.adjust(variables.$mugen-nav-background, $lightness: -10%, $space: hsl);
+					background-color: color.adjust($mugen-nav-background, $lightness: -10%, $space: hsl);
 				}
 			}
 		}
@@ -243,9 +243,9 @@
 			display: block;
 			border: none;
 			color: white;
-			background-color: variables.$mugen-nav-background;
+			background-color: $mugen-nav-background;
 			&:hover {
-				background-color: color.adjust(variables.$mugen-nav-background, $lightness: 5%, $space: hsl);
+				background-color: color.adjust($mugen-nav-background, $lightness: 5%, $space: hsl);
 			}
 		}
 	}

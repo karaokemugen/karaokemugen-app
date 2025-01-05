@@ -1,7 +1,7 @@
-@use '../variables';
+@import '../variables';
 
 .overlay {
-	background-color: variables.$mugen-video-overlay;
+	background-color: $mugen-video-overlay;
 	position: absolute;
 	top: 0;
 	right: 0;

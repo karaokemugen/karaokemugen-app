@@ -1,8 +1,8 @@
 // Minireset
-@use 'minireset.css/minireset';
+@import 'minireset.css/minireset';
 
-@use '../toast';
-@use '../frontend/styles/components/overlays';
+@import '../toast';
+@import '../frontend/styles/components/overlays';
 
 .ant-layout-content {
 	padding: 1em;

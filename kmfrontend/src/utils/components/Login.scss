@@ -1,15 +1,15 @@
 @use 'sass:color';
 @use 'sass:map';
-@use '../../frontend/styles/variables';
-@use '../../toast';
-@use '../../frontend/styles/components/buttons';
-@use '../../frontend/styles/components/input';
-@use '../../frontend/styles/components/overlays';
-@use '../../frontend/styles/fonts/Lato/stylesheet';
+@import '../../frontend/styles/variables';
+@import '../../toast';
+@import '../../frontend/styles/components/buttons';
+@import '../../frontend/styles/components/input';
+@import '../../frontend/styles/components/overlays';
+@import '../../frontend/styles/fonts/Lato/stylesheet';
 
 body {
 	font-family: Lato, sans-serif;
-	background: variables.$mugen-background;
+	background: $mugen-background;
 	color: white;
 }
 
@@ -30,16 +30,16 @@ body {
 		width: 100%;
 		font-weight: bold;
 		&.submitButton {
-			background-color: variables.$mugen-btn-primary-background;
+			background-color: $mugen-btn-primary-background;
 		}
 		&.guestButton {
-			background-color: color.scale(map.get(variables.$mugen-colors, 'blue'), $lightness: 20%);
+			background-color: color.scale(map.get($mugen-colors, 'blue'), $lightness: 20%);
 		}
 		&.loginButton {
-			background-color: color.scale(map.get(variables.$mugen-colors, 'green'), $lightness: 10%);
+			background-color: color.scale(map.get($mugen-colors, 'green'), $lightness: 10%);
 		}
 		&.signupButton {
-			background-color: color.scale(map.get(variables.$mugen-colors, 'green'), $lightness: 15%);
+			background-color: color.scale(map.get($mugen-colors, 'green'), $lightness: 15%);
 		}
 	}
 

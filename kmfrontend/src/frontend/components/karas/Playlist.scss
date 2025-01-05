@@ -1,5 +1,5 @@
 @use 'sass:color';
-@use '../../styles/variables';
+@import '../../styles/variables';
 
 .playlist-main {
 	display: flex;
@@ -7,9 +7,9 @@
 	flex: 1 0 auto;
 	.panel {
 		flex: 1;
-		border: 0.5em solid color.adjust(variables.$mugen-background, $lightness: -20%, $space: hsl);
+		border: 0.5em solid color.adjust($mugen-background, $lightness: -20%, $space: hsl);
 	}
-	@media screen and (max-width: variables.$mugen-breakpoint-large) {
+	@media screen and (max-width: $mugen-breakpoint-large) {
 		flex-direction: column;
 		#panel2 {
 			display: none;
@@ -60,7 +60,7 @@
 	margin-bottom: 31px;
 }
 
-@media (max-width: variables.$mugen-breakpoint-small) {
+@media (max-width: $mugen-breakpoint-small) {
 	.ReactVirtualized__Grid__innerScrollContainer {
 		margin-bottom: 63px;
 	}
@@ -68,7 +68,7 @@
 
 .playlist-tooltip {
 	padding: 1em;
-	background-color: color.adjust(variables.$mugen-background, $lightness: 5%, $space: hsl);
+	background-color: color.adjust($mugen-background, $lightness: 5%, $space: hsl);
 }
 
 .playlist-tooltip-refresh {

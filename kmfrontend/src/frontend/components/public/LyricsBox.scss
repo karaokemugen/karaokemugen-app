@@ -1,9 +1,9 @@
 @use 'sass:color';
-@use '../../styles/variables';
+@import '../../styles/variables';
 
 .lyrics-box {
 	&.mobile {
-		@media screen and (min-width: variables.$mugen-breakpoint-large) {
+		@media screen and (min-width: $mugen-breakpoint-large) {
 			display: none;
 		}
 		> .lyrics {
@@ -20,7 +20,7 @@
 	}
 	> .lyrics {
 		width: 100%;
-		background-color: color.adjust(variables.$mugen-background, $lightness: 10%, $space: hsl);
+		background-color: color.adjust($mugen-background, $lightness: 10%, $space: hsl);
 		padding: 1em;
 		margin: 0 0.5em;
 		border-radius: 15px;
@@ -41,7 +41,7 @@
 				font-size: 0;
 			}
 			&.greyed {
-				color: color.adjust(variables.$mugen-background, $lightness: 65%, $space: hsl);
+				color: color.adjust($mugen-background, $lightness: 65%, $space: hsl);
 			}
 			&.current {
 				font-size: 1.25em;

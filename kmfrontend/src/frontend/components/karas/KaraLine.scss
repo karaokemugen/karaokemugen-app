@@ -1,45 +1,37 @@
 @use 'sass:color';
-@use '../../styles/variables';
+@import '../../styles/variables';
 
 // Hover events only for PCs
 body:not(.touch) {
 	.playlist-main .list-group-item:hover {
-		background-color: color.scale(variables.$mugen-playlist-odd, $lightness: -35%);
+		background-color: color.scale($mugen-playlist-odd, $lightness: -35%);
 		&.list-group-item-even {
-			background-color: color.scale(variables.$mugen-playlist-even, $lightness: -25%);
+			background-color: color.scale($mugen-playlist-even, $lightness: -25%);
 		}
 		&.dejavu {
-			background-color: color.scale(variables.$mugen-playlist-dejavu-odd, $lightness: -35%);
+			background-color: color.scale($mugen-playlist-dejavu-odd, $lightness: -35%);
 			&.list-group-item-even {
-				background-color: color.scale(variables.$mugen-playlist-dejavu-even, $lightness: -25%);
+				background-color: color.scale($mugen-playlist-dejavu-even, $lightness: -25%);
 			}
 		}
 		&.currentlyplaying {
-			background-color: color.scale(
-				variables.$mugen-playlist-currently-playing,
-				$lightness: -55%,
-				$saturation: -25%
-			);
+			background-color: color.scale($mugen-playlist-currently-playing, $lightness: -55%, $saturation: -25%);
 			&.list-group-item-even {
-				background-color: color.scale(
-					variables.$mugen-playlist-currently-playing,
-					$lightness: -45%,
-					$saturation: -25%
-				);
+				background-color: color.scale($mugen-playlist-currently-playing, $lightness: -45%, $saturation: -25%);
 			}
 		}
 	}
 }
 
 .list-group-item {
-	background-color: variables.$mugen-playlist-odd;
+	background-color: $mugen-playlist-odd;
 	&.dejavu {
 		.playKara {
-			background-color: variables.$mugen-playlist-dejavu-odd;
+			background-color: $mugen-playlist-dejavu-odd;
 		}
 		.contentDiv {
 			i.fas.dejavu-icon {
-				color: color.scale(variables.$mugen-playlist-dejavu-odd, $lightness: 20%, $saturation: 15%);
+				color: color.scale($mugen-playlist-dejavu-odd, $lightness: 20%, $saturation: 15%);
 				margin-left: unset;
 				margin-right: 0.25em;
 			}
@@ -50,13 +42,13 @@ body:not(.touch) {
 	&.list-group-item-even.currentlyplaying,
 	&.list-group-item-even.dejavu.currentlyplaying {
 		background-color: color.scale(
-			variables.$mugen-playlist-currently-playing,
+			$mugen-playlist-currently-playing,
 			$lightness: -50%,
 			$saturation: -15%,
 			$alpha: -25%
 		);
 		.playKara {
-			background-color: variables.$mugen-playlist-currently-playing;
+			background-color: $mugen-playlist-currently-playing;
 			animation: btn-pulse infinite ease-in-out 1s;
 		}
 		.contentDiv {
@@ -64,7 +56,7 @@ body:not(.touch) {
 		}
 	}
 	&.list-group-item-even {
-		background-color: variables.$mugen-playlist-even;
+		background-color: $mugen-playlist-even;
 	}
 	z-index: 20;
 	overflow: auto;
@@ -74,7 +66,7 @@ body:not(.touch) {
 	display: flex;
 	flex-wrap: nowrap;
 	flex-direction: row;
-	@media screen and (max-width: variables.$mugen-breakpoint-large) {
+	@media screen and (max-width: $mugen-breakpoint-large) {
 		flex-wrap: wrap;
 	}
 
@@ -186,7 +178,7 @@ body:not(.touch) {
 			display: flex;
 			justify-content: space-between;
 			padding: 0.5em 0 0;
-			@media screen and (max-width: variables.$mugen-breakpoint-small) {
+			@media screen and (max-width: $mugen-breakpoint-small) {
 				flex-direction: column;
 				align-items: flex-start;
 			}
@@ -282,12 +274,12 @@ body:not(.touch) {
 
 @keyframes btn-pulse {
 	0% {
-		background-color: color.scale(variables.$mugen-playlist-currently-playing, $lightness: -55%);
+		background-color: color.scale($mugen-playlist-currently-playing, $lightness: -55%);
 	}
 	50% {
-		background-color: color.scale(variables.$mugen-playlist-currently-playing, $lightness: -65%, $saturation: -5%);
+		background-color: color.scale($mugen-playlist-currently-playing, $lightness: -65%, $saturation: -5%);
 	}
 	100% {
-		background-color: color.scale(variables.$mugen-playlist-currently-playing, $lightness: -55%);
+		background-color: color.scale($mugen-playlist-currently-playing, $lightness: -55%);
 	}
 }
