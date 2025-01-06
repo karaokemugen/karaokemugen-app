@@ -1,10 +1,10 @@
-@import '../../styles/variables.scss';
+@use '../../styles/variables.scss';
 
 .selectWithIcon {
 	position: relative;
 	display: inline-block;
-	background-color: $mugen-select-background;
-	border: $mugen-select-border;
+	background-color: variables.$mugen-select-background;
+	border: variables.$mugen-select-border;
 	border-radius: 4px;
 }
 
@@ -33,9 +33,9 @@
 
 .selectWithIcon-menu {
 	cursor: pointer;
-	background-color: $mugen-select-background;
+	background-color: variables.$mugen-select-background;
 	color: white;
-	border: $mugen-select-border;
+	border: variables.$mugen-select-border;
 	border-radius: 4px;
 	list-style-type: none;
 	padding-left: 0;
@@ -53,7 +53,7 @@
 	padding: 0.5rem 0.5rem 0.5rem 1rem;
 	&:hover,
 	&:focus {
-		background: $mugen-select-focus;
+		background: variables.$mugen-select-focus;
 	}
 }
 
@@ -69,7 +69,7 @@
 	transition: transform 0.2s cubic-bezier(0.55, 0, 0.1, 1);
 }
 
-@media (max-width: $mugen-breakpoint-large) {
+@media (max-width: variables.$mugen-breakpoint-large) {
 	.selectWithIcon {
 		display: none;
 	}

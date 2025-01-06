@@ -1,7 +1,7 @@
 @use 'sass:color';
 @use 'sass:map';
-@import '../../styles/variables';
-@import '../../styles/components/blurred-bg';
+@use '../../styles/variables';
+@use '../../styles/components/blurred-bg';
 
 .player-box {
 	margin: 1em 0;
@@ -23,7 +23,7 @@
 		left: 0;
 		width: 100%;
 		padding: 0.5em 0.5em 1em;
-		background-color: $mugen-background;
+		background-color: variables.$mugen-background;
 		z-index: 99;
 		&::before {
 			border-radius: 0;
@@ -33,7 +33,7 @@
 	> * {
 		z-index: 10;
 	}
-	@include blurred-bg;
+	@include blurred-bg.blurred-bg;
 	&::before {
 		z-index: 0;
 		border-radius: 15px;
@@ -46,7 +46,7 @@
 	> .first {
 		font-size: 1.25em;
 		font-weight: lighter;
-		@include shadow;
+		@include variables.shadow;
 		display: flex;
 		p:first-child {
 			flex-grow: 1;
@@ -62,7 +62,7 @@
 		& > div {
 			display: flex;
 			align-items: center;
-			@media screen and (max-width: $mugen-breakpoint-small) {
+			@media screen and (max-width: variables.$mugen-breakpoint-small) {
 				align-items: start;
 				gap: 0.25em;
 				flex-flow: column wrap;
@@ -74,11 +74,11 @@
 		.song {
 			font-size: 2em;
 			font-weight: bold;
-			@include shadow;
+			@include variables.shadow;
 		}
 		.series {
 			font-size: 1.25em;
-			@include shadow;
+			@include variables.shadow;
 		}
 		&.inline {
 			.song {
@@ -99,7 +99,7 @@
 		margin-bottom: 0.5em;
 		> div {
 			width: min-content;
-			@include shadow;
+			@include variables.shadow;
 		}
 	}
 	.progress-bar-container {
@@ -137,7 +137,7 @@
 		}
 	}
 	.favorites {
-		background-color: color.adjust(map.get($mugen-colors, 'yellow'), $lightness: -10%, $space: hsl);
+		background-color: color.adjust(map.get(variables.$mugen-colors, 'yellow'), $lightness: -10%, $space: hsl);
 		width: max-content;
 		margin: 0.5em 0;
 		text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.25);
@@ -148,12 +148,12 @@
 			margin-right: 0.25em;
 		}
 		&:hover {
-			background-color: color.adjust(map.get($mugen-colors, 'yellow'), $lightness: -15%, $space: hsl);
+			background-color: color.adjust(map.get(variables.$mugen-colors, 'yellow'), $lightness: -15%, $space: hsl);
 		}
 	}
 }
 
-@media screen and (min-width: $mugen-breakpoint-large) {
+@media screen and (min-width: variables.$mugen-breakpoint-large) {
 	.player-box.fixed {
 		.title .song {
 			font-size: 2em;

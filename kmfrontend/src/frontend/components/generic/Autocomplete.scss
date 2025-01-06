@@ -1,4 +1,4 @@
-@import '../../styles/variables';
+@use '../../styles/variables';
 
 $input-color: white;
 $input-placeholder: #aaa;
@@ -33,9 +33,9 @@ $option-active-background: #00b0ed;
 	position: relative;
 	z-index: 1;
 	padding: 0.5em;
-	border: $mugen-select-border;
+	border: variables.$mugen-select-border;
 	color: $input-color;
-	background: $mugen-select-background;
+	background: variables.$mugen-select-background;
 	max-width: 100%;
 	width: 100%;
 	text-align: left;
@@ -46,7 +46,7 @@ $option-active-background: #00b0ed;
 	list-style-type: none;
 	padding: 0.25em;
 	margin: 0;
-	border: $mugen-select-border;
+	border: variables.$mugen-select-border;
 	color: $options-color;
 	background: $options-background;
 	.UI-autocomplete-option {

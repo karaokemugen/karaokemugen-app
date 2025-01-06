@@ -1,18 +1,18 @@
 @use 'sass:color';
-@import '../variables';
+@use '../variables';
 
 .btn-group {
 	> .btn {
 		border-radius: 0;
 		// First button will have a left radius
 		&:first-child {
-			border-bottom-left-radius: $mugen-btn-radius;
-			border-top-left-radius: $mugen-btn-radius;
+			border-bottom-left-radius: variables.$mugen-btn-radius;
+			border-top-left-radius: variables.$mugen-btn-radius;
 		}
 		// Last button will have a right radius
 		&:last-child {
-			border-bottom-right-radius: $mugen-btn-radius;
-			border-top-right-radius: $mugen-btn-radius;
+			border-bottom-right-radius: variables.$mugen-btn-radius;
+			border-top-right-radius: variables.$mugen-btn-radius;
 		}
 	}
 }
@@ -23,46 +23,46 @@ h5 > a {
 }
 
 .btn {
-	border: $mugen-btn-border;
-	background-color: $mugen-btn-background;
+	border: variables.$mugen-btn-border;
+	background-color: variables.$mugen-btn-background;
 	color: white;
 	display: inline-block;
 	cursor: pointer;
-	border-radius: $mugen-btn-radius;
+	border-radius: variables.$mugen-btn-radius;
 	padding: 0.5em;
 }
 
 .btn:disabled {
-	background-color: color.scale($mugen-btn-background, $lightness: 20%, $space: hsl);
+	background-color: color.scale(variables.$mugen-btn-background, $lightness: 20%, $space: hsl);
 	color: gray;
 	cursor: not-allowed;
 	&:hover {
-		background-color: color.scale($mugen-btn-background, $lightness: 20%, $space: hsl);
+		background-color: color.scale(variables.$mugen-btn-background, $lightness: 20%, $space: hsl);
 		color: gray;
 		cursor: not-allowed;
 	}
 }
 
 .btn-default {
-	background-color: $mugen-btn-background;
+	background-color: variables.$mugen-btn-background;
 	color: #eee;
 }
 .btn-default:hover {
-	background-color: color.adjust($mugen-btn-background, $lightness: 5%, $space: hsl);
+	background-color: color.adjust(variables.$mugen-btn-background, $lightness: 5%, $space: hsl);
 }
 
 .btn-default:active:focus,
 .btn-default:focus {
-	background-color: $mugen-btn-background;
+	background-color: variables.$mugen-btn-background;
 }
 
 .btn-danger,
 .btn-danger:focus:active,
 .btn-danger:focus {
-	background-color: $mugen-btn-danger-background;
+	background-color: variables.$mugen-btn-danger-background;
 }
 .btn-danger:hover {
-	background-color: color.adjust($mugen-btn-danger-background, $lightness: 5%, $space: hsl);
+	background-color: color.adjust(variables.$mugen-btn-danger-background, $lightness: 5%, $space: hsl);
 }
 
 .btn-danger-low:hover {
@@ -79,22 +79,22 @@ h5 > a {
 .btn-primary:active:focus,
 .btn-primary:focus {
 	color: white;
-	background-color: $mugen-btn-primary-background;
+	background-color: variables.$mugen-btn-primary-background;
 }
 
 .btn-primary:hover {
-	background-color: color.adjust($mugen-btn-primary-background, $lightness: 5%, $space: hsl);
+	background-color: color.adjust(variables.$mugen-btn-primary-background, $lightness: 5%, $space: hsl);
 }
 
 .btn-success,
 .btn-success:active:focus,
 .btn-success:focus {
 	color: white;
-	background-color: $mugen-btn-success-background;
+	background-color: variables.$mugen-btn-success-background;
 }
 
 .btn-success:hover {
-	background-color: color.adjust($mugen-btn-success-background, $lightness: 5%, $space: hsl);
+	background-color: color.adjust(variables.$mugen-btn-success-background, $lightness: 5%, $space: hsl);
 }
 
 .btn-dark,
@@ -132,7 +132,7 @@ h5 > a {
 }
 
 .btn-tile-group {
-	border: $mugen-btn-border;
+	border: variables.$mugen-btn-border;
 	margin: -2px -1px; // Remove 1px borders from mini buttons
 	display: flex;
 	flex-direction: column;
@@ -141,8 +141,8 @@ h5 > a {
 		flex-grow: 1;
 		border-radius: 0 !important;
 
-		border-top: $mugen-btn-border !important;
-		border-bottom: $mugen-btn-border !important;
+		border-top: variables.$mugen-btn-border !important;
+		border-bottom: variables.$mugen-btn-border !important;
 		font-size: 1em !important;
 	}
 }
@@ -154,13 +154,13 @@ h5 > a {
 	grid-column-gap: 0.5em;
 	.list-label {
 		&:first-child {
-			border-bottom: $mugen-btn-border;
+			border-bottom: variables.$mugen-btn-border;
 		}
 		font-size: 1.2em;
 		padding-top: 0.2em;
 	}
 
-	@media (max-width: $mugen-breakpoint-xl) {
+	@media (max-width: variables.$mugen-breakpoint-xl) {
 		display: none;
 	}
 }
@@ -279,7 +279,7 @@ h5 > a {
 	display: none;
 }
 
-@media (max-width: $mugen-breakpoint-small) {
+@media (max-width: variables.$mugen-breakpoint-small) {
 	.KmAppWrapperDecorator:not(.chibi) {
 		.messageButton,
 		.displayModifierButtons,
@@ -293,7 +293,7 @@ h5 > a {
 	}
 }
 
-@media (max-width: $mugen-breakpoint-large) {
+@media (max-width: variables.$mugen-breakpoint-large) {
 	.KmAppWrapperDecorator {
 		.backPlaylistsButton {
 			display: none;
@@ -301,7 +301,7 @@ h5 > a {
 	}
 }
 
-@media (max-width: $mugen-breakpoint-medium) {
+@media (max-width: variables.$mugen-breakpoint-medium) {
 	.KmAppWrapperDecorator:not(.chibi) {
 		.pitchControl,
 		.speedControl {
@@ -310,7 +310,7 @@ h5 > a {
 	}
 }
 
-@media (max-width: $mugen-breakpoint-smaller) {
+@media (max-width: variables.$mugen-breakpoint-smaller) {
 	.stopButton,
 	.volumeButton {
 		display: none;

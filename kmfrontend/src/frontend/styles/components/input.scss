@@ -1,12 +1,12 @@
 @use 'sass:color';
 @use 'sass:map';
-@import '../variables';
+@use '../variables';
 
 select {
-	background-color: $mugen-select-background;
+	background-color: variables.$mugen-select-background;
 	color: white;
 	border-radius: 0.5em;
-	border: $mugen-select-border;
+	border: variables.$mugen-select-border;
 }
 
 /* Range input sliders */
@@ -35,7 +35,7 @@ input[type='range']:focus {
 		box-shadow:
 			1px 1px 1px #00000008,
 			0 0 1px #0d0d0d08;
-		background: color.adjust($mugen-background, $lightness: 10%, $space: hsl);
+		background: color.adjust(variables.$mugen-background, $lightness: 10%, $space: hsl);
 		border-radius: 0;
 		border: 1px solid #0001015c;
 	}
@@ -48,7 +48,7 @@ input[type='range']:focus {
 	height: 1.5em;
 	width: 1.75em;
 	border-radius: 0;
-	background: color.adjust($mugen-background, $lightness: 20%, $space: hsl);
+	background: color.adjust(variables.$mugen-background, $lightness: 20%, $space: hsl);
 	cursor: pointer;
 	-webkit-appearance: none;
 	margin-top: -3px;
@@ -73,10 +73,10 @@ input[type='range']::-ms-thumb {
 	@include slider;
 }
 input[type='range']:focus::-webkit-slider-runnable-track {
-	background: color.adjust($mugen-background, $lightness: 10%, $space: hsl);
+	background: color.adjust(variables.$mugen-background, $lightness: 10%, $space: hsl);
 }
 input[type='range']::-ms-fill-lower {
-	background: color.adjust($mugen-background, $lightness: 15%, $space: hsl);
+	background: color.adjust(variables.$mugen-background, $lightness: 15%, $space: hsl);
 	border: 0.1px solid #0001015c;
 	border-radius: 0;
 	box-shadow:
@@ -84,7 +84,7 @@ input[type='range']::-ms-fill-lower {
 		0 0 1px #0d0d0d08;
 }
 input[type='range']::-ms-fill-upper {
-	background: color.adjust($mugen-background, $lightness: 10%, $space: hsl);
+	background: color.adjust(variables.$mugen-background, $lightness: 10%, $space: hsl);
 	border: 0.1px solid #0001015c;
 	border-radius: 0;
 	box-shadow:
@@ -92,10 +92,10 @@ input[type='range']::-ms-fill-upper {
 		0 0 1px #0d0d0d08;
 }
 input[type='range']:focus::-ms-fill-lower {
-	background: color.adjust($mugen-background, $lightness: 10%, $space: hsl);
+	background: color.adjust(variables.$mugen-background, $lightness: 10%, $space: hsl);
 }
 input[type='range']:focus::-ms-fill-upper {
-	background: color.adjust($mugen-background, $lightness: 10%, $space: hsl);
+	background: color.adjust(variables.$mugen-background, $lightness: 10%, $space: hsl);
 }
 
 input[type='text']:not([data-exclude='true']):not(.ant-input):not(.ant-pagination-options-quick-jumper > input),
@@ -106,15 +106,15 @@ input[type='number']:not([data-exclude='true']):not(.ant-input) {
 	box-shadow: none;
 	font-size: 1.5rem;
 	line-height: 1.5rem;
-	background-color: color.adjust($mugen-background, $lightness: 10%, $space: hsl);
+	background-color: color.adjust(variables.$mugen-background, $lightness: 10%, $space: hsl);
 	outline: none;
 	margin: 0;
 	padding: 0 1rem;
 	color: #ccc;
 	&.errorBackground {
-		background-color: map.get($mugen-colors, 'red');
+		background-color: map.get(variables.$mugen-colors, 'red');
 		&:focus {
-			background-color: color.adjust(map.get($mugen-colors, 'red'), $lightness: 5%, $space: hsl);
+			background-color: color.adjust(map.get(variables.$mugen-colors, 'red'), $lightness: 5%, $space: hsl);
 		}
 	}
 }

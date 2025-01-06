@@ -1,6 +1,6 @@
 @use 'sass:color';
 @use 'sass:map';
-@import '../../styles/variables';
+@use '../../styles/variables';
 
 #profilModal {
 	.avatar {
@@ -26,7 +26,7 @@
 		display: flex;
 		justify-content: flex-start;
 		align-items: center;
-		@media screen and (max-width: $mugen-breakpoint-small) {
+		@media screen and (max-width: variables.$mugen-breakpoint-small) {
 			flex-direction: column;
 			align-items: flex-start;
 			button {
@@ -42,12 +42,12 @@
 		}
 		button.btn-save {
 			font-size: 1.5em;
-			background-color: map.get($mugen-colors, 'green');
+			background-color: map.get(variables.$mugen-colors, 'green');
 			&:hover {
-				background-color: color.scale(map.get($mugen-colors, 'green'), $lightness: 5%);
+				background-color: color.scale(map.get(variables.$mugen-colors, 'green'), $lightness: 5%);
 			}
 			&:active {
-				background-color: color.scale(map.get($mugen-colors, 'green'), $lightness: 10%);
+				background-color: color.scale(map.get(variables.$mugen-colors, 'green'), $lightness: 10%);
 			}
 		}
 	}
@@ -55,7 +55,7 @@
 	.profileData .profileLine {
 		display: flex;
 		justify-content: space-between;
-		@media screen and (max-width: $mugen-breakpoint-small) {
+		@media screen and (max-width: variables.$mugen-breakpoint-small) {
 			flex-direction: column;
 			align-items: flex-start;
 		}

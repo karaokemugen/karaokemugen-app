@@ -1,7 +1,7 @@
 @use 'sass:map';
-@import '../../styles/variables';
+@use '../../styles/variables';
 
-@media (max-width: $mugen-breakpoint-large) {
+@media (max-width: variables.$mugen-breakpoint-large) {
 	.karaLineButton {
 		min-height: 3em;
 		font-size: 1.25em;
@@ -13,7 +13,7 @@
 }
 
 .karaLineButton.yellow {
-	color: map.get($mugen-colors, 'yellow');
+	color: map.get(variables.$mugen-colors, 'yellow');
 }
 
 .currentUpvote {

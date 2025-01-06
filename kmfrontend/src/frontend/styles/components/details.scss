@@ -1,18 +1,18 @@
 @use 'sass:color';
-@import '../variables';
+@use '../variables';
 
 details {
 	margin: 0.5rem;
-	background-color: color.scale($mugen-background, $lightness: 10%);
+	background-color: color.scale(variables.$mugen-background, $lightness: 10%);
 	border-radius: 8px;
-	border: solid 1px color.scale($mugen-background, $lightness: 25%);
+	border: solid 1px color.scale(variables.$mugen-background, $lightness: 25%);
 
 	summary {
 		user-select: none;
 		padding: 0.5rem;
 	}
 	&[open] summary {
-		border-bottom: solid 1px color.scale($mugen-background, $lightness: 25%);
+		border-bottom: solid 1px color.scale(variables.$mugen-background, $lightness: 25%);
 	}
 
 	> :not(summary) {
