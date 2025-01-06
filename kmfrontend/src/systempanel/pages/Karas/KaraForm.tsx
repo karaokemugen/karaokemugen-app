@@ -362,8 +362,10 @@ function KaraForm(props: KaraFormProps) {
 				</table>
 				{mediaInfo?.warnings?.length > 0 && (
 					<div className="media-info warnings">
-						{mediaInfo.warnings.map(w => (
-							<div className="unmet-warning ">{i18next.t('KARA.MEDIA_FILE_INFO.WARNINGS.' + w)}</div>
+						{mediaInfo.warnings.map((w, i) => (
+							<div key={i} className="unmet-warning ">
+								{i18next.t('KARA.MEDIA_FILE_INFO.WARNINGS.' + w)}{' '}
+							</div>
 						))}
 					</div>
 				)}
@@ -897,7 +899,7 @@ function KaraForm(props: KaraFormProps) {
 									onlineAuthorization: localStorage.getItem('kmOnlineToken'),
 								}}
 								action="/api/importFile"
-								accept="video/*,audio/*,.mkv,.aac,.m2ts"
+								accept="video/*,audio/*,.mkv,.aac,.m2ts,.mka"
 								multiple={false}
 								onChange={onMediaUploadChange}
 								fileList={mediafile as any[]}
