@@ -2,7 +2,7 @@
 	"name": "kmfrontend",
 	"private": true,
 	"dependencies": {
-		"@cospired/i18n-iso-languages": "^4.2.0",
+		"@karaokemugen/i18n-iso-languages": "^4.2.1",
 		"@sentry/react": "^8.47.0",
 		"antd": "5.22.7",
 		"dayjs": "^1.11.13",

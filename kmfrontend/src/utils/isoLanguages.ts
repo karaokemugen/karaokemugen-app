@@ -1,12 +1,13 @@
-import { alpha2ToAlpha3B, getAlpha3BCode, getName, getNames, registerLocale } from '@cospired/i18n-iso-languages';
-import de from '@cospired/i18n-iso-languages/langs/de.json';
-import en from '@cospired/i18n-iso-languages/langs/en.json';
-import es from '@cospired/i18n-iso-languages/langs/es.json';
-import fr from '@cospired/i18n-iso-languages/langs/fr.json';
-import id from '@cospired/i18n-iso-languages/langs/id.json';
-import it from '@cospired/i18n-iso-languages/langs/it.json';
-import pt from '@cospired/i18n-iso-languages/langs/pt.json';
-import pl from '@cospired/i18n-iso-languages/langs/pl.json';
+import { alpha2ToAlpha3B, getAlpha3BCode, getName, getNames, registerLocale } from '@karaokemugen/i18n-iso-languages';
+import de from '@karaokemugen/i18n-iso-languages/langs/de.json';
+import en from '@karaokemugen/i18n-iso-languages/langs/en.json';
+import es from '@karaokemugen/i18n-iso-languages/langs/es.json';
+import fr from '@karaokemugen/i18n-iso-languages/langs/fr.json';
+import id from '@karaokemugen/i18n-iso-languages/langs/id.json';
+import it from '@karaokemugen/i18n-iso-languages/langs/it.json';
+import pt from '@karaokemugen/i18n-iso-languages/langs/pt.json';
+import pl from '@karaokemugen/i18n-iso-languages/langs/pl.json';
+import ta from '@karaokemugen/i18n-iso-languages/langs/ta.json';
 import countries from 'i18n-iso-countries';
 import countries_de from 'i18n-iso-countries/langs/de.json';
 import countries_en from 'i18n-iso-countries/langs/en.json';
@@ -16,6 +17,8 @@ import countries_id from 'i18n-iso-countries/langs/id.json';
 import countries_it from 'i18n-iso-countries/langs/it.json';
 import countries_pt from 'i18n-iso-countries/langs/pt.json';
 import countries_pl from 'i18n-iso-countries/langs/pl.json';
+import countries_ta from 'i18n-iso-countries/langs/ta.json';
+
 import i18next from 'i18next';
 
 import { nonLatinLanguages } from '../../../src/lib/utils/langs';
@@ -28,6 +31,7 @@ countries.registerLocale(countries_pt);
 countries.registerLocale(countries_de);
 countries.registerLocale(countries_it);
 countries.registerLocale(countries_pl);
+countries.registerLocale(countries_ta);
 
 registerLocale(fr);
 registerLocale(en);
@@ -37,8 +41,9 @@ registerLocale(pt);
 registerLocale(de);
 registerLocale(it);
 registerLocale(pl);
+registerLocale(ta);
 
-export const supportedLanguages = ['en', 'fr', 'es', 'id', 'pt', 'de', 'it', 'pl'];
+export const supportedLanguages = ['en', 'fr', 'es', 'id', 'pt', 'de', 'it', 'pl', 'ta'];
 const navigatorLanguage: string = navigator.languages[0].substring(0, 2);
 export const langSupport = supportedLanguages.includes(navigatorLanguage) ? navigatorLanguage : 'en';
 
