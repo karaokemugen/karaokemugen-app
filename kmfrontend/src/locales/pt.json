@@ -141,7 +141,7 @@
 		"REFUSED_other": "{{count}} recusou",
 		"ACCEPT": "Aceitar",
 		"REFUSE": "Negar",
-		"PLAYLIST_REMAINING_one": "Tempo restante da lista atual: {{count}} minuto",
+		"PLAYLIST_REMAINING_one": "Tempo restante da lista atual: {{count}} minutos",
 		"PLAYLIST_REMAINING_other": "Tempo restante da lista atual: {{count}} minutos"
 	},
 	"CRITERIA": {
@@ -558,7 +558,7 @@
 			"PLAYER_STOP": "O botão Parar interromperá a reprodução assim que a música atual terminar. Você pode clicar nele novamente para parar <1>imediatamente</1>.",
 			"PLAYER_BAR": "O Karaoke Mugen Player pode ser controlado na barra superior.",
 			"PLAYER_CURRENT_HINT": "O player tocará a música selecionada no <1>lista de reprodução atual</1>.",
-			"LIBRARY": "A biblioteca mostra todas as músicas de karaokê disponíveis.",
+			"LIBRARY": "A biblioteca mostra todas as músicas disponíveis.",
 			"MESSAGE": "Você pode enviar uma mensagem ao seu público (nos dispositivos ou na tela do player) com o botão Mensagem.",
 			"PLAYER_GO_BACK": "O botão Retroceder permite voltar <1>o início da atual</1> canção.",
 			"CURRENT_PUBLIC_DESC": "O <1>atual</1> e <3>público</3> a lista de reprodução pode ser a mesma.",
