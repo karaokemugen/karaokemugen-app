@@ -127,6 +127,7 @@ export const defaults: Config = {
 		},
 		FullScreen: false,
 		AudioDevice: 'auto',
+		AudioOnlyExperience: false,
 		Monitor: false,
 		Borders: true,
 		ExtraCommandLine: '',

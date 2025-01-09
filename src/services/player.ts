@@ -173,6 +173,10 @@ async function toggleBordersPlayer() {
 	await mpv.toggleBorders();
 }
 
+async function toggleAudioOnlyExperiencePlayer() {
+	return await mpv.toggleAudioOnlyExperience();
+}
+
 async function setHwDecPlayer(method: MpvHardwareDecodingOptions) {
 	await mpv.setHwDec(method);
 }
@@ -408,6 +412,9 @@ export async function sendCommand(command: PlayerCommand, options: any) {
 			await toggleOnTopPlayer();
 		} else if (command === 'toggleBorders') {
 			await toggleBordersPlayer();
+		} else if (command === 'toggleAudioOnlyExperience') {
+			await toggleAudioOnlyExperiencePlayer();
+			return 'NOTIFICATION.OPERATOR.INFO.CHANGES_WILL_OCCUR_ON_NEXT_SONG';
 		} else if (command === 'setHwDec') {
 			await setHwDecPlayer(options);
 		} else if (command === 'mute') {
