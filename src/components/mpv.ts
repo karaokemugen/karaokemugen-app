@@ -1131,19 +1131,6 @@ export class Players {
 			) {
 				return await next();
 			}
-			// Workaround for audio-only files: disable the lavfi-complex filter
-			if (
-				supportedFiles.audio.some(extension => playerState.currentSong?.mediafile.endsWith(extension)) &&
-				playerState.currentSong?.avatar &&
-				getConfig().Player.Display.Avatar
-			) {
-				await this.exec({
-					command: [
-						'set_property',
-						`lavfi-complex', '[aid1]loudnorm[ao];[vid${playerState.currentVideoTrack}]null[vo]`,
-					],
-				});
-			}
 			await this.exec({ command: ['seek', delta] });
 		} catch (err) {
 			logger.error('Unable to seek', { service, obj: err });
