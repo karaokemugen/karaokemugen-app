@@ -414,7 +414,7 @@ export async function sendCommand(command: PlayerCommand, options: any) {
 			await toggleBordersPlayer();
 		} else if (command === 'toggleAudioOnlyExperience') {
 			await toggleAudioOnlyExperiencePlayer();
-			return 'NOTIFICATION.OPERATOR.INFO.CHANGES_WILL_OCCUR_ON_NEXT_SONG';
+			return 'CHANGES_OCCUR_ON_NEXT_SONG';
 		} else if (command === 'setHwDec') {
 			await setHwDecPlayer(options);
 		} else if (command === 'mute') {

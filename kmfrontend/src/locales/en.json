@@ -985,7 +985,6 @@
 			"INFO": {
 				"BATCH_EDIT_COMPLETE": "Song batch edit complete.",
 				"PLAYER_RESTARTING": "Restarting media player…",
-				"CHANGES_OCCUR_ON_NEXT_SONG": "This setting will be active on next song.",
 				"POLL_WINNER": "People voted for a new song!",
 				"POLL_STARTING": "Starting poll",
 				"END_OF_SESSION_NEAR": "The karaoke session should end in {{data}} minutes."
@@ -1857,7 +1856,8 @@
 		"REPO_ALL_MEDIAS_DELETED": "All media from repository deleted",
 		"REPO_OLD_MEDIAS_DELETED": "Older media from repository deleted",
 		"REPO_MEDIA_DELETED": "Media deleted",
-		"USER_RESETPASSWORD_SUCCESS": "User password successfully Reset"
+		"USER_RESETPASSWORD_SUCCESS": "User password successfully Reset",
+		"CHANGES_OCCUR_ON_NEXT_SONG": "This setting will be active on next song."
 	},
 	"HEADERS": {
 		"HOME": {

@@ -985,7 +985,6 @@
 			"INFO": {
 				"BATCH_EDIT_COMPLETE": "Edition en masse de chansons terminée.",
 				"PLAYER_RESTARTING": "Redémarrage du lecteur vidéo…",
-				"CHANGES_OCCUR_ON_NEXT_SONG": "La modification prendra effet à la prochaine chanson",
 				"POLL_WINNER": "Le peuple a voté pour une nouvelle chanson !",
 				"POLL_STARTING": "Démarrage du sondage",
 				"END_OF_SESSION_NEAR": "La session de karaoké doit se terminer dans {{data}} minutes."
@@ -1857,7 +1856,8 @@
 		"REPO_ALL_MEDIAS_DELETED": "Suppression avec succès de tous les médias du dépôt",
 		"REPO_OLD_MEDIAS_DELETED": "Suppression avec succès des médias les plus anciens du dépôt",
 		"REPO_MEDIA_DELETED": "Media supprimé avec succès",
-		"USER_RESETPASSWORD_SUCCESS": "Mot de passe de l'utilisateur réinitialisé avec succès"
+		"USER_RESETPASSWORD_SUCCESS": "Mot de passe de l'utilisateur réinitialisé avec succès",
+		"CHANGES_OCCUR_ON_NEXT_SONG": "La modification prendra effet à la prochaine chanson"
 	},
 	"HEADERS": {
 		"HOME": {
