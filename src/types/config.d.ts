@@ -182,6 +182,7 @@ export interface Config {
 		AudioDelay?: number;
 		LiveComments?: boolean;
 		BlurVideoOnWarningTag?: boolean;
+		AudioOnlyExperience?: boolean;
 	};
 	Playlist: {
 		AllowDuplicates?: boolean;

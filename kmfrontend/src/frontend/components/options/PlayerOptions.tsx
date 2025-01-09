@@ -283,6 +283,28 @@ function PlayerOptions(props: IProps) {
 					</div>
 				))}
 			{filterValue === undefined ||
+				(sanitizeSettingsSearchValue(i18next.t('SETTINGS.PLAYER.AUDIO_ONLY_EXPERIENCE')).includes(
+					filterValue
+				) && (
+					<div className="settings-line">
+						<label htmlFor="Player.AudioOnlyExperience">
+							<span className="title">{i18next.t('SETTINGS.PLAYER.AUDIO_ONLY_EXPERIENCE')}</span>
+							<br />
+							<span className="tooltip">
+								{i18next.t('SETTINGS.PLAYER.AUDIO_ONLY_EXPERIENCE_TOOLTIP')}
+							</span>
+						</label>
+						<div>
+							<Switch
+								idInput="Player.AudioOnlyExperience"
+								handleChange={putPlayerCommando}
+								isChecked={config['Player.AudioOnlyExperience']}
+								nameCommand="toggleAudioOnlyExperience"
+							/>
+						</div>
+					</div>
+				))}
+			{filterValue === undefined ||
 				(sanitizeSettingsSearchValue(i18next.t('SETTINGS.PLAYER.WINDOWBORDERS')).includes(filterValue) && (
 					<div className="settings-line">
 						<label htmlFor="Player.Borders">
