@@ -11,9 +11,7 @@ import i18next from 'i18next';
 import { extname, resolve } from 'path';
 import semver from 'semver';
 
-// import { getSettings, saveSetting } from '../lib/dao/database.js';
 import { getSettings, saveSetting } from '../lib/dao/database.js';
-
 import { readRepoManifest, selectRepositoryManifest } from '../lib/dao/repo.js';
 import { readAllKaras } from '../lib/services/generation.js';
 import { Repository } from '../lib/types/repo.js';
