@@ -689,7 +689,10 @@
 			"SET": "இயல்புநிலை நிலையை மீறவும்",
 			"UNSET": "தனிப்பயன் நிலையை அகற்று"
 		},
-		"REPOSITORY_DOCUMENTATION": "{{instance}} இன் விதிகளை இங்கே காண்க"
+		"REPOSITORY_DOCUMENTATION": "{{instance}} இன் விதிகளை இங்கே காண்க",
+		"ORDER_MEDIA_NEW": "புதிய",
+		"ORDER_MEDIA_POPULAR": "மக்கள்",
+		"ORDER_MEDIA_STANDARD": "தரநிலை"
 	},
 	"ADMIN_MESSAGE": {
 		"ESSENTIAL_MESSAGE": "முக்கியமான செய்தி",
