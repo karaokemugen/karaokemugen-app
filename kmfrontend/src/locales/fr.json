@@ -1863,7 +1863,7 @@
 		"REPO_OLD_MEDIAS_DELETED": "Suppression avec succès des médias les plus anciens du dépôt",
 		"REPO_MEDIA_DELETED": "Media supprimé avec succès",
 		"USER_RESETPASSWORD_SUCCESS": "Mot de passe de l'utilisateur réinitialisé avec succès",
-		"CHANGES_OCCUR_ON_NEXT_SONG": "La modification prendra effet à la prochaine chanson"
+		"CHANGES_OCCUR_ON_NEXT_SONG": "La modification prendra effet à la prochaine chanson."
 	},
 	"HEADERS": {
 		"HOME": {
