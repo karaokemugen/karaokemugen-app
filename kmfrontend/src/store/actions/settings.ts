@@ -10,6 +10,17 @@ import { commandBackend } from '../../utils/socket';
 import { LogoutUser } from '../types/auth';
 import { Settings, SettingsFailure, SettingsSuccess } from '../types/settings';
 import { logout } from './auth';
+import 'dayjs/locale/de';
+import 'dayjs/locale/en';
+import 'dayjs/locale/es';
+import 'dayjs/locale/fr';
+import 'dayjs/locale/id';
+import 'dayjs/locale/it';
+import 'dayjs/locale/pl';
+import 'dayjs/locale/pt';
+import 'dayjs/locale/ta';
+import dayjs from 'dayjs';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
 
 export async function setSettings(
 	dispatch: Dispatch<SettingsSuccess | SettingsFailure>,
@@ -22,10 +33,11 @@ export async function setSettings(
 			config: Config;
 			state: PublicState;
 		} = await commandBackend('getSettings');
+		dayjs.extend(localizedFormat);
 		if (!withoutProfile) {
 			try {
 				if (!res.config.System) {
-					res.config.System = { Repositories: await commandBackend('getRepos') } as any;
+					res.config.System = { Repositories: await commandBackend('getRepos') } as Config['System'];
 				}
 				const user: User = await commandBackend('getMyAccount');
 				const favorites = await commandBackend('getFavoritesMicro');
@@ -33,12 +45,14 @@ export async function setSettings(
 				for (const kara of favorites) {
 					favoritesSet.add(kara.kid);
 				}
-				i18next.changeLanguage(user.language && user.type < 2 ? user.language : langSupport);
+				const newLanguage = user.language && user.type < 2 ? user.language : langSupport;
+				i18next.changeLanguage(newLanguage);
+				dayjs.locale(newLanguage);
 				if (!user.language && user.type < 2) {
 					user.language = langSupport;
 					try {
 						await commandBackend('editMyAccount', user);
-					} catch (e) {
+					} catch (_) {
 						// already display
 					}
 				}
@@ -53,11 +67,12 @@ export async function setSettings(
 						version: res.version,
 					},
 				});
-			} catch (e) {
-				logout(dispatch as unknown as Dispatch<LogoutUser>);
+			} catch (_) {
+				logout(dispatch as unknown as Dispatch<SettingsSuccess | SettingsFailure | LogoutUser>);
 			}
 		} else {
 			i18next.changeLanguage(langSupport);
+			dayjs.locale(langSupport);
 			dispatch({
 				type: Settings.SETTINGS_SUCCESS,
 				payload: { state: res.state, config: res.config, user: {}, favorites: new Set(), version: res.version },

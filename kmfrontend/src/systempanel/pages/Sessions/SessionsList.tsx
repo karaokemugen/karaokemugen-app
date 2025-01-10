@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import { Session, SessionExports } from '../../../../../src/types/session';
 import { commandBackend } from '../../../utils/socket';
 import Title from '../../components/Title';
+import dayjs from 'dayjs';
 
 interface SessionListState {
 	sessions: Session[];
@@ -114,14 +115,14 @@ class SessionList extends Component<unknown, SessionListState> {
 			title: i18next.t('SESSIONS.STARTED_AT'),
 			dataIndex: 'started_at',
 			key: 'started_at',
-			render: date => new Date(date).toLocaleString(),
+			render: date => dayjs(date).format('L LTS'),
 			sorter: (a, b) => a.started_at - b.started_at,
 		},
 		{
 			title: i18next.t('SESSIONS.ENDED_AT'),
 			dataIndex: 'ended_at',
 			key: 'ended_at',
-			render: date => (date ? new Date(date).toLocaleString() : null),
+			render: date => (date ? dayjs(date).format('L LTS') : null),
 			sorter: (a, b) => a.ended_at - b.ended_at,
 		},
 		{

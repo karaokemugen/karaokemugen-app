@@ -30,6 +30,7 @@ import ShowVideoButton from '../generic/buttons/ShowVideoButton';
 import UpvoteKaraButton from '../generic/buttons/UpvoteKaraButton';
 import VideoPreview from '../generic/VideoPreview';
 import InlineTag from './InlineTag';
+import dayjs from 'dayjs';
 
 interface IProps {
 	kid?: string;
@@ -110,7 +111,7 @@ export default function KaraDetail(props: IProps) {
 
 			return i18next.t('KARA_DETAIL.LAST_PLAYED_2', { time: timeAgoStr });
 		} else if (lastPlayed_at) {
-			return i18next.t('KARA_DETAIL.LAST_PLAYED', { date: new Date(lastPlayed_at).toLocaleDateString() });
+			return i18next.t('KARA_DETAIL.LAST_PLAYED', { date: dayjs(lastPlayed_at).format('L LTS') });
 		}
 		return null;
 	};
@@ -289,7 +290,7 @@ export default function KaraDetail(props: IProps) {
 							{kara.added_at ? (
 								<>
 									{i18next.t('KARA_DETAIL.ADDED_2')}
-									<span className="boldDetails">{new Date(kara.added_at).toLocaleString()}</span>
+									<span className="boldDetails">{dayjs(kara.added_at).format('L LTS')}</span>
 								</>
 							) : null}
 							{kara.nickname ? (
@@ -307,7 +308,7 @@ export default function KaraDetail(props: IProps) {
 						{kara.created_at ? (
 							<>
 								{i18next.t('KARA_DETAIL.ADDED_2')}
-								<span className="boldDetails">{new Date(kara.created_at).toLocaleString()}</span>
+								<span className="boldDetails">{dayjs(kara.created_at).format('L LTS')}</span>
 							</>
 						) : null}
 					</div>

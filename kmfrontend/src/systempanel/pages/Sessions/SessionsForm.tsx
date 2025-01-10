@@ -272,17 +272,17 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 								{
 									title: i18next.t('SESSIONS.LAST_PLAYED_AT'),
 									dataIndex: 'lastplayed_at',
-									render: text => (text ? new Date(text).toLocaleString() : null),
+									render: text => (text ? dayjs(text).format('L LTS') : null),
 								},
 								{
 									title: i18next.t('SESSIONS.LAST_REQUESTED_AT'),
 									dataIndex: 'lastrequested_at',
-									render: text => (text ? new Date(text).toLocaleString() : null),
+									render: text => (text ? dayjs(text).format('L LTS') : null),
 								},
 								{
 									title: i18next.t('SESSIONS.TITLE'),
 									dataIndex: 'title',
-									render: (text_, kara) =>
+									render: (_, kara) =>
 										buildKaraTitle(
 											this.context.globalState.settings.data,
 											kara,
@@ -306,17 +306,17 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 								{
 									title: i18next.t('SESSIONS.LAST_PLAYED_AT'),
 									dataIndex: 'lastplayed_at',
-									render: text => (text ? new Date(text).toLocaleString() : null),
+									render: text => (text ? dayjs(text).format('L LTS') : null),
 								},
 								{
 									title: i18next.t('SESSIONS.LAST_REQUESTED_AT'),
 									dataIndex: 'lastrequested_at',
-									render: text => (text ? new Date(text).toLocaleString() : null),
+									render: text => (text ? dayjs(text).format('L LTS') : null),
 								},
 								{
 									title: i18next.t('SESSIONS.TITLE'),
 									dataIndex: 'title',
-									render: (text_, kara) =>
+									render: (_, kara) =>
 										buildKaraTitle(
 											this.context.globalState.settings.data,
 											kara,

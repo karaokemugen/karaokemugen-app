@@ -57,6 +57,7 @@ import EditableTagGroup from '../../components/EditableTagGroup';
 import LanguagesList from '../../components/LanguagesList';
 import OpenLyricsFileButton from '../../components/OpenLyricsFileButton';
 import TaskProgress from '../../components/TaskProgressBar';
+import dayjs from 'dayjs';
 
 const { Paragraph } = Typography;
 const { Panel } = Collapse;
@@ -1645,7 +1646,7 @@ function KaraForm(props: KaraFormProps) {
 				wrapperCol={{ span: 8 }}
 				name="created_at"
 			>
-				<label>{props.kara?.created_at ? new Date(props.kara?.created_at).toLocaleString() : null}</label>
+				<label>{props.kara?.created_at ? dayjs(props.kara?.created_at).format('L LTS') : null}</label>
 			</Form.Item>
 			<Form.Item
 				label={i18next.t('KARA.MODIFIED_AT')}
@@ -1653,7 +1654,7 @@ function KaraForm(props: KaraFormProps) {
 				wrapperCol={{ span: 8 }}
 				name="modified_at"
 			>
-				<label>{props.kara?.modified_at ? new Date(props.kara?.modified_at).toLocaleString() : null}</label>
+				<label>{props.kara?.modified_at ? dayjs(props.kara?.modified_at).format('L LTS') : null}</label>
 			</Form.Item>
 			<div style={{ marginLeft: '220px', marginBottom: '1em' }}>
 				{errors.map(error => (

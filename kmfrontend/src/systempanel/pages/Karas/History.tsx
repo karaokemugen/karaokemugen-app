@@ -7,6 +7,7 @@ import GlobalContext from '../../../store/context';
 import { getSerieOrSingerGroupsOrSingers, getTagInLocaleList, getTitleInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import Title from '../../components/Title';
+import dayjs from 'dayjs';
 
 interface KaraListState {
 	karas: DBKara[];
@@ -110,7 +111,7 @@ class KaraList extends Component<unknown, KaraListState> {
 			title: i18next.t('KARA.PLAYED_AT'),
 			dataIndex: 'lastplayed_at',
 			key: 'lastplayed_at',
-			render: played_at => new Date(played_at).toLocaleString(),
+			render: played_at => dayjs(played_at).format('L LTS'),
 			defaultSortOrder: 'descend',
 			sorter: (a, b) => a.lastplayed_at - b.lastplayed_at,
 		},

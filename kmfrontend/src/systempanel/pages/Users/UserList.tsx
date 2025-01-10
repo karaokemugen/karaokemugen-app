@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import { User } from '../../../../../src/lib/types/user';
 import { commandBackend } from '../../../utils/socket';
 import Title from '../../components/Title';
+import dayjs from 'dayjs';
 
 function UserList() {
 	const [users, setUsers] = useState([] as User[]);
@@ -58,7 +59,7 @@ function UserList() {
 			title: i18next.t('USERS.LAST_LOGIN_AT'),
 			dataIndex: 'last_login_at',
 			key: 'last_login_at',
-			render: date => new Date(date).toLocaleString(),
+			render: date => dayjs(date).format('L LTS'),
 			sorter: (a, b) => new Date(a.last_login_at).valueOf() - new Date(b.last_login_at).valueOf(),
 		},
 		{
