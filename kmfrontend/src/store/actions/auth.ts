@@ -51,7 +51,7 @@ export async function login(
 	}
 }
 
-export function logout(dispatch: Dispatch<LogoutUser>): void {
+export async function logout(dispatch: Dispatch<LogoutUser | SettingsSuccess | SettingsFailure>): Promise<void> {
 	localStorage.removeItem('kmToken');
 	localStorage.removeItem('kmOnlineToken');
 	setAuthorization(null, null);
@@ -59,6 +59,7 @@ export function logout(dispatch: Dispatch<LogoutUser>): void {
 	dispatch({
 		type: AuthAction.LOGOUT_USER,
 	});
+	await setSettings(dispatch, true);
 }
 
 export function setAuthenticationInformation(

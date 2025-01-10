@@ -40,6 +40,20 @@ function App() {
 		displayMessage('error', i18next.t('INBOX.SONG_DOWNLOADED_FROM_INBOX_FAILED'), 5000);
 	};
 
+	const logoutIfNotAdminInAdminPath = async () => {
+		// add a trailing slash
+		const path = location.pathname !== '/' ? location.pathname?.slice(1) + '/' : '';
+		if (
+			path &&
+			['admin', 'system', 'welcome'].includes(path.slice(0, path.indexOf('/'))) &&
+			context.globalState.auth.data.role &&
+			context.globalState.auth.data.role !== 'admin'
+		) {
+			await logout(context.globalDispatch);
+			displayMessage('warning', i18next.t('ERROR_CODES.ADMIN_PLEASE'));
+		}
+	};
+
 	useEffect(() => {
 		isAlreadyLogged(context.globalDispatch).then(() => {
 			setInitialized(true);
@@ -57,17 +71,7 @@ function App() {
 	}, []);
 
 	useEffect(() => {
-		// add a trailing slash
-		const path = location.pathname !== '/' ? location.pathname?.slice(1) + '/' : '';
-		if (
-			path &&
-			['admin', 'system', 'welcome'].includes(path.slice(0, path.indexOf('/'))) &&
-			context.globalState.auth.data.role &&
-			context.globalState.auth.data.role !== 'admin'
-		) {
-			displayMessage('warning', i18next.t('ERROR_CODES.ADMIN_PLEASE'));
-			logout(context.globalDispatch);
-		}
+		logoutIfNotAdminInAdminPath();
 		getSocket().on('favoritesUpdated', setFavorites);
 		return () => {
 			getSocket().off('favoritesUpdated', setFavorites);
