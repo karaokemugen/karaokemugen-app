@@ -461,7 +461,10 @@
 			},
 			"TIMING_CHANGE_WARNING": "Die gewählte Option kann die Start- und Endzeit des Mediums verändern. Prüfe das Timing der Lyrics, nachdem das Medium encodet und gespeichert wurde.",
 			"LABEL": "Encode Medium"
-		}
+		},
+		"ORDER_MEDIA_NEW": "Neu",
+		"ORDER_MEDIA_POPULAR": "Beliebt",
+		"ORDER_MEDIA_STANDARD": "Standard"
 	},
 	"SETTINGS": {
 		"KARAOKE": {
@@ -621,7 +624,8 @@
 			"DISPLAY_AVATAR": "Das Profilbild des Anfragenden während der Wiedergabe anzeigen",
 			"DISPLAY_CONNECTION_INFO_TOOLTIP": "Es ist die „Gehe zu http://xxx!“-Nachricht",
 			"DISPLAY_AVATAR_TOOLTIP": "Das Profilbild des Anfragenden wird am Anfang und am Ende des Liedes in der unteren rechten Ecke des Players angezeigt.",
-			"PLAYER_LANGUAGE": "Nachrichten und Spracheinstellungen"
+			"PLAYER_LANGUAGE": "Nachrichten und Spracheinstellungen",
+			"AUDIO_ONLY_EXPERIENCE": "Nur Ton"
 		},
 		"SYSTEMPANEL_TIP": "Du kannst die gesuchten Optionen nicht finden? <2>Einige Optionen befinden sich in den <3>System-Einstellungen</3>.</2>",
 		"PLAYLIST": {
