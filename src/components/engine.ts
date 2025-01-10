@@ -124,6 +124,7 @@ export async function initEngine() {
 		try {
 			initStep(i18next.t('INIT_DB'));
 			initHooks();
+			await readAllRepoManifests();
 			await initDBSystem();
 			await initKaraBase();
 			await exit(0);
