@@ -11,7 +11,9 @@ import i18next from 'i18next';
 import { extname, resolve } from 'path';
 import semver from 'semver';
 
+// import { getSettings, saveSetting } from '../lib/dao/database.js';
 import { getSettings, saveSetting } from '../lib/dao/database.js';
+
 import { readRepoManifest, selectRepositoryManifest } from '../lib/dao/repo.js';
 import { readAllKaras } from '../lib/services/generation.js';
 import { Repository } from '../lib/types/repo.js';
@@ -89,17 +91,20 @@ export async function oldFilenameFormatKillSwitch(repoName: string) {
 		// Same if the setting is set in database.
 		const settings = await getSettings();
 		if (settings[`oldFormatKillSwitchDone-${repoName}`]) return;
+		logger.info(`Kill switch for old format detected for ${repoName}, renaming medias...`, { service });
+
 		const UUIDMediaMap = new Map();
 		const karaFiles = await listAllFiles('Karaokes');
 		const karas = await readAllKaras(karaFiles, false);
 		for (const kara of karas) {
 			if (!kara.data.songname) {
-				logger.warn(`No songname set for ${kara.data.kid}!`);
+				logger.warn(`No songname set for ${kara.data.kid}!`, { service });
 				continue;
 			}
 			const mediafile = `${kara.data.songname}${extname(kara.medias[0].filename)}`;
 			UUIDMediaMap.set(sanitizeFile(mediafile), kara.data.kid);
 		}
+		let mediasRenamed = 0;
 		for (const mediaFile of mediaFiles) {
 			// If we encounter mediafiles being UUIDs, they're ignored.
 			if (mediaFile.split('.')[0].match(uuidRegexp)) continue;
@@ -108,6 +113,7 @@ export async function oldFilenameFormatKillSwitch(repoName: string) {
 			if (UUID) {
 				try {
 					await rename(resolve(mediaDir, mediaFile), resolve(mediaDir, `${UUID}${extname(mediaFile)}`));
+					mediasRenamed += 1;
 				} catch (err) {
 					logger.warn(`UUID found for ${mediaFile} but renaming failed : ${err}`, { service });
 				}
@@ -115,6 +121,7 @@ export async function oldFilenameFormatKillSwitch(repoName: string) {
 				logger.warn(`No UUID found for ${mediaFile}, no action taken`, { service });
 			}
 		}
+		logger.info(`Renamed ${mediasRenamed} medias`, { service });
 		await saveSetting(`oldFormatKillSwitchDone-${repoName}`, 'true');
 	}
 }
