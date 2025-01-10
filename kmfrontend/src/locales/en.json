@@ -384,7 +384,7 @@
 			"AUDIO_DELAY": "Audio / Video delay (in ms)",
 			"AUDIO_DELAY_TOOLTIP": "Add a delay to the audio or video to synchronize the player on your playback device. This is useful when using a bluetooth speaker or a wireless monitor that doesn't play audio and video synchronized",
 			"AUDIO_ONLY_EXPERIENCE": "Audio only",
-			"AUDIO_ONLY_EXPERIENCE_TOOLTIP": "If enabled, will show a still image instead of a video. Change will take effect on next song",
+			"AUDIO_ONLY_EXPERIENCE_TOOLTIP": "If enabled, will show a still image instead of a video. Change will take effect on next song.",
 			"MONITOR_NUMBER": "Player screen",
 			"MONITOR_NUMBER_TOOLTIP": "Screen on which Karaoke Mugen will be displayed at startup",
 			"WINDOWBORDERS": "Enable borders on the player window",
