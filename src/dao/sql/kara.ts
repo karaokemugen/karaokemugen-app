@@ -152,7 +152,6 @@ GROUP BY ${groupClauses}
 	${groupClauseEnd}
 ${havingClause}
 ORDER BY ${orderClauses}
-	ak.serie_singergroup_singer_sortable,
 	ak.songtypes_sortable DESC,
 	ak.songorder,
 	ak.languages_sortable,
