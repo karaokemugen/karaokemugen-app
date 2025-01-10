@@ -220,6 +220,8 @@ export default function userController(router: SocketIOApp) {
 				from: +req.body?.from || 0,
 				size: +req.body?.size || 9999999,
 				order: req.body?.order,
+				direction: req.body?.direction,
+				q: req.body?.q,
 				parentsOnly: req.body?.parentsOnly,
 				blacklist: req.body?.blacklist,
 			});
