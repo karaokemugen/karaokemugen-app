@@ -102,17 +102,17 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	let groupClauseEnd = '';
 	// Search mode to filter karas played or requested in a particular session
 	if (params.order === 'mediasize') {
-		orderClauses = `mediasize ${params.direction === 'desc' ? 'DESC' : ''}, `;
+		orderClauses = `mediasize ${params.direction === 'asc' ? '' : 'DESC'}, `;
 	} else if (params.order === 'history') {
-		orderClauses = `lastplayed_at ${params.direction === 'desc' ? 'DESC' : ''} NULLS LAST, `;
+		orderClauses = `lastplayed_at ${params.direction === 'asc' ? '' : 'DESC'} NULLS LAST, `;
 	} else if (params.order === 'sessionPlayed') {
 		orderClauses = groupClause = 'p.played_at, ';
 	} else if (params.order === 'sessionRequested') {
 		orderClauses = groupClause = 'rq.requested_at, ';
 	} else if (params.order === 'recent') {
-		orderClauses = `created_at ${params.direction === 'desc' ? 'DESC' : ''}, `;
+		orderClauses = `created_at ${params.direction === 'asc' ? '' : 'DESC'}, `;
 	} else if (params.order === 'requested' && getConfig().Online.FetchPopularSongs) {
-		orderClauses = `requested ${params.direction === 'desc' ? 'DESC' : ''}, `;
+		orderClauses = `requested ${params.direction === 'asc' ? '' : 'DESC'}, `;
 		groupClauseEnd = ', requested';
 		selectRequested = 'orq.requested AS requested, ';
 		// Emptying joinClauses first before adding something to it.
@@ -123,10 +123,10 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		params.order === 'requestedLocal' ||
 		(params.order === 'requested' && !getConfig().Online.FetchPopularSongs)
 	) {
-		orderClauses = 'requested DESC, ';
+		orderClauses = `requested ${params.direction === 'asc' ? '' : 'DESC'}, `;
 		havingClause = 'HAVING COUNT(rq.*) > 1';
 	} else if (params.order === 'played') {
-		orderClauses = 'played DESC, ';
+		orderClauses = `played ${params.direction === 'asc' ? '' : 'DESC'}, `;
 		havingClause = 'HAVING COUNT(p.*) > 1';
 	} else {
 		orderClauses = `ak.serie_singergroup_singer_sortable ${params.direction === 'desc' ? 'DESC' : ''},`;
