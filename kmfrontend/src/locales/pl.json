@@ -557,7 +557,8 @@
 			"DISPLAY_NICKNAME_TOOLTIP": "Wyświetla się u dołu ekranu na początku i na końcu utworu",
 			"DISPLAY_AVATAR_TOOLTIP": "Awatar osoby proszącej o piosenkę zostanie wyświetlony na początku i na końcu piosenki w prawym dolnym rogu ekranu odtwarzacza.",
 			"LIVE_COMMENTS_TOOLTIP": "Wiadomości z czatu na Twitchu zostaną wyświetlone w odtwarzaczu (Skonfiguruj poprawnie swojego AutoModa).",
-			"LIVE_COMMENTS": "Komentarze na żywo"
+			"LIVE_COMMENTS": "Komentarze na żywo",
+			"AUDIO_ONLY_EXPERIENCE": "Tylko dźwięk"
 		},
 		"KARAOKE": {
 			"QUOTA_SETTINGS": "Ograniczenia",
@@ -1327,7 +1328,10 @@
 		"DELETE_ALL_TOOLTIP": "Usuń wszystkie wyświetlane utwory jednocześnie",
 		"SHOW_LYRICS_IN_FOLDER": "Pokaż tekst w folderze",
 		"MISSING_DOWNLOAD_TOOLTIP": "Ta piosenka nie jest pobierana, będziesz potrzebować Internetu, aby ją odtworzyć. Możesz sprawić, by działał w trybie offline, pobierając multimedia.",
-		"FROM_DISPLAY_TYPE": "Wyświetlanie typu tagu"
+		"FROM_DISPLAY_TYPE": "Wyświetlanie typu tagu",
+		"ORDER_MEDIA_STANDARD": "Standard",
+		"ORDER_MEDIA_POPULAR": "Popularny",
+		"ORDER_MEDIA_NEW": "Nowy"
 	},
 	"HEADERS": {
 		"SESSIONS": {
