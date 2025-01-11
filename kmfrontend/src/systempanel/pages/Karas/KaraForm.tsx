@@ -1595,7 +1595,7 @@ function KaraForm(props: KaraFormProps) {
 				]}
 				name="comment"
 			>
-				<Input placeholder={i18next.t('KARA.COMMENT')} onKeyPress={submitHandler} />
+				<Input.TextArea autoSize placeholder={i18next.t('KARA.COMMENT')} onKeyPress={submitHandler} />
 			</Form.Item>
 			<Form.Item
 				label={
