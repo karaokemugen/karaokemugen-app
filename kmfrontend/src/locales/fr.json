@@ -341,7 +341,6 @@
 		"REPOSITORY": "DÉPÔTS",
 		"STATS": "ÉTAT",
 		"STATS_KARAS": "Chansons",
-		"STATS_SERIES": "Œuvres",
 		"STATS_TAGS": "Tags",
 		"STATS_USAGETIME": "Durée d'utilisation",
 		"STATS_PLAYTIME": "Durée de lecture",
@@ -384,6 +383,8 @@
 			"AUDIO_DEVICE_TOOLTIP": "Selectionnez une sortie audio. Si vous ne savez pas, laissez sur \"Autoselect device\" C'est utile si vous souhaitez diffuser l'audio du lecteur sur une sortie audio autre que votre principale.",
 			"AUDIO_DELAY": "Délai audio/vidéo (en ms)",
 			"AUDIO_DELAY_TOOLTIP": "Ajoute un délai à l'audio ou à la vidéo pour synchroniser le lecteur sur votre appareil de lecture. Ceci est utile lors de l'utilisation d'un haut-parleur bluetooth ou d'un moniteur sans fil qui ne lit pas l'audio et la vidéo de manière synchronisée",
+			"AUDIO_ONLY_EXPERIENCE": "Audio uniquement",
+			"AUDIO_ONLY_EXPERIENCE_TOOLTIP": "Si activé, une image fixe sera affichée à la place de la vidéo. Le changement prendra effet à la prochaine chanson.",
 			"MONITOR_NUMBER": "Écran sur lequel afficher le lecteur",
 			"MONITOR_NUMBER_TOOLTIP": "Écran sur lequel afficher le lecteur au démarrage",
 			"WINDOWBORDERS": "Activer les bordures sur la fenêtre du lecteur",
@@ -457,9 +458,9 @@
 			"PLAYLIST_ENCORES_VIDEOS": "Vidéo d'encores de liste de lecture",
 			"PLAYLIST_ENCORES_VIDEOS_TOOLTIP": "Cette vidéo sera jouée avant la dernière chanson de la liste de lecture courante.",
 			"PLAYLIST_SPONSORS_VIDEOS": "Vidéo de sponsors de liste de lecture",
-			"PLAYLIST_SPONSORS_VIDEOS_TOOLTIP": "Les vidéos de sponsors sont joués toutes les X chansons, ainsi qu'après la vidéo d'introduction si activée",
+			"PLAYLIST_SPONSORS_VIDEOS_TOOLTIP": "Les vidéos de sponsors sont jouées toutes les X chansons, ainsi qu'après la vidéo d'introduction si activée",
 			"PLAYLIST_JINGLES_VIDEOS": "Vidéo de jingles de liste de lecture",
-			"PLAYLIST_JINGLES_VIDEOS_TOOLTIP": "Les vidéos de jingles sont joués toutes les X chansons",
+			"PLAYLIST_JINGLES_VIDEOS_TOOLTIP": "Les vidéos de jingles sont jouées toutes les X chansons",
 			"EVERY": "toutes les",
 			"SONGS": "chansons",
 			"WITH": "avec",
@@ -621,7 +622,7 @@
 	"REMOTE_TOKEN": "Jeton d'accès distant",
 	"REMOTE_TOKEN_TOOLTIP": "(A communiquer uniquement aux administrateurs du serveur)",
 	"REMOTE_RESET": "Réinitialiser le jeton",
-	"REMOTE_RESET_TOOLTIP": "Générer un nouveau jeton : ceci va réintialiser votre code de salle personnalisé.",
+	"REMOTE_RESET_TOOLTIP": "Générer un nouveau jeton : ceci va réinitialiser votre code de salle personnalisé.",
 	"REMOTE_RESET_CONFIRM": "Votre ancien code personnalisé sera libre à nouveau et un nouveau code sera généré, êtes-vous sûr ?",
 	"CLEAR_FILTER": "Vider",
 	"VIEW_STANDARD": "Standard",
@@ -1079,10 +1080,16 @@
 		"DOWNLOAD": "Télécharger",
 		"DOWNLOAD_ALL_TOOLTIP": "Télécharger tout les médias récupérés en une seule fois",
 		"SHOWING": "Affichage des {{from}}-{{to}} de {{total}} karaokés",
-		"FILTER_MEDIA_STATUS": "Etat du média : ",
+		"FILTER_MEDIA_STATUS": "État du média : ",
 		"FILTER_ALL": "Tous",
 		"FILTER_IN_PROGRESS": "Téléchargement en cours",
 		"FILTER_NOT_DOWNLOADED": "Non téléchargés",
+		"ORDER_MEDIA": "Trier les médias par : ",
+		"ORDER_MEDIA_STANDARD": "Standard",
+		"ORDER_MEDIA_NEW": "Nouveau",
+		"ORDER_MEDIA_POPULAR": "Populaire",
+		"ORDER_MEDIA_MEDIASIZE": "Taille de fichier",
+		"CHANGE_ORDER_DIRECTION": "Changer le sens de l'ordre",
 		"REPOSITORY": "Dépôt",
 		"COPY_SONG": "Copier la chanson vers un autre dépôt",
 		"VIDEO_PREVIEW": "Aperçu de la vidéo",
@@ -1119,7 +1126,7 @@
 		"SHOW_MEDIA_IN_FOLDER": "Voir le média dans son dossier",
 		"UPLOAD_MEDIA_TOOLTIP": "Renvoyer le média du karaoké",
 		"PLAY_KARAOKE": "Jouer le karaoké",
-		"MISSING_DOWNLOAD_TOOLTIP": "Cette chanson n'est pas téléchargé, il vous faudra Internet pour le jouer. Vous pouvez cliquer sur Télécharger le média pour l'utiliser hors-ligne.",
+		"MISSING_DOWNLOAD_TOOLTIP": "Cette chanson n'est pas téléchargée, il vous faudra Internet pour le jouer. Vous pouvez cliquer sur Télécharger le média pour l'utiliser hors-ligne.",
 		"IN_PROGRESS_DOWNLOAD_TOOLTIP": "Téléchargement en cours",
 		"ONLINE_REPOSITORIES": "Certaines de vos chansons proviennent de dépôts distants (le serveur kara.moe par exemple), ces chansons ne sont pas modifiables via cette interface, afin d'assurer la bonne synchronisation des dépôts. Vous pouvez cocher la case \"Mode mainteneur\" dans les paramètres du dépôt, vous ne recevrez alors plus de mises à jour des chansons mais vous serez en mesure de les modifier ou les supprimer.",
 		"PARENTS": "Parents",
@@ -1514,8 +1521,8 @@
 			"DOWNLOAD": "Télécharger des médias",
 			"BROWSE": "Parcourir les chansons",
 			"CREATE": "Créer un karaoké",
-			"HISTORY": "Historique des chansons joués",
-			"MOST_PLAYED": "Historique des chansons les plus joués"
+			"HISTORY": "Historique des chansons jouées",
+			"MOST_PLAYED": "Historique des chansons les plus jouées"
 		},
 		"TAGS": {
 			"CREATE": "Créer un tag",
@@ -1649,9 +1656,9 @@
 		"FAVORITES_IMPORTED_ERROR": "Erreur lors de l'import de favoris",
 		"KARA_CREATED_ERROR": "Erreur lors de la génération de la chanson",
 		"KARA_FILE_EXISTS_ERROR": "Impossible de sauvegarder : Un karaoké avec le même nom de fichier existe. Assurez-vous que ce n'est pas un doublon et que les tags soient correctement définis.",
-		"KARA_HISTORY_ERROR": "Erreur lors de la récupération des chansons triés par date jouée",
-		"KARA_RANKING_ERROR": "Erreur lors de la récupération des chansons triés par popularité",
-		"KARA_PLAYED_ERROR": "Erreur lors de la récupération des chansons triés par les plus joués",
+		"KARA_HISTORY_ERROR": "Erreur lors de la récupération des chansons triées par date jouée",
+		"KARA_RANKING_ERROR": "Erreur lors de la récupération des chansons triées par popularité",
+		"KARA_PLAYED_ERROR": "Erreur lors de la récupération des chansons triées par les plus joués",
 		"SONG_VIEW_ERROR": "Erreur lors de la récupération d'une chanson",
 		"KARA_DELETED_ERROR": "Erreur lors de la suppression d'une chanson",
 		"KARA_EDIT_ERROR_UNMOVABLE_LYRICS": "Impossible de renommer les paroles. Le fichier est-il utilisé par une autre application ?",
@@ -1756,7 +1763,7 @@
 		"USER_DELETE_ERROR_ONLINE": "Erreur lors de la suppression du compte en ligne",
 		"USER_RESETPASSWORD_ONLINE_ERROR": "Impossible de vous envoyer un email de réinitialisation : contactez l'administrateur du serveur dont vous dépendez.",
 		"UPDATING_MEDIAS_ERROR": "Le dépôt {{repo}} n'a pas mis à jour les medias correctement : {{err}}",
-		"UPDATING_MEDIAS_MULTIPLE_USED_MEDIA_PATH_ERROR": "Plusieurs dépôts ont le même dossier de médias, ce qui peut occassioner des suppressions de fichiers non voulues. Veuillez changer le dossier principal de médias de ces dépôts : {{repos}}",
+		"UPDATING_MEDIAS_MULTIPLE_USED_MEDIA_PATH_ERROR": "Plusieurs dépôts ont le même dossier de médias, ce qui peut occasionner des suppressions de fichiers non voulues. Veuillez changer le dossier principal de médias de ces dépôts : {{repos}}",
 		"REPOS_MULTIPLE_USED_MEDIA_PATH_ERROR": "Le dossier de médias principal est déjà utilisé par un autre dépôt",
 		"USER_UNKNOWN": "Utilisateur connecté inconnu",
 		"ADMIN_PLEASE": "Merci d'utiliser un compte opérateur",
@@ -1774,11 +1781,11 @@
 		"PROBLEMATIC_SMART_PLAYLIST_ERROR": "Erreur lors de la création de la liste de lecture sur les tags problématiques",
 		"MEDIA_DELETE_ERROR": "Erreur lors de la suppression du média",
 		"REPO_DELETE_ALL_MEDIAS_ERROR": "Erreur lors de la suppression de tous les médias du dépôt",
-		"REPO_DELETE_OLD_MEDIAS_ERROR": "Erreur lors de la supppression des médias les plus anciens du dépôt",
+		"REPO_DELETE_OLD_MEDIAS_ERROR": "Erreur lors de la suppression des médias les plus anciens du dépôt",
 		"REPO_GET_FREE_SPACE_ERROR": "Erreur lors de la récupération de l'espace disponible pour le dépôt",
-		"USER_CANNOT_CHANGE_TYPE": "Seulement les administrateurs peuvent changer le type d'un utilisateur",
+		"USER_CANNOT_CHANGE_TYPE": "Seuls les administrateurs peuvent changer le type d'un utilisateur",
 		"GUESTS_CANNOT_EDIT": "Les invités ne peuvent pas modifier leur compte",
-		"PREVIEW_HOOKS_ERROR": "Erreur lors de la prévisialisation des hooks",
+		"PREVIEW_HOOKS_ERROR": "Erreur lors de la prévisualisation des hooks",
 		"LYRICS_FILE_OPEN_ERROR": "Erreur lors de l'ouverture du fichier",
 		"LYRICS_FOLDER_OPEN_ERROR": "Erreur lors de l'ouverture du dossier des paroles",
 		"COLLECTIONS_GET_ERROR": "Erreur lors de la récupération des collections",
@@ -1855,7 +1862,8 @@
 		"REPO_ALL_MEDIAS_DELETED": "Suppression avec succès de tous les médias du dépôt",
 		"REPO_OLD_MEDIAS_DELETED": "Suppression avec succès des médias les plus anciens du dépôt",
 		"REPO_MEDIA_DELETED": "Media supprimé avec succès",
-		"USER_RESETPASSWORD_SUCCESS": "Mot de passe de l'utilisateur réinitialisé avec succès"
+		"USER_RESETPASSWORD_SUCCESS": "Mot de passe de l'utilisateur réinitialisé avec succès",
+		"CHANGES_OCCUR_ON_NEXT_SONG": "La modification prendra effet à la prochaine chanson."
 	},
 	"HEADERS": {
 		"HOME": {
@@ -1890,7 +1898,7 @@
 		"REPOSITORIES": {
 			"TITLE": "Gestion des collections et des dépôts",
 			"DESCRIPTION_COLLECTION": "Les Collections de chansons sont destinées à des publics différents. Choisissez les collections que vous souhaitez voir dans votre base de karaokés.",
-			"DESCRIPTION": "Les dépôts sont des sources de karaokés. Ajoutez, (des)activez, ou supprimez des dépôts depuis cette page."
+			"DESCRIPTION": "Les dépôts sont des sources de karaokés. Ajoutez, (dés)activez, ou supprimez des dépôts depuis cette page."
 		},
 		"REPOSITORIES_NEW": {
 			"TITLE": "Créer un dépôt",
@@ -2030,7 +2038,7 @@
 			"POLL": "Sondage"
 		},
 		"DESC": {
-			"PAUSE": "Entre les chansons (mode stream/classique.)",
+			"PAUSE": "Entre les chansons (mode stream/classique).",
 			"STOP": "Quand le lecteur a démarré ou est arrêté.",
 			"POLL": "Quand un sondage est en cours."
 		}
@@ -2069,7 +2077,8 @@
 		"ONLINE_USER_REQUIRED": "Un utilisateur en ligne est requis pour la boîte de réception"
 	},
 	"ABOUT": {
-		"DESCRIPTION": "Un lecteur de karaoké et un outil d'organisation de soirées entre amis ou en public. Sous licence MIT.",
+		"DESCRIPTION": "Un lecteur de karaoké et un outil d'organisation de soirées entre amis ou en public.",
+		"LICENSE": "Sous licence MIT.",
 		"CONTRIBUTORS": "Les karaokés ont été créés par des gens géniaux, comme par exemple <1>{{contributors}}</1>.",
 		"DONATORS": "Merci à <1>{{donators}}</1> pour leur don à Karaoke Mugen"
 	},
@@ -2130,7 +2139,7 @@
 		"STOP_NOW_SHORT": "Arrêt immédiat",
 		"REWIND": "Rembobiner la VHS",
 		"PREVIOUS_SONG": "Chanson précédente",
-		"PREVIOUS_SONG_SHORT": "Précedente",
+		"PREVIOUS_SONG_SHORT": "Précédente",
 		"NEXT_SONG": "Chanson suivante",
 		"NEXT_SONG_SHORT": "Suivante",
 		"PLAY": "Jouer",

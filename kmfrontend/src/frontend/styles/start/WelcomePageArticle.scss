@@ -1,8 +1,8 @@
-@import '../variables';
+@use '../variables';
 
 .article-wrapper {
 	width: 100%;
-	background-color: $mugen-article-background;
+	background-color: variables.$mugen-article-background;
 	cursor: pointer;
 	margin-top: 1em;
 	box-shadow:
@@ -56,16 +56,16 @@
 	}
 
 	&[data-type='mast'] {
-		border-color: $mugen-article-mastodon-border;
+		border-color: variables.$mugen-article-mastodon-border;
 	}
 	&[data-type='app'] {
-		border-color: $mugen-article-application-border;
+		border-color: variables.$mugen-article-application-border;
 	}
 	&[data-type='base'] {
-		border-color: $mugen-article-database-border;
+		border-color: variables.$mugen-article-database-border;
 	}
 	&[data-type='system_error'] {
-		border-color: $mugen-article-error-border;
+		border-color: variables.$mugen-article-error-border;
 		background-color: black;
 		color: palegoldenrod;
 		.article-body:after {

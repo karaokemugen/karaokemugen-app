@@ -7,6 +7,7 @@ import GlobalContext from '../../store/context';
 import i18n from '../../utils/i18n';
 import { commandBackend, getSocket, isRemote } from '../../utils/socket';
 import Title from '../components/Title';
+import dayjs from 'dayjs';
 
 interface LogState {
 	log: { level: string; message: string; timestamp: string; service: string; obj?: any }[];
@@ -84,7 +85,7 @@ class Log extends Component<unknown, LogState> {
 							if (line.level === 'debug') color = '#999999'; // grey
 							return (
 								<Timeline.Item key={i} style={{ color: color }}>
-									<strong>{new Date(line.timestamp).toLocaleString()}</strong> -{' '}
+									<strong>{dayjs(line.timestamp).format('L LTS')}</strong> -{' '}
 									<strong>{line.service}</strong>
 									<ArrowRightOutlined style={{ margin: '0 0.5em' }} />
 									<code style={{ whiteSpace: 'pre-wrap' }}>{line.message}</code>

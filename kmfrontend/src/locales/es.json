@@ -480,7 +480,6 @@
 		"MASTODON_UPDATE": "Noticias Karaoke Mugen",
 		"BASE_UPDATE": "Actualización de base de datos",
 		"STATS_TAGS": "Etiquetas",
-		"STATS_SERIES": "Serie",
 		"STATS_KARAS": "Karaokes",
 		"STATS": "ESTADO",
 		"REPOSITORY": "REPOSITORIOS",
@@ -1724,7 +1723,7 @@
 		"DESC": {
 			"POLL": "Cuando se está ejecutando una encuesta.",
 			"STOP": "Cuando el reproductor está detenido.",
-			"PAUSE": "Entre canciones (modo streamer/clásico)"
+			"PAUSE": "Entre canciones (modo streamer/clásico)."
 		},
 		"PREVIEW": "Vista previa",
 		"PICTURES": "Fotos",
@@ -1774,7 +1773,8 @@
 	},
 	"ABOUT": {
 		"DONATORS": "Gracias a 1 <>{{donators}}</1> para sus donaciones a Karaoke Mugen",
-		"DESCRIPTION": "Reproductor de karaoke y organizador de fiestas, entre amigos o en público. Con licencia MIT.",
+		"DESCRIPTION": "Reproductor de karaoke y organizador de fiestas, entre amigos o en público.",
+		"LICENSE": "Con licencia MIT.",
 		"CONTRIBUTORS": "Los karaokes fueron creados por gente impresionante, como <1>{{contributors}}</1> por ejemplo."
 	},
 	"CHIBI": {

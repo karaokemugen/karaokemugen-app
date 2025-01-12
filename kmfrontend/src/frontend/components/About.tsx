@@ -28,7 +28,7 @@ export default function About() {
 			);
 			setDonators(shuffle(donators));
 		});
-		commandBackend('getTags', { type: 6 }).then(res => {
+		commandBackend('getTags', { type: [6] }).then(res => {
 			setContributors(shuffle(res.content.map(c => c.name)));
 		});
 		commandBackend('getElectronVersions').then(setVersions);
@@ -44,6 +44,7 @@ export default function About() {
 			<div className="app-presentation">
 				<img src={imgMugenFullLogo} alt="Karaoke Mugen logo" />
 				<p>{i18n.t('ABOUT.DESCRIPTION')}</p>
+				<p>{i18n.t('ABOUT.LICENSE')}</p>
 			</div>
 			<p className="version">
 				v{context.globalState.settings.data.version.number}{' '}

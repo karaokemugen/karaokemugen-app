@@ -86,7 +86,7 @@ export default class EditableTagGroup extends Component<EditableTagGroupProps, E
 			return { data: [] };
 		}
 		const tags = await commandBackend('getTags', {
-			type: type,
+			type: [type],
 			filter: filter,
 		});
 		return tags?.content || [];

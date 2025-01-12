@@ -1,19 +1,19 @@
 @use 'sass:color';
-@import '../../styles/variables';
-@import '../../styles/components/blurred-bg';
+@use '../../styles/variables';
+@use '../../styles/components/blurred-bg';
 
 header.menu-container {
 	position: fixed;
 	top: 0;
 	width: 100%;
 	padding: 1em 0;
-	background-color: $mugen-topbar-background;
+	background-color: variables.$mugen-topbar-background;
 	z-index: 999;
 	--img: none;
-	@media screen and (max-width: $mugen-breakpoint-large) {
+	@media screen and (max-width: variables.$mugen-breakpoint-large) {
 		padding: 0.5em 0;
 	}
-	@include blurred-bg;
+	@include blurred-bg.blurred-bg;
 	> .menu {
 		display: flex;
 		justify-content: space-between;
@@ -48,11 +48,11 @@ header.menu-container {
 				> i {
 					margin: 0 1em;
 
-					@media screen and (max-width: $mugen-breakpoint-large) {
+					@media screen and (max-width: variables.$mugen-breakpoint-large) {
 						margin: 0 0.5em;
 					}
 				}
-				@each $name, $color in $mugen-colors {
+				@each $name, $color in variables.$mugen-colors {
 					@if $name != 'black' {
 						&.#{$name} {
 							&:hover,
@@ -77,7 +77,7 @@ header.menu-container {
 			font-size: 1.25em;
 			text-align: center;
 			text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.25);
-			background-color: scale-color($mugen-topbar-background, $lightness: -30%);
+			background-color: color.scale(variables.$mugen-topbar-background, $lightness: -30%);
 			padding: 0.5em;
 			border-radius: 8px;
 			height: min-content;
@@ -160,13 +160,13 @@ header.menu-container {
 	}
 }
 
-@media screen and (max-width: $mugen-breakpoint-large) {
+@media screen and (max-width: variables.$mugen-breakpoint-large) {
 	header.menu-container > .menu .menu-bar {
 		display: none;
 	}
 }
 
-@media screen and (min-width: $mugen-breakpoint-large) {
+@media screen and (min-width: variables.$mugen-breakpoint-large) {
 	header.menu-container > .menu {
 		width: 75%;
 		margin: 0.5em auto;

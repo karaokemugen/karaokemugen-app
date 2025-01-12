@@ -495,7 +495,6 @@
 		"REPOSITORY": "REPOSITORI",
 		"STATS": "STATUS",
 		"STATS_KARAS": "Karaoke",
-		"STATS_SERIES": "Serial",
 		"STATS_TAGS": "Tanda",
 		"BASE_UPDATE": "Basis data diperbarui",
 		"MASTODON_UPDATE": "Berita Karaoke Mugen",
@@ -758,7 +757,7 @@
 		"PREVIEW": "Pratinjau",
 		"CATEGORY": "Kategori",
 		"DESC": {
-			"PAUSE": "Antar lagu (mode penyiar/klasik)",
+			"PAUSE": "Antar lagu (mode penyiar/klasik).",
 			"POLL": "Ketika jajak pendapat sedang berlangsung.",
 			"STOP": "Ketika pemutar dalam keadaan berhenti."
 		},
@@ -795,7 +794,8 @@
 	"ABOUT": {
 		"CONTRIBUTORS": "Karaoke dibuat oleh orang-orang yang hebat, seperti <1>{{contributors}}</1> misalnya.",
 		"DONATORS": "Terima kasih kepada <1>{{donators}}</1> untuk donasinya ke Karaoke Mugen",
-		"DESCRIPTION": "Pemutar karaoke dan pengelola pesta, antar teman atau di publik. Dilisensikan MIT."
+		"DESCRIPTION": "Pemutar karaoke dan pengelola pesta, antar teman atau di publik.",
+		"LICENSE": " Dilisensikan MIT."
 	},
 	"SETUP_PAGE": {
 		"SAVE_PARAMETER": "Simpan",

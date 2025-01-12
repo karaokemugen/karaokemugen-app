@@ -341,7 +341,6 @@
 		"REPOSITORY": "REPOSITORIES",
 		"STATS": "STATUS",
 		"STATS_KARAS": "Songs",
-		"STATS_SERIES": "Series",
 		"STATS_TAGS": "Tags",
 		"STATS_USAGETIME": "Usage time",
 		"STATS_PLAYTIME": "Play time",
@@ -384,6 +383,8 @@
 			"AUDIO_DEVICE_TOOLTIP": "Select an audio output device. If you don't know, leave it on \"Autoselect device\". This is useful if you want to output the player audio on a different sound device than your main one.",
 			"AUDIO_DELAY": "Audio / Video delay (in ms)",
 			"AUDIO_DELAY_TOOLTIP": "Add a delay to the audio or video to synchronize the player on your playback device. This is useful when using a bluetooth speaker or a wireless monitor that doesn't play audio and video synchronized",
+			"AUDIO_ONLY_EXPERIENCE": "Audio only",
+			"AUDIO_ONLY_EXPERIENCE_TOOLTIP": "If enabled, will show a still image instead of a video. Change will take effect on next song.",
 			"MONITOR_NUMBER": "Player screen",
 			"MONITOR_NUMBER_TOOLTIP": "Screen on which Karaoke Mugen will be displayed at startup",
 			"WINDOWBORDERS": "Enable borders on the player window",
@@ -1109,6 +1110,12 @@
 		"FILTER_ALL": "All",
 		"FILTER_IN_PROGRESS": "Download in progress",
 		"FILTER_NOT_DOWNLOADED": "Not downloaded",
+		"ORDER_MEDIA": "Order media by: ",
+		"ORDER_MEDIA_STANDARD": "Standard",
+		"ORDER_MEDIA_NEW": "New",
+		"ORDER_MEDIA_POPULAR": "Popular",
+		"ORDER_MEDIA_MEDIASIZE": "Mediasize",
+		"CHANGE_ORDER_DIRECTION": "Change the direction of the order",
 		"REPOSITORY": "Repository",
 		"COPY_SONG": "Copy song to another repository",
 		"VIDEO_PREVIEW": "Video preview",
@@ -1855,7 +1862,8 @@
 		"REPO_ALL_MEDIAS_DELETED": "All media from repository deleted",
 		"REPO_OLD_MEDIAS_DELETED": "Older media from repository deleted",
 		"REPO_MEDIA_DELETED": "Media deleted",
-		"USER_RESETPASSWORD_SUCCESS": "User password successfully Reset"
+		"USER_RESETPASSWORD_SUCCESS": "User password successfully Reset",
+		"CHANGES_OCCUR_ON_NEXT_SONG": "This setting will be active on next song."
 	},
 	"HEADERS": {
 		"HOME": {
@@ -1955,7 +1963,7 @@
 		},
 		"TAG_LIST": {
 			"TITLE": "Tags list",
-			"DESCRIPTION": "Maintainers only: list of tags your songs are made of."
+			"DESCRIPTION": "Maintainers only: list of tags you can define your metadata for a song with."
 		},
 		"TAG_NEW": {
 			"TITLE": "Create a tag",
@@ -2030,7 +2038,7 @@
 			"POLL": "Poll"
 		},
 		"DESC": {
-			"PAUSE": "Between songs (streamer/classic mode.)",
+			"PAUSE": "Between songs (streamer/classic mode).",
 			"STOP": "When the player is in a stopped state.",
 			"POLL": "When a poll is running."
 		}
@@ -2069,8 +2077,9 @@
 		"ONLINE_USER_REQUIRED": "A online user is required for inbox"
 	},
 	"ABOUT": {
-		"DESCRIPTION": "A karaoke player and a party organizer, between friends or in public. MIT-licensed.",
-		"CONTRIBUTORS": "The karaoke were created by awesome people, like <1>{{contributors}}</1> for example.",
+		"DESCRIPTION": "A karaoke player and a party organizer, between friends or in public.",
+		"LICENSE": "MIT-licensed.",
+		"CONTRIBUTORS": "The karaoke subs were created by awesome people, like <1>{{contributors}}</1> for example.",
 		"DONATORS": "Thanks to <1>{{donators}}</1> for their donations to Karaoke Mugen"
 	},
 	"QUIZ": {

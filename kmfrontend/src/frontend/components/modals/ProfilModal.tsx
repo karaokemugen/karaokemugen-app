@@ -15,7 +15,7 @@ import { useLocalSearch } from '../../../utils/hooks';
 import {
 	getLanguagesInLangFromCode,
 	getListLanguagesInLocale,
-	languagesSupport,
+	supportedLanguages,
 	listCountries,
 } from '../../../utils/isoLanguages';
 import { getTagInLanguage, sortAndHideTags } from '../../../utils/kara';
@@ -79,7 +79,7 @@ function ProfilModal(props: IProps) {
 			try {
 				const response = await commandBackend('editMyAccount', user);
 				data.onlineToken = response.data.onlineToken;
-			} catch (e) {
+			} catch (_) {
 				// already display
 			} finally {
 				setAuthenticationInformation(context.globalDispatch, data);
@@ -97,7 +97,7 @@ function ProfilModal(props: IProps) {
 			delete user.password;
 			setAnimeListToFetch(user.anime_list_to_fetch ? user.anime_list_to_fetch : '');
 			setUser(user);
-		} catch (e) {
+		} catch (_) {
 			logout(context.globalDispatch);
 		}
 	};
@@ -279,7 +279,7 @@ function ProfilModal(props: IProps) {
 			try {
 				const data = await commandBackend('getKara', { kid: 'ed57440b-0410-4fd4-8fc0-b87eee2df9a0' });
 				setExampleForLinguisticsPreference(buildKaraTitleFuture(data));
-			} catch (err) {
+			} catch (_) {
 				// ignore error
 			}
 		};
@@ -695,7 +695,7 @@ function ProfilModal(props: IProps) {
 									</label>
 								</div>
 								<select name="language" onChange={onChange} defaultValue={user.language}>
-									{languagesSupport.map(lang => {
+									{supportedLanguages.map(lang => {
 										return (
 											<option key={lang} value={lang}>
 												{getLanguagesInLangFromCode(lang)}

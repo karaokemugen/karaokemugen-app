@@ -153,7 +153,8 @@
 			"DISPLAY_AVATAR": "Mostra l'avatar del richiedente durante la riproduzione",
 			"WINDOWBORDERS_TOOLTIP": "Disabilitarli non li disabiliterà per il monitor dell'operatore, in cui saranno sempre abilitati.",
 			"DISPLAY_CONNECTION_INFO_TOOLTIP": "È il messaggio \"Vai su http://xxx !\"",
-			"DISPLAY_AVATAR_TOOLTIP": "L'avatar del richiedente del brano verrà visualizzato all'inizio e alla fine del brano nell'angolo in basso a destra della schermata del lettore."
+			"DISPLAY_AVATAR_TOOLTIP": "L'avatar del richiedente del brano verrà visualizzato all'inizio e alla fine del brano nell'angolo in basso a destra della schermata del lettore.",
+			"AUDIO_ONLY_EXPERIENCE": "Solo audio"
 		},
 		"SYSTEMPANEL_TIP": "Non trovi le opzioni che cerchi? <2>Alcune opzioni sono nel <3>pannello di sistema</3>.</2>",
 		"KARAOKE": {
@@ -303,7 +304,9 @@
 			"REQUIRE_USER_CREATION_CODE": "Richiedi un codice per la creazione utente",
 			"REQUIRE_USER_CREATION_CODE_TOOLTIP": "Agli utenti sarà richiesto un codice per creare nuovi account che solo gli operatori potranno vedere e comunicargli. Il codice verrà mostrato nella schermata Utenti del menu K.",
 			"PUBLIC_PLAYER_CONTROLS_TOOLTIP": "I comandi Riproduci/Sospendi, Interrompi, Precedente e Successivo saranno visibili nell'interfaccia pubblica, consentendo agli utenti di controllare il lettore multimediale dai loro dispositivi. Da utilizzare solo in piccoli gruppi!"
-		}
+		},
+		"FILTER_SETTINGS": "Cerca impostazioni",
+		"FILTER_SETTINGS_TOOLTIP": "Trova rapidamente l'impostazione che ti serve tramite questa barra di ricerca."
 	},
 	"KAROULETTE": {
 		"PLAYLIST_REMAINING_other": "Tempo rimanente di questa lista: {{count}} minuti",
@@ -447,7 +450,6 @@
 	"WELCOME_PAGE": {
 		"ACTIVE_SESSION": "Sessione Attiva: ",
 		"STATS_TAGS": "Tag",
-		"STATS_SERIES": "Serie",
 		"QUIZ": "INIZIA QUIZ",
 		"COLLECTIONS": "COLLEZIONI",
 		"STATS_KARAS": "Brani",
@@ -1335,7 +1337,10 @@
 			"UPLOAD": "Carica l'immagine di copertina",
 			"EMBED_COVER_ERROR": "Errore durante l'allegamento della nuova immagine di copertina",
 			"REPLACE": "Sostituisci l'immagine di copertina"
-		}
+		},
+		"ORDER_MEDIA_POPULAR": "Popolari",
+		"ORDER_MEDIA_NEW": "Nuovo",
+		"ORDER_MEDIA_STANDARD": "Standard"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_STARTED": "Avvio download",
@@ -1621,7 +1626,7 @@
 			"DESCRIPTION": "Modulo di modifica della sessione karaoke."
 		},
 		"TAG_LIST": {
-			"DESCRIPTION": "Solo per mantenitori: lista dei tag assegnati ai tuoi brani.",
+			"DESCRIPTION": "Solo per mantenitori: lista di tag che descrivono il brano.",
 			"TITLE": "Lista di tag"
 		},
 		"INBOX": {
@@ -2097,7 +2102,8 @@
 	},
 	"ABOUT": {
 		"DONATORS": "Grazie a <1>{{donators}}</1> per aver donato a Karaoke Mugen",
-		"DESCRIPTION": "Un lettore karaoke ed un organizzatore di feste, tra amici o in pubblico. Licenza MIT.",
+		"DESCRIPTION": "Un lettore karaoke ed un organizzatore di feste, tra amici o in pubblico.",
+		"LICENSE": "Licenza MIT.",
 		"CONTRIBUTORS": "I karaoke sono stati creati da persone meravigliose, come <1>{{contributors}}</1>, per esempio."
 	},
 	"SEARCH_FILTER": "Cerca filtro",

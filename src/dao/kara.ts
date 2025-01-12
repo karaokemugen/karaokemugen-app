@@ -38,7 +38,7 @@ export async function insertKara(kara: KaraFileV4): Promise<KaraOldData> {
 		yesql(sqlinsertKara)({
 			karafile: kara.meta.karaFile,
 			mediafile: kara.medias[0].filename,
-			subfile: kara.medias[0].lyrics?.[0]?.filename || null,
+			lyrics_infos: JSON.stringify(kara.medias[0].lyrics),
 			titles: kara.data.titles,
 			titles_aliases: JSON.stringify(kara.data.titles_aliases || []),
 			titles_default_language: kara.data.titles_default_language || 'eng',
@@ -101,32 +101,35 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	// This is normal behaviour without anyone.
 	let groupClauseEnd = '';
 	// Search mode to filter karas played or requested in a particular session
-	if (params.order === 'history') {
-		orderClauses = 'lastplayed_at DESC NULLS LAST, ';
-	}
-	if (params.order === 'sessionPlayed') {
+	if (params.order === 'mediasize') {
+		orderClauses = `mediasize ${params.direction === 'asc' ? '' : 'DESC'}, `;
+	} else if (params.order === 'history') {
+		orderClauses = `lastplayed_at ${params.direction === 'asc' ? '' : 'DESC'} NULLS LAST, `;
+	} else if (params.order === 'sessionPlayed') {
 		orderClauses = groupClause = 'p.played_at, ';
-	}
-	if (params.order === 'sessionRequested') {
+	} else if (params.order === 'sessionRequested') {
 		orderClauses = groupClause = 'rq.requested_at, ';
-	}
-	if (params.order === 'recent') orderClauses = 'created_at DESC, ';
-	if (params.order === 'requested' && getConfig().Online.FetchPopularSongs) {
-		orderClauses = 'requested DESC, ';
+	} else if (params.order === 'recent') {
+		orderClauses = `created_at ${params.direction === 'asc' ? '' : 'DESC'}, `;
+	} else if (params.order === 'requested' && getConfig().Online.FetchPopularSongs) {
+		orderClauses = `requested ${params.direction === 'asc' ? '' : 'DESC'}, `;
 		groupClauseEnd = ', requested';
 		selectRequested = 'orq.requested AS requested, ';
 		// Emptying joinClauses first before adding something to it.
 		joinClauses.splice(0, joinClauses.length);
 		joinClauses.push(' LEFT OUTER JOIN online_requested AS orq ON orq.fk_kid = ak.pk_kid ');
 		whereClauses = ' AND requested > 1';
-	}
-	if (params.order === 'requestedLocal' || (params.order === 'requested' && !getConfig().Online.FetchPopularSongs)) {
-		orderClauses = 'requested DESC, ';
+	} else if (
+		params.order === 'requestedLocal' ||
+		(params.order === 'requested' && !getConfig().Online.FetchPopularSongs)
+	) {
+		orderClauses = `requested ${params.direction === 'asc' ? '' : 'DESC'}, `;
 		havingClause = 'HAVING COUNT(rq.*) > 1';
-	}
-	if (params.order === 'played') {
-		orderClauses = 'played DESC, ';
+	} else if (params.order === 'played') {
+		orderClauses = `played ${params.direction === 'asc' ? '' : 'DESC'}, `;
 		havingClause = 'HAVING COUNT(p.*) > 1';
+	} else {
+		orderClauses = `ak.serie_singergroup_singer_sortable ${params.direction === 'desc' ? 'DESC' : ''},`;
 	}
 	if (params.from > 0) offsetClause = `OFFSET ${params.from} `;
 	if (params.size > 0) limitClause = `LIMIT ${params.size} `;

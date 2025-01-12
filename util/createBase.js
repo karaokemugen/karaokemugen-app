@@ -143,7 +143,7 @@ async function main() {
 		if (subFile) {
 			const subExt = path.extname(subFile);
 			const finalSubFile = `${baseKaraFileName}${subExt}`;
-			kara.subfile = finalSubFile;
+			kara.lyrics_infos[0].filename = finalSubFile;
 			const finalSubPath = path.resolve(subDir, finalSubFile);
 			if (!dryRun) await fs.copyFile(subFile, finalSubPath);
 		}

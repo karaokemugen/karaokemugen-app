@@ -80,6 +80,7 @@ export const playerState: PlayerState = {
 	},
 	pitch: 0,
 	speed: 100,
+	currentVideoTrack: 1,
 };
 
 async function resolveMediaURL(file: string, repoName: string): Promise<string> {
@@ -444,12 +445,12 @@ export class Players {
 					'\\',
 					'/'
 				)}\\',format=yuva420p,geq=lum='p(X,Y)':a='if(gt(abs(W/2-X),W/2-${cropRatio})*gt(abs(H/2-Y),H/2-${cropRatio}),if(lte(hypot(${cropRatio}-(W/2-abs(W/2-X)),${cropRatio}-(H/2-abs(H/2-Y))),${cropRatio}),255,0),255)'[logo]`,
-				scaleAvailable ? '[vid1]split[v_in1][base]' : '',
+				scaleAvailable ? `[vid${playerState.currentVideoTrack}]split[v_in1][base]` : '',
 				isMP3 ? `nullsrc=size=1x1:duration=${song.duration}[emp]` : undefined,
 				isMP3 ? '[base][emp]overlay[ovrl]' : undefined,
 				scaleAvailable
 					? '[logo][v_in1]scale=w=(rh*.128):h=(rh*.128)[logo1]'
-					: '[logo][vid1]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base]',
+					: `[logo][vid${playerState.currentVideoTrack}]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base]`,
 				`[${isMP3 ? 'ovrl' : 'base'}][logo1]overlay=x='if(between(t,0,8)+between(t,${song.duration - 8},${
 					song.duration
 				}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`,
@@ -457,7 +458,7 @@ export class Players {
 				.filter(x => !!x)
 				.join(';');
 		}
-		return [audio, avatar || '[vid1]null[vo]'].filter(x => !!x).join(';');
+		return [audio, avatar || `[vid${playerState.currentVideoTrack}]null[vo]`].filter(x => !!x).join(';');
 	}
 
 	isRunning() {
@@ -642,10 +643,10 @@ export class Players {
 		const scaleAvailable = isScaleAvailable();
 		return [
 			`movie=\\'${resolve(resolvedPath('Temp'), 'qrcode.png').replaceAll('\\', '/')}\\'[logo]`,
-			scaleAvailable ? '[vid1]split[v_in1][base]' : '',
+			scaleAvailable ? `[vid${playerState.currentVideoTrack}]split[v_in1][base]` : '',
 			scaleAvailable
 				? '[logo][v_in1]scale=w=(rh*.256):h=(rh*.256)[logo1]'
-				: '[logo][vid1]scale2ref=w=(ih*.256):h=(ih*.256)[logo1][base]',
+				: `[logo][vid${playerState.currentVideoTrack}]scale2ref=w=(ih*.256):h=(ih*.256)[logo1][base]`,
 			'[base][logo1]overlay=x=W-(W*50/300):y=H*20/300[vo]',
 		]
 			.filter(x => !!x)
@@ -658,7 +659,9 @@ export class Players {
 
 	async hideQRCode() {
 		if (playerState.playerStatus !== 'play') {
-			await this.exec({ command: ['set_property', 'lavfi-complex', '[vid1]null[vo]'] });
+			await this.exec({
+				command: ['set_property', 'lavfi-complex', `[vid${playerState.currentVideoTrack}]null[vo]`],
+			});
 		}
 	}
 
@@ -675,6 +678,7 @@ export class Players {
 			playerState.currentMedia = null;
 			playerState._playing = false;
 			playerState.playing = false;
+			playerState.currentVideoTrack = 1;
 			emitPlayerState();
 			const conf = getConfig();
 			const options = ['loadfile', background.pictures[0]];
@@ -814,6 +818,10 @@ export class Players {
 		logger.debug('Play event triggered', { service });
 		await this.ensureRunning();
 		playerState.playing = true;
+		if (getConfig().Player.AudioOnlyExperience) {
+			// In case of audio-only experience we switch video track to 2 (still image)
+			playerState.currentVideoTrack = 2;
+		}
 		profile('mpvPlay');
 		let mediaFile: string;
 		let subFile: string;
@@ -824,6 +832,7 @@ export class Players {
 		};
 		let onlineMedia = false;
 		const showVideo = !modifiers || (modifiers && modifiers.Blind === '');
+		playerState.modifiers = modifiers;
 		const loadPromises = [
 			Players.genLavfiComplex(song, showVideo)
 				.then(res => (options['lavfi-complex'] = res))
@@ -835,13 +844,13 @@ export class Players {
 					// At least, loudnorm
 					options['lavfi-complex'] = '[aid1]loudnorm[ao]';
 				}),
-			resolveFileInDirs(song.subfile, resolvedPathRepos('Lyrics', song.repository))
+			resolveFileInDirs(song.lyrics_infos[0]?.filename, resolvedPathRepos('Lyrics', song.repository))
 				.then(res => (subFile = res[0]))
 				.catch(err => {
-					if (song.subfile) {
+					if (song.lyrics_infos[0]?.filename) {
 						// No need to log if there's no subfile to begin with, not an error.
 						logger.debug('Error while resolving subs path', { service, obj: err });
-						logger.warn(`Subs NOT FOUND : ${song.subfile}`, { service });
+						logger.warn(`Subs NOT FOUND : ${song.lyrics_infos[0].filename}`, { service });
 					}
 					subFile = '';
 				}),
@@ -885,12 +894,19 @@ export class Players {
 			id3tags = await id3.read(mediaFile);
 		}
 
+		// We load default background for audio-only experience(tm) so it's always switchable at run-time.
+		const defaultImageFile = (await getBackgroundAndMusic('pause')).pictures[0];
+		options['external-file'] = defaultImageFile.replaceAll('\\', '/');
+
 		if (id3tags && !id3tags.image) {
-			const defaultImageFile = (await getBackgroundAndMusic('pause')).pictures[0];
-			options['external-file'] = defaultImageFile.replaceAll('\\', '/');
 			options['force-window'] = 'yes';
 			options['image-display-duration'] = 'inf';
 			options.vid = '1';
+			// Redefine the lavfi-complex filter because we're currently running on video track 2 if audio-only experience is enabled
+			if (getConfig().Player.AudioOnlyExperience) {
+				playerState.currentVideoTrack = 1;
+				options['lavfi-complex'] = await Players.genLavfiComplex(song, showVideo);
+			}
 		}
 		options.start = start.toString();
 		if (config.Player.BlurVideoOnWarningTag === true || playerState.blurVideo === true) {
@@ -978,6 +994,7 @@ export class Players {
 				playerState.currentSong = null;
 				playerState.mediaType = mediaType;
 				playerState.currentMedia = media;
+				playerState.currentVideoTrack = 1;
 				await retry(() => this.exec({ command: ['loadfile', media.filename, 'replace', '0', options] }), {
 					retries: 3,
 					onFailedAttempt: error => {
@@ -1114,14 +1131,6 @@ export class Players {
 			) {
 				return await next();
 			}
-			// Workaround for audio-only files: disable the lavfi-complex filter
-			if (
-				supportedFiles.audio.some(extension => playerState.currentSong?.mediafile.endsWith(extension)) &&
-				playerState.currentSong?.avatar &&
-				getConfig().Player.Display.Avatar
-			) {
-				await this.exec({ command: ['set_property', 'lavfi-complex', '[aid1]loudnorm[ao];[vid1]null[vo]'] });
-			}
 			await this.exec({ command: ['seek', delta] });
 		} catch (err) {
 			logger.error('Unable to seek', { service, obj: err });
@@ -1135,14 +1144,6 @@ export class Players {
 			// Skip the song if we try to go after the end of the song
 			if (playerState.mediaType === 'song' && pos > playerState.currentSong.duration) {
 				return await next();
-			}
-			// Workaround for audio-only files: disable the lavfi-complex filter
-			if (
-				supportedFiles.audio.some(extension => playerState.currentSong?.mediafile.endsWith(extension)) &&
-				playerState.currentSong?.avatar &&
-				getConfig().Player.Display.Avatar
-			) {
-				await this.exec({ command: ['set_property', 'lavfi-complex', '[aid1]loudnorm[ao];[vid1]null[vo]'] });
 			}
 			await this.exec({ command: ['seek', pos, 'absolute'] });
 		} catch (err) {
@@ -1191,6 +1192,8 @@ export class Players {
 
 	async setBlur(enabled: boolean) {
 		this.setBlurPercentage(enabled ? 90 : 0);
+		if (!playerState.modifiers) playerState.modifiers = { Blind: 'blur' };
+		emitPlayerState();
 	}
 
 	async setBlind(blind: boolean) {
@@ -1198,6 +1201,7 @@ export class Players {
 			await this.exec({ command: ['set_property', 'vf', blind ? 'geq=0:128:128' : ''] });
 			if (blind) {
 				playerState.blurVideo = false;
+				if (!playerState.modifiers) playerState.modifiers = { Blind: 'black' };
 				emitPlayerState();
 			}
 		} catch (err) {
@@ -1299,6 +1303,29 @@ export class Players {
 		}
 	}
 
+	async toggleAudioOnlyExperience() {
+		try {
+			if (playerState.currentVideoTrack === 1) {
+				playerState.currentVideoTrack = 2;
+			} else {
+				playerState.currentVideoTrack = 1;
+			}
+			/* This code is disabled for now: this is not working properly. See #1708 for more details.
+			if (playerState.currentSong) {
+				const showVideo =
+					!playerState.modifiers || (playerState.modifiers && playerState.modifiers.Blind === '');
+				const lavfiComplex = await Players.genLavfiComplex(playerState.currentSong, showVideo);
+				await this.exec({ command: ['set_property', 'lavfi-complex', lavfiComplex] });
+				emitPlayerState();
+			}
+			*/
+		} catch (err) {
+			logger.error('Unable to toggle audio only experience', { service, obj: err });
+			sentry.error(err);
+			throw err;
+		}
+	}
+
 	async toggleBorders(): Promise<boolean> {
 		try {
 			await this.exec({ command: ['set_property', 'border', !playerState.border] });
@@ -1370,11 +1397,14 @@ export class Players {
 		// Song playing
 		const manifest = getRepoManifest(playerState.currentSong.repository);
 		const X =
-			playerState.currentSong.announce_position_x || manifest?.rules?.lyrics?.defaultAnnouncePositionX || 'Left';
+			playerState.currentSong.lyrics_infos[0]?.announce_position_x ??
+			manifest?.rules?.lyrics?.defaultAnnouncePositionX ??
+			'Left';
 		const Y =
-			playerState.currentSong.announce_position_y ||
-			manifest?.rules?.lyrics?.defaultAnnouncePositionY ||
+			playerState.currentSong.lyrics_infos[0]?.announce_position_y ??
+			manifest?.rules?.lyrics?.defaultAnnouncePositionY ??
 			'Bottom';
+
 		// We lower pos if X pos isn't right or Y pos isn't top since 9 is top right already.
 		if (X === 'Center') pos -= 1;
 		if (X === 'Left') pos -= 2;

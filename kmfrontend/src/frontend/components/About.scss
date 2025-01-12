@@ -1,3 +1,5 @@
+@use 'sass:color';
+
 .about-page {
 	padding: 1em;
 	display: flex;
@@ -11,7 +13,7 @@
 	}
 	.awesome-person {
 		font-weight: bold;
-		color: scale-color(#26aacc, $lightness: 40%);
+		color: color.scale(#26aacc, $lightness: 40%);
 	}
 	.app-presentation {
 		img {

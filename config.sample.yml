@@ -160,6 +160,8 @@ Player:
   Volume: 100
   # AudioDelay for audio/video sync
   AudioDelay: 0
+  # Decide if a still image should be shown instead of video for an audio-only experience(tm)
+  AudioOnlyExperience: false
   # Hardware decoding. See mpv manual for more info
   HardwareDecoding: auto-safe
   # Extra mpv commandline arguments example

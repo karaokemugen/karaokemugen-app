@@ -36,18 +36,23 @@ export async function removeSSHKey(repoName: string) {
 	}
 }
 
-function getKeyFileName(repoName: string) {
-	return resolve(resolvedPath('SSHKeys'), `id_rsa_KaraokeMugen_${repoName}`);
+export function getKeyFileName(repoName: string) {
+	const key = resolve(resolvedPath('SSHKeys'), `id_rsa_KaraokeMugen_${repoName}`);
+	logger.debug(`Private key selected: ${key}`, { service });
+	return key;
 }
 
-function getKnownHostsFileName(repoName: string) {
-	return resolve(resolvedPath('SSHKeys'), `known_hosts_KaraokeMugen_${repoName}`);
+export function getKnownHostsFileName(repoName: string) {
+	const knownHostsFile = resolve(resolvedPath('SSHKeys'), `known_hosts_KaraokeMugen_${repoName}`);
+	logger.debug(`Known hosts file selected: ${knownHostsFile}`);
+	return knownHostsFile;
 }
 
 export async function getSSHPubKey(repoName: string): Promise<string> {
 	try {
 		const keyFile = getKeyFileName(repoName);
 		const pubKey = await readFile(`${keyFile}.pub`, 'utf-8');
+		logger.debug(`Public key selected: ${keyFile}`, { service });
 		return pubKey;
 	} catch (err) {
 		throw new ErrorKM('SSH_PUBLIC_KEY_NOT_FOUND', 404, false);

@@ -10,6 +10,7 @@ import { User } from '../../../../src/lib/types/user';
 import GlobalContext from '../../store/context';
 import { commandBackend } from '../../utils/socket';
 import Title from '../components/Title';
+import dayjs from 'dayjs';
 
 export default function Inbox() {
 	const context = useContext(GlobalContext);
@@ -194,7 +195,7 @@ export default function Inbox() {
 			sorter: (a, b) => new Date(a.created_at).valueOf() - new Date(b.created_at).valueOf(),
 			sortDirections: ['ascend' as const, 'descend' as const, 'ascend' as const],
 			defaultSortOrder: 'ascend' as const,
-			render: text => new Date(text).toLocaleString(),
+			render: text => dayjs(text).format('L LTS'),
 		},
 		{
 			title: i18next.t('INBOX.NAME'),
