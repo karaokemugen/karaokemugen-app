@@ -555,7 +555,8 @@
 			"DISPLAY_AVATAR_TOOLTIP": "Awatar osoby proszącej o piosenkę zostanie wyświetlony na początku i na końcu piosenki w prawym dolnym rogu ekranu odtwarzacza.",
 			"LIVE_COMMENTS_TOOLTIP": "Wiadomości z czatu na Twitchu zostaną wyświetlone w odtwarzaczu (Skonfiguruj poprawnie swojego AutoModa).",
 			"LIVE_COMMENTS": "Komentarze na żywo",
-			"AUDIO_ONLY_EXPERIENCE": "Tylko dźwięk"
+			"AUDIO_ONLY_EXPERIENCE": "Tylko dźwięk",
+			"AUDIO_ONLY_EXPERIENCE_TOOLTIP": "Jeśli włączone, pokaże nieruchomy obraz zamiast wideo. Zmiana zostanie wprowadzona w następnym utworze."
 		},
 		"KARAOKE": {
 			"QUOTA_SETTINGS": "Ograniczenia",
@@ -983,7 +984,7 @@
 			},
 			"PLAYER_MESSAGE_PLACEHOLDER": "Przejdź do $url, aby zagrać!",
 			"EMPTY_NAME": "Wprowadź nazwę gry",
-			"EMPTY_PLAYLIST": "Wybierz listę odtwarzania",
+			"EMPTY_PLAYLIST": "Wybierz listę piosenek",
 			"END_GAME": {
 				"DESCRIPTION": "Gra się kończy…",
 				"MAX_SCORE": "Gdy gracz dotrze do",
@@ -1328,7 +1329,10 @@
 		"FROM_DISPLAY_TYPE": "Wyświetlanie typu tagu",
 		"ORDER_MEDIA_STANDARD": "Standard",
 		"ORDER_MEDIA_POPULAR": "Popularny",
-		"ORDER_MEDIA_NEW": "Nowy"
+		"ORDER_MEDIA_NEW": "Nowy",
+		"ORDER_MEDIA": "Zamów media według: ",
+		"ORDER_MEDIA_MEDIASIZE": "Rozmiar nośnika",
+		"CHANGE_ORDER_DIRECTION": "Zmień kierunek zamówienia"
 	},
 	"HEADERS": {
 		"SESSIONS": {
@@ -2119,7 +2123,8 @@
 		"REPO_DELETED": "Repozytorium zostało pomyślnie usunięte",
 		"DATABASE_RESTORED": "Baza danych przywrócona z karaokemugen.sql",
 		"PL_SONG_ADDED": "Pomyślnie dodano piosenkę \"{{song}}\"!",
-		"SESSION_ACTIVATED": "Sesja została pomyślnie aktywowana"
+		"SESSION_ACTIVATED": "Sesja została pomyślnie aktywowana",
+		"CHANGES_OCCUR_ON_NEXT_SONG": "To ustawienie zostanie aktywowane od następnego utworu."
 	},
 	"LANGUAGES": {
 		"QRO": "Alfabet łaciński (Romanizacja)"
