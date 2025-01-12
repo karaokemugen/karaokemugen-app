@@ -280,7 +280,7 @@
 			"SONGPOLLCHOICES": "Jumlah lagu yang bisa dipilih pengguna selama jajak pendapat publik",
 			"SONGPOLLCHOICES_TOOLTIP": "Setiap pilihan akan dipilih dari daftar putar saran",
 			"SONGPOLLTIMEOUT": "Durasi jajak pendapat publik",
-			"REMOTE": "Izinkan akses jarak jauh (<code>.kara.moe)",
+			"REMOTE": "Izinkan akses jarak jauh (<code>.{{instance}})",
 			"REMOTE_TOOLTIP": "Aktifkan ini untuk memperbolehkan teman kamu untuk menyarankan lagu pada sesi karaoke kamu!",
 			"QUOTA_TYPE_TOOLTIP": "Kuota membantu mencegah pengguna dari menambahkan terlalu banyak lagu sekaligus",
 			"TIME_BY_USER": "Waktu per pengguna",
@@ -715,10 +715,7 @@
 		"USERS": {
 			"CREATE": "Buat pengguna",
 			"BROWSE": "Jelajah pengguna"
-		},
-		"EGG_1": "Berhenti klik pada versi.",
-		"EGG_2": "Wah.",
-		"EGG_3": "Berhenti, percuma saja."
+		}
 	},
 	"LOGS": {
 		"LEVELS": {
@@ -1421,7 +1418,7 @@
 		"VERSIONS_TOOLTIP": "Versi memungkinkan pengenalan lebih baik lagu dengan judul yang sama. Jika tidak ada versi yang diterapkan ke lagu ini karena itu terlalu spesifik (cth. Future Vers. atau Chihaya Vers.) yang ditunjukkan di judulnya dengan menambahkan \" ~Chihaya Vers.\".",
 		"CREATED_AT": "Tanggal pembuatan",
 		"MODIFIED_AT": "Tanggal terakhir diperbarui",
-		"ONLINE_REPOSITORIES": "Beberapa karaoke kamu berasal dari repositori jarak jauh (seperti contohnya peladen kara.moe), karaoke tersebut tidak bisa disunting lewat antarmuka ini, untuk memastikan repositori tetap tersinkronisasi. Kamu bisa mencentang kotak \"Mode pengelola\" di pengaturan repositori, kamu tidak akan menerima pembaruan lagi tapi kamu akan bisa menyunting atau menghapus karaoke.",
+		"ONLINE_REPOSITORIES": "Beberapa karaoke kamu berasal dari repositori jarak jauh, karaoke tersebut tidak bisa disunting lewat antarmuka ini, untuk memastikan repositori tetap tersinkronisasi. Kamu bisa mencentang kotak \"Mode pengelola\" di pengaturan repositori, kamu tidak akan menerima pembaruan lagi tapi kamu akan bisa menyunting atau menghapus karaoke.",
 		"PROBLEMATIC_TOOLTIP": "Lagu ini berisi adegan ({{tags}}) yang mungkin bermasalah bagi sebagian penonton.",
 		"DEFAULT_LANGUAGE": "Bahasa baku untuk digunakan",
 		"SECTIONS": {

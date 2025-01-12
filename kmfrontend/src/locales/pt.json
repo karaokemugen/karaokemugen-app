@@ -438,7 +438,7 @@
 			"HIDE_INVISIBLE_SONGS_HIDDEN_OPTION": "Esconder",
 			"HIDE_INVISIBLE_SONGS_VISIBLE_OPTION": "Rótulos misteriosos",
 			"SONGPOLLCHOICES": "Número de músicas que os usuários podem escolher durante a enquete pública",
-			"REMOTE": "Permitir acesso remoto (<code>.kara.moe)",
+			"REMOTE": "Permitir acesso remoto (<code>.{{instance}})",
 			"HIDE_INVISIBLE_SONGS_TOOLTIP": "A forma como as canções misteriosas são exibidas ao público. Melhor para surpresas!",
 			"SONGPOLLTIMEOUT_TOOLTIP": "Em segundos. É melhor se for inferior ao temporizador de pausa do modo Stream!",
 			"SONGPOLL_TOOLTIP": "Uma enquete acontecerá no início de cada música nos dispositivos dos seus usuários ou no chat do Twitch. No modo Stream, a enquete acontecerá durante as pausas"
@@ -978,7 +978,7 @@
 		"GROUPS_TOOLTIP": "Baixe grupos para esta música. A música será incluída nesses pacotes de download",
 		"SHOW_MEDIA_IN_FOLDER": "Mostrar mídia na pasta",
 		"MISSING_DOWNLOAD_TOOLTIP": "Este karaokê não pode ser baixado, você precisará da Internet para reproduzi-lo.",
-		"ONLINE_REPOSITORIES": "Alguns dos seus karaokês são de repositórios remotos (servidor kara.moe por exemplo), esses karaokês não são editáveis através desta interface, para garantir que os repositórios permaneçam sincronizados.",
+		"ONLINE_REPOSITORIES": "Alguns dos seus karaokês são de repositórios remotos, esses karaokês não são editáveis através desta interface, para garantir que os repositórios permaneçam sincronizados.",
 		"COLLECTIONS_TOOLTIP": "Selecione as coleções nas quais o karaokê deve aparecer",
 		"FILTER_MEDIA_STATUS": "Status da mídia: ",
 		"FILTER_IN_PROGRESS": "Download em progresso",
@@ -1527,7 +1527,6 @@
 			"CREATE": "Crie um usuário"
 		},
 		"SYSTEM_DESCRIPTION": "Veja logs, altere opções de configuração, faça backup/restaure seu banco de dados, acione uma geração manual e gerencie sessões de karaokê",
-		"EGG_3": "Pare com isso, é inútil.",
 		"USERS_DESCRIPTION": "Liste, edite, crie usuários, altere suas senhas, crie novas contas de convidados.",
 		"KARAS": {
 			"CREATE": "Crie um karaokê",
@@ -1536,8 +1535,6 @@
 			"DOWNLOAD": "Baixar mídias",
 			"BROWSE": "Navegar nos karaokês"
 		},
-		"EGG_1": "Pare de clicar na versão.",
-		"EGG_2": "Bem.",
 		"KARAS_DESCRIPTION": "Liste, edite e crie arquivos de dados de karaokê. Você também pode baixar mídias e visualizar o histórico dos mais solicitados, mais reproduzidos e do karaokê"
 	},
 	"SUCCESS_CODES": {

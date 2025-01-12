@@ -373,10 +373,7 @@
 		"USERS": {
 			"CREATE": "Tworzenie użytkownika",
 			"BROWSE": "Przeglądanie użytkowników"
-		},
-		"EGG_3": "Przestań to, to bezużyteczne.",
-		"EGG_1": "Przestań klikać wersję.",
-		"EGG_2": "Dobrze."
+		}
 	},
 	"TASKS": {
 		"FINDING_UNUSED_MEDIAS": "Wyszukiwanie nieużywanych nośników…",
@@ -637,7 +634,7 @@
 			"HIDE_INVISIBLE_SONGS_VISIBLE_OPTION": "Tajemnicze etykiety",
 			"SONGPOLL": "Ankieta publiczna",
 			"SONGPOLLTIMEOUT": "Czas trwania ankiety publicznej",
-			"REMOTE": "Zezwól na dostęp zdalny (<code>.kara.moe)",
+			"REMOTE": "Zezwól na dostęp zdalny (<code>.{{instance}})",
 			"REMOTE_TOOLTIP": "Włącz tę opcję, aby Twoi znajomi mogli sugerować utwory podczas Twojej sesji karaoke!",
 			"ADDED_SONG_VISIBILITY_PUBLIC_TOOLTIP": "Czy utwory dodane przez publiczność powinny być widoczne publicznie, czy należy je uważać za utwory tajemnicze?",
 			"STREAM_SETTINGS_TOOLTIP": "Pauza pomiędzy utworami, czat na Twitchu",
@@ -1323,7 +1320,7 @@
 		},
 		"REPOSITORY_DOCUMENTATION": "Zobacz zasady {{instance}} tutaj",
 		"PARENTS_TOOLTIP": "Jeśli zdefiniowano rodzica, ta piosenka będzie wyświetlana jako piosenka alternatywna do niej. Wybierz odpowiednie repozytorium przed wypełnieniem go, aby uniknąć dodawania utworów z innych repozytoriów.",
-		"ONLINE_REPOSITORIES": "Niektóre z twoich utworów pochodzą ze zdalnych repozytoriów (na przykład serwera kara.moe), tych utworów nie można edytować za pomocą tego interfejsu, aby upewnić się, że repozytoria pozostają zsynchronizowane. Możesz zaznaczyć pole wyboru \"Tryb opiekuna\" w ustawieniach repozytorium, nie będziesz już otrzymywać żadnych aktualizacji, ale będziesz mógł edytować lub usuwać utwory.",
+		"ONLINE_REPOSITORIES": "Niektóre z twoich utworów pochodzą ze zdalnych repozytoriów, tych utworów nie można edytować za pomocą tego interfejsu, aby upewnić się, że repozytoria pozostają zsynchronizowane. Możesz zaznaczyć pole wyboru \"Tryb opiekuna\" w ustawieniach repozytorium, nie będziesz już otrzymywać żadnych aktualizacji, ale będziesz mógł edytować lub usuwać utwory.",
 		"DELETE_MEDIA_TOOLTIP": "Usuń multimedia karaoke",
 		"DELETE_ALL_TOOLTIP": "Usuń wszystkie wyświetlane utwory jednocześnie",
 		"SHOW_LYRICS_IN_FOLDER": "Pokaż tekst w folderze",

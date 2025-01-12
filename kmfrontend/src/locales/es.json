@@ -272,7 +272,7 @@
 			"MYSTERY_SONG_SETTINGS": "Canciones misteriosas",
 			"SONGPOLLCHOICES": "Número de canciones que los usuarios pueden elegir durante la encuesta pública",
 			"SONGPOLL_TOOLTIP": "Se realizará una encuesta al principio de cada canción en los dispositivos de tus usuarios o en el chat de Twitch. En el modo Stream, el sondeo ocurrirá durante las pausas",
-			"REMOTE": "Permitir el acceso remoto (<código>.kara.moe)",
+			"REMOTE": "Permitir el acceso remoto (<código>.{{instance}})",
 			"SESSION_SETTINGS": "Modos Karaoke",
 			"WITH": "con",
 			"MESSAGE": "que se muestra en la pantalla",
@@ -910,7 +910,7 @@
 		"DELETE_KARA_TITLE": "Vas a eliminar los karaokes {{count}} mostrados, ¿estás seguro?",
 		"DELETE_MEDIA_TOOLTIP": "Eliminar los medios de karaoke",
 		"UPLOAD_MEDIA_TOOLTIP": "Volver a subir medios de karaoke",
-		"ONLINE_REPOSITORIES": "Algunos de tus karaokes provienen de repositorios remotos (servidor kara.moe por ejemplo), estos karaokes no son editables a través de esta interfaz, para asegurar que los repositorios se mantienen sincronizados. Puedes marcar la casilla \"Modo mantenedor\" en la configuración del repositorio, dejarás de recibir actualizaciones pero podrás editar o borrar karaokes.",
+		"ONLINE_REPOSITORIES": "Algunos de tus karaokes provienen de repositorios remotos, estos karaokes no son editables a través de esta interfaz, para asegurar que los repositorios se mantienen sincronizados. Puedes marcar la casilla \"Modo mantenedor\" en la configuración del repositorio, dejarás de recibir actualizaciones pero podrás editar o borrar karaokes.",
 		"VERSION_AVAILABILITY": "Disponible en {{count}} versiones.",
 		"IN_PROGRESS_DOWNLOAD_TOOLTIP": "Descarga en progreso",
 		"PLAYED": "Conteo de visitas",
@@ -1523,9 +1523,6 @@
 			"CREATE": "Crear una etiqueta",
 			"MERGE": "Combinar etiquetas duplicadas"
 		},
-		"EGG_1": "Deje de hacer clic en la versión.",
-		"EGG_2": "Bueno.",
-		"EGG_3": "Deja eso, es inútil.",
 		"KARAS_DESCRIPTION": "Lista, edita y crea archivos de datos de karaoke. También puedes descargar medios y ver los más solicitados, los más reproducidos y el historial de karaoke",
 		"SYSTEM_DESCRIPTION": "Consulta los registros, cambia las opciones de configuración, haz una copia de seguridad/restaura tu base de datos, activa una generación manual y gestiona la sesión de karaoke"
 	},

@@ -430,7 +430,7 @@
 		"PARENTS_TOOLTIP": "Wenn ein Bezugslied definiert ist, wird dieses Lied als Alternative angezeigt. Bitte wähle das richtige Repository aus, bevor du das Feld ausfüllst, damit keine Lied aus anderen Repositorys hinzugefügt wird.",
 		"SYNC_WARNING_DESCRIPTION": "Beim Synchronisieren von Medien werden alle Medien aus deaktivierten Sammlungen entfernt, wenn sie zuvor heruntergeladen wurden. Dadurch können viele Dateien gelöscht werden, wenn du eine Sammlung, die du normalerweise benutzt, vorübergehend deaktiviert hast.",
 		"QUEUE_LABEL_SONGS": "({{numberSongs}} Lieder):",
-		"ONLINE_REPOSITORIES": "Einige deiner Lieder stammen aus anderen Repositorys (z. B. vom kara.moe-Server). Diese Lieder können über diese Schnittstelle nicht bearbeitet werden, um sicherzustellen, dass die Repositorys synchronisiert bleiben. Du kannst das Kontrollkästchen \"Maintainer-Modus\" in den Repository-Einstellungen aktivieren. Dann erhältst du keine Updates mehr, kannst aber Lieder bearbeiten oder löschen.",
+		"ONLINE_REPOSITORIES": "Einige deiner Lieder stammen aus anderen Repositorys. Diese Lieder können über diese Schnittstelle nicht bearbeitet werden, um sicherzustellen, dass die Repositorys synchronisiert bleiben. Du kannst das Kontrollkästchen \"Maintainer-Modus\" in den Repository-Einstellungen aktivieren. Dann erhältst du keine Updates mehr, kannst aber Lieder bearbeiten oder löschen.",
 		"SHOW_LYRICS_IN_FOLDER": "Songtext im Ordner anzeigen",
 		"VERSION_AVAILABILITY": "Verfügbar in {{count}} Versionen.",
 		"ORDER_TOOLTIP": "Nummer des Openings/Endings. Wenn dies das einzige Opening/Ending der Reihe ist, lass diese Info leer.",
@@ -534,7 +534,7 @@
 			"PLAYLIST_INTRO_VIDEOS": "Playlist-Intro-Video",
 			"STREAM_TWITCH_OAUTH_SUCCESS": "Erfolgreich verbunden ({{login}})",
 			"SONGPOLL": "Öffentliche Umfrage",
-			"REMOTE": "Fernzugriff gestatten (<code>.kara.moe)",
+			"REMOTE": "Fernzugriff gestatten (<code>.{{instance}})",
 			"MYSTERY_SONG_SETTINGS_TOOLTIP": "Verbirg Lieder vor der Öffentlichkeit, um sie zu überraschen!",
 			"SONGPOLLTIMEOUT_TOOLTIP": "In Sekunden. Sollte am besten niedriger sein als die Pausenzeit im Streaming-Modus!",
 			"MYSTERY_SONG_SETTINGS": "Verborgene Lieder",
@@ -1805,10 +1805,7 @@
 			"BROWSE": "Benutzer durchsuchen"
 		},
 		"KARAS_DESCRIPTION": "Liste, bearbeite und erstelle Karaoke-Dateien. Du kannst auch Medien herunterladen und die beliebtesten, am meisten gespielten Lieder sowie die Karaoke-Historie einsehen",
-		"EGG_2": "Nun ja.",
-		"EGG_1": "Hör auf, auf die Version zu klicken.",
-		"USERS_DESCRIPTION": "Benutzer auflisten, bearbeiten, erstellen, ihr Passwort ändern, neue Gästekonten erstellen.",
-		"EGG_3": "Hör auf damit, das ist sinnlos."
+		"USERS_DESCRIPTION": "Benutzer auflisten, bearbeiten, erstellen, ihr Passwort ändern, neue Gästekonten erstellen."
 	},
 	"USERS": {
 		"EMAIL": "E-Mail",

@@ -205,7 +205,7 @@
 			"STREAM_PAUSE_DURATION_TOOLTIP": "In secondi, 0 per infinito (premi \"Riproduci\" per riprodurre il prossimo brano)",
 			"STREAM_TWITCH_OAUTH_SUCCESS": "Connessione riuscita ({{login}})",
 			"SONGPOLL": "Sondaggio al pubblico",
-			"REMOTE": "Consenti l'accesso remoto (<codice>.kara.moe)",
+			"REMOTE": "Consenti l'accesso remoto (<codice>.{{instance}})",
 			"MYSTERY_SONG_SETTINGS_TOOLTIP": "Nascondi i brani al pubblico, per sorprenderlo!",
 			"SONGPOLLTIMEOUT_TOOLTIP": "In secondi. Meglio se è più breve del periodo di pausa della modalità Stream!",
 			"MYSTERY_SONG_SETTINGS": "Brani misteriosi",
@@ -1306,7 +1306,7 @@
 		"PARENTS_TOOLTIP": "Se un brano principale è definito, questo brano verrà mostrato come sua variante. Si prega di selezionare l'archivio corretto prima di compilare questo campo per prevenire l'aggiunta di brani da altri archivi.",
 		"SYNC_WARNING_DESCRIPTION": "Sincronizzando i file multimediali, tutti i file multimediali contenuti in collezioni disabilitate verranno rimossi. Ciò potrebbe eliminare molti file se hai disabilitato temporaneamente una collezione che usi spesso.",
 		"QUEUE_LABEL_SONGS": "({{numberSongs}} brani):",
-		"ONLINE_REPOSITORIES": "Alcuni dei tuoi brani vengono da archivi remoti (come il server kara.moe) e non sono modificabili tramite questa interfaccia, così da mantenere sincronizzati gli archivi. Puoi abilitare la \"modalità mantenitore\" nelle impostazioni archivio, così facendo non riceverai più aggiornamenti ma potrai modificare o eliminare i brani.",
+		"ONLINE_REPOSITORIES": "Alcuni dei tuoi brani vengono da archivi remoti e non sono modificabili tramite questa interfaccia, così da mantenere sincronizzati gli archivi. Puoi abilitare la \"modalità mantenitore\" nelle impostazioni archivio, così facendo non riceverai più aggiornamenti ma potrai modificare o eliminare i brani.",
 		"SHOW_LYRICS_IN_FOLDER": "Mostra il testo nella cartella",
 		"VERSION_AVAILABILITY": "Disponibile in {{count}} versioni.",
 		"ORDER_TOOLTIP": "Numero della opening/ending. Se questa è l'unica opening/ending della serie, lascia vuoto.",
@@ -1740,10 +1740,7 @@
 			"BROWSE": "Esplora utenti"
 		},
 		"KARAS_DESCRIPTION": "Elenca, modifica e crea i file di dati del karaoke. Puoi anche scaricare file multimediali e vedere i più richiesti, i più riprodotti e la cronologia.",
-		"EGG_2": "Bene.",
-		"EGG_1": "Smettila di cliccare sulla versione.",
-		"USERS_DESCRIPTION": "Elenca, modifica, crea utenti, cambia le loro password, crea nuovi account ospiti.",
-		"EGG_3": "Smettila, è inutile."
+		"USERS_DESCRIPTION": "Elenca, modifica, crea utenti, cambia le loro password, crea nuovi account ospiti."
 	},
 	"USERS": {
 		"EMAIL": "Email",
