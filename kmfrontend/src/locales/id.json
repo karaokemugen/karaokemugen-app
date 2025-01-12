@@ -792,7 +792,7 @@
 		"CONTRIBUTORS": "Karaoke dibuat oleh orang-orang yang hebat, seperti <1>{{contributors}}</1> misalnya.",
 		"DONATORS": "Terima kasih kepada <1>{{donators}}</1> untuk donasinya ke Karaoke Mugen",
 		"DESCRIPTION": "Pemutar karaoke dan pengelola pesta, antar teman atau di publik.",
-		"LICENSE": " Dilisensikan MIT."
+		"LICENSE": "Dilisensikan MIT."
 	},
 	"SETUP_PAGE": {
 		"SAVE_PARAMETER": "Simpan",
