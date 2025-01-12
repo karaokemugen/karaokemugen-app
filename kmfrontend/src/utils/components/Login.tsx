@@ -289,6 +289,8 @@ function Login() {
 								</label>
 								<div className="loginLine">
 									<input
+										// Used by password manager
+										name="login"
 										type="text"
 										className={`${errorBackground} ${onlineSwitch ? 'loginName' : ''}`}
 										defaultValue={login}

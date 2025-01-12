@@ -1,5 +1,6 @@
 @use 'sass:color';
-@import '../../styles/variables';
+@use 'sass:map';
+@use '../../styles/variables';
 
 @keyframes slide-ltr {
 	0% {
@@ -14,26 +15,26 @@
 	width: 100%;
 	height: 2em;
 	position: relative;
-	border-bottom: $mugen-btn-border;
-	border-top: $mugen-btn-border;
+	border-bottom: variables.$mugen-btn-border;
+	border-top: variables.$mugen-btn-border;
 	background-color: #1e2124;
 	cursor: grab;
 
 	&:hover {
 		#progressBarColor {
-			background-color: color.adjust(map-get($mugen-colors, 'blue'), $lightness: -10%, $space: hsl);
+			background-color: color.adjust(map.get(variables.$mugen-colors, 'blue'), $lightness: -10%, $space: hsl);
 		}
 	}
 	&:active {
 		cursor: grabbing;
 		#progressBarColor {
-			background-color: color.adjust(map-get($mugen-colors, 'blue'), $lightness: -15%, $space: hsl);
+			background-color: color.adjust(map.get(variables.$mugen-colors, 'blue'), $lightness: -15%, $space: hsl);
 		}
 	}
 
 	#progressBarColor {
 		position: absolute;
-		background-color: color.adjust(map-get($mugen-colors, 'blue'), $lightness: -5%, $space: hsl);
+		background-color: color.adjust(map.get(variables.$mugen-colors, 'blue'), $lightness: -5%, $space: hsl);
 		border-bottom: solid 1px #595959;
 		z-index: 0;
 		left: 0;

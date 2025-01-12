@@ -1,7 +1,6 @@
 import i18next from 'i18next';
 import { resolve } from 'path';
 import { DefaultLogFields, ListLogLine, SimpleGit, simpleGit, SimpleGitProgressEvent } from 'simple-git';
-import which from 'which';
 
 import { Repository } from '../lib/types/repo.js';
 import { ErrorKM } from '../lib/utils/error.js';
@@ -10,7 +9,7 @@ import logger from '../lib/utils/logger.js';
 import Task from '../lib/utils/taskManager.js';
 import { getRepo } from '../services/repo.js';
 import { Commit } from '../types/repo.js';
-import { updateKnownHostsFile } from './ssh.js';
+import { getKeyFileName, getKnownHostsFileName, updateKnownHostsFile } from './ssh.js';
 import { getState } from './state.js';
 
 const service = 'Git';
@@ -89,40 +88,36 @@ export default class Git {
 
 	/** Prepare git instance */
 	async setup(configChanged = false) {
-		this.git = simpleGit({
+		const repo = getRepo(this.opts.repoName);
+		const simpleGitOpts = {
 			baseDir: this.opts.baseDir,
-			binary: await getGitPath(),
 			unsafe: {
 				allowUnsafeCustomBinary: true,
 			},
 			progress: this.progressHandler.bind(this),
-		});
+			config: ['core.autocrlf=true', `user.name=${repo.Git.Author}`, `user.email=${repo.Git.Email}`],
+		};
+		const url = this.getFormattedURL();
+		if (this.isSshUrl()) {
+			this.keyFile = getKeyFileName(this.opts.repoName);
+			this.knownHostsFile = getKnownHostsFileName(this.opts.repoName);
+			await updateKnownHostsFile(url, this.opts.repoName);
+			simpleGitOpts.config.push(
+				`core.sshCommand=ssh -o UserKnownHostsFile="${this.knownHostsFile}" -i "${this.keyFile}"`
+			);
+		}
+		logger.debug(`Git options: ${JSON.stringify(simpleGitOpts)}`, { service, obj: simpleGitOpts });
+		this.git = simpleGit(simpleGitOpts);
 		if (configChanged) {
-			logger.info('Setting up git repository settings', { service });
-			// Set email and stuff
-			// This is done on each setup because when these are modified in the repo setting, git might not be ready yet.
-			const repo = getRepo(this.opts.repoName);
-			await this.configUser(repo.Git.Author, repo.Git.Email);
-			// Avoid crlf conflicts
-			await this.git.addConfig('core.autocrlf', 'true');
+			logger.info('Setting remotes', { service });
 			// Check if Remote is correctly configured
 			const remotes = await this.git.getRemotes(true);
 			const origin = remotes.find(r => r.name === 'origin');
-			const url = this.getFormattedURL();
 			if (!origin) await this.git.addRemote('origin', url);
 			if (origin && (origin.refs.fetch !== url || origin.refs.push !== url)) {
 				logger.debug(`${this.opts.repoName}: Rebuild remote`, { service });
 				await this.setRemote();
 				await this.git.branch(['--set-upstream-to=origin/master', 'master']);
-			}
-			if (this.isSshUrl() && (await fileExists(this.keyFile))) {
-				await this.git.addConfig(
-					'core.sshCommand',
-					`ssh -o UserKnownHostsFile="${this.knownHostsFile}" -i "${this.keyFile}"`
-				);
-				await updateKnownHostsFile(url, this.opts.repoName);
-			} else {
-				await this.git.raw(['config', '--unset', 'core.sshCommand']);
 			}
 		}
 	}
@@ -228,7 +223,8 @@ export default class Git {
 			total: 100,
 		});
 		try {
-			const ret = await this.git.clone(this.opts.url, '.', { '--depth': 1 });
+			const cmdlineOpts = { '--depth': 1 };
+			const ret = await this.git.clone(this.opts.url, '.', cmdlineOpts);
 			return ret;
 		} catch (err) {
 			throw err;
@@ -237,9 +233,7 @@ export default class Git {
 		}
 	}
 
-	/** Call this when user */
-	// When user what? Are you drunk?
-	// It's obviously called when user changes their name/mail.
+	// Call when user changes their name/mail.
 	async configUser(author: string, email: string) {
 		await this.git.addConfig('user.name', author);
 		await this.git.addConfig('user.email', email);
@@ -289,16 +283,14 @@ export default class Git {
 	}
 }
 
-async function getGitPath() {
-	try {
-		return await which(`git${process.platform === 'win32' ? '.exe' : ''}`);
-	} catch (err) {
-		if (err.code === 'ENOENT') throw new ErrorKM('GIT_BINARY_NOT_FOUND', 500, false);
-		throw err;
-	}
-}
-
 export async function checkGitInstalled() {
 	// Throws an error if git not installed
-	return !!(await getGitPath());
+	const git = simpleGit();
+	const version = await git.version();
+	if (version.installed) {
+		logger.debug(`Git installed as version : ${JSON.stringify(version)}`, { service });
+	} else {
+		logger.error('Git NOT installed (not foudn in path', { service });
+		throw new ErrorKM('GIT_BINARY_NOT_FOUND', 500, false);
+	}
 }

@@ -1,5 +1,6 @@
 @use 'sass:color';
-@import '../../styles/variables';
+@use 'sass:map';
+@use '../../styles/variables';
 
 .searchMenuContainer {
 	background-color: #1e2124;
@@ -15,7 +16,7 @@
 		cursor: pointer;
 		padding: 0.5em;
 		background-color: crimson;
-		@media (max-width: $mugen-breakpoint-small) {
+		@media (max-width: variables.$mugen-breakpoint-small) {
 			span {
 				display: none;
 			}
@@ -74,9 +75,9 @@
 	.filterLabel,
 	.filterInput,
 	.filterCheckbox {
-		background-color: $mugen-select-background;
+		background-color: variables.$mugen-select-background;
 		color: white;
-		border: $mugen-select-border;
+		border: variables.$mugen-select-border;
 		padding: 0.5em;
 		&:first-child {
 			border-top-left-radius: 0.5em;
@@ -92,12 +93,12 @@
 		flex-grow: 1;
 		min-width: 60px;
 		&:disabled {
-			background-color: scale-color($color: $mugen-select-background, $lightness: 10%);
+			background-color: color.scale($color: variables.$mugen-select-background, $lightness: 10%);
 			color: gray;
 		}
 	}
 
-	@media (max-width: $mugen-breakpoint-smaller) {
+	@media (max-width: variables.$mugen-breakpoint-smaller) {
 		flex-wrap: wrap;
 		.filterTags {
 			flex: 1;
@@ -174,7 +175,7 @@
 		display: flex;
 	}
 
-	@media screen and (max-width: $mugen-breakpoint-large) {
+	@media screen and (max-width: variables.$mugen-breakpoint-large) {
 		button {
 			height: 2em;
 		}
@@ -201,9 +202,9 @@
 		font-size: 0.75em;
 	}
 	button.btn-active {
-		background-color: $mugen-btn-primary-background;
+		background-color: variables.$mugen-btn-primary-background;
 	}
-	@media screen and (max-width: $mugen-breakpoint-large) {
+	@media screen and (max-width: variables.$mugen-breakpoint-large) {
 		font-size: 1em;
 		.plInfos {
 			vertical-align: middle;
@@ -219,12 +220,12 @@
 }
 .plInfos,
 .plBrowse {
-	background-color: color.adjust(map-get($mugen-colors, 'blue'), $lightness: -20%, $space: hsl);
+	background-color: color.adjust(map.get(variables.$mugen-colors, 'blue'), $lightness: -20%, $space: hsl);
 	float: right;
 	padding: 0.25em;
 }
 .plQuota {
-	background-color: color.adjust(map-get($mugen-colors, 'green'), $lightness: -10%, $space: hsl);
+	background-color: color.adjust(map.get(variables.$mugen-colors, 'green'), $lightness: -10%, $space: hsl);
 	padding: 0.25em;
 	&.selection {
 		float: right;

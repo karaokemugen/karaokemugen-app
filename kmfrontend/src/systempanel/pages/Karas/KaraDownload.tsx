@@ -3,10 +3,12 @@ import {
 	ClockCircleTwoTone,
 	DownloadOutlined,
 	InfoCircleTwoTone,
+	SortAscendingOutlined,
+	SortDescendingOutlined,
 	SyncOutlined,
 	WarningTwoTone,
 } from '@ant-design/icons';
-import { Button, Cascader, Col, Input, Layout, Modal, Radio, Row, Select, Table } from 'antd';
+import { Button, Cascader, Col, Input, Layout, Modal, Radio, Row, Select, Space, Table } from 'antd';
 import i18next from 'i18next';
 import prettyBytes from 'pretty-bytes';
 import { Component } from 'react';
@@ -29,6 +31,8 @@ import { commandBackend, getSocket } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 import { getProtocolForOnline } from '../../../utils/tools';
 import Title from '../../components/Title';
+import { KaraList } from '../../../../../src/lib/types/kara';
+import { DefaultOptionType } from 'antd/es/cascader';
 interface KaraDownloadState {
 	karas: DBKara[];
 	i18nTag: any;
@@ -40,8 +44,10 @@ interface KaraDownloadState {
 	tagFilter: string;
 	tags: DBTag[];
 	download_status: 'MISSING' | 'DOWNLOADING' | '';
+	order: 'mediasize' | 'requested' | 'recent' | '';
+	direction: 'desc' | 'asc';
 	totalMediaSize: string;
-	tagOptions: any[];
+	tagOptions: DefaultOptionType[];
 	preview: string;
 	syncModal: boolean;
 }
@@ -65,6 +71,8 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 			tags: [],
 			download_status: 'MISSING',
 			totalMediaSize: '',
+			order: '',
+			direction: 'asc',
 			tagOptions: [],
 			preview: '',
 		};
@@ -86,7 +94,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 		try {
 			const res = await commandBackend('getTags', undefined, false, 300000);
 			this.setState({ tags: res.content }, () => this.filterTagCascaderOption());
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	}
@@ -112,7 +120,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 		const p = Math.max(0, this.state.currentPage - 1);
 		const psz = this.state.currentPageSize;
 		const pfrom = p * psz;
-		const response = await commandBackend(
+		const response: KaraList = await commandBackend(
 			'getKaras',
 			{
 				filter: this.state.filter,
@@ -130,7 +138,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 				mediafile: kara.mediafile,
 				kid: kara.kid,
 				size: kara.mediasize,
-				name: kara.karafile.replace('.kara.json', ''),
+				name: kara.songname,
 				repository: kara.repository,
 			});
 		}
@@ -149,6 +157,8 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 					q: `${this.state.tagFilter}!m:${this.state.download_status}`,
 					from: pfrom,
 					size: psz,
+					order: this.state.order,
+					direction: this.state.direction,
 				},
 				false,
 				300000
@@ -158,7 +168,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 				karasCount: res.infos.count || 0,
 				i18nTag: res.i18n,
 			});
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};
@@ -167,7 +177,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 		try {
 			const res: DBStats = await commandBackend('getStats', undefined, false, 300000);
 			this.setState({ totalMediaSize: prettyBytes(res.total_media_size) });
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};
@@ -360,6 +370,41 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 								>
 									{i18next.t('KARA.FILTER_NOT_DOWNLOADED')}
 								</Radio>
+							</Row>
+							<Row>
+								<label style={{ margin: '0.5em' }}>{i18next.t('KARA.ORDER_MEDIA')}</label>
+								<Space.Compact>
+									<Select
+										defaultValue={''}
+										popupMatchSelectWidth={false}
+										onChange={(value: 'mediasize' | 'requested' | 'recent' | '') =>
+											this.setState({ order: value, currentPage: 0 }, this.getKaras)
+										}
+										options={[
+											{ value: '', label: i18next.t('KARA.ORDER_MEDIA_STANDARD') },
+											{ value: 'recent', label: i18next.t('KARA.ORDER_MEDIA_NEW') },
+											{ value: 'requested', label: i18next.t('KARA.ORDER_MEDIA_POPULAR') },
+											{ value: 'mediasize', label: i18next.t('KARA.ORDER_MEDIA_MEDIASIZE') },
+										]}
+									/>
+									<Button
+										onClick={() =>
+											this.setState(
+												{
+													direction: this.state.direction === 'asc' ? 'desc' : 'asc',
+												},
+												this.getKaras
+											)
+										}
+										title={i18next.t('KARA.CHANGE_ORDER_DIRECTION')}
+									>
+										{this.state.direction === 'asc' ? (
+											<SortAscendingOutlined />
+										) : (
+											<SortDescendingOutlined />
+										)}
+									</Button>
+								</Space.Compact>
 							</Row>
 						</Col>
 						<Col flex={2}>

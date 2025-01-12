@@ -294,7 +294,7 @@
 		"SECONDS_other": "{{count}} segundos",
 		"SECONDS_one": "{{count}} segundo",
 		"POINTS_other": "{{count}} pontos",
-		"MAX_SCORE": "- Quando alguém ganha <1>$t(QUIZ_RULES.POINTS, {\"conta\": {{points}} })</1>",
+		"MAX_SCORE": "- Quando alguém ganha <1>$t(QUIZ_RULES.POINTS, {\"count\": {{points}} })</1>",
 		"SONGS_one": "<1>{{count}} música</1>",
 		"SONGS_other": "<1>{{count}} músicas</1>",
 		"MAX_SONGS": "- In <1>$t(QUIZ_RULES.SONGS, {\"count\": {{songs}} })</1>",

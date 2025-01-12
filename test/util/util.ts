@@ -119,7 +119,9 @@ export function testKara(kara: any, details: TestDetails) {
 	if (details.plc) expect(kara.pos).to.be.a('number').and.at.least(0);
 	expect(kara.requested).to.be.a('number').and.at.least(0);
 	expect(kara.songorder).to.satisfy((s: any) => typeof s === 'number' || s === null);
-	expect(kara.subfile).to.satisfy((s: any) => typeof s === 'string' || s === null);
+	for (const lyrics_info of kara.lyrics_infos) {
+		expect(lyrics_info.filename).to.satisfy((s: any) => typeof s === 'string' || s === null);
+	}
 	if (details.kara) {
 		expect(kara.tid).to.be.an('array');
 		for (const tid of kara.tid) {

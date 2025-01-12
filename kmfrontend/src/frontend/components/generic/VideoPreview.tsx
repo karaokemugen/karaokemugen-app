@@ -24,7 +24,7 @@ export default function VideoPreview(props: Props) {
 				).then(r => r.json());
 				return props.kara.mediasize !== mediasize
 					? videoLink
-					: `${getProtocolForOnline(context, props.kara.repository)}://${props.kara.repository}/hardsubs/${props.kara.kid}.${props.kara.mediasize}.${subchecksum}.mp4`;
+					: `${getProtocolForOnline(context, props.kara.repository)}://${props.kara.repository}/hardsubs/${props.kara.kid}.${props.kara.mediasize}.${subchecksum || 'no_ass_file'}.mp4`;
 			} else {
 				return videoLink;
 			}

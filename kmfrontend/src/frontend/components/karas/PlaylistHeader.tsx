@@ -199,7 +199,7 @@ function PlaylistHeader(props: IProps) {
 
 	const searchMenu = (
 		<div className="searchMenuContainer">
-			{playlist?.plaid === nonStandardPlaylists.library ? (
+			{[nonStandardPlaylists.library, nonStandardPlaylists.animelist].includes(playlist?.plaid) ? (
 				<div className="filterContainer">
 					<div
 						className="filterButton"
@@ -252,7 +252,7 @@ function PlaylistHeader(props: IProps) {
 					/>{' '}
 					{i18next.t('VIEW_STANDARD')}
 				</div>
-				{[nonStandardPlaylists.library, nonStandardPlaylists.favorites].includes(playlist?.plaid) ? (
+				{isNonStandardPlaylist(playlist?.plaid) ? (
 					<div
 						tabIndex={0}
 						className={'filterElement ' + (activeFilter === 'recent' ? 'filterElementActive' : '')}
@@ -314,7 +314,7 @@ function PlaylistHeader(props: IProps) {
 					/>
 
 					<div className="btn-group">
-						{[nonStandardPlaylists.library, nonStandardPlaylists.favorites].includes(playlist?.plaid) ? (
+						{isNonStandardPlaylist(playlist?.plaid) ? (
 							<button
 								type="button"
 								title={i18next.t('PLAYLIST_HEADER.FILTERS')}

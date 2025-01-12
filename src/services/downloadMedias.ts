@@ -15,7 +15,7 @@ import { emitWS } from '../lib/utils/ws.js';
 import { File } from '../types/download.js';
 import Sentry from '../utils/sentry.js';
 import { addDownloads } from './download.js';
-import { checkDownloadStatus, getRepo, checkRepoMediaPaths } from './repo.js';
+import { checkDownloadStatus, checkRepoMediaPaths, getRepo } from './repo.js';
 
 const service = 'MediasUpdater';
 

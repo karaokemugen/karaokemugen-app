@@ -9,6 +9,8 @@ const service = 'Args';
 export function parseArgs() {
 	const version = getState().version;
 	const program = new Command();
+	// Doing this because commander 13 breaks with Electron's arguments.
+	program.allowExcessArguments();
 	return program
 		.description('Starts Karaoke Mugen Desktop App')
 		.version(`${version.number} "${version.name}" (commit ${version.sha})`)

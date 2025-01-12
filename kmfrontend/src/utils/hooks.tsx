@@ -108,7 +108,7 @@ export const useTagSearch = (
 									})
 							);
 						} else if (tType < 999) {
-							const response = await commandBackend('getTags', { filter: query, type: tType });
+							const response = await commandBackend('getTags', { filter: query, type: [tType] });
 							setTags(
 								response.content
 									.filter((val: DBTag) => val.karacount !== null)

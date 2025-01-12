@@ -111,7 +111,7 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	}
 	if (newConfig.Online.Remote !== oldConfig.Online.Remote && state.ready) {
 		if (newConfig.Online.Remote) {
-			await initKMServerCommunication();
+			await initKMServerCommunication(true);
 			initRemote();
 		} else {
 			destroyRemote();

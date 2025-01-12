@@ -1,4 +1,5 @@
 @use 'sass:color';
+@use 'sass:map';
 
 $mugen-background: #404040;
 $mugen-topbar-background: color.adjust($mugen-background, $lightness: 5%, $space: hsl);
@@ -17,21 +18,21 @@ $mugen-colors: (
 // Colors for playlists display
 $mugen-playlist-odd: #1c1c1c;
 $mugen-playlist-even: color.scale($mugen-playlist-odd, $lightness: 10%);
-$mugen-playlist-currently-playing: color.scale(map-get($mugen-colors, 'blue'), $lightness: 65%, $saturation: 20%);
-$mugen-playlist-dejavu-odd: color.scale(map-get($mugen-colors, 'orange'), $lightness: -15%, $saturation: 0%);
+$mugen-playlist-currently-playing: color.scale(map.get($mugen-colors, 'blue'), $lightness: 65%, $saturation: 20%);
+$mugen-playlist-dejavu-odd: color.scale(map.get($mugen-colors, 'orange'), $lightness: -15%, $saturation: 0%);
 $mugen-playlist-dejavu-even: color.scale($mugen-playlist-dejavu-odd, $lightness: 10%);
 
 // Colors for buttons
 $mugen-btn-background: #2e2e2e;
-$mugen-btn-primary-background: color.adjust(map-get($mugen-colors, 'blue'), $lightness: -5%);
-$mugen-btn-success-background: color.adjust(map-get($mugen-colors, 'green'), $lightness: -10%);
-$mugen-btn-danger-background: map-get($mugen-colors, 'red');
+$mugen-btn-primary-background: color.adjust(map.get($mugen-colors, 'blue'), $lightness: -5%);
+$mugen-btn-success-background: color.adjust(map.get($mugen-colors, 'green'), $lightness: -10%);
+$mugen-btn-danger-background: map.get($mugen-colors, 'red');
 $mugen-btn-border: solid 1px color.adjust($mugen-btn-background, $lightness: 40%, $space: hsl);
 $mugen-btn-radius: 0.25rem;
 
 // Colors for input
 $mugen-input-background: color.adjust($mugen-background, $lightness: 10%, $space: hsl);
-$mugen-input-error-background: map-get($mugen-colors, 'red');
+$mugen-input-error-background: map.get($mugen-colors, 'red');
 
 // Colors for radio buttons
 $mugen-radio-btn-background: #575757;
@@ -50,7 +51,7 @@ $mugen-welcome-page-background: black linear-gradient(135deg, #1f3647 0%, #55776
 // colors for select
 $mugen-select-background: $mugen-btn-background;
 $mugen-select-border: $mugen-btn-border;
-$mugen-select-focus: color.adjust(map-get($mugen-colors, 'blue'), $lightness: -15%);
+$mugen-select-focus: color.adjust(map.get($mugen-colors, 'blue'), $lightness: -15%);
 
 $mugen-nav-background: #5d5d5d;
 

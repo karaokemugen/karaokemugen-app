@@ -1,4 +1,4 @@
-@import '../../styles/variables';
+@use '../../styles/variables';
 
 .tutorial {
 	position: fixed;
@@ -38,7 +38,7 @@
 		margin: 0 37.5%;
 		position: absolute;
 		bottom: 90px;
-		@media screen and (max-width: $mugen-breakpoint-xl) {
+		@media screen and (max-width: variables.$mugen-breakpoint-xl) {
 			flex-direction: row;
 			width: 80%;
 			margin: 0 10%;
@@ -57,7 +57,7 @@
 		background-color: black;
 		padding: 1em;
 		border: grey 2px solid;
-		@media screen and (max-height: $mugen-height-small) {
+		@media screen and (max-height: variables.$mugen-height-small) {
 			margin: 0 10%;
 		}
 		&.inline {
@@ -75,7 +75,7 @@
 		background-color: black;
 		padding: 1em;
 
-		@media screen and (max-width: $mugen-breakpoint-xl) {
+		@media screen and (max-width: variables.$mugen-breakpoint-xl) {
 			width: 99%;
 			margin: 0 0.5%;
 			top: 200px;
@@ -90,7 +90,7 @@
 		}
 
 		.kara-line-image {
-			@media screen and (max-width: $mugen-breakpoint-xl) {
+			@media screen and (max-width: variables.$mugen-breakpoint-xl) {
 				display: none;
 			}
 			position: relative;
@@ -119,7 +119,7 @@
 		position: absolute;
 		background-color: black;
 		padding: 1em;
-		@media screen and (max-width: $mugen-breakpoint-larger) {
+		@media screen and (max-width: variables.$mugen-breakpoint-larger) {
 			width: 98.5%;
 		}
 		a {
@@ -146,7 +146,7 @@
 		top: 170px;
 		left: 8px;
 		width: 49.5%;
-		@media screen and (max-width: $mugen-breakpoint-larger) {
+		@media screen and (max-width: variables.$mugen-breakpoint-larger) {
 			width: 99.75%;
 		}
 	}
@@ -155,7 +155,7 @@
 		top: 100px;
 		margin: 0 25%;
 		width: 50%;
-		@media screen and (max-width: $mugen-breakpoint-larger) {
+		@media screen and (max-width: variables.$mugen-breakpoint-larger) {
 			margin: 0 0.75%;
 			width: 99%;
 		}

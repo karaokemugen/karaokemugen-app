@@ -387,7 +387,7 @@ export async function createProblematicSmartPlaylist() {
 			username: 'admin',
 			type_smart: 'UNION',
 		};
-		const tags = await getTags({ type: 15 });
+		const tags = await getTags({ type: [15] });
 		const allPlaylists = await selectPlaylists();
 		const existingProblematicPlaylist = allPlaylists.find(
 			pl =>

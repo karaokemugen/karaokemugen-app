@@ -2,7 +2,7 @@ import i18next from 'i18next';
 import { useContext, useEffect, useMemo, useState } from 'react';
 
 import GlobalContext from '../../../store/context';
-import { getLanguagesInLangFromCode, languagesSupport } from '../../../utils/isoLanguages';
+import { getLanguagesInLangFromCode, supportedLanguages } from '../../../utils/isoLanguages';
 import { commandBackend } from '../../../utils/socket';
 import { dotify } from '../../../utils/tools';
 import Switch from '../generic/Switch';
@@ -283,6 +283,28 @@ function PlayerOptions(props: IProps) {
 					</div>
 				))}
 			{filterValue === undefined ||
+				(sanitizeSettingsSearchValue(i18next.t('SETTINGS.PLAYER.AUDIO_ONLY_EXPERIENCE')).includes(
+					filterValue
+				) && (
+					<div className="settings-line">
+						<label htmlFor="Player.AudioOnlyExperience">
+							<span className="title">{i18next.t('SETTINGS.PLAYER.AUDIO_ONLY_EXPERIENCE')}</span>
+							<br />
+							<span className="tooltip">
+								{i18next.t('SETTINGS.PLAYER.AUDIO_ONLY_EXPERIENCE_TOOLTIP')}
+							</span>
+						</label>
+						<div>
+							<Switch
+								idInput="Player.AudioOnlyExperience"
+								handleChange={putPlayerCommando}
+								isChecked={config['Player.AudioOnlyExperience']}
+								nameCommand="toggleAudioOnlyExperience"
+							/>
+						</div>
+					</div>
+				))}
+			{filterValue === undefined ||
 				(sanitizeSettingsSearchValue(i18next.t('SETTINGS.PLAYER.WINDOWBORDERS')).includes(filterValue) && (
 					<div className="settings-line">
 						<label htmlFor="Player.Borders">
@@ -330,7 +352,7 @@ function PlayerOptions(props: IProps) {
 						</label>
 						<div>
 							<select id="App.Language" onChange={onChange} defaultValue={config['App.Language']}>
-								{languagesSupport.map(lang => {
+								{supportedLanguages.map(lang => {
 									return (
 										<option key={lang} value={lang}>
 											{getLanguagesInLangFromCode(lang)}

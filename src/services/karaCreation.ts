@@ -18,6 +18,7 @@ import { resolvedPath, resolvedPathRepos } from '../lib/utils/config.js';
 import { ErrorKM } from '../lib/utils/error.js';
 import { replaceExt, resolveFileInDirs, smartMove } from '../lib/utils/files.js';
 import logger, { profile } from '../lib/utils/logger.js';
+import { sortJSON } from '../lib/utils/objectHelpers.js';
 import Task from '../lib/utils/taskManager.js';
 import { adminToken } from '../utils/constants.js';
 import sentry from '../utils/sentry.js';
@@ -76,8 +77,8 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 			throw new ErrorKM('UNKNOWN_SONG', 404, false);
 		}
 		if (!kara.data.ignoreHooks) await applyKaraHooks(kara);
-		const { sanitizedFilename, songname } = await defineSongname(kara, oldKara);
-		kara.data.songname = songname;
+		const { sanitizedFilename } = await defineSongname(kara, oldKara);
+		kara.data.songname = sanitizedFilename;
 		const karaJsonFileOld = resolve(resolvedPathRepos('Karaokes', oldKara.repository)[0], oldKara.karafile);
 		const karaJsonFileDest = resolve(
 			resolvedPathRepos('Karaokes', kara.data.repository)[0],
@@ -119,16 +120,16 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 						default: true,
 						version: 'Default',
 					};
-					filenames.lyricsfile = sanitizedFilename + extname(kara.medias[0].lyrics[0].filename);
-					editedKara.modifiedLyrics = true;
+					filenames.lyricsfiles[0] = sanitizedFilename + extname(kara.medias[0].lyrics[0].filename);
+					editedKara.modifiedLyrics[0] = true;
 				}
 			} catch (err) {
 				// Not lethal
 			}
 			if (oldMediaPath) await fs.unlink(oldMediaPath);
 		}
-		const subDest = filenames.lyricsfile
-			? resolve(resolvedPathRepos('Lyrics', kara.data.repository)[0], filenames.lyricsfile)
+		const subDest = filenames.lyricsfiles[0]
+			? resolve(resolvedPathRepos('Lyrics', kara.data.repository)[0], filenames.lyricsfiles[0])
 			: undefined;
 		// Retesting modified media because we needed original media in place for toyunda stuff. Now that toyunda is gone...
 		// Maybe we could actually refactor this somehow.
@@ -147,16 +148,19 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 		}
 		kara.medias[0].filename = filenames.mediafile;
 		if (editedKara.modifiedLyrics) {
-			if (kara.medias[0].lyrics?.[0]) {
-				const subPath = resolve(resolvedPath('Temp'), kara.medias[0].lyrics?.[0].filename);
+			if (kara.medias[0].lyrics[0]) {
+				const subPath = resolve(resolvedPath('Temp'), kara.medias[0].lyrics[0]?.filename);
 				const ext = await processSubfile(subPath);
-				if (oldKara.subfile) {
+				if (oldKara.lyrics_infos) {
 					const oldSubPath = (
-						await resolveFileInDirs(oldKara.subfile, resolvedPathRepos('Lyrics', oldKara.repository))
+						await resolveFileInDirs(
+							oldKara.lyrics_infos[0].filename,
+							resolvedPathRepos('Lyrics', oldKara.repository)
+						)
 					)[0];
 					await fs.unlink(oldSubPath);
 				}
-				kara.medias[0].lyrics[0].filename = replaceExt(filenames.lyricsfile, ext);
+				kara.medias[0].lyrics[0].filename = replaceExt(filenames.lyricsfiles[0], ext);
 				try {
 					await smartMove(subPath, subDest, { overwrite: true });
 				} catch (err) {
@@ -164,14 +168,22 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 					throw new ErrorKM('KARA_EDIT_ERROR_UNMOVABLE_LYRICS', 409, false);
 				}
 			}
-		} else if (kara.medias[0].lyrics?.[0]?.filename && oldKara.subfile !== filenames.lyricsfile) {
+		} else if (
+			kara.medias[0].lyrics[0]?.filename &&
+			oldKara.lyrics_infos[0].filename !== filenames.lyricsfiles[0]
+		) {
 			// Check if lyric name has changed BECAUSE WE'RE NOT USING UUIDS AS FILENAMES GRRRR.
-			kara.medias[0].lyrics[0].filename = filenames.lyricsfile;
+			kara.medias[0].lyrics[0].filename = filenames.lyricsfiles[0];
 			const oldSubPath =
-				filenames.lyricsfile && oldKara.subfile
-					? (await resolveFileInDirs(oldKara.subfile, resolvedPathRepos('Lyrics', oldKara.repository)))[0]
+				filenames.lyricsfiles[0] && oldKara.lyrics_infos[0].filename
+					? (
+							await resolveFileInDirs(
+								oldKara.lyrics_infos[0].filename,
+								resolvedPathRepos('Lyrics', oldKara.repository)
+							)
+						)[0]
 					: undefined;
-			if (filenames.lyricsfile) {
+			if (filenames.lyricsfiles) {
 				try {
 					await smartMove(oldSubPath, subDest, { overwrite: true });
 				} catch (err) {
@@ -181,6 +193,13 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 			}
 		}
 		await fs.unlink(karaJsonFileOld);
+
+		// Sort stuff inside kara JSON.
+
+		kara.data = sortJSON(kara.data);
+		kara.medias[0] = sortJSON(kara.medias[0]);
+		if (kara.medias[0].lyrics[0]) kara.medias[0].lyrics[0] = sortJSON(kara.medias[0].lyrics[0]);
+
 		await writeKara(karaJsonFileDest, kara);
 		await integrateKaraFile(karaJsonFileDest, kara, false, refresh);
 		checkDownloadStatus([kara.data.kid]);
@@ -190,7 +209,7 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 		const newKara = await getKara(kara.data.kid, adminToken);
 
 		// ASS file post processing
-		if (kara.medias[0].lyrics?.[0]?.filename) await ASSFileCleanup(subDest, newKara);
+		if (kara.medias[0].lyrics[0]?.filename) await ASSFileCleanup(subDest, newKara);
 	} catch (err) {
 		logger.error('Error while editing kara', { service, obj: err });
 		sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
@@ -231,8 +250,8 @@ export async function createKara(editedKara: EditedKara) {
 			}
 		}
 		if (!kara.data.ignoreHooks) await applyKaraHooks(kara);
-		const { sanitizedFilename, songname } = await defineSongname(kara);
-		kara.data.songname = songname;
+		const { sanitizedFilename } = await defineSongname(kara);
+		kara.data.songname = sanitizedFilename;
 		const karaJsonFileDest = resolve(
 			resolvedPathRepos('Karaokes', kara.data.repository)[0],
 			`${sanitizedFilename}.kara.json`
@@ -258,16 +277,22 @@ export async function createKara(editedKara: EditedKara) {
 		const filenames = determineMediaAndLyricsFilenames(kara, sanitizedFilename);
 		const mediaDest = resolve(resolvedPathRepos('Medias', kara.data.repository)[0], filenames.mediafile);
 		let subDest: string;
-		if (kara.medias[0].lyrics?.[0]?.filename) {
-			const subPath = resolve(resolvedPath('Temp'), kara.medias[0].lyrics?.[0].filename);
+		if (kara.medias[0].lyrics[0]?.filename) {
+			const subPath = resolve(resolvedPath('Temp'), kara.medias[0].lyrics[0].filename);
 			const ext = await processSubfile(subPath);
-			filenames.lyricsfile = replaceExt(filenames.lyricsfile, ext);
-			kara.medias[0].lyrics[0].filename = filenames.lyricsfile;
-			subDest = resolve(resolvedPathRepos('Lyrics', kara.data.repository)[0], filenames.lyricsfile);
+			filenames.lyricsfiles[0] = replaceExt(filenames.lyricsfiles[0], ext);
+			kara.medias[0].lyrics[0].filename = filenames.lyricsfiles[0];
+			subDest = resolve(resolvedPathRepos('Lyrics', kara.data.repository)[0], filenames.lyricsfiles[0]);
 			await smartMove(subPath, subDest, { overwrite: true });
 		}
 		await smartMove(mediaPath, mediaDest, { overwrite: true });
 		kara.medias[0].filename = filenames.mediafile;
+
+		// Sort stuff inside kara JSON.
+
+		kara.data = sortJSON(kara.data);
+		kara.medias[0] = sortJSON(kara.medias[0]);
+		if (kara.medias[0].lyrics[0]) kara.medias[0].lyrics[0] = sortJSON(kara.medias[0].lyrics[0]);
 		await writeKara(karaJsonFileDest, kara);
 		await integrateKaraFile(karaJsonFileDest, kara, false, true);
 		checkDownloadStatus([kara.data.kid]);
@@ -277,7 +302,7 @@ export async function createKara(editedKara: EditedKara) {
 		const newKara = await getKara(kara.data.kid, adminToken);
 
 		// ASS file post processing
-		if (kara.medias[0].lyrics?.[0]?.filename) await ASSFileCleanup(subDest, newKara);
+		if (kara.medias[0].lyrics[0]?.filename) await ASSFileCleanup(subDest, newKara);
 	} catch (err) {
 		logger.error('Error while creating kara', { service, obj: err });
 		sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));

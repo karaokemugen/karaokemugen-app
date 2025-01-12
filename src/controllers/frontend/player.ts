@@ -42,7 +42,7 @@ export default function playerController(router: SocketIOApp) {
 		await runChecklist(socket, req, getConfig().Frontend.PublicPlayerControls ? 'guest' : 'admin');
 		try {
 			const msg = await sendCommand(req.body.command, req.body.options);
-			return { code: 200, message: msg };
+			return { code: 200, message: APIMessage(msg) };
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}

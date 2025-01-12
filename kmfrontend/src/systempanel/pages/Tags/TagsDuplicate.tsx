@@ -1,5 +1,5 @@
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { Button, Layout, Modal, Table, Tag, Tooltip } from 'antd';
+import { Button, Layout, Modal, Select, Table, Tag, Tooltip } from 'antd';
 import i18next from 'i18next';
 import { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import { DBTag } from '../../../../../src/lib/types/database/tag';
 import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
-import { getTagTypeName } from '../../../utils/tagTypes';
+import { getTagTypeName, tagTypes } from '../../../utils/tagTypes';
 import { isModifiable } from '../../../utils/tools';
 import Title from '../../components/Title';
 
@@ -17,10 +17,23 @@ function TagsDuplicate() {
 	const [tags, setTags] = useState<DBTag[]>([]);
 	const [tag, setTag] = useState<DBTag>();
 	const [deleteModal, setDeleteModal] = useState(false);
+	const [typesTag, setTypeTag] = useState(
+		localStorage.getItem('typeTagDuplicate')
+			? localStorage
+					.getItem('typeTagDuplicate')
+					.split(',')
+					.map(value => parseInt(value))
+			: []
+	);
 
 	const refresh = async () => {
 		try {
-			const res = await commandBackend('getTags', { duplicates: true }, false, 300000);
+			const res = await commandBackend(
+				'getTags',
+				{ duplicates: true, type: typesTag?.length > 0 ? typesTag : undefined },
+				false,
+				300000
+			);
 			setTags(res.content);
 		} catch (error) {
 			// already display
@@ -41,6 +54,13 @@ function TagsDuplicate() {
 			resetDelete();
 		}
 	};
+
+	const changeType = value => setTypeTag(value);
+
+	useEffect(() => {
+		localStorage.setItem('typeTagDuplicate', typesTag ? typesTag.toString() : '');
+		refresh();
+	}, [typesTag]);
 
 	useEffect(() => {
 		refresh();
@@ -118,6 +138,24 @@ function TagsDuplicate() {
 				description={i18next.t('HEADERS.TAG_DUPLICATES.DESCRIPTION')}
 			/>
 			<Layout.Content>
+				<div style={{ display: 'flex', marginBottom: '1em' }}>
+					<label style={{ marginLeft: '2em', paddingRight: '1em' }}>{i18next.t('TAGS.TYPES')} :</label>
+					<Select
+						mode="multiple"
+						allowClear={true}
+						style={{ width: 300 }}
+						onChange={changeType}
+						defaultValue={typesTag}
+					>
+						{Object.entries(tagTypes).map(([key, value]) => {
+							return (
+								<Select.Option key={value.type} value={value.type}>
+									{i18next.t(`TAG_TYPES.${key}_other`)}
+								</Select.Option>
+							);
+						})}
+					</Select>
+				</div>
 				<Table
 					dataSource={tags}
 					columns={columns}

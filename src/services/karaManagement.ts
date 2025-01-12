@@ -95,13 +95,21 @@ export async function removeKara(
 				} catch (err) {
 					logger.warn(`Non fatal: Removing karafile ${kara.karafile} failed`, { service, obj: err });
 				}
-				if (kara.subfile) {
+				if (kara.lyrics_infos[0].filename) {
 					try {
 						await fs.unlink(
-							(await resolveFileInDirs(kara.subfile, resolvedPathRepos('Lyrics', kara.repository)))[0]
+							(
+								await resolveFileInDirs(
+									kara.lyrics_infos[0].filename,
+									resolvedPathRepos('Lyrics', kara.repository)
+								)
+							)[0]
 						);
 					} catch (err) {
-						logger.warn(`Non fatal: Removing subfile ${kara.subfile} failed`, { service, obj: err });
+						logger.warn(`Non fatal: Removing subfile ${kara.lyrics_infos[0].filename} failed`, {
+							service,
+							obj: err,
+						});
 					}
 				}
 			}
@@ -166,10 +174,13 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 		tasks.push(
 			copy(mediaFiles[0], resolve(resolvedPathRepos('Medias', repoName)[0], kara.mediafile), { overwrite: true })
 		);
-		if (kara.subfile) {
-			const lyricsFiles = await resolveFileInDirs(kara.subfile, resolvedPathRepos('Lyrics', oldRepoName));
+		if (kara.lyrics_infos[0].filename) {
+			const lyricsFiles = await resolveFileInDirs(
+				kara.lyrics_infos[0].filename,
+				resolvedPathRepos('Lyrics', oldRepoName)
+			);
 			tasks.push(
-				copy(lyricsFiles[0], resolve(resolvedPathRepos('Lyrics', repoName)[0], kara.subfile), {
+				copy(lyricsFiles[0], resolve(resolvedPathRepos('Lyrics', repoName)[0], kara.lyrics_infos[0].filename), {
 					overwrite: true,
 				})
 			);
@@ -317,18 +328,23 @@ export async function integrateKaraFile(
 				logger.warn(`Failed to remove ${oldKara.old_mediafile}, does it still exist?`, { service });
 			}
 		}
-		if (oldKara.old_subfile && oldKara.old_subfile !== karaData.medias[0].lyrics?.[0]?.filename) {
+		if (
+			oldKara.old_lyrics_infos[0] &&
+			oldKara.old_lyrics_infos[0]?.filename !== karaData.medias[0].lyrics?.[0]?.filename
+		) {
 			try {
 				await fs.unlink(
 					(
 						await resolveFileInDirs(
-							oldKara.old_subfile,
+							oldKara.old_lyrics_infos[0].filename,
 							resolvedPathRepos('Lyrics', oldKara.old_repository)
 						)
 					)[0]
 				);
 			} catch (err) {
-				logger.warn(`Failed to remove ${oldKara.old_subfile}, does it still exist?`, { service });
+				logger.warn(`Failed to remove ${oldKara.old_lyrics_infos[0]?.filename}, does it still exist?`, {
+					service,
+				});
 			}
 		}
 	}
@@ -429,8 +445,8 @@ export async function encodeMediaFileToRepoDefaults(
 
 export async function openLyricsFile(kid: string) {
 	try {
-		const { subfile, repository, mediafile } = await getKara(kid, adminToken);
-		const lyricsPath = resolve(resolvedPathRepos('Lyrics', repository)[0], subfile);
+		const { lyrics_infos, repository, mediafile } = await getKara(kid, adminToken);
+		const lyricsPath = resolve(resolvedPathRepos('Lyrics', repository)[0], lyrics_infos[0]?.filename);
 		if (extname(lyricsPath) === '.ass' && mediafile) {
 			for (const repo of resolvedPathRepos('Medias', repository)) {
 				const mediaPath = resolve(repo, mediafile);
@@ -450,8 +466,8 @@ export async function openLyricsFile(kid: string) {
 
 export async function showLyricsInFolder(kid: string) {
 	try {
-		const { subfile, repository } = await getKara(kid, adminToken);
-		const lyricsPath = resolve(resolvedPathRepos('Lyrics', repository)[0], subfile);
+		const { lyrics_infos, repository } = await getKara(kid, adminToken);
+		const lyricsPath = resolve(resolvedPathRepos('Lyrics', repository)[0], lyrics_infos[0]?.filename);
 		shell.showItemInFolder(lyricsPath);
 	} catch (err) {
 		logger.error('Failed to open lyrics folder', { service });

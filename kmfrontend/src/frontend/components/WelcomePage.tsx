@@ -25,6 +25,7 @@ import OnlineStatsModal from './modals/OnlineStatsModal';
 import ProfilModal from './modals/ProfilModal';
 import RestartDownloadsModal from './modals/RestartDownloadsModal';
 import WelcomePageArticle from './WelcomePageArticle';
+import dayjs from 'dayjs';
 
 function WelcomePage() {
 	const context = useContext(GlobalContext);
@@ -125,7 +126,7 @@ function WelcomePage() {
 					news.push({
 						html: base.body.feed.entry[0].summary._text,
 						date,
-						dateStr: realDate.toLocaleDateString(),
+						dateStr: dayjs(realDate).format('L LTS'),
 						title:
 							i18next.t('WELCOME_PAGE.BASE_UPDATE') +
 							' : ' +
@@ -146,12 +147,8 @@ function WelcomePage() {
 				news.push({
 					html: appli.body.feed.entry[0].content._text,
 					date: appli.body.feed.entry[0].updated._text,
-					dateStr: new Date(appli.body.feed.entry[0].updated._text).toLocaleDateString(),
-					title:
-						i18next.t('WELCOME_PAGE.APP_UPDATE') +
-						' : ' +
-						appli.body.feed.entry[0].title._text +
-						(appli.body.feed.entry[0].summary._text ? ' - ' + appli.body.feed.entry[0].summary._text : ''),
+					dateStr: dayjs(appli.body.feed.entry[0].updated._text).format('L LTS'),
+					title: i18next.t('WELCOME_PAGE.APP_UPDATE') + ' : ' + appli.body.feed.entry[0].title._text,
 					link: appli.body.feed.entry[0].link._attributes.href,
 					type: 'app',
 				});
@@ -164,7 +161,7 @@ function WelcomePage() {
 					news.push({
 						html: mast.body.rss.channel.item[i].description._text,
 						date: mast.body.rss.channel.item[i].pubDate._text,
-						dateStr: new Date(mast.body.rss.channel.item[i].pubDate._text).toLocaleDateString(),
+						dateStr: dayjs(mast.body.rss.channel.item[i].pubDate._text).format('L LTS'),
 						title: i18next.t('WELCOME_PAGE.MASTODON_UPDATE'),
 						link: mast.body.rss.channel.item[i].link._text,
 						type: 'mast',
@@ -393,10 +390,6 @@ function WelcomePage() {
 									<li onClick={() => navigate('/system/karas')}>
 										<strong>{i18next.t('WELCOME_PAGE.STATS_KARAS')}</strong>
 										<span>{stats?.karas}</span>
-									</li>
-									<li onClick={() => navigate('/system/tags?type=1')}>
-										<strong>{i18next.t('WELCOME_PAGE.STATS_SERIES')}</strong>
-										<span>{stats?.series}</span>
 									</li>
 									<li onClick={() => navigate('/system/tags')}>
 										<strong>{i18next.t('WELCOME_PAGE.STATS_TAGS')}</strong>

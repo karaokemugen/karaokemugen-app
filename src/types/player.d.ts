@@ -43,6 +43,8 @@ export interface PlayerState {
 	pitch?: number;
 	speed?: number;
 	blurVideo?: boolean;
+	modifiers?: SongModifiers;
+	currentVideoTrack?: number;
 }
 
 export interface mpvStatus {
@@ -64,6 +66,7 @@ export type PlayerCommand =
 	| 'toggleFullscreen'
 	| 'toggleAlwaysOnTop'
 	| 'toggleBorders'
+	| 'toggleAudioOnlyExperience'
 	| 'setHwDec'
 	| 'mute'
 	| 'unmute'

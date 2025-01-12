@@ -1,5 +1,5 @@
 @use 'sass:color';
-@import '../../styles/variables';
+@use '../../styles/variables';
 
 .tags-list {
 	display: inline-flex;
@@ -8,18 +8,18 @@
 	flex-direction: column;
 	div.tags-item {
 		padding: 1em;
-		background-color: $mugen-playlist-odd;
+		background-color: variables.$mugen-playlist-odd;
 		transition: background-color 250ms ease;
 		cursor: pointer;
 		&:hover,
 		&:focus {
-			background-color: color.adjust($mugen-playlist-odd, $lightness: 5%, $space: hsl);
+			background-color: color.adjust(variables.$mugen-playlist-odd, $lightness: 5%, $space: hsl);
 		}
 		&.even {
-			background-color: $mugen-playlist-even;
+			background-color: variables.$mugen-playlist-even;
 			&:hover,
 			&:focus {
-				background-color: color.adjust($mugen-playlist-even, $lightness: 5%, $space: hsl);
+				background-color: color.adjust(variables.$mugen-playlist-even, $lightness: 5%, $space: hsl);
 			}
 		}
 		> .title {
