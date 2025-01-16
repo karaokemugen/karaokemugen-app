@@ -1,6 +1,6 @@
 {
   "name": "karaokemugen-app",
-  "version": "8.0.48",
+  "version": "8.0.48-next",
   "versionName": "Sakuya Splendide",
   "description": "Karaoke playlist manager / player",
   "bin": {
@@ -282,7 +282,7 @@
       "artifactName": "${productName}-${version}-mac-${arch}.${ext}",
       "target": [
         {
-          "target": "dmg",
+          "target": ["dmg", "zip"],
           "arch": [
             "x64",
             "arm64"
