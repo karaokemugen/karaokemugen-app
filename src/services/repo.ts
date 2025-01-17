@@ -656,9 +656,14 @@ export async function updateGitRepo(name: string) {
 		const newCommit = await git.getCurrentCommit();
 		logger.debug(`Original commit : ${originalCommit} and new commit : ${newCommit}`, { service });
 		await oldFilenameFormatKillSwitch(repo.Name);
-		const diff = await git.diff(originalCommit, newCommit);
-		const changes = computeFileChanges(diff);
-		await applyChanges(changes, repo);
+		try {
+			const diff = await git.diff(originalCommit, newCommit);
+			const changes = computeFileChanges(diff);
+			await applyChanges(changes, repo);
+		} catch (err) {
+			// Diff or applying changes failed, but files are there. So we'll trigger a regen.
+			await generateDB();
+		}
 		return false;
 	} catch (err) {
 		logger.error(`Failed to update repo ${name}: ${err}`, { service, obj: err });
