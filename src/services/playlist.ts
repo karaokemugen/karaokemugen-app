@@ -1,8 +1,9 @@
 // Utils
+import { extname, resolve } from 'node:path';
+
 import { promises as fs } from 'fs';
 import i18n from 'i18next';
 import { shuffle } from 'lodash';
-import { extname, resolve } from 'node:path';
 
 import { insertKaraToRequests } from '../dao/kara.js';
 // DAO
@@ -23,10 +24,10 @@ import {
 	selectPLCInfoMini,
 	selectSongCountForUser,
 	selectSongTimeSpentForUser,
-	updatePlaying as setPlayingFlag,
 	shiftPosInPlaylist,
 	truncatePlaylist,
 	updateFreeOrphanedSongs,
+	updatePlaying as setPlayingFlag,
 	updatePlaylist,
 	updatePlaylistDuration,
 	updatePlaylistKaraCount,
@@ -369,9 +370,7 @@ export async function exportPlaylistMedia(
 					kara.lyrics_infos[0]?.filename,
 					resolvedPathRepos('Lyrics', kara.repository)
 				);
-				const destBaseFile = sanitizeFile(
-					`${kara.titles[kara.titles_default_language]}.${kara.kid.substring(0, 8)}`
-				);
+				const destBaseFile = sanitizeFile(kara.songname);
 				logger.debug(`Copying ${karaMediaPath[0]} to ${exportDir}`, { service });
 				task.update({
 					subtext: destBaseFile,
