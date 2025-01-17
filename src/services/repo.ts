@@ -1163,7 +1163,7 @@ export async function generateCommits(repoName: string) {
 		let modifiedLyrics = status.modified.filter(f => f.includes('lyrics/'));
 		let deletedLyrics = status.deleted.filter(f => f.includes('lyrics/'));
 		let addedLyrics = status.not_added.filter(f => f.includes('lyrics/'));
-		let commits: Commit[] = [];
+		const commits: Commit[] = [];
 		// These are to keep track of if files have been renamed or not
 		const deletedTIDFiles = new Map<string, string>();
 		const deletedKIDFiles = new Map<string, string>();
@@ -1182,7 +1182,7 @@ export async function generateCommits(repoName: string) {
 				deletedLyrics.length +
 				addedLyrics.length,
 		});
-		let modifiedMedias: ModifiedMedia[] = [];
+		const modifiedMedias: ModifiedMedia[] = [];
 
 		// Deleted songs
 		// For deleted songs, not much we can do other than delete them from the index and search for associated deleted lyrics.
