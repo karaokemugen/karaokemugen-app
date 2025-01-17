@@ -213,7 +213,7 @@ export async function checkMediaAndDownloadSingleKara(kara: MediaDownloadCheck, 
 			await addDownloads([
 				{
 					mediafile: kara.mediafile,
-					name: kara.mediafile,
+					name: kara.songname,
 					size: kara.mediasize,
 					repository: kara.repository,
 					kid: kara.kid,

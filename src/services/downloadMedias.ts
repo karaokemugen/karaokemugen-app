@@ -39,12 +39,7 @@ async function listRemoteMedias(repo: string) {
 	profile('listRemoteMedias');
 	const remote = await getRemoteMedias(repo);
 	profile('listRemoteMedias');
-	return remote.map(m => {
-		return {
-			...m,
-			repository: repo,
-		};
-	});
+	return remote;
 }
 
 async function compareMedias(
@@ -106,7 +101,7 @@ async function downloadMedias(karas: DBMedia[]): Promise<void> {
 			karas.map(k => {
 				return {
 					mediafile: k.mediafile,
-					name: k.mediafile,
+					name: `${k.titles[k.titles_default_language]} (${k.mediafile})`,
 					size: k.mediasize,
 					repository: k.repository,
 					kid: k.kid,
