@@ -77,8 +77,8 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 			throw new ErrorKM('UNKNOWN_SONG', 404, false);
 		}
 		if (!kara.data.ignoreHooks) await applyKaraHooks(kara);
-		const { sanitizedFilename } = await defineSongname(kara, oldKara);
-		kara.data.songname = sanitizedFilename;
+		const { sanitizedFilename, songname } = await defineSongname(kara, oldKara);
+		kara.data.songname = songname;
 		const karaJsonFileOld = resolve(resolvedPathRepos('Karaokes', oldKara.repository)[0], oldKara.karafile);
 		const karaJsonFileDest = resolve(
 			resolvedPathRepos('Karaokes', kara.data.repository)[0],
@@ -250,8 +250,8 @@ export async function createKara(editedKara: EditedKara) {
 			}
 		}
 		if (!kara.data.ignoreHooks) await applyKaraHooks(kara);
-		const { sanitizedFilename } = await defineSongname(kara);
-		kara.data.songname = sanitizedFilename;
+		const { sanitizedFilename, songname } = await defineSongname(kara);
+		kara.data.songname = songname;
 		const karaJsonFileDest = resolve(
 			resolvedPathRepos('Karaokes', kara.data.repository)[0],
 			`${sanitizedFilename}.kara.json`

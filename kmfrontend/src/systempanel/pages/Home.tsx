@@ -17,31 +17,10 @@ import { useContext } from 'react';
 import { Link } from 'react-router-dom';
 
 import GlobalContext from '../../store/context';
-import { displayMessage } from '../../utils/tools';
 import Title from '../components/Title';
 
 function Home() {
 	const context = useContext(GlobalContext);
-
-	let clickCount = 0;
-
-	const incrClick = () => {
-		clickCount++;
-		if (clickCount === 5) {
-			displayMessage('info', i18next.t('HOME.EGG_1'));
-		}
-		if (clickCount === 20) {
-			displayMessage('warning', i18next.t('HOME.EGG_2'));
-		}
-		if (clickCount === 40) {
-			displayMessage('error', i18next.t('HOME.EGG_3'));
-		}
-		if (clickCount === 60) {
-			window.location.assign(
-				'https://kara.moe/kara/zankoku-na-tenshi-no-these/5a8f26ed-e387-4169-ad8a-4ce8c31b65d9/theater'
-			);
-		}
-	};
 
 	return (
 		<>
@@ -152,7 +131,7 @@ function Home() {
 						</Card>
 					</Col>
 				</Row>
-				<p style={{ marginTop: '1em' }} onClick={incrClick}>
+				<p style={{ marginTop: '1em' }}>
 					v{context?.globalState.settings?.data.version.number} -{' '}
 					{context?.globalState.settings?.data.version.name} (
 					{context?.globalState.settings?.data.version.sha})

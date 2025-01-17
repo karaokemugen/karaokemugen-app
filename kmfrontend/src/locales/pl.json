@@ -177,7 +177,7 @@
 		"EXPL_OPEN": "To jest kryterium używane do generowania <1>playlisty</1>. Będzie ona automatycznie odświeżana za każdym razem, gdy do bazy danych dodawane będą nowe utwory.",
 		"PLAYLIST_DURATION_ORDER_LESS_RECENT": "najstarsze",
 		"CRITERIA_TYPE_1003": "Krótszy niż (mm:ss)",
-		"TYPE_SMART_DESC": "Typ „OR” lepiej nadaje się do czarnej listy. „AND” w przypadku klasycznych list odtwarzania",
+		"TYPE_SMART_DESC": "Typ „ALBO” lepiej nadaje się do czarnej listy. „I” w przypadku klasycznych list odtwarzania",
 		"PLAYLIST_DURATION": "<1/>Ogranicz do <2/> <3/> (<4/>zamówień )",
 		"PLAYLIST_DURATION_ORDER_MORE_RECENT": "najnowsze",
 		"CRITERIA_DESC": "Wybierz i dodaj kryteria, aby automatycznie uwzględniać określone utwory.",
@@ -373,10 +373,7 @@
 		"USERS": {
 			"CREATE": "Tworzenie użytkownika",
 			"BROWSE": "Przeglądanie użytkowników"
-		},
-		"EGG_3": "Przestań to, to bezużyteczne.",
-		"EGG_1": "Przestań klikać wersję.",
-		"EGG_2": "Dobrze."
+		}
 	},
 	"TASKS": {
 		"FINDING_UNUSED_MEDIAS": "Wyszukiwanie nieużywanych nośników…",
@@ -558,7 +555,8 @@
 			"DISPLAY_AVATAR_TOOLTIP": "Awatar osoby proszącej o piosenkę zostanie wyświetlony na początku i na końcu piosenki w prawym dolnym rogu ekranu odtwarzacza.",
 			"LIVE_COMMENTS_TOOLTIP": "Wiadomości z czatu na Twitchu zostaną wyświetlone w odtwarzaczu (Skonfiguruj poprawnie swojego AutoModa).",
 			"LIVE_COMMENTS": "Komentarze na żywo",
-			"AUDIO_ONLY_EXPERIENCE": "Tylko dźwięk"
+			"AUDIO_ONLY_EXPERIENCE": "Tylko dźwięk",
+			"AUDIO_ONLY_EXPERIENCE_TOOLTIP": "Jeśli włączone, pokaże nieruchomy obraz zamiast wideo. Zmiana zostanie wprowadzona w następnym utworze."
 		},
 		"KARAOKE": {
 			"QUOTA_SETTINGS": "Ograniczenia",
@@ -637,7 +635,7 @@
 			"HIDE_INVISIBLE_SONGS_VISIBLE_OPTION": "Tajemnicze etykiety",
 			"SONGPOLL": "Ankieta publiczna",
 			"SONGPOLLTIMEOUT": "Czas trwania ankiety publicznej",
-			"REMOTE": "Zezwól na dostęp zdalny (<code>.kara.moe)",
+			"REMOTE": "Zezwól na dostęp zdalny (<code>.{{instance}})",
 			"REMOTE_TOOLTIP": "Włącz tę opcję, aby Twoi znajomi mogli sugerować utwory podczas Twojej sesji karaoke!",
 			"ADDED_SONG_VISIBILITY_PUBLIC_TOOLTIP": "Czy utwory dodane przez publiczność powinny być widoczne publicznie, czy należy je uważać za utwory tajemnicze?",
 			"STREAM_SETTINGS_TOOLTIP": "Pauza pomiędzy utworami, czat na Twitchu",
@@ -986,7 +984,7 @@
 			},
 			"PLAYER_MESSAGE_PLACEHOLDER": "Przejdź do $url, aby zagrać!",
 			"EMPTY_NAME": "Wprowadź nazwę gry",
-			"EMPTY_PLAYLIST": "Wybierz listę odtwarzania",
+			"EMPTY_PLAYLIST": "Wybierz listę piosenek",
 			"END_GAME": {
 				"DESCRIPTION": "Gra się kończy…",
 				"MAX_SCORE": "Gdy gracz dotrze do",
@@ -1323,7 +1321,7 @@
 		},
 		"REPOSITORY_DOCUMENTATION": "Zobacz zasady {{instance}} tutaj",
 		"PARENTS_TOOLTIP": "Jeśli zdefiniowano rodzica, ta piosenka będzie wyświetlana jako piosenka alternatywna do niej. Wybierz odpowiednie repozytorium przed wypełnieniem go, aby uniknąć dodawania utworów z innych repozytoriów.",
-		"ONLINE_REPOSITORIES": "Niektóre z twoich utworów pochodzą ze zdalnych repozytoriów (na przykład serwera kara.moe), tych utworów nie można edytować za pomocą tego interfejsu, aby upewnić się, że repozytoria pozostają zsynchronizowane. Możesz zaznaczyć pole wyboru \"Tryb opiekuna\" w ustawieniach repozytorium, nie będziesz już otrzymywać żadnych aktualizacji, ale będziesz mógł edytować lub usuwać utwory.",
+		"ONLINE_REPOSITORIES": "Niektóre z twoich utworów pochodzą ze zdalnych repozytoriów, tych utworów nie można edytować za pomocą tego interfejsu, aby upewnić się, że repozytoria pozostają zsynchronizowane. Możesz zaznaczyć pole wyboru \"Tryb opiekuna\" w ustawieniach repozytorium, nie będziesz już otrzymywać żadnych aktualizacji, ale będziesz mógł edytować lub usuwać utwory.",
 		"DELETE_MEDIA_TOOLTIP": "Usuń multimedia karaoke",
 		"DELETE_ALL_TOOLTIP": "Usuń wszystkie wyświetlane utwory jednocześnie",
 		"SHOW_LYRICS_IN_FOLDER": "Pokaż tekst w folderze",
@@ -1331,7 +1329,10 @@
 		"FROM_DISPLAY_TYPE": "Wyświetlanie typu tagu",
 		"ORDER_MEDIA_STANDARD": "Standard",
 		"ORDER_MEDIA_POPULAR": "Popularny",
-		"ORDER_MEDIA_NEW": "Nowy"
+		"ORDER_MEDIA_NEW": "Nowy",
+		"ORDER_MEDIA": "Zamów media według: ",
+		"ORDER_MEDIA_MEDIASIZE": "Rozmiar nośnika",
+		"CHANGE_ORDER_DIRECTION": "Zmień kierunek zamówienia"
 	},
 	"HEADERS": {
 		"SESSIONS": {
@@ -2122,7 +2123,8 @@
 		"REPO_DELETED": "Repozytorium zostało pomyślnie usunięte",
 		"DATABASE_RESTORED": "Baza danych przywrócona z karaokemugen.sql",
 		"PL_SONG_ADDED": "Pomyślnie dodano piosenkę \"{{song}}\"!",
-		"SESSION_ACTIVATED": "Sesja została pomyślnie aktywowana"
+		"SESSION_ACTIVATED": "Sesja została pomyślnie aktywowana",
+		"CHANGES_OCCUR_ON_NEXT_SONG": "To ustawienie zostanie aktywowane od następnego utworu."
 	},
 	"LANGUAGES": {
 		"QRO": "Alfabet łaciński (Romanizacja)"
