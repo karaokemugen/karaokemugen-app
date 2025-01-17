@@ -101,7 +101,7 @@ async function downloadMedias(karas: DBMedia[]): Promise<void> {
 			karas.map(k => {
 				return {
 					mediafile: k.mediafile,
-					name: `${k.titles[k.titles_default_language]} (${k.mediafile})`,
+					name: k.songname,
 					size: k.mediasize,
 					repository: k.repository,
 					kid: k.kid,

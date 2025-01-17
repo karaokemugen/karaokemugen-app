@@ -66,6 +66,7 @@ SELECT
   ak.comment AS comment,
   ak.ignore_hooks AS ignore_hooks,
   ak.from_display_type AS from_display_type,
+  ak.songname,
   COUNT(p.*)::integer AS played,
   ${selectRequested}
   (CASE WHEN :dejavu_time < MAX(p.played_at)
@@ -142,6 +143,7 @@ GROUP BY ${groupClauses}
 	ak.mediasize,
 	ak.repository,
 	ak.songtypes_sortable,
+	ak.songname,
 	f.fk_kid,
 	ak.tid,
 	ak.languages_sortable,
@@ -155,7 +157,7 @@ ORDER BY ${orderClauses}
 	ak.songtypes_sortable DESC,
 	ak.songorder,
 	ak.languages_sortable,
-	parents, 
+	parents,
 	ak.titles_sortable
 ${limitClause}
 ${offsetClause}
