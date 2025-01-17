@@ -114,7 +114,7 @@ export async function startDownloads() {
 async function processDownload(download: KaraDownload) {
 	const downloadTask = new Task({
 		text: 'DOWNLOADING',
-		subtext: download.mediafile,
+		subtext: download.name,
 		value: 0,
 		total: download.size,
 	});
@@ -135,6 +135,7 @@ async function processDownload(download: KaraDownload) {
 		const repo = getRepo(download.repository);
 		const downloadItem = {
 			filename: tempMedia,
+			name: download.name,
 			url: `${repo.Secure ? 'https' : 'http'}://${download.repository}/downloads/medias/${fixedEncodeURIComponent(download.mediafile)}`,
 			id: download.name,
 		};
