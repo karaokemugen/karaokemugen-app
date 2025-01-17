@@ -321,6 +321,7 @@ export async function updateZipRepo(name: string) {
 			await saveSetting(`commit-${name}`, LatestCommit);
 			await saveSetting('baseChecksum', await baseChecksum());
 			updateRunning = false;
+			await oldFilenameFormatKillSwitch(repo.Name);
 			return true;
 		}
 		// Check if update is necessary by fetching the remote last commit sha
@@ -328,6 +329,7 @@ export async function updateZipRepo(name: string) {
 		logger.debug(`Update ${repo.Name}: ours is ${localCommit}, theirs is ${LatestCommit}`, { service });
 		if (LatestCommit !== localCommit) {
 			try {
+				await oldFilenameFormatKillSwitch(repo.Name);
 				const patch = await HTTP.get(
 					`${repo.Secure ? 'https' : 'http'}://${repo.Name}/api/karas/repository/diff?commit=${fixedEncodeURIComponent(localCommit)}`,
 					{
@@ -653,6 +655,7 @@ export async function updateGitRepo(name: string) {
 		}
 		const newCommit = await git.getCurrentCommit();
 		logger.debug(`Original commit : ${originalCommit} and new commit : ${newCommit}`, { service });
+		await oldFilenameFormatKillSwitch(repo.Name);
 		const diff = await git.diff(originalCommit, newCommit);
 		const changes = computeFileChanges(diff);
 		await applyChanges(changes, repo);
@@ -670,7 +673,6 @@ export async function updateGitRepo(name: string) {
 async function applyChanges(changes: Change[], repo: Repository) {
 	let task: Task;
 	try {
-		await oldFilenameFormatKillSwitch(repo.Name);
 		const tagFiles = changes.filter(f => f.path.endsWith('.tag.json'));
 		const karaFiles = changes.filter(f => f.path.endsWith('.kara.json'));
 		const fontFiles = changes.filter(f => f.path.startsWith('fonts/'));
