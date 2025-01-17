@@ -2,7 +2,7 @@
 import { promises as fs } from 'fs';
 import i18n from 'i18next';
 import { shuffle } from 'lodash';
-import { join } from 'path/posix';
+import { extname, resolve } from 'node:path';
 
 import { insertKaraToRequests } from '../dao/kara.js';
 // DAO
@@ -23,10 +23,10 @@ import {
 	selectPLCInfoMini,
 	selectSongCountForUser,
 	selectSongTimeSpentForUser,
+	updatePlaying as setPlayingFlag,
 	shiftPosInPlaylist,
 	truncatePlaylist,
 	updateFreeOrphanedSongs,
-	updatePlaying as setPlayingFlag,
 	updatePlaylist,
 	updatePlaylistDuration,
 	updatePlaylistKaraCount,
@@ -50,7 +50,7 @@ import { OldJWTToken, User } from '../lib/types/user.js';
 import { getConfig, resolvedPathRepos } from '../lib/utils/config.js';
 import { date, now, time as time2 } from '../lib/utils/date.js';
 import { ErrorKM } from '../lib/utils/error.js';
-import { fileExists, resolveFileInDirs } from '../lib/utils/files.js';
+import { fileExists, resolveFileInDirs, sanitizeFile } from '../lib/utils/files.js';
 import logger, { profile } from '../lib/utils/logger.js';
 import { generateM3uFileFromPlaylist } from '../lib/utils/m3u.js';
 import Task from '../lib/utils/taskManager.js';
@@ -369,22 +369,23 @@ export async function exportPlaylistMedia(
 					kara.lyrics_infos[0]?.filename,
 					resolvedPathRepos('Lyrics', kara.repository)
 				);
-				// This works as long as filenames are not uuids. After that, the computed filename should be retrieved here
-				// with something like defineFilename() and determineMediaAndLyricsFilenames()
+				const destBaseFile = sanitizeFile(
+					`${kara.titles[kara.titles_default_language]}.${kara.kid.substring(0, 8)}`
+				);
 				logger.debug(`Copying ${karaMediaPath[0]} to ${exportDir}`, { service });
 				task.update({
-					subtext: kara.mediafile,
+					subtext: destBaseFile,
 				});
-				const exportPath = join(exportDir, kara.mediafile);
+				const exportPath = resolve(exportDir, `${destBaseFile}${extname(kara.mediafile)}`);
 				const existingFileSize = (await fileExists(exportPath)) && (await fs.stat(exportPath)).size;
 				if (!existingFileSize || existingFileSize !== kara.mediasize)
 					await fs.copyFile(karaMediaPath[0], exportPath);
 				if (karaLyricsPath[0]) {
 					// Kara can have no lyrics file
-					await fs.copyFile(karaLyricsPath[0], join(exportDir, kara.lyrics_infos[0]?.filename));
-					task.update({
-						subtext: kara.lyrics_infos[0]?.filename,
-					});
+					await fs.copyFile(
+						karaLyricsPath[0],
+						resolve(exportDir, `${destBaseFile}${extname(kara.lyrics_infos[0]?.filename)}`)
+					);
 				}
 				exportedResult.push({ ...kara, exportSuccessful: true });
 			} catch (err) {
