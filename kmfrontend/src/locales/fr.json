@@ -517,7 +517,7 @@
 			"SONGPOLLCHOICES_TOOLTIP": "Chaque choix sera selectionné depuis la liste de suggestions",
 			"SONGPOLLTIMEOUT": "Durée du sondage public",
 			"SONGPOLLTIMEOUT_TOOLTIP": "En secondes. C'est mieux s'il est inférieur au temps de pause du mode Stream !",
-			"REMOTE": "Permettre l'accès à distance (<code>.kara.moe)",
+			"REMOTE": "Permettre l'accès à distance (<code>.{{instance}})",
 			"REMOTE_TOOLTIP": "Activez ceci pour permettre à vos amis de proposer des chansons pour votre karaoké !"
 		},
 		"PLAYLIST": {
@@ -1128,7 +1128,7 @@
 		"PLAY_KARAOKE": "Jouer le karaoké",
 		"MISSING_DOWNLOAD_TOOLTIP": "Cette chanson n'est pas téléchargée, il vous faudra Internet pour le jouer. Vous pouvez cliquer sur Télécharger le média pour l'utiliser hors-ligne.",
 		"IN_PROGRESS_DOWNLOAD_TOOLTIP": "Téléchargement en cours",
-		"ONLINE_REPOSITORIES": "Certaines de vos chansons proviennent de dépôts distants (le serveur kara.moe par exemple), ces chansons ne sont pas modifiables via cette interface, afin d'assurer la bonne synchronisation des dépôts. Vous pouvez cocher la case \"Mode mainteneur\" dans les paramètres du dépôt, vous ne recevrez alors plus de mises à jour des chansons mais vous serez en mesure de les modifier ou les supprimer.",
+		"ONLINE_REPOSITORIES": "Certaines de vos chansons proviennent de dépôts distants, ces chansons ne sont pas modifiables via cette interface, afin d'assurer la bonne synchronisation des dépôts. Vous pouvez cocher la case \"Mode mainteneur\" dans les paramètres du dépôt, vous ne recevrez alors plus de mises à jour des chansons mais vous serez en mesure de les modifier ou les supprimer.",
 		"PARENTS": "Parents",
 		"CHILDRENS": "Enfant de {{parent}}",
 		"PARENTS_TOOLTIP": "Si un parent est défini, cette chanson apparaîtra comme une alternative au parent. Veillez à définir le dépôt avant de remplir ce tableau pour éviter d'ajouter des chansons d'autres dépôts.",
@@ -1532,10 +1532,7 @@
 		"USERS": {
 			"CREATE": "Créer un utilisateur",
 			"BROWSE": "Parcourir les utilisateurs"
-		},
-		"EGG_1": "Arrêtez de cliquer sur la version.",
-		"EGG_2": "Mais.",
-		"EGG_3": "Faut cesser par contre. Ça devient gênant."
+		}
 	},
 	"TASKS": {
 		"COPYING_LYRICS_IN_REPOS": "Mise à jour des lyrics…",

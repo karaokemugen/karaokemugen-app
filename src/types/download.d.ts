@@ -34,4 +34,5 @@ export interface MediaDownloadCheck {
 	mediafile: string;
 	repository: string;
 	mediasize: number;
+	songname: string;
 }

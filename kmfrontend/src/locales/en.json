@@ -517,7 +517,7 @@
 			"SONGPOLLCHOICES_TOOLTIP": "Each choice will be selected from the suggestion playlist",
 			"SONGPOLLTIMEOUT": "Public poll duration",
 			"SONGPOLLTIMEOUT_TOOLTIP": "In seconds. It's better if it's lower than the Stream mode's pause timer!",
-			"REMOTE": "Allow remote access (<code>.kara.moe)",
+			"REMOTE": "Allow remote access (<code>.{{instance}})",
 			"REMOTE_TOOLTIP": "Enable this to allow your friends to suggest songs on your karaoke session!"
 		},
 		"PLAYLIST": {
@@ -1154,7 +1154,7 @@
 		"PLAY_KARAOKE": "Play karaoke",
 		"MISSING_DOWNLOAD_TOOLTIP": "This song is not downloaded, you will need Internet in order to play it. You can make it work offline by downloading the media.",
 		"IN_PROGRESS_DOWNLOAD_TOOLTIP": "Download in progress",
-		"ONLINE_REPOSITORIES": "Some of your songs are from remote repositories (kara.moe server for example), these songs are not editable through this interface, to make sure that the repositories stay in sync. You can check the \"Maintainer mode\" checkbox in the repository settings, you will not receive any updates anymore but you will be able to edit or delete songs.",
+		"ONLINE_REPOSITORIES": "Some of your songs are from remote repositories, these songs are not editable through this interface, to make sure that the repositories stay in sync. You can check the \"Maintainer mode\" checkbox in the repository settings, you will not receive any updates anymore but you will be able to edit or delete songs.",
 		"PARENTS": "Parents",
 		"CHILDRENS": "Children of {{parent}}",
 		"PARENTS_TOOLTIP": "If a parent is defined, this song will be shown as an alternative song to it. Please select the right repository before filling this to avoid adding songs from other repositories.",
@@ -1532,10 +1532,7 @@
 		"USERS": {
 			"CREATE": "Create an user",
 			"BROWSE": "Browse users"
-		},
-		"EGG_1": "Stop clicking on the version.",
-		"EGG_2": "Well.",
-		"EGG_3": "Stop that, it's useless."
+		}
 	},
 	"TASKS": {
 		"COPYING_LYRICS_IN_REPOS": "Updating lyrics…",

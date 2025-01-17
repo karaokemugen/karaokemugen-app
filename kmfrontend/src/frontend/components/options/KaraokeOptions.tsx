@@ -1099,11 +1099,19 @@ function KaraokeOptions(props: IProps) {
 					</div>
 				)}
 				{filterValue === undefined ||
-					(sanitizeSettingsSearchValue(i18next.t('SETTINGS.KARAOKE.REMOTE')).includes(filterValue) && (
+					(sanitizeSettingsSearchValue(
+						i18next.t('SETTINGS.KARAOKE.REMOTE', {
+							instance: context.globalState.settings.data.config.Online.Host,
+						})
+					).includes(filterValue) && (
 						<div className="settings-group">
 							<div className="settings-line">
 								<label htmlFor="Online.Remote">
-									<span className="title">{i18next.t('SETTINGS.KARAOKE.REMOTE')}</span>
+									<span className="title">
+										{i18next.t('SETTINGS.KARAOKE.REMOTE', {
+											instance: context.globalState.settings.data.config.Online.Host,
+										})}
+									</span>
 									<br />
 									<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.REMOTE_TOOLTIP')}</span>
 								</label>

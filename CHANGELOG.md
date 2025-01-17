@@ -1,14 +1,28 @@
+# [8.0.54] - 2025-01-18
+
+This is a bugfix release to address the downloads/play issues with some songs
+
+## Changed
+
+- **[Users]** Updated translations
+- **[Maintainers]** DB generation is now triggered if the git pull/git diff fails when updating a repository
+
+## Fixed
+
+- **[Users]** Fixed several issues with the new UUID schema for filenames, involving downloads and playing the song from the library
+- **[Users]** Fixed macOS auto-updates
+
 # [8.0.48] - 2025-01-12
 
 We're releasing this new version of Karaoke Mugen with several fixes and additions to prepare further for the UUID apocalypse.
 
 ## Added
 
-- **[Users]** You can now filter and sort by year in the "My Anime" list.
 - **[Users]** Added Tamil translation
 - **[Users]** Added Polish translation
 - **[Users]** You can now filter songs by media size (and other criteria) on the downloader page
 - **[Users]** Added information for password managers to auto-fill login/password screen better
+- **[Operators]** You can now filter and sort by year in the "My Anime" list.
 - **[Operators]** Karaokes can now be added through generation even if they have missing tags. This is a repository manifest option.
 - **[Operators]** Added an Audio-Only Experience(tm) option. Switching this on in Player options will replace the video with the current background image. Audio will play and subtiltes will still display. This is for events where displaying video is not advised.
 - **[Maintainers]** Added support for .mka audio container.
@@ -19,13 +33,12 @@ We're releasing this new version of Karaoke Mugen with several fixes and additio
 
 - **[Users]** : Language is not displayed anymore on karaoke parents to indicate that there might be several languages available as versions
 - **[Users]** : Popular songs list is now limited to the most 100 popular songs to avoid strain on KM Server. This will be reverted at some point once we find out what makes it so slow.
-- **[Operators]** : Optimized application boot time.U
-- **[Maintainers]** : Removed vietnamiese from non-latin languages when selecting languages for i18n of titles/tags
+- **[Operators]** : Optimized application boot time.
+- **[Maintainers]** : Removed vietnamese from non-latin languages when selecting languages for i18n of titles/tags
 - **[Maintainers]** : The comment field on karaoke forms is now a text area
 - **[Maintainers]** : Updated ultrastar2ass to 1.1.3
 - **[Maintainers]** : When merging tags, the first tag stays and the second one is removed. Previously both tags were removed and a new, merged one was created.
-- **[Maintainers]** : Tag types are now stored in local storage when displaying the duplicate tags page
-- **[Maintianers]** : JSON data in karaoke and tag files is now properly sorted
+- **[Maintainers]** : JSON data in karaoke and tag files is now properly sorted
 - **[Maintainers]** : Preparations have been made to prepare for Multi-track drifting(tm)
 - **[Maintainers]** : Karaoke form will not update anymore when selecting a parent if the form has been modified
 - **[Developers]** : Reworked SASS variables import
@@ -40,7 +53,6 @@ We're releasing this new version of Karaoke Mugen with several fixes and additio
 
 - **[Users]** Dates should be better formatted according to locale everywhere now.
 - **[Users]** Fixed login page when logged out if not admin
-- **[Users]** Fixed current playlist display in public page
 - **[Users]** Fixed some video previews for karaokes without any subchecksums
 - **[Operators]** Fixed issue when seeking inside audio files
 - **[Operators]** Fixed news feeds on welcome screen
