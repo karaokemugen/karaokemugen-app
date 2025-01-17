@@ -1,4 +1,4 @@
-# [8.0.53] - 2025-01-18
+# [8.0.54] - 2025-01-18
 
 This is a bugfix release to address the downloads/play issues with some songs
 
