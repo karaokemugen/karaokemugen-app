@@ -282,7 +282,7 @@
       "artifactName": "${productName}-${version}-mac-${arch}.${ext}",
       "target": [
         {
-          "target": ["dmg", "zip"],
+          "target": "dmg",
           "arch": [
             "x64",
             "arm64"
