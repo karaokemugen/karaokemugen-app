@@ -1,3 +1,17 @@
+# [8.0.53] - 2025-01-18
+
+This is a bugfix release to address the downloads/play issues with some songs
+
+## Changed
+
+- **[Users]** Updated translations
+- **[Maintainers]** DB generation is now triggered if the git pull/git diff fails when updating a repository
+
+## Fixed
+
+- **[Users]** Fixed several issues with the new UUID schema for filenames, involving downloads and playing the song from the library
+- **[Users]** Fixed macOS auto-updates
+
 # [8.0.48] - 2025-01-12
 
 We're releasing this new version of Karaoke Mugen with several fixes and additions to prepare further for the UUID apocalypse.
