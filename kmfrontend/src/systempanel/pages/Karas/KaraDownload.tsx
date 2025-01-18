@@ -117,25 +117,8 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 	};
 
 	downloadAll = async () => {
-		const p = Math.max(0, this.state.currentPage - 1);
-		const psz = this.state.currentPageSize;
-		const pfrom = p * psz;
-		const response: KaraList = await commandBackend(
-			'getKaras',
-			{
-				filter: this.state.filter,
-				q: `${this.state.tagFilter}!m:${this.state.download_status}`,
-				from: pfrom,
-				size: psz,
-				order: this.state.order,
-				direction: this.state.direction,
-			},
-			false,
-			300000
-		);
-		const karas = response.content;
 		const karasToDownload: KaraDownloadRequest[] = [];
-		for (const kara of karas) {
+		for (const kara of this.state.karas) {
 			karasToDownload.push({
 				mediafile: kara.mediafile,
 				kid: kara.kid,
