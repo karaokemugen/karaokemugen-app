@@ -127,6 +127,8 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 				q: `${this.state.tagFilter}!m:${this.state.download_status}`,
 				from: pfrom,
 				size: psz,
+				order: this.state.order,
+				direction: this.state.direction,
 			},
 			false,
 			300000
