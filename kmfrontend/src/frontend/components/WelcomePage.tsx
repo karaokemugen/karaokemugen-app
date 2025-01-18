@@ -26,6 +26,7 @@ import ProfilModal from './modals/ProfilModal';
 import RestartDownloadsModal from './modals/RestartDownloadsModal';
 import WelcomePageArticle from './WelcomePageArticle';
 import dayjs from 'dayjs';
+import { DBDownload } from '../../../../src/types/database/download';
 
 function WelcomePage() {
 	const context = useContext(GlobalContext);
@@ -54,12 +55,12 @@ function WelcomePage() {
 	const getDownloadQueue = async () => {
 		try {
 			const [downloadQueue, downloadQueueStatus] = await Promise.all([
-				commandBackend('getDownloads', undefined, false, 300000),
+				commandBackend('getDownloads', undefined, false, 300000) as Promise<DBDownload[]>,
 				commandBackend('getDownloadQueueStatus', undefined, false, 300000),
 			]);
 			if (
 				downloadQueueStatus === 'stopped' &&
-				downloadQueue.length > 0 &&
+				downloadQueue.some(kara => kara.status === 'DL_PLANNED') &&
 				!sessionStorage.getItem('dlQueueRestart')
 			) {
 				showModal(context.globalDispatch, <RestartDownloadsModal />);
