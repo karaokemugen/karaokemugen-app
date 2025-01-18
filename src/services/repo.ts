@@ -1391,12 +1391,10 @@ export async function generateCommits(repoName: string) {
 			const lyrics = parse(file).base;
 			const lyricsPath = resolve(resolvedPathRepos('Lyrics', repoName)[0], lyrics);
 			await ASSFileCleanup(lyricsPath, null, repoName);
-			const kid = parse(lyrics).name;
-			const dbKara = await getKara(kid, adminToken);
 			const commit: Commit = {
 				addedFiles: [file],
 				removedFiles: [],
-				message: `📝 ✏️ Modify ${dbKara.songname}`,
+				message: `📝 ✏️ Modify ${lyrics}`,
 			};
 			commits.push(commit);
 			task.incr();
@@ -1404,12 +1402,10 @@ export async function generateCommits(repoName: string) {
 		// Deleted lyrics (you never know)
 		for (const file of deletedLyrics) {
 			const lyrics = parse(file).base;
-			const kid = parse(lyrics).name;
-			const dbKara = await getKara(kid, adminToken);
 			const commit: Commit = {
 				addedFiles: [],
 				removedFiles: [file],
-				message: `🔥 ✏️ Delete ${dbKara.songname}`,
+				message: `🔥 ✏️ Delete ${lyrics}`,
 			};
 			commits.push(commit);
 			task.incr();
