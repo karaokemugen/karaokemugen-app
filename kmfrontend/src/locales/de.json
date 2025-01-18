@@ -464,7 +464,10 @@
 		},
 		"ORDER_MEDIA_NEW": "Neu",
 		"ORDER_MEDIA_POPULAR": "Beliebt",
-		"ORDER_MEDIA_STANDARD": "Standard"
+		"ORDER_MEDIA_STANDARD": "Standard",
+		"ORDER_MEDIA": "Sortiere Medien nach: ",
+		"ORDER_MEDIA_MEDIASIZE": "Mediengröße",
+		"CHANGE_ORDER_DIRECTION": "Ordnungsrichtung ändern"
 	},
 	"SETTINGS": {
 		"KARAOKE": {
@@ -625,7 +628,8 @@
 			"DISPLAY_CONNECTION_INFO_TOOLTIP": "Es ist die „Gehe zu http://xxx!“-Nachricht",
 			"DISPLAY_AVATAR_TOOLTIP": "Das Profilbild des Anfragenden wird am Anfang und am Ende des Liedes in der unteren rechten Ecke des Players angezeigt.",
 			"PLAYER_LANGUAGE": "Nachrichten und Spracheinstellungen",
-			"AUDIO_ONLY_EXPERIENCE": "Nur Ton"
+			"AUDIO_ONLY_EXPERIENCE": "Nur Ton",
+			"AUDIO_ONLY_EXPERIENCE_TOOLTIP": "Zeigt ein Standbild statt des Videos bei Aktivierung. Die Änderung wird zum nächsten Lied übernommen."
 		},
 		"SYSTEMPANEL_TIP": "Du kannst die gesuchten Optionen nicht finden? <2>Einige Optionen befinden sich in den <3>System-Einstellungen</3>.</2>",
 		"PLAYLIST": {
@@ -1585,7 +1589,8 @@
 		"REPO_ALL_MEDIAS_DELETED": "Alle Medien aus dem Repository gelöscht",
 		"STOP_AFTER": "Die Karaoke wird am Ende des aktuellen Liedes angehalten. Um jetzt anzuhalten, klicke erneut auf die Schaltfläche.",
 		"PL_SONG_ADDED": "Erfolgreich \"{{song}}\"-Song hinzugefügt!",
-		"TAG_COPIED": "Tag erfolgreich in ein anderes Repository kopiert"
+		"TAG_COPIED": "Tag erfolgreich in ein anderes Repository kopiert",
+		"CHANGES_OCCUR_ON_NEXT_SONG": "Diese Einstellung wird ab dem nächsten Lied übernommen."
 	},
 	"TAG_TYPES": {
 		"GROUPS_other": "Gruppen",
@@ -2105,8 +2110,8 @@
 		"ENCODING_MEDIA": "Medium wird encodet …"
 	},
 	"ABOUT": {
-		"DONATORS": "Danke an <1>1{{donators}}</1> für ihre Spenden an Karaoke Mugen",
-		"DESCRIPTION": "Ein Karaoke-Spieler und ein Partyveranstalter, unter Freunden oder in der Öffentlichkeit.",
+		"DONATORS": "Danke an <1>{{donators}}</1> für die Spende an Karaoke Mugen",
+		"DESCRIPTION": "Ein Karaoke-Player und Party-Tool – unter Freunden oder in der Öffentlichkeit.",
 		"LICENSE": "MIT-lizenziert.",
 		"CONTRIBUTORS": "Die Karaoke-Untertitel wurden von großartigen Menschen wie beispielsweise <1>{{contributors}}</1> erstellt."
 	},
