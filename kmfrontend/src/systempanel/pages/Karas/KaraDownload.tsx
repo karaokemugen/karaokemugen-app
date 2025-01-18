@@ -118,6 +118,9 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 
 	downloadAll = async () => {
 		const karasToDownload: KaraDownloadRequest[] = [];
+		if (!this.state.karas?.length) {
+			return;
+		}
 		for (const kara of this.state.karas) {
 			karasToDownload.push({
 				mediafile: kara.mediafile,
