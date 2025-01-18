@@ -30,7 +30,7 @@ class Viewcounts extends Component<unknown, ViewcountsState> {
 		try {
 			const res = await commandBackend('getKaras', { order: 'played', ignoreCollections: true });
 			this.setState({ karas: res.content, i18n: res.i18n });
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};

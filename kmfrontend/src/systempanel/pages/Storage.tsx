@@ -41,7 +41,7 @@ class Storage extends Component<unknown, StorageState> {
 	openMediaFolder = async (name: string) => {
 		try {
 			await commandBackend('openMediaFolder', { name }, true, 300000);
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};
@@ -49,7 +49,7 @@ class Storage extends Component<unknown, StorageState> {
 	deleteOldRepoMedias = async (name: string) => {
 		try {
 			await commandBackend('deleteOldRepoMedias', { name }, true, 300000);
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};
@@ -57,7 +57,7 @@ class Storage extends Component<unknown, StorageState> {
 	deleteAllRepoMedias = async (name: string) => {
 		try {
 			await commandBackend('deleteAllRepoMedias', { name }, true, 300000);
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};
@@ -100,7 +100,7 @@ class Storage extends Component<unknown, StorageState> {
 		{
 			key: 'openFolder',
 			align: 'center' as const,
-			render: (text_, record) => (
+			render: (_, record) => (
 				<Button type="primary" icon={<FolderOpenOutlined />} onClick={() => this.openMediaFolder(record.name)}>
 					{i18next.t('REPOSITORIES.OPEN_MEDIA_FOLDER')}
 				</Button>
@@ -109,7 +109,7 @@ class Storage extends Component<unknown, StorageState> {
 		{
 			key: 'deleteOldRepoMedias',
 			align: 'center' as const,
-			render: (text_, record) => (
+			render: (_, record) => (
 				<Button
 					type="primary"
 					danger
@@ -123,7 +123,7 @@ class Storage extends Component<unknown, StorageState> {
 		{
 			key: 'deleteAllRepoMedias',
 			align: 'center' as const,
-			render: (text_, record) => (
+			render: (_, record) => (
 				<Button
 					type="primary"
 					danger

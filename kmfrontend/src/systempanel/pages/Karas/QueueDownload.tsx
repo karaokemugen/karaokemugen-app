@@ -73,7 +73,7 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 		try {
 			const res = await commandBackend('getTags', undefined, false, 300000);
 			this.setState({ tags: res.content }, () => this.filterTagCascaderOption());
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	}
@@ -115,7 +115,7 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 				karasCount: res.infos.count || 0,
 				i18nTag: res.i18n,
 			});
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};

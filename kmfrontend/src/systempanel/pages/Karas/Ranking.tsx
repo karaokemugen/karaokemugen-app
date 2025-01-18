@@ -30,7 +30,7 @@ class Ranking extends Component<unknown, RankingState> {
 		try {
 			const res = await commandBackend('getKaras', { order: 'requestedLocal', ignoreCollections: true });
 			this.setState({ karas: res.content, i18n: res.i18n });
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};

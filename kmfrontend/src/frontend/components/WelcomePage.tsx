@@ -46,7 +46,7 @@ function WelcomePage() {
 			const res = await commandBackend('getSessions');
 			setSessions(res);
 			setActiveSession(res.filter((valueSession: Session) => valueSession.active)[0]);
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};
@@ -64,7 +64,7 @@ function WelcomePage() {
 			) {
 				showModal(context.globalDispatch, <RestartDownloadsModal />);
 			}
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};
@@ -73,7 +73,7 @@ function WelcomePage() {
 		try {
 			const data: RemoteStatusData = await commandBackend('getRemoteData');
 			setRemoteStatus(data);
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};
@@ -179,7 +179,7 @@ function WelcomePage() {
 				return dateA < dateB ? 1 : dateA > dateB ? -1 : 0;
 			});
 			setNews(news);
-		} catch (err) {
+		} catch (_) {
 			// error already display
 		}
 	};
@@ -192,7 +192,7 @@ function WelcomePage() {
 		let migrationsToDo;
 		try {
 			migrationsToDo = (await commandBackend('getMigrationsFrontend')).filter(res => !res.flag_done).length > 0;
-		} catch (e) {
+		} catch (_) {
 			migrationsToDo = false;
 		}
 		if (migrationsToDo) {
@@ -222,7 +222,7 @@ function WelcomePage() {
 						},
 					},
 				});
-			} catch (err: any) {
+			} catch (_) {
 				// error already display
 			}
 		}

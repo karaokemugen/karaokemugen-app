@@ -184,7 +184,7 @@ function Playlist(props: IProps) {
 		try {
 			const result = await commandBackend('getPlayerStatus');
 			updateCounters(result);
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};
@@ -473,7 +473,7 @@ function Playlist(props: IProps) {
 				setData(karas);
 			}
 			setPlaylistInProgress(false);
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};
@@ -760,7 +760,7 @@ function Playlist(props: IProps) {
 			}
 			setData(data);
 			setSelectAllKarasChecked(false);
-		} catch (err) {
+		} catch (_) {
 			// error already display
 		}
 	};
@@ -796,7 +796,7 @@ function Playlist(props: IProps) {
 				await commandBackend(url, dataApi);
 				setCheckedKaras(0);
 				setSelectAllKarasChecked(false);
-			} catch (e) {
+			} catch (_) {
 				// already display
 			}
 		}
@@ -957,7 +957,7 @@ function Playlist(props: IProps) {
 						const [removed] = result.splice(oldIndex, 1);
 						result.splice(newIndex, 0, removed);
 						data.content = result;
-					} catch (e) {
+					} catch (_) {
 						//already display
 					}
 

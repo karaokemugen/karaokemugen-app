@@ -16,7 +16,6 @@ const newrepository: Repository = {
 	SendStats: false,
 	Update: true,
 	AutoMediaDownloads: 'updateOnly',
-	// @ts-ignore: omg just shut up
 	MaintainerMode: false,
 	BaseDir: null,
 	Path: {
@@ -36,7 +35,7 @@ function RepositoriesEdit() {
 		try {
 			await commandBackend('addRepo', repository, true);
 			navigate('/system/repositories');
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};
@@ -52,7 +51,7 @@ function RepositoriesEdit() {
 				true
 			);
 			navigate('/system/repositories');
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};
@@ -71,7 +70,7 @@ function RepositoriesEdit() {
 			try {
 				await commandBackend('movingMediaRepo', { path: movingMediaPath, name }, true, 300000);
 				navigate('/system/repositories');
-			} catch (e) {
+			} catch (_) {
 				// already display
 			}
 		}

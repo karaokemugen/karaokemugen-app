@@ -128,7 +128,7 @@ export const useTagSearch = (
 							// For 999+ values, it's CriteriaList implementation for other criteria than tags, so we return an empty dataset
 							return [];
 						}
-					} catch (e) {
+					} catch (_) {
 						//already display
 					}
 				},

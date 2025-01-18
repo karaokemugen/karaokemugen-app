@@ -188,7 +188,7 @@ function KaraLine(props: IProps) {
 		try {
 			await addKara(event, pos);
 			deleteKara();
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};

@@ -106,7 +106,7 @@ function AdminPage(props: IProps) {
 		let kmStats;
 		try {
 			kmStats = await commandBackend('getStats');
-		} catch (e) {
+		} catch (_) {
 			kmStats = {
 				karas: 0,
 			};

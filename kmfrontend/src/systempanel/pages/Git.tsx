@@ -81,7 +81,7 @@ function StashList(props: {
 			commandBackend('popStash', { repoName: props.repo.Name, stashId: index }, false, 120000).then(
 				props.refreshRepo
 			);
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};
@@ -92,7 +92,7 @@ function StashList(props: {
 			commandBackend('dropStash', { repoName: props.repo.Name, stashId: index }, false, 120000).then(
 				props.refreshRepo
 			);
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};
@@ -255,7 +255,7 @@ export default function Git() {
 					await commandBackend('resetRepo', { repoName });
 					break;
 			}
-		} catch (e) {
+		} catch (_) {
 			failed = true;
 		}
 		if (!failed) {

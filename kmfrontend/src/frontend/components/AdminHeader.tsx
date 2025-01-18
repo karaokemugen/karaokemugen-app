@@ -114,7 +114,7 @@ function AdminHeader(props: IProps) {
 		try {
 			const result = await commandBackend('getPlayerStatus');
 			playerUpdate(result);
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};

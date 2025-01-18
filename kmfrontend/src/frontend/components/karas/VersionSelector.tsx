@@ -40,8 +40,8 @@ export default function VersionSelector(props: Props) {
 				requestedby: context.globalState.auth.data.username,
 				kids: [kara.kid],
 			});
-			PLCCallback(res, context, kara);
-		} catch (e) {
+			PLCCallback(res, context, kara, props.scope);
+		} catch (_) {
 			// already display
 		}
 	};

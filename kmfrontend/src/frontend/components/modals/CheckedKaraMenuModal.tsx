@@ -39,7 +39,7 @@ function CheckedKaraMenuModal(props: IProps) {
 			});
 			setEffectFree(true);
 			setTimeout(props.closeKaraMenu, 350);
-		} catch (e) {
+		} catch (_) {
 			//already display
 		}
 	};
@@ -56,7 +56,7 @@ function CheckedKaraMenuModal(props: IProps) {
 			});
 			setEffectVisibility(true);
 			setTimeout(props.closeKaraMenu, 350);
-		} catch (e) {
+		} catch (_) {
 			//already display
 		}
 	};
@@ -73,7 +73,7 @@ function CheckedKaraMenuModal(props: IProps) {
 			});
 			setEffectVisibility(true);
 			setTimeout(props.closeKaraMenu, 350);
-		} catch (e) {
+		} catch (_) {
 			//already display
 		}
 	};
@@ -89,7 +89,7 @@ function CheckedKaraMenuModal(props: IProps) {
 			});
 			setEffectFavorite(true);
 			setTimeout(props.closeKaraMenu, 350);
-		} catch (e) {
+		} catch (_) {
 			//already display
 		}
 	};
@@ -107,7 +107,7 @@ function CheckedKaraMenuModal(props: IProps) {
 			});
 			setEffectBlacklist(true);
 			setTimeout(props.closeKaraMenu, 350);
-		} catch (e) {
+		} catch (_) {
 			//already display
 		}
 	};
@@ -125,7 +125,7 @@ function CheckedKaraMenuModal(props: IProps) {
 			});
 			setEffectWhitelist(true);
 			setTimeout(props.closeKaraMenu, 350);
-		} catch (e) {
+		} catch (_) {
 			//already display
 		}
 	};
@@ -146,7 +146,7 @@ function CheckedKaraMenuModal(props: IProps) {
 			);
 			setEffectShuffle(true);
 			setTimeout(props.closeKaraMenu, 350);
-		} catch (e) {
+		} catch (_) {
 			//already display
 		}
 	};

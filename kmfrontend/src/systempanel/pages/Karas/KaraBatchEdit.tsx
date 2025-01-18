@@ -79,7 +79,7 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 		try {
 			const karas = await commandBackend('getPlaylistContents', { plaid });
 			this.setState({ plaid: plaid, karas: karas.content, i18nTag: karas.i18n });
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};

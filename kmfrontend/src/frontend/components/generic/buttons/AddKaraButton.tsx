@@ -8,6 +8,7 @@ import { PLCCallback } from '../../../../utils/tools';
 
 interface Props {
 	kara: DBKara;
+	scope: 'admin' | 'public';
 }
 
 export default function AddKaraButton(props: Props) {
@@ -20,10 +21,10 @@ export default function AddKaraButton(props: Props) {
 				requestedby: context.globalState.auth.data.username,
 				kids: [props.kara.kid],
 			});
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
-		PLCCallback(response, context, props.kara);
+		PLCCallback(response, context, props.kara, props.scope);
 	};
 
 	return (

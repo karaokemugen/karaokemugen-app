@@ -38,7 +38,7 @@ function PollModal() {
 				await commandBackend('votePoll', { index: button.value });
 				setVoted(parseInt(button.value));
 			}
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};

@@ -63,7 +63,7 @@ class SessionList extends Component<unknown, SessionListState> {
 		try {
 			await commandBackend('deleteMediaFile', { file: file, repo: this.state.repository });
 			this.setState({ unused: this.state.unused.filter(item => item.file !== file) });
-		} catch (err) {
+		} catch (_) {
 			// already display
 		}
 	};
@@ -72,7 +72,7 @@ class SessionList extends Component<unknown, SessionListState> {
 		try {
 			await commandBackend('deleteTag', { tids: [tid] });
 			this.setState({ unused: this.state.unused.filter(item => item.tid !== tid) });
-		} catch (err) {
+		} catch (_) {
 			// already display
 		}
 	};
@@ -170,7 +170,7 @@ class SessionList extends Component<unknown, SessionListState> {
 		},
 		{
 			title: i18next.t('ACTION'),
-			render: (text_, record) => (
+			render: (_, record) => (
 				<Button
 					type="primary"
 					danger

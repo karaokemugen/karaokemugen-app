@@ -33,7 +33,7 @@ export default function Inbox() {
 			try {
 				const res = await commandBackend('getInbox', { repoName: instance.Name });
 				setInbox(res);
-			} catch (e) {
+			} catch (_) {
 				// already display
 			}
 		}
@@ -42,7 +42,7 @@ export default function Inbox() {
 	const downloadKaraFromInbox = async (inid: string) => {
 		try {
 			await commandBackend('downloadKaraFromInbox', { repoName: instance.Name, inid });
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 		getInbox();
@@ -56,7 +56,7 @@ export default function Inbox() {
 			onOk: async close => {
 				try {
 					await commandBackend('deleteKaraFromInbox', { repoName: instance.Name, inid });
-				} catch (e) {
+				} catch (_) {
 					// already display
 				}
 				getInbox();
@@ -179,7 +179,7 @@ export default function Inbox() {
 				try {
 					const res = await commandBackend('getInbox', { repoName: instance.Name });
 					setInbox(res);
-				} catch (e) {
+				} catch (_) {
 					// already display
 				}
 			}

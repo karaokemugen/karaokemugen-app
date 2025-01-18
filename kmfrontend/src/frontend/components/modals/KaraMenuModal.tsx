@@ -45,7 +45,7 @@ function KaraMenuModal(props: IProps) {
 			const response = await commandBackend(url, data);
 			setKara(response);
 			document.getElementById('root').addEventListener('click', handleClick);
-		} catch (err) {
+		} catch (_) {
 			props.closeKaraMenu();
 		}
 	};
@@ -58,7 +58,7 @@ function KaraMenuModal(props: IProps) {
 			});
 			setEffectFree(true);
 			setTimeout(props.closeKaraMenu, 350);
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};
@@ -71,23 +71,19 @@ function KaraMenuModal(props: IProps) {
 			});
 			setEffectVisibility(true);
 			setTimeout(props.closeKaraMenu, 350);
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};
 
 	const makeFavorite = () => {
 		try {
-			kara?.flag_favorites
-				? commandBackend('deleteFavorites', {
-						kids: [kara?.kid],
-				  })
-				: commandBackend('addFavorites', {
-						kids: [kara?.kid],
-				  });
+			commandBackend(kara?.flag_favorites ? 'deleteFavorites' : 'addFavorites', {
+				kids: [kara?.kid],
+			});
 			setEffectFavorite(true);
 			setTimeout(props.closeKaraMenu, 350);
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};
@@ -105,7 +101,7 @@ function KaraMenuModal(props: IProps) {
 			});
 			setEffectBlacklist(true);
 			setTimeout(props.closeKaraMenu, 350);
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};
@@ -123,7 +119,7 @@ function KaraMenuModal(props: IProps) {
 			});
 			setEffectWhitelist(false);
 			setTimeout(props.closeKaraMenu, 350);
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};
@@ -140,7 +136,7 @@ function KaraMenuModal(props: IProps) {
 			);
 			setEffectShuffle(true);
 			setTimeout(props.closeKaraMenu, 350);
-		} catch (e) {
+		} catch (_) {
 			//already display
 		}
 	};
@@ -213,7 +209,7 @@ function KaraMenuModal(props: IProps) {
 									plc_ids: [props.kara.plcid],
 								});
 								props.closeKaraMenu();
-							} catch (e) {
+							} catch (_) {
 								// already display
 							}
 						}}
