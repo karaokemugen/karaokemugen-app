@@ -24,9 +24,10 @@ interface IProps {
 
 function ActionsButtons(props: IProps) {
 	const context = useContext(GlobalContext);
+	const isAdmin = props.scope === 'admin';
 
 	const onRightClickAdd = (e: any) => {
-		if (props.scope === 'admin') {
+		if (isAdmin) {
 			e.preventDefault();
 			e.stopPropagation();
 			props.addKara(e, -1);
@@ -40,10 +41,10 @@ function ActionsButtons(props: IProps) {
 		!props.isHeader &&
 		!context.globalState.settings.data.config.Playlist.AllowDuplicates &&
 		oppositePlaylist?.content.findIndex(k => k.kid === props.kara.kid) !== -1 &&
-		props.scope === 'admin';
+		isAdmin;
 	return (
 		<>
-			{props.scope === 'admin' &&
+			{isAdmin &&
 			playlist?.plaid === context.globalState.settings.data.state.publicPlaid &&
 			oppositePlaylist?.plaid === context.globalState.settings.data.state.currentPlaid ? (
 				<button
@@ -55,7 +56,7 @@ function ActionsButtons(props: IProps) {
 				</button>
 			) : null}
 
-			{props.scope === 'admin' &&
+			{isAdmin &&
 			playlist?.plaid === context.globalState.settings.data.state.publicPlaid &&
 			oppositePlaylist?.plaid === context.globalState.settings.data.state.currentPlaid ? (
 				<button
@@ -69,7 +70,7 @@ function ActionsButtons(props: IProps) {
 
 			{playlist?.plaid !== nonStandardPlaylists.favorites &&
 			playlist?.plaid !== nonStandardPlaylists.animelist &&
-			((props.scope === 'admin' &&
+			((isAdmin &&
 				playlist?.plaid !== nonStandardPlaylists.library &&
 				!(props.isHeader && playlist?.flag_smart) &&
 				!(
@@ -105,7 +106,7 @@ function ActionsButtons(props: IProps) {
 				</button>
 			) : null}
 
-			{(props.scope === 'admin' &&
+			{(isAdmin &&
 				oppositePlaylist?.plaid !== nonStandardPlaylists.library &&
 				oppositePlaylist?.plaid !== nonStandardPlaylists.favorites &&
 				oppositePlaylist?.plaid !== nonStandardPlaylists.animelist &&
@@ -113,7 +114,7 @@ function ActionsButtons(props: IProps) {
 					playlist?.plaid === context.globalState.settings.data.state.publicPlaid &&
 					oppositePlaylist?.plaid === context.globalState.settings.data.state.currentPlaid
 				)) ||
-			(props.scope === 'public' &&
+			(!isAdmin &&
 				!is_touch_device() &&
 				![
 					context.globalState.settings.data.state.publicPlaid,
@@ -131,9 +132,7 @@ function ActionsButtons(props: IProps) {
 							? i18next.t('TOOLTIP_KARA_ALREADY_ADDED')
 							: props.isHeader
 								? i18next.t('TOOLTIP_ADD_SELECT_KARA')
-								: `${i18next.t('TOOLTIP_ADDKARA')}${
-										props.scope === 'admin' ? i18next.t('TOOLTIP_ADDKARA_ADMIN') : ''
-									}`
+								: `${i18next.t('TOOLTIP_ADDKARA')}${isAdmin ? i18next.t('TOOLTIP_ADDKARA_ADMIN') : ''}`
 					}
 					className={classValue}
 					onContextMenu={onRightClickAdd}
