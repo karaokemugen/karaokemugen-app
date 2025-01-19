@@ -72,7 +72,7 @@ function KaraDownload() {
 
 	useEffect(() => {
 		getKaras();
-	}, [downloadStatus, order, tagFilter, direction]);
+	}, [direction, currentPage, currentPageSize]);
 
 	const getTags = async () => {
 		try {
@@ -162,7 +162,6 @@ function KaraDownload() {
 		setCurrentPageSize(pagination.pageSize);
 		localStorage.setItem('karaDownloadPage', pagination.current);
 		localStorage.setItem('karaDownloadPageSize', pagination.pageSize);
-		setTimeout(getKaras, 10);
 	};
 
 	const handleFilterTagSelection = value => {
