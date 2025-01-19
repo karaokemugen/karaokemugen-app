@@ -176,7 +176,8 @@ export const sqlgetAllKarasMicro = (
   ak.lyrics_infos AS lyrics_infos,
   ak.karafile AS karafile,
   ak.from_display_type AS from_display_type,
-  ak.download_status AS download_status
+  ak.download_status AS download_status,
+  ak.songname AS songname
 FROM all_karas AS ak
 ${additionalFrom.join('')}
 WHERE true
