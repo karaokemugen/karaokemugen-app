@@ -5,13 +5,16 @@
 body:not(.touch) {
 	.playlist-main .list-group-item:hover {
 		background-color: color.scale(variables.$mugen-playlist-odd, $lightness: -35%);
+
 		&.list-group-item-even {
 			background-color: color.scale(variables.$mugen-playlist-even, $lightness: -25%);
 		}
-		&.dejavu {
-			background-color: color.scale(variables.$mugen-playlist-dejavu-odd, $lightness: -35%);
+
+		&.played {
+			background-color: color.scale(variables.$mugen-playlist-played-odd, $lightness: -35%);
+
 			&.list-group-item-even {
-				background-color: color.scale(variables.$mugen-playlist-dejavu-even, $lightness: -25%);
+				background-color: color.scale(variables.$mugen-playlist-played-even, $lightness: -25%);
 			}
 		}
 		&.currentlyplaying {
@@ -33,22 +36,21 @@ body:not(.touch) {
 
 .list-group-item {
 	background-color: variables.$mugen-playlist-odd;
-	&.dejavu {
+
+	&.played {
 		.playKara {
-			background-color: variables.$mugen-playlist-dejavu-odd;
+			background-color: variables.$mugen-playlist-played-odd;
 		}
+
 		.contentDiv {
-			i.fas.dejavu-icon {
-				color: color.scale(variables.$mugen-playlist-dejavu-odd, $lightness: 20%, $saturation: 15%);
+			i.fas.played-icon {
+				color: color.scale(variables.$mugen-playlist-played-odd, $lightness: 20%, $saturation: 15%);
 				margin-left: unset;
 				margin-right: 0.25em;
 			}
 		}
 	}
-	&.currentlyplaying,
-	&.dejavu.currentlyplaying,
-	&.list-group-item-even.currentlyplaying,
-	&.list-group-item-even.dejavu.currentlyplaying {
+	&.currentlyplaying {
 		background-color: color.scale(
 			variables.$mugen-playlist-currently-playing,
 			$lightness: -50%,
@@ -59,13 +61,16 @@ body:not(.touch) {
 			background-color: variables.$mugen-playlist-currently-playing;
 			animation: btn-pulse infinite ease-in-out 1s;
 		}
+
 		.contentDiv {
 			color: inherit;
 		}
 	}
+
 	&.list-group-item-even {
 		background-color: variables.$mugen-playlist-even;
 	}
+
 	z-index: 20;
 	overflow: auto;
 	padding: 0.5em;
@@ -74,6 +79,7 @@ body:not(.touch) {
 	display: flex;
 	flex-wrap: nowrap;
 	flex-direction: row;
+
 	@media screen and (max-width: variables.$mugen-breakpoint-large) {
 		flex-wrap: wrap;
 	}
@@ -101,24 +107,29 @@ body:not(.touch) {
 		margin: 0 0.25em;
 		user-select: none;
 	}
+
 	// .actionDiv: profile picture of the requester and remove/add/actions buttons
 	.actionDiv {
 		display: flex;
 		flex-direction: row;
 		flex: 0 0 auto;
 		align-items: center;
+
 		&.vertical {
 			flex-wrap: wrap;
 			flex-direction: column;
 			justify-content: center;
+
 			.btn-group {
 				padding-top: 0.15em;
 			}
 		}
+
 		button {
 			z-index: 9;
 			position: relative;
 		}
+
 		// .dragHandle: in playlists, the three-dot handle to drag
 		.dragHandle {
 			padding-left: 0.5em;
@@ -127,6 +138,7 @@ body:not(.touch) {
 			cursor: move;
 		}
 	}
+
 	// .contentDiv: karaTitle and tags
 	> .contentDiv {
 		padding: 0.25em 0.5em;
@@ -134,24 +146,30 @@ body:not(.touch) {
 		display: flex;
 		flex-wrap: wrap;
 		flex: 1 1 auto;
+
 		i.fas.problematic {
 			color: gold;
 		}
 	}
+
 	&:not(.liTag) > .contentDiv {
 		cursor: zoom-in;
 	}
+
 	> .contentDiv.contentDivMobile {
 		&.problematic {
 			color: gold;
 		}
+
 		padding: 0.125em 0;
 		flex-direction: column;
 		display: flex;
 		flex-basis: 50%;
+
 		> * {
 			flex: 0 0 auto !important;
 		}
+
 		.tag.inline {
 			margin-bottom: 0;
 			padding: 0 0.25em;
@@ -160,57 +178,69 @@ body:not(.touch) {
 			display: inline-block;
 			height: min-content;
 			overflow-wrap: break-word;
+
 			&.empty {
 				height: 1.5rem;
 			}
 		}
+
 		.contentDivMobileSerie,
 		.contentDivMobileTitle {
 			.tag.inline.green {
 				margin-left: 0;
 			}
 		}
+
 		.contentDivMobileSerie {
 			font-weight: bold;
 		}
+
 		.contentDivMobileTitle {
 			display: flex;
 			font-style: italic;
 			margin-bottom: 0.25em;
+
 			> i.fas {
 				margin-left: 0.375em;
 				line-height: 1.2;
 			}
 		}
+
 		.contentDivMobileTags {
 			display: flex;
 			justify-content: space-between;
 			padding: 0.5em 0 0;
+
 			@media screen and (max-width: variables.$mugen-breakpoint-small) {
 				flex-direction: column;
 				align-items: flex-start;
 			}
+
 			.tagConteneur {
 				margin-left: 0;
 			}
 		}
 	}
+
 	.infoDiv {
 		display: flex;
 		flex-direction: row;
 		align-items: center;
 	}
+
 	// Overrides, original tagConteneur in styles/components/tags.scss
 	.tagConteneur {
 		margin-left: auto;
 		display: flex;
 		align-items: flex-end;
 		flex-wrap: wrap;
+
 		.tag {
 			padding: 0 0.25em;
 			margin-bottom: 0;
 		}
 	}
+
 	// .checkboxKara: checkbox for bulk selection in admin interface
 	.checkboxKara {
 		padding: 0.25em;
@@ -225,10 +255,12 @@ body:not(.touch) {
 
 	&.side-right {
 		flex-direction: row-reverse;
+
 		.actionDiv {
 			float: left;
 			flex-direction: row-reverse;
 		}
+
 		.checkboxKara {
 			float: left;
 		}
@@ -249,9 +281,11 @@ body:not(.touch) {
 
 .marker-label {
 	background: black;
+
 	&.green {
 		background: forestgreen;
 	}
+
 	color: white;
 	padding: 0.2em;
 	position: absolute;
@@ -270,6 +304,7 @@ body:not(.touch) {
 	text-align: center;
 	font-weight: bold;
 	border-radius: 10%;
+
 	> i {
 		font-size: 88%;
 		margin-right: 0.5em;
@@ -284,9 +319,11 @@ body:not(.touch) {
 	0% {
 		background-color: color.scale(variables.$mugen-playlist-currently-playing, $lightness: -55%);
 	}
+
 	50% {
 		background-color: color.scale(variables.$mugen-playlist-currently-playing, $lightness: -65%, $saturation: -5%);
 	}
+
 	100% {
 		background-color: color.scale(variables.$mugen-playlist-currently-playing, $lightness: -55%);
 	}
