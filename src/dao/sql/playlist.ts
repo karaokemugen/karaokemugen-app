@@ -475,7 +475,20 @@ INNER JOIN playlist_content AS pc ON pc.fk_kid = ak.pk_kid
 INNER JOIN playlist AS pl ON pl.pk_plaid = pc.fk_plaid
 LEFT OUTER JOIN upvote up ON up.fk_plcid = pc.pk_plcid
 WHERE  pc.pk_plcid = ANY ($1)
-GROUP BY pl.fk_plcid_playing, pc.fk_kid, ak.titles, ak.titles_aliases, ak.mediasize, ak.mediafile, ak.repository, pc.nickname, pc.fk_login, pc.pk_plcid, pc.fk_plaid, ak.tags
+GROUP BY 
+	pl.fk_plcid_playing, 
+	pc.fk_kid, 
+	ak.titles, 
+	ak.titles_aliases, 
+	ak.mediasize, 
+	ak.mediafile, 
+	ak.repository, 
+	ak.songname,
+	pc.nickname, 
+	pc.fk_login, 
+	pc.pk_plcid, 
+	pc.fk_plaid, 
+	ak.tags
 `;
 
 export const sqlgetPLCByKIDUser = `
