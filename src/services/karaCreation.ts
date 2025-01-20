@@ -12,7 +12,7 @@ import {
 	convertDBKarasToKaraFiles,
 	createKarasMap,
 } from '../lib/services/karaValidation.js';
-import { EditedKara } from '../lib/types/kara.d.js';
+import { EditedKara, KaraFileV4 } from '../lib/types/kara.d.js';
 import { ASSFileCleanup } from '../lib/utils/ass.js';
 import { resolvedPath, resolvedPathRepos } from '../lib/utils/config.js';
 import { ErrorKM } from '../lib/utils/error.js';
@@ -34,7 +34,7 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 		text: 'EDITING_SONG',
 		subtext: editedKara.kara.data.titles[editedKara.kara.data.titles_default_language],
 	});
-	const kara = trimKaraData(editedKara.kara);
+	let kara = trimKaraData(editedKara.kara);
 	// Validation here, processing stuff later
 	// No sentry triggered if validation fails
 	try {
@@ -77,24 +77,19 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 			throw new ErrorKM('UNKNOWN_SONG', 404, false);
 		}
 		if (!kara.data.ignoreHooks) await applyKaraHooks(kara);
-		const { sanitizedFilename, songname } = await defineSongname(kara, oldKara);
+		const { sanitizedFilename, songname } = await defineSongname(kara);
 		kara.data.songname = songname;
 		const karaJsonFileOld = resolve(resolvedPathRepos('Karaokes', oldKara.repository)[0], oldKara.karafile);
 		const karaJsonFileDest = resolve(
 			resolvedPathRepos('Karaokes', kara.data.repository)[0],
 			`${sanitizedFilename}.kara.json`
 		);
-		if (karaJsonFileOld !== karaJsonFileDest && (await exists(karaJsonFileDest))) {
-			logger.error(`Cannot save kara since it would overwrite the existing file ${karaJsonFileDest}`, {
-				service,
-				karaJsonFileDest,
-				karaJsonFileOld,
-			});
-			throw new ErrorKM('KARA_FILE_EXISTS_ERROR', 409, false);
-		}
-		const filenames = determineMediaAndLyricsFilenames(kara, sanitizedFilename);
+		const filenames = determineMediaAndLyricsFilenames(kara);
 		const mediaDest = resolve(resolvedPathRepos('Medias', kara.data.repository)[0], filenames.mediafile);
 		let oldMediaPath: string;
+		// I wanted to remove this since we switched to UUIDs BUT WHAT ABOUT FILE EXTENSIONS.
+		// They can be different when you change mediafiles!
+		// We're doomed. This function is never going to be simplified.
 		if (editedKara.modifiedMedia || oldKara.mediafile !== filenames.mediafile) {
 			try {
 				oldMediaPath = (
@@ -138,6 +133,7 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 			await smartMove(mediaPath, mediaDest, { overwrite: true });
 		} else if (oldKara.mediafile !== filenames.mediafile && oldMediaPath) {
 			// Check if media name has changed BECAUSE WE'RE NOT USING UUIDS AS FILENAMES GRRRR.
+			// *present-Axel bonks past-Axel* We still have that issue due to file extensions. Deal with it, boomer.
 			try {
 				await smartMove(oldMediaPath, mediaDest);
 			} catch (err) {
@@ -172,7 +168,6 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 			kara.medias[0].lyrics[0]?.filename &&
 			oldKara.lyrics_infos[0].filename !== filenames.lyricsfiles[0]
 		) {
-			// Check if lyric name has changed BECAUSE WE'RE NOT USING UUIDS AS FILENAMES GRRRR.
 			kara.medias[0].lyrics[0].filename = filenames.lyricsfiles[0];
 			const oldSubPath =
 				filenames.lyricsfiles[0] && oldKara.lyrics_infos[0].filename
@@ -196,9 +191,7 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 
 		// Sort stuff inside kara JSON.
 
-		kara.data = sortJSON(kara.data);
-		kara.medias[0] = sortJSON(kara.medias[0]);
-		if (kara.medias[0].lyrics[0]) kara.medias[0].lyrics[0] = sortJSON(kara.medias[0].lyrics[0]);
+		kara = sortKaraJSON(kara);
 
 		await writeKara(karaJsonFileDest, kara);
 		await integrateKaraFile(karaJsonFileDest, kara, false, refresh);
@@ -221,7 +214,7 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 }
 
 export async function createKara(editedKara: EditedKara) {
-	const kara = trimKaraData(editedKara.kara);
+	let kara = trimKaraData(editedKara.kara);
 	const task = new Task({
 		text: 'CREATING_SONG',
 		subtext: kara.data.titles[kara.data.titles_default_language],
@@ -274,7 +267,7 @@ export async function createKara(editedKara: EditedKara) {
 		} catch (err) {
 			// Not lethal
 		}
-		const filenames = determineMediaAndLyricsFilenames(kara, sanitizedFilename);
+		const filenames = determineMediaAndLyricsFilenames(kara);
 		const mediaDest = resolve(resolvedPathRepos('Medias', kara.data.repository)[0], filenames.mediafile);
 		let subDest: string;
 		if (kara.medias[0].lyrics[0]?.filename) {
@@ -290,9 +283,7 @@ export async function createKara(editedKara: EditedKara) {
 
 		// Sort stuff inside kara JSON.
 
-		kara.data = sortJSON(kara.data);
-		kara.medias[0] = sortJSON(kara.medias[0]);
-		if (kara.medias[0].lyrics[0]) kara.medias[0].lyrics[0] = sortJSON(kara.medias[0].lyrics[0]);
+		kara = sortKaraJSON(kara);
 		await writeKara(karaJsonFileDest, kara);
 		await integrateKaraFile(karaJsonFileDest, kara, false, true);
 		checkDownloadStatus([kara.data.kid]);
@@ -327,4 +318,11 @@ async function getAllKarasInFamily(kidsToSearch: string[]) {
 		q: `k:${[...kids.values()].join(',')}`,
 	});
 	return karas;
+}
+
+function sortKaraJSON(kara: KaraFileV4) {
+	kara.data = sortJSON(kara.data);
+	kara.medias[0] = sortJSON(kara.medias[0]);
+	if (kara.medias[0].lyrics[0]) kara.medias[0].lyrics[0] = sortJSON(kara.medias[0].lyrics[0]);
+	return kara;
 }
