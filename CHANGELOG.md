@@ -1,3 +1,26 @@
+# [8.0.56] - 2025-01-20
+
+This is a hotfix release. Very hot.
+
+## Added
+
+- **[Operators]** Added button to open the log file in Explorer/Finder/whatever-you-use-on-Linux on the init screen.
+- **[Operators]** Suggestion prompt when no song was found now allows multiple repositories to provide their own suggestion URLs.
+- **[Operators]** News feeds will now accept one feed per repostory installed.
+- **[Operators]** On the download screen, the download all button now is unreactive when there are no songs to download.
+- **[Operators]** Unzipping the master.zip of a repository should now be faster.
+- **[Developers]** Simplified some code due to the UUID format change
+- **[Developers]** Moved some frontend stuff to function components
+
+## Fixed
+
+- **[Operators]** Fixed medias not being downloaded when added to the current playlist
+- **[Operators]** Fixed download all button not using the sort settings selected by the user
+- **[Operators]** Download dialog on startup now is only shown if downloads are pending
+- **[Operators]** Fixed mac auto-updates (for good)
+- **[Maintainers]** .aac files now can support cover art
+- **[Maintainers]** Songname is now used in commit messages instead of filenames when available.
+
 # [8.0.54] - 2025-01-18
 
 This is a bugfix release to address the downloads/play issues with some songs
