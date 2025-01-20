@@ -1,5 +1,5 @@
+import AdmZip from 'adm-zip';
 import { execa } from 'execa';
-import extract from 'extract-zip';
 import { promises as fs } from 'fs';
 import { move, remove } from 'fs-extra';
 import parallel from 'p-map';
@@ -18,18 +18,20 @@ const service = 'Patch';
 
 async function extractZip(path: string, outDir: string, task: Task): Promise<string> {
 	let firstDir: string;
-	await extract(path, {
-		dir: outDir,
-		onEntry: (entry, zipFile) => {
-			if (entry.crc32 === 0 && !firstDir) {
-				firstDir = entry.fileName.slice(0, entry.fileName.length - 1);
+	const zip = new AdmZip(path);
+	zip.getEntries().forEach((entry, entriesRead, { length: entryCount }) => {
+		if (entry.isDirectory) {
+			if (!firstDir) {
+				firstDir = entry.entryName.slice(0, -1);
 			}
-			task.update({
-				subtext: entry.fileName,
-				value: zipFile.entriesRead,
-				total: zipFile.entryCount,
-			});
-		},
+		} else {
+			zip.extractEntryTo(entry, outDir);
+		}
+		task.update({
+			subtext: entry.entryName,
+			value: entriesRead,
+			total: entryCount,
+		});
 	});
 	return firstDir;
 }

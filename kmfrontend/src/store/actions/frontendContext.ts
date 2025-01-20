@@ -101,7 +101,7 @@ async function getPlaylistInfo(plaid: string) {
 		try {
 			playlist = await commandBackend('getPlaylist', { plaid });
 			content = await commandBackend('getPlaylistContentsMicro', { plaid });
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	} else {

@@ -132,7 +132,7 @@ function KaraList({ karas, scope, addKara = false }: KaraListProps) {
 								)}
 								{kara?.public_plc_id.length === 0 &&
 								context?.globalState.settings.data.config?.Frontend?.Mode === 2 ? (
-									<AddKaraButton kara={kara} />
+									<AddKaraButton kara={kara} scope={scope} />
 								) : null}
 								<ShowVideoButton
 									togglePreview={() => setShowVideo(!showVideo)}

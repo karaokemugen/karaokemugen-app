@@ -93,7 +93,7 @@ export default function KaraDetail(props: IProps) {
 			}
 			const karaGet = await commandBackend(url, data);
 			setKara(karaGet);
-		} catch (err) {
+		} catch (_) {
 			closeModalWithContext();
 		}
 	};
@@ -123,7 +123,7 @@ export default function KaraDetail(props: IProps) {
 				response = formatLyrics(response);
 			}
 			setLyrics(response ?? []);
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};
@@ -323,7 +323,7 @@ export default function KaraDetail(props: IProps) {
 			</>
 		);
 
-		const addKaraButton = <AddKaraButton kara={kara} />;
+		const addKaraButton = <AddKaraButton kara={kara} scope={props.scope} />;
 
 		const makeFavButton = <MakeFavButton kid={kara.kid} />;
 

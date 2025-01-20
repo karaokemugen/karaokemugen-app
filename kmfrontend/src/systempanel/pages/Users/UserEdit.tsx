@@ -25,7 +25,7 @@ function UserEdit() {
 		try {
 			await commandBackend('createUser', user, true);
 			navigate('/system/users');
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};
@@ -35,7 +35,7 @@ function UserEdit() {
 			userSaved.old_login = user.login;
 			await commandBackend('editUser', userSaved, true);
 			navigate('/system/users');
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};
@@ -46,7 +46,7 @@ function UserEdit() {
 				try {
 					const res = await commandBackend('getUser', { username });
 					setUser(res);
-				} catch (e) {
+				} catch (_) {
 					// already display
 				}
 			} else {

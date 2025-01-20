@@ -59,7 +59,7 @@ export async function generateProfilePicLink(user: User, context: GlobalContextI
 				const path = `/avatars/${data.avatar_file}`;
 				cache.set(user.login, path);
 				return path;
-			} catch (e) {
+			} catch (_) {
 				return blankAvatar;
 			}
 		}

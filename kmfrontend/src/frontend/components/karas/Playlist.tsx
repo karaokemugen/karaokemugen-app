@@ -30,6 +30,7 @@ import PlaylistHeader from './PlaylistHeader';
 import QuizRanking from './QuizRanking';
 import { TagTypeNum } from '../../../../../src/lib/types/tag';
 import { setIndexKaraDetail } from '../../../store/actions/frontendContext';
+import { RepositoryManifestV2 } from '../../../../../src/lib/types/repo';
 
 // Virtuoso's resize observer can this error,
 // which is caught by DnD and aborts dragging.
@@ -84,6 +85,7 @@ function Playlist(props: IProps) {
 	const [playing, setPlaying] = useState<number>(
 		getPlaylistInfo(props.side, context)?.content.findIndex(k => k.flag_playing)
 	);
+	const [repositories, setRepositories] = useState<{ name: string; url: string; suggestUrl: string }[]>();
 	const [songsBeforeJingle, setSongsBeforeJingle] = useState<number>();
 	const [songsBeforeSponsor, setSongsBeforeSponsor] = useState<number>();
 	const [goToPlaying, setGotToPlaying] = useState<boolean>(props.scope === 'public');
@@ -184,12 +186,13 @@ function Playlist(props: IProps) {
 		try {
 			const result = await commandBackend('getPlayerStatus');
 			updateCounters(result);
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};
 
 	const initCall = async () => {
+		getRepositories();
 		getPlayerStatus();
 		setCriteriasOpen(false);
 		await getPlaylist();
@@ -350,14 +353,20 @@ function Playlist(props: IProps) {
 						) : (
 							<>
 								<div>{i18next.t('KARA_SUGGESTION_NOT_FOUND')}</div>
-								{context?.globalState.settings.data.config.System.Repositories.filter(
-									value => value.Enabled && value.Online
-								).map(value => (
-									<a key={value.Name} href={`http${value.Secure && 's'}://${value.Name}/`}>
-										{value.Name}
-									</a>
+								{repositories.map(value => (
+									<div key={value.name}>
+										<div>
+											<a key={value.name} href={value.url}>
+												{value.name}
+											</a>
+										</div>
+										<div>
+											{value.suggestUrl ? (
+												<a href={value.suggestUrl}>{value.name}/suggest</a>
+											) : null}
+										</div>
+									</div>
 								))}
-								<a href="https://kara.moe/suggest">kara.moe/suggest</a>
 							</>
 						)}
 					</div>
@@ -473,7 +482,7 @@ function Playlist(props: IProps) {
 				setData(karas);
 			}
 			setPlaylistInProgress(false);
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};
@@ -760,7 +769,7 @@ function Playlist(props: IProps) {
 			}
 			setData(data);
 			setSelectAllKarasChecked(false);
-		} catch (err) {
+		} catch (_) {
 			// error already display
 		}
 	};
@@ -796,7 +805,7 @@ function Playlist(props: IProps) {
 				await commandBackend(url, dataApi);
 				setCheckedKaras(0);
 				setSelectAllKarasChecked(false);
-			} catch (e) {
+			} catch (_) {
 				// already display
 			}
 		}
@@ -957,7 +966,7 @@ function Playlist(props: IProps) {
 						const [removed] = result.splice(oldIndex, 1);
 						result.splice(newIndex, 0, removed);
 						data.content = result;
-					} catch (e) {
+					} catch (_) {
 						//already display
 					}
 
@@ -976,6 +985,27 @@ function Playlist(props: IProps) {
 			e.stopImmediatePropagation();
 		}
 	};
+
+	const getRepositories = async () => {
+		const newRepos = [];
+		if (context) {
+			for (const value of context.globalState.settings.data.config.System.Repositories.filter(
+				value => value.Enabled && value.Online
+			)) {
+				const manifest: RepositoryManifestV2 = await commandBackend('getRepoManifest', { name: value.Name });
+				newRepos.push({
+					name: value.Name,
+					url: `http${value.Secure && 's'}://${value.Name}/`,
+					suggestUrl: manifest.suggestURL,
+				});
+			}
+		}
+		setRepositories(newRepos);
+	};
+
+	useDeferredEffect(() => {
+		getRepositories();
+	}, [context.globalState.settings.data.config.System.Repositories]);
 
 	useDeferredEffect(() => {
 		if (!stopUpdate) {

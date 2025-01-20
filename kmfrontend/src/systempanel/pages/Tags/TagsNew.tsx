@@ -14,7 +14,7 @@ function TagNew() {
 		try {
 			await commandBackend('addTag', tag, true, 300000);
 			navigate('/system/tags');
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};

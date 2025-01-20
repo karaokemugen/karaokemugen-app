@@ -49,7 +49,7 @@ class Config extends Component<ConfigProps, ConfigState> {
 				config: this.configKeyValue(res.config),
 				error: '',
 			});
-		} catch (e) {
+		} catch (_) {
 			//already display
 		}
 	};
@@ -96,7 +96,7 @@ class Config extends Component<ConfigProps, ConfigState> {
 			title: i18next.t('CONFIG.VALUE'),
 			dataIndex: 'value',
 			key: 'value',
-			render: (text, record: Record) =>
+			render: (_, record: Record) =>
 				record.key === 'Player.HardwareDecoding' ? (
 					<Select
 						style={{ width: '100%' }}

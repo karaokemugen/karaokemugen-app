@@ -32,7 +32,7 @@ function UsersModal(props: IProps) {
 			try {
 				const response = await commandBackend('getUser', { username: user.login });
 				setUserDetails(response);
-			} catch (e) {
+			} catch (_) {
 				// already display
 			}
 		}

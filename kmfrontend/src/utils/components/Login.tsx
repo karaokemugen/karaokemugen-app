@@ -56,7 +56,7 @@ function Login() {
 		try {
 			await commandBackend('getUser', { username: `${loginToCheck}@${serv}` }, false, 30000, true);
 			setExistingOnlineAccountLocally(true);
-		} catch (e) {
+		} catch (_) {
 			setExistingOnlineAccountLocally(false);
 		}
 	};
@@ -116,7 +116,7 @@ function Login() {
 					navigate('/');
 				}
 			}
-		} catch (err) {
+		} catch (_) {
 			// error already display
 		}
 	};
@@ -166,7 +166,7 @@ function Login() {
 				await commandBackend('createUser', data);
 				setRedBorders('');
 				loginCall(username, password, securityCode);
-			} catch (e) {
+			} catch (_) {
 				// already display
 			}
 		}

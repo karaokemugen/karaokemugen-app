@@ -169,7 +169,7 @@ function ProgressBar() {
 			try {
 				const result = await commandBackend('getPlayerStatus');
 				refreshPlayerInfos(result);
-			} catch (e) {
+			} catch (_) {
 				// already display
 			}
 		}

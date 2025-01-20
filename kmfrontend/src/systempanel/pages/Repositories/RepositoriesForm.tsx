@@ -42,7 +42,7 @@ function RepositoryForm(props: RepositoriesFormProps) {
 			try {
 				const res = await commandBackend('getSSHPubKey', { repoName: form.getFieldValue('Name') });
 				setSshKey(res);
-			} catch (e) {
+			} catch (_) {
 				setSshKey(undefined);
 			}
 		}

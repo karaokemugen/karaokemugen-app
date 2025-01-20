@@ -122,7 +122,7 @@ export default function Background() {
 		},
 		{
 			title: i18next.t('ACTION'),
-			render: (text_, record) => (
+			render: (_, record) => (
 				<Button type="primary" danger icon={<DeleteOutlined />} onClick={() => deleteBg(record)} />
 			),
 		},
