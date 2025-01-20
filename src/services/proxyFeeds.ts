@@ -2,6 +2,7 @@
 import internet from 'internet-available';
 import { xml2js } from 'xml-js';
 
+import { getRepoManifest } from '../lib/services/repo.js';
 import HTTP from '../lib/utils/http.js';
 // KM Imports
 import logger from '../lib/utils/logger.js';
@@ -9,14 +10,11 @@ import logger from '../lib/utils/logger.js';
 import { Feed } from '../types/feeds.js';
 import { SystemMessage } from '../types/state.js';
 import { getState, setState } from '../utils/state.js';
+import { getRepos } from './repo.js';
 
 const service = 'Feeds';
 
 const feeds = [
-	{
-		name: 'git_base',
-		url: 'https://gitlab.com/karaokemugen/bases/karaokebase/-/tags?format=atom&sort=updated_desc',
-	},
 	{
 		name: 'git_app',
 		url: 'https://gitlab.com/karaokemugen/code/karaokemugen-app/-/releases?format=atom&sort=updated_desc',
@@ -34,6 +32,12 @@ export async function getFeeds() {
 		await internet();
 		for (const feed of feeds) {
 			feedPromises.push(fetchFeed(feed.url, feed.name));
+		}
+		for (const repo of getRepos()) {
+			const manifest = getRepoManifest(repo.Name);
+			if (manifest?.feedURL) {
+				feedPromises.push(fetchFeed(manifest.feedURL, `repo_${repo.Name}`));
+			}
 		}
 	} catch (err) {
 		logger.warn('This instance is not connected to the internets, cannot get online feeds', {

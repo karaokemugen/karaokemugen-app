@@ -110,36 +110,38 @@ function WelcomePage() {
 	const getNewsFeed = async () => {
 		try {
 			const data: Feed[] = await commandBackend('getNewsFeed', undefined, undefined, 300000);
-			const base = data.find(d => d.name === 'git_base');
+			const repos = data.filter(d => d.name.startsWith('repo'));
 			const appli = data.find(d => d.name === 'git_app');
 			const mast = data.find(d => d.name === 'mastodon');
 			const system = data.find(d => d.name === 'system');
 			const news: News[] = [];
-			if (base?.body) {
-				base.body = JSON.parse(base.body);
-				if (base.body.feed.entry[0].summary?._text) {
-					// Gitlab's feed doesn't report date anymore so we have to calculate it. We name base tags with the previous month as in 'the situation at the end of this month'. So when we have a tagname of 202410, the date it's created is actually 2024-11-01.
-					const date = base.body.feed.entry[0].title._text;
-					const year = date.substring(0, 4);
-					const month = date.substring(4);
-					const dateObj = new Date(`${year}-${month}-01`);
-					const realDate = new Date(dateObj.setMonth(dateObj.getMonth() + 1));
-					news.push({
-						html: base.body.feed.entry[0].summary._text,
-						date,
-						dateStr: dayjs(realDate).format('L LTS'),
-						title:
-							i18next.t('WELCOME_PAGE.BASE_UPDATE') +
-							' : ' +
-							base.body.feed.title._text +
-							(base.body.feed.entry[0].summary._text
-								? ' - ' + base.body.feed.entry[0].summary._text
-								: ''),
-						link: (base.body.feed.entry[0].link._attributes.href as string)
-							.replace('tags', 'blob')
-							.concat('/CHANGELOG.md'),
-						type: 'base',
-					});
+			for (const base of repos) {
+				if (base?.body) {
+					base.body = JSON.parse(base.body);
+					if (base.body.feed.entry[0].summary?._text) {
+						// Gitlab's feed doesn't report date anymore so we have to calculate it. We name base tags with the previous month as in 'the situation at the end of this month'. So when we have a tagname of 202410, the date it's created is actually 2024-11-01.
+						const date = base.body.feed.entry[0].title._text;
+						const year = date.substring(0, 4);
+						const month = date.substring(4);
+						const dateObj = new Date(`${year}-${month}-01`);
+						const realDate = new Date(dateObj.setMonth(dateObj.getMonth() + 1));
+						news.push({
+							html: base.body.feed.entry[0].summary._text,
+							date,
+							dateStr: dayjs(realDate).format('L LTS'),
+							title:
+								i18next.t('WELCOME_PAGE.BASE_UPDATE') +
+								' : ' +
+								base.body.feed.title._text +
+								(base.body.feed.entry[0].summary._text
+									? ' - ' + base.body.feed.entry[0].summary._text
+									: ''),
+							link: (base.body.feed.entry[0].link._attributes.href as string)
+								.replace('tags', 'blob')
+								.concat('/CHANGELOG.md'),
+							type: 'base',
+						});
+					}
 				}
 			}
 
