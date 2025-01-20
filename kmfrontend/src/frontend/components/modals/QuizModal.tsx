@@ -159,7 +159,7 @@ export default function QuizModal(props: IProps) {
 				settings,
 			});
 			closeModalWithContext();
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};

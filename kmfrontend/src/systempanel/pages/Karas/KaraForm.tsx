@@ -698,7 +698,7 @@ function KaraForm(props: KaraFormProps) {
 				setCoverImageEmbedRunning(false);
 				throw new Error('Upload error');
 			}
-		} catch (err) {
+		} catch (_) {
 			message.error(i18next.t('KARA.AUDIO_COVER.EMBED_COVER_ERROR'));
 			setCoverImageEmbedRunning(false);
 		}

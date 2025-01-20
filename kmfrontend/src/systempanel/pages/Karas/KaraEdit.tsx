@@ -21,7 +21,7 @@ function KaraEdit() {
 			await commandBackend('editKara', kara, true, 300000);
 			addListener();
 			navigate('/system/karas');
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};
@@ -42,7 +42,7 @@ function KaraEdit() {
 		try {
 			await commandBackend('deleteKaras', { kids: [kid] }, true);
 			navigate('/system/karas/');
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};

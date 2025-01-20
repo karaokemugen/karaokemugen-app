@@ -94,6 +94,7 @@ ipcRenderer.on('tasksUpdated', (event, data) => {
 });
 
 document.querySelector('.ip--button-logs').addEventListener('click', clickButton);
+document.querySelector('.ip--button-display-logs').addEventListener('click', clickDisplayLogButton);
 
 function askTip() {
 	ipcRenderer.send('tip');
@@ -105,6 +106,10 @@ function clickButton() {
 	wrapper.dataset.displayLog = buttonLogsStatus ? 'false' : 'true';
 	const div = document.querySelector('.ip--logs');
 	div.scroll(0, div.scrollHeight);
+}
+
+function clickDisplayLogButton() {
+	ipcRenderer.send('openLogFile');
 }
 
 function setProgressBar(pct, text) {

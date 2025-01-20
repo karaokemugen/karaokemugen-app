@@ -1,155 +1,80 @@
 import { DeleteOutlined } from '@ant-design/icons';
 import { Button, Col, Layout, Radio, Row, Select, Table } from 'antd';
 import i18next from 'i18next';
-import { Component } from 'react';
+import { useEffect, useState } from 'react';
 
 import { commandBackend } from '../../utils/socket';
 import { getTagTypeName, tagTypes } from '../../utils/tagTypes';
 import Title from '../components/Title';
 
-interface SessionListState {
-	unused: any[];
-	repositories: string[];
-	repository: string;
-	type?: 'tags' | 'medias';
-	tagType?: number;
-}
+function UnusedList() {
+	const [unused, setUnused] = useState([]);
+	const [repositories, setRepositories] = useState<string[]>([]);
+	const [repository, setRepository] = useState<string>();
+	const [type, setType] = useState<'tags' | 'medias'>();
+	const [tagType, setTagType] = useState<number>();
 
-class SessionList extends Component<unknown, SessionListState> {
-	state = {
-		unused: [],
-		repositories: [],
-		repository: null,
-		type: undefined,
-		tagType: undefined,
-	};
+	useEffect(() => {
+		refresh();
+	}, []);
 
-	componentDidMount() {
-		this.refresh();
-	}
+	useEffect(() => {
+		if (type === 'medias') {
+			getMedias();
+		} else if (type === 'tags') {
+			getTags();
+		}
+	}, [type]);
 
-	refresh = async () => {
+	const refresh = async () => {
 		const res = await commandBackend('getRepos');
-		if (res.length > 0) this.setState({ repository: res[0].Name, repositories: res.map(value => value.Name) });
+		if (res.length > 0) {
+			setRepository(res[0].Name);
+			setRepositories(res.map(value => value.Name));
+		}
 	};
 
-	getTags = async () => {
-		const res = await commandBackend('getUnusedTags', { name: this.state.repository }, undefined, 60000);
-		this.setState({
-			unused: res
+	const getTags = async () => {
+		const res = await commandBackend('getUnusedTags', { name: repository }, undefined, 60000);
+		setUnused(
+			res
 				? res.map(value => {
 						return { name: value.name, types: value.types, file: value.tagfile, tid: value.tid };
 					})
-				: [],
-		});
+				: []
+		);
 	};
 
-	getMedias = async () => {
-		const res = await commandBackend('getUnusedMedias', { name: this.state.repository }, undefined, 600000);
-		this.setState({
-			unused: res
+	const getMedias = async () => {
+		const res = await commandBackend('getUnusedMedias', { name: repository }, undefined, 600000);
+		setUnused(
+			res
 				? res.map(value => {
 						return { file: value };
 					})
-				: [],
-		});
+				: []
+		);
 	};
 
-	changeType = async value => {
-		this.setState({ tagType: value });
-	};
-
-	deleteMedia = async (file: string) => {
+	const deleteMedia = async (file: string) => {
 		try {
-			await commandBackend('deleteMediaFile', { file: file, repo: this.state.repository });
-			this.setState({ unused: this.state.unused.filter(item => item.file !== file) });
-		} catch (err) {
+			await commandBackend('deleteMediaFile', { file: file, repo: repository });
+			setUnused(unused.filter(item => item.file !== file));
+		} catch (_) {
 			// already display
 		}
 	};
 
-	deleteTag = async tid => {
+	const deleteTag = async tid => {
 		try {
 			await commandBackend('deleteTag', { tids: [tid] });
-			this.setState({ unused: this.state.unused.filter(item => item.tid !== tid) });
-		} catch (err) {
+			setUnused(unused.filter(item => item.tid !== tid));
+		} catch (_) {
 			// already display
 		}
 	};
 
-	render() {
-		return (
-			<>
-				<Title
-					title={i18next.t('HEADERS.UNUSED_FILES.TITLE')}
-					description={i18next.t('HEADERS.UNUSED_FILES.DESCRIPTION')}
-				/>
-				<Layout.Content>
-					<Row style={{ marginBottom: '0.5em', marginLeft: '0.5em' }}>
-						{this.state.repositories && this.state.repository ? (
-							<Col style={{ paddingRight: '5em' }}>
-								<label style={{ paddingRight: '15px' }}>{i18next.t('UNUSED_FILES.REPOSITORY')}</label>
-								<Select style={{ width: 150 }} defaultValue={this.state.repository}>
-									{this.state.repositories.map(repo => {
-										return (
-											<Select.Option key={repo} value={repo}>
-												{repo}
-											</Select.Option>
-										);
-									})}
-								</Select>
-							</Col>
-						) : null}
-						<Col style={{ paddingTop: '5px' }}>
-							<label style={{ paddingRight: '1em' }}>{i18next.t('MENU.UNUSED_FILES')}</label>
-							<Radio
-								checked={this.state.type === 'tags'}
-								onChange={async () => this.setState({ type: 'tags' }, this.getTags)}
-							>
-								{i18next.t('UNUSED_FILES.TAGS')}
-							</Radio>
-							<Radio
-								checked={this.state.type === 'medias'}
-								onChange={async () => this.setState({ type: 'medias' }, this.getMedias)}
-							>
-								{i18next.t('UNUSED_FILES.MEDIAS')}
-							</Radio>
-						</Col>
-						{this.state.type === 'tags' ? (
-							<Col>
-								<label style={{ marginLeft: '2em', paddingRight: '1em' }}>
-									{i18next.t('TAGS.TYPES')} :
-								</label>
-								<Select
-									allowClear={true}
-									style={{ width: 300 }}
-									onChange={this.changeType}
-									defaultValue={this.state.tagType}
-								>
-									{Object.entries(tagTypes).map(([key, value]) => {
-										return (
-											<Select.Option key={value.type} value={value.type}>
-												{i18next.t(`TAG_TYPES.${key}_other`)}
-											</Select.Option>
-										);
-									})}
-								</Select>
-							</Col>
-						) : null}
-					</Row>
-					<Table
-						dataSource={this.state.unused.filter(
-							e => !this.state.tagType || e.types?.includes(this.state.tagType)
-						)}
-						columns={this.columns}
-						rowKey="file"
-					/>
-				</Layout.Content>
-			</>
-		);
-	}
-
-	columns = [
+	const columns = [
 		{
 			title: i18next.t('UNUSED_FILES.NAME'),
 			dataIndex: 'name',
@@ -170,18 +95,78 @@ class SessionList extends Component<unknown, SessionListState> {
 		},
 		{
 			title: i18next.t('ACTION'),
-			render: (text_, record) => (
+			render: (_, record) => (
 				<Button
 					type="primary"
 					danger
 					icon={<DeleteOutlined />}
-					onClick={() =>
-						this.state.type === 'medias' ? this.deleteMedia(record.file) : this.deleteTag(record.tid)
-					}
+					onClick={() => (type === 'medias' ? deleteMedia(record.file) : deleteTag(record.tid))}
 				/>
 			),
 		},
 	];
+
+	return (
+		<>
+			<Title
+				title={i18next.t('HEADERS.UNUSED_FILES.TITLE')}
+				description={i18next.t('HEADERS.UNUSED_FILES.DESCRIPTION')}
+			/>
+			<Layout.Content>
+				<Row style={{ marginBottom: '1em', marginLeft: '0.5em' }}>
+					{repositories && repository ? (
+						<Col style={{ paddingRight: '5em' }}>
+							<label style={{ paddingRight: '15px' }}>{i18next.t('UNUSED_FILES.REPOSITORY')}</label>
+							<Select style={{ width: 150 }} defaultValue={repository}>
+								{repositories.map(repo => {
+									return (
+										<Select.Option key={repo} value={repo}>
+											{repo}
+										</Select.Option>
+									);
+								})}
+							</Select>
+						</Col>
+					) : null}
+					<Col style={{ paddingTop: '5px' }}>
+						<label style={{ paddingRight: '1em' }}>{i18next.t('MENU.UNUSED_FILES')}</label>
+						<Radio checked={type === 'tags'} onChange={async () => setType('tags')}>
+							{i18next.t('UNUSED_FILES.TAGS')}
+						</Radio>
+						<Radio checked={type === 'medias'} onChange={async () => setType('medias')}>
+							{i18next.t('UNUSED_FILES.MEDIAS')}
+						</Radio>
+					</Col>
+					{type === 'tags' ? (
+						<Col>
+							<label style={{ marginLeft: '2em', paddingRight: '1em' }}>
+								{i18next.t('TAGS.TYPES')} :
+							</label>
+							<Select
+								allowClear={true}
+								style={{ width: 300 }}
+								onChange={setTagType}
+								defaultValue={tagType}
+							>
+								{Object.entries(tagTypes).map(([key, value]) => {
+									return (
+										<Select.Option key={value.type} value={value.type}>
+											{i18next.t(`TAG_TYPES.${key}_other`)}
+										</Select.Option>
+									);
+								})}
+							</Select>
+						</Col>
+					) : null}
+				</Row>
+				<Table
+					dataSource={unused.filter(e => !tagType || e.types?.includes(tagType))}
+					columns={columns}
+					rowKey="file"
+				/>
+			</Layout.Content>
+		</>
+	);
 }
 
-export default SessionList;
+export default UnusedList;

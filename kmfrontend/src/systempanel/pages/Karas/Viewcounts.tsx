@@ -1,68 +1,35 @@
-import { Button, Layout, Table, TableColumnProps } from 'antd';
+import { Button, Layout, Table } from 'antd';
 import i18next from 'i18next';
-import { Component } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 import { DBKara } from '../../../../../src/lib/types/database/kara';
 import GlobalContext from '../../../store/context';
 import { getSerieOrSingerGroupsOrSingers, getTagInLocaleList, getTitleInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import Title from '../../components/Title';
+import { SortOrder } from 'antd/es/table/interface';
 
-interface ViewcountsState {
-	karas: DBKara[];
-	i18n: any[];
-}
+function Viewcounts() {
+	const context = useContext(GlobalContext);
 
-class Viewcounts extends Component<unknown, ViewcountsState> {
-	static contextType = GlobalContext;
-	context: React.ContextType<typeof GlobalContext>;
+	const [karas, setKaras] = useState<DBKara[]>([]);
+	const [i18n, setI18n] = useState([]);
 
-	state = {
-		karas: [],
-		i18n: [],
-	};
+	useEffect(() => {
+		refresh();
+	}, []);
 
-	componentDidMount() {
-		this.refresh();
-	}
-
-	refresh = async () => {
+	const refresh = async () => {
 		try {
 			const res = await commandBackend('getKaras', { order: 'played', ignoreCollections: true });
-			this.setState({ karas: res.content, i18n: res.i18n });
-		} catch (e) {
+			setKaras(res.content);
+			setI18n(res.i18n);
+		} catch (_) {
 			// already display
 		}
 	};
 
-	render() {
-		return (
-			<>
-				<Title
-					title={i18next.t('HEADERS.MOST_PLAYED.TITLE')}
-					description={i18next.t('HEADERS.MOST_PLAYED.DESCRIPTION')}
-				/>
-				<Layout.Content>
-					<Button style={{ margin: '1em' }} type="primary" onClick={this.refresh}>
-						{i18next.t('REFRESH')}
-					</Button>
-					<Table
-						dataSource={this.state.karas}
-						columns={this.columns}
-						rowKey="kid"
-						scroll={{
-							x: true,
-						}}
-						expandable={{
-							showExpandColumn: false,
-						}}
-					/>
-				</Layout.Content>
-			</>
-		);
-	}
-
-	columns: TableColumnProps<any>[] = [
+	const columns = [
 		{
 			key: 'kid',
 			render: null,
@@ -71,24 +38,21 @@ class Viewcounts extends Component<unknown, ViewcountsState> {
 			title: i18next.t('TAG_TYPES.LANGS_other'),
 			dataIndex: 'langs',
 			key: 'langs',
-			render: langs =>
-				getTagInLocaleList(this.context.globalState.settings.data, langs, this.state.i18n).join(', '),
+			render: langs => getTagInLocaleList(context.globalState.settings.data, langs, i18n).join(', '),
 		},
 		{
 			title: i18next.t('KARA.FROM_DISPLAY_TYPE_COLUMN'),
 			dataIndex: 'series',
 			key: 'series',
 			render: (_series, record) =>
-				getSerieOrSingerGroupsOrSingers(this.context?.globalState.settings.data, record, this.state.i18n),
+				getSerieOrSingerGroupsOrSingers(context?.globalState.settings.data, record, i18n),
 		},
 		{
 			title: i18next.t('TAG_TYPES.SONGTYPES_other'),
 			dataIndex: 'songtypes',
 			key: 'songtypes',
 			render: (songtypes, record) =>
-				getTagInLocaleList(this.context.globalState.settings.data, songtypes, this.state.i18n)
-					.sort()
-					.join(', ') +
+				getTagInLocaleList(context.globalState.settings.data, songtypes, i18n).sort().join(', ') +
 				' ' +
 				(record.songorder || ''),
 		},
@@ -97,24 +61,48 @@ class Viewcounts extends Component<unknown, ViewcountsState> {
 			dataIndex: 'titles',
 			key: 'titles',
 			render: (titles, record) =>
-				getTitleInLocale(this.context.globalState.settings.data, titles, record.titles_default_language),
+				getTitleInLocale(context.globalState.settings.data, titles, record.titles_default_language),
 		},
 		{
 			title: i18next.t('TAG_TYPES.VERSIONS_other'),
 			dataIndex: 'versions',
 			key: 'versions',
-			render: versions =>
-				getTagInLocaleList(this.context.globalState.settings.data, versions, this.state.i18n).join(', '),
+			render: versions => getTagInLocaleList(context.globalState.settings.data, versions, i18n).join(', '),
 		},
 		{
 			title: i18next.t('KARA.PLAYED'),
 			dataIndex: 'played',
 			key: 'played',
-			defaultSortOrder: 'descend',
+			defaultSortOrder: 'descend' as SortOrder,
 			render: viewcount => viewcount,
 			sorter: (a, b) => a.viewcount - b.viewcount,
 		},
 	];
+
+	return (
+		<>
+			<Title
+				title={i18next.t('HEADERS.MOST_PLAYED.TITLE')}
+				description={i18next.t('HEADERS.MOST_PLAYED.DESCRIPTION')}
+			/>
+			<Layout.Content>
+				<Button style={{ margin: '1em' }} type="primary" onClick={refresh}>
+					{i18next.t('REFRESH')}
+				</Button>
+				<Table
+					dataSource={karas}
+					columns={columns}
+					rowKey="kid"
+					scroll={{
+						x: true,
+					}}
+					expandable={{
+						showExpandColumn: false,
+					}}
+				/>
+			</Layout.Content>
+		</>
+	);
 }
 
 export default Viewcounts;

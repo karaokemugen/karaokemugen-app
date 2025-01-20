@@ -76,7 +76,7 @@ function PublicPage() {
 					setCurrentVisible(playlist.flag_visible);
 				}
 			});
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};
@@ -173,7 +173,7 @@ function PublicPage() {
 		try {
 			const result = await commandBackend('getPlayerStatus');
 			playerUpdate(result);
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};

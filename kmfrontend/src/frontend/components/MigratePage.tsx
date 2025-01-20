@@ -26,7 +26,7 @@ export default function MigratePage() {
 					setMigrations(migrationsToDo);
 				}
 			});
-		} catch (e) {
+		} catch (_) {
 			navigate('/welcome');
 		}
 	};

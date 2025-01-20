@@ -204,7 +204,7 @@ function PlayerBox(props: IProps) {
 			try {
 				const result = await commandBackend('getPlayerStatus');
 				refreshPlayerInfos(result);
-			} catch (e) {
+			} catch (_) {
 				// already display
 			}
 			if (props.mode === 'homepage' && context.globalState.auth.data.role !== 'guest') {

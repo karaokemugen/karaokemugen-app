@@ -29,7 +29,7 @@ function Tutorial(props: IProps) {
 				props.unmount();
 			}
 			setStepIndex(stepIndex + 1);
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};

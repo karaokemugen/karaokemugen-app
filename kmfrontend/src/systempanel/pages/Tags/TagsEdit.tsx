@@ -20,7 +20,7 @@ function TagEdit() {
 		try {
 			await commandBackend('editTag', tag, true, 300000);
 			navigate('/system/tags');
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};
@@ -29,7 +29,7 @@ function TagEdit() {
 		try {
 			await commandBackend('deleteTag', { tids: [tid] }, true);
 			navigate('/system/tags/');
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};
@@ -38,7 +38,7 @@ function TagEdit() {
 		try {
 			await commandBackend('mergeTags', { tid1, tid2 }, true, 300000);
 			navigate('/system/tags/');
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};
@@ -51,7 +51,7 @@ function TagEdit() {
 			res = await commandBackend('getTags');
 			setTags(res.content);
 			setTag(tagData);
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 		setLoaded(true);

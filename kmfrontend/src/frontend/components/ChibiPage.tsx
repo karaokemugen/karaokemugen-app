@@ -87,7 +87,7 @@ function ChibiPage() {
 			try {
 				const result = await commandBackend('getPlayerStatus');
 				playerUpdate(result);
-			} catch (e) {
+			} catch (_) {
 				// already display
 			}
 			await getPlaylistList();

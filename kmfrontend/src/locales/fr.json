@@ -1759,7 +1759,7 @@
 		"PASSWORD_TOO_SHORT": "Mot de passe trop court (8 caractères minimum)",
 		"USER_DELETE_ERROR_ONLINE": "Erreur lors de la suppression du compte en ligne",
 		"USER_RESETPASSWORD_ONLINE_ERROR": "Impossible de vous envoyer un email de réinitialisation : contactez l'administrateur du serveur dont vous dépendez.",
-		"UPDATING_MEDIAS_ERROR": "Le dépôt {{repo}} n'a pas mis à jour les medias correctement : {{err}}",
+		"UPDATING_MEDIAS_ERROR": "Le dépôt {{repo}} n'a pas mis à jour les médias correctement : {{err}}",
 		"UPDATING_MEDIAS_MULTIPLE_USED_MEDIA_PATH_ERROR": "Plusieurs dépôts ont le même dossier de médias, ce qui peut occasionner des suppressions de fichiers non voulues. Veuillez changer le dossier principal de médias de ces dépôts : {{repos}}",
 		"REPOS_MULTIPLE_USED_MEDIA_PATH_ERROR": "Le dossier de médias principal est déjà utilisé par un autre dépôt",
 		"USER_UNKNOWN": "Utilisateur connecté inconnu",
@@ -1988,7 +1988,7 @@
 		},
 		"STORAGE": {
 			"TITLE": "Gestion de l'espace disque",
-			"DESCRIPTION": "Gestion de l'espace disque des medias"
+			"DESCRIPTION": "Gestion de l'espace disque des médias"
 		},
 		"INBOX": {
 			"TITLE": "Boîte de réception des chansons à intégrer",

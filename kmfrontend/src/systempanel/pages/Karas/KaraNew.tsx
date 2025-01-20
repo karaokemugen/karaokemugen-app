@@ -16,7 +16,7 @@ function KaraNew() {
 			await commandBackend('createKara', kara, true, 300000);
 			addListener();
 			navigate('/system/karas');
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};

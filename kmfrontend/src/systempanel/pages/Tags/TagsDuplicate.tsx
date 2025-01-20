@@ -50,7 +50,7 @@ function TagsDuplicate() {
 			resetDelete();
 			await commandBackend('deleteTag', { tids: [tid] }, true);
 			refresh();
-		} catch (err) {
+		} catch (_) {
 			resetDelete();
 		}
 	};

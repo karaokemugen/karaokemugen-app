@@ -21,7 +21,7 @@ function ShuffleModal(props: IProps) {
 				method: method,
 				fullShuffle: fullShuffle,
 			});
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 		closeModalWithContext();

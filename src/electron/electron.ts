@@ -16,6 +16,7 @@ import { addRepo, getRepo } from '../services/repo.js';
 import { generateAdminPassword } from '../services/user.js';
 import { MenuLayout } from '../types/electron.js';
 import { detectKMFileTypes } from '../utils/files.js';
+import { selectLogFile } from '../utils/logger.js';
 import { getState, setState } from '../utils/state.js';
 import { tip } from '../utils/tips.js';
 import { emitIPC } from './electronLogger.js';
@@ -179,6 +180,9 @@ async function registerIPCEvents() {
 		if (eventData.type === 'streamFiles') {
 			shell.openPath(resolve(resolvedPath('StreamFiles')));
 		}
+	});
+	ipcMain.on('openLogFile', () => {
+		selectLogFile();
 	});
 }
 

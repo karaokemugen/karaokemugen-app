@@ -23,7 +23,7 @@ function PlayCurrentModal(props: IProps) {
 		try {
 			commandBackend('sendPlayerCommand', { command: 'play' });
 			closeModalWithContext();
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};

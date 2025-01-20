@@ -48,6 +48,7 @@ import { createKaraInDB, integrateKaraFile, removeKara } from './karaManagement.
 import { createProblematicSmartPlaylist, updateAllSmartPlaylists } from './smartPlaylist.js';
 import { sendPayload } from './stats.js';
 import { getTags, integrateTagFile, removeTag } from './tag.js';
+import { isUUID } from '../lib/utils/validators.js';
 
 const service = 'Repo';
 
@@ -1391,10 +1392,16 @@ export async function generateCommits(repoName: string) {
 			const lyrics = parse(file).base;
 			const lyricsPath = resolve(resolvedPathRepos('Lyrics', repoName)[0], lyrics);
 			await ASSFileCleanup(lyricsPath, null, repoName);
+			const filename = parse(lyrics).name;
+			let songname: string;
+			if (isUUID(filename)) {
+				const dbKara = await getKara(filename, adminToken);
+				songname = dbKara.songname;
+			}
 			const commit: Commit = {
 				addedFiles: [file],
 				removedFiles: [],
-				message: `📝 ✏️ Modify ${lyrics}`,
+				message: `📝 ✏️ Modify ${songname ?? filename}`,
 			};
 			commits.push(commit);
 			task.incr();
@@ -1402,10 +1409,16 @@ export async function generateCommits(repoName: string) {
 		// Deleted lyrics (you never know)
 		for (const file of deletedLyrics) {
 			const lyrics = parse(file).base;
+			const filename = parse(lyrics).name;
+			let songname: string;
+			if (isUUID(filename)) {
+				const dbKara = await getKara(filename, adminToken);
+				songname = dbKara.songname;
+			}
 			const commit: Commit = {
 				addedFiles: [],
 				removedFiles: [file],
-				message: `🔥 ✏️ Delete ${lyrics}`,
+				message: `🔥 ✏️ Delete ${songname ?? filename}`,
 			};
 			commits.push(commit);
 			task.incr();

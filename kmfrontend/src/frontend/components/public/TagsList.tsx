@@ -62,7 +62,7 @@ function TagsList() {
 			}
 			setTags(data);
 			setForceUpdate(!forceUpdate);
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};

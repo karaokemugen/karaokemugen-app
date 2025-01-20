@@ -30,7 +30,7 @@ function KMFrontend() {
 		user.flag_sendstats = flag_sendstats;
 		try {
 			await commandBackend('editMyAccount', user);
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};
@@ -40,7 +40,7 @@ function KMFrontend() {
 			try {
 				await commandBackend('shutdown');
 				setShutdownPopup(true);
-			} catch (e) {
+			} catch (_) {
 				// already display
 			}
 		});

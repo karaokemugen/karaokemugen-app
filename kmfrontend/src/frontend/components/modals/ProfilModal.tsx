@@ -150,7 +150,7 @@ function ProfilModal(props: IProps) {
 				);
 				dlAnchorElem.click();
 			}
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};

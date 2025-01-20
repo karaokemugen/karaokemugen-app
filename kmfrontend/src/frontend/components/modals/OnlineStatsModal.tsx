@@ -24,7 +24,7 @@ function OnlineStatsModal() {
 					},
 				});
 				closeModal(context.globalDispatch);
-			} catch (e) {
+			} catch (_) {
 				// already display
 			}
 		}

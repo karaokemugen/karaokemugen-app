@@ -15,7 +15,7 @@ function RemoteStatus() {
 		try {
 			const data: RemoteStatusData = await commandBackend('getRemoteData');
 			setRemoteStatus(data);
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};

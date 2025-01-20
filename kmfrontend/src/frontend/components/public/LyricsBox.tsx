@@ -58,7 +58,7 @@ function LyricsBox(props: IProps) {
 			try {
 				const lyrics: ASSLine[] = formatLyrics(await commandBackend('getKaraLyrics', { kid: props.kid }));
 				setLyrics(lyrics || []);
-			} catch (e) {
+			} catch (_) {
 				// already display
 			}
 		} else {
@@ -171,7 +171,7 @@ function LyricsBox(props: IProps) {
 														{val.text}
 													</span>
 												)
-										  )
+											)
 										: rubifiedArray.map((val, index) =>
 												val.rubys.length ? (
 													<ruby key={index}>
@@ -183,7 +183,7 @@ function LyricsBox(props: IProps) {
 												) : (
 													val.text
 												)
-										  )}
+											)}
 								</div>
 							);
 						})}
@@ -200,7 +200,6 @@ function LyricsBox(props: IProps) {
 }
 
 LyricsBox.i18nText = (actualMode: LyricsStatus) => {
-	// eslint-disable-next-line default-case
 	switch (actualMode) {
 		case LyricsStatus.hide:
 			return i18next.t('PUBLIC_HOMEPAGE.SHOW_LYRICS');

@@ -33,7 +33,7 @@ function TagsList() {
 		try {
 			const res = await commandBackend('getTags', { filter, type: typeTag ? [typeTag] : undefined });
 			setTags(res.content);
-		} catch (e) {
+		} catch (_) {
 			//already display
 		}
 	};
@@ -48,7 +48,7 @@ function TagsList() {
 			resetDelete();
 			await commandBackend('deleteTag', { tids: [tid] }, true);
 			refresh();
-		} catch (err) {
+		} catch (_) {
 			resetDelete();
 		}
 	};

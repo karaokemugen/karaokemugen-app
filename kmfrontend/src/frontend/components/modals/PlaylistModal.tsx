@@ -47,7 +47,7 @@ function PlaylistModal(props: IProps) {
 				});
 				setPlaylistInfo(props.side, context, response.plaid);
 				closeModalWithContext();
-			} catch (e) {
+			} catch (_) {
 				// already display
 			}
 		}

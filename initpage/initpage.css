@@ -160,6 +160,18 @@ body {
 	cursor: pointer;
 }
 
+.ip--button-display-logs {
+	margin: 1em;
+	display: inline-block;
+	border: none;
+	background: hsl(225, 7%, 18%);
+	color: hsl(225, 7%, 33%);
+	padding: 0.5em 1em;
+	border-radius: 0.2em;
+	font-family: sans-serif;
+	cursor: pointer;
+}
+
 .ip--logs {
 	font-size: 0.8em;
 	list-style: none;

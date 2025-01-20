@@ -69,7 +69,7 @@ function PlaylistCommandsModal(props: IProps) {
 					dlAnchorElem.setAttribute('download', fileName);
 					dlAnchorElem.click();
 				}
-			} catch (e) {
+			} catch (_) {
 				// already display
 			}
 		}
@@ -199,11 +199,12 @@ function PlaylistCommandsModal(props: IProps) {
 					if (response.message.data.reposUnknown?.length > 0) {
 						importPlaylistResponse(response.message.data, file);
 					} else {
-						!file?.name.includes('.kmfavorites') &&
+						if (!file?.name.includes('.kmfavorites')) {
 							displayMessage(
 								'success',
 								i18next.t(`SUCCESS_CODES.${response.message.code}`, { data: name })
 							);
+						}
 						const plaid = file?.name.includes('.kmfavorites')
 							? nonStandardPlaylists.favorites
 							: response.message.data.plaid;
@@ -211,7 +212,7 @@ function PlaylistCommandsModal(props: IProps) {
 					}
 				};
 				fr.readAsText(file);
-			} catch (e) {
+			} catch (_) {
 				// already display
 			}
 		}

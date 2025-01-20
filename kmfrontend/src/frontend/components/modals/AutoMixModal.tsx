@@ -77,7 +77,7 @@ function AutoMixModal(props: IProps) {
 			} else {
 				showModal(context.globalDispatch, <QuizModal gamePlaylist={res.plaid} />);
 			}
-		} catch (e) {
+		} catch (_) {
 			// already display
 		}
 	};
