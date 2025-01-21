@@ -150,9 +150,6 @@ export async function initEngine() {
 			initDownloader();
 			initSession();
 			if (conf.Karaoke.StreamerMode.Twitch.Enabled) initTwitch();
-			if (!conf.App.FirstRun && !state.isTest && !state.opt.noPlayer) {
-				initPlayer();
-			}
 			if (conf.Online.Stats === true) initStats(false);
 			initStep(i18next.t('INIT_LAST'), true);
 			enableWSLogging(state.opt.debug ? 'debug' : 'info');
@@ -181,10 +178,13 @@ export async function initEngine() {
 			initStep(i18next.t('INIT_DONE'), true);
 			postInit();
 			initHooks();
-			readAllRepoManifests();
 			initFonts();
+			readAllRepoManifests();
 			archiveOldLogs();
 			initUsageTimer();
+			if (!conf.App.FirstRun && !state.isTest && !state.opt.noPlayer) {
+				initPlayer();
+			}
 			if (conf.Player.KeyboardMediaShortcuts) registerShortcuts();
 			if (state.isTest) {
 				await updateAllRepos();
