@@ -126,7 +126,7 @@ setState({ args });
 // Let's go! This calls the functions below.
 // Start Electron -> Pre Init -> Main Init -> Engine Init -> Post Init
 try {
-	startElectron();
+	await startElectron();
 } catch (err) {
 	if (logger) logger.error('Error during launch', { service, obj: err });
 	console.log(err);

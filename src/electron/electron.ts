@@ -35,37 +35,11 @@ let aboutWindow: Electron.BrowserWindow;
 
 let initDone = false;
 
-export function startElectron() {
+export async function startElectron() {
 	setState({ electron: !!app });
 	// Fix bug that makes the web views not updating if they're hidden behind other windows.
 	// It's better for streamers who capture the web interface through OBS.
 	app.commandLine.appendSwitch('disable-features', 'CalculateNativeWinOcclusion');
-	// This is called when Electron finished initializing
-	app.on('ready', async () => {
-		try {
-			await preInit();
-		} catch (err) {
-			console.log(err);
-			// This is usually very much fatal.
-			throw err;
-		}
-		// Register km:// protocol for internal use only.
-		try {
-			registerKMProtocol();
-		} catch (err) {
-			logger.warn('KM protocol could not be registered!', { obj: err, service });
-		}
-		// Create electron window with init screen
-		if (!getState().opt.cli) await initElectronWindow();
-		// Once init page is ready, or if we're in cli mode we start running init operations
-		//
-		if (getState().opt.cli) {
-			await initMain();
-		} else {
-			ipcMain.once('initPageReady', initMain);
-		}
-		registerIPCEvents();
-	});
 
 	// macOS only. Yes.
 	app.on('open-url', (_event, url: string) => {
@@ -105,6 +79,31 @@ export function startElectron() {
 	});
 
 	if (process.platform !== 'darwin') Menu.setApplicationMenu(null);
+
+	await app.whenReady();
+	try {
+		await preInit();
+	} catch (err) {
+		console.log(err);
+		// This is usually very much fatal.
+		throw err;
+	}
+	// Register km:// protocol for internal use only.
+	try {
+		registerKMProtocol();
+	} catch (err) {
+		logger.warn('KM protocol could not be registered!', { obj: err, service });
+	}
+	// Create electron window with init screen
+	if (!getState().opt.cli) await initElectronWindow();
+	// Once init page is ready, or if we're in cli mode we start running init operations
+
+	if (getState().opt.cli) {
+		await initMain();
+	} else {
+		ipcMain.once('initPageReady', initMain);
+	}
+	registerIPCEvents();
 }
 
 /** This is called once KM Engine fully started so we can open the right windows */
