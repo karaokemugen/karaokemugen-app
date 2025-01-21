@@ -1,7 +1,7 @@
 import { expect, describe, it, vi } from 'vitest';
 import { TestScheduler } from 'rxjs/testing';
 
-import Mpv from '../../../../src/utils/mpvIPC.js';
+import Mpv from '../../../../src/components/mpv/mpvIPC.js';
 import { MpvState } from '../../../../src/components/mpv/mpvState';
 
 describe('MpvState', () => {

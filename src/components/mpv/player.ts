@@ -17,13 +17,13 @@ import { endPoll } from '../../services/poll.js';
 import { getCurrentSongTimers } from '../../services/quiz.js';
 import { MpvOptions } from '../../types/player.js';
 import { editSetting } from '../../utils/config.js';
-import MpvIPC from '../../utils/mpvIPC.js';
+import { isMpvGreaterThan39 } from '../../utils/hokutoNoCode.js';
 import sentry from '../../utils/sentry.js';
 import { getState } from '../../utils/state.js';
 import { isShutdownInProgress } from '../engine.js';
 import { emitPlayerState, Players, playerState } from '../mpv.js';
+import MpvIPC from './mpvIPC.js';
 import { MpvState } from './mpvState.js';
-import { isMpvGreaterThan39 } from '../../utils/hokutoNoCode.js';
 
 export class Player {
 	private readonly log: logger.Logger;
