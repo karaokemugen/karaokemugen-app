@@ -168,7 +168,7 @@ export async function initEngine() {
 					// Non fatal
 					handleFile(file).catch(() => {});
 				} else if (file && file.startsWith('km://')) {
-					handleProtocol(state.args[0].substr(5).split('/')).catch(() => {});
+					handleProtocol(state.args[0].substring(5)).catch(() => {});
 				}
 			}
 			if (conf.System.Database.bundledPostgresBinary) dumpPG().catch(() => {});

@@ -1,4 +1,7 @@
-import { app, BrowserWindow, dialog, ipcMain, Menu, protocol, screen, shell } from 'electron';
+import { join } from 'node:path';
+import url from 'node:url';
+
+import { app, BrowserWindow, dialog, ipcMain, Menu, net, protocol, screen, shell } from 'electron';
 import { promises as fs } from 'fs';
 import i18next from 'i18next';
 import { resolve } from 'path';
@@ -66,7 +69,7 @@ export function startElectron() {
 
 	// macOS only. Yes.
 	app.on('open-url', (_event, url: string) => {
-		handleProtocol(url.substring(5).split('/'));
+		handleProtocol(url.substring(5));
 	});
 
 	// Windows all closed should quit the app, even on macOS.
@@ -91,7 +94,7 @@ export function startElectron() {
 			focusWindow();
 			const file = args[args.length - 1];
 			if (file && file !== '.' && !file.startsWith('--')) {
-				file.startsWith('km://') ? handleProtocol(file.substr(5).split('/')) : handleFile(file);
+				file.startsWith('km://') ? handleProtocol(file.substring(5)) : handleFile(file);
 			}
 		}
 	});
@@ -128,9 +131,10 @@ export async function postInit() {
 }
 
 function registerKMProtocol() {
-	protocol.registerStringProtocol('km', req => {
-		const args = req.url.substring(5).split('/');
+	protocol.handle('km', req => {
+		const args = req.url.slice('atom://'.length);
 		handleProtocol(args);
+		return net.fetch(url.pathToFileURL(join(__dirname, args)).toString());
 	});
 }
 
@@ -186,10 +190,11 @@ async function registerIPCEvents() {
 	});
 }
 
-export async function handleProtocol(args: string[]) {
+export async function handleProtocol(command: string) {
 	try {
-		logger.info(`Received protocol uri km://${args.join('/')}`, { service });
+		logger.info(`Received protocol uri km://${command}}`, { service });
 		if (!getState().ready) return;
+		const args = command.split('/');
 		switch (args[0]) {
 			case 'addRepo':
 				const repoName = args[1];
@@ -233,7 +238,7 @@ export async function handleProtocol(args: string[]) {
 				throw 'Unknown protocol';
 		}
 	} catch (err) {
-		logger.error(`Unknown command : ${args.join('/')}`, { service });
+		logger.error(`Unknown command : ${command}`, { service });
 	}
 }
 
