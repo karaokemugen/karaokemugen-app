@@ -116,7 +116,7 @@ const portable = dataPath === resolve(appPath, 'app/');
 
 setState({ appPath, dataPath, resourcePath, portable });
 
-process.env.NODE_ENV = 'production'; // Default
+process.env.NODE_ENV = process.env.NODE_ENV || 'production'; // Default
 
 // Electron packaged app does not need a slice(2) but a (1) since it has no script argument
 const args = app.isPackaged ? process.argv.slice(1) : process.argv.slice(2);
