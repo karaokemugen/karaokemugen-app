@@ -326,6 +326,7 @@ export function emitPlayerState() {
 }
 
 export function defineMPVEnv() {
+	// On Linux we bundle some libs so we need to add our mpv's folder to LD_LIBRARY_PATH.
 	const env = { ...process.env };
 	if (process.platform === 'linux') {
 		const state = getState();
@@ -391,6 +392,7 @@ async function checkMpv() {
 	}
 }
 
+/* is the scale ffmpeg lavfi-complex option available? */
 function isScaleAvailable(): boolean {
 	// Either it's a semver or a N-xxxxx-xxxx version number
 	if (playerState.ffmpegVersion.startsWith('N')) {
@@ -432,7 +434,8 @@ export class Players {
 			getConfig().Player.Display.Avatar &&
 			!(playerState.ffmpegVersion.includes('.') && semver.satisfies(playerState.ffmpegVersion, '7.0.x'));
 		const cropRatio = shouldDisplayAvatar ? Math.floor((await getAvatarResolution(song.avatar)) * 0.5) : 0;
-		let avatar = '';
+
+		let avatar = `[vid${playerState.currentVideoTrack}]null[vo]`;
 
 		if (shouldDisplayAvatar) {
 			// Checking if ffmpeg's version in mpv is either a semver or a version revision and if it's better or not than the required versions we have.
@@ -458,7 +461,7 @@ export class Players {
 				.filter(x => !!x)
 				.join(';');
 		}
-		return [audio, avatar || `[vid${playerState.currentVideoTrack}]null[vo]`].filter(x => !!x).join(';');
+		return [audio, avatar].filter(x => !!x).join(';');
 	}
 
 	isRunning() {
@@ -879,7 +882,7 @@ export class Players {
 						});
 				}),
 		];
-		await Promise.all<Promise<any>>(loadPromises);
+		await Promise.all(loadPromises);
 		logger.debug(`Loading media: ${mediaFile}${subFile ? ` with ${subFile}` : ''}`, { service });
 		const config = getConfig();
 		if (subFile) {
@@ -972,6 +975,7 @@ export class Players {
 		return null;
 	}
 
+	/* Function playing playlist medias (jingles, intros, etc.) */
 	async playMedia(mediaType: PlaylistMediaType): Promise<PlayerState> {
 		const conf = getConfig();
 		const media = getSingleMedia(mediaType);
