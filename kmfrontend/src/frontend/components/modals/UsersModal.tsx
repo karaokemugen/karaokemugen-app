@@ -130,17 +130,6 @@ function UsersModal(props: IProps) {
 												{userDetails.social_networks.discord}
 											</div>
 										) : null}
-										{userDetails?.social_networks.twitter ? (
-											<div>
-												<i className="fab fa-fw fa-twitter" />
-												<a
-													href={`https://twitter.com/${userDetails.social_networks.twitter}`}
-													rel="noreferrer noopener"
-												>
-													{userDetails.social_networks.twitter}
-												</a>
-											</div>
-										) : null}
 										{userDetails?.social_networks.mastodon ? (
 											<div>
 												<i className="fab fa-fw fa-mastodon" />

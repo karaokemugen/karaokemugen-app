@@ -228,8 +228,6 @@
 			"FLAG_PUBLIC": "இந்த சுயவிவரத்தை பகிரங்கப்படுத்துங்கள்",
 			"FLAG_DISPLAYFAVORITES": "உங்களுக்கு பிடித்தவை பகிரங்கப்படுத்துங்கள்",
 			"SOCIAL_NETWORKS": {
-				"TWITTER": "ஃச் (முன்னர் ட்விட்டர்)",
-				"TWITTER_PLACEHOLDER": "@Karaokegen",
 				"MASTODON": "மாச்டோடன்",
 				"MASTODON_PLACEHOLDER": "Karaokemugen@shelter.moe",
 				"BLUESKY": "ப்ளூச்கி",
@@ -1824,8 +1822,7 @@
 				"BLUESKY": "ப்ளூச்கி: ",
 				"TWITCH": "இழுப்பு: ",
 				"INSTAGRAM": "இன்ச்டாகிராம்: ",
-				"DISCORD": "முரண்பாடு: ",
-				"TWITTER": "ட்விட்டர்: "
+				"DISCORD": "முரண்பாடு: "
 			},
 			"USERNAME": "பயனர்பெயர்: ",
 			"MAIL": "மின்னஞ்சல்: ",

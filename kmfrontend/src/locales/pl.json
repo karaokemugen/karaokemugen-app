@@ -816,8 +816,6 @@
 			"SOCIAL_NETWORKS": {
 				"MASTODON": "Mastodon",
 				"BLUESKY": "Bluesky",
-				"TWITTER": "X (dawniej Twitter)",
-				"TWITTER_PLACEHOLDER": "@KaraokeMugen",
 				"MASTODON_PLACEHOLDER": "KaraokeMugen@shelter.moe",
 				"BLUESKY_PLACEHOLDER": "karaoke.bsky.social",
 				"TWITCH": "Twitch",
@@ -1529,8 +1527,7 @@
 				"MASTODON": "Mastodon: ",
 				"DISCORD": "Niezgoda: ",
 				"INSTAGRAM": "Instagram: ",
-				"TWITCH": "Twitch: ",
-				"TWITTER": "Twitter: "
+				"TWITCH": "Twitch: "
 			},
 			"URL": "Website: ",
 			"MAIL": "Email: "

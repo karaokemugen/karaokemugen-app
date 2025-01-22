@@ -111,17 +111,6 @@ export default function Inbox() {
 							{userDetails.social_networks.discord}
 						</div>
 					) : null}
-					{userDetails?.social_networks?.twitter ? (
-						<div>
-							<label>{i18next.t('INBOX.CONTACT_INFOS_MODAL.SOCIAL_NETWORKS.TWITTER')}</label>
-							<a
-								href={`https://twitter.com/${userDetails.social_networks.twitter}`}
-								rel="noreferrer noopener"
-							>
-								{userDetails.social_networks.twitter}
-							</a>
-						</div>
-					) : null}
 					{userDetails?.social_networks?.mastodon ? (
 						<div>
 							<label>{i18next.t('INBOX.CONTACT_INFOS_MODAL.SOCIAL_NETWORKS.MASTODON')}</label>

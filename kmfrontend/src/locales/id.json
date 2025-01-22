@@ -771,7 +771,6 @@
 		"CONTACT_INFOS_MODAL": {
 			"URL": "Situs Web: ",
 			"SOCIAL_NETWORKS": {
-				"TWITTER": "Twitter: ",
 				"MASTODON": "Mastodon: ",
 				"BLUESKY": "Bluesky: ",
 				"INSTAGRAM": "Instagram: ",
@@ -896,13 +895,11 @@
 			"MAIN_SONG_NAME_LANG": "Preferensi tampilan nama lagu",
 			"FLAG_PARENTSONLY": "Kelompokkan lagu berdasarkan versi",
 			"SOCIAL_NETWORKS": {
-				"TWITTER_PLACEHOLDER": "@KaraokeMugen",
 				"TWITCH": "Twitch",
 				"TWITCH_PLACEHOLDER": "KaraokeLive",
 				"INSTAGRAM": "Instagram",
 				"INSTAGRAM_PLACEHOLDER": "karaokemugen",
 				"DISCORD_PLACEHOLDER": "Karak#1423",
-				"TWITTER": "Twitter",
 				"MASTODON": "Mastodon",
 				"MASTODON_PLACEHOLDER": "KaraokeMugen@shelter.moe",
 				"BLUESKY": "Bluesky",

@@ -597,8 +597,6 @@
 				"INSTAGRAM_PLACEHOLDER": "karaokemugen",
 				"INSTAGRAM": "Instagram",
 				"TWITCH_PLACEHOLDER": "KaraokeLive",
-				"TWITTER": "Twitter",
-				"TWITTER_PLACEHOLDER": "@KaraokeMugen",
 				"MASTODON": "Mastodon",
 				"MASTODON_PLACEHOLDER": "KaraokeMugen@shelter.moe",
 				"BLUESKY": "Bluesky",
@@ -1746,7 +1744,6 @@
 			"URL": "Sitio web: ",
 			"SOCIAL_NETWORKS": {
 				"INSTAGRAM": "Instagram: ",
-				"TWITTER": "Twitter: ",
 				"BLUESKY": "Bluesky: ",
 				"MASTODON": "Mastodon: ",
 				"DISCORD": "Discord: ",

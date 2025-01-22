@@ -692,8 +692,6 @@
 			"FLAG_PUBLIC": "Rendre ce profil visible aux autres",
 			"FLAG_DISPLAYFAVORITES": "Rendre public ses favoris",
 			"SOCIAL_NETWORKS": {
-				"TWITTER": "X (anciennement Twitter)",
-				"TWITTER_PLACEHOLDER": "@KaraokeMugen",
 				"MASTODON": "Mastodon",
 				"MASTODON_PLACEHOLDER": "KaraokeMugen@shelter.moe",
 				"BLUESKY": "Bluesky",
@@ -2062,7 +2060,6 @@
 			"MAIL": "Courriel : ",
 			"URL": "Site web : ",
 			"SOCIAL_NETWORKS": {
-				"TWITTER": "Twitter : ",
 				"MASTODON": "Mastodon : ",
 				"BLUESKY": "Bluesky : ",
 				"TWITCH": "Twitch : ",

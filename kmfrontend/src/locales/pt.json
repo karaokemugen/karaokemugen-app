@@ -500,10 +500,8 @@
 			"SOCIAL_NETWORKS": {
 				"TWITCH_PLACEHOLDER": "Karaokê ao vivo",
 				"INSTAGRAM": "Instagram",
-				"TWITTER": "X (anteriormente Twitter)",
 				"DISCORD": "Discórdia",
 				"MASTODON": "Mastodonte",
-				"TWITTER_PLACEHOLDER": "@KaraokêMugen",
 				"ANILIST": "ListaAni",
 				"BLUESKY": "Céu azul",
 				"BLUESKY_PLACEHOLDER": "karaokê.bsky.social",
@@ -1739,7 +1737,6 @@
 			"SOCIAL_NETWORKS": {
 				"MASTODON": "Mastodonte: ",
 				"BLUESKY": "Céu azul: ",
-				"TWITTER": "Twitter: ",
 				"TWITCH": "Contração muscular: ",
 				"INSTAGRAM": "Instagram: ",
 				"DISCORD": "Discórdia: "

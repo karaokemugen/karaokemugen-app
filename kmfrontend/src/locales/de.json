@@ -1138,8 +1138,6 @@
 				"MYANIMELIST": "MyAnimeList",
 				"TWITCH_PLACEHOLDER": "KaraokeLive",
 				"DISCORD": "Discord",
-				"TWITTER_PLACEHOLDER": "@KaraokeMugen",
-				"TWITTER": "X (ehemals Twitter)",
 				"MASTODON": "Mastodon",
 				"MASTODON_PLACEHOLDER": "KaraokeMugen@shelter.moe",
 				"TWITCH": "Twitch",
@@ -1943,7 +1941,6 @@
 			"SOCIAL_NETWORKS": {
 				"MASTODON": "Mastodon: ",
 				"DISCORD": "Discord: ",
-				"TWITTER": "Twitter: ",
 				"TWITCH": "Twitch: ",
 				"INSTAGRAM": "Instagram: ",
 				"BLUESKY": "Bluesky: "
