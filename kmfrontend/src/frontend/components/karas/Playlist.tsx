@@ -992,12 +992,21 @@ function Playlist(props: IProps) {
 			for (const value of context.globalState.settings.data.config.System.Repositories.filter(
 				value => value.Enabled && value.Online
 			)) {
-				const manifest: RepositoryManifestV2 = await commandBackend('getRepoManifest', { name: value.Name });
-				newRepos.push({
-					name: value.Name,
-					url: `http${value.Secure && 's'}://${value.Name}/`,
-					suggestUrl: manifest.suggestURL,
-				});
+				if (props.scope === 'admin') {
+					const manifest: RepositoryManifestV2 = await commandBackend('getRepoManifest', {
+						name: value.Name,
+					});
+					newRepos.push({
+						name: value.Name,
+						url: `http${value.Secure && 's'}://${value.Name}/`,
+						suggestUrl: manifest.suggestURL,
+					});
+				} else {
+					newRepos.push({
+						name: value.Name,
+						url: `http${value.Secure && 's'}://${value.Name}/`,
+					});
+				}
 			}
 		}
 		setRepositories(newRepos);
