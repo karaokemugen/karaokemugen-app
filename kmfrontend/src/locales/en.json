@@ -1204,7 +1204,8 @@
 		"MEDIAS": "Media",
 		"TAGS": "Tags",
 		"REPOSITORY": "Repository",
-		"TYPE": "Type"
+		"TYPE": "Type",
+		"DELETE_ALL_MEDIAS": "Delete all unused media"
 	},
 	"USERS": {
 		"TYPE": "Account type",

@@ -1204,7 +1204,8 @@
 		"MEDIAS": "Médias",
 		"TAGS": "Tags",
 		"REPOSITORY": "Dépôt",
-		"TYPE": "Type"
+		"TYPE": "Type",
+		"DELETE_ALL_MEDIAS": "Supprimer tous les médias inutilisés"
 	},
 	"USERS": {
 		"TYPE": "Type de compte",
