@@ -395,8 +395,8 @@ async function checkMpv() {
 /* is the scale ffmpeg lavfi-complex option available? */
 function isScaleAvailable(): boolean {
 	// Either it's a semver or a N-xxxxx-xxxx version number
-	if (playerState.ffmpegVersion.startsWith('N')) {
-		return parseInt(playerState.ffmpegVersion.split('-')[1]) >= requiredMPVFFmpegMasterVersion;
+	if (playerState.ffmpegVersion?.startsWith('N')) {
+		return parseInt(playerState.ffmpegVersion?.split('-')[1]) >= requiredMPVFFmpegMasterVersion;
 	} else {
 		return semver.satisfies(semver.coerce(playerState.ffmpegVersion), requiredMPVFFmpegVersion);
 	}
@@ -432,7 +432,7 @@ export class Players {
 			song.avatar &&
 			getConfig().Player.Display.SongInfo &&
 			getConfig().Player.Display.Avatar &&
-			!(playerState.ffmpegVersion.includes('.') && semver.satisfies(playerState.ffmpegVersion, '7.0.x'));
+			!(playerState.ffmpegVersion?.includes('.') && semver.satisfies(playerState.ffmpegVersion, '7.0.x'));
 		const cropRatio = shouldDisplayAvatar ? Math.floor((await getAvatarResolution(song.avatar)) * 0.5) : 0;
 
 		let avatar = `[vid${playerState.currentVideoTrack}]null[vo]`;
@@ -640,7 +640,7 @@ export class Players {
 		// Also disable for macOS as of November 2024 no mpv version seems to work with this.
 		if (
 			process.platform === 'darwin' ||
-			(playerState.ffmpegVersion.includes('.') && semver.satisfies(playerState.ffmpegVersion, '7.0.x'))
+			(playerState.ffmpegVersion?.includes('.') && semver.satisfies(playerState.ffmpegVersion, '7.0.x'))
 		)
 			return '';
 		const scaleAvailable = isScaleAvailable();
