@@ -1998,7 +1998,8 @@
 		"TYPE": "Typ",
 		"FILE": "Datei",
 		"MEDIAS": "Medien",
-		"REPOSITORY": "Repository"
+		"REPOSITORY": "Repository",
+		"DELETE_ALL_MEDIAS": "Alle ungenutzten Medien löschen"
 	},
 	"SESSIONS": {
 		"SESSION_EXPORT_PLAYED_COUNT": "Gespielte Lieder (gruppiert nach Anzahl der gespielten Lieder)",
