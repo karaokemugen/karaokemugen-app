@@ -8,6 +8,7 @@ import {
 	addRepo,
 	checkGitRepoStatus,
 	compareLyricsChecksums,
+	convertToUUIDFormat,
 	copyLyricsRepo,
 	deleteMedias,
 	dropStashInRepo,
@@ -57,6 +58,15 @@ export default function repoController(router: SocketIOApp) {
 		try {
 			return removeSSHKey(req.body.repoName);
 		} catch (err) {
+			throw { code: err.code || 500, message: APIMessage(err.message) };
+		}
+	});
+	router.route('convertRepoToUUID', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'closed');
+		try {
+			return convertToUUIDFormat(req.body.repoName);
+		} catch (err) {
+			console.log(err);
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});

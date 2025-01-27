@@ -2,7 +2,7 @@ import { shell } from 'electron';
 import { promises as fs } from 'fs';
 import { copy, remove } from 'fs-extra';
 import parallel from 'p-map';
-import { basename, parse, resolve } from 'path';
+import { basename, dirname, extname, parse, resolve } from 'path';
 import { TopologicalSort } from 'topological-sort';
 
 import { compareKarasChecksum, generateDB } from '../dao/database.js';
@@ -29,8 +29,10 @@ import { ErrorKM } from '../lib/utils/error.js';
 import { asyncCheckOrMkdir, listAllFiles, moveAll, relativePath, resolveFileInDirs } from '../lib/utils/files.js';
 import HTTP, { fixedEncodeURIComponent } from '../lib/utils/http.js';
 import logger, { profile } from '../lib/utils/logger.js';
+import { sortJSON } from '../lib/utils/objectHelpers.js';
 import { computeFileChanges } from '../lib/utils/patch.js';
 import Task from '../lib/utils/taskManager.js';
+import { isUUID } from '../lib/utils/validators.js';
 import { emitWS } from '../lib/utils/ws.js';
 import { Change, Commit, DifferentChecksumReport, ModifiedMedia, Push } from '../types/repo.js';
 import { adminToken } from '../utils/constants.js';
@@ -48,7 +50,7 @@ import { createKaraInDB, integrateKaraFile, removeKara } from './karaManagement.
 import { createProblematicSmartPlaylist, updateAllSmartPlaylists } from './smartPlaylist.js';
 import { sendPayload } from './stats.js';
 import { getTags, integrateTagFile, removeTag } from './tag.js';
-import { isUUID } from '../lib/utils/validators.js';
+import { uuidRegexp } from '../lib/utils/constants.js';
 
 const service = 'Repo';
 
@@ -1603,5 +1605,65 @@ export async function openMediaFolder(repoName: string) {
 		logger.error(`Unable to open media folders : ${err}`, { service });
 		sentry.error(err);
 		throw err instanceof ErrorKM ? err : new ErrorKM('OPEN_MEDIA_FOLDER_ERROR');
+	}
+}
+
+export async function convertToUUIDFormat(repoName: string) {
+	logger.info(`Converting repository ${repoName} to UUIDs`, { service });
+	const task = new Task({
+		text: 'CONVERTING_TO_UUID',
+		value: 0,
+	});
+	try {
+		const tags = await getTags({});
+		const karaDirs = resolvedPathRepos('Karaokes', repoName);
+		const karafiles = await fs.readdir(karaDirs[0]);
+		task.update({
+			total: karafiles.length,
+		});
+		for (const karafile of karafiles) {
+			task.incr();
+			if (basename(karafile, extname(karafile)).match(uuidRegexp)) continue;
+			const karapath = resolve(karaDirs[0], karafile);
+			const karadata = await fs.readFile(karapath, 'utf-8');
+			const kara = JSON.parse(karadata);
+			const mediafile = kara.medias[0].filename;
+			const subfile = kara.medias[0].lyrics[0]?.filename;
+			kara.medias[0].filename = `${kara.data.kid}${extname(mediafile)}`;
+			let mediapath = '';
+			try {
+				mediapath = (await resolveFileInDirs(mediafile, resolvedPathRepos('Medias', repoName)))[0];
+			} catch (err) {
+				// Media might be missing, it's okay.
+			}
+			const newMediapath = resolve(dirname(mediapath), `${kara.data.kid}${extname(mediafile)}`);
+			kara.medias[0].filename = basename(newMediapath);
+			if (mediapath) {
+				await fs.rename(mediapath, newMediapath);
+			}
+			if (subfile) {
+				try {
+					const subpath = (await resolveFileInDirs(subfile, resolvedPathRepos('Lyrics', repoName)))[0];
+					const newSubpath = resolve(dirname(subpath), `${kara.data.kid}${extname(subfile)}`);
+					await fs.rename(subpath, newSubpath);
+					kara.medias[0].lyrics[0].filename = basename(newSubpath);
+				} catch (err) {
+					console.log(err);
+					throw err;
+				}
+			}
+			kara.data.songname = defineSongname(kara, tags.content);
+			kara.data = sortJSON(kara.data);
+			await fs.writeFile(
+				resolve(resolvedPathRepos('Karaokes', repoName)[0], `${kara.data.kid}.kara.json`),
+				JSON.stringify(kara, null, 2)
+			);
+			await fs.unlink(karapath);
+		}
+		logger.info(`Finished converting repository ${repoName} to UUIDs`, { service });
+	} catch (err) {
+		throw err;
+	} finally {
+		task.end();
 	}
 }

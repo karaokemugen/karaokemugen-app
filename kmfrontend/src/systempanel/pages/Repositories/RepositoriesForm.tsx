@@ -13,6 +13,7 @@ interface RepositoriesFormProps {
 	repository: Repository;
 	save: any;
 	movingMedia: (movingMediaPath: string) => void;
+	convertToUUID: (repo: string) => void;
 	compareLyrics: (repo: string) => void;
 	syncTags: (repo: string) => void;
 }
@@ -538,6 +539,24 @@ function RepositoryForm(props: RepositoriesFormProps) {
 							style={{ textAlign: 'left', marginTop: '10px' }}
 							message={i18next.t('WARNING')}
 							description={i18next.t('REPOSITORIES.MOVING_MEDIA_ABOUT_MESSAGE')}
+							type="warning"
+						/>
+					</Form.Item>
+					<Divider orientation="left">{i18next.t('REPOSITORIES.CONVERT_TO_UUID_PANEL')}</Divider>
+
+					<Form.Item style={{ textAlign: 'right' }}>
+						<Button
+							type="primary"
+							danger
+							disabled={zipUpdateInProgress}
+							onClick={() => props.convertToUUID(props.repository.Name)}
+						>
+							{i18next.t('REPOSITORIES.CONVERT_TO_UUID_BUTTON')}
+						</Button>
+						<Alert
+							style={{ textAlign: 'left', marginTop: '10px' }}
+							message={i18next.t('WARNING')}
+							description={i18next.t('REPOSITORIES.CONVERT_TO_UUID_ABOUT_MESSAGE')}
 							type="warning"
 						/>
 					</Form.Item>
