@@ -419,7 +419,7 @@ export class Players {
 
 		const shouldDisplayAvatar =
 			showVideo && song.avatar && getConfig().Player.Display.SongInfo && getConfig().Player.Display.Avatar;
-		const shouldDisplayQRcode = showVideo && getConfig().Player.Display.ConnectionInfo.QRCode;
+		const shouldDisplayQRcode = showVideo && getConfig().Player.Display.ConnectionInfo.QRCodeDuringSong;
 
 		// Avatar
 		const cropRatio = shouldDisplayAvatar ? Math.floor((await getAvatarResolution(song.avatar)) * 0.5) : 0;
@@ -436,7 +436,7 @@ export class Players {
 		) {
 			return '[vid1]null[vo]';
 		} else {
-			let needThirdSplit = shouldDisplayAvatar && shouldDisplayQRcode;
+			const needThirdSplit = shouldDisplayAvatar && shouldDisplayQRcode;
 
 			if (shouldDisplayAvatar) {
 				avatar = this.genLavfiAvatar(song.avatar, song.duration, cropRatio, needThirdSplit);
@@ -477,7 +477,7 @@ export class Players {
 		// This is a fix for people using mpvs with ffmpeg < 7.1 or a certain commit version.
 		const scaleAvailable = isScaleAvailable();
 
-		let split = `[vid${playerState.currentVideoTrack}]split=${needThirdSplit ? '3[base][v_in1][v_in2]' : '2[base][v_in1]'}`;
+		const split = `[vid${playerState.currentVideoTrack}]split=${needThirdSplit ? '3[base][v_in1][v_in2]' : '2[base][v_in1]'}`;
 
 		// Again, lavfi-complex expert @nah comes to the rescue!
 		return [
@@ -738,7 +738,7 @@ export class Players {
 			const qrCode =
 				conf.Player.Display.ConnectionInfo.Enabled && conf.Player.Display.ConnectionInfo.QRCode
 					? {
-							'lavfi-complex': Players.genLavfiQRCode(false),
+							'lavfi-complex': `${Players.genLavfiQRCode(false)}[vo]`,
 						}
 					: {};
 			if (background.music[0]) {
@@ -752,7 +752,7 @@ export class Players {
 							'audio-files-set': background.music[0],
 							aid: '1',
 							'loop-file': 'inf',
-							...qrCode,
+							//...qrCode,
 						},
 					],
 				});

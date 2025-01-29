@@ -121,6 +121,7 @@ export const defaults: Config = {
 				Host: null,
 				Message: '',
 				QRCode: false,
+				QRCodeDuringSong: false,
 			},
 			RandomQuotes: true,
 			SongInfo: true,
