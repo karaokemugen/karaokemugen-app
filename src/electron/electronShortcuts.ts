@@ -18,12 +18,18 @@ const service = 'MediaShortcuts';
 
 export async function registerShortcuts() {
 	if (process.platform === 'darwin') {
-		if (getConfig().App.FirstRun)
+		if (getConfig().App.FirstRun) {
 			await dialog.showMessageBox({
 				title: i18next.t('PERMISSIONS_KEYBOARD_INFO_MACOS.TITLE'),
 				message: i18next.t('PERMISSIONS_KEYBOARD_INFO_MACOS.MESSAGE'),
 			});
+		} else if (!systemPreferences.isTrustedAccessibilityClient(false)) {
+			// Not first run, but accessibility hasn't been enabled yet, so we simply return.
+			return;
+		}
 		systemPreferences.isTrustedAccessibilityClient(true);
+		// Media keys won't be switched on on first run.
+		return;
 	}
 	profile('initKeyboardShortcuts');
 	if (process.platform === 'linux') {

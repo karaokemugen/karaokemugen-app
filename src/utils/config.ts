@@ -232,7 +232,7 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	const config = setConfig(newConfig);
 
 	// Toggling media shortcuts
-	if (!oldConfig.Player.KeyboardMediaShortcuts && config.Player.KeyboardMediaShortcuts) registerShortcuts();
+	if (!oldConfig.Player.KeyboardMediaShortcuts && config.Player.KeyboardMediaShortcuts) registerShortcuts(true);
 	if (oldConfig.Player.KeyboardMediaShortcuts && !config.Player.KeyboardMediaShortcuts) unregisterShortcuts();
 	// Toggling poll
 	if (state.ready) setSongPoll(config.Karaoke.Poll.Enabled);
