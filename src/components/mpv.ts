@@ -414,7 +414,48 @@ export class Players {
 
 	/** Define lavfi-complex commands when we need to display stuff on screen or adjust audio volume. And it's... complex. */
 	private static async genLavfiComplex(song: CurrentSong, showVideo = true): Promise<string> {
-		const isMP3 = supportedFiles.audio.some(extension => song.mediafile.endsWith(extension));
+		//audio loudnorm
+		const audio = this.genLavfiLoudnorm(song);
+
+		const shouldDisplayAvatar =
+			showVideo && song.avatar && getConfig().Player.Display.SongInfo && getConfig().Player.Display.Avatar;
+		const shouldDisplayQRcode = showVideo && getConfig().Player.Display.ConnectionInfo.QRCode;
+
+		// Avatar
+		const cropRatio = shouldDisplayAvatar ? Math.floor((await getAvatarResolution(song.avatar)) * 0.5) : 0;
+
+		let returnLavfi: string;
+		let avatar: string;
+		let qrCode: string;
+
+		// Disable this for mpvs with ffmpeg version 7.0
+		// Does not work on macOS at the moment (November 2024) due to mpv versions not including a good ffmpeg.
+		if (
+			process.platform === 'darwin' ||
+			(playerState.ffmpegVersion.includes('.') && semver.satisfies(playerState.ffmpegVersion, '7.0.x'))
+		) {
+			return '[vid1]null[vo]';
+		} else {
+			let needThirdSplit = shouldDisplayAvatar && shouldDisplayQRcode;
+
+			if (shouldDisplayAvatar) {
+				avatar = this.genLavfiAvatar(song.avatar, song.duration, cropRatio, needThirdSplit);
+			}
+
+			if (shouldDisplayQRcode) {
+				qrCode = this.genLavfiQRCode(needThirdSplit);
+			}
+
+			const parts = [audio];
+			if (shouldDisplayAvatar) parts.push(avatar + (shouldDisplayQRcode ? '[avatar_out]' : '[vo]'));
+			if (shouldDisplayQRcode) parts.push(qrCode + '[vo]');
+
+			returnLavfi = parts.join(';');
+		}
+		return returnLavfi;
+	}
+
+	private static genLavfiLoudnorm(song: CurrentSong): string {
 		// Loudnorm normalization scheme: https://ffmpeg.org/ffmpeg-filters.html#loudnorm
 		let audio: string;
 		if (song.loudnorm) {
@@ -423,45 +464,37 @@ export class Players {
 		} else {
 			audio = '';
 		}
+		return audio;
+	}
 
-		// Avatar
-		const shouldDisplayAvatar =
-			// Does not work on macOS at the moment (November 2024) due to mpv versions not including a good ffmpeg.
-			process.platform !== 'darwin' &&
-			showVideo &&
-			song.avatar &&
-			getConfig().Player.Display.SongInfo &&
-			getConfig().Player.Display.Avatar &&
-			!(playerState.ffmpegVersion?.includes('.') && semver.satisfies(playerState.ffmpegVersion, '7.0.x'));
-		const cropRatio = shouldDisplayAvatar ? Math.floor((await getAvatarResolution(song.avatar)) * 0.5) : 0;
+	private static genLavfiAvatar(
+		songAvatar: string,
+		songDuration: number,
+		cropRatio: number,
+		needThirdSplit: boolean
+	): string {
+		// Checking if ffmpeg's version in mpv is either a semver or a version revision and if it's better or not than the required versions we have.
+		// This is a fix for people using mpvs with ffmpeg < 7.1 or a certain commit version.
+		const scaleAvailable = isScaleAvailable();
 
-		let avatar = `[vid${playerState.currentVideoTrack}]null[vo]`;
+		let split = `[vid${playerState.currentVideoTrack}]split=${needThirdSplit ? '3[base][v_in1][v_in2]' : '2[base][v_in1]'}`;
 
-		if (shouldDisplayAvatar) {
-			// Checking if ffmpeg's version in mpv is either a semver or a version revision and if it's better or not than the required versions we have.
-			// This is a fix for people using mpvs with ffmpeg < 7.1 or a certain commit version.
-			const scaleAvailable = isScaleAvailable();
-
-			// Again, lavfi-complex expert @nah comes to the rescue!
-			avatar = [
-				`movie=\\'${song.avatar.replaceAll(
-					'\\',
-					'/'
-				)}\\',format=yuva420p,geq=lum='p(X,Y)':a='if(gt(abs(W/2-X),W/2-${cropRatio})*gt(abs(H/2-Y),H/2-${cropRatio}),if(lte(hypot(${cropRatio}-(W/2-abs(W/2-X)),${cropRatio}-(H/2-abs(H/2-Y))),${cropRatio}),255,0),255)'[logo]`,
-				scaleAvailable ? `[vid${playerState.currentVideoTrack}]split[v_in1][base]` : '',
-				isMP3 ? `nullsrc=size=1x1:duration=${song.duration}[emp]` : undefined,
-				isMP3 ? '[base][emp]overlay[ovrl]' : undefined,
-				scaleAvailable
-					? '[logo][v_in1]scale=w=(rh*.128):h=(rh*.128)[logo1]'
-					: `[logo][vid${playerState.currentVideoTrack}]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base]`,
-				`[${isMP3 ? 'ovrl' : 'base'}][logo1]overlay=x='if(between(t,0,8)+between(t,${song.duration - 8},${
-					song.duration
-				}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`,
-			]
-				.filter(x => !!x)
-				.join(';');
-		}
-		return [audio, avatar].filter(x => !!x).join(';');
+		// Again, lavfi-complex expert @nah comes to the rescue!
+		return [
+			`movie=\\'${songAvatar.replaceAll(
+				'\\',
+				'/'
+			)}\\',format=yuva420p,geq=lum='p(X,Y)':a='if(gt(abs(W/2-X),W/2-${cropRatio})*gt(abs(H/2-Y),H/2-${cropRatio}),if(lte(hypot(${cropRatio}-(W/2-abs(W/2-X)),${cropRatio}-(H/2-abs(H/2-Y))),${cropRatio}),255,0),255)'[avatar]`,
+			scaleAvailable ? `${split}` : '',
+			`nullsrc=size=1x1:duration=${songDuration}[emp]`,
+			'[base][emp]overlay[ovrl]',
+			scaleAvailable
+				? '[avatar][v_in1]scale=w=(rh*.128):h=(rh*.128)[avatar1]'
+				: `[avatar][vid${playerState.currentVideoTrack}]scale2ref=w=(ih*.128):h=(ih*.128)[avatar1][ovrl]`,
+			`[ovrl][avatar1]overlay=x='if(between(t,0,8)+between(t,${songDuration - 8},${songDuration}),W-(W*29/300),NAN)':y=H-(H*29/200)`,
+		]
+			.filter(x => !!x)
+			.join(';');
 	}
 
 	isRunning() {
@@ -635,35 +668,52 @@ export class Players {
 		}
 	}
 
-	private genLavfiComplexQRCode(): string {
+	private static genLavfiQRCode(needThirdSplit: boolean): string {
 		// Disable this for mpvs with ffmpeg version 7.0
-		// Also disable for macOS as of November 2024 no mpv version seems to work with this.
+		// Does not work on macOS at the moment (November 2024) due to mpv versions not including a good ffmpeg.
 		if (
 			process.platform === 'darwin' ||
-			(playerState.ffmpegVersion?.includes('.') && semver.satisfies(playerState.ffmpegVersion, '7.0.x'))
+			(playerState.ffmpegVersion.includes('.') && semver.satisfies(playerState.ffmpegVersion, '7.0.x'))
 		)
 			return '';
+
+		let overlay: string;
+		let videoInput: number;
+		let split: string;
+		if (needThirdSplit) {
+			videoInput = 2;
+			split = '';
+			overlay = '[avatar_out]';
+		} else {
+			videoInput = 1;
+			split = `[vid${playerState.currentVideoTrack}]split[base][v_in${videoInput}]`;
+			overlay = '[base]';
+		}
+
 		const scaleAvailable = isScaleAvailable();
+		const qrCodeFile = resolve(resolvedPath('Temp'), 'qrcode.png').replaceAll('\\', '/');
 		return [
-			`movie=\\'${resolve(resolvedPath('Temp'), 'qrcode.png').replaceAll('\\', '/')}\\'[logo]`,
-			scaleAvailable ? `[vid${playerState.currentVideoTrack}]split[v_in1][base]` : '',
+			`movie=\\'${qrCodeFile}\\'[qrcode]`,
+			scaleAvailable ? `${split}` : '',
 			scaleAvailable
-				? '[logo][v_in1]scale=w=(rh*.256):h=(rh*.256)[logo1]'
-				: `[logo][vid${playerState.currentVideoTrack}]scale2ref=w=(ih*.256):h=(ih*.256)[logo1][base]`,
-			'[base][logo1]overlay=x=W-(W*50/300):y=H*20/300[vo]',
+				? `[qrcode][v_in${videoInput}]scale=w=(rh*.256):h=(rh*.256)[qrcode1]`
+				: `[qrcode][vid${playerState.currentVideoTrack}]scale2ref=w=(ih*.256):h=(ih*.256)[qrcode1][base]`,
+			`${overlay}[qrcode1]overlay=x=W-w-(W*0.05):y=H*0.05`,
 		]
 			.filter(x => !!x)
 			.join(';');
 	}
 
 	async displayQRCode() {
-		await this.exec({ command: ['set_property', 'lavfi-complex', this.genLavfiComplexQRCode()] });
+		await this.exec({
+			command: ['set_property', 'lavfi-complex', `${Players.genLavfiQRCode(false)}[vo]`],
+		});
 	}
 
 	async hideQRCode() {
 		if (playerState.playerStatus !== 'play') {
 			await this.exec({
-				command: ['set_property', 'lavfi-complex', `[vid${playerState.currentVideoTrack}]null[vo]`],
+				command: ['set_property', 'lavfi-complex', `[vid1]null[vo]`],
 			});
 		}
 	}
@@ -688,7 +738,7 @@ export class Players {
 			const qrCode =
 				conf.Player.Display.ConnectionInfo.Enabled && conf.Player.Display.ConnectionInfo.QRCode
 					? {
-							'lavfi-complex': this.genLavfiComplexQRCode(),
+							'lavfi-complex': Players.genLavfiQRCode(false),
 						}
 					: {};
 			if (background.music[0]) {
