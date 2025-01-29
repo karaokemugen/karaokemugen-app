@@ -105,18 +105,19 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 			// Redefine mediapath as coming from temp
 			mediaPath = resolve(resolvedPath('Temp'), kara.medias[0].filename);
 			try {
-				const extractFile = await extractVideoSubtitles(mediaPath, kara.data.kid);
+				const { extractFile, mediasize } = await extractVideoSubtitles(mediaPath, kara.data.kid);
 				if (extractFile) {
 					if (kara.medias[0] && !kara.medias[0].lyrics) {
 						kara.medias[0].lyrics = [];
 					}
+					kara.medias[0].filesize = mediasize;
 					kara.medias[0].lyrics[0] = {
 						filename: basename(extractFile),
 						default: true,
 						version: 'Default',
 					};
 					filenames.lyricsfiles[0] = sanitizedFilename + extname(kara.medias[0].lyrics[0].filename);
-					editedKara.modifiedLyrics[0] = true;
+					editedKara.modifiedLyrics = true;
 				}
 			} catch (err) {
 				// Not lethal
@@ -253,11 +254,12 @@ export async function createKara(editedKara: EditedKara) {
 
 		const mediaPath = resolve(resolvedPath('Temp'), kara.medias[0].filename);
 		try {
-			const extractFile = await extractVideoSubtitles(mediaPath, kara.data.kid);
+			const { extractFile, mediasize } = await extractVideoSubtitles(mediaPath, kara.data.kid);
 			if (extractFile) {
 				if (kara.medias[0] && !kara.medias[0].lyrics) {
 					kara.medias[0].lyrics = [];
 				}
+				kara.medias[0].filesize = mediasize;
 				kara.medias[0].lyrics[0] = {
 					filename: basename(extractFile),
 					default: true,
