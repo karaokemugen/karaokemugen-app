@@ -399,7 +399,7 @@
 			"DISPLAY_CONNECTION_INFO_QRCODE": "Show QRCode when player is stopped",
 			"DISPLAY_CONNECTION_INFO_QRCODE_TOOLTIP": "The QRCode will be displayed on the upper-right part of the pause and stop screens.",
 			"DISPLAY_CONNECTION_INFO_QRCODE_DURING_SONG": "Show QRCode during songs",
-			"DISPLAY_CONNECTION_INFO_QRCODE_DURING_SONG_TOOLTIP": "The QRCode will be displayed during songs in the upper-right part of the screen",
+			"DISPLAY_CONNECTION_INFO_QRCODE_DURING_SONG_TOOLTIP": "The QRCode will be displayed during songs in the upper-right part of the screen.",
 			"DISPLAY_CONNECTION_INFO_MESSAGE": "Connection information message",
 			"DISPLAY_CONNECTION_INFO_MESSAGE_TOOLTIP": "Customize the message displayed on screen, to encourage your audience or give them more information. Use $url to display this karaoke session's URL. Like this: \"Go to $url!\"",
 			"DISPLAY_CONNECTION_INFO": "Show connection information",
