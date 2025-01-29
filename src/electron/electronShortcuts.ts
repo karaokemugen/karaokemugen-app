@@ -16,20 +16,17 @@ import { getState, setState } from '../utils/state.js';
 
 const service = 'MediaShortcuts';
 
-export async function registerShortcuts() {
+export async function registerShortcuts(configChange = false) {
 	if (process.platform === 'darwin') {
 		if (getConfig().App.FirstRun) {
 			await dialog.showMessageBox({
 				title: i18next.t('PERMISSIONS_KEYBOARD_INFO_MACOS.TITLE'),
 				message: i18next.t('PERMISSIONS_KEYBOARD_INFO_MACOS.MESSAGE'),
 			});
-		} else if (!systemPreferences.isTrustedAccessibilityClient(false)) {
-			// Not first run, but accessibility hasn't been enabled yet, so we simply return.
-			return;
 		}
-		systemPreferences.isTrustedAccessibilityClient(true);
-		// Media keys won't be switched on on first run.
-		return;
+		// If KM isn't registered as an accessibility app (to make media keys work), we try to ask for the permission on the system.
+		if (configChange || !systemPreferences.isTrustedAccessibilityClient(false))
+			systemPreferences.isTrustedAccessibilityClient(true);
 	}
 	profile('initKeyboardShortcuts');
 	if (process.platform === 'linux') {
