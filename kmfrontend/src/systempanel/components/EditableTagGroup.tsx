@@ -154,7 +154,14 @@ export default class EditableTagGroup extends Component<EditableTagGroupProps, E
 							const tagi18n = getTagInLocale(this.context?.globalState.settings.data, tag);
 							const desc = tagi18n.description || '';
 							return (
-								<Col span={8} key={tag.tid || tag.name} title={tag.aliases?.join(', ')}>
+								<Col
+									xs={{ span: 10 }}
+									sm={{ span: 10 }}
+									md={{ span: 8 }}
+									xl={{ span: 6 }}
+									key={tag.tid || tag.name}
+									title={tag.aliases?.join(', ')}
+								>
 									<Checkbox value={tag.tid} style={{ height: '100%', paddingBottom: '0.3em' }}>
 										<div>{tagi18n.i18n}</div>
 										{desc ? <span style={{ fontSize: 11 }}>{desc}</span> : null}

@@ -1189,7 +1189,6 @@ function KaraForm(props: KaraFormProps) {
 			<Form.Item
 				label={i18next.t('TAG_TYPES.SONGTYPES_other')}
 				labelCol={{ flex: '0 1 220px' }}
-				wrapperCol={{ span: 10, offset: 0 }}
 				rules={getRules('songtypes')}
 				name="songtypes"
 			>
@@ -1225,7 +1224,6 @@ function KaraForm(props: KaraFormProps) {
 					</span>
 				}
 				labelCol={{ flex: '0 1 220px' }}
-				wrapperCol={{ span: 10 }}
 				rules={getRules('versions')}
 				name="versions"
 			>
@@ -1328,7 +1326,6 @@ function KaraForm(props: KaraFormProps) {
 					</span>
 				}
 				labelCol={{ flex: '0 1 220px' }}
-				wrapperCol={{ span: 10, offset: 0 }}
 				rules={getRules('collections')}
 				name="collections"
 			>
@@ -1350,7 +1347,6 @@ function KaraForm(props: KaraFormProps) {
 					</span>
 				}
 				labelCol={{ flex: '0 1 220px' }}
-				wrapperCol={{ span: 10 }}
 				rules={getRules('families')}
 				name="families"
 			>
@@ -1364,7 +1360,6 @@ function KaraForm(props: KaraFormProps) {
 			<Form.Item
 				label={i18next.t('TAG_TYPES.PLATFORMS_other')}
 				labelCol={{ flex: '0 1 220px' }}
-				wrapperCol={{ span: 10 }}
 				rules={getRules('platforms')}
 				name="platforms"
 			>
@@ -1386,7 +1381,6 @@ function KaraForm(props: KaraFormProps) {
 			<Form.Item
 				label={i18next.t('TAG_TYPES.GENRES_other')}
 				labelCol={{ flex: '0 1 220px' }}
-				wrapperCol={{ span: 10 }}
 				rules={getRules('genres')}
 				name="genres"
 			>
@@ -1400,7 +1394,6 @@ function KaraForm(props: KaraFormProps) {
 			<Form.Item
 				label={i18next.t('TAG_TYPES.ORIGINS_other')}
 				labelCol={{ flex: '0 1 220px' }}
-				wrapperCol={{ span: 10 }}
 				rules={getRules('origins')}
 				name="origins"
 			>
@@ -1414,7 +1407,6 @@ function KaraForm(props: KaraFormProps) {
 			<Form.Item
 				label={i18next.t('TAG_TYPES.MISC_other')}
 				labelCol={{ flex: '0 1 220px' }}
-				wrapperCol={{ span: 10 }}
 				rules={getRules('misc')}
 				name="misc"
 			>
@@ -1428,7 +1420,6 @@ function KaraForm(props: KaraFormProps) {
 			<Form.Item
 				label={i18next.t('TAG_TYPES.WARNINGS_other')}
 				labelCol={{ flex: '0 1 220px' }}
-				wrapperCol={{ span: 10 }}
 				rules={getRules('warnings')}
 				name="warnings"
 			>
@@ -1449,7 +1440,6 @@ function KaraForm(props: KaraFormProps) {
 					</span>
 				}
 				labelCol={{ flex: '0 1 220px' }}
-				wrapperCol={{ span: 10 }}
 				rules={getRules('groups')}
 				name="groups"
 			>
