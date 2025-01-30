@@ -63,7 +63,6 @@ export const playerState: PlayerState = {
 	timeposition: 0,
 	mute: false,
 	currentSong: null,
-	mediaType: 'stop',
 	showSubs: true,
 	onTop: false,
 	fullscreen: false,
