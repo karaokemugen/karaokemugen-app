@@ -322,7 +322,7 @@ export async function configureHost() {
 	} else {
 		setState({ osURL: `http://${config.Player.Display.ConnectionInfo.Host}${URLPort}` });
 	}
-	if (config.Player.Display.ConnectionInfo.QRCode) {
+	if (config.Player.Display.ConnectionInfo.QRCode || config.Player.Display.ConnectionInfo.QRCodeDuringSong) {
 		await createQRCodeFile(getState().osURL);
 	}
 	if (
