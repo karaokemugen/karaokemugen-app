@@ -58,6 +58,7 @@ import LanguagesList from '../../components/LanguagesList';
 import OpenLyricsFileButton from '../../components/OpenLyricsFileButton';
 import TaskProgress from '../../components/TaskProgressBar';
 import dayjs from 'dayjs';
+import { TagType } from '../../../../../src/lib/types/tag';
 
 const { Paragraph } = Typography;
 const { Panel } = Collapse;
@@ -77,7 +78,6 @@ function KaraForm(props: KaraFormProps) {
 	const [titles, setTitles] = useState(props.kara?.titles ? props.kara.titles : {});
 	const [defaultLanguage, setDefaultLanguage] = useState(props.kara?.titles_default_language || null);
 	const [titlesIsTouched, setTitlesIsTouched] = useState(false);
-	const [serieSingersRequired, setSerieSingersRequired] = useState(props.kara ? false : true);
 	const [subfile, setSubfile] = useState(
 		props.kara?.lyrics_infos?.[0]
 			? [
@@ -158,10 +158,8 @@ function KaraForm(props: KaraFormProps) {
 	}, [repositoriesValue]);
 
 	useEffect(() => {
-		form.validateFields(['series']);
-		form.validateFields(['singergroups']);
-		form.validateFields(['singers']);
-	}, [serieSingersRequired]);
+		form.validateFields([]);
+	}, [repositoryManifest]);
 
 	useEffect(() => {
 		validateMediaRules();
@@ -714,12 +712,27 @@ function KaraForm(props: KaraFormProps) {
 		setCoverImagePreviewOpen(true);
 	};
 
-	const onChangeSingersSeries = () => {
-		setSerieSingersRequired(
-			form.getFieldValue('singers')?.length === 0 &&
-				form.getFieldValue('singergroups')?.length === 0 &&
-				form.getFieldValue('series')?.length === 0
-		);
+	const getRules = (field: string) => {
+		const rules = [
+			{
+				required: repositoryManifest?.rules?.karaFile?.requiredTagTypes?.includes(field as TagType) || false,
+				message: i18next.t(`KARA.KARA_FIELD_REQUIRED`, {
+					field: i18next.t(`TAG_TYPES.${field.toUpperCase()}_other`),
+				}),
+			},
+		];
+
+		repositoryManifest?.rules?.karaFile?.requiredTagTypesGroup?.forEach(group => {
+			if (group.includes(field as TagType)) {
+				rules.push({
+					required: group.every(elem => !form.getFieldValue(elem) || form.getFieldValue(elem).length === 0),
+					message: i18next.t('KARA.KARA_GROUP_FIELD_REQUIRED', {
+						fields: group.map(elem => i18next.t(`TAG_TYPES.${elem.toUpperCase()}_other`)).join(', '),
+					}),
+				});
+			}
+		});
+		return rules;
 	};
 
 	const search = value => {
@@ -1132,12 +1145,7 @@ function KaraForm(props: KaraFormProps) {
 				label={i18next.t('TAG_TYPES.LANGS_other')}
 				labelCol={{ flex: '0 1 220px' }}
 				wrapperCol={{ span: 7 }}
-				rules={[
-					{
-						required: true,
-						message: i18next.t('KARA.LANGUAGES_REQUIRED'),
-					},
-				]}
+				rules={getRules('langs')}
 				name="langs"
 			>
 				<EditableTagGroup form={form} tagType={5} onChange={tags => form.setFieldsValue({ langs: tags })} />
@@ -1153,22 +1161,10 @@ function KaraForm(props: KaraFormProps) {
 				}
 				labelCol={{ flex: '0 1 220px' }}
 				wrapperCol={{ span: 14 }}
-				rules={[
-					{
-						required: serieSingersRequired,
-						message: i18next.t('KARA.SERIES_SINGERS_REQUIRED'),
-					},
-				]}
+				rules={getRules('series')}
 				name="series"
 			>
-				<EditableTagGroup
-					form={form}
-					tagType={1}
-					onChange={tags => {
-						form.setFieldsValue({ series: tags });
-						onChangeSingersSeries();
-					}}
-				/>
+				<EditableTagGroup form={form} tagType={1} onChange={tags => form.setFieldsValue({ series: tags })} />
 			</Form.Item>
 			<Form.Item
 				label={
@@ -1181,6 +1177,7 @@ function KaraForm(props: KaraFormProps) {
 				}
 				labelCol={{ flex: '0 1 220px' }}
 				wrapperCol={{ span: 14 }}
+				rules={getRules('franchises')}
 				name="franchises"
 			>
 				<EditableTagGroup
@@ -1193,13 +1190,8 @@ function KaraForm(props: KaraFormProps) {
 				label={i18next.t('TAG_TYPES.SONGTYPES_other')}
 				labelCol={{ flex: '0 1 220px' }}
 				wrapperCol={{ span: 10, offset: 0 }}
+				rules={getRules('songtypes')}
 				name="songtypes"
-				rules={[
-					{
-						required: true,
-						message: i18next.t('KARA.TYPE_REQUIRED'),
-					},
-				]}
 			>
 				<EditableTagGroup
 					form={form}
@@ -1234,6 +1226,7 @@ function KaraForm(props: KaraFormProps) {
 				}
 				labelCol={{ flex: '0 1 220px' }}
 				wrapperCol={{ span: 10 }}
+				rules={getRules('versions')}
 				name="versions"
 			>
 				<EditableTagGroup
@@ -1247,42 +1240,22 @@ function KaraForm(props: KaraFormProps) {
 				label={i18next.t('KARA.SINGERS_BY')}
 				labelCol={{ flex: '0 1 220px' }}
 				wrapperCol={{ span: 7 }}
-				rules={[
-					{
-						required: serieSingersRequired,
-						message: i18next.t('KARA.SERIES_SINGERS_REQUIRED'),
-					},
-				]}
+				rules={getRules('singers')}
 				name="singers"
 			>
-				<EditableTagGroup
-					form={form}
-					tagType={2}
-					onChange={tags => {
-						form.setFieldsValue({ singer: tags });
-						onChangeSingersSeries();
-					}}
-				/>
+				<EditableTagGroup form={form} tagType={2} onChange={tags => form.setFieldsValue({ singers: tags })} />
 			</Form.Item>
 			<Form.Item
 				label={i18next.t('KARA.SINGERGROUPS_BY')}
 				labelCol={{ flex: '0 1 220px' }}
 				wrapperCol={{ span: 7 }}
-				rules={[
-					{
-						required: serieSingersRequired,
-						message: i18next.t('KARA.SERIES_SINGERS_REQUIRED'),
-					},
-				]}
+				rules={getRules('singergroups')}
 				name="singergroups"
 			>
 				<EditableTagGroup
 					form={form}
 					tagType={17}
-					onChange={tags => {
-						form.setFieldsValue({ singergroup: tags });
-						onChangeSingersSeries();
-					}}
+					onChange={tags => form.setFieldsValue({ singergroups: tags })}
 				/>
 			</Form.Item>
 			<Form.Item
@@ -1296,6 +1269,7 @@ function KaraForm(props: KaraFormProps) {
 				}
 				labelCol={{ flex: '0 1 220px' }}
 				wrapperCol={{ span: 7 }}
+				rules={getRules('songwriters')}
 				name="songwriters"
 			>
 				<EditableTagGroup
@@ -1315,6 +1289,7 @@ function KaraForm(props: KaraFormProps) {
 				}
 				labelCol={{ flex: '0 1 220px' }}
 				wrapperCol={{ span: 7 }}
+				rules={getRules('creators')}
 				name="creators"
 			>
 				<EditableTagGroup form={form} tagType={4} onChange={tags => form.setFieldsValue({ creators: tags })} />
@@ -1354,13 +1329,8 @@ function KaraForm(props: KaraFormProps) {
 				}
 				labelCol={{ flex: '0 1 220px' }}
 				wrapperCol={{ span: 10, offset: 0 }}
+				rules={getRules('collections')}
 				name="collections"
-				rules={[
-					{
-						required: true,
-						message: i18next.t('KARA.COLLECTIONS_REQUIRED'),
-					},
-				]}
 			>
 				<EditableTagGroup
 					form={form}
@@ -1381,6 +1351,7 @@ function KaraForm(props: KaraFormProps) {
 				}
 				labelCol={{ flex: '0 1 220px' }}
 				wrapperCol={{ span: 10 }}
+				rules={getRules('families')}
 				name="families"
 			>
 				<EditableTagGroup
@@ -1394,6 +1365,7 @@ function KaraForm(props: KaraFormProps) {
 				label={i18next.t('TAG_TYPES.PLATFORMS_other')}
 				labelCol={{ flex: '0 1 220px' }}
 				wrapperCol={{ span: 10 }}
+				rules={getRules('platforms')}
 				name="platforms"
 			>
 				<Collapse
@@ -1415,6 +1387,7 @@ function KaraForm(props: KaraFormProps) {
 				label={i18next.t('TAG_TYPES.GENRES_other')}
 				labelCol={{ flex: '0 1 220px' }}
 				wrapperCol={{ span: 10 }}
+				rules={getRules('genres')}
 				name="genres"
 			>
 				<EditableTagGroup
@@ -1428,6 +1401,7 @@ function KaraForm(props: KaraFormProps) {
 				label={i18next.t('TAG_TYPES.ORIGINS_other')}
 				labelCol={{ flex: '0 1 220px' }}
 				wrapperCol={{ span: 10 }}
+				rules={getRules('origins')}
 				name="origins"
 			>
 				<EditableTagGroup
@@ -1441,6 +1415,7 @@ function KaraForm(props: KaraFormProps) {
 				label={i18next.t('TAG_TYPES.MISC_other')}
 				labelCol={{ flex: '0 1 220px' }}
 				wrapperCol={{ span: 10 }}
+				rules={getRules('misc')}
 				name="misc"
 			>
 				<EditableTagGroup
@@ -1454,6 +1429,7 @@ function KaraForm(props: KaraFormProps) {
 				label={i18next.t('TAG_TYPES.WARNINGS_other')}
 				labelCol={{ flex: '0 1 220px' }}
 				wrapperCol={{ span: 10 }}
+				rules={getRules('warnings')}
 				name="warnings"
 			>
 				<EditableTagGroup
@@ -1474,6 +1450,7 @@ function KaraForm(props: KaraFormProps) {
 				}
 				labelCol={{ flex: '0 1 220px' }}
 				wrapperCol={{ span: 10 }}
+				rules={getRules('groups')}
 				name="groups"
 			>
 				<EditableTagGroup
@@ -1566,12 +1543,7 @@ function KaraForm(props: KaraFormProps) {
 				}
 				labelCol={{ flex: '0 1 220px' }}
 				wrapperCol={{ span: 7 }}
-				rules={[
-					{
-						required: true,
-						message: i18next.t('KARA.KARA_AUTHORS_REQUIRED'),
-					},
-				]}
+				rules={getRules('authors')}
 				name="authors"
 			>
 				<EditableTagGroup form={form} tagType={6} onChange={tags => form.setFieldsValue({ author: tags })} />

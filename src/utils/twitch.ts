@@ -2,7 +2,6 @@
 import i18next from 'i18next';
 import tmi, { ChatUserstate, Client } from 'tmi.js';
 
-import { getSongSeriesSingers, getSongTitle } from '../lib/services/kara.js';
 import { getConfig } from '../lib/utils/config.js';
 // KM Imports
 import logger, { profile } from '../lib/utils/logger.js';
@@ -84,9 +83,9 @@ function listenChat(chat: Client) {
 		} else if (msg === '!song') {
 			const song = await getCurrentSong();
 			const repo = getRepo(song.repository);
-			const str = `@${context.username} : ${getSongTitle(song)} - ${getSongSeriesSingers(song)} (${
-				/\./.test(song.repository)
-					? `${repo.Secure ? 'https' : 'http'}://${song.repository}/base/kara/${song.kid}`
+			const str = `@${context.username} : ${song.songname} (${
+				repo.Online
+					? `${repo.Secure ? 'https' : 'http'}://${song.repository}/kara/xxx/${song.kid}`
 					: `${getState().osURL}/public/plc/${song.plcid}`
 			})`;
 			chat.say(target, str);

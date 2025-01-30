@@ -185,11 +185,14 @@ export function buildKaraTitle(
 	if (onlyText) {
 		const versions = sortAndHideTags(data?.versions).map(t => `[${getTagInLocale(settings, t, i18nParam).i18n}]`);
 		const version = versions?.length > 0 ? ` ${versions.join(' ')}` : '';
-		return `${langsText} - ${serieText} - ${songtypeText} ${songorderText} - ${getTitleInLocale(
-			settings,
-			data.titles,
-			data.titles_default_language
-		)} ${version}`;
+		const arrayElements = [
+			langsText,
+			serieText,
+			songtypeText || songorderText ? `${songtypeText} ${songorderText}` : null,
+			songorderText,
+			getTitleInLocale(settings, data.titles, data.titles_default_language),
+		].filter(value => value != '');
+		return `${arrayElements.join(' - ')} ${version}`;
 	} else {
 		const versions = sortAndHideTags(data?.versions).map(t => (
 			<span className="tag inline white" key={t.tid}>
@@ -199,11 +202,11 @@ export function buildKaraTitle(
 		return (
 			<>
 				<span>{langsText}</span>
-				<span>&nbsp;-&nbsp;</span>
+				{langsText ? <span>&nbsp;-&nbsp;</span> : null}
 				<span className="karaTitleSerie">{serieText}</span>
-				<span>&nbsp;-&nbsp;</span>
+				{serieText ? <span>&nbsp;-&nbsp;</span> : null}
 				<span>{`${songtypeText} ${songorderText}`}</span>
-				<span>&nbsp;-&nbsp;</span>
+				{songtypeText || songorderText ? <span>&nbsp;-&nbsp;</span> : null}
 				<span className="karaTitleTitle">
 					{getTitleInLocale(settings, data.titles, data.titles_default_language)}
 				</span>
