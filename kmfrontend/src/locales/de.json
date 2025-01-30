@@ -616,7 +616,7 @@
 			"DISPLAY_RANDOMQUOTES": "Zufälligen Spruch anzeigen",
 			"DISPLAY_CONNECTION_INFO_QRCODE_TOOLTIP": "Der QR-Code wird oben rechts auf den Pause- und Stopp-Bildschirmen angezeigt.",
 			"DISPLAY_CONNECTION_INFO_MESSAGE_TOOLTIP": "Passe die angezeigte Bildschirm-Nachricht individuell an, um das Publikum anzuheizen oder ihm Informationen zu vermitteln. Verwende $url, um die URL dieser Karaoke-Sitzung anzuzeigen. Etwa so: „Gehe zu $url!“",
-			"DISPLAY_CONNECTION_INFO_QRCODE": "QR-Code anzeigen",
+			"DISPLAY_CONNECTION_INFO_QRCODE": "QR-Code anzeigen, wenn der Player pausiert wird",
 			"DISPLAY_RANDOMQUOTES_TOOLTIP": "Wenn der Player angehalten wird, werden am unteren Bildschirmrand zufällige Sprüche angezeigt",
 			"LIVE_COMMENTS": "Live-Kommentare",
 			"DISPLAY_AVATAR": "Das Profilbild des Anfragenden während der Wiedergabe anzeigen",
@@ -624,7 +624,9 @@
 			"DISPLAY_AVATAR_TOOLTIP": "Das Profilbild des Anfragenden wird am Anfang und am Ende des Liedes in der unteren rechten Ecke des Players angezeigt.",
 			"PLAYER_LANGUAGE": "Nachrichten und Spracheinstellungen",
 			"AUDIO_ONLY_EXPERIENCE": "Nur Ton",
-			"AUDIO_ONLY_EXPERIENCE_TOOLTIP": "Zeigt ein Standbild statt des Videos bei Aktivierung. Die Änderung wird zum nächsten Lied übernommen."
+			"AUDIO_ONLY_EXPERIENCE_TOOLTIP": "Zeigt ein Standbild statt des Videos bei Aktivierung. Die Änderung wird zum nächsten Lied übernommen.",
+			"DISPLAY_CONNECTION_INFO_QRCODE_DURING_SONG": "QR-Code während eines Liedes anzeigen",
+			"DISPLAY_CONNECTION_INFO_QRCODE_DURING_SONG_TOOLTIP": "Der QR-Code wird während eines Liedes in der oberen rechten Ecke angezeigt."
 		},
 		"SYSTEMPANEL_TIP": "Du kannst die gesuchten Optionen nicht finden? <2>Einige Optionen befinden sich in den <3>System-Einstellungen</3>.</2>",
 		"PLAYLIST": {
@@ -1713,7 +1715,10 @@
 		"SECURE_TOOLTIP": "Erlaube HTTPS-Zugriff auf diese Quelle",
 		"GIT_EDIT_MESSAGE": "Commit-Nachricht bearbeiten",
 		"GIT_SQUASH_MESSAGE": "Commit-Nachricht",
-		"GIT_TOO_MANY_CHANGES": "Sieht so aus, als würdest du {{changes}} Änderungen vornehmen. Beim Durchführen vieler Änderungen der gleichen Art empfehlen wir, diese in einen großen Commit zu bündeln."
+		"GIT_TOO_MANY_CHANGES": "Sieht so aus, als würdest du {{changes}} Änderungen vornehmen. Beim Durchführen vieler Änderungen der gleichen Art empfehlen wir, diese in einen großen Commit zu bündeln.",
+		"CONVERT_TO_UUID_BUTTON": "Konvertierung ins UUID-Format …",
+		"CONVERT_TO_UUID_PANEL": "Ins UUID-Format konvertieren",
+		"CONVERT_TO_UUID_ABOUT_MESSAGE": "Möglicherweise benennt dein Repository seine Dateien nach einer veralteten Konvention (vor Karaoke Mugen 8.0.56 – Januar 2025). Falls dein Repository bereits länger besteht, kannst du mit dieser Schaltfläche alle Dateien (Karaoke-Metadaten, Liedtexte und Medien) ins UUID-Format umbenennen. Beachte bitte, dass diese Änderung nicht rückgängig zu machen ist."
 	},
 	"TAGS": {
 		"KITSU_SLUG_ERROR": "Ungültiger Kitsu-Slug",
