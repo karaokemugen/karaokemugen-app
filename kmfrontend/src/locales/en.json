@@ -1435,7 +1435,7 @@
 		"MOVE_TOOLTIP": "This allows you to define which repositories take priority when creating your database: the highest repositories will be taken into account first if two repositories have the same karaoke",
 		"CONVERT_TO_UUID_BUTTON": "Convert to UUID file format…",
 		"CONVERT_TO_UUID_PANEL": "Convert to UUID file format",
-		"CONVERT_TO_UUID_ABOUT_MESSAGE": "Your repository might name its files in an old format (before Karaoke Mugen 8.0.56 - January 2025). If your repository was created before that, you can use this button to rename all files (karaoke metadata, lyrics and media) to the UUID file name format. Please note that this is not revertable.",
+		"CONVERT_TO_UUID_ABOUT_MESSAGE": "Your repository might name its files in an old format (before Karaoke Mugen 8.0.56 - January 2025). If your repository was created before that, you can use this button to rename all files (karaoke metadata, lyrics and media) to the UUID format. Please note that this is not reversible.",
 		"MOVING_MEDIA": "Destination where to move media",
 		"MOVING_MEDIA_BUTTON": "Move media…",
 		"MOVING_MEDIA_PANEL": "Move media",
