@@ -256,7 +256,7 @@ export async function addDownloads(downloads: KaraDownloadRequest[]): Promise<nu
 		dls.forEach(dl => dq.push(dl));
 		return dls.length;
 	} catch (err) {
-		logger.error(`Unable to queue new download : ${err}`, { service });
+		logger.error(`Unable to queue new download : ${err}`, { service, obj: err });
 		Sentry.error(err);
 		throw err instanceof ErrorKM ? err : new ErrorKM('DOWNLOADS_QUEUED_ERROR');
 	}
