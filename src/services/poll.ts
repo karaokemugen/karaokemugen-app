@@ -3,7 +3,6 @@ import { sample, sampleSize } from 'lodash';
 import { setTimeout as sleep } from 'timers/promises';
 
 import { APIMessage } from '../lib/services/frontend.js';
-import { getSongSeriesSingers, getSongTitle, getSongVersion } from '../lib/services/kara.js';
 import { DBPLC } from '../lib/types/database/playlist.js';
 import { OldJWTToken } from '../lib/types/user.js';
 import { getConfig } from '../lib/utils/config.js';
@@ -47,15 +46,7 @@ async function displayPoll(winner?: number) {
 		if (isNaN(percentage)) percentage = 0;
 		const percentageStr = percentage < 1 ? `0${percentage.toFixed(1)}` : percentage.toFixed(1);
 		// If series is empty, pick singer information instead
-		const series = getSongSeriesSingers(kara);
-		// If song order is 0, don't display it (we don't want things like OP0, ED0...)
-		const songorder = !kara.songorder || kara.songorder === 0 ? `${kara.songorder}` : '';
-		const version = getSongVersion(kara);
-		return `${boldWinnerOpen}${
-			kara.index
-		}. ${percentageStr}% : ${kara.langs[0].name.toUpperCase()} - ${series} - ${kara.songtypes
-			.map(s => s.name)
-			.join(' ')}${songorder} - ${getSongTitle(kara)}${version}${boldWinnerClose}`;
+		return `${boldWinnerOpen}${kara.index}. ${percentageStr}% : ${kara.songname}${boldWinnerClose}`;
 	});
 	const voteMessage = winner ? i18n.t('VOTE_MESSAGE_SCREEN_WINNER') : i18n.t('VOTE_MESSAGE_SCREEN');
 	await playerMessage(
@@ -78,9 +69,11 @@ export async function timerPoll() {
 	if (internalDate === pollDate) endPoll();
 }
 
-async function displayPollWinnerTwitch(winner: PollResults) {
+async function displayPollWinnerTwitch(pollResults: PollResults) {
 	try {
-		await sayTwitch(`Poll winner : ${winner.kara} (${winner.votes} votes)`);
+		await sayTwitch(
+			`Poll winner : ${pollResults.winner.songname} (${pollResults.winner.votes} votes out of ${pollResults.votes})`
+		);
 	} catch (err) {
 		// Non fatal
 	}
@@ -89,18 +82,18 @@ async function displayPollWinnerTwitch(winner: PollResults) {
 /** Ends poll and emits results through websockets */
 export async function endPoll() {
 	if (poll.length > 0) {
-		const winner = await getPollResults();
+		const pollResults = await getPollResults();
 		const streamConfig = getConfig().Karaoke.StreamerMode;
 		if (streamConfig.Enabled) {
 			const state = getState();
-			if (state.player.mediaType === 'poll') displayPoll(winner.index);
-			if (streamConfig.Twitch.Channel) displayPollWinnerTwitch(winner);
+			if (state.player.mediaType === 'poll') displayPoll(pollResults.index);
+			if (streamConfig.Twitch.Channel) displayPollWinnerTwitch(pollResults);
 		}
 		pollEnding = true;
-		logger.debug('Ending poll', { service, obj: winner });
-		emit('songPollResult', winner);
-		emitWS('songPollResult', winner);
-		emitWS('operatorNotificationInfo', APIMessage('NOTIFICATION.OPERATOR.INFO.POLL_WINNER', winner));
+		logger.debug('Ending poll', { service, obj: pollResults });
+		emit('songPollResult', pollResults);
+		emitWS('songPollResult', pollResults);
+		emitWS('operatorNotificationInfo', APIMessage('NOTIFICATION.OPERATOR.INFO.POLL_WINNER', pollResults));
 		stopPoll();
 	}
 }
@@ -115,7 +108,7 @@ export function stopPoll() {
 }
 
 /** Get poll results once a poll has ended */
-export async function getPollResults(): Promise<PollResults> {
+async function getPollResults(): Promise<PollResults> {
 	logger.debug('Getting poll results', { service });
 	const maxVotes = Math.max(...poll.map(choice => choice.votes));
 	// We check if winner isn't the only one...
@@ -134,14 +127,10 @@ export async function getPollResults(): Promise<PollResults> {
 	emitWS('playlistInfoUpdated', plaid);
 	emitWS('playlistContentsUpdated', plaid);
 
-	const version = getSongVersion(winner);
-	const kara = `${winner.series ? winner.series[0]?.name : winner.singers[0]?.name} - ${winner.songtypes
-		.map(s => s.name)
-		.join(' ')}${winner.songorder ? winner.songorder : ''} - ${getSongTitle(winner)}${version}`;
-	logger.info(`Winner is "${kara}" with ${maxVotes} votes`, { service });
+	logger.info(`Winner is "${winner.songname}" with ${maxVotes} votes`, { service });
 	return {
 		votes: maxVotes,
-		kara,
+		winner,
 		index: winner.index,
 	};
 }
@@ -255,17 +244,8 @@ async function displayPollTwitch() {
 		logger.info('Announcing vote on Twitch', { service });
 		await sayTwitch(i18n.t('TWITCH.CHAT.VOTE'));
 		for (const kara of poll) {
-			const series = getSongSeriesSingers(kara);
-			// If song order is 0, don't display it (we don't want things like OP0, ED0...)
-			let songorder = `${kara.songorder}`;
-			if (!kara.songorder || kara.songorder === 0) songorder = '';
 			await sleep(1000);
-			const version = getSongVersion(kara);
-			await sayTwitch(
-				`${kara.index}. ${kara.langs[0].name.toUpperCase()} - ${series} - ${
-					kara.songtypes[0].name
-				}${songorder} - ${getSongTitle(kara)}${version}`
-			);
+			await sayTwitch(`${kara.index}. ${kara.songname}`);
 		}
 	} catch (err) {
 		logger.error('Unable to post poll on twitch', { service, obj: err });

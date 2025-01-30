@@ -348,12 +348,16 @@ function KaraLine(props: IProps) {
 									<span
 										className={`tag inline green ${kara.children?.length > 0 && settings.user.flag_parentsonly ? 'empty' : undefined}`}
 										title={
-											kara.children?.length > 0 && settings.user.flag_parentsonly
+											!kara.langs ||
+											kara.langs.length === 0 ||
+											(kara.children?.length > 0 && settings.user.flag_parentsonly)
 												? ''
 												: getTagInLocale(settings, kara.langs[0], props.i18nTag).i18n
 										}
 									>
-										{kara.children?.length > 0 && settings.user.flag_parentsonly
+										{!kara.langs ||
+										kara.langs.length === 0 ||
+										(kara.children?.length > 0 && settings.user.flag_parentsonly)
 											? ''
 											: kara.langs[0].short?.toUpperCase() || kara.langs[0].name.toUpperCase()}
 									</span>
@@ -379,9 +383,13 @@ function KaraLine(props: IProps) {
 								<div className="contentDivMobileSerie">
 									<span
 										className="tag inline green"
-										title={getTagInLocale(settings, kara.songtypes[0], props.i18nTag).i18n}
+										title={
+											kara.songtypes?.length > 0 &&
+											getTagInLocale(settings, kara.songtypes[0], props.i18nTag).i18n
+										}
 									>
-										{kara.songtypes[0].short?.toUpperCase() || kara.songtypes[0].name}{' '}
+										{kara.songtypes?.length > 0 &&
+											(kara.songtypes[0].short?.toUpperCase() || kara.songtypes[0].name)}{' '}
 										{kara.songorder}
 									</span>
 									{karaSerieOrSingerGroupsOrSingers}

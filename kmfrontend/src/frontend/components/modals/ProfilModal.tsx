@@ -267,13 +267,17 @@ function ProfilModal(props: IProps) {
 				t => `[${getTagInLanguage(t, user.main_series_lang, user.fallback_series_lang).i18n}]`
 			);
 			const version = versions?.length > 0 ? ` ${versions.join(' ')}` : '';
-			return `${langsText} - ${serieText} - ${songtypeText} ${songorderText} - ${
+			const arrayElements = [
+				langsText,
+				serieText,
+				songtypeText || songorderText ? `${songtypeText} ${songorderText}` : null,
 				data.titles[user.main_series_lang]
 					? data.titles[user.main_series_lang]
 					: data.titles[user.fallback_series_lang]
 						? data.titles[user.fallback_series_lang]
-						: data.titles[data.titles_default_language]
-			} ${version}`;
+						: data.titles[data.titles_default_language],
+			].filter(value => value != '');
+			return `${arrayElements.join(' - ')} ${version}`;
 		};
 		const getExampleForLinguisticsPreference = async () => {
 			try {
