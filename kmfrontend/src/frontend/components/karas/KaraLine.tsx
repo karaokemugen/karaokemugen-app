@@ -282,7 +282,7 @@ function KaraLine(props: IProps) {
 		<div {...props.draggable.draggableProps} ref={props.draggable.innerRef}>
 			<div
 				className={`list-group-item${kara.flag_playing ? ' currentlyplaying' : ''}${
-					kara.flag_dejavu ? ' played' : ''
+					kara.flag_dejavu ? ' dejavu' : ''
 				}
 				${props.indexInPL % 2 === 0 ? ' list-group-item-even' : ''} ${
 					(props.jingle || props.sponsor) && isAdmin ? ' marker' : ''
@@ -364,7 +364,7 @@ function KaraLine(props: IProps) {
 									</span>
 									{kara.flag_dejavu && !kara.flag_playing ? (
 										<i
-											className="fas fa-fw fa-history played-icon"
+											className="fas fa-fw fa-history dejavu-icon"
 											title={i18next.t('KARA.DEJAVU_TOOLTIP')}
 										/>
 									) : null}
@@ -436,7 +436,7 @@ function KaraLine(props: IProps) {
 								<div className="disable-select karaTitle">
 									{kara.flag_dejavu && !kara.flag_playing ? (
 										<i
-											className="fas fa-fw fa-history played-icon"
+											className="fas fa-fw fa-history dejavu-icon"
 											title={i18next.t('KARA.DEJAVU_TOOLTIP')}
 										/>
 									) : null}

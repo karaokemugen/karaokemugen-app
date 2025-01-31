@@ -19,8 +19,8 @@ $mugen-colors: (
 $mugen-playlist-odd: #1c1c1c;
 $mugen-playlist-even: color.scale($mugen-playlist-odd, $lightness: 10%);
 $mugen-playlist-currently-playing: color.scale(map.get($mugen-colors, 'blue'), $lightness: 65%, $saturation: 20%);
-$mugen-playlist-played-odd: color.scale(map.get($mugen-colors, 'orange'), $lightness: -15%, $saturation: 0%);
-$mugen-playlist-played-even: color.scale($mugen-playlist-played-odd, $lightness: 10%);
+$mugen-playlist-dejavu-odd: color.scale(map.get($mugen-colors, 'orange'), $lightness: -15%, $saturation: 0%);
+$mugen-playlist-dejavu-even: color.scale($mugen-playlist-dejavu-odd, $lightness: 10%);
 
 // Colors for buttons
 $mugen-btn-background: #2e2e2e;
