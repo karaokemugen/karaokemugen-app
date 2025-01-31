@@ -353,7 +353,7 @@ function Playlist(props: IProps) {
 						) : (
 							<>
 								<div>{i18next.t('KARA_SUGGESTION_NOT_FOUND')}</div>
-								{repositories.map(value => (
+								{repositories?.map(value => (
 									<div key={value.name}>
 										<div>
 											<a key={value.name} href={value.url}>
