@@ -32,6 +32,7 @@ import { tagTypes } from '../../../utils/tagTypes';
 import { getProtocolForOnline } from '../../../utils/tools';
 import Title from '../../components/Title';
 import { DefaultOptionType } from 'antd/es/cascader';
+import { Repository } from '../../../../../src/lib/types/repo';
 
 function KaraDownload() {
 	const context = useContext(GlobalContext);
@@ -54,8 +55,11 @@ function KaraDownload() {
 	const [tagOptions, setTagOptions] = useState<DefaultOptionType[]>([]);
 	const [preview, setPreview] = useState('');
 	const [syncModal, setSyncModal] = useState(false);
+	const [repositories, setRepositories] = useState<{ label: string; value: string }[]>([]);
+	const [selectedRepositories, setSelectedRepositories] = useState<string[]>([]);
 
 	useEffect(() => {
+		getRepositories();
 		getKaras();
 		getTotalMediaSize();
 		readKaraQueue();
@@ -67,12 +71,27 @@ function KaraDownload() {
 	}, []);
 
 	useEffect(() => {
+		getTotalMediaSize();
+	}, [selectedRepositories]);
+
+	useEffect(() => {
 		filterTagCascaderOption();
 	}, [tags]);
 
 	useEffect(() => {
 		getKaras();
 	}, [direction, currentPage, currentPageSize]);
+
+	const getRepositories = async () => {
+		const res: Repository[] = await commandBackend('getRepos');
+		setRepositories(
+			res
+				.filter(r => r.Online)
+				.map(r => {
+					return { label: r.Name, value: r.Name };
+				})
+		);
+	};
 
 	const getTags = async () => {
 		try {
@@ -145,7 +164,14 @@ function KaraDownload() {
 
 	const getTotalMediaSize = async () => {
 		try {
-			const res: DBStats = await commandBackend('getStats', undefined, false, 300000);
+			const res: DBStats = await commandBackend(
+				'getStats',
+				{
+					repoNames: selectedRepositories?.length > 0 ? selectedRepositories : undefined,
+				},
+				false,
+				300000
+			);
 			setTotalMediaSize(prettyBytes(res.total_media_size));
 		} catch (_) {
 			// already display
@@ -256,7 +282,9 @@ function KaraDownload() {
 	};
 
 	const syncMedias = () => {
-		commandBackend('updateAllMedias').catch(() => {});
+		commandBackend('updateAllMedias', {
+			repoNames: selectedRepositories?.length > 0 ? selectedRepositories : undefined,
+		}).catch(() => {});
 		setSyncModal(false);
 	};
 
@@ -422,22 +450,6 @@ function KaraDownload() {
 								onSearch={getKaras}
 							/>
 						</Row>
-						<Row style={{ margin: '0.5em' }}>
-							<label>
-								{i18next.t('KARA.TOTAL_MEDIA_SIZE')} {totalMediaSize}
-							</label>
-						</Row>
-						<Row>
-							<Button
-								style={{ width: '230px' }}
-								type="primary"
-								key="synchronize"
-								title={i18next.t('KARA.SYNCHRONIZE_DESC')}
-								onClick={() => setSyncModal(true)}
-							>
-								{i18next.t('KARA.SYNCHRONIZE')}
-							</Button>
-						</Row>
 						<Row>
 							<label style={{ margin: '0.5em' }}>{i18next.t('KARA.FILTER_MEDIA_STATUS')}</label>
 							<Radio
@@ -495,6 +507,31 @@ function KaraDownload() {
 									{direction === 'asc' ? <SortAscendingOutlined /> : <SortDescendingOutlined />}
 								</Button>
 							</Space.Compact>
+						</Row>
+						<Row style={{ marginTop: '2em', marginLeft: '0.5em' }}>
+							<Col>
+								<label>
+									{i18next.t('KARA.TOTAL_MEDIA_SIZE')} {totalMediaSize}
+								</label>
+								<Select
+									options={repositories}
+									mode="multiple"
+									style={{ width: '90%', marginTop: '0.5em', marginBottom: '0.5em' }}
+									placeholder={i18next.t('KARA.SYNCHRONIZE_REPOSITORIES')}
+									onChange={setSelectedRepositories}
+								/>
+							</Col>
+							<Col style={{ display: 'flex', alignItems: 'center' }}>
+								<Button
+									style={{ width: '200px', marginBottom: '0.5em' }}
+									type="primary"
+									key="synchronize"
+									title={i18next.t('KARA.SYNCHRONIZE_DESC')}
+									onClick={() => setSyncModal(true)}
+								>
+									{i18next.t('KARA.SYNCHRONIZE')}
+								</Button>
+							</Col>
 						</Row>
 					</Col>
 					<Col flex={2}>

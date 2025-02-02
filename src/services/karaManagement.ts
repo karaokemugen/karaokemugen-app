@@ -371,16 +371,20 @@ export async function integrateKaraFile(
 	return karaData.data.kid;
 }
 
-export async function deleteMediaFile(file: string, repo: string) {
-	try {
-		// Just to make sure someone doesn't send a full path file
-		const mediaFile = basename(file);
-		const mediaPaths = await resolveFileInDirs(mediaFile, resolvedPathRepos('Medias', repo));
-		await fs.unlink(mediaPaths[0]);
-	} catch (err) {
-		logger.error(`Unable to delete media file ${file} from repository ${repo} : ${err}`, { service });
-		sentry.error(err);
-		throw new ErrorKM('MEDIA_DELETE_ERROR');
+export async function deleteMediaFiles(files: string[], repo: string) {
+	if (files?.length > 0) {
+		for (const file of files) {
+			try {
+				// Just to make sure someone doesn't send a full path file
+				const mediaFile = basename(file);
+				const mediaPaths = await resolveFileInDirs(mediaFile, resolvedPathRepos('Medias', repo));
+				await fs.unlink(mediaPaths[0]);
+			} catch (err) {
+				logger.error(`Unable to delete media file ${file} from repository ${repo} : ${err}`, { service });
+				sentry.error(err);
+				throw new ErrorKM('MEDIA_DELETE_ERROR');
+			}
+		}
 	}
 }
 

@@ -15,7 +15,6 @@ import { PlaylistMediaType } from '../lib/types/playlistMedias.js';
 import { getConfig, resolvedPath, resolvedPathRepos, setConfig } from '../lib/utils/config.js';
 import { supportedFiles } from '../lib/utils/constants.js';
 import { Timer } from '../lib/utils/date.js';
-import { getAvatarResolution } from '../lib/utils/ffmpeg.js';
 import { fileExists, replaceExt, resolveFileInDirs } from '../lib/utils/files.js';
 import HTTP, { fixedEncodeURIComponent } from '../lib/utils/http.js';
 import { convert1LangTo2B } from '../lib/utils/langs.js';
@@ -29,14 +28,7 @@ import { BackgroundType } from '../types/backgrounds.js';
 import { MpvCommand } from '../types/mpvIPC.js';
 import { PlayerState, SongModifiers } from '../types/player.js';
 import { CurrentSong } from '../types/playlist.js';
-import {
-	FFmpegRegex,
-	initializationCatchphrases,
-	mpvRegex,
-	requiredMPVFFmpegMasterVersion,
-	requiredMPVFFmpegVersion,
-	requiredMPVVersion,
-} from '../utils/constants.js';
+import { FFmpegRegex, initializationCatchphrases, mpvRegex, requiredMPVVersion } from '../utils/constants.js';
 import { setDiscordActivity } from '../utils/discordRPC.js';
 import sentry from '../utils/sentry.js';
 import { getState, setState } from '../utils/state.js';
@@ -47,6 +39,7 @@ import { getRepoManifest } from '../lib/services/repo.js';
 import { getTagNameInLanguage } from '../lib/services/tag.js';
 import { getRepo } from '../services/repo.js';
 import { writeStreamFiles } from '../utils/streamerFiles.js';
+import { lavfiGenerator } from './mpv/lavfiGenerator.js';
 import { Player } from './mpv/player.js';
 
 type PlayerType = 'main' | 'monitor';
@@ -63,7 +56,6 @@ export const playerState: PlayerState = {
 	timeposition: 0,
 	mute: false,
 	currentSong: null,
-	mediaType: 'stop',
 	showSubs: true,
 	onTop: false,
 	fullscreen: false,
@@ -326,6 +318,7 @@ export function emitPlayerState() {
 }
 
 export function defineMPVEnv() {
+	// On Linux we bundle some libs so we need to add our mpv's folder to LD_LIBRARY_PATH.
 	const env = { ...process.env };
 	if (process.platform === 'linux') {
 		const state = getState();
@@ -364,10 +357,10 @@ async function checkMpv() {
 	try {
 		const output = await execa(state.binPath.mpv, ['--version'], { env: defineMPVEnv() });
 		logger.debug(`mpv stdout: ${output.stdout}`, { service });
-		const mpv = semver.valid(mpvRegex.exec(output.stdout)[1]);
+		const mpv = semver.valid(mpvRegex.exec(output.stdout)[1]) || '';
 		mpvVersion = mpv.split('-')[0];
 
-		const ffmpegVersion = FFmpegRegex.exec(output.stdout)[1];
+		const ffmpegVersion = FFmpegRegex.exec(output.stdout)[1] || '';
 		setState({ player: { ...getState().player, version: mpvVersion, ffmpegVersion } });
 		playerState.version = mpvVersion;
 		playerState.ffmpegVersion = ffmpegVersion;
@@ -391,15 +384,6 @@ async function checkMpv() {
 	}
 }
 
-function isScaleAvailable(): boolean {
-	// Either it's a semver or a N-xxxxx-xxxx version number
-	if (playerState.ffmpegVersion.startsWith('N')) {
-		return parseInt(playerState.ffmpegVersion.split('-')[1]) >= requiredMPVFFmpegMasterVersion;
-	} else {
-		return semver.satisfies(semver.coerce(playerState.ffmpegVersion), requiredMPVFFmpegVersion);
-	}
-}
-
 export class Players {
 	players: {
 		main: Player;
@@ -409,57 +393,6 @@ export class Players {
 	messages: MessageManager;
 
 	comments: CommentHandler;
-
-	/** Define lavfi-complex commands when we need to display stuff on screen or adjust audio volume. And it's... complex. */
-	private static async genLavfiComplex(song: CurrentSong, showVideo = true): Promise<string> {
-		const isMP3 = supportedFiles.audio.some(extension => song.mediafile.endsWith(extension));
-		// Loudnorm normalization scheme: https://ffmpeg.org/ffmpeg-filters.html#loudnorm
-		let audio: string;
-		if (song.loudnorm) {
-			const [input_i, input_tp, input_lra, input_thresh, target_offset] = song.loudnorm.split(',');
-			audio = `[aid1]loudnorm=measured_i=${input_i}:measured_tp=${input_tp}:measured_lra=${input_lra}:measured_thresh=${input_thresh}:linear=true:offset=${target_offset}:lra=15:i=-15[ao]`;
-		} else {
-			audio = '';
-		}
-
-		// Avatar
-		const shouldDisplayAvatar =
-			// Does not work on macOS at the moment (November 2024) due to mpv versions not including a good ffmpeg.
-			process.platform !== 'darwin' &&
-			showVideo &&
-			song.avatar &&
-			getConfig().Player.Display.SongInfo &&
-			getConfig().Player.Display.Avatar &&
-			!(playerState.ffmpegVersion.includes('.') && semver.satisfies(playerState.ffmpegVersion, '7.0.x'));
-		const cropRatio = shouldDisplayAvatar ? Math.floor((await getAvatarResolution(song.avatar)) * 0.5) : 0;
-		let avatar = '';
-
-		if (shouldDisplayAvatar) {
-			// Checking if ffmpeg's version in mpv is either a semver or a version revision and if it's better or not than the required versions we have.
-			// This is a fix for people using mpvs with ffmpeg < 7.1 or a certain commit version.
-			const scaleAvailable = isScaleAvailable();
-
-			// Again, lavfi-complex expert @nah comes to the rescue!
-			avatar = [
-				`movie=\\'${song.avatar.replaceAll(
-					'\\',
-					'/'
-				)}\\',format=yuva420p,geq=lum='p(X,Y)':a='if(gt(abs(W/2-X),W/2-${cropRatio})*gt(abs(H/2-Y),H/2-${cropRatio}),if(lte(hypot(${cropRatio}-(W/2-abs(W/2-X)),${cropRatio}-(H/2-abs(H/2-Y))),${cropRatio}),255,0),255)'[logo]`,
-				scaleAvailable ? `[vid${playerState.currentVideoTrack}]split[v_in1][base]` : '',
-				isMP3 ? `nullsrc=size=1x1:duration=${song.duration}[emp]` : undefined,
-				isMP3 ? '[base][emp]overlay[ovrl]' : undefined,
-				scaleAvailable
-					? '[logo][v_in1]scale=w=(rh*.128):h=(rh*.128)[logo1]'
-					: `[logo][vid${playerState.currentVideoTrack}]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base]`,
-				`[${isMP3 ? 'ovrl' : 'base'}][logo1]overlay=x='if(between(t,0,8)+between(t,${song.duration - 8},${
-					song.duration
-				}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`,
-			]
-				.filter(x => !!x)
-				.join(';');
-		}
-		return [audio, avatar || `[vid${playerState.currentVideoTrack}]null[vo]`].filter(x => !!x).join(';');
-	}
 
 	isRunning() {
 		for (const player in this.players) {
@@ -632,35 +565,16 @@ export class Players {
 		}
 	}
 
-	private genLavfiComplexQRCode(): string {
-		// Disable this for mpvs with ffmpeg version 7.0
-		// Also disable for macOS as of November 2024 no mpv version seems to work with this.
-		if (
-			process.platform === 'darwin' ||
-			(playerState.ffmpegVersion.includes('.') && semver.satisfies(playerState.ffmpegVersion, '7.0.x'))
-		)
-			return '';
-		const scaleAvailable = isScaleAvailable();
-		return [
-			`movie=\\'${resolve(resolvedPath('Temp'), 'qrcode.png').replaceAll('\\', '/')}\\'[logo]`,
-			scaleAvailable ? `[vid${playerState.currentVideoTrack}]split[v_in1][base]` : '',
-			scaleAvailable
-				? '[logo][v_in1]scale=w=(rh*.256):h=(rh*.256)[logo1]'
-				: `[logo][vid${playerState.currentVideoTrack}]scale2ref=w=(ih*.256):h=(ih*.256)[logo1][base]`,
-			'[base][logo1]overlay=x=W-(W*50/300):y=H*20/300[vo]',
-		]
-			.filter(x => !!x)
-			.join(';');
-	}
-
 	async displayQRCode() {
-		await this.exec({ command: ['set_property', 'lavfi-complex', this.genLavfiComplexQRCode()] });
+		await this.exec({
+			command: ['set_property', 'lavfi-complex', `${lavfiGenerator.genLavfiQRCode(false)}[vo]`],
+		});
 	}
 
 	async hideQRCode() {
 		if (playerState.playerStatus !== 'play') {
 			await this.exec({
-				command: ['set_property', 'lavfi-complex', `[vid${playerState.currentVideoTrack}]null[vo]`],
+				command: ['set_property', 'lavfi-complex', `[vid1]null[vo]`],
 			});
 		}
 	}
@@ -685,7 +599,7 @@ export class Players {
 			const qrCode =
 				conf.Player.Display.ConnectionInfo.Enabled && conf.Player.Display.ConnectionInfo.QRCode
 					? {
-							'lavfi-complex': this.genLavfiComplexQRCode(),
+							'lavfi-complex': `${lavfiGenerator.genLavfiQRCode(false)}[vo]`,
 						}
 					: {};
 			if (background.music[0]) {
@@ -699,7 +613,7 @@ export class Players {
 							'audio-files-set': background.music[0],
 							aid: '1',
 							'loop-file': 'inf',
-							...qrCode,
+							//...qrCode,
 						},
 					],
 				});
@@ -834,7 +748,8 @@ export class Players {
 		const showVideo = !modifiers || (modifiers && modifiers.Blind === '');
 		playerState.modifiers = modifiers;
 		const loadPromises = [
-			Players.genLavfiComplex(song, showVideo)
+			lavfiGenerator
+				.genLavfiComplex(song, showVideo)
 				.then(res => (options['lavfi-complex'] = res))
 				.catch(err => {
 					logger.error('Cannot compute lavfi-complex filter, disabling avatar display', {
@@ -879,7 +794,7 @@ export class Players {
 						});
 				}),
 		];
-		await Promise.all<Promise<any>>(loadPromises);
+		await Promise.all(loadPromises);
 		logger.debug(`Loading media: ${mediaFile}${subFile ? ` with ${subFile}` : ''}`, { service });
 		const config = getConfig();
 		if (subFile) {
@@ -905,7 +820,7 @@ export class Players {
 			// Redefine the lavfi-complex filter because we're currently running on video track 2 if audio-only experience is enabled
 			if (getConfig().Player.AudioOnlyExperience) {
 				playerState.currentVideoTrack = 1;
-				options['lavfi-complex'] = await Players.genLavfiComplex(song, showVideo);
+				options['lavfi-complex'] = await lavfiGenerator.genLavfiComplex(song, showVideo);
 			}
 		}
 		options.start = start.toString();
@@ -972,6 +887,7 @@ export class Players {
 		return null;
 	}
 
+	/* Function playing playlist medias (jingles, intros, etc.) */
 	async playMedia(mediaType: PlaylistMediaType): Promise<PlayerState> {
 		const conf = getConfig();
 		const media = getSingleMedia(mediaType);

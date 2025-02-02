@@ -98,6 +98,7 @@ function Playlist(props: IProps) {
 	const plaid = useRef<string>(getPlaylistInfo(props.side, context)?.plaid);
 
 	const quizRanking = context.globalState.settings.data.state.quiz.running && props.quizRanking;
+	const isAdmin = props.scope === 'admin';
 
 	const publicPlaylistEmptied = () => {
 		if (getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.library) {
@@ -237,7 +238,7 @@ function Playlist(props: IProps) {
 	const sortable = useMemo(() => {
 		return (
 			!is_touch_device() &&
-			props.scope === 'admin' &&
+			isAdmin &&
 			!isNonStandardPlaylist(getPlaylistInfo(props.side, context)?.plaid) &&
 			searchType !== 'recent' &&
 			searchType !== 'requested' &&
@@ -338,8 +339,7 @@ function Playlist(props: IProps) {
 	const noRowsRenderer = useCallback(() => {
 		return (
 			<>
-				{getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.library &&
-				props.scope === 'admin' ? (
+				{getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.library && isAdmin ? (
 					<div className="list-group-item karaSuggestion">
 						<TasksEvent
 							limit={6}
@@ -353,7 +353,7 @@ function Playlist(props: IProps) {
 						) : (
 							<>
 								<div>{i18next.t('KARA_SUGGESTION_NOT_FOUND')}</div>
-								{repositories.map(value => (
+								{repositories?.map(value => (
 									<div key={value.name}>
 										<div>
 											<a key={value.name} href={value.url}>
@@ -444,7 +444,7 @@ function Playlist(props: IProps) {
 		param.size = data?.infos?.from > 0 && data?.infos?.to > 0 ? data.infos.to - data.infos.from : chunksize;
 		param.blacklist = true;
 		param.parentsOnly =
-			props.scope === 'public' &&
+			!isAdmin &&
 			searchCriteria !== 'tag' &&
 			context.globalState.settings.data.user.flag_parentsonly &&
 			param.plaid !== nonStandardPlaylists.favorites;
@@ -992,12 +992,21 @@ function Playlist(props: IProps) {
 			for (const value of context.globalState.settings.data.config.System.Repositories.filter(
 				value => value.Enabled && value.Online
 			)) {
-				const manifest: RepositoryManifestV2 = await commandBackend('getRepoManifest', { name: value.Name });
-				newRepos.push({
-					name: value.Name,
-					url: `http${value.Secure && 's'}://${value.Name}/`,
-					suggestUrl: manifest.suggestURL,
-				});
+				if (isAdmin) {
+					const manifest: RepositoryManifestV2 = await commandBackend('getRepoManifest', {
+						name: value.Name,
+					});
+					newRepos.push({
+						name: value.Name,
+						url: `http${value.Secure && 's'}://${value.Name}/`,
+						suggestUrl: manifest.suggestURL,
+					});
+				} else {
+					newRepos.push({
+						name: value.Name,
+						url: `http${value.Secure && 's'}://${value.Name}/`,
+					});
+				}
 			}
 		}
 		setRepositories(newRepos);
@@ -1019,7 +1028,7 @@ function Playlist(props: IProps) {
 		plaid.current = getPlaylistInfo(props.side, context)?.plaid;
 		setData(null); // will trigger initCall
 		if (
-			props.scope === 'admin' &&
+			isAdmin &&
 			getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.library &&
 			props.searchMenuOpen
 		) {
@@ -1055,7 +1064,7 @@ function Playlist(props: IProps) {
 		getSocket().on('KIDUpdated', KIDUpdated);
 		getSocket().on('playerStatus', updateCounters);
 		getSocket().on('databaseGenerated', updateLibrary);
-		if (props.scope === 'admin') {
+		if (isAdmin) {
 			getSocket().on('refreshLibrary', displayLibraryBanner);
 		} else {
 			getSocket().on('refreshLibrary', debounceUpdateLibrary);
@@ -1068,7 +1077,7 @@ function Playlist(props: IProps) {
 			getSocket().off('KIDUpdated', KIDUpdated);
 			getSocket().off('playerStatus', updateCounters);
 			getSocket().off('databaseGenerated', updateLibrary);
-			if (props.scope === 'admin') {
+			if (isAdmin) {
 				getSocket().off('refreshLibrary', displayLibraryBanner);
 			} else {
 				getSocket().off('refreshLibrary', debounceUpdateLibrary);
@@ -1101,7 +1110,7 @@ function Playlist(props: IProps) {
           }
       `}
 			</style>
-			{props.scope === 'admin' && !quizRanking ? (
+			{isAdmin && !quizRanking ? (
 				<PlaylistHeader
 					side={props.side}
 					playlistList={props.playlistList}

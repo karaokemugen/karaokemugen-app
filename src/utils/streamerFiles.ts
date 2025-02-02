@@ -3,8 +3,6 @@ import i18next from 'i18next';
 import { debounce } from 'lodash';
 import { resolve } from 'path';
 
-import { getSongSeriesSingers, getSongTitle, getSongVersion } from '../lib/services/kara.js';
-import { DBKara } from '../lib/types/database/kara.js';
 import { getConfig, resolvedPath } from '../lib/utils/config.js';
 import { asyncCheckOrMkdir } from '../lib/utils/files.js';
 import logger from '../lib/utils/logger.js';
@@ -15,16 +13,12 @@ import { getState } from './state.js';
 
 const service = 'StreamerFiles';
 
-function toPrettySong(song: DBKara): string {
-	return `${getSongSeriesSingers(song)}\n${song.songtypes.map(s => s.name).join(' ')}${!song.songorder || song.songorder === 0 ? '' : song.songorder.toString()} - ${getSongTitle(song)} ${getSongVersion(song)}`;
-}
-
 async function writeCurrentSong() {
 	let output: string;
 	const song = getState().player.currentSong;
 	const media = getState().player.currentMedia;
 	if (song) {
-		output = toPrettySong(song);
+		output = song.songname;
 	} else if (media) {
 		output = getState().player.mediaType;
 	} else {
@@ -43,7 +37,7 @@ async function writeNextSongAndRequester() {
 		const song = await getNextSong();
 		await fs.writeFile(
 			resolve(resolvedPath('StreamFiles'), 'next_song_name.txt'),
-			song ? toPrettySong(song) : '',
+			song ? song.songname : '',
 			'utf-8'
 		);
 		await fs.writeFile(resolve(resolvedPath('StreamFiles'), 'next_requester.txt'), song?.nickname || '', 'utf-8');

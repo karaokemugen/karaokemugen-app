@@ -335,5 +335,9 @@
 	"INTERFACE_RESTRICTED": "Brak sugestii",
 	"GENERATING_DATABASE": "Krok 2 / 2 - Aktualizacja bazy danych…",
 	"RESTARTING_PLAYER": "PONOWNE URUCHAMIANIE ODTWARZACZA…",
-	"INTERFACE_CLOSED": "Zamknięte"
+	"INTERFACE_CLOSED": "Zamknięte",
+	"NO": "Nie",
+	"YES": "Tak",
+	"CANCEL": "Anuluj",
+	"UNKNOWN": "Nieznany"
 }

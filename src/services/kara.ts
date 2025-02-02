@@ -191,9 +191,9 @@ export async function fetchPopularSongs() {
 	}
 }
 
-export function getKMStats() {
+export function getKMStats(selectedRepos?: string[]) {
 	try {
-		return getStats();
+		return getStats(selectedRepos);
 	} catch (err) {
 		logger.error(`Unable to fetch DB stats : ${err}`, { service });
 		sentry.error(err);

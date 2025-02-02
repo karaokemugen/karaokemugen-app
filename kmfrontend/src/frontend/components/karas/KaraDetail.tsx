@@ -55,6 +55,7 @@ export default function KaraDetail(props: IProps) {
 	const params = useParams();
 	const id = props.kid ? props.kid : params.kid;
 	const plc_id = props.playlistcontentId ? props.playlistcontentId : Number(params.plcid);
+	const isAdmin = props.scope === 'admin';
 
 	const keyObserverHandler = (e: KeyboardEvent) => {
 		if (e.key === 'Escape' && !document.getElementById('video')) {
@@ -63,7 +64,7 @@ export default function KaraDetail(props: IProps) {
 	};
 
 	const setBg = () => {
-		if (props.scope === 'admin') {
+		if (isAdmin) {
 			return;
 		}
 		const generated = kara ? `url('${getPreviewLink(kara, context)}')` : 'none';
@@ -189,12 +190,11 @@ export default function KaraDetail(props: IProps) {
 	}, [kara]);
 
 	useEffect(() => {
-		if (props.scope === 'admin' && !is_touch_device()) document.addEventListener('keyup', keyObserverHandler);
+		if (isAdmin && !is_touch_device()) document.addEventListener('keyup', keyObserverHandler);
 		setBg();
 		return () => {
-			if (props.scope === 'admin' && !is_touch_device())
-				document.removeEventListener('keyup', keyObserverHandler);
-			if (props.scope === 'public') setBgImage(context.globalDispatch, 'none');
+			if (isAdmin && !is_touch_device()) document.removeEventListener('keyup', keyObserverHandler);
+			if (!isAdmin) setBgImage(context.globalDispatch, 'none');
 		};
 	}, []);
 
@@ -265,7 +265,7 @@ export default function KaraDetail(props: IProps) {
 								: ''}
 					</span>
 				</div>
-				{kara.upvotes && props.scope === 'admin' ? (
+				{kara.upvotes && isAdmin ? (
 					<div className="detailsKaraLine">
 						<span title={i18next.t('KARA_DETAIL.UPVOTE_NUMBER')}>
 							<i className="fas fa-thumbs-up" />
@@ -372,13 +372,13 @@ export default function KaraDetail(props: IProps) {
 
 		const header = (
 			<div
-				className={`modal-header img-background${props.scope === 'public' ? ' fixed' : ''}`}
+				className={`modal-header img-background${!isAdmin ? ' fixed' : ''}`}
 				style={{
-					['--img' as any]: props.scope === 'admin' ? `url('${getPreviewLink(kara, context)}')` : 'none',
+					['--img' as any]: isAdmin ? `url('${getPreviewLink(kara, context)}')` : 'none',
 				}}
 			>
 				<div className="modal-header-title">
-					{props.scope === 'public' ? (
+					{!isAdmin ? (
 						<button className="transparent-btn" type="button" onClick={props.closeOnPublic}>
 							<i className="fas fa-fw fa-arrow-left" />
 						</button>
@@ -399,7 +399,7 @@ export default function KaraDetail(props: IProps) {
 							/>
 						</h5>
 					</div>
-					{props.scope === 'admin' ? (
+					{isAdmin ? (
 						<button className="transparent-btn" type="button" onClick={closeModalWithContext}>
 							<i className="fas fa-fw fa-times" />
 						</button>
@@ -433,7 +433,7 @@ export default function KaraDetail(props: IProps) {
 		);
 
 		let infoKaraTemp;
-		if (props.scope === 'admin') {
+		if (isAdmin) {
 			infoKaraTemp = (
 				<div className="modal modalPage" onClick={onClickOutsideModal}>
 					<div className="modal-dialog">
@@ -461,7 +461,7 @@ export default function KaraDetail(props: IProps) {
 					<div className="detailsKara">
 						<div className="centerButtons">
 							{context.globalState.auth.data.role === 'guest' ? null : makeFavButton}
-							{props.scope === 'public' &&
+							{!isAdmin &&
 							context?.globalState.settings.data.config?.Frontend?.Mode === 2 &&
 							kara.plaid !== context.globalState.settings.data.state.publicPlaid &&
 							kara.plaid !== context.globalState.settings.data.state.currentPlaid &&

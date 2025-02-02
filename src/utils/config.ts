@@ -232,7 +232,7 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	const config = setConfig(newConfig);
 
 	// Toggling media shortcuts
-	if (!oldConfig.Player.KeyboardMediaShortcuts && config.Player.KeyboardMediaShortcuts) registerShortcuts();
+	if (!oldConfig.Player.KeyboardMediaShortcuts && config.Player.KeyboardMediaShortcuts) registerShortcuts(true);
 	if (oldConfig.Player.KeyboardMediaShortcuts && !config.Player.KeyboardMediaShortcuts) unregisterShortcuts();
 	// Toggling poll
 	if (state.ready) setSongPoll(config.Karaoke.Poll.Enabled);
@@ -322,7 +322,7 @@ export async function configureHost() {
 	} else {
 		setState({ osURL: `http://${config.Player.Display.ConnectionInfo.Host}${URLPort}` });
 	}
-	if (config.Player.Display.ConnectionInfo.QRCode) {
+	if (config.Player.Display.ConnectionInfo.QRCode || config.Player.Display.ConnectionInfo.QRCodeDuringSong) {
 		await createQRCodeFile(getState().osURL);
 	}
 	if (

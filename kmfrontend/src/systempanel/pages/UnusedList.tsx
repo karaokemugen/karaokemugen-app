@@ -56,9 +56,18 @@ function UnusedList() {
 		);
 	};
 
+	const deleteAllMedia = async () => {
+		try {
+			await commandBackend('deleteMediaFiles', { files: unused.map(record => record.file), repo: repository });
+			setUnused([]);
+		} catch (_) {
+			// already display
+		}
+	};
+
 	const deleteMedia = async (file: string) => {
 		try {
-			await commandBackend('deleteMediaFile', { file: file, repo: repository });
+			await commandBackend('deleteMediaFiles', { files: [file], repo: repository });
 			setUnused(unused.filter(item => item.file !== file));
 		} catch (_) {
 			// already display
@@ -74,7 +83,7 @@ function UnusedList() {
 		}
 	};
 
-	const columns = [
+	const columnsTags = [
 		{
 			title: i18next.t('UNUSED_FILES.NAME'),
 			dataIndex: 'name',
@@ -95,6 +104,40 @@ function UnusedList() {
 		},
 		{
 			title: i18next.t('ACTION'),
+			width: 100,
+			align: 'center' as const,
+			render: (_, record) => (
+				<Button
+					type="primary"
+					danger
+					icon={<DeleteOutlined />}
+					onClick={() => (type === 'medias' ? deleteMedia(record.file) : deleteTag(record.tid))}
+				/>
+			),
+		},
+	];
+
+	const columnsMedias = [
+		{
+			title: i18next.t('UNUSED_FILES.FILE'),
+			dataIndex: 'file',
+			key: 'file',
+			sorter: (a, b) => a.file.localeCompare(b.file),
+			defaultSortOrder: 'ascend' as const,
+		},
+		{
+			title: (
+				<Button
+					title={i18next.t('UNUSED_FILES.DELETE_ALL_MEDIAS')}
+					type="primary"
+					danger
+					onClick={deleteAllMedia}
+				>
+					<DeleteOutlined />
+				</Button>
+			),
+			width: 100,
+			align: 'center' as const,
 			render: (_, record) => (
 				<Button
 					type="primary"
@@ -161,7 +204,7 @@ function UnusedList() {
 				</Row>
 				<Table
 					dataSource={unused.filter(e => !tagType || e.types?.includes(tagType))}
-					columns={columns}
+					columns={type === 'medias' ? columnsMedias : columnsTags}
 					rowKey="file"
 				/>
 			</Layout.Content>

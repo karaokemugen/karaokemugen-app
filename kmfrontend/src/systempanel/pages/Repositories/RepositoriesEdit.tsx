@@ -93,6 +93,14 @@ function RepositoriesEdit() {
 		}
 	};
 
+	const convertToUUID = async (repo: string) => {
+		if (repo) {
+			await commandBackend('convertRepoToUUID', {
+				repoName: repo,
+			});
+		}
+	};
+
 	const syncTags = async (repo: string) => {
 		if (repo) {
 			await commandBackend('syncTagsBetweenRepos', {
@@ -121,6 +129,7 @@ function RepositoriesEdit() {
 						save={name ? saveUpdate : saveNew}
 						movingMedia={movingMedia}
 						compareLyrics={compareLyrics}
+						convertToUUID={convertToUUID}
 						syncTags={syncTags}
 					/>
 				)}

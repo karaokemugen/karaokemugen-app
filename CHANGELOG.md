@@ -1,3 +1,38 @@
+# [8.0.58] - 2025-02-02
+
+This is mainly a bugfix release.
+
+## Added
+
+- **[Operators]** QR Code can now be displayed even during songs (#1662)
+- **[Operators]** When syncing medias, you can now choose which repositories to sync with if you have more than one. (#1638)
+- **[Operators]** Added progress bar for app updates on welcome screen.
+- **[Maintainers]** Repository manifest now has an option to disallow uneven resolutions
+- **[Maintainers]** Added "Convert to UUID" button in the repository edit form
+- **[Developers]** `NODE_ENV` can now be overriden on startup
+
+## Changed
+
+- **[Users]** Updated translations (german, english)
+- **[Maintainers]** Required tag types when adding songs is now decided by the repository manifest, and not hardcoded anymore (#1370)
+- **[Developers]** Made Electron more async/await compatible and cleaned up some deprecated code.
+
+## Removed
+
+- **[Users]** Removed Twitter/X support in profiles
+
+## Fixed
+
+- **[Users]** Fixed "Unable to do that" message on public page when doing some actions.
+- **[Operators]** "Add" button should be more responsive on operator page (#1401)
+- **[Operators]** Fixed some errors due to mpv initialization issues (#1722)
+- **[Operators]** Repository changelog in the news panel should work now (file was too big)
+- **[Operators]** Fixed language display in operator's mobile version
+- **[Operators]** On macOS, app shouldn't be asking for permission to use media keys anymore if it's been refused
+- **[Maintainers]** Kara submission form should be more responsive now
+- **[Maintainers]** Videos with embedded subtitles now have their subtitles stripped when added via the karaoke add page
+  ]
+
 # [8.0.56] - 2025-01-20
 
 This is a hotfix release. Very hot.

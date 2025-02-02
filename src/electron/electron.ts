@@ -1,4 +1,7 @@
-import { app, BrowserWindow, dialog, ipcMain, Menu, protocol, screen, shell } from 'electron';
+import { join } from 'node:path';
+import url from 'node:url';
+
+import { app, BrowserWindow, dialog, ipcMain, Menu, net, protocol, screen, shell } from 'electron';
 import { promises as fs } from 'fs';
 import i18next from 'i18next';
 import { resolve } from 'path';
@@ -32,41 +35,15 @@ let aboutWindow: Electron.BrowserWindow;
 
 let initDone = false;
 
-export function startElectron() {
+export async function startElectron() {
 	setState({ electron: !!app });
 	// Fix bug that makes the web views not updating if they're hidden behind other windows.
 	// It's better for streamers who capture the web interface through OBS.
 	app.commandLine.appendSwitch('disable-features', 'CalculateNativeWinOcclusion');
-	// This is called when Electron finished initializing
-	app.on('ready', async () => {
-		try {
-			await preInit();
-		} catch (err) {
-			console.log(err);
-			// This is usually very much fatal.
-			throw err;
-		}
-		// Register km:// protocol for internal use only.
-		try {
-			registerKMProtocol();
-		} catch (err) {
-			logger.warn('KM protocol could not be registered!', { obj: err, service });
-		}
-		// Create electron window with init screen
-		if (!getState().opt.cli) await initElectronWindow();
-		// Once init page is ready, or if we're in cli mode we start running init operations
-		//
-		if (getState().opt.cli) {
-			await initMain();
-		} else {
-			ipcMain.once('initPageReady', initMain);
-		}
-		registerIPCEvents();
-	});
 
 	// macOS only. Yes.
 	app.on('open-url', (_event, url: string) => {
-		handleProtocol(url.substring(5).split('/'));
+		handleProtocol(url.substring(5));
 	});
 
 	// Windows all closed should quit the app, even on macOS.
@@ -91,7 +68,7 @@ export function startElectron() {
 			focusWindow();
 			const file = args[args.length - 1];
 			if (file && file !== '.' && !file.startsWith('--')) {
-				file.startsWith('km://') ? handleProtocol(file.substr(5).split('/')) : handleFile(file);
+				file.startsWith('km://') ? handleProtocol(file.substring(5)) : handleFile(file);
 			}
 		}
 	});
@@ -102,6 +79,31 @@ export function startElectron() {
 	});
 
 	if (process.platform !== 'darwin') Menu.setApplicationMenu(null);
+
+	await app.whenReady();
+	try {
+		await preInit();
+	} catch (err) {
+		console.log(err);
+		// This is usually very much fatal.
+		throw err;
+	}
+	// Register km:// protocol for internal use only.
+	try {
+		registerKMProtocol();
+	} catch (err) {
+		logger.warn('KM protocol could not be registered!', { obj: err, service });
+	}
+	// Create electron window with init screen
+	if (!getState().opt.cli) await initElectronWindow();
+	// Once init page is ready, or if we're in cli mode we start running init operations
+
+	if (getState().opt.cli) {
+		await initMain();
+	} else {
+		ipcMain.once('initPageReady', initMain);
+	}
+	registerIPCEvents();
 }
 
 /** This is called once KM Engine fully started so we can open the right windows */
@@ -128,9 +130,10 @@ export async function postInit() {
 }
 
 function registerKMProtocol() {
-	protocol.registerStringProtocol('km', req => {
-		const args = req.url.substring(5).split('/');
+	protocol.handle('km', req => {
+		const args = req.url.slice('atom://'.length);
 		handleProtocol(args);
+		return net.fetch(url.pathToFileURL(join(__dirname, args)).toString());
 	});
 }
 
@@ -186,10 +189,11 @@ async function registerIPCEvents() {
 	});
 }
 
-export async function handleProtocol(args: string[]) {
+export async function handleProtocol(command: string) {
 	try {
-		logger.info(`Received protocol uri km://${args.join('/')}`, { service });
+		logger.info(`Received protocol uri km://${command}}`, { service });
 		if (!getState().ready) return;
+		const args = command.split('/');
 		switch (args[0]) {
 			case 'addRepo':
 				const repoName = args[1];
@@ -233,7 +237,7 @@ export async function handleProtocol(args: string[]) {
 				throw 'Unknown protocol';
 		}
 	} catch (err) {
-		logger.error(`Unknown command : ${args.join('/')}`, { service });
+		logger.error(`Unknown command : ${command}`, { service });
 	}
 }
 

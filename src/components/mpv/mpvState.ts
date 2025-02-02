@@ -1,9 +1,9 @@
 import { EventEmitter } from 'events';
 import { Observable, Subscriber } from 'rxjs';
 
-import Mpv from '../../utils/mpvIPC.js';
+import Mpv from './mpvIPC.js';
 
-const PLAYBACK_TIME: string = 'playback-time';
+const PLAYBACK_TIME = 'playback-time';
 
 export class MpvState extends EventEmitter implements Disposable {
 	private readonly playbackTimesSubs: Set<Subscriber<number>>;

@@ -5,6 +5,7 @@ import i18next from 'i18next';
 import { exit } from '../components/engine.js';
 import { getConfig } from '../lib/utils/config.js';
 import logger from '../lib/utils/logger.js';
+import Task from '../lib/utils/taskManager.js';
 import sentry from '../utils/sentry.js';
 import { win } from './electron.js';
 
@@ -17,6 +18,7 @@ export function initAutoUpdate() {
 	autoUpdater.logger = logger;
 	autoUpdater.autoDownload = false;
 	autoUpdater.disableDifferentialDownload = true;
+	let task: Task;
 	autoUpdater.on('error', error => {
 		if (error.message === 'net::ERR_INTERNET_DISCONNECTED') {
 			// Not yet handled cleanly by the electron-updater package
@@ -61,8 +63,20 @@ export function initAutoUpdate() {
 		}
 	});
 
+	autoUpdater.on('download-progress', state => {
+		if (!task)
+			task = new Task({
+				text: `DOWNLOADING_APP_UPDATE`,
+				total: 100,
+			});
+		task.update({
+			value: state.percent,
+		});
+	});
+
 	autoUpdater.on('update-downloaded', async () => {
 		logger.info('Update downloaded', { service });
+		if (task) task.end();
 		await dialog.showMessageBox(win, {
 			title: i18next.t('UPDATE_DOWNLOADED'),
 			message: i18next.t('UPDATE_READY_TO_INSTALL_RESTARTING'),
