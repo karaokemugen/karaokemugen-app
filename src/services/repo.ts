@@ -25,6 +25,7 @@ import { DiffChanges, Repository, RepositoryBasic, RepositoryManifest } from '..
 import { TagFile } from '../lib/types/tag.js';
 import { ASSFileCleanup } from '../lib/utils/ass.js';
 import { getConfig, resolvedPathRepos } from '../lib/utils/config.js';
+import { uuidRegexp } from '../lib/utils/constants.js';
 import { ErrorKM } from '../lib/utils/error.js';
 import { asyncCheckOrMkdir, listAllFiles, moveAll, relativePath, resolveFileInDirs } from '../lib/utils/files.js';
 import HTTP, { fixedEncodeURIComponent } from '../lib/utils/http.js';
@@ -50,7 +51,6 @@ import { createKaraInDB, integrateKaraFile, removeKara } from './karaManagement.
 import { createProblematicSmartPlaylist, updateAllSmartPlaylists } from './smartPlaylist.js';
 import { sendPayload } from './stats.js';
 import { getTags, integrateTagFile, removeTag } from './tag.js';
-import { uuidRegexp } from '../lib/utils/constants.js';
 
 const service = 'Repo';
 
