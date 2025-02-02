@@ -211,7 +211,7 @@ export default function karaController(router: SocketIOApp) {
 	router.route('getStats', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest', 'closed');
 		try {
-			return await getKMStats();
+			return await getKMStats(req.body?.repoNames);
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}

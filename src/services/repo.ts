@@ -59,13 +59,15 @@ const windowsDriveRootRegexp = /^[a-zA-Z]:\\$/;
 let updateRunning = false;
 
 /** Get all repositories in database */
-export function getRepos(publicView: false): Repository[];
-export function getRepos(publicView: true): RepositoryBasic[];
-export function getRepos(publicView: boolean): Repository[] | RepositoryBasic[];
-export function getRepos(): Repository[];
-export function getRepos(publicView = false): Repository[] | RepositoryBasic[] {
+export function getRepos(repoNames?: string[], publicView?: false): Repository[];
+export function getRepos(repoNames?: string[], publicView?: true): RepositoryBasic[];
+export function getRepos(repoNames?: string[], publicView?: boolean): Repository[] | RepositoryBasic[];
+export function getRepos(repoNames?: string[]): Repository[];
+export function getRepos(repoNames?: string[], publicView = false): Repository[] | RepositoryBasic[] {
 	try {
-		return selectRepos(publicView);
+		const repos = selectRepos(publicView);
+		if (!repoNames) return repos;
+		return repos.filter(r => repoNames.includes(r.Name));
 	} catch (err) {
 		logger.error(`Error getting repos : ${err}`, { service });
 		sentry.error(err);

@@ -36,3 +36,11 @@ export interface MediaDownloadCheck {
 	mediasize: number;
 	songname: string;
 }
+
+export interface UpdateMediasResult {
+	removedFiles: string[];
+	addedFiles: DBMedia[];
+	updatedFiles: DBMedia[];
+	repoName: string;
+	bytesToDownload: number;
+}
