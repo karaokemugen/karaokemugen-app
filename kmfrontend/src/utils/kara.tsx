@@ -189,7 +189,6 @@ export function buildKaraTitle(
 			langsText,
 			serieText,
 			songtypeText || songorderText ? `${songtypeText} ${songorderText}` : null,
-			songorderText,
 			getTitleInLocale(settings, data.titles, data.titles_default_language),
 		].filter(value => value != '');
 		return `${arrayElements.join(' - ')} ${version}`;
