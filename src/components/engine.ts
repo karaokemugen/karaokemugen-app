@@ -70,14 +70,14 @@ export async function initEngine() {
 			sentry.error(err);
 			await exit(1);
 		}
-	} else if (state.opt.mediaUpdateAll) {
+	} else if (state.opt.mediaUpdateAll || state.opt.mediaUpdate) {
 		try {
 			initStep(i18next.t('INIT_DB'));
 			await initDBSystem();
 			initStep(i18next.t('INIT_UPDATEMEDIAS'));
 			await initDownloader();
 			await wipeDownloads();
-			await updateAllMedias();
+			await updateAllMedias(state.opt.mediaUpdate);
 			await exit(0);
 		} catch (err) {
 			logger.error('Updating medias failed', { service, obj: err });
@@ -150,9 +150,6 @@ export async function initEngine() {
 			initDownloader();
 			initSession();
 			if (conf.Karaoke.StreamerMode.Twitch.Enabled) initTwitch();
-			if (!conf.App.FirstRun && !state.isTest && !state.opt.noPlayer) {
-				initPlayer();
-			}
 			if (conf.Online.Stats === true) initStats(false);
 			initStep(i18next.t('INIT_LAST'), true);
 			enableWSLogging(state.opt.debug ? 'debug' : 'info');
@@ -168,7 +165,7 @@ export async function initEngine() {
 					// Non fatal
 					handleFile(file).catch(() => {});
 				} else if (file && file.startsWith('km://')) {
-					handleProtocol(state.args[0].substr(5).split('/')).catch(() => {});
+					handleProtocol(state.args[0].substring(5)).catch(() => {});
 				}
 			}
 			if (conf.System.Database.bundledPostgresBinary) dumpPG().catch(() => {});
@@ -181,10 +178,13 @@ export async function initEngine() {
 			initStep(i18next.t('INIT_DONE'), true);
 			postInit();
 			initHooks();
-			readAllRepoManifests();
 			initFonts();
+			readAllRepoManifests();
 			archiveOldLogs();
 			initUsageTimer();
+			if (!conf.App.FirstRun && !state.isTest && !state.opt.noPlayer) {
+				initPlayer();
+			}
 			if (conf.Player.KeyboardMediaShortcuts) registerShortcuts();
 			if (state.isTest) {
 				await updateAllRepos();

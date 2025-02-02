@@ -14,7 +14,6 @@ import {
 	updateSession,
 } from '../dao/session.js';
 import { APIMessage } from '../lib/services/frontend.js';
-import { getSongSeriesSingers, getSongTitle, getSongVersion } from '../lib/services/kara.js';
 import { getConfig, resolvedPath } from '../lib/utils/config.js';
 import { ErrorKM } from '../lib/utils/error.js';
 import { sanitizeFile } from '../lib/utils/files.js';
@@ -245,11 +244,7 @@ export async function exportSession(seid: string): Promise<SessionExports> {
 			path: resolve(resolvedPath('SessionExports'), sessionExports.requested),
 			header: [
 				{ id: 'requested_at', title: 'REQUESTED AT' },
-				{ id: 'seriesinger', title: 'SERIES/SINGER' },
-				{ id: 'songtype', title: 'TYPE' },
-				{ id: 'order', title: 'ORDER' },
-				{ id: 'title', title: 'TITLE' },
-				{ id: 'version', title: 'VERSION' },
+				{ id: 'songname', title: 'SONG NAME' },
 			],
 			alwaysQuote: true,
 		});
@@ -257,11 +252,7 @@ export async function exportSession(seid: string): Promise<SessionExports> {
 			path: resolve(resolvedPath('SessionExports'), sessionExports.played),
 			header: [
 				{ id: 'played_at', title: 'PLAYED AT' },
-				{ id: 'seriesinger', title: 'SERIES/SINGER' },
-				{ id: 'songtype', title: 'TYPE' },
-				{ id: 'order', title: 'ORDER' },
-				{ id: 'title', title: 'TITLE' },
-				{ id: 'version', title: 'VERSION' },
+				{ id: 'songname', title: 'SONG NAME' },
 			],
 			alwaysQuote: true,
 		});
@@ -269,11 +260,7 @@ export async function exportSession(seid: string): Promise<SessionExports> {
 			path: resolve(resolvedPath('SessionExports'), sessionExports.playedCount),
 			header: [
 				{ id: 'count', title: 'PLAY COUNT' },
-				{ id: 'seriesinger', title: 'SERIES/SINGER' },
-				{ id: 'songtype', title: 'TYPE' },
-				{ id: 'order', title: 'ORDER' },
-				{ id: 'title', title: 'TITLE' },
-				{ id: 'version', title: 'VERSION' },
+				{ id: 'songname', title: 'SONG NAME' },
 			],
 			alwaysQuote: true,
 		});
@@ -281,33 +268,21 @@ export async function exportSession(seid: string): Promise<SessionExports> {
 			path: resolve(resolvedPath('SessionExports'), sessionExports.requestedCount),
 			header: [
 				{ id: 'count', title: 'REQUEST COUNT' },
-				{ id: 'seriesinger', title: 'SERIES/SINGER' },
-				{ id: 'songtype', title: 'TYPE' },
-				{ id: 'order', title: 'ORDER' },
-				{ id: 'title', title: 'TITLE' },
-				{ id: 'version', title: 'VERSION' },
+				{ id: 'songname', title: 'SONG NAME' },
 			],
 			alwaysQuote: true,
 		});
 		const recordsPlayed = played.map(k => {
 			return {
 				played_at: k.lastplayed_at.toLocaleString(),
-				seriesinger: getSongSeriesSingers(k),
-				version: getSongVersion(k),
-				songtype: k.songtypes.map(s => s.name).join(', '),
-				order: k.songorder ? k.songorder : '',
-				title: getSongTitle(k),
+				songname: k.songname,
 				kid: k.kid,
 			};
 		});
 		const recordsRequested = requested.map(k => {
 			return {
 				requested_at: k.lastrequested_at.toLocaleString(),
-				seriesinger: getSongSeriesSingers(k),
-				version: getSongVersion(k),
-				songtype: k.songtypes.map(s => s.name).join(', '),
-				order: k.songorder ? k.songorder : '',
-				title: getSongTitle(k),
+				songname: k.songname,
 				kid: k.kid,
 			};
 		});

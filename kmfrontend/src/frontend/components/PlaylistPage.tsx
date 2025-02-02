@@ -114,7 +114,7 @@ export default function PlaylistPage() {
 								</span>{' '}
 								{karaVersions}
 							</div>
-							<div className="series">{`${serieText} - ${songtypeText}${songorderText}`}</div>
+							<div className="series">{`${serieText}${serieText ? ' - ' : null}${songtypeText} ${songorderText}`}</div>
 						</li>
 					);
 				})}

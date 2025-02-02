@@ -453,6 +453,31 @@ function PlayerOptions(props: IProps) {
 								</div>
 							</div>
 						))}
+					{filterValue === undefined ||
+						(sanitizeSettingsSearchValue(
+							i18next.t('SETTINGS.PLAYER.DISPLAY_CONNECTION_INFO_QRCODE_DURING_SONG')
+						).includes(filterValue) && (
+							<div className="settings-line">
+								<label htmlFor="Player.Display.ConnectionInfo.QRCodeDuringSong">
+									<span className="title">
+										{i18next.t('SETTINGS.PLAYER.DISPLAY_CONNECTION_INFO_QRCODE_DURING_SONG')}
+									</span>
+									<br />
+									<span className="tooltip">
+										{i18next.t(
+											'SETTINGS.PLAYER.DISPLAY_CONNECTION_INFO_QRCODE_DURING_SONG_TOOLTIP'
+										)}
+									</span>
+								</label>
+								<div>
+									<Switch
+										idInput="Player.Display.ConnectionInfo.QRCodeDuringSong"
+										handleChange={onChange}
+										isChecked={config['Player.Display.ConnectionInfo.QRCodeDuringSong']}
+									/>
+								</div>
+							</div>
+						))}
 
 					{filterValue === undefined ||
 						(sanitizeSettingsSearchValue(

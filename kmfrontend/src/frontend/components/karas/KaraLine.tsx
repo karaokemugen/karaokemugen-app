@@ -60,6 +60,7 @@ function KaraLine(props: IProps) {
 	const settings = context.globalState.settings.data;
 	const kara = props.kara;
 	const [karaMenu, setKaraMenu] = useState(false);
+	const isAdmin = props.scope === 'admin';
 
 	const upvoteKara = () => {
 		const plc_id = kara.plcid ? kara.plcid : kara.public_plc_id[0];
@@ -132,7 +133,7 @@ function KaraLine(props: IProps) {
 				displayMessage('warning', i18next.t('ERROR_CODES.FAVORITES_ONLINE_NOINTERNET'), 5000);
 				return;
 			}
-		} else if (props.scope === 'admin') {
+		} else if (isAdmin) {
 			if (oppositePlaylist && !oppositePlaylist.flag_smart) {
 				if (!isNonStandardPlaylist(getPlaylistInfo(props.side, context).plaid) && !pos) {
 					url = 'copyKaraToPlaylist';
@@ -223,7 +224,7 @@ function KaraLine(props: IProps) {
 								className={`tag ${typeData.color}${type === 'WARNINGS' ? ' problematicTag' : ''}`}
 								title={getTagInLocale(settings, tag, props.i18nTag).i18n}
 							>
-								{props.scope === 'admin' && !is_touch_device()
+								{isAdmin && !is_touch_device()
 									? tag.short
 										? tag.short
 										: tag.name
@@ -263,9 +264,9 @@ function KaraLine(props: IProps) {
 
 	const downloadIcon = () => {
 		// Tags in the header
-		if (kara.download_status === 'MISSING' && props.scope === 'admin') {
+		if (kara.download_status === 'MISSING' && isAdmin) {
 			return <i className="fas fa-fw fa-cloud" title={i18next.t('KARA.MISSING_DOWNLOAD_TOOLTIP')} />;
-		} else if (kara.download_status === 'DOWNLOADING' && props.scope === 'admin') {
+		} else if (kara.download_status === 'DOWNLOADING' && isAdmin) {
 			return (
 				<i className="fas fa-fw fa-cloud-download-alt" title={i18next.t('KARA.IN_PROGRESS_DOWNLOAD_TOOLTIP')} />
 			);
@@ -284,11 +285,11 @@ function KaraLine(props: IProps) {
 					kara.flag_dejavu ? ' dejavu' : ''
 				}
 				${props.indexInPL % 2 === 0 ? ' list-group-item-even' : ''} ${
-					(props.jingle || props.sponsor) && props.scope === 'admin' ? ' marker' : ''
+					(props.jingle || props.sponsor) && isAdmin ? ' marker' : ''
 				}
-				${props.sponsor && props.scope === 'admin' ? ' green' : ''}${props.side === 'right' ? ' side-right' : ''}`}
+				${props.sponsor && isAdmin ? ' green' : ''}${props.side === 'right' ? ' side-right' : ''}`}
 			>
-				{props.scope === 'public' && kara.username !== authData.username && kara.flag_visible === false ? (
+				{!isAdmin && kara.username !== authData.username && kara.flag_visible === false ? (
 					<div className="contentDiv">
 						<div>
 							{
@@ -301,7 +302,7 @@ function KaraLine(props: IProps) {
 				) : (
 					<>
 						<div className="infoDiv">
-							{props.scope === 'admin' &&
+							{isAdmin &&
 							(isNonStandardPlaylist(plaid) ||
 								(getPlaylistInfo(props.side, context)?.flag_public &&
 									!getPlaylistInfo(props.side, context)?.flag_current)) ? (
@@ -314,7 +315,7 @@ function KaraLine(props: IProps) {
 									<i className="fas fa-fw fa-play" />
 								</button>
 							) : null}
-							{props.scope === 'admin' &&
+							{isAdmin &&
 							!isNonStandardPlaylist(plaid) &&
 							!(
 								getPlaylistInfo(props.side, context)?.flag_public &&
@@ -328,7 +329,7 @@ function KaraLine(props: IProps) {
 									<i className="fas fa-fw fa-play-circle" />
 								</button>
 							) : null}
-							{props.scope === 'admin' && !isNonStandardPlaylist(plaid) && !kara.flag_visible ? (
+							{isAdmin && !isNonStandardPlaylist(plaid) && !kara.flag_visible ? (
 								<button
 									type="button"
 									className={'btn btn-action btn-primary'}
@@ -338,7 +339,7 @@ function KaraLine(props: IProps) {
 								</button>
 							) : null}
 						</div>
-						{is_touch_device() || props.scope === 'public' ? (
+						{is_touch_device() || !isAdmin ? (
 							<div
 								className="contentDiv contentDivMobile"
 								onClick={() => props.openKara(kara)}
@@ -346,14 +347,18 @@ function KaraLine(props: IProps) {
 							>
 								<div className="contentDivMobileTitle">
 									<span
-										className={`tag inline green ${kara.children?.length > 0 && settings.user.flag_parentsonly ? 'empty' : undefined}`}
+										className={`tag inline green ${!isAdmin && kara.children?.length > 0 && settings.user.flag_parentsonly ? 'empty' : undefined}`}
 										title={
-											kara.children?.length > 0 && settings.user.flag_parentsonly
+											!kara.langs ||
+											kara.langs.length === 0 ||
+											(!isAdmin && kara.children?.length > 0 && settings.user.flag_parentsonly)
 												? ''
 												: getTagInLocale(settings, kara.langs[0], props.i18nTag).i18n
 										}
 									>
-										{kara.children?.length > 0 && settings.user.flag_parentsonly
+										{!kara.langs ||
+										kara.langs.length === 0 ||
+										(!isAdmin && kara.children?.length > 0 && settings.user.flag_parentsonly)
 											? ''
 											: kara.langs[0].short?.toUpperCase() || kara.langs[0].name.toUpperCase()}
 									</span>
@@ -379,14 +384,18 @@ function KaraLine(props: IProps) {
 								<div className="contentDivMobileSerie">
 									<span
 										className="tag inline green"
-										title={getTagInLocale(settings, kara.songtypes[0], props.i18nTag).i18n}
+										title={
+											kara.songtypes?.length > 0 &&
+											getTagInLocale(settings, kara.songtypes[0], props.i18nTag).i18n
+										}
 									>
-										{kara.songtypes[0].short?.toUpperCase() || kara.songtypes[0].name}{' '}
+										{kara.songtypes?.length > 0 &&
+											(kara.songtypes[0].short?.toUpperCase() || kara.songtypes[0].name)}{' '}
 										{kara.songorder}
 									</span>
 									{karaSerieOrSingerGroupsOrSingers}
 								</div>
-								{kara.upvotes && props.scope === 'admin' ? (
+								{kara.upvotes && isAdmin ? (
 									<div className="upvoteCount">
 										<i className="fas fa-thumbs-up" />
 										{kara.upvotes}
@@ -397,7 +406,7 @@ function KaraLine(props: IProps) {
 										{kara.children?.length > 0 &&
 										settings.user.flag_parentsonly &&
 										plaid !== nonStandardPlaylists.favorites &&
-										props.scope === 'public' ? (
+										!isAdmin ? (
 											<>
 												<i className="far fa-fixed-width fa-list-alt" />
 												&nbsp;
@@ -443,7 +452,7 @@ function KaraLine(props: IProps) {
 											})}
 										/>
 									) : null}
-									{kara.upvotes && props.scope === 'admin' ? (
+									{kara.upvotes && isAdmin ? (
 										<div className="upvoteCount" title={i18next.t('KARA_DETAIL.UPVOTE_NUMBER')}>
 											<i className="fas fa-thumbs-up" />
 											{kara.upvotes}
@@ -457,7 +466,7 @@ function KaraLine(props: IProps) {
 								</div>
 							</div>
 						)}
-						{props.scope === 'admin' ? (
+						{isAdmin ? (
 							<span className="checkboxKara" onClick={checkKara}>
 								{kara.checked ? (
 									<i className="far fa-check-square"></i>
@@ -466,7 +475,7 @@ function KaraLine(props: IProps) {
 								)}
 							</span>
 						) : null}
-						<div className={`actionDiv${props.scope === 'public' ? ' vertical' : ''}`}>
+						<div className={`actionDiv${!isAdmin ? ' vertical' : ''}`}>
 							{!is_touch_device() && shouldShowProfile ? (
 								<ProfilePicture
 									className={`img-circle${is_touch_device() ? ' mobile' : ''}`}
@@ -480,7 +489,7 @@ function KaraLine(props: IProps) {
 								/>
 							) : null}
 							<div className="btn-group">
-								{props.scope === 'admin' || settings?.config?.Frontend?.Mode === 2 ? (
+								{isAdmin || settings?.config?.Frontend?.Mode === 2 ? (
 									<ActionsButtons
 										side={props.side}
 										scope={props.scope}
@@ -493,7 +502,7 @@ function KaraLine(props: IProps) {
 										acceptKara={acceptKara}
 									/>
 								) : null}
-								{props.scope === 'admin' ? (
+								{isAdmin ? (
 									<button
 										title={i18next.t('KARA_MENU.KARA_COMMANDS')}
 										onClick={event => {
@@ -509,7 +518,7 @@ function KaraLine(props: IProps) {
 							</div>
 							{props.sortable ? <DragHandle dragHandleProps={props.draggable.dragHandleProps} /> : null}
 						</div>
-						{props.scope === 'public' ? (
+						{!isAdmin ? (
 							<div className="chevron" onClick={() => props.openKara(props.kara)}>
 								<i className="fas fa-chevron-right fa-3x" />
 							</div>
@@ -517,11 +526,11 @@ function KaraLine(props: IProps) {
 					</>
 				)}
 			</div>
-			{props.sponsor && props.jingle && props.scope === 'admin' ? (
+			{props.sponsor && props.jingle && isAdmin ? (
 				<div className="marker-label green">{i18next.t('KARA_DETAIL.JINGLE_SPONSOR')}</div>
-			) : props.jingle && props.scope === 'admin' ? (
+			) : props.jingle && isAdmin ? (
 				<div className="marker-label">{i18next.t('KARA_DETAIL.JINGLE')}</div>
-			) : props.sponsor && props.scope === 'admin' ? (
+			) : props.sponsor && isAdmin ? (
 				<div className="marker-label green">{i18next.t('KARA_DETAIL.SPONSOR')}</div>
 			) : (
 				''

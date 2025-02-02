@@ -85,7 +85,7 @@ export async function playSingleSong(kid?: string, randomPlaying = false) {
 export async function getSongInfosForPlayer(kara: DBKara | DBPLC): Promise<{ infos: string; avatar: string }> {
 	const lang = getConfig().Player.Display.SongInfoLanguage;
 	// If series is empty, pick singer information instead
-	const series = getSongSeriesSingers(kara, lang);
+	const firstLine = getSongSeriesSingers(kara, lang);
 	// Get song versions for display
 	const versions = getSongVersion(kara, lang);
 
@@ -126,9 +126,11 @@ export async function getSongInfosForPlayer(kara: DBKara | DBPLC): Promise<{ inf
 	}
 	// Construct mpv message to display.
 	// If song order is 0, don't display it (we don't want things like OP0, ED0...)
-	let infos = `{\\bord2}{\\fscx70}{\\fscy70}{\\b1}${series}{\\b0}\\N{\\i1}${kara.songtypes
-		.map(s => s.name)
-		.join(' ')}${kara.songorder || ''} - ${getSongTitle(kara, lang)}${versions}{\\i0}${requestedBy}`;
+	const secondLine = [
+		`${kara.songtypes.length > 0 ? kara.songtypes.map(s => s.name).join(' ') : ''}${kara.songorder || ''}`,
+		`${getSongTitle(kara, lang)}${versions}`,
+	];
+	let infos = `{\\bord2}{\\fscx70}{\\fscy70}{\\b1}${firstLine}{\\b0}\\N{\\i1}${secondLine.join(' - ')}{\\i0}${requestedBy}`;
 	if ('flag_visible' in kara && kara.flag_visible === false && !getState().quiz.running) {
 		// We're on a PLC with a flag_visible set to false, let's hide stuff!
 		// But we don't hide it if we're in quiz mode. Because you know.

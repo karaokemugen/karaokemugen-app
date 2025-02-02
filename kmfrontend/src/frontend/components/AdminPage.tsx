@@ -44,23 +44,13 @@ function AdminPage(props: IProps) {
 	const operatorNotificationSuccess = (data: { code: string; data: string }) =>
 		displayMessage('success', i18next.t(data.code, { data: data }));
 
-	const playlistInfoUpdated = useCallback(
-		debounce(
-			async (plaid: string) => {
-				await getPlaylistList();
-				if (context.globalState.frontendContext?.playlistInfoLeft?.plaid === plaid)
-					setPlaylistInfoLeft(context.globalDispatch, plaid);
-				if (context.globalState.frontendContext?.playlistInfoRight?.plaid === plaid)
-					setPlaylistInfoRight(context.globalDispatch, plaid);
-			},
-			300,
-			{ maxWait: 1000 }
-		),
-		[
-			context.globalState.frontendContext?.playlistInfoLeft?.plaid,
-			context.globalState.frontendContext?.playlistInfoRight?.plaid,
-		]
-	);
+	const playlistInfoUpdated = (plaid: string) => {
+		getPlaylistList();
+		if (context.globalState.frontendContext.playlistInfoLeft?.plaid === plaid)
+			setPlaylistInfoLeft(context.globalDispatch, plaid);
+		if (context.globalState.frontendContext.playlistInfoRight?.plaid === plaid)
+			setPlaylistInfoRight(context.globalDispatch, plaid);
+	};
 
 	const toggleSearchMenuLeft = () => {
 		setSearchMenuOpenLeft(!searchMenuOpenLeft);

@@ -6,7 +6,7 @@ export interface PollState {
 
 export interface PollResults {
 	votes: number;
-	kara: string;
+	winner: PollItem;
 	index: number;
 }
 

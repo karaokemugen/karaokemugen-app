@@ -15,7 +15,7 @@ import { playSingleSong } from '../../services/karaEngine.js';
 import {
 	batchEditKaras,
 	copyKaraToRepo,
-	deleteMediaFile,
+	deleteMediaFiles,
 	embedAudioFileCoverArt,
 	encodeMediaFileToRepoDefaults,
 	removeKara,
@@ -199,10 +199,10 @@ export default function karaController(router: SocketIOApp) {
 		// This is async so we always return
 		batchEditKaras(req.body.plaid, req.body.action, req.body.tid, +req.body.type as TagTypeNum).catch(() => {});
 	});
-	router.route('deleteMediaFile', async (socket: Socket, req: APIData) => {
+	router.route('deleteMediaFiles', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
-			return await deleteMediaFile(req.body.file, req.body.repo);
+			return await deleteMediaFiles(req.body.files, req.body.repo);
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
@@ -211,7 +211,7 @@ export default function karaController(router: SocketIOApp) {
 	router.route('getStats', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest', 'closed');
 		try {
-			return await getKMStats();
+			return await getKMStats(req.body?.repoNames);
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}

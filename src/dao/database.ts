@@ -15,6 +15,7 @@ import { fileExists } from '../lib/utils/files.js';
 import logger, { profile } from '../lib/utils/logger.js';
 import Task from '../lib/utils/taskManager.js';
 import { emitWS } from '../lib/utils/ws.js';
+import { getRepos } from '../services/repo.js';
 import { updateAllSmartPlaylists } from '../services/smartPlaylist.js';
 import { DBStats } from '../types/database/database.js';
 import { checkDumpExists, initPG, isShutdownPG, restorePG } from '../utils/postgresql.js';
@@ -269,13 +270,14 @@ export async function resetUserData() {
 	logger.warn('User data has been reset!', { service });
 }
 
-export async function getStats(): Promise<DBStats> {
+export async function getStats(selectedRepos?: string[]): Promise<DBStats> {
 	const collectionClauses = [];
 	for (const collection of Object.keys(getConfig().Karaoke.Collections)) {
 		if (getConfig().Karaoke.Collections[collection] === true)
 			collectionClauses.push(`'${collection}~${tagTypes.collections}' = ANY(ak.tid)`);
 	}
-	const res = await db().query(sqlGetStats(collectionClauses));
+	const repos = selectedRepos || getRepos().map(r => r.Name);
+	const res = await db().query(sqlGetStats(collectionClauses), [repos]);
 	// Bigints are returned as strings in node-postgres for now. So we'll turn it into a number here.
 	// See this issue : https://github.com/brianc/node-postgres/issues/2398
 	return { ...res.rows[0], total_media_size: +res.rows[0].total_media_size };

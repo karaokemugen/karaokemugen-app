@@ -116,7 +116,7 @@ const portable = dataPath === resolve(appPath, 'app/');
 
 setState({ appPath, dataPath, resourcePath, portable });
 
-process.env.NODE_ENV = 'production'; // Default
+process.env.NODE_ENV = process.env.NODE_ENV || 'production'; // Default
 
 // Electron packaged app does not need a slice(2) but a (1) since it has no script argument
 const args = app.isPackaged ? process.argv.slice(1) : process.argv.slice(2);
@@ -125,11 +125,9 @@ setState({ args });
 
 // Let's go! This calls the functions below.
 // Start Electron -> Pre Init -> Main Init -> Engine Init -> Post Init
-try {
-	startElectron();
-} catch (err) {
+startElectron().catch(err => {
 	if (logger) logger.error('Error during launch', { service, obj: err });
 	console.log(err);
 	sentry.error(err);
 	exit(1);
-}
+});
