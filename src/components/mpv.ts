@@ -357,10 +357,10 @@ async function checkMpv() {
 	try {
 		const output = await execa(state.binPath.mpv, ['--version'], { env: defineMPVEnv() });
 		logger.debug(`mpv stdout: ${output.stdout}`, { service });
-		const mpv = semver.valid(mpvRegex.exec(output.stdout)[1]) || '';
+		const mpv = semver.valid(mpvRegex.exec(output.stdout)[1]) || 'UNKNOWN';
 		mpvVersion = mpv.split('-')[0];
 
-		const ffmpegVersion = FFmpegRegex.exec(output.stdout)[1] || '';
+		const ffmpegVersion = FFmpegRegex.exec(output.stdout)[1] || 'UNKNOWN';
 		setState({ player: { ...getState().player, version: mpvVersion, ffmpegVersion } });
 		playerState.version = mpvVersion;
 		playerState.ffmpegVersion = ffmpegVersion;
