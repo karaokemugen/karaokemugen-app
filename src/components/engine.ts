@@ -70,14 +70,14 @@ export async function initEngine() {
 			sentry.error(err);
 			await exit(1);
 		}
-	} else if (state.opt.mediaUpdateAll) {
+	} else if (state.opt.mediaUpdateAll || state.opt.mediaUpdate) {
 		try {
 			initStep(i18next.t('INIT_DB'));
 			await initDBSystem();
 			initStep(i18next.t('INIT_UPDATEMEDIAS'));
 			await initDownloader();
 			await wipeDownloads();
-			await updateAllMedias();
+			await updateAllMedias(state.opt.mediaUpdate);
 			await exit(0);
 		} catch (err) {
 			logger.error('Updating medias failed', { service, obj: err });
