@@ -209,7 +209,7 @@
 		"EXPLORE": "Explore",
 		"OTHERS": "Others…",
 		"GET_LUCKY": "Get lucky",
-		"REQUESTED_KARAOKES": "Popular songs",
+		"REQUESTED_KARAOKES": "Most requested songs",
 		"NEW_KARAOKES": "New songs",
 		"KARA_VERSIONS": "This song is available in {{length}} versions, choose the one you want to add.",
 		"ANIME_LIST": "My Animes",
@@ -630,7 +630,7 @@
 	"VIEW_STANDARD": "Standard",
 	"VIEW_FAVORITES": "Favorites",
 	"VIEW_RECENT": "Latest",
-	"VIEW_POPULAR": "Popular",
+	"VIEW_POPULAR": "Requested",
 	"VIEW_LIKES": "Likes",
 	"VIEW_LIKES_TOOLTIP": "The song with the most likes will be shown first, this does not change the playlist order.",
 	"KARA_SUGGESTION_NOT_FOUND": "Can't find your favorite song? Check your configured online repositories as well as the suggestions site if your wish has not already been granted:",
@@ -815,7 +815,7 @@
 		},
 		"STATS_MODAL": {
 			"TITLE": "Use my favorites and songs requests for stats",
-			"DESC": "We use your favorites as well as the songs that you have requested during a session to make usage statistics (for example, to find out the most popular songs).",
+			"DESC": "We use your favorites as well as the songs that you have requested during a session to make usage statistics (for example, to find out the most requested songs).",
 			"REFUSE_DESC": "If you do not want to participate, even if it's anonymous, in these usage statistics, please let us know. If you refuse, your data will be ignored and not sent by the Karaoke Mugen Application.",
 			"CHANGE": "You can change this at any time in your profile. Do you accept usage of your song history for stats?"
 		},
@@ -1112,7 +1112,7 @@
 		"ORDER_MEDIA": "Order media by: ",
 		"ORDER_MEDIA_STANDARD": "Standard",
 		"ORDER_MEDIA_NEW": "New",
-		"ORDER_MEDIA_POPULAR": "Popular",
+		"ORDER_MEDIA_POPULAR": "Requested",
 		"ORDER_MEDIA_MEDIASIZE": "Mediasize",
 		"CHANGE_ORDER_DIRECTION": "Change the direction of the order",
 		"REPOSITORY": "Repository",
@@ -1184,7 +1184,7 @@
 		"DOWNLOAD_QUEUE": "Download queue",
 		"DOWNLOAD": "Media download",
 		"HISTORY": "History",
-		"RANKING": "Most popular",
+		"RANKING": "Most requested",
 		"VIEWCOUNTS": "Most played",
 		"TAGS": "Tags",
 		"DATABASE": "Database",
@@ -1376,8 +1376,8 @@
 			"ONLINE_UPDATES_MEDIAS_ENCORES": "Auto-update encores",
 			"ONLINE_UPDATES_MEDIAS_SPONSORS": "Auto-update sponsors",
 			"ONLINE_USERS": "Allow online user registration & login",
-			"ONLINE_FETCHPOPULARSONGS": "Fetch popular songs from your online repositories",
-			"ONLINE_FETCHPOPULARSONGS_TOOLTIP": "If disabled, popular songs will be calculated from your Karaoke Mugen app",
+			"ONLINE_FETCHPOPULARSONGS": "Fetch most requested songs from your online repositories",
+			"ONLINE_FETCHPOPULARSONGS_TOOLTIP": "If disabled, most requested songs will be calculated from your Karaoke Mugen app",
 			"ONLINE_DISCORD_DISPLAYACTIVITY": "Show Karaoke Mugen activity on your Discord profile"
 		}
 	},
@@ -1509,7 +1509,7 @@
 	},
 	"HOME": {
 		"SYSTEM_DESCRIPTION": "See logs, change configuration options, backup/restore your database, trigger a manual generation and manage karaoke session",
-		"KARAS_DESCRIPTION": "List, edit, and create karaoke data files. You can also download media and view most popular, most played, and karaoke history",
+		"KARAS_DESCRIPTION": "List, edit, and create karaoke data files. You can also download media and view most requested, most played, and karaoke history",
 		"TAGS_DESCRIPTION": "List, create, edit tags (singers, songwriters, creators, song types, etc.)",
 		"USERS_DESCRIPTION": "List, edit, create users, change their password, create new guests accounts.",
 		"SYSTEM": {
@@ -1659,7 +1659,7 @@
 		"KARA_CREATED_ERROR": "Error creating the karaoke",
 		"KARA_FILE_EXISTS_ERROR": "Error saving files: A karaoke with the same filename already exists. Please make sure this is not a duplicate and the tags are set correctly.",
 		"KARA_HISTORY_ERROR": "Error getting songs sorted by date played",
-		"KARA_RANKING_ERROR": "Error sorting songs by popularity",
+		"KARA_RANKING_ERROR": "Error sorting songs by most requested",
 		"KARA_PLAYED_ERROR": "Error getting songs sorted by most played",
 		"SONG_VIEW_ERROR": "Error getting song information",
 		"KARA_DELETED_ERROR": "Error deleting song",
@@ -1948,9 +1948,9 @@
 			"DESCRIPTION": "Lists all the karaoke played on your application, in descending chronological order."
 		},
 		"MOST_REQUESTED": {
-			"TITLE": "Most Popular Songs",
-			"DESCRIPTION": "Lists the most popular songs on your application. Only takes into account songs added from the public interface.",
-			"DESCRIPTION_ONLINE": "You're seeing the ONLINE popular song list right now. Disable the \"Fetch popular songs online\" setting to only see those from your instance."
+			"TITLE": "Most Requested Songs",
+			"DESCRIPTION": "Lists the most requested songs on your application. Only takes into account songs added from the public interface.",
+			"DESCRIPTION_ONLINE": "You're seeing the most requested ONLINE song list right now. Disable the \"Fetch most requested songs online\" setting to only see those from your instance."
 		},
 		"MOST_PLAYED": {
 			"TITLE": "Most played songs",
