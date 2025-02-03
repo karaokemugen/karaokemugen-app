@@ -13,13 +13,12 @@ import {
 	createKarasMap,
 } from '../lib/services/karaValidation.js';
 import { consolidateTagsInRepo } from '../lib/services/tag.js';
-import { EditedKara, KaraFileV4 } from '../lib/types/kara.d.js';
+import { EditedKara } from '../lib/types/kara.d.js';
 import { ASSFileCleanup } from '../lib/utils/ass.js';
 import { resolvedPath, resolvedPathRepos } from '../lib/utils/config.js';
 import { ErrorKM } from '../lib/utils/error.js';
 import { replaceExt, resolveFileInDirs, smartMove } from '../lib/utils/files.js';
 import logger, { profile } from '../lib/utils/logger.js';
-import { sortJSON } from '../lib/utils/objectHelpers.js';
 import Task from '../lib/utils/taskManager.js';
 import { adminToken } from '../utils/constants.js';
 import sentry from '../utils/sentry.js';
@@ -34,7 +33,7 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 		text: 'EDITING_SONG',
 		subtext: editedKara.kara.data.titles[editedKara.kara.data.titles_default_language],
 	});
-	let kara = trimKaraData(editedKara.kara);
+	const kara = trimKaraData(editedKara.kara);
 	// Validation here, processing stuff later
 	// No sentry triggered if validation fails
 	try {
@@ -189,13 +188,8 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 			}
 		}
 		await fs.unlink(karaJsonFileOld);
-
-		// Sort stuff inside kara JSON.
-
-		kara = sortKaraJSON(kara);
-
 		await writeKara(karaJsonFileDest, kara);
-		await integrateKaraFile(karaJsonFileDest, kara, false, refresh);
+		await integrateKaraFile(karaJsonFileDest, false, refresh);
 		checkDownloadStatus([kara.data.kid]);
 		await consolidateTagsInRepo(kara);
 
@@ -215,7 +209,7 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 }
 
 export async function createKara(editedKara: EditedKara) {
-	let kara = trimKaraData(editedKara.kara);
+	const kara = trimKaraData(editedKara.kara);
 	const task = new Task({
 		text: 'CREATING_SONG',
 		subtext: kara.data.titles[kara.data.titles_default_language],
@@ -282,12 +276,8 @@ export async function createKara(editedKara: EditedKara) {
 		}
 		await smartMove(mediaPath, mediaDest, { overwrite: true });
 		kara.medias[0].filename = filenames.mediafile;
-
-		// Sort stuff inside kara JSON.
-
-		kara = sortKaraJSON(kara);
 		await writeKara(karaJsonFileDest, kara);
-		await integrateKaraFile(karaJsonFileDest, kara, false, true);
+		await integrateKaraFile(karaJsonFileDest, false, true);
 		checkDownloadStatus([kara.data.kid]);
 		await consolidateTagsInRepo(kara);
 
@@ -320,11 +310,4 @@ async function getAllKarasInFamily(kidsToSearch: string[]) {
 		q: `k:${[...kids.values()].join(',')}`,
 	});
 	return karas;
-}
-
-function sortKaraJSON(kara: KaraFileV4) {
-	kara.data = sortJSON(kara.data);
-	kara.medias[0] = sortJSON(kara.medias[0]);
-	if (kara.medias[0].lyrics[0]) kara.medias[0].lyrics[0] = sortJSON(kara.medias[0].lyrics[0]);
-	return kara;
 }

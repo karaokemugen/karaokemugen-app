@@ -12,7 +12,7 @@ import { deleteRepo, insertRepo, updateRepo } from '../dao/repo.js';
 import { getSettings, refreshAll, saveSetting } from '../lib/dao/database.js';
 import { initHooks } from '../lib/dao/hook.js';
 import { refreshKaras } from '../lib/dao/kara.js';
-import { formatKaraV4, parseKara, writeKara } from '../lib/dao/karafile.js';
+import { formatKaraV4, getDataFromKaraFile, writeKara } from '../lib/dao/karafile.js';
 import { selectRepos } from '../lib/dao/repo.js';
 import { APIMessage } from '../lib/services/frontend.js';
 import { readAllKaras } from '../lib/services/generation.js';
@@ -732,7 +732,7 @@ async function applyChanges(changes: Change[], repo: Repository) {
 			}
 		}
 		const karaMapper = async file => {
-			const karaFileData = await parseKara(file);
+			const karaFileData = await getDataFromKaraFile(file, { media: true, lyrics: true });
 			karas.push({
 				file,
 				data: karaFileData,
@@ -783,7 +783,7 @@ async function applyChanges(changes: Change[], repo: Repository) {
 			throw err;
 		}
 		for (const kara of karas) {
-			KIDsToUpdate.push(await integrateKaraFile(kara.file, kara.data, false));
+			KIDsToUpdate.push(await integrateKaraFile(kara.file, false));
 			task.update({ value: task.item.value + 1, subtext: basename(kara.file) });
 		}
 		const deletePromises = [];
