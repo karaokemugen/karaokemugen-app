@@ -108,7 +108,7 @@ export async function downloadKaraFromInbox(inid: string, repoName: string, toke
 		}
 		for (const tag of kara.extra_tags) {
 			const tagFile = resolve(resolvedPathRepos('Tags', repoName)[0], tag.file);
-			await writeTagFile(tag.data.tag, tagFile);
+			await writeTagFile(tag.data.tag, resolvedPathRepos('Tags', tag.data.tag.repository)[0]);
 			// Let's refresh the database when there are new tags.
 			await integrateTagFile(tagFile);
 		}
