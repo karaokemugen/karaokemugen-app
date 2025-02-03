@@ -22,12 +22,11 @@ import { defineTagFilename, getDataFromTagFile, removeTagFile, trimTagData, writ
 import { refreshKarasAfterDBChange } from '../lib/services/karaManagement.js';
 import { DBKara, DBKaraTag } from '../lib/types/database/kara.js';
 import { DBTag } from '../lib/types/database/tag.js';
-import { KaraFileV4 } from '../lib/types/kara.js';
 import { Tag, TagFile, TagParams } from '../lib/types/tag.js';
 import { getConfig, resolvedPathRepos } from '../lib/utils/config.js';
 import { getTagTypeName, tagTypes } from '../lib/utils/constants.js';
 import { ErrorKM } from '../lib/utils/error.js';
-import { listAllFiles, resolveFileInDirs, sanitizeFile } from '../lib/utils/files.js';
+import { listAllFiles, resolveFileInDirs } from '../lib/utils/files.js';
 import HTTP from '../lib/utils/http.js';
 import logger, { profile } from '../lib/utils/logger.js';
 import Task from '../lib/utils/taskManager.js';
@@ -358,33 +357,6 @@ export async function integrateTagFile(file: string, refresh = true): Promise<st
 	} catch (err) {
 		logger.error(`Error integrating tag file ${file}`, { service, obj: err });
 	}
-}
-
-export async function consolidateTagsInRepo(kara: KaraFileV4) {
-	profile('consolidateTagsInRepo');
-	const copies = [];
-	for (const tagType of Object.keys(tagTypes)) {
-		if (kara.data.tags[tagType]) {
-			for (const karaTag of kara.data.tags[tagType]) {
-				const tag = await getTag(karaTag).catch(() => {});
-				if (!tag) continue;
-				if (tag.repository !== kara.data.repository) {
-					// This might need to be copied
-					tag.repository = kara.data.repository;
-					const destPath = resolvedPathRepos('Tags', tag.repository);
-					const tagFile = `${sanitizeFile(tag.name)}.${tag.tid.substring(0, 8)}.tag.json`;
-					try {
-						await resolveFileInDirs(tagFile, destPath);
-					} catch {
-						// File does not exist, let's write it.
-						copies.push(writeTagFile(tag, destPath[0]));
-					}
-				}
-			}
-		}
-	}
-	await Promise.all(copies);
-	profile('consolidateTagsInRepo');
 }
 
 export async function copyTagToRepo(tid: string, repoName: string) {

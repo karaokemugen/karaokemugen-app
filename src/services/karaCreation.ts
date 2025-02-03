@@ -12,6 +12,7 @@ import {
 	convertDBKarasToKaraFiles,
 	createKarasMap,
 } from '../lib/services/karaValidation.js';
+import { consolidateTagsInRepo } from '../lib/services/tag.js';
 import { EditedKara, KaraFileV4 } from '../lib/types/kara.d.js';
 import { ASSFileCleanup } from '../lib/utils/ass.js';
 import { resolvedPath, resolvedPathRepos } from '../lib/utils/config.js';
@@ -25,7 +26,6 @@ import sentry from '../utils/sentry.js';
 import { getKara, getKaras } from './kara.js';
 import { integrateKaraFile } from './karaManagement.js';
 import { checkDownloadStatus } from './repo.js';
-import { consolidateTagsInRepo } from './tag.js';
 
 const service = 'KaraCreation';
 
