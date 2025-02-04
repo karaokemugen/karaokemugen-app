@@ -239,7 +239,7 @@ export async function addDownloads(downloads: KaraDownloadRequest[]): Promise<nu
 			}
 			return true;
 		});
-		if (downloadsFiltered.length === 0) throw { code: 409, msg: 'DOWNLOADS_QUEUED_ALREADY_ADDED_ERROR' };
+		if (downloadsFiltered.length === 0) throw new ErrorKM('DOWNLOADS_QUEUED_ALREADY_ADDED_ERROR', 409, false);
 		const dls: KaraDownload[] = downloadsFiltered.map(dl => {
 			logger.debug(`Adding download ${dl.name}`, { service });
 			return {
