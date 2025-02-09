@@ -61,6 +61,8 @@ async function compareMedias(
 				updatedFiles.push(remoteKara);
 			}
 			// Do nothing if file exists and sizes are the same
+		} else {
+			addedFiles.push(remoteKara);
 		}
 	}
 
