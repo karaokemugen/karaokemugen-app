@@ -353,7 +353,7 @@ export async function selectKarasFromCriterias(
 			} else if (c.type === 1001) {
 				queryArr.push(sqlselectKarasFromCriterias[c.type](collectionClauses));
 			} else {
-				queryArr.push(sqlselectKarasFromCriterias[c.type](c.value));
+				queryArr.push(sqlselectKarasFromCriterias[c.type](c.value, collectionClauses));
 			}
 		}
 		sql = queryArr.join(' UNION ');
