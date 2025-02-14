@@ -21,7 +21,7 @@ import { isMpvGreaterThan39 } from '../../utils/hokutoNoCode.js';
 import sentry from '../../utils/sentry.js';
 import { getState } from '../../utils/state.js';
 import { isShutdownInProgress } from '../engine.js';
-import { emitPlayerState, Players, playerState } from '../mpv.js';
+import { emitPlayerState, Players, playerState } from './mpv.js';
 import MpvIPC from './mpvIPC.js';
 import { MpvState } from './mpvState.js';
 
