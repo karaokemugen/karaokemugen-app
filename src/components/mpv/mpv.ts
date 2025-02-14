@@ -579,7 +579,7 @@ export class Players {
 		}
 	}
 
-	private async loadBackground(type: BackgroundType) {
+	private async loadBackground(type: BackgroundType = 'stop') {
 		const background = await getBackgroundAndMusic(type);
 		logger.debug(
 			`Background selected : ${background.pictures[0]}${background.music[0] ? ` (${background.music[0]})` : ''}`,
