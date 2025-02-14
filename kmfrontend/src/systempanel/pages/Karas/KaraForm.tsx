@@ -591,6 +591,7 @@ function KaraForm(props: KaraFormProps) {
 			kara: karaFile,
 			modifiedLyrics: subfileIsTouched,
 			modifiedMedia: mediafileIsTouched,
+			useEmbeddedLyrics: form?.getFieldValue('useEmbeddedLyrics'),
 		};
 	};
 
@@ -1018,6 +1019,27 @@ function KaraForm(props: KaraFormProps) {
 						</Card>
 					) : null}
 				</Row>
+			</Form.Item>
+			<Form.Item
+				label={
+					<span>
+						{i18next.t('KARA.USEEMBEDDEDLYRICS')}&nbsp;
+						<Tooltip title={i18next.t('KARA.USEEMBEDDEDLYRICS_TOOLTIP')}>
+							<QuestionCircleOutlined />
+						</Tooltip>
+					</span>
+				}
+				valuePropName="checked"
+				labelCol={{ flex: '0 1 220px' }}
+				wrapperCol={{ span: 8 }}
+				rules={[
+					{
+						required: false,
+					},
+				]}
+				name="useEmbeddedLyrics"
+			>
+				<Checkbox />
 			</Form.Item>
 			<Form.Item
 				label={

@@ -1080,6 +1080,8 @@
 		"KARA_AUTHORS_TOOLTIP": "You should add yourself here ;)",
 		"COMMENT": "Any comments?",
 		"COMMENT_TOOLTIP": "A commentary field for things like \"To all my fans!\" or \"Don't modify the effects!\" or \"Made with lots of coffee\".",
+		"USEEMBEDDEDLYRICS": "Prioritize embedded lyrics from media",
+		"USEEMBEDDEDLYRICS_TOOLTIP": "If the media uploaded contains an embedded ASS file, it'll be extracted and replace the current lyrics file.",
 		"IGNOREHOOKS": "Ignore automatic tags",
 		"IGNOREHOOKS_TOOLTIP": "Some tags can be added automatically to this song if it meets some conditions.",
 		"PREVIEW_HOOKS": "Preview tags added automatically",
