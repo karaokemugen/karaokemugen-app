@@ -948,7 +948,7 @@ export class Players {
 		}
 	}
 
-	async stop(type: BackgroundType): Promise<PlayerState> {
+	async stop(type: BackgroundType = 'stop'): Promise<PlayerState> {
 		// on stop do not trigger onEnd event
 		// => setting internal playing = false prevent this behavior
 		logger.debug('Stop event triggered', { service });

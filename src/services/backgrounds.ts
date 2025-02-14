@@ -16,7 +16,7 @@ const service = 'Backgrounds';
 export const backgroundTypes = ['pause', 'stop', 'poll', 'bundled'] as const;
 
 /** Find a background for the player to use */
-export async function getBackgroundAndMusic(type: BackgroundType): Promise<BackgroundList> {
+export async function getBackgroundAndMusic(type: BackgroundType = 'stop'): Promise<BackgroundList> {
 	let files = await getBackgroundFiles(type);
 	// If no picture available, pick from bundled backgrounds
 	if (files.pictures.length === 0) files = await getBackgroundFiles('bundled');
