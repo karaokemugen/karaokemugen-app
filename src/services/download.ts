@@ -268,7 +268,7 @@ export function getDownloads() {
 	} catch (err) {
 		logger.error('Unable to get downloads', { service });
 		Sentry.error(err);
-		throw err instanceof ErrorKM ? err : new ErrorKM('DOWNLOADS_QUEUED_ERROR');
+		throw err instanceof ErrorKM ? err : new ErrorKM('DOWNLOADS_GET_ERROR');
 	}
 }
 
