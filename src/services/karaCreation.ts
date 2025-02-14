@@ -29,7 +29,6 @@ import { checkDownloadStatus } from './repo.js';
 const service = 'KaraCreation';
 
 export async function editKara(editedKara: EditedKara, refresh = true) {
-	console.log(editedKara);
 	const task = new Task({
 		text: 'EDITING_SONG',
 		subtext: editedKara.kara.data.titles[editedKara.kara.data.titles_default_language],
