@@ -202,21 +202,23 @@ export async function updateAllRepos() {
 export async function checkDownloadStatus(kids?: string[]) {
 	profile('checkDownloadStatus');
 	// Avoid spamming logs if we're only checking one song at a time
-	if (kids?.length > 1) logger.info(`Checking downloaded status of ${kids ? kids.length : 'all'} songs`, { service });
+	if (!kids || kids?.length > 1)
+		logger.info(`Checking downloaded status of ${kids ? kids.length : 'all'} songs`, { service });
 	const karas = await getKaras({
 		q: kids ? `k:${kids.join(',')}` : undefined,
 		ignoreCollections: true,
 	});
 	const mediasMissing = [];
 	const mediasExisting = [];
-	for (const kara of karas.content) {
-		try {
-			await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', kara.repository));
-			mediasExisting.push(kara.kid);
-		} catch (err) {
-			// Not found, switching to missing
-			mediasMissing.push(kara.kid);
+	const mediasPresent = new Set();
+	for (const repo of getRepos()) {
+		for (const mediaDir of resolvedPathRepos('Medias', repo.Name)) {
+			const files = await fs.readdir(mediaDir);
+			files.forEach(f => mediasPresent.add(f));
 		}
+	}
+	for (const kara of karas.content) {
+		mediasPresent.has(kara.mediafile) ? mediasExisting.push(kara.kid) : mediasMissing.push(kara.kid);
 	}
 	if (mediasMissing.length > 0) {
 		updateDownloaded(mediasMissing, 'MISSING');
@@ -225,7 +227,7 @@ export async function checkDownloadStatus(kids?: string[]) {
 		updateDownloaded(mediasExisting, 'DOWNLOADED');
 	}
 	// Avoid spamming logs if we're only checking one song at a time
-	if (kids?.length > 1) logger.info('Finished checking downloaded status', { service });
+	if (!kids || kids?.length > 1) logger.info('Finished checking downloaded status', { service });
 	profile('checkDownloadStatus');
 }
 
