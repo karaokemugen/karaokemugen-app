@@ -1021,6 +1021,7 @@ function KaraForm(props: KaraFormProps) {
 				</Row>
 			</Form.Item>
 			<Form.Item
+				className="wrap-label"
 				label={
 					<span>
 						{i18next.t('KARA.USEEMBEDDEDLYRICS')}&nbsp;
