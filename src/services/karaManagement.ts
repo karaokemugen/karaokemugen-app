@@ -96,7 +96,7 @@ export async function removeKara(
 				} catch (err) {
 					logger.warn(`Non fatal: Removing karafile ${kara.karafile} failed`, { service, obj: err });
 				}
-				if (kara.lyrics_infos[0].filename) {
+				if (kara.lyrics_infos?.length > 0 && kara.lyrics_infos[0].filename) {
 					try {
 						await fs.unlink(
 							(
