@@ -17,6 +17,7 @@ import { EditedKara } from '../lib/types/kara.d.js';
 import { ASSFileCleanup } from '../lib/utils/ass.js';
 import { resolvedPath, resolvedPathRepos } from '../lib/utils/config.js';
 import { ErrorKM } from '../lib/utils/error.js';
+import { removeSubtitles } from '../lib/utils/ffmpeg.js';
 import { replaceExt, resolveFileInDirs, smartMove } from '../lib/utils/files.js';
 import logger, { profile } from '../lib/utils/logger.js';
 import Task from '../lib/utils/taskManager.js';
@@ -105,12 +106,11 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 			mediaPath = resolve(resolvedPath('Temp'), kara.medias[0].filename);
 			if (editedKara.useEmbeddedLyrics) {
 				try {
-					const { extractFile, mediasize } = await extractVideoSubtitles(mediaPath, kara.data.kid);
+					const extractFile = await extractVideoSubtitles(mediaPath, kara.data.kid);
 					if (extractFile) {
 						if (kara.medias[0] && !kara.medias[0].lyrics) {
 							kara.medias[0].lyrics = [];
 						}
-						kara.medias[0].filesize = mediasize;
 						kara.medias[0].lyrics[0] = {
 							filename: basename(extractFile),
 							default: true,
@@ -122,6 +122,20 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 				} catch (err) {
 					// Not lethal
 				}
+			}
+			try {
+				const ext = extname(mediaPath);
+				const videoWithoutExt = mediaPath.replaceAll(ext, '');
+				const unsubbedVideo = `${videoWithoutExt}.sn${ext}`;
+				await removeSubtitles(mediaPath, unsubbedVideo);
+				logger.info(`Subtitles removed from ${mediaPath}`, { service });
+				// New unsubbed video has a different size from what it had before, so we're returning it too.
+				await fs.unlink(mediaPath);
+				const stat = await fs.stat(unsubbedVideo);
+				kara.medias[0].filesize = stat.size;
+				await fs.rename(unsubbedVideo, mediaPath);
+			} catch (err) {
+				// Non-lethal.
 			}
 			if (oldMediaPath) await fs.unlink(oldMediaPath);
 		}
@@ -251,12 +265,11 @@ export async function createKara(editedKara: EditedKara) {
 		const mediaPath = resolve(resolvedPath('Temp'), kara.medias[0].filename);
 		if (kara.medias[0].lyrics && editedKara.useEmbeddedLyrics) {
 			try {
-				const { extractFile, mediasize } = await extractVideoSubtitles(mediaPath, kara.data.kid);
+				const extractFile = await extractVideoSubtitles(mediaPath, kara.data.kid);
 				if (extractFile) {
 					if (kara.medias[0] && !kara.medias[0].lyrics) {
 						kara.medias[0].lyrics = [];
 					}
-					kara.medias[0].filesize = mediasize;
 					kara.medias[0].lyrics[0] = {
 						filename: basename(extractFile),
 						default: true,
@@ -266,6 +279,21 @@ export async function createKara(editedKara: EditedKara) {
 			} catch (err) {
 				// Not lethal
 			}
+		}
+		// Remove subtitles from video, if any.
+		try {
+			const ext = extname(mediaPath);
+			const videoWithoutExt = mediaPath.replaceAll(ext, '');
+			const unsubbedVideo = `${videoWithoutExt}.sn${ext}`;
+			await removeSubtitles(mediaPath, unsubbedVideo);
+			logger.info(`Subtitles removed from ${mediaPath}`, { service });
+			// New unsubbed video has a different size from what it had before, so we're returning it too.
+			await fs.unlink(mediaPath);
+			const stat = await fs.stat(unsubbedVideo);
+			kara.medias[0].filesize = stat.size;
+			await fs.rename(unsubbedVideo, mediaPath);
+		} catch (err) {
+			// Non-lethal.
 		}
 		const filenames = determineMediaAndLyricsFilenames(kara);
 		const mediaDest = resolve(resolvedPathRepos('Medias', kara.data.repository)[0], filenames.mediafile);
