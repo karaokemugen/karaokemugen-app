@@ -149,7 +149,7 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 			if (kara.medias[0].lyrics[0]) {
 				const subPath = resolve(resolvedPath('Temp'), kara.medias[0].lyrics[0]?.filename);
 				const ext = await processSubfile(subPath);
-				if (oldKara.lyrics_infos) {
+				if (oldKara.lyrics_infos?.length > 0) {
 					const oldSubPath = (
 						await resolveFileInDirs(
 							oldKara.lyrics_infos[0].filename,
