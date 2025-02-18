@@ -2,7 +2,7 @@ import { sample } from 'lodash';
 import { Socket } from 'socket.io';
 
 import { initKaraBase, shutdown } from '../../components/engine.js';
-import { getMpvAudioOutputs } from '../../components/mpv.js';
+import { getMpvAudioOutputs } from '../../components/mpv/mpv.js';
 import { APIMessage } from '../../lib/services/frontend.js';
 import { generateDatabase } from '../../lib/services/generation.js';
 import { APIData } from '../../lib/types/api.js';

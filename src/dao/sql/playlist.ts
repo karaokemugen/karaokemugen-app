@@ -251,33 +251,33 @@ ${additionalFrom}
 WHERE pc.fk_plaid = :plaid
 ${filterClauses.map(clause => `AND (${clause})`).join(' ')}
 ${whereClause}
-GROUP BY 
-	pl.fk_plcid_playing, 
-	ak.pk_kid, 
-	ak.titles, 
-	ak.titles_aliases, 
-	ak.titles_default_language, 
-	ak.songorder, 
+GROUP BY
+	pl.fk_plcid_playing,
+	ak.pk_kid,
+	ak.titles,
+	ak.titles_aliases,
+	ak.titles_default_language,
+	ak.songorder,
 	ak.songname,
-	ak.tags, 
-	ak.lyrics_infos, 
-	ak.year, 
-	ak.mediafile, 
-	ak.karafile, 
-	ak.from_display_type, 
-	ak.duration, 
-	ak.mediasize, 
-	pc.created_at, 
-	pc.nickname, 
-	ak.download_status, 
-	pc.fk_login, pc.pos, 
-	pc.pk_plcid, 
-	wl.fk_kid, 
-	bl.fk_kid, 
-	f.fk_kid, 
-	u.avatar_file, 
-	u.type, 
-	ak.repository, 
+	ak.tags,
+	ak.lyrics_infos,
+	ak.year,
+	ak.mediafile,
+	ak.karafile,
+	ak.from_display_type,
+	ak.duration,
+	ak.mediasize,
+	pc.created_at,
+	pc.nickname,
+	ak.download_status,
+	pc.fk_login, pc.pos,
+	pc.pk_plcid,
+	wl.fk_kid,
+	bl.fk_kid,
+	f.fk_kid,
+	u.avatar_file,
+	u.type,
+	ak.repository,
 	pc.criterias
 ORDER BY ${orderClause}
 ${limitClause}
@@ -475,19 +475,19 @@ INNER JOIN playlist_content AS pc ON pc.fk_kid = ak.pk_kid
 INNER JOIN playlist AS pl ON pl.pk_plaid = pc.fk_plaid
 LEFT OUTER JOIN upvote up ON up.fk_plcid = pc.pk_plcid
 WHERE  pc.pk_plcid = ANY ($1)
-GROUP BY 
-	pl.fk_plcid_playing, 
-	pc.fk_kid, 
-	ak.titles, 
-	ak.titles_aliases, 
-	ak.mediasize, 
-	ak.mediafile, 
-	ak.repository, 
+GROUP BY
+	pl.fk_plcid_playing,
+	pc.fk_kid,
+	ak.titles,
+	ak.titles_aliases,
+	ak.mediasize,
+	ak.mediafile,
+	ak.repository,
 	ak.songname,
-	pc.nickname, 
-	pc.fk_login, 
-	pc.pk_plcid, 
-	pc.fk_plaid, 
+	pc.nickname,
+	pc.fk_login,
+	pc.pk_plcid,
+	pc.fk_plaid,
 	ak.tags
 `;
 
@@ -642,7 +642,7 @@ export const sqlselectKarasFromCriterias = {
 		AND   kt.fk_kid NOT IN (select fk_kid from playlist_content where fk_plaid = $2)
 		AND   fk_plaid = $1
 		${
-			collectionClauses.length > 0
+			collectionClauses?.length > 0
 				? `AND ((${collectionClauses
 						.map(clause => `(${clause})`)
 						.join(
@@ -665,7 +665,7 @@ export const sqlselectKarasFromCriterias = {
 	AND   ak.pk_kid NOT IN (select fk_kid from playlist_content where fk_plaid = $2)
 	AND   fk_plaid = $1
 	${
-		collectionClauses.length > 0
+		collectionClauses?.length > 0
 			? `AND ((${collectionClauses
 					.map(clause => `(${clause})`)
 					.join(
@@ -710,7 +710,7 @@ export const sqlselectKarasFromCriterias = {
 	AND   ak.pk_kid NOT IN (select fk_kid from playlist_content where fk_plaid = $2)
 	AND   fk_plaid = $1
 	${
-		collectionClauses.length > 0
+		collectionClauses?.length > 0
 			? `AND ((${collectionClauses
 					.map(clause => `(${clause})`)
 					.join(
@@ -733,7 +733,7 @@ export const sqlselectKarasFromCriterias = {
 	AND   ak.pk_kid NOT IN (select fk_kid from playlist_content where fk_plaid = $2)
 	AND   fk_plaid = $1
 	${
-		collectionClauses.length > 0
+		collectionClauses?.length > 0
 			? `AND ((${collectionClauses
 					.map(clause => `(${clause})`)
 					.join(
@@ -756,7 +756,7 @@ export const sqlselectKarasFromCriterias = {
 	AND   ak.pk_kid NOT IN (select fk_kid from playlist_content where fk_plaid = $2)
 	AND   fk_plaid = $1
 	${
-		collectionClauses.length > 0
+		collectionClauses?.length > 0
 			? `AND ((${collectionClauses
 					.map(clause => `(${clause})`)
 					.join(
@@ -778,7 +778,7 @@ export const sqlselectKarasFromCriterias = {
 	AND   ak.pk_kid NOT IN (select fk_kid from playlist_content where fk_plaid = $2)
 	AND   fk_plaid = $1
 	${
-		collectionClauses.length > 0
+		collectionClauses?.length > 0
 			? `AND ((${collectionClauses
 					.map(clause => `(${clause})`)
 					.join(
@@ -800,7 +800,7 @@ export const sqlselectKarasFromCriterias = {
 	AND   ak.pk_kid NOT IN (select fk_kid from playlist_content where fk_plaid = $2)
 	AND   fk_plaid = $1
 	${
-		collectionClauses.length > 0
+		collectionClauses?.length > 0
 			? `AND ((${collectionClauses
 					.map(clause => `(${clause})`)
 					.join(

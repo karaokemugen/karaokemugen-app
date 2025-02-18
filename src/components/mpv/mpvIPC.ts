@@ -4,7 +4,7 @@ import { Socket } from 'net';
 
 import { MpvCommand } from '../../types/mpvIPC.js';
 import { mpvIsRecentEnough } from '../../utils/hokutoNoCode.js';
-import { defineMPVEnv } from '../mpv.js';
+import { defineMPVEnv } from './mpv.js';
 
 class Mpv extends EventEmitter {
 	binary: string;

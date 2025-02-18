@@ -4,6 +4,8 @@ import { setTimeout as sleep } from 'timers/promises';
 
 import { baseChecksum } from '../dao/dataStore.js';
 import { saveSetting } from '../lib/dao/database.js';
+import { writeKara } from '../lib/dao/karafile.js';
+import { writeTagFile } from '../lib/dao/tagfile.js';
 import { Inbox } from '../lib/types/inbox.js';
 import { ASSFileCleanup } from '../lib/utils/ass.js';
 import { resolvedPath, resolvedPathRepos } from '../lib/utils/config.js';
@@ -106,27 +108,15 @@ export async function downloadKaraFromInbox(inid: string, repoName: string, toke
 		}
 		for (const tag of kara.extra_tags) {
 			const tagFile = resolve(resolvedPathRepos('Tags', repoName)[0], tag.file);
-			await fs.writeFile(tagFile, JSON.stringify(tag.data, null, 2), 'utf-8');
+			await writeTagFile(tag.data.tag, resolvedPathRepos('Tags', tag.data.tag.repository)[0]);
 			// Let's refresh the database when there are new tags.
 			await integrateTagFile(tagFile);
 		}
 		const karaFile = resolve(resolvedPathRepos('Karaokes', repoName)[0], kara.kara.file);
 		// Yes, we're actually reordering this in order for karas to be in the right order when written. For some reason Axios sorts JSON responses? Or is it KM Server? Who knows? Where is Carmen San Diego?
-		await fs.writeFile(
-			karaFile,
-			JSON.stringify(
-				{
-					header: kara.kara.data.header,
-					medias: kara.kara.data.medias,
-					data: kara.kara.data.data,
-				},
-				null,
-				2
-			),
-			'utf-8'
-		);
+		await writeKara(karaFile, kara.kara.data);
 		saveSetting('baseChecksum', await baseChecksum());
-		const newKaraKid = await integrateKaraFile(karaFile, kara.kara.data, true, true, false);
+		const newKaraKid = await integrateKaraFile(karaFile, true, true, false);
 		updateAllSmartPlaylists();
 		await Promise.all(promises);
 

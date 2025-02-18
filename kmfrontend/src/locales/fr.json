@@ -216,7 +216,7 @@
 		"EXPLORE": "Explorer",
 		"OTHERS": "Autres…",
 		"GET_LUCKY": "J'ai de la chance",
-		"REQUESTED_KARAOKES": "Karaokés populaires",
+		"REQUESTED_KARAOKES": "Karaokés les plus demandés",
 		"NEW_KARAOKES": "Nouveaux karaokés",
 		"KARA_VERSIONS": "Cette chanson est disponible en {{length}} versions, choisissez celle que vous voulez ajoutez.",
 		"ANIME_LIST": "Mes animés",
@@ -809,7 +809,7 @@
 		},
 		"STATS_MODAL": {
 			"TITLE": "Utiliser mes favoris et demandes de chansons pour des statistiques",
-			"DESC": "Nous utilisons vos favoris ainsi que les chansons que vous avez demandé lors d'une session pour faire des statistiques d'utilisation (par exemple, permettre de connaître les chansons les plus populaires).",
+			"DESC": "Nous utilisons vos favoris ainsi que les chansons que vous avez demandé lors d'une session pour faire des statistiques d'utilisation (par exemple, permettre de connaître les chansons les plus demandées).",
 			"REFUSE_DESC": "Si vous ne voulez pas participer, même si c'est anonyme, à ces statistiques d'utilisation, merci de nous le dire. Si vous refusez, le serveur ignorera vos échantillons de statistiques et les applications Karaoke Mugen n'enverront pas vos données.",
 			"CHANGE": "Vous pouvez changer ceci à tout moment dans votre profil. Acceptez-vous cet usage de votre historique de chansons à des fins de statistique ?"
 		},
@@ -1054,6 +1054,8 @@
 		"KARA_AUTHORS_TOOLTIP": "Vous devriez vous ajouter ici ;)",
 		"COMMENT": "Un commentaire ?",
 		"COMMENT_TOOLTIP": "Un champ pour un commentaire comme \"Spéciale dédicace à ma maman\" ou \"Ne pas toucher aux effets!\" ou \"Fait avec trop de café\".",
+		"USEEMBEDDEDLYRICS": "Utiliser les paroles du fichier média en priorité",
+		"USEEMBEDDEDLYRICS_TOOLTIP": "Si le média envoyé contient un fichier de paroles, ce dernier sra alors utilisé à la place du fichier de paroles envoyé ci-dessous.",
 		"IGNOREHOOKS": "Ignorer les tags automatiques",
 		"IGNOREHOOKS_TOOLTIP": "Certains tags pourront être ajoutés automatiquement à ce karaoké s'il remplit certaines conditions.",
 		"PREVIEW_HOOKS": "Prévisualiser les tags ajoutés automatiquement",
@@ -1377,8 +1379,8 @@
 			"ONLINE_UPDATES_MEDIAS_SPONSORS": "Mise à jour automatique des sponsors",
 			"ONLINE_USERS": "Autoriser l'inscription des utilisateurs en ligne",
 			"ONLINE_DISCORD_DISPLAYACTIVITY": "Afficher votre activité de Karaoke Mugen sur votre profil Discord",
-			"ONLINE_FETCHPOPULARSONGS": "Récupérer les chansons populaires depuis vos dépôts en ligne",
-			"ONLINE_FETCHPOPULARSONGS_TOOLTIP": "Si désactivé, les chansons populaires seront calculées uniquement depuis votre application Karaoke Mugen"
+			"ONLINE_FETCHPOPULARSONGS": "Récupérer les chansons les plus demandées depuis vos dépôts en ligne",
+			"ONLINE_FETCHPOPULARSONGS_TOOLTIP": "Si désactivé, les chansons les plus demandées seront calculées uniquement depuis votre application Karaoke Mugen"
 		}
 	},
 	"SESSIONS": {
@@ -1509,7 +1511,7 @@
 	},
 	"HOME": {
 		"SYSTEM_DESCRIPTION": "Voir les journaux, changer les options de configuration, sauvegarder et restaurer votre base de données, lancer une génération manuelle et gérer les sessions de karaokés",
-		"KARAS_DESCRIPTION": "Lister, modifier, et créer des fichiers de karaokés. Vous pouvez aussi télécharger des médias, voir les karaokés les plus populaires, joués et l'historique",
+		"KARAS_DESCRIPTION": "Lister, modifier, et créer des fichiers de karaokés. Vous pouvez aussi télécharger des médias, voir les karaokés les plus demandés, joués et l'historique",
 		"TAGS_DESCRIPTION": "Créer, lister, éditer les tags (œuvres, chanteurs, compositeurs, créateurs, types de chanson, etc.)",
 		"USERS_DESCRIPTION": "Lister, créer et modifier les utilisateurs, changer leur mot de passe, créer de nouveaux comptes invités.",
 		"SYSTEM": {
@@ -1948,9 +1950,9 @@
 			"DESCRIPTION": "Liste tous les karaokés joués sur votre application, par ordre chronologique décroissant."
 		},
 		"MOST_REQUESTED": {
-			"TITLE": "Chansons les plus populaires",
-			"DESCRIPTION": "Liste les chansons les plus populaires sur votre application. Ne prend en compte que les chansons ajoutés depuis l'interface publique.",
-			"DESCRIPTION_ONLINE": "Vous voyez actuellement la liste des karaokés populaires EN LIGNE. Désactivez l'option \"Récupérer les chansons populaires en ligne\" pour voir celles de votre instance uniquement."
+			"TITLE": "Chansons les plus demandées",
+			"DESCRIPTION": "Liste les chansons les plus demandées sur votre application. Ne prend en compte que les chansons ajoutés depuis l'interface publique.",
+			"DESCRIPTION_ONLINE": "Vous voyez actuellement la liste des karaokés les plus demandés EN LIGNE. Désactivez l'option \"Récupérer les chansons les plus demandées en ligne\" pour voir celles de votre instance uniquement."
 		},
 		"MOST_PLAYED": {
 			"TITLE": "Chansons les plus jouées",

@@ -8,39 +8,39 @@ import { dirname, resolve } from 'path';
 import semver from 'semver';
 import { setTimeout as sleep } from 'timers/promises';
 
-import { errorStep } from '../electron/electronLogger.js';
-import { APIMessage } from '../lib/services/frontend.js';
-import { DBKaraTag } from '../lib/types/database/kara.js';
-import { PlaylistMediaType } from '../lib/types/playlistMedias.js';
-import { getConfig, resolvedPath, resolvedPathRepos, setConfig } from '../lib/utils/config.js';
-import { supportedFiles } from '../lib/utils/constants.js';
-import { Timer } from '../lib/utils/date.js';
-import { fileExists, replaceExt, resolveFileInDirs } from '../lib/utils/files.js';
-import HTTP, { fixedEncodeURIComponent } from '../lib/utils/http.js';
-import { convert1LangTo2B } from '../lib/utils/langs.js';
-import logger, { profile } from '../lib/utils/logger.js';
-import { emitWS } from '../lib/utils/ws.js';
-import { getBackgroundAndMusic } from '../services/backgrounds.js';
-import { playerEnding } from '../services/karaEngine.js';
-import { getPromoMessage, next } from '../services/player.js';
-import { getSingleMedia } from '../services/playlistMedias.js';
-import { BackgroundType } from '../types/backgrounds.js';
-import { MpvCommand } from '../types/mpvIPC.js';
-import { PlayerState, SongModifiers } from '../types/player.js';
-import { CurrentSong } from '../types/playlist.js';
-import { FFmpegRegex, initializationCatchphrases, mpvRegex, requiredMPVVersion } from '../utils/constants.js';
-import { setDiscordActivity } from '../utils/discordRPC.js';
-import sentry from '../utils/sentry.js';
-import { getState, setState } from '../utils/state.js';
-import { isShutdownInProgress } from './engine.js';
+import { errorStep } from '../../electron/electronLogger.js';
+import { APIMessage } from '../../lib/services/frontend.js';
+import { DBKaraTag } from '../../lib/types/database/kara.js';
+import { PlaylistMediaType } from '../../lib/types/playlistMedias.js';
+import { getConfig, resolvedPath, resolvedPathRepos, setConfig } from '../../lib/utils/config.js';
+import { supportedFiles } from '../../lib/utils/constants.js';
+import { Timer } from '../../lib/utils/date.js';
+import { fileExists, replaceExt, resolveFileInDirs } from '../../lib/utils/files.js';
+import HTTP, { fixedEncodeURIComponent } from '../../lib/utils/http.js';
+import { convert1LangTo2B } from '../../lib/utils/langs.js';
+import logger, { profile } from '../../lib/utils/logger.js';
+import { emitWS } from '../../lib/utils/ws.js';
+import { getBackgroundAndMusic } from '../../services/backgrounds.js';
+import { playerEnding } from '../../services/karaEngine.js';
+import { getPromoMessage, next } from '../../services/player.js';
+import { getSingleMedia } from '../../services/playlistMedias.js';
+import { BackgroundType } from '../../types/backgrounds.js';
+import { MpvCommand } from '../../types/mpvIPC.js';
+import { PlayerState, SongModifiers } from '../../types/player.js';
+import { CurrentSong } from '../../types/playlist.js';
+import { FFmpegRegex, initializationCatchphrases, mpvRegex, requiredMPVVersion } from '../../utils/constants.js';
+import { setDiscordActivity } from '../../utils/discordRPC.js';
+import sentry from '../../utils/sentry.js';
+import { getState, setState } from '../../utils/state.js';
+import { isShutdownInProgress } from '../engine.js';
 import Timeout = NodeJS.Timeout;
-import { getSongSeriesSingers, getSongTitle } from '../lib/services/kara.js';
-import { getRepoManifest } from '../lib/services/repo.js';
-import { getTagNameInLanguage } from '../lib/services/tag.js';
-import { getRepo } from '../services/repo.js';
-import { writeStreamFiles } from '../utils/streamerFiles.js';
-import { lavfiGenerator } from './mpv/lavfiGenerator.js';
-import { Player } from './mpv/player.js';
+import { getSongSeriesSingers, getSongTitle } from '../../lib/services/kara.js';
+import { getRepoManifest } from '../../lib/services/repo.js';
+import { getTagNameInLanguage } from '../../lib/services/tag.js';
+import { getRepo } from '../../services/repo.js';
+import { writeStreamFiles } from '../../utils/streamerFiles.js';
+import { lavfiGenerator } from './lavfiGenerator.js';
+import { Player } from './player.js';
 
 type PlayerType = 'main' | 'monitor';
 
@@ -357,10 +357,10 @@ async function checkMpv() {
 	try {
 		const output = await execa(state.binPath.mpv, ['--version'], { env: defineMPVEnv() });
 		logger.debug(`mpv stdout: ${output.stdout}`, { service });
-		const mpv = semver.valid(mpvRegex.exec(output.stdout)[1]) || '';
+		const mpv = semver.valid(mpvRegex.exec(output.stdout)[1]) || 'UNKNOWN';
 		mpvVersion = mpv.split('-')[0];
 
-		const ffmpegVersion = FFmpegRegex.exec(output.stdout)[1] || '';
+		const ffmpegVersion = FFmpegRegex.exec(output.stdout)[1] || 'UNKNOWN';
 		setState({ player: { ...getState().player, version: mpvVersion, ffmpegVersion } });
 		playerState.version = mpvVersion;
 		playerState.ffmpegVersion = ffmpegVersion;
@@ -579,7 +579,7 @@ export class Players {
 		}
 	}
 
-	private async loadBackground(type: BackgroundType) {
+	private async loadBackground(type: BackgroundType = 'stop') {
 		const background = await getBackgroundAndMusic(type);
 		logger.debug(
 			`Background selected : ${background.pictures[0]}${background.music[0] ? ` (${background.music[0]})` : ''}`,
@@ -948,7 +948,7 @@ export class Players {
 		}
 	}
 
-	async stop(type: BackgroundType): Promise<PlayerState> {
+	async stop(type: BackgroundType = 'stop'): Promise<PlayerState> {
 		// on stop do not trigger onEnd event
 		// => setting internal playing = false prevent this behavior
 		logger.debug('Stop event triggered', { service });
