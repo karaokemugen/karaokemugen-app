@@ -401,7 +401,8 @@ export async function exportPlaylistMedia(
 		// Create m3u playlist
 		const playlist = await getPlaylistInfo(plaid);
 		const successfulExports = exportedResult.filter(resultKara => resultKara.exportSuccessful);
-		if (successfulExports.length > 0) await generateM3uFileFromPlaylist(playlist, successfulExports, exportDir);
+		if (successfulExports.length > 0)
+			await generateM3uFileFromPlaylist(playlist, successfulExports, exportDir, true);
 
 		return exportedResult;
 	} catch (err) {

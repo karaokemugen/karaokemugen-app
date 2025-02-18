@@ -4,7 +4,7 @@ import { resolve } from 'path';
 import { setTimeout as sleep } from 'timers/promises';
 
 import { isShutdownInProgress } from '../components/engine.js';
-import Players, { switchToPollScreen } from '../components/mpv.js';
+import Players, { switchToPollScreen } from '../components/mpv/mpv.js';
 import { updatePlaylistLastEditTime, updatePLCVisible } from '../dao/playlist.js';
 import { APIMessage } from '../lib/services/frontend.js';
 import { getConfig, resolvedPath, setConfig } from '../lib/utils/config.js';

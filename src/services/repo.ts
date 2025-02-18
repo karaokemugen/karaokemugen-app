@@ -12,7 +12,7 @@ import { deleteRepo, insertRepo, updateRepo } from '../dao/repo.js';
 import { getSettings, refreshAll, saveSetting } from '../lib/dao/database.js';
 import { initHooks } from '../lib/dao/hook.js';
 import { refreshKaras } from '../lib/dao/kara.js';
-import { formatKaraV4, parseKara, writeKara } from '../lib/dao/karafile.js';
+import { formatKaraV4, getDataFromKaraFile, writeKara } from '../lib/dao/karafile.js';
 import { selectRepos } from '../lib/dao/repo.js';
 import { APIMessage } from '../lib/services/frontend.js';
 import { readAllKaras } from '../lib/services/generation.js';
@@ -25,6 +25,7 @@ import { DiffChanges, Repository, RepositoryBasic, RepositoryManifest } from '..
 import { TagFile } from '../lib/types/tag.js';
 import { ASSFileCleanup } from '../lib/utils/ass.js';
 import { getConfig, resolvedPathRepos } from '../lib/utils/config.js';
+import { uuidRegexp } from '../lib/utils/constants.js';
 import { ErrorKM } from '../lib/utils/error.js';
 import { asyncCheckOrMkdir, listAllFiles, moveAll, relativePath, resolveFileInDirs } from '../lib/utils/files.js';
 import HTTP, { fixedEncodeURIComponent } from '../lib/utils/http.js';
@@ -50,7 +51,6 @@ import { createKaraInDB, integrateKaraFile, removeKara } from './karaManagement.
 import { createProblematicSmartPlaylist, updateAllSmartPlaylists } from './smartPlaylist.js';
 import { sendPayload } from './stats.js';
 import { getTags, integrateTagFile, removeTag } from './tag.js';
-import { uuidRegexp } from '../lib/utils/constants.js';
 
 const service = 'Repo';
 
@@ -202,21 +202,23 @@ export async function updateAllRepos() {
 export async function checkDownloadStatus(kids?: string[]) {
 	profile('checkDownloadStatus');
 	// Avoid spamming logs if we're only checking one song at a time
-	if (kids?.length > 1) logger.info(`Checking downloaded status of ${kids ? kids.length : 'all'} songs`, { service });
+	if (!kids || kids?.length > 1)
+		logger.info(`Checking downloaded status of ${kids ? kids.length : 'all'} songs`, { service });
 	const karas = await getKaras({
 		q: kids ? `k:${kids.join(',')}` : undefined,
 		ignoreCollections: true,
 	});
 	const mediasMissing = [];
 	const mediasExisting = [];
-	for (const kara of karas.content) {
-		try {
-			await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', kara.repository));
-			mediasExisting.push(kara.kid);
-		} catch (err) {
-			// Not found, switching to missing
-			mediasMissing.push(kara.kid);
+	const mediasPresent = new Set();
+	for (const repo of getRepos()) {
+		for (const mediaDir of resolvedPathRepos('Medias', repo.Name)) {
+			const files = await fs.readdir(mediaDir);
+			files.forEach(f => mediasPresent.add(f));
 		}
+	}
+	for (const kara of karas.content) {
+		mediasPresent.has(kara.mediafile) ? mediasExisting.push(kara.kid) : mediasMissing.push(kara.kid);
 	}
 	if (mediasMissing.length > 0) {
 		updateDownloaded(mediasMissing, 'MISSING');
@@ -225,7 +227,7 @@ export async function checkDownloadStatus(kids?: string[]) {
 		updateDownloaded(mediasExisting, 'DOWNLOADED');
 	}
 	// Avoid spamming logs if we're only checking one song at a time
-	if (kids?.length > 1) logger.info('Finished checking downloaded status', { service });
+	if (!kids || kids?.length > 1) logger.info('Finished checking downloaded status', { service });
 	profile('checkDownloadStatus');
 }
 
@@ -732,7 +734,7 @@ async function applyChanges(changes: Change[], repo: Repository) {
 			}
 		}
 		const karaMapper = async file => {
-			const karaFileData = await parseKara(file);
+			const karaFileData = await getDataFromKaraFile(file, { media: true, lyrics: true });
 			karas.push({
 				file,
 				data: karaFileData,
@@ -783,7 +785,7 @@ async function applyChanges(changes: Change[], repo: Repository) {
 			throw err;
 		}
 		for (const kara of karas) {
-			KIDsToUpdate.push(await integrateKaraFile(kara.file, kara.data, false));
+			KIDsToUpdate.push(await integrateKaraFile(kara.file, false));
 			task.update({ value: task.item.value + 1, subtext: basename(kara.file) });
 		}
 		const deletePromises = [];

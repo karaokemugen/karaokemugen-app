@@ -5,7 +5,7 @@ import { getConfig, resolvedPath } from '../../lib/utils/config.js';
 import { getAvatarResolution } from '../../lib/utils/ffmpeg.js';
 import { CurrentSong } from '../../types/playlist.js';
 import { requiredMPVFFmpegMasterVersion, requiredMPVFFmpegVersion } from '../../utils/constants.js';
-import { playerState } from '../mpv.js';
+import { playerState } from './mpv.js';
 
 export class lavfiGenerator {
 	// Define lavfi-complex commands when we need to display stuff on screen or adjust audio volume. And it's... complex.
