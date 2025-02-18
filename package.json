@@ -86,7 +86,6 @@
   "dependencies": {
     "@hiogawa/flac-picture": "^1.0.0-pre.5",
     "@sentry/electron": "^5.11.0",
-    "adm-zip": "^0.5.16",
     "agentkeepalive": "^4.6.0",
     "ass-compiler": "^0.1.15",
     "ass-parser": "^0.2.0",
@@ -106,6 +105,7 @@
     "electron-updater": "^6.3.9",
     "execa": "^9.5.2",
     "express": "^4.21.2",
+	"extract-zip": "^2.0.1",
     "fastq": "^1.19.0",
     "file-type": "^20.1.0",
     "form-data": "^4.0.1",
@@ -162,7 +162,6 @@
     "@electron/notarize": "^2.5.0",
     "@sentry/cli": "^2.41.1",
     "@stylistic/eslint-plugin": "^3.1.0",
-    "@types/adm-zip": "^0.5.7",
     "@types/bcryptjs": "^2.4.6",
     "@types/better-queue": "^3.8.6",
     "@types/chai": "^5.0.1",
