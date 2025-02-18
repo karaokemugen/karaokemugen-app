@@ -1,3 +1,33 @@
+# [8.0.60] - 2025-02-18
+
+This is a hotfix version for issues regarding decompression of the initial database download, which failed on some configurations.
+
+## Added
+
+- **[Maintainers]** Added a checkbox to use embedded lyrics on a video file instead of the supplied lyrics file when adding/editing a song
+- **[Maintainers]** Added multi-channel audio encoding
+- **[Developers]** Added `SKIP_NOTARIZE` env var when skipping notarization on macOS builds
+
+## Changed
+
+- **[Users]** "Popular" songs become "Most requested" (#1712)
+- **[Users]** Upgraded backend and frontend dependencies
+- **[Users]** Increased performance of the downloaded status check when checking a lot of songs.
+- **[Developers]** mpv code now has its own folder
+- **[Developers]** Moved stuff aroudn when creating kara and tag files
+- **[Developers]** Moved conslidateTags to lib
+
+## Fixed
+
+- **[Users]** Fixed song order display in song titles
+- **[Users]** Fixed some issues with mpv version detection for some users
+- **[Operators]** Fixed zip file decompression on some computers causing Karaoke Mugen to crash (reverted from adm-zip to extract-zip module)
+- **[Operators]** Fixed syncing media files
+- **[Operators]** Fixed smart playlist creation with UNION type and types > 1001.
+- **[Opeartors]** Use the songname field when generating .m3u playlists
+- **[Operators]** Fixed locale for error when trying to get the download queue.
+- **[Maintainers]** Fixed writing tags when downloading songs from an inbox.
+
 # [8.0.58] - 2025-02-02
 
 This is mainly a bugfix release.
