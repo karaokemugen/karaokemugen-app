@@ -394,7 +394,7 @@ deploy_mac:
   script:
     - ls -la release_mac/*
     - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD
-      $HOST; cd www/mugen.karaokes.moe/downloads; mput release_mac/*"
+      $KARAOKESMOE; cd www/mugen.karaokes.moe/downloads; mput release_mac/*"
   rules:
     - if: $SCHEDULED_RELEASES == "true"
       when: never
@@ -422,7 +422,7 @@ deploy_linux:
   script:
     - ls -la release_linux/*
     - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD
-      $HOST; cd www/mugen.karaokes.moe/downloads; mput release_linux/*"
+      $KARAOKESMOE; cd www/mugen.karaokes.moe/downloads; mput release_linux/*"
   rules:
     - if: $SCHEDULED_RELEASES == "true"
       when: never
@@ -447,7 +447,7 @@ deploy_win:
   script:
     - ls -la release_win/*
     - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD
-      $HOST; cd www/mugen.karaokes.moe/downloads; mput release_win/*"
+      $KARAOKESMOE; cd www/mugen.karaokes.moe/downloads; mput release_win/*"
   rules:
     - if: $SCHEDULED_RELEASES == "true"
       when: never

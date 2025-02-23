@@ -44,7 +44,7 @@ import { v4 as UUIDv4 } from 'uuid';
 
 import { PositionX, PositionY } from '../../../../../src/lib/types';
 import { DBKara } from '../../../../../src/lib/types/database/kara';
-import { KaraFileV4, MediaInfo, MediaInfoValidationResult } from '../../../../../src/lib/types/kara';
+import type { EditedKara, KaraFileV4, MediaInfo, MediaInfoValidationResult } from '../../../../../src/lib/types/kara';
 import type { RepositoryManifestV2 } from '../../../../../src/lib/types/repo';
 import { blobToBase64 } from '../../../../../src/lib/utils/filesCommon';
 import GlobalContext from '../../../store/context';
@@ -58,14 +58,14 @@ import LanguagesList from '../../components/LanguagesList';
 import OpenLyricsFileButton from '../../components/OpenLyricsFileButton';
 import TaskProgress from '../../components/TaskProgressBar';
 import dayjs from 'dayjs';
-import { TagType } from '../../../../../src/lib/types/tag';
+import type { TagType } from '../../../../../src/lib/types/tag';
 
 const { Paragraph } = Typography;
 const { Panel } = Collapse;
 
 interface KaraFormProps {
 	kara?: DBKara;
-	save: any;
+	save: (kara: EditedKara) => void;
 	handleCopy?: (kid: string, repo: string) => void;
 	handleDelete?: (kid: string) => void;
 }
@@ -262,6 +262,7 @@ function KaraForm(props: KaraFormProps) {
 			title: string;
 			format?: (value: any) => string;
 			formatSuggestedValue?: (value: any) => string;
+			visibleOnlyWhenSuggested?: boolean;
 		}> = [
 			{ name: 'fileExtension', title: 'KARA.MEDIA_FILE_INFO.FILE_FORMAT' },
 			{
@@ -287,7 +288,7 @@ function KaraForm(props: KaraFormProps) {
 			{
 				name: 'videoAspectRatio',
 				title: 'KARA.MEDIA_FILE_INFO.VIDEO_ASPECT_RATIO',
-				format: (value: any) =>
+				format: (value: MediaInfo['videoAspectRatio']) =>
 					value?.pixelAspectRatio || value?.displayAspectRatio
 						? `SAR ${value?.pixelAspectRatio} DAR ${value?.displayAspectRatio}`
 						: '-',
@@ -295,12 +296,17 @@ function KaraForm(props: KaraFormProps) {
 			{
 				name: 'videoResolution',
 				title: 'KARA.MEDIA_FILE_INFO.VIDEO_RESOLUTION',
-				format: (value: any) => value.formatted,
+				format: (value: MediaInfo['videoResolution']) => value.formatted,
 			},
 			{
 				name: 'videoFramerate',
 				title: 'KARA.MEDIA_FILE_INFO.VIDEO_FRAMERATE',
 				format: (value: number) => `${value} fps`,
+			},
+			{
+				name: 'videoOffset',
+				title: 'Video offset',
+				visibleOnlyWhenSuggested: true,
 			},
 			{ name: 'audioCodec', title: 'KARA.MEDIA_FILE_INFO.AUDIO_CODEC' },
 			{ name: 'audioChannelLayout', title: 'KARA.MEDIA_FILE_INFO.AUDIO_CHANNEL_LAYOUT' },
@@ -308,6 +314,11 @@ function KaraForm(props: KaraFormProps) {
 				name: 'audioSampleRate',
 				title: 'KARA.MEDIA_FILE_INFO.AUDIO_SAMPLE_RATE',
 				format: (value: number) => `${value} Hz`,
+			},
+			{
+				name: 'audioOffset',
+				title: 'Audio offset',
+				visibleOnlyWhenSuggested: true,
 			},
 			mediaInfo?.mediaType === 'audio' &&
 				({
@@ -326,6 +337,7 @@ function KaraForm(props: KaraFormProps) {
 						String(mediaInfo[property.name])),
 				validationResult: mediaInfoValidationResults?.find(r => r.name === property.name),
 			}))
+			.filter(property => property.validationResult || property.visibleOnlyWhenSuggested !== true)
 			.map(property => ({
 				...property,
 				suggestedValueFormatted:
@@ -792,7 +804,7 @@ function KaraForm(props: KaraFormProps) {
 			setTitles(parentKara.titles);
 			setDefaultLanguage(parentKara.titles_default_language);
 			setParentKara(parentKara);
-			onChangeSingersSeries();
+			form.validateFields();
 		}
 	};
 
@@ -802,9 +814,8 @@ function KaraForm(props: KaraFormProps) {
 
 	const updateDisplayTypeOptions = () => {
 		setDisplayTypeOptions(
-			Object.keys(tagTypes)
-				.filter(tagType => form.getFieldValue(tagType.toLowerCase())?.length > 0)
-				.concat('')
+			['']
+				.concat(Object.keys(tagTypes).filter(tagType => form.getFieldValue(tagType.toLowerCase())?.length > 0))
 				.map(tagType => {
 					return {
 						label: i18next.t(tagType ? `TAG_TYPES.${tagType}_one` : 'TAG_TYPES.DEFAULT'),

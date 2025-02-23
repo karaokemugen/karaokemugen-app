@@ -212,7 +212,7 @@ function RepositoryForm(props: RepositoriesFormProps) {
 					valuePropName="checked"
 					name="Secure"
 				>
-					<Checkbox />
+					<Checkbox defaultChecked />
 				</Form.Item>
 			) : null}
 			<Form.Item
