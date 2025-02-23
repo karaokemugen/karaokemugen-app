@@ -104,38 +104,40 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 		if (editedKara.modifiedMedia) {
 			// Redefine mediapath as coming from temp
 			mediaPath = resolve(resolvedPath('Temp'), kara.medias[0].filename);
-			if (editedKara.useEmbeddedLyrics) {
-				try {
-					const extractFile = await extractVideoSubtitles(mediaPath, kara.data.kid);
-					if (extractFile) {
-						if (kara.medias[0] && !kara.medias[0].lyrics) {
-							kara.medias[0].lyrics = [];
-						}
-						kara.medias[0].lyrics[0] = {
-							filename: basename(extractFile),
-							default: true,
-							version: 'Default',
-						};
-						filenames.lyricsfiles[0] = sanitizedFilename + extname(kara.medias[0].lyrics[0].filename);
-						editedKara.modifiedLyrics = true;
-					}
-				} catch (err) {
-					// Not lethal
-				}
-			}
+			let extractedVideoSubtitlesFile = '';
 			try {
-				const ext = extname(mediaPath);
-				const videoWithoutExt = mediaPath.replaceAll(ext, '');
-				const unsubbedVideo = `${videoWithoutExt}.sn${ext}`;
-				await removeSubtitles(mediaPath, unsubbedVideo);
-				logger.info(`Subtitles removed from ${mediaPath}`, { service });
-				// New unsubbed video has a different size from what it had before, so we're returning it too.
-				await fs.unlink(mediaPath);
-				const stat = await fs.stat(unsubbedVideo);
-				kara.medias[0].filesize = stat.size;
-				await fs.rename(unsubbedVideo, mediaPath);
+				extractedVideoSubtitlesFile = await extractVideoSubtitles(mediaPath, kara.data.kid);
+				if (extractedVideoSubtitlesFile && editedKara.useEmbeddedLyrics) {
+					if (kara.medias[0] && !kara.medias[0].lyrics) {
+						kara.medias[0].lyrics = [];
+					}
+					kara.medias[0].lyrics[0] = {
+						filename: basename(extractedVideoSubtitlesFile),
+						default: true,
+						version: 'Default',
+					};
+					filenames.lyricsfiles[0] = sanitizedFilename + extname(kara.medias[0].lyrics[0].filename);
+					editedKara.modifiedLyrics = true;
+				}
 			} catch (err) {
-				// Non-lethal.
+				// Not lethal
+			}
+			if (extractedVideoSubtitlesFile) {
+				// Only remove subtitle if they are any, because this will remove other data like opus cover images from the media file
+				try {
+					const ext = extname(mediaPath);
+					const videoWithoutExt = mediaPath.replaceAll(ext, '');
+					const unsubbedVideo = `${videoWithoutExt}.sn${ext}`;
+					await removeSubtitles(mediaPath, unsubbedVideo);
+					logger.info(`Subtitles removed from ${mediaPath}`, { service });
+					// New unsubbed video has a different size from what it had before, so we're returning it too.
+					await fs.unlink(mediaPath);
+					const stat = await fs.stat(unsubbedVideo);
+					kara.medias[0].filesize = stat.size;
+					await fs.rename(unsubbedVideo, mediaPath);
+				} catch (err) {
+					// Non-lethal.
+				}
 			}
 			if (oldMediaPath) await fs.unlink(oldMediaPath);
 		}
