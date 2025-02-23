@@ -792,7 +792,7 @@ function KaraForm(props: KaraFormProps) {
 			setTitles(parentKara.titles);
 			setDefaultLanguage(parentKara.titles_default_language);
 			setParentKara(parentKara);
-			onChangeSingersSeries();
+			form.validateFields();
 		}
 	};
 
