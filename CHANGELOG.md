@@ -1,4 +1,4 @@
-# [8.0.62] - 2025-02-23
+# [8.0.63] - 2025-02-23
 
 This is a hotfix version for blur issues with quiz mode.
 
