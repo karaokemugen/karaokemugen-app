@@ -1,3 +1,11 @@
+# [8.0.64] - 2025-02-24
+
+This is ANOTHER hotfix release.
+
+## Fixed
+
+- **[Operators]** Reverted some backend module upgrades to address an issue with initializing PostgreSQL's database on first launch
+
 # [8.0.63] - 2025-02-23
 
 This is a hotfix version for blur issues with quiz mode.

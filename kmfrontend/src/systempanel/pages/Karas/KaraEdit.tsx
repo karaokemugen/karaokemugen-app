@@ -3,11 +3,12 @@ import i18next from 'i18next';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { DBKara } from '../../../../../src/lib/types/database/kara';
+import type { DBKara } from '../../../../../src/lib/types/database/kara';
 import { addListener, removeListener } from '../../../utils/electron';
 import { commandBackend } from '../../../utils/socket';
 import Title from '../../components/Title';
 import KaraForm from './KaraForm';
+import type { EditedKara } from '../../../../../src/lib/types/kara';
 
 function KaraEdit() {
 	const navigate = useNavigate();
@@ -16,7 +17,7 @@ function KaraEdit() {
 	const [kara, setKara] = useState<DBKara>();
 	const [loaded, setLoaded] = useState(false);
 
-	const saveUpdate = async kara => {
+	const saveUpdate = async (kara: EditedKara) => {
 		try {
 			await commandBackend('editKara', kara, true, 300000);
 			addListener();

@@ -7,11 +7,12 @@ import { commandBackend } from '../../../utils/socket';
 import Title from '../../components/Title';
 import KaraForm from './KaraForm';
 import { useEffect } from 'react';
+import type { EditedKara } from '../../../../../src/lib/types/kara';
 
 function KaraNew() {
 	const navigate = useNavigate();
 
-	const saveNew = async kara => {
+	const saveNew = async (kara: EditedKara) => {
 		try {
 			await commandBackend('createKara', kara, true, 300000);
 			addListener();
