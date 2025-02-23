@@ -1,4 +1,16 @@
-# [8.0.60] - 2025-02-18
+# [8.0.62] - 2025-02-23
+
+This is a hotfix version for blur issues with quiz mode.
+
+## Changed
+
+- **[Users]** Updated german translations
+
+## Fixed
+
+- **[Operators]** Fixed blur not working during quiz (or not working at all if both QR Code and avatar display was disabled)
+
+# [8.0.61] - 2025-02-18
 
 This is a hotfix version for issues regarding decompression of the initial database download, which failed on some configurations.
 
