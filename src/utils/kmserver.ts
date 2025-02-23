@@ -1,5 +1,6 @@
 import { io, Socket } from 'socket.io-client';
 
+import { interval, Subscription } from 'rxjs';
 import { APIData } from '../lib/types/api.js';
 import { getConfig } from '../lib/utils/config.js';
 import logger, { profile } from '../lib/utils/logger.js';
@@ -8,6 +9,7 @@ import Sentry from './sentry.js';
 import { subRemoteUsers } from './userPubSub.js';
 
 let socket: Socket;
+let checkLatencyIntervalSubscription: Subscription;
 
 const service = 'KMServer';
 
@@ -34,7 +36,26 @@ function connectToKMServer() {
 		socket.on('disconnect', reason => {
 			logger.warn('Connection lost with server,', { service, obj: reason });
 		});
+
+		if (checkLatencyIntervalSubscription) checkLatencyIntervalSubscription.unsubscribe();
+		checkLatencyIntervalSubscription = interval(10_000).subscribe(() => checkSocketLatency(socket));
 	});
+}
+
+export function checkSocketLatency(socket: Socket) {
+	try {
+		const start = Date.now();
+		// volatile, so the packet will be discarded if the socket is not connected
+		socket.timeout(20_000).volatile.emit('ping', {}, (_err, _res) => {
+			const latencyMs = Date.now() - start;
+			// logger.debug(`Socket recieved pong, latency: ${latencyMs}ms`, { service })
+			if (latencyMs > 100) logger.info(`Latency to remote: ${latencyMs}ms`, { service });
+			if (latencyMs > 500)
+				logger.warn('High latency detected, the interface might be unresponsive for guests', { service });
+		});
+	} catch (e) {
+		// Not fatal
+	}
 }
 
 export async function initKMServerCommunication(remote: boolean) {
