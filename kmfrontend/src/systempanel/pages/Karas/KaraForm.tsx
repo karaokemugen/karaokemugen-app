@@ -262,6 +262,7 @@ function KaraForm(props: KaraFormProps) {
 			title: string;
 			format?: (value: any) => string;
 			formatSuggestedValue?: (value: any) => string;
+			visibleOnlyWhenSuggested?: boolean;
 		}> = [
 			{ name: 'fileExtension', title: 'KARA.MEDIA_FILE_INFO.FILE_FORMAT' },
 			{
@@ -302,12 +303,22 @@ function KaraForm(props: KaraFormProps) {
 				title: 'KARA.MEDIA_FILE_INFO.VIDEO_FRAMERATE',
 				format: (value: number) => `${value} fps`,
 			},
+			{
+				name: 'videoOffset',
+				title: 'Video offset',
+				visibleOnlyWhenSuggested: true,
+			},
 			{ name: 'audioCodec', title: 'KARA.MEDIA_FILE_INFO.AUDIO_CODEC' },
 			{ name: 'audioChannelLayout', title: 'KARA.MEDIA_FILE_INFO.AUDIO_CHANNEL_LAYOUT' },
 			{
 				name: 'audioSampleRate',
 				title: 'KARA.MEDIA_FILE_INFO.AUDIO_SAMPLE_RATE',
 				format: (value: number) => `${value} Hz`,
+			},
+			{
+				name: 'audioOffset',
+				title: 'Audio offset',
+				visibleOnlyWhenSuggested: true,
 			},
 			mediaInfo?.mediaType === 'audio' &&
 				({
@@ -326,6 +337,7 @@ function KaraForm(props: KaraFormProps) {
 						String(mediaInfo[property.name])),
 				validationResult: mediaInfoValidationResults?.find(r => r.name === property.name),
 			}))
+			.filter(property => property.validationResult || property.visibleOnlyWhenSuggested !== true)
 			.map(property => ({
 				...property,
 				suggestedValueFormatted:
