@@ -46,12 +46,14 @@ export function checkSocketLatency(socket: Socket) {
 	try {
 		const start = Date.now();
 		// volatile, so the packet will be discarded if the socket is not connected
-		socket.timeout(20_000).volatile.emit('ping', {}, (_err, _res) => {
-			const latencyMs = Date.now() - start;
-			// logger.debug(`Socket recieved pong, latency: ${latencyMs}ms`, { service })
-			if (latencyMs > 100) logger.info(`Latency to remote: ${latencyMs}ms`, { service });
-			if (latencyMs > 500)
-				logger.warn('High latency detected, the interface might be unresponsive for guests', { service });
+		socket.timeout(20_000).volatile.emit('ping', {}, (err, res) => {
+			if (!err && res.data === true) {
+				const latencyMs = Date.now() - start;
+				//logger.debug(`Socket recieved pong, latency: ${latencyMs}ms`, { service })
+				if (latencyMs > 100) logger.info(`Latency to remote: ${latencyMs}ms`, { service });
+				if (latencyMs > 500)
+					logger.warn('High latency detected, the interface might be unresponsive for guests', { service });
+			}
 		});
 	} catch (e) {
 		// Not fatal
