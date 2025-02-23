@@ -802,9 +802,8 @@ function KaraForm(props: KaraFormProps) {
 
 	const updateDisplayTypeOptions = () => {
 		setDisplayTypeOptions(
-			Object.keys(tagTypes)
-				.filter(tagType => form.getFieldValue(tagType.toLowerCase())?.length > 0)
-				.concat('')
+			['']
+				.concat(Object.keys(tagTypes).filter(tagType => form.getFieldValue(tagType.toLowerCase())?.length > 0))
 				.map(tagType => {
 					return {
 						label: i18next.t(tagType ? `TAG_TYPES.${tagType}_one` : 'TAG_TYPES.DEFAULT'),
