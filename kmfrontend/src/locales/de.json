@@ -65,7 +65,7 @@
 		"HIDE_LYRICS": "Liedtext ausblenden",
 		"LYRICS_EXPL": {
 			"LINES": "Der aktuelle Liedtext wird hier live angezeigt.",
-			"CURRENT": "Die Hervorhebung in fett zeigen die aktuell gesungene Zeile an."
+			"CURRENT": "Die Hervorhebung in fett zeigt die aktuell gesungene Zeile an."
 		},
 		"OPEN_POLL": "Für das nächste Lied abstimmen",
 		"PUBLIC_SUGGESTIONS": "Öffentliche Vorschläge",
@@ -73,7 +73,7 @@
 		"FAVORITES": "Favoriten",
 		"SONG_SEARCH_SHORT": "Suchen",
 		"OTHERS": "Andere …",
-		"RESTRICTED_DESCRIPTION": "Karaoke ist im eingeschränkten Modus, es können keine neuen Lieder hinzugefügt werden.",
+		"RESTRICTED_DESCRIPTION": "Die Wunschliste ist geschlossen, es können keine neuen Lieder hinzugefügt werden.",
 		"HELLO": "Hallo, {{name}}!",
 		"SONG_SEARCH": "Lieder suchen",
 		"EXPLORE": "Entdecken",
