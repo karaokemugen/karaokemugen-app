@@ -123,7 +123,7 @@ UPDATE playlist SET time_left = (
 			FROM playlist_content, playlist
 			WHERE playlist_content.pk_plcid = playlist.fk_plcid_playing AND playlist_content.fk_plaid = $1)
 			,0)
-	)
+	),
 	duration = (
 		SELECT COALESCE(SUM(kara.duration),0) AS duration
 			FROM kara, playlist_content
