@@ -113,12 +113,44 @@ UPDATE playlist SET time_left = (
 			WHERE playlist_content.pk_plcid = playlist.fk_plcid_playing AND playlist_content.fk_plaid = $1)
 			,0)
 	),
+	time_played = (
+		SELECT COALESCE(SUM(kara.duration),0) AS duration
+		FROM kara, playlist_content
+		WHERE playlist_content.fk_kid = kara.pk_kid
+		AND playlist_content.fk_plaid = $1
+		AND playlist_content.pos < COALESCE(
+			(SELECT pos
+			FROM playlist_content, playlist
+			WHERE playlist_content.pk_plcid = playlist.fk_plcid_playing AND playlist_content.fk_plaid = $1)
+			,0)
+	)
 	duration = (
 		SELECT COALESCE(SUM(kara.duration),0) AS duration
 			FROM kara, playlist_content
 			WHERE playlist_content.fk_kid = kara.pk_kid
 				AND playlist_content.fk_plaid = $1
-				AND playlist_content.pos >= 0)
+				AND playlist_content.pos >= 0
+	),
+	songs_played = (
+		SELECT COUNT(playlist_content.pk_plcid)
+		FROM playlist_content
+		WHERE playlist_content.fk_plaid = $1
+		AND playlist_content.pos < COALESCE(
+			(SELECT pos
+			FROM playlist_content, playlist
+			WHERE playlist_content.pk_plcid = playlist.fk_plcid_playing AND playlist_content.fk_plaid = $1)
+			,0)
+	),
+	songs_left = (
+	  SELECT COUNT(playlist_content.pk_plcid)
+		FROM playlist_content
+		WHERE playlist_content.fk_plaid = $1
+		AND playlist_content.pos >= COALESCE(
+			(SELECT pos
+			FROM playlist_content, playlist
+			WHERE playlist_content.pk_plcid = playlist.fk_plcid_playing AND playlist_content.fk_plaid = $1)
+			,0)
+	)
 WHERE pk_plaid = $1;
 `;
 
@@ -510,7 +542,10 @@ export const sqlgetPlaylist = (singlePlaylist: boolean, visibleOnly: boolean) =>
 SELECT pk_plaid AS plaid,
 	name,
 	karacount,
+	songs_played,
+	songs_left,
 	duration,
+	time_played,
 	time_left,
 	created_at,
 	modified_at,

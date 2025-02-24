@@ -2,6 +2,9 @@ import { DBPLBase, DBPLC } from '../../lib/types/database/playlist.js';
 
 export interface DBPL extends DBPLBase {
 	time_left?: number;
+	time_played?: number;
+	songs_left?: number;
+	songs_played?: number;
 	plcid_playing?: number;
 	flag_current?: boolean;
 	flag_public?: boolean;

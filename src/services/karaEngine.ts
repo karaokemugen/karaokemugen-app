@@ -218,11 +218,11 @@ export async function playCurrentSong(now: boolean) {
 			await mpv.play(kara, modifiers, startTime);
 			setState({ randomPlaying: false });
 			updateUserQuotas(kara);
-			writeStreamFiles('time_remaining_in_current_playlist');
 			writeStreamFiles('song_name');
 			writeStreamFiles('requester');
 			writeStreamFiles('next_song_name_and_requester');
 			await updatePlaylistDuration(kara.plaid);
+			writeStreamFiles('current_playlist_info');
 			updatePlaylistLastEditTime(kara.plaid);
 			emitWS('playlistInfoUpdated', kara.plaid);
 			emit('newSong', kara);
