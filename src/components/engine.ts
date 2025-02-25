@@ -168,27 +168,29 @@ export async function initEngine() {
 					handleProtocol(state.args[0].substring(5)).catch(() => {});
 				}
 			}
-			if (conf.System.Database.bundledPostgresBinary) dumpPG().catch(() => {});
-			if (!state.isTest && getConfig().Online.Discord.DisplayActivity) initDiscordRPC();
 			// Mark all migrations as done for the first run to
 			// avoid the user to have to do all the migrations from start
 			if (conf.App.FirstRun) await markAllMigrationsFrontendAsDone();
+			await readAllRepoManifests();
+			if (state.isTest) {
+				await updateAllRepos();
+			}
 			setState({ ready: true });
+
+			// Beyond that point everything can be async.
+			if (conf.System.Database.bundledPostgresBinary) dumpPG().catch(() => {});
+			if (!state.isTest && getConfig().Online.Discord.DisplayActivity) initDiscordRPC();
 			writeStreamFiles();
 			initStep(i18next.t('INIT_DONE'), true);
 			postInit();
 			initHooks();
 			initFonts();
-			readAllRepoManifests();
 			archiveOldLogs();
 			initUsageTimer();
 			if (!conf.App.FirstRun && !state.isTest && !state.opt.noPlayer) {
 				initPlayer();
 			}
 			if (conf.Player.KeyboardMediaShortcuts) registerShortcuts();
-			if (state.isTest) {
-				await updateAllRepos();
-			}
 			internetCheck().then(internet => {
 				if (internet) {
 					initStep(i18next.t('INIT_ONLINEURL'));

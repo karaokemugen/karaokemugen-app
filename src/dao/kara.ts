@@ -25,10 +25,11 @@ import {
 export async function selectYears(): Promise<DBYear[]> {
 	const collectionsClauses = [];
 	const collections = getConfig().Karaoke.Collections;
-	for (const collection of Object.keys(collections)) {
-		if (collections[collection] === true)
-			collectionsClauses.push(`'${collection}~${tagTypes.collections}' = ANY(ak.tid)`);
-	}
+	if (collections)
+		for (const collection of Object.keys(collections)) {
+			if (collections[collection] === true)
+				collectionsClauses.push(`'${collection}~${tagTypes.collections}' = ANY(ak.tid)`);
+		}
 	const res = await db().query(sqlgetYears(collectionsClauses));
 	return res.rows;
 }
@@ -152,10 +153,11 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 			WHERE
 			${params.blacklist ? 'fk_kid_parent NOT IN (SELECT * FROM blacklist) AND ' : ''}
 			`;
-			for (const collection of Object.keys(collections)) {
-				if (collections[collection] === true)
-					collectionsParentClauses.push(`'${collection}~${tagTypes.collections}' = ANY(ak2.tid)`);
-			}
+			if (collections)
+				for (const collection of Object.keys(collections)) {
+					if (collections[collection] === true)
+						collectionsParentClauses.push(`'${collection}~${tagTypes.collections}' = ANY(ak2.tid)`);
+				}
 		}
 		// List all songs which are parents or not children.
 		withCTEs.push('parents AS (SELECT fk_kid_parent AS kid FROM kara_relation)');
@@ -185,10 +187,11 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	}
 	const collectionClauses = [];
 	if (!params.ignoreCollections) {
-		for (const collection of Object.keys(collections)) {
-			if (collections[collection] === true)
-				collectionClauses.push(`'${collection}~${tagTypes.collections}' = ANY(ak.tid)`);
-		}
+		if (collections)
+			for (const collection of Object.keys(collections)) {
+				if (collections[collection] === true)
+					collectionClauses.push(`'${collection}~${tagTypes.collections}' = ANY(ak.tid)`);
+			}
 	}
 	const query = sqlgetAllKaras(
 		yesqlPayload.sql,
@@ -247,9 +250,10 @@ export async function selectAllKarasMicro(params: KaraParams): Promise<DBKaraBas
 	const collectionClauses = [];
 	if (!params.ignoreCollections) {
 		const collections = getConfig().Karaoke.Collections;
-		for (const collection of Object.keys(collections)) {
-			if (collection) collectionClauses.push(`'${collection}~${tagTypes.collections}' = ANY(ak.tid)`);
-		}
+		if (collections)
+			for (const collection of Object.keys(collections)) {
+				if (collection) collectionClauses.push(`'${collection}~${tagTypes.collections}' = ANY(ak.tid)`);
+			}
 	}
 	const query = sqlgetAllKarasMicro(yesqlPayload.sql, yesqlPayload.additionalFrom, collectionClauses);
 	const queryParams = {

@@ -26,9 +26,10 @@ async function getRemoteMedias(repoName: string) {
 	const collections = getConfig().Karaoke.Collections;
 	const enabledCollections = [];
 	const repo = getRepo(repoName);
-	for (const collection of Object.keys(collections)) {
-		if (collections[collection] === true) enabledCollections.push(collection);
-	}
+	if (collections)
+		for (const collection of Object.keys(collections)) {
+			if (collections[collection] === true) enabledCollections.push(collection);
+		}
 	const res = await HTTP.post(`${repo.Secure ? 'https' : 'http'}://${repoName}/api/karas/medias`, {
 		collections: enabledCollections,
 	});

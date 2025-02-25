@@ -341,9 +341,10 @@ export async function selectKarasFromCriterias(
 	logger.debug(`Criterias selected for playlist ${plaid}: ${JSON.stringify(criterias)}`, { service, obj: criterias });
 	const collections = getConfig().Karaoke.Collections;
 	const collectionClauses = [];
-	for (const collection of Object.keys(collections)) {
-		if (collection) collectionClauses.push(`'${collection}~${tagTypes.collections}' = ANY(ak.tid)`);
-	}
+	if (collections)
+		for (const collection of Object.keys(collections)) {
+			if (collection) collectionClauses.push(`'${collection}~${tagTypes.collections}' = ANY(ak.tid)`);
+		}
 	if (smartPlaylistType === 'UNION') {
 		for (const c of criterias) {
 			// Ignore if criteria is not found

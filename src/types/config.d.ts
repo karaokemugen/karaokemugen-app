@@ -1,7 +1,7 @@
 import { PathType } from '../lib/types/config.js';
 import { PositionX, PositionY } from '../lib/types/index.js';
 import { PlaylistMediaType } from '../lib/types/playlistMedias.js';
-import { Repository } from '../lib/types/repo.js';
+import { Collections, Repository } from '../lib/types/repo.js';
 import { endOfPlaylistActions } from '../utils/defaultSettings.js';
 import { MpvHardwareDecodingOptions } from './mpvIPC.js';
 import { SongModifiers } from './player.js';
@@ -119,7 +119,7 @@ export interface Config {
 		};
 	};
 	Karaoke: {
-		Collections?: Record<string, boolean>;
+		Collections?: Collections;
 		ClassicMode?: boolean;
 		StreamerMode: {
 			Enabled?: boolean;
