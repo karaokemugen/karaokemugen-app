@@ -1,4 +1,5 @@
 import { promises as fs } from 'fs';
+import parallel from 'p-map';
 import { resolve } from 'path';
 import prettyBytes from 'pretty-bytes';
 
@@ -7,13 +8,12 @@ import { DBMedia } from '../lib/types/database/kara.js';
 import { getConfig, resolvedPathRepos } from '../lib/utils/config.js';
 import { mediaFileRegexp } from '../lib/utils/constants.js';
 import { ErrorKM } from '../lib/utils/error.js';
-import { resolveFileInDirs } from '../lib/utils/files.js';
 import HTTP from '../lib/utils/http.js';
 import logger, { profile } from '../lib/utils/logger.js';
 import { on } from '../lib/utils/pubsub.js';
 import Task from '../lib/utils/taskManager.js';
 import { emitWS } from '../lib/utils/ws.js';
-import { File, UpdateMediasResult } from '../types/download.js';
+import { UpdateMediasResult } from '../types/download.js';
 import Sentry from '../utils/sentry.js';
 import { addDownloads } from './download.js';
 import { checkDownloadStatus, checkRepoMediaPaths, getRepo, getRepos } from './repo.js';
@@ -45,7 +45,7 @@ async function listRemoteMedias(repo: string) {
 }
 
 async function compareMedias(
-	localFiles: File[],
+	localFiles: Map<string, number>,
 	remoteKaras: DBMedia[],
 	repo: string,
 	dryRun = false
@@ -56,9 +56,9 @@ async function compareMedias(
 	const mediasPath = resolvedPathRepos('Medias', repo)[0];
 	logger.info('Comparing your medias with the current ones', { service });
 	for (const remoteKara of remoteKaras) {
-		const localFile = localFiles.find(f => f.basename === remoteKara.mediafile);
-		if (localFile) {
-			if (remoteKara.mediasize !== localFile.size) {
+		const localSize = localFiles.get(remoteKara.mediafile);
+		if (localSize) {
+			if (remoteKara.mediasize !== localSize) {
 				updatedFiles.push(remoteKara);
 			}
 			// Do nothing if file exists and sizes are the same
@@ -67,9 +67,9 @@ async function compareMedias(
 		}
 	}
 
-	for (const localFile of localFiles) {
-		const remoteFilePresent = remoteKaras.find(remoteKara => localFile.basename === remoteKara.mediafile);
-		if (!remoteFilePresent) removedFiles.push(localFile.basename);
+	for (const localFile of localFiles.keys()) {
+		const remoteFilePresent = remoteKaras.find(remoteKara => localFile === remoteKara.mediafile);
+		if (!remoteFilePresent) removedFiles.push(localFile);
 	}
 	const filesToDownload = addedFiles.concat(updatedFiles);
 	let bytesToDownload = 0;
@@ -80,7 +80,7 @@ async function compareMedias(
 		for (const file of filesToDownload) {
 			bytesToDownload += file.mediasize;
 		}
-		logger.info(`Removing ${removedFiles.length} files`);
+		logger.info(`Removing ${removedFiles.length} files`, { service });
 		logger.info(
 			`Downloading ${filesToDownload.length} new/updated medias (size : ${prettyBytes(bytesToDownload)})`,
 			{ service }
@@ -133,23 +133,30 @@ async function downloadMedias(karas: DBMedia[]): Promise<void> {
 	});
 }
 
-async function listLocalMedias(repo: string): Promise<File[]> {
+async function listLocalMedias(repo: string): Promise<Map<string, number>> {
 	profile('listLocalMedias');
-	const mediaFiles = await fs.readdir(resolvedPathRepos('Medias', repo)[0]);
-	const localMedias = [];
-	for (const file of mediaFiles) {
-		try {
-			if (!file.match(mediaFileRegexp)) continue;
-			const mediaPath = await resolveFileInDirs(file, resolvedPathRepos('Medias', repo));
-			const mediaStats = await fs.stat(mediaPath[0]);
-			localMedias.push({
-				basename: file,
-				size: mediaStats.size,
-			});
-		} catch {
-			logger.info(`Local media file ${file} not found`, { service });
-		}
+	const mediaDir = resolvedPathRepos('Medias', repo)[0];
+	const mediaFiles = await fs.readdir(mediaDir);
+	const localMedias: Map<string, number> = new Map();
+	const mapper = async (file: string) => {
+		const mediaPath = resolve(mediaDir, file);
+		if (!file.match(mediaFileRegexp)) return undefined;
+		return {
+			file,
+			size: (await fs.stat(mediaPath)).size,
+		};
+	};
+	profile('listLocalMedias-mapper');
+	const files = await parallel(mediaFiles, mapper, {
+		stopOnError: false,
+		concurrency: 128,
+	});
+	profile('listLocalMedias-mapper');
+	profile('listLocalMedias-buildMap');
+	for (const file of files) {
+		localMedias.set(file.file, file.size);
 	}
+	profile('listLocalMedias-buildMap');
 	logger.debug('Listed local media files', { service });
 	profile('listLocalMedias');
 	return localMedias;
