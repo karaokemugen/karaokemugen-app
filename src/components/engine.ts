@@ -21,7 +21,7 @@ import { getConfig, setConfig } from '../lib/utils/config.js';
 import { duration } from '../lib/utils/date.js';
 import logger, { archiveOldLogs, enableWSLogging, profile } from '../lib/utils/logger.js';
 import { createImagePreviews } from '../lib/utils/previews.js';
-import { initDownloader, wipeDownloadQueue } from '../services/download.js';
+import { initDownloader, wipeDownloadQueue, wipeDownloads } from '../services/download.js';
 import { updateAllMedias } from '../services/downloadMedias.js';
 import { initFonts } from '../services/fonts.js';
 import { getKaras, initFetchPopularSongs, stopFetchPopularSongs } from '../services/kara.js';
@@ -76,6 +76,7 @@ export async function initEngine() {
 			await initDBSystem();
 			initStep(i18next.t('INIT_UPDATEMEDIAS'));
 			await initDownloader();
+			await wipeDownloads();
 			await updateAllMedias(state.opt.mediaUpdate);
 			await exit(0);
 		} catch (err) {
