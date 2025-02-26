@@ -96,7 +96,7 @@ async function compareMedias(
 			await fs.unlink(resolve(mediasPath, file.mediafile));
 		}
 		if (removedFiles.length > 0) await removeFiles(removedFiles, mediasPath);
-		await downloadMedias(filesToDownload);
+		if (filesToDownload.length > 0) await downloadMedias(filesToDownload);
 		logger.info('Done updating medias', { service });
 	}
 	return {
