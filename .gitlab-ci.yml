@@ -478,6 +478,29 @@ release_site:
     - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
     - if: '$CI_COMMIT_TAG'
     - when: never
+cleanup_deploys:
+  stage: release
+  artifacts:
+    expire_in: 1 day
+  interruptible: true
+  tags:
+    - $RUNNER_LINUX
+  cache: {}
+  image: axelterizaki/karaokemugen-ci:utils
+  needs:
+    - deploy_win
+    - deploy_linux
+    - deploy_mac
+  script:
+    - bash util/cleanupReleases.sh
+  rules:
+    - if: $SCHEDULED_RELEASES == "true"
+      when: never
+    - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
+    - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
+    - if: $CI_COMMIT_BRANCH == "master"
+    - if: $CI_COMMIT_BRANCH == "next"
+    - when: never
 weekly_releases:
   stage: schedule
   image: axelterizaki/karaokemugen-git-ssh:latest
