@@ -498,8 +498,8 @@ cleanup_deploys:
       when: never
     - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
     - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
-    - if: $CI_COMMIT_BRANCH == "master"
-    - if: $CI_COMMIT_BRANCH == "next"
+    - if: '$CI_COMMIT_TAG'
+      when: never
     - when: never
 weekly_releases:
   stage: schedule
