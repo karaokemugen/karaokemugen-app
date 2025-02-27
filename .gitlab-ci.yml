@@ -165,7 +165,7 @@ deploy_kmremote:
   tags:
     - $RUNNER_LINUX
   cache: {}
-  image: axelterizaki/karaokemugen-ci:transferts
+  image: axelterizaki/karaokemugen-ci:utils
   dependencies:
     - build-react
   needs:
