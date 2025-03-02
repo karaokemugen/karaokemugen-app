@@ -1818,6 +1818,9 @@
 		"MEDIAS_FOLDER_OPEN_ERROR": "Failed to open media folder",
 		"UNKNOWN_PARENT_FROM_INBOX": "Unknown parent for this inbox song"
 	},
+	"WARNING_CODES": {
+		"REMOTE_HIGH_LATENCY_DETECTED": "Your connection with {{host}} is slow, your users might encounter issues"
+	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Added {{data}} downloads to the queue",
 		"DOWNLOADS_STARTED": "Downloads starting",
