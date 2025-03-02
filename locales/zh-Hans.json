@@ -2,5 +2,16 @@
 	"NO": "否",
 	"CANCEL": "取消",
 	"YES": "是",
-	"UNKNOWN": "未知"
+	"UNKNOWN": "未知",
+	"YEAR": "年",
+	"TITLE": "标题",
+	"LIBRARY": "库",
+	"TAG_TYPES": {
+		"CREATORS": "创建者",
+		"LANGS": "语言",
+		"GROUPS": "群组",
+		"PLATFORMS": "平台",
+		"SERIES": "系列",
+		"VERSIONS": "版本"
+	}
 }
