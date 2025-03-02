@@ -161,6 +161,7 @@ async function listLocalMedias(repo: string): Promise<Map<string, number>> {
 		profile('listLocalMedias-mapper');
 		profile('listLocalMedias-buildMap');
 		for (const file of files) {
+			if (!file) continue;
 			localMedias.set(file.file, file.size);
 		}
 		profile('listLocalMedias-buildMap');
