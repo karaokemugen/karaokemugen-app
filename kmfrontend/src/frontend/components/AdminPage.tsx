@@ -36,13 +36,13 @@ function AdminPage(props: IProps) {
 	const [quizRanking, setQuizRanking] = useState(false);
 
 	const operatorNotificationInfo = (data: { code: string; data: string }) =>
-		displayMessage('info', i18next.t(data.code, { data: data }));
+		displayMessage('info', i18next.t(data.code, data.data));
 	const operatorNotificationError = (data: { code: string; data: string }) =>
-		displayMessage('error', i18next.t(data.code, { data: data }));
+		displayMessage('error', i18next.t(data.code, data.data));
 	const operatorNotificationWarning = (data: { code: string; data: string }) =>
-		displayMessage('warning', i18next.t(data.code, { data: data }));
+		displayMessage('warning', i18next.t(data.code, data.data));
 	const operatorNotificationSuccess = (data: { code: string; data: string }) =>
-		displayMessage('success', i18next.t(data.code, { data: data }));
+		displayMessage('success', i18next.t(data.code, data.data));
 
 	const playlistInfoUpdated = (plaid: string) => {
 		getPlaylistList();
