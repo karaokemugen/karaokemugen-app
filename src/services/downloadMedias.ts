@@ -37,11 +37,17 @@ async function getRemoteMedias(repoName: string) {
 }
 
 async function listRemoteMedias(repo: string) {
-	logger.info('Fetching current media list', { service });
-	profile('listRemoteMedias');
-	const remote = await getRemoteMedias(repo);
-	profile('listRemoteMedias');
-	return remote;
+	try {
+		logger.info('Fetching current media list', { service });
+		profile('listRemoteMedias');
+		const remote = await getRemoteMedias(repo);
+		profile('listRemoteMedias');
+		return remote;
+	} catch (err) {
+		logger.error(`Failed to fetch current media list : ${err}`, { service, obj: err });
+		Sentry.error(err);
+		throw err;
+	}
 }
 
 async function compareMedias(
@@ -134,32 +140,38 @@ async function downloadMedias(karas: DBMedia[]): Promise<void> {
 }
 
 async function listLocalMedias(repo: string): Promise<Map<string, number>> {
-	profile('listLocalMedias');
-	const mediaDir = resolvedPathRepos('Medias', repo)[0];
-	const mediaFiles = await fs.readdir(mediaDir);
-	const localMedias: Map<string, number> = new Map();
-	const mapper = async (file: string) => {
-		const mediaPath = resolve(mediaDir, file);
-		if (!file.match(mediaFileRegexp)) return undefined;
-		return {
-			file,
-			size: (await fs.stat(mediaPath)).size,
+	try {
+		profile('listLocalMedias');
+		const mediaDir = resolvedPathRepos('Medias', repo)[0];
+		const mediaFiles = await fs.readdir(mediaDir);
+		const localMedias: Map<string, number> = new Map();
+		const mapper = async (file: string) => {
+			const mediaPath = resolve(mediaDir, file);
+			if (!file.match(mediaFileRegexp)) return undefined;
+			return {
+				file,
+				size: (await fs.stat(mediaPath)).size,
+			};
 		};
-	};
-	profile('listLocalMedias-mapper');
-	const files = await parallel(mediaFiles, mapper, {
-		stopOnError: false,
-		concurrency: 128,
-	});
-	profile('listLocalMedias-mapper');
-	profile('listLocalMedias-buildMap');
-	for (const file of files) {
-		localMedias.set(file.file, file.size);
+		profile('listLocalMedias-mapper');
+		const files = await parallel(mediaFiles, mapper, {
+			stopOnError: false,
+			concurrency: 128,
+		});
+		profile('listLocalMedias-mapper');
+		profile('listLocalMedias-buildMap');
+		for (const file of files) {
+			localMedias.set(file.file, file.size);
+		}
+		profile('listLocalMedias-buildMap');
+		logger.debug('Listed local media files', { service });
+		profile('listLocalMedias');
+		return localMedias;
+	} catch (err) {
+		logger.error(`Failed to list local media files : ${err}`, { service, obj: err });
+		Sentry.error(err);
+		throw err;
 	}
-	profile('listLocalMedias-buildMap');
-	logger.debug('Listed local media files', { service });
-	profile('listLocalMedias');
-	return localMedias;
 }
 
 async function removeFiles(files: string[], dir: string): Promise<void> {
