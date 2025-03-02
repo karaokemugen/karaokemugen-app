@@ -16,11 +16,39 @@ import i18next from 'i18next';
 import { useContext } from 'react';
 import { Link } from 'react-router-dom';
 
+import { useEffect } from 'react';
 import GlobalContext from '../../store/context';
 import Title from '../components/Title';
 
+import { getSocket } from '../../utils/socket';
+import { displayMessage } from '../../utils/tools';
+
 function Home() {
 	const context = useContext(GlobalContext);
+
+	const operatorNotificationInfo = (data: { code: string; data: string }) =>
+		displayMessage('info', i18next.t(data.code, data.data));
+	const operatorNotificationError = (data: { code: string; data: string }) =>
+		displayMessage('error', i18next.t(data.code, data.data));
+	const operatorNotificationWarning = (data: { code: string; data: string }) => {
+		displayMessage('warning', i18next.t(data.code, data.data));
+		console.debug({ data });
+	};
+	const operatorNotificationSuccess = (data: { code: string; data: string }) =>
+		displayMessage('success', i18next.t(data.code, data.data));
+
+	useEffect(() => {
+		getSocket().on('operatorNotificationInfo', operatorNotificationInfo);
+		getSocket().on('operatorNotificationError', operatorNotificationError);
+		getSocket().on('operatorNotificationWarning', operatorNotificationWarning);
+		getSocket().on('operatorNotificationSuccess', operatorNotificationSuccess);
+		return () => {
+			getSocket().off('operatorNotificationInfo', operatorNotificationInfo);
+			getSocket().off('operatorNotificationError', operatorNotificationError);
+			getSocket().off('operatorNotificationWarning', operatorNotificationWarning);
+			getSocket().off('operatorNotificationSuccess', operatorNotificationSuccess);
+		};
+	}, []);
 
 	return (
 		<>

@@ -1,6 +1,5 @@
 import i18next from 'i18next';
-import { debounce } from 'lodash';
-import { createElement, useCallback, useContext, useEffect, useState } from 'react';
+import { createElement, useContext, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Route, Routes } from 'react-router';
 import { useSearchParams } from 'react-router-dom';
