@@ -31,5 +31,5 @@
 		"experimentalDecorators": true,
 		"skipLibCheck": true
 	},
-	"include": ["src", "test", "util"]
+	"include": ["src", "test", "util", "testUnit"]
 }

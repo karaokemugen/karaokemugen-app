@@ -1,7 +1,7 @@
-import { io, Socket } from 'socket.io-client';
-
 import dayjs from 'dayjs';
 import { catchError, filter, interval, map, Observable, pairwise, Subscription, switchMap, tap } from 'rxjs';
+import { io, Socket } from 'socket.io-client';
+
 import { APIMessage } from '../lib/services/frontend.js';
 import { APIData } from '../lib/types/api.js';
 import { getConfig } from '../lib/utils/config.js';

@@ -43,7 +43,7 @@ import { getTwitchClient, initTwitch, stopTwitch } from '../utils/twitch.js';
 import initFrontend from './frontend.js';
 
 let usageTime = 0;
-let usageTimeInterval;
+let usageTimeInterval: NodeJS.Timeout;
 
 const service = 'Engine';
 
