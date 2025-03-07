@@ -26,10 +26,7 @@ export class lavfiGenerator {
 
 		// Disable this for mpvs with ffmpeg version 7.0
 		// Does not work on macOS at the moment (November 2024) due to mpv versions not including a good ffmpeg.
-		if (
-			process.platform === 'darwin' ||
-			(playerState.ffmpegVersion.includes('.') && semver.satisfies(playerState.ffmpegVersion, '7.0.x'))
-		) {
+		if (playerState.ffmpegVersion.includes('.') && semver.satisfies(playerState.ffmpegVersion, '7.0.x')) {
 			return '[vid1]null[vo]';
 		} else {
 			const needThirdSplit = shouldDisplayAvatar && shouldDisplayQRcode;
@@ -97,11 +94,7 @@ export class lavfiGenerator {
 	public static genLavfiQRCode(needThirdSplit: boolean): string {
 		// Disable this for mpvs with ffmpeg version 7.0
 		// Does not work on macOS at the moment (November 2024) due to mpv versions not including a good ffmpeg.
-		if (
-			process.platform === 'darwin' ||
-			(playerState.ffmpegVersion.includes('.') && semver.satisfies(playerState.ffmpegVersion, '7.0.x'))
-		)
-			return '';
+		if (playerState.ffmpegVersion.includes('.') && semver.satisfies(playerState.ffmpegVersion, '7.0.x')) return '';
 
 		let overlay: string;
 		let videoInput: number;
