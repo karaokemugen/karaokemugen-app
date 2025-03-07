@@ -25,7 +25,6 @@ export class lavfiGenerator {
 		let qrCode: string;
 
 		// Disable this for mpvs with ffmpeg version 7.0
-		// Does not work on macOS at the moment (November 2024) due to mpv versions not including a good ffmpeg.
 		if (playerState.ffmpegVersion.includes('.') && semver.satisfies(playerState.ffmpegVersion, '7.0.x')) {
 			return '[vid1]null[vo]';
 		} else {
