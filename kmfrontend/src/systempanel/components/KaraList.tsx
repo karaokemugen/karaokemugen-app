@@ -381,7 +381,7 @@ function KaraList(props: KaraListProps) {
 					if (record.download_status !== 'DOWNLOADED') {
 						playVideoButton = null;
 					}
-					if (record.lyrics_infos[0] === null) {
+					if (record.lyrics_infos?.length === 0 || record.lyrics_infos[0] === null) {
 						lyricsButton = null;
 					}
 					return (
