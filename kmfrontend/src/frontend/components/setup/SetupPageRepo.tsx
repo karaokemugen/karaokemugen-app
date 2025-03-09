@@ -37,7 +37,7 @@ function SetupPageRepo() {
 			properties: ['createDirectory', 'openDirectory'],
 		};
 		ipc.send('get-file-paths', options);
-		ipc.once('get-file-paths-response', async (_event: any, filepaths: string[]) => {
+		ipc.once('get-file-paths-response', async (_, filepaths: string[]) => {
 			if (filepaths.length > 0) {
 				setRepositoryFolder(filepaths[0]);
 			}

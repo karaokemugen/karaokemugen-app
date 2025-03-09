@@ -24,12 +24,12 @@ function mapDrives(drives: { mount: string; label: string }[]) {
 
 async function getFS(path: string, os: string) {
 	if (!path) path = '/';
-	let computedPath = path.length > 1 && os === 'win32' ? path.substr(1) : path;
+	let computedPath = path.length > 1 && os === 'win32' ? path.substring(1) : path;
 	if (os !== 'win32' && path[0] !== '/') path = `/${path}`;
 	let response;
 	try {
 		response = await commandBackend('getFS', { path });
-	} catch (error) {
+	} catch (_) {
 		// Folder don't exist fallback to root folder
 		computedPath = '/';
 		response = await commandBackend('getFS', { path: '/' });
@@ -54,8 +54,7 @@ function computeListing(listing: Listing, path: string, seeFiles: boolean): List
 
 export default function FileSystem(props: IProps) {
 	const [listing, setListing] = useState<Listing>([]);
-	let [path, setPath] = useState<string>();
-	path = path?.replace(/\/$/, '');
+	const [path, setPath] = useState<string>(props.path?.replace(/\/$/, ''));
 	const separator = props.os === 'win32' ? '\\' : '/';
 
 	function getFSCallback(res) {
@@ -68,16 +67,16 @@ export default function FileSystem(props: IProps) {
 	function browseInto(item: ListingElement) {
 		if (item.isDirectory) {
 			const newPath = item.back
-				? path.substr(
+				? path.substring(
 						0,
 						props.os === 'win32'
-							? path.substr(0, path.length - 1).lastIndexOf(separator) === 3
+							? path.substring(0, path.length - 1).lastIndexOf(separator) === 3
 								? 3
-								: path.substr(0, path.length - 1).lastIndexOf(separator) + 1
+								: path.substring(0, path.length - 1).lastIndexOf(separator) + 1
 							: path.lastIndexOf(separator) === 0
-							? 1
-							: path.lastIndexOf(separator)
-				  )
+								? 1
+								: path.lastIndexOf(separator)
+					)
 				: `${path}${separator}${item.name}`;
 			getFS(newPath, props.os).then(getFSCallback);
 			if (!props.fileRequired) props.saveValueModal(newPath);
@@ -89,7 +88,7 @@ export default function FileSystem(props: IProps) {
 	useEffect(() => {
 		getFS(
 			props.fileRequired
-				? path.substr(0, path.lastIndexOf(separator) === 0 ? 1 : path.lastIndexOf(separator))
+				? path.substring(0, path.lastIndexOf(separator) === 0 ? 1 : path.lastIndexOf(separator))
 				: props.path,
 			props.os
 		).then(getFSCallback);
