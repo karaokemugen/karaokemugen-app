@@ -1,5 +1,5 @@
 import { FileOutlined, FolderOutlined, LeftOutlined, UsbOutlined } from '@ant-design/icons';
-import { Button, List } from 'antd';
+import { Button, Input, List } from 'antd';
 import i18next from 'i18next';
 import { useEffect, useState } from 'react';
 
@@ -64,7 +64,7 @@ export default function FileSystem(props: IProps) {
 		setPath(res.fullPath);
 	}
 
-	function browseInto(item: ListingElement) {
+	const browseInto = (item: ListingElement) => {
 		if (item.isDirectory) {
 			const newPath = item.back
 				? path.substring(
@@ -83,7 +83,12 @@ export default function FileSystem(props: IProps) {
 		} else if (props.fileRequired) {
 			props.saveValueModal(`${path}${separator}${item.name}`);
 		}
-	}
+	};
+
+	const onChangeInput = event => {
+		setPath(event.target.value);
+		props.saveValueModal(event.target.value);
+	};
 
 	useEffect(() => {
 		getFS(
@@ -98,7 +103,7 @@ export default function FileSystem(props: IProps) {
 		<List
 			header={
 				<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-					{path}
+					<Input style={{ marginRight: '0.5em' }} value={path} onChange={onChangeInput} />
 					{!props.fileRequired ? <Button type="primary">{i18next.t('CONFIG.SELECT')}</Button> : null}
 				</div>
 			}
