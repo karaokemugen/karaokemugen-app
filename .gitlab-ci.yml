@@ -337,11 +337,6 @@ pkg_deploy_mac:
   tags:
     - macos
   interruptible: true
-  artifacts:
-    expire_in: 1 day
-    name: km-app-pkgmac-${CI_COMMIT_REF_SLUG}
-    paths:
-      - release_mac
   dependencies:
     - build-react
     - build-migrationsFile
