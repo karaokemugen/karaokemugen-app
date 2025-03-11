@@ -1,5 +1,5 @@
 import { promises as fs } from 'fs';
-import { exists } from 'fs-extra';
+import { ensureDir, exists } from 'fs-extra';
 import { basename, extname, resolve } from 'path';
 
 import { applyKaraHooks } from '../lib/dao/hook.js';
@@ -298,16 +298,20 @@ export async function createKara(editedKara: EditedKara) {
 			// Non-lethal.
 		}
 		const filenames = determineMediaAndLyricsFilenames(kara);
-		const mediaDest = resolve(resolvedPathRepos('Medias', kara.data.repository)[0], filenames.mediafile);
+		const mediaDir = resolvedPathRepos('Medias', kara.data.repository)[0];
+		const mediaDest = resolve(mediaDir, filenames.mediafile);
 		let subDest: string;
 		if (kara.medias[0].lyrics[0]?.filename) {
 			const subPath = resolve(resolvedPath('Temp'), kara.medias[0].lyrics[0].filename);
 			const ext = await processSubfile(subPath);
 			filenames.lyricsfiles[0] = replaceExt(filenames.lyricsfiles[0], ext);
 			kara.medias[0].lyrics[0].filename = filenames.lyricsfiles[0];
-			subDest = resolve(resolvedPathRepos('Lyrics', kara.data.repository)[0], filenames.lyricsfiles[0]);
+			const subDir = resolvedPathRepos('Lyrics', kara.data.repository)[0];
+			subDest = resolve(subDir, filenames.lyricsfiles[0]);
+			await ensureDir(subDir);
 			await smartMove(subPath, subDest, { overwrite: true });
 		}
+		await ensureDir(mediaDir);
 		await smartMove(mediaPath, mediaDest, { overwrite: true });
 		kara.medias[0].filename = filenames.mediafile;
 		await writeKara(karaJsonFileDest, kara);
