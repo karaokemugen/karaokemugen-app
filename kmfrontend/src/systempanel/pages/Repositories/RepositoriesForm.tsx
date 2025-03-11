@@ -11,7 +11,7 @@ import FoldersElement from '../../components/FoldersElement';
 
 interface RepositoriesFormProps {
 	repository: Repository;
-	save: any;
+	save: (repository: Repository) => void;
 	movingMedia: (movingMediaPath: string) => void;
 	convertToUUID: (repo: string) => void;
 	compareLyrics: (repo: string) => void;
@@ -199,87 +199,94 @@ function RepositoryForm(props: RepositoriesFormProps) {
 				<Checkbox />
 			</Form.Item>
 			{onlineMode ? (
-				<Form.Item
-					label={
-						<span>
-							{i18next.t('REPOSITORIES.SECURE')}&nbsp;
-							<Tooltip title={i18next.t('REPOSITORIES.SECURE_TOOLTIP')}>
-								<QuestionCircleOutlined />
-							</Tooltip>
-						</span>
-					}
-					labelCol={{ flex: '0 1 300px' }}
-					valuePropName="checked"
-					name="Secure"
-				>
-					<Checkbox defaultChecked />
-				</Form.Item>
+				<>
+					<Form.Item
+						label={
+							<span>
+								{i18next.t('REPOSITORIES.SECURE')}&nbsp;
+								<Tooltip title={i18next.t('REPOSITORIES.SECURE_TOOLTIP')}>
+									<QuestionCircleOutlined />
+								</Tooltip>
+							</span>
+						}
+						labelCol={{ flex: '0 1 300px' }}
+						valuePropName="checked"
+						name="Secure"
+					>
+						<Checkbox defaultChecked />
+					</Form.Item>
+
+					<Form.Item
+						label={
+							<span>
+								{i18next.t('REPOSITORIES.SENDSTATS')}&nbsp;
+								<Tooltip title={i18next.t('REPOSITORIES.SENDSTATS_TOOLTIP')}>
+									<QuestionCircleOutlined />
+								</Tooltip>
+							</span>
+						}
+						labelCol={{ flex: '0 1 300px' }}
+						valuePropName="checked"
+						name="SendStats"
+					>
+						<Checkbox />
+					</Form.Item>
+					<Form.Item
+						label={
+							<span>
+								{i18next.t('REPOSITORIES.UPDATE')}&nbsp;
+								<Tooltip title={i18next.t('REPOSITORIES.UPDATE_TOOLTIP')}>
+									<QuestionCircleOutlined />
+								</Tooltip>
+							</span>
+						}
+						labelCol={{ flex: '0 1 300px' }}
+						valuePropName="checked"
+						name="Update"
+					>
+						<Checkbox onChange={e => setUpdate(e.target.checked)} />
+					</Form.Item>
+					<Form.Item
+						label={
+							<span>
+								{i18next.t('REPOSITORIES.AUTO_MEDIA_DOWNLOADS')}&nbsp;
+								<Tooltip title={i18next.t('REPOSITORIES.AUTO_MEDIA_DOWNLOADS_TOOLTIP')}>
+									<QuestionCircleOutlined />
+								</Tooltip>
+							</span>
+						}
+						labelCol={{ flex: '0 1 300px' }}
+						name="AutoMediaDownloads"
+					>
+						<Select>
+							<Select.Option value="none">
+								{i18next.t('REPOSITORIES.AUTO_MEDIA_DOWNLOADS_NONE')}
+							</Select.Option>
+							<Select.Option value="updateOnly">
+								{i18next.t('REPOSITORIES.AUTO_MEDIA_DOWNLOADS_UPDATE_ONLY')}
+							</Select.Option>
+							<Select.Option value="all">
+								{i18next.t('REPOSITORIES.AUTO_MEDIA_DOWNLOADS_ALL')}
+							</Select.Option>
+						</Select>
+					</Form.Item>
+					<Form.Item
+						label={
+							<span>
+								{i18next.t('REPOSITORIES.MAINTAINER_MODE')}&nbsp;
+								<Tooltip title={i18next.t('REPOSITORIES.MAINTAINER_MODE_TOOLTIP')}>
+									<QuestionCircleOutlined />
+								</Tooltip>
+							</span>
+						}
+						labelCol={{ flex: '0 1 300px' }}
+						valuePropName="checked"
+						name="MaintainerMode"
+					>
+						<Checkbox onChange={e => setMaintainerMode(e.target.checked)} />
+					</Form.Item>
+				</>
 			) : null}
-			<Form.Item
-				label={
-					<span>
-						{i18next.t('REPOSITORIES.SENDSTATS')}&nbsp;
-						<Tooltip title={i18next.t('REPOSITORIES.SENDSTATS_TOOLTIP')}>
-							<QuestionCircleOutlined />
-						</Tooltip>
-					</span>
-				}
-				labelCol={{ flex: '0 1 300px' }}
-				valuePropName="checked"
-				name="SendStats"
-			>
-				<Checkbox />
-			</Form.Item>
-			<Form.Item
-				label={
-					<span>
-						{i18next.t('REPOSITORIES.UPDATE')}&nbsp;
-						<Tooltip title={i18next.t('REPOSITORIES.UPDATE_TOOLTIP')}>
-							<QuestionCircleOutlined />
-						</Tooltip>
-					</span>
-				}
-				labelCol={{ flex: '0 1 300px' }}
-				valuePropName="checked"
-				name="Update"
-			>
-				<Checkbox onChange={e => setUpdate(e.target.checked)} />
-			</Form.Item>
-			<Form.Item
-				label={
-					<span>
-						{i18next.t('REPOSITORIES.AUTO_MEDIA_DOWNLOADS')}&nbsp;
-						<Tooltip title={i18next.t('REPOSITORIES.AUTO_MEDIA_DOWNLOADS_TOOLTIP')}>
-							<QuestionCircleOutlined />
-						</Tooltip>
-					</span>
-				}
-				labelCol={{ flex: '0 1 300px' }}
-				name="AutoMediaDownloads"
-			>
-				<Select>
-					<Select.Option value="none">{i18next.t('REPOSITORIES.AUTO_MEDIA_DOWNLOADS_NONE')}</Select.Option>
-					<Select.Option value="updateOnly">
-						{i18next.t('REPOSITORIES.AUTO_MEDIA_DOWNLOADS_UPDATE_ONLY')}
-					</Select.Option>
-					<Select.Option value="all">{i18next.t('REPOSITORIES.AUTO_MEDIA_DOWNLOADS_ALL')}</Select.Option>
-				</Select>
-			</Form.Item>
-			<Form.Item
-				label={
-					<span>
-						{i18next.t('REPOSITORIES.MAINTAINER_MODE')}&nbsp;
-						<Tooltip title={i18next.t('REPOSITORIES.MAINTAINER_MODE_TOOLTIP')}>
-							<QuestionCircleOutlined />
-						</Tooltip>
-					</span>
-				}
-				labelCol={{ flex: '0 1 300px' }}
-				valuePropName="checked"
-				name="MaintainerMode"
-			>
-				<Checkbox onChange={e => setMaintainerMode(e.target.checked)} />
-			</Form.Item>
 			<Form.Item
 				label={i18next.t('REPOSITORIES.BASE_DIR')}
 				labelCol={{ flex: '0 1 300px' }}
