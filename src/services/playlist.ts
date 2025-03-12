@@ -801,7 +801,7 @@ export async function addKaraToPlaylist(params: AddKaraParams) {
 		updatePlaylistLastEditTime(params.plaid);
 
 		// Auto-balance current playlist if user isn't in first pool
-		if (conf.Karaoke.AutoBalance) {
+		if (conf.Karaoke.AutoBalance && params.plaid === getState().currentPlaid) {
 			let playlist = await getPlaylistContentsMini(params.plaid);
 			const playingPosInPL = getPlayingPos(playlist);
 			if (playingPosInPL) {
