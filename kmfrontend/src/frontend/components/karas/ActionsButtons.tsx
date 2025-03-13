@@ -122,7 +122,8 @@ function ActionsButtons(props: IProps) {
 				].includes(playlist?.plaid) &&
 				!context.globalState.settings.data.state.quiz.running &&
 				(props.kara.public_plc_id?.length === 0 ||
-					context.globalState.settings.data.config.Playlist.AllowPublicDuplicates === 'allowed') &&
+					(props.kara?.my_public_plc_id.length === 0 &&
+						context.globalState.settings.data.config.Playlist.AllowPublicDuplicates === 'allowed')) &&
 				(playlist?.plaid !== nonStandardPlaylists.library ||
 					props.kara.children?.length === 0 ||
 					!context.globalState.settings.data.user.flag_parentsonly)) ? (
