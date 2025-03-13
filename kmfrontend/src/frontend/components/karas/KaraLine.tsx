@@ -518,11 +518,6 @@ function KaraLine(props: IProps) {
 							</div>
 							{props.sortable ? <DragHandle dragHandleProps={props.draggable.dragHandleProps} /> : null}
 						</div>
-						{!isAdmin ? (
-							<div className="chevron" onClick={() => props.openKara(props.kara)}>
-								<i className="fas fa-chevron-right fa-3x" />
-							</div>
-						) : null}
 					</>
 				)}
 			</div>

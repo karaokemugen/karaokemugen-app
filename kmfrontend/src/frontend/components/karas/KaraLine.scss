@@ -238,13 +238,6 @@ body:not(.touch) {
 		color: grey;
 		cursor: not-allowed;
 	}
-
-	.chevron {
-		display: flex;
-		align-items: center;
-		padding-left: 0.5em;
-		cursor: pointer;
-	}
 }
 
 .marker-label {
