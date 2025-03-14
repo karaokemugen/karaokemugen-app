@@ -340,7 +340,7 @@
 		"ADD_FILE_LYRICS_ERROR": "{{name}} ist keine Untertiteldatei",
 		"FILTER_NOT_DOWNLOADED": "Nicht heruntergeladen",
 		"CREATORS_TOOLTIP": "Die Einrichtung, die die Serie entwickelt hat. Das kann ein Animationsstudio, ein Filmstudio oder ein Spielestudio sein.",
-		"SYNCHRONIZE_DESC": "Alle Medien herunterladen",
+		"SYNCHRONIZE_DESC": "Alle Medien der ausgewählten Repositorys herunterladen",
 		"DEFAULT_LANGUAGE": "Zu verwendende Standardsprache",
 		"MEDIA_FILE_INFO": {
 			"VIDEO_RESOLUTION": "Auflösung",
@@ -458,11 +458,16 @@
 			"LABEL": "Encode Medium"
 		},
 		"ORDER_MEDIA_NEW": "Neu",
-		"ORDER_MEDIA_POPULAR": "Beliebt",
+		"ORDER_MEDIA_POPULAR": "Gewünscht",
 		"ORDER_MEDIA_STANDARD": "Standard",
 		"ORDER_MEDIA": "Sortiere Medien nach: ",
 		"ORDER_MEDIA_MEDIASIZE": "Mediengröße",
-		"CHANGE_ORDER_DIRECTION": "Ordnungsrichtung ändern"
+		"CHANGE_ORDER_DIRECTION": "Ordnungsrichtung ändern",
+		"KARA_FIELD_REQUIRED": "{{field}} ist ein Pflichtfeld",
+		"KARA_GROUP_FIELD_REQUIRED": "{{fields}} können nicht alle leer sein.",
+		"USEEMBEDDEDLYRICS": "Ins Medium eingebetteten Liedtext priorisieren",
+		"USEEMBEDDEDLYRICS_TOOLTIP": "Falls im hochgeladenen Medium eine ASS-Datei integriert ist, wird diese extrahiert und ersetzt die aktuelle Liedtext-Datei.",
+		"SYNCHRONIZE_REPOSITORIES": "Repositorys zum Synchronisieren"
 	},
 	"SETTINGS": {
 		"KARAOKE": {
@@ -874,7 +879,7 @@
 		"REPO_UPLOAD_MEDIA_ERROR": "Fehler beim Senden der Medien an das Repository",
 		"TAG_DELETE_ERROR": "Fehler beim Löschen des Tags",
 		"FILES_VALIDATED_ERROR": "Fehler beim Validieren der Dateien",
-		"KARA_RANKING_ERROR": "Fehler beim Sortieren der Lieder nach Beliebtheit",
+		"KARA_RANKING_ERROR": "Fehler beim Sortieren der Lieder nach Wunschhäufigkeit",
 		"REPO_PATH_ERROR_IN_APP_PATH": "Die Repository-Medien oder der Basispfad darf sich nicht im Pfad der Anwendung befinden",
 		"USER_DELETE_ERROR": "Fehler beim Löschen des Benutzers",
 		"USER_EDIT_ERROR": "Fehler beim Bearbeiten des Benutzers",
@@ -1064,9 +1069,9 @@
 			"TITLE": "Verwaltung des Festplattenspeichers"
 		},
 		"MOST_REQUESTED": {
-			"TITLE": "Beliebteste Lieder",
-			"DESCRIPTION": "Listet die beliebten Lieder in deiner Anwendung. Berücksichtigt nur Lieder, die über die öffentliche Schnittstelle hinzugefügt wurden.",
-			"DESCRIPTION_ONLINE": "Im Moment siehst du die Liste der beliebten ONLINE-Lieder. Deaktiviere die Einstellung \"Beliebte Lieder online abrufen\", um nur die Lieder aus deiner Instanz zu sehen."
+			"TITLE": "Meist gewünschte Lieder",
+			"DESCRIPTION": "Listet die meist gewünschten Lieder in deiner Anwendung auf. Berücksichtigt nur Lieder, die über die öffentliche Schnittstelle hinzugefügt wurden.",
+			"DESCRIPTION_ONLINE": "Im Moment siehst du die Liste der meist gewünschten ONLINE-Lieder. Deaktiviere die Einstellung \"Meist gewünschte Lieder aus deinen Online-Repositorys abrufen\", um nur die Lieder aus deiner App zu sehen."
 		},
 		"USER_EDIT": {
 			"TITLE": "Einen Benutzer ändern",
@@ -1807,7 +1812,7 @@
 			"CREATE": "Einen Benutzer erstellen",
 			"BROWSE": "Benutzer durchsuchen"
 		},
-		"KARAS_DESCRIPTION": "Liste, bearbeite und erstelle Karaoke-Dateien. Du kannst auch Medien herunterladen und die beliebtesten, am meisten gespielten Lieder sowie die Karaoke-Historie einsehen",
+		"KARAS_DESCRIPTION": "Liste, bearbeite und erstelle Karaoke-Dateien. Du kannst auch Medien herunterladen und die meist gewünschten, meist gespielten Lieder sowie die Karaoke-Historie einsehen",
 		"USERS_DESCRIPTION": "Benutzer auflisten, bearbeiten, erstellen, ihr Passwort ändern, neue Gästekonten erstellen."
 	},
 	"USERS": {
@@ -1861,7 +1866,7 @@
 		"KARAS": "Lieder",
 		"BATCH_EDIT": "Tag-Batch-Bearbeitung",
 		"DUPLICATE": "Duplikate",
-		"RANKING": "Beliebt"
+		"RANKING": "Meist gewünscht"
 	},
 	"QUIZ": {
 		"RULES": {
@@ -2042,7 +2047,7 @@
 			"PLAYER_KEYBOARDMEDIASHORTCUTS_TOOLTIP": "Deaktiviere dies, wenn du willst, dass diese Tasten eine andere App steuern (iTunes, Foobar, etc.)",
 			"ONLINE_UPDATES_MEDIAS_INTROS": "Auto-Update Intros",
 			"ONLINE_UPDATES_MEDIAS_ENCORES": "Auto-Update Zugaben",
-			"ONLINE_FETCHPOPULARSONGS": "Hol dir beliebte Songs aus deinen Online-Repositories",
+			"ONLINE_FETCHPOPULARSONGS": "Meist gewünschte Lieder aus deinen Online-Repositorys abrufen",
 			"ONLINE_UPDATES_MEDIAS_JINGLES": "Auto-Update Jingles",
 			"ONLINE_DISCORD_DISPLAYACTIVITY": "Zeige Karaoke Mugen-Aktivitäten in deinem Discord-Profil an",
 			"ONLINE_UPDATES_MEDIAS_OUTROS": "Auto-Update Outros",
@@ -2050,7 +2055,7 @@
 			"APP_QUICKSTART_TOOLTIP": "Dadurch wird die Datenüberprüfung deaktiviert. Du musst deine Datenbank im Falle einer Änderung manuell über die Systemsteuerung -> Datenbank-Seite erstellen.",
 			"PLAYER_HARDWAREDECODING_TOOLTIP": "Erzwingt die Hardware-Beschleunigung des Players. Hinweis: Bei einigen Konfigurationen kann dies zu unerwartetem Verhalten bei der Wiedergabe führen. Wähle in solchen Fällen \"Deaktiviert\". Die Option \"Automatisch\" ist die sicherste und \"Erzwingen\" die riskanteste/unempfehlenswerteste.",
 			"PLAYER_HARDWAREDECODING": "Video-Hardware-Dekodierung",
-			"ONLINE_FETCHPOPULARSONGS_TOOLTIP": "Wenn diese Funktion deaktiviert ist, werden beliebte Lieder aus deiner Karaoke Mugen App zur Berechnung verwendet",
+			"ONLINE_FETCHPOPULARSONGS_TOOLTIP": "Wenn diese Funktion deaktiviert ist, werden die meist gewünschten Lieder aus deiner Karaoke-Mugen-App berechnet",
 			"ONLINE_STATS": "Nutzungstelemetrie an den Karaoke Mugen Server senden",
 			"PLAYER_KEYBOARDMEDIASHORTCUTS": "Den Player mit den Medientasten der Tastatur steuern",
 			"ONLINE_USERS": "Erlaube die Online-Registrierung und -Anmeldung von Benutzern"
@@ -2139,5 +2144,8 @@
 		"PREVIOUS_SONG_SHORT": "Davor"
 	},
 	"NEW_ACCOUNT_CODE_SHORT": "Neuer Benutzer-Code",
-	"NEW_ACCOUNT_CODE": "Neuer Benutzer-Code (beim Veranstalter melden)"
+	"NEW_ACCOUNT_CODE": "Neuer Benutzer-Code (beim Veranstalter melden)",
+	"WARNING_CODES": {
+		"REMOTE_HIGH_LATENCY_DETECTED": "Deine Verbindung zu {{host}} ist langsam. Deine Nutzer könnten Schwierigkeiten haben"
+	}
 }
