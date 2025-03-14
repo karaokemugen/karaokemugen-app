@@ -78,7 +78,7 @@
 		"SONG_SEARCH": "Lieder suchen",
 		"EXPLORE": "Entdecken",
 		"KARA_VERSIONS": "Dieses Lied ist in {{length}} Versionen verfügbar. Wähle die Version aus, die du hinzufügen möchtest.",
-		"REQUESTED_KARAOKES": "Beliebte Lieder",
+		"REQUESTED_KARAOKES": "Meist gewünschte Lieder",
 		"GET_LUCKY": "Auf gut Glück",
 		"NEW_KARAOKES": "Neue Lieder",
 		"ANIME_LIST": "Meine Animes",
@@ -1398,7 +1398,7 @@
 		"Letztes Lied?",
 		"Letztes Lied, gebt noch mal alles!"
 	],
-	"VIEW_POPULAR": "Beliebt",
+	"VIEW_POPULAR": "Gewünscht",
 	"QUOTA_AVAILABLE": "Du kannst jetzt wieder Lieder hinzufügen!",
 	"VIEW_LIKES": "Likes",
 	"REPO_IN_PROGRESS": "Karaoke Mugen ist noch nicht ganz fertig. Bitte warte, bis die folgenden Vorgänge abgeschlossen sind.",
