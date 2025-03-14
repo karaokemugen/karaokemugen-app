@@ -1955,7 +1955,7 @@
 		"MOST_REQUESTED": {
 			"TITLE": "Most Requested Songs",
 			"DESCRIPTION": "Lists the most requested songs on your application. Only takes into account songs added from the public interface.",
-			"DESCRIPTION_ONLINE": "You're seeing the most requested ONLINE song list right now. Disable the \"Fetch most requested songs online\" setting to only see those from your instance."
+			"DESCRIPTION_ONLINE": "You're seeing the most requested ONLINE song list right now. Disable the \"Fetch most requested songs from your online repositories\" setting to only see those from your instance."
 		},
 		"MOST_PLAYED": {
 			"TITLE": "Most played songs",
