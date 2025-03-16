@@ -630,7 +630,7 @@
 	"VIEW_STANDARD": "Standard",
 	"VIEW_FAVORITES": "Favoris",
 	"VIEW_RECENT": "Nouveau",
-	"VIEW_POPULAR": "Populaire",
+	"VIEW_POPULAR": "Demandé",
 	"VIEW_LIKES": "J'aime",
 	"VIEW_LIKES_TOOLTIP": "Les chansons avec le plus de J'aime sont affichées en premier, ceci n'a pas d'effet sur l'ordonnancement de la liste de lecture.",
 	"KARA_SUGGESTION_NOT_FOUND": "Vous ne trouvez pas votre bonheur ? Vérifiez sur vos dépôts en ligne configurés ainsi que sur le site de suggestions si votre souhait n'est pas déjà exaucé :",
@@ -1088,7 +1088,7 @@
 		"ORDER_MEDIA": "Trier les médias par : ",
 		"ORDER_MEDIA_STANDARD": "Standard",
 		"ORDER_MEDIA_NEW": "Nouveau",
-		"ORDER_MEDIA_POPULAR": "Populaire",
+		"ORDER_MEDIA_POPULAR": "Demandé",
 		"ORDER_MEDIA_MEDIASIZE": "Taille de fichier",
 		"CHANGE_ORDER_DIRECTION": "Changer le sens de l'ordre",
 		"REPOSITORY": "Dépôt",
@@ -1186,7 +1186,7 @@
 		"DOWNLOAD_QUEUE": "File d'attente des téléchargements",
 		"DOWNLOAD": "Téléchargement des médias",
 		"HISTORY": "Historique",
-		"RANKING": "Plus populaire",
+		"RANKING": "Plus demandés",
 		"VIEWCOUNTS": "Plus joués",
 		"TAGS": "Tags",
 		"DATABASE": "Base de données",
@@ -1658,7 +1658,7 @@
 		"KARA_CREATED_ERROR": "Erreur lors de la génération de la chanson",
 		"KARA_FILE_EXISTS_ERROR": "Impossible de sauvegarder : Un karaoké avec le même nom de fichier existe. Assurez-vous que ce n'est pas un doublon et que les tags soient correctement définis.",
 		"KARA_HISTORY_ERROR": "Erreur lors de la récupération des chansons triées par date jouée",
-		"KARA_RANKING_ERROR": "Erreur lors de la récupération des chansons triées par popularité",
+		"KARA_RANKING_ERROR": "Erreur lors de la récupération des chansons les plus demandées",
 		"KARA_PLAYED_ERROR": "Erreur lors de la récupération des chansons triées par les plus joués",
 		"SONG_VIEW_ERROR": "Erreur lors de la récupération d'une chanson",
 		"KARA_DELETED_ERROR": "Erreur lors de la suppression d'une chanson",
@@ -1952,7 +1952,7 @@
 		"MOST_REQUESTED": {
 			"TITLE": "Chansons les plus demandées",
 			"DESCRIPTION": "Liste les chansons les plus demandées sur votre application. Ne prend en compte que les chansons ajoutés depuis l'interface publique.",
-			"DESCRIPTION_ONLINE": "Vous voyez actuellement la liste des karaokés les plus demandés EN LIGNE. Désactivez l'option \"Récupérer les chansons les plus demandées en ligne\" pour voir celles de votre instance uniquement."
+			"DESCRIPTION_ONLINE": "Vous voyez actuellement la liste des karaokés les plus demandés EN LIGNE. Désactivez l'option \"Récupérer les chansons les plus demandées depuis vos dépôts en ligne\" pour voir celles de votre instance uniquement."
 		},
 		"MOST_PLAYED": {
 			"TITLE": "Chansons les plus jouées",
@@ -2144,5 +2144,8 @@
 		"NEXT_SONG_SHORT": "Suivante",
 		"PLAY": "Jouer",
 		"PAUSE": "Pause"
+	},
+	"WARNING_CODES": {
+		"REMOTE_HIGH_LATENCY_DETECTED": "Votre connexion avec {{host}} est lente, vos utilisateurs peuvent rencontrer des problèmes"
 	}
 }
