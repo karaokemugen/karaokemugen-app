@@ -17,9 +17,14 @@ export const backgroundTypes = ['pause', 'stop', 'poll', 'bundled'] as const;
 
 /** Find a background for the player to use */
 export async function getBackgroundAndMusic(type: BackgroundType = 'stop'): Promise<BackgroundList> {
-	let files = await getBackgroundFiles(type);
-	// If no picture available, pick from bundled backgrounds
-	if (files.pictures.length === 0) files = await getBackgroundFiles('bundled');
+	//load default and is bundled background, then edit it
+	const files = await getBackgroundFiles('bundled');
+	const customFiles = await getBackgroundFiles(type);
+
+	if (customFiles.pictures.length > 0) files.pictures = customFiles.pictures;
+	if (customFiles.music.length > 0) files.music = customFiles.music;
+
+	//assign backgrounds
 	const backgroundImageFile = sample(files.pictures);
 	// First, try to find a "neighbour" audio file
 	let backgroundMusicFile = files.music.find(
