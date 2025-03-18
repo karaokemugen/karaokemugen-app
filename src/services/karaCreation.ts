@@ -291,7 +291,7 @@ async function processEmbeddedSubtitle(mediaPath: string, kara: KaraFileV4, useE
 	}
 	if (extractedVideoSubtitlesFile) {
 		// Only remove subtitle if they are any, because this will remove other data like opus cover images from the media file
-		await extractAndRemoveEmbeddedSubtitle(mediaPath, kara);
+		await removeEmbeddedSubtitle(mediaPath, kara);
 	}
 }
 
@@ -310,7 +310,7 @@ async function getAllKarasInFamily(kidsToSearch: string[]) {
 	return karas;
 }
 
-async function extractAndRemoveEmbeddedSubtitle(mediaPath: string, kara: KaraFileV4) {
+async function removeEmbeddedSubtitle(mediaPath: string, kara: KaraFileV4) {
 	try {
 		const ext = extname(mediaPath);
 		const videoWithoutExt = mediaPath.replaceAll(ext, '');
