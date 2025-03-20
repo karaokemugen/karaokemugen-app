@@ -40,7 +40,7 @@ function SetupPageCollections() {
 
 	return (
 		<>
-			{collections ? (
+			{collections && context.globalState.settings.data.config.Karaoke.Collections ? (
 				<section className="step step-repo">
 					<p>{i18next.t('SETUP_PAGE.COLLECTIONS_CHOICE_DESC_1')}</p>
 					<div className="input-group">

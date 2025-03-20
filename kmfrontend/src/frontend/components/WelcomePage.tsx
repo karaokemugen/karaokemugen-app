@@ -520,6 +520,7 @@ function WelcomePage() {
 											<li
 												key={collection.name}
 												className={
+													context.globalState.settings.data.config.Karaoke.Collections &&
 													context.globalState.settings.data.config.Karaoke.Collections[
 														collection.tid
 													]
