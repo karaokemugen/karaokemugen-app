@@ -35,7 +35,8 @@ import { emitWS } from '../lib/utils/ws.js';
 import sentry from '../utils/sentry.js';
 import { getKaras } from './kara.js';
 import { editKara } from './karaCreation.js';
-import { getRepos } from './repo.js';
+import { getRepoMetadata, getRepos } from './repo.js';
+import { setDefaultCollections } from '../lib/dao/repo.js';
 
 const service = 'Tag';
 
@@ -480,16 +481,18 @@ export async function checkCollections() {
 			if (repo.Enabled) {
 				if (repo.Online && internet) {
 					try {
-						const tags = (
-							await HTTP.get(
+						const [tags, manifest] = await Promise.all([
+							HTTP.get(
 								`${repo.Secure ? 'https' : 'http'}://${repo.Name}/api/karas/tags?type=${
 									tagTypes.collections
 								}`
-							)
-						).data;
-						for (const tag of tags.content) {
+							),
+							getRepoMetadata(repo),
+						]);
+						for (const tag of tags.data.content) {
 							if (!availableCollections.find(t => t.tid === tag.tid)) availableCollections.push(tag);
 						}
+						setDefaultCollections(manifest.Manifest);
 					} catch (err) {
 						// Fallback to what the repository has locally
 						const tags = await getTags({ type: [tagTypes.collections] });
