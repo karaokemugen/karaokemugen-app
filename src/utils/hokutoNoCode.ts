@@ -47,7 +47,7 @@ export async function checkMovedUserDir() {
 		await dialog.showMessageBox({
 			type: 'warning',
 			title: i18next.t('MOVED_USER_DIR_DIALOG.TITLE'),
-			message: i18next.t('MOVED_USER_DIR_DIALOG.MESSAGE'),
+			message: i18next.t('MOVED_USER_DIR_DIALOG.TITLE'),
 			detail: `${i18next.t('MOVED_USER_DIR_DIALOG.DETAIL', { newDir: getState().dataPath, oldDir: resolve(app.getPath('home'), 'KaraokeMugen/') })}`,
 			buttons: [i18next.t('MOVED_USER_DIR_DIALOG.UNDERSTOOD')],
 		});
@@ -55,7 +55,7 @@ export async function checkMovedUserDir() {
 			await dialog.showMessageBox({
 				type: 'info',
 				title: i18next.t('MOVED_USER_DIR_FLATPAK_DIALOG.TITLE'),
-				message: i18next.t('MOVED_USER_DIR_FLATPAK_DIALOG.MESSAGE'),
+				message: i18next.t('MOVED_USER_DIR_FLATPAK_DIALOG.TITLE'),
 				detail: `${i18next.t('MOVED_USER_DIR_FLATPAK_DIALOG.DETAIL', { oldDir: resolve(app.getPath('home'), 'KaraokeMugen/') })}`,
 				buttons: [i18next.t('MOVED_USER_DIR_FLATPAK_DIALOG.UNDERSTOOD')],
 			});
@@ -65,7 +65,7 @@ export async function checkMovedUserDir() {
 		const buttons = await dialog.showMessageBox({
 			type: 'error',
 			title: i18next.t('MOVING_USER_DIR_ERROR_DIALOG.TITLE'),
-			message: i18next.t('MOVING_USER_DIR_ERROR_DIALOG.MESSAGE'),
+			message: i18next.t('MOVING_USER_DIR_ERROR_DIALOG.TITLE'),
 			detail: `${i18next.t('MOVING_USER_DIR_ERROR_DIALOG.DETAIL', { newDir: getState().dataPath, oldDir: resolve(app.getPath('home'), 'KaraokeMugen/') })}`,
 			buttons: [
 				i18next.t('MOVING_USER_DIR_ERROR_DIALOG.CONTINUE'),

@@ -124,19 +124,16 @@
 	"MOVED_USER_DIR_DIALOG": {
 		"UNDERSTOOD": "Jasne!",
 		"DETAIL": "Aby zachować zgodność ze standardami systemu operacyjnego, folder Dane użytkownika został przeniesiony. Wcześniej było to:\n\n{{oldDir}}\n\nTeraz jest to:\n\n{{newDir}}\n\nJeśli jesteś streamerem, możesz zaktualizować układ OBS, aby wskazywał właściwe pliki tekstowe w nowej lokalizacji.",
-		"MESSAGE": "Folder użytkownika przeniesiony!",
 		"TITLE": "Folder użytkownika przeniesiony!"
 	},
 	"MOVING_USER_DIR_ERROR_DIALOG": {
 		"QUIT": "Wyjdź",
 		"CONTINUE": "Kontynuuj",
 		"TITLE": "Nie można przenieść folderu danych Karaoke Mugen",
-		"MESSAGE": "Nie można przenieść folderu danych Karaoke Mugen",
 		"DETAIL": "Folder z danymi Karaoke Mugen został przeniesiony. Przedtem było to:\n\n{{oldDir}}\n\nNow it's this:\n\n{{newDir}}\n\nWystąpił błąd podczas próby przeniesienia tego folderu. Powinieneś kliknąć \"Zakończ\" i samodzielnie przenieść folder.\n\nMożesz także kliknąć \"Kontynuuj\". Jeśli to zrobisz, zaczniesz od nowa z zupełnie nowym folderem danych. Sugerujemy usunięcie starego folderu pokazanego powyżej."
 	},
 	"DATABASE_IN_THE_FUTURE_ERROR": {
 		"TITLE": "Baza danych jest w przyszłości, Marty!",
-		"MESSAGE": "Baza danych jest w przyszłości, Marty!",
 		"DELETE_ALL_DATA": "USUŃ wszystkie dane",
 		"CONTINUE_ANYWAY": "Kontynuuj na własne ryzyko",
 		"DETAIL": "Baza danych, do której próbuje uzyskać dostęp Karaoke Mugen, została wykorzystana przez nowszą wersję aplikacji i jest niekompatybilna. Spróbujmy to naprawić.\n\nJeśli klikniesz \"ANULUJ\", aplikacja zostanie zamknięta bez robienia czegokolwiek. Powinieneś uruchomić nowszą wersję Karaoke Mugen.\n\nJeśli klikniesz \"USUŃ wszystkie dane\", aplikacja USUNIE listy odtwarzania, lokalnych użytkowników, statystyki itp. i uruchomi się normalnie."
@@ -203,7 +200,6 @@
 	},
 	"UNKNOWN_REPOSITORY_ADD": {
 		"DETAIL": "Za chwilę dodasz repozytorium {{repoName}} do Karaoke Mugen. Czy na pewno?",
-		"MESSAGE": "Nieznane repozytorium",
 		"TITLE": "Nieznane repozytorium"
 	},
 	"GENERATING_READING": "Krok 1 / 2 - Odczyt danych…",
@@ -295,13 +291,11 @@
 	"ERROR_START_PLAYER": "Błąd podczas uruchamiania odtwarzacza multimedialnego",
 	"MOVED_USER_DIR_FLATPAK_DIALOG": {
 		"TITLE": "Użytkownicy Flatpak!",
-		"MESSAGE": "Użytkownicy Flatpak!",
 		"UNDERSTOOD": "Jasne! Zrobię to, zanim zapomnę!",
 		"DETAIL": "Zawartość folderu użytkownika została przeniesiona, ale ponieważ używasz wersji Flatpak Karaoke Mugen, aplikacja nie może usunąć starego folderu. Powinieneś go usunąć samodzielnie tutaj:\n\n{{oldDir}}\n\n(Powinien być pusty!)"
 	},
 	"DATABASE_CONNECTION_ERROR": {
 		"TITLE": "Błąd połączenia z bazą danych",
-		"MESSAGE": "Błąd połączenia z bazą danych",
 		"DETAIL": "Wystąpił błąd podczas inicjalizacji/nawiązywania połączenia z bazą danych. Aby uzyskać więcej informacji na temat możliwych przyczyn, kliknij Pomoc.",
 		"HELP": "Pomoc"
 	},
@@ -321,7 +315,6 @@
 	"REQUESTED_AND_other": "i {{count}} innych",
 	"REPO_DISABLED": {
 		"TITLE": "Repozytorium wyłączone",
-		"MESSAGE": "Repozytorium wyłączone",
 		"DETAIL": "Repozytorium {{repo}} zostało wyłączone, ponieważ jeden z jego folderów jest niedostępny. Jeśli którykolwiek z jego folderów znajduje się na dysku zewnętrznym, upewnij się, że jest podłączony i przejdź do Panelu systemu > Repozytoriów, aby go ponownie włączyć."
 	},
 	"MENU_GOTO_PUBLIC": "&Interfejs publiczny",
@@ -337,7 +330,6 @@
 	},
 	"REPOSITORY_ALREADY_EXISTS": {
 		"TITLE": "Repozytorium już istnieje",
-		"MESSAGE": "Repozytorium już istnieje",
 		"DETAIL": "Repozytorium, które próbujesz dodać, już istnieje w Twojej bazie danych Karaoke Mugen."
 	},
 	"INTERFACE_RESTRICTED": "Brak sugestii",

@@ -234,12 +234,10 @@
 	"MENU_OPTIONS_OPERATORCONFIG_OSX": "Einstellungen…",
 	"REPOSITORY_ALREADY_EXISTS": {
 		"TITLE": "Repository bereits vorhanden",
-		"MESSAGE": "Repository bereits vorhanden",
 		"DETAIL": "Das Repository was du versuchst hinzuzufügen, gibt es bereits in deiner Karaoke Mugen Datenbank."
 	},
 	"UNKNOWN_REPOSITORY_ADD": {
 		"TITLE": "Unbekanntes Repository",
-		"MESSAGE": "Unbekanntes Repository",
 		"DETAIL": "Du bist dabei, das {{repoName}}-Repository zu Karaoke Mugen hinzuzufügen. Bist du sicher?"
 	},
 	"GOOD_ANSWER": "Richtige Antwort",
@@ -255,14 +253,12 @@
 	},
 	"DATABASE_CONNECTION_ERROR": {
 		"TITLE": "Datenbankverbindungs Fehler",
-		"MESSAGE": "Datenbankverbindungs Fehler",
 		"DETAIL": "Bei der Datenbankinitialisierung/-verbindung ist ein Fehler aufgetreten. Für weitere Informationen zu möglichen Ursachen klicke auf Hilfe.",
 		"HELP": "Hilfe"
 	},
 	"DATABASE_IN_THE_FUTURE_ERROR": {
 		"DELETE_ALL_DATA": "Alle Daten LÖSCHEN",
 		"TITLE": "Die Datenbank liegt in der Zukunft!",
-		"MESSAGE": "Die Datenbank liegt in der Zukunft!",
 		"CONTINUE_ANYWAY": "Auf eigene Gefahr fortfahren",
 		"DETAIL": "Die Datenbank, auf die Karaoke Mugen zuzugreifen versucht, wurde von einer späteren Version der Anwendung verwendet und ist nicht mehr kompatibel. Versuchen wir, dies zu beheben.\n\nWenn du auf „ABBRECHEN“ klickst, wird die Anwendung ohne weitere Aktion geschlossen. Du solltest eine neuere Version von Karaoke Mugen starten.\n\nWenn du auf „Alle Daten LÖSCHEN“ klicken, löscht die Anwendung Wiedergabelisten, lokale Benutzer, Statistiken usw. und startet normal."
 	},
@@ -298,7 +294,6 @@
 	"INTERFACE_RESTRICTED": "Keine Wünsche",
 	"REPO_DISABLED": {
 		"TITLE": "Repository deaktiviert",
-		"MESSAGE": "Repository deaktiviert",
 		"DETAIL": "Das {{repo}}-Repository wurde deaktiviert, da einer seiner Ordner nicht verfügbar ist. Wenn sich einer seiner Ordner auf einem externen Laufwerk befindet, stelle bitte sicher, dass das Laufwerk angeschlossen ist, und gehen Sie zu „Systemsteuerung“ > „Repositorys“, um es erneut zu aktivieren."
 	},
 	"FULLSCREEN_TIP": "Drücke F um den Vollbild-Modus zu beenden.",
@@ -331,20 +326,17 @@
 	"MENU_OPTIONS_CHIBIRANKING": "Zeige losgelöst den Quiz-Rang",
 	"MOVED_USER_DIR_DIALOG": {
 		"TITLE": "Benutzerordner verschoben!",
-		"MESSAGE": "Benutzerordner verschoben!",
 		"UNDERSTOOD": "Alles klar!",
 		"DETAIL": "Um den Anforderungen deines Betriebssystems zu entsprechen, wurde der Benutzerordner verschoben. Vorher:\n\n{{oldDir}}\n\nJetzt:\n\n{{newDir}}\n\nFalls du streamst, musst du vielleicht dein OBS-Layout aktualisieren, damit sie auf die entsprechenden Textdateien in dem neuen Verzeichnis verweisen."
 	},
 	"MOVING_USER_DIR_ERROR_DIALOG": {
 		"TITLE": "Das Datenverzeichnis von Karaoke Mugen kann nicht verschoben werden",
-		"MESSAGE": "Das Datenverzeichnis von Karaoke Mugen kann nicht verschoben werden",
 		"CONTINUE": "Fortsetzen",
 		"QUIT": "Abbrechen",
 		"DETAIL": "Karaoke Mugens Datenverzeichnis wurde verschoben. Vorher:\n\n{{oldDir}}\n\nJetzt:\n\n{{newDir}}\n\nBeim Verschieben ist ein Fehler aufgetreten. Du solltest auf \"Abbrechen\" klicken und den Ordner manuell verschieben.\n\nDu kannst auch auf \"Fortsetzen\" klicken. In diesem Fall wird mit einem neuen (leeren) Datenverzeichnis fortgefahren. Wir empfehlen dann, den alten Order unter dem oben gezeigten Pfad zu löschen."
 	},
 	"MOVED_USER_DIR_FLATPAK_DIALOG": {
 		"TITLE": "Flatpak-Nutzer!",
-		"MESSAGE": "Flatpak-Nutzer!",
 		"DETAIL": "Der Inhalt des Benutzerorderners wurde verschoben. Da du Karaoke Mugen über Flatpak installiert hast, kann das Programm den alten Ordner nicht löschen. Daher solltest du diesen Ordner hier manuell löschen:\n\n{{oldDir}}\n\n(Er sollte leer sein!)",
 		"UNDERSTOOD": "Alles klar! Mache ich, bevor ich es vergesse!"
 	},

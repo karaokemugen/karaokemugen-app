@@ -90,7 +90,6 @@
 	"CURRENT_VERSION_OK": "Kamu sudah menggunakan versi terbaru dari Karaoke Mugen!",
 	"REPO_DISABLED": {
 		"TITLE": "Repositori dimatikan",
-		"MESSAGE": "Repositori dimatikan",
 		"DETAIL": "Repositori {{repo}} telah dimatikan karena salah satu foldernya tidak tersedia. Jika salah satu foldernya ada di penyimpanan eksternal, pastikan itu terhubung dan pergi ke Bilah Sistem > Repositori untuk menyalakannya lagi."
 	},
 	"TIPS": {
@@ -159,12 +158,10 @@
 	"UNKNOWN_ARTIST": "Artis tidak diketahui",
 	"REPOSITORY_ALREADY_EXISTS": {
 		"DETAIL": "Repositori yang kamu coba tambahkan sudah ada di basis data Karaoke Mugenmu.",
-		"MESSAGE": "Repositori sudah ada",
 		"TITLE": "Repositori sudah ada"
 	},
 	"DATABASE_CONNECTION_ERROR": {
 		"TITLE": "Tidak dapat menyambung dengan basis data",
-		"MESSAGE": "Tidak dapat menyambung dengan basis data",
 		"HELP": "Bantuan",
 		"DETAIL": "Sebuah error muncul ketika memulai/menyambung basis data. Untuk informasi lebih lanjut mengenai kemungkinan penyebabnya, Kunjungi bantuan."
 	},
@@ -174,7 +171,6 @@
 	},
 	"UNKNOWN_REPOSITORY_ADD": {
 		"TITLE": "Repositori tidak diketahui",
-		"MESSAGE": "Repositori tidak diketahui",
 		"DETAIL": "Kamu baru saja akan menambahkan repositori {{repoName}} ke Karaoke Mugen. Apakah kamu yakin?"
 	},
 	"GENERATING_READING": "Langkah 1 / 2 - Membaca data…",
