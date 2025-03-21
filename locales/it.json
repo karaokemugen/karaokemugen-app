@@ -115,7 +115,8 @@
 	"MENU_OPTIONS_OPERATORCONFIG_OSX": "Impostazioni…",
 	"REPOSITORY_ALREADY_EXISTS": {
 		"TITLE": "L'archivio esiste già",
-		"MESSAGE": "L'archivio che stai cercando di aggiungere esiste già nel tuo database di Karaoke Mugen."
+		"MESSAGE": "L'archivio esiste già",
+		"DETAIL": "L'archivio che stai cercando di aggiungere esiste già nel tuo database di Karaoke Mugen."
 	},
 	"MIGRATION_MESSAGES": [
 		"Allineando i microfoni",
@@ -150,7 +151,8 @@
 	"ERROR_INIT_PG_DATA": "Errore durante l'inizializzazione dei dati del database",
 	"UNKNOWN_REPOSITORY_ADD": {
 		"TITLE": "Archivio sconosciuto",
-		"MESSAGE": "Stai per aggiungere l'archivio {{repoName}} a Karaoke Mugen. Sei sicuro?"
+		"MESSAGE": "Archivio sconosciuto",
+		"DETAIL": "Stai per aggiungere l'archivio {{repoName}} a Karaoke Mugen. Sei sicuro?"
 	},
 	"GOOD_ANSWER": "Risposta corretta",
 	"MENU_HELP_GUIDE": "&Documentazione",
@@ -173,7 +175,8 @@
 	},
 	"DATABASE_CONNECTION_ERROR": {
 		"TITLE": "Errore di connessione al database",
-		"MESSAGE": "Si è verificato un errore durante la connessione al database. Per maggiori informazioni sulle possibili cause, clicca su Aiuto.",
+		"MESSAGE": "Errore di connessione al database",
+		"DETAIL": "Si è verificato un errore durante la connessione al database. Per maggiori informazioni sulle possibili cause, clicca su Aiuto.",
 		"HELP": "Aiuto"
 	},
 	"INIT_UPDATEMEDIAS": "Aggiornando i file multimediali…",
@@ -181,8 +184,9 @@
 	"DATABASE_IN_THE_FUTURE_ERROR": {
 		"DELETE_ALL_DATA": "ELIMINA tutti i dati",
 		"TITLE": "Il database è nel futuro, Marty!",
+		"MESSAGE": "Il database è nel futuro, Marty!",
 		"CONTINUE_ANYWAY": "Continua a tuo rischio e pericolo",
-		"MESSAGE": "Il database a cui Karaoke Mugen sta cercando di accedere è stato usato da una versione più recente dell'app e non è compatibile. Proviamo a sistemarlo.\n\nSe premi \"ANNULLA\", l'app verrà chiusa senza fare nulla. Dovrai quindi avviare una versione più recente di Karaoke Mugen.\n\nSe premi \"ELIMINA tutti i dati\", l'app ELIMINERÀ tutte le playlist, gli utenti locali, le statistiche, ecc... e si riavvierà normalmente."
+		"DETAIL": "Il database a cui Karaoke Mugen sta cercando di accedere è stato usato da una versione più recente dell'app e non è compatibile. Proviamo a sistemarlo.\n\nSe premi \"ANNULLA\", l'app verrà chiusa senza fare nulla. Dovrai quindi avviare una versione più recente di Karaoke Mugen.\n\nSe premi \"ELIMINA tutti i dati\", l'app ELIMINERÀ tutte le playlist, gli utenti locali, le statistiche, ecc... e si riavvierà normalmente."
 	},
 	"ERROR_START_PLAYER": "Errore durante l'avvio del lettore multimediale",
 	"UPDATE_READY_TO_INSTALL_RESTARTING": "Karaoke Mugen verrà riavviato per installare l'aggiornamento…",
@@ -223,8 +227,8 @@
 	"MENU_FILE": "&File",
 	"INIT_PLAYLIST_AND_PLAYER": "Inizializzando il lettore e le playlist…",
 	"PERMISSIONS_KEYBOARD_INFO_MACOS": {
-		"MESSAGE": "macOS ti chiederà di dare a Karaoke Mugen i permessi di accessibilità di sistema. Questi permessi consentono di usare i tasti multimediali della tua tastiera per controllare il lettore video. Puoi rifiutarti di dare questi permessi, ma i tasti multimediali non funzioneranno.",
-		"TITLE": "Richiesta dei permessi"
+		"DETAIL": "macOS ti chiederà di dare a Karaoke Mugen i permessi di accessibilità di sistema. Questi permessi consentono di usare i tasti multimediali della tua tastiera per controllare il lettore video. Puoi rifiutarti di dare questi permessi, ma i tasti multimediali non funzioneranno.",
+		"MESSAGE": "Richiesta dei permessi"
 	},
 	"INIT_VALIDATION": "Convalidando i tuoi file…",
 	"MENU_TOOLS_KARAOKES": "&Lista dei brani",
@@ -238,7 +242,8 @@
 	"MENU_EDIT_STOPSPEECH": "Smetti di parlare",
 	"REPO_DISABLED": {
 		"TITLE": "Archivio disabilitato",
-		"MESSAGE": "L'archivio {{repo}} è stato disabilitato perché una delle sue cartelle non è disponibile. Se alcune cartelle sono in un disco esterno, assicurati che sia collegato e vai nel Pannello di Sistema > Archivi per riabilitarlo."
+		"MESSAGE": "Archivio disabilitato",
+		"DETAIL": "L'archivio {{repo}} è stato disabilitato perché una delle sue cartelle non è disponibile. Se alcune cartelle sono in un disco esterno, assicurati che sia collegato e vai nel Pannello di Sistema > Archivi per riabilitarlo."
 	},
 	"FULLSCREEN_TIP": "Premi F per uscire dallo schermo intero.",
 	"INIT_MIGRATION": "Aggiornando la struttura del database, si prega di attendere…",
@@ -326,18 +331,21 @@
 	"MENU_OPTIONS_CHIBIRANKING_LINK": "Copia il link della classifica staccata del quiz",
 	"MOVED_USER_DIR_DIALOG": {
 		"TITLE": "Cartella utente spostata!",
-		"MESSAGE": "La cartella User Data è stata spostata per soddisfare gli standard del tuo sistema operativo. Prima era:\n\n{{oldDir}}\n\nAdesso è:\n\n{{newDir}}\n\nSe sei uno streamer, dovresti aggiornare il tuo layout di OBS e selezionare i file di testo corretti nella loro nuova posizione.",
+		"MESSAGE": "Cartella utente spostata!",
+		"DETAIL": "La cartella User Data è stata spostata per soddisfare gli standard del tuo sistema operativo. Prima era:\n\n{{oldDir}}\n\nAdesso è:\n\n{{newDir}}\n\nSe sei uno streamer, dovresti aggiornare il tuo layout di OBS e selezionare i file di testo corretti nella loro nuova posizione.",
 		"UNDERSTOOD": "Ho capito!"
 	},
 	"MOVING_USER_DIR_ERROR_DIALOG": {
 		"CONTINUE": "Continua",
 		"TITLE": "Impossibile spostare la cartella dei dati di Karaoke Mugen",
-		"MESSAGE": "La cartella dei dati di Karaoke Mugen è stata spostata. Prima era:\n\n{{oldDir}}\n\nAdesso è:\n\n{{newDir}}\n\nErrore durante lo spostamento della cartella. Dovresti cliccare su \"Esci\" e spostare tu stesso la cartella.\n\nPuoi anche cliccare su \"Continua\". Se lo fai, ricomincerai da capo con una nuova cartella dei dati. Ti consigliamo di eliminare la vecchia cartella mostrata sopra.",
+		"MESSAGE": "Impossibile spostare la cartella dei dati di Karaoke Mugen",
+		"DETAIL": "La cartella dei dati di Karaoke Mugen è stata spostata. Prima era:\n\n{{oldDir}}\n\nAdesso è:\n\n{{newDir}}\n\nErrore durante lo spostamento della cartella. Dovresti cliccare su \"Esci\" e spostare tu stesso la cartella.\n\nPuoi anche cliccare su \"Continua\". Se lo fai, ricomincerai da capo con una nuova cartella dei dati. Ti consigliamo di eliminare la vecchia cartella mostrata sopra.",
 		"QUIT": "Esci"
 	},
 	"MOVED_USER_DIR_FLATPAK_DIALOG": {
 		"TITLE": "Utenti Flatpak!",
-		"MESSAGE": "Il contenuto della cartella utente è stato spostato, ma l'app non può rimuovere la vecchia cartella poiché stai usando la versione Flatpak di Karaoke Mugen. Dovresti eliminarla tu:\n\n{{oldDir}}\n\n(Dovrebbe essere vuota!)",
+		"MESSAGE": "Utenti Flatpak!",
+		"DETAIL": "Il contenuto della cartella utente è stato spostato, ma l'app non può rimuovere la vecchia cartella poiché stai usando la versione Flatpak di Karaoke Mugen. Dovresti eliminarla tu:\n\n{{oldDir}}\n\n(Dovrebbe essere vuota!)",
 		"UNDERSTOOD": "Ho capito! Lo farò prima di dimenticarmene!"
 	}
 }

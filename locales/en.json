@@ -174,29 +174,34 @@
 	},
 	"MOVED_USER_DIR_DIALOG": {
 		"TITLE": "User folder moved!",
-		"MESSAGE": "In order to be compliant with your operating system's standards, the User Data folder has been moved. Before, it was:\n\n{{oldDir}}\n\nNow it's:\n\n{{newDir}}\n\nIf you are a streamer, you might want to update your OBS layout to point to the right text files at their new location.",
+		"MESSAGE": "User folder moved!",
+		"DETAIL": "In order to be compliant with your operating system's standards, the User Data folder has been moved. Before, it was:\n\n{{oldDir}}\n\nNow it's:\n\n{{newDir}}\n\nIf you are a streamer, you might want to update your OBS layout to point to the right text files at their new location.",
 		"UNDERSTOOD": "Got it!"
 	},
 	"MOVED_USER_DIR_FLATPAK_DIALOG": {
 		"TITLE": "Flatpak users!",
-		"MESSAGE": "The user folder's contents have been moved, but since you're using a Flatpak version of Karaoke Mugen, the app cannot remove the old folder. You should remove it yourself here:\n\n{{oldDir}}\n\n(It should be empty!)",
+		"MESSAGE": "Flatpak users!",
+		"DETAIL": "The user folder's contents have been moved, but since you're using a Flatpak version of Karaoke Mugen, the app cannot remove the old folder. You should remove it yourself here:\n\n{{oldDir}}\n\n(It should be empty!)",
 		"UNDERSTOOD": "Got it! I'll do that before I forget!"
 	},
 	"MOVING_USER_DIR_ERROR_DIALOG": {
 		"TITLE": "Unable to move the Karaoke Mugen data folder",
-		"MESSAGE": "Karaoke Mugen's data folder has been moved. Before it was this:\n\n{{oldDir}}\n\nNow it's this:\n\n{{newDir}}\n\nAn error occured when trying to move that folder. You should click on \"Quit\" and move the folder yourself.\n\nYou can also click on \"Continue\". If yuou do, you'll start over with a brand new data folder. We suggest you then delete the old folder shown above.",
+		"MESSAGE": "Unable to move the Karaoke Mugen data folder",
+		"DETAIL": "Karaoke Mugen's data folder has been moved. Before it was this:\n\n{{oldDir}}\n\nNow it's this:\n\n{{newDir}}\n\nAn error occured when trying to move that folder. You should click on \"Quit\" and move the folder yourself.\n\nYou can also click on \"Continue\". If yuou do, you'll start over with a brand new data folder. We suggest you then delete the old folder shown above.",
 		"CONTINUE": "Continue",
 		"QUIT": "Quit"
 	},
 	"DATABASE_IN_THE_FUTURE_ERROR": {
 		"TITLE": "Database is in the future, Marty!",
-		"MESSAGE": "The database Karaoke Mugen is trying to access has been used by a later version of the application and is incompatible. Let's try to fix that.\n\nIf you click \"CANCEL\", the application will close without doing anything. You should launch a newer version of Karaoke Mugen.\n\nIf you click \"DELETE all data\", the application will DELETE playlists, local users, stats, etc. and start up normally.",
+		"MESSAGE": "Database is in the future, Marty!",
+		"DETAIL": "The database Karaoke Mugen is trying to access has been used by a later version of the application and is incompatible. Let's try to fix that.\n\nIf you click \"CANCEL\", the application will close without doing anything. You should launch a newer version of Karaoke Mugen.\n\nIf you click \"DELETE all data\", the application will DELETE playlists, local users, stats, etc. and start up normally.",
 		"DELETE_ALL_DATA": "DELETE all data",
 		"CONTINUE_ANYWAY": "Continue at your own risk"
 	},
 	"REPO_DISABLED": {
 		"TITLE": "Repository disabled",
-		"MESSAGE": "The {{repo}} repository has been disabled because one of its folders is unavailable. If any of its folders are on an external drive, make sure it's plugged in and go into System Panel > Repositories to re-enable it."
+		"MESSAGE": "Repository disabled",
+		"DETAIL": "The {{repo}} repository has been disabled because one of its folders is unavailable. If any of its folders are on an external drive, make sure it's plugged in and go into System Panel > Repositories to re-enable it."
 	},
 	"TIPS": {
 		"TITLES": {
@@ -256,15 +261,17 @@
 	"UNKNOWN_ARTIST": "Unknown artist",
 	"REPOSITORY_ALREADY_EXISTS": {
 		"TITLE": "Repository already exists",
-		"MESSAGE": "The repository you're trying to add already exists in your Karaoke Mugen database."
+		"MESSAGE": "Repository already exists",
+		"DETAIL": "The repository you're trying to add already exists in your Karaoke Mugen database."
 	},
 	"PERMISSIONS_KEYBOARD_INFO_MACOS": {
-		"TITLE": "Permission request",
-		"MESSAGE": "macOS is going to ask you to add Karaoke Mugen to the accessibility system permissions. This permission allows you to use your keyboard's media keys to control the video player. You can refuse to add this permission, but then media keys won't work."
+		"MESSAGE": "Permission request",
+		"DETAIL": "macOS is going to ask you to add Karaoke Mugen to the accessibility system permissions. This permission allows you to use your keyboard's media keys to control the video player. You can refuse to add this permission, but then media keys won't work."
 	},
 	"DATABASE_CONNECTION_ERROR": {
 		"TITLE": "Database connection error",
-		"MESSAGE": "An error occured during database initialization/connection. For more information on possible causes, click on Help.",
+		"MESSAGE": "Database connection error",
+		"DETAIL": "An error occured during database initialization/connection. For more information on possible causes, click on Help.",
 		"HELP": "Help"
 	},
 	"MISSING_BINARIES": {
@@ -273,7 +280,8 @@
 	},
 	"UNKNOWN_REPOSITORY_ADD": {
 		"TITLE": "Unknown repository",
-		"MESSAGE": "You're about to add the {{repoName}} repository to Karaoke Mugen. Are you sure?"
+		"MESSAGE": "Unknown repository",
+		"DETAIL": "You're about to add the {{repoName}} repository to Karaoke Mugen. Are you sure?"
 	},
 	"GENERATING_READING": "Step 1 / 2 - Reading data…",
 	"GENERATING_DATABASE": "Step 2 / 2 - Updating database…",

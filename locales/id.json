@@ -90,7 +90,8 @@
 	"CURRENT_VERSION_OK": "Kamu sudah menggunakan versi terbaru dari Karaoke Mugen!",
 	"REPO_DISABLED": {
 		"TITLE": "Repositori dimatikan",
-		"MESSAGE": "Repositori {{repo}} telah dimatikan karena salah satu foldernya tidak tersedia. Jika salah satu foldernya ada di penyimpanan eksternal, pastikan itu terhubung dan pergi ke Bilah Sistem > Repositori untuk menyalakannya lagi."
+		"MESSAGE": "Repositori dimatikan",
+		"DETAIL": "Repositori {{repo}} telah dimatikan karena salah satu foldernya tidak tersedia. Jika salah satu foldernya ada di penyimpanan eksternal, pastikan itu terhubung dan pergi ke Bilah Sistem > Repositori untuk menyalakannya lagi."
 	},
 	"TIPS": {
 		"TITLES": {
@@ -157,13 +158,15 @@
 	},
 	"UNKNOWN_ARTIST": "Artis tidak diketahui",
 	"REPOSITORY_ALREADY_EXISTS": {
-		"MESSAGE": "Repositori yang kamu coba tambahkan sudah ada di basis data Karaoke Mugenmu.",
+		"DETAIL": "Repositori yang kamu coba tambahkan sudah ada di basis data Karaoke Mugenmu.",
+		"MESSAGE": "Repositori sudah ada",
 		"TITLE": "Repositori sudah ada"
 	},
 	"DATABASE_CONNECTION_ERROR": {
 		"TITLE": "Tidak dapat menyambung dengan basis data",
+		"MESSAGE": "Tidak dapat menyambung dengan basis data",
 		"HELP": "Bantuan",
-		"MESSAGE": "Sebuah error muncul ketika memulai/menyambung basis data. Untuk informasi lebih lanjut mengenai kemungkinan penyebabnya, Kunjungi bantuan."
+		"DETAIL": "Sebuah error muncul ketika memulai/menyambung basis data. Untuk informasi lebih lanjut mengenai kemungkinan penyebabnya, Kunjungi bantuan."
 	},
 	"MISSING_BINARIES": {
 		"TITLE": "Program tidak ditemukan",
@@ -171,7 +174,8 @@
 	},
 	"UNKNOWN_REPOSITORY_ADD": {
 		"TITLE": "Repositori tidak diketahui",
-		"MESSAGE": "Kamu baru saja akan menambahkan repositori {{repoName}} ke Karaoke Mugen. Apakah kamu yakin?"
+		"MESSAGE": "Repositori tidak diketahui",
+		"DETAIL": "Kamu baru saja akan menambahkan repositori {{repoName}} ke Karaoke Mugen. Apakah kamu yakin?"
 	},
 	"GENERATING_READING": "Langkah 1 / 2 - Membaca data…",
 	"GENERATING_DATABASE": "Langkah 2 / 2 - Memperbarui basis data…",
@@ -218,8 +222,8 @@
 	"MENU_EDIT_SPEECH": "Kata-kata",
 	"MENU_TOOLS_DATABASE": "Basis&data",
 	"PERMISSIONS_KEYBOARD_INFO_MACOS": {
-		"TITLE": "Permintaan izin",
-		"MESSAGE": "macOS akan meminta kamu untuk menambahkan Karaoke Mugen ke perizinan aksesibilitas sistem. Izin ini memperbolehkan kamu untuk menggunakan kunci media papan tik kamu untuk mengontrol pemutar video. Kamu bisa menolak untuk menambahkan izini ini, tapi kunci media tidak akan bekerja."
+		"MESSAGE": "Permintaan izin",
+		"DETAIL": "macOS akan meminta kamu untuk menambahkan Karaoke Mugen ke perizinan aksesibilitas sistem. Izin ini memperbolehkan kamu untuk menggunakan kunci media papan tik kamu untuk mengontrol pemutar video. Kamu bisa menolak untuk menambahkan izini ini, tapi kunci media tidak akan bekerja."
 	},
 	"INIT_MIGRATION": "Memperbarui struktur basis data, mohon ditunggu…",
 	"REQUESTED_WITH": "(dengan {{names}})",

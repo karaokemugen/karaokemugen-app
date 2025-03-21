@@ -48,8 +48,8 @@
 		}
 	},
 	"PERMISSIONS_KEYBOARD_INFO_MACOS": {
-		"MESSAGE": "O macOS vai pedir-lhe que acrescente o Karaoke Mugen às permissões do sistema de acessibilidade. Esta permissão permite-lhe utilizar as teclas de média do seu teclado para controlar o leitor de vídeo. Pode recusar-se a adicionar esta permissão, mas depois as teclas de média não funcionarão.",
-		"TITLE": "Solicitação de permissão"
+		"DETAIL": "O macOS vai pedir-lhe que acrescente o Karaoke Mugen às permissões do sistema de acessibilidade. Esta permissão permite-lhe utilizar as teclas de média do seu teclado para controlar o leitor de vídeo. Pode recusar-se a adicionar esta permissão, mas depois as teclas de média não funcionarão.",
+		"MESSAGE": "Solicitação de permissão"
 	},
 	"CURRENT_PLAYLIST": "Lista de reprodução",
 	"MENU_VIEW_RESETZOOM": "R&redefinir zoom",
@@ -116,7 +116,8 @@
 	"UPDATE_PROMPT": "Queres atualizar o Karaoke Mugen?",
 	"UPDATE_ERROR": "Ocorreu um erro ao tentar atualizar o Karaoke Mugen: ",
 	"REPO_DISABLED": {
-		"MESSAGE": "O repositório {{repo}} foi desativado porque uma das suas pastas não está disponível. Se alguma das suas pastas estiver numa drive externa, certifique-se de que está ligada e entre no Painel do Sistema > Repositórios para a voltar a ativar.",
+		"DETAIL": "O repositório {{repo}} foi desativado porque uma das suas pastas não está disponível. Se alguma das suas pastas estiver numa drive externa, certifique-se de que está ligada e entre no Painel do Sistema > Repositórios para a voltar a ativar.",
+		"MESSAGE": "Repositório desativado",
 		"TITLE": "Repositório desativado"
 	},
 	"UPDATE_DOWNLOADED": "Atualização descarregada",
@@ -125,11 +126,13 @@
 		"TITLE": "Sobre Karaoke Mugen"
 	},
 	"UNKNOWN_REPOSITORY_ADD": {
-		"MESSAGE": "Você está prestes a adicionar o repositório {{repoName}} ao Karaoke Mugen. Tens a certeza?",
+		"DETAIL": "Você está prestes a adicionar o repositório {{repoName}} ao Karaoke Mugen. Tens a certeza?",
+		"MESSAGE": "Repositório desconhecido",
 		"TITLE": "Repositório desconhecido"
 	},
 	"DATABASE_CONNECTION_ERROR": {
-		"MESSAGE": "Ocorreu um erro durante a inicialização/conexão da base de dados. Para mais informações sobre possíveis causas, clique em Ajuda.",
+		"DETAIL": "Ocorreu um erro durante a inicialização/conexão da base de dados. Para mais informações sobre possíveis causas, clique em Ajuda.",
+		"MESSAGE": "Erro de ligação à base de dados",
 		"TITLE": "Erro de ligação à base de dados",
 		"HELP": "Ajuda"
 	},
@@ -150,7 +153,8 @@
 	"UNKNOWN_ARTIST": "Artista desconhecido",
 	"REPOSITORY_ALREADY_EXISTS": {
 		"TITLE": "O repositório já existe",
-		"MESSAGE": "O repositório que você está a tentar adicionar já existe no banco de dados do Karaoke Mugen."
+		"MESSAGE": "O repositório já existe",
+		"DETAIL": "O repositório que você está a tentar adicionar já existe no banco de dados do Karaoke Mugen."
 	},
 	"FULLSCREEN_TIP": "Prima F para sair da tela cheia.",
 	"NO_KARA_PLAYING": "Nenhum karaokê está a tocar",
@@ -317,24 +321,28 @@
 	"MENU_OPTIONS_CHIBIRANKING": "Mostrar classificação do quiz separada",
 	"MOVED_USER_DIR_DIALOG": {
 		"TITLE": "Pasta do usuário movida!",
-		"MESSAGE": "Para estar em conformidade com os padrões do seu sistema operacional, a pasta User Data foi movida. Antes era:\n\n{{oldDir}}\n\nAgora é:\n\n{{newDir}}\n\nSe você é um streamer, talvez queira atualizar o layout do OBS para apontar para os arquivos de texto corretos em seu novo local.",
+		"MESSAGE": "Pasta do usuário movida!",
+		"DETAIL": "Para estar em conformidade com os padrões do seu sistema operacional, a pasta User Data foi movida. Antes era:\n\n{{oldDir}}\n\nAgora é:\n\n{{newDir}}\n\nSe você é um streamer, talvez queira atualizar o layout do OBS para apontar para os arquivos de texto corretos em seu novo local.",
 		"UNDERSTOOD": "Conseguiu!"
 	},
 	"MOVING_USER_DIR_ERROR_DIALOG": {
 		"TITLE": "Não foi possível mover a pasta de dados do Karaoke Mugen",
-		"MESSAGE": "A pasta de dados do Karaokê Mugen foi movida. Antes era isso:\n\n{{oldDir}}\n\nAgora é isso:\n\n{{newDir}}\n\nOcorreu um erro ao tentar mover essa pasta. Você deve clicar em \"Sair\" e mover a pasta você mesmo.\n\nVocê também pode clicar em “Continuar”. Se fizer isso, você começará de novo com uma nova pasta de dados. Sugerimos que você exclua a pasta antiga mostrada acima.",
+		"MESSAGE": "Não foi possível mover a pasta de dados do Karaoke Mugen",
+		"DETAIL": "A pasta de dados do Karaokê Mugen foi movida. Antes era isso:\n\n{{oldDir}}\n\nAgora é isso:\n\n{{newDir}}\n\nOcorreu um erro ao tentar mover essa pasta. Você deve clicar em \"Sair\" e mover a pasta você mesmo.\n\nVocê também pode clicar em “Continuar”. Se fizer isso, você começará de novo com uma nova pasta de dados. Sugerimos que você exclua a pasta antiga mostrada acima.",
 		"QUIT": "Fechar",
 		"CONTINUE": "Continuar"
 	},
 	"DATABASE_IN_THE_FUTURE_ERROR": {
 		"TITLE": "O banco de dados está no futuro, Marty!",
+		"MESSAGE": "O banco de dados está no futuro, Marty!",
 		"DELETE_ALL_DATA": "EXCLUIR todos os dados",
 		"CONTINUE_ANYWAY": "Continue por sua conta e risco",
-		"MESSAGE": "O banco de dados que o Karaokê Mugen está tentando acessar foi usado por uma versão posterior do aplicativo e é incompatível. Vamos tentar consertar isso.\n\nSe você clicar em “CANCELAR”, o aplicativo será fechado sem fazer nada. Você deve lançar uma versão mais recente do Karaoke Mugen.\n\nSe você clicar em \"Excluir todos os dados\", o aplicativo excluirá listas de reprodução, usuários locais, estatísticas, etc. e iniciará normalmente."
+		"DETAIL": "O banco de dados que o Karaokê Mugen está tentando acessar foi usado por uma versão posterior do aplicativo e é incompatível. Vamos tentar consertar isso.\n\nSe você clicar em “CANCELAR”, o aplicativo será fechado sem fazer nada. Você deve lançar uma versão mais recente do Karaoke Mugen.\n\nSe você clicar em \"Excluir todos os dados\", o aplicativo excluirá listas de reprodução, usuários locais, estatísticas, etc. e iniciará normalmente."
 	},
 	"MOVED_USER_DIR_FLATPAK_DIALOG": {
 		"TITLE": "Usuários Flatpak!",
-		"MESSAGE": "O conteúdo da pasta do usuário foi movido, mas como você está usando uma versão Flatpak do Karaoke Mugen, o aplicativo não pode remover a pasta antiga. Você mesmo deve removê-lo aqui:\n\n{{oldDir}}\n\n(Deve estar vazio!)",
+		"MESSAGE": "Usuários Flatpak!",
+		"DETAIL": "O conteúdo da pasta do usuário foi movido, mas como você está usando uma versão Flatpak do Karaoke Mugen, o aplicativo não pode remover a pasta antiga. Você mesmo deve removê-lo aqui:\n\n{{oldDir}}\n\n(Deve estar vazio!)",
 		"UNDERSTOOD": "Entendi! Eu vou fazer isto antes que eu me esqueça!"
 	},
 	"INIT_MIGRATION": "Atualizando estrutura do banco de dados, por favor espere…",

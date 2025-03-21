@@ -160,7 +160,8 @@ async function checkPaths(config: Config) {
 				});
 				await dialog.showMessageBox(win, {
 					title: i18next.t('REPO_DISABLED.TITLE'),
-					message: i18next.t('REPO_DISABLED.MESSAGE', { repo: repo.Name }),
+					message: i18next.t('REPO_DISABLED.MESSAGE'),
+					detail: i18next.t('REPO_DISABLED.DETAIL', { repo: repo.Name }),
 				});
 			}
 		}

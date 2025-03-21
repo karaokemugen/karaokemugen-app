@@ -207,7 +207,8 @@ export async function handleProtocol(command: string) {
 					const buttons = await dialog.showMessageBox({
 						type: 'none',
 						title: i18next.t('UNKNOWN_REPOSITORY_ADD.TITLE'),
-						message: `${i18next.t('UNKNOWN_REPOSITORY_ADD.MESSAGE', { repoName })}`,
+						message: i18next.t('UNKNOWN_REPOSITORY_ADD.MESSAGE'),
+						detail: `${i18next.t('UNKNOWN_REPOSITORY_ADD.DETAIL', { repoName })}`,
 						buttons: [i18next.t('YES'), i18next.t('NO')],
 					});
 					if (buttons.response === 0) {
@@ -229,7 +230,8 @@ export async function handleProtocol(command: string) {
 					await dialog.showMessageBox({
 						type: 'none',
 						title: i18next.t('REPOSITORY_ALREADY_EXISTS.TITLE'),
-						message: `${i18next.t('REPOSITORY_ALREADY_EXISTS.MESSAGE', { repoName })}`,
+						message: i18next.t('REPOSITORY_ALREADY_EXISTS.MESSAGE'),
+						detail: `${i18next.t('REPOSITORY_ALREADY_EXISTS.DETAIL', { repoName })}`,
 					});
 				}
 				break;

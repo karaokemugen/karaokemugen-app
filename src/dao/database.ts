@@ -129,6 +129,7 @@ async function migrateDB(): Promise<Postgrator.Migration[]> {
 			type: 'error',
 			title: i18next.t('DATABASE_IN_THE_FUTURE_ERROR.TITLE'),
 			message: i18next.t('DATABASE_IN_THE_FUTURE_ERROR.MESSAGE'),
+			detail: i18next.t('DATABASE_IN_THE_FUTURE_ERROR.DETAIL'),
 			defaultId: 0,
 			buttons: [
 				i18next.t('CANCEL'),
@@ -240,6 +241,7 @@ export async function initDBSystem(): Promise<Postgrator.Migration[]> {
 				type: 'error',
 				title: i18next.t('DATABASE_CONNECTION_ERROR.TITLE'),
 				message: i18next.t('DATABASE_CONNECTION_ERROR.MESSAGE'),
+				detail: i18next.t('DATABASE_CONNECTION_ERROR.DETAIL'),
 				buttons: [i18next.t('DATABASE_CONNECTION_ERROR.HELP'), 'OK'],
 			});
 			if (res.response === 0) {

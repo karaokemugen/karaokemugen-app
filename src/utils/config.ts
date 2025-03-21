@@ -462,7 +462,8 @@ async function binMissing(binariesPath: any, err: string) {
 		await dialog.showMessageBox({
 			type: 'none',
 			title: i18next.t('MISSING_BINARIES.TITLE'),
-			message: error,
+			message: i18next.t('ERROR_MISSING_BINARIES'),
+			detail: error,
 		});
 	}
 }
