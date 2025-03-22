@@ -128,7 +128,7 @@ async function migrateDB(): Promise<Postgrator.Migration[]> {
 		const res = await dialog.showMessageBox({
 			type: 'error',
 			title: i18next.t('DATABASE_IN_THE_FUTURE_ERROR.TITLE'),
-			message: i18next.t('DATABASE_IN_THE_FUTURE_ERROR.TITLE'),
+			message: process.platform === 'darwin' ? i18next.t('DATABASE_IN_THE_FUTURE_ERROR.TITLE') : undefined,
 			detail: i18next.t('DATABASE_IN_THE_FUTURE_ERROR.DETAIL'),
 			defaultId: 0,
 			buttons: [
@@ -240,7 +240,7 @@ export async function initDBSystem(): Promise<Postgrator.Migration[]> {
 			const res = await dialog.showMessageBox({
 				type: 'error',
 				title: i18next.t('DATABASE_CONNECTION_ERROR.TITLE'),
-				message: i18next.t('DATABASE_CONNECTION_ERROR.TITLE'),
+				message: process.platform === 'darwin' ? i18next.t('DATABASE_CONNECTION_ERROR.TITLE') : undefined,
 				detail: i18next.t('DATABASE_CONNECTION_ERROR.DETAIL'),
 				buttons: [i18next.t('DATABASE_CONNECTION_ERROR.HELP'), 'OK'],
 			});
