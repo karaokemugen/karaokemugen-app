@@ -339,5 +339,6 @@
 		"TITLE": "Utenti Flatpak!",
 		"DETAIL": "Il contenuto della cartella utente è stato spostato, ma l'app non può rimuovere la vecchia cartella poiché stai usando la versione Flatpak di Karaoke Mugen. Dovresti eliminarla tu:\n\n{{oldDir}}\n\n(Dovrebbe essere vuota!)",
 		"UNDERSTOOD": "Ho capito! Lo farò prima di dimenticarmene!"
-	}
+	},
+	"DOWNLOADING_APP_UPDATE": "Scaricando un aggiornamento dell'applicazione"
 }
