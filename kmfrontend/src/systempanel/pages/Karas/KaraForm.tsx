@@ -243,8 +243,7 @@ function KaraForm(props: KaraFormProps) {
 				setMediaInfo(newMediaInfo);
 				setIsEncodingMedia(false);
 				setMediafileIsTouched(true);
-				form.setFieldsValue({ mediafile: newMediaInfo.filename });
-				form.validateFields();
+				updateField({ mediafile: newMediaInfo.filename });
 			} catch (e) {
 				setIsEncodingMedia(false);
 				throw e;
@@ -700,8 +699,7 @@ function KaraForm(props: KaraFormProps) {
 				// Handle cover embeds like a new media file upload
 				setMediaInfo(mediaInfoAfterEmbed);
 				setMediafileIsTouched(true);
-				form.setFieldsValue({ mediafile: mediaInfoAfterEmbed.filename });
-				form.validateFields();
+				updateField({ mediafile: mediaInfoAfterEmbed.filename });
 
 				message.success(i18next.t('KARA.AUDIO_COVER.EMBED_COVER_SUCCESS'));
 				setCoverImageEmbedRunning(false);
@@ -839,6 +837,11 @@ function KaraForm(props: KaraFormProps) {
 				</label>
 			</Tag>
 		);
+	};
+
+	const updateField = (values: unknown) => {
+		form.setFieldsValue(values);
+		form.validateFields();
 	};
 
 	return (
@@ -1182,7 +1185,7 @@ function KaraForm(props: KaraFormProps) {
 				rules={getRules('langs')}
 				name="langs"
 			>
-				<EditableTagGroup form={form} tagType={5} onChange={tags => form.setFieldsValue({ langs: tags })} />
+				<EditableTagGroup form={form} tagType={5} onChange={tags => updateField({ langs: tags })} />
 			</Form.Item>
 			<Form.Item
 				label={
@@ -1198,7 +1201,7 @@ function KaraForm(props: KaraFormProps) {
 				rules={getRules('series')}
 				name="series"
 			>
-				<EditableTagGroup form={form} tagType={1} onChange={tags => form.setFieldsValue({ series: tags })} />
+				<EditableTagGroup form={form} tagType={1} onChange={tags => updateField({ series: tags })} />
 			</Form.Item>
 			<Form.Item
 				label={
@@ -1214,11 +1217,7 @@ function KaraForm(props: KaraFormProps) {
 				rules={getRules('franchises')}
 				name="franchises"
 			>
-				<EditableTagGroup
-					form={form}
-					tagType={18}
-					onChange={tags => form.setFieldsValue({ franchises: tags })}
-				/>
+				<EditableTagGroup form={form} tagType={18} onChange={tags => updateField({ franchises: tags })} />
 			</Form.Item>
 			<Form.Item
 				label={i18next.t('TAG_TYPES.SONGTYPES_other')}
@@ -1230,7 +1229,7 @@ function KaraForm(props: KaraFormProps) {
 					form={form}
 					tagType={3}
 					checkboxes={true}
-					onChange={tags => form.setFieldsValue({ songtypes: tags })}
+					onChange={tags => updateField({ songtypes: tags })}
 				/>
 			</Form.Item>
 			<Form.Item
@@ -1265,7 +1264,7 @@ function KaraForm(props: KaraFormProps) {
 					form={form}
 					tagType={14}
 					checkboxes={true}
-					onChange={tags => form.setFieldsValue({ versions: tags })}
+					onChange={tags => updateField({ versions: tags })}
 				/>
 			</Form.Item>
 			<Form.Item
@@ -1275,7 +1274,7 @@ function KaraForm(props: KaraFormProps) {
 				rules={getRules('singers')}
 				name="singers"
 			>
-				<EditableTagGroup form={form} tagType={2} onChange={tags => form.setFieldsValue({ singers: tags })} />
+				<EditableTagGroup form={form} tagType={2} onChange={tags => updateField({ singers: tags })} />
 			</Form.Item>
 			<Form.Item
 				label={i18next.t('KARA.SINGERGROUPS_BY')}
@@ -1284,11 +1283,7 @@ function KaraForm(props: KaraFormProps) {
 				rules={getRules('singergroups')}
 				name="singergroups"
 			>
-				<EditableTagGroup
-					form={form}
-					tagType={17}
-					onChange={tags => form.setFieldsValue({ singergroups: tags })}
-				/>
+				<EditableTagGroup form={form} tagType={17} onChange={tags => updateField({ singergroups: tags })} />
 			</Form.Item>
 			<Form.Item
 				label={
@@ -1304,11 +1299,7 @@ function KaraForm(props: KaraFormProps) {
 				rules={getRules('songwriters')}
 				name="songwriters"
 			>
-				<EditableTagGroup
-					form={form}
-					tagType={8}
-					onChange={tags => form.setFieldsValue({ songwriters: tags })}
-				/>
+				<EditableTagGroup form={form} tagType={8} onChange={tags => updateField({ songwriters: tags })} />
 			</Form.Item>
 			<Form.Item
 				label={
@@ -1324,7 +1315,7 @@ function KaraForm(props: KaraFormProps) {
 				rules={getRules('creators')}
 				name="creators"
 			>
-				<EditableTagGroup form={form} tagType={4} onChange={tags => form.setFieldsValue({ creators: tags })} />
+				<EditableTagGroup form={form} tagType={4} onChange={tags => updateField({ creators: tags })} />
 			</Form.Item>
 			<Form.Item
 				hasFeedback
@@ -1367,7 +1358,7 @@ function KaraForm(props: KaraFormProps) {
 					form={form}
 					tagType={16}
 					checkboxes={true}
-					onChange={tags => form.setFieldsValue({ collections: tags })}
+					onChange={tags => updateField({ collections: tags })}
 				/>
 			</Form.Item>
 
@@ -1388,7 +1379,7 @@ function KaraForm(props: KaraFormProps) {
 					form={form}
 					tagType={10}
 					checkboxes={true}
-					onChange={tags => form.setFieldsValue({ families: tags })}
+					onChange={tags => updateField({ families: tags })}
 				/>
 			</Form.Item>
 			<Form.Item
@@ -1407,7 +1398,7 @@ function KaraForm(props: KaraFormProps) {
 							form={form}
 							tagType={13}
 							checkboxes={true}
-							onChange={tags => form.setFieldsValue({ platforms: tags })}
+							onChange={tags => updateField({ platforms: tags })}
 						/>
 					</Panel>
 				</Collapse>
@@ -1422,7 +1413,7 @@ function KaraForm(props: KaraFormProps) {
 					form={form}
 					tagType={12}
 					checkboxes={true}
-					onChange={tags => form.setFieldsValue({ genres: tags })}
+					onChange={tags => updateField({ genres: tags })}
 				/>
 			</Form.Item>
 			<Form.Item
@@ -1435,7 +1426,7 @@ function KaraForm(props: KaraFormProps) {
 					form={form}
 					tagType={11}
 					checkboxes={true}
-					onChange={tags => form.setFieldsValue({ origins: tags })}
+					onChange={tags => updateField({ origins: tags })}
 				/>
 			</Form.Item>
 			<Form.Item
@@ -1448,7 +1439,7 @@ function KaraForm(props: KaraFormProps) {
 					form={form}
 					tagType={7}
 					checkboxes={true}
-					onChange={tags => form.setFieldsValue({ misc: tags })}
+					onChange={tags => updateField({ misc: tags })}
 				/>
 			</Form.Item>
 			<Form.Item
@@ -1461,7 +1452,7 @@ function KaraForm(props: KaraFormProps) {
 					form={form}
 					tagType={15}
 					checkboxes={true}
-					onChange={tags => form.setFieldsValue({ warnings: tags })}
+					onChange={tags => updateField({ warnings: tags })}
 				/>
 			</Form.Item>
 			<Form.Item
@@ -1481,7 +1472,7 @@ function KaraForm(props: KaraFormProps) {
 					form={form}
 					tagType={9}
 					checkboxes={true}
-					onChange={tags => form.setFieldsValue({ groups: tags })}
+					onChange={tags => updateField({ groups: tags })}
 				/>
 			</Form.Item>
 			<Divider orientation="left">{i18next.t('KARA.SECTIONS.META')}</Divider>
@@ -1570,7 +1561,7 @@ function KaraForm(props: KaraFormProps) {
 				rules={getRules('authors')}
 				name="authors"
 			>
-				<EditableTagGroup form={form} tagType={6} onChange={tags => form.setFieldsValue({ author: tags })} />
+				<EditableTagGroup form={form} tagType={6} onChange={tags => updateField({ author: tags })} />
 			</Form.Item>
 			<Form.Item
 				hasFeedback
@@ -1591,7 +1582,7 @@ function KaraForm(props: KaraFormProps) {
 				]}
 				name="comment"
 			>
-				<Input.TextArea autoSize placeholder={i18next.t('KARA.COMMENT')} onKeyPress={submitHandler} />
+				<Input.TextArea autoSize placeholder={i18next.t('KARA.COMMENT')} onKeyDown={submitHandler} />
 			</Form.Item>
 			<Form.Item
 				label={
