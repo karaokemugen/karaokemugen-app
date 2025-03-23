@@ -84,7 +84,7 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 			resolvedPathRepos('Karaokes', kara.data.repository)[0],
 			`${sanitizedFilename}.kara.json`
 		);
-		const filenames = determineMediaAndLyricsFilenames(kara);
+		let filenames = determineMediaAndLyricsFilenames(kara);
 		const mediaDest = resolve(resolvedPathRepos('Medias', kara.data.repository)[0], filenames.mediafile);
 		let oldMediaPath: string;
 		// I wanted to remove this since we switched to UUIDs BUT WHAT ABOUT FILE EXTENSIONS.
@@ -105,7 +105,11 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 			// Redefine mediapath as coming from temp
 			mediaPath = resolve(resolvedPath('Temp'), kara.medias[0].filename);
 
-			await processEmbeddedSubtitle(mediaPath, kara, editedKara.useEmbeddedLyrics);
+			const modifiedLyrics = await processEmbeddedSubtitle(mediaPath, kara, editedKara);
+			if (!editedKara.modifiedLyrics) {
+				editedKara.modifiedLyrics = modifiedLyrics;
+				filenames = determineMediaAndLyricsFilenames(kara);
+			}
 			if (oldMediaPath) await fs.unlink(oldMediaPath);
 		}
 		const subDest = filenames.lyricsfiles[0]
@@ -132,7 +136,7 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 			if (kara.medias[0].lyrics[0]) {
 				const subPath = resolve(resolvedPath('Temp'), kara.medias[0].lyrics[0]?.filename);
 				const ext = await processSubfile(subPath);
-				if (oldKara.lyrics_infos?.length > 0) {
+				if (oldKara.lyrics_infos?.length > 0 && oldKara.lyrics_infos[0]?.filename) {
 					const oldSubPath = (
 						await resolveFileInDirs(
 							oldKara.lyrics_infos[0].filename,
@@ -272,8 +276,9 @@ export async function createKara(editedKara: EditedKara) {
 	}
 }
 
-async function processEmbeddedSubtitle(mediaPath: string, kara: KaraFileV4, useEmbeddedLyrics) {
+async function processEmbeddedSubtitle(mediaPath: string, kara: KaraFileV4, useEmbeddedLyrics): Promise<boolean> {
 	let extractedVideoSubtitlesFile = '';
+	let modifiedLyrics = false;
 	try {
 		extractedVideoSubtitlesFile = await extractVideoSubtitles(mediaPath, kara.data.kid);
 		if (extractedVideoSubtitlesFile && useEmbeddedLyrics) {
@@ -285,6 +290,7 @@ async function processEmbeddedSubtitle(mediaPath: string, kara: KaraFileV4, useE
 				default: true,
 				version: 'Default',
 			};
+			modifiedLyrics = true;
 		}
 	} catch (err) {
 		// Not lethal
@@ -293,6 +299,7 @@ async function processEmbeddedSubtitle(mediaPath: string, kara: KaraFileV4, useE
 		// Only remove subtitle if they are any, because this will remove other data like opus cover images from the media file
 		await removeEmbeddedSubtitle(mediaPath, kara);
 	}
+	return modifiedLyrics;
 }
 
 async function getAllKarasInFamily(kidsToSearch: string[]) {
