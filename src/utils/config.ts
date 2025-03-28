@@ -192,6 +192,12 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 		);
 	}
 	Object.keys(newConfig.System.Repositories).forEach((_, i) => {
+		if (!isEqual(newConfig.System.Repositories[i].BaseDir, oldConfig.System.Repositories[i].BaseDir)) {
+			newConfig.System.Repositories[i].BaseDir = relativePath(
+				state.dataPath,
+				resolve(state.dataPath, newConfig.System.Repositories[i].BaseDir)
+			);
+		}
 		for (const path of Object.keys(newConfig.System.Repositories[i].Path)) {
 			if (!isEqual(newConfig.System.Repositories[i].Path[path], oldConfig.System.Repositories[i].Path[path])) {
 				if (Array.isArray(newConfig.System.Repositories[i].Path[path])) {

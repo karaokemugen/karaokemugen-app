@@ -5,6 +5,7 @@ import parallel from 'p-map';
 import { basename, dirname, extname, parse, resolve } from 'path';
 import { TopologicalSort } from 'topological-sort';
 
+import { isEqual } from 'lodash';
 import { compareKarasChecksum, generateDB } from '../dao/database.js';
 import { baseChecksum, editKaraInStore, getStoreChecksum, sortKaraStore } from '../dao/dataStore.js';
 import { updateDownloaded } from '../dao/download.js';
@@ -494,7 +495,7 @@ async function hookEditedRepo(oldRepo: Repository, repo: Repository, refresh = f
 		doGenerate = true;
 	}
 	if (doGenerate) await generateDB();
-	if (oldRepo.Path.Medias !== repo.Path.Medias && getState().DBReady && onlineCheck) {
+	if (!isEqual(oldRepo.Path.Medias, repo.Path.Medias) && getState().DBReady && onlineCheck) {
 		getKaras({ q: `r:${repo.Name}`, ignoreCollections: true }).then(karas => {
 			checkDownloadStatus(karas.content.map(k => k.kid));
 		});
@@ -881,7 +882,7 @@ export async function newGitRepo(repo: Repository) {
 	// Only testing first media folder because I'm lazy.
 	const baseDir = resolve(state.dataPath, repo.BaseDir);
 	const mediaDir = resolve(state.dataPath, repo.Path.Medias[0]);
-	if (pathIsContainedInAnother(baseDir, mediaDir)) throw 'Media folder is contained in base dir, move it first!';
+	if (pathIsContainedInAnother(mediaDir, baseDir)) throw 'Media folder is contained in base dir, move it first!';
 	await remove(baseDir);
 	await asyncCheckOrMkdir(baseDir);
 	const git = await setupGit(repo, false, true);
@@ -1027,7 +1028,7 @@ function checkRepoPaths(repo: Repository) {
 	if (!getState().portable) {
 		// The Mutsui Fix.
 		// If not in portable mode, prevent repo paths from being in the app folder
-		if (pathIsContainedInAnother(resolve(getState().appPath), resolve(getState().dataPath, repo.BaseDir))) {
+		if (pathIsContainedInAnother(resolve(getState().dataPath, repo.BaseDir), resolve(getState().appPath))) {
 			throw new ErrorKM('REPO_PATH_ERROR_IN_APP_PATH', 400, false);
 		}
 	}
@@ -1035,11 +1036,11 @@ function checkRepoPaths(repo: Repository) {
 		// Fix for KM-APP-1W5 because someone thought it would be funny to put all its medias in the folder KM's exe is in. Never doubt your users' creativity.
 		if (
 			!getState().portable &&
-			pathIsContainedInAnother(resolve(getState().appPath), resolve(getState().dataPath, path))
+			pathIsContainedInAnother(resolve(getState().dataPath, path), resolve(getState().appPath))
 		) {
 			throw new ErrorKM('REPO_PATH_ERROR_IN_APP_PATH', 400, false);
 		}
-		if (pathIsContainedInAnother(resolve(getState().dataPath, repo.BaseDir), resolve(getState().dataPath, path))) {
+		if (pathIsContainedInAnother(resolve(getState().dataPath, path), resolve(getState().dataPath, repo.BaseDir))) {
 			throw new ErrorKM('REPO_PATH_ERROR_IN_BASE_PATH', 400, false);
 		}
 		if (windowsDriveRootRegexp.test(path)) {
