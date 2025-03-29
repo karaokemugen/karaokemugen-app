@@ -223,7 +223,7 @@ export async function updateMedias(repo: string, dryRun = false): Promise<Update
 		text: 'UPDATING_MEDIAS',
 		subtext: repo,
 	});
-	if (updateRunning) throw new ErrorKM('ERROR_CODES.UPDATE_REPO_ALREADY_IN_PROGRESS', 409);
+	if (updateRunning) throw new ErrorKM('UPDATE_REPO_ALREADY_IN_PROGRESS', 409, false);
 	updateRunning = true;
 	try {
 		const [remoteMedias, localMedias] = await Promise.all([listRemoteMedias(repo), listLocalMedias(repo)]);
