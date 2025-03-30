@@ -1,9 +1,9 @@
 import './EditableTagGroup.scss';
 
 import { PlusOutlined } from '@ant-design/icons';
-import { AutoComplete, Button, Checkbox, Col, Form, FormInstance, Row, Tag } from 'antd';
+import { AutoComplete, Button, Checkbox, Col, Form, FormInstance, InputRef, Row, Tag } from 'antd';
 import i18next from 'i18next';
-import { Component } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 
 import type { DBKaraTag } from '../../../../src/lib/types/database/kara';
 import GlobalContext from '../../store/context';
@@ -12,76 +12,65 @@ import { commandBackend } from '../../utils/socket';
 import { CreateTagModal } from './CreateTagModal';
 
 interface EditableTagGroupProps {
-	onChange: any;
+	onChange: (e: unknown[]) => void;
 	checkboxes?: boolean;
 	tagType?: number;
-	value?: any[];
+	value?: DBKaraTag[];
 	form?: FormInstance;
 }
 
-interface EditableTagGroupState {
-	tags: DBKaraTag[];
-	value: string[];
-	inputVisible: boolean;
-	currentVal: any;
-	createModal: boolean;
-}
+export default function EditableTagGroup(props: EditableTagGroupProps) {
+	const context = useContext(GlobalContext);
+	const timer: NodeJS.Timeout[] = [];
 
-const timer: NodeJS.Timeout[] = [];
-export default class EditableTagGroup extends Component<EditableTagGroupProps, EditableTagGroupState> {
-	static contextType = GlobalContext;
-	context: React.ContextType<typeof GlobalContext>;
-	input: any;
+	const input = useRef();
 
-	constructor(props) {
-		super(props);
-		if (this.props.checkboxes) this.search();
-	}
+	const [value, setValue] = useState(props.value || []);
+	const [inputVisible, setInputVisible] = useState(false);
+	const [currentVal, setCurrentVal] = useState<string>();
+	const [tags, setTags] = useState<DBKaraTag[]>([]);
+	const [createModal, setCreateModal] = useState(false);
 
-	state = {
-		value: this.props.value || [],
-		inputVisible: false,
-		tags: [],
-		currentVal: undefined,
-		createModal: false,
+	useEffect(() => {
+		if (props.checkboxes) search();
+	}, []);
+
+	useEffect(() => {
+		if (inputVisible && input.current) (input.current as InputRef).focus();
+	}, [inputVisible]);
+
+	const handleClose = removedTag => {
+		const tags = value.filter(tag => tag.tid !== removedTag.tid || tag.name !== removedTag.name);
+		setTags(value);
+		if (props.onChange) props.onChange(tags);
 	};
 
-	showInput = () => {
-		this.setState({ inputVisible: true }, () => this.input.focus());
-	};
-
-	handleClose = removedTag => {
-		const tags = this.state.value.filter(tag => tag.tid !== removedTag.tid || tag.name !== removedTag.name);
-		this.setState({ value: tags });
-		this.props.onChange && this.props.onChange(tags);
-	};
-
-	handleInputConfirm = val => {
+	const handleInputConfirm = val => {
 		if (val) {
-			const tags = this.state.value;
-			const tag = this.state.tags.filter(tag => val === tag.tid)[0];
+			const tags = value;
+			const tag = tags.filter(tag => val === tag.tid)[0];
 			if (tags.filter(tag => val === tag.tid).length === 0) {
 				if (tag?.tid) {
 					tags.push(tag);
 				} else {
-					tags.push({ name: val });
+					tags.push({ name: val } as DBKaraTag);
 				}
 			}
-			this.setState({
-				value: tags,
-				inputVisible: false,
-				currentVal: undefined,
-			});
-			this.props.onChange && this.props.onChange(tags);
+			setValue(tags);
+			setInputVisible(false);
+			setCurrentVal(undefined);
+			if (props.onChange) props.onChange(tags);
 		}
 	};
 
-	handleConfirmCreate = (val: DBKaraTag) => {
-		this.setState({ tags: [...this.state.tags, val], value: [...this.state.value, val], currentVal: undefined });
-		this.props.onChange && this.props.onChange([...this.state.value, val]);
+	const handleConfirmCreate = (val: DBKaraTag) => {
+		setTags([...tags, val]);
+		setValue([...value, val]);
+		setCurrentVal(undefined);
+		if (props.onChange) props.onChange([...value, val]);
 	};
 
-	getTags = async (filter: string, type: number) => {
+	const getTags = async (filter: string, type: number) => {
 		if (filter === '') {
 			return { data: [] };
 		}
@@ -92,26 +81,24 @@ export default class EditableTagGroup extends Component<EditableTagGroupProps, E
 		return tags?.content || [];
 	};
 
-	search = (val?: string) => {
-		if (timer[this.props.tagType]) clearTimeout(timer[this.props.tagType]);
-		timer[this.props.tagType] = setTimeout(() => {
-			this.getTags(val, this.props.tagType).then(tags => {
-				this.setState({ tags: this.sortByProp(tags, 'text') });
-			});
+	const search = (val?: string) => {
+		if (timer[props.tagType]) clearTimeout(timer[props.tagType]);
+		timer[props.tagType] = setTimeout(() => {
+			getTags(val, props.tagType).then(tags => setTags(sortByProp(tags, 'text')));
 		}, 1000);
 	};
 
-	onCheck = val => {
+	const onCheck = val => {
 		const tags = [];
 		for (const element of val) {
-			const tag = this.state.tags.filter(tag => element === tag.tid)[0];
+			const tag = tags.filter(tag => element === tag.tid)[0];
 			tags.push(tag);
 		}
-		this.setState({ value: tags });
-		this.props.onChange && this.props.onChange(tags);
+		setValue(tags);
+		if (props.onChange) props.onChange(tags);
 	};
 
-	sortByProp = (array, val) => {
+	const sortByProp = (array, val) => {
 		if (Array.isArray(array)) {
 			return array.sort((a, b) => {
 				return a[val] > b[val] ? 1 : a[val] < b[val] ? -1 : 0;
@@ -121,116 +108,106 @@ export default class EditableTagGroup extends Component<EditableTagGroupProps, E
 		}
 	};
 
-	onKeyEnter = e => {
-		if (e.keyCode === 13 && this.state.tags.length === 0) this.setState({ createModal: true });
+	const onKeyEnter = e => {
+		if (e.keyCode === 13 && tags.length === 0) setCreateModal(true);
 	};
 
-	getCurrentValue = () => {
-		const tags = this.state.tags.filter(tag => tag.tid === this.state.currentVal);
-		if (tags.length > 0 && tags[0].tid) {
-			return this.getTagLabel(tags[0]);
+	const getCurrentValue = () => {
+		const updateTags = tags.filter(tag => tag.tid === currentVal);
+		if (updateTags.length > 0 && updateTags[0].tid) {
+			return getTagLabel(updateTags[0]);
 		} else {
-			return this.state.currentVal;
+			return currentVal;
 		}
 	};
 
-	getTagLabel = (tag: DBKaraTag) => {
-		const labelI18n = getTagInLocale(this.context?.globalState.settings.data, tag).i18n;
+	const getTagLabel = (tag: DBKaraTag) => {
+		const labelI18n = getTagInLocale(context?.globalState.settings.data, tag).i18n;
 		return `${labelI18n}${labelI18n !== tag.name ? ` (${tag.name})` : ''}`;
 	};
 
-	render() {
-		if (this.props.checkboxes) {
-			const tids = this.state.value.map(tag => tag.tid);
-			return (
-				<Checkbox.Group
-					className="editable-tag-group-checkbox"
-					value={tids}
-					style={{ width: '100%' }}
-					onChange={this.onCheck}
-				>
-					<Row>
-						{this.state.tags.map((tag: DBKaraTag) => {
-							const tagi18n = getTagInLocale(this.context?.globalState.settings.data, tag);
-							const desc = tagi18n.description || '';
-							return (
-								<Col
-									xs={{ span: 10 }}
-									sm={{ span: 10 }}
-									md={{ span: 8 }}
-									xl={{ span: 6 }}
-									key={tag.tid || tag.name}
-									title={tag.aliases?.join(', ')}
-								>
-									<Checkbox value={tag.tid} style={{ height: '100%', paddingBottom: '0.3em' }}>
-										<div>{tagi18n.i18n}</div>
-										{desc ? <span style={{ fontSize: 11 }}>{desc}</span> : null}
-									</Checkbox>
-								</Col>
-							);
-						})}
-					</Row>
-				</Checkbox.Group>
-			);
-		} else {
-			return (
-				<div>
-					{this.state.value.map((tag: DBKaraTag) => (
-						<Tag
-							style={{ marginBottom: '8px' }}
-							key={tag.tid || tag.name}
-							closable={true}
-							title={tag.aliases?.join(', ')}
-							onClose={() => this.handleClose(tag)}
-						>
-							{this.getTagLabel(tag)}
-						</Tag>
-					))}
-					{this.state.inputVisible && (
-						<Form.Item wrapperCol={{ span: 14 }}>
-							<AutoComplete
-								ref={input => (this.input = input)}
-								onSearch={this.search}
-								onChange={val => this.setState({ currentVal: val })}
-								onSelect={val => this.handleInputConfirm(val)}
-								options={this.state.tags.map((tag: DBKaraTag) => {
-									return {
-										value: tag.tid,
-										label: this.getTagLabel(tag),
-									};
-								})}
-								onInputKeyDown={this.onKeyEnter}
-								value={this.getCurrentValue()}
-							/>
-							<Button
-								style={{ marginTop: '10px' }}
-								type="primary"
-								onClick={() => {
-									this.setState({ createModal: true });
-								}}
+	if (props.checkboxes) {
+		const tids = value.map(tag => tag.tid);
+		return (
+			<Checkbox.Group
+				className="editable-tag-group-checkbox"
+				value={tids}
+				style={{ width: '100%' }}
+				onChange={onCheck}
+			>
+				<Row>
+					{tags.map((tag: DBKaraTag) => {
+						const tagi18n = getTagInLocale(context?.globalState.settings.data, tag);
+						const desc = tagi18n.description || '';
+						return (
+							<Col
+								xs={{ span: 10 }}
+								sm={{ span: 10 }}
+								md={{ span: 8 }}
+								xl={{ span: 6 }}
+								key={tag.tid || tag.name}
+								title={tag.aliases?.join(', ')}
 							>
-								{i18next.t('MODAL.CREATE_TAG.OPEN')}
-							</Button>
-						</Form.Item>
-					)}
-					{!this.state.inputVisible && (
-						<Tag onClick={this.showInput} style={{ borderStyle: 'dashed' }}>
-							<PlusOutlined /> {i18next.t('ADD')}
-						</Tag>
-					)}
-					{this.state.createModal ? (
-						<CreateTagModal
-							initialTagTypes={[this.props.tagType]}
-							initialName={this.getCurrentValue()}
-							onClose={() => {
-								this.setState({ createModal: false });
-							}}
-							onCreate={this.handleConfirmCreate}
-							repo={this.props.form.getFieldValue('repository')}
+								<Checkbox value={tag.tid} style={{ height: '100%', paddingBottom: '0.3em' }}>
+									<div>{tagi18n.i18n}</div>
+									{desc ? <span style={{ fontSize: 11 }}>{desc}</span> : null}
+								</Checkbox>
+							</Col>
+						);
+					})}
+				</Row>
+			</Checkbox.Group>
+		);
+	} else {
+		return (
+			<div>
+				{value.map((tag: DBKaraTag) => (
+					<Tag
+						style={{ marginBottom: '8px' }}
+						key={tag.tid || tag.name}
+						closable={true}
+						title={tag.aliases?.join(', ')}
+						onClose={() => handleClose(tag)}
+					>
+						{getTagLabel(tag)}
+					</Tag>
+				))}
+				{inputVisible && (
+					<Form.Item wrapperCol={{ span: 14 }}>
+						<AutoComplete
+							ref={input}
+							onSearch={search}
+							onChange={setCurrentVal}
+							onSelect={val => handleInputConfirm(val)}
+							options={tags.map((tag: DBKaraTag) => {
+								return {
+									value: tag.tid,
+									label: getTagLabel(tag),
+								};
+							})}
+							onInputKeyDown={onKeyEnter}
+							value={getCurrentValue()}
 						/>
-					) : null}
-				</div>
-			);
-		}
+						<Button style={{ marginTop: '10px' }} type="primary" onClick={() => setCreateModal(true)}>
+							{i18next.t('MODAL.CREATE_TAG.OPEN')}
+						</Button>
+					</Form.Item>
+				)}
+				{!inputVisible && (
+					<Tag onClick={() => setInputVisible(true)} style={{ borderStyle: 'dashed' }}>
+						<PlusOutlined /> {i18next.t('ADD')}
+					</Tag>
+				)}
+				{createModal ? (
+					<CreateTagModal
+						initialTagTypes={[props.tagType]}
+						initialName={getCurrentValue()}
+						onClose={() => setCreateModal(false)}
+						onCreate={handleConfirmCreate}
+						repo={props.form.getFieldValue('repository')}
+					/>
+				) : null}
+			</div>
+		);
 	}
 }
