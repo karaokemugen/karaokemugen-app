@@ -271,7 +271,6 @@
       ],
       "icon": "icon1024.png",
       "compression": "normal",
-      "publisherName": "Karaoke Mugen Team",
       "verifyUpdateCodeSignature": false,
       "publish": {
         "provider": "generic",
