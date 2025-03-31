@@ -40,19 +40,19 @@ export default function AutocompleteTag(props: AutocompleteTagProps) {
 
 	const handleInputConfirm = val => {
 		if (val) {
-			const tags = value;
+			const updateTags = value;
 			const tag = tags.filter(tag => val === tag.tid)[0];
-			if (tags.filter(tag => val === tag.tid).length === 0) {
+			if (updateTags.filter(tag => val === tag.tid).length === 0) {
 				if (tag?.tid) {
-					tags.push(tag);
+					updateTags.push(tag);
 				} else {
-					tags.push({ name: val } as DBKaraTag);
+					updateTags.push({ name: val } as DBKaraTag);
 				}
 			}
-			setValue(tags);
+			setValue(updateTags);
 			setInputVisible(false);
 			setCurrentVal(undefined);
-			if (props.onChange) props.onChange(tags);
+			if (props.onChange) props.onChange(updateTags);
 		}
 	};
 
