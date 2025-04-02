@@ -184,8 +184,8 @@ function KaraForm(props: KaraFormProps) {
 	};
 
 	const getParents = async () => {
-		if (form.getFieldValue('parents') !== null) {
-			const parents: string[] = form.getFieldValue('parents');
+		if (props.kara?.parents !== null) {
+			const parents: string[] = props.kara?.parents;
 			if (parents.length > 0) {
 				const res = await commandBackend('getKaras', { q: `k:${parents.join()}`, ignoreCollections: true });
 				const karaSearch = res.content.map(kara => {
@@ -863,11 +863,11 @@ function KaraForm(props: KaraFormProps) {
 	};
 
 	const getTagsCheckbox = async () => {
+		const newTagsCheckbox = new Map(tagsCheckbox);
 		for (const type of typeTagCheckbox) {
-			const newTagsCheckbox = tagsCheckbox;
 			newTagsCheckbox.set(type, await getTags(type));
-			setTagsCheckbox(newTagsCheckbox);
 		}
+		setTagsCheckbox(newTagsCheckbox);
 	};
 
 	return (
