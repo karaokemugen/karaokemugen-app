@@ -1570,7 +1570,7 @@ function KaraForm(props: KaraFormProps) {
 				rules={getRules('authors')}
 				name="authors"
 			>
-				<AutocompleteTag form={form} tagType={6} onChange={tags => updateField({ author: tags })} />
+				<AutocompleteTag form={form} tagType={6} onChange={tags => updateField({ authors: tags })} />
 			</Form.Item>
 			<Form.Item
 				hasFeedback
