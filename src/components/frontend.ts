@@ -83,7 +83,7 @@ export default function initFrontend(): number {
 				'Access-Control-Allow-Headers',
 				'Origin, X-Requested-With, Content-Type, Authorization, Accept, Key'
 			);
-			req.method === 'OPTIONS' ? res.json() : next();
+			req.method === 'OPTIONS' ? res.status(200).json() : next();
 		});
 
 		// Path to video previews
@@ -102,7 +102,7 @@ export default function initFrontend(): number {
 		app.use('/coffee', (_req, res) => res.status(418).json());
 
 		app.use('/', express.static(resolve(state.resourcePath, 'kmfrontend/dist')));
-		app.get('/*', (_req, res) => {
+		app.get('/*splat', (_req, res) => {
 			res.sendFile(resolve(state.resourcePath, 'kmfrontend/dist/index.html'));
 		});
 
