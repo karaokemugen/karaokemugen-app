@@ -184,7 +184,7 @@ function KaraForm(props: KaraFormProps) {
 	};
 
 	const getParents = async () => {
-		if (props.kara?.parents !== null) {
+		if (props.kara?.parents) {
 			const parents: string[] = props.kara?.parents;
 			if (parents.length > 0) {
 				const res = await commandBackend('getKaras', { q: `k:${parents.join()}`, ignoreCollections: true });

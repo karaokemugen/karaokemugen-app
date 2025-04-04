@@ -33,9 +33,10 @@ export default function AutocompleteTag(props: AutocompleteTagProps) {
 	}, [inputVisible]);
 
 	const handleClose = removedTag => {
-		const tags = value.filter(tag => tag.tid !== removedTag.tid || tag.name !== removedTag.name);
-		setTags(value);
-		if (props.onChange) props.onChange(tags);
+		const updateTags = value.filter(tag => tag.tid !== removedTag.tid || tag.name !== removedTag.name);
+		setValue(updateTags);
+		setTags(updateTags);
+		if (props.onChange) props.onChange(updateTags);
 	};
 
 	const handleInputConfirm = val => {
@@ -67,11 +68,11 @@ export default function AutocompleteTag(props: AutocompleteTagProps) {
 		if (filter === '') {
 			return { data: [] };
 		}
-		const tags = await commandBackend('getTags', {
+		const updateTags = await commandBackend('getTags', {
 			type: [type],
 			filter: filter,
 		});
-		return tags?.content || [];
+		return updateTags?.content || [];
 	};
 
 	const search = (val?: string) => {
