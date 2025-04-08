@@ -80,7 +80,7 @@ function KaraDownload() {
 
 	useEffect(() => {
 		getKaras();
-	}, [direction, currentPage, currentPageSize]);
+	}, [direction, currentPage, currentPageSize, downloadStatus]);
 
 	const getRepositories = async () => {
 		const res: Repository[] = await commandBackend('getRepos');
