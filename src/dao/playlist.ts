@@ -7,7 +7,7 @@ import { Criteria, PLCParams, UnaggregatedCriteria } from '../lib/types/playlist
 import { getConfig } from '../lib/utils/config.js';
 import { getTagTypeName, tagTypes } from '../lib/utils/constants.js';
 import { now } from '../lib/utils/date.js';
-import logger, { profile } from '../lib/utils/logger.js';
+import { profile } from '../lib/utils/logger.js';
 import { DBPL, DBPLCInfo, SmartPlaylistType } from '../types/database/playlist.js';
 import { getPlayerState, getState } from '../utils/state.js';
 import { organizeTagsInKara } from './kara.js';
@@ -51,7 +51,7 @@ import {
 	sqlupdatePLCSetPos,
 } from './sql/playlist.js';
 
-const service = 'PlaylistDB';
+//const service = 'PlaylistDB';
 
 const jinglesDuration = 5;
 const sponsorsDuration = 5;
