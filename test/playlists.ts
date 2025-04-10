@@ -102,7 +102,6 @@ describe('Playlists', () => {
 		const data = await commandBackend(token, 'getPlaylistContents', { plaid: newPlaylistID });
 		expect(data.content.length).to.be.at.least(1);
 		for (const plc of data.content) {
-			console.log(plc);
 			testKara(plc, { tagDetails: 'short', plc: true });
 		}
 		PLCID = data.content[0].plcid;

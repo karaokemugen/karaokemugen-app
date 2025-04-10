@@ -437,6 +437,7 @@ SELECT
   NOW() - MAX(p.played_at) AS lastplayed_ago,
   pc.nickname AS nickname,
   pc.fk_login AS username,
+  pc.played_at AS played_at,
   u.avatar_file AS avatar_file,
   u.type AS user_type,
   pc.pos AS pos,
