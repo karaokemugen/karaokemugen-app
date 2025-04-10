@@ -102,7 +102,7 @@ function OnlineStatsModal() {
 					</div>
 					<div className="modal-footer">
 						<button type="button" className="btn btn-action btn-default ok" onClick={() => onClick()}>
-							{i18next.t('ONLINE_STATS.CONFIRM')}
+							{i18next.t('CONFIRM')}
 						</button>
 					</div>
 				</div>

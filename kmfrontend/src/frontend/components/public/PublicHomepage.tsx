@@ -89,6 +89,11 @@ function PublicHomepage(props: IProps) {
 								<i className="fas fa-fw fa-play-circle" /> {i18next.t('PUBLIC_HOMEPAGE.CURRENT')}
 							</Link>
 						) : null}
+						{props.currentVisible ? (
+							<Link className="action purple" to="/public/playlist/current/me">
+								<i className="fas fa-fw fa-user" /> {i18next.t('PUBLIC_HOMEPAGE.MY_INCOMING_SONGS')}
+							</Link>
+						) : null}
 						{props.publicVisible &&
 						context.globalState.settings.data.state.currentPlaid !==
 							context.globalState.settings.data.state.publicPlaid ? (

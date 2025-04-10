@@ -1,0 +1,1 @@
+ALTER TABLE playlist_content ADD COLUMN played_at TIMESTAMPTZ;

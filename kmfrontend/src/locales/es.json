@@ -15,6 +15,7 @@
 	},
 	"CANCEL": "Cancelar",
 	"SUBMIT": "Guardar",
+	"CONFIRM": "Confirmar",
 	"SEARCH": "Buscar",
 	"AND": "y",
 	"NO": "No",
@@ -529,7 +530,6 @@
 		"TITLE": "Estadísticas",
 		"CHANGE": "Puede cambiar su elección en cualquier momento desde las opciones.",
 		"INTRO": "Karaoke Mugen puede enviar información anónima sobre tu instancia al servidor de Karaoke Mugen para crear estadísticas de uso.",
-		"CONFIRM": "Confirmar",
 		"QUESTION": "¿Estás de acuerdo en enviar estas estadísticas a Karaoke Mugen Server?",
 		"ERROR": "Karaoke Mugen puede enviar información sobre tu instancia a Sentry.io durante los errores. Esto nos ayuda a resolverlos ya que aparecen mucho más rápido. ¿Estás de acuerdo con el envío de estos informes de error?"
 	},

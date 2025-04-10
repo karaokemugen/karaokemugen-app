@@ -1,6 +1,7 @@
 {
 	"YES": "Ya",
 	"NO": "Tidak",
+	"CONFIRM": "Konfirmasi",
 	"SELECT_PLACEHOLDER": "Pilih sebuah daftar putar",
 	"AND": "dan",
 	"SEARCH": "Cari",
@@ -872,7 +873,6 @@
 		"TITLE": "Statistik",
 		"CHANGE": "Kamu bisa mengubah pilihan kamu kapan saja dari opsi.",
 		"QUESTION": "Apakah kamu setuju untuk mengirim statistik tersebut ke Peladen Karaoke Mugen?",
-		"CONFIRM": "Konfirmasi",
 		"ERROR": "Karaoke Mugen mungkin mengirim informasi tentang program kamu ke Sentry.io saat galat. Ini membantu kami menyelesaikan lebih cepat. Apakah kamu setuju untuk mengirim laporan galat tersebut?",
 		"INTRO": "Karaoke Mugen bisa mengirim informasi awanama tantang peladen kamu ke Peladen Karaoke Mugen untuk membuat statistik penggunaan."
 	},

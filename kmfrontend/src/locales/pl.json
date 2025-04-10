@@ -2,6 +2,7 @@
 	"VERSION": "Wersja",
 	"NO": "Nie",
 	"PITCH_UP": "Podnieś ton",
+	"CONFIRM": "Potwierdź",
 	"BLURVIDEO_UNBLUR": "Wyostrzyć wideo",
 	"YES": "Tak",
 	"SHOW_SUBS": "Pokaż tekst na ekranie",
@@ -772,7 +773,6 @@
 			"1": "Które utwory zostały odtworzone",
 			"4": "Ustawienia aplikacji (z wyłączeniem wszelkich informacji prywatnych, takich jak hasła i klucze)"
 		},
-		"CONFIRM": "Potwierdź",
 		"CHANGE": "W każdej chwili możesz zmienić swój wybór w opcjach.",
 		"INTRO": "Karaoke Mugen może wysyłać anonimowe informacje o Twojej instancji do serwera Karaoke Mugen w celu tworzenia statystyk użytkowania.",
 		"QUESTION": "Czy zgadzasz się na przesyłanie tych statystyk do serwera Karaoke Mugen?",

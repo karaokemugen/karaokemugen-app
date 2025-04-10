@@ -1,4 +1,5 @@
 {
+	"CONFIRM": "Bestätigen",
 	"NOT_FOUND_PAGE": {
 		"404": "Verloren in Karaoke Mugen?",
 		"404_4": "Zur Startseite",
@@ -1420,8 +1421,7 @@
 		"QUESTION": "Bist du damit einverstanden, diese Statistiken an Karaoke Mugen Server zu senden?",
 		"CHANGE": "Du kannst deine Auswahl jederzeit in den Optionen ändern.",
 		"ERROR": "Karaoke Mugen kann bei Fehlern Informationen über Ihre Instanz an Sentry.io senden. Dies hilft uns, Probleme zu lösen, da diese direkt gemeldet werden. Bist du damit einverstanden, diese Fehlerberichte zu senden?",
-		"TITLE": "Statistiken",
-		"CONFIRM": "Bestätigen"
+		"TITLE": "Statistiken"
 	},
 	"INSTANCE_NAME_SHORT": "Server",
 	"INTRO_TAGLINES": [

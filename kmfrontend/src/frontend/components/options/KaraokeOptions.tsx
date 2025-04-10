@@ -531,6 +531,30 @@ function KaraokeOptions(props: IProps) {
 						))}
 
 					{filterValue === undefined ||
+						(sanitizeSettingsSearchValue(i18next.t('SETTINGS.KARAOKE.ALLOW_PLAYLIST_ITEM_SWAP')).includes(
+							filterValue
+						) && (
+							<div className="settings-line">
+								<label htmlFor="Playlist.AllowPublicCurrentPlaylistItemSwap">
+									<span className="title">
+										{i18next.t('SETTINGS.KARAOKE.ALLOW_PLAYLIST_ITEM_SWAP')}
+									</span>
+									<br />
+									<span className="tooltip">
+										{i18next.t('SETTINGS.KARAOKE.ALLOW_PLAYLIST_ITEM_SWAP_TOOLTIP')}
+									</span>
+								</label>
+								<div>
+									<Switch
+										idInput="Playlist.AllowPublicCurrentPlaylistItemSwap"
+										handleChange={onChange}
+										isChecked={config['Playlist.AllowPublicCurrentPlaylistItemSwap']}
+									/>
+								</div>
+							</div>
+						))}
+
+					{filterValue === undefined ||
 						(sanitizeSettingsSearchValue(
 							i18next.t('SETTINGS.KARAOKE.MINUTES_BEFORE_SESSION_ENDS_WARNING')
 						).includes(filterValue) && (

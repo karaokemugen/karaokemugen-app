@@ -4,11 +4,11 @@ import i18next from 'i18next';
 import { debounce } from 'lodash';
 import { Fragment, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { DragDropContext, Draggable, DraggableProvided, Droppable, DropResult } from 'react-beautiful-dnd';
-import { ItemProps, ListRange, Virtuoso } from 'react-virtuoso';
+import { ListRange, Virtuoso } from 'react-virtuoso';
 
-import { DownloadedStatus } from '../../../../../src/lib/types/database/download';
-import { KaraDownloadRequest } from '../../../../../src/types/download';
-import { PublicPlayerState } from '../../../../../src/types/state';
+import type { DownloadedStatus } from '../../../../../src/lib/types/database/download';
+import type { KaraDownloadRequest } from '../../../../../src/types/download';
+import type { PublicPlayerState } from '../../../../../src/types/state';
 import GlobalContext from '../../../store/context';
 import TasksEvent from '../../../TasksEvent';
 import { useDeferredEffect, useResizeListener } from '../../../utils/hooks';
@@ -28,9 +28,9 @@ import CriteriasList from './CriteriasList';
 import KaraLine from './KaraLine';
 import PlaylistHeader from './PlaylistHeader';
 import QuizRanking from './QuizRanking';
-import { TagTypeNum } from '../../../../../src/lib/types/tag';
+import type { TagTypeNum } from '../../../../../src/lib/types/tag';
 import { setIndexKaraDetail } from '../../../store/actions/frontendContext';
-import { RepositoryManifestV2 } from '../../../../../src/lib/types/repo';
+import type { RepositoryManifestV2 } from '../../../../../src/lib/types/repo';
 
 // Virtuoso's resize observer can this error,
 // which is caught by DnD and aborts dragging.
@@ -44,7 +44,7 @@ window.addEventListener('error', e => {
 });
 
 const chunksize = 400;
-let timer: any;
+let timer: NodeJS.Timeout;
 
 interface IProps {
 	scope: 'admin' | 'public';
@@ -55,13 +55,13 @@ interface IProps {
 	openKara: (kara: KaraElement, index?: number) => void;
 	searchValue?: string;
 	searchCriteria?: 'year' | 'tag';
-	searchType?: 'search' | 'recent' | 'requested';
+	searchType?: 'search' | 'recent' | 'requested' | 'incoming';
 	quizRanking?: boolean;
 }
 interface KaraList {
 	content: KaraElement[];
-	avatars: any;
-	i18n?: any;
+	avatars: Record<string, string>;
+	i18n?: Record<string, string>;
 	infos: {
 		count: number;
 		from: number;
@@ -74,7 +74,7 @@ function Playlist(props: IProps) {
 	const refContainer = useRef<HTMLDivElement>();
 	const [searchValue, setSearchValue] = useState(props.searchValue);
 	const [searchCriteria, setSearchCriteria] = useState<'year' | 'tag'>(props.searchCriteria);
-	const [searchType, setSearchType] = useState<'search' | 'recent' | 'requested'>(
+	const [searchType, setSearchType] = useState<'search' | 'recent' | 'requested' | 'incoming'>(
 		props.searchType ? props.searchType : 'search'
 	);
 	const [orderByLikes, setOrderByLikes] = useState(false);
@@ -82,6 +82,7 @@ function Playlist(props: IProps) {
 	const [stopUpdate, setStopUpdate] = useState(false);
 	const [data, setData] = useState<KaraList>();
 	const [checkedKaras, setCheckedKaras] = useState(0);
+	const [plcidToSwap, setPlcidToSwap] = useState<number>();
 	const [playing, setPlaying] = useState<number>(
 		getPlaylistInfo(props.side, context)?.content.findIndex(k => k.flag_playing)
 	);
@@ -94,7 +95,7 @@ function Playlist(props: IProps) {
 	const [selectAllKarasChecked, setSelectAllKarasChecked] = useState(false);
 	const [criteriasOpen, setCriteriasOpen] = useState(false);
 	const [refreshLibraryBanner, setRefreshLibraryBanner] = useState(false);
-	const virtuoso = useRef<any>(null);
+	const virtuoso = useRef(null);
 	const plaid = useRef<string>(getPlaylistInfo(props.side, context)?.plaid);
 
 	const quizRanking = context.globalState.settings.data.state.quiz.running && props.quizRanking;
@@ -255,7 +256,7 @@ function Playlist(props: IProps) {
 		getPlaylistInfo(props.side, context)?.plaid,
 	]);
 
-	const HeightPreservingItem = ({ children, ...props }: PropsWithChildren<ItemProps<any>>) => {
+	const HeightPreservingItem = ({ children, ...props }: PropsWithChildren) => {
 		const [size, setSize] = useState(0);
 		const knownSize = props['data-known-size'];
 		useEffect(() => {
@@ -267,8 +268,7 @@ function Playlist(props: IProps) {
 			<div
 				{...props}
 				className="height-preserving-container"
-				//@ts-ignore
-				// check styling in the style tag below
+				//@ts-expect-error check styling in the style tag below
 				style={{ '--child-height': `${size}px` }}
 			>
 				{children}
@@ -317,6 +317,9 @@ function Playlist(props: IProps) {
 						}}
 						sortable={sortable}
 						draggable={provided}
+						playingIn={props.searchType === 'incoming'}
+						plcidToSwap={plcidToSwap}
+						swapPLCs={props.searchType === 'incoming' ? swapPLCs : undefined}
 					/>
 				);
 			} else {
@@ -331,7 +334,7 @@ function Playlist(props: IProps) {
 				);
 			}
 		},
-		[sortable, playing, data, songsBeforeSponsor, songsBeforeJingle, checkedKaras]
+		[sortable, playing, data, songsBeforeSponsor, songsBeforeJingle, checkedKaras, plcidToSwap]
 	);
 
 	const [repoInProgress, setRepoInProgress] = useState(false);
@@ -407,8 +410,11 @@ function Playlist(props: IProps) {
 		return url;
 	};
 
-	const getPlaylist = async (searchTypeParam?: 'search' | 'recent' | 'requested', orderByLikesParam?: boolean) => {
-		const criterias: any = {
+	const getPlaylist = async (
+		searchTypeParam?: 'search' | 'recent' | 'requested' | 'incoming',
+		orderByLikesParam?: boolean
+	) => {
+		const criterias = {
 			year: 'y',
 			tag: 't',
 		};
@@ -422,7 +428,7 @@ function Playlist(props: IProps) {
 			search = searchTypeParam;
 			if (data?.infos) data.infos.from = 0;
 			setData(data);
-		} else if (data?.infos?.from === 0) {
+		} else if (data?.infos?.from === 0 && searchType !== 'incoming') {
 			setSearchType(undefined);
 			search = undefined;
 		}
@@ -431,7 +437,19 @@ function Playlist(props: IProps) {
 			order = orderByLikesParam;
 		}
 		const url: string = getPlaylistUrl();
-		const param: any = {};
+		const param: {
+			plaid: string;
+			orderByLikes: boolean;
+			filter: string;
+			from: number;
+			size: number;
+			blacklist: boolean;
+			parentsOnly: boolean;
+			order: string;
+			q: string;
+			incomingSongs: boolean;
+			filterByUser: string;
+		} = {} as never;
 		if (!isNonStandardPlaylist(loadingPlaid)) {
 			param.plaid = loadingPlaid;
 			if (order || (order === undefined && order)) {
@@ -442,16 +460,20 @@ function Playlist(props: IProps) {
 		param.filter = getFilterValue(props.side);
 		param.from = data?.infos?.from > 0 ? data.infos.from : 0;
 		param.size = data?.infos?.from > 0 && data?.infos?.to > 0 ? data.infos.to - data.infos.from : chunksize;
+
 		param.blacklist = true;
 		param.parentsOnly =
 			!isAdmin &&
 			searchCriteria !== 'tag' &&
 			context.globalState.settings.data.user.flag_parentsonly &&
 			param.plaid !== nonStandardPlaylists.favorites;
-		if (search) {
+
+		if (search === 'incoming') {
+			param.incomingSongs = search === 'incoming';
+			param.order = 'search';
+			param.filterByUser = context.globalState.auth.data.username;
+		} else if (search) {
 			param.order = search === 'search' ? undefined : search;
-		} else if (search !== 'search') {
-			param.order = search;
 		}
 		if (searchCriteria && searchValue) {
 			param.q = `${searchCriteria ? criterias[searchCriteria] : ''}:${searchValue}`;
@@ -490,27 +512,31 @@ function Playlist(props: IProps) {
 	const playingUpdate = useCallback(
 		(dataUpdate: { plaid: string; plc_id: number }) => {
 			if (!stopUpdate && getPlaylistInfo(props.side, context)?.plaid === dataUpdate.plaid) {
-				setData(oldData => {
-					if (oldData) {
-						let indexPlaying;
-						for (let index = 0; index < oldData.content.length; index++) {
-							const kara = oldData.content[index];
-							if (kara?.plcid === dataUpdate.plc_id) {
-								kara.flag_playing = true;
-								indexPlaying = index;
-								if (goToPlaying) {
-									scrollToIndex(index);
-									setGotToPlayingAvoidScroll(true);
+				if (props.searchType === 'incoming') {
+					getPlaylist();
+				} else {
+					setData(oldData => {
+						if (oldData) {
+							let indexPlaying;
+							for (let index = 0; index < oldData.content.length; index++) {
+								const kara = oldData.content[index];
+								if (kara?.plcid === dataUpdate.plc_id) {
+									kara.flag_playing = true;
+									indexPlaying = index;
+									if (goToPlaying) {
+										scrollToIndex(index);
+										setGotToPlayingAvoidScroll(true);
+									}
+									setPlaying(indexPlaying);
+								} else if (kara?.flag_playing) {
+									kara.flag_playing = false;
+									kara.flag_dejavu = true;
 								}
-								setPlaying(indexPlaying);
-							} else if (kara?.flag_playing) {
-								kara.flag_playing = false;
-								kara.flag_dejavu = true;
 							}
 						}
-					}
-					return oldData;
-				});
+						return oldData;
+					});
+				}
 			}
 		},
 		[goToPlaying]
@@ -635,7 +661,7 @@ function Playlist(props: IProps) {
 	};
 
 	const getSearchTagForAddAll = () => {
-		const criterias: any = {
+		const criterias = {
 			year: 'y',
 			tag: 't',
 		};
@@ -711,7 +737,7 @@ function Playlist(props: IProps) {
 		}).catch(() => {});
 	};
 
-	const addCheckedKaras = async (_event?: any, pos?: number) => {
+	const addCheckedKaras = async (_?, pos?: number) => {
 		const listKara = data?.content.filter(a => a?.checked);
 		if (!listKara || listKara.length === 0) {
 			displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
@@ -1012,6 +1038,21 @@ function Playlist(props: IProps) {
 		setRepositories(newRepos);
 	};
 
+	const swapPLCs = async (plc: number) => {
+		if (plcidToSwap && plc) {
+			if (plc !== plcidToSwap) {
+				await commandBackend('swapPLCs', {
+					plcid1: plcidToSwap,
+					plcid2: plc,
+				});
+			}
+			setPlcidToSwap(undefined);
+		} else if (plc) {
+			setPlcidToSwap(plc);
+			displayMessage('success', i18next.t('KARA.SWAP_DESCRIPTION'));
+		}
+	};
+
 	useDeferredEffect(() => {
 		getRepositories();
 	}, [context.globalState.settings.data.config.System.Repositories]);
@@ -1030,9 +1071,10 @@ function Playlist(props: IProps) {
 		if (
 			isAdmin &&
 			getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.library &&
-			props.searchMenuOpen
+			props.searchMenuOpen &&
+			props.toggleSearchMenu
 		) {
-			props.toggleSearchMenu && props.toggleSearchMenu();
+			props.toggleSearchMenu();
 		}
 	}, [getPlaylistInfo(props.side, context)?.plaid]);
 
@@ -1160,7 +1202,7 @@ function Playlist(props: IProps) {
 										EmptyPlaceholder: noRowsRenderer,
 										Footer: () => <div style={{ height: '2.25rem' }} />,
 									}}
-									// @ts-ignore
+									// @ts-expect-error Ignore virtuso typing error
 									scrollerRef={provided.innerRef}
 									style={{ flex: '1 0 auto' }}
 									itemContent={index => (

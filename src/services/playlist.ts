@@ -260,11 +260,11 @@ export async function isUserAllowedToAddKara(plaid: string, user: User, duration
 /** Set a PLC flag_playing to enabled */
 export async function setPlaying(plc_id: number, plaid: string) {
 	await setPlayingFlag(plc_id, plaid);
+	updatePlaylistDuration(plaid);
 	emitWS('playingUpdated', {
 		plaid,
 		plc_id,
 	});
-	updatePlaylistDuration(plaid);
 }
 
 /** Trim playlist after a certain duration */
@@ -342,6 +342,23 @@ export async function emptyPlaylist(plaid: string): Promise<string> {
 		throw err instanceof ErrorKM ? err : new ErrorKM('PL_EMPTY_ERROR');
 	} finally {
 		profile('emptyPL');
+	}
+}
+
+export async function swapPLCs(plcid1: number, plcid2: number, token: OldJWTToken) {
+	if (!getConfig().Playlist.AllowPublicCurrentPlaylistItemSwap) throw new ErrorKM('PLC_SWAP_FORBIDDEN', 403);
+	const plcs = await getPLCInfoMini([plcid1, plcid2]);
+	if (
+		token.role !== 'admin' &&
+		(plcs[0].username !== token.username || plcs[1].username !== token.username || plcs[0].plaid !== plcs[1].plaid)
+	)
+		throw new ErrorKM('PLC_SWAP_FORBIDDEN', 403);
+	if (plcs[0].plcid === plcid1) {
+		await editPLC([plcid2], { pos: plcs[0].pos }, false);
+		await editPLC([plcid1], { pos: plcs[1].pos });
+	} else {
+		await editPLC([plcid2], { pos: plcs[1].pos }, false);
+		await editPLC([plcid1], { pos: plcs[0].pos });
 	}
 }
 
@@ -581,6 +598,17 @@ export function getPlaylistContentsMini(plaid: string) {
 	return selectPlaylistContentsMini(plaid);
 }
 
+export async function updateAllPlaylistDurations() {
+	profile('updateAllPlaylistsDurations');
+	const pls = await getPlaylists(adminToken);
+	const promises = [];
+	for (const pl of pls) {
+		promises.push(updatePlaylistDuration(pl.plaid));
+	}
+	await Promise.all(promises);
+	profile('updateAllPlaylistsDurations');
+}
+
 /** Get a tiny amount of data from a PLC
  * After Mini-PL, Micro-PL, we need the PL-C format.
  */
@@ -606,7 +634,9 @@ export async function getPlaylistContents(
 	from = 0,
 	size = 99999999999,
 	random = 0,
-	orderByLikes = false
+	orderByLikes = false,
+	incomingSongs = false,
+	filterByUser?: string
 ) {
 	try {
 		profile('getPLC');
@@ -620,6 +650,8 @@ export async function getPlaylistContents(
 			size,
 			random,
 			orderByLikes,
+			incomingSongs,
+			filterByUser,
 		});
 		if (from === -1) {
 			const pos = getPlayingPos(pl);
