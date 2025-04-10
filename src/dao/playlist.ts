@@ -374,7 +374,8 @@ export async function selectKarasFromCriterias(
 	let sql = '';
 	const criterias = await selectCriterias(plaid);
 	if (criterias.length === 0) return [];
-	logger.debug(`Criterias selected for playlist ${plaid}: ${JSON.stringify(criterias)}`, { service, obj: criterias });
+	// Uncomment this for
+	// logger.debug(`Criterias selected for playlist ${plaid}: ${JSON.stringify(criterias)}`, { service, obj: criterias });
 	const collections = getConfig().Karaoke.Collections;
 	const collectionClauses = [];
 	if (collections)
@@ -435,7 +436,8 @@ export async function selectKarasFromCriterias(
 					}`
 				: uniqueKIDsSQL;
 	}
-	logger.debug(`SQL for Smart playlist: "${sql}" with params ${params}`, { service });
+	// Uncomment this if smart playlist needs debugging
+	// logger.debug(`SQL for Smart playlist: "${sql}" with params ${params}`, { service });
 	const res = await db().query(sql, params);
 	// When INTERSECT, we add all criterias to the songs.
 	if (smartPlaylistType === 'INTERSECT') {
