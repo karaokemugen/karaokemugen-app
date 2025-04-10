@@ -2,6 +2,7 @@
 	"SEARCH": "Procurar",
 	"SUBMIT": "Gravar",
 	"CANCEL": "Cancelar",
+	"CONFIRM": "confirme",
 	"NOT_FOUND_PAGE": {
 		"404": "Perdido no Karaoke Mugen?",
 		"404_2": "Não entres em pânico, nós podemos te ajudar.",
@@ -2047,7 +2048,6 @@
 			"4": "Configurações do aplicativo (excluindo quaisquer informações privadas, como senhas ou chaves)"
 		},
 		"QUESTION": "Você concorda em enviar essas estatísticas para o Karaoke Mugen Server?",
-		"CONFIRM": "confirme",
 		"ERROR": "Karaoke Mugen pode enviar informações sobre sua instância para Sentry.io durante erros. Isso nos ajuda a resolvê-los, pois eles surgem muito mais rápido. Você concorda em enviar esses relatórios de erros?",
 		"TITLE": "Estatísticas",
 		"INTRO": "Karaoke Mugen pode enviar informações anônimas sobre sua instância ao Karaoke Mugen Server para criar estatísticas de uso.",

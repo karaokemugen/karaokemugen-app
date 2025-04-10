@@ -15,7 +15,7 @@ import PollModal from '../modals/PollModal';
 import TagsList from './TagsList';
 
 interface Props {
-	sort: 'search' | 'recent' | 'requested'; // Affects basic search, favorites has local sort state
+	sort: 'search' | 'recent' | 'requested' | 'incoming'; // Affects basic search, favorites has local sort state
 	poll: boolean;
 	plaid?: string;
 }

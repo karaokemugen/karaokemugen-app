@@ -29,7 +29,7 @@ import PublicHomepage from './PublicHomepage';
 import PublicList from './PublicList';
 import QuizPage from './QuizPage';
 
-let timer: any;
+let timer: NodeJS.Timeout;
 
 function PublicPage() {
 	const context = useContext(GlobalContext);
@@ -319,6 +319,15 @@ function PublicPage() {
 							/>
 							<Route path="/tags/:tagType" element={<PublicList sort="search" poll={isPollActive} />} />
 							<Route
+								path="/playlist/current/me"
+								element={
+									<Navigate
+										to={`/public/playlist/${context.globalState.settings.data.state.currentPlaid}/me`}
+										replace={true}
+									/>
+								}
+							/>
+							<Route
 								path="/playlist/current"
 								element={
 									<Navigate
@@ -335,6 +344,10 @@ function PublicPage() {
 										replace={true}
 									/>
 								}
+							/>
+							<Route
+								path="/playlist/:plaid/me"
+								element={<PublicList sort="incoming" poll={isPollActive} />}
 							/>
 							<Route path="/playlist/:plaid" element={<PublicList sort="search" poll={isPollActive} />} />
 							<Route

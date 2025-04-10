@@ -180,6 +180,13 @@ Playlist:
   EndOfPlaylistAction: none
   # Should a message be displayed on screen inviting people to add songs?
   RandomSongsAfterEndMessage: true
+  # Allow public to swap current playlist items they own
+  AllowPublicCurrentPlaylistItemSwap: true;
+  # Allow public to add the same song multiple times
+  # - allowed : public can add the same song multiple times
+  # - upvotes : public can only upvote a song already present
+  # - disallowed : public can't add the same song multiple times
+  AllowPublicDuplicates: upvotes
   # Allow duplicates in current playlist
   AllowDuplicates: false
   # Time after which a song is not considered recently played anymore in minutes

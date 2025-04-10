@@ -30,8 +30,12 @@ import {
 import { KaraElement } from '../../types/kara';
 import KaraMenuModal from '../modals/KaraMenuModal';
 import ActionsButtons from './ActionsButtons';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
 
-const DragHandle = ({ dragHandleProps }) => (
+dayjs.extend(relativeTime);
+
+const DragHandle = ({ dragHandleProps }: { dragHandleProps: object }) => (
 	<span {...dragHandleProps} className="dragHandle">
 		<i className="fas fa-ellipsis-v" />
 	</span>
@@ -41,7 +45,7 @@ interface IProps {
 	kara: KaraElement;
 	side: 'left' | 'right';
 	scope: 'admin' | 'public';
-	i18nTag: { [key: string]: { [key: string]: string } };
+	i18nTag: Record<string, string>;
 	avatar_file: string;
 	indexInPL: number;
 	checkKara: (id: number | string) => void;
@@ -52,6 +56,9 @@ interface IProps {
 	openKara: (kara: KaraElement) => void;
 	sortable: boolean;
 	draggable: DraggableProvided;
+	playingIn?: boolean;
+	plcidToSwap?: number;
+	swapPLCs?: (plcid: number) => void;
 }
 
 function KaraLine(props: IProps) {
@@ -119,7 +126,7 @@ function KaraLine(props: IProps) {
 		}).catch(() => {});
 	};
 
-	const addKara = async (_event?: any, pos?: number) => {
+	const addKara = async (_, pos?: number) => {
 		let url = '';
 		let data;
 		const oppositePlaylist = getOppositePlaylistInfo(props.side, context);
@@ -185,9 +192,9 @@ function KaraLine(props: IProps) {
 		}
 	};
 
-	const transferKara = async (event: any, pos?: number) => {
+	const transferKara = async (_, pos?: number) => {
 		try {
-			await addKara(event, pos);
+			await addKara(_, pos);
 			deleteKara();
 		} catch (_) {
 			// already display
@@ -339,6 +346,24 @@ function KaraLine(props: IProps) {
 								</button>
 							) : null}
 						</div>
+						{context.globalState.settings.data.config.Playlist.AllowPublicCurrentPlaylistItemSwap &&
+						props.swapPLCs ? (
+							<button
+								title={i18next.t('KARA.SWAP_TOOLTIP')}
+								className={`btn btn-action karaLineButton swapButton ${props.plcidToSwap === kara.plcid ? 'btn-danger' : ''}`}
+								onClick={() => props.swapPLCs(kara.plcid)}
+							>
+								{props.plcidToSwap ? (
+									props.plcidToSwap === kara.plcid ? (
+										<i className="fas fa-fw fa-xmark" />
+									) : (
+										<i className="fas fa-fw fa-arrows-turn-right" />
+									)
+								) : (
+									<i className="fas fa-fw fa-retweet" />
+								)}
+							</button>
+						) : null}
 						{is_touch_device() || !isAdmin ? (
 							<div
 								className="contentDiv contentDivMobile"
@@ -415,10 +440,20 @@ function KaraLine(props: IProps) {
 												})}
 											</>
 										) : (
-											<span>
-												<i className="fas fa-fw fa-clock" />
-												{secondsTimeSpanToHMS(kara.duration, 'mm:ss')}
-											</span>
+											<div className="playingIn">
+												<div>
+													<i className="fas fa-fw fa-clock" />
+													{secondsTimeSpanToHMS(kara.duration, 'mm:ss')}
+												</div>
+												{props.playingIn && kara.playing_at ? (
+													<div>
+														{i18next.t('KARA_DETAIL.PLAYING_IN', {
+															time: dayjs(kara.playing_at).fromNow(true),
+															date: dayjs(kara.playing_at).format('HH[h]mm'),
+														})}
+													</div>
+												) : null}
+											</div>
 										)}
 									</div>
 									<div className="tagConteneur">
@@ -506,7 +541,11 @@ function KaraLine(props: IProps) {
 									<button
 										title={i18next.t('KARA_MENU.KARA_COMMANDS')}
 										onClick={event => {
-											karaMenu ? closeKaraMenu() : openKaraMenu(event);
+											if (karaMenu) {
+												closeKaraMenu();
+											} else {
+												openKaraMenu(event);
+											}
 										}}
 										className={
 											'btn showPlaylistCommands karaLineButton' + (karaMenu ? ' btn-primary' : '')

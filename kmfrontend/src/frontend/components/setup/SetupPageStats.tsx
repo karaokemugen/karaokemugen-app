@@ -107,7 +107,7 @@ function SetupPageStats() {
 			<div className="actions">
 				<label className="error">{error}</label>
 				<button type="button" onClick={updateStats}>
-					{i18next.t('ONLINE_STATS.CONFIRM')}
+					{i18next.t('CONFIRM')}
 				</button>
 			</div>
 		</section>

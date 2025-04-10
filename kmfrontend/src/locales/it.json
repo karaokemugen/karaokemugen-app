@@ -3,6 +3,7 @@
 	"NO": "No",
 	"AND": "e",
 	"CANCEL": "Annulla",
+	"CONFIRM": "Conferma",
 	"DETAILS": {
 		"YEAR": "Anno",
 		"DURATION": "Durata"
@@ -913,8 +914,7 @@
 		"QUESTION": "Acconsenti all'invio di queste statistiche al server di Karaoke Mugen?",
 		"CHANGE": "Puoi cambiare idea in qualsiasi momento tramite le opzioni.",
 		"ERROR": "Karaoke Mugen potrebbe inviare informazioni sulla tua sessione a Sentry.io durante gli errori, il che ci aiuta a risolverli più velocemente. Acconsenti all'invio di queste segnalazioni di errore?",
-		"TITLE": "Statistiche",
-		"CONFIRM": "Conferma"
+		"TITLE": "Statistiche"
 	},
 	"INSTANCE_NAME_SHORT": "Server",
 	"INSTANCE_NAME": "Nome del server",
