@@ -31,9 +31,6 @@ import { KaraElement } from '../../types/kara';
 import KaraMenuModal from '../modals/KaraMenuModal';
 import ActionsButtons from './ActionsButtons';
 import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
-
-dayjs.extend(relativeTime);
 
 const DragHandle = ({ dragHandleProps }: { dragHandleProps: object }) => (
 	<span {...dragHandleProps} className="dragHandle">
@@ -449,7 +446,7 @@ function KaraLine(props: IProps) {
 													<div>
 														{i18next.t('KARA_DETAIL.PLAYING_IN', {
 															time: dayjs(kara.playing_at).fromNow(true),
-															date: dayjs(kara.playing_at).format('HH[h]mm'),
+															date: dayjs(kara.playing_at).format('LT'),
 														})}
 													</div>
 												) : null}
@@ -487,7 +484,7 @@ function KaraLine(props: IProps) {
 											})}
 										/>
 									) : null}
-									{kara.upvotes && isAdmin ? (
+									{kara.upvotes ? (
 										<div className="upvoteCount" title={i18next.t('KARA_DETAIL.UPVOTE_NUMBER')}>
 											<i className="fas fa-thumbs-up" />
 											{kara.upvotes}
@@ -495,8 +492,15 @@ function KaraLine(props: IProps) {
 									) : null}
 									<div className="tagConteneur">{karaTags}</div>
 									<div>
-										<i className="fas fa-fw fa-clock" />
-										{secondsTimeSpanToHMS(kara.duration, 'mm:ss')}
+										<div className="playingIn">
+											<div>
+												<i className="fas fa-fw fa-clock" />
+												{secondsTimeSpanToHMS(kara.duration, 'mm:ss')}
+											</div>
+											{kara.playing_at ? (
+												<div>({dayjs(kara.playing_at).format('LT')})</div>
+											) : null}
+										</div>
 									</div>
 								</div>
 							</div>
