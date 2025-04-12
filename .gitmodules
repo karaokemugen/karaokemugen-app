@@ -6,4 +6,4 @@
 	url = ../../medias/guest-avatars
 [submodule "assets/systemRepo"]
 	path = assets/systemRepo
-	url = https://gitlab.com/karaokemugen/bases/system.git
+	url = ../../bases/system.git
