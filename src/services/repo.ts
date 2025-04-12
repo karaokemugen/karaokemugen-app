@@ -1,11 +1,11 @@
 import { shell } from 'electron';
 import { promises as fs } from 'fs';
 import { copy, remove } from 'fs-extra';
+import { isEqual } from 'lodash';
 import parallel from 'p-map';
 import { basename, dirname, extname, parse, resolve } from 'path';
 import { TopologicalSort } from 'topological-sort';
 
-import { isEqual } from 'lodash';
 import { compareKarasChecksum, generateDB } from '../dao/database.js';
 import { baseChecksum, editKaraInStore, getStoreChecksum, sortKaraStore } from '../dao/dataStore.js';
 import { updateDownloaded } from '../dao/download.js';
