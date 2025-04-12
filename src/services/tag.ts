@@ -17,6 +17,7 @@ import { removeTagInKaras } from '../dao/tagfile.js';
 import { saveSetting } from '../lib/dao/database.js';
 import { refreshKarasUpdate } from '../lib/dao/kara.js';
 import { formatKaraV4 } from '../lib/dao/karafile.js';
+import { setDefaultCollections } from '../lib/dao/repo.js';
 import { convertToDBTag, refreshTags, updateTagSearchVector } from '../lib/dao/tag.js';
 import { defineTagFilename, getDataFromTagFile, removeTagFile, trimTagData, writeTagFile } from '../lib/dao/tagfile.js';
 import { refreshKarasAfterDBChange } from '../lib/services/karaManagement.js';
@@ -36,7 +37,6 @@ import sentry from '../utils/sentry.js';
 import { getKaras } from './kara.js';
 import { editKara } from './karaCreation.js';
 import { getRepoMetadata, getRepos } from './repo.js';
-import { setDefaultCollections } from '../lib/dao/repo.js';
 
 const service = 'Tag';
 
@@ -158,9 +158,9 @@ export async function mergeTags(tid1: string, tid2: string) {
 		// So we don't do that.
 		// The query updates only rows where KIDs aren't already listed as belonging to the new TID.
 		// The remaining rows will disappear thanks to the removal of the old TIDs just after, thanks to ON DELETE CASCADE.
+		let karas = await getKarasWithTags([tag2]);
 		await updateKaraTagsTID(tid2, tagObj.tid);
 		await Promise.all([deleteTag([tid2]), removeTagFile(tag2.tagfile, tag2.repository), removeTagInStore(tid2)]);
-		let karas = await getKarasWithTags([tag2]);
 		if (karas.length > 0) {
 			await replaceTagInKaras(tid2, tagObj, karas);
 			karas = await getKarasWithTags([tagObj]);
