@@ -87,23 +87,23 @@ export default function initFrontend(): number {
 		});
 
 		// Path to video previews
-		app.use('/previews', express.static(resolvedPath('Previews'), { fallthrough: false }));
+		app.use('/previews', express.static(resolvedPath('Previews'), { dotfiles: 'allow', fallthrough: false }));
 		// Path to backgrounds
-		app.use('/backgrounds', express.static(resolvedPath('Backgrounds'), { fallthrough: false }));
+		app.use('/backgrounds', express.static(resolvedPath('Backgrounds'), { dotfiles: 'allow', fallthrough: false }));
 		// There's a single /medias path which will list all files in all folders. Pretty handy.
-		resolvedPathRepos('Medias').forEach(dir => app.use('/medias', express.static(dir)));
+		resolvedPathRepos('Medias').forEach(dir => app.use('/medias', express.static(dir, { dotfiles: 'allow' })));
 		// Path to user avatars
-		app.use('/avatars', express.static(resolvedPath('Avatars')));
+		app.use('/avatars', express.static(resolvedPath('Avatars'), { dotfiles: 'allow' }));
 
 		// Serve session export data
-		app.use('/sessionExports', express.static(resolve(state.dataPath, 'sessionExports/')));
+		app.use('/sessionExports', express.static(resolve(state.dataPath, 'sessionExports/'), { dotfiles: 'allow' }));
 
 		// HTTP standards are important.
 		app.use('/coffee', (_req, res) => res.status(418).json());
 
-		app.use('/', express.static(resolve(state.resourcePath, 'kmfrontend/dist')));
-		app.get('/*', (_req, res) => {
-			res.sendFile(resolve(state.resourcePath, 'kmfrontend/dist/index.html'));
+		app.use('/', express.static(resolve(state.resourcePath, 'kmfrontend/dist'), { dotfiles: 'allow' }));
+		app.get('/*splat', (_req, res) => {
+			res.sendFile(resolve(state.resourcePath, 'kmfrontend/dist/index.html'), { dotfiles: 'allow' });
 		});
 
 		const server = createServer(app);
