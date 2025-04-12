@@ -13,6 +13,7 @@ interface FoldersElementProps {
 	keyModal?: string;
 	openFile?: boolean;
 	openDirectory?: boolean;
+	disabled?: boolean;
 }
 
 interface FoldersElementState {
@@ -157,6 +158,7 @@ export default class FoldersElement extends Component<FoldersElementProps, Folde
 													value.splice(index, 1);
 													this.setState({ value: value });
 												}}
+												disabled={this.props.disabled}
 											/>
 										</div>
 									</>
@@ -167,12 +169,14 @@ export default class FoldersElement extends Component<FoldersElementProps, Folde
 									}
 									style={{ maxWidth: this.state.value.length > 1 ? '500px' : '700px' }}
 									defaultValue={element}
+									disabled={this.props.disabled}
 								/>
 							</div>
 						))}
 						<Button
 							type="primary"
 							onClick={() => this.openFileSystemModal(this.state.value, -1, this.props.keyModal)}
+							disabled={this.props.disabled}
 						>
 							<PlusOutlined />
 							{this.getButtonLabel()}
@@ -182,6 +186,7 @@ export default class FoldersElement extends Component<FoldersElementProps, Folde
 					<Input
 						onClick={() => this.openFileSystemModal(this.props.value, undefined, this.props.keyModal)}
 						value={this.state.value}
+						disabled={this.props.disabled}
 					/>
 				)}
 

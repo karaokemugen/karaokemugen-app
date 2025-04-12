@@ -1040,7 +1040,10 @@ function checkRepoPaths(repo: Repository) {
 		) {
 			throw new ErrorKM('REPO_PATH_ERROR_IN_APP_PATH', 400, false);
 		}
-		if (pathIsContainedInAnother(resolve(getState().dataPath, path), resolve(getState().dataPath, repo.BaseDir))) {
+		if (
+			!repo.System &&
+			pathIsContainedInAnother(resolve(getState().dataPath, path), resolve(getState().dataPath, repo.BaseDir))
+		) {
 			throw new ErrorKM('REPO_PATH_ERROR_IN_BASE_PATH', 400, false);
 		}
 		if (windowsDriveRootRegexp.test(path)) {

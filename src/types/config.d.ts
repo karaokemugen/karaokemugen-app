@@ -222,6 +222,7 @@ export interface Config {
 		RandomSongsAfterEndMessage: boolean;
 	};
 	System: {
+		SystemRepositoryMaintainance?: boolean;
 		FrontendPort: number;
 		Database: {
 			host?: string;
