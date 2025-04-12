@@ -4,8 +4,8 @@ import { useForm } from 'antd/es/form/Form';
 import i18next from 'i18next';
 import { useEffect, useState } from 'react';
 
-import { Repository } from '../../../../../src/lib/types/repo';
-import { TaskItem } from '../../../../../src/lib/types/taskItem';
+import type { Repository } from '../../../../../src/lib/types/repo';
+import type { TaskItem } from '../../../../../src/lib/types/taskItem';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import FoldersElement from '../../components/FoldersElement';
 
@@ -34,8 +34,10 @@ function RepositoryForm(props: RepositoriesFormProps) {
 	const [isSshUrl, setIsSShUrl] = useState(props.repository?.Git?.URL.toLowerCase().startsWith('git@'));
 
 	const getRepositories = async () => {
-		const res = await commandBackend('getRepos');
-		setRepositoriesValue(res.filter(repo => repo.Name !== props.repository.Name).map(repo => repo.Name));
+		const res: Repository[] = await commandBackend('getRepos');
+		setRepositoriesValue(
+			res.filter(repo => repo.Name !== props.repository.Name && !repo.System).map(repo => repo.Name)
+		);
 	};
 
 	const getSshkey = async () => {
@@ -89,6 +91,7 @@ function RepositoryForm(props: RepositoriesFormProps) {
 		const repository: Repository = {
 			Name: values.Name,
 			Online: values.Online,
+			System: props.repository?.System,
 			Enabled: values.Enabled,
 			Secure: values.Secure,
 			SendStats: values.SendStats,
@@ -180,7 +183,11 @@ function RepositoryForm(props: RepositoriesFormProps) {
 				]}
 				name="Name"
 			>
-				<Input placeholder={i18next.t('REPOSITORIES.NAME')} onBlur={setDefaultFolders} />
+				<Input
+					placeholder={i18next.t('REPOSITORIES.NAME')}
+					onBlur={setDefaultFolders}
+					disabled={props.repository?.System}
+				/>
 			</Form.Item>
 			<Form.Item
 				label={i18next.t('REPOSITORIES.ONLINE')}
@@ -188,7 +195,7 @@ function RepositoryForm(props: RepositoriesFormProps) {
 				valuePropName="checked"
 				name="Online"
 			>
-				<Checkbox onChange={e => setOnlineMode(e.target.checked)} />
+				<Checkbox onChange={e => setOnlineMode(e.target.checked)} disabled={props.repository?.System} />
 			</Form.Item>
 			<Form.Item
 				label={i18next.t('REPOSITORIES.ENABLED')}
@@ -300,7 +307,11 @@ function RepositoryForm(props: RepositoriesFormProps) {
 				]}
 				name="BaseDir"
 			>
-				<FoldersElement openDirectory={true} onChange={value => form.setFieldsValue({ BaseDir: value })} />
+				<FoldersElement
+					openDirectory={true}
+					onChange={value => form.setFieldsValue({ BaseDir: value })}
+					disabled={props.repository?.System}
+				/>
 			</Form.Item>
 			<Form.Item
 				label={i18next.t('REPOSITORIES.PATH_MEDIAS')}
@@ -315,7 +326,11 @@ function RepositoryForm(props: RepositoriesFormProps) {
 				]}
 				name="PathMedias"
 			>
-				<FoldersElement openDirectory={true} onChange={value => form.setFieldsValue({ PathMedias: value })} />
+				<FoldersElement
+					openDirectory={true}
+					onChange={value => form.setFieldsValue({ PathMedias: value })}
+					disabled={props.repository?.System}
+				/>
 			</Form.Item>
 			{maintainerMode && onlineMode ? (
 				<>
@@ -446,45 +461,49 @@ function RepositoryForm(props: RepositoriesFormProps) {
 			</Form.Item>
 			{props.repository.Name ? (
 				<>
-					<Divider orientation="left">{i18next.t('REPOSITORIES.COMPARE_LYRICS')}</Divider>
-					<Alert
-						style={{ textAlign: 'left', marginBottom: '10px' }}
-						message={i18next.t('REPOSITORIES.COMPARE_ABOUT_MESSAGE')}
-						type="info"
-					/>
-					{repositoriesValue ? (
+					{props.repository.System ? null : (
 						<>
-							<Form.Item
-								label={i18next.t('REPOSITORIES.CHOOSE_REPOSITORY')}
-								labelCol={{ flex: '0 1 300px' }}
-							>
-								<Select
-									style={{ maxWidth: '50%', minWidth: '150px' }}
-									placeholder={i18next.t('TAGS.REPOSITORY')}
-									onChange={value => setCompareRepo(value.toString())}
-								>
-									{repositoriesValue.map(repo => {
-										return (
-											<Select.Option key={repo} value={repo}>
-												{repo}
-											</Select.Option>
-										);
-									})}
-								</Select>
-							</Form.Item>
-							<Form.Item labelCol={{ flex: '0 1 300px' }} style={{ textAlign: 'right' }}>
-								<div>
-									<Button
-										type="primary"
-										disabled={zipUpdateInProgress}
-										onClick={() => props.compareLyrics(compareRepo)}
+							<Divider orientation="left">{i18next.t('REPOSITORIES.COMPARE_LYRICS')}</Divider>
+							<Alert
+								style={{ textAlign: 'left', marginBottom: '10px' }}
+								message={i18next.t('REPOSITORIES.COMPARE_ABOUT_MESSAGE')}
+								type="info"
+							/>
+							{repositoriesValue ? (
+								<>
+									<Form.Item
+										label={i18next.t('REPOSITORIES.CHOOSE_REPOSITORY')}
+										labelCol={{ flex: '0 1 300px' }}
 									>
-										{i18next.t('REPOSITORIES.COMPARE_BUTTON')}
-									</Button>
-								</div>
-							</Form.Item>
+										<Select
+											style={{ maxWidth: '50%', minWidth: '150px' }}
+											placeholder={i18next.t('TAGS.REPOSITORY')}
+											onChange={value => setCompareRepo(value.toString())}
+										>
+											{repositoriesValue.map(repo => {
+												return (
+													<Select.Option key={repo} value={repo}>
+														{repo}
+													</Select.Option>
+												);
+											})}
+										</Select>
+									</Form.Item>
+									<Form.Item labelCol={{ flex: '0 1 300px' }} style={{ textAlign: 'right' }}>
+										<div>
+											<Button
+												type="primary"
+												disabled={zipUpdateInProgress}
+												onClick={() => props.compareLyrics(compareRepo)}
+											>
+												{i18next.t('REPOSITORIES.COMPARE_BUTTON')}
+											</Button>
+										</div>
+									</Form.Item>
+								</>
+							) : null}
 						</>
-					) : null}
+					)}
 					<Divider orientation="left">{i18next.t('REPOSITORIES.SYNCHRONIZE_TAGS')}</Divider>
 					<Alert
 						style={{ textAlign: 'left', marginBottom: '10px' }}
@@ -524,49 +543,53 @@ function RepositoryForm(props: RepositoriesFormProps) {
 							</Form.Item>
 						</>
 					) : null}
-					<Divider orientation="left">{i18next.t('REPOSITORIES.MOVING_MEDIA_PANEL')}</Divider>
+					{props.repository.System ? null : (
+						<>
+							<Divider orientation="left">{i18next.t('REPOSITORIES.MOVING_MEDIA_PANEL')}</Divider>
 
-					<Form.Item
-						hasFeedback
-						label={i18next.t('REPOSITORIES.MOVING_MEDIA')}
-						labelCol={{ flex: '0 1 300px' }}
-					>
-						<FoldersElement openDirectory={true} onChange={value => setMovingMediaPath(value)} />
-					</Form.Item>
-					<Form.Item style={{ textAlign: 'right' }}>
-						<Button
-							type="primary"
-							danger
-							disabled={zipUpdateInProgress}
-							onClick={() => props.movingMedia(movingMediaPath)}
-						>
-							{i18next.t('REPOSITORIES.MOVING_MEDIA_BUTTON')}
-						</Button>
-						<Alert
-							style={{ textAlign: 'left', marginTop: '10px' }}
-							message={i18next.t('WARNING')}
-							description={i18next.t('REPOSITORIES.MOVING_MEDIA_ABOUT_MESSAGE')}
-							type="warning"
-						/>
-					</Form.Item>
-					<Divider orientation="left">{i18next.t('REPOSITORIES.CONVERT_TO_UUID_PANEL')}</Divider>
+							<Form.Item
+								hasFeedback
+								label={i18next.t('REPOSITORIES.MOVING_MEDIA')}
+								labelCol={{ flex: '0 1 300px' }}
+							>
+								<FoldersElement openDirectory={true} onChange={value => setMovingMediaPath(value)} />
+							</Form.Item>
+							<Form.Item style={{ textAlign: 'right' }}>
+								<Button
+									type="primary"
+									danger
+									disabled={zipUpdateInProgress}
+									onClick={() => props.movingMedia(movingMediaPath)}
+								>
+									{i18next.t('REPOSITORIES.MOVING_MEDIA_BUTTON')}
+								</Button>
+								<Alert
+									style={{ textAlign: 'left', marginTop: '10px' }}
+									message={i18next.t('WARNING')}
+									description={i18next.t('REPOSITORIES.MOVING_MEDIA_ABOUT_MESSAGE')}
+									type="warning"
+								/>
+							</Form.Item>
+							<Divider orientation="left">{i18next.t('REPOSITORIES.CONVERT_TO_UUID_PANEL')}</Divider>
 
-					<Form.Item style={{ textAlign: 'right' }}>
-						<Button
-							type="primary"
-							danger
-							disabled={zipUpdateInProgress}
-							onClick={() => props.convertToUUID(props.repository.Name)}
-						>
-							{i18next.t('REPOSITORIES.CONVERT_TO_UUID_BUTTON')}
-						</Button>
-						<Alert
-							style={{ textAlign: 'left', marginTop: '10px' }}
-							message={i18next.t('WARNING')}
-							description={i18next.t('REPOSITORIES.CONVERT_TO_UUID_ABOUT_MESSAGE')}
-							type="warning"
-						/>
-					</Form.Item>
+							<Form.Item style={{ textAlign: 'right' }}>
+								<Button
+									type="primary"
+									danger
+									disabled={zipUpdateInProgress}
+									onClick={() => props.convertToUUID(props.repository.Name)}
+								>
+									{i18next.t('REPOSITORIES.CONVERT_TO_UUID_BUTTON')}
+								</Button>
+								<Alert
+									style={{ textAlign: 'left', marginTop: '10px' }}
+									message={i18next.t('WARNING')}
+									description={i18next.t('REPOSITORIES.CONVERT_TO_UUID_ABOUT_MESSAGE')}
+									type="warning"
+								/>
+							</Form.Item>
+						</>
+					)}
 				</>
 			) : null}
 		</Form>

@@ -40,7 +40,7 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 
 	deleteRepository = async (repository: Repository) => {
 		try {
-			await commandBackend('deleteRepo', { name: repository.Name }, true);
+			await commandBackend('deleteRepo', { name: repository.Name });
 		} catch (_) {
 			// already display
 		}
@@ -60,7 +60,7 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 			this.refresh();
 			if (timer) clearTimeout(timer);
 			timer = setTimeout(() => {
-				commandBackend('generateDatabase', undefined, true, 300000).catch(() => {});
+				commandBackend('generateDatabase', undefined, false, 300000).catch(() => {});
 			}, 5000);
 		} catch (_) {
 			// already display

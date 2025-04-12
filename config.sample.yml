@@ -222,6 +222,8 @@ Playlist:
       - ???
       - Mystery song!
 System:
+  # Allow to edit system repositories
+  SystemRepositoryMaintainance: false
   # Port to listen to
   FrontendPort: 1337
   Database:

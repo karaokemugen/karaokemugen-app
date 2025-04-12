@@ -45,7 +45,7 @@ import { v4 as UUIDv4 } from 'uuid';
 import { PositionX, PositionY } from '../../../../../src/lib/types';
 import { DBKara, DBKaraTag } from '../../../../../src/lib/types/database/kara';
 import type { EditedKara, KaraFileV4, MediaInfo, MediaInfoValidationResult } from '../../../../../src/lib/types/kara';
-import type { RepositoryManifestV2 } from '../../../../../src/lib/types/repo';
+import type { Repository, RepositoryManifestV2 } from '../../../../../src/lib/types/repo';
 import { blobToBase64 } from '../../../../../src/lib/utils/filesCommon';
 import GlobalContext from '../../../store/context';
 import { buildKaraTitle, getPreviewLink, getPreviewPath, getTagInLocale } from '../../../utils/kara';
@@ -477,8 +477,10 @@ function KaraForm(props: KaraFormProps) {
 	};
 
 	const getRepositories = async () => {
-		const res = await commandBackend('getRepos');
-		setRepositoriesValue(res.filter(repo => repo.MaintainerMode || !repo.Online).map(repo => repo.Name));
+		const res: Repository[] = await commandBackend('getRepos');
+		setRepositoriesValue(
+			res.filter(repo => repo.MaintainerMode || (!repo.Online && !repo.System)).map(repo => repo.Name)
+		);
 	};
 
 	const previewHooks = async () => {
