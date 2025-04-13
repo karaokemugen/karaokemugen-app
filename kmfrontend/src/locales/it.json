@@ -266,7 +266,9 @@
 			"ALLOW_PUBLIC_DUPLICATES": "Consenti brani doppioni in playlist (pubblico)",
 			"ALLOW_PUBLIC_DUPLICATES_TOOLTIP": "Scegli se consentire al pubblico di aggiungere un brano più volte. Un utente non può aggiungere un brano già aggiunto da sé stesso, ma può aggiungerne uno già aggiunto da un altro utente. Selezionando \"Voti\", gli utenti non potranno aggiungere doppioni ma potranno votare brani già presenti. \"Consenti\" va bene per un Karaoke classico, \"Voti\" per un Karaoke pubblico.",
 			"FREE_ACCEPTED_SONGS": "Libera i brani accettati",
-			"FREE_ACCEPTED_SONGS_TOOLTIP": "I brani verranno liberati una volta accettati da un operatore della playlist pubblica. Il richiedente del brano riotterrà la quota spesa."
+			"FREE_ACCEPTED_SONGS_TOOLTIP": "I brani verranno liberati una volta accettati da un operatore della playlist pubblica. Il richiedente del brano riotterrà la quota spesa.",
+			"ALLOW_PLAYLIST_ITEM_SWAP_TOOLTIP": "Gli utenti possono cambiare l'ordine dei brani da loro richiesti se vogliono cantare prima un brano specifico.",
+			"ALLOW_PLAYLIST_ITEM_SWAP": "Consenti al pubblico di cambiare l'ordine dei propri brani"
 		},
 		"PLAYLIST": {
 			"ENDOFPLAYLISTACTION": {
@@ -358,7 +360,8 @@
 		"RESTRICTED_DESCRIPTION": "Il karaoke è in modalità limitata, non puoi aggiungere brani.",
 		"QUOTA_KARA_DESCRIPTION_one": "Puoi suggerire solo {{count}} brano. Potrai suggerirne altri dopo che l'operatore avrà accettato o rifiutato i tuoi suggerimenti o quando il tuo brano verrà riprodotto a schermo.",
 		"PUBLIC_SUGGESTIONS_SHORT": "Suggerimenti",
-		"OPEN_POLL": "Vota il prossimo brano"
+		"OPEN_POLL": "Vota il prossimo brano",
+		"MY_INCOMING_SONGS": "I miei brani successivi"
 	},
 	"KARA_MENU": {
 		"WHITELISTED": "Aggiunto alla whitelist!",
@@ -1171,7 +1174,8 @@
 		"UNKNOWN_PARENT_FROM_INBOX": "Versione principale di questo brano sconosciuta",
 		"REPOS_MULTIPLE_USED_MEDIA_PATH_ERROR": "La cartella dei file multimediali è già utilizzata da un altro archivio",
 		"UPDATING_MEDIAS_MULTIPLE_USED_MEDIA_PATH_ERROR": "Diversi archivi condividono la stessa cartella dei file multimediali, ciò causerà rimozioni indesiderate. Si prega di cambiare la cartella dei file multimediali di questi archivi: {{repos}}",
-		"REPO_MANIFEST_GET_ERROR": "Manifesto dell'archivio non trovato"
+		"REPO_MANIFEST_GET_ERROR": "Manifesto dell'archivio non trovato",
+		"PLC_SWAP_FORBIDDEN": "Non è consentito cambiare l'ordine dei brani"
 	},
 	"KARA": {
 		"PAUSE_DOWNLOAD_QUEUE": "Sospendi",
@@ -1344,7 +1348,9 @@
 		"KARA_FIELD_REQUIRED": "Il campo {{field}} è obbligatorio",
 		"KARA_GROUP_FIELD_REQUIRED": "I campi {{fields}} non possono essere entrambi vuoti.",
 		"USEEMBEDDEDLYRICS": "Prioritizza il testo allegato al file multimediale",
-		"USEEMBEDDEDLYRICS_TOOLTIP": "Se il file multimediale caricato contiene un file ASS, questo verrà estratto e sostituirà il file del testo attuale."
+		"USEEMBEDDEDLYRICS_TOOLTIP": "Se il file multimediale caricato contiene un file ASS, questo verrà estratto e sostituirà il file del testo attuale.",
+		"SWAP_DESCRIPTION": "Scegli un secondo brano con cui scambiarne la posizione",
+		"SWAP_TOOLTIP": "Cambia l'ordine dei brani da te richiesti"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_STARTED": "Avvio download",
