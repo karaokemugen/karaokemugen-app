@@ -32,7 +32,6 @@ function Home() {
 		displayMessage('error', i18next.t(data.code, data.data));
 	const operatorNotificationWarning = (data: { code: string; data: string }) => {
 		displayMessage('warning', i18next.t(data.code, data.data));
-		console.debug({ data });
 	};
 	const operatorNotificationSuccess = (data: { code: string; data: string }) =>
 		displayMessage('success', i18next.t(data.code, data.data));
