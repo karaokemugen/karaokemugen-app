@@ -12,6 +12,7 @@ import { useDeferredEffect } from '../../../utils/hooks';
 import { getTagInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { YEARS } from '../../../utils/tagTypes';
+import { WS_CMD } from '../../../utils/ws';
 
 const chunksize = 100;
 let timer: NodeJS.Timeout;
@@ -33,7 +34,7 @@ function TagsList() {
 
 	const getTags = async (from: number) => {
 		try {
-			const response = await commandBackend('getTags', {
+			const response = await commandBackend(WS_CMD.GET_TAGS, {
 				type: [tagType],
 				from,
 				size: chunksize,
@@ -68,7 +69,7 @@ function TagsList() {
 	};
 
 	const getYears = async () => {
-		const response = await commandBackend('getYears');
+		const response = await commandBackend(WS_CMD.GET_YEARS);
 		response.content = response.content.map((val: DBYear) => {
 			return { tid: val.year, name: val.year, type: [0], karacount: [{ type: 0, count: val.karacount }] };
 		});

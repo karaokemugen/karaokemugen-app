@@ -21,6 +21,7 @@ import QuizModal from './modals/QuizModal';
 import Tutorial from './modals/Tutorial';
 import UsersModal from './modals/UsersModal';
 import PlayerControls from './PlayerControls';
+import { WS_CMD } from '../../utils/ws';
 
 interface IProps {
 	currentPlaylist: PlaylistElem;
@@ -89,7 +90,7 @@ function AdminHeader(props: IProps) {
 			i18next.t('MODAL.STOP_QUIZ.DESCRIPTION'),
 			(hasConfirmed: boolean) => {
 				if (hasConfirmed) {
-					commandBackend('stopGame');
+					commandBackend(WS_CMD.STOP_GAME);
 				}
 			}
 		);
@@ -97,22 +98,22 @@ function AdminHeader(props: IProps) {
 
 	const saveOperatorAdd = (songVisibility: boolean) => {
 		const data = expand('Playlist.MysterySongs.AddedSongVisibilityAdmin', songVisibility);
-		commandBackend('updateSettings', { setting: data }).catch(() => {});
+		commandBackend(WS_CMD.UPDATE_SETTINGS, { setting: data }).catch(() => {});
 	};
 
 	const changePublicInterfaceMode = (value: number) => {
 		const data = expand('Frontend.Mode', value);
-		commandBackend('updateSettings', { setting: data }).catch(() => {});
+		commandBackend(WS_CMD.UPDATE_SETTINGS, { setting: data }).catch(() => {});
 	};
 
 	const changeLiveComments = (liveComments: boolean) => {
 		const data = expand('Player.LiveComments', liveComments);
-		commandBackend('updateSettings', { setting: data }).catch(() => {});
+		commandBackend(WS_CMD.UPDATE_SETTINGS, { setting: data }).catch(() => {});
 	};
 
 	const getPlayerStatus = async () => {
 		try {
-			const result = await commandBackend('getPlayerStatus');
+			const result = await commandBackend(WS_CMD.GET_PLAYER_STATUS);
 			playerUpdate(result);
 		} catch (_) {
 			// already display
@@ -175,14 +176,14 @@ function AdminHeader(props: IProps) {
 	};
 
 	const editCurrentPlaylist = async (plaid: string) => {
-		await commandBackend('editPlaylist', {
+		await commandBackend(WS_CMD.EDIT_PLAYLIST, {
 			flag_current: true,
 			plaid,
 		});
 	};
 
 	const editPublicPlaylist = async (plaid: string) => {
-		await commandBackend('editPlaylist', {
+		await commandBackend(WS_CMD.EDIT_PLAYLIST, {
 			flag_public: true,
 			plaid,
 		});

@@ -9,6 +9,7 @@ import Title from '../../components/Title';
 import dayjs from 'dayjs';
 import { SortOrder } from 'antd/es/table/interface';
 import { useContext, useEffect, useState } from 'react';
+import { WS_CMD } from '../../../utils/ws';
 
 function KaraHistory() {
 	const context = useContext(GlobalContext);
@@ -22,7 +23,7 @@ function KaraHistory() {
 
 	const refresh = async () => {
 		try {
-			const res = await commandBackend('getKaras', { order: 'history', ignoreCollections: true });
+			const res = await commandBackend(WS_CMD.GET_KARAS, { order: 'history', ignoreCollections: true });
 			setKaras(res.content);
 			setI18n(res.i18n);
 		} catch (_) {

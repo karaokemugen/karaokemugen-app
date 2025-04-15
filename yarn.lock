@@ -499,7 +499,7 @@
     "@eslint/core" "^0.13.0"
     levn "^0.4.1"
 
-"@fastify/otel@github:getsentry/fastify-otel#otel-v1":
+"@fastify/otel@getsentry/fastify-otel#otel-v1":
   version "0.8.0"
   resolved "https://codeload.github.com/getsentry/fastify-otel/tar.gz/ae3088d65e286bdc94ac5d722573537d6a6671bb"
   dependencies:

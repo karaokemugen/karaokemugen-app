@@ -9,6 +9,7 @@ import GlobalContext from '../../../store/context';
 import { useDeferredEffect } from '../../../utils/hooks';
 import { getTagInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
+import { WS_CMD } from '../../../utils/ws';
 
 interface Props {
 	tag: DBKaraTag;
@@ -32,7 +33,7 @@ export default function InlineTag(props: Props) {
 
 	const getTag = async () => {
 		if (props.tag) {
-			const res = await commandBackend('getTag', { tid: props.tag.tid });
+			const res = await commandBackend(WS_CMD.GET_TAG, { tid: props.tag.tid });
 			const count = Array.isArray(res.karacount)
 				? res.karacount.filter((karacount: any) => karacount.type === props.tagType)
 				: [];

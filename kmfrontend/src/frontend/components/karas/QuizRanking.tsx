@@ -13,6 +13,7 @@ import { commandBackend, getSocket } from '../../../utils/socket';
 import { acceptedAnswerToIcon } from '../../../utils/tagTypes';
 import KaraList from './KaraList';
 import QuizScore from './QuizScore';
+import { WS_CMD } from '../../../utils/ws';
 
 function QuizRanking() {
 	const context = useContext(GlobalContext);
@@ -30,8 +31,8 @@ function QuizRanking() {
 	const userTotalScores = useAsyncMemo(
 		async () => {
 			const [users, scores]: [User[], GameTotalScore[]] = await Promise.all([
-				commandBackend('getUsers'),
-				commandBackend('getTotalGameScore', {
+				commandBackend(WS_CMD.GET_USERS),
+				commandBackend(WS_CMD.GET_TOTAL_GAME_SCORE, {
 					gamename: quiz.currentQuizGame,
 				}),
 			]);
@@ -44,9 +45,11 @@ function QuizRanking() {
 		[]
 	);
 
-	const karas = useAsyncMemo<IKaraList>(() => commandBackend('getLastKaras'), [mode], {
+	const karas = useAsyncMemo<IKaraList>(() => commandBackend(WS_CMD.GET_LAST_KARAS), [mode], {
 		content: [],
 		infos: { from: 0, to: 0, count: 0 },
+		avatars: undefined,
+		i18n: undefined,
 	});
 
 	useEffect(() => {
@@ -63,8 +66,8 @@ function QuizRanking() {
 			merge(quiz, gameState);
 		};
 
-		commandBackend('getPlayerStatus').then(refreshPlayerInfos);
-		commandBackend('getGameState').then(gameState => {
+		commandBackend(WS_CMD.GET_PLAYER_STATUS).then(refreshPlayerInfos);
+		commandBackend(WS_CMD.GET_GAME_STATE).then(gameState => {
 			updateQuizState(gameState);
 			if (quiz.currentSong == null || quiz.currentSong?.state === 'guess') {
 				qStart({

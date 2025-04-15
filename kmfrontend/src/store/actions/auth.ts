@@ -1,7 +1,7 @@
 import i18next from 'i18next';
 import { Dispatch } from 'react';
 
-import { OldTokenResponse } from '../../../../src/lib/types/user';
+import { OldJWTToken, OldTokenResponse } from '../../../../src/lib/types/user';
 import { commandBackend, setAuthorization } from '../../utils/socket';
 import { displayMessage } from '../../utils/tools';
 import { AuthAction, IAuthentifactionInformation, LoginFailure, LoginSuccess, LogoutUser } from '../types/auth';
@@ -9,6 +9,7 @@ import { PlaylistInfo } from '../types/frontendContext';
 import { SettingsFailure, SettingsSuccess } from '../types/settings';
 import { setPlaylistInfoLeft, setPlaylistInfoRight } from './frontendContext';
 import { setSettings } from './settings';
+import { WS_CMD } from '../../utils/ws';
 
 export async function login(
 	username: string,
@@ -18,7 +19,7 @@ export async function login(
 	guestName?: string
 ): Promise<string> {
 	try {
-		const info: IAuthentifactionInformation = await commandBackend(username ? 'login' : 'loginGuest', {
+		const info: IAuthentifactionInformation = await commandBackend(username ? WS_CMD.LOGIN : WS_CMD.LOGIN_GUEST, {
 			username,
 			password,
 			securityCode,
@@ -94,7 +95,7 @@ export async function isAlreadyLogged(
 
 	if (kmToken) {
 		try {
-			const verification: OldTokenResponse = await commandBackend('checkAuth', undefined, false, 30000);
+			const verification = await commandBackend(WS_CMD.CHECK_AUTH, undefined, false, 30000);
 			setPlaylistInfoLeft(dispatch);
 			setPlaylistInfoRight(dispatch);
 			dispatch({

@@ -3,6 +3,7 @@ import i18next from 'i18next';
 import { io, ManagerOptions, Socket, SocketOptions } from 'socket.io-client';
 
 import { displayMessage, eventEmitter } from './tools';
+import { ExtractBodyType, ExtractResponseType, WSCmdDefinition } from '../../../src/lib/types/frontend';
 
 let socket: Socket;
 let proxy: boolean;
@@ -32,19 +33,19 @@ export function setAuthorization(authorizationParam: string, onlineAuthorization
 	if (!authorizationParam || onlineAuthorizationParam) onlineAuthorization = onlineAuthorizationParam;
 }
 
-export function commandBackend(
-	name: string,
-	body?: any,
+export function commandBackend<T extends WSCmdDefinition<object, any>>(
+	name: T,
+	body?: ExtractBodyType<T>,
 	loading = false,
 	timeout = 30000,
 	silent = false
-): Promise<any> {
+): Promise<ExtractResponseType<T>> {
 	const bodyWithoutpwd = { ...body };
-	if (bodyWithoutpwd.password) bodyWithoutpwd.password = undefined;
+	if (bodyWithoutpwd['password']) bodyWithoutpwd['password'] = undefined;
 	addBreadcrumb({
 		level: 'info',
 		category: 'commandBackend',
-		message: name,
+		message: name.value,
 		data: bodyWithoutpwd,
 	});
 	return new Promise((resolve, reject) => {
@@ -62,7 +63,7 @@ export function commandBackend(
 			reject(error);
 		}, timeout);
 		socket.emit(
-			name,
+			name.value,
 			{ authorization, onlineAuthorization, body },
 			({ err, data }: { err: boolean; data: any }) => {
 				clearTimeout(nodeTimeout);
@@ -71,14 +72,14 @@ export function commandBackend(
 					addBreadcrumb({
 						level: 'warning',
 						category: 'commandBackend',
-						message: name,
+						message: name.value,
 						data: data,
 					});
 				} else {
 					addBreadcrumb({
 						level: 'info',
 						category: 'commandBackend',
-						message: name,
+						message: name.value,
 						data: data?.message?.code || data?.code,
 					});
 				}

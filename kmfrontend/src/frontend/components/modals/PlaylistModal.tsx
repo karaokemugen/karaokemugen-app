@@ -10,6 +10,7 @@ import { getPlaylistInfo, setPlaylistInfo } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { displayMessage } from '../../../utils/tools';
 import Switch from '../generic/Switch';
+import { WS_CMD } from '../../../utils/ws';
 
 interface IProps {
 	side: 'left' | 'right';
@@ -35,7 +36,7 @@ function PlaylistModal(props: IProps) {
 		} else {
 			try {
 				setError(undefined);
-				const response = await commandBackend('createPlaylist', {
+				const response = await commandBackend(WS_CMD.CREATE_PLAYLIST, {
 					name: name,
 					flag_visible: flagVisible,
 					flag_current: flagCurrent,
@@ -58,7 +59,7 @@ function PlaylistModal(props: IProps) {
 			setError(i18next.t('MODAL.PLAYLIST_MODAL.NAME_MANDATORY'));
 		} else {
 			setError(undefined);
-			await commandBackend('editPlaylist', {
+			await commandBackend(WS_CMD.EDIT_PLAYLIST, {
 				name: name,
 				flag_visible: flagVisible,
 				flag_current: flagCurrent,

@@ -25,6 +25,7 @@ import { callModal, displayMessage } from '../../../utils/tools';
 import Autocomplete from '../generic/Autocomplete';
 import CropAvatarModal from './CropAvatarModal';
 import OnlineProfileModal from './OnlineProfileModal';
+import { WS_CMD } from '../../../utils/ws';
 
 interface IProps {
 	scope?: 'public' | 'admin';
@@ -77,8 +78,8 @@ function ProfilModal(props: IProps) {
 			const data: IAuthentifactionInformation = context.globalState.auth.data;
 
 			try {
-				const response = await commandBackend('editMyAccount', user);
-				data.onlineToken = response.data.onlineToken;
+				const response = await commandBackend(WS_CMD.EDIT_MY_ACCOUNT, user);
+				data.onlineToken = response.message.data.onlineToken;
 			} catch (_) {
 				// already display
 			} finally {
@@ -93,7 +94,7 @@ function ProfilModal(props: IProps) {
 
 	const getUser = async () => {
 		try {
-			const user = await commandBackend('getMyAccount');
+			const user = await commandBackend(WS_CMD.GET_MY_ACCOUNT);
 			delete user.password;
 			setAnimeListToFetch(user.anime_list_to_fetch ? user.anime_list_to_fetch : '');
 			setUser(user);
@@ -128,7 +129,7 @@ function ProfilModal(props: IProps) {
 					async (confirm: boolean) => {
 						if (confirm) {
 							const data = { favorites: JSON.parse(fr['result'] as string) };
-							await commandBackend('importFavorites', data);
+							await commandBackend(WS_CMD.IMPORT_FAVORITES, data);
 						}
 					}
 				);
@@ -139,7 +140,7 @@ function ProfilModal(props: IProps) {
 
 	const favExport = async () => {
 		try {
-			const exportFile = await commandBackend('exportFavorites');
+			const exportFile = await commandBackend(WS_CMD.EXPORT_FAVORITES);
 			const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(exportFile, null, 4));
 			const dlAnchorElem = document.getElementById('downloadAnchorElem');
 			if (dlAnchorElem) {
@@ -179,14 +180,14 @@ function ProfilModal(props: IProps) {
 			i18next.t('MODAL.PROFILE_MODAL.LOCAL_DELETE'),
 			i18next.t('MODAL.PROFILE_MODAL.LOCAL_DELETE_WARN'),
 			async () => {
-				await commandBackend('deleteMyAccount');
+				await commandBackend(WS_CMD.DELETE_MY_ACCOUNT);
 				logout(context.globalDispatch);
 			}
 		);
 	};
 
 	const refreshAnimeList = async () => {
-		await commandBackend('refreshAnimeList');
+		await commandBackend(WS_CMD.REFRESH_ANIME_LIST);
 		closeModalWithContext();
 	};
 
@@ -281,7 +282,7 @@ function ProfilModal(props: IProps) {
 		};
 		const getExampleForLinguisticsPreference = async () => {
 			try {
-				const data = await commandBackend('getKara', { kid: 'ed57440b-0410-4fd4-8fc0-b87eee2df9a0' });
+				const data = await commandBackend(WS_CMD.GET_KARA, { kid: 'ed57440b-0410-4fd4-8fc0-b87eee2df9a0' });
 				setExampleForLinguisticsPreference(buildKaraTitleFuture(data));
 			} catch (_) {
 				// ignore error

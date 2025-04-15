@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { commandBackend } from '../../utils/socket';
 import { getTagTypeName, tagTypes } from '../../utils/tagTypes';
 import Title from '../components/Title';
+import { WS_CMD } from '../../utils/ws';
 
 function UnusedList() {
 	const [unused, setUnused] = useState([]);
@@ -27,7 +28,7 @@ function UnusedList() {
 	}, [type]);
 
 	const refresh = async () => {
-		const res = await commandBackend('getRepos');
+		const res = await commandBackend(WS_CMD.GET_REPOS);
 		if (res.length > 0) {
 			setRepository(res[0].Name);
 			setRepositories(res.map(value => value.Name));
@@ -35,7 +36,7 @@ function UnusedList() {
 	};
 
 	const getTags = async () => {
-		const res = await commandBackend('getUnusedTags', { name: repository }, undefined, 60000);
+		const res = await commandBackend(WS_CMD.GET_UNUSED_TAGS, { name: repository }, undefined, 60000);
 		setUnused(
 			res
 				? res.map(value => {
@@ -46,7 +47,7 @@ function UnusedList() {
 	};
 
 	const getMedias = async () => {
-		const res = await commandBackend('getUnusedMedias', { name: repository }, undefined, 600000);
+		const res = await commandBackend(WS_CMD.GET_UNUSED_MEDIAS, { name: repository }, undefined, 600000);
 		setUnused(
 			res
 				? res.map(value => {
@@ -58,7 +59,10 @@ function UnusedList() {
 
 	const deleteAllMedia = async () => {
 		try {
-			await commandBackend('deleteMediaFiles', { files: unused.map(record => record.file), repo: repository });
+			await commandBackend(WS_CMD.DELETE_MEDIA_FILES, {
+				files: unused.map(record => record.file),
+				repo: repository,
+			});
 			setUnused([]);
 		} catch (_) {
 			// already display
@@ -67,7 +71,7 @@ function UnusedList() {
 
 	const deleteMedia = async (file: string) => {
 		try {
-			await commandBackend('deleteMediaFiles', { files: [file], repo: repository });
+			await commandBackend(WS_CMD.DELETE_MEDIA_FILES, { files: [file], repo: repository });
 			setUnused(unused.filter(item => item.file !== file));
 		} catch (_) {
 			// already display
@@ -76,7 +80,7 @@ function UnusedList() {
 
 	const deleteTag = async tid => {
 		try {
-			await commandBackend('deleteTag', { tids: [tid] });
+			await commandBackend(WS_CMD.DELETE_TAG, { tids: [tid] });
 			setUnused(unused.filter(item => item.tid !== tid));
 		} catch (_) {
 			// already display

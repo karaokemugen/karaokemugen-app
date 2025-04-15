@@ -31,6 +31,9 @@ import { KaraElement } from '../../types/kara';
 import KaraMenuModal from '../modals/KaraMenuModal';
 import ActionsButtons from './ActionsButtons';
 import dayjs from 'dayjs';
+import { WS_CMD } from '../../../utils/ws';
+import { DBPLCInfo } from '../../../../../src/types/database/playlist';
+import { WSCmdDefinition } from '../../../../../src/lib/types/frontend';
 
 const DragHandle = ({ dragHandleProps }: { dragHandleProps: object }) => (
 	<span {...dragHandleProps} className="dragHandle">
@@ -68,19 +71,19 @@ function KaraLine(props: IProps) {
 
 	const upvoteKara = () => {
 		const plc_id = kara.plcid ? kara.plcid : kara.public_plc_id[0];
-		const data = kara.flag_upvoted ? { downvote: 'true', plc_id: plc_id } : { plc_id: plc_id };
-		commandBackend('votePLC', data).catch(() => {});
+		const data = kara.flag_upvoted ? { downvote: true, plc_id: plc_id } : { plc_id: plc_id };
+		commandBackend(WS_CMD.VOTE_PLC, data).catch(() => {});
 	};
 
 	const refuseKara = () => {
-		commandBackend('editPLC', {
+		commandBackend(WS_CMD.EDIT_PLC, {
 			flag_refused: !kara.flag_refused,
 			plc_ids: [kara.plcid],
 		}).catch(() => {});
 	};
 
 	const acceptKara = () => {
-		commandBackend('editPLC', {
+		commandBackend(WS_CMD.EDIT_PLC, {
 			flag_accepted: !kara.flag_accepted,
 			plc_ids: [kara.plcid],
 		}).catch(() => {});
@@ -90,7 +93,7 @@ function KaraLine(props: IProps) {
 		if (getPlaylistInfo(props.side, context).flag_smart) {
 			if (kara) props.deleteCriteria(kara);
 		} else {
-			await commandBackend('deleteKaraFromPlaylist', {
+			await commandBackend(WS_CMD.DELETE_KARA_FROM_PLAYLIST, {
 				plc_ids: kara?.plcid ? [kara.plcid] : kara.my_public_plc_id,
 			}).catch(() => {});
 			if (!kara?.plcid) {
@@ -101,7 +104,7 @@ function KaraLine(props: IProps) {
 
 	const deleteFavorite = () => {
 		if (authData.onlineAvailable !== false) {
-			commandBackend('deleteFavorites', {
+			commandBackend(WS_CMD.DELETE_FAVORITES, {
 				kids: [kara.kid],
 			}).catch(() => {});
 		} else {
@@ -111,25 +114,25 @@ function KaraLine(props: IProps) {
 	};
 
 	const playKara = () => {
-		commandBackend('playKara', {
+		commandBackend(WS_CMD.PLAY_KARA, {
 			kid: kara.kid,
 		}).catch(() => {});
 	};
 
 	const editPlayingFlag = () => {
-		commandBackend('editPLC', {
+		commandBackend(WS_CMD.EDIT_PLC, {
 			flag_playing: true,
 			plc_ids: [kara.plcid],
 		}).catch(() => {});
 	};
 
 	const addKara = async (_, pos?: number) => {
-		let url = '';
+		let url: WSCmdDefinition<object, { plc: DBPLCInfo } | void>;
 		let data;
 		const oppositePlaylist = getOppositePlaylistInfo(props.side, context);
 		if (oppositePlaylist?.plaid === nonStandardPlaylists.favorites) {
 			if (authData.onlineAvailable !== false) {
-				url = 'addFavorites';
+				url = WS_CMD.ADD_FAVORITES;
 				data = {
 					kids: [kara.kid],
 				};
@@ -140,13 +143,13 @@ function KaraLine(props: IProps) {
 		} else if (isAdmin) {
 			if (oppositePlaylist && !oppositePlaylist.flag_smart) {
 				if (!isNonStandardPlaylist(getPlaylistInfo(props.side, context).plaid) && !pos) {
-					url = 'copyKaraToPlaylist';
+					url = WS_CMD.COPY_KARA_TO_PLAYLIST;
 					data = {
 						plaid: oppositePlaylist.plaid,
 						plc_ids: [kara.plcid],
 					};
 				} else {
-					url = 'addKaraToPlaylist';
+					url = WS_CMD.ADD_KARA_TO_PLAYLIST;
 					if (pos) {
 						data = {
 							plaid: oppositePlaylist.plaid,
@@ -163,7 +166,7 @@ function KaraLine(props: IProps) {
 					}
 				}
 			} else {
-				url = 'addCriterias';
+				url = WS_CMD.ADD_CRITERIAS;
 				data = {
 					criterias: [
 						{
@@ -175,7 +178,7 @@ function KaraLine(props: IProps) {
 				};
 			}
 		} else {
-			url = 'addKaraToPublicPlaylist';
+			url = WS_CMD.ADD_KARA_TO_PUBLIC_PLAYLIST;
 			data = {
 				requestedby: authData.username,
 				kids: [kara.kid],
@@ -207,7 +210,7 @@ function KaraLine(props: IProps) {
 	};
 
 	const changeVisibilityKara = () => {
-		commandBackend('editPLC', {
+		commandBackend(WS_CMD.EDIT_PLC, {
 			flag_visible: true,
 			plc_ids: [kara.plcid],
 		}).catch(() => {});

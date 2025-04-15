@@ -17,6 +17,7 @@ import { commandBackend } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 import { displayMessage } from '../../../utils/tools';
 import SelectWithIcon from '../generic/SelectWithIcon';
+import { WS_CMD } from '../../../utils/ws';
 
 type RecursivePartial<T> = {
 	[P in keyof T]?: T[P] extends (infer U)[]
@@ -50,7 +51,7 @@ export default function QuizModal(props: IProps) {
 
 	const playlists = useAsyncMemo<PlaylistElem[]>(
 		async () => {
-			return await commandBackend('getPlaylists');
+			return await commandBackend(WS_CMD.GET_PLAYLISTS);
 		},
 		[],
 		[]
@@ -58,7 +59,7 @@ export default function QuizModal(props: IProps) {
 
 	const existingGames = useAsyncMemo<Game[]>(
 		async () => {
-			return await commandBackend('getGames');
+			return await commandBackend(WS_CMD.GET_GAMES);
 		},
 		[version],
 		[]
@@ -83,8 +84,8 @@ export default function QuizModal(props: IProps) {
 
 	const getUserTotalScores = async (gamename: string) => {
 		const [users, scores]: [User[], GameTotalScore[]] = await Promise.all([
-			commandBackend('getUsers'),
-			commandBackend('getTotalGameScore', {
+			commandBackend(WS_CMD.GET_USERS),
+			commandBackend(WS_CMD.GET_TOTAL_GAME_SCORE, {
 				gamename,
 			}),
 		]);
@@ -153,7 +154,7 @@ export default function QuizModal(props: IProps) {
 			}
 		}
 		try {
-			await commandBackend('startGame', {
+			await commandBackend(WS_CMD.START_GAME, {
 				gamename: gameName,
 				playlist: gamePlaylist,
 				settings,
@@ -181,7 +182,7 @@ export default function QuizModal(props: IProps) {
 	};
 
 	const deleteGame = async () => {
-		await commandBackend('deleteGame', { gamename: gameName });
+		await commandBackend(WS_CMD.DELETE_GAME, { gamename: gameName });
 		setVersion(v => v + 1);
 		rawSetGameConfig(context.globalState.settings.data.state.quiz.settings);
 		setGameName('');
@@ -191,9 +192,9 @@ export default function QuizModal(props: IProps) {
 	};
 
 	const resetScores = async () => {
-		await commandBackend('resetGameScores', { gamename: gameName });
+		await commandBackend(WS_CMD.RESET_GAME_SCORES, { gamename: gameName });
 		setVersion(v => v + 1);
-		setGameLoadedResults(await commandBackend('getTotalGameScore', { gamename: gameName }));
+		setGameLoadedResults(await commandBackend(WS_CMD.GET_TOTAL_GAME_SCORE, { gamename: gameName }));
 		displayMessage('success', 'Scores supprimés !');
 	};
 

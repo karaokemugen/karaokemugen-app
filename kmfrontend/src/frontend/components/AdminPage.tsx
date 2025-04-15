@@ -21,6 +21,8 @@ import ProgressBar from './karas/ProgressBar';
 import QuizModal from './modals/QuizModal';
 import Tutorial from './modals/Tutorial';
 import Options from './options/Options';
+import { PlayerCommand } from '../../../../src/types/player';
+import { WS_CMD } from '../../utils/ws';
 
 interface IProps {
 	powerOff: (() => void) | undefined;
@@ -60,8 +62,8 @@ function AdminPage(props: IProps) {
 	};
 
 	const putPlayerCommando = (event: any) => {
-		const namecommand = event.currentTarget.getAttribute('data-namecommand');
-		let data: { command: string; options?: any };
+		const namecommand: PlayerCommand = event.currentTarget.getAttribute('data-namecommand');
+		let data: { command: PlayerCommand; options?: any };
 		if (namecommand === 'setVolume') {
 			let volume = parseInt(event.currentTarget.value);
 			const base = 100;
@@ -87,14 +89,14 @@ function AdminPage(props: IProps) {
 				command: namecommand,
 			};
 		}
-		commandBackend('sendPlayerCommand', data).catch(() => {});
+		commandBackend(WS_CMD.SEND_PLAYER_COMMAND, data).catch(() => {});
 	};
 
 	const getPlaylistList = async () => {
-		const playlistList: PlaylistElem[] = await commandBackend('getPlaylists');
+		const playlistList: PlaylistElem[] = await commandBackend(WS_CMD.GET_PLAYLISTS);
 		let kmStats;
 		try {
-			kmStats = await commandBackend('getStats');
+			kmStats = await commandBackend(WS_CMD.GET_STATS);
 		} catch (_) {
 			kmStats = {
 				karas: 0,

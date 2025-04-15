@@ -22,6 +22,7 @@ import { Session, SessionExports } from '../../../../../src/types/session';
 import GlobalContext from '../../../store/context';
 import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
+import { WS_CMD } from '../../../utils/ws';
 
 interface SessionsFormProps extends FormProps {
 	sessions: Session[];
@@ -69,12 +70,12 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 
 	async componentDidMount() {
 		if (this.props.session.seid) {
-			const played = await commandBackend('getKaras', {
+			const played = await commandBackend(WS_CMD.GET_KARAS, {
 				order: 'sessionPlayed',
 				q: `seid:${this.props.session.seid}`,
 				ignoreCollections: true,
 			});
-			const requested = await commandBackend('getKaras', {
+			const requested = await commandBackend(WS_CMD.GET_KARAS, {
 				order: 'sessionRequested',
 				q: `seid:${this.props.session.seid}`,
 				ignoreCollections: true,
@@ -107,7 +108,9 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 	};
 
 	exportSession = async () => {
-		const exportSession: SessionExports = await commandBackend('exportSession', { seid: this.props.session.seid });
+		const exportSession: SessionExports = await commandBackend(WS_CMD.EXPORT_SESSION, {
+			seid: this.props.session.seid,
+		});
 		Modal.info({
 			title: i18next.t('SESSIONS.SESSION_EXPORTED_TITLE'),
 			content: (

@@ -5,6 +5,7 @@ import { closeModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 import RadioButton from '../generic/RadioButton';
+import { WS_CMD } from '../../../utils/ws';
 
 function OnlineStatsModal() {
 	const context = useContext(GlobalContext);
@@ -13,7 +14,7 @@ function OnlineStatsModal() {
 	const onClick = () => {
 		if (errorTracking !== undefined) {
 			try {
-				commandBackend('updateSettings', {
+				commandBackend(WS_CMD.UPDATE_SETTINGS, {
 					setting: {
 						Online: {
 							ErrorTracking: errorTracking,

@@ -6,13 +6,14 @@ import { Tag } from '../../../../../src/lib/types/tag';
 import { commandBackend } from '../../../utils/socket';
 import Title from '../../components/Title';
 import TagsForm from './TagsForm';
+import { WS_CMD } from '../../../utils/ws';
 
 function TagNew() {
 	const navigate = useNavigate();
 
 	const saveNew = async (tag: Tag) => {
 		try {
-			await commandBackend('addTag', tag, true, 300000);
+			await commandBackend(WS_CMD.ADD_TAG, tag, true, 300000);
 			navigate('/system/tags');
 		} catch (_) {
 			// already display

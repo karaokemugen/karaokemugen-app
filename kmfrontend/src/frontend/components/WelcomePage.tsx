@@ -27,6 +27,7 @@ import Autocomplete from './generic/Autocomplete';
 import OnlineStatsModal from './modals/OnlineStatsModal';
 import ProfilModal from './modals/ProfilModal';
 import RestartDownloadsModal from './modals/RestartDownloadsModal';
+import { WS_CMD } from '../../utils/ws';
 
 function WelcomePage() {
 	const context = useContext(GlobalContext);
@@ -66,7 +67,7 @@ function WelcomePage() {
 
 	const getSessions = async () => {
 		try {
-			const res = await commandBackend('getSessions');
+			const res = await commandBackend(WS_CMD.GET_SESSIONS);
 			setSessions(res);
 			setActiveSession(res.filter((valueSession: Session) => valueSession.active)[0]);
 		} catch (_) {
@@ -77,8 +78,8 @@ function WelcomePage() {
 	const getDownloadQueue = async () => {
 		try {
 			const [downloadQueue, downloadQueueStatus] = await Promise.all([
-				commandBackend('getDownloads', undefined, false, 300000) as Promise<DBDownload[]>,
-				commandBackend('getDownloadQueueStatus', undefined, false, 300000),
+				commandBackend(WS_CMD.GET_DOWNLOADS, undefined, false, 300000) as Promise<DBDownload[]>,
+				commandBackend(WS_CMD.GET_DOWNLOAD_QUEUE_STATUS, undefined, false, 300000),
 			]);
 			if (
 				downloadQueueStatus === 'stopped' &&
@@ -94,7 +95,7 @@ function WelcomePage() {
 
 	const updateRemoteData = async () => {
 		try {
-			const data: RemoteStatusData = await commandBackend('getRemoteData');
+			const data: RemoteStatusData = await commandBackend(WS_CMD.GET_REMOTE_DATA);
 			setRemoteStatus(data);
 		} catch (_) {
 			// already display
@@ -102,36 +103,36 @@ function WelcomePage() {
 	};
 
 	const getRepositories = async () => {
-		const res = await commandBackend('getRepos');
+		const res = await commandBackend(WS_CMD.GET_REPOS);
 		setRepositories(res);
 	};
 
 	const getStats = async () => {
-		const res = await commandBackend('getStats', undefined, false, 300000);
+		const res = await commandBackend(WS_CMD.GET_STATS, undefined, false, 300000);
 		setStats(res);
 	};
 
 	const editActiveSession = async (value: string) => {
 		const sessionsEdit = sessions.filter(session => session.name === value);
 		if (sessionsEdit.length === 0) {
-			await commandBackend('createSession', { name: value });
-			const sessionsList = await commandBackend('getSessions');
+			await commandBackend(WS_CMD.CREATE_SESSION, { name: value });
+			const sessionsList = await commandBackend(WS_CMD.GET_SESSIONS);
 			setSessions(sessionsList);
 			setActiveSession(sessionsList.filter((valueSession: Session) => valueSession.active)[0]);
 		} else {
 			setActiveSession(sessionsEdit[0]);
-			commandBackend('activateSession', { seid: sessionsEdit[0].seid });
+			commandBackend(WS_CMD.ACTIVATE_SESSION, { seid: sessionsEdit[0].seid });
 		}
 	};
 
 	const getCatchphrase = async () => {
-		const res = await commandBackend('getCatchphrase');
+		const res = await commandBackend(WS_CMD.GET_CATCHPHRASE);
 		setCatchphrase(res);
 	};
 
 	const getNewsFeed = async () => {
 		try {
-			const data: Feed[] = await commandBackend('getNewsFeed', undefined, undefined, 300000);
+			const data: Feed[] = await commandBackend(WS_CMD.GET_NEWS_FEED, undefined, undefined, 300000);
 			const repos = data.filter(d => d.name.startsWith('repo'));
 			const appli = data.find(d => d.name === 'git_app');
 			const mast = data.find(d => d.name === 'mastodon');
@@ -216,7 +217,8 @@ function WelcomePage() {
 	const displayModal = async () => {
 		let migrationsToDo;
 		try {
-			migrationsToDo = (await commandBackend('getMigrationsFrontend')).filter(res => !res.flag_done).length > 0;
+			migrationsToDo =
+				(await commandBackend(WS_CMD.GET_MIGRATIONS_FRONTEND)).filter(res => !res.flag_done).length > 0;
 		} catch (_) {
 			migrationsToDo = false;
 		}
@@ -237,7 +239,7 @@ function WelcomePage() {
 			try {
 				const collections = context.globalState.settings.data.config.Karaoke.Collections;
 				collections[tid] = !collections[tid];
-				commandBackend('updateSettings', {
+				commandBackend(WS_CMD.UPDATE_SETTINGS, {
 					setting: {
 						Karaoke: {
 							Collections: collections,
@@ -260,7 +262,7 @@ function WelcomePage() {
 		}
 	};
 
-	const getCollections = async () => setCollections(await commandBackend('getCollections'));
+	const getCollections = async () => setCollections(await commandBackend(WS_CMD.GET_COLLECTIONS));
 
 	useEffect(() => {
 		displayModal();

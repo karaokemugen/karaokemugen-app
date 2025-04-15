@@ -7,6 +7,7 @@ import { Session } from '../../../../../src/types/session';
 import { commandBackend } from '../../../utils/socket';
 import Title from '../../components/Title';
 import SessionForm from './SessionsForm';
+import { WS_CMD } from '../../../utils/ws';
 
 const newsession: Session = {
 	name: null,
@@ -23,23 +24,23 @@ function SessionEdit() {
 	const [sessions, setSessions] = useState<Session[]>([]);
 
 	const saveNew = async (session: Session) => {
-		await commandBackend('createSession', session, true);
+		await commandBackend(WS_CMD.CREATE_SESSION, session, true);
 		navigate('/system/sessions');
 	};
 
 	const saveUpdate = async (session: Session) => {
-		await commandBackend('editSession', session, true);
+		await commandBackend(WS_CMD.EDIT_SESSION, session, true);
 		navigate('/system/sessions');
 	};
 
 	const handleSessionMerge = async (seid1: string, seid2: string) => {
-		await commandBackend('mergeSessions', { seid1: seid1, seid2: seid2 }, true);
+		await commandBackend(WS_CMD.MERGE_SESSIONS, { seid1: seid1, seid2: seid2 }, true);
 		navigate('/system/sessions/');
 	};
 
 	const loadsession = async () => {
 		if (seid) {
-			const res = await commandBackend('getSessions');
+			const res = await commandBackend(WS_CMD.GET_SESSIONS);
 			const actualSession = res.filter(session => session.seid === seid);
 			setSessions(res);
 			setSession(actualSession[0]);

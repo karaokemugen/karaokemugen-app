@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router';
 
 import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
+import { WS_CMD } from '../../../utils/ws';
 
 function SetupPageStats() {
 	const context = useContext(GlobalContext);
@@ -16,7 +17,7 @@ function SetupPageStats() {
 	const updateStats = async () => {
 		if (errorTracking !== undefined && userStats !== undefined) {
 			try {
-				await commandBackend('updateSettings', {
+				await commandBackend(WS_CMD.UPDATE_SETTINGS, {
 					setting: {
 						Online: {
 							ErrorTracking: errorTracking,
@@ -25,7 +26,7 @@ function SetupPageStats() {
 				});
 				const user = context?.globalState.settings.data.user;
 				user.flag_sendstats = userStats;
-				await commandBackend('editMyAccount', user);
+				await commandBackend(WS_CMD.EDIT_MY_ACCOUNT, user);
 				setError(undefined);
 				await commandBackend('updateSettings', {
 					setting: {

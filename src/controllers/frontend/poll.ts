@@ -1,14 +1,12 @@
-import { Socket } from 'socket.io';
-
+import { WS_CMD } from '../../../kmfrontend/src/utils/ws.js';
 import { APIMessage } from '../../lib/services/frontend.js';
-import { APIData } from '../../lib/types/api.js';
 import { check } from '../../lib/utils/validators.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
 import { addPollVote, getPoll } from '../../services/poll.js';
 import { runChecklist } from '../middlewares.js';
 
 export default function pollController(router: SocketIOApp) {
-	router.route('getPoll', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_POLL, async (socket, req) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		try {
 			return getPoll(req.token);
@@ -16,7 +14,7 @@ export default function pollController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('votePoll', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.VOTE_POLL, async (socket, req) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		// Validate form data
 		const validationErrors = check(req.body, {

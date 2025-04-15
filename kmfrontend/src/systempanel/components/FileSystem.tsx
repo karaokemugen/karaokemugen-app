@@ -4,6 +4,7 @@ import i18next from 'i18next';
 import { useEffect, useState } from 'react';
 
 import { commandBackend } from '../../utils/socket';
+import { WS_CMD } from '../../utils/ws';
 
 interface IProps {
 	path: string;
@@ -28,11 +29,11 @@ async function getFS(path: string, os: string) {
 	if (os !== 'win32' && path[0] !== '/') path = `/${path}`;
 	let response;
 	try {
-		response = await commandBackend('getFS', { path });
+		response = await commandBackend(WS_CMD.GET_FS, { path });
 	} catch (_) {
 		// Folder don't exist fallback to root folder
 		computedPath = '/';
-		response = await commandBackend('getFS', { path: '/' });
+		response = await commandBackend(WS_CMD.GET_FS, { path: '/' });
 	}
 	if (os === 'win32' && computedPath === '/') {
 		response = mapDrives(response.drives);

@@ -31,6 +31,7 @@ import { commandBackend, getSocket } from '../../utils/socket';
 import { tagTypes } from '../../utils/tagTypes';
 import { isModifiable, isRepoOnline, isRepoOnlineAndMaintainer } from '../../utils/tools';
 import { ItemType } from 'antd/es/menu/interface';
+import { WS_CMD } from '../../utils/ws';
 
 interface KaraListProps {
 	tagFilter?: string;
@@ -89,7 +90,7 @@ function KaraList(props: KaraListProps) {
 
 	const refresh = async () => {
 		const res = await commandBackend(
-			'getKaras',
+			WS_CMD.GET_KARAS,
 			{
 				filter: filter,
 				q: tagFilter,
@@ -107,7 +108,7 @@ function KaraList(props: KaraListProps) {
 	};
 
 	const getTags = async () => {
-		const res = await commandBackend('getTags', undefined, false, 300000);
+		const res = await commandBackend(WS_CMD.GET_TAGS, undefined, false, 300000);
 		setTags(res.content);
 	};
 
@@ -176,7 +177,7 @@ function KaraList(props: KaraListProps) {
 		const karasRemovingUpdated = karasRemoving;
 		karasRemovingUpdated.push(...kids);
 		setKarasRemoving(karasRemovingUpdated);
-		await commandBackend('deleteKaras', { kids: kids }, true);
+		await commandBackend(WS_CMD.DELETE_KARAS, { kids: kids }, true);
 		setKarasRemoving(karasRemoving.filter(value => !kids.includes(value)));
 		setKaras(karas.filter(value => !kids.includes(value.kid)));
 	};
@@ -209,7 +210,7 @@ function KaraList(props: KaraListProps) {
 			name: buildKaraTitle(context.globalState.settings.data, kara, true) as string,
 			repository: kara.repository,
 		};
-		commandBackend('addDownloads', { downloads: [downloadObject] }).catch(() => {});
+		commandBackend(WS_CMD.ADD_DOWNLOADS, { downloads: [downloadObject] }).catch(() => {});
 	};
 
 	const getMenu = (record: DBKara) => {
@@ -227,25 +228,25 @@ function KaraList(props: KaraListProps) {
 			label: i18next.t('KARA.DELETE_MEDIA_TOOLTIP'),
 			icon: <ClearOutlined />,
 			danger: true,
-			onClick: () => commandBackend('deleteMedias', { kids: [record.kid] }, true),
+			onClick: () => commandBackend(WS_CMD.DELETE_MEDIAS, { kids: [record.kid] }, true),
 		};
 		const uploadMediaButton = {
 			key: '3',
 			label: i18next.t('KARA.UPLOAD_MEDIA_TOOLTIP'),
 			icon: <UploadOutlined />,
-			onClick: () => commandBackend('uploadMedia', { kid: record.kid }),
+			onClick: () => commandBackend(WS_CMD.UPLOAD_MEDIA, { kid: record.kid }),
 		};
 		const showMediaButton = {
 			key: '4',
 			label: i18next.t('KARA.SHOW_MEDIA_IN_FOLDER'),
 			icon: <FolderViewOutlined />,
-			onClick: () => commandBackend('showMediaInFolder', { kid: record.kid }),
+			onClick: () => commandBackend(WS_CMD.SHOW_MEDIA_IN_FOLDER, { kid: record.kid }),
 		};
 		const showLyricsButton = {
 			key: '5',
 			label: i18next.t('KARA.SHOW_LYRICS_IN_FOLDER'),
 			icon: <FolderViewOutlined />,
-			onClick: () => commandBackend('showLyricsInFolder', { kid: record.kid }),
+			onClick: () => commandBackend(WS_CMD.SHOW_LYRICS_IN_FOLDER, { kid: record.kid }),
 		};
 		if (record.lyrics_infos[0]) {
 			menu.push(showLyricsButton);
@@ -351,7 +352,7 @@ function KaraList(props: KaraListProps) {
 							type="primary"
 							icon={<FontColorsOutlined />}
 							title={i18next.t('KARA.LYRICS_FILE')}
-							onClick={() => commandBackend('openLyricsFile', { kid: record.kid }).catch(() => {})}
+							onClick={() => commandBackend(WS_CMD.OPEN_LYRICS_FILE, { kid: record.kid }).catch(() => {})}
 							style={{ marginRight: '0.75em' }}
 						/>
 					);
@@ -368,7 +369,7 @@ function KaraList(props: KaraListProps) {
 
 					let playVideoButton: JSX.Element = (
 						<Button
-							onClick={() => commandBackend('playKara', { kid: record.kid }).catch(() => {})}
+							onClick={() => commandBackend(WS_CMD.PLAY_KARA, { kid: record.kid }).catch(() => {})}
 							icon={<PlayCircleOutlined />}
 							title={i18next.t('KARA.PLAY_KARAOKE')}
 							style={{ marginRight: '0.75em' }}
@@ -403,7 +404,7 @@ function KaraList(props: KaraListProps) {
 								danger
 								title={i18next.t('KARA.DELETE_MEDIA_TOOLTIP')}
 								icon={<ClearOutlined />}
-								onClick={() => commandBackend('deleteMedias', { kids: [record.kid] }, true)}
+								onClick={() => commandBackend(WS_CMD.DELETE_MEDIAS, { kids: [record.kid] }, true)}
 								style={{ marginRight: '0.75em' }}
 							/>
 						</div>

@@ -7,6 +7,7 @@ import { Tag } from '../../../../../src/lib/types/tag';
 import { commandBackend } from '../../../utils/socket';
 import Title from '../../components/Title';
 import TagsForm from './TagsForm';
+import { WS_CMD } from '../../../utils/ws';
 
 function TagEdit() {
 	const navigate = useNavigate();
@@ -18,7 +19,7 @@ function TagEdit() {
 
 	const saveUpdate = async (tag: Tag) => {
 		try {
-			await commandBackend('editTag', tag, true, 300000);
+			await commandBackend(WS_CMD.EDIT_TAG, tag, true, 300000);
 			navigate('/system/tags');
 		} catch (_) {
 			// already display
@@ -27,7 +28,7 @@ function TagEdit() {
 
 	const handleTagDelete = async (tid: string) => {
 		try {
-			await commandBackend('deleteTag', { tids: [tid] }, true);
+			await commandBackend(WS_CMD.DELETE_TAG, { tids: [tid] }, true);
 			navigate('/system/tags/');
 		} catch (_) {
 			// already display
@@ -36,7 +37,7 @@ function TagEdit() {
 
 	const handleTagMerge = async (tid1: string, tid2: string) => {
 		try {
-			await commandBackend('mergeTags', { tid1, tid2 }, true, 300000);
+			await commandBackend(WS_CMD.MERGE_TAGS, { tid1, tid2 }, true, 300000);
 			navigate('/system/tags/');
 		} catch (_) {
 			// already display
@@ -45,11 +46,11 @@ function TagEdit() {
 
 	const loadTag = async () => {
 		try {
-			let res = await commandBackend('getTag', { tid }, true);
-			const tagData = { ...res };
+			let tag = await commandBackend(WS_CMD.GET_TAG, { tid }, true);
+			const tagData = { ...tag };
 			tagData.tid = tid;
-			res = await commandBackend('getTags');
-			setTags(res.content);
+			let tags = await commandBackend(WS_CMD.GET_TAGS);
+			setTags(tags.content);
 			setTag(tagData);
 		} catch (_) {
 			// already display
@@ -58,7 +59,7 @@ function TagEdit() {
 	};
 
 	const handleCopy = async (tid, repo) => {
-		await commandBackend('copyTagToRepo', { repo, tid }, true);
+		await commandBackend(WS_CMD.COPY_TAG_TO_REPO, { repo, tid }, true);
 		navigate('/system/tags');
 	};
 

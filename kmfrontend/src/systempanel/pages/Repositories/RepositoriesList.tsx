@@ -17,6 +17,7 @@ import { commandBackend } from '../../../utils/socket';
 import { displayMessage } from '../../../utils/tools';
 import Title from '../../components/Title';
 import CollectionsActivation from './CollectionsActivation';
+import { WS_CMD } from '../../../utils/ws';
 
 interface RepositoryListState {
 	repositories: Repository[];
@@ -34,13 +35,13 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 	}
 
 	refresh = async () => {
-		const res = await commandBackend('getRepos');
+		const res = await commandBackend(WS_CMD.GET_REPOS);
 		this.setState({ repositories: res });
 	};
 
 	deleteRepository = async (repository: Repository) => {
 		try {
-			await commandBackend('deleteRepo', { name: repository.Name });
+			await commandBackend(WS_CMD.DELETE_REPO, { name: repository.Name });
 		} catch (_) {
 			// already display
 		}
@@ -54,13 +55,13 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 		repositories[index + change] = firstRepos;
 		repositories[index] = secondRepos;
 		try {
-			await commandBackend('updateSettings', {
+			await commandBackend(WS_CMD.UPDATE_SETTINGS, {
 				setting: { System: { Repositories: repositories } },
 			});
 			this.refresh();
 			if (timer) clearTimeout(timer);
 			timer = setTimeout(() => {
-				commandBackend('generateDatabase', undefined, false, 300000).catch(() => {});
+				commandBackend(WS_CMD.GENERATE_DATABASE, undefined, false, 300000).catch(() => {});
 			}, 5000);
 		} catch (_) {
 			// already display
@@ -68,7 +69,7 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 	};
 
 	updateRepos = async () => {
-		commandBackend('updateAllRepos')
+		commandBackend(WS_CMD.UPDATE_ALL_REPOS)
 			.then(() => displayMessage('info', i18next.t('DATABASE.UPDATING_REPOS')))
 			.catch(() => {});
 	};

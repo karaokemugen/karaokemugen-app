@@ -10,6 +10,7 @@ import { commandBackend, getSocket } from '../../../utils/socket';
 import FoldersElement from '../../components/FoldersElement';
 import { useParams } from 'react-router-dom';
 import { debounce } from 'lodash';
+import { WS_CMD } from '../../../utils/ws';
 
 interface RepositoriesFormProps {
 	repository: Repository;
@@ -39,7 +40,7 @@ function RepositoryForm(props: RepositoriesFormProps) {
 	const [secure, setSecure] = useState(props.repository?.Secure);
 
 	const getRepositories = async () => {
-		const res: Repository[] = await commandBackend('getRepos');
+		const res: Repository[] = await commandBackend(WS_CMD.GET_REPOS);
 		setRepositoriesValue(
 			res.filter(repo => repo.Name !== props.repository.Name && !repo.System).map(repo => repo.Name)
 		);
@@ -48,7 +49,7 @@ function RepositoryForm(props: RepositoriesFormProps) {
 	const getSshkey = async () => {
 		if (isSshUrl) {
 			try {
-				const res = await commandBackend('getSSHPubKey', { repoName: form.getFieldValue('Name') });
+				const res = await commandBackend(WS_CMD.GET_SSHPUB_KEY, { repoName: form.getFieldValue('Name') });
 				setSshKey(res);
 			} catch (_) {
 				setSshKey(undefined);
@@ -57,12 +58,12 @@ function RepositoryForm(props: RepositoriesFormProps) {
 	};
 
 	async function createSshKey(): Promise<void> {
-		await commandBackend('generateSSHKey', { repoName: form.getFieldValue('Name') });
+		await commandBackend(WS_CMD.GENERATE_SSHKEY, { repoName: form.getFieldValue('Name') });
 		getSshkey();
 	}
 
 	async function removeSshKey(): Promise<void> {
-		await commandBackend('removeSSHKey', { repoName: form.getFieldValue('Name') });
+		await commandBackend(WS_CMD.REMOVE_SSHKEY, { repoName: form.getFieldValue('Name') });
 		getSshkey();
 	}
 

@@ -6,6 +6,7 @@ import { useRef, useState } from 'react';
 import type { DBKaraTag } from '../../../../src/lib/types/database/kara';
 import { commandBackend } from '../../utils/socket';
 import { tagTypes } from '../../utils/tagTypes';
+import { WS_CMD } from '../../utils/ws';
 
 interface CreateTagModalProps {
 	initialTagTypes?: number[];
@@ -39,7 +40,7 @@ export function CreateTagModal(props: CreateTagModalProps) {
 				onFinish={async tag => {
 					try {
 						setLoading(true);
-						const response = await commandBackend('addTag', {
+						const response = await commandBackend(WS_CMD.ADD_TAG, {
 							...tag,
 							repository: props.repo,
 							i18n: { eng: tag.name },

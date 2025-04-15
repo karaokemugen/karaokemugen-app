@@ -5,6 +5,7 @@ import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 import { callModal } from '../../../utils/tools';
 import { RemoteStatusData } from '../../types/remote';
+import { WS_CMD } from '../../../utils/ws';
 
 function RemoteStatus() {
 	const context = useContext(GlobalContext);
@@ -13,7 +14,7 @@ function RemoteStatus() {
 
 	const updateRemoteData = async () => {
 		try {
-			const data: RemoteStatusData = await commandBackend('getRemoteData');
+			const data: RemoteStatusData = await commandBackend(WS_CMD.GET_REMOTE_DATA);
 			setRemoteStatus(data);
 		} catch (_) {
 			// already display
@@ -28,7 +29,7 @@ function RemoteStatus() {
 			i18next.t('REMOTE_RESET'),
 			i18next.t('REMOTE_RESET_CONFIRM'),
 			() => {
-				commandBackend('resetRemoteToken');
+				commandBackend(WS_CMD.RESET_REMOTE_TOKEN);
 			}
 		);
 	};

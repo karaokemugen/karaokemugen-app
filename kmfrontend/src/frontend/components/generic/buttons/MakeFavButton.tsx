@@ -4,6 +4,7 @@ import { useCallback, useContext, useMemo } from 'react';
 import GlobalContext from '../../../../store/context';
 import { commandBackend } from '../../../../utils/socket';
 import { displayMessage } from '../../../../utils/tools';
+import { WS_CMD } from '../../../../utils/ws';
 
 interface Props {
 	kid: string;
@@ -17,12 +18,12 @@ export default function MakeFavButton(props: Props) {
 	const makeFavorite = useCallback(() => {
 		if (context.globalState.auth.data.onlineAvailable !== false) {
 			isFavorite
-				? commandBackend('deleteFavorites', {
+				? commandBackend(WS_CMD.DELETE_FAVORITES, {
 						kids: [props.kid],
-				  })
-				: commandBackend('addFavorites', {
+					})
+				: commandBackend(WS_CMD.ADD_FAVORITES, {
 						kids: [props.kid],
-				  });
+					});
 		} else {
 			displayMessage('warning', i18next.t('ERROR_CODES.FAVORITES_ONLINE_NOINTERNET'), 5000);
 			return;

@@ -1,7 +1,5 @@
-import { Socket } from 'socket.io';
-
+import { WS_CMD } from '../../../kmfrontend/src/utils/ws.js';
 import { APIMessage } from '../../lib/services/frontend.js';
-import { APIData } from '../../lib/types/api.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
 import {
 	continueGameSong,
@@ -20,7 +18,7 @@ import { getPublicCurrentGame, getState } from '../../utils/state.js';
 import { runChecklist } from '../middlewares.js';
 
 export default function quizController(router: SocketIOApp) {
-	router.route('startGame', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.START_GAME, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'limited');
 		try {
 			await startGame(req.body.gamename, req.body.playlist, req.body.settings);
@@ -28,7 +26,7 @@ export default function quizController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('stopGame', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.STOP_GAME, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'limited');
 		try {
 			// When stopGame is triggered via API, we don't display scores
@@ -37,7 +35,7 @@ export default function quizController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('deleteGame', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.DELETE_GAME, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'limited');
 		try {
 			await deleteGame(req.body.gamename);
@@ -45,7 +43,7 @@ export default function quizController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('resetGameScores', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.RESET_GAME_SCORES, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'limited');
 		try {
 			await resetGameScores(req.body.gamename);
@@ -53,7 +51,7 @@ export default function quizController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('continueGameSong', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.CONTINUE_GAME_SONG, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'limited');
 		try {
 			return continueGameSong();
@@ -61,7 +59,7 @@ export default function quizController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('getGames', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_GAMES, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'limited');
 		try {
 			return await getGames();
@@ -69,7 +67,7 @@ export default function quizController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('getGameScore', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_GAME_SCORE, async (socket, req) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		try {
 			return await getGameScore(req.body.gamename, req.body.login);
@@ -77,7 +75,7 @@ export default function quizController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('getTotalGameScore', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_TOTAL_GAME_SCORE, async (socket, req) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		try {
 			return await getTotalGameScore(req.body.gamename);
@@ -85,7 +83,7 @@ export default function quizController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('getPossibleAnswers', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_POSSIBLE_ANSWERS, async (socket, req) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		try {
 			return await getPossibleAnswers(req.body.answer);
@@ -93,7 +91,7 @@ export default function quizController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('setAnswer', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.SET_ANSWER, async (socket, req) => {
 		const guestsAllowed = getState().quiz.settings.Players.Guests;
 		await runChecklist(socket, req, guestsAllowed ? 'guest' : 'user', 'limited');
 		try {
@@ -102,11 +100,11 @@ export default function quizController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('getGameState', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_GAME_STATE, async (socket, req) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		return getPublicCurrentGame(req.token?.role === 'admin');
 	});
-	router.route('getLastKaras', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_LAST_KARAS, async (socket, req) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		try {
 			return await getPlayedKarasInQuiz();

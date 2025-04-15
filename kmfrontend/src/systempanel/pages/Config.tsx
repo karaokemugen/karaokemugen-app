@@ -8,6 +8,8 @@ import { commandBackend } from '../../utils/socket';
 import { dotify, expand } from '../../utils/tools';
 import FoldersElement from '../components/FoldersElement';
 import Title from '../components/Title';
+import { WS_CMD } from '../../utils/ws';
+import { PlayerCommand } from '../../../../src/types/player';
 
 interface ConfigProps {
 	properties?: string[];
@@ -44,7 +46,7 @@ class Config extends Component<ConfigProps, ConfigState> {
 
 	refresh = async () => {
 		try {
-			const res = await commandBackend('getSettings');
+			const res = await commandBackend(WS_CMD.GET_SETTINGS);
 			this.setState({
 				config: this.configKeyValue(res.config),
 				error: '',
@@ -55,14 +57,14 @@ class Config extends Component<ConfigProps, ConfigState> {
 	};
 
 	saveSetting = async (key: string, value: any) => {
-		await commandBackend('updateSettings', {
+		await commandBackend(WS_CMD.UPDATE_SETTINGS, {
 			setting: expand(key, value),
 		}).catch(() => {});
 		this.refresh();
 	};
 
-	putPlayerCommando = (value: any, name: string, command: string) => {
-		commandBackend('sendPlayerCommand', {
+	putPlayerCommando = (value: any, name: string, command: PlayerCommand) => {
+		commandBackend(WS_CMD.SEND_PLAYER_COMMAND, {
 			command: command,
 			options: value,
 		});
@@ -187,7 +189,7 @@ class Config extends Component<ConfigProps, ConfigState> {
 	};
 
 	configBackup = async () => {
-		await commandBackend('backupSettings');
+		await commandBackend(WS_CMD.BACKUP_SETTINGS);
 	};
 
 	render() {

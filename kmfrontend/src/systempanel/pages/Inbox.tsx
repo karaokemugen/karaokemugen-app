@@ -11,6 +11,7 @@ import GlobalContext from '../../store/context';
 import { commandBackend } from '../../utils/socket';
 import Title from '../components/Title';
 import dayjs from 'dayjs';
+import { WS_CMD } from '../../utils/ws';
 
 export default function Inbox() {
 	const context = useContext(GlobalContext);
@@ -31,7 +32,7 @@ export default function Inbox() {
 	const getInbox = async () => {
 		if (repoList.length > 0) {
 			try {
-				const res = await commandBackend('getInbox', { repoName: instance.Name });
+				const res = await commandBackend(WS_CMD.GET_INBOX, { repoName: instance.Name });
 				setInbox(res);
 			} catch (_) {
 				// already display
@@ -41,7 +42,7 @@ export default function Inbox() {
 
 	const downloadKaraFromInbox = async (inid: string) => {
 		try {
-			await commandBackend('downloadKaraFromInbox', { repoName: instance.Name, inid });
+			await commandBackend(WS_CMD.DOWNLOAD_KARA_FROM_INBOX, { repoName: instance.Name, inid });
 		} catch (_) {
 			// already display
 		}
@@ -55,7 +56,7 @@ export default function Inbox() {
 			cancelText: i18next.t('NO'),
 			onOk: async close => {
 				try {
-					await commandBackend('deleteKaraFromInbox', { repoName: instance.Name, inid });
+					await commandBackend(WS_CMD.DELETE_KARA_FROM_INBOX, { repoName: instance.Name, inid });
 				} catch (_) {
 					// already display
 				}
@@ -166,7 +167,7 @@ export default function Inbox() {
 		const getInbox = async () => {
 			if (repoList.length > 0) {
 				try {
-					const res = await commandBackend('getInbox', { repoName: instance.Name });
+					const res = await commandBackend(WS_CMD.GET_INBOX, { repoName: instance.Name });
 					setInbox(res);
 				} catch (_) {
 					// already display
@@ -239,7 +240,7 @@ export default function Inbox() {
 							type="primary"
 							icon={<PlayCircleOutlined />}
 							onClick={() =>
-								commandBackend('playKara', {
+								commandBackend(WS_CMD.PLAY_KARA, {
 									kid: record.edited_kid || record.kid,
 								}).catch(() => {})
 							}

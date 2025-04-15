@@ -10,6 +10,7 @@ import { commandBackend } from '../../../utils/socket';
 import { getTagTypeName, tagTypes } from '../../../utils/tagTypes';
 import { isModifiable } from '../../../utils/tools';
 import Title from '../../components/Title';
+import { WS_CMD } from '../../../utils/ws';
 
 function TagsList() {
 	const context = useContext(GlobalContext);
@@ -31,7 +32,7 @@ function TagsList() {
 
 	const refresh = async () => {
 		try {
-			const res = await commandBackend('getTags', { filter, type: typeTag ? [typeTag] : undefined });
+			const res = await commandBackend(WS_CMD.GET_TAGS, { filter, type: typeTag ? [typeTag] : undefined });
 			setTags(res.content);
 		} catch (_) {
 			//already display
@@ -46,7 +47,7 @@ function TagsList() {
 	const deleteTag = async tid => {
 		try {
 			resetDelete();
-			await commandBackend('deleteTag', { tids: [tid] }, true);
+			await commandBackend(WS_CMD.DELETE_TAG, { tids: [tid] }, true);
 			refresh();
 		} catch (_) {
 			resetDelete();

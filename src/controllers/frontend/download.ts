@@ -1,7 +1,5 @@
-import { Socket } from 'socket.io';
-
+import { WS_CMD } from '../../../kmfrontend/src/utils/ws.js';
 import { APIMessage } from '../../lib/services/frontend.js';
-import { APIData } from '../../lib/types/api.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
 import {
 	addDownloads,
@@ -15,7 +13,7 @@ import { updateAllMedias } from '../../services/downloadMedias.js';
 import { runChecklist } from '../middlewares.js';
 
 export default function downloadController(router: SocketIOApp) {
-	router.route('addDownloads', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.ADD_DOWNLOADS, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			const numberOfDLs = await addDownloads(req.body.downloads);
@@ -24,7 +22,7 @@ export default function downloadController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('getDownloads', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_DOWNLOADS, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			const downloads = await getDownloads();
@@ -33,7 +31,7 @@ export default function downloadController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('getDownloadQueueStatus', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_DOWNLOAD_QUEUE_STATUS, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			return getDownloadQueueStatus();
@@ -41,7 +39,7 @@ export default function downloadController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('deleteDownloads', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.DELETE_DOWNLOADS, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			return await wipeDownloads();
@@ -49,7 +47,7 @@ export default function downloadController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('pauseDownloads', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.PAUSE_DOWNLOADS, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			return pauseQueue();
@@ -57,7 +55,7 @@ export default function downloadController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('startDownloadQueue', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.START_DOWNLOAD_QUEUE, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			await startDownloads();
@@ -66,7 +64,7 @@ export default function downloadController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('updateAllMedias', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.UPDATE_ALL_MEDIAS, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		await updateAllMedias(req.body?.repoNames, req.body?.dryRun);
 		return APIMessage('UPDATING_MEDIAS_IN_PROGRESS');

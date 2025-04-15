@@ -10,6 +10,7 @@ import { getOppositePlaylistInfo, getPlaylistInfo, setPlaylistInfo } from '../..
 import { commandBackend } from '../../../utils/socket';
 import { nonStandardPlaylists } from '../../../utils/tools';
 import SelectWithIcon from '../generic/SelectWithIcon';
+import { WS_CMD } from '../../../utils/ws';
 
 interface IProps {
 	side: 'left' | 'right';
@@ -26,7 +27,7 @@ function DeletePlaylistModal(props: IProps) {
 
 		try {
 			if (plaidChosen) {
-				await commandBackend('editPlaylist', {
+				await commandBackend(WS_CMD.EDIT_PLAYLIST, {
 					flag_whitelist: playlist.flag_whitelist,
 					flag_blacklist: playlist.flag_blacklist,
 					flag_current:
@@ -45,7 +46,7 @@ function DeletePlaylistModal(props: IProps) {
 						: context.globalState.settings.data.state.publicPlaid
 				);
 				try {
-					commandBackend('deletePlaylist', {
+					commandBackend(WS_CMD.DELETE_PLAYLIST, {
 						plaid: playlist.plaid,
 					});
 				} catch (_) {

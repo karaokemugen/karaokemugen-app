@@ -1,6 +1,7 @@
 import i18next from 'i18next';
 
 import { commandBackend } from '../../../utils/socket';
+import { WS_CMD } from '../../../utils/ws';
 
 export default function useMigration(name: string, onEnd: () => void): [() => JSX.Element, () => void] {
 	const EndButton = () => (
@@ -10,7 +11,7 @@ export default function useMigration(name: string, onEnd: () => void): [() => JS
 	);
 
 	function saveMigration() {
-		commandBackend('setMigrationsFrontend', { mig: { name, flag_done: true } }).then(onEnd);
+		commandBackend(WS_CMD.SET_MIGRATIONS_FRONTEND, { mig: { name, flag_done: true } }).then(onEnd);
 	}
 
 	return [EndButton, saveMigration];

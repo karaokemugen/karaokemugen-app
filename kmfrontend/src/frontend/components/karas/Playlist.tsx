@@ -31,6 +31,9 @@ import QuizRanking from './QuizRanking';
 import type { TagTypeNum } from '../../../../../src/lib/types/tag';
 import { setIndexKaraDetail } from '../../../store/actions/frontendContext';
 import type { RepositoryManifestV2 } from '../../../../../src/lib/types/repo';
+import { WS_CMD } from '../../../utils/ws';
+import { KaraList as DBKaraList } from '../../../../../src/lib/types/kara';
+import { WSCmdDefinition } from '../../../../../src/lib/types/frontend';
 
 // Virtuoso's resize observer can this error,
 // which is caught by DnD and aborts dragging.
@@ -186,7 +189,7 @@ function Playlist(props: IProps) {
 
 	const getPlayerStatus = async () => {
 		try {
-			const result = await commandBackend('getPlayerStatus');
+			const result = await commandBackend(WS_CMD.GET_PLAYER_STATUS);
 			updateCounters(result);
 		} catch (_) {
 			// already display
@@ -397,15 +400,15 @@ function Playlist(props: IProps) {
 
 	const getPlaylistUrl = (plaidParam?: string) => {
 		const idPlaylist: string = plaidParam ? plaidParam : getPlaylistInfo(props.side, context)?.plaid;
-		let url: string;
+		let url: WSCmdDefinition<object, DBKaraList>;
 		if (idPlaylist === nonStandardPlaylists.library) {
-			url = 'getKaras';
+			url = WS_CMD.GET_KARAS;
 		} else if (idPlaylist === nonStandardPlaylists.favorites) {
-			url = 'getFavorites';
+			url = WS_CMD.GET_FAVORITES;
 		} else if (idPlaylist === nonStandardPlaylists.animelist) {
-			url = 'getAnimeList';
+			url = WS_CMD.GET_ANIME_LIST;
 		} else {
-			url = 'getPlaylistContents';
+			url = WS_CMD.GET_PLAYLIST_CONTENTS;
 		}
 		return url;
 	};
@@ -436,7 +439,7 @@ function Playlist(props: IProps) {
 			setOrderByLikes(orderByLikesParam);
 			order = orderByLikesParam;
 		}
-		const url: string = getPlaylistUrl();
+		const url = getPlaylistUrl();
 		const param: {
 			plaid: string;
 			orderByLikes: boolean;
@@ -544,7 +547,7 @@ function Playlist(props: IProps) {
 
 	const gotToPlayingAfterPlaylistUpdate = async () => {
 		if (data && goToPlaying && !isNonStandardPlaylist(getPlaylistInfo(props.side, context)?.plaid)) {
-			const result = await commandBackend('findPlayingSongInPlaylist', {
+			const result = await commandBackend(WS_CMD.FIND_PLAYING_SONG_IN_PLAYLIST, {
 				plaid: getPlaylistInfo(props.side, context)?.plaid,
 			});
 			if (result?.index !== -1) {
@@ -595,7 +598,7 @@ function Playlist(props: IProps) {
 			setGotToPlaying(true);
 			setGotToPlayingAvoidScroll(true);
 		} else {
-			const result = await commandBackend('findPlayingSongInPlaylist', {
+			const result = await commandBackend(WS_CMD.FIND_PLAYING_SONG_IN_PLAYLIST, {
 				plaid: getPlaylistInfo(props.side, context)?.plaid,
 			});
 			if (result?.index !== -1) {
@@ -689,7 +692,7 @@ function Playlist(props: IProps) {
 					...getSearchTagForAddAll(),
 				});
 				if (randomKaras.content.length > 0) {
-					const textContent = randomKaras.content.map((e: KaraElement) => (
+					const textContent = randomKaras.content.map(e => (
 						<Fragment key={e.kid}>
 							{buildKaraTitle(context.globalState.settings.data, e, true)} <br />
 							<br />
@@ -706,10 +709,10 @@ function Playlist(props: IProps) {
 							{textContent}
 						</>,
 						() => {
-							const karaList = randomKaras.content.map((a: KaraElement) => {
+							const karaList = randomKaras.content.map(a => {
 								return a.kid;
 							});
-							commandBackend('addKaraToPlaylist', {
+							commandBackend(WS_CMD.ADD_KARA_TO_PLAYLIST, {
 								kids: karaList,
 								plaid: getOppositePlaylistInfo(props.side, context).plaid,
 							}).catch(() => {});
@@ -728,9 +731,9 @@ function Playlist(props: IProps) {
 			plaid: getPlaylistInfo(props.side, context)?.plaid,
 			...getSearchTagForAddAll(),
 		});
-		const karaList = response.content.map((a: KaraElement) => a.kid);
+		const karaList = response.content.map(a => a.kid);
 		displayMessage('info', i18next.t('PL_MULTIPLE_ADDED', { count: response.content.length }));
-		commandBackend('addKaraToPlaylist', {
+		commandBackend(WS_CMD.ADD_KARA_TO_PLAYLIST, {
 			kids: karaList,
 			requestedby: context.globalState.auth.data.username,
 			plaid: getOppositePlaylistInfo(props.side, context).plaid,
@@ -745,19 +748,19 @@ function Playlist(props: IProps) {
 		}
 		const idsKara = listKara.map(a => a.kid);
 		const idsKaraPlaylist = listKara.map(a => a.plcid);
-		let url = '';
+		let url: WSCmdDefinition<object, any>;
 		let dataApi;
 		const oppositePlaylist = getOppositePlaylistInfo(props.side, context);
 
 		if (!oppositePlaylist.flag_smart) {
 			if (!isNonStandardPlaylist(getPlaylistInfo(props.side, context)?.plaid) && !pos) {
-				url = 'copyKaraToPlaylist';
+				url = WS_CMD.COPY_KARA_TO_PLAYLIST;
 				dataApi = {
 					plaid: oppositePlaylist.plaid,
 					plc_ids: idsKaraPlaylist,
 				};
 			} else {
-				url = 'addKaraToPlaylist';
+				url = WS_CMD.ADD_KARA_TO_PLAYLIST;
 				if (pos) {
 					dataApi = {
 						plaid: oppositePlaylist.plaid,
@@ -774,14 +777,14 @@ function Playlist(props: IProps) {
 				}
 			}
 		} else if (oppositePlaylist.flag_smart) {
-			url = 'addCriterias';
+			url = WS_CMD.ADD_CRITERIAS;
 			dataApi = {
 				criterias: idsKara.map(kid => {
 					return { type: 1001, value: kid, plaid: oppositePlaylist.plaid };
 				}),
 			};
 		} else if (oppositePlaylist.plaid === nonStandardPlaylists.favorites) {
-			url = 'addFavorites';
+			url = WS_CMD.ADD_FAVORITES;
 			dataApi = {
 				kids: idsKara,
 			};
@@ -843,7 +846,7 @@ function Playlist(props: IProps) {
 			displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
 			return;
 		}
-		await commandBackend('deleteFavorites', {
+		await commandBackend(WS_CMD.DELETE_FAVORITES, {
 			kids: listKara.map(a => a.kid),
 		});
 		setSelectAllKarasChecked(false);
@@ -856,7 +859,7 @@ function Playlist(props: IProps) {
 			return;
 		}
 		const idsKaraPlaylist = listKara.map(a => a.plcid);
-		await commandBackend('editPLC', {
+		await commandBackend(WS_CMD.EDIT_PLC, {
 			plc_ids: idsKaraPlaylist,
 			flag_accepted: true,
 		}).catch(() => {});
@@ -870,7 +873,7 @@ function Playlist(props: IProps) {
 			return;
 		}
 		const idsKaraPlaylist = listKara.map(a => a.plcid);
-		await commandBackend('editPLC', {
+		await commandBackend(WS_CMD.EDIT_PLC, {
 			plc_ids: idsKaraPlaylist,
 			flag_refused: true,
 		}).catch(() => {});
@@ -881,7 +884,7 @@ function Playlist(props: IProps) {
 		const response = await commandBackend(getPlaylistUrl(), { plaid: getPlaylistInfo(props.side, context)?.plaid });
 		const karaList: KaraDownloadRequest[] = response.content
 			.filter(kara => kara.download_status === 'MISSING')
-			.map((kara: KaraElement) => {
+			.map(kara => {
 				return {
 					mediafile: kara.mediafile,
 					kid: kara.kid,
@@ -890,7 +893,7 @@ function Playlist(props: IProps) {
 					repository: kara.repository,
 				};
 			});
-		if (karaList.length > 0) commandBackend('addDownloads', { downloads: karaList }).catch(() => {});
+		if (karaList.length > 0) commandBackend(WS_CMD.ADD_DOWNLOADS, { downloads: karaList }).catch(() => {});
 	};
 
 	const onChangeTags = (type: number | string, value: string) => {
@@ -946,7 +949,7 @@ function Playlist(props: IProps) {
 	};
 
 	const removeCriterias = async (kara: KaraElement) => {
-		await commandBackend('removeCriterias', {
+		await commandBackend(WS_CMD.REMOVE_CRITERIAS, {
 			criterias: [
 				{
 					plaid: getPlaylistInfo(props.side, context)?.plaid,
@@ -981,7 +984,7 @@ function Playlist(props: IProps) {
 					let apiIndex = newIndex + 1;
 					if (newIndex > oldIndex) apiIndex = apiIndex + 1;
 					try {
-						commandBackend('editPLC', {
+						commandBackend(WS_CMD.EDIT_PLC, {
 							pos: apiIndex,
 							plc_ids: [plcid],
 						}).finally(() => {
@@ -1019,7 +1022,7 @@ function Playlist(props: IProps) {
 				value => value.Enabled && value.Online
 			)) {
 				if (isAdmin) {
-					const manifest: RepositoryManifestV2 = await commandBackend('getRepoManifest', {
+					const manifest: RepositoryManifestV2 = await commandBackend(WS_CMD.GET_REPO_MANIFEST, {
 						name: value.Name,
 					});
 					newRepos.push({
@@ -1041,7 +1044,7 @@ function Playlist(props: IProps) {
 	const swapPLCs = async (plc: number) => {
 		if (plcidToSwap && plc) {
 			if (plc !== plcidToSwap) {
-				await commandBackend('swapPLCs', {
+				await commandBackend(WS_CMD.SWAP_PLCS, {
 					plcid1: plcidToSwap,
 					plcid2: plc,
 				});

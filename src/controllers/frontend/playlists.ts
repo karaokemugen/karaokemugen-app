@@ -1,7 +1,5 @@
-import { Socket } from 'socket.io';
-
+import { WS_CMD } from '../../../kmfrontend/src/utils/ws.js';
 import { APIMessage } from '../../lib/services/frontend.js';
-import { APIData } from '../../lib/types/api.js';
 import { bools } from '../../lib/utils/constants.js';
 import { check } from '../../lib/utils/validators.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
@@ -32,7 +30,7 @@ import { vote } from '../../services/upvote.js';
 import { runChecklist } from '../middlewares.js';
 
 export default function playlistsController(router: SocketIOApp) {
-	router.route('createAutomix', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.CREATE_AUTOMIX, async (socket, req) => {
 		await runChecklist(socket, req);
 		try {
 			return await createAutoMix(req.body, req.token.username);
@@ -41,7 +39,7 @@ export default function playlistsController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('getPlaylists', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_PLAYLISTS, async (socket, req) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		// Get list of playlists
 		try {
@@ -51,7 +49,7 @@ export default function playlistsController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('createPlaylist', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.CREATE_PLAYLIST, async (socket, req) => {
 		await runChecklist(socket, req);
 		const validationErrors = check(req.body, {
 			name: { presence: { allowEmpty: false } },
@@ -80,7 +78,7 @@ export default function playlistsController(router: SocketIOApp) {
 			throw { code: 400, message: validationErrors };
 		}
 	});
-	router.route('getPlaylist', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_PLAYLIST, async (socket, req) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		try {
 			const playlist = await getPlaylistInfo(req.body?.plaid, req.token);
@@ -89,7 +87,7 @@ export default function playlistsController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('editPlaylist', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.EDIT_PLAYLIST, async (socket, req) => {
 		await runChecklist(socket, req);
 		// No errors detected
 		if (req.body.name) req.body.name = decodeURIComponent(req.body.name?.trim());
@@ -101,7 +99,7 @@ export default function playlistsController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('deletePlaylist', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.DELETE_PLAYLIST, async (socket, req) => {
 		await runChecklist(socket, req);
 		try {
 			return await removePlaylist(req.body?.plaid);
@@ -109,7 +107,7 @@ export default function playlistsController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('emptyPlaylist', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.EMPTY_PLAYLIST, async (socket, req) => {
 		await runChecklist(socket, req);
 		// Empty playlist
 		try {
@@ -118,7 +116,7 @@ export default function playlistsController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('exportPlaylistMedia', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.EXPORT_PLAYLIST_MEDIA, async (socket, req) => {
 		await runChecklist(socket, req);
 		// Export all playlist kara medias to a local directory
 		try {
@@ -127,7 +125,7 @@ export default function playlistsController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('findPlayingSongInPlaylist', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.FIND_PLAYING_SONG_IN_PLAYLIST, async (socket, req) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		try {
 			const index = await findPlaying(req.body?.plaid);
@@ -136,7 +134,7 @@ export default function playlistsController(router: SocketIOApp) {
 			throw { code: 500 };
 		}
 	});
-	router.route('getPlaylistContents', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_PLAYLIST_CONTENTS, async (socket, req) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		try {
 			return await getPlaylistContents(
@@ -155,7 +153,7 @@ export default function playlistsController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('getPlaylistContentsMicro', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_PLAYLIST_CONTENTS_MICRO, async (socket, req) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		try {
 			return await getPlaylistContentsMicro(req.body?.plaid, req.body?.username, req.token);
@@ -163,7 +161,7 @@ export default function playlistsController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('addKaraToPlaylist', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.ADD_KARA_TO_PLAYLIST, async (socket, req) => {
 		await runChecklist(socket, req, 'admin');
 		// add a kara to a playlist
 		const validationErrors = check(req.body, {
@@ -187,7 +185,7 @@ export default function playlistsController(router: SocketIOApp) {
 			throw { code: 400, message: validationErrors };
 		}
 	});
-	router.route('copyKaraToPlaylist', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.COPY_KARA_TO_PLAYLIST, async (socket, req) => {
 		await runChecklist(socket, req);
 		// add karas from a playlist to another
 		const validationErrors = check(req.body, {
@@ -205,7 +203,7 @@ export default function playlistsController(router: SocketIOApp) {
 			throw { code: 400, message: validationErrors };
 		}
 	});
-	router.route('deleteKaraFromPlaylist', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.DELETE_KARA_FROM_PLAYLIST, async (socket, req) => {
 		await runChecklist(socket, req, 'guest');
 		const validationErrors = check(req.body, {
 			plc_ids: { presence: true, numbersArrayValidator: true },
@@ -223,7 +221,7 @@ export default function playlistsController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('getPLC', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_PLC, async (socket, req) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		try {
 			return await getKaraFromPlaylist(req.body?.plc_id, req.token);
@@ -231,7 +229,7 @@ export default function playlistsController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('swapPLCs', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.SWAP_PLCS, async (socket, req) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		try {
 			return await swapPLCs(req.body?.plcid1, req.body?.plcid2, req.token);
@@ -239,7 +237,7 @@ export default function playlistsController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('editPLC', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.EDIT_PLC, async (socket, req) => {
 		await runChecklist(socket, req);
 		const validationErrors = check(req.body, {
 			plc_ids: { numbersArrayValidator: true },
@@ -268,7 +266,7 @@ export default function playlistsController(router: SocketIOApp) {
 			throw { code: 400, message: validationErrors };
 		}
 	});
-	router.route('randomizePLC', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.RANDOMIZE_PLC, async (socket, req) => {
 		await runChecklist(socket, req);
 		try {
 			return await randomizePLC(req.body?.plc_ids);
@@ -276,7 +274,7 @@ export default function playlistsController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('votePLC', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.VOTE_PLC, async (socket, req) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		// Post an upvote
 		try {
@@ -285,7 +283,7 @@ export default function playlistsController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('exportPlaylist', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.EXPORT_PLAYLIST, async (socket, req) => {
 		await runChecklist(socket, req);
 		try {
 			return await exportPlaylist(req.body?.plaid);
@@ -293,7 +291,7 @@ export default function playlistsController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('importPlaylist', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.IMPORT_PLAYLIST, async (socket, req) => {
 		await runChecklist(socket, req);
 		// Imports a playlist and its contents in an importable format (posted as JSON data)
 		try {
@@ -307,7 +305,7 @@ export default function playlistsController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('shufflePlaylist', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.SHUFFLE_PLAYLIST, async (socket, req) => {
 		await runChecklist(socket, req);
 		try {
 			return await shufflePlaylist(req.body?.plaid, req.body?.method, req.body?.fullShuffle);
