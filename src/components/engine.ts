@@ -29,7 +29,7 @@ import { initPlayer, quitmpv } from '../services/player.js';
 import { initPlaylistSystem, stopPlaylistSystem } from '../services/playlist.js';
 import { buildAllMediasList, updatePlaylistMedias } from '../services/playlistMedias.js';
 import { stopGame } from '../services/quiz.js';
-import { checkDownloadStatus, updateAllRepos } from '../services/repo.js';
+import { checkDownloadStatus, statsEnabledRepositories, updateAllRepos } from '../services/repo.js';
 import { initSession, stopSessionSystem } from '../services/session.js';
 import { initStats, stopStatsSystem } from '../services/stats.js';
 import { generateAdminPassword, initUserSystem } from '../services/user.js';
@@ -150,7 +150,7 @@ export async function initEngine() {
 			initDownloader();
 			initSession();
 			if (conf.Karaoke.StreamerMode.Twitch.Enabled) initTwitch();
-			if (conf.Online.Stats === true) initStats(false);
+			if (statsEnabledRepositories.length > 0) initStats(false);
 			initStep(i18next.t('INIT_LAST'), true);
 			enableWSLogging(state.opt.debug ? 'debug' : 'info');
 			// Easter egg

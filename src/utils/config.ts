@@ -45,7 +45,6 @@ import {
 import { updateAllPlaylistDurations } from '../services/playlist.js';
 import { setSongPoll } from '../services/poll.js';
 import { destroyRemote, initRemote } from '../services/remote.js';
-import { initStats, stopStatsSystem } from '../services/stats.js';
 import { updateSongsLeft } from '../services/user.js';
 import { BinariesConfig } from '../types/binChecker.js';
 import { Config } from '../types/config.js';
@@ -255,8 +254,6 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	config.Playlist.RandomSongsAfterEndMessage ? initAddASongMessage() : stopAddASongMessage();
 	// Toggling Discord RPC
 	config.Online.Discord.DisplayActivity ? initDiscordRPC() : stopDiscordRPC();
-	// Toggling stats
-	config.Online.Stats ? initStats(newConfig.Online.Stats === oldConfig.Online.Stats) : stopStatsSystem();
 	// Streamer mode
 	if (config.Karaoke.StreamerMode.Enabled) writeStreamFiles();
 

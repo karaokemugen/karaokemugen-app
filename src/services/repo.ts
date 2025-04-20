@@ -14,11 +14,11 @@ import { getSettings, refreshAll, saveSetting } from '../lib/dao/database.js';
 import { initHooks } from '../lib/dao/hook.js';
 import { refreshKaras } from '../lib/dao/kara.js';
 import { formatKaraV4, getDataFromKaraFile, writeKara } from '../lib/dao/karafile.js';
-import { selectRepos } from '../lib/dao/repo.js';
+import { readRepoManifest, selectRepos } from '../lib/dao/repo.js';
 import { APIMessage } from '../lib/services/frontend.js';
 import { readAllKaras } from '../lib/services/generation.js';
 import { defineSongname } from '../lib/services/karaCreation.js';
-import { getRepoManifest } from '../lib/services/repo.js';
+import { getRepoManifest, readAllRepoManifests } from '../lib/services/repo.js';
 import { DBTag } from '../lib/types/database/tag.js';
 import { KaraMetaFile } from '../lib/types/downloads.js';
 import { KaraFileV4 } from '../lib/types/kara.js';
@@ -112,6 +112,7 @@ export async function addRepo(repo: Repository) {
 		if (windowsDriveRootRegexp.test(repo.BaseDir)) {
 			throw new ErrorKM('CANNOT_INSTALL_REPO_AT_WINDOWS_ROOT_DRIVE', 400, false);
 		}
+		if (typeof repo.Enabled === 'undefined') repo.Enabled = true;
 		if (repo.Online) {
 			// Testing if repository is reachable
 			try {
@@ -146,7 +147,9 @@ export async function addRepo(repo: Repository) {
 				}
 			} else {
 				updateZipRepo(repo.Name)
-					.then(() => generateDB())
+					.then(() => {
+						generateDB().then(() => readRepoManifest(repo.Name));
+					})
 					.catch(err => {
 						logger.warn('Repository was added, but initializing it failed', { service, err });
 					});
@@ -188,6 +191,7 @@ export async function updateAllRepos() {
 		logger.info('Finished updating all repositories', { service });
 		if (allReposUpdated) emitWS('operatorNotificationSuccess', APIMessage('SUCCESS_CODES.REPOS_ALL_UPDATED'));
 		if (doGenerate) await generateDB();
+		readAllRepoManifests();
 		if (getConfig().App.FirstRun) {
 			createProblematicSmartPlaylist();
 		}
@@ -214,8 +218,12 @@ export async function checkDownloadStatus(kids?: string[]) {
 	const mediasPresent = new Set();
 	for (const repo of getRepos()) {
 		for (const mediaDir of resolvedPathRepos('Medias', repo.Name)) {
-			const files = await fs.readdir(mediaDir);
-			files.forEach(f => mediasPresent.add(f));
+			try {
+				const files = await fs.readdir(mediaDir);
+				files.forEach(f => mediasPresent.add(f));
+			} catch (err) {
+				logger.warn(`Error listing files from directory, skipping ${mediaDir}`, { service, err });
+			}
 		}
 	}
 	for (const kara of karas.content) {
@@ -444,7 +452,7 @@ export async function editRepo(
 async function hookEditedRepo(oldRepo: Repository, repo: Repository, refresh = false, onlineCheck = true) {
 	let doGenerate = false;
 	if (!oldRepo.SendStats && repo.Online && repo.Enabled && repo.SendStats && getState().DBReady && onlineCheck) {
-		sendPayload(repo.Name, repo.Name === getConfig().Online.Host, repo.Secure).catch();
+		sendPayload(repo.Name, repo.Secure).catch();
 	}
 	// Repo is online so we have stuff to do
 	if (repo.Enabled && repo.Online && repo.Update) {
@@ -495,6 +503,7 @@ async function hookEditedRepo(oldRepo: Repository, repo: Repository, refresh = f
 		doGenerate = true;
 	}
 	if (doGenerate) await generateDB();
+	readRepoManifest(repo.Name);
 	if (!isEqual(oldRepo.Path.Medias, repo.Path.Medias) && getState().DBReady && onlineCheck) {
 		getKaras({ q: `r:${repo.Name}`, ignoreCollections: true }).then(karas => {
 			checkDownloadStatus(karas.content.map(k => k.kid));
@@ -671,6 +680,8 @@ export async function updateGitRepo(name: string) {
 		} catch (err) {
 			// Diff or applying changes failed, but files are there. So we'll trigger a regen.
 			await generateDB();
+		} finally {
+			await readRepoManifest(repo.Name);
 		}
 		return false;
 	} catch (err) {
@@ -1674,4 +1685,8 @@ export async function convertToUUIDFormat(repoName: string) {
 	} finally {
 		task.end();
 	}
+}
+
+export function statsEnabledRepositories(): Repository[] {
+	return getRepos().filter(r => r.Enabled && r.SendStats && r.Online);
 }

@@ -6,7 +6,6 @@ const propertiesToDisplay = [
 	'App.QuickStart',
 	'Online.Users',
 	'Online.Discord.DisplayActivity',
-	'Online.Stats',
 	'Online.FetchPopularSongs',
 	'Online.ErrorTracking',
 	'Player.HardwareDecoding',

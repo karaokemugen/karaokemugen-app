@@ -32,7 +32,6 @@ export const defaults: Config = {
 		Secure: true,
 		MediasHost: null,
 		Timeout: 2000,
-		Stats: undefined,
 		ErrorTracking: undefined,
 		Users: true,
 		Discord: {
@@ -237,7 +236,6 @@ export const endOfPlaylistActions = ['random', 'random_fallback', 'play_fallback
 export const configConstraints = {
 	'App.FirstRun': { inclusion: bools },
 	// 'App.InstanceID': {presence: true, format: uuidRegexp}, // Broken on regular installations since InstanceID is stored in database. We'll implement this in KM 10.0 aka KMX
-	'Online.Stats': { boolUndefinedValidator: true },
 	'Online.ErrorTracking': { boolUndefinedValidator: true },
 	'Online.Host': { presence: true, format: hostnameRegexp },
 	'Online.Timeout': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0 } },

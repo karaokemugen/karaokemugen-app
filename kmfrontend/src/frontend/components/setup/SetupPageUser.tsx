@@ -86,7 +86,7 @@ function SetupPageUser() {
 			});
 			setAuthenticationInformation(context.globalDispatch, infos);
 			setError(undefined);
-			navigate('/setup/repo');
+			navigate('/setup/stats');
 		} catch (err: any) {
 			const error = err?.message?.code ? i18next.t(`ERROR_CODES.${err.message.code}`) : JSON.stringify(err);
 			setError(error);

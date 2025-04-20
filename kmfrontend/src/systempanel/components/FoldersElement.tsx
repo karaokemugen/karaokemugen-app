@@ -13,6 +13,7 @@ interface FoldersElementProps {
 	keyModal?: string;
 	openFile?: boolean;
 	openDirectory?: boolean;
+	hideAdd?: boolean;
 	disabled?: boolean;
 }
 
@@ -173,14 +174,16 @@ export default class FoldersElement extends Component<FoldersElementProps, Folde
 								/>
 							</div>
 						))}
-						<Button
-							type="primary"
-							onClick={() => this.openFileSystemModal(this.state.value, -1, this.props.keyModal)}
-							disabled={this.props.disabled}
-						>
-							<PlusOutlined />
-							{this.getButtonLabel()}
-						</Button>
+						{this.props.hideAdd ? null : (
+							<Button
+								type="primary"
+								onClick={() => this.openFileSystemModal(this.state.value, -1, this.props.keyModal)}
+								disabled={this.props.disabled}
+							>
+								<PlusOutlined />
+								{this.getButtonLabel()}
+							</Button>
+						)}
 					</>
 				) : (
 					<Input

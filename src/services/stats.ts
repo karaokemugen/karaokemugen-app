@@ -14,6 +14,7 @@ import { emitWS } from '../lib/utils/ws.js';
 import { getPublicConfig } from '../utils/config.js';
 import sentry from '../utils/sentry.js';
 import { getState } from '../utils/state.js';
+import { statsEnabledRepositories } from './repo.js';
 import { getSessions } from './session.js';
 
 const service = 'Stats';
@@ -31,15 +32,14 @@ export function stopStatsSystem() {
 }
 
 export async function sendAllPayloads() {
-	const repos = getConfig().System.Repositories.filter(r => r.Online && r.Enabled && r.SendStats);
+	const repos = statsEnabledRepositories();
 	for (const repo of repos) {
-		const minimal = getConfig().Online.Host !== repo.Name;
-		sendPayload(repo.Name, minimal, repo.Secure);
+		sendPayload(repo.Name, repo.Secure);
 	}
 }
 
 /** Send stats payload to KM Server */
-export async function sendPayload(host: string, minimal: boolean, secure: boolean) {
+export async function sendPayload(host: string, secure: boolean) {
 	let payload: any;
 	try {
 		try {
@@ -47,7 +47,7 @@ export async function sendPayload(host: string, minimal: boolean, secure: boolea
 		} catch (err) {
 			throw 'This instance is not connected to the internets';
 		}
-		payload = await buildPayload(minimal);
+		payload = await buildPayload();
 		if (!payload.instance.instance_id) throw 'Could not fetch instance ID';
 		logger.info(`Sending payload to ${host} (${prettyBytes(JSON.stringify(payload).length)})`, {
 			service,
@@ -82,10 +82,10 @@ async function savePayload(payload: any, host: string) {
 }
 
 /** Create stats payload */
-async function buildPayload(minimal: boolean) {
+async function buildPayload() {
 	return {
 		payloadVersion: 3,
-		instance: await buildInstanceStats(minimal),
+		instance: await buildInstanceStats(),
 		viewcounts: await selectPlayed(),
 		requests: await selectRequests(),
 		sessions: await getSessions(),
@@ -93,39 +93,34 @@ async function buildPayload(minimal: boolean) {
 }
 
 /** Create system information stats */
-async function buildInstanceStats(minimal: boolean) {
+async function buildInstanceStats() {
 	const state = getState();
 	let extraStats = {};
-	let conf: any;
-	if (minimal) {
-		conf = { minimal: true };
-	} else {
-		conf = cloneDeep(getPublicConfig(true, false));
-		const [cpu, mem, gfx, os, disks] = await Promise.all([
-			si.cpu(),
-			si.mem(),
-			si.graphics(),
-			si.osInfo(),
-			si.diskLayout(),
-		]);
-		let total_disk_size = 0;
-		disks.forEach(d => {
-			total_disk_size += d.size;
-		});
-		extraStats = {
-			locale: state.defaultLocale,
-			screens: gfx.displays.length,
-			cpu_manufacturer: cpu.manufacturer,
-			cpu_model: cpu.brand,
-			cpu_speed: cpu.speed,
-			cpu_cores: cpu.cores,
-			memory: mem.total,
-			total_disk_space: total_disk_size,
-			os_platform: os.platform,
-			os_distro: os.distro,
-			os_release: os.release,
-		};
-	}
+	const conf = cloneDeep(getPublicConfig(true, false));
+	const [cpu, mem, gfx, os, disks] = await Promise.all([
+		si.cpu(),
+		si.mem(),
+		si.graphics(),
+		si.osInfo(),
+		si.diskLayout(),
+	]);
+	let total_disk_size = 0;
+	disks.forEach(d => {
+		total_disk_size += d.size;
+	});
+	extraStats = {
+		locale: state.defaultLocale,
+		screens: gfx.displays.length,
+		cpu_manufacturer: cpu.manufacturer,
+		cpu_model: cpu.brand,
+		cpu_speed: cpu.speed,
+		cpu_cores: cpu.cores,
+		memory: mem.total,
+		total_disk_space: total_disk_size,
+		os_platform: os.platform,
+		os_distro: os.distro,
+		os_release: os.release,
+	};
 	return {
 		config: { ...conf },
 		instance_id: getConfig().App.InstanceID,

@@ -103,7 +103,12 @@ export default function FileSystem(props: IProps) {
 		<List
 			header={
 				<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-					<Input style={{ marginRight: '0.5em' }} value={path} onChange={onChangeInput} />
+					<Input
+						style={{ marginRight: '0.5em' }}
+						value={path}
+						onChange={onChangeInput}
+						disabled={listing.length === 0}
+					/>
 					{!props.fileRequired ? <Button type="primary">{i18next.t('CONFIG.SELECT')}</Button> : null}
 				</div>
 			}

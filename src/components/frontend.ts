@@ -29,6 +29,7 @@ import logger, { profile } from '../lib/utils/logger.js';
 import { initWS, SocketIOApp } from '../lib/utils/ws.js';
 import sentry from '../utils/sentry.js';
 import { getState } from '../utils/state.js';
+import importBaseController from '../controllers/frontend/importBase.js';
 
 const service = 'Frontend';
 
@@ -59,6 +60,7 @@ function apiRouter(ws: SocketIOApp) {
 	smartPlaylistsController(ws);
 	inboxController(ws);
 	quizController(ws);
+	importBaseController(ws);
 	if (getState().isTest) testController(ws);
 }
 

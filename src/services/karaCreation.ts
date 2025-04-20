@@ -105,7 +105,7 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 			// Redefine mediapath as coming from temp
 			mediaPath = resolve(resolvedPath('Temp'), kara.medias[0].filename);
 
-			const modifiedLyrics = await processEmbeddedSubtitle(mediaPath, kara, editedKara);
+			const modifiedLyrics = await processEmbeddedSubtitle(mediaPath, kara, editedKara.useEmbeddedLyrics);
 			if (!editedKara.modifiedLyrics) {
 				editedKara.modifiedLyrics = modifiedLyrics;
 				filenames = determineMediaAndLyricsFilenames(kara);
@@ -242,8 +242,8 @@ export async function createKara(editedKara: EditedKara) {
 		const mediaDir = resolvedPathRepos('Medias', kara.data.repository)[0];
 		const mediaDest = resolve(mediaDir, filenames.mediafile);
 		let subDest: string;
-		if (kara.medias[0].lyrics[0]?.filename) {
-			const subPath = resolve(resolvedPath('Temp'), kara.medias[0].lyrics[0].filename);
+		if (kara.medias[0].lyrics?.[0]?.filename) {
+			const subPath = resolve(resolvedPath('Temp'), kara.medias[0].lyrics?.[0].filename);
 			const ext = await processSubfile(subPath);
 			filenames.lyricsfiles[0] = replaceExt(filenames.lyricsfiles[0], ext);
 			kara.medias[0].lyrics[0].filename = filenames.lyricsfiles[0];
@@ -276,7 +276,11 @@ export async function createKara(editedKara: EditedKara) {
 	}
 }
 
-async function processEmbeddedSubtitle(mediaPath: string, kara: KaraFileV4, useEmbeddedLyrics): Promise<boolean> {
+async function processEmbeddedSubtitle(
+	mediaPath: string,
+	kara: KaraFileV4,
+	useEmbeddedLyrics: boolean
+): Promise<boolean> {
 	let extractedVideoSubtitlesFile = '';
 	let modifiedLyrics = false;
 	try {
