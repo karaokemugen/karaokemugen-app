@@ -1184,6 +1184,7 @@
 		"WARNING_IMPORT_LYRICS": "Lyrics will be converted to .ass file format when imported.",
 		"WARNING_IMPORT_MEDIA": "Media will be converted to .mp4.",
 		"ADD_TAG_TEMPLATE": "Add a tag in template",
+		"ADD_TAG_TEMPLATE_DESC": "Use the field below to add items to the filename template.",
 		"MEDIA_FILES": "Media files",
 		"IMPORT_START": "Start import",
 		"SOURCE": "Source",
