@@ -1602,7 +1602,7 @@
 		"IMPORTING_PLAYLIST": "Importation de la liste de lecture…",
 		"DUMMY_TASK": "Aucune tâche en cours",
 		"BASE_IMPORT": {
-			"IMPORTING_BASE": "Import de chansons...",
+			"IMPORTING_BASE": "Import de chansons…",
 			"ANALYZING_FILES": "Analyse des fichiers",
 			"CREATING_METADATA": "Création des métadonnées"
 		}
