@@ -1177,7 +1177,6 @@
 		"DESTINATION_REPOSITORY_TOOLTIP": "Dépôt vers lequel les nouveaux karaokés seront importés",
 		"FILENAME_TEMPLATE": "Modèle de nom de fichier",
 		"FILENAME_TEMPLATE_TOOLTIP": "Si vos fichiers existants ont un nom de fichier structuré - par exemple contenant le nom de la chanson, l'artiste et l'année - vous pouvez fournir le format ici. Les champs reconnus seront automatiquement enregistrés dans les nouvelles métadonnées du karaoké.",
-		"ADD_TAG_TEMPLATE_DESC": "Utilisez le champ ci-dessous pour ajouter des éléments au modèle de nom de fichier.",
 		"ADD_TAG_TEMPLATE": "Ajouter un tag dans le modèle",
 		"WARNING_IMPORT_TITLE": "A LIRE",
 		"WARNING_IMPORT": "Karaoke Mugen regardera dans le dossier source et essaiera de trouver des chansons à importer.",
@@ -1600,11 +1599,11 @@
 		"ENCODING_MEDIA": "Encodage du fichier média…",
 		"EXPORTING_PLAYLIST_MEDIA": "Export des médias de la liste de lecture…",
 		"IMPORTING_PLAYLIST": "Importation de la liste de lecture…",
-		"DUMMY_TASK": "Aucune tâche en cours",	
+		"DUMMY_TASK": "Aucune tâche en cours",
 		"BASE_IMPORT": {
 			"IMPORTING_BASE": "Import de chansons...",
 			"ANALYZING_FILES": "Analyse des fichiers",
-			"CREATING_METADATA": "Création des métadonnées"		
+			"CREATING_METADATA": "Création des métadonnées"
 		}
 	},
 	"ERROR_CODES": {
