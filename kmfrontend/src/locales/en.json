@@ -1176,7 +1176,7 @@
 		"DESTINATION_REPOSITORY": "Target repository",
 		"DESTINATION_REPOSITORY_TOOLTIP": "Repository where the new karaokes will be imported",
 		"FILENAME_TEMPLATE": "Filename template",
-		"FILENAME_TEMPLATE_TOOLTIP": "If your existing files have a structured filename - for example containing the song name, artist and year - you can provide the format here. The recognized fields will automatically be saved on the new karaokes metadata",
+		"FILENAME_TEMPLATE_TOOLTIP": "If your existing files have a structured filename - for example containing the song name, artist and year - you can provide the format here. The recognized fields will automatically be saved on the new karaokes metadata.",
 		"FILENAME_TEMPLATE_DESC": "Please specify the format of filenames you're using :",
 		"WARNING_IMPORT_TITLE": "PLEASE READ",
 		"WARNING_IMPORT": "Karaoke Mugen will look into the source folder and try to find songs to import.",
@@ -1602,9 +1602,9 @@
 		"IMPORTING_PLAYLIST": "Importing playlist…",
 		"DUMMY_TASK": "No ongoing tasks",
 		"BASE_IMPORT": {
-			"IMPORTING_BASE": "Importing songs...",
+			"IMPORTING_BASE": "Importing songs…",
 			"ANALYZING_FILES": "Analyzing files",
-			"CREATING_METADATA": "Creating metadata"		
+			"CREATING_METADATA": "Creating metadata"
 		}
 	},
 	"ERROR_CODES": {
