@@ -1,7 +1,7 @@
 import { Layout, Modal } from 'antd';
 import i18next from 'i18next';
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import { Repository } from '../../../../../src/lib/types/repo';
 import { DifferentChecksumReport } from '../../../../../src/types/repo';
@@ -11,8 +11,9 @@ import RepositoryForm from './RepositoriesForm';
 
 const newrepository: Repository = {
 	Name: undefined,
-	Online: false,
+	Online: undefined,
 	Enabled: true,
+	Secure: true,
 	SendStats: false,
 	Update: true,
 	AutoMediaDownloads: 'updateOnly',
@@ -26,21 +27,26 @@ const newrepository: Repository = {
 function RepositoriesEdit() {
 	const navigate = useNavigate();
 	const { name } = useParams();
+	const [searchParams] = useSearchParams();
 
 	const [repository, setRepository] = useState<Repository>();
 	const [report, setReport] = useState<DifferentChecksumReport[]>();
 	const [selectedRepo, setSelectedRepo] = useState<string>();
 
-	const saveNew = async repository => {
+	const saveNew = async (repository: Repository) => {
 		try {
 			await commandBackend('addRepo', repository, true);
-			navigate('/system/repositories');
+			if (searchParams.get('setup')) {
+				navigate(`/system/karas/import?repository=${repository.Name}`);
+			} else {
+				navigate('/system/repositories');
+			}
 		} catch (_) {
 			// already display
 		}
 	};
 
-	const saveUpdate = async repository => {
+	const saveUpdate = async (repository: Repository) => {
 		try {
 			await commandBackend(
 				'editRepo',

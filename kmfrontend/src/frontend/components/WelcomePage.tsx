@@ -222,10 +222,7 @@ function WelcomePage() {
 		}
 		if (migrationsToDo) {
 			navigate('/migrate');
-		} else if (
-			context?.globalState.settings.data.config?.Online.Stats === undefined ||
-			context?.globalState.settings.data.config?.Online.ErrorTracking === undefined
-		) {
+		} else if (context?.globalState.settings.data.config?.Online.ErrorTracking === undefined) {
 			showModal(context.globalDispatch, <OnlineStatsModal />);
 		} else {
 			getDownloadQueue();

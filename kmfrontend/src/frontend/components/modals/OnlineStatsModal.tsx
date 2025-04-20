@@ -8,17 +8,14 @@ import RadioButton from '../generic/RadioButton';
 
 function OnlineStatsModal() {
 	const context = useContext(GlobalContext);
-	const [openDetails, setOpenDetails] = useState(false);
-	const [stats, setStats] = useState<boolean>();
 	const [errorTracking, setErrorTracking] = useState<boolean>();
 
 	const onClick = () => {
-		if (errorTracking !== undefined && stats !== undefined) {
+		if (errorTracking !== undefined) {
 			try {
 				commandBackend('updateSettings', {
 					setting: {
 						Online: {
-							Stats: stats,
 							ErrorTracking: errorTracking,
 						},
 					},
@@ -39,44 +36,6 @@ function OnlineStatsModal() {
 					</div>
 					<div className="modal-body">
 						<div className="modal-message text">
-							<p>{i18next.t('ONLINE_STATS.INTRO')}</p>
-						</div>
-						<div className="text">
-							<a className="btn-link" type="button" onClick={() => setOpenDetails(!openDetails)}>
-								{i18next.t('ONLINE_STATS.DETAILS.TITLE')}
-							</a>
-							{openDetails ? (
-								<>
-									<ul>
-										<li>{i18next.t('ONLINE_STATS.DETAILS.1')}</li>
-										<li>{i18next.t('ONLINE_STATS.DETAILS.2')}</li>
-										<li>{i18next.t('ONLINE_STATS.DETAILS.3')}</li>
-										<li>{i18next.t('ONLINE_STATS.DETAILS.4')}</li>
-									</ul>
-									<p>{i18next.t('ONLINE_STATS.DETAILS.OUTRO')}</p>
-									<br />
-								</>
-							) : null}
-							<div className="text">
-								<p>{i18next.t('ONLINE_STATS.QUESTION')}</p>
-							</div>
-							<RadioButton
-								buttons={[
-									{
-										label: i18next.t('YES'),
-										activeColor: '#57bb00',
-										active: stats,
-										onClick: () => setStats(true),
-									},
-									{
-										label: i18next.t('NO'),
-										activeColor: '#880500',
-										active: stats === false,
-										onClick: () => setStats(false),
-									},
-								]}
-							/>
-							<br />
 							<div className="text">
 								<p>{i18next.t('ONLINE_STATS.ERROR')}</p>
 							</div>

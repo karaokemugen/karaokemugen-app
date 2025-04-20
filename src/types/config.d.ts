@@ -65,7 +65,6 @@ export interface Config {
 		Secure?: boolean;
 		Timeout?: number;
 		Users?: boolean;
-		Stats?: boolean;
 		ErrorTracking?: boolean;
 		Discord?: {
 			DisplayActivity?: boolean;
