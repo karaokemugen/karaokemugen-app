@@ -202,7 +202,7 @@
 	"CL_EMPTY_LIST": "空列表？",
 	"CL_PLAYLISTS": "歌曲列表",
 	"CL_ADD_RANDOM_TITLE": "您希望添加多少首随机歌曲？",
-	"CL_ABOUT_TO_ADD": "正在取消添加",
+	"CL_ABOUT_TO_ADD": "正在添加",
 	"ACCOUNT": "我的账户",
 	"LOGIN": {
 		"GUEST_CONTINUE": "以访客继续",
@@ -250,7 +250,7 @@
 	"CL_DELETE_CRITERIAS_PLAYLIST": "删除含有以下歌曲的条件“{{type}}”：",
 	"GOTO_TOP": "返回播放列表顶部",
 	"GOTO_PLAYING": "返回当前播放的歌曲",
-	"GOTO_BOTTOM": "返回播放列表结尾",
+	"GOTO_BOTTOM": "转到播放列表结尾",
 	"LOG_OFFLINE": {
 		"TITLE": "离线模式",
 		"MESSAGE": "对个人信息的修改将不会永久保存"
