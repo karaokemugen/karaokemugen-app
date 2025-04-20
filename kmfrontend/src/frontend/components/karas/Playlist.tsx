@@ -319,7 +319,7 @@ function Playlist(props: IProps) {
 						draggable={provided}
 						playingIn={props.searchType === 'incoming'}
 						plcidToSwap={plcidToSwap}
-						swapPLCs={props.searchType === 'incoming' ? swapPLCs : undefined}
+						swapPLCs={props.searchType === 'incoming' && data.infos.count > 1 ? swapPLCs : undefined}
 					/>
 				);
 			} else {
