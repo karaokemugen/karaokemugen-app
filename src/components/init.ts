@@ -138,6 +138,8 @@ async function checkPaths(config: Config) {
 				checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'tags')));
 				checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'fonts')));
 				checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'hooks')));
+				// Disabling the following check for System repositories
+				if (repo.System) continue;
 				for (const path of repo.Path.Medias) {
 					try {
 						const mediaPath = resolve(dataPath, path);
