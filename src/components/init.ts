@@ -13,8 +13,7 @@ import { asyncCheckOrMkdir, fileExists } from '../lib/utils/files.js';
 import logger, { configureLogger, profile } from '../lib/utils/logger.js';
 import { resetNewAccountCode, resetSecurityCode } from '../services/auth.js';
 import { backgroundTypes } from '../services/backgrounds.js';
-import { editRepo } from '../services/repo.js';
-import { Config } from '../types/config.js';
+import { editRepo, getRepos } from '../services/repo.js';
 import { initConfig } from '../utils/config.js';
 import { logo } from '../utils/constants.js';
 import { defaultRepositories } from '../utils/defaultSettings.js';
@@ -66,7 +65,7 @@ export async function preInit() {
 	logger.debug(`INIT_CWD : ${process.env.INIT_CWD}`, { service });
 	logger.debug(`PORTABLE_EXECUTABLE_DIR : ${process.env.PORTABLE_EXECUTABLE_DIR}`, { service });
 	logger.debug(`app.getAppPath : ${app ? app.getAppPath() : undefined}`, { service });
-	logger.debug(`argv: ${JSON.stringify(process.argv)}`, { service });
+	logger.debug(`argv : ${JSON.stringify(process.argv)}`, { service });
 	logger.debug(`Locale : ${state.defaultLocale}`, { service });
 	logger.debug(`OS : ${process.platform}`, { service });
 	await initConfig(argv);
@@ -97,7 +96,7 @@ export async function init() {
 	logger.debug('Initial state', { service, obj: state });
 
 	// Checking paths, create them if needed.
-	await checkPaths(getConfig());
+	await checkPaths();
 	// Copy avatar blank.png if it doesn't exist to the avatar path
 	logger.debug(`Copying blank.png to ${resolvedPath('Avatars')}`, { service });
 	copy(resolve(state.resourcePath, 'assets/blank.png'), resolve(resolvedPath('Avatars'), 'blank.png')).catch(() =>
@@ -116,10 +115,20 @@ export async function init() {
 	profile('Init');
 }
 
+/** Copy system repository from assets to repos folder */
+async function setupSystemRepo() {
+	const baseDir = resolve(getState().resourcePath, 'assets/systemRepo');
+	const destDir = resolve(getState().dataPath, 'repos/system');
+	logger.debug('Copying system repository', { service });
+	await remove(destDir);
+	await copy(baseDir, destDir);
+}
+
 /* Checking if application paths exist. * */
-async function checkPaths(config: Config) {
+async function checkPaths() {
 	try {
 		profile('checkPaths');
+		const repos = getRepos();
 		await remove(resolvedPath('Temp')).catch();
 		await remove(resolvedPath('Fonts')).catch();
 		await remove(resolvedPath('BundledBackgrounds')).catch();
@@ -131,8 +140,15 @@ async function checkPaths(config: Config) {
 		checks.push(asyncCheckOrMkdir(resolvedPath('Fonts')));
 		checks.push(asyncCheckOrMkdir(resolvedPath('Logs')));
 		checks.push(asyncCheckOrMkdir(resolvedPath('SSHKeys')));
-		for (const repo of config.System.Repositories) {
+		for (const type of backgroundTypes) {
+			checks.push(asyncCheckOrMkdir(resolve(resolvedPath('Backgrounds'), type)));
+		}
+		for (const path of Object.keys(getConfig().System.Path)) {
+			checks.push(asyncCheckOrMkdir(resolvedPath(path as PathType)));
+		}
+		for (const repo of repos) {
 			try {
+				if (repo.System) await setupSystemRepo();
 				checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'karaokes')));
 				checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'lyrics')));
 				checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'tags')));
@@ -164,12 +180,6 @@ async function checkPaths(config: Config) {
 					detail: i18next.t('REPO_DISABLED.DETAIL', { repo: repo.Name }),
 				});
 			}
-		}
-		for (const type of backgroundTypes) {
-			checks.push(asyncCheckOrMkdir(resolve(resolvedPath('Backgrounds'), type)));
-		}
-		for (const path of Object.keys(getConfig().System.Path)) {
-			checks.push(asyncCheckOrMkdir(resolvedPath(path as PathType)));
 		}
 		await Promise.all(checks);
 		logger.debug('Directory checks complete', { service });
