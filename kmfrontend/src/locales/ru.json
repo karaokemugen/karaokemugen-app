@@ -1,1 +1,70 @@
-{}
+{
+	"SELECT_PLACEHOLDER": "Выбрать плейлист",
+	"VERSION": "Версия",
+	"VOLUME_LEVEL": "Установить громкость",
+	"YES": "Да",
+	"AND": "и",
+	"SPEED_RESET": "Сброс на нормальную скорость",
+	"PLAYLISTS": {
+		"LIBRARY": "Библиотека",
+		"FAVORITES": "Избранное",
+		"ANIME_LIST": "Песни из моих аниме"
+	},
+	"DURATION_REMAINING": "осталось",
+	"NOT_FOUND_PAGE": {
+		"404_4": "Идти домой",
+		"404": "Заблудились в караоке Mugen?",
+		"404_2": "Не паникуйте, мы можем вам помочь.",
+		"404_3": "Вы здесь"
+	},
+	"PASSWORD_DIFFERENT": "Пароли не совпадают",
+	"ADMIN_HEADER": {
+		"CURRENT_PLAYLIST": "Текущий список воспроизведения",
+		"QUIZ_RANKING": "Рейтинг викторины",
+		"PUBLIC_PLAYLIST": "Публичный список воспроизведения",
+		"QUICK_ACCESS": "Быстрый доступ"
+	},
+	"SPEED_UP": "Увеличить скорость",
+	"PASSWORD_MANDATORY": "Требуется ввести пароль",
+	"INLINE_TAG": {
+		"SEARCH": "Песни с {{tag}}",
+		"COUNT_other": "{{count}} песен",
+		"COUNT_one": "{{count}} песни"
+	},
+	"SEARCH": "Поиск",
+	"SUBMIT": "Сохранить",
+	"CONFIRM": "Подтвердить",
+	"CANCEL": "Отменить",
+	"WARNING": "Предупреждение!",
+	"SHOW-HIDE": "Показать/Скрыть",
+	"LOGIN_MANDATORY": "Требуется войти в систему",
+	"SECURITY_CODE_MANDATORY": "Для создания учетной записи оператора требуется защитный код",
+	"DETAILS": {
+		"DURATION": "Продолжительность",
+		"YEAR": "Год"
+	},
+	"SHUTDOWN": "Выключение Karaoke Mugen",
+	"SHUTDOWN_POPUP": "Связь с Karaoke Mugen потеряна",
+	"HOME_BUTTON": "Дом",
+	"SHOW_SUBS": "Показывать текст песни на экране",
+	"SPEED_DOWN": "Уменьшить скорость",
+	"BLURVIDEO_BLUR": "Размытое видео",
+	"BLURVIDEO_UNBLUR": "Нормальное видео",
+	"PITCH_RESET": "Сброс высоты тона",
+	"PITCH_UP": "Увеличить высоту тона",
+	"PITCH_DOWN": "Уменьшить высоту тона",
+	"OPTIONS": "Опции",
+	"PASSWORD": "Пароль (минимум 8 символов)",
+	"PASSWORDCONF": "Подтверждение пароля",
+	"NEW_PASSWORD": "Новый пароль",
+	"WEBAPPMODE_CLOSED_MESSAGE": "Интерфейс закрыт, пожалуйста, подождите.",
+	"MESSAGE": "Сообщение",
+	"PLAYLIST_HEADER": {
+		"FILTERS": "Фильтры",
+		"ACTIVE_FILTER": "Активный фильтр"
+	},
+	"NO": "Нет",
+	"OR": "или",
+	"HIDE_SUBS": "Скрыть текст песни на экране",
+	"UNKNOWN": "Неизвестный"
+}
