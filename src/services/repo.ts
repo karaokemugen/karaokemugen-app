@@ -1033,50 +1033,54 @@ export function checkRepoMediaPaths(repo?: Repository) {
 }
 
 function checkRepoPaths(repo: Repository) {
-	if (windowsDriveRootRegexp.test(repo.BaseDir)) {
-		throw new ErrorKM('REPO_PATH_ERROR_IN_WINDOWS_ROOT_DIR', 400, false);
-	}
-	if (!getState().portable) {
-		// The Mutsui Fix.
-		// If not in portable mode, prevent repo paths from being in the app folder
-		if (pathIsContainedInAnother(resolve(getState().dataPath, repo.BaseDir), resolve(getState().appPath))) {
-			throw new ErrorKM('REPO_PATH_ERROR_IN_APP_PATH', 400, false);
-		}
-	}
-	for (const path of repo.Path.Medias) {
-		// Fix for KM-APP-1W5 because someone thought it would be funny to put all its medias in the folder KM's exe is in. Never doubt your users' creativity.
-		if (
-			!getState().portable &&
-			pathIsContainedInAnother(resolve(getState().dataPath, path), resolve(getState().appPath))
-		) {
-			throw new ErrorKM('REPO_PATH_ERROR_IN_APP_PATH', 400, false);
-		}
-		if (
-			!repo.System &&
-			pathIsContainedInAnother(resolve(getState().dataPath, path), resolve(getState().dataPath, repo.BaseDir))
-		) {
-			throw new ErrorKM('REPO_PATH_ERROR_IN_BASE_PATH', 400, false);
-		}
-		if (windowsDriveRootRegexp.test(path)) {
+	try {
+		if (windowsDriveRootRegexp.test(repo.BaseDir)) {
 			throw new ErrorKM('REPO_PATH_ERROR_IN_WINDOWS_ROOT_DIR', 400, false);
 		}
-	}
+		if (!getState().portable) {
+			// The Mutsui Fix.
+			// If not in portable mode, prevent repo paths from being in the app folder
+			if (pathIsContainedInAnother(resolve(getState().dataPath, repo.BaseDir), resolve(getState().appPath))) {
+				throw new ErrorKM('REPO_PATH_ERROR_IN_APP_PATH', 400, false);
+			}
+		}
+		for (const path of repo.Path.Medias) {
+			// Fix for KM-APP-1W5 because someone thought it would be funny to put all its medias in the folder KM's exe is in. Never doubt your users' creativity.
+			if (
+				!getState().portable &&
+				pathIsContainedInAnother(resolve(getState().dataPath, path), resolve(getState().appPath))
+			) {
+				throw new ErrorKM('REPO_PATH_ERROR_IN_APP_PATH', 400, false);
+			}
+			if (
+				!repo.System &&
+				pathIsContainedInAnother(resolve(getState().dataPath, path), resolve(getState().dataPath, repo.BaseDir))
+			) {
+				throw new ErrorKM('REPO_PATH_ERROR_IN_BASE_PATH', 400, false);
+			}
+			if (windowsDriveRootRegexp.test(path)) {
+				throw new ErrorKM('REPO_PATH_ERROR_IN_WINDOWS_ROOT_DIR', 400, false);
+			}
+		}
 
-	const mediaPathErrors = checkRepoMediaPaths(repo);
-	if (mediaPathErrors.reposWithSameMediaPath.length > 0) {
-		logger.error(
-			`Multiple repositories share the same media path, which will cause sync errors: ${mediaPathErrors.reposWithSameMediaPathText}`,
-			{ service }
-		);
-		throw new ErrorKM('REPOS_MULTIPLE_USED_MEDIA_PATH_ERROR', 400, false);
-	}
+		const mediaPathErrors = checkRepoMediaPaths(repo);
+		if (mediaPathErrors.reposWithSameMediaPath.length > 0) {
+			logger.error(
+				`Multiple repositories share the same media path, which will cause sync errors: ${mediaPathErrors.reposWithSameMediaPathText}`,
+				{ service }
+			);
+			throw new ErrorKM('REPOS_MULTIPLE_USED_MEDIA_PATH_ERROR', 400, false);
+		}
 
-	const checks = [];
-	for (const path of Object.keys(repo.Path)) {
-		repo.Path[path].forEach((dir: string) => checks.push(asyncCheckOrMkdir(resolve(getState().dataPath, dir))));
+		const checks = [];
+		for (const path of Object.keys(repo.Path)) {
+			repo.Path[path].forEach((dir: string) => checks.push(asyncCheckOrMkdir(resolve(getState().dataPath, dir))));
+		}
+		checks.push(asyncCheckOrMkdir(resolve(getState().dataPath, repo.BaseDir)));
+		return Promise.all(checks);
+	} catch (err) {
+		throw err instanceof ErrorKM ? err : new ErrorKM('REPO_CHECK_PATHS_ERROR', 400, false);
 	}
-	checks.push(asyncCheckOrMkdir(resolve(getState().dataPath, repo.BaseDir)));
-	return Promise.all(checks);
 }
 
 /** Find any unused medias in a repository */
