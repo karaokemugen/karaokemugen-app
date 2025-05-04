@@ -276,7 +276,7 @@ pkg_linux_arm64:
     - when: never
 pkg_win:
   stage: package
-  image: electronuserland/builder:wine-mono
+  image: electronuserland/builder:22-wine-mono-03.25
   tags:
     - $RUNNER_LINUX
   cache:
