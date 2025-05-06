@@ -88,7 +88,7 @@ function KMMenu() {
 				<Menu.Item key="karalist">
 					<Link to="/system/karas">{i18next.t('MENU.LIST')}</Link>
 				</Menu.Item>
-				<Menu.Item key="karaimport">
+				<Menu.Item key="karacreate">
 					<Link to="/system/karas/create">{i18next.t('MENU.NEW')}</Link>
 				</Menu.Item>
 				<Menu.Item key="queuedownload">
@@ -96,6 +96,9 @@ function KMMenu() {
 				</Menu.Item>
 				<Menu.Item key="karadownload">
 					<Link to="/system/karas/download">{i18next.t('MENU.DOWNLOAD')}</Link>
+				</Menu.Item>
+				<Menu.Item key="karaimport">
+					<Link to="/system/karas/import">{i18next.t('MENU.KARAIMPORT')}</Link>
 				</Menu.Item>
 				<Menu.Item key="karahistory">
 					<Link to="/system/karas/history">{i18next.t('MENU.HISTORY')}</Link>

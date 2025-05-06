@@ -128,7 +128,8 @@ async function migrateDB(): Promise<Postgrator.Migration[]> {
 		const res = await dialog.showMessageBox({
 			type: 'error',
 			title: i18next.t('DATABASE_IN_THE_FUTURE_ERROR.TITLE'),
-			message: i18next.t('DATABASE_IN_THE_FUTURE_ERROR.MESSAGE'),
+			message: process.platform === 'darwin' ? i18next.t('DATABASE_IN_THE_FUTURE_ERROR.TITLE') : undefined,
+			detail: i18next.t('DATABASE_IN_THE_FUTURE_ERROR.DETAIL'),
 			defaultId: 0,
 			buttons: [
 				i18next.t('CANCEL'),
@@ -239,7 +240,8 @@ export async function initDBSystem(): Promise<Postgrator.Migration[]> {
 			const res = await dialog.showMessageBox({
 				type: 'error',
 				title: i18next.t('DATABASE_CONNECTION_ERROR.TITLE'),
-				message: i18next.t('DATABASE_CONNECTION_ERROR.MESSAGE'),
+				message: process.platform === 'darwin' ? i18next.t('DATABASE_CONNECTION_ERROR.TITLE') : undefined,
+				detail: i18next.t('DATABASE_CONNECTION_ERROR.DETAIL'),
 				buttons: [i18next.t('DATABASE_CONNECTION_ERROR.HELP'), 'OK'],
 			});
 			if (res.response === 0) {
@@ -272,10 +274,12 @@ export async function resetUserData() {
 
 export async function getStats(selectedRepos?: string[]): Promise<DBStats> {
 	const collectionClauses = [];
-	for (const collection of Object.keys(getConfig().Karaoke.Collections)) {
-		if (getConfig().Karaoke.Collections[collection] === true)
-			collectionClauses.push(`'${collection}~${tagTypes.collections}' = ANY(ak.tid)`);
-	}
+	const collections = getConfig().Karaoke.Collections;
+	if (collections)
+		for (const collection of Object.keys(collections)) {
+			if (collections[collection] === true)
+				collectionClauses.push(`'${collection}~${tagTypes.collections}' = ANY(ak.tid)`);
+		}
 	const repos = selectedRepos || getRepos().map(r => r.Name);
 	const res = await db().query(sqlGetStats(collectionClauses), [repos]);
 	// Bigints are returned as strings in node-postgres for now. So we'll turn it into a number here.

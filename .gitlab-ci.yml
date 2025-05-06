@@ -3,7 +3,7 @@
 # Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
 # Note that environment variables can be set in several places
 # See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
-image: axelterizaki/karaokemugen-ci:node-20
+image: axelterizaki/karaokemugen-ci:node-22
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
   ELECTRON_CACHE: '.cache/electron'
@@ -165,7 +165,7 @@ deploy_kmremote:
   tags:
     - $RUNNER_LINUX
   cache: {}
-  image: axelterizaki/karaokemugen-ci:transferts
+  image: axelterizaki/karaokemugen-ci:utils
   dependencies:
     - build-react
   needs:
@@ -276,7 +276,7 @@ pkg_linux_arm64:
     - when: never
 pkg_win:
   stage: package
-  image: electronuserland/builder:wine-mono
+  image: electronuserland/builder:22-wine-mono-03.25
   tags:
     - $RUNNER_LINUX
   cache:
@@ -301,8 +301,6 @@ pkg_win:
   script:
     - rm -Rf release_win
     - npm install -g electron-builder
-    - wget -qO - https://download.opensuse.org/repositories/Emulators:/Wine:/Debian/xUbuntu_20.04/Release.key
-      | apt-key add -
     - apt-get update -qq && apt-get install -y -qq zip
     - wget -qO- http://mugen.karaokes.moe/downloads/$DIST_WIN | tar xz
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
@@ -324,7 +322,7 @@ pkg_win:
     - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
     - if: '$CI_COMMIT_TAG'
     - when: never
-pkg_mac:
+pkg_deploy_mac:
   stage: package
   cache:
     key: km-app-${CI_COMMIT_REF_SLUG}
@@ -337,11 +335,6 @@ pkg_mac:
   tags:
     - macos
   interruptible: true
-  artifacts:
-    expire_in: 1 day
-    name: km-app-pkgmac-${CI_COMMIT_REF_SLUG}
-    paths:
-      - release_mac
   dependencies:
     - build-react
     - build-migrationsFile
@@ -368,30 +361,6 @@ pkg_mac:
     - mv packages/*-mac.yml release_mac
     - mv packages/*.dmg release_mac/
     - mv packages/*.zip release_mac/
-    - ls -la release_mac/*
-  rules:
-    - if: $SCHEDULED_RELEASES == "true"
-      when: never
-    - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
-    - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
-    - if: '$CI_COMMIT_TAG'
-    - when: never
-deploy_mac:
-  stage: deploy
-  image: minidocks/lftp
-  tags:
-    - $RUNNER_LINUX
-  interruptible: true
-  artifacts:
-    expire_in: 1 day
-  variables:
-    GIT_STRATEGY: none
-  cache: {}
-  dependencies:
-    - pkg_mac
-  needs:
-    - pkg_mac
-  script:
     - ls -la release_mac/*
     - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD
       $KARAOKESMOE; cd www/mugen.karaokes.moe/downloads; mput release_mac/*"
@@ -468,7 +437,7 @@ release_site:
   needs:
     - deploy_win
     - deploy_linux
-    - deploy_mac
+    - pkg_deploy_mac
   script:
     - sh util/triggerWebsite.sh
   rules:
@@ -477,6 +446,29 @@ release_site:
     - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
     - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
     - if: '$CI_COMMIT_TAG'
+    - when: never
+cleanup_deploys:
+  stage: release
+  artifacts:
+    expire_in: 1 day
+  interruptible: true
+  tags:
+    - $RUNNER_LINUX
+  cache: {}
+  image: axelterizaki/karaokemugen-ci:utils
+  needs:
+    - deploy_win
+    - deploy_linux
+    - pkg_deploy_mac
+  script:
+    - bash util/cleanupReleases.sh
+  rules:
+    - if: $SCHEDULED_RELEASES == "true"
+      when: never
+    - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
+    - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
+    - if: '$CI_COMMIT_TAG'
+      when: never
     - when: never
 weekly_releases:
   stage: schedule

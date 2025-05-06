@@ -1,6 +1,7 @@
 import { shell } from 'electron';
 import { promises as fs } from 'fs';
 import { copy, remove } from 'fs-extra';
+import { isEqual } from 'lodash';
 import parallel from 'p-map';
 import { basename, dirname, extname, parse, resolve } from 'path';
 import { TopologicalSort } from 'topological-sort';
@@ -13,11 +14,11 @@ import { getSettings, refreshAll, saveSetting } from '../lib/dao/database.js';
 import { initHooks } from '../lib/dao/hook.js';
 import { refreshKaras } from '../lib/dao/kara.js';
 import { formatKaraV4, getDataFromKaraFile, writeKara } from '../lib/dao/karafile.js';
-import { selectRepos } from '../lib/dao/repo.js';
+import { readRepoManifest, selectRepos } from '../lib/dao/repo.js';
 import { APIMessage } from '../lib/services/frontend.js';
 import { readAllKaras } from '../lib/services/generation.js';
 import { defineSongname } from '../lib/services/karaCreation.js';
-import { getRepoManifest } from '../lib/services/repo.js';
+import { getRepoManifest, readAllRepoManifests } from '../lib/services/repo.js';
 import { DBTag } from '../lib/types/database/tag.js';
 import { KaraMetaFile } from '../lib/types/downloads.js';
 import { KaraFileV4 } from '../lib/types/kara.js';
@@ -111,6 +112,7 @@ export async function addRepo(repo: Repository) {
 		if (windowsDriveRootRegexp.test(repo.BaseDir)) {
 			throw new ErrorKM('CANNOT_INSTALL_REPO_AT_WINDOWS_ROOT_DRIVE', 400, false);
 		}
+		if (typeof repo.Enabled === 'undefined') repo.Enabled = true;
 		if (repo.Online) {
 			// Testing if repository is reachable
 			try {
@@ -145,7 +147,9 @@ export async function addRepo(repo: Repository) {
 				}
 			} else {
 				updateZipRepo(repo.Name)
-					.then(() => generateDB())
+					.then(() => {
+						generateDB().then(() => readRepoManifest(repo.Name));
+					})
 					.catch(err => {
 						logger.warn('Repository was added, but initializing it failed', { service, err });
 					});
@@ -187,6 +191,7 @@ export async function updateAllRepos() {
 		logger.info('Finished updating all repositories', { service });
 		if (allReposUpdated) emitWS('operatorNotificationSuccess', APIMessage('SUCCESS_CODES.REPOS_ALL_UPDATED'));
 		if (doGenerate) await generateDB();
+		readAllRepoManifests();
 		if (getConfig().App.FirstRun) {
 			createProblematicSmartPlaylist();
 		}
@@ -213,8 +218,12 @@ export async function checkDownloadStatus(kids?: string[]) {
 	const mediasPresent = new Set();
 	for (const repo of getRepos()) {
 		for (const mediaDir of resolvedPathRepos('Medias', repo.Name)) {
-			const files = await fs.readdir(mediaDir);
-			files.forEach(f => mediasPresent.add(f));
+			try {
+				const files = await fs.readdir(mediaDir);
+				files.forEach(f => mediasPresent.add(f));
+			} catch (err) {
+				logger.warn(`Error listing files from directory, skipping ${mediaDir}`, { service, err });
+			}
 		}
 	}
 	for (const kara of karas.content) {
@@ -443,7 +452,7 @@ export async function editRepo(
 async function hookEditedRepo(oldRepo: Repository, repo: Repository, refresh = false, onlineCheck = true) {
 	let doGenerate = false;
 	if (!oldRepo.SendStats && repo.Online && repo.Enabled && repo.SendStats && getState().DBReady && onlineCheck) {
-		sendPayload(repo.Name, repo.Name === getConfig().Online.Host, repo.Secure).catch();
+		sendPayload(repo.Name, repo.Secure).catch();
 	}
 	// Repo is online so we have stuff to do
 	if (repo.Enabled && repo.Online && repo.Update) {
@@ -494,7 +503,8 @@ async function hookEditedRepo(oldRepo: Repository, repo: Repository, refresh = f
 		doGenerate = true;
 	}
 	if (doGenerate) await generateDB();
-	if (oldRepo.Path.Medias !== repo.Path.Medias && getState().DBReady && onlineCheck) {
+	readRepoManifest(repo.Name);
+	if (!isEqual(oldRepo.Path.Medias, repo.Path.Medias) && getState().DBReady && onlineCheck) {
 		getKaras({ q: `r:${repo.Name}`, ignoreCollections: true }).then(karas => {
 			checkDownloadStatus(karas.content.map(k => k.kid));
 		});
@@ -670,6 +680,8 @@ export async function updateGitRepo(name: string) {
 		} catch (err) {
 			// Diff or applying changes failed, but files are there. So we'll trigger a regen.
 			await generateDB();
+		} finally {
+			await readRepoManifest(repo.Name);
 		}
 		return false;
 	} catch (err) {
@@ -881,7 +893,7 @@ export async function newGitRepo(repo: Repository) {
 	// Only testing first media folder because I'm lazy.
 	const baseDir = resolve(state.dataPath, repo.BaseDir);
 	const mediaDir = resolve(state.dataPath, repo.Path.Medias[0]);
-	if (pathIsContainedInAnother(baseDir, mediaDir)) throw 'Media folder is contained in base dir, move it first!';
+	if (pathIsContainedInAnother(mediaDir, baseDir)) throw 'Media folder is contained in base dir, move it first!';
 	await remove(baseDir);
 	await asyncCheckOrMkdir(baseDir);
 	const git = await setupGit(repo, false, true);
@@ -1021,47 +1033,54 @@ export function checkRepoMediaPaths(repo?: Repository) {
 }
 
 function checkRepoPaths(repo: Repository) {
-	if (windowsDriveRootRegexp.test(repo.BaseDir)) {
-		throw new ErrorKM('REPO_PATH_ERROR_IN_WINDOWS_ROOT_DIR', 400, false);
-	}
-	if (!getState().portable) {
-		// The Mutsui Fix.
-		// If not in portable mode, prevent repo paths from being in the app folder
-		if (pathIsContainedInAnother(resolve(getState().appPath), resolve(getState().dataPath, repo.BaseDir))) {
-			throw new ErrorKM('REPO_PATH_ERROR_IN_APP_PATH', 400, false);
-		}
-	}
-	for (const path of repo.Path.Medias) {
-		// Fix for KM-APP-1W5 because someone thought it would be funny to put all its medias in the folder KM's exe is in. Never doubt your users' creativity.
-		if (
-			!getState().portable &&
-			pathIsContainedInAnother(resolve(getState().appPath), resolve(getState().dataPath, path))
-		) {
-			throw new ErrorKM('REPO_PATH_ERROR_IN_APP_PATH', 400, false);
-		}
-		if (pathIsContainedInAnother(resolve(getState().dataPath, repo.BaseDir), resolve(getState().dataPath, path))) {
-			throw new ErrorKM('REPO_PATH_ERROR_IN_BASE_PATH', 400, false);
-		}
-		if (windowsDriveRootRegexp.test(path)) {
+	try {
+		if (windowsDriveRootRegexp.test(repo.BaseDir)) {
 			throw new ErrorKM('REPO_PATH_ERROR_IN_WINDOWS_ROOT_DIR', 400, false);
 		}
-	}
+		if (!getState().portable) {
+			// The Mutsui Fix.
+			// If not in portable mode, prevent repo paths from being in the app folder
+			if (pathIsContainedInAnother(resolve(getState().dataPath, repo.BaseDir), resolve(getState().appPath))) {
+				throw new ErrorKM('REPO_PATH_ERROR_IN_APP_PATH', 400, false);
+			}
+		}
+		for (const path of repo.Path.Medias) {
+			// Fix for KM-APP-1W5 because someone thought it would be funny to put all its medias in the folder KM's exe is in. Never doubt your users' creativity.
+			if (
+				!getState().portable &&
+				pathIsContainedInAnother(resolve(getState().dataPath, path), resolve(getState().appPath))
+			) {
+				throw new ErrorKM('REPO_PATH_ERROR_IN_APP_PATH', 400, false);
+			}
+			if (
+				!repo.System &&
+				pathIsContainedInAnother(resolve(getState().dataPath, path), resolve(getState().dataPath, repo.BaseDir))
+			) {
+				throw new ErrorKM('REPO_PATH_ERROR_IN_BASE_PATH', 400, false);
+			}
+			if (windowsDriveRootRegexp.test(path)) {
+				throw new ErrorKM('REPO_PATH_ERROR_IN_WINDOWS_ROOT_DIR', 400, false);
+			}
+		}
 
-	const mediaPathErrors = checkRepoMediaPaths(repo);
-	if (mediaPathErrors.reposWithSameMediaPath.length > 0) {
-		logger.error(
-			`Multiple repositories share the same media path, which will cause sync errors: ${mediaPathErrors.reposWithSameMediaPathText}`,
-			{ service }
-		);
-		throw new ErrorKM('REPOS_MULTIPLE_USED_MEDIA_PATH_ERROR', 400, false);
-	}
+		const mediaPathErrors = checkRepoMediaPaths(repo);
+		if (mediaPathErrors.reposWithSameMediaPath.length > 0) {
+			logger.error(
+				`Multiple repositories share the same media path, which will cause sync errors: ${mediaPathErrors.reposWithSameMediaPathText}`,
+				{ service }
+			);
+			throw new ErrorKM('REPOS_MULTIPLE_USED_MEDIA_PATH_ERROR', 400, false);
+		}
 
-	const checks = [];
-	for (const path of Object.keys(repo.Path)) {
-		repo.Path[path].forEach((dir: string) => checks.push(asyncCheckOrMkdir(resolve(getState().dataPath, dir))));
+		const checks = [];
+		for (const path of Object.keys(repo.Path)) {
+			repo.Path[path].forEach((dir: string) => checks.push(asyncCheckOrMkdir(resolve(getState().dataPath, dir))));
+		}
+		checks.push(asyncCheckOrMkdir(resolve(getState().dataPath, repo.BaseDir)));
+		return Promise.all(checks);
+	} catch (err) {
+		throw err instanceof ErrorKM ? err : new ErrorKM('REPO_CHECK_PATHS_ERROR', 400, false);
 	}
-	checks.push(asyncCheckOrMkdir(resolve(getState().dataPath, repo.BaseDir)));
-	return Promise.all(checks);
 }
 
 /** Find any unused medias in a repository */
@@ -1670,4 +1689,8 @@ export async function convertToUUIDFormat(repoName: string) {
 	} finally {
 		task.end();
 	}
+}
+
+export function statsEnabledRepositories(): Repository[] {
+	return getRepos().filter(r => r.Enabled && r.SendStats && r.Online);
 }

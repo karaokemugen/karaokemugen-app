@@ -424,7 +424,7 @@ function ProfilModal(props: IProps) {
 								</div>
 								<input
 									name="url"
-									type="text"
+									type="url"
 									placeholder={i18next.t('PROFILE_URL')}
 									defaultValue={user.url}
 									onKeyUp={onChange}

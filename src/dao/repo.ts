@@ -1,3 +1,4 @@
+import { cloneDeep } from 'lodash';
 import { saveSetting } from '../lib/dao/database.js';
 import { Repository } from '../lib/types/repo.js';
 import { getConfig } from '../lib/utils/config.js';
@@ -15,8 +16,7 @@ export function insertRepo(repo: Repository) {
 }
 
 export function updateRepo(repo: Repository, name: string) {
-	const conf = getConfig();
-	const repos = conf.System.Repositories;
+	const repos = cloneDeep(getConfig().System.Repositories);
 	if (repo.Name !== name) {
 		const i = repos.findIndex(r => r.Name === repo.Name);
 		if (i > 0) throw 'Repository with this new name already exists';

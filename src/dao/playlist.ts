@@ -7,9 +7,9 @@ import { Criteria, PLCParams, UnaggregatedCriteria } from '../lib/types/playlist
 import { getConfig } from '../lib/utils/config.js';
 import { getTagTypeName, tagTypes } from '../lib/utils/constants.js';
 import { now } from '../lib/utils/date.js';
-import logger, { profile } from '../lib/utils/logger.js';
+import { profile } from '../lib/utils/logger.js';
 import { DBPL, DBPLCInfo, SmartPlaylistType } from '../types/database/playlist.js';
-import { getState } from '../utils/state.js';
+import { getPlayerState, getState } from '../utils/state.js';
 import { organizeTagsInKara } from './kara.js';
 import {
 	sqladdCriteria,
@@ -34,6 +34,7 @@ import {
 	sqlremoveKaraFromPlaylist,
 	sqlreorderPlaylist,
 	sqlselectKarasFromCriterias,
+	sqlsetPlayedAt,
 	sqlsetPlaying,
 	sqlsetPLCAccepted,
 	sqlsetPLCFree,
@@ -50,7 +51,10 @@ import {
 	sqlupdatePLCSetPos,
 } from './sql/playlist.js';
 
-const service = 'PlaylistDB';
+//const service = 'PlaylistDB';
+
+const jinglesDuration = 5;
+const sponsorsDuration = 5;
 
 export function updatePLCCriterias(plcs: number[], criterias: Criteria[]) {
 	return db().query(sqlupdatePLCCriterias, [plcs, criterias]);
@@ -160,7 +164,12 @@ export function updatePos(plc_id: number, pos: number) {
 }
 
 export function updatePlaylistDuration(id: string) {
-	return db().query(sqlupdatePlaylistDuration, [id]);
+	return db().query(
+		yesql(sqlupdatePlaylistDuration)({
+			plaid: id,
+			...getIntermissionSettings(),
+		})
+	);
 }
 
 export async function selectPlaylistContentsMini(id: string): Promise<DBPLC[]> {
@@ -190,6 +199,22 @@ export async function selectPlaylistContentsMini(id: string): Promise<DBPLC[]> {
 	});
 }
 
+function getIntermissionSettings() {
+	const state = getPlayerState();
+	const conf = getConfig();
+	return {
+		songsBeforeJingle: state.songsBeforeJingle || 0,
+		songsBeforeSponsor: state.songsBeforeSponsor || 0,
+		// Did you know? Postgres does not liek dividing by 0.
+		// So default value is 1.
+		songsBetweenJingles: conf.Playlist.Medias.Jingles.Interval || 1,
+		songsBetweenSponsors: conf.Playlist.Medias.Sponsors.Interval || 1,
+		jinglesDuration: conf.Playlist.Medias.Jingles.Enabled ? jinglesDuration : 0,
+		sponsorsDuration: conf.Playlist.Medias.Sponsors.Enabled ? sponsorsDuration : 0,
+		pauseDuration: conf.Karaoke.StreamerMode.Enabled ? conf.Karaoke.StreamerMode.PauseDuration : 0,
+	};
+}
+
 export async function selectPlaylistContents(params: PLCParams): Promise<DBPLC[]> {
 	const filterClauses: WhereClause = params.filter
 		? buildClauses(params.filter, true)
@@ -213,13 +238,19 @@ export async function selectPlaylistContents(params: PLCParams): Promise<DBPLC[]
 		orderClause =
 			'(CASE WHEN pc.flag_accepted = FALSE AND pc.flag_refused = FALSE THEN TRUE ELSE FALSE END) DESC, pc.flag_accepted DESC, pc.flag_refused DESC, upvotes DESC';
 	}
+	// Limit params.size when incoming songs because it can beat up postgres.
+	if (params.incomingSongs) {
+		limitClause = ` LIMIT ${params.size > 400 ? 400 : params.size}`;
+	}
 	const query = sqlgetPlaylistContents(
 		filterClauses.sql,
 		whereClause,
 		orderClause,
 		limitClause,
 		offsetClause,
-		filterClauses.additionalFrom.join('')
+		filterClauses.additionalFrom.join(''),
+		params.incomingSongs,
+		params.filterByUser
 	);
 	const res = await db().query(
 		yesql(query)({
@@ -230,6 +261,7 @@ export async function selectPlaylistContents(params: PLCParams): Promise<DBPLC[]
 			whitelist_plaid: getState().whitelistPlaid,
 			blacklist_plaid: getState().blacklistPlaid,
 			...filterClauses.params,
+			...getIntermissionSettings(),
 		})
 	);
 	return res.rows.map(row => organizeTagsInKara(row));
@@ -298,6 +330,10 @@ export async function updatePlaying(plc_id: number, plaid: string) {
 	await db().query(sqlsetPlaying, [plc_id, plaid]);
 }
 
+export async function updatePlayedAt(plc_id: number) {
+	await db().query(sqlsetPlayedAt, [plc_id]);
+}
+
 export function insertCriteria(cList: Criteria[]) {
 	const c = cList.map(cItem => [cItem.value, cItem.type, cItem.plaid]);
 	return transaction({ params: c, sql: sqladdCriteria });
@@ -338,12 +374,14 @@ export async function selectKarasFromCriterias(
 	let sql = '';
 	const criterias = await selectCriterias(plaid);
 	if (criterias.length === 0) return [];
-	logger.debug(`Criterias selected for playlist ${plaid}: ${JSON.stringify(criterias)}`, { service, obj: criterias });
+	// Uncomment this for
+	// logger.debug(`Criterias selected for playlist ${plaid}: ${JSON.stringify(criterias)}`, { service, obj: criterias });
 	const collections = getConfig().Karaoke.Collections;
 	const collectionClauses = [];
-	for (const collection of Object.keys(collections)) {
-		if (collection) collectionClauses.push(`'${collection}~${tagTypes.collections}' = ANY(ak.tid)`);
-	}
+	if (collections)
+		for (const collection of Object.keys(collections)) {
+			if (collection) collectionClauses.push(`'${collection}~${tagTypes.collections}' = ANY(ak.tid)`);
+		}
 	if (smartPlaylistType === 'UNION') {
 		for (const c of criterias) {
 			// Ignore if criteria is not found
@@ -398,7 +436,8 @@ export async function selectKarasFromCriterias(
 					}`
 				: uniqueKIDsSQL;
 	}
-	logger.debug(`SQL for Smart playlist: "${sql}" with params ${params}`, { service });
+	// Uncomment this if smart playlist needs debugging
+	// logger.debug(`SQL for Smart playlist: "${sql}" with params ${params}`, { service });
 	const res = await db().query(sql, params);
 	// When INTERSECT, we add all criterias to the songs.
 	if (smartPlaylistType === 'INTERSECT') {

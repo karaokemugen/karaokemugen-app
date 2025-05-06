@@ -35,6 +35,7 @@ export default ts.config(
 					ignoreRestSiblings: true,
 				},
 			],
+			'security/detect-object-injection': 'off',
 		},
 		settings: {
 			react: {

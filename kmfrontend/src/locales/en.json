@@ -7,6 +7,7 @@
 	"UNKNOWN": "Unknown",
 	"SEARCH": "Search",
 	"SUBMIT": "Save",
+	"CONFIRM": "Confirm",
 	"CANCEL": "Cancel",
 	"WARNING": "Warning!",
 	"SHOW-HIDE": "Show/Hide",
@@ -201,6 +202,7 @@
 		},
 		"OPEN_POLL": "Vote for the next song",
 		"CURRENT": "See the current playlist",
+		"MY_INCOMING_SONGS": "My incoming songs",
 		"PUBLIC_SUGGESTIONS": "Public suggestions",
 		"PUBLIC_SUGGESTIONS_SHORT": "Suggestions",
 		"FAVORITES": "Favorites",
@@ -449,6 +451,8 @@
 				"UPVOTES_ONLY": "Upvotes",
 				"DISALLOWED": "Disallowed"
 			},
+			"ALLOW_PLAYLIST_ITEM_SWAP": "Allow public to swap songs in current playlist",
+			"ALLOW_PLAYLIST_ITEM_SWAP_TOOLTIP": "Users can swap songs they requested in the current playlist if they want to sing something sooner.",
 			"MEDIAS_SETTINGS": "Media",
 			"MEDIAS_SETTINGS_TOOLTIP": "Intros, Sponsors, Jingles, Encores and Outros",
 			"PLAYLIST_RANDOMSONGSAFTERENDMESSAGE": "Display an on-screen message regularly to invite users to add a song when randomly playing song after the current playlist ended",
@@ -637,7 +641,7 @@
 	"REPO_IN_PROGRESS": "Karaoke Mugen isn't quite ready, please wait for the following tasks to end.",
 	"ONLINE_STATS": {
 		"TITLE": "Stats",
-		"INTRO": "Karaoke Mugen can send anonymous information about your instance to Karaoke Mugen Server to create usage statistics.",
+		"INTRO": "Karaoke Mugen can send anonymous information about your instance to create usage statistics.",
 		"DETAILS": {
 			"1": "Which songs got played",
 			"2": "Which songs got requested (but not by whom)",
@@ -648,7 +652,6 @@
 		},
 		"CHANGE": "You can change your choice at any time from the options.",
 		"QUESTION": "Do you agree to send these statistics to Karaoke Mugen Server?",
-		"CONFIRM": "Confirm",
 		"ERROR": "Karaoke Mugen may send information about your instance to Sentry.io during errors. This helps us solve them as they come up much faster. Do you agree to send these error reports?"
 	},
 	"INSTANCE_NAME": "Server name",
@@ -952,18 +955,7 @@
 		"CREATE_ONLINE_ACCOUNT_DESC": "Type in an account name and a password to create one.",
 		"SECURITY_CODE_DESC_CONSOLE": "Please also enter the 6-digit security code that you can find by looking for \"SECURITY CODE FOR THIS SESSION\" in the Karaoke Mugen log file or in the console.",
 		"SECURITY_CODE_USE": "This code makes sure you're really the one doing these actions. It changes after each use.",
-		"CONNECTED_MESSAGE": "Congratulations, you're logged in to Karaoke Mugen, {{user}}!",
-		"DEFAULT_REPOSITORY_DESC_1": "Karaoke Mugen has a default karaoke repository, ",
-		"DEFAULT_REPOSITORY_DESC_2": ". Its media files will be downloaded as you need them.",
-		"DEFAULT_REPOSITORY_QUESTION": "Where do you want to store these downloads? By default they'll be in:",
-		"REPOSITORY_LATER": "You can change this folder at any time.",
-		"MODIFY_DIRECTORY": "Change folder",
-		"CHOOSE_DIRECTORY": "Select a folder",
-		"ADD_DIRECTORY": "Add a folder",
-		"SAVE_PARAMETER": "Save",
-		"COLLECTIONS_CHOICE": "Collection selection",
-		"COLLECTIONS_CHOICE_DESC_1": "The Song Collections are intended for different audiences. Choose the collections you want to see in your karaoke database.",
-		"COLLECTIONS_CHOICE_DESC_2": "You can change your collections at any time in the system panel."
+		"CONNECTED_MESSAGE": "Congratulations, you're logged in to Karaoke Mugen, {{user}}!"
 	},
 	"NOTIFICATION": {
 		"OPERATOR": {
@@ -980,6 +972,8 @@
 				"POLL_ALREADY_STARTED": "A poll is already in progress",
 				"POLL_PUBLIC_PL_EMPTY": "Unable to start poll: public playlist is empty",
 				"POLL_NOT_ENOUGH_SONGS": "Unable to start poll: not enough songs available",
+				"IMPORT_BASE_FAILED": "Failed to import songs",
+				"IMPORT_BASE_OK_BUT_ERRORS_SEE_LOGS": "Import is OK but there is some errors, see logs",
 				"UPDATE_GIT_REPO_ERROR": "Updating git repository failed"
 			},
 			"INFO": {
@@ -1146,6 +1140,8 @@
 		"EDIT_KARA": "Edit song",
 		"DEJAVU_TOOLTIP": "Recently played song",
 		"PROBLEMATIC_TOOLTIP": "This song contains scenes ({{tags}}) that may be problematic for some viewers.",
+		"SWAP_TOOLTIP": "Swap play order of songs you requested",
+		"SWAP_DESCRIPTION": "Choose a second song to swap them",
 		"DELETE_ALL_TOOLTIP": "Remove all displayed songs at once",
 		"DELETE_KARA_TITLE": "You're going to remove {{count}} displayed songs, are you sure?",
 		"DELETE_MEDIA_TOOLTIP": "Delete karaoke media",
@@ -1172,6 +1168,28 @@
 		},
 		"REPOSITORY_DOCUMENTATION": "See {{instance}}'s rules here"
 	},
+	"KARAOKE_IMPORT": {
+		"CONFIGURATION": "Configuration",
+		"SOURCE_DIR": "Source directory",
+		"SOURCE_DIR_DESC": "Please select the folder your songs are located at. They will be copied to your target repository.",
+		"SOURCE_DIR_TOOLTIP": "Directory with karaoke medias (video/audio) to import",
+		"DESTINATION_REPOSITORY": "Target repository",
+		"DESTINATION_REPOSITORY_TOOLTIP": "Repository where the new karaokes will be imported",
+		"FILENAME_TEMPLATE": "Filename template",
+		"FILENAME_TEMPLATE_TOOLTIP": "If your existing files have a structured filename - for example containing the song name, artist and year - you can provide the format here. The recognized fields will automatically be saved on the new karaokes metadata.",
+		"FILENAME_TEMPLATE_DESC": "Please specify the format of filenames you're using :",
+		"WARNING_IMPORT_TITLE": "PLEASE READ",
+		"WARNING_IMPORT": "Karaoke Mugen will look into the source folder and try to find songs to import.",
+		"WARNING_IMPORT_LIST": "Things to know :",
+		"WARNING_IMPORT_LYRICS": "Lyrics will be converted to .ass file format when imported.",
+		"WARNING_IMPORT_MEDIA": "Media will be converted to .mp4.",
+		"ADD_TAG_TEMPLATE": "Add a tag in template",
+		"ADD_TAG_TEMPLATE_DESC": "Use the field below to add items to the filename template.",
+		"MEDIA_FILES": "Media files",
+		"IMPORT_START": "Start import",
+		"SOURCE": "Source",
+		"FILENAME_TEMPLATE_ERROR": "Filename template is mandatory"
+	},
 	"MENU": {
 		"HOME": "Dashboard",
 		"SYSTEM": "System",
@@ -1188,6 +1206,7 @@
 		"HISTORY": "History",
 		"RANKING": "Most requested",
 		"VIEWCOUNTS": "Most played",
+		"KARAIMPORT": "Import karaokes",
 		"TAGS": "Tags",
 		"DATABASE": "Database",
 		"GIT": "Git",
@@ -1412,13 +1431,19 @@
 		"PRIVATE": "Private?"
 	},
 	"REPOSITORIES": {
+		"NAME_DESC": "What should your repository be called ?",
 		"NAME": "Repository name",
 		"ONLINE_NAME": "Repository domain name",
-		"TOOLTIP_NAME": "If it's an online repository, put its domain name only here. If it's a local repository, name it as you want. For example 'My private little karaoke'",
+		"TOOLTIP_NAME": "Name it as you want. For example 'My private little karaoke'",
+		"TOOLTIP_ONLINE_NAME": "Put its domain name only here.",
 		"BASE_DIR": "Base directory",
-		"PATH_MEDIAS": "Media",
+		"PATH_MEDIAS": "Media path storage",
+		"PATH_MEDIAS_DESC": "Please indicate where you want media to be stored. If you plan to have a lot of songs, it should be in a place where you have lots of disk space available.",
 		"NEW_REPOSITORY": "New repository",
-		"ONLINE": "Online",
+		"ONLINE": "Remote (Get songs)",
+		"LOCAL": "Local (For your own songs)",
+		"REPOSITORY_TYPE": "Repository type",
+		"REPOSITORY_TYPE_DESC": "First, choose if the repository you wish to add is a local or online one.",
 		"ENABLED": "Enabled",
 		"SECURE": "Secure",
 		"SECURE_TOOLTIP": "Enable HTTPS access to the repository",
@@ -1575,7 +1600,12 @@
 		"CALCULATING_MEDIA_ENCODING_PARAMETERS": "Calculating media encoding parameters…",
 		"ENCODING_MEDIA": "Encoding media file…",
 		"IMPORTING_PLAYLIST": "Importing playlist…",
-		"DUMMY_TASK": "No ongoing tasks"
+		"DUMMY_TASK": "No ongoing tasks",
+		"BASE_IMPORT": {
+			"IMPORTING_BASE": "Importing songs…",
+			"ANALYZING_FILES": "Analyzing files",
+			"CREATING_METADATA": "Creating metadata"
+		}
 	},
 	"ERROR_CODES": {
 		"INVALID_DATA": "Invalid data",
@@ -1702,6 +1732,7 @@
 		"PL_SONG_COPY_ERROR": "Error copying a song to the destination playlist",
 		"PL_VIEW_CONTENT_ERROR": "Error fetching playlist's content",
 		"PL_MODIFY_CONTENT_ERROR": "Error modifying content's position or playing status",
+		"PLC_SWAP_FORBIDDEN": "Song swapping is not allowed",
 		"UPVOTE_FAILED": "Upvote failed",
 		"UPVOTE_NO_SELF": "Unable to upvote one of your own requests",
 		"UPVOTE_ALREADY_DONE": "Upvote already done",
@@ -1816,7 +1847,16 @@
 		"QUIZZ_GET_GAME_SCORES_ERROR": "Error when getting game scores",
 		"PLAYER_DISABLED_IN_TEST_MODE_SORRYMASEN_PLEASE_UNDERSTAND": "Player is disabled in test mode",
 		"MEDIAS_FOLDER_OPEN_ERROR": "Failed to open media folder",
-		"UNKNOWN_PARENT_FROM_INBOX": "Unknown parent for this inbox song"
+		"UNKNOWN_PARENT_FROM_INBOX": "Unknown parent for this inbox song",
+		"FIND_FILES_TO_IMPORT_ERROR": "Error finding files to import",
+		"IMPORT_SONG_TEMPLATE_MISSING_TITLE_ERROR": "Unable to identify songs from template, title is missing in the template",
+		"IMPORT_SONG_TEMPLATE_ERROR_DUPLICATE_TAG": "Unable to identify songs from template, duplicate tag in the template",
+		"IMPORT_SONG_TEMPLATE_ERROR": "Unable to identify songs from template",
+		"IMPORT_NO_TITLE_ERROR": "Unable to import songs, title is missing in the template",
+		"IMPORT_SONG_ERROR": "Unable to import songs"
+	},
+	"WARNING_CODES": {
+		"REMOTE_HIGH_LATENCY_DETECTED": "Your connection with {{host}} is slow, your users might encounter issues"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Added {{data}} downloads to the queue",
@@ -1937,6 +1977,10 @@
 			"TITLE": "Edit a karaoke",
 			"DESCRIPTION": "Karaoke modification form."
 		},
+		"KARAOKE_IMPORT": {
+			"TITLE": "Import Karaokes",
+			"DESCRIPTION": "Import karaokes from a folder into Karaoke Mugen"
+		},
 		"DOWNLOAD_QUEUE": {
 			"TITLE": "Media download queue",
 			"DESCRIPTION": "See the list of current and pending downloads."
@@ -1952,7 +1996,7 @@
 		"MOST_REQUESTED": {
 			"TITLE": "Most Requested Songs",
 			"DESCRIPTION": "Lists the most requested songs on your application. Only takes into account songs added from the public interface.",
-			"DESCRIPTION_ONLINE": "You're seeing the most requested ONLINE song list right now. Disable the \"Fetch most requested songs online\" setting to only see those from your instance."
+			"DESCRIPTION_ONLINE": "You're seeing the most requested ONLINE song list right now. Disable the \"Fetch most requested songs from your online repositories\" setting to only see those from your instance."
 		},
 		"MOST_PLAYED": {
 			"TITLE": "Most played songs",

@@ -27,6 +27,7 @@ import KaraHistory from '../pages/Karas/History';
 import KaraBatchEdit from '../pages/Karas/KaraBatchEdit';
 import KaraDownload from '../pages/Karas/KaraDownload';
 import KaraEdit from '../pages/Karas/KaraEdit';
+import KaraImport from '../pages/Karas/KaraImport';
 import KaraListPage from '../pages/Karas/KaraListPage';
 import QueueDownload from '../pages/Karas/QueueDownload';
 import KaraRanking from '../pages/Karas/Ranking';
@@ -135,6 +136,7 @@ class KMSystem extends Component<unknown, unknown> {
 							<Route path="/karas/download/queue" element={<QueueDownload />} />
 							<Route path="/karas/download" element={<KaraDownload />} />
 							<Route path="/karas/create" element={<KaraNew />} />
+							<Route path="/karas/import" element={<KaraImport />} />
 							<Route path="/karas/history" element={<KaraHistory />} />
 							<Route path="/karas/ranking" element={<KaraRanking />} />
 							<Route path="/karas/viewcounts" element={<KaraViewcounts />} />

@@ -21,6 +21,7 @@ import 'dayjs/locale/pt';
 import 'dayjs/locale/ta';
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
+import relativeTime from 'dayjs/plugin/relativeTime';
 
 export async function setSettings(
 	dispatch: Dispatch<SettingsSuccess | SettingsFailure>,
@@ -34,6 +35,7 @@ export async function setSettings(
 			state: PublicState;
 		} = await commandBackend('getSettings');
 		dayjs.extend(localizedFormat);
+		dayjs.extend(relativeTime);
 		if (!withoutProfile) {
 			try {
 				if (!res.config.System) {

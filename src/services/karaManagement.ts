@@ -1,6 +1,6 @@
 import { shell } from 'electron';
 import { promises as fs } from 'fs';
-import { copy } from 'fs-extra';
+import { copy, ensureDir } from 'fs-extra';
 import i18next from 'i18next';
 import { basename, extname, resolve } from 'path';
 
@@ -172,16 +172,18 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 		}
 		tasks.push(writeKara(resolve(resolvedPathRepos('Karaokes', repoName)[0], kara.karafile), karaFileData));
 		const mediaFiles = await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', oldRepoName));
-		tasks.push(
-			copy(mediaFiles[0], resolve(resolvedPathRepos('Medias', repoName)[0], kara.mediafile), { overwrite: true })
-		);
+		const mediaDestDir = resolvedPathRepos('Medias', repoName)[0];
+		await ensureDir(mediaDestDir);
+		tasks.push(copy(mediaFiles[0], resolve(mediaDestDir, kara.mediafile), { overwrite: true }));
 		if (kara.lyrics_infos[0].filename) {
 			const lyricsFiles = await resolveFileInDirs(
 				kara.lyrics_infos[0].filename,
 				resolvedPathRepos('Lyrics', oldRepoName)
 			);
+			const subDestDir = resolvedPathRepos('Lyrics', repoName)[0];
+			await ensureDir(subDestDir);
 			tasks.push(
-				copy(lyricsFiles[0], resolve(resolvedPathRepos('Lyrics', repoName)[0], kara.lyrics_infos[0].filename), {
+				copy(lyricsFiles[0], resolve(subDestDir, kara.lyrics_infos[0].filename), {
 					overwrite: true,
 				})
 			);

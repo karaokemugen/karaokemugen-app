@@ -16,7 +16,7 @@ import {
 } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import i18next from 'i18next';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 import type { Tag, TagTypeNum } from '../../../../../src/lib/types/tag';
 import { commandBackend } from '../../../utils/socket';
@@ -24,6 +24,8 @@ import { tagTypes } from '../../../utils/tagTypes';
 import EditableGroupAlias from '../../components/EditableGroupAlias';
 import KaraList from '../../components/KaraList';
 import LanguagesList from '../../components/LanguagesList';
+import type { Repository } from '../../../../../src/lib/types/repo';
+import GlobalContext from '../../../store/context';
 
 interface TagsFormProps {
 	tags: Tag[];
@@ -46,6 +48,7 @@ const kitsuUrlRegexp = /kitsu\.(io|app)\/anime\/([a-zA-Z0-9-_&(%20)]+)/;
 const validExternalAnimeIdRegexp = /^(?:[1-9]|\d\d+)$/; // strictly positive
 
 function TagForm(props: TagsFormProps) {
+	const context = useContext(GlobalContext);
 	const [form] = useForm();
 
 	const [i18n, setI18n] = useState<Record<string, string>>(props.tag?.i18n ? props.tag.i18n : { eng: '' });
@@ -76,8 +79,17 @@ function TagForm(props: TagsFormProps) {
 	}, [repositoriesValue]);
 
 	const getRepositories = async () => {
-		const res = await commandBackend('getRepos');
-		setRepositoriesValue(res.filter(repo => repo.MaintainerMode || !repo.Online).map(repo => repo.Name));
+		const res: Repository[] = await commandBackend('getRepos');
+		setRepositoriesValue(
+			res
+				.filter(
+					repo =>
+						repo.MaintainerMode ||
+						(!repo.Online && !repo.System) ||
+						(repo.System && context.globalState.settings.data.config.System.SystemRepositoryMaintainance)
+				)
+				.map(repo => repo.Name)
+		);
 	};
 
 	const handleSubmit = (values: TagForForm) => {
@@ -562,9 +574,9 @@ function TagForm(props: TagsFormProps) {
 						</Form.Item>
 					</>
 				) : null}
-				<Divider orientation="left">{i18next.t('TAGS.COPY_TAG')}</Divider>
 				{repositoriesValue && props.tag?.repository ? (
 					<>
+						<Divider orientation="left">{i18next.t('TAGS.COPY_TAG')}</Divider>
 						<Form.Item
 							hasFeedback
 							label={i18next.t('TAGS.REPOSITORY')}

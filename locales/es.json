@@ -113,7 +113,7 @@
 	},
 	"REPO_DISABLED": {
 		"TITLE": "Repositorio deshabilitado",
-		"MESSAGE": "El repositorio {{repo}} ha sido deshabilitado por el administrador del sistema. Por favor, contacte con él para más información."
+		"DETAIL": "El repositorio {{repo}} ha sido deshabilitado por el administrador del sistema. Por favor, contacte con él para más información."
 	},
 	"TIPS": {
 		"TITLES": {
@@ -171,15 +171,15 @@
 	"UNKNOWN_ARTIST": "Artista desconocido",
 	"REPOSITORY_ALREADY_EXISTS": {
 		"TITLE": "El repositorio ya existe",
-		"MESSAGE": "El repositorio que intenta agregar ya existe en su base de datos de Karaoke Mugen."
+		"DETAIL": "El repositorio que intenta agregar ya existe en su base de datos de Karaoke Mugen."
 	},
 	"PERMISSIONS_KEYBOARD_INFO_MACOS": {
-		"TITLE": "Permisos de teclado",
-		"MESSAGE": "macOS le pedirá que agregue Karaoke Mugen a los permisos del sistema de accesibilidad. Este permiso le permite usar las teclas multimedia de su teclado para controlar el reproductor de video. Puede negarse a agregar este permiso, pero las claves multimedia no funcionarán."
+		"MESSAGE": "Permisos de teclado",
+		"DETAIL": "macOS le pedirá que agregue Karaoke Mugen a los permisos del sistema de accesibilidad. Este permiso le permite usar las teclas multimedia de su teclado para controlar el reproductor de video. Puede negarse a agregar este permiso, pero las claves multimedia no funcionarán."
 	},
 	"DATABASE_CONNECTION_ERROR": {
 		"TITLE": "Error de conexión a la base de datos",
-		"MESSAGE": "Ocurrió un error durante la inicialización/conexión de la base de datos. Para obtener más información sobre las posibles causas, haga clic en Ayuda.",
+		"DETAIL": "Ocurrió un error durante la inicialización/conexión de la base de datos. Para obtener más información sobre las posibles causas, haga clic en Ayuda.",
 		"HELP": "Ayuda"
 	},
 	"MISSING_BINARIES": {
@@ -188,7 +188,7 @@
 	},
 	"UNKNOWN_REPOSITORY_ADD": {
 		"TITLE": "Repositorio desconocido",
-		"MESSAGE": "Está a punto de agregar el repositorio {{repoName}} a Karaoke Mugen. ¿Está seguro?"
+		"DETAIL": "Está a punto de agregar el repositorio {{repoName}} a Karaoke Mugen. ¿Está seguro?"
 	},
 	"GENERATING_READING": "Paso 1 / 2 - Leyendo los datos…",
 	"GENERATING_DATABASE": "Paso 2 / 2 - Actualizando la base de datos…",

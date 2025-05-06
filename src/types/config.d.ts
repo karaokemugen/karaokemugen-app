@@ -1,7 +1,7 @@
 import { PathType } from '../lib/types/config.js';
 import { PositionX, PositionY } from '../lib/types/index.js';
 import { PlaylistMediaType } from '../lib/types/playlistMedias.js';
-import { Repository } from '../lib/types/repo.js';
+import { Collections, Repository } from '../lib/types/repo.js';
 import { endOfPlaylistActions } from '../utils/defaultSettings.js';
 import { MpvHardwareDecodingOptions } from './mpvIPC.js';
 import { SongModifiers } from './player.js';
@@ -65,7 +65,6 @@ export interface Config {
 		Secure?: boolean;
 		Timeout?: number;
 		Users?: boolean;
-		Stats?: boolean;
 		ErrorTracking?: boolean;
 		Discord?: {
 			DisplayActivity?: boolean;
@@ -119,7 +118,7 @@ export interface Config {
 		};
 	};
 	Karaoke: {
-		Collections?: Record<string, boolean>;
+		Collections?: Collections;
 		ClassicMode?: boolean;
 		StreamerMode: {
 			Enabled?: boolean;
@@ -187,6 +186,7 @@ export interface Config {
 	};
 	Playlist: {
 		AllowDuplicates?: boolean;
+		AllowPublicCurrentPlaylistItemSwap?: boolean;
 		AllowPublicDuplicates?: PublicDuplicateSetting;
 		MaxDejaVuTime?: number;
 		Medias: {
@@ -221,6 +221,7 @@ export interface Config {
 		RandomSongsAfterEndMessage: boolean;
 	};
 	System: {
+		SystemRepositoryMaintainance?: boolean;
 		FrontendPort: number;
 		Database: {
 			host?: string;

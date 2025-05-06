@@ -42,9 +42,9 @@ import {
 	prepareClassicPauseScreen,
 	stopAddASongMessage,
 } from '../services/player.js';
+import { updateAllPlaylistDurations } from '../services/playlist.js';
 import { setSongPoll } from '../services/poll.js';
 import { destroyRemote, initRemote } from '../services/remote.js';
-import { initStats, stopStatsSystem } from '../services/stats.js';
 import { updateSongsLeft } from '../services/user.js';
 import { BinariesConfig } from '../types/binChecker.js';
 import { Config } from '../types/config.js';
@@ -192,6 +192,12 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 		);
 	}
 	Object.keys(newConfig.System.Repositories).forEach((_, i) => {
+		if (!isEqual(newConfig.System.Repositories[i].BaseDir, oldConfig.System.Repositories[i].BaseDir)) {
+			newConfig.System.Repositories[i].BaseDir = relativePath(
+				state.dataPath,
+				resolve(state.dataPath, newConfig.System.Repositories[i].BaseDir)
+			);
+		}
 		for (const path of Object.keys(newConfig.System.Repositories[i].Path)) {
 			if (!isEqual(newConfig.System.Repositories[i].Path[path], oldConfig.System.Repositories[i].Path[path])) {
 				if (Array.isArray(newConfig.System.Repositories[i].Path[path])) {
@@ -248,10 +254,20 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	config.Playlist.RandomSongsAfterEndMessage ? initAddASongMessage() : stopAddASongMessage();
 	// Toggling Discord RPC
 	config.Online.Discord.DisplayActivity ? initDiscordRPC() : stopDiscordRPC();
-	// Toggling stats
-	config.Online.Stats ? initStats(newConfig.Online.Stats === oldConfig.Online.Stats) : stopStatsSystem();
 	// Streamer mode
 	if (config.Karaoke.StreamerMode.Enabled) writeStreamFiles();
+
+	// Intermissions and playlist durations
+	if (
+		oldConfig.Playlist.Medias.Jingles.Enabled !== newConfig.Playlist.Medias.Jingles.Enabled ||
+		oldConfig.Playlist.Medias.Sponsors.Enabled !== newConfig.Playlist.Medias.Sponsors.Enabled ||
+		oldConfig.Playlist.Medias.Jingles.Interval !== newConfig.Playlist.Medias.Jingles.Interval ||
+		oldConfig.Playlist.Medias.Sponsors.Interval !== newConfig.Playlist.Medias.Sponsors.Interval ||
+		oldConfig.Karaoke.StreamerMode.Enabled !== newConfig.Karaoke.StreamerMode.Enabled ||
+		oldConfig.Karaoke.StreamerMode.PauseDuration !== newConfig.Karaoke.StreamerMode.PauseDuration
+	) {
+		updateAllPlaylistDurations();
+	}
 
 	configureHost();
 
@@ -462,7 +478,8 @@ async function binMissing(binariesPath: any, err: string) {
 		await dialog.showMessageBox({
 			type: 'none',
 			title: i18next.t('MISSING_BINARIES.TITLE'),
-			message: error,
+			message: i18next.t('ERROR_MISSING_BINARIES'),
+			detail: error,
 		});
 	}
 }

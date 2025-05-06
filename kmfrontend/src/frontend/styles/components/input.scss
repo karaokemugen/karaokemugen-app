@@ -99,6 +99,7 @@ input[type='range']:focus::-ms-fill-upper {
 }
 
 input[type='text']:not([data-exclude='true']):not(.ant-input):not(.ant-pagination-options-quick-jumper > input),
+input[type='url']:not([data-exclude='true']):not(.ant-input),
 input[type='password']:not([data-exclude='true']):not(.ant-input),
 input[type='number']:not([data-exclude='true']):not(.ant-input) {
 	width: 100%;
@@ -120,6 +121,7 @@ input[type='number']:not([data-exclude='true']):not(.ant-input) {
 }
 
 input[type='text']:not([data-exclude='true']):not(.ant-input):not(.ant-pagination-options-quick-jumper > input):focus,
+input[type='url']:not([data-exclude='true']):not(.ant-input):focus,
 input[type='password']:not([data-exclude='true']):not(.ant-input):focus,
 input[type='number']:not([data-exclude='true']):not(.ant-input):focus {
 	box-shadow: 0 1px 0 0 #546e7a;

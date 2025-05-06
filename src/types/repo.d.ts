@@ -29,3 +29,18 @@ export interface ModifiedMedia {
 	sizeDifference?: boolean;
 	commit: string;
 }
+
+export interface ImportKaraObject {
+	[TagType: string]: string;
+	title: string;
+	year?: number;
+}
+
+export interface ImportBaseFile {
+	directory: string;
+	oldFile: string;
+	newFile: ImportKaraObject;
+	tags: {
+		[TagType: string]: string[];
+	};
+}

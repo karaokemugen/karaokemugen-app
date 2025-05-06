@@ -78,7 +78,12 @@
 			"TAG": "歌曲 {{verb}} {{tag}} 已在列表中。",
 			"BEFORE_YEAR": "{{year}} 年以前的歌曲在列表中。",
 			"AFTER_YEAR": "{{year}} 年后的歌曲在列表中。",
-			"KID": "这首歌已在列表中。"
+			"KID": "这首歌已在列表中。",
+			"TAG_VERBS": {
+				"2": "演唱者",
+				"4": "创建者",
+				"13": "在平台上"
+			}
 		},
 		"OR": "或",
 		"AND": "且",
@@ -190,13 +195,14 @@
 		"EXPLORE": "浏览",
 		"OTHERS": "其他…",
 		"GET_LUCKY": "获得好运",
-		"REQUESTED_KARAOKES": "热门歌曲",
-		"RESTRICTED_DESCRIPTION": "卡拉OK限制模式开启，无法添加歌曲。"
+		"REQUESTED_KARAOKES": "点播次数最多的歌曲",
+		"RESTRICTED_DESCRIPTION": "卡拉OK限制模式开启，无法添加歌曲。",
+		"QUOTA_KARA_DESCRIPTION_other": "您只能推荐 {{count}} 首歌曲。主持人添加（或未添加）您的建议或屏幕上播放您的歌曲后，您将可以再次推荐。"
 	},
 	"CL_EMPTY_LIST": "空列表？",
 	"CL_PLAYLISTS": "歌曲列表",
 	"CL_ADD_RANDOM_TITLE": "您希望添加多少首随机歌曲？",
-	"CL_ABOUT_TO_ADD": "正在取消添加",
+	"CL_ABOUT_TO_ADD": "正在添加",
 	"ACCOUNT": "我的账户",
 	"LOGIN": {
 		"GUEST_CONTINUE": "以访客继续",
@@ -244,7 +250,7 @@
 	"CL_DELETE_CRITERIAS_PLAYLIST": "删除含有以下歌曲的条件“{{type}}”：",
 	"GOTO_TOP": "返回播放列表顶部",
 	"GOTO_PLAYING": "返回当前播放的歌曲",
-	"GOTO_BOTTOM": "返回播放列表结尾",
+	"GOTO_BOTTOM": "转到播放列表结尾",
 	"LOG_OFFLINE": {
 		"TITLE": "离线模式",
 		"MESSAGE": "对个人信息的修改将不会永久保存"
@@ -273,5 +279,15 @@
 	"CONFIRM_FAV_IMPORT": "用导入的数据覆盖你的收藏夹？",
 	"FAVORITES_IMPORT": "导入收藏夹",
 	"FAVORITES_EXPORT": "导出收藏夹",
-	"PROFILE_PASSWORDCONF": "确认"
+	"PROFILE_PASSWORDCONF": "确认",
+	"PLAYERS_CONTROLS": {
+		"PAUSE": "暂停",
+		"NEXT_SONG": "下一首",
+		"PLAY": "播放",
+		"NEXT_SONG_SHORT": "下一步"
+	},
+	"TOOLTIP_CLOSEPARENT": "关闭",
+	"KARA_DETAIL": {
+		"ADDED": "添加了 "
+	}
 }

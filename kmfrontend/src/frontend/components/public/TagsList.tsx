@@ -14,7 +14,7 @@ import { commandBackend } from '../../../utils/socket';
 import { YEARS } from '../../../utils/tagTypes';
 
 const chunksize = 100;
-let timer: any;
+let timer: NodeJS.Timeout;
 
 function TagsList() {
 	const navigate = useNavigate();

@@ -12,8 +12,6 @@ Online:
   Secure: true
   # Timeout (in ms) when calling the KM Server
   Timeout: 2000
-  # Should your instance sends stats? True/false. Non-existant means the app will ask the user a question if it wants to send stats to KM Server.
-  #Stats: false
   # Should your instance sends error logs to sentry.io? True/false. Non-existant means the app will ask the user a question if it wants to send errors.
   #ErrorTracking: false
   # Should we use KM Server's URL shortener? Turns connection URL into http://kara.moe for example
@@ -180,6 +178,13 @@ Playlist:
   EndOfPlaylistAction: none
   # Should a message be displayed on screen inviting people to add songs?
   RandomSongsAfterEndMessage: true
+  # Allow public to swap current playlist items they own
+  AllowPublicCurrentPlaylistItemSwap: true;
+  # Allow public to add the same song multiple times
+  # - allowed : public can add the same song multiple times
+  # - upvotes : public can only upvote a song already present
+  # - disallowed : public can't add the same song multiple times
+  AllowPublicDuplicates: upvotes
   # Allow duplicates in current playlist
   AllowDuplicates: false
   # Time after which a song is not considered recently played anymore in minutes
@@ -215,6 +220,8 @@ Playlist:
       - ???
       - Mystery song!
 System:
+  # Allow to edit system repositories
+  SystemRepositoryMaintainance: false
   # Port to listen to
   FrontendPort: 1337
   Database:

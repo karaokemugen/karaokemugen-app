@@ -295,7 +295,7 @@ ${
 		: ''
 }
 GROUP BY k.year
-ORDER BY year;
+ORDER BY year NULLS LAST;
 `;
 
 export const sqlselectAllKIDs = (kid?: string) => `

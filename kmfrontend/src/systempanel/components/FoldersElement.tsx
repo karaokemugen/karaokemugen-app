@@ -8,15 +8,17 @@ import { isElectron } from '../../utils/electron';
 import FileSystem from './FileSystem';
 
 interface FoldersElementProps {
-	onChange: any;
-	value?: any[] | string;
+	onChange: (string) => void;
+	value?: string[] | string;
 	keyModal?: string;
 	openFile?: boolean;
 	openDirectory?: boolean;
+	hideAdd?: boolean;
+	disabled?: boolean;
 }
 
 interface FoldersElementState {
-	value: any[] | string;
+	value: string[] | string;
 	visibleModal: boolean;
 	indexModal?: number;
 	keyModal?: string;
@@ -27,9 +29,6 @@ interface FoldersElementState {
 export default class FoldersElement extends Component<FoldersElementProps, FoldersElementState> {
 	static contextType = GlobalContext;
 	context: React.ContextType<typeof GlobalContext>;
-
-	input: any;
-	currentVal: any;
 
 	constructor(props) {
 		super(props);
@@ -53,8 +52,8 @@ export default class FoldersElement extends Component<FoldersElementProps, Folde
 				index === -1 || !value
 					? '/'
 					: this.context.globalState.settings.data.state.os === 'win32'
-					? value?.replace(/\//g, '\\')
-					: value
+						? value?.replace(/\//g, '\\')
+						: value
 			}`;
 			const options = {
 				defaultPath: path,
@@ -76,17 +75,17 @@ export default class FoldersElement extends Component<FoldersElementProps, Folde
 	}
 
 	saveFolders() {
-		let value = this.state.value;
+		let value: string | string[] = this.state.value;
 		if (this.state.newValueModal) {
 			if (this.state.indexModal === undefined) {
 				value = this.state.newValueModal.replace(/\\/g, '/');
 			} else if (this.state.indexModal === -1) {
-				(value as any[]).push(this.state.newValueModal.replace(/\\/g, '/'));
+				(value as string[]).push(this.state.newValueModal.replace(/\\/g, '/'));
 			} else {
-				(value as any[])[this.state.indexModal] = this.state.newValueModal.replace(/\\/g, '/');
+				(value as string[])[this.state.indexModal] = this.state.newValueModal.replace(/\\/g, '/');
 			}
 			this.setState({ value: value });
-			this.props.onChange && this.props.onChange(value);
+			if (this.props.onChange) this.props.onChange(value);
 		}
 	}
 
@@ -143,7 +142,7 @@ export default class FoldersElement extends Component<FoldersElementProps, Folde
 														(this.state.value as string[]).filter(val => val !== element)
 													);
 												this.setState({ value: value });
-												this.props.onChange && this.props.onChange(value);
+												if (this.props.onChange) this.props.onChange(value);
 											}}
 										>
 											{this.props.value[0] === element
@@ -156,10 +155,11 @@ export default class FoldersElement extends Component<FoldersElementProps, Folde
 												danger
 												icon={<DeleteOutlined />}
 												onClick={() => {
-													const value = this.state.value as any[];
+													const value = this.state.value as string[];
 													value.splice(index, 1);
 													this.setState({ value: value });
 												}}
+												disabled={this.props.disabled}
 											/>
 										</div>
 									</>
@@ -170,21 +170,26 @@ export default class FoldersElement extends Component<FoldersElementProps, Folde
 									}
 									style={{ maxWidth: this.state.value.length > 1 ? '500px' : '700px' }}
 									defaultValue={element}
+									disabled={this.props.disabled}
 								/>
 							</div>
 						))}
-						<Button
-							type="primary"
-							onClick={() => this.openFileSystemModal(this.state.value, -1, this.props.keyModal)}
-						>
-							<PlusOutlined />
-							{this.getButtonLabel()}
-						</Button>
+						{this.props.hideAdd ? null : (
+							<Button
+								type="primary"
+								onClick={() => this.openFileSystemModal(this.state.value, -1, this.props.keyModal)}
+								disabled={this.props.disabled}
+							>
+								<PlusOutlined />
+								{this.getButtonLabel()}
+							</Button>
+						)}
 					</>
 				) : (
 					<Input
 						onClick={() => this.openFileSystemModal(this.props.value, undefined, this.props.keyModal)}
 						value={this.state.value}
+						disabled={this.props.disabled}
 					/>
 				)}
 

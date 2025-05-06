@@ -23,7 +23,7 @@ interface RepositoryListState {
 	repository?: Repository;
 }
 
-let timer: any;
+let timer: NodeJS.Timeout;
 class RepositoryList extends Component<unknown, RepositoryListState> {
 	state = {
 		repositories: [],
@@ -40,7 +40,7 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 
 	deleteRepository = async (repository: Repository) => {
 		try {
-			await commandBackend('deleteRepo', { name: repository.Name }, true);
+			await commandBackend('deleteRepo', { name: repository.Name });
 		} catch (_) {
 			// already display
 		}
@@ -60,7 +60,7 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 			this.refresh();
 			if (timer) clearTimeout(timer);
 			timer = setTimeout(() => {
-				commandBackend('generateDatabase', undefined, true, 300000).catch(() => {});
+				commandBackend('generateDatabase', undefined, false, 300000).catch(() => {});
 			}, 5000);
 		} catch (_) {
 			// already display
@@ -118,7 +118,7 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 		);
 	}
 
-	columns: ColumnsType<any> = [
+	columns: ColumnsType<Repository> = [
 		{
 			title: i18next.t('REPOSITORIES.ENABLED'),
 			dataIndex: 'Enabled',
@@ -159,14 +159,7 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 			title: i18next.t('REPOSITORIES.UPDATE'),
 			dataIndex: 'Update',
 			key: 'update',
-			render: (_text, record) => <Checkbox disabled={true} checked={record.Update} />,
-		},
-		{
-			title: i18next.t('REPOSITORIES.SENDSTATS'),
-			dataIndex: 'SendStats',
-			key: 'sendStats',
-			hidden: true,
-			render: (_text, record) => <Checkbox disabled={true} checked={record.SendStats} />,
+			render: (_text, record) => record.Online && <Checkbox disabled={true} checked={record.Update} />,
 		},
 		{
 			title: i18next.t('REPOSITORIES.AUTO_MEDIA_DOWNLOADS'),
@@ -188,7 +181,7 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 			dataIndex: 'MaintainerMode',
 			key: 'maintainerMode',
 
-			render: (_text, record) => <Checkbox disabled={true} checked={record.MaintainerMode} />,
+			render: (_text, record) => record.Online && <Checkbox disabled={true} checked={record.MaintainerMode} />,
 		},
 		{
 			title: (
@@ -200,7 +193,7 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 				</span>
 			),
 			key: 'move',
-			render: (text, record, index) => {
+			render: (_, __, index) => {
 				return (
 					<>
 						{index > 0 ? (
@@ -224,7 +217,7 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 		{
 			title: i18next.t('ACTION'),
 			key: 'action',
-			render: (text, record: Repository) => (
+			render: (_, record: Repository) => (
 				<span>
 					<Link to={`/system/repositories/${record.Name}`}>
 						<Button type="primary" icon={<EditOutlined />} />

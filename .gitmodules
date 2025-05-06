@@ -4,3 +4,6 @@
 [submodule "assets/guestAvatars"]
 	path = assets/guestAvatars
 	url = ../../medias/guest-avatars
+[submodule "assets/systemRepo"]
+	path = assets/systemRepo
+	url = ../../bases/system.git

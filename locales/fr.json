@@ -174,29 +174,29 @@
 	},
 	"MOVED_USER_DIR_DIALOG": {
 		"TITLE": "Dossier utilisateur déplacé !",
-		"MESSAGE": "Afin de correspondre aux standards de votre système d'exploitation, le dossier des données de Karaoke Mugen a été déplacé. Avant c'était :\n\n{{oldDir}}\n\nMaintenant c'est :\n\n{{newDir}}\n\nSi vous êtes streameur/euse, vous voudrez peut-être mettre à jour votre layout OBS pour pointer vers le nouvel emplacement des fichiers texte de streaming.",
+		"DETAIL": "Afin de correspondre aux standards de votre système d'exploitation, le dossier des données de Karaoke Mugen a été déplacé. Avant c'était :\n\n{{oldDir}}\n\nMaintenant c'est :\n\n{{newDir}}\n\nSi vous êtes streameur/euse, vous voudrez peut-être mettre à jour votre layout OBS pour pointer vers le nouvel emplacement des fichiers texte de streaming.",
 		"UNDERSTOOD": "J'ai bien compris !"
 	},
 	"MOVED_USER_DIR_FLATPAK_DIALOG": {
 		"TITLE": "Utilisateurs de Flatpak !",
-		"MESSAGE": "Le contenu du dossier a bien été déplacé, mais vous utilisez Karaoke Mugen en version Flatpak. L'application ne peut pas supprimer l'ancien dossier utilisateur à cause de cela. Nous vous invitons à le supprimer vous-même :\n\n{{oldDir}}\n\n(Il devrait être vide !)",
+		"DETAIL": "Le contenu du dossier a bien été déplacé, mais vous utilisez Karaoke Mugen en version Flatpak. L'application ne peut pas supprimer l'ancien dossier utilisateur à cause de cela. Nous vous invitons à le supprimer vous-même :\n\n{{oldDir}}\n\n(Il devrait être vide !)",
 		"UNDERSTOOD": "D'accord ! Je fais ça maintenant avant d'oublier !"
 	},
 	"MOVING_USER_DIR_ERROR_DIALOG": {
 		"TITLE": "Impossible de déplacer le dossier de données de Karaoke Mugen",
-		"MESSAGE": "Le dossier de données de Karaoke Mugen a changé. Avant c'était :\n\n{{oldDir}}\n\nMaintenant c'est :\n\n{{newDir}}\n\nUne erreur est survenue durant le déplacement des données. Nous vous suggérons de cliquer sur \"Quitter\" pour faire le déplacement vous-même.\n\nVous pouvez aussi cliquer sur \"Continuer\". Dans ce cas vous repartirez avec des données neuves. Nous vous suggérons alors de supprimer l'ancien dossier indiqué ci-dessus.",
+		"DETAIL": "Le dossier de données de Karaoke Mugen a changé. Avant c'était :\n\n{{oldDir}}\n\nMaintenant c'est :\n\n{{newDir}}\n\nUne erreur est survenue durant le déplacement des données. Nous vous suggérons de cliquer sur \"Quitter\" pour faire le déplacement vous-même.\n\nVous pouvez aussi cliquer sur \"Continuer\". Dans ce cas vous repartirez avec des données neuves. Nous vous suggérons alors de supprimer l'ancien dossier indiqué ci-dessus.",
 		"CONTINUE": "Continuer",
 		"QUIT": "Quitter"
 	},
 	"DATABASE_IN_THE_FUTURE_ERROR": {
 		"TITLE": "La base de données est dans le futur, Marty !",
-		"MESSAGE": "La base de données que Karaoke Mugen essaye de lire a été utilisée par une autre application plus récente et est donc incompatible. Essayons de régler cela.\n\nSi vous cliquez sur \"ANNULER\", l'application se fermera sans rien faire. Vous devriez lancer une version plus récente de Karaoke Mugen.\n\nSi vous cliquez sur \"SUPPRIMER toutes les données\", l'application va SUPPRIMER listes de lecture, utilisateurs locaux, statistiques, etc. et démarrer normalement.",
-		"DELETE_ALL_DATA": "SUPPRIMER toutesles données",
+		"DETAIL": "La base de données que Karaoke Mugen essaye de lire a été utilisée par une autre application plus récente et est donc incompatible. Essayons de régler cela.\n\nSi vous cliquez sur \"Annuler\", l'application se fermera sans rien faire. Vous devriez lancer une version plus récente de Karaoke Mugen.\n\nSi vous cliquez sur \"SUPPRIMER toutes les données\", l'application va SUPPRIMER les listes de lecture, utilisateurs locaux, statistiques, etc... et démarrer normalement.",
+		"DELETE_ALL_DATA": "SUPPRIMER toutes les données",
 		"CONTINUE_ANYWAY": "Continuer quand même (risqué !)"
 	},
 	"REPO_DISABLED": {
 		"TITLE": "Dépôt désactivé",
-		"MESSAGE": "Le dépôt {{repo}} a été désactivé car l'un de ses dossiers est inaccessible. Si toute ou partie de ses fichiers sont sur un support externe, vérifiez qu'il est bien branché et allez dans Panneau Système > Dépôts pour le réactiver."
+		"DETAIL": "Le dépôt {{repo}} a été désactivé car l'un de ses dossiers est inaccessible. Si toute ou partie de ses fichiers sont sur un support externe, vérifiez qu'il est bien branché et allez dans Panneau Système > Dépôts pour le réactiver."
 	},
 	"TIPS": {
 		"TITLES": {
@@ -256,15 +256,15 @@
 	"UNKNOWN_ARTIST": "Artiste inconnu",
 	"REPOSITORY_ALREADY_EXISTS": {
 		"TITLE": "Dépôt déjà existant",
-		"MESSAGE": "Le dépôt que vous souhaitez ajouter existe déjà dans votre base de données Karaoke Mugen."
+		"DETAIL": "Le dépôt que vous souhaitez ajouter existe déjà dans votre base de données Karaoke Mugen."
 	},
 	"PERMISSIONS_KEYBOARD_INFO_MACOS": {
-		"TITLE": "Demande de permissions",
-		"MESSAGE": "macOS va vous demander d'ajouter Karaoke Mugen aux permissions d'accessibilité du système. Cette permission permet de manipuler le lecteur vidéo avec les touches multimédia de votre clavier. Bien sûr vous pouvez refuser d'accorder la permission à Karaoke Mugen, mais dans ce cas les touches multimédia ne fonctionneront pas."
+		"MESSAGE": "Demande de permissions",
+		"DETAIL": "macOS va vous demander d'ajouter Karaoke Mugen aux permissions d'accessibilité du système. Cette permission permet de manipuler le lecteur vidéo avec les touches multimédia de votre clavier. Bien sûr vous pouvez refuser d'accorder la permission à Karaoke Mugen, mais dans ce cas les touches multimédia ne fonctionneront pas."
 	},
 	"DATABASE_CONNECTION_ERROR": {
 		"TITLE": "Erreur de connexion à la base de données",
-		"MESSAGE": "Un problème est survenu sur l'initialisation/connexion à la base de données. Cliquez sur Aide pour plus d'informations.",
+		"DETAIL": "Un problème est survenu sur l'initialisation/connexion à la base de données. Cliquez sur Aide pour plus d'informations.",
 		"HELP": "Aide"
 	},
 	"MISSING_BINARIES": {
@@ -273,7 +273,7 @@
 	},
 	"UNKNOWN_REPOSITORY_ADD": {
 		"TITLE": "Dépôt inconnu",
-		"MESSAGE": "Vous êtes sur le point d'ajouter le dépôt {{repoName}}, êtes-vous sûr ?"
+		"DETAIL": "Vous êtes sur le point d'ajouter le dépôt {{repoName}}, êtes-vous sûr ?"
 	},
 	"GENERATING_READING": "Etape 1 / 2 - Lecture des données…",
 	"GENERATING_DATABASE": "Etape 2 / 2 - Mise à jour de la base de données…",

@@ -207,7 +207,8 @@ class Mpv extends EventEmitter {
 
 	async unobserveProperty(property: string) {
 		const id = this.observedProperties.indexOf(property);
-		if (id === -1) throw new Error('This property is not observed');
+		// Return silently if property doesn't exist anymore.
+		if (id === -1) return;
 		if (!this.isRunning) throw new Error('MPV is not running');
 		await this.ishukan({ command: ['unobserve_property', id] });
 		delete this.observedProperties[id];
