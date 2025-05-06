@@ -7,6 +7,7 @@
 	"UNKNOWN": "Inconnu",
 	"SEARCH": "Rechercher",
 	"SUBMIT": "Sauvegarder",
+	"CONFIRM": "Confirmer",
 	"CANCEL": "Annuler",
 	"WARNING": "Attention !",
 	"SHOW-HIDE": "Montrer / Cacher",
@@ -208,6 +209,7 @@
 		},
 		"OPEN_POLL": "Voter pour la prochaine chanson",
 		"CURRENT": "Voir la liste de lecture courante",
+		"MY_INCOMING_SONGS": "Mes chansons à venir",
 		"PUBLIC_SUGGESTIONS": "Suggestions du public",
 		"PUBLIC_SUGGESTIONS_SHORT": "Suggestions",
 		"FAVORITES": "Favoris",
@@ -449,6 +451,8 @@
 				"UPVOTES_ONLY": "Soutiens",
 				"DISALLOWED": "Interdire"
 			},
+			"ALLOW_PLAYLIST_ITEM_SWAP": "Permettre au public d'échanger les positions de leurs chansons",
+			"ALLOW_PLAYLIST_ITEM_SWAP_TOOLTIP": "Les utilisateurs peuvent échanger la position de leurs chansons dans la liste de lecture courante pour chanter une de leurs chansons plus tôt par exemple.",
 			"PLAYLIST_RANDOMSONGSAFTERENDMESSAGE": "Afficher régulièrement un message à l'écran pour inviter les utilisateurs à ajouter une chanson lors de la lecture aléatoire d'une chanson après la fin de la liste de lecture en cours",
 			"PLAYLIST_RANDOMSONGSAFTERENDMESSAGE_TOOLTIP": "Le message sera affiché au milieu de l'écran lorsque Karaoke Mugen jouera des chansons aléatoires, invitant les utilisateurs à ajouter des chansons",
 			"MEDIAS_SETTINGS": "Intermissions",
@@ -630,14 +634,14 @@
 	"VIEW_STANDARD": "Standard",
 	"VIEW_FAVORITES": "Favoris",
 	"VIEW_RECENT": "Nouveau",
-	"VIEW_POPULAR": "Populaire",
+	"VIEW_POPULAR": "Demandé",
 	"VIEW_LIKES": "J'aime",
 	"VIEW_LIKES_TOOLTIP": "Les chansons avec le plus de J'aime sont affichées en premier, ceci n'a pas d'effet sur l'ordonnancement de la liste de lecture.",
 	"KARA_SUGGESTION_NOT_FOUND": "Vous ne trouvez pas votre bonheur ? Vérifiez sur vos dépôts en ligne configurés ainsi que sur le site de suggestions si votre souhait n'est pas déjà exaucé :",
 	"REPO_IN_PROGRESS": "Karaoke Mugen n'est pas encore tout à fait prêt, merci de patienter en attendant que les tâches ci-dessus soient terminées.",
 	"ONLINE_STATS": {
 		"TITLE": "Statistiques",
-		"INTRO": "Karaoke Mugen peut envoyer des informations anonymisées sur votre instance à Karaoke Mugen Server afin d'établir des statistiques d'utilisation.",
+		"INTRO": "Karaoke Mugen peut envoyer des informations anonymisées sur votre instance afin d'établir des statistiques d'utilisation.",
 		"DETAILS": {
 			"1": "Quelles chansons ont été joués",
 			"2": "Quelles chansons ont été demandés (mais pas par qui)",
@@ -648,7 +652,6 @@
 		},
 		"CHANGE": "Vous pourrez modifier votre choix à tout moment depuis les options.",
 		"QUESTION": "Acceptez-vous d'envoyer ces statistiques à Karaoke Mugen Server ?",
-		"CONFIRM": "Confirmer",
 		"ERROR": "Karaoke Mugen peut envoyer des informations sur votre instance à Sentry.io lors de dysfonctionnements de l'application. Cela nous aide à régler les soucis que vous pourriez rencontrer. Acceptez-vous d'envoyer ces rapports d'erreur ?"
 	},
 	"INSTANCE_NAME": "Nom du serveur",
@@ -952,18 +955,7 @@
 		"CREATE_ONLINE_ACCOUNT_DESC": "Indiquez un nom de compte et un mot de passe pour créer un compte.",
 		"SECURITY_CODE_DESC_CONSOLE": "Indiquez également le code de sécurité (à 6 chiffres) que vous pourrez trouver en cherchant \"SECURITY CODE FOR THIS SESSION\" dans le fichier des logs de Karaoke Mugen.",
 		"SECURITY_CODE_USE": "Ce code permet d'être certain que c'est bien vous qui effectuez ces actions. Le code change à chaque utilisation.",
-		"CONNECTED_MESSAGE": "Félicitations, vous voilà connecté sur Karaoke Mugen, {{user}} !",
-		"DEFAULT_REPOSITORY_DESC_1": "Karaoke Mugen propose un dépôt de karaokés par défaut, ",
-		"DEFAULT_REPOSITORY_DESC_2": ". Les médias seront téléchargés au fur et à mesure que vous en aurez besoin.",
-		"DEFAULT_REPOSITORY_QUESTION": "Où voulez-vous stocker ces téléchargements ? Par défaut ils seront dans :",
-		"REPOSITORY_LATER": "Vous pourrez changer ce dossier plus tard.",
-		"MODIFY_DIRECTORY": "Modifier le dossier",
-		"CHOOSE_DIRECTORY": "Choisissez un dossier",
-		"ADD_DIRECTORY": "Ajouter un dossier",
-		"SAVE_PARAMETER": "Enregistrer ce paramètre",
-		"COLLECTIONS_CHOICE": "Choix des collections",
-		"COLLECTIONS_CHOICE_DESC_1": "Les Collections de chansons sont destinées à des publics différents. Choisissez les collections que vous souhaitez voir dans votre base de karaokés.",
-		"COLLECTIONS_CHOICE_DESC_2": "Vous pouvez changer vos collections à tout moment dans le panneau système."
+		"CONNECTED_MESSAGE": "Félicitations, vous voilà connecté sur Karaoke Mugen, {{user}} !"
 	},
 	"NOTIFICATION": {
 		"OPERATOR": {
@@ -980,10 +972,12 @@
 				"POLL_ALREADY_STARTED": "Un sondage est déjà en cours",
 				"POLL_PUBLIC_PL_EMPTY": "Impossible de démarrer un sondage : la liste de lecture publique est vide",
 				"POLL_NOT_ENOUGH_SONGS": "Impossible de démarrer un sondage : pas assez de chansons disponibles",
+				"IMPORT_BASE_FAILED": "Échec de l'importation des chansons",
+				"IMPORT_BASE_OK_BUT_ERRORS_SEE_LOGS": "L'importation est correcte mais il y a quelques erreurs, voir le journal d'événements",
 				"UPDATE_GIT_REPO_ERROR": "La mise à jour du dépot git a échouée"
 			},
 			"INFO": {
-				"BATCH_EDIT_COMPLETE": "Edition en masse de chansons terminée.",
+				"BATCH_EDIT_COMPLETE": "Édition en masse de chansons terminée.",
 				"PLAYER_RESTARTING": "Redémarrage du lecteur vidéo…",
 				"POLL_WINNER": "Le peuple a voté pour une nouvelle chanson !",
 				"POLL_STARTING": "Démarrage du sondage",
@@ -1055,7 +1049,7 @@
 		"COMMENT": "Un commentaire ?",
 		"COMMENT_TOOLTIP": "Un champ pour un commentaire comme \"Spéciale dédicace à ma maman\" ou \"Ne pas toucher aux effets!\" ou \"Fait avec trop de café\".",
 		"USEEMBEDDEDLYRICS": "Utiliser les paroles du fichier média en priorité",
-		"USEEMBEDDEDLYRICS_TOOLTIP": "Si le média envoyé contient un fichier de paroles, ce dernier sra alors utilisé à la place du fichier de paroles envoyé ci-dessous.",
+		"USEEMBEDDEDLYRICS_TOOLTIP": "Si le média envoyé contient un fichier de paroles, ce dernier sera alors utilisé à la place du fichier de paroles envoyé ci-dessous.",
 		"IGNOREHOOKS": "Ignorer les tags automatiques",
 		"IGNOREHOOKS_TOOLTIP": "Certains tags pourront être ajoutés automatiquement à ce karaoké s'il remplit certaines conditions.",
 		"PREVIEW_HOOKS": "Prévisualiser les tags ajoutés automatiquement",
@@ -1088,7 +1082,7 @@
 		"ORDER_MEDIA": "Trier les médias par : ",
 		"ORDER_MEDIA_STANDARD": "Standard",
 		"ORDER_MEDIA_NEW": "Nouveau",
-		"ORDER_MEDIA_POPULAR": "Populaire",
+		"ORDER_MEDIA_POPULAR": "Demandé",
 		"ORDER_MEDIA_MEDIASIZE": "Taille de fichier",
 		"CHANGE_ORDER_DIRECTION": "Changer le sens de l'ordre",
 		"REPOSITORY": "Dépôt",
@@ -1107,7 +1101,7 @@
 			"SELECT_ACTION": "Sélectionnez une action :",
 			"SELECT_TAG": "Sélectionnez un tag :",
 			"SELECT_TAG_TYPE": "Sélectionnez un type de tag :",
-			"EDIT": "Edition en masse",
+			"EDIT": "Édition en masse",
 			"SELECT": "Sélectionnez"
 		},
 		"SINGERGROUPS_BY": "du groupe musical",
@@ -1119,6 +1113,8 @@
 		"DELETE_KARA_MODAL": "Supprimer la chanson ?",
 		"EDIT_KARA": "Editer la chanson",
 		"DEJAVU_TOOLTIP": "Chanson déjà passée",
+		"SWAP_TOOLTIP": "Changer l'ordre de lecture des chansons que vous avez demandées",
+		"SWAP_DESCRIPTION": "Choissisez une seconde chanson pour les inverser",
 		"PROBLEMATIC_TOOLTIP": "Cette chanson comprend des scènes ({{tags}}) pouvant poser problème à certaines personnes.",
 		"DELETE_ALL_TOOLTIP": "Supprimer toutes les chansons affichées en une seule fois",
 		"DELETE_KARA_TITLE": "Vous allez supprimer les {{count}} chansons affichées, êtes-vous sûr ?",
@@ -1172,6 +1168,28 @@
 		},
 		"REPOSITORY_DOCUMENTATION": "Accéder aux règles de {{instance}}"
 	},
+	"KARAOKE_IMPORT": {
+		"CONFIGURATION": "Configuration",
+		"SOURCE_DIR": "Dossier source",
+		"SOURCE_DIR_TOOLTIP": "Dossier avec les médias (vidéo/audio) de karaokés à importer",
+		"SOURCE_DIR_DESC": "Veuillez sélectionner le dossier dans lequel se trouvent vos chansons. Elles seront copiées dans votre dépôt cible.",
+		"DESTINATION_REPOSITORY": "Dépôt cible",
+		"DESTINATION_REPOSITORY_TOOLTIP": "Dépôt vers lequel les nouveaux karaokés seront importés",
+		"FILENAME_TEMPLATE": "Modèle de nom de fichier",
+		"FILENAME_TEMPLATE_TOOLTIP": "Si vos fichiers existants ont un nom de fichier structuré - par exemple contenant le nom de la chanson, l'artiste et l'année - vous pouvez fournir le format ici. Les champs reconnus seront automatiquement enregistrés dans les nouvelles métadonnées du karaoké.",
+		"ADD_TAG_TEMPLATE": "Ajouter un tag dans le modèle",
+		"ADD_TAG_TEMPLATE_DESC": "Utilisez le champ ci-dessous pour ajouter des éléments au modèle de nom de fichier.",
+		"WARNING_IMPORT_TITLE": "À LIRE",
+		"WARNING_IMPORT": "Karaoke Mugen regardera dans le dossier source et essaiera de trouver des chansons à importer.",
+		"WARNING_IMPORT_LIST": "Choses à savoir :",
+		"WARNING_IMPORT_LYRICS": "Les paroles seront converties au format .ass lorsqu'elles seront importées.",
+		"WARNING_IMPORT_MEDIA": "Les médias seront convertis au format .mp4.",
+		"FILENAME_TEMPLATE_DESC": "Veuillez préciser le format de nommage des fichiers que vous utilisez :",
+		"MEDIA_FILES": "Fichiers médias",
+		"IMPORT_START": "Débuter l'import",
+		"SOURCE": "Source",
+		"FILENAME_TEMPLATE_ERROR": "Le modèle de nom de fichier est obligatoire"
+	},
 	"MENU": {
 		"HOME": "Tableau de bord",
 		"SYSTEM": "Système",
@@ -1186,15 +1204,16 @@
 		"DOWNLOAD_QUEUE": "File d'attente des téléchargements",
 		"DOWNLOAD": "Téléchargement des médias",
 		"HISTORY": "Historique",
-		"RANKING": "Plus populaire",
+		"RANKING": "Plus demandés",
 		"VIEWCOUNTS": "Plus joués",
+		"KARAIMPORT": "Import de karaokés",
 		"TAGS": "Tags",
 		"DATABASE": "Base de données",
 		"GIT": "Git",
 		"USERS": "Utilisateurs",
 		"UNUSED_FILES": "Fichiers inutilisés",
 		"DUPLICATE": "Dupliqués",
-		"BATCH_EDIT": "Edition en masse de kara/tags",
+		"BATCH_EDIT": "Édition en masse de kara/tags",
 		"STORAGE": "Gestion de l'espace disque",
 		"BACKGROUNDS": "Fonds d'écran",
 		"INBOX": "Boîte de réception",
@@ -1412,13 +1431,19 @@
 		"PRIVATE": "Privée ?"
 	},
 	"REPOSITORIES": {
+		"NAME_DESC": "Comment votre dépôt s'appelle-t-il ?",
 		"NAME": "Nom du dépôt",
 		"ONLINE_NAME": "Nom de domaine du dépôt",
-		"TOOLTIP_NAME": "Si c'est un dépôt en ligne, indiquez son nom de domaine uniquement. S'il s'agit d'un dépôt local, mettez le nom que vous voulez. Par exemple 'Mon trésor de guerre'",
+		"TOOLTIP_NAME": "Mettez le nom que vous voulez. Par exemple 'Mon trésor de guerre'",
+		"TOOLTIP_ONLINE_NAME": "Indiquez son nom de domaine uniquement.",
 		"BASE_DIR": "Chemin du dépôt",
-		"PATH_MEDIAS": "Médias",
+		"PATH_MEDIAS": "Chemin de stockage des médias",
+		"PATH_MEDIAS_DESC": "Veuillez indiquer l'endroit où vous souhaitez que les fichiers médias soient stockés. Si vous prévoyez d'avoir beaucoup de chansons, il est préférable de les stocker dans un endroit où vous disposez de beaucoup d'espace disque.",
 		"NEW_REPOSITORY": "Nouveau dépôt",
-		"ONLINE": "En ligne",
+		"ONLINE": "Externe (Récupérez des chansons)",
+		"LOCAL": "Local (Pour vos propres chansons)",
+		"REPOSITORY_TYPE": "Type de dépôt",
+		"REPOSITORY_TYPE_DESC": "Tout d'abord, choisissez si le dépôt que vous souhaitez ajouter est local ou en ligne.",
 		"UPDATE": "Mise à jour automatique",
 		"UPDATE_TOOLTIP": "Si désactivé, le dépôt ne sera jamais mis à jour par l'application.",
 		"ENABLED": "Actif",
@@ -1555,7 +1580,7 @@
 		"UPDATING_REPO": "Mise à jour des chansons du dépôt",
 		"UPDATING_PLMEDIAS": "Mise à jour des médias de liste de lecture…",
 		"CREATING_TAG_IN_PROGRESS": "Création de tag en cours…",
-		"EDITING_TAG_IN_PROGRESS": "Edition de tag en cours…",
+		"EDITING_TAG_IN_PROGRESS": "Édition de tag en cours…",
 		"DELETING_TAG_IN_PROGRESS": "Suppression de tag en cours…",
 		"DELETING_PARENT_IN_PROGRESS": "Suppression d'une chanson parente en cours…",
 		"MERGING_TAGS_IN_PROGRESS": "Fusion de tags en cours…",
@@ -1575,7 +1600,12 @@
 		"ENCODING_MEDIA": "Encodage du fichier média…",
 		"EXPORTING_PLAYLIST_MEDIA": "Export des médias de la liste de lecture…",
 		"IMPORTING_PLAYLIST": "Importation de la liste de lecture…",
-		"DUMMY_TASK": "Aucune tâche en cours"
+		"DUMMY_TASK": "Aucune tâche en cours",
+		"BASE_IMPORT": {
+			"IMPORTING_BASE": "Import de chansons…",
+			"ANALYZING_FILES": "Analyse des fichiers",
+			"CREATING_METADATA": "Création des métadonnées"
+		}
 	},
 	"ERROR_CODES": {
 		"INVALID_DATA": "Données invalides",
@@ -1612,7 +1642,7 @@
 		"REPO_NOT_UPDATEABLE": "Le dépôt ne peut pas être mis à jour : il est désactivé, ses mises à jour sont désactivées, il est hors ligne ou pas en mode mainteneur",
 		"REPO_GIT_DROP_STASH_ERROR": "Impossible de supprimer le stash",
 		"TAG_REPOSITORY_INVALID_CHANGE": "Vous ne pouvez pas changer le dépôt d'un tag : utilisez plutôt la copie",
-		"GET_MEDIA_INFO_ERROR": "Echec de récupération des informations du média",
+		"GET_MEDIA_INFO_ERROR": "Échec de récupération des informations du média",
 		"INBOX_VIEW_ERROR": "Impossible de récupérer la boite de réception",
 		"INBOX_DOWNLOAD_ERROR": "Impossible de récupérer le karaoké de la boîte de réception",
 		"INBOX_DELETE_FORBIDDEN_ERROR": "Suppression d'une chanson de la boîte de réception interdite",
@@ -1658,7 +1688,7 @@
 		"KARA_CREATED_ERROR": "Erreur lors de la génération de la chanson",
 		"KARA_FILE_EXISTS_ERROR": "Impossible de sauvegarder : Un karaoké avec le même nom de fichier existe. Assurez-vous que ce n'est pas un doublon et que les tags soient correctement définis.",
 		"KARA_HISTORY_ERROR": "Erreur lors de la récupération des chansons triées par date jouée",
-		"KARA_RANKING_ERROR": "Erreur lors de la récupération des chansons triées par popularité",
+		"KARA_RANKING_ERROR": "Erreur lors de la récupération des chansons les plus demandées",
 		"KARA_PLAYED_ERROR": "Erreur lors de la récupération des chansons triées par les plus joués",
 		"SONG_VIEW_ERROR": "Erreur lors de la récupération d'une chanson",
 		"KARA_DELETED_ERROR": "Erreur lors de la suppression d'une chanson",
@@ -1699,6 +1729,7 @@
 		"PL_SONG_COPY_ERROR": "Erreur lors de la copie d'une chanson vers la liste de lecture définie",
 		"PL_VIEW_CONTENT_ERROR": "Erreur lors de la récupération des informations d'une chanson d'une liste de lecture",
 		"PL_MODIFY_CONTENT_ERROR": "Erreur lors de la modification de la position ou de la lecture d'une chanson",
+		"PLC_SWAP_FORBIDDEN": "L'échange de chansons n'est pas autorisé",
 		"UPVOTE_FAILED": "Erreur lors du vote",
 		"UPVOTE_NO_SELF": "Impossible de voter pour ses propres ajouts",
 		"UPVOTE_ALREADY_DONE": "Le vote a déjà été fait",
@@ -1816,7 +1847,13 @@
 		"MEDIA_VALIDATION_ERROR": "Impossible de valider les informations du média",
 		"MEDIA_ENCODING_ABORTED": "L'encodage du média a été annulé",
 		"UNKNOWN_PARENT_FROM_INBOX": "Parent inconnu pour ce karaoké venant de la boîte de réception",
-		"REPO_MANIFEST_GET_ERROR": "Le manifeste du dépôt n'a pas été trouvé"
+		"REPO_MANIFEST_GET_ERROR": "Le manifeste du dépôt n'a pas été trouvé",
+		"FIND_FILES_TO_IMPORT_ERROR": "Erreur dans la recherche des fichiers à importer",
+		"IMPORT_SONG_TEMPLATE_MISSING_TITLE_ERROR": "Impossible d'identifier des chansons depuis le modèle, le titre est absent du modèle",
+		"IMPORT_SONG_TEMPLATE_ERROR_DUPLICATE_TAG": "Impossible d'identifier des chansons depuis le modèle, un tag est dupliqué dans le modèle",
+		"IMPORT_SONG_TEMPLATE_ERROR": "Impossible d'identifier des chansons depuis le modèle",
+		"IMPORT_NO_TITLE_ERROR": "Impossible d'importer des chansons, le titre est absent du modèle",
+		"IMPORT_SONG_ERROR": "Impossible d'importer des chansons"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Ajout de {{data}} téléchargements à la file d'attente",
@@ -1937,6 +1974,10 @@
 			"TITLE": "Modifier un karaoké",
 			"DESCRIPTION": "Formulaire de modification de karaoké."
 		},
+		"KARAOKE_IMPORT": {
+			"TITLE": "Import de karaokés",
+			"DESCRIPTION": "Importer des karaokés depuis un dossier vers Karaoke Mugen"
+		},
 		"DOWNLOAD_QUEUE": {
 			"TITLE": "File d'attente des téléchargements des médias",
 			"DESCRIPTION": "Voir la liste des téléchargements de médias en cours et en attente."
@@ -1952,7 +1993,7 @@
 		"MOST_REQUESTED": {
 			"TITLE": "Chansons les plus demandées",
 			"DESCRIPTION": "Liste les chansons les plus demandées sur votre application. Ne prend en compte que les chansons ajoutés depuis l'interface publique.",
-			"DESCRIPTION_ONLINE": "Vous voyez actuellement la liste des karaokés les plus demandés EN LIGNE. Désactivez l'option \"Récupérer les chansons les plus demandées en ligne\" pour voir celles de votre instance uniquement."
+			"DESCRIPTION_ONLINE": "Vous voyez actuellement la liste des karaokés les plus demandés EN LIGNE. Désactivez l'option \"Récupérer les chansons les plus demandées depuis vos dépôts en ligne\" pour voir celles de votre instance uniquement."
 		},
 		"MOST_PLAYED": {
 			"TITLE": "Chansons les plus jouées",
@@ -2144,5 +2185,8 @@
 		"NEXT_SONG_SHORT": "Suivante",
 		"PLAY": "Jouer",
 		"PAUSE": "Pause"
+	},
+	"WARNING_CODES": {
+		"REMOTE_HIGH_LATENCY_DETECTED": "Votre connexion avec {{host}} est lente, vos utilisateurs peuvent rencontrer des problèmes"
 	}
 }

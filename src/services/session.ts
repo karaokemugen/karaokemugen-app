@@ -94,7 +94,7 @@ export async function editSession(session: Session) {
 		if (!oldSession) throw new ErrorKM('UNKNOWN_SESSION', 404, false);
 
 		if (session.ended_at && new Date(session.ended_at).getTime() < new Date(session.started_at).getTime()) {
-			throw new ErrorKM('ERROR_CODES.SESSION_END_BEFORE_START_ERROR', 400);
+			throw new ErrorKM('SESSION_END_BEFORE_START_ERROR', 400);
 		}
 		session.started_at
 			? (session.started_at = new Date(session.started_at))

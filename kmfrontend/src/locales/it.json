@@ -3,6 +3,7 @@
 	"NO": "No",
 	"AND": "e",
 	"CANCEL": "Annulla",
+	"CONFIRM": "Conferma",
 	"DETAILS": {
 		"YEAR": "Anno",
 		"DURATION": "Durata"
@@ -145,7 +146,7 @@
 			"DISPLAY_CONNECTION_INFO_QRCODE_TOOLTIP": "Il codice QR verrà visualizzato in alto a destra della schermata del lettore se sospeso o interrotto.",
 			"DISPLAY_CONNECTION_INFO_MESSAGE_TOOLTIP": "Personalizza il messaggio visualizzato a schermo, per incoraggiare il pubblico o dargli più informazioni. Usa $url per visualizzare l'URL di questa sessione karaoke. Esempio: \"Vai su $url!\"",
 			"AUDIO_DELAY": "Latenza Audio / Video (in ms)",
-			"DISPLAY_CONNECTION_INFO_QRCODE": "Mostra codice QR",
+			"DISPLAY_CONNECTION_INFO_QRCODE": "Mostra codice QR quando il lettore è interrotto",
 			"DISPLAY_RANDOMQUOTES_TOOLTIP": "Le citazioni casuali sono visualizzate in fondo alla schermata del lettore quando è interrotto",
 			"AUDIO_DELAY_TOOLTIP": "Aggiungi una latenza all'audio o al video per sincronizzare il lettore al tuo dispositivo di riproduzione. Può essere utile quando si usano altoparlanti bluetooth o monitor wireless che non sono sincronizzati",
 			"LIVE_COMMENTS": "Commenti live",
@@ -155,7 +156,9 @@
 			"DISPLAY_CONNECTION_INFO_TOOLTIP": "È il messaggio \"Vai su http://xxx !\"",
 			"DISPLAY_AVATAR_TOOLTIP": "L'avatar del richiedente del brano verrà visualizzato all'inizio e alla fine del brano nell'angolo in basso a destra della schermata del lettore.",
 			"AUDIO_ONLY_EXPERIENCE": "Solo audio",
-			"AUDIO_ONLY_EXPERIENCE_TOOLTIP": "Se attivata, verrà mostrata un'immagine statica anziché un video. La modifica verrà applicata al prossimo brano."
+			"AUDIO_ONLY_EXPERIENCE_TOOLTIP": "Se attivata, verrà mostrata un'immagine statica anziché un video. La modifica verrà applicata al prossimo brano.",
+			"DISPLAY_CONNECTION_INFO_QRCODE_DURING_SONG": "Mostra codice QR durante i brani",
+			"DISPLAY_CONNECTION_INFO_QRCODE_DURING_SONG_TOOLTIP": "Il codice QR verrà mostrato in alto a destra durante i brani."
 		},
 		"SYSTEMPANEL_TIP": "Non trovi le opzioni che cerchi? <2>Alcune opzioni sono nel <3>pannello di sistema</3>.</2>",
 		"KARAOKE": {
@@ -263,7 +266,9 @@
 			"ALLOW_PUBLIC_DUPLICATES": "Consenti brani doppioni in playlist (pubblico)",
 			"ALLOW_PUBLIC_DUPLICATES_TOOLTIP": "Scegli se consentire al pubblico di aggiungere un brano più volte. Un utente non può aggiungere un brano già aggiunto da sé stesso, ma può aggiungerne uno già aggiunto da un altro utente. Selezionando \"Voti\", gli utenti non potranno aggiungere doppioni ma potranno votare brani già presenti. \"Consenti\" va bene per un Karaoke classico, \"Voti\" per un Karaoke pubblico.",
 			"FREE_ACCEPTED_SONGS": "Libera i brani accettati",
-			"FREE_ACCEPTED_SONGS_TOOLTIP": "I brani verranno liberati una volta accettati da un operatore della playlist pubblica. Il richiedente del brano riotterrà la quota spesa."
+			"FREE_ACCEPTED_SONGS_TOOLTIP": "I brani verranno liberati una volta accettati da un operatore della playlist pubblica. Il richiedente del brano riotterrà la quota spesa.",
+			"ALLOW_PLAYLIST_ITEM_SWAP_TOOLTIP": "Gli utenti possono cambiare l'ordine dei brani da loro richiesti se vogliono cantare prima un brano specifico.",
+			"ALLOW_PLAYLIST_ITEM_SWAP": "Consenti al pubblico di cambiare l'ordine dei propri brani"
 		},
 		"PLAYLIST": {
 			"ENDOFPLAYLISTACTION": {
@@ -346,7 +351,7 @@
 			"CURRENT": "Il testo in grassetto indica il testo attualmente cantato."
 		},
 		"HIDE_LYRICS": "Nascondi il testo",
-		"REQUESTED_KARAOKES": "Brani popolari",
+		"REQUESTED_KARAOKES": "Brani più richiesti",
 		"QUOTA_KARA_DESCRIPTION_other": "Puoi suggerire solo {{count}} brani. Potrai suggerirne altri dopo che l'operatore avrà accettato o rifiutato i tuoi suggerimenti o quando il tuo brano verrà riprodotto a schermo.",
 		"HELLO": "Ciao, {{name}}!",
 		"FAVORITES": "Preferiti",
@@ -355,7 +360,8 @@
 		"RESTRICTED_DESCRIPTION": "Il karaoke è in modalità limitata, non puoi aggiungere brani.",
 		"QUOTA_KARA_DESCRIPTION_one": "Puoi suggerire solo {{count}} brano. Potrai suggerirne altri dopo che l'operatore avrà accettato o rifiutato i tuoi suggerimenti o quando il tuo brano verrà riprodotto a schermo.",
 		"PUBLIC_SUGGESTIONS_SHORT": "Suggerimenti",
-		"OPEN_POLL": "Vota il prossimo brano"
+		"OPEN_POLL": "Vota il prossimo brano",
+		"MY_INCOMING_SONGS": "I miei brani successivi"
 	},
 	"KARA_MENU": {
 		"WHITELISTED": "Aggiunto alla whitelist!",
@@ -895,7 +901,7 @@
 			"TITLE": "Interrompere il quiz?"
 		}
 	},
-	"VIEW_POPULAR": "Popolari",
+	"VIEW_POPULAR": "Richiesti",
 	"VIEW_LIKES": "Più amati",
 	"REPO_IN_PROGRESS": "Karaoke Mugen non è ancora pronto, si prega di attendere il termine delle seguenti attività.",
 	"ONLINE_STATS": {
@@ -907,12 +913,11 @@
 			"2": "I brani che sono stati richiesti (ma non da chi)",
 			"4": "Impostazioni dell'applicazione (escluse informazioni private come password o chiavi)"
 		},
-		"INTRO": "Karaoke Mugen può inviare informazioni anonime sulla tua sessione al server di Karaoke Mugen per creare statistiche sul consumo.",
+		"INTRO": "Karaoke Mugen può inviare informazioni anonime sulla tua sessione per creare statistiche sul consumo.",
 		"QUESTION": "Acconsenti all'invio di queste statistiche al server di Karaoke Mugen?",
 		"CHANGE": "Puoi cambiare idea in qualsiasi momento tramite le opzioni.",
 		"ERROR": "Karaoke Mugen potrebbe inviare informazioni sulla tua sessione a Sentry.io durante gli errori, il che ci aiuta a risolverli più velocemente. Acconsenti all'invio di queste segnalazioni di errore?",
-		"TITLE": "Statistiche",
-		"CONFIRM": "Conferma"
+		"TITLE": "Statistiche"
 	},
 	"INSTANCE_NAME_SHORT": "Server",
 	"INSTANCE_NAME": "Nome del server",
@@ -1169,7 +1174,8 @@
 		"UNKNOWN_PARENT_FROM_INBOX": "Versione principale di questo brano sconosciuta",
 		"REPOS_MULTIPLE_USED_MEDIA_PATH_ERROR": "La cartella dei file multimediali è già utilizzata da un altro archivio",
 		"UPDATING_MEDIAS_MULTIPLE_USED_MEDIA_PATH_ERROR": "Diversi archivi condividono la stessa cartella dei file multimediali, ciò causerà rimozioni indesiderate. Si prega di cambiare la cartella dei file multimediali di questi archivi: {{repos}}",
-		"REPO_MANIFEST_GET_ERROR": "Manifesto dell'archivio non trovato"
+		"REPO_MANIFEST_GET_ERROR": "Manifesto dell'archivio non trovato",
+		"PLC_SWAP_FORBIDDEN": "Non è consentito cambiare l'ordine dei brani"
 	},
 	"KARA": {
 		"PAUSE_DOWNLOAD_QUEUE": "Sospendi",
@@ -1207,7 +1213,7 @@
 		"ADD_FILE_LYRICS_ERROR": "{{name}} non è un file di sottotitoli",
 		"FILTER_NOT_DOWNLOADED": "Non scaricato",
 		"CREATORS_TOOLTIP": "Entità che ha creato la serie. Può essere uno studio di animazione, studio cinematografico o casa produttrice videoludica.",
-		"SYNCHRONIZE_DESC": "Scarica tutti i file multimediali",
+		"SYNCHRONIZE_DESC": "Scarica tutti i file multimediali dagli archivi selezionati",
 		"DEFAULT_LANGUAGE": "Lingua predefinita da utilizzare",
 		"MEDIA_FILE_INFO": {
 			"VIDEO_RESOLUTION": "Risoluzione",
@@ -1332,12 +1338,19 @@
 			"EMBED_COVER_ERROR": "Errore durante l'allegamento della nuova immagine di copertina",
 			"REPLACE": "Sostituisci l'immagine di copertina"
 		},
-		"ORDER_MEDIA_POPULAR": "Popolari",
+		"ORDER_MEDIA_POPULAR": "Richiesti",
 		"ORDER_MEDIA_NEW": "Recenti",
 		"ORDER_MEDIA_STANDARD": "Standard",
 		"ORDER_MEDIA": "Ordina file multimediali per: ",
 		"ORDER_MEDIA_MEDIASIZE": "Dimensione",
-		"CHANGE_ORDER_DIRECTION": "Inverti l'ordine"
+		"CHANGE_ORDER_DIRECTION": "Inverti l'ordine",
+		"SYNCHRONIZE_REPOSITORIES": "Archivi da sincronizzare",
+		"KARA_FIELD_REQUIRED": "Il campo {{field}} è obbligatorio",
+		"KARA_GROUP_FIELD_REQUIRED": "I campi {{fields}} non possono essere entrambi vuoti.",
+		"USEEMBEDDEDLYRICS": "Prioritizza il testo allegato al file multimediale",
+		"USEEMBEDDEDLYRICS_TOOLTIP": "Se il file multimediale caricato contiene un file ASS, questo verrà estratto e sostituirà il file del testo attuale.",
+		"SWAP_DESCRIPTION": "Scegli un secondo brano con cui scambiarne la posizione",
+		"SWAP_TOOLTIP": "Cambia l'ordine dei brani da te richiesti"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_STARTED": "Avvio download",
@@ -1515,7 +1528,10 @@
 		"GIT_SQUASH_MESSAGE": "Messaggio di Commit",
 		"GIT_TOO_MANY_CHANGES": "Pare che tu stia effettuando {{changes}} cambiamenti. Quando si effettuano molti cambiamenti dello stesso tipo, si consiglia di unirli tutti in un unico grande Commit.",
 		"SECURE": "Sicuro",
-		"SECURE_TOOLTIP": "Abilita l'accesso HTTPS all'archivio"
+		"SECURE_TOOLTIP": "Abilita l'accesso HTTPS all'archivio",
+		"CONVERT_TO_UUID_BUTTON": "Converti al formato UUID…",
+		"CONVERT_TO_UUID_PANEL": "Converti al formato UUID",
+		"CONVERT_TO_UUID_ABOUT_MESSAGE": "Il tuo archivio potrebbe rinominare i file in maniera obsoleta (prima della versione 8.0.56 di Karaoke Mugen - Gennaio 2025). Se il tuo archivio è stato creato prima di allora, puoi usare questo tasto per rinominare tutti i file (metadata, testi e file multimediali) al nuovo formato UUID. Questa operazione non è reversibile."
 	},
 	"TAGS": {
 		"KITSU_SLUG_ERROR": "Kitsu Slug non valido",
@@ -1652,9 +1668,9 @@
 			"TITLE": "Gestione dello spazio su disco"
 		},
 		"MOST_REQUESTED": {
-			"TITLE": "Brani più popolari",
+			"TITLE": "Brani più richiesti",
 			"DESCRIPTION": "Elenca i brani più richiesti nella tua app. Considera solo i brani aggiunti dall'interfaccia pubblica.",
-			"DESCRIPTION_ONLINE": "Al momento stai osservando la lista dei brani popolari ONLINE. Disabilita l'impostazione \"Recupera i brani popolari online\" per vedere solo quelli locali."
+			"DESCRIPTION_ONLINE": "Al momento stai osservando la lista dei brani più richiesti ONLINE. Disabilita l'impostazione \"Recupera i brani più richiesti dai tuoi archivi online\" per vedere solo quelli locali."
 		},
 		"USER_EDIT": {
 			"TITLE": "Modifica un utente",
@@ -1795,35 +1811,24 @@
 	},
 	"LOADING_SUBTITLE_ELECTRON": "Non dovrebbe volerci molto, prova a riavviare o aggiornare Karaoke Mugen se rimani bloccato qui.",
 	"SETUP_PAGE": {
-		"CHOOSE_DIRECTORY": "Seleziona una cartella",
 		"ONLINE_ACCOUNT_SAVE_INFOS": "Effettuare un backup dei tuoi brani preferiti, il tuo avatar e le informazioni del profilo per utilizzarle in un'altra app Karaoke Mugen.",
 		"ONLINE_ACCOUNT_LOST_PASSWORD": "Se fornisci un indirizzo email, potrai recuperare il tuo account in caso di smarrimento della password.",
 		"SECURITY_CODE_USE": "Questo codice ci assicura che stai effettuando davvero tu queste azioni e cambia dopo ogni utilizzo.",
-		"DEFAULT_REPOSITORY_QUESTION": "Dove vuoi conservare questi download? Di base andranno in:",
 		"CREATE_ONLINE_ACCOUNT": "Voglio creare un nuovo account",
 		"ONLINE_ACCOUNT_INSTANCE": "Il tuo account online verrà ospitato dall'istanza {{instance}}",
 		"TITLE": "Configurazione Guidata",
 		"CONNECTED_MESSAGE": "Complimenti, ti sei connesso a Karaoke Mugen, {{user}}!",
-		"MODIFY_DIRECTORY": "Cambia cartella",
 		"ONLINE_ACCOUNT_INSTANCE_DESC": "Un'istanza è un server online che fornisce diversi servizi a Karaoke Mugen. Se non sei sicuro, lascia l'istanza predefinita ({{instance}}), se invece sai quello che fai, scegli l'istanza che preferisci.",
 		"ONLINE_ACCOUNT_DESC": "Un account online ti permette di:",
-		"SAVE_PARAMETER": "Salva",
-		"COLLECTIONS_CHOICE_DESC_1": "Le collezioni dei brani sono previste per varie udienze. Scegli le collezioni che vuoi vedere nel tuo database di karaoke.",
 		"CREATE_ONLINE_ACCOUNT_DESC": "Inserisci un nome ed una password per creare un account.",
 		"ACCOUNT_QUESTION": "Preferisci utilizzare un account locale (solo sul tuo computer) o un account online (accesso a internet necessario) ?",
-		"DEFAULT_REPOSITORY_DESC_2": ". I suoi file multimediali verranno scaricati quando necessario.",
 		"ONLINE_ACCOUNT": "Online",
-		"DEFAULT_REPOSITORY_DESC_1": "Karaoke Mugen ha un archivio di karaoke predefinito, ",
 		"WELCOME": "Benvenuto su Karaoke Mugen!",
 		"NEED_ACCOUNT": "Prima di poter iniziare a cantare, avrai bisogno di un account per utilizzare l'app.",
-		"COLLECTIONS_CHOICE": "Selezione collezione",
 		"LOCAL_ACCOUNT_DESC": "Hai scelto un account locale. Inserisci un nome ed una password qui sotto:",
-		"ADD_DIRECTORY": "Aggiungi una cartella",
 		"SECURITY_CODE_DESC_CONSOLE": "Si prega di inserire anche il codice di sicurezza di 6 cifre che puoi trovare nella console o nel file di log di Karaoke Mugen cercando \"SECURITY CODE FOR THIS SESSION\".",
 		"LOCAL_ACCOUNT": "Locale",
-		"REPOSITORY_LATER": "Puoi cambiare questa cartella in qualsiasi momento.",
-		"LOGIN_ONLINE_ACCOUNT": "Ho già un account",
-		"COLLECTIONS_CHOICE_DESC_2": "Puoi cambiare le tue collezioni in qualsiasi momento tramite il pannello di sistema."
+		"LOGIN_ONLINE_ACCOUNT": "Ho già un account"
 	},
 	"QUIZ": {
 		"RULES": {
@@ -1960,7 +1965,8 @@
 		"TYPE": "Tipo",
 		"FILE": "File",
 		"MEDIAS": "File multimediali",
-		"REPOSITORY": "Archivio"
+		"REPOSITORY": "Archivio",
+		"DELETE_ALL_MEDIAS": "Elimina tutti i file multimediali inutilizzati"
 	},
 	"SESSIONS": {
 		"SESSION_EXPORT_PLAYED_COUNT": "Brani riprodotti (raggruppati per numero di riproduzioni)",
@@ -2003,7 +2009,7 @@
 			"PLAYER_KEYBOARDMEDIASHORTCUTS_TOOLTIP": "Disabilitalo se vuoi che questi tasti controllino altre app (iTunes, foobar, ecc...)",
 			"ONLINE_UPDATES_MEDIAS_INTROS": "Aggiorna automaticamente le Intro",
 			"ONLINE_UPDATES_MEDIAS_ENCORES": "Aggiorna automaticamente gli Encore",
-			"ONLINE_FETCHPOPULARSONGS": "Recupera i brani popolari dal tuo archivio online",
+			"ONLINE_FETCHPOPULARSONGS": "Recupera i brani più richiesti dai tuoi archivi online",
 			"ONLINE_UPDATES_MEDIAS_JINGLES": "Aggiorna automaticamente i Jingle",
 			"ONLINE_DISCORD_DISPLAYACTIVITY": "Mostra l'attività di Karaoke Mugen sul tuo profilo Discord",
 			"ONLINE_UPDATES_MEDIAS_OUTROS": "Aggiorna automaticamente le Outro",
@@ -2011,7 +2017,7 @@
 			"APP_QUICKSTART_TOOLTIP": "Ciò disabilita la verifica dei dati. In caso di modifiche, dovrai generare il tuo database manualmente dal pannello di sistema -> database.",
 			"PLAYER_HARDWAREDECODING_TOOLTIP": "Forza l'accelerazione hardware del lettore. Nota: in alcune configurazioni, potrebbe causare comportamenti imprevedibili. In questi casi, seleziona \"Disattivata\". L'opzione \"Automatica\" è la più sicura e \"Forza\" è la più rischiosa e sconsigliata.",
 			"PLAYER_HARDWAREDECODING": "Decodifica hardware del video",
-			"ONLINE_FETCHPOPULARSONGS_TOOLTIP": "Se disabilitato, i brani popolari saranno calcolati dalla tua app Karaoke Mugen.",
+			"ONLINE_FETCHPOPULARSONGS_TOOLTIP": "Se disabilitato, i brani più richiesti saranno calcolati dalla tua app Karaoke Mugen.",
 			"ONLINE_STATS": "Invia statistiche sul consumo al server di Karaoke Mugen",
 			"PLAYER_KEYBOARDMEDIASHORTCUTS": "Controlla il lettore tramite i tasti multimediali della tastiera",
 			"ONLINE_USERS": "Permetti la registrazione e l'accesso di account online"
@@ -2133,5 +2139,8 @@
 		"STOP_AFTER_SHORT": "Interrompi dopo"
 	},
 	"NEW_ACCOUNT_CODE_SHORT": "Nuovo codice account",
-	"NEW_ACCOUNT_CODE": "Nuovo codice account (chiedi all'operatore)"
+	"NEW_ACCOUNT_CODE": "Nuovo codice account (chiedi all'operatore)",
+	"WARNING_CODES": {
+		"REMOTE_HIGH_LATENCY_DETECTED": "La tua connessione a {{host}} è lenta, i tuoi utenti potrebbero avere problemi."
+	}
 }

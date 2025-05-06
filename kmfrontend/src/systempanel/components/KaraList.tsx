@@ -10,7 +10,6 @@ import {
 	UploadOutlined,
 } from '@ant-design/icons';
 import { Alert, Button, Cascader, Col, Dropdown, Input, Menu, Modal, Row, Table } from 'antd';
-import { ItemType } from 'antd/lib/menu/hooks/useItems';
 import i18next from 'i18next';
 import { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -31,6 +30,7 @@ import {
 import { commandBackend, getSocket } from '../../utils/socket';
 import { tagTypes } from '../../utils/tagTypes';
 import { isModifiable, isRepoOnline, isRepoOnlineAndMaintainer } from '../../utils/tools';
+import { ItemType } from 'antd/es/menu/interface';
 
 interface KaraListProps {
 	tagFilter?: string;
@@ -381,7 +381,7 @@ function KaraList(props: KaraListProps) {
 					if (record.download_status !== 'DOWNLOADED') {
 						playVideoButton = null;
 					}
-					if (record.lyrics_infos[0] === null) {
+					if (record.lyrics_infos?.length === 0 || record.lyrics_infos[0] === null) {
 						lyricsButton = null;
 					}
 					return (

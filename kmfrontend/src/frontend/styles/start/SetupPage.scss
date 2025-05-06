@@ -129,12 +129,6 @@
 			}
 		}
 
-		&.step-repo {
-			.input-group .input-control {
-				width: 100%;
-			}
-		}
-
 		&.step-choice {
 			.actions {
 				justify-content: flex-end;
@@ -151,85 +145,5 @@
 
 	.text-danger {
 		color: tomato;
-	}
-
-	.step.step-choice.loading {
-		flex: 1;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		flex-direction: column;
-		text-align: center;
-		width: 100%;
-		font-size: 20px;
-	}
-
-	.ip--logo {
-		margin: 1em;
-		height: 35vh;
-	}
-
-	.ip--top {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
-	.ip--progress-bar-container {
-		display: initial;
-		width: 75%;
-		max-width: 50em;
-		height: 25px;
-		background-color: #505050;
-		margin-top: 1em;
-		border: forestgreen solid;
-		border-radius: 1em;
-	}
-
-	.ip--progress-bar-container > div.ip--progress-bar {
-		height: 100%;
-		width: 0;
-		background-color: forestgreen;
-		transition: width 50ms linear;
-		color: white;
-		border-radius: 1em;
-	}
-
-	.ip--progress-bar-container > div.ip--progress-text {
-		position: relative;
-		bottom: 115%;
-	}
-
-	.ip--nanami {
-		margin: 1em;
-		width: 50%;
-		max-width: 40em;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-	.ip--nanami > img {
-		height: 100px;
-		float: left;
-	}
-	/*-----------------------------------------------------------------------------------*/
-
-	@keyframes pulse {
-		0% {
-			transform: scale(0.95);
-			opacity: 0.5;
-		}
-		50% {
-			transform: scale(1);
-			opacity: 1;
-		}
-		100% {
-			transform: scale(0.95);
-			opacity: 0.5;
-		}
-	}
-
-	.ip--logo {
-		animation: pulse 3s infinite ease-in-out;
 	}
 }

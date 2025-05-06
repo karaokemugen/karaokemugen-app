@@ -2,7 +2,12 @@ import i18next from 'i18next';
 import { sample } from 'lodash';
 import { resolve } from 'path';
 
-import { selectPlaylistContentsMicro, updatePlaylistDuration, updatePlaylistLastEditTime } from '../dao/playlist.js';
+import {
+	selectPlaylistContentsMicro,
+	updatePlayedAt,
+	updatePlaylistDuration,
+	updatePlaylistLastEditTime,
+} from '../dao/playlist.js';
 import { selectUpvotesByPLC } from '../dao/upvote.js';
 import { APIMessage } from '../lib/services/frontend.js';
 import { getSongSeriesSingers, getSongTitle, getSongVersion } from '../lib/services/kara.js';
@@ -217,12 +222,13 @@ export async function playCurrentSong(now: boolean) {
 			logger.info(`Playing ${kara.mediafile.substring(0, kara.mediafile.length - 4)}`, { service });
 			await mpv.play(kara, modifiers, startTime);
 			setState({ randomPlaying: false });
+			updatePlayedAt(kara.plcid);
 			updateUserQuotas(kara);
-			writeStreamFiles('time_remaining_in_current_playlist');
 			writeStreamFiles('song_name');
 			writeStreamFiles('requester');
 			writeStreamFiles('next_song_name_and_requester');
 			await updatePlaylistDuration(kara.plaid);
+			writeStreamFiles('current_playlist_info');
 			updatePlaylistLastEditTime(kara.plaid);
 			emitWS('playlistInfoUpdated', kara.plaid);
 			emit('newSong', kara);

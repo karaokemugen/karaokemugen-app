@@ -26,6 +26,7 @@ import {
 	removeKaraFromPlaylist,
 	removePlaylist,
 	shufflePlaylist,
+	swapPLCs,
 } from '../../services/playlist.js';
 import { vote } from '../../services/upvote.js';
 import { runChecklist } from '../middlewares.js';
@@ -146,7 +147,9 @@ export default function playlistsController(router: SocketIOApp) {
 				req.body?.from || 0,
 				req.body?.size || 9999999,
 				req.body?.random || 0,
-				req.body?.orderByLikes
+				req.body?.orderByLikes,
+				req.body?.incomingSongs,
+				req.body?.filterByUser
 			);
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
@@ -224,6 +227,14 @@ export default function playlistsController(router: SocketIOApp) {
 		await runChecklist(socket, req, 'guest', 'limited');
 		try {
 			return await getKaraFromPlaylist(req.body?.plc_id, req.token);
+		} catch (err) {
+			throw { code: err.code || 500, message: APIMessage(err.message) };
+		}
+	});
+	router.route('swapPLCs', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'guest', 'limited');
+		try {
+			return await swapPLCs(req.body?.plcid1, req.body?.plcid2, req.token);
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}

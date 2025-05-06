@@ -34,7 +34,8 @@ export function initAutoUpdate() {
 		const buttonIndex = await dialog.showMessageBox(win, {
 			type: 'info',
 			title: i18next.t('UPDATE_FOUND'),
-			message: i18next.t('UPDATE_PROMPT'),
+			message: process.platform === 'darwin' ? i18next.t('UPDATE_FOUND') : undefined,
+			detail: i18next.t('UPDATE_PROMPT'),
 			buttons: [i18next.t('YES'), i18next.t('NO')],
 			cancelId: 1,
 		});
@@ -46,7 +47,8 @@ export function initAutoUpdate() {
 				await dialog.showMessageBox(win, {
 					type: 'info',
 					title: i18next.t('UPDATE_FOUND'),
-					message: i18next.t('UPDATE_ERROR') + err,
+					message: process.platform === 'darwin' ? i18next.t('UPDATE_FOUND') : undefined,
+					detail: i18next.t('UPDATE_ERROR') + err,
 				});
 			}
 		}
@@ -58,7 +60,8 @@ export function initAutoUpdate() {
 		if (manualUpdate) {
 			dialog.showMessageBox({
 				title: i18next.t('UPDATE_NOT_AVAILABLE'),
-				message: i18next.t('CURRENT_VERSION_OK'),
+				message: process.platform === 'darwin' ? i18next.t('UPDATE_NOT_AVAILABLE') : undefined,
+				detail: i18next.t('CURRENT_VERSION_OK'),
 			});
 		}
 	});
@@ -79,7 +82,8 @@ export function initAutoUpdate() {
 		if (task) task.end();
 		await dialog.showMessageBox(win, {
 			title: i18next.t('UPDATE_DOWNLOADED'),
-			message: i18next.t('UPDATE_READY_TO_INSTALL_RESTARTING'),
+			message: process.platform === 'darwin' ? i18next.t('UPDATE_DOWNLOADED') : undefined,
+			detail: i18next.t('UPDATE_READY_TO_INSTALL_RESTARTING'),
 		});
 		try {
 			await exit(0, true);

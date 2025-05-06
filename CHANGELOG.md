@@ -1,4 +1,82 @@
-# [8.0.64] - 2025-02-24
+# [8.0.78] - 2025-05-06
+
+Has it been that long since our last release? It has.
+
+## Added
+
+- **[Users]** Users can now choose the order of their requested songs if they're in the current playlist. They can swap songs if more than one is present. (#1576)
+- **[Users]** In the current playlist view, you can now see when a song is going to play (#1576). Also available for **[Operators]**.
+- **[Operators]** Operator is now notified if the connection with KM Server is slow/unsteady (#1728)
+- **[Operators]** Operator notifications are now shown on the Welcome screen too
+- **[Operators]** Added new files for streamer layouts (#1726) :
+    - `time_remaining_in_current_playlist.txt`
+    - `time_played_in_current_playlist.txt`
+    - `time_total_in_current_playlist.txt`
+    - `current_kara_count.txt`
+    - `songs_left_in_current_playlist.txt`
+    - `songs_played_in_current_playlist.txt`
+- **[Operators]** Better logging when syncing media folders with online repositories
+- **[Maintainers]** Added a wizard for creating new repositories. (#1098)
+    - This feature is still in BETA. Feedback is appreciated.
+    - People who have an existing collection of songs can now create a repository from scratch with their own songs.
+    - Songs can be imported in batch. Point KM to a folder and indicate the pattern with which the files are named and let it import all your songs. For example `{singer} - {title}`
+    - Songs will be copied to the repository folder upon importation (so be careful abotu disk space)
+    - This is compatible with Ultrastar naming schemes.
+- **[Maintainers]**
+- **[Maintainers]** .wav music files can now have a cover image (#1730)
+- **[Maintainers]** The file browser when not using the electron window to access Karaoke Mugen now lets you input a folder/file path manually
+- **[Maintainers]** A new `system` repository is now bundled with Karaoke Mugen. (#1369)
+    - It contains basic tags like languages and a few type tags to make it easier for people to kickstart their own repository (local or not)
+    - It can't be disabled. (actually yes it is if you fool around with the config file.)
+
+## Changed
+
+- **[Users]** Updated translations for German, Traditional Chinese, Simplfiied Chinese, English, French, Italian and Russian
+    - Languages above 30% of total strings translated can be selected by users in the app.
+    - Help us translate in your language through Weblate!
+- **[Operators]** Autobalance occurs only on current playlists nows
+- **[Maintainers]** Default collections are now specified in repository manifests (#1725)
+- **[Maintainers]** Validate all fields when modifying a field in kara form
+- **[Maintainers]** Checkboxes are not displayed if there are no tags to choose from (#1743)
+- **[Maintainers]** Duplicate tag IDs in your database ar enow outputted to a separate file during generation instead of written to logs all the time.
+- **[Maintainers]** Better logging for generation when there are errors.
+- **[Developers]** Cleaned up code for syncing media folders
+- **[Developers]** Clean up release binaries from mugen.karaokes.moe. It now cleans minor versions but keeps major ones (#1729)
+- **[Developers]** Refactored several system panel components
+- **[Developers]** Upgraded backend and frontend dependencies
+- **[Developers]** Upgraded docker image to Node 22. Node 22 is now required for development.
+- **[Developers]** Commented out some smart playlist debug logs
+
+## Fixed
+
+- **[Users]** Fixed add song button not refreshing properly in public interface (#1733)
+- **[Users]** Updated URL field type in user profiles
+- **[Operators]** Fixed Twitch token generation (#1757)
+- **[Operators]** Fixed message boxes on macOS (#1742)
+- **[Operators]** Fixed music stopping during pause/stop screens (#1727)
+- **[Operators]** Fixed QRCode display with macOS
+- **[Operators]** Fixed various bugs with media download synchronization
+- **[Operators]** Fixed avatar not being refreshed properly when reviewing songs in the public playlist (#1732)
+- **[Operators]** Fixed search when updating download status
+- **[Maintainers]** Fixed loudnorm parser as it would sometimes crash like a drunk owl on Friday night when importing medias.
+- **[Maintainers]** Fixed generation if a song has no tags
+- **[Maintainers]** Fixed tag merging for good
+- **[Maintainers]** Fixed various issues with karaoke form (#1744 and others)
+- **[Maintainers]** Fixed repositories with relative paths (#1665)
+- **[Maintainers]** Fixed editing song with media having embedded subtitles
+- **[Maintainers]** Fixed cover images disappearing and refactored subtitle removal (#1739)
+- **[Maintainers]** Fixed lyrics button appearing when there are no lyrics for a song
+- **[Maintainers]** Fixed issue with writing files to repository folders that don't exist yet (#1731)
+- **[Developers]** Fixed linter errors in code
+
+## Removed
+
+- **[Users]** Removed chevron in kara line on public interface to gain more screen space
+- **[Maintainers]** Removed audio gain (replaygain) calculation when importing a new media as it's not used anymore.
+- **[Maintainers]** Removed online-centered fields on the repository form when it's a local one
+- **[Developers]** Removed useless code from loadBackgrounds()
+
+# [8.0.65] - 2025-02-24
 
 This is ANOTHER hotfix release.
 

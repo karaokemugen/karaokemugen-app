@@ -5,28 +5,28 @@ import i18next from 'i18next';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import dayjs from 'dayjs';
 import { Repository } from '../../../../src/lib/types/repo';
 import { Tag } from '../../../../src/lib/types/tag';
 import { DBStats } from '../../../../src/types/database/database';
+import { DBDownload } from '../../../../src/types/database/download';
 import { Feed } from '../../../../src/types/feeds';
 import { Session } from '../../../../src/types/session';
+import TasksEvent from '../../TasksEvent';
 import logo from '../../assets/Logo-final-fond-transparent.png';
 import { logout } from '../../store/actions/auth';
 import { showModal } from '../../store/actions/modal';
 import GlobalContext from '../../store/context';
-import TasksEvent from '../../TasksEvent';
 import { useLocalSearch } from '../../utils/hooks';
 import { commandBackend, getSocket } from '../../utils/socket';
-import { secondsTimeSpanToHMS } from '../../utils/tools';
+import { displayMessage, secondsTimeSpanToHMS } from '../../utils/tools';
 import { News } from '../types/news';
 import { RemoteStatusData } from '../types/remote';
+import WelcomePageArticle from './WelcomePageArticle';
 import Autocomplete from './generic/Autocomplete';
 import OnlineStatsModal from './modals/OnlineStatsModal';
 import ProfilModal from './modals/ProfilModal';
 import RestartDownloadsModal from './modals/RestartDownloadsModal';
-import WelcomePageArticle from './WelcomePageArticle';
-import dayjs from 'dayjs';
-import { DBDownload } from '../../../../src/types/database/download';
 
 function WelcomePage() {
 	const context = useContext(GlobalContext);
@@ -41,6 +41,28 @@ function WelcomePage() {
 	const [stats, setStats] = useState<DBStats>();
 	const [remoteStatus, setRemoteStatus] = useState<RemoteStatusData>();
 	let timeout: NodeJS.Timeout;
+
+	const operatorNotificationInfo = (data: { code: string; data: string }) =>
+		displayMessage('info', i18next.t(data.code, data.data));
+	const operatorNotificationError = (data: { code: string; data: string }) =>
+		displayMessage('error', i18next.t(data.code, data.data));
+	const operatorNotificationWarning = (data: { code: string; data: string }) =>
+		displayMessage('warning', i18next.t(data.code, data.data));
+	const operatorNotificationSuccess = (data: { code: string; data: string }) =>
+		displayMessage('success', i18next.t(data.code, data.data));
+
+	useEffect(() => {
+		getSocket().on('operatorNotificationInfo', operatorNotificationInfo);
+		getSocket().on('operatorNotificationError', operatorNotificationError);
+		getSocket().on('operatorNotificationWarning', operatorNotificationWarning);
+		getSocket().on('operatorNotificationSuccess', operatorNotificationSuccess);
+		return () => {
+			getSocket().off('operatorNotificationInfo', operatorNotificationInfo);
+			getSocket().off('operatorNotificationError', operatorNotificationError);
+			getSocket().off('operatorNotificationWarning', operatorNotificationWarning);
+			getSocket().off('operatorNotificationSuccess', operatorNotificationSuccess);
+		};
+	}, []);
 
 	const getSessions = async () => {
 		try {
@@ -200,10 +222,7 @@ function WelcomePage() {
 		}
 		if (migrationsToDo) {
 			navigate('/migrate');
-		} else if (
-			context?.globalState.settings.data.config?.Online.Stats === undefined ||
-			context?.globalState.settings.data.config?.Online.ErrorTracking === undefined
-		) {
+		} else if (context?.globalState.settings.data.config?.Online.ErrorTracking === undefined) {
 			showModal(context.globalDispatch, <OnlineStatsModal />);
 		} else {
 			getDownloadQueue();
@@ -498,6 +517,7 @@ function WelcomePage() {
 											<li
 												key={collection.name}
 												className={
+													context.globalState.settings.data.config.Karaoke.Collections &&
 													context.globalState.settings.data.config.Karaoke.Collections[
 														collection.tid
 													]

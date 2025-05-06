@@ -29,7 +29,7 @@ import { initPlayer, quitmpv } from '../services/player.js';
 import { initPlaylistSystem, stopPlaylistSystem } from '../services/playlist.js';
 import { buildAllMediasList, updatePlaylistMedias } from '../services/playlistMedias.js';
 import { stopGame } from '../services/quiz.js';
-import { checkDownloadStatus, updateAllRepos } from '../services/repo.js';
+import { checkDownloadStatus, statsEnabledRepositories, updateAllRepos } from '../services/repo.js';
 import { initSession, stopSessionSystem } from '../services/session.js';
 import { initStats, stopStatsSystem } from '../services/stats.js';
 import { generateAdminPassword, initUserSystem } from '../services/user.js';
@@ -43,7 +43,7 @@ import { getTwitchClient, initTwitch, stopTwitch } from '../utils/twitch.js';
 import initFrontend from './frontend.js';
 
 let usageTime = 0;
-let usageTimeInterval;
+let usageTimeInterval: NodeJS.Timeout;
 
 const service = 'Engine';
 
@@ -150,7 +150,7 @@ export async function initEngine() {
 			initDownloader();
 			initSession();
 			if (conf.Karaoke.StreamerMode.Twitch.Enabled) initTwitch();
-			if (conf.Online.Stats === true) initStats(false);
+			if (statsEnabledRepositories.length > 0) initStats(false);
 			initStep(i18next.t('INIT_LAST'), true);
 			enableWSLogging(state.opt.debug ? 'debug' : 'info');
 			// Easter egg
@@ -168,27 +168,29 @@ export async function initEngine() {
 					handleProtocol(state.args[0].substring(5)).catch(() => {});
 				}
 			}
-			if (conf.System.Database.bundledPostgresBinary) dumpPG().catch(() => {});
-			if (!state.isTest && getConfig().Online.Discord.DisplayActivity) initDiscordRPC();
 			// Mark all migrations as done for the first run to
 			// avoid the user to have to do all the migrations from start
 			if (conf.App.FirstRun) await markAllMigrationsFrontendAsDone();
+			await readAllRepoManifests();
+			if (state.isTest) {
+				await updateAllRepos();
+			}
 			setState({ ready: true });
+
+			// Beyond that point everything can be async.
+			if (conf.System.Database.bundledPostgresBinary) dumpPG().catch(() => {});
+			if (!state.isTest && getConfig().Online.Discord.DisplayActivity) initDiscordRPC();
 			writeStreamFiles();
 			initStep(i18next.t('INIT_DONE'), true);
 			postInit();
 			initHooks();
 			initFonts();
-			readAllRepoManifests();
 			archiveOldLogs();
 			initUsageTimer();
 			if (!conf.App.FirstRun && !state.isTest && !state.opt.noPlayer) {
 				initPlayer();
 			}
 			if (conf.Player.KeyboardMediaShortcuts) registerShortcuts();
-			if (state.isTest) {
-				await updateAllRepos();
-			}
 			internetCheck().then(internet => {
 				if (internet) {
 					initStep(i18next.t('INIT_ONLINEURL'));

@@ -1,6 +1,34 @@
 // SQL for playlist management
-
 import { DownloadedStatus } from '../../lib/types/database/download.js';
+
+const intermissionsDuration = `
+		+ (floor((pc.pos - ppos.pos + :songsBeforeJingle) / :songsBetweenJingles) * :jinglesDuration)
+		+ (floor((pc.pos - ppos.pos + :songsBeforeSponsor) / :songsBetweenSponsors) * :sponsorsDuration)
+		+ ((pc.pos - ppos.pos) * :pauseDuration)
+
+`;
+
+const sqlSnippet = {
+	CTEKaraDuration: `kara_duration AS (SELECT pk_kid, duration FROM all_karas)`,
+	CTEPlayingPos: `playing_pos AS (
+	SELECT pos FROM playlist_content
+	   INNER JOIN playlist ON playlist.pk_plaid = playlist_content.fk_plaid
+	   WHERE playlist.pk_plaid = :plaid
+		 AND playlist.fk_plcid_playing = playlist_content.pk_plcid
+   )
+	`,
+
+	playing_at: `NOW() + ((SELECT
+		SUM(kd.duration)
+	FROM kara_duration kd
+	INNER JOIN playlist_content AS plc ON plc.fk_kid = kd.pk_kid
+	WHERE plc.fk_plaid = :plaid
+		AND plc.pos >= ppos.pos AND plc.pos < pc.pos
+	)::integer
+		${intermissionsDuration}
+	) * interval '1 second' AS playing_at
+	`,
+};
 
 export const sqlupdatePlaylistLastEditTime = `
 UPDATE playlist SET
@@ -102,24 +130,56 @@ WHERE pk_plcid = $2;
 `;
 
 export const sqlupdatePlaylistDuration = `
+WITH playing_pos AS (
+  SELECT pos
+	FROM playlist_content, playlist
+   WHERE playlist_content.pk_plcid = playlist.fk_plcid_playing AND playlist_content.fk_plaid = :plaid
+),
+last_pos AS (
+  SELECT MAX(pos) AS pos
+	FROM playlist_content
+   WHERE playlist_content.fk_plaid = :plaid
+),
+kara_duration AS (SELECT pk_kid, duration FROM all_karas)
 UPDATE playlist SET time_left = (
-	SELECT COALESCE(SUM(kara.duration),0) AS duration
-		FROM kara, playlist_content
-		WHERE playlist_content.fk_kid = kara.pk_kid
-		AND playlist_content.fk_plaid = $1
-		AND playlist_content.pos >= COALESCE(
-			(SELECT pos
-			FROM playlist_content, playlist
-			WHERE playlist_content.pk_plcid = playlist.fk_plcid_playing AND playlist_content.fk_plaid = $1)
-			,0)
+	SELECT COALESCE(SUM(kd.duration)
+		${intermissionsDuration}
+	,0)
+		FROM playlist_content
+		INNER JOIN kara_duration kd ON kd.pk_kid = playlist_content.fk_kid
+		WHERE playlist_content.fk_plaid = :plaid
+		AND playlist_content.pos >= COALESCE(ppos.pos,0)
+	),
+	time_played = (
+		SELECT COALESCE(SUM(kd.duration),0) AS duration
+		FROM playlist_content
+		INNER JOIN kara_duration kd ON kd.pk_kid = playlist_content.fk_kid
+		WHERE playlist_content.fk_plaid = :plaid
+		AND playlist_content.pos < COALESCE(ppos.pos,0)
 	),
 	duration = (
-		SELECT COALESCE(SUM(kara.duration),0) AS duration
-			FROM kara, playlist_content
-			WHERE playlist_content.fk_kid = kara.pk_kid
-				AND playlist_content.fk_plaid = $1
-				AND playlist_content.pos >= 0)
-WHERE pk_plaid = $1;
+		SELECT COALESCE(SUM(kd.duration)
+			${intermissionsDuration}
+		,0) AS duration
+			FROM playlist_content
+		    INNER JOIN kara_duration kd ON kd.pk_kid = playlist_content.fk_kid
+			WHERE playlist_content.fk_plaid = :plaid
+				AND playlist_content.pos >= 0
+	),
+	songs_played = (
+		SELECT COUNT(playlist_content.pk_plcid)
+		FROM playlist_content
+		WHERE playlist_content.fk_plaid = :plaid
+		AND playlist_content.pos < COALESCE(ppos.pos,0)
+	),
+	songs_left = (
+	  SELECT COUNT(playlist_content.pk_plcid)
+		FROM playlist_content
+		WHERE playlist_content.fk_plaid = :plaid
+		AND playlist_content.pos >= COALESCE(ppos.pos,0)
+	)
+FROM playing_pos ppos, last_pos pc
+WHERE pk_plaid = :plaid;
 `;
 
 export const sqlgetPlaylistContentsMicro = (login: string) => `
@@ -175,10 +235,16 @@ export const sqlgetPlaylistContents = (
 	orderClause: string,
 	limitClause: string,
 	offsetClause: string,
-	additionalFrom: string
+	additionalFrom: string,
+	incomingSongs?: boolean,
+	filterByUser?: string
 ) => `
+WITH blank AS (SELECT TRUE),
+${sqlSnippet.CTEKaraDuration},
+${sqlSnippet.CTEPlayingPos}
 SELECT
   ak.tags AS tags,
+  ${sqlSnippet.playing_at},
   ak.pk_kid AS kid,
   ak.titles AS titles,
   ak.titles_aliases AS titles_aliases,
@@ -200,7 +266,7 @@ SELECT
 		THEN TRUE
 		ELSE FALSE
   END) AS flag_dejavu,
-  MAX(p.played_at) AS lastplayed_at,
+  pc.played_at AS played_at,
   (CASE WHEN f.fk_kid IS NULL
 		THEN FALSE
 		ELSE TRUE
@@ -235,8 +301,10 @@ SELECT
   array_remove(array_agg(DISTINCT pc_self.pk_plcid), null) AS my_public_plc_id,
   pc.criterias
 FROM all_karas AS ak
-LEFT OUTER JOIN kara k ON k.pk_kid = ak.pk_kid
 INNER JOIN playlist_content AS pc ON pc.fk_kid = ak.pk_kid
+INNER JOIN playing_pos AS ppos ON 1 = 1
+INNER JOIN kara_duration AS kd ON kd.pk_kid = pc.fk_kid
+LEFT OUTER JOIN kara k ON k.pk_kid = ak.pk_kid
 LEFT OUTER JOIN users AS u ON u.pk_login = pc.fk_login
 LEFT OUTER JOIN playlist_content AS bl ON ak.pk_kid = bl.fk_kid AND bl.fk_plaid = :blacklist_plaid
 LEFT OUTER JOIN playlist_content AS wl ON ak.pk_kid = wl.fk_kid AND wl.fk_plaid = :whitelist_plaid
@@ -251,6 +319,8 @@ ${additionalFrom}
 WHERE pc.fk_plaid = :plaid
 ${filterClauses.map(clause => `AND (${clause})`).join(' ')}
 ${whereClause}
+${filterByUser ? ' AND pc.fk_login = :username' : ''}
+${incomingSongs ? ' AND pc.pos > ppos.pos' : ''}
 GROUP BY
 	pl.fk_plcid_playing,
 	ak.pk_kid,
@@ -278,6 +348,7 @@ GROUP BY
 	u.avatar_file,
 	u.type,
 	ak.repository,
+	ppos.pos,
 	pc.criterias
 ORDER BY ${orderClause}
 ${limitClause}
@@ -366,6 +437,7 @@ SELECT
   NOW() - MAX(p.played_at) AS lastplayed_ago,
   pc.nickname AS nickname,
   pc.fk_login AS username,
+  pc.played_at AS played_at,
   u.avatar_file AS avatar_file,
   u.type AS user_type,
   pc.pos AS pos,
@@ -510,7 +582,10 @@ export const sqlgetPlaylist = (singlePlaylist: boolean, visibleOnly: boolean) =>
 SELECT pk_plaid AS plaid,
 	name,
 	karacount,
+	songs_played,
+	songs_left,
 	duration,
+	time_played,
 	time_left,
 	created_at,
 	modified_at,
@@ -596,6 +671,12 @@ UPDATE playlist
 SET fk_plcid_playing = $1
 FROM playlist_content
 WHERE pk_plaid = $2;
+`;
+
+export const sqlsetPlayedAt = `
+UPDATE playlist_content
+SET played_at = NOW()
+WHERE pk_plcid = $1;
 `;
 
 export const sqladdCriteria = `

@@ -32,7 +32,6 @@ export const defaults: Config = {
 		Secure: true,
 		MediasHost: null,
 		Timeout: 2000,
-		Stats: undefined,
 		ErrorTracking: undefined,
 		Users: true,
 		Discord: {
@@ -80,12 +79,6 @@ export const defaults: Config = {
 		},
 	},
 	Karaoke: {
-		Collections: {
-			'c7db86a0-ff64-4044-9be4-66dd1ef1d1c1': true, // Geek
-			'dbcf2c22-524d-4708-99bb-601703633927': true, // Asia
-			'efe171c0-e8a1-4d03-98c0-60ecf741ad52': false, // West
-			'2fa2fe3f-bb56-45ee-aa38-eae60e76f224': false, // Shitpost
-		},
 		Autoplay: false,
 		ClassicMode: false,
 		MinutesBeforeEndOfSessionWarning: 15,
@@ -149,6 +142,7 @@ export const defaults: Config = {
 	},
 	Playlist: {
 		AllowDuplicates: false,
+		AllowPublicCurrentPlaylistItemSwap: true,
 		AllowPublicDuplicates: 'upvotes',
 		MaxDejaVuTime: 60,
 		Medias: {
@@ -242,7 +236,6 @@ export const endOfPlaylistActions = ['random', 'random_fallback', 'play_fallback
 export const configConstraints = {
 	'App.FirstRun': { inclusion: bools },
 	// 'App.InstanceID': {presence: true, format: uuidRegexp}, // Broken on regular installations since InstanceID is stored in database. We'll implement this in KM 10.0 aka KMX
-	'Online.Stats': { boolUndefinedValidator: true },
 	'Online.ErrorTracking': { boolUndefinedValidator: true },
 	'Online.Host': { presence: true, format: hostnameRegexp },
 	'Online.Timeout': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0 } },

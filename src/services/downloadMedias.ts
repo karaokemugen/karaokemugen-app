@@ -1,4 +1,5 @@
 import { promises as fs } from 'fs';
+import parallel from 'p-map';
 import { resolve } from 'path';
 import prettyBytes from 'pretty-bytes';
 
@@ -7,13 +8,12 @@ import { DBMedia } from '../lib/types/database/kara.js';
 import { getConfig, resolvedPathRepos } from '../lib/utils/config.js';
 import { mediaFileRegexp } from '../lib/utils/constants.js';
 import { ErrorKM } from '../lib/utils/error.js';
-import { resolveFileInDirs } from '../lib/utils/files.js';
 import HTTP from '../lib/utils/http.js';
 import logger, { profile } from '../lib/utils/logger.js';
 import { on } from '../lib/utils/pubsub.js';
 import Task from '../lib/utils/taskManager.js';
 import { emitWS } from '../lib/utils/ws.js';
-import { File, UpdateMediasResult } from '../types/download.js';
+import { UpdateMediasResult } from '../types/download.js';
 import Sentry from '../utils/sentry.js';
 import { addDownloads } from './download.js';
 import { checkDownloadStatus, checkRepoMediaPaths, getRepo, getRepos } from './repo.js';
@@ -26,9 +26,10 @@ async function getRemoteMedias(repoName: string) {
 	const collections = getConfig().Karaoke.Collections;
 	const enabledCollections = [];
 	const repo = getRepo(repoName);
-	for (const collection of Object.keys(collections)) {
-		if (collections[collection] === true) enabledCollections.push(collection);
-	}
+	if (collections)
+		for (const collection of Object.keys(collections)) {
+			if (collections[collection] === true) enabledCollections.push(collection);
+		}
 	const res = await HTTP.post(`${repo.Secure ? 'https' : 'http'}://${repoName}/api/karas/medias`, {
 		collections: enabledCollections,
 	});
@@ -36,15 +37,21 @@ async function getRemoteMedias(repoName: string) {
 }
 
 async function listRemoteMedias(repo: string) {
-	logger.info('Fetching current media list', { service });
-	profile('listRemoteMedias');
-	const remote = await getRemoteMedias(repo);
-	profile('listRemoteMedias');
-	return remote;
+	try {
+		logger.info('Fetching current media list', { service });
+		profile('listRemoteMedias');
+		const remote = await getRemoteMedias(repo);
+		profile('listRemoteMedias');
+		return remote;
+	} catch (err) {
+		logger.error(`Failed to fetch current media list : ${err}`, { service, obj: err });
+		Sentry.error(err);
+		throw err;
+	}
 }
 
 async function compareMedias(
-	localFiles: File[],
+	localFiles: Map<string, number>,
 	remoteKaras: DBMedia[],
 	repo: string,
 	dryRun = false
@@ -55,9 +62,9 @@ async function compareMedias(
 	const mediasPath = resolvedPathRepos('Medias', repo)[0];
 	logger.info('Comparing your medias with the current ones', { service });
 	for (const remoteKara of remoteKaras) {
-		const localFile = localFiles.find(f => f.basename === remoteKara.mediafile);
-		if (localFile) {
-			if (remoteKara.mediasize !== localFile.size) {
+		const localSize = localFiles.get(remoteKara.mediafile);
+		if (localSize) {
+			if (remoteKara.mediasize !== localSize) {
 				updatedFiles.push(remoteKara);
 			}
 			// Do nothing if file exists and sizes are the same
@@ -66,9 +73,9 @@ async function compareMedias(
 		}
 	}
 
-	for (const localFile of localFiles) {
-		const remoteFilePresent = remoteKaras.find(remoteKara => localFile.basename === remoteKara.mediafile);
-		if (!remoteFilePresent) removedFiles.push(localFile.basename);
+	for (const localFile of localFiles.keys()) {
+		const remoteFilePresent = remoteKaras.find(remoteKara => localFile === remoteKara.mediafile);
+		if (!remoteFilePresent) removedFiles.push(localFile);
 	}
 	const filesToDownload = addedFiles.concat(updatedFiles);
 	let bytesToDownload = 0;
@@ -79,7 +86,7 @@ async function compareMedias(
 		for (const file of filesToDownload) {
 			bytesToDownload += file.mediasize;
 		}
-		logger.info(`Removing ${removedFiles.length} files`);
+		logger.info(`Removing ${removedFiles.length} files`, { service });
 		logger.info(
 			`Downloading ${filesToDownload.length} new/updated medias (size : ${prettyBytes(bytesToDownload)})`,
 			{ service }
@@ -95,7 +102,7 @@ async function compareMedias(
 			await fs.unlink(resolve(mediasPath, file.mediafile));
 		}
 		if (removedFiles.length > 0) await removeFiles(removedFiles, mediasPath);
-		await downloadMedias(filesToDownload);
+		if (filesToDownload.length > 0) await downloadMedias(filesToDownload);
 		logger.info('Done updating medias', { service });
 	}
 	return {
@@ -132,26 +139,40 @@ async function downloadMedias(karas: DBMedia[]): Promise<void> {
 	});
 }
 
-async function listLocalMedias(repo: string): Promise<File[]> {
-	profile('listLocalMedias');
-	const mediaFiles = await fs.readdir(resolvedPathRepos('Medias', repo)[0]);
-	const localMedias = [];
-	for (const file of mediaFiles) {
-		try {
-			if (!file.match(mediaFileRegexp)) continue;
-			const mediaPath = await resolveFileInDirs(file, resolvedPathRepos('Medias', repo));
-			const mediaStats = await fs.stat(mediaPath[0]);
-			localMedias.push({
-				basename: file,
-				size: mediaStats.size,
-			});
-		} catch {
-			logger.info(`Local media file ${file} not found`, { service });
+async function listLocalMedias(repo: string): Promise<Map<string, number>> {
+	try {
+		profile('listLocalMedias');
+		const mediaDir = resolvedPathRepos('Medias', repo)[0];
+		const mediaFiles = await fs.readdir(mediaDir);
+		const localMedias: Map<string, number> = new Map();
+		const mapper = async (file: string) => {
+			const mediaPath = resolve(mediaDir, file);
+			if (!file.match(mediaFileRegexp)) return undefined;
+			return {
+				file,
+				size: (await fs.stat(mediaPath)).size,
+			};
+		};
+		profile('listLocalMedias-mapper');
+		const files = await parallel(mediaFiles, mapper, {
+			stopOnError: false,
+			concurrency: 128,
+		});
+		profile('listLocalMedias-mapper');
+		profile('listLocalMedias-buildMap');
+		for (const file of files) {
+			if (!file) continue;
+			localMedias.set(file.file, file.size);
 		}
+		profile('listLocalMedias-buildMap');
+		logger.debug('Listed local media files', { service });
+		profile('listLocalMedias');
+		return localMedias;
+	} catch (err) {
+		logger.error(`Failed to list local media files : ${err}`, { service, obj: err });
+		Sentry.error(err);
+		throw err;
 	}
-	logger.debug('Listed local media files', { service });
-	profile('listLocalMedias');
-	return localMedias;
 }
 
 async function removeFiles(files: string[], dir: string): Promise<void> {
@@ -202,7 +223,7 @@ export async function updateMedias(repo: string, dryRun = false): Promise<Update
 		text: 'UPDATING_MEDIAS',
 		subtext: repo,
 	});
-	if (updateRunning) throw new ErrorKM('ERROR_CODES.UPDATE_REPO_ALREADY_IN_PROGRESS', 409);
+	if (updateRunning) throw new ErrorKM('UPDATE_REPO_ALREADY_IN_PROGRESS', 409, false);
 	updateRunning = true;
 	try {
 		const [remoteMedias, localMedias] = await Promise.all([listRemoteMedias(repo), listLocalMedias(repo)]);

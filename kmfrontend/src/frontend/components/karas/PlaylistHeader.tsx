@@ -50,6 +50,8 @@ interface IProps {
 }
 
 function PlaylistHeader(props: IProps) {
+	let timer: NodeJS.Timeout;
+
 	const context = useContext(GlobalContext);
 	const [tagType, setTagType] = useState(2);
 	const [karaMenu, setKaraMenu] = useState(false);
@@ -143,7 +145,6 @@ function PlaylistHeader(props: IProps) {
 		setKaraMenu(false);
 	};
 
-	let timer;
 	const changeFilterValue = e => {
 		setSearchFilter(e.target.value);
 		if (timer) clearTimeout(timer);

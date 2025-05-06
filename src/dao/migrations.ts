@@ -3,7 +3,10 @@ import Postgrator from 'postgrator';
 
 import { db, getSettings } from '../lib/dao/database.js';
 import { setConfig } from '../lib/utils/config.js';
+import { getPlaylists } from '../services/playlist.js';
+import { adminToken } from '../utils/constants.js';
 import { compareKarasChecksum, generateDB } from './database.js';
+import { updatePlaylistDuration } from './playlist.js';
 
 export async function postMigrationTasks(migrations: Postgrator.Migration[], didGeneration: boolean) {
 	profile('postMigrationTasks');
@@ -43,6 +46,12 @@ export async function postMigrationTasks(migrations: Postgrator.Migration[], did
 				break;
 			case 'migrateLyricInfos':
 				if (!didGeneration) doGenerate = true;
+				break;
+			case 'addSongsPlayedAndLeftToPlaylistInfo':
+				const playlists = await getPlaylists(adminToken);
+				for (const pl of playlists) {
+					updatePlaylistDuration(pl.plaid);
+				}
 				break;
 			default:
 		}

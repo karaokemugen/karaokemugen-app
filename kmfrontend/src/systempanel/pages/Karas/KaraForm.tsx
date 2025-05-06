@@ -43,9 +43,9 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import { v4 as UUIDv4 } from 'uuid';
 
 import { PositionX, PositionY } from '../../../../../src/lib/types';
-import { DBKara } from '../../../../../src/lib/types/database/kara';
+import { DBKara, DBKaraTag } from '../../../../../src/lib/types/database/kara';
 import type { EditedKara, KaraFileV4, MediaInfo, MediaInfoValidationResult } from '../../../../../src/lib/types/kara';
-import type { RepositoryManifestV2 } from '../../../../../src/lib/types/repo';
+import type { Repository, RepositoryManifestV2 } from '../../../../../src/lib/types/repo';
 import { blobToBase64 } from '../../../../../src/lib/utils/filesCommon';
 import GlobalContext from '../../../store/context';
 import { buildKaraTitle, getPreviewLink, getPreviewPath, getTagInLocale } from '../../../utils/kara';
@@ -53,12 +53,13 @@ import { commandBackend } from '../../../utils/socket';
 import { getTagTypeName, tagTypes, tagTypesKaraFileV4Order } from '../../../utils/tagTypes';
 import { secondsTimeSpanToHMS } from '../../../utils/tools';
 import EditableGroupAlias from '../../components/EditableGroupAlias';
-import EditableTagGroup from '../../components/EditableTagGroup';
+import AutocompleteTag from '../../components/karas/AutocompleteTag';
 import LanguagesList from '../../components/LanguagesList';
 import OpenLyricsFileButton from '../../components/OpenLyricsFileButton';
 import TaskProgress from '../../components/TaskProgressBar';
 import dayjs from 'dayjs';
 import type { TagType } from '../../../../../src/lib/types/tag';
+import CheckBoxTag from '../../components/karas/CheckBoxTag';
 
 const { Paragraph } = Typography;
 const { Panel } = Collapse;
@@ -74,7 +75,10 @@ function KaraForm(props: KaraFormProps) {
 	const [form] = useForm();
 	const context = useContext(GlobalContext);
 
+	const typeTagCheckbox = [3, 14, 16, 10, 13, 12, 11, 7, 15, 9];
+
 	// State
+	const [tagsCheckbox, setTagsCheckbox] = useState<Map<number, DBKaraTag[]>>(new Map());
 	const [titles, setTitles] = useState(props.kara?.titles ? props.kara.titles : {});
 	const [defaultLanguage, setDefaultLanguage] = useState(props.kara?.titles_default_language || null);
 	const [titlesIsTouched, setTitlesIsTouched] = useState(false);
@@ -139,6 +143,7 @@ function KaraForm(props: KaraFormProps) {
 	}, [isEncodingMedia, coverImageEmbedRunning]);
 
 	useEffect(() => {
+		getTagsCheckbox();
 		getRepositories();
 		form.validateFields();
 		updateDisplayTypeOptions();
@@ -179,8 +184,8 @@ function KaraForm(props: KaraFormProps) {
 	};
 
 	const getParents = async () => {
-		if (form.getFieldValue('parents') !== null) {
-			const parents: string[] = form.getFieldValue('parents');
+		if (props.kara?.parents) {
+			const parents: string[] = props.kara?.parents;
 			if (parents.length > 0) {
 				const res = await commandBackend('getKaras', { q: `k:${parents.join()}`, ignoreCollections: true });
 				const karaSearch = res.content.map(kara => {
@@ -243,8 +248,7 @@ function KaraForm(props: KaraFormProps) {
 				setMediaInfo(newMediaInfo);
 				setIsEncodingMedia(false);
 				setMediafileIsTouched(true);
-				form.setFieldsValue({ mediafile: newMediaInfo.filename });
-				form.validateFields();
+				updateField({ mediafile: newMediaInfo.filename });
 			} catch (e) {
 				setIsEncodingMedia(false);
 				throw e;
@@ -473,8 +477,10 @@ function KaraForm(props: KaraFormProps) {
 	};
 
 	const getRepositories = async () => {
-		const res = await commandBackend('getRepos');
-		setRepositoriesValue(res.filter(repo => repo.MaintainerMode || !repo.Online).map(repo => repo.Name));
+		const res: Repository[] = await commandBackend('getRepos');
+		setRepositoriesValue(
+			res.filter(repo => repo.MaintainerMode || (!repo.Online && !repo.System)).map(repo => repo.Name)
+		);
 	};
 
 	const previewHooks = async () => {
@@ -700,8 +706,7 @@ function KaraForm(props: KaraFormProps) {
 				// Handle cover embeds like a new media file upload
 				setMediaInfo(mediaInfoAfterEmbed);
 				setMediafileIsTouched(true);
-				form.setFieldsValue({ mediafile: mediaInfoAfterEmbed.filename });
-				form.validateFields();
+				updateField({ mediafile: mediaInfoAfterEmbed.filename });
 
 				message.success(i18next.t('KARA.AUDIO_COVER.EMBED_COVER_SUCCESS'));
 				setCoverImageEmbedRunning(false);
@@ -809,7 +814,7 @@ function KaraForm(props: KaraFormProps) {
 	};
 
 	const submitHandler = e => {
-		e.key === 'Enter' && e.preventDefault();
+		if (e.key === 'Enter') e.preventDefault();
 	};
 
 	const updateDisplayTypeOptions = () => {
@@ -839,6 +844,32 @@ function KaraForm(props: KaraFormProps) {
 				</label>
 			</Tag>
 		);
+	};
+
+	const updateField = (values: unknown) => {
+		form.setFieldsValue(values);
+		form.validateFields();
+	};
+
+	const getTags = async (type: number) => {
+		const tags = await commandBackend('getTags', {
+			type: [type],
+		});
+		return sortByProp(tags?.content, 'text') || [];
+	};
+
+	const sortByProp = (array, val) => {
+		return array.sort((a, b) => {
+			return a[val] > b[val] ? 1 : a[val] < b[val] ? -1 : 0;
+		});
+	};
+
+	const getTagsCheckbox = async () => {
+		const newTagsCheckbox = new Map(tagsCheckbox);
+		for (const type of typeTagCheckbox) {
+			newTagsCheckbox.set(type, await getTags(type));
+		}
+		setTagsCheckbox(newTagsCheckbox);
 	};
 
 	return (
@@ -1182,7 +1213,7 @@ function KaraForm(props: KaraFormProps) {
 				rules={getRules('langs')}
 				name="langs"
 			>
-				<EditableTagGroup form={form} tagType={5} onChange={tags => form.setFieldsValue({ langs: tags })} />
+				<AutocompleteTag form={form} tagType={5} onChange={tags => updateField({ langs: tags })} />
 			</Form.Item>
 			<Form.Item
 				label={
@@ -1198,7 +1229,7 @@ function KaraForm(props: KaraFormProps) {
 				rules={getRules('series')}
 				name="series"
 			>
-				<EditableTagGroup form={form} tagType={1} onChange={tags => form.setFieldsValue({ series: tags })} />
+				<AutocompleteTag form={form} tagType={1} onChange={tags => updateField({ series: tags })} />
 			</Form.Item>
 			<Form.Item
 				label={
@@ -1214,25 +1245,18 @@ function KaraForm(props: KaraFormProps) {
 				rules={getRules('franchises')}
 				name="franchises"
 			>
-				<EditableTagGroup
-					form={form}
-					tagType={18}
-					onChange={tags => form.setFieldsValue({ franchises: tags })}
-				/>
+				<AutocompleteTag form={form} tagType={18} onChange={tags => updateField({ franchises: tags })} />
 			</Form.Item>
-			<Form.Item
-				label={i18next.t('TAG_TYPES.SONGTYPES_other')}
-				labelCol={{ flex: '0 1 220px' }}
-				rules={getRules('songtypes')}
-				name="songtypes"
-			>
-				<EditableTagGroup
-					form={form}
-					tagType={3}
-					checkboxes={true}
-					onChange={tags => form.setFieldsValue({ songtypes: tags })}
-				/>
-			</Form.Item>
+			{tagsCheckbox.get(3)?.length > 0 ? (
+				<Form.Item
+					label={i18next.t('TAG_TYPES.SONGTYPES_other')}
+					labelCol={{ flex: '0 1 220px' }}
+					rules={getRules('songtypes')}
+					name="songtypes"
+				>
+					<CheckBoxTag tags={tagsCheckbox.get(3)} onChange={tags => updateField({ songtypes: tags })} />
+				</Form.Item>
+			) : null}
 			<Form.Item
 				label={
 					<span>
@@ -1248,26 +1272,23 @@ function KaraForm(props: KaraFormProps) {
 			>
 				<InputNumber min={0} style={{ width: '100%' }} onPressEnter={submitHandler} />
 			</Form.Item>
-			<Form.Item
-				label={
-					<span>
-						{i18next.t('TAG_TYPES.VERSIONS_other')}&nbsp;
-						<Tooltip title={i18next.t('KARA.VERSIONS_TOOLTIP')}>
-							<QuestionCircleOutlined />
-						</Tooltip>
-					</span>
-				}
-				labelCol={{ flex: '0 1 220px' }}
-				rules={getRules('versions')}
-				name="versions"
-			>
-				<EditableTagGroup
-					form={form}
-					tagType={14}
-					checkboxes={true}
-					onChange={tags => form.setFieldsValue({ versions: tags })}
-				/>
-			</Form.Item>
+			{tagsCheckbox.get(14)?.length > 0 ? (
+				<Form.Item
+					label={
+						<span>
+							{i18next.t('TAG_TYPES.VERSIONS_other')}&nbsp;
+							<Tooltip title={i18next.t('KARA.VERSIONS_TOOLTIP')}>
+								<QuestionCircleOutlined />
+							</Tooltip>
+						</span>
+					}
+					labelCol={{ flex: '0 1 220px' }}
+					rules={getRules('versions')}
+					name="versions"
+				>
+					<CheckBoxTag tags={tagsCheckbox.get(14)} onChange={tags => updateField({ versions: tags })} />
+				</Form.Item>
+			) : null}
 			<Form.Item
 				label={i18next.t('KARA.SINGERS_BY')}
 				labelCol={{ flex: '0 1 220px' }}
@@ -1275,7 +1296,7 @@ function KaraForm(props: KaraFormProps) {
 				rules={getRules('singers')}
 				name="singers"
 			>
-				<EditableTagGroup form={form} tagType={2} onChange={tags => form.setFieldsValue({ singers: tags })} />
+				<AutocompleteTag form={form} tagType={2} onChange={tags => updateField({ singers: tags })} />
 			</Form.Item>
 			<Form.Item
 				label={i18next.t('KARA.SINGERGROUPS_BY')}
@@ -1284,11 +1305,7 @@ function KaraForm(props: KaraFormProps) {
 				rules={getRules('singergroups')}
 				name="singergroups"
 			>
-				<EditableTagGroup
-					form={form}
-					tagType={17}
-					onChange={tags => form.setFieldsValue({ singergroups: tags })}
-				/>
+				<AutocompleteTag form={form} tagType={17} onChange={tags => updateField({ singergroups: tags })} />
 			</Form.Item>
 			<Form.Item
 				label={
@@ -1304,11 +1321,7 @@ function KaraForm(props: KaraFormProps) {
 				rules={getRules('songwriters')}
 				name="songwriters"
 			>
-				<EditableTagGroup
-					form={form}
-					tagType={8}
-					onChange={tags => form.setFieldsValue({ songwriters: tags })}
-				/>
+				<AutocompleteTag form={form} tagType={8} onChange={tags => updateField({ songwriters: tags })} />
 			</Form.Item>
 			<Form.Item
 				label={
@@ -1324,7 +1337,7 @@ function KaraForm(props: KaraFormProps) {
 				rules={getRules('creators')}
 				name="creators"
 			>
-				<EditableTagGroup form={form} tagType={4} onChange={tags => form.setFieldsValue({ creators: tags })} />
+				<AutocompleteTag form={form} tagType={4} onChange={tags => updateField({ creators: tags })} />
 			</Form.Item>
 			<Form.Item
 				hasFeedback
@@ -1349,141 +1362,130 @@ function KaraForm(props: KaraFormProps) {
 					onPressEnter={submitHandler}
 				/>
 			</Form.Item>
-			<Divider orientation="left">{i18next.t('KARA.SECTIONS.CATEGORIZATION')}</Divider>
-			<Form.Item
-				label={
-					<span>
-						{i18next.t('TAG_TYPES.COLLECTIONS_other')}&nbsp;
-						<Tooltip title={i18next.t('KARA.COLLECTIONS_TOOLTIP')}>
-							<QuestionCircleOutlined />
-						</Tooltip>
-					</span>
-				}
-				labelCol={{ flex: '0 1 220px' }}
-				rules={getRules('collections')}
-				name="collections"
-			>
-				<EditableTagGroup
-					form={form}
-					tagType={16}
-					checkboxes={true}
-					onChange={tags => form.setFieldsValue({ collections: tags })}
-				/>
-			</Form.Item>
-
-			<Form.Item
-				label={
-					<span>
-						{i18next.t('TAG_TYPES.FAMILIES_other')}&nbsp;
-						<Tooltip title={i18next.t('KARA.FAMILIES_TOOLTIP')}>
-							<QuestionCircleOutlined />
-						</Tooltip>
-					</span>
-				}
-				labelCol={{ flex: '0 1 220px' }}
-				rules={getRules('families')}
-				name="families"
-			>
-				<EditableTagGroup
-					form={form}
-					tagType={10}
-					checkboxes={true}
-					onChange={tags => form.setFieldsValue({ families: tags })}
-				/>
-			</Form.Item>
-			<Form.Item
-				label={i18next.t('TAG_TYPES.PLATFORMS_other')}
-				labelCol={{ flex: '0 1 220px' }}
-				rules={getRules('platforms')}
-				name="platforms"
-			>
-				<Collapse
-					bordered={false}
-					defaultActiveKey={props.kara?.platforms.length > 0 || parentKara?.platforms.length > 0 ? ['1'] : []}
+			{tagsCheckbox.get(16)?.length > 0 ||
+			tagsCheckbox.get(10)?.length > 0 ||
+			tagsCheckbox.get(13)?.length > 0 ||
+			tagsCheckbox.get(12)?.length > 0 ||
+			tagsCheckbox.get(11)?.length > 0 ||
+			tagsCheckbox.get(7)?.length > 0 ||
+			tagsCheckbox.get(15)?.length > 0 ||
+			tagsCheckbox.get(9)?.length > 0 ? (
+				<Divider orientation="left">{i18next.t('KARA.SECTIONS.CATEGORIZATION')}</Divider>
+			) : null}
+			{tagsCheckbox.get(16)?.length > 0 ? (
+				<Form.Item
+					label={
+						<span>
+							{i18next.t('TAG_TYPES.COLLECTIONS_other')}&nbsp;
+							<Tooltip title={i18next.t('KARA.COLLECTIONS_TOOLTIP')}>
+								<QuestionCircleOutlined />
+							</Tooltip>
+						</span>
+					}
+					labelCol={{ flex: '0 1 220px' }}
+					rules={getRules('collections')}
+					name="collections"
 				>
-					<Panel header={i18next.t('SHOW-HIDE')} key="1" forceRender={true}>
-						<EditableTagGroup
-							value={props.kara?.platforms || parentKara?.platforms}
-							form={form}
-							tagType={13}
-							checkboxes={true}
-							onChange={tags => form.setFieldsValue({ platforms: tags })}
-						/>
-					</Panel>
-				</Collapse>
-			</Form.Item>
-			<Form.Item
-				label={i18next.t('TAG_TYPES.GENRES_other')}
-				labelCol={{ flex: '0 1 220px' }}
-				rules={getRules('genres')}
-				name="genres"
-			>
-				<EditableTagGroup
-					form={form}
-					tagType={12}
-					checkboxes={true}
-					onChange={tags => form.setFieldsValue({ genres: tags })}
-				/>
-			</Form.Item>
-			<Form.Item
-				label={i18next.t('TAG_TYPES.ORIGINS_other')}
-				labelCol={{ flex: '0 1 220px' }}
-				rules={getRules('origins')}
-				name="origins"
-			>
-				<EditableTagGroup
-					form={form}
-					tagType={11}
-					checkboxes={true}
-					onChange={tags => form.setFieldsValue({ origins: tags })}
-				/>
-			</Form.Item>
-			<Form.Item
-				label={i18next.t('TAG_TYPES.MISC_other')}
-				labelCol={{ flex: '0 1 220px' }}
-				rules={getRules('misc')}
-				name="misc"
-			>
-				<EditableTagGroup
-					form={form}
-					tagType={7}
-					checkboxes={true}
-					onChange={tags => form.setFieldsValue({ misc: tags })}
-				/>
-			</Form.Item>
-			<Form.Item
-				label={i18next.t('TAG_TYPES.WARNINGS_other')}
-				labelCol={{ flex: '0 1 220px' }}
-				rules={getRules('warnings')}
-				name="warnings"
-			>
-				<EditableTagGroup
-					form={form}
-					tagType={15}
-					checkboxes={true}
-					onChange={tags => form.setFieldsValue({ warnings: tags })}
-				/>
-			</Form.Item>
-			<Form.Item
-				label={
-					<span>
-						{i18next.t('TAG_TYPES.GROUPS_other')}&nbsp;
-						<Tooltip title={i18next.t('KARA.GROUPS_TOOLTIP')}>
-							<QuestionCircleOutlined />
-						</Tooltip>
-					</span>
-				}
-				labelCol={{ flex: '0 1 220px' }}
-				rules={getRules('groups')}
-				name="groups"
-			>
-				<EditableTagGroup
-					form={form}
-					tagType={9}
-					checkboxes={true}
-					onChange={tags => form.setFieldsValue({ groups: tags })}
-				/>
-			</Form.Item>
+					<CheckBoxTag tags={tagsCheckbox.get(16)} onChange={tags => updateField({ collections: tags })} />
+				</Form.Item>
+			) : null}
+			{tagsCheckbox.get(10)?.length > 0 ? (
+				<Form.Item
+					label={
+						<span>
+							{i18next.t('TAG_TYPES.FAMILIES_other')}&nbsp;
+							<Tooltip title={i18next.t('KARA.FAMILIES_TOOLTIP')}>
+								<QuestionCircleOutlined />
+							</Tooltip>
+						</span>
+					}
+					labelCol={{ flex: '0 1 220px' }}
+					rules={getRules('families')}
+					name="families"
+				>
+					<CheckBoxTag tags={tagsCheckbox.get(10)} onChange={tags => updateField({ families: tags })} />
+				</Form.Item>
+			) : null}
+			{tagsCheckbox.get(13)?.length > 0 ? (
+				<Form.Item
+					label={i18next.t('TAG_TYPES.PLATFORMS_other')}
+					labelCol={{ flex: '0 1 220px' }}
+					rules={getRules('platforms')}
+					name="platforms"
+				>
+					<Collapse
+						bordered={false}
+						defaultActiveKey={
+							props.kara?.platforms.length > 0 || parentKara?.platforms.length > 0 ? ['1'] : []
+						}
+					>
+						<Panel header={i18next.t('SHOW-HIDE')} key="1" forceRender={true}>
+							<CheckBoxTag
+								value={props.kara?.platforms || parentKara?.platforms}
+								tags={tagsCheckbox.get(13)}
+								onChange={tags => updateField({ platforms: tags })}
+							/>
+						</Panel>
+					</Collapse>
+				</Form.Item>
+			) : null}
+			{tagsCheckbox.get(12)?.length > 0 ? (
+				<Form.Item
+					label={i18next.t('TAG_TYPES.GENRES_other')}
+					labelCol={{ flex: '0 1 220px' }}
+					rules={getRules('genres')}
+					name="genres"
+				>
+					<CheckBoxTag tags={tagsCheckbox.get(12)} onChange={tags => updateField({ genres: tags })} />
+				</Form.Item>
+			) : null}
+			{tagsCheckbox.get(11)?.length > 0 ? (
+				<Form.Item
+					label={i18next.t('TAG_TYPES.ORIGINS_other')}
+					labelCol={{ flex: '0 1 220px' }}
+					rules={getRules('origins')}
+					name="origins"
+				>
+					<CheckBoxTag tags={tagsCheckbox.get(11)} onChange={tags => updateField({ origins: tags })} />
+				</Form.Item>
+			) : null}
+			{tagsCheckbox.get(7)?.length > 0 ? (
+				<Form.Item
+					label={i18next.t('TAG_TYPES.MISC_other')}
+					labelCol={{ flex: '0 1 220px' }}
+					rules={getRules('misc')}
+					name="misc"
+				>
+					<CheckBoxTag tags={tagsCheckbox.get(7)} onChange={tags => updateField({ misc: tags })} />
+				</Form.Item>
+			) : null}
+			{tagsCheckbox.get(15)?.length > 0 ? (
+				<Form.Item
+					label={i18next.t('TAG_TYPES.WARNINGS_other')}
+					labelCol={{ flex: '0 1 220px' }}
+					rules={getRules('warnings')}
+					name="warnings"
+				>
+					<CheckBoxTag tags={tagsCheckbox.get(15)} onChange={tags => updateField({ warnings: tags })} />
+				</Form.Item>
+			) : null}
+			{tagsCheckbox.get(9)?.length > 0 ? (
+				<Form.Item
+					label={
+						<span>
+							{i18next.t('TAG_TYPES.GROUPS_other')}&nbsp;
+							<Tooltip title={i18next.t('KARA.GROUPS_TOOLTIP')}>
+								<QuestionCircleOutlined />
+							</Tooltip>
+						</span>
+					}
+					labelCol={{ flex: '0 1 220px' }}
+					rules={getRules('groups')}
+					name="groups"
+				>
+					<CheckBoxTag tags={tagsCheckbox.get(9)} onChange={tags => updateField({ groups: tags })} />
+				</Form.Item>
+			) : null}
 			<Divider orientation="left">{i18next.t('KARA.SECTIONS.META')}</Divider>
 			<Form.Item
 				className="wrap-label"
@@ -1570,7 +1572,7 @@ function KaraForm(props: KaraFormProps) {
 				rules={getRules('authors')}
 				name="authors"
 			>
-				<EditableTagGroup form={form} tagType={6} onChange={tags => form.setFieldsValue({ author: tags })} />
+				<AutocompleteTag form={form} tagType={6} onChange={tags => updateField({ authors: tags })} />
 			</Form.Item>
 			<Form.Item
 				hasFeedback
@@ -1591,7 +1593,7 @@ function KaraForm(props: KaraFormProps) {
 				]}
 				name="comment"
 			>
-				<Input.TextArea autoSize placeholder={i18next.t('KARA.COMMENT')} onKeyPress={submitHandler} />
+				<Input.TextArea autoSize placeholder={i18next.t('KARA.COMMENT')} onKeyDown={submitHandler} />
 			</Form.Item>
 			<Form.Item
 				label={

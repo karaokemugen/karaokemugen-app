@@ -1,6 +1,7 @@
 {
 	"YES": "Ya",
 	"NO": "Tidak",
+	"CONFIRM": "Konfirmasi",
 	"SELECT_PLACEHOLDER": "Pilih sebuah daftar putar",
 	"AND": "dan",
 	"SEARCH": "Cari",
@@ -794,17 +795,13 @@
 		"LICENSE": "Dilisensikan MIT."
 	},
 	"SETUP_PAGE": {
-		"SAVE_PARAMETER": "Simpan",
 		"ONLINE_ACCOUNT": "Daring",
 		"ONLINE_ACCOUNT_DESC": "Sebuah akun daring memungkinkan kamu untuk:",
 		"LOCAL_ACCOUNT": "Lokal",
 		"TITLE": "Panduan Penyetelan",
 		"WELCOME": "Selamat Datang di Karaoke Mugen!",
-		"ADD_DIRECTORY": "Tambah folder",
 		"NEED_ACCOUNT": "Sebelum kau bisa memulai bernyanyi, kamu akan membutuhkan sebuah akun untuk menggunakan aplikasi.",
 		"ACCOUNT_QUESTION": "Apakah kamu ingin menggunakan akun lokal (hanya di komputer kamu saja) atau akun daring (akses internet diperlukan)?",
-		"MODIFY_DIRECTORY": "Ubah folder",
-		"CHOOSE_DIRECTORY": "Pilih folder",
 		"ONLINE_ACCOUNT_SAVE_INFOS": "Cadangkan lagu, avatar, dan info profil favorit Anda untuk mendapatkannya kembali dari komputer lain.",
 		"ONLINE_ACCOUNT_LOST_PASSWORD": "Jika kamu memberikan alamat surel, kamu akan bisa memulihkan akun kamu jika kamu lupa kata sandi.",
 		"LOCAL_ACCOUNT_DESC": "Kamu memilih akun lokal. Ketik nama akun dan kata sandi di bawah ini:",
@@ -812,17 +809,10 @@
 		"CREATE_ONLINE_ACCOUNT": "Saya ingin membuat akun baru",
 		"LOGIN_ONLINE_ACCOUNT": "Saya sudah punya akun",
 		"CREATE_ONLINE_ACCOUNT_DESC": "Ketik nama akun dan kata sandi untuk membuat yang baru.",
-		"DEFAULT_REPOSITORY_DESC_1": "Karaoke Mugen memiliki repositori karaoke baku, ",
-		"DEFAULT_REPOSITORY_DESC_2": ". Berkas medianya akan diunduh ketika kamu membutuhkan mereka.",
-		"DEFAULT_REPOSITORY_QUESTION": "Di mana kamu ingin menyimpan unduhan tersebut? Secara baku mereka akan ada di:",
-		"REPOSITORY_LATER": "Kamu bisa mengubah folder ini kapan saja.",
 		"ONLINE_ACCOUNT_INSTANCE_DESC": "Peladen adalah layanan daring yang memberikan beberapa layanan terkait Karaoke Mugen. Jika kamu tidak yakin, biarkan peladen baku ({{instance}}), atau jika kamu tahu apa yang kamu lakukan, ubah ke peladen pilihanmu.",
 		"SECURITY_CODE_DESC_CONSOLE": "Mohon untuk memasukkan juga kode keamanan 6 digit yang bisa kamu temukan dengan mencari \"SECURITY CODE FOR THIS SESSION\" di berkas log Karaoke Mugen atau di konsol.",
 		"SECURITY_CODE_USE": "Kode ini memastikan bahwa kamu benar-benar yang melakukan tindakan ini. Ini berganti setelah setiap penggunaan.",
-		"CONNECTED_MESSAGE": "Selamat, kamu telah masuk ke Karaoke Mugen, {{user}}!",
-		"COLLECTIONS_CHOICE_DESC_1": "Koleksi Lagu ditujukan untuk audiens berbeda. Pilih koleksi yang kamu ingin lihat di basis data karaoke.",
-		"COLLECTIONS_CHOICE_DESC_2": "Kamu bisa mengganti koleksimu kapan pun dari bilah sistem.",
-		"COLLECTIONS_CHOICE": "Seleksi koleksi"
+		"CONNECTED_MESSAGE": "Selamat, kamu telah masuk ke Karaoke Mugen, {{user}}!"
 	},
 	"CONFIG": {
 		"SAVE": "Simpan",
@@ -872,9 +862,8 @@
 		"TITLE": "Statistik",
 		"CHANGE": "Kamu bisa mengubah pilihan kamu kapan saja dari opsi.",
 		"QUESTION": "Apakah kamu setuju untuk mengirim statistik tersebut ke Peladen Karaoke Mugen?",
-		"CONFIRM": "Konfirmasi",
 		"ERROR": "Karaoke Mugen mungkin mengirim informasi tentang program kamu ke Sentry.io saat galat. Ini membantu kami menyelesaikan lebih cepat. Apakah kamu setuju untuk mengirim laporan galat tersebut?",
-		"INTRO": "Karaoke Mugen bisa mengirim informasi awanama tantang peladen kamu ke Peladen Karaoke Mugen untuk membuat statistik penggunaan."
+		"INTRO": "Karaoke Mugen bisa mengirim informasi awanama tantang peladen kamu untuk membuat statistik penggunaan."
 	},
 	"INSTANCE_NAME": "Nama peladen",
 	"INSTANCE_NAME_SHORT": "Peladen",

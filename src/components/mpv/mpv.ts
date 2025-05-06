@@ -594,43 +594,21 @@ export class Players {
 			playerState.playing = false;
 			playerState.currentVideoTrack = 1;
 			emitPlayerState();
-			const conf = getConfig();
 			const options = ['loadfile', background.pictures[0]];
-			const qrCode =
-				conf.Player.Display.ConnectionInfo.Enabled && conf.Player.Display.ConnectionInfo.QRCode
-					? {
-							'lavfi-complex': `${lavfiGenerator.genLavfiQRCode(false)}[vo]`,
-						}
-					: {};
-			if (background.music[0]) {
-				await this.exec({
-					command: [
-						...options,
-						'replace',
-						'0',
-						{
-							'force-media-title': 'Background',
-							'audio-files-set': background.music[0],
-							aid: '1',
-							'loop-file': 'inf',
-							//...qrCode,
-						},
-					],
-				});
-			} else {
-				await this.exec({
-					command: [
-						...options,
-						'replace',
-						'0',
-						{
-							'force-media-title': 'Background',
-							'loop-file': 'inf',
-							...qrCode,
-						},
-					],
-				});
-			}
+
+			await this.exec({
+				command: [
+					...options,
+					'replace',
+					'0',
+					{
+						'force-media-title': 'Background',
+						'audio-files-set': background.music[0],
+						aid: '1',
+						'loop-file': 'inf',
+					},
+				],
+			});
 
 			setState({
 				backgrounds: {

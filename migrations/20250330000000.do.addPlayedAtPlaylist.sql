@@ -1,0 +1,1 @@
+ALTER TABLE playlist_content ADD COLUMN IF NOT EXISTS played_at TIMESTAMPTZ;

@@ -20,8 +20,8 @@ export async function registerShortcuts(configChange = false) {
 	if (process.platform === 'darwin') {
 		if (getConfig().App.FirstRun) {
 			await dialog.showMessageBox({
-				title: i18next.t('PERMISSIONS_KEYBOARD_INFO_MACOS.TITLE'),
 				message: i18next.t('PERMISSIONS_KEYBOARD_INFO_MACOS.MESSAGE'),
+				detail: i18next.t('PERMISSIONS_KEYBOARD_INFO_MACOS.DETAIL'),
 			});
 		}
 		// If KM isn't registered as an accessibility app (to make media keys work), we try to ask for the permission on the system.

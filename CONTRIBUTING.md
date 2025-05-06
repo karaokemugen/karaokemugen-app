@@ -4,10 +4,10 @@ Every good will is welcome.
 
 To see how you can help, check :
 
--   [Documentation](https://docs.karaokes.moe)
--   [Create an issue or try to resolve one!](https://gitlab.com/karaokemugen/code/karaokemugen-app/issues)
--   [Come to our Discord!](https://karaokes.moe/discord)
--   [Post a message on our forum](https://discourse.karaokes.moe)
+- [Documentation](https://docs.karaokes.moe)
+- [Create an issue or try to resolve one!](https://gitlab.com/karaokemugen/code/karaokemugen-app/issues)
+- [Come to our Discord!](https://karaokes.moe/discord)
+- [Post a message on our forum](https://discourse.karaokes.moe)
 
 Please read the following before contributing :
 
@@ -15,8 +15,8 @@ Please read the following before contributing :
 
 When trying to work on a new feature or issue, remember there are two main branches to base your new branch/work off :
 
--   `next` should be used when adding new features or fixing non-urgent bugs.
--   `master` should be used when fixing bugs in the currently running version of Karaoke Mugen. Your fix will be included in the next "bugfix" release.
+- `next` should be used when adding new features or fixing non-urgent bugs.
+- `master` should be used when fixing bugs in the currently running version of Karaoke Mugen. Your fix will be included in the next "bugfix" release.
 
 As a rule of thumb, all merge requests should be made against `next`, except if your fix only applies to `master`. This can happen when `next` and `master` have a different major version number and the fix doesn't apply on `next` for some reason.
 
@@ -26,14 +26,14 @@ So if you want to work on a new feature for example, create a branch or merge re
 
 Please respect coding conventions already in place as much as possible.
 
--   Use of async/await instead of .then/.catch and callbacks
--   Use `for..of` loops instead of `.forEach` unless :
-    -   Your `.forEach` is not using async functions
-    -   You're writing a oneliner function
-    -   You need to work on index instead of the array contents themselves. `for..in` is not safe to use. See [this ESLint rule](https://eslint.org/docs/latest/rules/guard-for-in) for details on hwo to use `for..in` if you need to (like if you're using async/await in the loop).
--   Use TypeScript
--   Use ES Modules syntax
--   Before adding a dependancy, ask on Discord if it should really be added. Who knows, someone might have an idea on how to avoid using it, or a better alternative.
+- Use of async/await instead of .then/.catch and callbacks
+- Use `for..of` loops instead of `.forEach` unless :
+    - Your `.forEach` is not using async functions
+    - You're writing a oneliner function
+    - You need to work on index instead of the array contents themselves. `for..in` is not safe to use. See [this ESLint rule](https://eslint.org/docs/latest/rules/guard-for-in) for details on hwo to use `for..in` if you need to (like if you're using async/await in the loop).
+- Use TypeScript
+- Use ES Modules syntax
+- Before adding a dependancy, ask on Discord if it should really be added. Who knows, someone might have an idea on how to avoid using it, or a better alternative.
 
 ## Workflow
 
@@ -61,9 +61,9 @@ We're listing specific tools, but remember you can also choose your own preferre
 
 ### Install git
 
--   Get [git](https://git-scm.com/)
--   [gitAhead](https://gitahead.com/) is a good multi-platform git GUI
--   [Fork](https://git-fork.com/) is also a good graphical client for git, but it's not free (as in free beer)
+- Get [git](https://git-scm.com/)
+- [gitAhead](https://gitahead.com/) is a good multi-platform git GUI
+- [Fork](https://git-fork.com/) is also a good graphical client for git, but it's not free (as in free beer)
 
 Generally, git bash (bundled with git for Windows) is a good terminal. You can also use Windows Terminal or Tabby on Windows. Other OSes have proper terminals already installed.
 
@@ -73,18 +73,18 @@ On Windows you might want to use [Posh-git](https://github.com/dahlbyk/posh-git)
 
 If you don't already have an IDE of choice, use Visual Studio Code.
 
--   [Install Visual Studio Code](https://code.visualstudio.com/)
+- [Install Visual Studio Code](https://code.visualstudio.com/)
 
 You can use some of these extensions :
 
--   **ES Lint** (mandatory since it'll show you all the little problems your code as like indentation or the semi-colons to end lines. It'll basically simplify your life immensely.)
--   gitignore
--   GitLens (to easily see commits or who wrote that line of code from VSCode)
--   Gitmoji
--   npm intellisense (auto-completion of modules in imports)
--   SQL Beautify
--   vscode-icons
--   YAML
+- **ES Lint** (mandatory since it'll show you all the little problems your code as like indentation or the semi-colons to end lines. It'll basically simplify your life immensely.)
+- gitignore
+- GitLens (to easily see commits or who wrote that line of code from VSCode)
+- Gitmoji
+- npm intellisense (auto-completion of modules in imports)
+- SQL Beautify
+- vscode-icons
+- YAML
 
 ### Install and prepare PostgreSQL
 
@@ -144,8 +144,8 @@ yarn gitconfig
 
 This will enable a few options :
 
--   Display sub-modules diff
--   Make sure pull/fetch/status and push browse through sub-modules recursively.
+- Display sub-modules diff
+- Make sure pull/fetch/status and push browse through sub-modules recursively.
 
 If you're not using SSH, you'll need a token when pushing. You can generate this token from your Settings page on Gitlab in the "Access Token" section.
 
@@ -161,15 +161,15 @@ yarn setup
 
 `setup` is actually a command which does a few things :
 
--   It installs all dependencies for all the parts from the app
--   It transpiles the Typescript/React code into javascript.
+- It installs all dependencies for all the parts from the app
+- It transpiles the Typescript/React code into javascript.
 
 Depending on what you modify, use the right commands in the right folder.
 
--   The backend is built every time you use `yarn start`
--   You can build the backend manually with `yarn build`
--   You can install frontend dependencies with `yarn installkmfrontend`
--   You can build the frontend manually with `yarm buildkmfrontend`
+- The backend is built every time you use `yarn start`
+- You can build the backend manually with `yarn build`
+- You can install frontend dependencies with `yarn installkmfrontend`
+- You can build the frontend manually with `yarm buildkmfrontend`
 
 `yarn setup` does all these for you but it can take a while on some machines.
 
@@ -187,7 +187,6 @@ Create a `config.yml` file in `app` with the following contents :
 
 ```YAML
 Online:
-  Stats: false
   ErrorTracking: false
 System:
   Database:
@@ -221,9 +220,9 @@ You can also launch from the VS Code's debugger, as we provide a `launch.json` i
 
 KM is divided into two parts :
 
--   A React Frontend :
-    -   `kmfrontend` is the mobile and PC interface dedicated to managing your Karaoke session, for you or your guests.
--   A NodeJS backend in `src`.
+- A React Frontend :
+    - `kmfrontend` is the mobile and PC interface dedicated to managing your Karaoke session, for you or your guests.
+- A NodeJS backend in `src`.
 
 For those two parts, we use Typescript to manage type definitions within the app.
 
@@ -243,32 +242,32 @@ The lib contains varions functions, refer to the `README.md` inside for details.
 
 Here's a small tour of the backend :
 
--   Everything starts in `index.ts`, you just need to follow the `main()` function.
--   The `components` folder has the main KM modules, like its engine, the frontend initialization and mpv, it's video player.
--   The `electron` folder contains all the code for the Electron app and its graphical user interface and desktop integration.
--   The `services` folder has all the app and logic code. Handling playlists, songs, and player engine, and all KM sub-systems. Services expose functions to `controllers` and get their data from `dao`
--   The `controllers` folder contains all API routes used by the KM frontend. These routes call `services`.
--   The `dao` folder contains all functions getting data in and out of Karaoke Mugen's database or files.
--   The `types` folder has all object definitions we use in Karaoke Mugen's code for Typescript.
--   The `utils` folder is filled with a lot of utility functions used at some points in the code, like managing configuration, state, constants, downloader tool, etc.
+- Everything starts in `index.ts`, you just need to follow the `main()` function.
+- The `components` folder has the main KM modules, like its engine, the frontend initialization and mpv, it's video player.
+- The `electron` folder contains all the code for the Electron app and its graphical user interface and desktop integration.
+- The `services` folder has all the app and logic code. Handling playlists, songs, and player engine, and all KM sub-systems. Services expose functions to `controllers` and get their data from `dao`
+- The `controllers` folder contains all API routes used by the KM frontend. These routes call `services`.
+- The `dao` folder contains all functions getting data in and out of Karaoke Mugen's database or files.
+- The `types` folder has all object definitions we use in Karaoke Mugen's code for Typescript.
+- The `utils` folder is filled with a lot of utility functions used at some points in the code, like managing configuration, state, constants, downloader tool, etc.
 
 #### Versions
 
 Version numbering follows the classic semver : major.minor.sub-version
 
--   2.1.0 is a minor version from the 2.x codebase.
--   2.2.1 is a patch version of 2.2.
--   3.0.0 is a whole new major version
+- 2.1.0 is a minor version from the 2.x codebase.
+- 2.2.1 is a patch version of 2.2.
+- 3.0.0 is a whole new major version
 
 Besides, every version has a code name. Major versions are usually a female character from japanese animation, and every minor version has an adjective starting with the same letter. Examples :
 
--   Akari Amoureuse
--   Belldandy Bolchévique
--   Chitoge Chatoyante
--   Darkness Délirante
--   Emilia Eblouissante
--   Finé Fantastique
--   etc.
+- Akari Amoureuse
+- Belldandy Bolchévique
+- Chitoge Chatoyante
+- Darkness Délirante
+- Emilia Eblouissante
+- Finé Fantastique
+- etc.
 
 We try to find a player background for each version.
 
@@ -276,8 +275,8 @@ We try to find a player background for each version.
 
 There are two branches :
 
--   `master` is the stable branch. We usually put fixes there. It's the most stable version before we make a release. We merge `next` on it before major releases.
--   `next` is the dev branch. That's where we develop new things. When we work on an issue, gitlab creates a merge request and branch for us that we merge onto `next` when it's done.
+- `master` is the stable branch. We usually put fixes there. It's the most stable version before we make a release. We merge `next` on it before major releases.
+- `next` is the dev branch. That's where we develop new things. When we work on an issue, gitlab creates a merge request and branch for us that we merge onto `next` when it's done.
 
 #### Create a new migration
 

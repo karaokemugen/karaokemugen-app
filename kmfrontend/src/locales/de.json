@@ -1,4 +1,5 @@
 {
+	"CONFIRM": "Bestätigen",
 	"NOT_FOUND_PAGE": {
 		"404": "Verloren in Karaoke Mugen?",
 		"404_4": "Zur Startseite",
@@ -78,7 +79,7 @@
 		"SONG_SEARCH": "Lieder suchen",
 		"EXPLORE": "Entdecken",
 		"KARA_VERSIONS": "Dieses Lied ist in {{length}} Versionen verfügbar. Wähle die Version aus, die du hinzufügen möchtest.",
-		"REQUESTED_KARAOKES": "Beliebte Lieder",
+		"REQUESTED_KARAOKES": "Meist gewünschte Lieder",
 		"GET_LUCKY": "Auf gut Glück",
 		"NEW_KARAOKES": "Neue Lieder",
 		"ANIME_LIST": "Meine Animes",
@@ -340,7 +341,7 @@
 		"ADD_FILE_LYRICS_ERROR": "{{name}} ist keine Untertiteldatei",
 		"FILTER_NOT_DOWNLOADED": "Nicht heruntergeladen",
 		"CREATORS_TOOLTIP": "Die Einrichtung, die die Serie entwickelt hat. Das kann ein Animationsstudio, ein Filmstudio oder ein Spielestudio sein.",
-		"SYNCHRONIZE_DESC": "Alle Medien herunterladen",
+		"SYNCHRONIZE_DESC": "Alle Medien der ausgewählten Repositorys herunterladen",
 		"DEFAULT_LANGUAGE": "Zu verwendende Standardsprache",
 		"MEDIA_FILE_INFO": {
 			"VIDEO_RESOLUTION": "Auflösung",
@@ -458,11 +459,16 @@
 			"LABEL": "Encode Medium"
 		},
 		"ORDER_MEDIA_NEW": "Neu",
-		"ORDER_MEDIA_POPULAR": "Beliebt",
+		"ORDER_MEDIA_POPULAR": "Gewünscht",
 		"ORDER_MEDIA_STANDARD": "Standard",
 		"ORDER_MEDIA": "Sortiere Medien nach: ",
 		"ORDER_MEDIA_MEDIASIZE": "Mediengröße",
-		"CHANGE_ORDER_DIRECTION": "Ordnungsrichtung ändern"
+		"CHANGE_ORDER_DIRECTION": "Ordnungsrichtung ändern",
+		"KARA_FIELD_REQUIRED": "{{field}} ist ein Pflichtfeld",
+		"KARA_GROUP_FIELD_REQUIRED": "{{fields}} können nicht alle leer sein.",
+		"USEEMBEDDEDLYRICS": "Ins Medium eingebetteten Liedtext priorisieren",
+		"USEEMBEDDEDLYRICS_TOOLTIP": "Falls im hochgeladenen Medium eine ASS-Datei integriert ist, wird diese extrahiert und ersetzt die aktuelle Liedtext-Datei.",
+		"SYNCHRONIZE_REPOSITORIES": "Repositorys zum Synchronisieren"
 	},
 	"SETTINGS": {
 		"KARAOKE": {
@@ -874,7 +880,7 @@
 		"REPO_UPLOAD_MEDIA_ERROR": "Fehler beim Senden der Medien an das Repository",
 		"TAG_DELETE_ERROR": "Fehler beim Löschen des Tags",
 		"FILES_VALIDATED_ERROR": "Fehler beim Validieren der Dateien",
-		"KARA_RANKING_ERROR": "Fehler beim Sortieren der Lieder nach Beliebtheit",
+		"KARA_RANKING_ERROR": "Fehler beim Sortieren der Lieder nach Wunschhäufigkeit",
 		"REPO_PATH_ERROR_IN_APP_PATH": "Die Repository-Medien oder der Basispfad darf sich nicht im Pfad der Anwendung befinden",
 		"USER_DELETE_ERROR": "Fehler beim Löschen des Benutzers",
 		"USER_EDIT_ERROR": "Fehler beim Bearbeiten des Benutzers",
@@ -1064,9 +1070,9 @@
 			"TITLE": "Verwaltung des Festplattenspeichers"
 		},
 		"MOST_REQUESTED": {
-			"TITLE": "Beliebteste Lieder",
-			"DESCRIPTION": "Listet die beliebten Lieder in deiner Anwendung. Berücksichtigt nur Lieder, die über die öffentliche Schnittstelle hinzugefügt wurden.",
-			"DESCRIPTION_ONLINE": "Im Moment siehst du die Liste der beliebten ONLINE-Lieder. Deaktiviere die Einstellung \"Beliebte Lieder online abrufen\", um nur die Lieder aus deiner Instanz zu sehen."
+			"TITLE": "Meist gewünschte Lieder",
+			"DESCRIPTION": "Listet die meist gewünschten Lieder in deiner Anwendung auf. Berücksichtigt nur Lieder, die über die öffentliche Schnittstelle hinzugefügt wurden.",
+			"DESCRIPTION_ONLINE": "Im Moment siehst du die Liste der meist gewünschten ONLINE-Lieder. Deaktiviere die Einstellung \"Meist gewünschte Lieder aus deinen Online-Repositorys abrufen\", um nur die Lieder aus deiner App zu sehen."
 		},
 		"USER_EDIT": {
 			"TITLE": "Einen Benutzer ändern",
@@ -1398,7 +1404,7 @@
 		"Letztes Lied?",
 		"Letztes Lied, gebt noch mal alles!"
 	],
-	"VIEW_POPULAR": "Beliebt",
+	"VIEW_POPULAR": "Gewünscht",
 	"QUOTA_AVAILABLE": "Du kannst jetzt wieder Lieder hinzufügen!",
 	"VIEW_LIKES": "Likes",
 	"REPO_IN_PROGRESS": "Karaoke Mugen ist noch nicht ganz fertig. Bitte warte, bis die folgenden Vorgänge abgeschlossen sind.",
@@ -1411,12 +1417,11 @@
 			"2": "Welche Lieder wurden angefragt (aber nicht von wem)",
 			"4": "Anwendungseinstellungen (ausgenommen private Informationen wie Passwörter oder Schlüssel)"
 		},
-		"INTRO": "Karaoke Mugen kann anonyme Informationen über deine Instanz an den Karaoke Mugen Server senden, um Nutzungsstatistiken zu erstellen.",
+		"INTRO": "Karaoke Mugen kann anonyme Informationen über deine Instanz an senden, um Nutzungsstatistiken zu erstellen.",
 		"QUESTION": "Bist du damit einverstanden, diese Statistiken an Karaoke Mugen Server zu senden?",
 		"CHANGE": "Du kannst deine Auswahl jederzeit in den Optionen ändern.",
 		"ERROR": "Karaoke Mugen kann bei Fehlern Informationen über Ihre Instanz an Sentry.io senden. Dies hilft uns, Probleme zu lösen, da diese direkt gemeldet werden. Bist du damit einverstanden, diese Fehlerberichte zu senden?",
-		"TITLE": "Statistiken",
-		"CONFIRM": "Bestätigen"
+		"TITLE": "Statistiken"
 	},
 	"INSTANCE_NAME_SHORT": "Server",
 	"INTRO_TAGLINES": [
@@ -1476,35 +1481,24 @@
 	"REMOTE_URL": "URL für Fernzugriff",
 	"LOADING_SUBTITLE_ELECTRON": "Es sollte nicht allzu lange dauern. Versuche, Karaoke Mugen neu zu starten oder zu aktualisieren, wenn du hier nicht weiterkommst.",
 	"SETUP_PAGE": {
-		"CHOOSE_DIRECTORY": "Einen Ordner auswählen",
 		"ONLINE_ACCOUNT_SAVE_INFOS": "Sichere deine Lieblingslieder, deinen Avatar und deine Profilinformationen, um sie auch auf anderen Veranstaltungen wieder zu verwenden.",
 		"ONLINE_ACCOUNT_LOST_PASSWORD": "Wenn du eine E-Mail-Adresse angibst, kannst du dein Konto wiederherstellen, wenn du dein Passwort vergessen hast.",
 		"SECURITY_CODE_USE": "Dieser Code stellt sicher, dass du wirklich derjenige bist, der diese Aktionen durchführt. Er ändert sich nach jeder Verwendung.",
-		"DEFAULT_REPOSITORY_QUESTION": "Wo willst du diese Downloads speichern? Standardmäßig befinden sie sich in:",
 		"CREATE_ONLINE_ACCOUNT": "Ich möchte ein neues Konto erstellen",
 		"ONLINE_ACCOUNT_INSTANCE": "Dein Online-Konto wird auf der Instanz {{instance}} gespeichert",
 		"TITLE": "Einrichtungsassistent",
 		"CONNECTED_MESSAGE": "Glückwunsch, du bist bei Karaoke Mugen eingeloggt, {{user}}!",
-		"MODIFY_DIRECTORY": "Ordner ändern",
 		"ONLINE_ACCOUNT_INSTANCE_DESC": "Eine Instanz ist ein Online-Server, der verschiedene Dienste für Karaoke Mugen bereitstellt. Wenn du dir nicht sicher bist, belasse die Standardinstanz ({{instance}}), oder wenn du weißt, was du tust, ändere sie in die Instanz deiner Wahl.",
 		"ONLINE_ACCOUNT_DESC": "Ein Online-Konto ermöglicht es dir:",
-		"SAVE_PARAMETER": "Speichern",
-		"COLLECTIONS_CHOICE_DESC_1": "Die Kollektionen sind für unterschiedliche Zielgruppen gedacht. Wähle die Kollektionen aus, die du in deiner Karaoke-Datenbank sehen willst.",
 		"CREATE_ONLINE_ACCOUNT_DESC": "Gib einen Kontonamen und ein Passwort ein, um ein Konto zu erstellen.",
 		"ACCOUNT_QUESTION": "Willst du ein lokales Konto (nur auf deinem Computer) oder ein Online-Konto (Internetzugang erforderlich) verwenden?",
-		"DEFAULT_REPOSITORY_DESC_2": ". Die Mediendateien werden heruntergeladen, wenn du sie brauchst.",
 		"ONLINE_ACCOUNT": "Online",
-		"DEFAULT_REPOSITORY_DESC_1": "Karaoke Mugen hat ein Standard-Karaoke-Repository, ",
 		"WELCOME": "Willkommen bei Karaoke Mugen!",
 		"NEED_ACCOUNT": "Bevor du anfangen kannst zu singen, brauchst du ein Konto, um die App zu nutzen.",
-		"COLLECTIONS_CHOICE": "Auswahl der Kollektion",
 		"LOCAL_ACCOUNT_DESC": "Du hast ein lokales Konto gewählt. Gib unten einen Kontonamen und ein Passwort ein:",
-		"ADD_DIRECTORY": "Einen Ordner hinzufügen",
 		"SECURITY_CODE_DESC_CONSOLE": "Bitte gib auch den 6-stelligen Sicherheitscode ein, den du findest, indem du in der Karaoke Mugen-Logdatei oder in der Konsole nach \"SECURITY CODE FOR THIS SESSION\" suchst.",
 		"LOCAL_ACCOUNT": "Lokal",
-		"REPOSITORY_LATER": "Du kannst diesen Ordner jederzeit ändern.",
-		"LOGIN_ONLINE_ACCOUNT": "Ich habe bereits ein Konto",
-		"COLLECTIONS_CHOICE_DESC_2": "Du kannst deine Kollektionen jederzeit in der Systemsteuerung ändern."
+		"LOGIN_ONLINE_ACCOUNT": "Ich habe bereits ein Konto"
 	},
 	"NOTIFICATION": {
 		"OPERATOR": {
@@ -1807,7 +1801,7 @@
 			"CREATE": "Einen Benutzer erstellen",
 			"BROWSE": "Benutzer durchsuchen"
 		},
-		"KARAS_DESCRIPTION": "Liste, bearbeite und erstelle Karaoke-Dateien. Du kannst auch Medien herunterladen und die beliebtesten, am meisten gespielten Lieder sowie die Karaoke-Historie einsehen",
+		"KARAS_DESCRIPTION": "Liste, bearbeite und erstelle Karaoke-Dateien. Du kannst auch Medien herunterladen und die meist gewünschten, meist gespielten Lieder sowie die Karaoke-Historie einsehen",
 		"USERS_DESCRIPTION": "Benutzer auflisten, bearbeiten, erstellen, ihr Passwort ändern, neue Gästekonten erstellen."
 	},
 	"USERS": {
@@ -1861,7 +1855,7 @@
 		"KARAS": "Lieder",
 		"BATCH_EDIT": "Tag-Batch-Bearbeitung",
 		"DUPLICATE": "Duplikate",
-		"RANKING": "Beliebt"
+		"RANKING": "Meist gewünscht"
 	},
 	"QUIZ": {
 		"RULES": {
@@ -2042,7 +2036,7 @@
 			"PLAYER_KEYBOARDMEDIASHORTCUTS_TOOLTIP": "Deaktiviere dies, wenn du willst, dass diese Tasten eine andere App steuern (iTunes, Foobar, etc.)",
 			"ONLINE_UPDATES_MEDIAS_INTROS": "Auto-Update Intros",
 			"ONLINE_UPDATES_MEDIAS_ENCORES": "Auto-Update Zugaben",
-			"ONLINE_FETCHPOPULARSONGS": "Hol dir beliebte Songs aus deinen Online-Repositories",
+			"ONLINE_FETCHPOPULARSONGS": "Meist gewünschte Lieder aus deinen Online-Repositorys abrufen",
 			"ONLINE_UPDATES_MEDIAS_JINGLES": "Auto-Update Jingles",
 			"ONLINE_DISCORD_DISPLAYACTIVITY": "Zeige Karaoke Mugen-Aktivitäten in deinem Discord-Profil an",
 			"ONLINE_UPDATES_MEDIAS_OUTROS": "Auto-Update Outros",
@@ -2050,7 +2044,7 @@
 			"APP_QUICKSTART_TOOLTIP": "Dadurch wird die Datenüberprüfung deaktiviert. Du musst deine Datenbank im Falle einer Änderung manuell über die Systemsteuerung -> Datenbank-Seite erstellen.",
 			"PLAYER_HARDWAREDECODING_TOOLTIP": "Erzwingt die Hardware-Beschleunigung des Players. Hinweis: Bei einigen Konfigurationen kann dies zu unerwartetem Verhalten bei der Wiedergabe führen. Wähle in solchen Fällen \"Deaktiviert\". Die Option \"Automatisch\" ist die sicherste und \"Erzwingen\" die riskanteste/unempfehlenswerteste.",
 			"PLAYER_HARDWAREDECODING": "Video-Hardware-Dekodierung",
-			"ONLINE_FETCHPOPULARSONGS_TOOLTIP": "Wenn diese Funktion deaktiviert ist, werden beliebte Lieder aus deiner Karaoke Mugen App zur Berechnung verwendet",
+			"ONLINE_FETCHPOPULARSONGS_TOOLTIP": "Wenn diese Funktion deaktiviert ist, werden die meist gewünschten Lieder aus deiner Karaoke-Mugen-App berechnet",
 			"ONLINE_STATS": "Nutzungstelemetrie an den Karaoke Mugen Server senden",
 			"PLAYER_KEYBOARDMEDIASHORTCUTS": "Den Player mit den Medientasten der Tastatur steuern",
 			"ONLINE_USERS": "Erlaube die Online-Registrierung und -Anmeldung von Benutzern"
@@ -2139,5 +2133,8 @@
 		"PREVIOUS_SONG_SHORT": "Davor"
 	},
 	"NEW_ACCOUNT_CODE_SHORT": "Neuer Benutzer-Code",
-	"NEW_ACCOUNT_CODE": "Neuer Benutzer-Code (beim Veranstalter melden)"
+	"NEW_ACCOUNT_CODE": "Neuer Benutzer-Code (beim Veranstalter melden)",
+	"WARNING_CODES": {
+		"REMOTE_HIGH_LATENCY_DETECTED": "Deine Verbindung zu {{host}} ist langsam. Deine Nutzer könnten Schwierigkeiten haben"
+	}
 }

@@ -1,5 +1,5 @@
 import { FileOutlined, FolderOutlined, LeftOutlined, UsbOutlined } from '@ant-design/icons';
-import { Button, List } from 'antd';
+import { Button, Input, List } from 'antd';
 import i18next from 'i18next';
 import { useEffect, useState } from 'react';
 
@@ -24,12 +24,12 @@ function mapDrives(drives: { mount: string; label: string }[]) {
 
 async function getFS(path: string, os: string) {
 	if (!path) path = '/';
-	let computedPath = path.length > 1 && os === 'win32' ? path.substr(1) : path;
+	let computedPath = path.length > 1 && os === 'win32' ? path.substring(1) : path;
 	if (os !== 'win32' && path[0] !== '/') path = `/${path}`;
 	let response;
 	try {
 		response = await commandBackend('getFS', { path });
-	} catch (error) {
+	} catch (_) {
 		// Folder don't exist fallback to root folder
 		computedPath = '/';
 		response = await commandBackend('getFS', { path: '/' });
@@ -54,8 +54,7 @@ function computeListing(listing: Listing, path: string, seeFiles: boolean): List
 
 export default function FileSystem(props: IProps) {
 	const [listing, setListing] = useState<Listing>([]);
-	let [path, setPath] = useState<string>();
-	path = path?.replace(/\/$/, '');
+	const [path, setPath] = useState<string>(props.path?.replace(/\/$/, ''));
 	const separator = props.os === 'win32' ? '\\' : '/';
 
 	function getFSCallback(res) {
@@ -65,31 +64,36 @@ export default function FileSystem(props: IProps) {
 		setPath(res.fullPath);
 	}
 
-	function browseInto(item: ListingElement) {
+	const browseInto = (item: ListingElement) => {
 		if (item.isDirectory) {
 			const newPath = item.back
-				? path.substr(
+				? path.substring(
 						0,
 						props.os === 'win32'
-							? path.substr(0, path.length - 1).lastIndexOf(separator) === 3
+							? path.substring(0, path.length - 1).lastIndexOf(separator) === 3
 								? 3
-								: path.substr(0, path.length - 1).lastIndexOf(separator) + 1
+								: path.substring(0, path.length - 1).lastIndexOf(separator) + 1
 							: path.lastIndexOf(separator) === 0
-							? 1
-							: path.lastIndexOf(separator)
-				  )
-				: `${path}${separator}${item.name}`;
+								? 1
+								: path.lastIndexOf(separator)
+					)
+				: `${path ?? `${path}${separator}`}${item.name}`;
 			getFS(newPath, props.os).then(getFSCallback);
 			if (!props.fileRequired) props.saveValueModal(newPath);
 		} else if (props.fileRequired) {
 			props.saveValueModal(`${path}${separator}${item.name}`);
 		}
-	}
+	};
+
+	const onChangeInput = event => {
+		setPath(event.target.value);
+		props.saveValueModal(event.target.value);
+	};
 
 	useEffect(() => {
 		getFS(
 			props.fileRequired
-				? path.substr(0, path.lastIndexOf(separator) === 0 ? 1 : path.lastIndexOf(separator))
+				? path.substring(0, path.lastIndexOf(separator) === 0 ? 1 : path.lastIndexOf(separator))
 				: props.path,
 			props.os
 		).then(getFSCallback);
@@ -99,7 +103,12 @@ export default function FileSystem(props: IProps) {
 		<List
 			header={
 				<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-					{path}
+					<Input
+						style={{ marginRight: '0.5em' }}
+						value={path}
+						onChange={onChangeInput}
+						disabled={listing.length === 0}
+					/>
 					{!props.fileRequired ? <Button type="primary">{i18next.t('CONFIG.SELECT')}</Button> : null}
 				</div>
 			}

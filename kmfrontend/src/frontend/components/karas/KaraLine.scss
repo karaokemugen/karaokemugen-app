@@ -193,6 +193,11 @@ body:not(.touch) {
 			.tagConteneur {
 				margin-left: 0;
 			}
+			.playingIn {
+				display: flex;
+				justify-content: space-between;
+				gap: 0.5em;
+			}
 		}
 	}
 	.infoDiv {
@@ -238,13 +243,6 @@ body:not(.touch) {
 		color: grey;
 		cursor: not-allowed;
 	}
-
-	.chevron {
-		display: flex;
-		align-items: center;
-		padding-left: 0.5em;
-		cursor: pointer;
-	}
 }
 
 .marker-label {
@@ -278,6 +276,10 @@ body:not(.touch) {
 
 .disable-select {
 	user-select: none;
+}
+
+.swapButton {
+	margin-right: 0.5em;
 }
 
 @keyframes btn-pulse {

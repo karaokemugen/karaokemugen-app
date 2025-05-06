@@ -260,11 +260,11 @@ export async function isUserAllowedToAddKara(plaid: string, user: User, duration
 /** Set a PLC flag_playing to enabled */
 export async function setPlaying(plc_id: number, plaid: string) {
 	await setPlayingFlag(plc_id, plaid);
+	updatePlaylistDuration(plaid);
 	emitWS('playingUpdated', {
 		plaid,
 		plc_id,
 	});
-	updatePlaylistDuration(plaid);
 }
 
 /** Trim playlist after a certain duration */
@@ -331,6 +331,7 @@ export async function emptyPlaylist(plaid: string): Promise<string> {
 		await truncatePlaylist(plaid);
 		await Promise.all([updatePlaylistKaraCount(plaid), updatePlaylistDuration(plaid)]);
 		updatePlaylistLastEditTime(plaid);
+		if (plaid === getState().currentPlaid) writeStreamFiles('current_playlist_info');
 		// If our playlist is the public one, the frontend should reset all buttons on the song library so it shows + for everything all over again.
 		if (plaid === getState().publicPlaid) emitWS('publicPlaylistEmptied', plaid);
 		emitWS('playlistContentsUpdated', plaid);
@@ -341,6 +342,23 @@ export async function emptyPlaylist(plaid: string): Promise<string> {
 		throw err instanceof ErrorKM ? err : new ErrorKM('PL_EMPTY_ERROR');
 	} finally {
 		profile('emptyPL');
+	}
+}
+
+export async function swapPLCs(plcid1: number, plcid2: number, token: OldJWTToken) {
+	if (!getConfig().Playlist.AllowPublicCurrentPlaylistItemSwap) throw new ErrorKM('PLC_SWAP_FORBIDDEN', 403);
+	const plcs = await getPLCInfoMini([plcid1, plcid2]);
+	if (
+		token.role !== 'admin' &&
+		(plcs[0].username !== token.username || plcs[1].username !== token.username || plcs[0].plaid !== plcs[1].plaid)
+	)
+		throw new ErrorKM('PLC_SWAP_FORBIDDEN', 403);
+	if (plcs[0].plcid === plcid1) {
+		await editPLC([plcid2], { pos: plcs[0].pos }, false);
+		await editPLC([plcid1], { pos: plcs[1].pos });
+	} else {
+		await editPLC([plcid2], { pos: plcs[1].pos }, false);
+		await editPLC([plcid1], { pos: plcs[0].pos });
 	}
 }
 
@@ -429,8 +447,7 @@ function currentHook(plaid: string, name: string) {
 	emitWS('currentPlaylistUpdated', plaid);
 	resetAllAcceptedPLCs();
 	writeStreamFiles('next_song_name_and_requester');
-	writeStreamFiles('current_kara_count');
-	writeStreamFiles('time_remaining_in_current_playlist');
+	writeStreamFiles('current_playlist_info');
 	downloadMediasInPlaylist(plaid);
 	logger.info(`Playlist ${name} is now current`, { service });
 }
@@ -581,6 +598,17 @@ export function getPlaylistContentsMini(plaid: string) {
 	return selectPlaylistContentsMini(plaid);
 }
 
+export async function updateAllPlaylistDurations() {
+	profile('updateAllPlaylistsDurations');
+	const pls = await getPlaylists(adminToken);
+	const promises = [];
+	for (const pl of pls) {
+		promises.push(updatePlaylistDuration(pl.plaid));
+	}
+	await Promise.all(promises);
+	profile('updateAllPlaylistsDurations');
+}
+
 /** Get a tiny amount of data from a PLC
  * After Mini-PL, Micro-PL, we need the PL-C format.
  */
@@ -606,7 +634,9 @@ export async function getPlaylistContents(
 	from = 0,
 	size = 99999999999,
 	random = 0,
-	orderByLikes = false
+	orderByLikes = false,
+	incomingSongs = false,
+	filterByUser?: string
 ) {
 	try {
 		profile('getPLC');
@@ -620,6 +650,8 @@ export async function getPlaylistContents(
 			size,
 			random,
 			orderByLikes,
+			incomingSongs,
+			filterByUser,
 		});
 		if (from === -1) {
 			const pos = getPlayingPos(pl);
@@ -801,7 +833,7 @@ export async function addKaraToPlaylist(params: AddKaraParams) {
 		updatePlaylistLastEditTime(params.plaid);
 
 		// Auto-balance current playlist if user isn't in first pool
-		if (conf.Karaoke.AutoBalance) {
+		if (conf.Karaoke.AutoBalance && params.plaid === getState().currentPlaid) {
 			let playlist = await getPlaylistContentsMini(params.plaid);
 			const playingPosInPL = getPlayingPos(playlist);
 			if (playingPosInPL) {
@@ -836,8 +868,7 @@ export async function addKaraToPlaylist(params: AddKaraParams) {
 		if (params.plaid === state.currentPlaid) {
 			checkMediaAndDownload(karas);
 			writeStreamFiles('next_song_name_and_requester');
-			writeStreamFiles('current_kara_count');
-			writeStreamFiles('time_remaining_in_current_playlist');
+			writeStreamFiles('current_playlist_info');
 			if (conf.Karaoke.Autoplay && (state.player?.mediaType === 'stop' || state.randomPlaying)) {
 				setState({ randomPlaying: false });
 				await setPlaying(PLCsInserted[0].plcid, getState().currentPlaid);
@@ -940,6 +971,7 @@ export async function copyKaraToPlaylist(plc_ids: number[], plaid: string, pos?:
 			updatePlaylistDuration(plaid),
 			updatePlaylistKaraCount(plaid),
 		]);
+		if (plaid === getState().currentPlaid) writeStreamFiles('current_playlist_info');
 		updatePlaylistLastEditTime(plaid);
 		const state = getState();
 		// If we're adding to the current playlist ID and KM's mode is public, we have to notify users that their song has been added and will be playing in xxx minutes
@@ -1046,6 +1078,13 @@ export async function removeKaraFromPlaylist(
 				emitWS('playlistContentsUpdated', plaid);
 				emitWS('playlistInfoUpdated', plaid);
 			}
+			if (plaid === getState().currentPlaid) {
+				writeStreamFiles('next_song_name_and_requester');
+				writeStreamFiles('current_playlist_info');
+			}
+			if (plaid === getState().publicPlaid) {
+				writeStreamFiles('public_kara_count');
+			}
 			const pl = await getPlaylistInfo(plaid, adminToken);
 			if (pl.flag_public || pl.flag_current) {
 				for (const username of usersNeedingUpdate.values()) {
@@ -1053,12 +1092,6 @@ export async function removeKaraFromPlaylist(
 				}
 			}
 		}
-		await Promise.all([
-			writeStreamFiles('next_song_name_and_requester'),
-			writeStreamFiles('current_kara_count'),
-			writeStreamFiles('time_remaining_in_current_playlist'),
-			writeStreamFiles('public_kara_count'),
-		]);
 	} catch (err) {
 		logger.error(`Error deleting song from a playlist : ${err}`, { service });
 		sentry.error(err);
@@ -1230,8 +1263,10 @@ export async function editPLC(plc_ids: number[], params: PLCEditParams, refresh 
 			if (currentSong && currentSong.pos <= params.pos && plc.plaid === getState().currentPlaid) {
 				setState({ player: { currentSong: await getCurrentSong() } });
 			}
-			writeStreamFiles('next_song_name_and_requester');
-			writeStreamFiles('time_remaining_in_current_playlist');
+			if (plc.plaid === getState().currentPlaid) {
+				writeStreamFiles('next_song_name_and_requester');
+				writeStreamFiles('current_playlist_info');
+			}
 			songsLeftToUpdate.add({
 				username: plc.username,
 				plaid: plc.plaid,

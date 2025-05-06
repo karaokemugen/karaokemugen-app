@@ -531,6 +531,30 @@ function KaraokeOptions(props: IProps) {
 						))}
 
 					{filterValue === undefined ||
+						(sanitizeSettingsSearchValue(i18next.t('SETTINGS.KARAOKE.ALLOW_PLAYLIST_ITEM_SWAP')).includes(
+							filterValue
+						) && (
+							<div className="settings-line">
+								<label htmlFor="Playlist.AllowPublicCurrentPlaylistItemSwap">
+									<span className="title">
+										{i18next.t('SETTINGS.KARAOKE.ALLOW_PLAYLIST_ITEM_SWAP')}
+									</span>
+									<br />
+									<span className="tooltip">
+										{i18next.t('SETTINGS.KARAOKE.ALLOW_PLAYLIST_ITEM_SWAP_TOOLTIP')}
+									</span>
+								</label>
+								<div>
+									<Switch
+										idInput="Playlist.AllowPublicCurrentPlaylistItemSwap"
+										handleChange={onChange}
+										isChecked={config['Playlist.AllowPublicCurrentPlaylistItemSwap']}
+									/>
+								</div>
+							</div>
+						))}
+
+					{filterValue === undefined ||
 						(sanitizeSettingsSearchValue(
 							i18next.t('SETTINGS.KARAOKE.MINUTES_BEFORE_SESSION_ENDS_WARNING')
 						).includes(filterValue) && (
@@ -1026,7 +1050,10 @@ function KaraokeOptions(props: IProps) {
 					{config['Karaoke.StreamerMode.Twitch.Enabled'] ? (
 						<div id="twitchSettings" className="settingsGroupPanel">
 							<div className="settings-line">
-								<a href="https://twitchapps.com/tmi/" rel="noreferrer noopener">
+								<a
+									href="https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=ln73ciuk24lf8q67oktml4vwz6duin&redirect_uri=https://mugen.karaokes.moe/twitch"
+									rel="noreferrer noopener"
+								>
 									{i18next.t('SETTINGS.KARAOKE.STREAM_TWITCH_OAUTH_TOKEN_GET')}
 								</a>
 							</div>

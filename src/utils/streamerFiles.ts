@@ -84,15 +84,6 @@ async function writeKarasInPublicPL() {
 	);
 }
 
-async function writeKarasInCurrentPL() {
-	const pl = await getPlaylistInfo(getState().currentPlaid);
-	await fs.writeFile(
-		resolve(resolvedPath('StreamFiles'), 'current_kara_count.txt'),
-		pl?.karacount.toString(),
-		'utf-8'
-	);
-}
-
 /* format seconds to Hour Minute Second */
 function secondsTimeSpanToHMS(s: number, format: string) {
 	const d = Math.floor(s / (3600 * 24));
@@ -114,14 +105,53 @@ function secondsTimeSpanToHMS(s: number, format: string) {
 	return result;
 }
 
-async function writeTimeRemaining() {
+async function writePlaylistInfo() {
 	const currentPlaidInfo = await getPlaylistInfo(getState().currentPlaid);
 	if (currentPlaidInfo) {
-		await fs.writeFile(
-			resolve(getState().dataPath, getConfig().System.Path.StreamFiles, 'time_remaining_in_current_playlist.txt'),
-			secondsTimeSpanToHMS(currentPlaidInfo.time_left, 'hm'),
-			'utf-8'
-		);
+		await Promise.all([
+			fs.writeFile(
+				resolve(
+					getState().dataPath,
+					getConfig().System.Path.StreamFiles,
+					'time_remaining_in_current_playlist.txt'
+				),
+				secondsTimeSpanToHMS(currentPlaidInfo.time_left, 'hm'),
+				'utf-8'
+			),
+			fs.writeFile(
+				resolve(
+					getState().dataPath,
+					getConfig().System.Path.StreamFiles,
+					'time_played_in_current_playlist.txt'
+				),
+				secondsTimeSpanToHMS(currentPlaidInfo.time_played, 'hm'),
+				'utf-8'
+			),
+			fs.writeFile(
+				resolve(getState().dataPath, getConfig().System.Path.StreamFiles, 'time_total_in_current_playlist.txt'),
+				secondsTimeSpanToHMS(currentPlaidInfo.duration, 'hm'),
+				'utf-8'
+			),
+			fs.writeFile(
+				resolve(getState().dataPath, getConfig().System.Path.StreamFiles, 'curent_kara_count.txt'),
+				`${currentPlaidInfo.karacount}`,
+				'utf-8'
+			),
+			fs.writeFile(
+				resolve(getState().dataPath, getConfig().System.Path.StreamFiles, 'songs_left_in_current_playlist.txt'),
+				`${currentPlaidInfo.songs_left}`,
+				'utf-8'
+			),
+			fs.writeFile(
+				resolve(
+					getState().dataPath,
+					getConfig().System.Path.StreamFiles,
+					'songs_played_in_current_playlist.txt'
+				),
+				`${currentPlaidInfo.songs_played}`,
+				'utf-8'
+			),
+		]);
 	}
 }
 
@@ -132,9 +162,8 @@ const fnMap: Map<StreamFileType, () => Promise<void>> = new Map([
 	['next_song_name_and_requester', debounce(writeNextSongAndRequester, ...debounceSettings)],
 	['km_url', debounce(writeURL, ...debounceSettings)],
 	['frontend_state', debounce(writeFrontendStatus, ...debounceSettings)],
-	['current_kara_count', debounce(writeKarasInCurrentPL, ...debounceSettings)],
 	['public_kara_count', debounce(writeKarasInPublicPL, ...debounceSettings)],
-	['time_remaining_in_current_playlist', debounce(writeTimeRemaining, ...debounceSettings)],
+	['current_playlist_info', debounce(writePlaylistInfo, ...debounceSettings)],
 	['player_status', debounce(writePlayerStatus, ...debounceSettings)],
 ]);
 

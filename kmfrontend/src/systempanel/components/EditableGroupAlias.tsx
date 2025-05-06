@@ -1,85 +1,63 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Form, Input, Tag } from 'antd';
+import { Button, Form, Input, InputRef, Tag } from 'antd';
 import i18next from 'i18next';
-import { Component } from 'react';
+import { useEffect, useRef, useState } from 'react';
 interface EditableGroupProps {
-	onChange: any;
-	value?: any[];
+	onChange: (e: string[]) => void;
+	value?: string[];
 }
 
-interface EditableGroupState {
-	DS: string[];
-	value: any[];
-	inputVisible: boolean;
-	currentVal: any;
-}
-export default class EditableGroupAlias extends Component<EditableGroupProps, EditableGroupState> {
-	input: any;
+export default function EditableGroupAlias(props: EditableGroupProps) {
+	const input = useRef<InputRef>();
 
-	state = {
-		value: this.props.value || [],
-		inputVisible: false,
-		DS: [],
-		currentVal: undefined,
-	};
+	const [value, setValue] = useState(props.value || []);
+	const [inputVisible, setInputVisible] = useState(false);
+	const [currentVal, setCurrentVal] = useState<string>();
 
-	showInput = () => {
-		this.setState({ inputVisible: true }, () => this.input.focus());
-	};
+	useEffect(() => {
+		if (inputVisible && input.current) input.current.focus();
+	}, [inputVisible]);
 
-	handleInputConfirmAlias = val => {
-		let tags = this.state.value;
+	const handleInputConfirmAlias = val => {
+		let tags = value;
 		if (val && tags.indexOf(val) === -1) {
 			tags = [...tags, val];
 		}
-		this.setState({
-			value: tags,
-			inputVisible: false,
-		});
-		this.props.onChange && this.props.onChange(tags);
+		setValue(tags);
+		setInputVisible(false);
+		if (props.onChange) props.onChange(tags);
 	};
 
-	handleCloseAlias = removedTag => {
-		const tags = this.state.value.filter(tag => tag !== removedTag);
-		this.setState({ value: tags });
-		this.props.onChange && this.props.onChange(tags);
+	const handleCloseAlias = removedTag => {
+		const tags = value.filter(tag => tag !== removedTag);
+		setValue(tags);
+		if (props.onChange) props.onChange(tags);
 	};
 
-	render() {
-		const { value, inputVisible } = this.state;
-		return (
-			<div>
-				{value.map(tag => (
-					<Tag
-						style={{ marginBottom: '8px' }}
-						key={tag}
-						closable={true}
-						onClose={() => this.handleCloseAlias(tag)}
+	return (
+		<div>
+			{value.map(tag => (
+				<Tag style={{ marginBottom: '8px' }} key={tag} closable={true} onClose={() => handleCloseAlias(tag)}>
+					{tag}
+				</Tag>
+			))}
+			{inputVisible && (
+				<Form.Item wrapperCol={{ span: 10 }}>
+					<Input ref={input} onChange={e => setCurrentVal(e.target.value)} />
+					<Button
+						style={{ marginTop: '10px' }}
+						type="primary"
+						onClick={() => handleInputConfirmAlias(currentVal)}
 					>
-						{tag}
-					</Tag>
-				))}
-				{inputVisible && (
-					<Form.Item wrapperCol={{ span: 10 }}>
-						<Input
-							ref={input => (this.input = input)}
-							onChange={e => this.setState({ currentVal: e.target.value })}
-						/>
-						<Button
-							style={{ marginTop: '10px' }}
-							type="primary"
-							onClick={() => this.handleInputConfirmAlias(this.state.currentVal)}
-						>
-							{i18next.t('ADD')}
-						</Button>
-					</Form.Item>
-				)}
-				{!inputVisible && (
-					<Tag onClick={this.showInput} style={{ borderStyle: 'dashed' }}>
-						<PlusOutlined /> {i18next.t('ADD')}
-					</Tag>
-				)}
-			</div>
-		);
-	}
+						{i18next.t('ADD')}
+					</Button>
+				</Form.Item>
+			)}
+			{!inputVisible && (
+				<Tag onClick={() => setInputVisible(true)} style={{ borderStyle: 'dashed' }}>
+					<PlusOutlined /> {i18next.t('ADD')}
+				</Tag>
+			)}
+		</div>
+	);
 }

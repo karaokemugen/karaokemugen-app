@@ -26,7 +26,7 @@ function ProfilePicture(props: IProps) {
 
 	useEffect(() => {
 		updateUrl();
-	}, [props.user.avatar_file]);
+	}, [props.user.avatar_file, props.user.login]);
 
 	const htmlProps = { ...props, user: undefined };
 	return (
@@ -43,4 +43,7 @@ function ProfilePicture(props: IProps) {
 	);
 }
 
-export default memo(ProfilePicture, (prev, next) => prev.user.avatar_file === next.user.avatar_file);
+export default memo(
+	ProfilePicture,
+	(prev, next) => prev.user.avatar_file === next.user.avatar_file && prev.user.login === next.user.login
+);

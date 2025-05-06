@@ -1,8 +1,8 @@
-import { expect, describe, it, vi } from 'vitest';
 import { TestScheduler } from 'rxjs/testing';
+import { describe, expect, it, vi } from 'vitest';
 
 import Mpv from '../../../../src/components/mpv/mpvIPC.js';
-import { MpvState } from '../../../../src/components/mpv/mpvState';
+import { MpvState } from '../../../../src/components/mpv/mpvState.js';
 
 describe('MpvState', () => {
 	it.each([{ running: true }, { running: false }])(
