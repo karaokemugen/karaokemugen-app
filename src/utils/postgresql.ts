@@ -277,7 +277,7 @@ export async function initPGData() {
 	const conf = getConfig();
 	logger.info('No database present, initializing a new one...', { service });
 	try {
-		let binPath = await detectPGBinPath();
+		const binPath = await detectPGBinPath();
 		const state = getState();
 		const options = [
 			'init',
