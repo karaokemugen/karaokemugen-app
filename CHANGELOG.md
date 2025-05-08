@@ -1,3 +1,12 @@
+# [8.0.79] - 2025-05-08
+
+This is a hotfix release
+
+## Fixed
+
+- **[Operators]** Fixed doublequotes in postgresql paths on Windows
+- **[Operators]** Reinstated onboarding setup.
+
 # [8.0.78] - 2025-05-06
 
 Has it been that long since our last release? It has.
