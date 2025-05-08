@@ -69,6 +69,25 @@
 						background: none;
 					}
 				}
+				.input-checkbox {
+					display: flex;
+					width: 100%;
+					font-size: 1.2em;
+					padding: 0.2em 0;
+
+					.input-checkbox-switch {
+						margin-top: 0.5em;
+					}
+
+					label {
+						margin: 0.25em;
+					}
+
+					.name {
+						font-weight: bold;
+						font-size: 1em;
+					}
+				}
 			}
 		}
 

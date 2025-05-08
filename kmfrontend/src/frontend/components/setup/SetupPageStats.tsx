@@ -10,15 +10,18 @@ function SetupPageStats() {
 	const navigate = useNavigate();
 
 	const [error, setError] = useState<string>();
+	const [openDetails, setOpenDetails] = useState(false);
+	const [stats, setStats] = useState<boolean>();
 	const [errorTracking, setErrorTracking] = useState<boolean>();
 	const [userStats, setUserStats] = useState<boolean>();
 
 	const updateStats = async () => {
-		if (errorTracking !== undefined && userStats !== undefined) {
+		if (errorTracking !== undefined && stats !== undefined && userStats !== undefined) {
 			try {
 				await commandBackend('updateSettings', {
 					setting: {
 						Online: {
+							Stats: stats,
 							ErrorTracking: errorTracking,
 						},
 					},
@@ -27,16 +30,7 @@ function SetupPageStats() {
 				user.flag_sendstats = userStats;
 				await commandBackend('editMyAccount', user);
 				setError(undefined);
-				await commandBackend('updateSettings', {
-					setting: {
-						App: {
-							FirstRun: false,
-						},
-					},
-				}).catch(() => {});
-				await commandBackend('startPlayer').catch(() => {});
-				sessionStorage.setItem('dlQueueRestart', 'true');
-				navigate('/system/repositories/create?setup=true');
+				navigate('/setup/loading');
 			} catch (err: any) {
 				const error = err?.message ? i18next.t(`ERROR_CODES.${err.message}`) : JSON.stringify(err);
 				setError(error);
@@ -46,11 +40,35 @@ function SetupPageStats() {
 
 	return (
 		<section className="step step-choice">
+			<p>{i18next.t('ONLINE_STATS.INTRO')}</p>
 			<p>
-				{i18next.t('SETUP_PAGE.CONNECTED_MESSAGE', {
-					user: context?.globalState.settings.data.user.nickname,
-				})}
+				<a className="btn-link" type="button" onClick={() => setOpenDetails(!openDetails)}>
+					{i18next.t('ONLINE_STATS.DETAILS.TITLE')}
+				</a>
+				{openDetails ? (
+					<>
+						<ul>
+							<li>{i18next.t('ONLINE_STATS.DETAILS.1')}</li>
+							<li>{i18next.t('ONLINE_STATS.DETAILS.2')}</li>
+							<li>{i18next.t('ONLINE_STATS.DETAILS.3')}</li>
+							<li>{i18next.t('ONLINE_STATS.DETAILS.4')}</li>
+						</ul>
+						<p>{i18next.t('ONLINE_STATS.DETAILS.OUTRO')}</p>
+						<br />
+					</>
+				) : null}
 			</p>
+			<p>{i18next.t('ONLINE_STATS.QUESTION')}</p>
+			<div className="input-group">
+				<div className="actions">
+					<button className={stats ? 'on' : ''} type="button" onClick={() => setStats(true)}>
+						{i18next.t('YES')}
+					</button>
+					<button className={stats === false ? 'off' : ''} type="button" onClick={() => setStats(false)}>
+						{i18next.t('NO')}
+					</button>
+				</div>
+			</div>
 			<p>{i18next.t('ONLINE_STATS.ERROR')}</p>
 			<div className="input-group">
 				<div className="actions">
@@ -89,7 +107,7 @@ function SetupPageStats() {
 			<div className="actions">
 				<label className="error">{error}</label>
 				<button type="button" onClick={updateStats}>
-					{i18next.t('CONFIRM')}
+					{i18next.t('ONLINE_STATS.CONFIRM')}
 				</button>
 			</div>
 		</section>
