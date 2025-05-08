@@ -955,6 +955,17 @@
 		"CREATE_ONLINE_ACCOUNT_DESC": "Indiquez un nom de compte et un mot de passe pour créer un compte.",
 		"SECURITY_CODE_DESC_CONSOLE": "Indiquez également le code de sécurité (à 6 chiffres) que vous pourrez trouver en cherchant \"SECURITY CODE FOR THIS SESSION\" dans le fichier des logs de Karaoke Mugen.",
 		"SECURITY_CODE_USE": "Ce code permet d'être certain que c'est bien vous qui effectuez ces actions. Le code change à chaque utilisation.",
+		"DEFAULT_REPOSITORY_DESC_1": "Karaoke Mugen propose un dépôt de karaokés par défaut, ",
+		"DEFAULT_REPOSITORY_DESC_2": ". Les médias seront téléchargés au fur et à mesure que vous en aurez besoin.",
+		"DEFAULT_REPOSITORY_QUESTION": "Où voulez-vous stocker ces téléchargements ? Par défaut ils seront dans :",
+		"REPOSITORY_LATER": "Vous pourrez changer ce dossier plus tard.",
+		"MODIFY_DIRECTORY": "Modifier le dossier",
+		"CHOOSE_DIRECTORY": "Choisissez un dossier",
+		"ADD_DIRECTORY": "Ajouter un dossier",
+		"SAVE_PARAMETER": "Enregistrer ce paramètre",
+		"COLLECTIONS_CHOICE": "Choix des collections",
+		"COLLECTIONS_CHOICE_DESC_1": "Les Collections de chansons sont destinées à des publics différents. Choisissez les collections que vous souhaitez voir dans votre base de karaokés.",
+		"COLLECTIONS_CHOICE_DESC_2": "Vous pouvez changer vos collections à tout moment dans le panneau système.",
 		"CONNECTED_MESSAGE": "Félicitations, vous voilà connecté sur Karaoke Mugen, {{user}} !"
 	},
 	"NOTIFICATION": {

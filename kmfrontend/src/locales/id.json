@@ -795,6 +795,17 @@
 		"LICENSE": "Dilisensikan MIT."
 	},
 	"SETUP_PAGE": {
+		"SAVE_PARAMETER": "Simpan",
+		"ADD_DIRECTORY": "Tambah folder",
+		"MODIFY_DIRECTORY": "Ubah folder",
+		"CHOOSE_DIRECTORY": "Pilih folder",
+		"DEFAULT_REPOSITORY_DESC_1": "Karaoke Mugen memiliki repositori karaoke baku, ",
+		"DEFAULT_REPOSITORY_DESC_2": ". Berkas medianya akan diunduh ketika kamu membutuhkan mereka.",
+		"DEFAULT_REPOSITORY_QUESTION": "Di mana kamu ingin menyimpan unduhan tersebut? Secara baku mereka akan ada di:",
+		"REPOSITORY_LATER": "Kamu bisa mengubah folder ini kapan saja.",
+		"COLLECTIONS_CHOICE_DESC_1": "Koleksi Lagu ditujukan untuk audiens berbeda. Pilih koleksi yang kamu ingin lihat di basis data karaoke.",
+		"COLLECTIONS_CHOICE_DESC_2": "Kamu bisa mengganti koleksimu kapan pun dari bilah sistem.",
+		"COLLECTIONS_CHOICE": "Seleksi koleksi",
 		"ONLINE_ACCOUNT": "Daring",
 		"ONLINE_ACCOUNT_DESC": "Sebuah akun daring memungkinkan kamu untuk:",
 		"LOCAL_ACCOUNT": "Lokal",

@@ -955,7 +955,18 @@
 		"CREATE_ONLINE_ACCOUNT_DESC": "Type in an account name and a password to create one.",
 		"SECURITY_CODE_DESC_CONSOLE": "Please also enter the 6-digit security code that you can find by looking for \"SECURITY CODE FOR THIS SESSION\" in the Karaoke Mugen log file or in the console.",
 		"SECURITY_CODE_USE": "This code makes sure you're really the one doing these actions. It changes after each use.",
-		"CONNECTED_MESSAGE": "Congratulations, you're logged in to Karaoke Mugen, {{user}}!"
+		"CONNECTED_MESSAGE": "Congratulations, you're logged in to Karaoke Mugen, {{user}}!",
+		"DEFAULT_REPOSITORY_DESC_1": "Karaoke Mugen has a default karaoke repository, ",
+		"DEFAULT_REPOSITORY_DESC_2": ". Its media files will be downloaded as you need them.",
+		"DEFAULT_REPOSITORY_QUESTION": "Where do you want to store these downloads? By default they'll be in:",
+		"REPOSITORY_LATER": "You can change this folder at any time.",
+		"MODIFY_DIRECTORY": "Change folder",
+		"CHOOSE_DIRECTORY": "Select a folder",
+		"ADD_DIRECTORY": "Add a folder",
+		"SAVE_PARAMETER": "Save",
+		"COLLECTIONS_CHOICE": "Collection selection",
+		"COLLECTIONS_CHOICE_DESC_1": "The Song Collections are intended for different audiences. Choose the collections you want to see in your karaoke database.",
+		"COLLECTIONS_CHOICE_DESC_2": "You can change your collections at any time in the system panel."
 	},
 	"NOTIFICATION": {
 		"OPERATOR": {

@@ -1,6 +1,6 @@
 {
   "name": "karaokemugen-app",
-  "version": "8.0.78-master",
+  "version": "8.0.79N-master",
   "versionName": "Sakuya Splendide",
   "description": "Karaoke playlist manager / player",
   "bin": {
@@ -344,7 +344,7 @@
       }
     },
     "productName": "Karaoke Mugen",
-    "copyright": "© 2017-2024 Karaoke Mugen Team",
+    "copyright": "© 2017-2025 Karaoke Mugen Team",
     "extraResources": [
       "migrations/**",
       "locales/*",
