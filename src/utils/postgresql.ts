@@ -84,8 +84,7 @@ export async function stopPG() {
 	const state = getState();
 	const conf = getConfig();
 	const pgDataDir = resolve(getState().dataPath, conf.System.Path.DB, 'postgres');
-	let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl);
-	if (state.os === 'win32') binPath = `"${binPath}"`;
+	const binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl);
 	const options = ['-D', pgDataDir, '-w', 'stop'];
 	await execa(binPath, options, {
 		cwd: state.binPath.postgres,
@@ -162,8 +161,7 @@ export async function dumpPG() {
 			dumpFile,
 			conf.System.Database.database,
 		];
-		let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_dump);
-		if (state.os === 'win32') binPath = `"${binPath}"`;
+		const binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_dump);
 		profile('dumpAndCompress');
 		await execa(binPath, options, {
 			cwd: resolve(state.appPath, state.binPath.postgres),
@@ -212,8 +210,7 @@ export async function restorePG() {
 			dumpFile,
 			conf.System.Database.database,
 		];
-		let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_client);
-		if (state.os === 'win32') binPath = `"${binPath}"`;
+		const binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_client);
 		logger.info('Restoring dump to database...', { service });
 		await execa(binPath, options, {
 			cwd: resolve(state.appPath, state.binPath.postgres),
@@ -280,7 +277,7 @@ export async function initPGData() {
 	const conf = getConfig();
 	logger.info('No database present, initializing a new one...', { service });
 	try {
-		let binPath = await detectPGBinPath();
+		const binPath = await detectPGBinPath();
 		const state = getState();
 		const options = [
 			'init',
@@ -289,7 +286,6 @@ export async function initPGData() {
 			'-D',
 			resolve(state.dataPath, conf.System.Path.DB, 'postgres/'),
 		];
-		if (state.os === 'win32') binPath = `"${binPath}"`;
 		logger.info('ENV', { service, obj: determineEnv() });
 		await execa(binPath, options, {
 			cwd: resolve(state.appPath, state.binPath.postgres),
@@ -332,8 +328,7 @@ export async function checkPG(): Promise<boolean> {
 	if (!conf.System.Database.bundledPostgresBinary) return false;
 	try {
 		const options = ['status', '-D', resolve(state.dataPath, conf.System.Path.DB, 'postgres/')];
-		let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl);
-		if (state.os === 'win32') binPath = `"${binPath}"`;
+		const binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl);
 		const out = await execa(binPath, options, {
 			cwd: resolve(state.appPath, state.binPath.postgres),
 			env: determineEnv(),
@@ -407,8 +402,7 @@ export async function initPG(relaunch = true) {
 	logger.info('Launching bundled PostgreSQL', { service });
 	await updatePGConf();
 	const pgBinExe = state.os === 'win32' ? 'postgres.exe' : 'postgres';
-	let binPath = resolve(state.appPath, state.binPath.postgres, pgBinExe);
-	if (state.os === 'win32') binPath = `"${binPath}"`;
+	const binPath = resolve(state.appPath, state.binPath.postgres, pgBinExe);
 	// We set all stdios on ignore or inherit since postgres requires a TTY terminal and will hang if we don't do that
 	const pgBinDir = resolve(state.appPath, state.binPath.postgres);
 	try {
