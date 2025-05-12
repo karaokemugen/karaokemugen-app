@@ -768,17 +768,6 @@
 		}
 	},
 	"SETUP_PAGE": {
-		"COLLECTIONS_CHOICE": "Seleção de coleção",
-		"MODIFY_DIRECTORY": "Mudar pasta",
-		"ADD_DIRECTORY": "Adicionar uma pasta",
-		"DEFAULT_REPOSITORY_DESC_1": "Karaoke Mugen tem um repositório padrão de karaokês, ",
-		"CHOOSE_DIRECTORY": "Selecione uma pasta",
-		"COLLECTIONS_CHOICE_DESC_2": "Você pode alterar suas coleções a qualquer momento no painel do sistema.",
-		"DEFAULT_REPOSITORY_QUESTION": "Onde você deseja armazenar esses downloads? Por padrão, eles estarão em:",
-		"DEFAULT_REPOSITORY_DESC_2": ".",
-		"REPOSITORY_LATER": "Você pode alterar esta pasta a qualquer momento.",
-		"SAVE_PARAMETER": "Salvar",
-		"COLLECTIONS_CHOICE_DESC_1": "As Coletâneas de Canções são destinadas a diferentes públicos.",
 		"LOCAL_ACCOUNT": "Local",
 		"ONLINE_ACCOUNT_INSTANCE": "Sua conta online será hospedada no {{instance}} instância",
 		"CREATE_ONLINE_ACCOUNT": "Quero criar uma nova conta",
