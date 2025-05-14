@@ -23,7 +23,7 @@ const sqlSnippet = {
 	FROM kara_duration kd
 	INNER JOIN playlist_content AS plc ON plc.fk_kid = kd.pk_kid
 	WHERE plc.fk_plaid = :plaid
-		AND plc.pos >= ppos.pos AND plc.pos < pc.pos
+		AND plc.pos >= COALESCE(ppos.pos, 0) AND plc.pos < pc.pos
 	)::integer
 		${intermissionsDuration}
 	) * interval '1 second' AS playing_at
@@ -302,7 +302,7 @@ SELECT
   pc.criterias
 FROM all_karas AS ak
 INNER JOIN playlist_content AS pc ON pc.fk_kid = ak.pk_kid
-INNER JOIN playing_pos AS ppos ON 1 = 1
+LEFT OUTER JOIN playing_pos AS ppos ON 1 = 1
 INNER JOIN kara_duration AS kd ON kd.pk_kid = pc.fk_kid
 LEFT OUTER JOIN kara k ON k.pk_kid = ak.pk_kid
 LEFT OUTER JOIN users AS u ON u.pk_login = pc.fk_login
@@ -320,7 +320,7 @@ WHERE pc.fk_plaid = :plaid
 ${filterClauses.map(clause => `AND (${clause})`).join(' ')}
 ${whereClause}
 ${filterByUser ? ' AND pc.fk_login = :username' : ''}
-${incomingSongs ? ' AND pc.pos > ppos.pos' : ''}
+${incomingSongs ? ' AND pc.pos > COALESCE(ppos.pos, 0)' : ''}
 GROUP BY
 	pl.fk_plcid_playing,
 	ak.pk_kid,

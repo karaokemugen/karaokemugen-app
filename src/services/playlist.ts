@@ -1373,6 +1373,10 @@ export async function importPlaylist(playlist: PlaylistExport, username: string,
 			}
 		}
 		// Validations done. First creating playlist.
+		// If no flag_playing was set, set it on the first song
+		if (!flag_playingDetected) {
+			playlist.PlaylistContents[0].flag_playing = true;
+		}
 		if (!plaid) {
 			plaid = await createPlaylist(playlist.PlaylistInformation, username);
 		} else {
