@@ -18,7 +18,7 @@ async function writeCurrentSong() {
 	const song = getState().player.currentSong;
 	const media = getState().player.currentMedia;
 	if (song) {
-		output = song.songname;
+		output = song.songname || '';
 	} else if (media) {
 		output = getState().player.mediaType;
 	} else {
