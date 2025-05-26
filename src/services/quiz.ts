@@ -35,7 +35,6 @@ import { displayMessage, getPromoMessage, next, sendCommand, stopPlayer } from '
 import { editPlaylist } from './playlist.js';
 import { getTag } from './tag.js';
 import { createUser, editUser, getUser, getUsers } from './user.js';
-import { defineSongname } from '../lib/services/karaCreation.js';
 
 const service = 'Quiz';
 
