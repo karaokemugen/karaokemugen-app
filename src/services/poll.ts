@@ -46,7 +46,7 @@ async function displayPoll(winner?: number) {
 		if (isNaN(percentage)) percentage = 0;
 		const percentageStr = percentage < 1 ? `0${percentage.toFixed(1)}` : percentage.toFixed(1);
 		// If series is empty, pick singer information instead
-		return `${boldWinnerOpen}${kara.index}. ${percentageStr}% : ${kara.songname}${boldWinnerClose}`;
+		return `${boldWinnerOpen}${kara.index}. ${percentageStr}% : ${kara.songname || kara.mediafile}${boldWinnerClose}`;
 	});
 	const voteMessage = winner ? i18n.t('VOTE_MESSAGE_SCREEN_WINNER') : i18n.t('VOTE_MESSAGE_SCREEN');
 	await playerMessage(
@@ -72,7 +72,7 @@ export async function timerPoll() {
 async function displayPollWinnerTwitch(pollResults: PollResults) {
 	try {
 		await sayTwitch(
-			`Poll winner : ${pollResults.winner.songname} (${pollResults.winner.votes} votes out of ${pollResults.votes})`
+			`Poll winner : ${pollResults.winner.songname || pollResults.winner.mediafile} (${pollResults.winner.votes} votes out of ${pollResults.votes})`
 		);
 	} catch (err) {
 		// Non fatal
@@ -127,7 +127,7 @@ async function getPollResults(): Promise<PollResults> {
 	emitWS('playlistInfoUpdated', plaid);
 	emitWS('playlistContentsUpdated', plaid);
 
-	logger.info(`Winner is "${winner.songname}" with ${maxVotes} votes`, { service });
+	logger.info(`Winner is "${winner.songname || winner.mediafile}" with ${maxVotes} votes`, { service });
 	return {
 		votes: maxVotes,
 		winner,
@@ -245,7 +245,7 @@ async function displayPollTwitch() {
 		await sayTwitch(i18n.t('TWITCH.CHAT.VOTE'));
 		for (const kara of poll) {
 			await sleep(1000);
-			await sayTwitch(`${kara.index}. ${kara.songname}`);
+			await sayTwitch(`${kara.index}. ${kara.songname || kara.mediafile}`);
 		}
 	} catch (err) {
 		logger.error('Unable to post poll on twitch', { service, obj: err });
