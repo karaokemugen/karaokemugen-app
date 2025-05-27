@@ -146,7 +146,7 @@ async function manageFavoriteInInstance(action: 'POST' | 'DELETE', username: str
 	}
 }
 
-export async function exportFavorites(username: string) {
+export async function exportFavorites(username: string): Promise<FavExport> {
 	try {
 		username = username.toLowerCase();
 		const favs = await getFavorites({

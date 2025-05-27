@@ -7,6 +7,7 @@ import GlobalContext from '../../../store/context';
 import { getPlaylistInfo } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import KaraDetail from './KaraDetail';
+import { WS_CMD } from '../../../utils/ws';
 
 interface Props {
 	side: 'left' | 'right';
@@ -30,7 +31,7 @@ export default function KaraReviews(props: Props) {
 	const playlist = getPlaylistInfo(props.side, context);
 
 	const fetchTimeRemaining = async () => {
-		const playlistList: DBPL[] = await commandBackend('getPlaylists');
+		const playlistList: DBPL[] = await commandBackend(WS_CMD.GET_PLAYLISTS);
 		setTimeRemaining(playlistList.find(pl => pl?.flag_current).time_left);
 	};
 
@@ -47,11 +48,14 @@ export default function KaraReviews(props: Props) {
 				setEnd(true);
 				break;
 			}
-			const res: { content: DBPLC[]; infos: { count: number } } = await commandBackend('getPlaylistContents', {
-				plaid: playlist.plaid,
-				from: localI * 20,
-				size: 20,
-			});
+			const res: { content: DBPLC[]; infos: { count: number } } = await commandBackend(
+				WS_CMD.GET_PLAYLIST_CONTENTS,
+				{
+					plaid: playlist.plaid,
+					from: localI * 20,
+					size: 20,
+				}
+			);
 			if (res.infos.count === 0) {
 				closeModal(context.globalDispatch);
 				break;
@@ -69,13 +73,13 @@ export default function KaraReviews(props: Props) {
 
 	const nextKaraoke = async (accepted: boolean) => {
 		if (accepted) {
-			await commandBackend('editPLC', {
+			await commandBackend(WS_CMD.EDIT_PLC, {
 				plc_ids: [queue[0].plcid],
 				flag_accepted: true,
 			});
 			setAccepted(acc => acc + 1);
 		} else {
-			await commandBackend('editPLC', {
+			await commandBackend(WS_CMD.EDIT_PLC, {
 				plc_ids: [queue[0].plcid],
 				flag_refused: true,
 			});

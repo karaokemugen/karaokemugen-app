@@ -26,7 +26,7 @@ import { emitWS } from '../lib/utils/ws.js';
 import { QuizGameConfig } from '../types/config.js';
 import { SongModifiers } from '../types/player.js';
 import { CurrentSong } from '../types/playlist.js';
-import { GameAnswer, QuizAnswers, TotalTimes } from '../types/quiz.js';
+import { GameAnswer, GameAnswerResult, QuizAnswers, TotalTimes } from '../types/quiz.js';
 import Sentry from '../utils/sentry.js';
 import { getState, setState } from '../utils/state.js';
 import { sayTwitch } from '../utils/twitch.js';
@@ -681,7 +681,7 @@ export function getCurrentSongTimers(): TotalTimes {
 	};
 }
 
-export function setAnswer(login: string, input: string) {
+export function setAnswer(login: string, input: string): GameAnswerResult {
 	const gameState = getState().quiz;
 	if (!gameState.running) return 'NOT_IN_QUIZ';
 	if (gameState.currentSong.state !== 'guess') return 'TOO_LATE';

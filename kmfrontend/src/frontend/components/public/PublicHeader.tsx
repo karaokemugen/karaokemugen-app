@@ -17,6 +17,8 @@ import { useResizeListener } from '../../../utils/hooks';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { displayMessage, secondsTimeSpanToHMS } from '../../../utils/tools';
 import PlayerControls from '../PlayerControls';
+import { WS_CMD } from '../../../utils/ws';
+import { PlayerCommand } from '../../../../../src/types/player';
 
 interface IProps {
 	onResize: (top: string) => void;
@@ -40,7 +42,7 @@ function PublicHeader(props: IProps) {
 
 	const score = useAsyncMemo<GameScore[]>(
 		async () => {
-			const score = await commandBackend('getGameScore', {
+			const score = await commandBackend(WS_CMD.GET_GAME_SCORE, {
 				gamename: context.globalState.settings.data.state.quiz.currentQuizGame,
 				login: context.globalState.auth.data.username,
 			});
@@ -104,7 +106,7 @@ function PublicHeader(props: IProps) {
 
 	const putPlayerCommando = (event: any) => {
 		const namecommand = event.currentTarget.getAttribute('data-namecommand');
-		let data: { command: string; options?: any };
+		let data: { command: PlayerCommand; options?: any };
 		if (namecommand === 'goTo') {
 			data = {
 				command: namecommand,
@@ -115,13 +117,13 @@ function PublicHeader(props: IProps) {
 				command: namecommand,
 			};
 		}
-		commandBackend('sendPlayerCommand', data).catch(() => {});
+		commandBackend(WS_CMD.SEND_PLAYER_COMMAND, data).catch(() => {});
 	};
 
 	useEffect(() => {
 		getSocket().on('quotaAvailableUpdated', updateQuotaAvailable);
 		// This will emit a quotaAvailableUpdated event
-		commandBackend('refreshUserQuotas');
+		commandBackend(WS_CMD.REFRESH_USER_QUOTAS);
 		props.onResize(`${ref.current.scrollHeight}px`);
 		const observer = new ResizeObserver(resizeCheck);
 		observer.observe(document.getElementById('menu-supp-root'));

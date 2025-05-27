@@ -6,22 +6,23 @@ import prettyBytes from 'pretty-bytes';
 import { commandBackend } from '../../utils/socket';
 import Title from '../components/Title';
 import { useEffect, useState } from 'react';
+import { WS_CMD } from '../../utils/ws';
 
 function Storage() {
-	const [repositories, setRepositories] = useState<{ name: string; freeSpace: number }[]>([]);
+	const [repositories, setRepositories] = useState<{ name: string; freeSpace: string }[]>([]);
 
 	useEffect(() => {
 		getRepos();
 	}, []);
 
 	const getRepos = async () => {
-		const res = await commandBackend('getRepos');
-		const repos: { name: string; freeSpace: number }[] = await Promise.all(
+		const res = await commandBackend(WS_CMD.GET_REPOS);
+		const repos: { name: string; freeSpace: string }[] = await Promise.all(
 			res
 				.filter(repo => repo.Online)
 				.map(async repo => {
 					const freeSpace: number | null = await commandBackend(
-						'getRepoFreeSpace',
+						WS_CMD.GET_REPO_FREE_SPACE,
 						{ repoName: repo.Name },
 						false,
 						300000
@@ -34,7 +35,7 @@ function Storage() {
 
 	const openMediaFolder = async (name: string) => {
 		try {
-			await commandBackend('openMediaFolder', { name }, true, 300000);
+			await commandBackend(WS_CMD.OPEN_MEDIA_FOLDER, { name }, true, 300000);
 		} catch (_) {
 			// already display
 		}
@@ -42,7 +43,7 @@ function Storage() {
 
 	const deleteOldRepoMedias = async (name: string) => {
 		try {
-			await commandBackend('deleteOldRepoMedias', { name }, true, 300000);
+			await commandBackend(WS_CMD.DELETE_OLD_REPO_MEDIAS, { name }, true, 300000);
 		} catch (_) {
 			// already display
 		}
@@ -50,7 +51,7 @@ function Storage() {
 
 	const deleteAllRepoMedias = async (name: string) => {
 		try {
-			await commandBackend('deleteAllRepoMedias', { name }, true, 300000);
+			await commandBackend(WS_CMD.DELETE_ALL_REPO_MEDIAS, { name }, true, 300000);
 		} catch (_) {
 			// already display
 		}

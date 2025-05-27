@@ -8,6 +8,7 @@ import { getSerieOrSingerGroupsOrSingers, getTagInLocaleList, getTitleInLocale }
 import { commandBackend } from '../../../utils/socket';
 import Title from '../../components/Title';
 import { SortOrder } from 'antd/es/table/interface';
+import { WS_CMD } from '../../../utils/ws';
 
 function Viewcounts() {
 	const context = useContext(GlobalContext);
@@ -21,7 +22,7 @@ function Viewcounts() {
 
 	const refresh = async () => {
 		try {
-			const res = await commandBackend('getKaras', { order: 'played', ignoreCollections: true });
+			const res = await commandBackend(WS_CMD.GET_KARAS, { order: 'played', ignoreCollections: true });
 			setKaras(res.content);
 			setI18n(res.i18n);
 		} catch (_) {

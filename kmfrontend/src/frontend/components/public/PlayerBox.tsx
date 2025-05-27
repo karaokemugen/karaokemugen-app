@@ -12,6 +12,7 @@ import { getPreviewLink, getTagInLocale, getTitleInLocale, sortAndHideTags } fro
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 import { secondsTimeSpanToHMS } from '../../../utils/tools';
+import { WS_CMD } from '../../../utils/ws';
 
 interface IProps {
 	mode: 'fixed' | 'homepage' | 'playlist';
@@ -54,7 +55,7 @@ function PlayerBox(props: IProps) {
 
 	const getFavorites = async (payload?: string) => {
 		if (payload === undefined || payload === context.globalState.auth.data.username) {
-			const result = await commandBackend('getFavoritesMicro');
+			const result = await commandBackend(WS_CMD.GET_FAVORITES_MICRO);
 			const set = new Set<string>();
 			for (const kara of result) {
 				set.add(kara.kid);
@@ -66,11 +67,11 @@ function PlayerBox(props: IProps) {
 	const toggleFavorite = async event => {
 		event.stopPropagation();
 		if (favorites.has(kid)) {
-			await commandBackend('deleteFavorites', {
+			await commandBackend(WS_CMD.DELETE_FAVORITES, {
 				kids: [kid],
 			});
 		} else {
-			await commandBackend('addFavorites', {
+			await commandBackend(WS_CMD.ADD_FAVORITES, {
 				kids: [kid],
 			});
 		}
@@ -204,7 +205,7 @@ function PlayerBox(props: IProps) {
 			context?.globalState.settings.data.config?.Frontend?.Mode !== 0
 		) {
 			try {
-				const result = await commandBackend('getPlayerStatus');
+				const result = await commandBackend(WS_CMD.GET_PLAYER_STATUS);
 				refreshPlayerInfos(result);
 			} catch (_) {
 				// already display

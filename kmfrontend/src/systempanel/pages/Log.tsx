@@ -8,6 +8,7 @@ import i18n from '../../utils/i18n';
 import { commandBackend, getSocket, isRemote } from '../../utils/socket';
 import Title from '../components/Title';
 import dayjs from 'dayjs';
+import { WS_CMD } from '../../utils/ws';
 
 interface LogState {
 	log: { level: string; message: string; timestamp: string; service: string; obj?: any }[];
@@ -51,7 +52,7 @@ class Log extends Component<unknown, LogState> {
 	}
 
 	refresh = async () => {
-		const res = await commandBackend('getLogs', { level: this.state.level });
+		const res = await commandBackend(WS_CMD.GET_LOGS, { level: this.state.level });
 		if (res) this.setState({ log: res });
 	};
 
@@ -60,7 +61,7 @@ class Log extends Component<unknown, LogState> {
 	};
 
 	openLogFile = () => {
-		commandBackend('openLogFile');
+		commandBackend(WS_CMD.OPEN_LOG_FILE);
 	};
 
 	render() {

@@ -26,6 +26,7 @@ import KaraList from '../../components/KaraList';
 import LanguagesList from '../../components/LanguagesList';
 import type { Repository } from '../../../../../src/lib/types/repo';
 import GlobalContext from '../../../store/context';
+import { WS_CMD } from '../../../utils/ws';
 
 interface TagsFormProps {
 	tags: Tag[];
@@ -79,7 +80,7 @@ function TagForm(props: TagsFormProps) {
 	}, [repositoriesValue]);
 
 	const getRepositories = async () => {
-		const res: Repository[] = await commandBackend('getRepos');
+		const res: Repository[] = await commandBackend(WS_CMD.GET_REPOS);
 		setRepositoriesValue(
 			res
 				.filter(

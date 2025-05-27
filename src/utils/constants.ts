@@ -1,5 +1,6 @@
 // Karaoke Mugen App Constants
 
+import { Repository } from '../lib/types/repo.js';
 import { OldJWTToken } from '../lib/types/user.js';
 import { QuizGameConfig } from '../types/config.js';
 
@@ -365,4 +366,14 @@ export const defaultQuizSettings: QuizGameConfig = {
 	},
 	// This is undefined because we allow it to be an empty string too and we need to knwo when to apply the i18next string
 	PlayerMessage: undefined,
+};
+
+export const systemRepo: Repository = {
+	Name: 'System',
+	Online: false,
+	Enabled: true,
+	MaintainerMode: false,
+	BaseDir: null,
+	Path: { Medias: null },
+	System: true,
 };

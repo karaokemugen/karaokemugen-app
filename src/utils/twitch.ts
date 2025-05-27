@@ -83,7 +83,7 @@ function listenChat(chat: Client) {
 		} else if (msg === '!song') {
 			const song = await getCurrentSong();
 			const repo = getRepo(song.repository);
-			const str = `@${context.username} : ${song.songname} (${
+			const str = `@${context.username} : ${song.songname || song.mediafile} (${
 				repo.Online
 					? `${repo.Secure ? 'https' : 'http'}://${song.repository}/kara/xxx/${song.kid}`
 					: `${getState().osURL}/public/plc/${song.plcid}`

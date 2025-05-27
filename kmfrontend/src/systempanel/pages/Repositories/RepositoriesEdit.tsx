@@ -8,6 +8,7 @@ import { DifferentChecksumReport } from '../../../../../src/types/repo';
 import { commandBackend } from '../../../utils/socket';
 import Title from '../../components/Title';
 import RepositoryForm from './RepositoriesForm';
+import { WS_CMD } from '../../../utils/ws';
 
 const newrepository: Repository = {
 	Name: undefined,
@@ -35,7 +36,7 @@ function RepositoriesEdit() {
 
 	const saveNew = async (repository: Repository) => {
 		try {
-			await commandBackend('addRepo', repository, true);
+			await commandBackend(WS_CMD.ADD_REPO, repository, true);
 			if (searchParams.get('setup')) {
 				navigate(`/system/karas/import?repository=${repository.Name}`);
 			} else {
@@ -49,7 +50,7 @@ function RepositoriesEdit() {
 	const saveUpdate = async (repository: Repository) => {
 		try {
 			await commandBackend(
-				'editRepo',
+				WS_CMD.EDIT_REPO,
 				{
 					name,
 					newRepo: repository,
@@ -64,7 +65,7 @@ function RepositoriesEdit() {
 
 	const loadrepository = async () => {
 		if (name) {
-			const res = await commandBackend('getRepo', { name });
+			const res = await commandBackend(WS_CMD.GET_REPO, { name });
 			setRepository(res);
 		} else {
 			setRepository({ ...newrepository });
@@ -74,7 +75,7 @@ function RepositoriesEdit() {
 	const movingMedia = async (movingMediaPath: string) => {
 		if (movingMediaPath && name) {
 			try {
-				await commandBackend('movingMediaRepo', { path: movingMediaPath, name }, true, 300000);
+				await commandBackend(WS_CMD.MOVING_MEDIA_REPO, { path: movingMediaPath, name }, true, 300000);
 				navigate('/system/repositories');
 			} catch (_) {
 				// already display
@@ -84,7 +85,7 @@ function RepositoriesEdit() {
 
 	const compareLyrics = async (repo: string) => {
 		if (repo) {
-			const response = await commandBackend('compareLyricsBetweenRepos', {
+			const response = await commandBackend(WS_CMD.COMPARE_LYRICS_BETWEEN_REPOS, {
 				repo1: name,
 				repo2: repo,
 			});
@@ -95,13 +96,13 @@ function RepositoriesEdit() {
 
 	const copyLyrics = async () => {
 		if (report) {
-			await commandBackend('copyLyricsBetweenRepos', { report });
+			await commandBackend(WS_CMD.COPY_LYRICS_BETWEEN_REPOS, { report });
 		}
 	};
 
 	const convertToUUID = async (repo: string) => {
 		if (repo) {
-			await commandBackend('convertRepoToUUID', {
+			await commandBackend(WS_CMD.CONVERT_REPO_TO_UUID, {
 				repoName: repo,
 			});
 		}
@@ -109,7 +110,7 @@ function RepositoriesEdit() {
 
 	const syncTags = async (repo: string) => {
 		if (repo) {
-			await commandBackend('syncTagsBetweenRepos', {
+			await commandBackend(WS_CMD.SYNC_TAGS_BETWEEN_REPOS, {
 				repoSourceName: name,
 				repoDestName: repo,
 			});

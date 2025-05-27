@@ -8,6 +8,7 @@ import { Session, SessionExports } from '../../../../../src/types/session';
 import { commandBackend } from '../../../utils/socket';
 import Title from '../../components/Title';
 import dayjs from 'dayjs';
+import { WS_CMD } from '../../../utils/ws';
 
 interface SessionListState {
 	sessions: Session[];
@@ -24,17 +25,17 @@ class SessionList extends Component<unknown, SessionListState> {
 	}
 
 	refresh = async () => {
-		const res = await commandBackend('getSessions');
+		const res = await commandBackend(WS_CMD.GET_SESSIONS);
 		this.setState({ sessions: res });
 	};
 
 	deleteSession = async session => {
-		await commandBackend('deleteSession', { seid: session.seid });
+		await commandBackend(WS_CMD.DELETE_SESSION, { seid: session.seid });
 		this.refresh();
 	};
 
 	exportSession = async session => {
-		const exportSession: SessionExports = await commandBackend('exportSession', { seid: session.seid });
+		const exportSession: SessionExports = await commandBackend(WS_CMD.EXPORT_SESSION, { seid: session.seid });
 		Modal.info({
 			title: i18next.t('SESSIONS.SESSION_EXPORTED_TITLE'),
 			content: (
@@ -70,7 +71,7 @@ class SessionList extends Component<unknown, SessionListState> {
 	majPrivate = async (sessionParam: Session) => {
 		const session = sessionParam;
 		session.private = !sessionParam.private;
-		await commandBackend('editSession', session);
+		await commandBackend(WS_CMD.EDIT_SESSION, session);
 		this.refresh();
 	};
 

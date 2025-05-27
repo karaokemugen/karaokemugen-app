@@ -8,6 +8,7 @@ import GlobalContext from '../../../store/context';
 import { getTagInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { CreateTagModal } from '../CreateTagModal';
+import { WS_CMD } from '../../../utils/ws';
 
 interface AutocompleteTagProps {
 	onChange: (e: unknown[]) => void;
@@ -68,7 +69,7 @@ export default function AutocompleteTag(props: AutocompleteTagProps) {
 		if (filter === '') {
 			return { data: [] };
 		}
-		const updateTags = await commandBackend('getTags', {
+		const updateTags = await commandBackend(WS_CMD.GET_TAGS, {
 			type: [type],
 			filter: filter,
 		});

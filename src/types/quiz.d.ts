@@ -75,6 +75,7 @@ export interface GamePossibleAnswer {
 	i18n?: any;
 }
 
+export type GameAnswerResult = 'OK' | 'NOT_IN_QUIZ' | 'TOO_LATE' | 'OK_QUICK';
 export interface GameScore extends PlayerScore {
 	kid: string;
 	answer: string;

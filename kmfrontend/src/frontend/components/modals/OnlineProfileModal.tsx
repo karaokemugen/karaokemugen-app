@@ -7,6 +7,7 @@ import { setAuthenticationInformation } from '../../../store/actions/auth';
 import { closeModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
+import { WS_CMD } from '../../../utils/ws';
 
 interface IProps {
 	loginServ?: string;
@@ -21,12 +22,12 @@ function OnlineProfileModal(props: IProps) {
 	const onClick = async () => {
 		let response;
 		if (props.type === 'convert') {
-			response = await commandBackend('convertMyLocalUserToOnline', {
+			response = await commandBackend(WS_CMD.CONVERT_MY_LOCAL_USER_TO_ONLINE, {
 				instance: loginServ,
 				password: password,
 			});
 		} else {
-			response = await commandBackend('convertMyOnlineUserToLocal', { password: password });
+			response = await commandBackend(WS_CMD.CONVERT_MY_ONLINE_USER_TO_LOCAL, { password: password });
 		}
 		const user = context.globalState.auth.data;
 		user.token = response.message.data.token;

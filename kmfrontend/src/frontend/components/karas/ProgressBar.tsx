@@ -10,6 +10,7 @@ import { useResizeListener } from '../../../utils/hooks';
 import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { secondsTimeSpanToHMS } from '../../../utils/tools';
+import { WS_CMD } from '../../../utils/ws';
 
 function ProgressBar() {
 	const context = useContext(GlobalContext);
@@ -62,7 +63,7 @@ function ProgressBar() {
 		const futurTimeSec = getFuturTimeSec(e);
 		if (futurTimeSec) {
 			setWidth(e.pageX);
-			commandBackend('sendPlayerCommand', { command: 'goTo', options: futurTimeSec }).catch(() => {});
+			commandBackend(WS_CMD.SEND_PLAYER_COMMAND, { command: 'goTo', options: futurTimeSec }).catch(() => {});
 		}
 	};
 
@@ -167,7 +168,7 @@ function ProgressBar() {
 	const displayProgressBar = async () => {
 		if (context.globalState.auth.isAuthenticated) {
 			try {
-				const result = await commandBackend('getPlayerStatus');
+				const result = await commandBackend(WS_CMD.GET_PLAYER_STATUS);
 				refreshPlayerInfos(result);
 			} catch (_) {
 				// already display

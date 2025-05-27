@@ -1,4 +1,5 @@
 import { User } from '../../../src/lib/types/user';
+import { WS_CMD } from './ws';
 import blankAvatar from '../assets/blank.png';
 import { GlobalContextInterface } from '../store/context';
 import { commandBackend, getSocket, isRemote } from './socket';
@@ -55,7 +56,7 @@ export async function generateProfilePicLink(user: User, context: GlobalContextI
 			return `/avatars/${user.avatar_file}`;
 		} else {
 			try {
-				const data: User = await commandBackend('getUser', { username: user.login });
+				const data: User = await commandBackend(WS_CMD.GET_USER, { username: user.login });
 				const path = `/avatars/${data.avatar_file}`;
 				cache.set(user.login, path);
 				return path;

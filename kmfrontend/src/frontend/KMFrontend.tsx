@@ -19,6 +19,7 @@ import PlaylistPage from './components/PlaylistPage';
 import PublicPage from './components/public/PublicPage';
 import SetupPage from './components/setup/SetupPage';
 import WelcomePage from './components/WelcomePage';
+import { WS_CMD } from '../utils/ws';
 
 function KMFrontend() {
 	const context = useContext(GlobalContext);
@@ -29,7 +30,7 @@ function KMFrontend() {
 		const user = context?.globalState.settings.data.user;
 		user.flag_sendstats = flag_sendstats;
 		try {
-			await commandBackend('editMyAccount', user);
+			await commandBackend(WS_CMD.EDIT_MY_ACCOUNT, user);
 		} catch (_) {
 			// already display
 		}
@@ -38,7 +39,7 @@ function KMFrontend() {
 	const powerOff = () => {
 		callModal(context.globalDispatch, 'confirm', `${i18next.t('SHUTDOWN')} ?`, '', async () => {
 			try {
-				await commandBackend('shutdown');
+				await commandBackend(WS_CMD.SHUTDOWN);
 				setShutdownPopup(true);
 			} catch (_) {
 				// already display

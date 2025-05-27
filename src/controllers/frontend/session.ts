@@ -1,7 +1,5 @@
-import { Socket } from 'socket.io';
-
+import { WS_CMD } from '../../../kmfrontend/src/utils/ws.js';
 import { APIMessage } from '../../lib/services/frontend.js';
-import { APIData } from '../../lib/types/api.js';
 import { check } from '../../lib/utils/validators.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
 import {
@@ -16,7 +14,7 @@ import {
 import { runChecklist } from '../middlewares.js';
 
 export default function sessionController(router: SocketIOApp) {
-	router.route('getSessions', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_SESSIONS, async (socket, req) => {
 		await runChecklist(socket, req);
 		try {
 			return await getSessions();
@@ -25,7 +23,7 @@ export default function sessionController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('createSession', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.CREATE_SESSION, async (socket, req) => {
 		await runChecklist(socket, req);
 		// Validate form data
 		const validationErrors = check(req.body, {
@@ -36,9 +34,9 @@ export default function sessionController(router: SocketIOApp) {
 			try {
 				await addSession(
 					req.body.name,
-					req.body.started_at,
-					req.body.ended_at,
-					req.body.activate,
+					req.body.started_at?.toString(),
+					req.body.ended_at?.toString(),
+					req.body.active,
 					req.body.private
 				);
 				return { code: 200, message: APIMessage('SESSION_CREATED') };
@@ -51,7 +49,7 @@ export default function sessionController(router: SocketIOApp) {
 			throw { code: 400, message: validationErrors };
 		}
 	});
-	router.route('mergeSessions', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.MERGE_SESSIONS, async (socket, req) => {
 		await runChecklist(socket, req);
 		try {
 			const session = await mergeSessions(req.body.seid1, req.body.seid2);
@@ -61,7 +59,7 @@ export default function sessionController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('editSession', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.EDIT_SESSION, async (socket, req) => {
 		await runChecklist(socket, req);
 		// Validate form data
 		const validationErrors = check(req.body, {
@@ -70,14 +68,7 @@ export default function sessionController(router: SocketIOApp) {
 		if (!validationErrors) {
 			// No errors detected
 			try {
-				await editSession({
-					seid: req.body.seid,
-					name: req.body.name,
-					started_at: req.body.started_at,
-					ended_at: req.body.ended_at,
-					private: req.body.private,
-					active: req.body.active,
-				});
+				await editSession(req.body);
 				return { code: 200, message: APIMessage('SESSION_EDITED') };
 			} catch (err) {
 				throw { code: err.code || 500, message: APIMessage(err.message) };
@@ -88,7 +79,7 @@ export default function sessionController(router: SocketIOApp) {
 			throw { code: 400, message: validationErrors };
 		}
 	});
-	router.route('activateSession', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.ACTIVATE_SESSION, async (socket, req) => {
 		await runChecklist(socket, req);
 		try {
 			await activateSession(req.body.seid);
@@ -98,7 +89,7 @@ export default function sessionController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('deleteSession', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.DELETE_SESSION, async (socket, req) => {
 		await runChecklist(socket, req);
 		try {
 			await removeSession(req.body.seid);
@@ -108,7 +99,7 @@ export default function sessionController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('exportSession', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.EXPORT_SESSION, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			return await exportSession(req.body.seid);

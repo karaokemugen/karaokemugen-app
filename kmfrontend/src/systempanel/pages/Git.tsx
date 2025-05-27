@@ -30,6 +30,7 @@ import { Commit, ModifiedMedia } from '../../../../src/types/repo';
 import { commandBackend, getSocket } from '../../utils/socket';
 import { displayMessage } from '../../utils/tools';
 import Title from '../components/Title';
+import { WS_CMD } from '../../utils/ws';
 
 type CommitWithComment = Commit & { comment: string; filesModified: boolean };
 
@@ -46,13 +47,13 @@ interface Repo {
 }
 
 async function getRepos(): Promise<Repo[]> {
-	const repos: Repository[] = await commandBackend('getRepos');
+	const repos: Repository[] = await commandBackend(WS_CMD.GET_REPOS);
 	return Promise.all(
 		repos
 			.filter(repo => repo.Online && repo.MaintainerMode && repo.Enabled && repo.Git?.URL)
 			.map(async repo => {
-				const gitStatus: GitStatusResult = await commandBackend('checkRepo', { repoName: repo.Name });
-				const stashes: GitLogResult = await commandBackend('listRepoStashes', { repoName: repo.Name });
+				const gitStatus: GitStatusResult = await commandBackend(WS_CMD.CHECK_REPO, { repoName: repo.Name });
+				const stashes: GitLogResult = await commandBackend(WS_CMD.LIST_REPO_STASHES, { repoName: repo.Name });
 				let label = i18next.t('REPOSITORIES.GIT_STATUSES.CLEAN');
 				if (gitStatus.behind > 0) {
 					label = i18next.t('REPOSITORIES.GIT_STATUSES.BEHIND');
@@ -78,7 +79,7 @@ function StashList(props: {
 	const popStash = index => {
 		try {
 			props.setLoading(true);
-			commandBackend('popStash', { repoName: props.repo.Name, stashId: index }, false, 120000).then(
+			commandBackend(WS_CMD.POP_STASH, { repoName: props.repo.Name, stashId: index }, false, 120000).then(
 				props.refreshRepo
 			);
 		} catch (_) {
@@ -89,7 +90,7 @@ function StashList(props: {
 	const dropStash = index => {
 		try {
 			props.setLoading(true);
-			commandBackend('dropStash', { repoName: props.repo.Name, stashId: index }, false, 120000).then(
+			commandBackend(WS_CMD.DROP_STASH, { repoName: props.repo.Name, stashId: index }, false, 120000).then(
 				props.refreshRepo
 			);
 		} catch (_) {
@@ -166,11 +167,11 @@ export default function Git() {
 
 	const generateCommits = useCallback(async (repoName: string) => {
 		setLoading(true);
-		const commits = await commandBackend('getCommits', { repoName }, false, 600000).catch(() => null);
+		const commits = await commandBackend(WS_CMD.GET_COMMITS, { repoName }, false, 600000).catch(() => null);
 		if (!commits) {
 			const dummyPush = { commits: [], modifiedMedias: [] };
 			setPendingPush({ repoName, commits: dummyPush });
-			await commandBackend('pushCommits', { repoName, commits: dummyPush });
+			await commandBackend(WS_CMD.PUSH_COMMITS, { repoName, commits: dummyPush });
 			displayMessage('info', i18next.t('REPOSITORIES.GIT_NOTHING_TO_PUSH'));
 		} else {
 			setPendingPush({ repoName, commits });
@@ -180,7 +181,7 @@ export default function Git() {
 
 	const updateRepo = useCallback(async (repoName: string) => {
 		setLoading(true);
-		await commandBackend('updateRepo', { repoName }, false, 300000).catch(() => null);
+		await commandBackend(WS_CMD.UPDATE_REPO, { repoName }, false, 300000).catch(() => null);
 		setLoading(false);
 		// Refresh repos
 		getRepos().then(setRepos);
@@ -208,7 +209,7 @@ export default function Git() {
 		);
 		if (squash) pendingPush.commits.squash = squashMessage;
 		if (!squash || squashMessage !== '') {
-			await commandBackend('pushCommits', pendingPush);
+			await commandBackend(WS_CMD.PUSH_COMMITS, pendingPush);
 			setShowPushModal(false);
 		} else {
 			setLoading(false);
@@ -237,7 +238,7 @@ export default function Git() {
 	);
 
 	const showDangerousActions = useCallback(async (repoName: string) => {
-		const git: GitStatusResult = await commandBackend('checkRepo', { repoName });
+		const git: GitStatusResult = await commandBackend(WS_CMD.CHECK_REPO, { repoName });
 		setGitStatus({ ...git, repoName });
 		setShowActionsModal(true);
 	}, []);
@@ -249,10 +250,10 @@ export default function Git() {
 			// eslint-disable-next-line default-case
 			switch (action) {
 				case 'stash':
-					await commandBackend('stashRepo', { repoName });
+					await commandBackend(WS_CMD.STASH_REPO, { repoName });
 					break;
 				case 'reset':
-					await commandBackend('resetRepo', { repoName });
+					await commandBackend(WS_CMD.RESET_REPO, { repoName });
 					break;
 			}
 		} catch (_) {
@@ -271,7 +272,7 @@ export default function Git() {
 	const diffFile = async (e: MouseEvent, file: string) => {
 		e.stopPropagation();
 		e.preventDefault();
-		const diff = await commandBackend('getFileDiff', {
+		const diff = await commandBackend(WS_CMD.GET_FILE_DIFF, {
 			file,
 			repoName: pendingPush.repoName,
 		});

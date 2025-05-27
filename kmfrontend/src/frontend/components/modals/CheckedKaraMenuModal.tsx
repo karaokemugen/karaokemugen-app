@@ -8,6 +8,7 @@ import { getOppositePlaylistInfo, getPlaylistInfo } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { displayMessage, is_touch_device, isNonStandardPlaylist, nonStandardPlaylists } from '../../../utils/tools';
 import { KaraElement } from '../../types/kara';
+import { WS_CMD } from '../../../utils/ws';
 
 interface IProps {
 	checkedKaras: KaraElement[];
@@ -33,7 +34,7 @@ function CheckedKaraMenuModal(props: IProps) {
 			return;
 		}
 		try {
-			await commandBackend('editPLC', {
+			await commandBackend(WS_CMD.EDIT_PLC, {
 				plc_ids: props.checkedKaras.map(a => a.plcid),
 				flag_free: true,
 			});
@@ -50,7 +51,7 @@ function CheckedKaraMenuModal(props: IProps) {
 			return;
 		}
 		try {
-			commandBackend('editPLC', {
+			commandBackend(WS_CMD.EDIT_PLC, {
 				plc_ids: props.checkedKaras.map(a => a.plcid),
 				flag_visible: true,
 			});
@@ -67,7 +68,7 @@ function CheckedKaraMenuModal(props: IProps) {
 			return;
 		}
 		try {
-			commandBackend('editPLC', {
+			commandBackend(WS_CMD.EDIT_PLC, {
 				plc_ids: props.checkedKaras.map(a => a.plcid),
 				flag_visible: false,
 			});
@@ -84,7 +85,7 @@ function CheckedKaraMenuModal(props: IProps) {
 			return;
 		}
 		try {
-			commandBackend('addFavorites', {
+			commandBackend(WS_CMD.ADD_FAVORITES, {
 				kids: props.checkedKaras.map(a => a.kid),
 			});
 			setEffectFavorite(true);
@@ -100,7 +101,7 @@ function CheckedKaraMenuModal(props: IProps) {
 			return;
 		}
 		try {
-			commandBackend('addCriterias', {
+			commandBackend(WS_CMD.ADD_CRITERIAS, {
 				criterias: props.checkedKaras.map(a => {
 					return { type: 1001, value: a.kid, plaid: context.globalState.settings.data.state.blacklistPlaid };
 				}),
@@ -118,7 +119,7 @@ function CheckedKaraMenuModal(props: IProps) {
 			return;
 		}
 		try {
-			commandBackend('addCriterias', {
+			commandBackend(WS_CMD.ADD_CRITERIAS, {
 				criterias: props.checkedKaras.map(a => {
 					return { type: 1001, value: a.kid, plaid: context.globalState.settings.data.state.whitelistPlaid };
 				}),
@@ -137,7 +138,7 @@ function CheckedKaraMenuModal(props: IProps) {
 		}
 		try {
 			commandBackend(
-				'randomizePLC',
+				WS_CMD.RANDOMIZE_PLC,
 				{
 					plc_ids: props.checkedKaras.map(a => a.plcid),
 				},

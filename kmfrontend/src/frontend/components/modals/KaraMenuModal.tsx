@@ -8,6 +8,9 @@ import { getOppositePlaylistInfo, getPlaylistInfo } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { is_touch_device, isNonStandardPlaylist, nonStandardPlaylists } from '../../../utils/tools';
 import { KaraElement } from '../../types/kara';
+import { WS_CMD } from '../../../utils/ws';
+import { DBKara } from '../../../../../src/lib/types/database/kara';
+import { WSCmdDefinition } from '../../../../../src/lib/types/frontend';
 
 interface IProps {
 	kara: KaraElement;
@@ -30,14 +33,14 @@ function KaraMenuModal(props: IProps) {
 
 	const getKaraDetail = async () => {
 		try {
-			let url;
+			let url: WSCmdDefinition<object, DBKara>;
 			let data;
 			const playlist = getPlaylistInfo(props.side, context);
 			if (playlist && isNonStandardPlaylist(playlist.plaid)) {
-				url = 'getKara';
+				url = WS_CMD.GET_KARA;
 				data = { kid: props.kara.kid };
 			} else {
-				url = 'getPLC';
+				url = WS_CMD.GET_PLC;
 				data = {
 					plc_id: props.kara.plcid,
 				};
@@ -52,7 +55,7 @@ function KaraMenuModal(props: IProps) {
 
 	const freeKara = () => {
 		try {
-			commandBackend('editPLC', {
+			commandBackend(WS_CMD.EDIT_PLC, {
 				plc_ids: [kara?.plcid],
 				flag_free: true,
 			});
@@ -65,7 +68,7 @@ function KaraMenuModal(props: IProps) {
 
 	const changeVisibilityKara = () => {
 		try {
-			commandBackend('editPLC', {
+			commandBackend(WS_CMD.EDIT_PLC, {
 				plc_ids: [kara?.plcid],
 				flag_visible: !kara?.flag_visible,
 			});
@@ -78,7 +81,7 @@ function KaraMenuModal(props: IProps) {
 
 	const makeFavorite = () => {
 		try {
-			commandBackend(kara?.flag_favorites ? 'deleteFavorites' : 'addFavorites', {
+			commandBackend(kara?.flag_favorites ? WS_CMD.DELETE_FAVORITES : WS_CMD.ADD_FAVORITES, {
 				kids: [kara?.kid],
 			});
 			setEffectFavorite(true);
@@ -90,7 +93,7 @@ function KaraMenuModal(props: IProps) {
 
 	const addToBlacklist = () => {
 		try {
-			commandBackend('addCriterias', {
+			commandBackend(WS_CMD.ADD_CRITERIAS, {
 				criterias: [
 					{
 						type: 1001,
@@ -108,7 +111,7 @@ function KaraMenuModal(props: IProps) {
 
 	const addToWhitelist = () => {
 		try {
-			commandBackend('addCriterias', {
+			commandBackend(WS_CMD.ADD_CRITERIAS, {
 				criterias: [
 					{
 						type: 1001,
@@ -127,7 +130,7 @@ function KaraMenuModal(props: IProps) {
 	const shuffleSongs = () => {
 		try {
 			commandBackend(
-				'randomizePLC',
+				WS_CMD.RANDOMIZE_PLC,
 				{
 					plc_ids: [kara?.plcid],
 				},
@@ -204,7 +207,7 @@ function KaraMenuModal(props: IProps) {
 					<div
 						onClick={() => {
 							try {
-								commandBackend('editPLC', {
+								commandBackend(WS_CMD.EDIT_PLC, {
 									pos: -1,
 									plc_ids: [props.kara.plcid],
 								});

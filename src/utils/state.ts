@@ -133,7 +133,7 @@ function emitQuizState(part: RecursivePartial<State>) {
 }
 
 /** Get current app state object */
-export function getState() {
+export function getState(): State {
 	return { ...state };
 }
 

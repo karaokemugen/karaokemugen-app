@@ -8,6 +8,7 @@ import { isElectron } from '../../../utils/electron';
 import { langSupport } from '../../../utils/isoLanguages';
 import { commandBackend } from '../../../utils/socket';
 import { displayMessage } from '../../../utils/tools';
+import { WS_CMD } from '../../../utils/ws';
 
 function SetupPageUser() {
 	const context = useContext(GlobalContext);
@@ -38,7 +39,7 @@ function SetupPageUser() {
 		}
 
 		try {
-			await commandBackend('createUser', {
+			await commandBackend(WS_CMD.CREATE_USER, {
 				login: username,
 				password: password,
 				role: 'admin',
@@ -79,14 +80,14 @@ function SetupPageUser() {
 	const loginFinish = async (securityCode: number) => {
 		try {
 			const username = login + (accountType === 'online' ? '@' + instance : '');
-			const infos = await commandBackend('login', {
+			const infos = await commandBackend(WS_CMD.LOGIN, {
 				username: username,
 				password: password,
 				securityCode: securityCode,
 			});
 			setAuthenticationInformation(context.globalDispatch, infos);
 			setError(undefined);
-			navigate('/setup/repo');
+			navigate('/setup/stats');
 		} catch (err: any) {
 			const error = err?.message?.code ? i18next.t(`ERROR_CODES.${err.message.code}`) : JSON.stringify(err);
 			setError(error);

@@ -8,6 +8,7 @@ import { User } from '../../../../../src/lib/types/user';
 import { commandBackend } from '../../../utils/socket';
 import Title from '../../components/Title';
 import dayjs from 'dayjs';
+import { WS_CMD } from '../../../utils/ws';
 
 function UserList() {
 	const [users, setUsers] = useState([] as User[]);
@@ -102,11 +103,11 @@ function UserList() {
 	});
 
 	const refresh = async () => {
-		const res = await commandBackend('getUsers');
+		const res = await commandBackend(WS_CMD.GET_USERS);
 		setUsers(res);
 	};
 	const deleteUser = async username => {
-		await commandBackend('deleteUser', { username }, true);
+		await commandBackend(WS_CMD.DELETE_USER, { username }, true);
 		setDeleteModal(false);
 		refresh();
 	};

@@ -1,7 +1,5 @@
-import { Socket } from 'socket.io';
-
+import { WS_CMD } from '../../../kmfrontend/src/utils/ws.js';
 import { APIMessage } from '../../lib/services/frontend.js';
-import { APIData } from '../../lib/types/api.js';
 import { check } from '../../lib/utils/validators.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
 import { resetSecurityCode } from '../../services/auth.js';
@@ -17,7 +15,7 @@ import { getState } from '../../utils/state.js';
 import { runChecklist } from '../middlewares.js';
 
 export default function userController(router: SocketIOApp) {
-	router.route('getUsers', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_USERS, async (socket, req) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		try {
 			return await getUsers({
@@ -27,7 +25,7 @@ export default function userController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('createUser', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.CREATE_USER, async (socket, req) => {
 		await runChecklist(socket, req, 'guest', 'limited', { optionalAuth: true });
 		// Validate form data
 		const validationErrors = check(req.body, {
@@ -57,7 +55,7 @@ export default function userController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('getUser', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_USER, async (socket, req) => {
 		await runChecklist(socket, req, 'guest', 'limited', { optionalAuth: true });
 		try {
 			return await getUser(req.body.username, true, false, req.token?.role || 'guest');
@@ -65,7 +63,7 @@ export default function userController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('deleteUser', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.DELETE_USER, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'closed');
 		try {
 			await removeUser(req.body.username);
@@ -74,12 +72,12 @@ export default function userController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('editUser', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.EDIT_USER, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'closed');
 		try {
 			// If we're modifying a online user (@) only editing its type is permitted, so we'll filter that out.
 			const user = req.body.login.includes('@')
-				? { type: req.body.type, flag_tutorial_done: req.body.flag_tutorial_done }
+				? { type: req.body.type, flag_tutorial_done: req.body.flag_tutorial_done, login: req.body.login }
 				: req.body;
 			const avatar = req.body.login.includes('@') ? null : req.body.avatar;
 
@@ -92,7 +90,7 @@ export default function userController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('resetUserPassword', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.RESET_USER_PASSWORD, async (socket, req) => {
 		await runChecklist(socket, req, 'guest', 'closed', { optionalAuth: true });
 		if (!req.body.username.includes('@')) {
 			if (+req.body.securityCode === getState().securityCode) {
@@ -124,7 +122,7 @@ export default function userController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('getMyAccount', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_MY_ACCOUNT, async (socket, req) => {
 		await runChecklist(socket, req, 'guest', 'closed');
 		try {
 			return await getUser(req.token.username, true);
@@ -133,7 +131,7 @@ export default function userController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('deleteMyAccount', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.DELETE_MY_ACCOUNT, async (socket, req) => {
 		await runChecklist(socket, req, 'user', 'closed');
 		try {
 			await removeUser(req.token.username);
@@ -143,7 +141,7 @@ export default function userController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('editMyAccount', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.EDIT_MY_ACCOUNT, async (socket, req) => {
 		await runChecklist(socket, req, 'user', 'closed');
 
 		try {
@@ -156,7 +154,7 @@ export default function userController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('convertMyLocalUserToOnline', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.CONVERT_MY_LOCAL_USER_TO_ONLINE, async (socket, req) => {
 		await runChecklist(socket, req, 'user', 'closed');
 		const validationErrors = check(req.body, {
 			instance: { presence: true },
@@ -177,7 +175,7 @@ export default function userController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('convertMyOnlineUserToLocal', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.CONVERT_MY_ONLINE_USER_TO_LOCAL, async (socket, req) => {
 		await runChecklist(socket, req, 'user', 'closed');
 		const validationErrors = check(req.body, {
 			password: { presence: true },
@@ -197,7 +195,7 @@ export default function userController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('refreshAnimeList', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.REFRESH_ANIME_LIST, async (socket, req) => {
 		await runChecklist(socket, req, 'user', 'closed');
 		try {
 			await refreshAnimeList(req.token.username, req.onlineAuthorization);
@@ -206,11 +204,20 @@ export default function userController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('getAnimeList', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_ANIME_LIST, async (socket, req) => {
 		await runChecklist(socket, req, 'guest', 'closed');
 		try {
 			if (req.token.role === 'guest') {
-				return [];
+				return {
+					content: [],
+					avatars: undefined,
+					infos: {
+						count: 0,
+						from: 0,
+						to: 0,
+					},
+					i18n: undefined,
+				};
 			}
 			return await getKaras({
 				username: req.token.username.toLowerCase(),

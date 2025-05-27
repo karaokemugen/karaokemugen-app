@@ -8,6 +8,7 @@ import ReactAudioPlayer from 'react-audio-player';
 import { supportedFiles } from '../../../../src/lib/utils/constants';
 import { commandBackend } from '../../utils/socket';
 import Title from '../components/Title';
+import { WS_CMD } from '../../utils/ws';
 
 export type BackgroundType = 'pause' | 'stop' | 'poll';
 
@@ -38,8 +39,8 @@ export default function Background() {
 		return result;
 	};
 
-	const getBgByType = async (type: string) => {
-		const res = await commandBackend('getBackgroundFiles', { type });
+	const getBgByType = async (type: 'pause' | 'stop' | 'poll' | 'bundled') => {
+		const res = await commandBackend(WS_CMD.GET_BACKGROUND_FILES, { type });
 		return formatBgList(res, type);
 	};
 
@@ -52,7 +53,7 @@ export default function Background() {
 	};
 
 	const deleteBg = (record: ElementBackgroundList) => {
-		commandBackend('removeBackground', record);
+		commandBackend(WS_CMD.REMOVE_BACKGROUND, record);
 		getBgList();
 	};
 
@@ -67,7 +68,7 @@ export default function Background() {
 				onlineAuthorization: localStorage.getItem('kmOnlineToken'),
 			},
 		});
-		await commandBackend('addBackground', { type, file: await response.json() });
+		await commandBackend(WS_CMD.ADD_BACKGROUND, { type, file: await response.json() });
 		setFile(undefined);
 		closeModal();
 		getBgList();

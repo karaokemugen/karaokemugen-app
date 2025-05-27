@@ -7,6 +7,7 @@ import GlobalContext from '../../../store/context';
 import { getSerieOrSingerGroupsOrSingers, getTagInLocaleList, getTitleInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import Title from '../../components/Title';
+import { WS_CMD } from '../../../utils/ws';
 
 function Ranking() {
 	const context = useContext(GlobalContext);
@@ -20,7 +21,7 @@ function Ranking() {
 
 	const refresh = async () => {
 		try {
-			const res = await commandBackend('getKaras', { order: 'requestedLocal', ignoreCollections: true });
+			const res = await commandBackend(WS_CMD.GET_KARAS, { order: 'requestedLocal', ignoreCollections: true });
 			setKaras(res.content);
 			setI18n(res.i18n);
 		} catch (_) {

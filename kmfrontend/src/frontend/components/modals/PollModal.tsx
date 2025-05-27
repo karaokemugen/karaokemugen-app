@@ -8,6 +8,7 @@ import { closeModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
+import { WS_CMD } from '../../../utils/ws';
 
 const colorPalette = [0, 63, 127, 191, 255];
 
@@ -21,7 +22,7 @@ function PollModal() {
 	const interval = useRef<NodeJS.Timeout>();
 
 	const getSongPoll = async () => {
-		const response: PollObject = await commandBackend('getPoll');
+		const response: PollObject = await commandBackend(WS_CMD.GET_POLL);
 		setPoll(response.poll);
 		setVoted(response.flag_uservoted ? 0 : -1);
 		setTimeLeft(response.timeLeft);
@@ -35,7 +36,12 @@ function PollModal() {
 		try {
 			if (voted === -1) {
 				const button: HTMLButtonElement = (event.target as HTMLButtonElement).closest('button');
-				await commandBackend('votePoll', { index: button.value });
+				let index = parseInt(button.value);
+				if (isNaN(index)) {
+					// ToDo: handle inconvertible number
+				}
+
+				await commandBackend(WS_CMD.VOTE_POLL, { index });
 				setVoted(parseInt(button.value));
 			}
 		} catch (_) {

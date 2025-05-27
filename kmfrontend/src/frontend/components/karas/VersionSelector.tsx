@@ -9,6 +9,7 @@ import { getTitleInLocale } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { PLCCallback } from '../../../utils/tools';
 import KaraList from './KaraList';
+import { WS_CMD } from '../../../utils/ws';
 
 interface Props {
 	kid: string;
@@ -16,14 +17,15 @@ interface Props {
 }
 
 async function fetchKaras(kid): Promise<IKaraList<DBKara>> {
-	const karaParent: DBKara = await commandBackend('getKara', { kid });
-	const karaChildren: IKaraList = await commandBackend('getKaras', {
+	const karaParent: DBKara = await commandBackend(WS_CMD.GET_KARA, { kid });
+	const karaChildren: IKaraList = await commandBackend(WS_CMD.GET_KARAS, {
 		q: `k:${karaParent.children.join(',')}`,
 	});
 	return {
 		infos: { count: karaChildren.content.length + 1, from: 0, to: karaChildren.content.length },
 		content: [karaParent, ...karaChildren.content],
 		i18n: karaChildren.i18n,
+		avatars: karaChildren.avatars,
 	};
 }
 
@@ -36,7 +38,7 @@ export default function VersionSelector(props: Props) {
 	const addKara = async (e, kara) => {
 		try {
 			e.stopPropagation();
-			const res = await commandBackend('addKaraToPublicPlaylist', {
+			const res = await commandBackend(WS_CMD.ADD_KARA_TO_PUBLIC_PLAYLIST, {
 				requestedby: context.globalState.auth.data.username,
 				kids: [kara.kid],
 			});

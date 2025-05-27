@@ -388,7 +388,7 @@ export async function exportPlaylistMedia(
 					kara.lyrics_infos[0]?.filename,
 					resolvedPathRepos('Lyrics', kara.repository)
 				);
-				const destBaseFile = sanitizeFile(kara.songname);
+				const destBaseFile = sanitizeFile(kara.songname || kara.mediafile);
 				logger.debug(`Copying ${karaMediaPath[0]} to ${exportDir}`, { service });
 				task.update({
 					subtext: destBaseFile,
@@ -1373,6 +1373,10 @@ export async function importPlaylist(playlist: PlaylistExport, username: string,
 			}
 		}
 		// Validations done. First creating playlist.
+		// If no flag_playing was set, set it on the first song
+		if (!flag_playingDetected) {
+			playlist.PlaylistContents[0].flag_playing = true;
+		}
 		if (!plaid) {
 			plaid = await createPlaylist(playlist.PlaylistInformation, username);
 		} else {

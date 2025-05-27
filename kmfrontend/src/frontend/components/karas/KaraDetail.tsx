@@ -6,7 +6,7 @@ import { createPortal } from 'react-dom';
 import { useParams } from 'react-router-dom';
 
 import { ASSLine } from '../../../../../src/lib/types/ass';
-import { lastplayed_ago } from '../../../../../src/lib/types/database/kara';
+import { DBKara, lastplayed_ago } from '../../../../../src/lib/types/database/kara';
 import { DBPLCInfo } from '../../../../../src/types/database/playlist';
 import { KaraDownloadRequest } from '../../../../../src/types/download';
 import { setBgImage } from '../../../store/actions/frontendContext';
@@ -31,6 +31,8 @@ import UpvoteKaraButton from '../generic/buttons/UpvoteKaraButton';
 import VideoPreview from '../generic/VideoPreview';
 import InlineTag from './InlineTag';
 import dayjs from 'dayjs';
+import { WS_CMD } from '../../../utils/ws';
+import { WSCmdDefinition } from '../../../../../src/lib/types/frontend';
 
 interface IProps {
 	kid?: string;
@@ -83,13 +85,13 @@ export default function KaraDetail(props: IProps) {
 
 	const getKaraDetail = async (kid?: string) => {
 		try {
-			let url: string;
+			let url: WSCmdDefinition<object, DBKara>;
 			let data: { plc_id?: number; kid?: string };
 			if (plc_id) {
-				url = 'getPLC';
+				url = WS_CMD.GET_PLC;
 				data = { plc_id: plc_id };
 			} else {
-				url = 'getKara';
+				url = WS_CMD.GET_KARA;
 				data = { kid: kid ? kid : id };
 			}
 			const karaGet = await commandBackend(url, data);
@@ -119,7 +121,7 @@ export default function KaraDetail(props: IProps) {
 
 	const fetchLyrics = async () => {
 		try {
-			let response = await commandBackend('getKaraLyrics', { kid: kara.kid });
+			let response = await commandBackend(WS_CMD.GET_KARA_LYRICS, { kid: kara.kid });
 			if (response?.length > 0) {
 				response = formatLyrics(response);
 			}
@@ -179,7 +181,7 @@ export default function KaraDetail(props: IProps) {
 			name: buildKaraTitle(context.globalState.settings.data, kara, true) as string,
 			repository: kara.repository,
 		};
-		commandBackend('addDownloads', { downloads: [downloadObject] }).catch(() => {});
+		commandBackend(WS_CMD.ADD_DOWNLOADS, { downloads: [downloadObject] }).catch(() => {});
 	};
 
 	const placeHeader = (headerEl: ReactNode) => createPortal(headerEl, document.getElementById('menu-supp-root'));

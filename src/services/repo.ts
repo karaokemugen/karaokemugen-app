@@ -1421,7 +1421,7 @@ export async function generateCommits(repoName: string) {
 			let songname: string;
 			if (isUUID(filename)) {
 				const dbKara = await getKara(filename, adminToken);
-				songname = dbKara.songname;
+				songname = dbKara.songname || filename;
 			}
 			const commit: Commit = {
 				addedFiles: [file],
@@ -1438,7 +1438,7 @@ export async function generateCommits(repoName: string) {
 			let songname: string;
 			if (isUUID(filename)) {
 				const dbKara = await getKara(filename, adminToken);
-				songname = dbKara.songname;
+				songname = dbKara.songname || filename;
 			}
 			const commit: Commit = {
 				addedFiles: [],

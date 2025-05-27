@@ -11,6 +11,7 @@ import GlobalContext from '../../../store/context';
 import ProfilePicture from '../../../utils/components/ProfilePicture';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { acceptedAnswerToIcon } from '../../../utils/tagTypes';
+import { WS_CMD } from '../../../utils/ws';
 
 function QuizScore() {
 	const context = useContext(GlobalContext);
@@ -20,8 +21,8 @@ function QuizScore() {
 	const userTotalScores = useAsyncMemo(
 		async () => {
 			const [users, scores]: [User[], GameTotalScore[]] = await Promise.all([
-				commandBackend('getUsers'),
-				commandBackend('getTotalGameScore', {
+				commandBackend(WS_CMD.GET_USERS),
+				commandBackend(WS_CMD.GET_TOTAL_GAME_SCORE, {
 					gamename: context.globalState.settings.data.state.quiz.currentQuizGame,
 				}),
 			]);
@@ -43,7 +44,7 @@ function QuizScore() {
 			setForceScore(!forceScore);
 		};
 
-		commandBackend('getGameState').then(gameState => {
+		commandBackend(WS_CMD.GET_GAME_STATE).then(gameState => {
 			updateQuizState(gameState);
 		});
 

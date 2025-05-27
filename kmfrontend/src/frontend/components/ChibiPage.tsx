@@ -14,6 +14,7 @@ import KmAppHeaderDecorator from './decorators/KmAppHeaderDecorator';
 import KmAppWrapperDecorator from './decorators/KmAppWrapperDecorator';
 import ProgressBar from './karas/ProgressBar';
 import PlayerControls from './PlayerControls';
+import { WS_CMD } from '../../utils/ws';
 
 function ChibiPage() {
 	const context = useContext(GlobalContext);
@@ -23,7 +24,7 @@ function ChibiPage() {
 	const [playlistList, setPlaylistList] = useState<PlaylistElem[]>([]);
 
 	const getPlaylistList = async () => {
-		const res = await commandBackend('getPlaylists');
+		const res = await commandBackend(WS_CMD.GET_PLAYLISTS);
 		setPlaylistList(res);
 	};
 
@@ -62,7 +63,7 @@ function ChibiPage() {
 				command: namecommand,
 			};
 		}
-		commandBackend('sendPlayerCommand', data).catch(() => {});
+		commandBackend(WS_CMD.SEND_PLAYER_COMMAND, data).catch(() => {});
 	};
 
 	const electronCmd = (event: any) => {
@@ -85,7 +86,7 @@ function ChibiPage() {
 		if (context.globalState.auth.isAuthenticated) {
 			getSocket().on('playerStatus', playerUpdate);
 			try {
-				const result = await commandBackend('getPlayerStatus');
+				const result = await commandBackend(WS_CMD.GET_PLAYER_STATUS);
 				playerUpdate(result);
 			} catch (_) {
 				// already display

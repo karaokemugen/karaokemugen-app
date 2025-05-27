@@ -18,7 +18,7 @@ async function writeCurrentSong() {
 	const song = getState().player.currentSong;
 	const media = getState().player.currentMedia;
 	if (song) {
-		output = song.songname;
+		output = song.songname || song.mediafile;
 	} else if (media) {
 		output = getState().player.mediaType;
 	} else {
@@ -37,7 +37,7 @@ async function writeNextSongAndRequester() {
 		const song = await getNextSong();
 		await fs.writeFile(
 			resolve(resolvedPath('StreamFiles'), 'next_song_name.txt'),
-			song ? song.songname : '',
+			song ? song.songname || song.mediafile : '',
 			'utf-8'
 		);
 		await fs.writeFile(resolve(resolvedPath('StreamFiles'), 'next_requester.txt'), song?.nickname || '', 'utf-8');

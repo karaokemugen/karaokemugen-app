@@ -1,8 +1,6 @@
-import { Socket } from 'socket.io';
-
+import { WS_CMD } from '../../../kmfrontend/src/utils/ws.js';
 import { APIMessage } from '../../lib/services/frontend.js';
 import { getRepoManifest } from '../../lib/services/repo.js';
-import { APIData } from '../../lib/types/api.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
 import {
 	addRepo,
@@ -37,7 +35,7 @@ import { generateSSHKey, getSSHPubKey, removeSSHKey } from '../../utils/ssh.js';
 import { runChecklist } from '../middlewares.js';
 
 export default function repoController(router: SocketIOApp) {
-	router.route('getSSHPubKey', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_SSHPUB_KEY, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'closed');
 		try {
 			return getSSHPubKey(req.body.repoName);
@@ -45,7 +43,7 @@ export default function repoController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('generateSSHKey', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GENERATE_SSHKEY, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'closed');
 		try {
 			return generateSSHKey(req.body.repoName);
@@ -53,7 +51,7 @@ export default function repoController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('removeSSHKey', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.REMOVE_SSHKEY, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'closed');
 		try {
 			return removeSSHKey(req.body.repoName);
@@ -61,7 +59,7 @@ export default function repoController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('convertRepoToUUID', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.CONVERT_REPO_TO_UUID, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'closed');
 		try {
 			return convertToUUIDFormat(req.body.repoName);
@@ -70,7 +68,7 @@ export default function repoController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('getRepos', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_REPOS, async (socket, req) => {
 		await runChecklist(socket, req, 'guest', 'closed', { optionalAuth: true });
 		try {
 			return getRepos(null, req.token?.role !== 'admin');
@@ -78,7 +76,7 @@ export default function repoController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('addRepo', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.ADD_REPO, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			await addRepo(req.body);
@@ -87,7 +85,7 @@ export default function repoController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('getRepo', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_REPO, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			const repo = getRepo(req.body.name);
@@ -96,7 +94,7 @@ export default function repoController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('getRepoManifest', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_REPO_MANIFEST, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			const manifest = getRepoManifest(req.body.name);
@@ -107,7 +105,7 @@ export default function repoController(router: SocketIOApp) {
 			throw { code: err?.code || 500, message: APIMessage(code) };
 		}
 	});
-	router.route('deleteRepo', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.DELETE_REPO, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			await removeRepo(req.body.name);
@@ -116,7 +114,7 @@ export default function repoController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('editRepo', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.EDIT_REPO, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			await editRepo(req.body.name, req.body.newRepo);
@@ -125,7 +123,7 @@ export default function repoController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('getUnusedTags', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_UNUSED_TAGS, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			return await findUnusedTags(req.body.name);
@@ -133,7 +131,7 @@ export default function repoController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('getUnusedMedias', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_UNUSED_MEDIAS, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			return await findUnusedMedias(req.body.name);
@@ -142,7 +140,7 @@ export default function repoController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('movingMediaRepo', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.MOVING_MEDIA_REPO, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			movingMediaRepo(req.body.name, req.body.path).catch(() => {});
@@ -151,7 +149,7 @@ export default function repoController(router: SocketIOApp) {
 			// This is async, check function to know which WS event you get
 		}
 	});
-	router.route('compareLyricsBetweenRepos', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.COMPARE_LYRICS_BETWEEN_REPOS, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			return await compareLyricsChecksums(req.body.repo1, req.body.repo2);
@@ -159,7 +157,7 @@ export default function repoController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('syncTagsBetweenRepos', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.SYNC_TAGS_BETWEEN_REPOS, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			return await syncTagsFromRepo(req.body.repoSourceName, req.body.repoDestName);
@@ -167,7 +165,7 @@ export default function repoController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('copyLyricsBetweenRepos', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.COPY_LYRICS_BETWEEN_REPOS, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			await copyLyricsRepo(req.body.report);
@@ -176,7 +174,7 @@ export default function repoController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('openMediaFolder', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.OPEN_MEDIA_FOLDER, async (socket, req) => {
 		await runChecklist(socket, req, 'admin');
 		try {
 			await openMediaFolder(req.body.name);
@@ -184,7 +182,7 @@ export default function repoController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('deleteAllRepoMedias', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.DELETE_ALL_REPO_MEDIAS, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			await deleteMedias(null, req.body?.name);
@@ -193,7 +191,7 @@ export default function repoController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('deleteOldRepoMedias', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.DELETE_OLD_REPO_MEDIAS, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			await deleteMedias(null, req.body?.name, true);
@@ -202,7 +200,7 @@ export default function repoController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('deleteMedias', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.DELETE_MEDIAS, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			await deleteMedias(req.body?.kids);
@@ -211,7 +209,7 @@ export default function repoController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('getRepoFreeSpace', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_REPO_FREE_SPACE, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			return await getRepoFreeSpace(req.body?.repoName);
@@ -219,7 +217,7 @@ export default function repoController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('updateAllRepos', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.UPDATE_ALL_REPOS, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			updateAllRepos();
@@ -228,7 +226,7 @@ export default function repoController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('updateRepo', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.UPDATE_REPO, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			await updateGitRepo(req.body.repoName);
@@ -237,7 +235,7 @@ export default function repoController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('stashRepo', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.STASH_REPO, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			await stashGitRepo(req.body.repoName);
@@ -246,7 +244,7 @@ export default function repoController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('checkRepo', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.CHECK_REPO, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			return await checkGitRepoStatus(req.body.repoName);
@@ -255,7 +253,7 @@ export default function repoController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('listRepoStashes', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.LIST_REPO_STASHES, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			return await listRepoStashes(req.body.repoName);
@@ -264,7 +262,7 @@ export default function repoController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('getFileDiff', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_FILE_DIFF, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'closed');
 		try {
 			return await getFileDiff(req.body.file, req.body.repoName);
@@ -273,7 +271,7 @@ export default function repoController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('popStash', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.POP_STASH, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			return await unstashInRepo(req.body.repoName, req.body.stashId);
@@ -282,7 +280,7 @@ export default function repoController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('dropStash', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.DROP_STASH, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			return await dropStashInRepo(req.body.repoName, req.body.stashId);
@@ -291,7 +289,7 @@ export default function repoController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('resetRepo', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.RESET_REPO, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			await resetRepo(req.body.repoName);
@@ -299,7 +297,7 @@ export default function repoController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('getCommits', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_COMMITS, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			return await generateCommits(req.body.repoName);
@@ -307,7 +305,7 @@ export default function repoController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('uploadMedia', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.UPLOAD_MEDIA, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			await uploadMedia(req.body.kid);
@@ -315,7 +313,7 @@ export default function repoController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('pushCommits', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.PUSH_COMMITS, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			pushCommits(req.body.repoName, req.body.commits, req.body.ignoreFTP);

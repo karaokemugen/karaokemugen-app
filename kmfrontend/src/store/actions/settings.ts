@@ -22,6 +22,7 @@ import 'dayjs/locale/ta';
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import { WS_CMD } from '../../utils/ws';
 
 export async function setSettings(
 	dispatch: Dispatch<SettingsSuccess | SettingsFailure>,
@@ -33,16 +34,16 @@ export async function setSettings(
 			version: Version;
 			config: Config;
 			state: PublicState;
-		} = await commandBackend('getSettings');
+		} = await commandBackend(WS_CMD.GET_SETTINGS);
 		dayjs.extend(localizedFormat);
 		dayjs.extend(relativeTime);
 		if (!withoutProfile) {
 			try {
 				if (!res.config.System) {
-					res.config.System = { Repositories: await commandBackend('getRepos') } as Config['System'];
+					res.config.System = { Repositories: await commandBackend(WS_CMD.GET_REPOS) } as Config['System'];
 				}
-				const user: User = await commandBackend('getMyAccount');
-				const favorites = await commandBackend('getFavoritesMicro');
+				const user: User = await commandBackend(WS_CMD.GET_MY_ACCOUNT);
+				const favorites = await commandBackend(WS_CMD.GET_FAVORITES_MICRO);
 				const favoritesSet = new Set<string>();
 				for (const kara of favorites) {
 					favoritesSet.add(kara.kid);
@@ -53,7 +54,7 @@ export async function setSettings(
 				if (!user.language && user.type < 2) {
 					user.language = langSupport;
 					try {
-						await commandBackend('editMyAccount', user);
+						await commandBackend(WS_CMD.EDIT_MY_ACCOUNT, user);
 					} catch (_) {
 						// already display
 					}

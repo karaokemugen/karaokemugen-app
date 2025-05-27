@@ -9,6 +9,7 @@ import TutoKaraLine from '../../../assets/tuto_karaline.png';
 import { useResizeListener } from '../../../utils/hooks';
 import { commandBackend } from '../../../utils/socket';
 import { is_large_device } from '../../../utils/tools';
+import { WS_CMD } from '../../../utils/ws';
 
 interface IProps {
 	unmount: () => void;
@@ -25,7 +26,7 @@ function Tutorial(props: IProps) {
 	const nextStep = () => {
 		try {
 			if (stepIndex === 2) {
-				commandBackend('editMyAccount', { flag_tutorial_done: true });
+				commandBackend(WS_CMD.EDIT_MY_ACCOUNT, { flag_tutorial_done: true });
 				props.unmount();
 			}
 			setStepIndex(stepIndex + 1);

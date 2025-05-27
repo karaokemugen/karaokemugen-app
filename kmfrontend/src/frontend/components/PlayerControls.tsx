@@ -8,6 +8,7 @@ import GlobalContext from '../../store/context';
 import { commandBackend, getSocket } from '../../utils/socket';
 import { is_touch_device, isNonStandardPlaylist } from '../../utils/tools';
 import PlayCurrentModal from './modals/PlayCurrentModal';
+import { WS_CMD } from '../../utils/ws';
 
 interface IProps {
 	currentPlaylist: PlaylistElem;
@@ -47,7 +48,7 @@ function PlayerControls(props: IProps) {
 	};
 
 	const toggleGameContinue = () => {
-		commandBackend('continueGameSong').then(setGameContinue);
+		commandBackend(WS_CMD.CONTINUE_GAME_SONG).then(setGameContinue);
 	};
 
 	const qStart = () => {

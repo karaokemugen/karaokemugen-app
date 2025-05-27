@@ -25,6 +25,7 @@ import { commandBackend, getSocket } from '../../../utils/socket';
 import { acceptedAnswerToIcon } from '../../../utils/tagTypes';
 import AutocompleteQuiz, { AutocompleteOption, AutocompleteOptions } from '../generic/AutocompleteQuiz';
 import KaraList from '../karas/KaraList';
+import { WS_CMD } from '../../../utils/ws';
 
 export default function QuizPage() {
 	const navigate = useNavigate();
@@ -57,8 +58,8 @@ export default function QuizPage() {
 	const userTotalScores = useAsyncMemo(
 		async () => {
 			const [users, scores]: [User[], GameTotalScore[]] = await Promise.all([
-				commandBackend('getUsers'),
-				commandBackend('getTotalGameScore', {
+				commandBackend(WS_CMD.GET_USERS),
+				commandBackend(WS_CMD.GET_TOTAL_GAME_SCORE, {
 					gamename: quiz.currentQuizGame,
 				}),
 			]);
@@ -71,9 +72,11 @@ export default function QuizPage() {
 		[]
 	);
 
-	const karas = useAsyncMemo<IKaraList>(() => commandBackend('getLastKaras'), [mode], {
+	const karas = useAsyncMemo<IKaraList>(() => commandBackend(WS_CMD.GET_LAST_KARAS), [mode], {
 		content: [],
 		infos: { from: 0, to: 0, count: 0 },
+		avatars: undefined,
+		i18n: undefined,
 	});
 
 	useEffect(() => {
@@ -100,8 +103,8 @@ export default function QuizPage() {
 			merge(quiz, gameState);
 		};
 
-		commandBackend('getPlayerStatus').then(refreshPlayerInfos);
-		commandBackend('getGameState').then(gameState => {
+		commandBackend(WS_CMD.GET_PLAYER_STATUS).then(refreshPlayerInfos);
+		commandBackend(WS_CMD.GET_GAME_STATE).then(gameState => {
 			updateQuizState(gameState);
 			if (quiz.currentSong == null || quiz.currentSong?.state === 'guess') {
 				qStart({
@@ -181,7 +184,7 @@ export default function QuizPage() {
 		if (ans.length && (!answerConfirmed.current || setState)) {
 			if (setState) answerConfirmed.current = true;
 
-			commandBackend('setAnswer', { answer: ans }).then(mode => {
+			commandBackend(WS_CMD.SET_ANSWER, { answer: ans }).then(mode => {
 				setResponseMode(mode);
 				if (mode !== 'TOO_LATE') setAnswerSnapshot(ans);
 			});
@@ -193,7 +196,9 @@ export default function QuizPage() {
 	const debouncedSearchForSuggestions = useCallback(
 		debounce(
 			async (input: string) => {
-				const answers: GamePossibleAnswer[] = await commandBackend('getPossibleAnswers', { answer: input });
+				const answers: GamePossibleAnswer[] = await commandBackend(WS_CMD.GET_POSSIBLE_ANSWERS, {
+					answer: input,
+				});
 				setSuggestions(
 					uniqBy(
 						answers.slice(0, 50).map<AutocompleteOption>(t => ({
@@ -444,7 +449,15 @@ export default function QuizPage() {
 				</div>
 			</div>
 			{result ? (
-				<KaraList karas={{ content: [result.song], infos: { count: 1, from: 0, to: 1 } }} scope="public" />
+				<KaraList
+					karas={{
+						content: [result.song],
+						infos: { count: 1, from: 0, to: 1 },
+						avatars: undefined,
+						i18n: undefined,
+					}}
+					scope="public"
+				/>
 			) : null}
 			<details className="rules">
 				<summary>{i18next.t('QUIZ.RULES.TITLE')}</summary>

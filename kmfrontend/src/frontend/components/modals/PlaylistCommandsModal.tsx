@@ -15,6 +15,8 @@ import AutoMixModal from './AutoMixModal';
 import DeletePlaylistModal from './DeletePlaylistModal';
 import PlaylistModal from './PlaylistModal';
 import ShuffleModal from './ShuffleModal';
+import { WS_CMD } from '../../../utils/ws';
+import { HttpMessage, WSCmdDefinition } from '../../../../../src/lib/types/frontend';
 
 interface IProps {
 	side: 'left' | 'right';
@@ -39,7 +41,7 @@ function PlaylistCommandsModal(props: IProps) {
 
 	const startFavMix = async () => {
 		props.closePlaylistCommands();
-		const response = await commandBackend('getUsers');
+		const response = await commandBackend(WS_CMD.GET_USERS);
 		const userList = response.filter((u: User) => (u.type as number) < 2);
 		showModal(context.globalDispatch, <AutoMixModal side={props.side} userList={userList} />);
 	};
@@ -95,7 +97,7 @@ function PlaylistCommandsModal(props: IProps) {
 				const data = { plaid: playlist?.plaid };
 				displayMessage('info', i18next.t('MODAL.EXPORT_PLAYLIST_MEDIA.START'));
 				const result: Array<{ kid: string; mediafile: string; exportSuccessful: boolean }> =
-					await commandBackend('exportPlaylistMedia', {
+					await commandBackend(WS_CMD.EXPORT_PLAYLIST_MEDIA, {
 						exportDir,
 						plaid: data.plaid,
 					});
@@ -148,7 +150,7 @@ function PlaylistCommandsModal(props: IProps) {
 				</>,
 				() =>
 					data.reposUnknown.forEach((repoName: string) => {
-						commandBackend('addRepo', {
+						commandBackend(WS_CMD.ADD_REPO, {
 							Name: repoName,
 							Online: true,
 							Enabled: true,
@@ -170,7 +172,7 @@ function PlaylistCommandsModal(props: IProps) {
 
 	const importPlaylist = (e: any) => {
 		props.closePlaylistCommands();
-		let url: string;
+		let url: WSCmdDefinition<object, HttpMessage<{ plaid: string; reposUnknown?: string[] } | undefined>>;
 		let fr: FileReader;
 		let file: File;
 		if (!window.FileReader) return alert('FileReader API is not supported by your browser.');
@@ -188,10 +190,10 @@ function PlaylistCommandsModal(props: IProps) {
 					const json = JSON.parse(fr.result as string);
 					if (file.name.includes('.kmfavorites')) {
 						data.favorites = json;
-						url = 'importFavorites';
+						url = WS_CMD.IMPORT_FAVORITES;
 						name = 'Favs';
 					} else {
-						url = 'importPlaylist';
+						url = WS_CMD.IMPORT_PLAYLIST;
 						data.playlist = json;
 						name = json?.PlaylistInformation?.name;
 					}
@@ -235,9 +237,9 @@ function PlaylistCommandsModal(props: IProps) {
 			'',
 			() => {
 				if (playlist?.flag_smart) {
-					commandBackend('emptyCriterias', { plaid: playlist?.plaid });
+					commandBackend(WS_CMD.EMPTY_CRITERIAS, { plaid: playlist?.plaid });
 				} else {
-					commandBackend('emptyPlaylist', { plaid: playlist?.plaid });
+					commandBackend(WS_CMD.EMPTY_PLAYLIST, { plaid: playlist?.plaid });
 				}
 			}
 		);

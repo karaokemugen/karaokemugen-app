@@ -7,6 +7,7 @@ import { createRoot } from 'react-dom/client';
 import ReactCrop, { Crop } from 'react-image-crop';
 
 import { commandBackend, isRemote } from '../../../utils/socket';
+import { WS_CMD } from '../../../utils/ws';
 
 interface IProps {
 	src: any;
@@ -65,7 +66,10 @@ function CropAvatarModal(props: IProps) {
 			const croppedImageUrl = await getCroppedImg(imageRef, crop);
 			if (croppedImageUrl) {
 				if (isRemote()) {
-					const response = await commandBackend('importFile', { extension: 'jpg', buffer: croppedImageUrl });
+					const response = await commandBackend(WS_CMD.IMPORT_FILE, {
+						extension: 'jpg',
+						buffer: croppedImageUrl,
+					});
 					props.saveAvatar({ path: response.filename });
 				} else {
 					const formData = new FormData();

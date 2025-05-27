@@ -28,6 +28,7 @@ import PublicHeader from './PublicHeader';
 import PublicHomepage from './PublicHomepage';
 import PublicList from './PublicList';
 import QuizPage from './QuizPage';
+import { WS_CMD } from '../../../utils/ws';
 
 let timer: NodeJS.Timeout;
 
@@ -66,7 +67,7 @@ function PublicPage() {
 
 	const getPlaylistList = async () => {
 		try {
-			const playlistsList = await commandBackend('getPlaylists');
+			const playlistsList = await commandBackend(WS_CMD.GET_PLAYLISTS);
 			playlistsList.forEach(playlist => {
 				if (playlist.flag_public) {
 					setPublicVisible(playlist.flag_visible);
@@ -83,7 +84,7 @@ function PublicPage() {
 
 	const refreshPoll = async () => {
 		try {
-			const poll = await commandBackend('getPoll');
+			const poll = await commandBackend(WS_CMD.GET_POLL);
 			if (poll) {
 				setPollActive(true);
 			}
@@ -171,7 +172,7 @@ function PublicPage() {
 
 	const getPlayerStatus = async () => {
 		try {
-			const result = await commandBackend('getPlayerStatus');
+			const result = await commandBackend(WS_CMD.GET_PLAYER_STATUS);
 			playerUpdate(result);
 		} catch (_) {
 			// already display

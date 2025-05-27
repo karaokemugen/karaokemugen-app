@@ -8,13 +8,14 @@ import Title from '../../components/Title';
 import KaraForm from './KaraForm';
 import { useEffect } from 'react';
 import type { EditedKara } from '../../../../../src/lib/types/kara';
+import { WS_CMD } from '../../../utils/ws';
 
 function KaraNew() {
 	const navigate = useNavigate();
 
 	const saveNew = async (kara: EditedKara) => {
 		try {
-			await commandBackend('createKara', kara, true, 300000);
+			await commandBackend(WS_CMD.CREATE_KARA, kara, true, 300000);
 			addListener();
 			navigate('/system/karas');
 		} catch (_) {

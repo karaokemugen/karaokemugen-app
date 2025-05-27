@@ -2,11 +2,10 @@ import { Router } from 'express';
 import { promises as fs } from 'fs';
 import multer from 'multer';
 import { resolve } from 'path';
-import { Socket } from 'socket.io';
 import { v4 as uuidV4 } from 'uuid';
 
+import { WS_CMD } from '../../../kmfrontend/src/utils/ws.js';
 import { APIMessage } from '../../lib/services/frontend.js';
-import { APIData } from '../../lib/types/api.js';
 import { resolvedPath } from '../../lib/utils/config.js';
 import logger from '../../lib/utils/logger.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
@@ -22,7 +21,7 @@ export default function filesController(router: Router) {
 }
 
 export function filesSocketController(router: SocketIOApp) {
-	router.route('importFile', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.IMPORT_FILE, async (socket, req) => {
 		await runChecklist(socket, req, 'user', 'closed');
 		try {
 			const extension = req.body.extension ? `.${req.body.extension}` : '';
@@ -38,7 +37,7 @@ export function filesSocketController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('openLyricsFile', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.OPEN_LYRICS_FILE, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'closed');
 		try {
 			return await openLyricsFile(req.body.kid);
@@ -47,7 +46,7 @@ export function filesSocketController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('showLyricsInFolder', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.SHOW_LYRICS_IN_FOLDER, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'closed');
 		try {
 			return await showLyricsInFolder(req.body.kid);
@@ -56,7 +55,7 @@ export function filesSocketController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('showMediaInFolder', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.SHOW_MEDIA_IN_FOLDER, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'closed');
 		try {
 			return await showMediaInFolder(req.body.kid);

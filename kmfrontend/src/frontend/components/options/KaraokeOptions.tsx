@@ -8,6 +8,7 @@ import { displayMessage, dotify, expand } from '../../../utils/tools';
 import Switch from '../generic/Switch';
 import RemoteStatus from './RemoteStatus';
 import { sanitizeSettingsSearchValue } from './Options';
+import { WS_CMD } from '../../../utils/ws';
 
 interface IProps {
 	onChange: (e: any) => void;
@@ -37,7 +38,7 @@ function KaraokeOptions(props: IProps) {
 
 	const saveMysterySongsLabels = (labels: string[]) => {
 		const data = expand('Playlist.MysterySongs.Labels', labels);
-		commandBackend('updateSettings', { setting: data }).catch(() => {});
+		commandBackend(WS_CMD.UPDATE_SETTINGS, { setting: data }).catch(() => {});
 	};
 
 	const parseTwitch = () => {
@@ -58,7 +59,7 @@ function KaraokeOptions(props: IProps) {
 			)
 			.then(data => {
 				if (data.login) {
-					commandBackend('updateSettings', {
+					commandBackend(WS_CMD.UPDATE_SETTINGS, {
 						setting: {
 							Karaoke: {
 								StreamerMode: {
