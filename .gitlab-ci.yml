@@ -301,7 +301,8 @@ pkg_win:
   script:
     - rm -Rf release_win
     - npm install -g electron-builder
-    - apt-get update -qq && apt-get install -y -qq zip
+    - apt-get update -qq
+    - apt-get install -y -qq zip
     - wget -qO- http://mugen.karaokes.moe/downloads/$DIST_WIN | tar xz
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
     - echo $SENTRY_DSN >assets/sentry.txt
