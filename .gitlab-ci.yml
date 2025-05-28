@@ -320,7 +320,7 @@ pkg_win:
     - when: never
 pkg_win_portable:
   stage: package
-  image: kolaente/zip:latest
+  image: alpine:latest
   tags:
     - $RUNNER_LINUX
   cache: {}
@@ -337,6 +337,8 @@ pkg_win_portable:
   needs:
     - pkg_win
   script:
+    - apk update
+    - apk add --no-cache zip
     - touch portable
     - touch disableAppUpdate
     - zip -rv release_win/*.zip portable disableAppUpdate
