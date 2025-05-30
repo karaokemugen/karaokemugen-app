@@ -28,14 +28,14 @@ function SetupPageStats() {
 				user.flag_sendstats = userStats;
 				await commandBackend(WS_CMD.EDIT_MY_ACCOUNT, user);
 				setError(undefined);
-				await commandBackend('updateSettings', {
+				await commandBackend(WS_CMD.UPDATE_SETTINGS, {
 					setting: {
 						App: {
 							FirstRun: false,
 						},
 					},
 				}).catch(() => {});
-				await commandBackend('startPlayer').catch(() => {});
+				await commandBackend(WS_CMD.START_PLAYER).catch(() => {});
 				sessionStorage.setItem('dlQueueRestart', 'true');
 				navigate('/system/repositories/create?setup=true');
 			} catch (err: any) {

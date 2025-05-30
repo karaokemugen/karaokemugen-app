@@ -22,7 +22,7 @@ export async function checkLogin(
 	let onlineToken: string;
 	username = username.toLowerCase().trim();
 	let user: User = { login: username };
-	if (username.includes('@') && +conf.Online.RemoteUsers.Enabled) {
+	if (username.includes('@') && conf.Online.RemoteUsers.Enabled) {
 		try {
 			// If username has a @, check its instance for existence
 			// If OnlineUsers is disabled, accounts are connected with

@@ -34,6 +34,7 @@ Online:
     # Should we allow users to register/login accounts ?
     Enabled: true
     DefaultHost: kara.moe
+    Secure: true
   # Timeout (in ms) when calling the KM Server
   Timeout: 2000
   # Fetch popular songs from remote repos ?

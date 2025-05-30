@@ -52,6 +52,7 @@ export const defaults: Config = {
 		RemoteUsers: {
 			Enabled: true,
 			DefaultHost: 'kara.moe',
+			Secure: true,
 		},
 		Timeout: 2000,
 		FetchPopularSongs: true,
