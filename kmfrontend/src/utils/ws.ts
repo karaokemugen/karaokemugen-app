@@ -233,7 +233,7 @@ export const WS_CMD = {
 	GENERATE_SSHKEY: defineWSCmd<{ repoName: string }, void>('generateSSHKey'),
 	REMOVE_SSHKEY: defineWSCmd<{ repoName: string }, void>('removeSSHKey'),
 	CONVERT_REPO_TO_UUID: defineWSCmd<{ repoName: string }, void>('convertRepoToUUID'),
-	GET_REPOS: defineWSCmd<undefined, Repository[]>('getRepos'),
+	GET_REPOS: defineWSCmd<undefined, Repository[] | RepositoryBasic[]>('getRepos'),
 	ADD_REPO: defineWSCmd<Repository, HttpMessage<string>>('addRepo'),
 	GET_REPO: defineWSCmd<{ name: string }, Repository>('getRepo'),
 	GET_REPO_MANIFEST: defineWSCmd<{ name: string }, RepositoryManifestV2>('getRepoManifest'),

@@ -11,6 +11,7 @@ import { tagTypes } from '../../../utils/tagTypes';
 import { useForm } from 'antd/es/form/Form';
 import { useSearchParams } from 'react-router-dom';
 import { WS_CMD } from '../../../utils/ws';
+import { Repository } from '../../../../../src/lib/types/repo';
 
 type TemplateOption = { value?: string; type?: string; label?: string };
 
@@ -81,7 +82,7 @@ function KaraImport() {
 	};
 
 	const getRepos = async () => {
-		const res = (await commandBackend(WS_CMD.GET_REPOS)).filter(r => r.MaintainerMode || !r.Online);
+		const res = (await commandBackend(WS_CMD.GET_REPOS)).filter(r => (r as Repository).MaintainerMode || !r.Online);
 		if (res.length > 0) {
 			setRepositories(res.map(value => value.Name));
 			if (!searchParams.get('repository')) setDestinationRepository(res[0].Name);
