@@ -7,17 +7,10 @@ App:
   # Instance ID
   #InstanceID: uuid here
 Online:
-  # Host for your KM Server
-  Host: kara.moe
-  Secure: true
-  # Timeout (in ms) when calling the KM Server
-  Timeout: 2000
   # Should your instance sends error logs to sentry.io? True/false. Non-existant means the app will ask the user a question if it wants to send errors.
   #ErrorTracking: false
-  # Should we use KM Server's URL shortener? Turns connection URL into http://kara.moe for example
+  # Should we use KM Server's URL shortener? Turns connection URL into https://mugen.re for example
   URL: true
-  # Should we allow users to register/login accounts on kara.moe ?
-  Users: true
   Updates:
     App: true
     Medias:
@@ -29,10 +22,20 @@ Online:
   # Use Discord's rich presence to display your activity on your profile
   Discord:
     DisplayActivity: true
-  # Remote URL xxxx.kara.moe enabled ?
-  Remote: true
-  # Remote token for online URL
-  RemoteToken: uuid_here
+  RemoteAccess:
+    # Remote URL xxxx.mugen.re enabled ?
+    Enabled: true
+    # Host for your KM Server
+    Domain: 'kara.moe'
+    # Remote token for online URL
+    #Token: 'uuid_here'
+    Secure: true
+  RemoteUsers:
+    # Should we allow users to register/login accounts ?
+    Enabled: true
+    DefaultHost: kara.moe
+  # Timeout (in ms) when calling the KM Server
+  Timeout: 2000
   # Fetch popular songs from remote repos ?
   FetchPopularSongs: true
   # Disallow ALL video downloads; We'll give you crepes if you keep this to true
