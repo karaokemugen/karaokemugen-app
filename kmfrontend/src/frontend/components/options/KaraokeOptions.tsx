@@ -1129,15 +1129,16 @@ function KaraokeOptions(props: IProps) {
 				{filterValue === undefined ||
 					(sanitizeSettingsSearchValue(
 						i18next.t('SETTINGS.KARAOKE.REMOTE', {
-							instance: context.globalState.settings.data.config.Online.Host,
+							instance: context.globalState.settings.data.config.Online.RemoteAccess.Domain,
 						})
 					).includes(filterValue) && (
 						<div className="settings-group">
 							<div className="settings-line">
-								<label htmlFor="Online.Remote">
+								<label htmlFor="Online.RemoteAccess.Enabled">
 									<span className="title">
 										{i18next.t('SETTINGS.KARAOKE.REMOTE', {
-											instance: context.globalState.settings.data.config.Online.Host,
+											instance:
+												context.globalState.settings.data.config.Online.RemoteAccess.Domain,
 										})}
 									</span>
 									<br />
@@ -1145,14 +1146,14 @@ function KaraokeOptions(props: IProps) {
 								</label>
 								<div>
 									<Switch
-										idInput="Online.Remote"
+										idInput="Online.RemoteAccess.Enabled"
 										handleChange={onChange}
-										isChecked={config['Online.Remote']}
+										isChecked={config['Online.RemoteAccess.Enabled']}
 									/>
 								</div>
 							</div>
 
-							{config['Online.Remote'] ? <RemoteStatus /> : null}
+							{config['Online.RemoteAccess.Enabled'] ? <RemoteStatus /> : null}
 						</div>
 					))}
 				{filterValue ? null : (

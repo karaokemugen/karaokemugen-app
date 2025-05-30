@@ -70,7 +70,7 @@ export default function authController(router: SocketIOApp) {
 	router.route(WS_CMD.CHECK_AUTH, async (socket, req) => {
 		await runChecklist(socket, req, 'guest', 'closed');
 		let onlineAvailable: boolean;
-		if (req.token.username.includes('@') && +getConfig().Online.Users) {
+		if (req.token.username.includes('@') && getConfig().Online.RemoteUsers.Enabled) {
 			onlineAvailable = true;
 			// Remote token does not exist, we're going to verify it and add it if it does work
 			try {

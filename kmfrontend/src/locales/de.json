@@ -2045,9 +2045,8 @@
 			"PLAYER_HARDWAREDECODING_TOOLTIP": "Erzwingt die Hardware-Beschleunigung des Players. Hinweis: Bei einigen Konfigurationen kann dies zu unerwartetem Verhalten bei der Wiedergabe führen. Wähle in solchen Fällen \"Deaktiviert\". Die Option \"Automatisch\" ist die sicherste und \"Erzwingen\" die riskanteste/unempfehlenswerteste.",
 			"PLAYER_HARDWAREDECODING": "Video-Hardware-Dekodierung",
 			"ONLINE_FETCHPOPULARSONGS_TOOLTIP": "Wenn diese Funktion deaktiviert ist, werden die meist gewünschten Lieder aus deiner Karaoke-Mugen-App berechnet",
-			"ONLINE_STATS": "Nutzungstelemetrie an den Karaoke Mugen Server senden",
 			"PLAYER_KEYBOARDMEDIASHORTCUTS": "Den Player mit den Medientasten der Tastatur steuern",
-			"ONLINE_USERS": "Erlaube die Online-Registrierung und -Anmeldung von Benutzern"
+			"ONLINE_REMOTEUSERS_ENABLED": "Erlaube die Online-Registrierung und -Anmeldung von Benutzern"
 		},
 		"MESSAGE": "Um eine Einstellung zu ändern, musst du sie nur bearbeiten und die Eingabetaste drücken. Nicht alle Einstellungen können geändert werden und führen zu einer Fehlermeldung, wenn du es trotzdem versuchst.",
 		"CHOOSE_FILE": "Wähle eine Datei",

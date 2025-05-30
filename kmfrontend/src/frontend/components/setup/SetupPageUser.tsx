@@ -19,7 +19,9 @@ function SetupPageUser() {
 	const [login, setLogin] = useState<string>();
 	const [password, setPassword] = useState<string>();
 	const [passwordConfirmation, setPasswordConfirmation] = useState<string>();
-	const [instance, setInstance] = useState<string>(context?.globalState.settings.data.config?.Online.Host);
+	const [instance, setInstance] = useState<string>(
+		context?.globalState.settings.data.config?.Online.RemoteUsers.DefaultHost
+	);
 	const [securityCode, setSecurityCode] = useState<number>();
 	const [error, setError] = useState<string>();
 
@@ -182,7 +184,7 @@ function SetupPageUser() {
 					</p>
 					<p>
 						{i18next.t('SETUP_PAGE.ONLINE_ACCOUNT_INSTANCE_DESC', {
-							instance: context?.globalState.settings.data.config?.Online.Host,
+							instance: context?.globalState.settings.data.config?.Online.RemoteUsers.DefaultHost,
 						})}
 					</p>
 					<ul className="actions">
@@ -226,7 +228,9 @@ function SetupPageUser() {
 										key="instance"
 										className="input-field"
 										type="text"
-										defaultValue={context?.globalState.settings.data.config?.Online.Host}
+										defaultValue={
+											context?.globalState.settings.data.config?.Online.RemoteUsers.DefaultHost
+										}
 										onChange={event => setInstance(event.target.value)}
 									/>
 								</div>
@@ -274,7 +278,9 @@ function SetupPageUser() {
 										key="instance"
 										className="input-field"
 										type="text"
-										defaultValue={context?.globalState.settings.data.config?.Online.Host}
+										defaultValue={
+											context?.globalState.settings.data.config?.Online.RemoteUsers.DefaultHost
+										}
 										onChange={event => setInstance(event.target.value)}
 									/>
 								</div>

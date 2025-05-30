@@ -4,7 +4,8 @@ import Config from './Config';
 
 const propertiesToDisplay = [
 	'App.QuickStart',
-	'Online.Users',
+	'Online.RemoteUsers.Enabled',
+	'Online.RemoteUsers.DefaultHost',
 	'Online.Discord.DisplayActivity',
 	'Online.FetchPopularSongs',
 	'Online.ErrorTracking',

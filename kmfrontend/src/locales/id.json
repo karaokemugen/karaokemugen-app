@@ -820,7 +820,6 @@
 			"PLAYER_KEYBOARDMEDIASHORTCUTS": "Kontrol pemutar dengan tombol media di papan ketik",
 			"PLAYER_KEYBOARDMEDIASHORTCUTS_TOOLTIP": "Nonaktifkan jika kamu ingin tombol tersebut mengontrol aplikasi lain (iTunes, foobar, dll.)",
 			"PLAYER_HARDWAREDECODING": "Dekode Perangkat Keras Video",
-			"ONLINE_STATS": "Kirim telemetri penggunaan ke Peladen Karaoke Mugen",
 			"PLAYER_HARDWAREDECODING_OPTIONS": {
 				"AUTOSAFE": "Otomatis (direkomendasikan)",
 				"NO": "Dinonaktfikan (dekode perangkat lunak saja)",
@@ -829,7 +828,7 @@
 			"ONLINE_UPDATES_MEDIAS_INTROS": "Otomatis perbarui intro",
 			"ONLINE_FETCHPOPULARSONGS_TOOLTIP": "Jika dinonaktifkan, lagu populer akan dihitung dari aplikasi Karaoke Mugen kamu",
 			"ONLINE_DISCORD_DISPLAYACTIVITY": "Tampilkan aktivitas Karaoke Mugen di profil Discord kamu",
-			"ONLINE_USERS": "Perbolehkan pendaftaran dan masuk pengguna secara daring",
+			"ONLINE_REMOTEUSERS_ENABLED": "Perbolehkan pendaftaran dan masuk pengguna secara daring",
 			"ONLINE_FETCHPOPULARSONGS": "Ambil lagu populer dari repositori daring kamu",
 			"APP_QUICKSTART_TOOLTIP": "Ini menonaktifkan verifikasi data. Kamu akan harus membuat basis data kamu jika terjadi modifikasi manual dari bilah sistem -> halaman basis data.",
 			"PLAYER_HARDWAREDECODING_TOOLTIP": "Paksa atau tidak akselerasi perangkat keras pada pemutar. Catatan: dalam beberapa konfigurasi, ini bisa mengakibatkan hal-hal tidak diduga ketika pemutaran ulang. Jika itu terjadi, pilih \"Nonaktifkan\". Pilihan \"Otomatis\" merupakan yang paling aman, dan \"Paksa\" merupakan yang paling riskan/tidak direkomendasikan.",
