@@ -1381,7 +1381,6 @@
 			"APP_QUICKSTART": "Démarrage rapide de l'application",
 			"APP_QUICKSTART_TOOLTIP": "Ceci désactive la vérification des données. Vous devrez générer votre base de données en cas de modification manuellement depuis le panneau système, onglet base de données.",
 			"ONLINE_ERRORTRACKING": "Envoi des rapports d'erreurs (via sentry.io)",
-			"ONLINE_STATS": "Envoi des statistiques d'utilisation à Karaoke Mugen Server",
 			"PLAYER_KEYBOARDMEDIASHORTCUTS": "Piloter le lecteur avec les touches média du clavier",
 			"PLAYER_KEYBOARDMEDIASHORTCUTS_TOOLTIP": "Désactivez si vous voulez que ces touches contrôlent une autre application (iTunes, foobar, etc.)",
 			"PLAYER_HARDWAREDECODING": "Décodage matériel des vidéos",
@@ -1396,7 +1395,8 @@
 			"ONLINE_UPDATES_MEDIAS_OUTROS": "Mise à jour automatique des vidéos outros",
 			"ONLINE_UPDATES_MEDIAS_ENCORES": "Mise à jour automatique des vidéos encores",
 			"ONLINE_UPDATES_MEDIAS_SPONSORS": "Mise à jour automatique des sponsors",
-			"ONLINE_USERS": "Autoriser l'inscription des utilisateurs en ligne",
+			"ONLINE_REMOTEUSERS_ENABLED": "Autoriser l'inscription des utilisateurs en ligne",
+			"ONLINE_REMOTEUSERS_DEFAULTHOST": "Instance par défaut pour les utilisateurs en ligne",
 			"ONLINE_DISCORD_DISPLAYACTIVITY": "Afficher votre activité de Karaoke Mugen sur votre profil Discord",
 			"ONLINE_FETCHPOPULARSONGS": "Récupérer les chansons les plus demandées depuis vos dépôts en ligne",
 			"ONLINE_FETCHPOPULARSONGS_TOOLTIP": "Si désactivé, les chansons les plus demandées seront calculées uniquement depuis votre application Karaoke Mugen"

@@ -5,6 +5,7 @@ import { db, getSettings } from '../lib/dao/database.js';
 import { setConfig } from '../lib/utils/config.js';
 import { getPlaylists } from '../services/playlist.js';
 import { adminToken } from '../utils/constants.js';
+import { decoupleOnlineConfig, removeKaraokeMugenFolderInPlaylistMedias } from '../utils/hokutoNoCode.js';
 import { compareKarasChecksum, generateDB } from './database.js';
 import { updatePlaylistDuration } from './playlist.js';
 
@@ -42,8 +43,6 @@ export async function postMigrationTasks(migrations: Postgrator.Migration[], did
 			// 9.0 migrations
 			// UUIDs Medias rename
 			case 'addSongname':
-				if (!didGeneration) doGenerate = true;
-				break;
 			case 'migrateLyricInfos':
 				if (!didGeneration) doGenerate = true;
 				break;
@@ -52,6 +51,10 @@ export async function postMigrationTasks(migrations: Postgrator.Migration[], did
 				for (const pl of playlists) {
 					updatePlaylistDuration(pl.plaid);
 				}
+				break;
+			case 'decouplingOnlineConfig':
+				decoupleOnlineConfig();
+				removeKaraokeMugenFolderInPlaylistMedias();
 				break;
 			default:
 		}

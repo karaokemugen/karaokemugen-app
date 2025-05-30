@@ -194,7 +194,7 @@ export async function initEngine() {
 			internetCheck().then(internet => {
 				if (internet) {
 					initStep(i18next.t('INIT_ONLINEURL'));
-					initKMServerCommunication(getConfig().Online.Remote);
+					initKMServerCommunication();
 				}
 				if (!state.isTest) {
 					if (internet) {

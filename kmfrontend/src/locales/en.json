@@ -1381,7 +1381,6 @@
 			"APP_QUICKSTART": "Quick application start",
 			"APP_QUICKSTART_TOOLTIP": "This disables data verification. You will have to generate your database in case of modification manually from the system panel -> database page.",
 			"ONLINE_ERRORTRACKING": "Send error and crash reports (via sentry.io)",
-			"ONLINE_STATS": "Send usage telemetry to Karaoke Mugen Server",
 			"PLAYER_KEYBOARDMEDIASHORTCUTS": "Control the player with keyboard media keys",
 			"PLAYER_KEYBOARDMEDIASHORTCUTS_TOOLTIP": "Disable if you want these keys to control another app (iTunes, foobar, etc.)",
 			"PLAYER_HARDWAREDECODING": "Video Hardware Decoding",
@@ -1396,7 +1395,8 @@
 			"ONLINE_UPDATES_MEDIAS_OUTROS": "Auto-update outros",
 			"ONLINE_UPDATES_MEDIAS_ENCORES": "Auto-update encores",
 			"ONLINE_UPDATES_MEDIAS_SPONSORS": "Auto-update sponsors",
-			"ONLINE_USERS": "Allow online user registration & login",
+			"ONLINE_REMOTEUSERS_ENABLED": "Allow online user registration & login",
+			"ONLINE_REMOTEUSERS_DEFAULTHOST": "Default instance for online users",			
 			"ONLINE_FETCHPOPULARSONGS": "Fetch most requested songs from your online repositories",
 			"ONLINE_FETCHPOPULARSONGS_TOOLTIP": "If disabled, most requested songs will be calculated from your Karaoke Mugen app",
 			"ONLINE_DISCORD_DISPLAYACTIVITY": "Show Karaoke Mugen activity on your Discord profile"

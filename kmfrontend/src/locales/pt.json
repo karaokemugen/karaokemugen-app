@@ -1102,7 +1102,7 @@
 		"VALUE": "Valor",
 		"PROPERTY": "Propriedade",
 		"PROPERTIES": {
-			"ONLINE_USERS": "Permitir registro e login de usuário on-line",
+			"ONLINE_REMOTEUSERS_ENABLED": "Permitir registro e login de usuário on-line",
 			"APP_QUICKSTART_TOOLTIP": "Isso desativa a verificação de dados.",
 			"PLAYER_HARDWAREDECODING_OPTIONS": {
 				"NO": "Desativado (somente decodificação de software)",
@@ -1119,7 +1119,6 @@
 			"PLAYER_HARDWAREDECODING": "Decodificação de hardware de vídeo",
 			"ONLINE_UPDATES_MEDIAS_SPONSORS": "Atualizar automaticamente patrocinadores",
 			"ONLINE_UPDATES_MEDIAS_OUTROS": "Atualizar outros automaticamente",
-			"ONLINE_STATS": "Enviar telemetria de uso para o servidor Karaokê Mugen",
 			"PLAYER_KEYBOARDMEDIASHORTCUTS": "Controle o player com as teclas de mídia do teclado",
 			"ONLINE_ERRORTRACKING": "Envie relatórios de erros e falhas (via sentry.io)",
 			"PLAYER_KEYBOARDMEDIASHORTCUTS_TOOLTIP": "Desative se quiser que essas teclas controlem outro aplicativo (iTunes, foobar, etc.)",
