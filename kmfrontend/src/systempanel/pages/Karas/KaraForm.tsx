@@ -634,13 +634,13 @@ function KaraForm(props: KaraFormProps) {
 
 	const isMediaFile = (filename: string): boolean => {
 		return new RegExp(`^.+\\.(${context.globalState.settings.data.state?.supportedMedias.join('|')})$`).test(
-			filename
+			filename.toLowerCase()
 		);
 	};
 
 	const isSubFile = (filename: string): boolean => {
 		return new RegExp(`^.+\\.(${context.globalState.settings.data.state?.supportedLyrics.join('|')})$`).test(
-			filename
+			filename.toLowerCase()
 		);
 	};
 
