@@ -91,7 +91,8 @@
 			"POINTS": "Punkte: {{count}}"
 		},
 		"QUOTA_KARA_DESCRIPTION_other": "Du kannst nur {{count}} Lieder vorschlagen. Du kannst erneut ein Lied vorschlagen, sobald ein Betreiber deine Vorschläge angenommen oder abgelehnt hat oder nachdem dein Lied gespielt wurde.",
-		"QUOTA_KARA_DESCRIPTION_one": "Du kannst nur {{count}} Lied vorschlagen. Du kannst erneut ein Lied vorschlagen, sobald ein Betreiber deinen Vorschlag angenommen oder abgelehnt hat oder nachdem dein Lied gespielt wurde."
+		"QUOTA_KARA_DESCRIPTION_one": "Du kannst nur {{count}} Lied vorschlagen. Du kannst erneut ein Lied vorschlagen, sobald ein Betreiber deinen Vorschlag angenommen oder abgelehnt hat oder nachdem dein Lied gespielt wurde.",
+		"MY_INCOMING_SONGS": "Meine bevorstehenden Lieder"
 	},
 	"VERSION": "Version",
 	"HOME_BUTTON": "Home",
@@ -468,7 +469,9 @@
 		"KARA_GROUP_FIELD_REQUIRED": "{{fields}} können nicht alle leer sein.",
 		"USEEMBEDDEDLYRICS": "Ins Medium eingebetteten Liedtext priorisieren",
 		"USEEMBEDDEDLYRICS_TOOLTIP": "Falls im hochgeladenen Medium eine ASS-Datei integriert ist, wird diese extrahiert und ersetzt die aktuelle Liedtext-Datei.",
-		"SYNCHRONIZE_REPOSITORIES": "Repositorys zum Synchronisieren"
+		"SYNCHRONIZE_REPOSITORIES": "Repositorys zum Synchronisieren",
+		"SWAP_TOOLTIP": "Position von Liedern in der Playlist ändern, die du dir gewünscht hast",
+		"SWAP_DESCRIPTION": "Wähle ein zweites Lied, um sie zu tauschen"
 	},
 	"SETTINGS": {
 		"KARAOKE": {
@@ -576,7 +579,9 @@
 			},
 			"FREE_ACCEPTED_SONGS_TOOLTIP": "Lieder werden freigegeben, wenn sie von einem Betreiber aus der öffentlichen Playlist übernommen werden. Die Person, die sich das Lied gewünscht hat, gewinnt dadurch Wunschkontingent zurück.",
 			"FREE_ACCEPTED_SONGS": "Freigegebene und angenommene Lieder",
-			"ALLOW_PUBLIC_DUPLICATES_TOOLTIP": "Gestatte/Nicht gestatte dem Publikum ein Lied mehr als einmal hinzuzufügen. Ein Benutzer kann ein Lied, das er selbst bereits hinzugefügt hat, kein zweites Mal hinzufügen, aber wiederum ein Lied, das ein anderer bereits hinzugefügt hat. \"Up-Votes\" bedeutet, dass ein Benutzer keine doppelten Lieder hinzufügen kann, aber bereits hinzugefügte Lieder unterstützen kann. \"Gestattet\" ist üblicherweise gut für klassisches Karaoke, \"Unterstützt\" für öffentliches Karaoke."
+			"ALLOW_PUBLIC_DUPLICATES_TOOLTIP": "Gestatte/Nicht gestatte dem Publikum ein Lied mehr als einmal hinzuzufügen. Ein Benutzer kann ein Lied, das er selbst bereits hinzugefügt hat, kein zweites Mal hinzufügen, aber wiederum ein Lied, das ein anderer bereits hinzugefügt hat. \"Up-Votes\" bedeutet, dass ein Benutzer keine doppelten Lieder hinzufügen kann, aber bereits hinzugefügte Lieder unterstützen kann. \"Gestattet\" ist üblicherweise gut für klassisches Karaoke, \"Unterstützt\" für öffentliches Karaoke.",
+			"ALLOW_PLAYLIST_ITEM_SWAP": "Der Öffentlichkeit gestatten, die Position der Lieder in der Playlist zu verändern",
+			"ALLOW_PLAYLIST_ITEM_SWAP_TOOLTIP": "Benutzer können die Position von Liedern, die sie sich gewünscht haben, in der Playlist verändern, falls sie ein Lied früher singen wollen."
 		},
 		"PLAYER": {
 			"TOP": "Oben",
@@ -1515,7 +1520,9 @@
 				"POLL_ALREADY_STARTED": "Eine Umfrage ist bereits im Gange",
 				"POLL_NOT_ENOUGH_SONGS": "Umfrage kann nicht gestartet werden: nicht genügend Lieder verfügbar",
 				"PLAYLIST_FREE_ORPHANED_SONGS": "Verwaiste Lieder können nicht freigegeben werden",
-				"STATS_PAYLOAD": "Fehler beim Übermitteln der Daten an den Server"
+				"STATS_PAYLOAD": "Fehler beim Übermitteln der Daten an den Server",
+				"IMPORT_BASE_FAILED": "Import von Liedern fehlgeschlagen",
+				"IMPORT_BASE_OK_BUT_ERRORS_SEE_LOGS": "Import abgeschlossen, aber es sind einige Fehler aufgetreten, siehe Logs"
 			},
 			"INFO": {
 				"POLL_WINNER": "Die Leute haben für einen neuen Song gestimmt!",
@@ -1630,7 +1637,7 @@
 			"CONFLICT": "Ausstehende Konflikte (benutze den Resolver)",
 			"MODIFIED": "Bearbeitet (Änderungen zum Pushen)"
 		},
-		"TOOLTIP_NAME": "Wenn es sich um ein Online-Repository handelt, gib hier nur den Domänennamen an. Wenn es sich um ein lokales Repository handelt, benenne es, wie du willst. Zum Beispiel 'Meine privaten Lieder'",
+		"TOOLTIP_NAME": "Benenne es, wie du willst. Zum Beispiel: „Meine privaten Lieder“",
 		"OPEN_MEDIA_FOLDER": "Medienordner öffnen",
 		"GIT": {
 			"EMAIL_TOOLTIP": "E-Mail, die mit deinen Commits verknüpft ist",
@@ -1669,7 +1676,7 @@
 		"SENDSTATS_TOOLTIP": "Sessions und gespielte/gewünschte Lieder",
 		"CONFIRM_SURE": "Möchtest du die Texte des Repository {{second}} mit denen des Repository {{first}} synchronisieren?",
 		"MOVING_MEDIA_ABOUT_MESSAGE": "Alle Mediendateien im Projektarchiv werden in den neuen Ordner verschoben. Wenn dein Projektarchiv mehrere Medienordner hat, werden alle Dateien aus allen Ordnern in denselben Zielordner verschoben. Wenn es doppelte Dateien gibt, werden sie gnadenlos überschrieben.",
-		"PATH_MEDIAS": "Medien",
+		"PATH_MEDIAS": "Medien-Verzeichnis",
 		"MOVING_MEDIA": "Ziel, wohin die Medien verschoben werden sollen",
 		"NEW_REPOSITORY": "Neues Repository",
 		"SYNCHRONIZE_TAGS": "Tags zwischen zwei Repositories synchronisieren",
@@ -1712,7 +1719,9 @@
 		"GIT_TOO_MANY_CHANGES": "Sieht so aus, als würdest du {{changes}} Änderungen vornehmen. Beim Durchführen vieler Änderungen der gleichen Art empfehlen wir, diese in einen großen Commit zu bündeln.",
 		"CONVERT_TO_UUID_BUTTON": "Konvertierung ins UUID-Format …",
 		"CONVERT_TO_UUID_PANEL": "Ins UUID-Format konvertieren",
-		"CONVERT_TO_UUID_ABOUT_MESSAGE": "Möglicherweise benennt dein Repository seine Dateien nach einer veralteten Konvention (vor Karaoke Mugen 8.0.56 – Januar 2025). Falls dein Repository bereits länger besteht, kannst du mit dieser Schaltfläche alle Dateien (Karaoke-Metadaten, Liedtexte und Medien) ins UUID-Format umbenennen. Beachte bitte, dass diese Änderung nicht rückgängig zu machen ist."
+		"CONVERT_TO_UUID_ABOUT_MESSAGE": "Möglicherweise benennt dein Repository seine Dateien nach einer veralteten Konvention (vor Karaoke Mugen 8.0.56 – Januar 2025). Falls dein Repository bereits länger besteht, kannst du mit dieser Schaltfläche alle Dateien (Karaoke-Metadaten, Liedtexte und Medien) ins UUID-Format umbenennen. Beachte bitte, dass diese Änderung nicht rückgängig zu machen ist.",
+		"TOOLTIP_ONLINE_NAME": "Füge nur den Domain-Namen hier ein.",
+		"NAME_DESC": "Wie soll dein Repository heißen?"
 	},
 	"TAGS": {
 		"KITSU_SLUG_ERROR": "Ungültiger Kitsu-Slug",
@@ -1855,7 +1864,8 @@
 		"KARAS": "Lieder",
 		"BATCH_EDIT": "Tag-Batch-Bearbeitung",
 		"DUPLICATE": "Duplikate",
-		"RANKING": "Meist gewünscht"
+		"RANKING": "Meist gewünscht",
+		"KARAIMPORT": "Lieder importieren"
 	},
 	"QUIZ": {
 		"RULES": {
@@ -2046,7 +2056,8 @@
 			"PLAYER_HARDWAREDECODING": "Video-Hardware-Dekodierung",
 			"ONLINE_FETCHPOPULARSONGS_TOOLTIP": "Wenn diese Funktion deaktiviert ist, werden die meist gewünschten Lieder aus deiner Karaoke-Mugen-App berechnet",
 			"PLAYER_KEYBOARDMEDIASHORTCUTS": "Den Player mit den Medientasten der Tastatur steuern",
-			"ONLINE_REMOTEUSERS_ENABLED": "Erlaube die Online-Registrierung und -Anmeldung von Benutzern"
+			"ONLINE_REMOTEUSERS_ENABLED": "Erlaube die Online-Registrierung und -Anmeldung von Benutzern",
+			"ONLINE_REMOTEUSERS_DEFAULTHOST": "Standard-Instanz für Online-Benutzer"
 		},
 		"MESSAGE": "Um eine Einstellung zu ändern, musst du sie nur bearbeiten und die Eingabetaste drücken. Nicht alle Einstellungen können geändert werden und führen zu einer Fehlermeldung, wenn du es trotzdem versuchst.",
 		"CHOOSE_FILE": "Wähle eine Datei",
@@ -2135,5 +2146,27 @@
 	"NEW_ACCOUNT_CODE": "Neuer Benutzer-Code (beim Veranstalter melden)",
 	"WARNING_CODES": {
 		"REMOTE_HIGH_LATENCY_DETECTED": "Deine Verbindung zu {{host}} ist langsam. Deine Nutzer könnten Schwierigkeiten haben"
+	},
+	"KARAOKE_IMPORT": {
+		"WARNING_IMPORT": "Karaoke Mugen sucht nun im Quellverzeichnis nach Liedern für den Import.",
+		"WARNING_IMPORT_TITLE": "BITTE LESEN",
+		"WARNING_IMPORT_LIST": "Gut zu wissen:",
+		"MEDIA_FILES": "Medien-Dateien",
+		"ADD_TAG_TEMPLATE_DESC": "Nutze das Feld unten, um dem Dateinamen-Template Elemente hinzuzufügen.",
+		"FILENAME_TEMPLATE_ERROR": "Das Dateinamen-Template ist eine Pflichtangabe",
+		"SOURCE_DIR": "Quellverzeichnis",
+		"CONFIGURATION": "Konfiguration",
+		"SOURCE_DIR_TOOLTIP": "Verzeichnis mit Karaoke-Medien (Video/Audio) für den Import",
+		"DESTINATION_REPOSITORY": "Ziel-Repository",
+		"DESTINATION_REPOSITORY_TOOLTIP": "Repository, in das die neuen Lieder importiert werden sollen",
+		"FILENAME_TEMPLATE": "Dateinamen-Template",
+		"ADD_TAG_TEMPLATE": "Ein Tag zum Template hinzufügen",
+		"WARNING_IMPORT_MEDIA": "Medien werden in .mp4 konvertiert.",
+		"FILENAME_TEMPLATE_TOOLTIP": "Falls deine Importdateien einen systematischen Dateinamen haben, bspw. Titel – Interpret – Jahr, kannst du dieses Format hier eintragen. Die erkannten Felder werden automatisch als neue Karaoke-Metadaten gespeichert.",
+		"WARNING_IMPORT_LYRICS": "Liedtexte werden beim Import in .ass-Dateien konvertiert.",
+		"SOURCE_DIR_DESC": "Bitte wähle den Ordner, in dem deine Lieder sind. Sie werden dann in dein Ziel-Repository kopiert.",
+		"FILENAME_TEMPLATE_DESC": "Bitte nenne das Dateinamen-Format, das du nutzt:",
+		"SOURCE": "Quelle",
+		"IMPORT_START": "Import starten"
 	}
 }
