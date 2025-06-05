@@ -982,7 +982,14 @@
 		"UNKNOWN_PARENT_FROM_INBOX": "Bezugslied unbekannt für dieses eingereichte Lied",
 		"C_BEFORE_YEAR_CONFLICT": "Du kannst kein \"vor Jahr\"-Kriterium hinzufügen, das größer ist als das \"nach Jahr\"-Kriterium.",
 		"UPDATING_MEDIAS_MULTIPLE_USED_MEDIA_PATH_ERROR": "Mehrere Repositorys haben den gleichen Medien-Pfad, was zu ungewollten Löschungen führen kann. Bitte ändere das primäre Medium für diese Repositorys: {{repos}}",
-		"REPOS_MULTIPLE_USED_MEDIA_PATH_ERROR": "Dieser primäre Medien-Pfad wird bereits von einem anderen Repository genutzt"
+		"REPOS_MULTIPLE_USED_MEDIA_PATH_ERROR": "Dieser primäre Medien-Pfad wird bereits von einem anderen Repository genutzt",
+		"PLC_SWAP_FORBIDDEN": "Liedertausch ist nicht gestattet",
+		"IMPORT_SONG_TEMPLATE_MISSING_TITLE_ERROR": "Zuordnung der Lieder aufgrund des Templates nicht möglich, der Titel fehlt im Template",
+		"FIND_FILES_TO_IMPORT_ERROR": "Fehler beim Suchen der Dateien für den Import aufgetreten",
+		"IMPORT_SONG_TEMPLATE_ERROR_DUPLICATE_TAG": "Zuordnung der Lieder aufgrund des Templates nicht möglich, Mehrfachnennung eines Tags im Template",
+		"IMPORT_SONG_ERROR": "Import der Lieder nicht möglich",
+		"IMPORT_SONG_TEMPLATE_ERROR": "Zuordnung der Lieder aufgrund des Templates nicht möglich",
+		"IMPORT_NO_TITLE_ERROR": "Import der Lieder nicht möglich, der Titel fehlt im Template"
 	},
 	"HEADERS": {
 		"DATABASE": {
@@ -1115,6 +1122,10 @@
 		"SESSIONS": {
 			"DESCRIPTION": "Du kannst Daten zu den verschiedenen Karaoke-Sitzungen, die du gemacht hast, hinzufügen, entfernen oder ansehen.",
 			"TITLE": "Sitzungsmanagement"
+		},
+		"KARAOKE_IMPORT": {
+			"TITLE": "Importiere Lieder",
+			"DESCRIPTION": "Lieder aus einem Ordner in Karaoke Mugen importieren"
 		}
 	},
 	"KARA_PAUSED_WAITING": "Es wird noch kein Lied abgespielt",
@@ -1671,7 +1682,7 @@
 		"MOVING_MEDIA_PANEL": "Medien verschieben",
 		"GIT_NOTHING_TO_PUSH": "Es wurde kein Commit erzeugt. Wir versuchen, frühere Commits, die fehlgeschlagen sind, zu pushen.",
 		"DESELECT_ALL_COMMITS": "Deselektiere alle Commits",
-		"ONLINE": "Online",
+		"ONLINE": "Remote (Lieder herunterladen)",
 		"GIT_DELETE": "Löschen",
 		"SENDSTATS_TOOLTIP": "Sessions und gespielte/gewünschte Lieder",
 		"CONFIRM_SURE": "Möchtest du die Texte des Repository {{second}} mit denen des Repository {{first}} synchronisieren?",
@@ -1721,7 +1732,11 @@
 		"CONVERT_TO_UUID_PANEL": "Ins UUID-Format konvertieren",
 		"CONVERT_TO_UUID_ABOUT_MESSAGE": "Möglicherweise benennt dein Repository seine Dateien nach einer veralteten Konvention (vor Karaoke Mugen 8.0.56 – Januar 2025). Falls dein Repository bereits länger besteht, kannst du mit dieser Schaltfläche alle Dateien (Karaoke-Metadaten, Liedtexte und Medien) ins UUID-Format umbenennen. Beachte bitte, dass diese Änderung nicht rückgängig zu machen ist.",
 		"TOOLTIP_ONLINE_NAME": "Füge nur den Domain-Namen hier ein.",
-		"NAME_DESC": "Wie soll dein Repository heißen?"
+		"NAME_DESC": "Wie soll dein Repository heißen?",
+		"LOCAL": "Lokal (für deine privaten Lieder)",
+		"REPOSITORY_TYPE": "Repository-Typ",
+		"REPOSITORY_TYPE_DESC": "Entscheide zunächst, ob das neue Repository online oder lokal sein soll.",
+		"PATH_MEDIAS_DESC": "Bitte gibt hier an, wo die Medien gespeichert werden sollen. Wenn du viele Lieder nutzen willst, sollte eine großzügige Menge Speicherplatz vorhanden sein."
 	},
 	"TAGS": {
 		"KITSU_SLUG_ERROR": "Ungültiger Kitsu-Slug",
@@ -2109,7 +2124,12 @@
 		"GENERATING_READING": "Daten einlesen…",
 		"UPDATING_MEDIAS": "Medien aktualisieren …",
 		"CALCULATING_MEDIA_ENCODING_PARAMETERS": "Medien-Encode-Parameter werden berechnet …",
-		"ENCODING_MEDIA": "Medium wird encodet …"
+		"ENCODING_MEDIA": "Medium wird encodet …",
+		"BASE_IMPORT": {
+			"ANALYZING_FILES": "Analysiere Dateien",
+			"CREATING_METADATA": "Erstelle Metadaten",
+			"IMPORTING_BASE": "Importiere Lieder …"
+		}
 	},
 	"ABOUT": {
 		"DONATORS": "Danke an <1>{{donators}}</1> für die Spende an Karaoke Mugen",
