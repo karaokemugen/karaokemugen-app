@@ -1978,8 +1978,8 @@
 			"DESCRIPTION": "Karaoke modification form."
 		},
 		"KARAOKE_IMPORT": {
-			"TITLE": "Import Karaokes",
-			"DESCRIPTION": "Import karaokes from a folder into Karaoke Mugen"
+			"TITLE": "Import songs",
+			"DESCRIPTION": "Import songs from a folder into Karaoke Mugen"
 		},
 		"DOWNLOAD_QUEUE": {
 			"TITLE": "Media download queue",
