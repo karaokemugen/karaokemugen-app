@@ -2086,7 +2086,7 @@
 		}
 	},
 	"INBOX": {
-		"NAME": "Nom du karaoké",
+		"NAME": "Nom de la chanson",
 		"TIMESTAMP": "Horodatage",
 		"TYPE": "Type de demande",
 		"TYPES": {
@@ -2098,10 +2098,12 @@
 		"CONTACT_INFOS": "Informations de contact de l'auteur",
 		"ISSUE": "Ticket {{number}}",
 		"USER": "Utilisateur en charge de l'intégration du ticket",
-		"DOWNLOAD": "Télécharger le karaoké",
+		"DOWNLOAD": "Télécharger la chanson",
+		"DELETE_SONG": "Supprimer la chanson",
+		"UNASSIGN_FROM_SONG": "Se désassigner de la chanson",
 		"SONG_DOWNLOADED_FROM_INBOX": "La chanson {{song}} a bien été récupérée depuis la boîte de réception",
 		"SONG_DOWNLOADED_FROM_INBOX_FAILED": "La chanson n'a pas pu être récupérée depuis la boîte de réception !",
-		"DELETE": "Êtes-vous sûr de vouloir supprimer le karaoké de la boite de réception ainsi que ses fichiers sur le serveur ?",
+		"DELETE": "Êtes-vous sûr de vouloir supprimer la chanson de la boite de réception ainsi que ses fichiers sur le serveur ?",
 		"CONTACT_INFOS_MODAL": {
 			"USERNAME": "Nom d'utilisateur : ",
 			"MAIL": "Courriel : ",
