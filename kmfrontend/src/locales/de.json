@@ -1966,7 +1966,7 @@
 			},
 			"MAIL": "Email: "
 		},
-		"DELETE": "Bist du sicher, dass du die Karaoke aus dem Posteingang und die Dateien auf dem Server löschen willst?",
+		"DELETE": "Bist du sicher, dass du dieses Lied aus dem Posteingang und die Dateien vom Server löschen willst?",
 		"TYPES": {
 			"CREATION": "Erstellung",
 			"MODIFICATION": "Modifikation"
@@ -1976,14 +1976,16 @@
 		"SONG_DOWNLOADED_FROM_INBOX_FAILED": "Song konnte nicht aus dem Posteingang heruntergeladen werden!",
 		"LINK_TO_ISSUE": "Link zur Meldung",
 		"TIMESTAMP": "Zeitstempel",
-		"NAME": "Karaoke/Lied Name",
+		"NAME": "Liedname",
 		"ONLINE_USER_REQUIRED": "Ein Online-Benutzer ist für den Posteingang erforderlich",
 		"ISSUE": "Meldung {{number}}",
 		"CONTACT_INFOS": "Kontaktinformationen zum Autor",
-		"DOWNLOAD": "Karaoke/Lied herunterladen",
+		"DOWNLOAD": "Lied herunterladen",
 		"USER": "Zuständiger Benutzer für die Integration von Meldungen",
 		"NO_REPOSITORY_ENABLED": "Du hast kein Online-Repository im Maintainer-Modus aktiviert",
-		"REVIEW": "Review"
+		"REVIEW": "Review",
+		"DELETE_SONG": "Lied löschen",
+		"UNASSIGN_FROM_SONG": "Nicht mehr für das Lied zuständig sein"
 	},
 	"BACKGROUNDS_MGMT": {
 		"DESC": {
