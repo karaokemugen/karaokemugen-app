@@ -1640,7 +1640,7 @@ export async function convertToUUIDFormat(repoName: string) {
 	try {
 		const tags = await getTags({});
 		const karaDirs = resolvedPathRepos('Karaokes', repoName);
-		const karafiles = await fs.readdir(karaDirs[0]);
+		const karafiles = (await fs.readdir(karaDirs[0])).filter(kf => kf.toLowerCase().endsWith('.json'));
 		task.update({
 			total: karafiles.length,
 		});
@@ -1648,43 +1648,51 @@ export async function convertToUUIDFormat(repoName: string) {
 			task.incr();
 			if (basename(karafile, extname(karafile)).match(uuidRegexp)) continue;
 			const karapath = resolve(karaDirs[0], karafile);
-			const karadata = await fs.readFile(karapath, 'utf-8');
-			const kara = JSON.parse(karadata);
-			const mediafile = kara.medias[0].filename;
-			const subfile = kara.medias[0].lyrics[0]?.filename;
-			kara.medias[0].filename = `${kara.data.kid}${extname(mediafile)}`;
-			let mediapath = '';
+			logger.info(`Processing ${karafile} (${task.item.value}/${karafiles.length})`, { service });
 			try {
-				mediapath = (await resolveFileInDirs(mediafile, resolvedPathRepos('Medias', repoName)))[0];
-			} catch (err) {
-				// Media might be missing, it's okay.
-			}
-			const newMediapath = resolve(dirname(mediapath), `${kara.data.kid}${extname(mediafile)}`);
-			kara.medias[0].filename = basename(newMediapath);
-			if (mediapath) {
-				await fs.rename(mediapath, newMediapath);
-			}
-			if (subfile) {
+				const karadata = await fs.readFile(karapath, 'utf-8');
+				const kara = JSON.parse(karadata);
+				const mediafile = kara.medias[0].filename;
+				const subfile = kara.medias[0].lyrics[0]?.filename;
+				kara.medias[0].filename = `${kara.data.kid}${extname(mediafile)}`;
+				let mediapath = '';
 				try {
-					const subpath = (await resolveFileInDirs(subfile, resolvedPathRepos('Lyrics', repoName)))[0];
-					const newSubpath = resolve(dirname(subpath), `${kara.data.kid}${extname(subfile)}`);
-					await fs.rename(subpath, newSubpath);
-					kara.medias[0].lyrics[0].filename = basename(newSubpath);
+					mediapath = (await resolveFileInDirs(mediafile, resolvedPathRepos('Medias', repoName)))[0];
 				} catch (err) {
-					console.log(err);
-					throw err;
+					// Media might be missing, it's okay.
 				}
+				const newMediapath = resolve(dirname(mediapath), `${kara.data.kid}${extname(mediafile)}`);
+				kara.medias[0].filename = basename(newMediapath);
+				if (mediapath) {
+					await fs.rename(mediapath, newMediapath);
+				}
+				if (subfile) {
+					try {
+						const subpath = (await resolveFileInDirs(subfile, resolvedPathRepos('Lyrics', repoName)))[0];
+						const newSubpath = resolve(dirname(subpath), `${kara.data.kid}${extname(subfile)}`);
+						await fs.rename(subpath, newSubpath);
+						kara.medias[0].lyrics[0].filename = basename(newSubpath);
+					} catch (err) {
+						console.log(err);
+						throw err;
+					}
+				}
+				kara.data.songname = defineSongname(kara, tags.content);
+				kara.data = sortJSON(kara.data);
+				await fs.writeFile(
+					resolve(resolvedPathRepos('Karaokes', repoName)[0], `${kara.data.kid}.kara.json`),
+					JSON.stringify(kara, null, 2)
+				);
+				await fs.unlink(karapath);
+			} catch (err) {
+				logger.error(`Error while converting file ${karapath} to UUID`, { service });
+				console.log(err);
+				logger.error(err);
 			}
-			kara.data.songname = defineSongname(kara, tags.content);
-			kara.data = sortJSON(kara.data);
-			await fs.writeFile(
-				resolve(resolvedPathRepos('Karaokes', repoName)[0], `${kara.data.kid}.kara.json`),
-				JSON.stringify(kara, null, 2)
-			);
-			await fs.unlink(karapath);
 		}
 		logger.info(`Finished converting repository ${repoName} to UUIDs`, { service });
 	} catch (err) {
+		logger.error(`Error converting repository to UUID`, { service });
 		throw err;
 	} finally {
 		task.end();

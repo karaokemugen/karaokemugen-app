@@ -122,7 +122,7 @@ async function populateTags(baseKaras: ImportBaseFile[], repoDest: string): Prom
 	for (const i in baseKaras) {
 		if ({}.hasOwnProperty.call(baseKaras, i)) {
 			const kara = baseKaras[i];
-			for (const key of Object.keys(kara.newFile)) {
+			for (const key of Object.keys(kara?.newFile || {})) {
 				// These too are ignored, they're not tags.
 				if (key === 'title' || key === 'year') continue;
 				// We assume that if there are several items in a tag they're separated by ,
