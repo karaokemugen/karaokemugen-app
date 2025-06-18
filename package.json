@@ -205,7 +205,7 @@
     "husky": "^9.1.7",
     "i18next-scanner": "^4.6.0",
     "lint-staged": "^16.1.2",
-    "mocha": "^11.7.0",
+    "mocha": "^11.2.2",
     "postgrator-cli": "^9.0.1",
     "prettier": "3.5.3",
     "rimraf": "^6.0.1",
