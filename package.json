@@ -96,6 +96,7 @@
     "commander": "^13.1.0",
     "compression": "^1.8.0",
     "convert-srt-to-ass": "^1.0.3",
+    "corepack": "^0.33.0",
     "cors": "^2.8.5",
     "csv-writer": "^1.6.0",
     "damerau-levenshtein": "^1.0.8",
@@ -391,5 +392,5 @@
   "lint-staged": {
     "!(src/lib|assets/guestAvatars)": "prettier --write --ignore-unknown"
   },
-  "packageManager": "yarn@1.22.22"
+  "packageManager": "yarn@4.9.2"
 }
