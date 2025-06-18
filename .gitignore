@@ -10,6 +10,7 @@ app-mac/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+install-state.gz
 *.exe
 karaokemugen*.log
 out/
