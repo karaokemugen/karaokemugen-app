@@ -1,7 +1,7 @@
 import { Layout, Modal } from 'antd';
 import i18next from 'i18next';
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import { Repository } from '../../../../../src/lib/types/repo';
 import { DifferentChecksumReport } from '../../../../../src/types/repo';
@@ -28,6 +28,7 @@ const newrepository: Repository = {
 function RepositoriesEdit() {
 	const navigate = useNavigate();
 	const { name } = useParams();
+	const [searchParams] = useSearchParams();
 
 	const [repository, setRepository] = useState<Repository>();
 	const [report, setReport] = useState<DifferentChecksumReport[]>();
@@ -38,6 +39,8 @@ function RepositoriesEdit() {
 			await commandBackend(WS_CMD.ADD_REPO, repository, true);
 			if (importRedirection) {
 				navigate(`/system/karas/import?repository=${repository.Name}`);
+			} else if (searchParams.get('setup')) {
+				navigate('/welcome');
 			} else {
 				navigate('/system/repositories');
 			}
