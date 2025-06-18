@@ -14,7 +14,7 @@ import { WS_CMD } from '../../../utils/ws';
 
 interface RepositoriesFormProps {
 	repository: Repository;
-	save: (repository: Repository) => void;
+	save: (repository: Repository, importRedirection?: boolean) => void;
 	movingMedia: (movingMediaPath: string) => void;
 	convertToUUID: (repo: string) => void;
 	compareLyrics: (repo: string) => void;
@@ -28,6 +28,7 @@ function RepositoryForm(props: RepositoriesFormProps) {
 	const [movingMediaPath, setMovingMediaPath] = useState<string>();
 	const [compareRepo, setCompareRepo] = useState<string>();
 	const { name } = useParams();
+	const [searchParams] = useSearchParams();
 
 	const [repositoriesValue, setRepositoriesValue] = useState<string[]>();
 	const [zipUpdateInProgress, setZipUpdateInProgress] = useState(false);
@@ -127,7 +128,7 @@ function RepositoryForm(props: RepositoriesFormProps) {
 					}
 				: undefined,
 		};
-		props.save(repository);
+		props.save(repository, !values.Online && searchParams.get('setup'));
 	};
 
 	const setDefaultFolders = (value: string): void => {
