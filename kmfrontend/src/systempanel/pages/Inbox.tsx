@@ -12,6 +12,7 @@ import { commandBackend } from '../../utils/socket';
 import Title from '../components/Title';
 import dayjs from 'dayjs';
 import { WS_CMD } from '../../utils/ws';
+import { getLanguagesInLocaleFromCode } from '../../utils/isoLanguages';
 
 export default function Inbox() {
 	const context = useContext(GlobalContext);
@@ -104,7 +105,12 @@ export default function Inbox() {
 					{userDetails?.language ? (
 						<div>
 							<label>{i18next.t('INBOX.CONTACT_INFOS_MODAL.LANGUAGE')}</label>
-							<span>{userDetails.language}</span>
+							<span>
+								{getLanguagesInLocaleFromCode(
+									userDetails.language,
+									context.globalState.settings.data.user.language
+								)}
+							</span>
 						</div>
 					) : null}
 					{userDetails?.email ? (
