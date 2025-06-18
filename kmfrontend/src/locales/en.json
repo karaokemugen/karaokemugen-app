@@ -2110,6 +2110,7 @@
 		"CONTACT_INFOS_MODAL": {
 			"USERNAME": "Username: ",
 			"MAIL": "Email: ",
+			"LANGUAGE": "Language: ",
 			"URL": "Website: ",
 			"SOCIAL_NETWORKS": {
 				"MASTODON": "Mastodon: ",

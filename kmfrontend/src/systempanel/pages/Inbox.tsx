@@ -101,6 +101,12 @@ export default function Inbox() {
 							<span>{userDetails.login}</span>
 						)}
 					</div>
+					{userDetails?.language ? (
+						<div>
+							<label>{i18next.t('INBOX.CONTACT_INFOS_MODAL.LANGUAGE')}</label>
+							<span>{userDetails.language}</span>
+						</div>
+					) : null}
 					{userDetails?.email ? (
 						<div>
 							<label>{i18next.t('INBOX.CONTACT_INFOS_MODAL.MAIL')}</label>

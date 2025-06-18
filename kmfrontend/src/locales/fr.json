@@ -2108,6 +2108,7 @@
 			"USERNAME": "Nom d'utilisateur : ",
 			"MAIL": "Courriel : ",
 			"URL": "Site web : ",
+			"LANGUAGE": "Langue : ",
 			"SOCIAL_NETWORKS": {
 				"MASTODON": "Mastodon : ",
 				"BLUESKY": "Bluesky : ",
