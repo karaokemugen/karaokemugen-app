@@ -284,6 +284,8 @@ export async function initConfig(argv: any) {
 		await loadConfigFiles(getState().dataPath, argv.config, defaults, getState().appPath);
 		const publicConfig = cloneDeep(getConfig());
 		publicConfig.Karaoke.StreamerMode.Twitch.OAuth = 'xxxxx';
+		publicConfig.System.Database.password = 'xxxxx';
+		publicConfig.System.Database.superuserPassword = 'xxxxx';
 		publicConfig.App.JwtSecret = 'xxxxx';
 		publicConfig.App.InstanceID = 'xxxxx';
 		publicConfig.Online.RemoteToken = 'xxxxx';
