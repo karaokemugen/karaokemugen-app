@@ -5,7 +5,11 @@ import { db, getSettings } from '../lib/dao/database.js';
 import { setConfig } from '../lib/utils/config.js';
 import { getPlaylists } from '../services/playlist.js';
 import { adminToken } from '../utils/constants.js';
-import { decoupleOnlineConfig, removeKaraokeMugenFolderInPlaylistMedias } from '../utils/hokutoNoCode.js';
+import {
+	decoupleOnlineConfig,
+	removeKaraokeMugenFolderInPlaylistMedias,
+	renameSSHKeys,
+} from '../utils/hokutoNoCode.js';
 import { compareKarasChecksum, generateDB } from './database.js';
 import { updatePlaylistDuration } from './playlist.js';
 
@@ -55,6 +59,9 @@ export async function postMigrationTasks(migrations: Postgrator.Migration[], did
 			case 'decouplingOnlineConfig':
 				decoupleOnlineConfig();
 				removeKaraokeMugenFolderInPlaylistMedias();
+				break;
+			case 'betterSSHKeys':
+				renameSSHKeys();
 				break;
 			default:
 		}

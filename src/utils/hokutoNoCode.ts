@@ -5,7 +5,7 @@
 
 import { app, dialog } from 'electron';
 import { existsSync, readdirSync, rmdirSync } from 'fs';
-import fs from 'fs/promises';
+import fs, { rename } from 'fs/promises';
 import { moveSync } from 'fs-extra';
 import fsExtra from 'fs-extra/esm';
 import i18next from 'i18next';
@@ -16,13 +16,13 @@ import { getSettings, saveSetting } from '../lib/dao/database.js';
 import { readRepoManifest, selectRepositoryManifest } from '../lib/dao/repo.js';
 import { readAllKaras } from '../lib/services/generation.js';
 import { Repository } from '../lib/types/repo.js';
-import { getConfig, resolvedPathRepos, setConfig } from '../lib/utils/config.js';
+import { getConfig, resolvedPath, resolvedPathRepos, setConfig } from '../lib/utils/config.js';
 import { uuidRegexp } from '../lib/utils/constants.js';
 import { listAllFiles, sanitizeFile } from '../lib/utils/files.js';
 import logger from '../lib/utils/logger.js';
 import Task from '../lib/utils/taskManager.js';
 import { medias } from '../services/playlistMedias.js';
-import { editRepo, getRepo } from '../services/repo.js';
+import { editRepo, getRepo, getRepos } from '../services/repo.js';
 import { resolvedMediaPath } from './config.js';
 import { getState, setState } from './state.js';
 
@@ -190,6 +190,24 @@ export async function oldFilenameFormatKillSwitch(repoName: string) {
 		logger.error(`Media rename failed: ${err}`, { service, obj: err });
 	} finally {
 		task.end();
+	}
+}
+
+/** Remove in KM 10.0
+ * While you're at it, also remove the non-user-specific key file name check in ssh.ts
+ */
+export async function renameSSHKeys() {
+	const repos = getRepos();
+	for (const repo of repos.filter(r => r.Online && r.MaintainerMode)) {
+		const oldKey = `id_rsa_KaraokeMugen_${repo.Name}`;
+		const newKey = `KaraokeMugen_${repo.Name}`;
+		const dir = resolvedPath('SSHKeys');
+		try {
+			await rename(resolve(dir, oldKey), resolve(dir, newKey));
+			await rename(resolve(dir, `${oldKey}.pub`), resolve(dir, `${newKey}.pub`));
+		} catch (_) {
+			// Non-fatal
+		}
 	}
 }
 
