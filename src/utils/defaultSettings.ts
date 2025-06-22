@@ -275,8 +275,8 @@ export const configConstraints = {
 	'Karaoke.Quota.FreeUpVotesRequiredPercent': {
 		numericality: { onlyInteger: true, greaterThanOrEqualTo: 1, lowerThanOrEqualTo: 100 },
 	},
-	'Karaoke.Quota.Songs': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 1 } },
-	'Karaoke.Quota.Time': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 1 } },
+	'Karaoke.Quota.Songs': { numericality: { onlyInteger: true } },
+	'Karaoke.Quota.Time': { numericality: { onlyInteger: true } },
 	'Player.Display.Avatar': { inclusion: bools },
 	'Player.Display.Nickname': { inclusion: bools },
 	'Player.Display.ConnectionInfo.Enabled': { inclusion: bools },
