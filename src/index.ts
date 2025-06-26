@@ -57,11 +57,6 @@ if (process.platform === 'win32') {
 // Main app begins here.
 dotenv.config();
 
-// Temp Fix for https://github.com/electron/electron/issues/46538
-if (process.platform === 'linux') {
-	app.commandLine.appendSwitch('gtk-version', '3');
-}
-
 let appPath: string;
 // Resources are all the stuff our app uses and is bundled with. mpv config files, default avatar, background, migrations, locales, etc.
 let resourcePath: string;
