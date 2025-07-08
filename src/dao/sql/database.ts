@@ -15,7 +15,10 @@ SELECT
 (SELECT SUM(duration) FROM kara)::integer AS duration,
 (SELECT SUM(k.duration) FROM played p LEFT JOIN kara k ON k.pk_kid = p.fk_kid)::integer AS playtime,
 (SELECT value FROM settings WHERE option = 'usageTime')::integer AS usagetime,
-(SELECT SUM(k.mediasize)::bigint FROM kara k LEFT JOIN all_karas ak ON k.pk_kid = ak.pk_kid WHERE ak.repository = ANY ($1) ${
+(SELECT SUM(k.mediasize)::bigint 
+FROM kara k 
+LEFT JOIN all_karas ak ON k.pk_kid = ak.pk_kid 
+WHERE ak.repository = ANY ($1) ${
 	collectionClauses.length > 0 ? `AND (${collectionClauses.map(clause => `(${clause})`).join(' OR ')})` : ''
 }) AS total_media_size;
 `;

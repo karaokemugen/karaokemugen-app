@@ -81,6 +81,10 @@ export async function findFilesToImport(dirName: string, template: string, viewO
 	}
 }
 
+/**
+ * From a template and a string, returns an object with the correct variables.
+ * Variables can be "title", any tag type, and "year"
+ */
 function translateKaraTemplate(mediafile: string, template: string): ImportBaseFile {
 	try {
 		if (!template.includes('{title}')) throw new ErrorKM('IMPORT_SONG_TEMPLATE_MISSING_TITLE_ERROR', 400);
