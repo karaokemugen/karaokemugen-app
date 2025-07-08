@@ -1,3 +1,42 @@
+# [8.0.90] - 2025-07-08
+
+Two months after the last release, we're doing great.
+
+This releases fixes a few embarrassing issues; We're close to 9.0 now. Anytime.
+
+Any.
+
+Time.
+
+## Added
+
+- **[Maintainers]** Contact language is now available to maintainers when parsing inbox items. You can now see the language a contributor uses most (according tot heir online profile) so you know how to speak to them. (#1770)
+- **[Maintainers]** Maintainers can now unassign themselves from some inbox items when they realize it's too much to work on. (#1764)
+
+## Changed
+
+- **[Operators]** Database password is now obfuscated in logs
+- **[Operators]** We're still working on decoupling Karaoke Mugen from its default repository. As a result some featuers can now target multiple repositories (users, stats, etc.) instead of just one. See issue for more info (#1750)
+- **[Maintainers]** SSH keys are now created with the ed2551ç algorithm (#1767)
+- **[Maintainers]** `StrictHostKeyVerification` has been disabled on the ssh command git uses to connect. This might not be totally safe but with hosts like github or gitlab and given we're only sending ssh public keys created specifically for KM. The main problem was that this created lots of errors with some users when trying to connect to gitlab.
+- **[Developers]** Upgraded Yarn to version 4
+- **[Developers]** Upgraded backend and frontend packages
+- **[Developers]** Added stronger typing for Websocket commands (thanks @DragonSkills99)
+
+## Fixed
+
+- **[Operators]** Fixed some playlist imports causing items in playlist to become invisble (#1762)
+- **[Operators]** Fixed some bad SQL migrations
+- **[Operators]** Fixed setup process by adding a redirection at the end towards the welcome page
+- **[Operators]** Possible macOS auto-update fixes. Previously updates weren't applied and the app was just restarting on its current version.
+- **[Maintainers]** Fixed embedding cover art into some music files
+- **[Maintainers]** Fixed media validation when creating a new song
+- **[Maintainers]** Fixed file extension validation in the karaoke submission form
+
+## Removed
+
+- **[Operators]** Removed quota check in configuration syntax check. This means that you can't accidentally set the quota to an invalid number anymore
+
 # [8.0.79] - 2025-05-08
 
 This is a hotfix release
