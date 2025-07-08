@@ -8,6 +8,7 @@ import { isElectron } from '../../../utils/electron';
 import { langSupport } from '../../../utils/isoLanguages';
 import { commandBackend } from '../../../utils/socket';
 import { displayMessage } from '../../../utils/tools';
+import { WS_CMD } from '../../../utils/ws';
 
 function SetupPageUser() {
 	const context = useContext(GlobalContext);
@@ -18,7 +19,9 @@ function SetupPageUser() {
 	const [login, setLogin] = useState<string>();
 	const [password, setPassword] = useState<string>();
 	const [passwordConfirmation, setPasswordConfirmation] = useState<string>();
-	const [instance, setInstance] = useState<string>(context?.globalState.settings.data.config?.Online.Host);
+	const [instance, setInstance] = useState<string>(
+		context?.globalState.settings.data.config?.Online.RemoteUsers.DefaultHost
+	);
 	const [securityCode, setSecurityCode] = useState<number>();
 	const [error, setError] = useState<string>();
 
@@ -38,7 +41,7 @@ function SetupPageUser() {
 		}
 
 		try {
-			await commandBackend('createUser', {
+			await commandBackend(WS_CMD.CREATE_USER, {
 				login: username,
 				password: password,
 				role: 'admin',
@@ -79,14 +82,14 @@ function SetupPageUser() {
 	const loginFinish = async (securityCode: number) => {
 		try {
 			const username = login + (accountType === 'online' ? '@' + instance : '');
-			const infos = await commandBackend('login', {
+			const infos = await commandBackend(WS_CMD.LOGIN, {
 				username: username,
 				password: password,
 				securityCode: securityCode,
 			});
 			setAuthenticationInformation(context.globalDispatch, infos);
 			setError(undefined);
-			navigate('/setup/repo');
+			navigate('/setup/stats');
 		} catch (err: any) {
 			const error = err?.message?.code ? i18next.t(`ERROR_CODES.${err.message.code}`) : JSON.stringify(err);
 			setError(error);
@@ -181,7 +184,7 @@ function SetupPageUser() {
 					</p>
 					<p>
 						{i18next.t('SETUP_PAGE.ONLINE_ACCOUNT_INSTANCE_DESC', {
-							instance: context?.globalState.settings.data.config?.Online.Host,
+							instance: context?.globalState.settings.data.config?.Online.RemoteUsers.DefaultHost,
 						})}
 					</p>
 					<ul className="actions">
@@ -225,7 +228,9 @@ function SetupPageUser() {
 										key="instance"
 										className="input-field"
 										type="text"
-										defaultValue={context?.globalState.settings.data.config?.Online.Host}
+										defaultValue={
+											context?.globalState.settings.data.config?.Online.RemoteUsers.DefaultHost
+										}
 										onChange={event => setInstance(event.target.value)}
 									/>
 								</div>
@@ -273,7 +278,9 @@ function SetupPageUser() {
 										key="instance"
 										className="input-field"
 										type="text"
-										defaultValue={context?.globalState.settings.data.config?.Online.Host}
+										defaultValue={
+											context?.globalState.settings.data.config?.Online.RemoteUsers.DefaultHost
+										}
 										onChange={event => setInstance(event.target.value)}
 									/>
 								</div>

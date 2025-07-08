@@ -1,4 +1,4 @@
-import { DeleteOutlined, DownloadOutlined, UserOutlined } from '@ant-design/icons';
+import { DeleteOutlined, DownloadOutlined, RollbackOutlined, UserOutlined } from '@ant-design/icons';
 import { EditOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import { Alert, Button, Layout, Modal, Table } from 'antd';
 import i18next from 'i18next';
@@ -11,6 +11,8 @@ import GlobalContext from '../../store/context';
 import { commandBackend } from '../../utils/socket';
 import Title from '../components/Title';
 import dayjs from 'dayjs';
+import { WS_CMD } from '../../utils/ws';
+import { getLanguagesInLocaleFromCode } from '../../utils/isoLanguages';
 
 export default function Inbox() {
 	const context = useContext(GlobalContext);
@@ -31,7 +33,7 @@ export default function Inbox() {
 	const getInbox = async () => {
 		if (repoList.length > 0) {
 			try {
-				const res = await commandBackend('getInbox', { repoName: instance.Name });
+				const res = await commandBackend(WS_CMD.GET_INBOX, { repoName: instance.Name });
 				setInbox(res);
 			} catch (_) {
 				// already display
@@ -41,7 +43,16 @@ export default function Inbox() {
 
 	const downloadKaraFromInbox = async (inid: string) => {
 		try {
-			await commandBackend('downloadKaraFromInbox', { repoName: instance.Name, inid });
+			await commandBackend(WS_CMD.DOWNLOAD_KARA_FROM_INBOX, { repoName: instance.Name, inid });
+		} catch (_) {
+			// already display
+		}
+		getInbox();
+	};
+
+	const unassignKaraFromInbox = async (inid: string) => {
+		try {
+			await commandBackend(WS_CMD.UNASSIGN_KARA_FROM_INBOX, { repoName: instance.Name, inid });
 		} catch (_) {
 			// already display
 		}
@@ -55,7 +66,7 @@ export default function Inbox() {
 			cancelText: i18next.t('NO'),
 			onOk: async close => {
 				try {
-					await commandBackend('deleteKaraFromInbox', { repoName: instance.Name, inid });
+					await commandBackend(WS_CMD.DELETE_KARA_FROM_INBOX, { repoName: instance.Name, inid });
 				} catch (_) {
 					// already display
 				}
@@ -91,6 +102,17 @@ export default function Inbox() {
 							<span>{userDetails.login}</span>
 						)}
 					</div>
+					{userDetails?.language ? (
+						<div>
+							<label>{i18next.t('INBOX.CONTACT_INFOS_MODAL.LANGUAGE')}</label>
+							<span>
+								{getLanguagesInLocaleFromCode(
+									userDetails.language,
+									context.globalState.settings.data.user.language
+								)}
+							</span>
+						</div>
+					) : null}
 					{userDetails?.email ? (
 						<div>
 							<label>{i18next.t('INBOX.CONTACT_INFOS_MODAL.MAIL')}</label>
@@ -166,7 +188,7 @@ export default function Inbox() {
 		const getInbox = async () => {
 			if (repoList.length > 0) {
 				try {
-					const res = await commandBackend('getInbox', { repoName: instance.Name });
+					const res = await commandBackend(WS_CMD.GET_INBOX, { repoName: instance.Name });
 					setInbox(res);
 				} catch (_) {
 					// already display
@@ -239,7 +261,7 @@ export default function Inbox() {
 							type="primary"
 							icon={<PlayCircleOutlined />}
 							onClick={() =>
-								commandBackend('playKara', {
+								commandBackend(WS_CMD.PLAY_KARA, {
 									kid: record.edited_kid || record.kid,
 								}).catch(() => {})
 							}
@@ -264,8 +286,17 @@ export default function Inbox() {
 					<Button
 						type="primary"
 						danger
+						onClick={() => unassignKaraFromInbox(record.inid)}
+						style={{ marginLeft: '1em' }}
+						title={i18next.t('INBOX.UNASSIGN_FROM_SONG')}
+						icon={<RollbackOutlined />}
+					/>
+					<Button
+						type="primary"
+						danger
 						onClick={() => deleteKaraFromInbox(record.inid)}
 						style={{ marginLeft: '1em' }}
+						title={i18next.t('INBOX.DELETE_SONG')}
 						icon={<DeleteOutlined />}
 					/>
 				</div>

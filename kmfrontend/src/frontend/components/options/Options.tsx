@@ -8,6 +8,7 @@ import { expand } from '../../../utils/tools';
 import InterfaceOptions from './InterfaceOptions';
 import KaraokeOptions from './KaraokeOptions';
 import PlayerOptions from './PlayerOptions';
+import { WS_CMD } from '../../../utils/ws';
 
 export function sanitizeSettingsSearchValue(value: string) {
 	return value.toLocaleLowerCase().replace(/[^a-z0-9]/g, '');
@@ -36,7 +37,7 @@ function Options() {
 			value = false;
 		}
 		const data = expand(e.target.id, value);
-		commandBackend('updateSettings', { setting: data }).catch(() => {});
+		commandBackend(WS_CMD.UPDATE_SETTINGS, { setting: data }).catch(() => {});
 	};
 
 	const updateSettingFilter: KeyboardEventHandler<HTMLInputElement> = e => {

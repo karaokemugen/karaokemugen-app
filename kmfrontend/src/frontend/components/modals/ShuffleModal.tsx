@@ -5,6 +5,8 @@ import { DBPL } from '../../../../../src/types/database/playlist';
 import { closeModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
+import { WS_CMD } from '../../../utils/ws';
+import { ShuffleMethods } from '../../../../../src/types/playlist';
 
 interface IProps {
 	playlist: DBPL;
@@ -14,9 +16,9 @@ function ShuffleModal(props: IProps) {
 	const context = useContext(GlobalContext);
 	const [fullShuffle, setFullShuffle] = useState(false);
 
-	const shuffle = async (method: string) => {
+	const shuffle = async (method: ShuffleMethods) => {
 		try {
-			await commandBackend('shufflePlaylist', {
+			await commandBackend(WS_CMD.SHUFFLE_PLAYLIST, {
 				plaid: props.playlist.plaid,
 				method: method,
 				fullShuffle: fullShuffle,

@@ -1,7 +1,5 @@
-import { Socket } from 'socket.io';
-
+import { WS_CMD } from '../../../kmfrontend/src/utils/ws.js';
 import { APIMessage } from '../../lib/services/frontend.js';
-import { APIData } from '../../lib/types/api.js';
 import { check } from '../../lib/utils/validators.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
 import {
@@ -15,7 +13,7 @@ import {
 import { runChecklist } from '../middlewares.js';
 
 export default function favoritesController(router: SocketIOApp) {
-	router.route('getFavoritesMicro', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_FAVORITES_MICRO, async (socket, req) => {
 		await runChecklist(socket, req, 'guest', 'closed');
 		try {
 			if (req.token.role === 'guest') {
@@ -30,11 +28,21 @@ export default function favoritesController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('getFavorites', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_FAVORITES, async (socket, req) => {
 		await runChecklist(socket, req, 'guest', 'closed');
 		try {
 			if (req.token.role === 'guest') {
-				return {};
+				// TODO: Check if you really want to return an empty object here or if you instead want to return an empty karalist
+				return {
+					content: [],
+					avatars: undefined,
+					infos: {
+						count: 0,
+						from: 0,
+						to: 0,
+					},
+					i18n: undefined,
+				};
 			}
 			return await getFavorites({
 				username: req.token.username.toLowerCase(),
@@ -49,7 +57,7 @@ export default function favoritesController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('addFavorites', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.ADD_FAVORITES, async (socket, req) => {
 		await runChecklist(socket, req, 'user', 'limited');
 		const validationErrors = check(req.body, {
 			kids: { presence: true, uuidArrayValidator: true },
@@ -66,7 +74,7 @@ export default function favoritesController(router: SocketIOApp) {
 			throw { code: 400, message: validationErrors };
 		}
 	});
-	router.route('deleteFavorites', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.DELETE_FAVORITES, async (socket, req) => {
 		await runChecklist(socket, req, 'user', 'closed');
 		const validationErrors = check(req.body, {
 			kids: { presence: true, uuidArrayValidator: true },
@@ -79,7 +87,7 @@ export default function favoritesController(router: SocketIOApp) {
 			}
 		}
 	});
-	router.route('exportFavorites', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.EXPORT_FAVORITES, async (socket, req) => {
 		await runChecklist(socket, req, 'user', 'closed');
 		// Returns the playlist and its contents in an exportable format (to save on disk)
 		try {
@@ -88,7 +96,7 @@ export default function favoritesController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('importFavorites', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.IMPORT_FAVORITES, async (socket, req) => {
 		await runChecklist(socket, req, 'user', 'closed');
 		const validationErrors = check(req.body, {
 			favorites: { isJSON: true },

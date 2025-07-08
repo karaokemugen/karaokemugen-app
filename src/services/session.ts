@@ -275,14 +275,14 @@ export async function exportSession(seid: string): Promise<SessionExports> {
 		const recordsPlayed = played.map(k => {
 			return {
 				played_at: k.lastplayed_at.toLocaleString(),
-				songname: k.songname,
+				songname: k.songname || k.mediafile,
 				kid: k.kid,
 			};
 		});
 		const recordsRequested = requested.map(k => {
 			return {
 				requested_at: k.lastrequested_at.toLocaleString(),
-				songname: k.songname,
+				songname: k.songname || k.mediafile,
 				kid: k.kid,
 			};
 		});

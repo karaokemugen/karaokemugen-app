@@ -955,17 +955,6 @@
 		"CREATE_ONLINE_ACCOUNT_DESC": "Indiquez un nom de compte et un mot de passe pour créer un compte.",
 		"SECURITY_CODE_DESC_CONSOLE": "Indiquez également le code de sécurité (à 6 chiffres) que vous pourrez trouver en cherchant \"SECURITY CODE FOR THIS SESSION\" dans le fichier des logs de Karaoke Mugen.",
 		"SECURITY_CODE_USE": "Ce code permet d'être certain que c'est bien vous qui effectuez ces actions. Le code change à chaque utilisation.",
-		"DEFAULT_REPOSITORY_DESC_1": "Karaoke Mugen propose un dépôt de karaokés par défaut, ",
-		"DEFAULT_REPOSITORY_DESC_2": ". Les médias seront téléchargés au fur et à mesure que vous en aurez besoin.",
-		"DEFAULT_REPOSITORY_QUESTION": "Où voulez-vous stocker ces téléchargements ? Par défaut ils seront dans :",
-		"REPOSITORY_LATER": "Vous pourrez changer ce dossier plus tard.",
-		"MODIFY_DIRECTORY": "Modifier le dossier",
-		"CHOOSE_DIRECTORY": "Choisissez un dossier",
-		"ADD_DIRECTORY": "Ajouter un dossier",
-		"SAVE_PARAMETER": "Enregistrer ce paramètre",
-		"COLLECTIONS_CHOICE": "Choix des collections",
-		"COLLECTIONS_CHOICE_DESC_1": "Les Collections de chansons sont destinées à des publics différents. Choisissez les collections que vous souhaitez voir dans votre base de karaokés.",
-		"COLLECTIONS_CHOICE_DESC_2": "Vous pouvez changer vos collections à tout moment dans le panneau système.",
 		"CONNECTED_MESSAGE": "Félicitations, vous voilà connecté sur Karaoke Mugen, {{user}} !"
 	},
 	"NOTIFICATION": {
@@ -1185,17 +1174,17 @@
 		"SOURCE_DIR_TOOLTIP": "Dossier avec les médias (vidéo/audio) de karaokés à importer",
 		"SOURCE_DIR_DESC": "Veuillez sélectionner le dossier dans lequel se trouvent vos chansons. Elles seront copiées dans votre dépôt cible.",
 		"DESTINATION_REPOSITORY": "Dépôt cible",
-		"DESTINATION_REPOSITORY_TOOLTIP": "Dépôt vers lequel les nouveaux karaokés seront importés",
+		"DESTINATION_REPOSITORY_TOOLTIP": "Dépôt vers lequel les nouvelles chansons seront importées",
 		"FILENAME_TEMPLATE": "Modèle de nom de fichier",
 		"FILENAME_TEMPLATE_TOOLTIP": "Si vos fichiers existants ont un nom de fichier structuré - par exemple contenant le nom de la chanson, l'artiste et l'année - vous pouvez fournir le format ici. Les champs reconnus seront automatiquement enregistrés dans les nouvelles métadonnées du karaoké.",
 		"ADD_TAG_TEMPLATE": "Ajouter un tag dans le modèle",
 		"ADD_TAG_TEMPLATE_DESC": "Utilisez le champ ci-dessous pour ajouter des éléments au modèle de nom de fichier.",
 		"WARNING_IMPORT_TITLE": "À LIRE",
 		"WARNING_IMPORT": "Karaoke Mugen regardera dans le dossier source et essaiera de trouver des chansons à importer.",
-		"WARNING_IMPORT_LIST": "Choses à savoir :",
+		"WARNING_IMPORT_LIST": "Choses à savoir :",
 		"WARNING_IMPORT_LYRICS": "Les paroles seront converties au format .ass lorsqu'elles seront importées.",
 		"WARNING_IMPORT_MEDIA": "Les médias seront convertis au format .mp4.",
-		"FILENAME_TEMPLATE_DESC": "Veuillez préciser le format de nommage des fichiers que vous utilisez :",
+		"FILENAME_TEMPLATE_DESC": "Veuillez préciser le format de nommage des fichiers que vous utilisez :",
 		"MEDIA_FILES": "Fichiers médias",
 		"IMPORT_START": "Débuter l'import",
 		"SOURCE": "Source",
@@ -1217,7 +1206,7 @@
 		"HISTORY": "Historique",
 		"RANKING": "Plus demandés",
 		"VIEWCOUNTS": "Plus joués",
-		"KARAIMPORT": "Import de karaokés",
+		"KARAIMPORT": "Import de chansons",
 		"TAGS": "Tags",
 		"DATABASE": "Base de données",
 		"GIT": "Git",
@@ -1392,7 +1381,6 @@
 			"APP_QUICKSTART": "Démarrage rapide de l'application",
 			"APP_QUICKSTART_TOOLTIP": "Ceci désactive la vérification des données. Vous devrez générer votre base de données en cas de modification manuellement depuis le panneau système, onglet base de données.",
 			"ONLINE_ERRORTRACKING": "Envoi des rapports d'erreurs (via sentry.io)",
-			"ONLINE_STATS": "Envoi des statistiques d'utilisation à Karaoke Mugen Server",
 			"PLAYER_KEYBOARDMEDIASHORTCUTS": "Piloter le lecteur avec les touches média du clavier",
 			"PLAYER_KEYBOARDMEDIASHORTCUTS_TOOLTIP": "Désactivez si vous voulez que ces touches contrôlent une autre application (iTunes, foobar, etc.)",
 			"PLAYER_HARDWAREDECODING": "Décodage matériel des vidéos",
@@ -1407,7 +1395,8 @@
 			"ONLINE_UPDATES_MEDIAS_OUTROS": "Mise à jour automatique des vidéos outros",
 			"ONLINE_UPDATES_MEDIAS_ENCORES": "Mise à jour automatique des vidéos encores",
 			"ONLINE_UPDATES_MEDIAS_SPONSORS": "Mise à jour automatique des sponsors",
-			"ONLINE_USERS": "Autoriser l'inscription des utilisateurs en ligne",
+			"ONLINE_REMOTEUSERS_ENABLED": "Autoriser l'inscription des utilisateurs en ligne",
+			"ONLINE_REMOTEUSERS_DEFAULTHOST": "Instance par défaut pour les utilisateurs en ligne",
 			"ONLINE_DISCORD_DISPLAYACTIVITY": "Afficher votre activité de Karaoke Mugen sur votre profil Discord",
 			"ONLINE_FETCHPOPULARSONGS": "Récupérer les chansons les plus demandées depuis vos dépôts en ligne",
 			"ONLINE_FETCHPOPULARSONGS_TOOLTIP": "Si désactivé, les chansons les plus demandées seront calculées uniquement depuis votre application Karaoke Mugen"
@@ -1442,13 +1431,13 @@
 		"PRIVATE": "Privée ?"
 	},
 	"REPOSITORIES": {
-		"NAME_DESC": "Comment votre dépôt s'appelle-t-il ?",
+		"NAME_DESC": "Comment votre dépôt s'appelle-t-il ?",
 		"NAME": "Nom du dépôt",
 		"ONLINE_NAME": "Nom de domaine du dépôt",
 		"TOOLTIP_NAME": "Mettez le nom que vous voulez. Par exemple 'Mon trésor de guerre'",
 		"TOOLTIP_ONLINE_NAME": "Indiquez son nom de domaine uniquement.",
 		"BASE_DIR": "Chemin du dépôt",
-		"PATH_MEDIAS": "Chemin de stockage des médias",
+		"PATH_MEDIAS": "Dossier des médias",
 		"PATH_MEDIAS_DESC": "Veuillez indiquer l'endroit où vous souhaitez que les fichiers médias soient stockés. Si vous prévoyez d'avoir beaucoup de chansons, il est préférable de les stocker dans un endroit où vous disposez de beaucoup d'espace disque.",
 		"NEW_REPOSITORY": "Nouveau dépôt",
 		"ONLINE": "Externe (Récupérez des chansons)",
@@ -1986,8 +1975,8 @@
 			"DESCRIPTION": "Formulaire de modification de karaoké."
 		},
 		"KARAOKE_IMPORT": {
-			"TITLE": "Import de karaokés",
-			"DESCRIPTION": "Importer des karaokés depuis un dossier vers Karaoke Mugen"
+			"TITLE": "Import de chansons",
+			"DESCRIPTION": "Importer des chansons depuis un dossier vers Karaoke Mugen"
 		},
 		"DOWNLOAD_QUEUE": {
 			"TITLE": "File d'attente des téléchargements des médias",
@@ -2097,7 +2086,7 @@
 		}
 	},
 	"INBOX": {
-		"NAME": "Nom du karaoké",
+		"NAME": "Nom de la chanson",
 		"TIMESTAMP": "Horodatage",
 		"TYPE": "Type de demande",
 		"TYPES": {
@@ -2109,14 +2098,17 @@
 		"CONTACT_INFOS": "Informations de contact de l'auteur",
 		"ISSUE": "Ticket {{number}}",
 		"USER": "Utilisateur en charge de l'intégration du ticket",
-		"DOWNLOAD": "Télécharger le karaoké",
+		"DOWNLOAD": "Télécharger la chanson",
+		"DELETE_SONG": "Supprimer la chanson",
+		"UNASSIGN_FROM_SONG": "Se désassigner de la chanson",
 		"SONG_DOWNLOADED_FROM_INBOX": "La chanson {{song}} a bien été récupérée depuis la boîte de réception",
 		"SONG_DOWNLOADED_FROM_INBOX_FAILED": "La chanson n'a pas pu être récupérée depuis la boîte de réception !",
-		"DELETE": "Êtes-vous sûr de vouloir supprimer le karaoké de la boite de réception ainsi que ses fichiers sur le serveur ?",
+		"DELETE": "Êtes-vous sûr de vouloir supprimer la chanson de la boite de réception ainsi que ses fichiers sur le serveur ?",
 		"CONTACT_INFOS_MODAL": {
 			"USERNAME": "Nom d'utilisateur : ",
 			"MAIL": "Courriel : ",
 			"URL": "Site web : ",
+			"LANGUAGE": "Langue : ",
 			"SOCIAL_NETWORKS": {
 				"MASTODON": "Mastodon : ",
 				"BLUESKY": "Bluesky : ",

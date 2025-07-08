@@ -33,6 +33,7 @@ import { getProtocolForOnline } from '../../../utils/tools';
 import Title from '../../components/Title';
 import { DefaultOptionType } from 'antd/es/cascader';
 import { Repository } from '../../../../../src/lib/types/repo';
+import { WS_CMD } from '../../../utils/ws';
 
 function KaraDownload() {
 	const context = useContext(GlobalContext);
@@ -83,7 +84,7 @@ function KaraDownload() {
 	}, [direction, currentPage, currentPageSize, downloadStatus]);
 
 	const getRepositories = async () => {
-		const res: Repository[] = await commandBackend('getRepos');
+		const res: Repository[] = await commandBackend(WS_CMD.GET_REPOS);
 		setRepositories(
 			res
 				.filter(r => r.Online)
@@ -95,7 +96,7 @@ function KaraDownload() {
 
 	const getTags = async () => {
 		try {
-			const res = await commandBackend('getTags', undefined, false, 300000);
+			const res = await commandBackend(WS_CMD.GET_TAGS, undefined, false, 300000);
 			setTags(res.content);
 		} catch (_) {
 			// already display
@@ -142,7 +143,7 @@ function KaraDownload() {
 			const psz = currentPageSize;
 			const pfrom = p * psz;
 			const res = await commandBackend(
-				'getKaras',
+				WS_CMD.GET_KARAS,
 				{
 					filter: filter,
 					q: `${tagFilter}!m:${downloadStatus}`,
@@ -165,7 +166,7 @@ function KaraDownload() {
 	const getTotalMediaSize = async () => {
 		try {
 			const res: DBStats = await commandBackend(
-				'getStats',
+				WS_CMD.GET_STATS,
 				{
 					repoNames: selectedRepositories?.length > 0 ? selectedRepositories : undefined,
 				},
@@ -179,7 +180,7 @@ function KaraDownload() {
 	};
 
 	const readKaraQueue = async () => {
-		const res = await commandBackend('getDownloads', undefined, false, 300000);
+		const res = await commandBackend(WS_CMD.GET_DOWNLOADS, undefined, false, 300000);
 		setKarasQueue(res);
 	};
 
@@ -243,17 +244,17 @@ function KaraDownload() {
 
 	// START karas download queue
 	const putToDownloadQueueStart = () => {
-		commandBackend('startDownloadQueue').catch(() => {});
+		commandBackend(WS_CMD.START_DOWNLOAD_QUEUE).catch(() => {});
 	};
 
 	// PAUSE karas download queue
 	const putToDownloadQueuePause = () => {
-		commandBackend('pauseDownloads').catch(() => {});
+		commandBackend(WS_CMD.PAUSE_DOWNLOADS).catch(() => {});
 	};
 
 	// POST (add) items to download queue
 	const postToDownloadQueue = (downloads: KaraDownloadRequest[]) => {
-		commandBackend('addDownloads', {
+		commandBackend(WS_CMD.ADD_DOWNLOADS, {
 			downloads,
 		}).catch(() => {});
 	};
@@ -282,7 +283,7 @@ function KaraDownload() {
 	};
 
 	const syncMedias = () => {
-		commandBackend('updateAllMedias', {
+		commandBackend(WS_CMD.UPDATE_ALL_MEDIAS, {
 			repoNames: selectedRepositories?.length > 0 ? selectedRepositories : undefined,
 		}).catch(() => {});
 		setSyncModal(false);
@@ -581,7 +582,7 @@ function KaraDownload() {
 									style={{ width: '100px' }}
 									type="primary"
 									key="queueDelete"
-									onClick={() => commandBackend('deleteDownloads').catch(() => {})}
+									onClick={() => commandBackend(WS_CMD.DELETE_DOWNLOADS).catch(() => {})}
 								>
 									{i18next.t('KARA.WIPE_DOWNLOAD_QUEUE')}
 								</Button>

@@ -10,6 +10,7 @@ import { commandBackend } from '../../../utils/socket';
 import { getTagTypeName, tagTypes } from '../../../utils/tagTypes';
 import { isModifiable } from '../../../utils/tools';
 import Title from '../../components/Title';
+import { WS_CMD } from '../../../utils/ws';
 
 function TagsDuplicate() {
 	const context = useContext(GlobalContext);
@@ -29,7 +30,7 @@ function TagsDuplicate() {
 	const refresh = async () => {
 		try {
 			const res = await commandBackend(
-				'getTags',
+				WS_CMD.GET_TAGS,
 				{ duplicates: true, type: typesTag?.length > 0 ? typesTag : undefined },
 				false,
 				300000
@@ -48,7 +49,7 @@ function TagsDuplicate() {
 	const deleteTag = async tid => {
 		try {
 			resetDelete();
-			await commandBackend('deleteTag', { tids: [tid] }, true);
+			await commandBackend(WS_CMD.DELETE_TAG, { tids: [tid] }, true);
 			refresh();
 		} catch (_) {
 			resetDelete();

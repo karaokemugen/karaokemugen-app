@@ -140,7 +140,7 @@ export async function editUser(
 		delete updatedUser.password;
 		let KMServerResponse: any;
 		try {
-			if (updatedUser.login.includes('@') && opts.editRemote && +getConfig().Online.Users) {
+			if (updatedUser.login.includes('@') && opts.editRemote && getConfig().Online.RemoteUsers.Enabled) {
 				KMServerResponse = await editRemoteUser(
 					{ ...updatedUser, password: user.password || undefined },
 					opts.editRemote,
@@ -330,7 +330,7 @@ export async function createUser(
 				logger.error('Admin accounts are not allowed to be created online', { service });
 				throw new ErrorKM('USER_CREATE_ERROR', 403, false);
 			}
-			if (!+getConfig().Online.Users) {
+			if (!+getConfig().Online.RemoteUsers.Enabled) {
 				logger.error('Creating online accounts is not allowed on this instance', { service });
 				throw new ErrorKM('USER_CREATE_ERROR_ONLINE_DISABLED', 403, false);
 			}

@@ -102,8 +102,11 @@ export default class Git {
 			this.keyFile = getKeyFileName(this.opts.repoName);
 			this.knownHostsFile = getKnownHostsFileName(this.opts.repoName);
 			await updateKnownHostsFile(url, this.opts.repoName);
+			// We're adding stricthostkeychecking=no here because it causes problems for some users. This is not safe but with gitlab.com or github.com it should be safe to trust and avoid future issues.
+			// We might consider making it an option in the future.
+			// As a result the known hosts file is not needed anymore for now, we can clean this up later by remove code if we don't make it an option.
 			simpleGitOpts.config.push(
-				`core.sshCommand=ssh -o UserKnownHostsFile="${this.knownHostsFile}" -i "${this.keyFile}"`
+				`core.sshCommand=ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile="${this.knownHostsFile}" -i "${this.keyFile}"`
 			);
 		}
 		logger.debug(`Git options: ${JSON.stringify(simpleGitOpts)}`, { service, obj: simpleGitOpts });

@@ -11,6 +11,7 @@ import { commandBackend } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 import Title from '../../components/Title';
 import { DBTag } from '../../../../../src/lib/types/database/tag';
+import { WS_CMD } from '../../../utils/ws';
 
 interface PlaylistElem {
 	plaid: string;
@@ -39,12 +40,12 @@ function KaraBatchEdit() {
 	}, []);
 
 	const getPlaylists = async () => {
-		const playlists = await commandBackend('getPlaylists');
+		const playlists = await commandBackend(WS_CMD.GET_PLAYLISTS);
 		setPlaylists(playlists);
 	};
 
 	const getTags = async () => {
-		const tags = await commandBackend('getTags');
+		const tags = await commandBackend(WS_CMD.GET_TAGS);
 		const options = Object.keys(tagTypes).map(type => {
 			const typeID = tagTypes[type].type;
 
@@ -74,7 +75,7 @@ function KaraBatchEdit() {
 
 	const changePlaylist = async (plaid: string) => {
 		try {
-			const karas = await commandBackend('getPlaylistContents', { plaid });
+			const karas = await commandBackend(WS_CMD.GET_PLAYLIST_CONTENTS, { plaid });
 			setPlaid(plaid);
 			setKaras(karas.content);
 			setI18n(karas.i18n);
@@ -84,7 +85,7 @@ function KaraBatchEdit() {
 	};
 
 	const batchEdit = async () => {
-		await commandBackend('editKaras', {
+		await commandBackend(WS_CMD.EDIT_KARAS, {
 			plaid: plaid,
 			action: action,
 			tid: tid,

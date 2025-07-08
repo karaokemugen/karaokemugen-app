@@ -13,6 +13,7 @@ import { commandBackend } from '../../../utils/socket';
 import { ANIMELISTS, FAVORITES, getTagTypeName, tagTypes, YEARS } from '../../../utils/tagTypes';
 import Autocomplete, { AutocompleteOption } from '../generic/Autocomplete';
 import QuizModal from './QuizModal';
+import { WS_CMD } from '../../../utils/ws';
 
 interface IProps {
 	userList: User[];
@@ -71,7 +72,7 @@ function AutoMixModal(props: IProps) {
 		};
 		closeModalWithContext();
 		try {
-			const res: AutoMixPlaylistInfo = await commandBackend('createAutomix', data);
+			const res: AutoMixPlaylistInfo = await commandBackend(WS_CMD.CREATE_AUTOMIX, data);
 			if (!data.surprisePlaylist) {
 				setPlaylistInfo(props.side, context, res.plaid);
 			} else {

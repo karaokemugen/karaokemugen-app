@@ -10,6 +10,7 @@ import { tagTypes, YEARS } from '../../../utils/tagTypes';
 import { is_touch_device, secondsTimeSpanToHMS } from '../../../utils/tools';
 import LyricsBox from './LyricsBox';
 import PlayerBox from './PlayerBox';
+import { WS_CMD } from '../../../utils/ws';
 
 interface IProps {
 	activePoll: boolean;
@@ -28,7 +29,7 @@ function PublicHomepage(props: IProps) {
 	const getLucky = async () => {
 		if (context.globalState.auth.isAuthenticated) {
 			setDiceAnimation(true);
-			const response = await commandBackend('getKaras', {
+			const response = await commandBackend(WS_CMD.GET_KARAS, {
 				random: 1,
 				blacklist: true,
 			});

@@ -5,8 +5,9 @@
 
 import { app, dialog } from 'electron';
 import { existsSync, readdirSync, rmdirSync } from 'fs';
-import { readdir, rename } from 'fs/promises';
+import fs, { rename } from 'fs/promises';
 import { moveSync } from 'fs-extra';
+import fsExtra from 'fs-extra/esm';
 import i18next from 'i18next';
 import { extname, resolve } from 'path';
 import semver from 'semver';
@@ -15,13 +16,59 @@ import { getSettings, saveSetting } from '../lib/dao/database.js';
 import { readRepoManifest, selectRepositoryManifest } from '../lib/dao/repo.js';
 import { readAllKaras } from '../lib/services/generation.js';
 import { Repository } from '../lib/types/repo.js';
-import { resolvedPathRepos } from '../lib/utils/config.js';
+import { getConfig, resolvedPath, resolvedPathRepos, setConfig } from '../lib/utils/config.js';
 import { uuidRegexp } from '../lib/utils/constants.js';
 import { listAllFiles, sanitizeFile } from '../lib/utils/files.js';
 import logger from '../lib/utils/logger.js';
 import Task from '../lib/utils/taskManager.js';
-import { editRepo, getRepo } from '../services/repo.js';
+import { medias } from '../services/playlistMedias.js';
+import { editRepo, getRepo, getRepos } from '../services/repo.js';
+import { resolvedMediaPath } from './config.js';
 import { getState, setState } from './state.js';
+
+const service = 'YouAreAlreadyDeadCode';
+
+/** Remove when we ship KM 10 */
+export function decoupleOnlineConfig() {
+	try {
+		const conf = getConfig();
+		setConfig({
+			Online: {
+				RemoteAccess: {
+					Enabled: conf.Online.Remote,
+					Token: conf.Online.RemoteToken,
+					Domain: conf.Online.Host,
+					Secure: conf.Online.Secure,
+				},
+				RemoteUsers: {
+					Enabled: conf.Online.Users,
+					DefaultHost: conf.Online.Host,
+					Secure: conf.Online.Secure,
+				},
+			},
+		});
+	} catch (err) {
+		logger.warn(`Failed to decouple online config. Should not be too bad : ${err}`, { service });
+	}
+}
+
+/** Remove when we ship KM 10 */
+export async function removeKaraokeMugenFolderInPlaylistMedias() {
+	try {
+		const conf = getConfig();
+		for (const type of Object.keys(medias)) {
+			fsExtra.remove(resolve(resolvedMediaPath(type)[0], 'KaraokeMugen'));
+			conf.System.MediaPath[type] = conf.System.MediaPath[type].filter(p => !p.endsWith('KaraokeMugen'));
+		}
+		setConfig({
+			System: {
+				MediaPath: conf.System.MediaPath,
+			},
+		});
+	} catch (err) {
+		logger.warn(`Failed to remove old PL intermission folder. Should not be too bad : ${err}`, { service });
+	}
+}
 
 /** Remove when we drop support for mpv <0.38.0 */
 export function mpvIsRecentEnough() {
@@ -92,7 +139,7 @@ export async function oldFilenameFormatKillSwitch(repoName: string) {
 		if (manifest.oldFormatKillSwitch === true) {
 			// The fun begins here.
 			const mediaDir = resolvedPathRepos('Medias', repoName)[0];
-			const mediaFiles = await readdir(mediaDir);
+			const mediaFiles = await fs.readdir(mediaDir);
 			// Doing nothing if no mediafiles found or if one mediafile isn't a UUID
 			if (mediaFiles.length === 0) return;
 			task.update({
@@ -124,7 +171,10 @@ export async function oldFilenameFormatKillSwitch(repoName: string) {
 				task.incr();
 				if (UUID) {
 					try {
-						await rename(resolve(mediaDir, mediaFile), resolve(mediaDir, `${UUID}${extname(mediaFile)}`));
+						await fs.rename(
+							resolve(mediaDir, mediaFile),
+							resolve(mediaDir, `${UUID}${extname(mediaFile)}`)
+						);
 						mediasRenamed += 1;
 					} catch (err) {
 						logger.warn(`UUID found for ${mediaFile} but renaming failed : ${err}`, { service });
@@ -140,6 +190,24 @@ export async function oldFilenameFormatKillSwitch(repoName: string) {
 		logger.error(`Media rename failed: ${err}`, { service, obj: err });
 	} finally {
 		task.end();
+	}
+}
+
+/** Remove in KM 10.0
+ * While you're at it, also remove the non-user-specific key file name check in ssh.ts
+ */
+export async function renameSSHKeys() {
+	const repos = getRepos();
+	for (const repo of repos.filter(r => r.Online && r.MaintainerMode)) {
+		const oldKey = `id_rsa_KaraokeMugen_${repo.Name}`;
+		const newKey = `KaraokeMugen_${repo.Name}`;
+		const dir = resolvedPath('SSHKeys');
+		try {
+			await rename(resolve(dir, oldKey), resolve(dir, newKey));
+			await rename(resolve(dir, `${oldKey}.pub`), resolve(dir, `${newKey}.pub`));
+		} catch (_) {
+			// Non-fatal
+		}
 	}
 }
 

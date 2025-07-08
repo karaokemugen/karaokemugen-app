@@ -4,6 +4,7 @@ import { useContext } from 'react';
 import { closeModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
+import { WS_CMD } from '../../../utils/ws';
 
 function RestartDownloadsModal() {
 	const context = useContext(GlobalContext);
@@ -14,12 +15,12 @@ function RestartDownloadsModal() {
 	};
 
 	const deleteQueue = () => {
-		commandBackend('deleteDownloads').catch(() => {});
+		commandBackend(WS_CMD.DELETE_DOWNLOADS).catch(() => {});
 		closeModalWithContext();
 	};
 
 	const startQueue = () => {
-		commandBackend('startDownloadQueue').catch(() => {});
+		commandBackend(WS_CMD.START_DOWNLOAD_QUEUE).catch(() => {});
 		closeModalWithContext();
 	};
 

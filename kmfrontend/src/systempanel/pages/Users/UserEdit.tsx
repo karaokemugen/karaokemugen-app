@@ -7,6 +7,7 @@ import { User } from '../../../../../src/lib/types/user';
 import { commandBackend } from '../../../utils/socket';
 import Title from '../../components/Title';
 import UserForm from './UserForm';
+import { WS_CMD } from '../../../utils/ws';
 
 const newUser = {
 	type: 1,
@@ -23,7 +24,7 @@ function UserEdit() {
 
 	const saveNew = async (user: User) => {
 		try {
-			await commandBackend('createUser', user, true);
+			await commandBackend(WS_CMD.CREATE_USER, user, true);
 			navigate('/system/users');
 		} catch (_) {
 			// already display
@@ -33,7 +34,7 @@ function UserEdit() {
 	const saveUpdate = async (userSaved: User) => {
 		try {
 			userSaved.old_login = user.login;
-			await commandBackend('editUser', userSaved, true);
+			await commandBackend(WS_CMD.EDIT_USER, userSaved, true);
 			navigate('/system/users');
 		} catch (_) {
 			// already display
@@ -44,7 +45,7 @@ function UserEdit() {
 		const loadUser = async () => {
 			if (username) {
 				try {
-					const res = await commandBackend('getUser', { username });
+					const res = await commandBackend(WS_CMD.GET_USER, { username });
 					setUser(res);
 				} catch (_) {
 					// already display

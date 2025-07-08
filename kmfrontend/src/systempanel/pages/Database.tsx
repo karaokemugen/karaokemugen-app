@@ -4,22 +4,23 @@ import { Trans } from 'react-i18next';
 
 import { commandBackend } from '../../utils/socket';
 import Title from '../components/Title';
+import { WS_CMD } from '../../utils/ws';
 
 function Database() {
 	const dbregen = async () => {
-		commandBackend('generateDatabase', undefined, false, 300000).catch(() => {});
+		commandBackend(WS_CMD.GENERATE_DATABASE, undefined, false, 300000).catch(() => {});
 	};
 
 	const dbvalidateFiles = async () => {
-		commandBackend('validateFiles', undefined, false, 300000).catch(() => {});
+		commandBackend(WS_CMD.VALIDATE_FILES, undefined, false, 300000).catch(() => {});
 	};
 
 	const dbdump = async () => {
-		commandBackend('dumpDatabase', undefined, true, 300000).catch(() => {});
+		commandBackend(WS_CMD.DUMP_DATABASE, undefined, true, 300000).catch(() => {});
 	};
 
 	const dbrestore = async () => {
-		commandBackend('restoreDatabase', undefined, true, 300000).catch(() => {});
+		commandBackend(WS_CMD.RESTORE_DATABASE, undefined, true, 300000).catch(() => {});
 	};
 
 	return (

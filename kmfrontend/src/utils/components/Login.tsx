@@ -14,6 +14,7 @@ import { isElectron } from '../electron';
 import { langSupport } from '../isoLanguages';
 import { commandBackend } from '../socket';
 import { callModal, displayMessage, lastLocation } from '../tools';
+import { WS_CMD } from '../ws';
 
 interface UserApi extends User {
 	role: 'admin' | 'user';
@@ -27,8 +28,9 @@ function Login() {
 	const [redBorders, setRedBorders] = useState('');
 	const [errorBackground, setErrorBackground] = useState('');
 	const [serv, setServ] = useState(
-		context.globalState.settings.data.config?.Online.Users && context.globalState.settings.data.config?.Online.Host
-			? context.globalState.settings.data.config.Online.Host
+		context.globalState.settings.data.config?.Online.RemoteUsers.Enabled &&
+			context.globalState.settings.data.config?.Online.RemoteUsers.DefaultHost
+			? context.globalState.settings.data.config.Online.RemoteUsers.DefaultHost
 			: ''
 	);
 	const [activeView, setActiveView] = useState<'login' | 'signup' | 'welcome' | 'guest'>('welcome');
@@ -54,7 +56,7 @@ function Login() {
 
 	const updateIsExistingOnlineAccountLocally = async (loginToCheck: string) => {
 		try {
-			await commandBackend('getUser', { username: `${loginToCheck}@${serv}` }, false, 30000, true);
+			await commandBackend(WS_CMD.GET_USER, { username: `${loginToCheck}@${serv}` }, false, 30000, true);
 			setExistingOnlineAccountLocally(true);
 		} catch (_) {
 			setExistingOnlineAccountLocally(false);
@@ -163,7 +165,7 @@ function Login() {
 				}
 			}
 			try {
-				await commandBackend('createUser', data);
+				await commandBackend(WS_CMD.CREATE_USER, data);
 				setRedBorders('');
 				loginCall(username, password, securityCode);
 			} catch (_) {
@@ -185,7 +187,7 @@ function Login() {
 
 	const callForgetPasswordApi = async (securityCode?: number) => {
 		if (login) {
-			await commandBackend('resetUserPassword', {
+			await commandBackend(WS_CMD.RESET_USER_PASSWORD, {
 				username: `${login}${onlineSwitch ? `@${serv}` : ''}`,
 				securityCode: securityCode,
 				password: password,

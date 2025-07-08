@@ -1,3 +1,4 @@
+import { WS_CMD } from '../../kmfrontend/src/utils/ws.js';
 import { APIMessage } from '../lib/services/frontend.js';
 import { DBUserBase } from '../lib/types/database/user.js';
 import { getConfig } from '../lib/utils/config.js';
@@ -14,7 +15,7 @@ import { runChecklist } from './middlewares.js';
 const service = 'Auth';
 
 export default function authController(router: SocketIOApp) {
-	router.route('login', async (_, req) => {
+	router.route(WS_CMD.LOGIN, async (_, req) => {
 		try {
 			let token = await checkLogin(req.body.username, req.body.password, req.body.securityCode);
 			// Admin user - Check if security code is correct
@@ -44,7 +45,7 @@ export default function authController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('loginGuest', async (_, req) => {
+	router.route(WS_CMD.LOGIN_GUEST, async (_, req) => {
 		const conf = getConfig();
 		if (!conf.Frontend.AllowGuestLogin || conf.Frontend.RequireSecurityCodeForNewAccounts)
 			throw { code: 403, message: APIMessage('GUESTS_NOT_ALLOWED') };
@@ -66,10 +67,10 @@ export default function authController(router: SocketIOApp) {
 		throw { code: 500, message: APIMessage('NO_MORE_GUESTS_AVAILABLE') };
 	});
 
-	router.route('checkAuth', async (socket, req) => {
+	router.route(WS_CMD.CHECK_AUTH, async (socket, req) => {
 		await runChecklist(socket, req, 'guest', 'closed');
 		let onlineAvailable: boolean;
-		if (req.token.username.includes('@') && +getConfig().Online.Users) {
+		if (req.token.username.includes('@') && getConfig().Online.RemoteUsers.Enabled) {
 			onlineAvailable = true;
 			// Remote token does not exist, we're going to verify it and add it if it does work
 			try {

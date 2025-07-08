@@ -7,9 +7,6 @@ import { Navigate, Route, Routes } from 'react-router';
 
 import logo from '../../../assets/Logo-final-fond-transparent.png';
 import GlobalContext from '../../../store/context';
-import SetupLoading from './SetupLoading';
-import SetupPageCollections from './SetupPageCollections';
-import SetupPageRepo from './SetupPageRepo';
 import SetupPageStats from './SetupPageStats';
 import SetupPageUser from './SetupPageUser';
 
@@ -43,10 +40,7 @@ function SetupPage() {
 				</div>
 				<div className="main">
 					<Routes>
-						<Route path="/loading" element={<SetupLoading />} />
 						<Route path="/stats" element={<SetupPageStats />} />
-						<Route path="/repo" element={<SetupPageRepo />} />
-						<Route path="/collections" element={<SetupPageCollections />} />
 						<Route path="/user" element={<SetupPageUser />} />
 						<Route
 							path="*"
@@ -54,7 +48,7 @@ function SetupPage() {
 								<Navigate
 									to={
 										context?.globalState.settings.data.user.login !== 'admin'
-											? '/setup/repo'
+											? '/setup/stats'
 											: '/setup/user'
 									}
 								/>

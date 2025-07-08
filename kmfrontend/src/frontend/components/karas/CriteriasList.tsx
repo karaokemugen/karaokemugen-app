@@ -15,6 +15,7 @@ import { getTagTypeName, tagTypes, YEARS } from '../../../utils/tagTypes';
 import { hmsToSecondsOnly, secondsTimeSpanToHMS } from '../../../utils/tools';
 import Autocomplete from '../generic/Autocomplete';
 import Switch from '../generic/Switch';
+import { WS_CMD } from '../../../utils/ws';
 
 const listTypeCriteria = [1002, 1003, 1006, 1007, 1008];
 
@@ -33,7 +34,7 @@ function CriteriasList(props: IProps) {
 
 	const getCriterias = async () => {
 		const user = context.globalState.settings.data.user;
-		const criteriasList = await commandBackend('getCriterias', {
+		const criteriasList = await commandBackend(WS_CMD.GET_CRITERIAS, {
 			plaid: props.playlist.plaid,
 			langs: [user.main_series_lang, user.fallback_series_lang],
 		});
@@ -48,7 +49,7 @@ function CriteriasList(props: IProps) {
 			value = hmsToSecondsOnly(criteriaVal);
 		}
 		if (value) {
-			await commandBackend('addCriterias', {
+			await commandBackend(WS_CMD.ADD_CRITERIAS, {
 				criterias: [
 					{
 						type: criteriaType,
@@ -64,7 +65,7 @@ function CriteriasList(props: IProps) {
 
 	const deleteCriteria = async (criteriaToDelete: Criteria) => {
 		criteriaToDelete.value = criteriaToDelete.type === 1001 ? criteriaToDelete.value.kid : criteriaToDelete.value;
-		await commandBackend('removeCriterias', { criterias: [criteriaToDelete] });
+		await commandBackend(WS_CMD.REMOVE_CRITERIAS, { criterias: [criteriaToDelete] });
 		getCriterias();
 	};
 
@@ -105,7 +106,7 @@ function CriteriasList(props: IProps) {
 		});
 
 	const editPlaylist = async (data: any) => {
-		await commandBackend('editPlaylist', {
+		await commandBackend(WS_CMD.EDIT_PLAYLIST, {
 			...data,
 			name: props.playlist.name,
 			plaid: props.playlist.plaid,

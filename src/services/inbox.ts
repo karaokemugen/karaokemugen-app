@@ -207,6 +207,21 @@ export async function deleteKaraInInbox(inid: string, repoName: string, token: s
 	}
 }
 
+export async function markKaraAsUnassignedInInbox(inid: string, repoName: string, token: string) {
+	const repo = getRepo(repoName);
+	try {
+		await HTTP.post(`${repo.Secure ? 'https' : 'http'}://${repoName}/api/inbox/${inid}/unassign`, null, {
+			headers: {
+				authorization: token,
+			},
+		});
+	} catch (err) {
+		logger.error(`Unable to unassign inbox item : ${err}`, { service, obj: err });
+		Sentry.error(err);
+		return;
+	}
+}
+
 export async function markKaraAsDownloadedInInbox(
 	inid: string,
 	repoName: string,

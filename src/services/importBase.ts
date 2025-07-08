@@ -81,6 +81,10 @@ export async function findFilesToImport(dirName: string, template: string, viewO
 	}
 }
 
+/**
+ * From a template and a string, returns an object with the correct variables.
+ * Variables can be "title", any tag type, and "year"
+ */
 function translateKaraTemplate(mediafile: string, template: string): ImportBaseFile {
 	try {
 		if (!template.includes('{title}')) throw new ErrorKM('IMPORT_SONG_TEMPLATE_MISSING_TITLE_ERROR', 400);
@@ -122,7 +126,7 @@ async function populateTags(baseKaras: ImportBaseFile[], repoDest: string): Prom
 	for (const i in baseKaras) {
 		if ({}.hasOwnProperty.call(baseKaras, i)) {
 			const kara = baseKaras[i];
-			for (const key of Object.keys(kara.newFile)) {
+			for (const key of Object.keys(kara?.newFile || {})) {
 				// These too are ignored, they're not tags.
 				if (key === 'title' || key === 'year') continue;
 				// We assume that if there are several items in a tag they're separated by ,

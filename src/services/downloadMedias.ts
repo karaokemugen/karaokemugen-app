@@ -120,7 +120,7 @@ async function downloadMedias(karas: DBMedia[]): Promise<void> {
 			karas.map(k => {
 				return {
 					mediafile: k.mediafile,
-					name: k.songname,
+					name: k.songname || k.mediafile,
 					size: k.mediasize,
 					repository: k.repository,
 					kid: k.kid,

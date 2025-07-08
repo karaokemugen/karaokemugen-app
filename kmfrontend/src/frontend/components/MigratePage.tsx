@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { MigrationsFrontend } from '../../../../src/types/database/migrationsFrontend';
 import logo from '../../assets/Logo-final-fond-transparent.png';
 import { commandBackend } from '../../utils/socket';
+import { WS_CMD } from '../../utils/ws';
 
 export default function MigratePage() {
 	const components = {};
@@ -18,7 +19,7 @@ export default function MigratePage() {
 
 	const getMigrations = () => {
 		try {
-			commandBackend('getMigrationsFrontend').then(res => {
+			commandBackend(WS_CMD.GET_MIGRATIONS_FRONTEND).then(res => {
 				const migrationsToDo: MigrationsFrontend[] = res.filter(el => !el.flag_done);
 				if (migrationsToDo.length === 0) {
 					navigate('/welcome');

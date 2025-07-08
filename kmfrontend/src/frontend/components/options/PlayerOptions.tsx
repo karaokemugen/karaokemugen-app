@@ -7,6 +7,7 @@ import { commandBackend } from '../../../utils/socket';
 import { dotify } from '../../../utils/tools';
 import Switch from '../generic/Switch';
 import { sanitizeSettingsSearchValue } from './Options';
+import { WS_CMD } from '../../../utils/ws';
 
 interface IProps {
 	onChange: (e: any) => void;
@@ -21,12 +22,12 @@ function PlayerOptions(props: IProps) {
 	const { filterValue } = props;
 
 	const getDisplays = async () => {
-		const res = await commandBackend('getDisplays');
+		const res = await commandBackend(WS_CMD.GET_DISPLAYS);
 		setDisplays(res);
 	};
 
 	const getAudioDevices = async () => {
-		const res = await commandBackend('getAudioDevices');
+		const res = await commandBackend(WS_CMD.GET_AUDIO_DEVICES);
 		setAudioDevices(res);
 	};
 
@@ -43,7 +44,7 @@ function PlayerOptions(props: IProps) {
 			value = false;
 		}
 		config[e.target.id] = value;
-		commandBackend('sendPlayerCommand', {
+		commandBackend(WS_CMD.SEND_PLAYER_COMMAND, {
 			command: e.target.getAttribute('data-namecommand'),
 			options: value,
 		}).catch(() => {});

@@ -8,6 +8,7 @@ import { displayMessage, dotify, expand } from '../../../utils/tools';
 import Switch from '../generic/Switch';
 import RemoteStatus from './RemoteStatus';
 import { sanitizeSettingsSearchValue } from './Options';
+import { WS_CMD } from '../../../utils/ws';
 
 interface IProps {
 	onChange: (e: any) => void;
@@ -37,7 +38,7 @@ function KaraokeOptions(props: IProps) {
 
 	const saveMysterySongsLabels = (labels: string[]) => {
 		const data = expand('Playlist.MysterySongs.Labels', labels);
-		commandBackend('updateSettings', { setting: data }).catch(() => {});
+		commandBackend(WS_CMD.UPDATE_SETTINGS, { setting: data }).catch(() => {});
 	};
 
 	const parseTwitch = () => {
@@ -58,7 +59,7 @@ function KaraokeOptions(props: IProps) {
 			)
 			.then(data => {
 				if (data.login) {
-					commandBackend('updateSettings', {
+					commandBackend(WS_CMD.UPDATE_SETTINGS, {
 						setting: {
 							Karaoke: {
 								StreamerMode: {
@@ -1128,15 +1129,16 @@ function KaraokeOptions(props: IProps) {
 				{filterValue === undefined ||
 					(sanitizeSettingsSearchValue(
 						i18next.t('SETTINGS.KARAOKE.REMOTE', {
-							instance: context.globalState.settings.data.config.Online.Host,
+							instance: context.globalState.settings.data.config.Online.RemoteAccess.Domain,
 						})
 					).includes(filterValue) && (
 						<div className="settings-group">
 							<div className="settings-line">
-								<label htmlFor="Online.Remote">
+								<label htmlFor="Online.RemoteAccess.Enabled">
 									<span className="title">
 										{i18next.t('SETTINGS.KARAOKE.REMOTE', {
-											instance: context.globalState.settings.data.config.Online.Host,
+											instance:
+												context.globalState.settings.data.config.Online.RemoteAccess.Domain,
 										})}
 									</span>
 									<br />
@@ -1144,14 +1146,14 @@ function KaraokeOptions(props: IProps) {
 								</label>
 								<div>
 									<Switch
-										idInput="Online.Remote"
+										idInput="Online.RemoteAccess.Enabled"
 										handleChange={onChange}
-										isChecked={config['Online.Remote']}
+										isChecked={config['Online.RemoteAccess.Enabled']}
 									/>
 								</div>
 							</div>
 
-							{config['Online.Remote'] ? <RemoteStatus /> : null}
+							{config['Online.RemoteAccess.Enabled'] ? <RemoteStatus /> : null}
 						</div>
 					))}
 				{filterValue ? null : (

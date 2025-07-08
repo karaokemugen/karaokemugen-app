@@ -41,7 +41,7 @@ export async function fetchAndAddFavorites(username: string, token: string) {
 	try {
 		const instance = username.split('@')[1];
 		const conf = getConfig();
-		const res = await HTTP(`${conf.Online.Secure ? 'https' : 'http'}://${instance}/api/favorites`, {
+		const res = await HTTP(`${conf.Online.RemoteUsers.Secure ? 'https' : 'http'}://${instance}/api/favorites`, {
 			headers: {
 				authorization: token,
 			},
@@ -79,7 +79,7 @@ export async function addToFavorites(username: string, kids: string[], onlineTok
 		profile('addToFavorites');
 		username = username.toLowerCase();
 		await insertFavorites(kids, username);
-		if (username.includes('@') && onlineToken && getConfig().Online.Users && updateRemote) {
+		if (username.includes('@') && onlineToken && getConfig().Online.RemoteUsers.Enabled && updateRemote) {
 			await manageFavoriteInInstanceBatch('POST', username, kids, onlineToken);
 		}
 		emitWS('favoritesUpdated', username);
@@ -95,7 +95,7 @@ export async function addToFavorites(username: string, kids: string[], onlineTok
 export async function convertToRemoteFavorites(username: string, token: string) {
 	// This is called when converting a local account to a remote one
 	// We thus know no favorites exist remotely.
-	if (!getConfig().Online.Users) return true;
+	if (!getConfig().Online.RemoteUsers.Enabled) return true;
 	const favorites = await getFavorites({
 		filter: null,
 		lang: null,
@@ -113,7 +113,7 @@ export async function removeFavorites(username: string, kids: string[], token: s
 		profile('deleteFavorites');
 		username = username.toLowerCase();
 		await deleteFavorites(kids, username);
-		if (username.includes('@') && getConfig().Online.Users) {
+		if (username.includes('@') && getConfig().Online.RemoteUsers.Enabled) {
 			manageFavoriteInInstanceBatch('DELETE', username, kids, token).catch(() => {});
 		}
 		emitWS('favoritesUpdated', username);
@@ -129,10 +129,10 @@ export async function removeFavorites(username: string, kids: string[], token: s
 async function manageFavoriteInInstance(action: 'POST' | 'DELETE', username: string, kid: string, token: string) {
 	// If OnlineUsers is disabled, we return early and do not try to update favorites online.
 	const conf = getConfig();
-	if (!conf.Online.Users) return true;
+	if (!conf.Online.RemoteUsers.Enabled) return true;
 	const instance = username.split('@')[1];
 	try {
-		return await HTTP(`${conf.Online.Secure ? 'https' : 'http'}://${instance}/api/favorites/${kid}`, {
+		return await HTTP(`${conf.Online.RemoteUsers.Secure ? 'https' : 'http'}://${instance}/api/favorites/${kid}`, {
 			method: action,
 			headers: {
 				authorization: token,
@@ -146,7 +146,7 @@ async function manageFavoriteInInstance(action: 'POST' | 'DELETE', username: str
 	}
 }
 
-export async function exportFavorites(username: string) {
+export async function exportFavorites(username: string): Promise<FavExport> {
 	try {
 		username = username.toLowerCase();
 		const favs = await getFavorites({

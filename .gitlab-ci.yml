@@ -84,7 +84,7 @@ test:
     POSTGRES_USER: karaokemugen_app
     POSTGRES_PASSWORD: musubi
   script:
-    - yarn install --check-files --force --cache-folder .yarn
+    - yarn install
     - touch mpv
     - touch ffmpeg
     - touch patch
@@ -301,7 +301,6 @@ pkg_win:
   script:
     - rm -Rf release_win
     - npm install -g electron-builder
-    - apt-get update -qq && apt-get install -y -qq zip
     - wget -qO- http://mugen.karaokes.moe/downloads/$DIST_WIN | tar xz
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
     - echo $SENTRY_DSN >assets/sentry.txt
@@ -310,10 +309,39 @@ pkg_win:
     - mkdir release_win
     - mv packages/*.exe release_win/
     - mv packages/*.yml release_win/
+    - mv packages/*.zip release_win/
+    - ls -la release_win/*
+  rules:
+    - if: $SCHEDULED_RELEASES == "true"
+      when: never
+    - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
+    - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
+    - if: '$CI_COMMIT_TAG'
+    - when: never
+pkg_win_portable:
+  stage: package
+  image: alpine:latest
+  tags:
+    - $RUNNER_LINUX
+  cache: {}
+  variables:
+    GIT_STRATEGY: none
+  interruptible: true
+  artifacts:
+    expire_in: 1 day
+    name: km-app-pkgwin-${CI_COMMIT_REF_SLUG}
+    paths:
+      - release_win
+  dependencies:
+    - pkg_win
+  needs:
+    - pkg_win
+  script:
+    - apk update
+    - apk add --no-cache zip
     - touch portable
     - touch disableAppUpdate
-    - zip -rv packages/*.zip portable disableAppUpdate
-    - mv packages/*.zip release_win/
+    - zip -rv release_win/*.zip portable disableAppUpdate
     - ls -la release_win/*
   rules:
     - if: $SCHEDULED_RELEASES == "true"
@@ -410,9 +438,9 @@ deploy_win:
     GIT_STRATEGY: none
   cache: {}
   dependencies:
-    - pkg_win
+    - pkg_win_portable
   needs:
-    - pkg_win
+    - pkg_win_portable
   script:
     - ls -la release_win/*
     - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD

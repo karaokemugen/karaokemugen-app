@@ -9,6 +9,7 @@ import { commandBackend } from '../../../utils/socket';
 import Title from '../../components/Title';
 import KaraForm from './KaraForm';
 import type { EditedKara } from '../../../../../src/lib/types/kara';
+import { WS_CMD } from '../../../utils/ws';
 
 function KaraEdit() {
 	const navigate = useNavigate();
@@ -19,7 +20,7 @@ function KaraEdit() {
 
 	const saveUpdate = async (kara: EditedKara) => {
 		try {
-			await commandBackend('editKara', kara, true, 300000);
+			await commandBackend(WS_CMD.EDIT_KARA, kara, true, 300000);
 			addListener();
 			navigate('/system/karas');
 		} catch (_) {
@@ -29,19 +30,19 @@ function KaraEdit() {
 
 	const loadKara = async () => {
 		removeListener();
-		const res = await commandBackend('getKara', { kid }, true);
+		const res = await commandBackend(WS_CMD.GET_KARA, { kid }, true);
 		setKara(res);
 		setLoaded(true);
 	};
 
 	const handleCopy = async (kid, repo) => {
-		await commandBackend('copyKaraToRepo', { repo, kid }, true);
+		await commandBackend(WS_CMD.COPY_KARA_TO_REPO, { repo, kid }, true);
 		navigate('/system/karas');
 	};
 
 	const handleDelete = async (kid: string) => {
 		try {
-			await commandBackend('deleteKaras', { kids: [kid] }, true);
+			await commandBackend(WS_CMD.DELETE_KARAS, { kids: [kid] }, true);
 			navigate('/system/karas/');
 		} catch (_) {
 			// already display

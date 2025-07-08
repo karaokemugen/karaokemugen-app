@@ -1,11 +1,10 @@
 import { sample } from 'lodash';
-import { Socket } from 'socket.io';
 
+import { WS_CMD } from '../../../kmfrontend/src/utils/ws.js';
 import { initKaraBase, shutdown } from '../../components/engine.js';
 import { getMpvAudioOutputs } from '../../components/mpv/mpv.js';
 import { APIMessage } from '../../lib/services/frontend.js';
 import { generateDatabase } from '../../lib/services/generation.js';
-import { APIData } from '../../lib/types/api.js';
 import { getConfig, setConfig } from '../../lib/utils/config.js';
 import { enableWSLogging, readLog } from '../../lib/utils/logger.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
@@ -23,7 +22,7 @@ import { getPlayerState, getPublicState, getState } from '../../utils/state.js';
 import { runChecklist } from '../middlewares.js';
 
 export default function miscController(router: SocketIOApp) {
-	router.route('openLogFile', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.OPEN_LOG_FILE, async (socket, req) => {
 		await runChecklist(socket, req, 'admin');
 		try {
 			await selectLogFile();
@@ -31,7 +30,7 @@ export default function miscController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('getMigrationsFrontend', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_MIGRATIONS_FRONTEND, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			return await getMigrationsFrontend();
@@ -39,7 +38,7 @@ export default function miscController(router: SocketIOApp) {
 			throw { code: 500 };
 		}
 	});
-	router.route('setMigrationsFrontend', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.SET_MIGRATIONS_FRONTEND, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			return await setMigrationsFrontend(req.body.mig);
@@ -48,7 +47,7 @@ export default function miscController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('getRemoteData', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_REMOTE_DATA, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			const state = getState();
@@ -60,7 +59,7 @@ export default function miscController(router: SocketIOApp) {
 			throw { code: 500 };
 		}
 	});
-	router.route('resetRemoteToken', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.RESET_REMOTE_TOKEN, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			await destroyRemote();
@@ -70,12 +69,12 @@ export default function miscController(router: SocketIOApp) {
 			throw { code: 500 };
 		}
 	});
-	router.route('shutdown', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.SHUTDOWN, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		shutdown().catch(() => {});
 	});
 
-	router.route('getSettings', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_SETTINGS, async (socket, req) => {
 		await runChecklist(socket, req, 'guest', 'closed', { optionalAuth: true });
 		return {
 			version: getState().version,
@@ -83,11 +82,11 @@ export default function miscController(router: SocketIOApp) {
 			state: getPublicState(req.user?.type === 0),
 		};
 	});
-	router.route('getElectronVersions', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_ELECTRON_VERSIONS, async (socket, req) => {
 		await runChecklist(socket, req, 'guest', 'closed', { optionalAuth: true });
 		return { ...process.versions };
 	});
-	router.route('updateSettings', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.UPDATE_SETTINGS, async (socket, req) => {
 		await runChecklist(socket, req);
 		try {
 			return await editSetting(req.body.setting);
@@ -95,26 +94,26 @@ export default function miscController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('getDisplays', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_DISPLAYS, async (socket, req) => {
 		await runChecklist(socket, req);
 		return getDisplays();
 	});
-	router.route('getAudioDevices', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_AUDIO_DEVICES, async (socket, req) => {
 		await runChecklist(socket, req);
 		return getMpvAudioOutputs();
 	});
 
-	router.route('refreshUserQuotas', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.REFRESH_USER_QUOTAS, async (socket, req) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		updateSongsLeft(req.token.username).catch(() => {});
 	});
 
-	router.route('getPlayerStatus', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_PLAYER_STATUS, async (socket, req) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		return getPlayerState();
 	});
 
-	router.route('getNewsFeed', async () => {
+	router.route(WS_CMD.GET_NEWS_FEED, async () => {
 		try {
 			return await getFeeds();
 		} catch (err) {
@@ -122,9 +121,9 @@ export default function miscController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('getCatchphrase', async (_socket: Socket, _req: APIData) => sample(initializationCatchphrases));
+	router.route(WS_CMD.GET_CATCHPHRASE, async (_socket, _req) => sample(initializationCatchphrases));
 
-	router.route('getLogs', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_LOGS, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			// Align socket
@@ -139,7 +138,7 @@ export default function miscController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('backupSettings', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.BACKUP_SETTINGS, async (socket, req) => {
 		await runChecklist(socket, req);
 		try {
 			await backupConfig();
@@ -149,7 +148,7 @@ export default function miscController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('generateDatabase', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GENERATE_DATABASE, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			await initKaraBase();
@@ -158,7 +157,7 @@ export default function miscController(router: SocketIOApp) {
 			throw { code: 500, message: APIMessage('DATABASE_GENERATED_ERROR') };
 		}
 	});
-	router.route('validateFiles', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.VALIDATE_FILES, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			await generateDatabase({
@@ -169,7 +168,7 @@ export default function miscController(router: SocketIOApp) {
 			throw { code: 500, message: APIMessage('FILES_VALIDATED_ERROR') };
 		}
 	});
-	router.route('dumpDatabase', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.DUMP_DATABASE, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			await dumpPG();
@@ -179,7 +178,7 @@ export default function miscController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('restoreDatabase', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.RESTORE_DATABASE, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			await restorePG();
@@ -189,7 +188,7 @@ export default function miscController(router: SocketIOApp) {
 			throw { code: 500, message: APIMessage('DATABASE_RESTORED_ERROR') };
 		}
 	});
-	router.route('getFS', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_FS, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			return await browseFs(req.body.path, req.body.onlyMedias);

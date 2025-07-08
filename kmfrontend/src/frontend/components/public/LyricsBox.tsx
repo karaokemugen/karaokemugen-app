@@ -8,6 +8,7 @@ import { PublicPlayerState } from '../../../../../src/types/state';
 import { formatLyrics } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { is_touch_device } from '../../../utils/tools';
+import { WS_CMD } from '../../../utils/ws';
 
 enum LyricsStatus {
 	hide,
@@ -56,7 +57,9 @@ function LyricsBox(props: IProps) {
 	const fetchLyrics = async () => {
 		if (props.kid) {
 			try {
-				const lyrics: ASSLine[] = formatLyrics(await commandBackend('getKaraLyrics', { kid: props.kid }));
+				const lyrics: ASSLine[] = formatLyrics(
+					await commandBackend(WS_CMD.GET_KARA_LYRICS, { kid: props.kid })
+				);
 				setLyrics(lyrics || []);
 			} catch (_) {
 				// already display

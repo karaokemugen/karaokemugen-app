@@ -5,6 +5,7 @@ import { DBKara } from '../../../../../../src/lib/types/database/kara';
 import GlobalContext from '../../../../store/context';
 import { commandBackend } from '../../../../utils/socket';
 import { PLCCallback } from '../../../../utils/tools';
+import { WS_CMD } from '../../../../utils/ws';
 
 interface Props {
 	kara: DBKara;
@@ -17,7 +18,7 @@ export default function AddKaraButton(props: Props) {
 	const addKara = async () => {
 		let response;
 		try {
-			response = await commandBackend('addKaraToPublicPlaylist', {
+			response = await commandBackend(WS_CMD.ADD_KARA_TO_PUBLIC_PLAYLIST, {
 				requestedby: context.globalState.auth.data.username,
 				kids: [props.kara.kid],
 			});

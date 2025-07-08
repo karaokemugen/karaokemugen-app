@@ -21,6 +21,7 @@ import ShowVideoButton from '../generic/buttons/ShowVideoButton';
 import UpvoteKaraButton from '../generic/buttons/UpvoteKaraButton';
 import VideoPreview from '../generic/VideoPreview';
 import InlineTag from './InlineTag';
+import { WS_CMD } from '../../../utils/ws';
 
 interface KaraListProps {
 	karas: IKaraList;
@@ -102,7 +103,7 @@ function KaraList({ karas, scope, addKara = false }: KaraListProps) {
 											<button
 												onClick={e => {
 													e.stopPropagation();
-													commandBackend('deleteKaraFromPlaylist', {
+													commandBackend(WS_CMD.DELETE_KARA_FROM_PLAYLIST, {
 														plc_ids: kara.my_public_plc_id,
 													});
 												}}

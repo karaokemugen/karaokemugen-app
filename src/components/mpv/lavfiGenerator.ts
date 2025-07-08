@@ -92,7 +92,7 @@ export class lavfiGenerator {
 
 	public static genLavfiQRCode(needThirdSplit: boolean): string {
 		// Disable this for mpvs with ffmpeg version 7.0
-		if (playerState.ffmpegVersion.includes('.') && semver.satisfies(playerState.ffmpegVersion, '7.0.x')) return '';
+		if (playerState.ffmpegVersion?.includes('.') && semver.satisfies(playerState.ffmpegVersion, '7.0.x')) return '';
 
 		let overlay: string;
 		let videoInput: number;

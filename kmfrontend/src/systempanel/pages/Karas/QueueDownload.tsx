@@ -21,6 +21,7 @@ import { tagTypes } from '../../../utils/tagTypes';
 import { getProtocolForOnline } from '../../../utils/tools';
 import Title from '../../components/Title';
 import { DefaultOptionType } from 'antd/es/select';
+import { WS_CMD } from '../../../utils/ws';
 
 function QueueDownload() {
 	const context = useContext(GlobalContext);
@@ -57,7 +58,7 @@ function QueueDownload() {
 
 	const getTags = async () => {
 		try {
-			const res = await commandBackend('getTags', undefined, false, 300000);
+			const res = await commandBackend(WS_CMD.GET_TAGS, undefined, false, 300000);
 			setTags(res.content);
 		} catch (_) {
 			// already display
@@ -86,7 +87,7 @@ function QueueDownload() {
 			const psz = currentPageSize;
 			const pfrom = p * psz;
 			const res = await commandBackend(
-				'getKaras',
+				WS_CMD.GET_KARAS,
 				{
 					filter: filter,
 					q: `${tagFilter}!m:DOWNLOADING`,
@@ -106,7 +107,7 @@ function QueueDownload() {
 	};
 
 	const readKaraQueue = async () => {
-		const res = await commandBackend('getDownloads', undefined, false, 300000);
+		const res = await commandBackend(WS_CMD.GET_DOWNLOADS, undefined, false, 300000);
 		setKarasQueue(res);
 	};
 
@@ -167,17 +168,17 @@ function QueueDownload() {
 
 	// START karas download queue
 	const putToDownloadQueueStart = () => {
-		commandBackend('startDownloadQueue').catch(() => {});
+		commandBackend(WS_CMD.START_DOWNLOAD_QUEUE).catch(() => {});
 	};
 
 	// PAUSE karas download queue
 	const putToDownloadQueuePause = () => {
-		commandBackend('pauseDownloads').catch(() => {});
+		commandBackend(WS_CMD.PAUSE_DOWNLOADS).catch(() => {});
 	};
 
 	// POST (add) items to download queue
 	const postToDownloadQueue = (downloads: KaraDownloadRequest[]) => {
-		commandBackend('addDownloads', {
+		commandBackend(WS_CMD.ADD_DOWNLOADS, {
 			downloads,
 		}).catch(() => {});
 	};
@@ -373,7 +374,7 @@ function QueueDownload() {
 						style={{ width: '100px', margin: '0.5em' }}
 						type="primary"
 						key="queueDelete"
-						onClick={() => commandBackend('deleteDownloads').catch(() => {})}
+						onClick={() => commandBackend(WS_CMD.DELETE_DOWNLOADS).catch(() => {})}
 					>
 						{i18next.t('KARA.WIPE_DOWNLOAD_QUEUE')}
 					</Button>

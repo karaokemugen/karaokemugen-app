@@ -26,8 +26,8 @@ const feeds = [
 ];
 
 /** Get Karaoke Mugen main news feeds */
-export async function getFeeds() {
-	const feedPromises = [];
+export async function getFeeds(): Promise<Feed[]> {
+	const feedPromises: Promise<Feed>[] = [];
 	try {
 		await internet();
 		for (const feed of feeds) {

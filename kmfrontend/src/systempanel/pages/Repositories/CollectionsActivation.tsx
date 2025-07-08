@@ -6,6 +6,7 @@ import { Tag } from '../../../../../src/lib/types/tag';
 import GlobalContext from '../../../store/context';
 import { getDescriptionInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
+import { WS_CMD } from '../../../utils/ws';
 
 function CollectionsActivation() {
 	const context = useContext(GlobalContext);
@@ -18,7 +19,7 @@ function CollectionsActivation() {
 	const enableCollection = (tid: string) => {
 		const collections = context.globalState.settings.data.config.Karaoke.Collections;
 		collections[tid] = !collections[tid];
-		commandBackend('updateSettings', {
+		commandBackend(WS_CMD.UPDATE_SETTINGS, {
 			setting: {
 				Karaoke: {
 					Collections: collections,
@@ -28,7 +29,7 @@ function CollectionsActivation() {
 	};
 
 	const refresh = async () => {
-		const res = await commandBackend('getTags', { type: [16] });
+		const res = await commandBackend(WS_CMD.GET_TAGS, { type: [16] });
 		setCollections(res.content);
 	};
 

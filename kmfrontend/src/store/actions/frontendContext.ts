@@ -12,6 +12,7 @@ import {
 	IndexKaraDetail,
 	PlaylistInfo,
 } from '../types/frontendContext';
+import { WS_CMD } from '../../utils/ws';
 
 export function setFilterValue(
 	dispatch: Dispatch<FilterValue>,
@@ -35,7 +36,7 @@ export function setBgImage(dispatch: Dispatch<BackgroundImage>, backgroundImg) {
 export async function setPlaylistInfoLeft(dispatch: Dispatch<PlaylistInfo>, plaid?: string) {
 	if (!plaid) {
 		const cookie = localStorage.getItem('mugenPlVal1');
-		const playlistList: PlaylistElem[] = await commandBackend('getPlaylists');
+		const playlistList: PlaylistElem[] = await commandBackend(WS_CMD.GET_PLAYLISTS);
 		plaid =
 			cookie !== null &&
 			(isNonStandardPlaylist(cookie) || playlistList.find(playlist => playlist.plaid === cookie)) &&
@@ -56,7 +57,7 @@ export async function setPlaylistInfoLeft(dispatch: Dispatch<PlaylistInfo>, plai
 export async function setPlaylistInfoRight(dispatch: Dispatch<PlaylistInfo>, plaid?: string) {
 	if (!plaid) {
 		const cookie = localStorage.getItem('mugenPlVal2');
-		const playlistList: PlaylistElem[] = await commandBackend('getPlaylists');
+		const playlistList: PlaylistElem[] = await commandBackend(WS_CMD.GET_PLAYLISTS);
 		plaid =
 			cookie !== null &&
 			(isNonStandardPlaylist(cookie) || playlistList.find(playlist => playlist.plaid === cookie)) &&
@@ -99,8 +100,8 @@ async function getPlaylistInfo(plaid: string) {
 	let content: DBPLCBase[] = [];
 	if (plaid && !isNonStandardPlaylist(plaid)) {
 		try {
-			playlist = await commandBackend('getPlaylist', { plaid });
-			content = await commandBackend('getPlaylistContentsMicro', { plaid });
+			playlist = await commandBackend(WS_CMD.GET_PLAYLIST, { plaid });
+			content = await commandBackend(WS_CMD.GET_PLAYLIST_CONTENTS_MICRO, { plaid });
 		} catch (_) {
 			// already display
 		}

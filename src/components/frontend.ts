@@ -11,6 +11,7 @@ import downloadController from '../controllers/frontend/download.js';
 import emulateController from '../controllers/frontend/emulate.js';
 import favoritesController from '../controllers/frontend/favorites.js';
 import filesController, { filesSocketController } from '../controllers/frontend/files.js';
+import importBaseController from '../controllers/frontend/importBase.js';
 import inboxController from '../controllers/frontend/inbox.js';
 import karaController from '../controllers/frontend/kara.js';
 import miscController from '../controllers/frontend/misc.js';
@@ -29,7 +30,6 @@ import logger, { profile } from '../lib/utils/logger.js';
 import { initWS, SocketIOApp } from '../lib/utils/ws.js';
 import sentry from '../utils/sentry.js';
 import { getState } from '../utils/state.js';
-import importBaseController from '../controllers/frontend/importBase.js';
 
 const service = 'Frontend';
 
@@ -101,7 +101,9 @@ export default function initFrontend(): number {
 		app.use('/sessionExports', express.static(resolve(state.dataPath, 'sessionExports/'), { dotfiles: 'allow' }));
 
 		// HTTP standards are important.
-		app.use('/coffee', (_req, res) => res.status(418).json());
+		app.use('/coffee', (_req, res) => {
+			res.status(418).json();
+		});
 
 		app.use('/', express.static(resolve(state.resourcePath, 'kmfrontend/dist'), { dotfiles: 'allow' }));
 		app.get('/*splat', (_req, res) => {

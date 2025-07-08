@@ -7,6 +7,7 @@ import { AutocompleteOptions } from '../frontend/components/generic/Autocomplete
 import { GlobalContextInterface } from '../store/context';
 import { getTagInLocale } from './kara';
 import { commandBackend } from './socket';
+import { WS_CMD } from './ws';
 
 // Big thanks to https://github.com/thivi/use-non-initial-effect-hook
 // See https://www.thearmchaircritic.org/tech-journal/prevent-useeffects-callback-firing-during-initial-render
@@ -94,7 +95,7 @@ export const useTagSearch = (
 					const tType = typeof type === 'number' ? type : tagType;
 					try {
 						if (tType === 0) {
-							const response = await commandBackend('getYears');
+							const response = await commandBackend(WS_CMD.GET_YEARS);
 							setTags(
 								response.content
 									.filter((val: DBYear) => val.year.toString().startsWith(query))
@@ -108,7 +109,7 @@ export const useTagSearch = (
 									})
 							);
 						} else if (tType < 999) {
-							const response = await commandBackend('getTags', { filter: query, type: [tType] });
+							const response = await commandBackend(WS_CMD.GET_TAGS, { filter: query, type: [tType] });
 							setTags(
 								response.content
 									.filter((val: DBTag) => val.karacount !== null)

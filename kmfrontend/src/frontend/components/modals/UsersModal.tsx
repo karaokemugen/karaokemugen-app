@@ -9,6 +9,7 @@ import GlobalContext from '../../../store/context';
 import ProfilePicture from '../../../utils/components/ProfilePicture';
 import { getCountryName } from '../../../utils/isoLanguages';
 import { commandBackend } from '../../../utils/socket';
+import { WS_CMD } from '../../../utils/ws';
 
 interface IProps {
 	scope?: 'public' | 'admin';
@@ -21,7 +22,7 @@ function UsersModal(props: IProps) {
 	const [userDetails, setUserDetails] = useState<User>();
 
 	const getUserList = async () => {
-		const response = await commandBackend('getUsers');
+		const response = await commandBackend(WS_CMD.GET_USERS);
 		setUsers(response.filter((a: User) => a.flag_logged_in));
 	};
 
@@ -30,7 +31,7 @@ function UsersModal(props: IProps) {
 			setUserDetails(undefined);
 		} else if (user.type < 2) {
 			try {
-				const response = await commandBackend('getUser', { username: user.login });
+				const response = await commandBackend(WS_CMD.GET_USER, { username: user.login });
 				setUserDetails(response);
 			} catch (_) {
 				// already display

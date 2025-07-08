@@ -4,33 +4,40 @@ import { useNavigate } from 'react-router';
 
 import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
+import { WS_CMD } from '../../../utils/ws';
 
 function SetupPageStats() {
 	const context = useContext(GlobalContext);
 	const navigate = useNavigate();
 
 	const [error, setError] = useState<string>();
-	const [openDetails, setOpenDetails] = useState(false);
-	const [stats, setStats] = useState<boolean>();
 	const [errorTracking, setErrorTracking] = useState<boolean>();
 	const [userStats, setUserStats] = useState<boolean>();
 
 	const updateStats = async () => {
-		if (errorTracking !== undefined && stats !== undefined && userStats !== undefined) {
+		if (errorTracking !== undefined && userStats !== undefined) {
 			try {
-				await commandBackend('updateSettings', {
+				await commandBackend(WS_CMD.UPDATE_SETTINGS, {
 					setting: {
 						Online: {
-							Stats: stats,
 							ErrorTracking: errorTracking,
 						},
 					},
 				});
 				const user = context?.globalState.settings.data.user;
 				user.flag_sendstats = userStats;
-				await commandBackend('editMyAccount', user);
+				await commandBackend(WS_CMD.EDIT_MY_ACCOUNT, user);
 				setError(undefined);
-				navigate('/setup/loading');
+				await commandBackend(WS_CMD.UPDATE_SETTINGS, {
+					setting: {
+						App: {
+							FirstRun: false,
+						},
+					},
+				}).catch(() => {});
+				await commandBackend(WS_CMD.START_PLAYER).catch(() => {});
+				sessionStorage.setItem('dlQueueRestart', 'true');
+				navigate('/system/repositories/create?setup=true');
 			} catch (err: any) {
 				const error = err?.message ? i18next.t(`ERROR_CODES.${err.message}`) : JSON.stringify(err);
 				setError(error);
@@ -40,35 +47,11 @@ function SetupPageStats() {
 
 	return (
 		<section className="step step-choice">
-			<p>{i18next.t('ONLINE_STATS.INTRO')}</p>
 			<p>
-				<a className="btn-link" type="button" onClick={() => setOpenDetails(!openDetails)}>
-					{i18next.t('ONLINE_STATS.DETAILS.TITLE')}
-				</a>
-				{openDetails ? (
-					<>
-						<ul>
-							<li>{i18next.t('ONLINE_STATS.DETAILS.1')}</li>
-							<li>{i18next.t('ONLINE_STATS.DETAILS.2')}</li>
-							<li>{i18next.t('ONLINE_STATS.DETAILS.3')}</li>
-							<li>{i18next.t('ONLINE_STATS.DETAILS.4')}</li>
-						</ul>
-						<p>{i18next.t('ONLINE_STATS.DETAILS.OUTRO')}</p>
-						<br />
-					</>
-				) : null}
+				{i18next.t('SETUP_PAGE.CONNECTED_MESSAGE', {
+					user: context?.globalState.settings.data.user.nickname,
+				})}
 			</p>
-			<p>{i18next.t('ONLINE_STATS.QUESTION')}</p>
-			<div className="input-group">
-				<div className="actions">
-					<button className={stats ? 'on' : ''} type="button" onClick={() => setStats(true)}>
-						{i18next.t('YES')}
-					</button>
-					<button className={stats === false ? 'off' : ''} type="button" onClick={() => setStats(false)}>
-						{i18next.t('NO')}
-					</button>
-				</div>
-			</div>
 			<p>{i18next.t('ONLINE_STATS.ERROR')}</p>
 			<div className="input-group">
 				<div className="actions">
@@ -107,7 +90,7 @@ function SetupPageStats() {
 			<div className="actions">
 				<label className="error">{error}</label>
 				<button type="button" onClick={updateStats}>
-					{i18next.t('ONLINE_STATS.CONFIRM')}
+					{i18next.t('CONFIRM')}
 				</button>
 			</div>
 		</section>

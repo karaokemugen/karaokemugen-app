@@ -955,18 +955,7 @@
 		"CREATE_ONLINE_ACCOUNT_DESC": "Type in an account name and a password to create one.",
 		"SECURITY_CODE_DESC_CONSOLE": "Please also enter the 6-digit security code that you can find by looking for \"SECURITY CODE FOR THIS SESSION\" in the Karaoke Mugen log file or in the console.",
 		"SECURITY_CODE_USE": "This code makes sure you're really the one doing these actions. It changes after each use.",
-		"CONNECTED_MESSAGE": "Congratulations, you're logged in to Karaoke Mugen, {{user}}!",
-		"DEFAULT_REPOSITORY_DESC_1": "Karaoke Mugen has a default karaoke repository, ",
-		"DEFAULT_REPOSITORY_DESC_2": ". Its media files will be downloaded as you need them.",
-		"DEFAULT_REPOSITORY_QUESTION": "Where do you want to store these downloads? By default they'll be in:",
-		"REPOSITORY_LATER": "You can change this folder at any time.",
-		"MODIFY_DIRECTORY": "Change folder",
-		"CHOOSE_DIRECTORY": "Select a folder",
-		"ADD_DIRECTORY": "Add a folder",
-		"SAVE_PARAMETER": "Save",
-		"COLLECTIONS_CHOICE": "Collection selection",
-		"COLLECTIONS_CHOICE_DESC_1": "The Song Collections are intended for different audiences. Choose the collections you want to see in your karaoke database.",
-		"COLLECTIONS_CHOICE_DESC_2": "You can change your collections at any time in the system panel."
+		"CONNECTED_MESSAGE": "Congratulations, you're logged in to Karaoke Mugen, {{user}}!"
 	},
 	"NOTIFICATION": {
 		"OPERATOR": {
@@ -1183,18 +1172,18 @@
 		"CONFIGURATION": "Configuration",
 		"SOURCE_DIR": "Source directory",
 		"SOURCE_DIR_DESC": "Please select the folder your songs are located at. They will be copied to your target repository.",
-		"SOURCE_DIR_TOOLTIP": "Directory with karaoke medias (video/audio) to import",
+		"SOURCE_DIR_TOOLTIP": "Directory with karaoke media (video/audio) to import",
 		"DESTINATION_REPOSITORY": "Target repository",
-		"DESTINATION_REPOSITORY_TOOLTIP": "Repository where the new karaokes will be imported",
+		"DESTINATION_REPOSITORY_TOOLTIP": "Repository to which the new songs will be imported",
 		"FILENAME_TEMPLATE": "Filename template",
-		"FILENAME_TEMPLATE_TOOLTIP": "If your existing files have a structured filename - for example containing the song name, artist and year - you can provide the format here. The recognized fields will automatically be saved on the new karaokes metadata.",
-		"FILENAME_TEMPLATE_DESC": "Please specify the format of filenames you're using :",
+		"FILENAME_TEMPLATE_TOOLTIP": "If your existing files have a structured filename - for example containing the song name, artist and year - you can provide the format here. The recognized fields will automatically be saved as new karaoke metadata.",
+		"FILENAME_TEMPLATE_DESC": "Please specify the format of filenames you're using:",
 		"WARNING_IMPORT_TITLE": "PLEASE READ",
 		"WARNING_IMPORT": "Karaoke Mugen will look into the source folder and try to find songs to import.",
-		"WARNING_IMPORT_LIST": "Things to know :",
+		"WARNING_IMPORT_LIST": "Things to know:",
 		"WARNING_IMPORT_LYRICS": "Lyrics will be converted to .ass file format when imported.",
 		"WARNING_IMPORT_MEDIA": "Media will be converted to .mp4.",
-		"ADD_TAG_TEMPLATE": "Add a tag in template",
+		"ADD_TAG_TEMPLATE": "Add a tag to the template",
 		"ADD_TAG_TEMPLATE_DESC": "Use the field below to add items to the filename template.",
 		"MEDIA_FILES": "Media files",
 		"IMPORT_START": "Start import",
@@ -1217,7 +1206,7 @@
 		"HISTORY": "History",
 		"RANKING": "Most requested",
 		"VIEWCOUNTS": "Most played",
-		"KARAIMPORT": "Import karaokes",
+		"KARAIMPORT": "Import songs",
 		"TAGS": "Tags",
 		"DATABASE": "Database",
 		"GIT": "Git",
@@ -1392,7 +1381,6 @@
 			"APP_QUICKSTART": "Quick application start",
 			"APP_QUICKSTART_TOOLTIP": "This disables data verification. You will have to generate your database in case of modification manually from the system panel -> database page.",
 			"ONLINE_ERRORTRACKING": "Send error and crash reports (via sentry.io)",
-			"ONLINE_STATS": "Send usage telemetry to Karaoke Mugen Server",
 			"PLAYER_KEYBOARDMEDIASHORTCUTS": "Control the player with keyboard media keys",
 			"PLAYER_KEYBOARDMEDIASHORTCUTS_TOOLTIP": "Disable if you want these keys to control another app (iTunes, foobar, etc.)",
 			"PLAYER_HARDWAREDECODING": "Video Hardware Decoding",
@@ -1407,7 +1395,8 @@
 			"ONLINE_UPDATES_MEDIAS_OUTROS": "Auto-update outros",
 			"ONLINE_UPDATES_MEDIAS_ENCORES": "Auto-update encores",
 			"ONLINE_UPDATES_MEDIAS_SPONSORS": "Auto-update sponsors",
-			"ONLINE_USERS": "Allow online user registration & login",
+			"ONLINE_REMOTEUSERS_ENABLED": "Allow online user registration & login",
+			"ONLINE_REMOTEUSERS_DEFAULTHOST": "Default instance for online users",
 			"ONLINE_FETCHPOPULARSONGS": "Fetch most requested songs from your online repositories",
 			"ONLINE_FETCHPOPULARSONGS_TOOLTIP": "If disabled, most requested songs will be calculated from your Karaoke Mugen app",
 			"ONLINE_DISCORD_DISPLAYACTIVITY": "Show Karaoke Mugen activity on your Discord profile"
@@ -1442,14 +1431,14 @@
 		"PRIVATE": "Private?"
 	},
 	"REPOSITORIES": {
-		"NAME_DESC": "What should your repository be called ?",
+		"NAME_DESC": "What should your repository be called?",
 		"NAME": "Repository name",
 		"ONLINE_NAME": "Repository domain name",
 		"TOOLTIP_NAME": "Name it as you want. For example 'My private little karaoke'",
-		"TOOLTIP_ONLINE_NAME": "Put its domain name only here.",
+		"TOOLTIP_ONLINE_NAME": "Put only the domain name in here.",
 		"BASE_DIR": "Base directory",
-		"PATH_MEDIAS": "Media path storage",
-		"PATH_MEDIAS_DESC": "Please indicate where you want media to be stored. If you plan to have a lot of songs, it should be in a place where you have lots of disk space available.",
+		"PATH_MEDIAS": "Media directory",
+		"PATH_MEDIAS_DESC": "Please indicate where you want the media to be stored. If you plan to have a lot of songs, it should be in a place where you have lots of disk space available.",
 		"NEW_REPOSITORY": "New repository",
 		"ONLINE": "Remote (Get songs)",
 		"LOCAL": "Local (For your own songs)",
@@ -1989,8 +1978,8 @@
 			"DESCRIPTION": "Karaoke modification form."
 		},
 		"KARAOKE_IMPORT": {
-			"TITLE": "Import Karaokes",
-			"DESCRIPTION": "Import karaokes from a folder into Karaoke Mugen"
+			"TITLE": "Import songs",
+			"DESCRIPTION": "Import songs from a folder into Karaoke Mugen"
 		},
 		"DOWNLOAD_QUEUE": {
 			"TITLE": "Media download queue",
@@ -2100,7 +2089,7 @@
 		}
 	},
 	"INBOX": {
-		"NAME": "Karaoke name",
+		"NAME": "Song name",
 		"TIMESTAMP": "Timestamp",
 		"TYPE": "Type of request",
 		"TYPES": {
@@ -2112,13 +2101,16 @@
 		"CONTACT_INFOS": "Author contact informations",
 		"ISSUE": "Issue {{number}}",
 		"USER": "User in charge of issue integration",
-		"DOWNLOAD": "Download karaoke",
+		"DOWNLOAD": "Download song",
+		"DELETE_SONG": "Delete song",
+		"UNASSIGN_FROM_SONG": "Unassign yourself from this song",
 		"SONG_DOWNLOADED_FROM_INBOX": "Song {{song}} succesfully downloaded from inbox",
 		"SONG_DOWNLOADED_FROM_INBOX_FAILED": "Song could not be downloaded from inbox!",
-		"DELETE": "Are you sure you want to delete the karaoke from the inbox as well as its files on the server?",
+		"DELETE": "Are you sure you want to delete the song from the inbox as well as its files on the server?",
 		"CONTACT_INFOS_MODAL": {
 			"USERNAME": "Username: ",
 			"MAIL": "Email: ",
+			"LANGUAGE": "Language: ",
 			"URL": "Website: ",
 			"SOCIAL_NETWORKS": {
 				"MASTODON": "Mastodon: ",

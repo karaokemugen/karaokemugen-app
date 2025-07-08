@@ -1,7 +1,5 @@
-import { Socket } from 'socket.io';
-
+import { WS_CMD } from '../../../kmfrontend/src/utils/ws.js';
 import { APIMessage } from '../../lib/services/frontend.js';
-import { APIData } from '../../lib/types/api.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
 import {
 	addCriteria,
@@ -13,7 +11,7 @@ import {
 import { runChecklist } from '../middlewares.js';
 
 export default function smartPlaylistsController(router: SocketIOApp) {
-	router.route('createProblematicSmartPlaylist', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.CREATE_PROBLEMATIC_SMART_PLAYLIST, async (socket, req) => {
 		await runChecklist(socket, req);
 		try {
 			return await createProblematicSmartPlaylist();
@@ -21,7 +19,7 @@ export default function smartPlaylistsController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('getCriterias', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.GET_CRITERIAS, async (socket, req) => {
 		await runChecklist(socket, req, 'admin');
 		try {
 			return await getCriterias(req.body.plaid, req.langs);
@@ -29,7 +27,7 @@ export default function smartPlaylistsController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('emptyCriterias', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.EMPTY_CRITERIAS, async (socket, req) => {
 		await runChecklist(socket, req, 'admin');
 		try {
 			return await emptyCriterias(req.body.plaid);
@@ -37,7 +35,7 @@ export default function smartPlaylistsController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('removeCriterias', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.REMOVE_CRITERIAS, async (socket, req) => {
 		await runChecklist(socket, req, 'admin');
 		try {
 			return await removeCriteria(req.body.criterias);
@@ -45,7 +43,7 @@ export default function smartPlaylistsController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('addCriterias', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.ADD_CRITERIAS, async (socket, req) => {
 		await runChecklist(socket, req, 'admin');
 		try {
 			return await addCriteria(req.body.criterias);

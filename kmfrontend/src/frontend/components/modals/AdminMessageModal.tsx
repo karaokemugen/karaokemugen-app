@@ -6,6 +6,7 @@ import { useContext, useEffect, useState } from 'react';
 import { closeModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
+import { WS_CMD } from '../../../utils/ws';
 
 function AdminMessageModal() {
 	const context = useContext(GlobalContext);
@@ -23,7 +24,7 @@ function AdminMessageModal() {
 			destination: destination,
 			duration: !duration || isNaN(duration) ? defaultDuration : duration,
 		};
-		commandBackend('displayPlayerMessage', msgData);
+		commandBackend(WS_CMD.DISPLAY_PLAYER_MESSAGE, msgData);
 		closeModal(context.globalDispatch);
 	};
 

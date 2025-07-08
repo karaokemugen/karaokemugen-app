@@ -39,12 +39,18 @@ import { Flex, Spin } from 'antd/lib';
 import { DefaultOptionType, SelectValue } from 'antd/lib/select';
 import { filesize } from 'filesize';
 import i18next from 'i18next';
-import { useContext, useEffect, useRef, useState } from 'react';
+import { ReactNode, useContext, useEffect, useRef, useState } from 'react';
 import { v4 as UUIDv4 } from 'uuid';
 
 import { PositionX, PositionY } from '../../../../../src/lib/types';
 import { DBKara, DBKaraTag } from '../../../../../src/lib/types/database/kara';
-import type { EditedKara, KaraFileV4, MediaInfo, MediaInfoValidationResult } from '../../../../../src/lib/types/kara';
+import type {
+	EditedKara,
+	KaraFileV4,
+	KaraList,
+	MediaInfo,
+	MediaInfoValidationResult,
+} from '../../../../../src/lib/types/kara';
 import type { Repository, RepositoryManifestV2 } from '../../../../../src/lib/types/repo';
 import { blobToBase64 } from '../../../../../src/lib/utils/filesCommon';
 import GlobalContext from '../../../store/context';
@@ -60,6 +66,7 @@ import TaskProgress from '../../components/TaskProgressBar';
 import dayjs from 'dayjs';
 import type { TagType } from '../../../../../src/lib/types/tag';
 import CheckBoxTag from '../../components/karas/CheckBoxTag';
+import { WS_CMD } from '../../../utils/ws';
 
 const { Paragraph } = Typography;
 const { Panel } = Collapse;
@@ -113,7 +120,7 @@ function KaraForm(props: KaraFormProps) {
 	const [repositoriesValue, setRepositoriesValue] = useState<string[]>(null);
 	const [repositoryManifest, setRepositoryManifest] = useState<RepositoryManifestV2>();
 	const [repoToCopySong, setRepoToCopySong] = useState<string>(null);
-	const [karaSearch, setKaraSearch] = useState<{ label: string; value: string }[]>([]);
+	const [karaSearch, setKaraSearch] = useState<{ label: ReactNode; value: string }[]>([]);
 	const [parentKara, setParentKara] = useState<DBKara>(null);
 	const [errors, setErrors] = useState<string[]>([]);
 	const [displayTypeOptions, setDisplayTypeOptions] = useState<DefaultOptionType[]>();
@@ -178,7 +185,7 @@ function KaraForm(props: KaraFormProps) {
 
 	const getRepoManifest = async (repository: string) => {
 		if (repository) {
-			const res = await commandBackend('getRepoManifest', { name: repository });
+			const res = await commandBackend(WS_CMD.GET_REPO_MANIFEST, { name: repository });
 			setRepositoryManifest(res);
 		}
 	};
@@ -187,7 +194,10 @@ function KaraForm(props: KaraFormProps) {
 		if (props.kara?.parents) {
 			const parents: string[] = props.kara?.parents;
 			if (parents.length > 0) {
-				const res = await commandBackend('getKaras', { q: `k:${parents.join()}`, ignoreCollections: true });
+				const res = await commandBackend(WS_CMD.GET_KARAS, {
+					q: `k:${parents.join()}`,
+					ignoreCollections: true,
+				});
 				const karaSearch = res.content.map(kara => {
 					return {
 						label: buildKaraTitle(context.globalState.settings.data, kara, true, res.i18n),
@@ -202,7 +212,7 @@ function KaraForm(props: KaraFormProps) {
 	const loadMediaInfo = async () => {
 		if (props.kara?.kid && props.kara?.download_status === 'DOWNLOADED') {
 			const mediaInfo: MediaInfo = await commandBackend(
-				'getKaraMediaInfo',
+				WS_CMD.GET_KARA_MEDIA_INFO,
 				{ kid: props.kara.kid },
 				false,
 				60000
@@ -217,7 +227,7 @@ function KaraForm(props: KaraFormProps) {
 		const repo: string = form?.getFieldValue('repository');
 		if (mediaInfo && repo) {
 			const mediaInfoValidationResults: MediaInfoValidationResult[] = await commandBackend(
-				'validateMediaInfo',
+				WS_CMD.VALIDATE_MEDIA_INFO,
 				{ mediaInfo: mediaInfo, repository: repo },
 				false,
 				60000
@@ -235,7 +245,7 @@ function KaraForm(props: KaraFormProps) {
 			try {
 				setIsEncodingMedia(true);
 				const newMediaInfo: MediaInfo = await commandBackend(
-					'encodeMediaFileToRepoDefaults',
+					WS_CMD.ENCODE_MEDIA_FILE_TO_REPO_DEFAULTS,
 					{
 						kid: props.kara?.kid,
 						filename: mediafileIsTouched && mediaInfo?.filename,
@@ -257,7 +267,7 @@ function KaraForm(props: KaraFormProps) {
 	};
 
 	const abortEncoding = async () => {
-		await commandBackend('abortMediaEncoding');
+		await commandBackend(WS_CMD.ABORT_MEDIA_ENCODING);
 	};
 
 	const renderMediaInfo = (mediaInfo: MediaInfo, mediaInfoValidationResults: MediaInfoValidationResult[]) => {
@@ -451,9 +461,9 @@ function KaraForm(props: KaraFormProps) {
 	const openChildrenModal = async (event, kid: string) => {
 		event.stopPropagation();
 		event.preventDefault();
-		const parent: DBKara = await commandBackend('getKara', { kid });
+		const parent: DBKara = await commandBackend(WS_CMD.GET_KARA, { kid });
 		if (parent.children.length > 0) {
-			const childrens = await commandBackend('getKaras', {
+			const childrens = await commandBackend(WS_CMD.GET_KARAS, {
 				q: `k:${parent.children.join()}`,
 				ignoreCollections: true,
 			});
@@ -477,7 +487,7 @@ function KaraForm(props: KaraFormProps) {
 	};
 
 	const getRepositories = async () => {
-		const res: Repository[] = await commandBackend('getRepos');
+		const res: Repository[] = await commandBackend(WS_CMD.GET_REPOS);
 		setRepositoriesValue(
 			res.filter(repo => repo.MaintainerMode || (!repo.Online && !repo.System)).map(repo => repo.Name)
 		);
@@ -487,7 +497,12 @@ function KaraForm(props: KaraFormProps) {
 		if (!defaultLanguage || !titles || Object.keys(titles).length === 0 || !titles[defaultLanguage]) {
 			message.error(i18next.t('KARA.TITLE_REQUIRED'));
 		} else {
-			const data = await commandBackend('previewHooks', getKaraToSend(form.getFieldsValue()), false, 300000);
+			const data = await commandBackend(
+				WS_CMD.PREVIEW_HOOKS,
+				getKaraToSend(form.getFieldsValue()),
+				false,
+				300000
+			);
 			Modal.info({
 				title: i18next.t('KARA.PREVIEW_HOOKS_MODAL'),
 				content: (
@@ -507,7 +522,7 @@ function KaraForm(props: KaraFormProps) {
 							</div>
 						))}
 						{data.fromDisplayTypeChange ? (
-							<div title={data.fromDisplayTypeChange}>
+							<div title={data.fromDisplayTypeChange?.toString()}>
 								{`${i18next.t('KARA.FROM_DISPLAY_TYPE')} : ${i18next.t(
 									`TAG_TYPES.${getTagTypeName(data.fromDisplayTypeChange)}_one`
 								)}`}
@@ -619,13 +634,13 @@ function KaraForm(props: KaraFormProps) {
 
 	const isMediaFile = (filename: string): boolean => {
 		return new RegExp(`^.+\\.(${context.globalState.settings.data.state?.supportedMedias.join('|')})$`).test(
-			filename
+			filename.toLowerCase()
 		);
 	};
 
 	const isSubFile = (filename: string): boolean => {
 		return new RegExp(`^.+\\.(${context.globalState.settings.data.state?.supportedLyrics.join('|')})$`).test(
-			filename
+			filename.toLowerCase()
 		);
 	};
 
@@ -640,7 +655,7 @@ function KaraForm(props: KaraFormProps) {
 			if (isMediaFile(info.file.name)) {
 				setMediafileIsTouched(true);
 				const mediaInfo: MediaInfo = await commandBackend(
-					'processUploadedMedia',
+					WS_CMD.PROCESS_UPLOADED_MEDIA,
 					{
 						origFilename: info.file.response.originalname,
 						filename: info.file.response.filename,
@@ -693,7 +708,7 @@ function KaraForm(props: KaraFormProps) {
 			} else if (info.file.status === 'done') {
 				setMediafileIsTouched(true);
 				const mediaInfoAfterEmbed: MediaInfo = await commandBackend(
-					'embedAudioFileCoverArt',
+					WS_CMD.EMBED_AUDIO_FILE_COVER_ART,
 					{
 						kid: props.kara?.kid,
 						tempFilename: mediafileIsTouched && mediaInfo?.filename,
@@ -755,12 +770,12 @@ function KaraForm(props: KaraFormProps) {
 
 	const search = value => {
 		setTimeout(async () => {
-			const karas = await commandBackend('getKaras', {
+			const karas: KaraList = await commandBackend(WS_CMD.GET_KARAS, {
 				filter: value,
 				size: 50,
 				ignoreCollections: true,
 			}).catch(() => {
-				return { content: [] };
+				return { content: [], avatars: undefined, i18n: undefined, infos: { count: 0, from: 0, to: 0 } };
 			});
 			if (karas.content) {
 				setKaraSearch(
@@ -791,7 +806,7 @@ function KaraForm(props: KaraFormProps) {
 	};
 
 	const applyFieldsFromKara = async (kid: string) => {
-		const parentKara = await commandBackend('getKara', { kid });
+		const parentKara = await commandBackend(WS_CMD.GET_KARA, { kid });
 		// Check if user has already started doing input, or if it's an edit of existing kara
 		if (
 			!props.kara?.kid &&
@@ -852,7 +867,7 @@ function KaraForm(props: KaraFormProps) {
 	};
 
 	const getTags = async (type: number) => {
-		const tags = await commandBackend('getTags', {
+		const tags = await commandBackend(WS_CMD.GET_TAGS, {
 			type: [type],
 		});
 		return sortByProp(tags?.content, 'text') || [];

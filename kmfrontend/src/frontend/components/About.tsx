@@ -9,6 +9,7 @@ import TextTransition, { presets } from 'react-text-transition';
 import imgMugenFullLogo from '../../assets/Logo-final-fond-transparent.png';
 import GlobalContext from '../../store/context';
 import { commandBackend } from '../../utils/socket';
+import { WS_CMD } from '../../utils/ws';
 
 export default function About() {
 	const context = useContext(GlobalContext);
@@ -28,10 +29,10 @@ export default function About() {
 			);
 			setDonators(shuffle(donators));
 		});
-		commandBackend('getTags', { type: [6] }).then(res => {
+		commandBackend(WS_CMD.GET_TAGS, { type: [6] }).then(res => {
 			setContributors(shuffle(res.content.map(c => c.name)));
 		});
-		commandBackend('getElectronVersions').then(setVersions);
+		commandBackend(WS_CMD.GET_ELECTRON_VERSIONS).then(setVersions);
 		const intervalId = setInterval(
 			() => setIndex(index => index + 1),
 			4000 // every 4 seconds

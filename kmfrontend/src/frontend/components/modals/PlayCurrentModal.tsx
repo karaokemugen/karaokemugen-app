@@ -9,6 +9,7 @@ import { closeModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
+import { WS_CMD } from '../../../utils/ws';
 
 interface IProps {
 	currentPlaylist: PlaylistElem;
@@ -21,7 +22,7 @@ function PlayCurrentModal(props: IProps) {
 
 	const playCurrentPlaylist = async () => {
 		try {
-			commandBackend('sendPlayerCommand', { command: 'play' });
+			commandBackend(WS_CMD.SEND_PLAYER_COMMAND, { command: 'play' });
 			closeModalWithContext();
 		} catch (_) {
 			// already display
@@ -29,19 +30,21 @@ function PlayCurrentModal(props: IProps) {
 	};
 
 	const switchPlaylistAndPlay = async () => {
-		await commandBackend('editPlaylist', {
+		await commandBackend(WS_CMD.EDIT_PLAYLIST, {
 			flag_current: true,
 			plaid: props.displayedPlaylist.plaid,
 		});
-		await commandBackend('sendPlayerCommand', { command: 'play' });
+		await commandBackend(WS_CMD.SEND_PLAYER_COMMAND, { command: 'play' });
 		closeModalWithContext();
 	};
 
 	const closeModalWithContext = () => closeModal(context.globalDispatch);
 
 	const getNextSong = async () => {
-		const { index } = await commandBackend('findPlayingSongInPlaylist', { plaid: props.currentPlaylist.plaid });
-		const karas: KaraList = await commandBackend('getPlaylistContents', {
+		const { index } = await commandBackend(WS_CMD.FIND_PLAYING_SONG_IN_PLAYLIST, {
+			plaid: props.currentPlaylist.plaid,
+		});
+		const karas: KaraList = await commandBackend(WS_CMD.GET_PLAYLIST_CONTENTS, {
 			plaid: props.currentPlaylist.plaid,
 			from: index,
 			size: 1,

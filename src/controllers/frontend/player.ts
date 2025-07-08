@@ -1,7 +1,5 @@
-import { Socket } from 'socket.io';
-
+import { WS_CMD } from '../../../kmfrontend/src/utils/ws.js';
 import { APIMessage } from '../../lib/services/frontend.js';
-import { APIData } from '../../lib/types/api.js';
 import { getConfig } from '../../lib/utils/config.js';
 import { check } from '../../lib/utils/validators.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
@@ -9,7 +7,7 @@ import { initPlayer, isPlayerRunning, playerMessage, playPlayer, sendCommand } f
 import { runChecklist } from '../middlewares.js';
 
 export default function playerController(router: SocketIOApp) {
-	router.route('play', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.PLAY, async (socket, req) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		try {
 			await playPlayer(true, req.token.username);
@@ -18,7 +16,7 @@ export default function playerController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('displayPlayerMessage', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.DISPLAY_PLAYER_MESSAGE, async (socket, req) => {
 		await runChecklist(socket, req);
 		const validationErrors = check(req.body, {
 			duration: { integerValidator: true },
@@ -38,7 +36,7 @@ export default function playerController(router: SocketIOApp) {
 			throw { code: 400, message: validationErrors };
 		}
 	});
-	router.route('sendPlayerCommand', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.SEND_PLAYER_COMMAND, async (socket, req) => {
 		await runChecklist(socket, req, getConfig().Frontend.PublicPlayerControls ? 'guest' : 'admin');
 		try {
 			const msg = await sendCommand(req.body.command, req.body.options);
@@ -47,7 +45,7 @@ export default function playerController(router: SocketIOApp) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
-	router.route('startPlayer', async (socket: Socket, req: APIData) => {
+	router.route(WS_CMD.START_PLAYER, async (socket, req) => {
 		await runChecklist(socket, req);
 		try {
 			if (isPlayerRunning()) {

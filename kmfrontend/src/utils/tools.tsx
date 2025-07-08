@@ -20,6 +20,8 @@ import { SettingsStoreData } from '../store/types/settings';
 import Modal from './components/Modal';
 import { getTagInLocale, getTitleInLocale } from './kara';
 import { commandBackend } from './socket';
+import { DBPLCInfo } from '../../../src/types/database/playlist';
+import { WS_CMD } from './ws';
 
 let is_touch = window.outerWidth <= 1023;
 let is_large = window.outerWidth <= 1860;
@@ -245,7 +247,7 @@ export async function decodeCriteriaReason(settings: SettingsStoreData, criteria
 			break;
 		default:
 			args[0] = 'TAG';
-			const tag = await commandBackend('getTag', { tid: criteria.value });
+			const tag = await commandBackend(WS_CMD.GET_TAG, { tid: criteria.value });
 			args[1] = {
 				tag: getTagInLocale(settings, tag).i18n,
 				verb: i18next.t(`CRITERIA.LABEL.TAG_VERBS.${criteria.type}`),
@@ -256,7 +258,12 @@ export async function decodeCriteriaReason(settings: SettingsStoreData, criteria
 	return i18next.t(...args);
 }
 
-export function PLCCallback(response, context: GlobalContextInterface, kara: DBKara, scope: 'admin' | 'public') {
+export function PLCCallback(
+	response: { plc: DBPLCInfo } | void,
+	context: GlobalContextInterface,
+	kara: DBKara,
+	scope: 'admin' | 'public'
+) {
 	if (response && response.plc) {
 		let message;
 		if (response.plc.time_before_play) {
@@ -310,13 +317,13 @@ export function PLCCallback(response, context: GlobalContextInterface, kara: DBK
 								onClick={e => {
 									e.preventDefault();
 									e.stopPropagation();
-									commandBackend('deleteKaraFromPlaylist', { plc_ids: [response.plc.plcid] })
+									commandBackend(WS_CMD.DELETE_KARA_FROM_PLAYLIST, { plc_ids: [response.plc.plcid] })
 										.then(() => {
 											toast.dismiss(response.plc.plcid);
 											displayMessage('success', i18next.t('SUCCESS_CODES.KARA_DELETED'));
 										})
 										.catch(() => {
-											toast.dismiss(response.data.plc.plcid);
+											toast.dismiss(response.plc.plcid);
 										});
 								}}
 							>

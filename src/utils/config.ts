@@ -109,9 +109,9 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 			displayInfo();
 		}
 	}
-	if (newConfig.Online.Remote !== oldConfig.Online.Remote && state.ready) {
-		if (newConfig.Online.Remote) {
-			await initKMServerCommunication(true);
+	if (newConfig.Online.RemoteAccess.Enabled !== oldConfig.Online.RemoteAccess.Enabled && state.ready) {
+		if (newConfig.Online.RemoteAccess.Enabled) {
+			await initKMServerCommunication();
 			initRemote();
 		} else {
 			destroyRemote();
@@ -284,6 +284,8 @@ export async function initConfig(argv: any) {
 		await loadConfigFiles(getState().dataPath, argv.config, defaults, getState().appPath);
 		const publicConfig = cloneDeep(getConfig());
 		publicConfig.Karaoke.StreamerMode.Twitch.OAuth = 'xxxxx';
+		publicConfig.System.Database.password = 'xxxxx';
+		publicConfig.System.Database.superuserPassword = 'xxxxx';
 		publicConfig.App.JwtSecret = 'xxxxx';
 		publicConfig.App.InstanceID = 'xxxxx';
 		publicConfig.Online.RemoteToken = 'xxxxx';
@@ -332,7 +334,7 @@ export async function configureHost() {
 	const URLPort = +config.System.FrontendPort === 80 ? '' : `:${config.System.FrontendPort}`;
 	setState({ osHost: { v4: address(undefined, 'ipv4'), v6: address(undefined, 'ipv6') } });
 	if (state.remoteAccess && 'host' in state.remoteAccess) {
-		setState({ osURL: `${config.Online.Secure ? 'https' : 'http'}://${state.remoteAccess.host}` });
+		setState({ osURL: `${config.Online.RemoteAccess.Secure ? 'https' : 'http'}://${state.remoteAccess.host}` });
 	} else if (!config.Player.Display.ConnectionInfo.Host) {
 		setState({ osURL: `http://${getState().osHost.v4}${URLPort}` }); // v6 is too long to show anyway
 	} else {

@@ -4,6 +4,7 @@ import i18next from 'i18next';
 
 import { DBKara } from '../../../../src/lib/types/database/kara';
 import { commandBackend } from '../../utils/socket';
+import { WS_CMD } from '../../utils/ws';
 
 interface IProps {
 	kara: DBKara;
@@ -17,7 +18,7 @@ export default function OpenLyricsFileButton({ kara, showOnlyIfDownloaded = true
 			<Button
 				type="primary"
 				icon={<EditOutlined />}
-				onClick={() => commandBackend('openLyricsFile', { kid: kid }).catch(() => {})}
+				onClick={() => commandBackend(WS_CMD.OPEN_LYRICS_FILE, { kid: kid }).catch(() => {})}
 			>
 				{i18next.t('KARA.LYRICS_FILE_OPEN')}
 			</Button>
