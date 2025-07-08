@@ -34,11 +34,13 @@ function RepositoriesEdit() {
 	const [report, setReport] = useState<DifferentChecksumReport[]>();
 	const [selectedRepo, setSelectedRepo] = useState<string>();
 
-	const saveNew = async (repository: Repository) => {
+	const saveNew = async (repository: Repository, importRedirection: boolean) => {
 		try {
 			await commandBackend(WS_CMD.ADD_REPO, repository, true);
-			if (searchParams.get('setup')) {
+			if (importRedirection) {
 				navigate(`/system/karas/import?repository=${repository.Name}`);
+			} else if (searchParams.get('setup')) {
+				navigate('/welcome');
 			} else {
 				navigate('/system/repositories');
 			}

@@ -1,5 +1,5 @@
 // Node modules
-import { app, shell } from 'electron';
+import { app, autoUpdater as nativeUpdater, BrowserWindow, shell } from 'electron';
 import { execa } from 'execa';
 import i18next from 'i18next';
 import internetAvailable from 'internet-available';
@@ -194,7 +194,7 @@ export async function initEngine() {
 			internetCheck().then(internet => {
 				if (internet) {
 					initStep(i18next.t('INIT_ONLINEURL'));
-					initKMServerCommunication(getConfig().Online.Remote);
+					initKMServerCommunication();
 				}
 				if (!state.isTest) {
 					if (internet) {
@@ -297,23 +297,45 @@ export async function exit(rc = 0, update = false) {
 				logger.warn('PostgreSQL could not be stopped!', { service, obj: err });
 				sentry.error(err);
 			} finally {
-				if (!update) mataNe(rc);
+				mataNe(rc, update);
 			}
-		} else if (!update) mataNe(rc);
+		} else {
+			mataNe(rc, update);
+		}
 	} catch (err) {
 		logger.error('Failed to shutdown PostgreSQL', { service, obj: err });
 		sentry.error(err);
-		if (!update) mataNe(1);
+		mataNe(1, update);
 	} finally {
 		await Promise.all(promises);
 	}
 }
 
-function mataNe(rc: number) {
+function mataNe(rc: number, update = false) {
 	logger.info('Closing', { service });
 	console.log('\nMata ne !\n');
 	unregisterShortcuts();
-	app.exit(rc);
+	// See https://github.com/electron-userland/electron-builder/issues/8997
+	// on MacOS 15+ the auto-updater from electron-updater borks and restarts the app without updating.
+	// This makes sure the app is shutdown properly so the auto-updater actually works.
+	// On other systems, the auto-updater doesn't need an explicit app.exit()
+	if (update) {
+		if (process.platform === 'darwin') {
+			app.removeAllListeners('before-quit');
+			app.removeAllListeners('window-all-closed');
+			BrowserWindow.getAllWindows().forEach(win => {
+				if (win.isDestroyed()) return;
+				win.removeAllListeners('close');
+				win.close();
+			});
+
+			nativeUpdater.once('before-quit-for-update', () => {
+				app.exit(0);
+			});
+		}
+	} else {
+		app.exit(rc);
+	}
 }
 
 export async function shutdown() {

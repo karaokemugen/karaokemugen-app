@@ -23,7 +23,7 @@ const service = 'RemoteUser';
 export async function remoteCheckAuth(instance: string, token: string) {
 	try {
 		const conf = getConfig().Online;
-		const res = await HTTP.get(`${conf.Secure ? 'https' : 'http'}://${instance}/api/auth/check`, {
+		const res = await HTTP.get(`${conf.RemoteUsers.Secure ? 'https' : 'http'}://${instance}/api/auth/check`, {
 			timeout: conf.Timeout,
 			headers: {
 				authorization: token,
@@ -43,7 +43,7 @@ export async function remoteLogin(username: string, password: string): Promise<s
 	const conf = getConfig().Online;
 	try {
 		const res = await HTTP.post<TokenResponseWithRoles>(
-			`${conf.Secure ? 'https' : 'http'}://${instance}/api/auth/login`,
+			`${conf.RemoteUsers.Secure ? 'https' : 'http'}://${instance}/api/auth/login`,
 			{
 				username: login,
 				password,
@@ -71,7 +71,9 @@ export async function resetRemotePassword(user: string) {
 	const [username, instance] = user.split('@');
 	const conf = getConfig().Online;
 	try {
-		await HTTP.post(`${conf.Secure ? 'https' : 'http'}://${instance}/api/users/${username}/resetpassword`);
+		await HTTP.post(
+			`${conf.RemoteUsers.Secure ? 'https' : 'http'}://${instance}/api/users/${username}/resetpassword`
+		);
 	} catch (err) {
 		logger.error(`Could not trigger reset password for ${user}`, { service, obj: err });
 		sentry.error(err);
@@ -83,7 +85,7 @@ export async function resetRemotePassword(user: string) {
 async function getARemoteUser(login: string, instance: string): Promise<User> {
 	try {
 		const conf = getConfig().Online;
-		const user = await HTTP.get(`${conf.Secure ? 'https' : 'http'}://${instance}/api/users/${login}`);
+		const user = await HTTP.get(`${conf.RemoteUsers.Secure ? 'https' : 'http'}://${instance}/api/users/${login}`);
 		return user.data as User;
 	} catch (err) {
 		if ([404].includes(err.response?.status)) return null;
@@ -108,7 +110,7 @@ export async function createRemoteUser(user: User) {
 		};
 	}
 	try {
-		await HTTP.post(`${conf.Secure ? 'https' : 'http'}://${instance}/api/users`, {
+		await HTTP.post(`${conf.RemoteUsers.Secure ? 'https' : 'http'}://${instance}/api/users`, {
 			login,
 			password: user.password,
 		});
@@ -128,7 +130,7 @@ export async function getRemoteUser(username: string, token: string): Promise<Us
 	const instance = username.split('@')[1];
 	const conf = getConfig().Online;
 	try {
-		const res = await HTTP(`${conf.Secure ? 'https' : 'http'}://${instance}/api/myaccount`, {
+		const res = await HTTP(`${conf.RemoteUsers.Secure ? 'https' : 'http'}://${instance}/api/myaccount`, {
 			headers: {
 				authorization: token,
 			},
@@ -157,12 +159,12 @@ export async function editRemoteUser(user: User, token: string, avatar = true) {
 				createReadStream(resolve(resolvedPath('Avatars'), user.avatar_file)),
 				user.avatar_file
 			);
-			await HTTP.patch(`${conf.Secure ? 'https' : 'http'}://${instance}/api/users/${login}`, form, {
+			await HTTP.patch(`${conf.RemoteUsers.Secure ? 'https' : 'http'}://${instance}/api/users/${login}`, form, {
 				headers: form.getHeaders({ authorization: token }),
 			});
 		}
 		const res = await HTTP.patch(
-			`${conf.Secure ? 'https' : 'http'}://${instance}/api/users/${login}`,
+			`${conf.RemoteUsers.Secure ? 'https' : 'http'}://${instance}/api/users/${login}`,
 			{
 				...user,
 				// Removing non-supported properties on App
@@ -189,7 +191,7 @@ export async function editRemoteUser(user: User, token: string, avatar = true) {
 /** Get remote avatar from KM Server */
 export async function fetchRemoteAvatar(instance: string, avatarFile: string): Promise<string> {
 	const conf = getConfig().Online;
-	const res = await HTTP.get(`${conf.Secure ? 'https' : 'http'}://${instance}/avatars/${avatarFile}`, {
+	const res = await HTTP.get(`${conf.RemoteUsers.Secure ? 'https' : 'http'}://${instance}/avatars/${avatarFile}`, {
 		responseType: 'stream',
 	});
 	let avatarPath: string;
@@ -308,7 +310,7 @@ export async function removeRemoteUser(token: OldJWTToken, password: string): Pr
 			renameUser: true,
 		});
 		const conf = getConfig().Online;
-		await HTTP(`${conf.Secure ? 'https' : 'http'}://${instance}/api/users`, {
+		await HTTP(`${conf.RemoteUsers.Secure ? 'https' : 'http'}://${instance}/api/users`, {
 			method: 'DELETE',
 			headers: {
 				authorization: onlineToken,
@@ -360,7 +362,7 @@ export async function refreshAnimeList(username: string, token: string): Promise
 	try {
 		const instance = username.split('@')[1];
 		const conf = getConfig().Online;
-		await HTTP.post(`${conf.Secure ? 'https' : 'http'}://${instance}/api/myaccount/myanime`, null, {
+		await HTTP.post(`${conf.RemoteUsers.Secure ? 'https' : 'http'}://${instance}/api/myaccount/myanime`, null, {
 			headers: {
 				authorization: token,
 			},

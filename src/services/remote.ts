@@ -14,7 +14,7 @@ let errCount = 0;
 
 async function startRemote(): Promise<RemoteSuccess> {
 	try {
-		let remoteToken = getConfig().Online.RemoteToken;
+		let remoteToken = getConfig().Online.RemoteAccess.Token;
 		if (!remoteToken) {
 			remoteToken = '';
 		}
@@ -27,26 +27,26 @@ async function startRemote(): Promise<RemoteSuccess> {
 		});
 		if (result.err && result.reason === 'INVALID_TOKEN') {
 			// Ask for a new token by deleting the invalid one
-			setConfig({ Online: { RemoteToken: null } });
+			setConfig({ Online: { RemoteAccess: { Token: null } } });
 			return await startRemote();
 		}
 		if (result.err) {
 			throw new Error(`Server refused to start remote: ${result.reason}`);
 		} else {
-			setConfig({ Online: { RemoteToken: result.token } });
+			setConfig({ Online: { RemoteAccess: { Token: result.token } } });
 			errCount = 0;
 			return result;
 		}
 	} catch (err) {
 		if (err?.message?.code === 'UNKNOWN_COMMAND') {
 			logger.warn(
-				`${getConfig().Online.Host} doesn't support remote access, maybe try a different online server`,
+				`${getConfig().Online.RemoteAccess.Domain} doesn't support remote access, maybe try a different online server`,
 				{ service, obj: err }
 			);
 		} else if (err?.message?.code === 'OUTDATED_CLIENT') {
 			logger.warn(
 				`${
-					getConfig().Online.Host
+					getConfig().Online.RemoteAccess.Domain
 				} and your application doesn't have compatible versions of KMFrontend, cannot start remote.`,
 				{ service, obj: err }
 			);
@@ -68,7 +68,7 @@ async function stopRemote() {
 }
 
 async function restartRemote() {
-	if (!getConfig().Online.Remote) return;
+	if (!getConfig().Online.RemoteAccess.Enabled) return;
 	try {
 		logger.debug('Reconnection...', { service });
 		const data = await startRemote();

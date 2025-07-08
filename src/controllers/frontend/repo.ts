@@ -38,7 +38,7 @@ export default function repoController(router: SocketIOApp) {
 	router.route(WS_CMD.GET_SSHPUB_KEY, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'closed');
 		try {
-			return getSSHPubKey(req.body.repoName);
+			return getSSHPubKey(req.body.repoName, req.token.username);
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
@@ -46,7 +46,7 @@ export default function repoController(router: SocketIOApp) {
 	router.route(WS_CMD.GENERATE_SSHKEY, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'closed');
 		try {
-			return generateSSHKey(req.body.repoName);
+			return generateSSHKey(req.body.repoName, req.token.username);
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
@@ -54,7 +54,7 @@ export default function repoController(router: SocketIOApp) {
 	router.route(WS_CMD.REMOVE_SSHKEY, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'closed');
 		try {
-			return removeSSHKey(req.body.repoName);
+			return removeSSHKey(req.body.repoName, req.token.username);
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}

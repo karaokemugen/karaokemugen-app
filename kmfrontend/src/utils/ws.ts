@@ -91,6 +91,7 @@ export const WS_CMD = {
 	GET_INBOX: defineWSCmd<{ repoName: string }, Inbox[]>('getInbox'),
 	DOWNLOAD_KARA_FROM_INBOX: defineWSCmd<{ repoName: string; inid: string }, void>('downloadKaraFromInbox'),
 	DELETE_KARA_FROM_INBOX: defineWSCmd<{ repoName: string; inid: string }, void>('deleteKaraFromInbox'),
+	UNASSIGN_KARA_FROM_INBOX: defineWSCmd<{ repoName: string; inid: string }, void>('unassignKaraFromInbox'),
 	// AREA src\controllers\frontend\kara.ts
 	GET_KARAS: defineWSCmd<
 		{

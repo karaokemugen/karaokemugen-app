@@ -1,9 +1,8 @@
 import { WS_CMD } from '../../../kmfrontend/src/utils/ws.js';
 import { validateMediaInfo } from '../../lib/dao/karafile.js';
-import { APIMessage, errMessage } from '../../lib/services/frontend.js';
+import { APIMessage } from '../../lib/services/frontend.js';
 import { previewHooks, processUploadedMedia } from '../../lib/services/karaCreation.js';
 import { TagTypeNum } from '../../lib/types/tag.js';
-import { ErrorKM } from '../../lib/utils/error.js';
 import { abortAllMediaEncodingProcesses } from '../../lib/utils/ffmpeg.js';
 import { check, isUUID } from '../../lib/utils/validators.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
@@ -101,9 +100,7 @@ export default function karaController(router: SocketIOApp) {
 				req.body.encodeOptions
 			);
 		} catch (err) {
-			const errMessageCode = (err instanceof ErrorKM && err.message) || 'ENCODE_MEDIA_ERROR';
-			errMessage(errMessageCode, err);
-			throw { code: err?.code || 500, message: APIMessage(errMessageCode) };
+			throw { code: err?.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route(WS_CMD.ABORT_MEDIA_ENCODING, async (socket, req) => {
@@ -111,9 +108,7 @@ export default function karaController(router: SocketIOApp) {
 		try {
 			return abortAllMediaEncodingProcesses();
 		} catch (err) {
-			const code = 'ENCODE_MEDIA_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw { code: err?.code || 500, message: APIMessage(err.message) };
 		}
 	});
 	router.route(WS_CMD.PREVIEW_HOOKS, async (socket, req) => {

@@ -17,32 +17,44 @@ let checkLatencyIntervalSubscription: Subscription;
 const service = 'KMServer';
 
 // Create a connection
-function connectToKMServer() {
+export function connectToKMServer(reset = false) {
+	// Reset connection if server changes
+	if (reset) socket = undefined;
 	if (socket) return;
-	return new Promise<void>((resolve, reject) => {
-		const conf = getConfig();
-		let timeout = setTimeout(() => {
-			reject(new Error('Connection timed out'));
-			socket.disconnect();
-		}, 5000);
-		socket = io(`${conf.Online.Secure ? 'https' : 'http'}://${conf.Online.Host}`, {
-			transports: ['websocket'],
+	logger.debug('Connecting to KMServer via socket.io', { service });
+	try {
+		return new Promise<void>((resolve, reject) => {
+			const conf = getConfig();
+			let timeout = setTimeout(() => {
+				reject(new Error('Connection timed out'));
+				socket.disconnect();
+			}, 5000);
+			socket = io(`${conf.Online.RemoteAccess.Secure ? 'https' : 'http'}://${conf.Online.RemoteAccess.Domain}`, {
+				transports: ['websocket'],
+			});
+			socket.on('connect', () => {
+				clearTimeout(timeout);
+				timeout = undefined;
+				if (checkLatencyIntervalSubscription) checkLatencyIntervalSubscription.unsubscribe();
+				checkLatencyIntervalSubscription = socketLatencyCheck$(
+					socket,
+					conf.Online.RemoteAccess.Domain
+				).subscribe();
+				resolve();
+			});
+			socket.on('connect_error', err => {
+				if (timeout) reject(err);
+			});
+			socket.on('disconnect', reason => {
+				logger.warn('Connection lost with server,', { service, obj: reason });
+				if (checkLatencyIntervalSubscription) checkLatencyIntervalSubscription.unsubscribe();
+			});
 		});
-		socket.on('connect', () => {
-			clearTimeout(timeout);
-			timeout = undefined;
-			if (checkLatencyIntervalSubscription) checkLatencyIntervalSubscription.unsubscribe();
-			checkLatencyIntervalSubscription = socketLatencyCheck$(socket, conf.Online.Host).subscribe();
-			resolve();
-		});
-		socket.on('connect_error', err => {
-			if (timeout) reject(err);
-		});
-		socket.on('disconnect', reason => {
-			logger.warn('Connection lost with server,', { service, obj: reason });
-			if (checkLatencyIntervalSubscription) checkLatencyIntervalSubscription.unsubscribe();
-		});
-	});
+	} catch (err) {
+		logger.error('Cannot establish socket connection to KMServer', { service, obj: err });
+		Sentry.error(err, 'warning');
+		// Non fatal.
+	}
 }
 
 const socketLatencyCheck$ = (socket: Socket, remoteHost: string, intervalMs = 10_000) =>
@@ -119,20 +131,16 @@ const socketLatencyCheck$ = (socket: Socket, remoteHost: string, intervalMs = 10
 		})
 	);
 
-export async function initKMServerCommunication(remote: boolean) {
-	try {
-		profile('initKMServerComms');
-		logger.debug('Connecting to KMServer via socket.io', { service });
+export async function initKMServerCommunication() {
+	profile('initKMServerComms');
+	if (getConfig().Online.RemoteAccess.Enabled) {
 		await connectToKMServer();
-		subRemoteUsers();
-		if (remote) initRemote();
-	} catch (err) {
-		logger.error('Cannot establish socket connection to KMServer', { service, obj: err });
-		Sentry.error(err, 'warning');
-		// Non fatal.
-	} finally {
-		profile('initKMServerComms');
+		initRemote();
 	}
+	if (getConfig().Online.RemoteUsers.Enabled) {
+		subRemoteUsers();
+	}
+	profile('initKMServerComms');
 }
 
 export function getKMServerSocket() {

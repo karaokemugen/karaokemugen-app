@@ -390,7 +390,7 @@ export async function deleteMediaFiles(files: string[], repo: string) {
 
 export async function embedAudioFileCoverArt(coverFilename: string, source: { kid?: string; tempFileName?: string }) {
 	if (!source.kid && !source.tempFileName)
-		throw new Error('Neither kid nor mediaFilename has been received but atleast one needs to be set');
+		throw new ErrorKM('Neither kid nor mediaFilename has been received but atleast one needs to be set', 400);
 	const kara = source.kid && (await getKara(source.kid, adminToken));
 	const mediaFilePaths =
 		(source.tempFileName && [resolve(resolvedPath('Temp'), basename(source.tempFileName))]) ||
@@ -444,6 +444,10 @@ export async function encodeMediaFileToRepoDefaults(
 		});
 		const newMediaInfo = await extractMediaTechInfos(encodedFileInfo.newMediaFilePath, undefined, true);
 		return newMediaInfo;
+	} catch (err) {
+		logger.error(`Error encoding file : ${err}`, { service, obj: err });
+		sentry.error(err);
+		throw err instanceof ErrorKM ? err : new ErrorKM('ENCODE_MEDIA_ERROR');
 	} finally {
 		task.end();
 	}

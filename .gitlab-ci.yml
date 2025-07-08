@@ -84,7 +84,7 @@ test:
     POSTGRES_USER: karaokemugen_app
     POSTGRES_PASSWORD: musubi
   script:
-    - yarn install --check-files --force --cache-folder .yarn
+    - yarn install
     - touch mpv
     - touch ffmpeg
     - touch patch

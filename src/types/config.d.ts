@@ -61,10 +61,10 @@ export interface Config {
 		Language?: string;
 	};
 	Online: {
-		Host?: string;
-		Secure?: boolean;
+		Host?: string; // Remove in KM 10
+		Secure?: boolean; // Remove in KM 10
 		Timeout?: number;
-		Users?: boolean;
+		Users?: boolean; // Remove in KM 10
 		ErrorTracking?: boolean;
 		Discord?: {
 			DisplayActivity?: boolean;
@@ -80,8 +80,19 @@ export interface Config {
 			App?: boolean;
 		};
 		MediasHost?: string;
-		Remote?: boolean;
-		RemoteToken?: string;
+		Remote?: boolean; // Remote is not used anymore (remove in KM 10.0)
+		RemoteAccess?: {
+			Enabled?: boolean;
+			Domain?: string;
+			Secure?: boolean;
+			Token?: string;
+		};
+		RemoteUsers?: {
+			Enabled?: boolean;
+			DefaultHost?: string;
+			Secure?: boolean;
+		};
+		RemoteToken?: string; // Remove in KM 10
 		FetchPopularSongs?: boolean;
 		AllowDownloads?: boolean;
 	};

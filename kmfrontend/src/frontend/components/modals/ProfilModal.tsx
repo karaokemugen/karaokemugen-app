@@ -106,7 +106,10 @@ function ProfilModal(props: IProps) {
 	const profileConvert = () => {
 		showModal(
 			context.globalDispatch,
-			<OnlineProfileModal type="convert" loginServ={context?.globalState.settings.data.config?.Online.Host} />
+			<OnlineProfileModal
+				type="convert"
+				loginServ={context?.globalState.settings.data.config?.Online.RemoteUsers.DefaultHost}
+			/>
 		);
 	};
 
@@ -321,7 +324,7 @@ function ProfilModal(props: IProps) {
 	const queriedMainLanguages = useLocalSearch(languages, mainLanguageQuery);
 	const queriedFallbackLanguages = useLocalSearch(languages, fallbackLanguageQuery);
 
-	if (!context?.globalState.settings.data.config?.Online.Users && logInfos?.username.includes('@')) {
+	if (!context?.globalState.settings.data.config?.Online.RemoteUsers.Enabled && logInfos?.username.includes('@')) {
 		setTimeout(function () {
 			displayMessage(
 				'warning',
@@ -815,7 +818,7 @@ function ProfilModal(props: IProps) {
 								</button>
 								{dangerousActions ? (
 									<div>
-										{context?.globalState.settings.data.config?.Online.Users &&
+										{context?.globalState.settings.data.config?.Online.RemoteUsers.Enabled &&
 										logInfos?.username !== 'admin' ? (
 											logInfos?.onlineToken ? (
 												<button

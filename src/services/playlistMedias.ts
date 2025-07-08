@@ -11,12 +11,12 @@ import { asyncCheckOrMkdir, isMediaFile } from '../lib/utils/files.js';
 import HTTP, { fixedEncodeURIComponent } from '../lib/utils/http.js';
 import logger from '../lib/utils/logger.js';
 import Task from '../lib/utils/taskManager.js';
-import { Config } from '../types/config.js';
 import { editSetting, resolvedMediaPath } from '../utils/config.js';
+import { getRepo, getRepos } from './repo.js';
 
 const service = 'PlaylistMedias';
 
-const medias: PlaylistMedias = {
+export const medias: PlaylistMedias = {
 	Intros: [],
 	Outros: [],
 	Encores: [],
@@ -38,20 +38,23 @@ export async function updatePlaylistMedias() {
 	const task = new Task({
 		text: 'UPDATING_PLMEDIAS',
 	});
-	for (const type of Object.keys(updates)) {
-		task.update({
-			subtext: type,
-		});
-		if (updates[type]) await updateMediasHTTP(type as PlaylistMediaType, task).catch(() => {});
-		// Failure is non-fatal
+	const repos = getRepos().filter(r => r.Online && r.Enabled);
+	for (const repo of repos) {
+		for (const type of Object.keys(updates)) {
+			task.update({
+				subtext: type,
+			});
+			if (updates[type]) await updateMediasHTTP(type as PlaylistMediaType, repo.Name, task).catch(() => {});
+			// Failure is non-fatal
+		}
 	}
 	task.end();
 }
 
-async function listRemoteMedias(type: PlaylistMediaType): Promise<PlaylistMediaFile[]> {
+async function listRemoteMedias(type: PlaylistMediaType, repoName: string): Promise<PlaylistMediaFile[]> {
 	try {
-		const conf = getConfig().Online;
-		const res = await HTTP.get(`${conf.Secure ? 'https' : 'http'}://${conf.Host}/api/playlistMedias/${type}`);
+		const repo = getRepo(repoName);
+		const res = await HTTP.get(`${repo.Secure ? 'https' : 'http'}://${repo.Name}/api/playlistMedias/${type}`);
 		return res.data as PlaylistMediaFile[];
 	} catch (err) {
 		logger.warn(`Unable to fetch remote playlist medias list : ${err}`, { service, obj: err });
@@ -78,19 +81,20 @@ async function removeFiles(files: string[], dir: string) {
 	}
 }
 
-export async function updateMediasHTTP(type: PlaylistMediaType, task: Task) {
+export async function updateMediasHTTP(type: PlaylistMediaType, repoName: string, task: Task) {
 	try {
-		const remoteFiles = await listRemoteMedias(type);
-		const localDir = resolve(resolvedMediaPath(type)[0], 'KaraokeMugen/');
+		const remoteFiles = await listRemoteMedias(type, repoName);
+		const localDir = resolve(resolvedMediaPath(type)[0], repoName);
 		await asyncCheckOrMkdir(localDir);
 		// Setting additional path if it doesn't exist in config (but it should if you used the defaults)
 		const conf = getConfig();
 		const slash = process.platform === 'win32' ? '\\' : '/';
-		if (!conf.System.MediaPath[type].includes(`${conf.System.MediaPath[type][0] + slash}KaraokeMugen`)) {
-			conf.System.MediaPath[type].push(`${conf.System.MediaPath[type][0] + slash}KaraokeMugen`);
-			const ConfigPart: Partial<Config> = {};
-			ConfigPart.System.MediaPath[type] = conf.System.MediaPath[type];
-			editSetting(ConfigPart);
+		if (!conf.System.MediaPath[type].includes(`${conf.System.MediaPath[type][0] + slash}${repoName}`)) {
+			conf.System.MediaPath[type].push(`${conf.System.MediaPath[type][0] + slash}${repoName}`);
+			const configPart: any = {};
+			configPart.System = { MediaPath: {} };
+			configPart.System.MediaPath[type] = conf.System.MediaPath[type];
+			editSetting(configPart);
 		}
 		const localFiles = await listLocalFiles(localDir);
 		const removedFiles: PlaylistMediaFile[] = [];
@@ -137,7 +141,7 @@ export async function updateMediasHTTP(type: PlaylistMediaType, task: Task) {
 				)})`,
 				{ service }
 			);
-			await downloadMedias(filesToDownload, localDir, type, task);
+			await downloadMedias(filesToDownload, localDir, type, repoName, task);
 			logger.info(`Update for ${type} done`, { service });
 		}
 	} catch (err) {
@@ -145,12 +149,18 @@ export async function updateMediasHTTP(type: PlaylistMediaType, task: Task) {
 	}
 }
 
-async function downloadMedias(files: PlaylistMediaFile[], dir: string, type: PlaylistMediaType, task: Task) {
-	const conf = getConfig().Online;
+async function downloadMedias(
+	files: PlaylistMediaFile[],
+	dir: string,
+	type: PlaylistMediaType,
+	repoName: string,
+	task: Task
+) {
+	const repo = getRepo(repoName);
 	const list = files.map(file => {
 		return {
 			filename: resolve(dir, file.basename),
-			url: `${conf.Secure ? 'https' : 'http'}://${conf.Host}/playlistMedias/${type}/${fixedEncodeURIComponent(file.basename)}`,
+			url: `${repo.Secure ? 'https' : 'http'}://${repo.Name}/playlistMedias/${type}/${fixedEncodeURIComponent(file.basename)}`,
 			size: file.size,
 		};
 	});

@@ -101,7 +101,9 @@ export default function initFrontend(): number {
 		app.use('/sessionExports', express.static(resolve(state.dataPath, 'sessionExports/'), { dotfiles: 'allow' }));
 
 		// HTTP standards are important.
-		app.use('/coffee', (_req, res) => res.status(418).json());
+		app.use('/coffee', (_req, res) => {
+			res.status(418).json();
+		});
 
 		app.use('/', express.static(resolve(state.resourcePath, 'kmfrontend/dist'), { dotfiles: 'allow' }));
 		app.get('/*splat', (_req, res) => {

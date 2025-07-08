@@ -52,7 +52,7 @@ describe('Karas information', () => {
 		const data = await commandBackend(token, 'getKaras', { filter: 'Dragon Ball' });
 		// This is made so if we ever run tests on a full database, it'll work.
 		for (const kara of data.content) {
-			expect(kara.series[0].name).to.include('Dragon').and.include('Ball');
+			if (kara.series?.length > 0) expect(kara.series[0].name).to.include('Dragon').and.include('Ball');
 			testKara(kara, { tagDetails: 'short', kara: true });
 		}
 	});

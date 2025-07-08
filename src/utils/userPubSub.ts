@@ -86,7 +86,7 @@ function setupUserWatch(server: string, secure: boolean) {
 export function startSub(user: string, server: string) {
 	const conf = getConfig().Online;
 	if (!ioMap.has(server)) {
-		setupUserWatch(server, conf.Secure);
+		setupUserWatch(server, conf.RemoteUsers.Secure);
 	}
 	const socket = ioMap.get(server);
 	socket.emit('subscribe user', { body: user }, res => {

@@ -158,6 +158,7 @@ export async function fetchPopularSongs() {
 	try {
 		const conf = getConfig();
 		profile('initPopularSongs');
+		// Requested number is a number but we store it as a string because we feed it to COPY FROM later.
 		const popularKIDs: Map<string, string> = new Map();
 		try {
 			await internet();
@@ -169,12 +170,15 @@ export async function fetchPopularSongs() {
 		const repos = conf.System.Repositories.filter(r => r.Enabled && r.Online);
 		for (const repo of repos) {
 			try {
+				// Limited to 100 first entries because it can get ugly for KM Server real fast.
 				const res = await HTTP.get(
 					`${repo.Secure ? 'https' : 'http'}://${repo.Name}/api/karas/search?order=requested&size=100`
 				);
 				const karas = res.data as any;
+				// Parsing results. In case of multiple repositories sharing the same KIDs, we add the requested number.
 				for (const kara of karas.content) {
-					popularKIDs.set(kara.kid, kara.requested);
+					const requested = popularKIDs.get(kara.kid) || '0';
+					popularKIDs.set(kara.kid, `${+requested + +kara.requested}`);
 				}
 			} catch (err) {
 				logger.warn(`Failed to fetch popular songs from ${repo.Name}`);

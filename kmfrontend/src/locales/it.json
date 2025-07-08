@@ -2018,9 +2018,8 @@
 			"PLAYER_HARDWAREDECODING_TOOLTIP": "Forza l'accelerazione hardware del lettore. Nota: in alcune configurazioni, potrebbe causare comportamenti imprevedibili. In questi casi, seleziona \"Disattivata\". L'opzione \"Automatica\" è la più sicura e \"Forza\" è la più rischiosa e sconsigliata.",
 			"PLAYER_HARDWAREDECODING": "Decodifica hardware del video",
 			"ONLINE_FETCHPOPULARSONGS_TOOLTIP": "Se disabilitato, i brani più richiesti saranno calcolati dalla tua app Karaoke Mugen.",
-			"ONLINE_STATS": "Invia statistiche sul consumo al server di Karaoke Mugen",
 			"PLAYER_KEYBOARDMEDIASHORTCUTS": "Controlla il lettore tramite i tasti multimediali della tastiera",
-			"ONLINE_USERS": "Permetti la registrazione e l'accesso di account online"
+			"ONLINE_REMOTEUSERS_ENABLED": "Permetti la registrazione e l'accesso di account online"
 		},
 		"MESSAGE": "Per modificare un'impostazione, modificala e premi invio. Non tutte le impostazioni sono modificabili e daranno errore se ci provi.",
 		"CHOOSE_FILE": "Scegli un file",
