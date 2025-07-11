@@ -1,1 +1,16 @@
-{}
+{
+	"YES": "Ya",
+	"NO": "Ket",
+	"AND": "ha",
+	"OR": "pe",
+	"CANCEL": "Nullañ",
+	"SEARCH": "Klask",
+	"WARNING": "Diwall !",
+	"NOT_FOUND_PAGE": {
+		"404": "Kollet e Karaoke Mugen ?",
+		"404_3": "Amañ emaoc'h"
+	},
+	"DETAILS": {
+		"YEAR": "Bloavezh"
+	}
+}
