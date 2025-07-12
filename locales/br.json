@@ -15,5 +15,11 @@
 		"LANGS": "Yezh"
 	},
 	"NEXT_SONG": "Kan war-lerc'h",
-	"MENU_HELP_ABOUT": "Diwar-benn Karaoke Mugen"
+	"MENU_HELP_ABOUT": "&Diwar-benn Karaoke Mugen",
+	"MENU_HELP_TRANSLATION": "&Kemer perzh e droidigezh",
+	"MENU_HELP_DISCORD": "&Discord",
+	"MENU_HELP_MASTODON": "&Mastodon",
+	"MENU_HELP_BLUESKY": "&Bluesky",
+	"MENU_HELP_GITLAB": "&GitLab",
+	"MENU_HELP_CONTRIB_DOC": "&Krouit ho Karaoke"
 }
