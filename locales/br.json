@@ -1,1 +1,19 @@
-{}
+{
+	"REQUESTED_BY": "Goulennet gant {{name}}",
+	"YES": "Ya",
+	"REQUESTED_WITH": "(gant {{names}})",
+	"NO": "Ket",
+	"REQUESTED_AND_one": "hag all",
+	"REQUESTED_AND_other": "ha {{count}} all",
+	"CANCEL": "Nullañ",
+	"YEAR": "Bloavezh",
+	"TITLE": "Titl",
+	"TAG_TYPES": {
+		"SINGERGROUPS": "Strollad",
+		"SINGERS": "Kaner",
+		"CREATORS": "Krouer",
+		"LANGS": "Yezh"
+	},
+	"NEXT_SONG": "Kan war-lerc'h",
+	"MENU_HELP_ABOUT": "Diwar-benn Karaoke Mugen"
+}
