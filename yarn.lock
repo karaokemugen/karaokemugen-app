@@ -4451,6 +4451,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"electron-builder-sandbox-fix@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "electron-builder-sandbox-fix@npm:1.1.0"
+  dependencies:
+    chalk: "npm:^4.1.2"
+  checksum: 10c0/1b48bb76f6c3b0970fc928b11425a0db705d9fe7054ea542aae6ad782dadfb9da90fecf397163d4f54c29f928d09305ab41a6c132136e166d98e3374f5129cab
+  languageName: node
+  linkType: hard
+
 "electron-builder@npm:^26.0.17":
   version: 26.0.17
   resolution: "electron-builder@npm:26.0.17"
@@ -7432,6 +7441,7 @@ __metadata:
     dotenv: "npm:^16.5.0"
     electron: "npm:^37.1.0"
     electron-builder: "npm:^26.0.17"
+    electron-builder-sandbox-fix: "npm:^1.1.0"
     electron-updater: "npm:^6.6.5"
     esbuild: "npm:^0.25.5"
     eslint: "npm:^9.29.0"
