@@ -195,7 +195,6 @@
     "chai": "^5.2.0",
     "electron": "^37.1.0",
     "electron-builder": "^26.0.17",
-    "electron-builder-sandbox-fix": "^1.1.0",
     "esbuild": "^0.25.5",
     "eslint": "^9.29.0",
     "eslint-config-prettier": "^10.1.5",
@@ -222,7 +221,6 @@
   "build": {
     "appId": "KaraokeMugen",
     "afterSign": "build/notarize.cjs",
-    "afterPack": "electron-builder-sandbox-fix",
     "npmRebuild": "false",
     "fileAssociations": [
       {
