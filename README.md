@@ -151,6 +151,8 @@ See [Database setup](#database-setup) for more information.
 
 If you don't have `yarn`, install it first from [Yarn's website](http://yarnpkg.com)
 
+Or simply do a `npm i -g yarn`
+
 ### Git submodules
 
 Initialize some git config values either via `yarn gitconfig` or by hand:
@@ -170,6 +172,7 @@ Use the `yarn pull` command (which is a shortcut for git pull with submodules) t
 Launch `yarn` to install dependencies and build the React frontend
 
 ```sh
+yarn install
 yarn setup
 ```
 
