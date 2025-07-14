@@ -253,7 +253,7 @@ export async function checkPassword(user: User, password: string): Promise<boole
 /** Create ADMIN user only if security code matches */
 export function createAdminUser(user: User, remote: boolean, requester: User) {
 	if (requester.type === 0 || user.securityCode === getState().securityCode) {
-		return createUser(user, { createRemote: remote, admin: true });
+		return createUser(user, { createRemote: remote, admin: true, skipSecurityCode: true });
 	}
 	throw { code: 403, msg: 'UNAUTHORIZED' };
 }
@@ -265,13 +265,14 @@ export async function createUser(
 		admin: false,
 		createRemote: true,
 		noPasswordCheck: false,
+		skipSecurityCode: false,
 	}
 ) {
 	try {
 		if (!opts.admin && !getConfig().Frontend.AllowUserCreation) {
 			throw new ErrorKM('USER_CREATION_DISABLED', 403, false);
 		}
-		if (!opts.admin && getConfig().Frontend.RequireSecurityCodeForNewAccounts) {
+		if (!opts.admin && !opts.skipSecurityCode && getConfig().Frontend.RequireSecurityCodeForNewAccounts) {
 			if (user.securityCode !== getState().newAccountCode) {
 				throw new ErrorKM('USER_CREATION_WRONG_SECURITY_CODE', 403, false);
 			}
@@ -495,11 +496,14 @@ async function createDefaultGuests() {
 	for (const guest of guestsToCreate) {
 		if (!(await getUser(sanitizeLogin(guest)))) {
 			try {
-				await createUser({
-					login: sanitizeLogin(guest),
-					nickname: guest,
-					type: 2,
-				});
+				await createUser(
+					{
+						login: sanitizeLogin(guest),
+						nickname: guest,
+						type: 2,
+					},
+					{ skipSecurityCode: true }
+				);
 				if (getState().isTest) {
 					break;
 				}
@@ -524,6 +528,7 @@ export async function initUserSystem() {
 			},
 			{
 				admin: true,
+				skipSecurityCode: true,
 			}
 		);
 
@@ -537,6 +542,7 @@ export async function initUserSystem() {
 					},
 					{
 						admin: true,
+						skipSecurityCode: true,
 					}
 				);
 			} catch (err) {
@@ -558,6 +564,7 @@ export async function initUserSystem() {
 				},
 				{
 					admin: true,
+					skipSecurityCode: true,
 				}
 			);
 		}
@@ -569,6 +576,7 @@ export async function initUserSystem() {
 				},
 				{
 					admin: true,
+					skipSecurityCode: true,
 				}
 			);
 		}
@@ -581,6 +589,7 @@ export async function initUserSystem() {
 				},
 				{
 					admin: false,
+					skipSecurityCode: true,
 				}
 			);
 		}
