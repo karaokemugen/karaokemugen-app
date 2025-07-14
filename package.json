@@ -221,6 +221,7 @@
   "build": {
     "appId": "KaraokeMugen",
     "afterSign": "build/notarize.cjs",
+	"afterPack": "build/electron-builder-sandbox-fix.cjs",
     "npmRebuild": "false",
     "fileAssociations": [
       {
