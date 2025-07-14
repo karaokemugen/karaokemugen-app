@@ -52,9 +52,9 @@ function PlaylistCommandsModal(props: IProps) {
 		let data;
 		const playlist = getPlaylistInfo(props.side, context);
 		if (playlist?.plaid === nonStandardPlaylists.favorites) {
-			url = 'exportFavorites';
+			url = WS_CMD.EXPORT_FAVORITES;
 		} else if (!isNonStandardPlaylist(playlist?.plaid)) {
-			url = 'exportPlaylist';
+			url = WS_CMD.EXPORT_PLAYLIST;
 			data = { plaid: playlist?.plaid };
 		}
 		if (url) {
