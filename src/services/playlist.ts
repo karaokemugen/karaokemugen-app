@@ -64,7 +64,7 @@ import { adminToken } from '../utils/constants.js';
 import sentry from '../utils/sentry.js';
 import { getState, setState } from '../utils/state.js';
 import { writeStreamFiles } from '../utils/streamerFiles.js';
-import { checkMediaAndDownload } from './download.js';
+import { checkMediaAndDownload, waitForSongsToDownload } from './download.js';
 import { getAllFavorites } from './favorites.js';
 import { getKaras, getKarasMicro } from './kara.js';
 import { getSongInfosForPlayer } from './karaEngine.js';
@@ -375,8 +375,12 @@ export async function exportPlaylistMedia(
 		value: 0,
 	});
 	try {
+		const songsToDownload = await checkMediaAndDownload(plMini);
+		if (songsToDownload.length > 0) {
+			await waitForSongsToDownload(songsToDownload);
+		}
 		let itemsProcessed = 0;
-		logger.debug(`Exporting media of playlist ${plaid}`, { service });
+		logger.debug(`Exporting media for playlist ${plaid}`, { service });
 		const exportedResult: Array<DBPLC & { exportSuccessful: boolean }> = [];
 		for (const kara of plMini) {
 			try {
