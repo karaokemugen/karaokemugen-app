@@ -12,7 +12,13 @@
 		"SINGERGROUPS": "Strollad",
 		"SINGERS": "Kaner",
 		"CREATORS": "Krouer",
-		"LANGS": "Yezh"
+		"LANGS": "Yezh",
+		"SONGTYPES": "Seurt kan",
+		"AUTHORS": "Aozer karaokeoù",
+		"MISC": "Diseurt",
+		"SONGWRITERS": "Sonaozour",
+		"ORIGINS": "Orin",
+		"PLATFORMS": "Savenn"
 	},
 	"NEXT_SONG": "Kan war-lerc'h",
 	"MENU_HELP_ABOUT": "&Diwar-benn Karaoke Mugen",
@@ -21,5 +27,6 @@
 	"MENU_HELP_MASTODON": "&Mastodon",
 	"MENU_HELP_BLUESKY": "&Bluesky",
 	"MENU_HELP_GITLAB": "&GitLab",
-	"MENU_HELP_CONTRIB_DOC": "&Krouit ho Karaoke"
+	"MENU_HELP_CONTRIB_DOC": "&Krouit ho Karaoke",
+	"UNKNOWN": "Dianav"
 }
