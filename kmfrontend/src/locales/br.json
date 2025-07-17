@@ -11,6 +11,43 @@
 		"404_3": "Amañ emaoc'h"
 	},
 	"DETAILS": {
-		"YEAR": "Bloavezh"
+		"YEAR": "Bloavezh",
+		"DURATION": "Padelezh"
+	},
+	"UNKNOWN": "Dianav",
+	"SUBMIT": "Saveteiñ",
+	"CONFIRM": "Kadarnaat",
+	"SHOW-HIDE": "Diskouez / Kuzhat",
+	"LOGIN_MANDATORY": "Rekis eo an anv implijer",
+	"PASSWORD_MANDATORY": "Rekis eo ar ger-tremen",
+	"PASSWORD_DIFFERENT": "Disheñvel eo ar gerioù-tremen",
+	"DURATION_REMAINING": "a chom",
+	"SHUTDOWN": "Kuitaat Karaoke Mugen",
+	"SHUTDOWN_POPUP": "Kollet eo bet kevreadenn gant Karaoke Mugen",
+	"HOME_BUTTON": "Degemer",
+	"MUTE_UNMUTE": "Mudañ / dimudañ",
+	"SHOW_SUBS": "Diskouez ar pozioù war ar skramm",
+	"HIDE_SUBS": "Kuzhat ar pozioù war ar skramm",
+	"SPEED_UP": "Kreskiñ an tizh",
+	"SPEED_DOWN": "Digreskiñ an tizh",
+	"SETUP_PAGE": {
+		"WELCOME": "Donemat e Karaoke Mugen !",
+		"ONLINE_ACCOUNT": "Kont enlinenn",
+		"CREATE_ONLINE_ACCOUNT": "Fellout a ra din krouiñ ur gont enlinenn",
+		"LOGIN_ONLINE_ACCOUNT": "Ur gont enlinenn am eus dija"
+	},
+	"LOGIN": {
+		"ONLINE_ACCOUNT": "Kont enlinenn ?"
+	},
+	"SETTINGS": {
+		"KARAOKE": {
+			"ONLINE_SETTINGS": "Enlinenn"
+		}
+	},
+	"USERS": {
+		"ONLINE": "Enlinenn"
+	},
+	"SUCCESS_CODES": {
+		"USER_CONVERTED": "Ho kont zo enlinenn bremañ"
 	}
 }
