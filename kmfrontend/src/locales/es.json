@@ -58,7 +58,7 @@
 		"CRITERIA_TYPE_1002": "Más largo que (mm:ss)",
 		"CRITERIA_TYPE_1001": "Canción",
 		"AND": "Y",
-		"TYPE_SMART_DESC": "El tipo \"OR\" es más adecuado para una lista negra. \"Y\" para listas de reproducción clásicas",
+		"TYPE_SMART_DESC": "El tipo \"OR\" es más adecuado para una lista negra. \"Y\" para listas de reproducción clásicas.",
 		"OR": "O",
 		"TYPE_SMART": "Tipo de lista de reproducción inteligente",
 		"PLAYLIST_DURATION": "<1/> Limitar a <2/> <3/> (<4/> orden)",
