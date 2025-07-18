@@ -138,7 +138,7 @@
 		"OR": "OR",
 		"AND": "AND",
 		"TYPE_SMART": "Smart playlist type",
-		"TYPE_SMART_DESC": "The \"OR\" type is better suited for a blacklist. \"AND\" for classic playlists",
+		"TYPE_SMART_DESC": "The \"OR\" type is better suited for a blacklist. \"AND\" for classic playlists.",
 		"PLAYLIST_DURATION": "<1/> Limit to <2/> <3/> (<4/> order)",
 		"PLAYLIST_DURATION_TYPE_MINUTES": "minutes",
 		"PLAYLIST_DURATION_TYPE_SONGS": "songs",
