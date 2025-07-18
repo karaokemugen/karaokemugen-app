@@ -178,7 +178,7 @@
 		"EXPL_OPEN": "To jest kryterium używane do generowania <1>playlisty</1>. Będzie ona automatycznie odświeżana za każdym razem, gdy do bazy danych dodawane będą nowe utwory.",
 		"PLAYLIST_DURATION_ORDER_LESS_RECENT": "najstarsze",
 		"CRITERIA_TYPE_1003": "Krótszy niż (mm:ss)",
-		"TYPE_SMART_DESC": "Typ „ALBO” lepiej nadaje się do czarnej listy. „I” w przypadku klasycznych list odtwarzania",
+		"TYPE_SMART_DESC": "Typ „ALBO” lepiej nadaje się do czarnej listy. „I” w przypadku klasycznych list odtwarzania.",
 		"PLAYLIST_DURATION": "<1/>Ogranicz do <2/> <3/> (<4/>zamówień )",
 		"PLAYLIST_DURATION_ORDER_MORE_RECENT": "najnowsze",
 		"CRITERIA_DESC": "Wybierz i dodaj kryteria, aby automatycznie uwzględniać określone utwory.",
