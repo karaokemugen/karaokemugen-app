@@ -186,7 +186,7 @@
 		},
 		"PLAYLIST_DURATION_TYPE_SONGS": "músicas",
 		"CRITERIA_TYPE_1006": "Ocultar músicas indisponíveis off-line",
-		"TYPE_SMART_DESC": "O tipo \"OR\" é mais adequado para uma lista negra. \"AND\" para playlist clássica",
+		"TYPE_SMART_DESC": "O tipo \"OR\" é mais adequado para uma lista negra. \"AND\" para playlist clássica.",
 		"CRITERIA_TYPE_1007": "Depois (ano incluído)",
 		"CRITERIA_TYPE_1008": "Antes (ano incluído)",
 		"EXPL": "Playlists inteligentes são criadas a partir de <1>critério</1>, você também pode adicionar músicas manualmente a esta lista.",
