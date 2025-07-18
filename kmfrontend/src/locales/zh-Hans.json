@@ -88,7 +88,7 @@
 		"OR": "或",
 		"AND": "且",
 		"TYPE_SMART": "智能播放列表",
-		"TYPE_SMART_DESC": "“或”更适合黑名单。“且”用于经典播放列表",
+		"TYPE_SMART_DESC": "“或”更适合黑名单。“且”用于经典播放列表。",
 		"PLAYLIST_DURATION": "<1/> 限制到 <2/> <3/> (<4/> order)",
 		"PLAYLIST_DURATION_TYPE_MINUTES": "分钟",
 		"PLAYLIST_DURATION_ORDER_LESS_RECENT": "最久远播放",
