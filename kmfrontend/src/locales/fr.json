@@ -139,7 +139,7 @@
 		"OR": "OU",
 		"AND": "ET",
 		"TYPE_SMART": "Type de liste de lecture intelligente",
-		"TYPE_SMART_DESC": "Le type \"OU\" est plus adapté à une liste noire. \"ET\" à des playlists classiques",
+		"TYPE_SMART_DESC": "Le type \"OU\" est plus adapté à une liste noire. \"ET\" à des playlists classiques.",
 		"PLAYLIST_DURATION": "<1/> Limiter à <2/> <3/> (tri par <4/>)",
 		"PLAYLIST_DURATION_TYPE_MINUTES": "minutes",
 		"PLAYLIST_DURATION_TYPE_SONGS": "chansons",
