@@ -54,7 +54,7 @@
 		"PLAYLIST_DURATION_TYPE_SONGS": "Lieder",
 		"EXPL_OPEN": "Das sind die Kriterien, nach denen <1>die Playlist</1> erstellt wird. Sie wird automatisch aktualisiert, wenn neue Lieder zur Datenbank hinzugefügt werden.",
 		"PLAYLIST_DURATION": "<1/> Limitierung auf <2/> <3/> (<4/> order)",
-		"TYPE_SMART_DESC": "Der Typ „ODER“ eignet sich besser für eine Blacklist. „UND“ für klassische Playlisten",
+		"TYPE_SMART_DESC": "Der Typ „ODER“ eignet sich besser für eine Blacklist. „UND“ für klassische Playlisten.",
 		"CRITERIA_TYPE_1007": "Nach (Jahreszahl)",
 		"CRITERIA_TYPE_1008": "Bevor (Jahreszahl)"
 	},
