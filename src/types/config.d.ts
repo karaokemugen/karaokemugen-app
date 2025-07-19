@@ -53,6 +53,20 @@ export interface QuizGameConfig {
 
 export type EndOfPlaylistAction = (typeof endOfPlaylistActions)[number];
 
+export interface DBConfig {
+	host?: string;
+	port?: number;
+	username?: string;
+	password?: string;
+	superuser?: string;
+	superuserPassword?: string;
+	database?: string;
+	bundledPostgresBinary?: boolean;
+	socket?: string;
+	connection?: 'tcp' | 'socket';
+	RestoreNeeded?: boolean;
+}
+
 export interface Config {
 	App: {
 		JwtSecret?: string;
@@ -234,19 +248,7 @@ export interface Config {
 	System: {
 		SystemRepositoryMaintainance?: boolean;
 		FrontendPort: number;
-		Database: {
-			host?: string;
-			port?: number;
-			username?: string;
-			password?: string;
-			superuser?: string;
-			superuserPassword?: string;
-			database?: string;
-			bundledPostgresBinary?: boolean;
-			socket?: string;
-			connection?: 'tcp' | 'socket';
-			RestoreNeeded?: boolean;
-		};
+		Database: DBConfig;
 		Binaries: {
 			Player: {
 				Windows?: string;

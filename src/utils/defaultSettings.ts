@@ -6,9 +6,9 @@ import { app } from 'electron';
 
 import { Repository } from '../lib/types/repo.js';
 import { bools, hostnameRegexp } from '../lib/utils/constants.js';
-import { Config } from '../types/config.js';
+import { Config, DBConfig } from '../types/config.js';
 
-export const dbConfig = {
+export const dbConfig: DBConfig = {
 	RestoreNeeded: false,
 	bundledPostgresBinary: true,
 	database: 'karaokemugen_app',
