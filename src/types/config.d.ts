@@ -244,7 +244,7 @@ export interface Config {
 			database?: string;
 			bundledPostgresBinary?: boolean;
 			socket?: string;
-			connectionMethod?: 'tcp' | 'socket';
+			connection?: 'tcp' | 'socket';
 			RestoreNeeded?: boolean;
 		};
 		Binaries: {
