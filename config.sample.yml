@@ -237,6 +237,9 @@ System:
     superuser: postgres
     superuserPassword: musubi
     username: karaokemugen_app
+    # socket or tcp. If socket, host should be a path to the Unix socket
+    # sockets do not work on Windows yet.
+    connectionMethod: tcp
   Binaries:
     Player:
       Linux: /usr/bin/mpv

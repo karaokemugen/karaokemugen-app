@@ -13,6 +13,8 @@ export const dbConfig = {
 	bundledPostgresBinary: true,
 	database: 'karaokemugen_app',
 	host: 'localhost',
+	socket: '',
+	connection: 'socket',
 	password: 'musubi',
 	port: 6559,
 	superuser: 'postgres',
