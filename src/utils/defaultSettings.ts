@@ -12,7 +12,7 @@ export const dbConfig = {
 	RestoreNeeded: false,
 	bundledPostgresBinary: true,
 	database: 'karaokemugen_app',
-	host: 'localhost',
+	host: '',
 	socket: '',
 	connection: 'socket',
 	password: 'musubi',

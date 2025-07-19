@@ -232,13 +232,15 @@ System:
     bundledPostgresBinary: false
     database: karaokemugen_app
     host: localhost
+    socket: /var/run/postgres/
     password: musubi
     port: 6559
     superuser: postgres
     superuserPassword: musubi
     username: karaokemugen_app
-    # socket or tcp. If socket, host should be a path to the Unix socket
-    # sockets do not work on Windows yet.
+    # socket or tcp. If socket, the socket property should be a path to the Unix socket directory
+    # socket option does not work on Windows yet.
+    # Note that if you're using a bundledPostgresBinary, host and socket are ignored.
     connection: tcp
   Binaries:
     Player:
