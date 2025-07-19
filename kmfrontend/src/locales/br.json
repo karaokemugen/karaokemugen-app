@@ -8,7 +8,8 @@
 	"WARNING": "Diwall !",
 	"NOT_FOUND_PAGE": {
 		"404": "Kollet e Karaoke Mugen ?",
-		"404_3": "Amañ emaoc'h"
+		"404_3": "Amañ emaoc'h",
+		"404_4": "Mont d'an degemer"
 	},
 	"DETAILS": {
 		"YEAR": "Bloavezh",
@@ -41,13 +42,83 @@
 	},
 	"SETTINGS": {
 		"KARAOKE": {
-			"ONLINE_SETTINGS": "Enlinenn"
+			"ONLINE_SETTINGS": "Enlinenn",
+			"OPEN_STREAMER_FILES": "Diskouez ar restroù.",
+			"HIDE_INVISIBLE_SONGS_HIDDEN_OPTION": "Kuzhat"
+		},
+		"PLAYER": {
+			"DISPLAY_SONGINFO": "Diskouez titouroù ar ganaouenn"
+		},
+		"INTERFACE": {
+			"DISPLAY_WELCOME_MESSAGE": "Diskouez ur c'hemennad degemer",
+			"LABEL": "Etrefas",
+			"WEBAPPMODE_CLOSED_SHORT": "Serret"
 		}
 	},
 	"USERS": {
-		"ONLINE": "Enlinenn"
+		"ONLINE": "Enlinenn",
+		"NEW_USER": "Implijer nevez"
 	},
 	"SUCCESS_CODES": {
 		"USER_CONVERTED": "Ho kont zo enlinenn bremañ"
-	}
+	},
+	"PASSWORDCONF": "Kadarnadur ar ger-tremen",
+	"NEW_PASSWORD": "Ger-tremen nevez",
+	"PLAYLISTS": {
+		"FAVORITES": "Pennroll"
+	},
+	"INLINE_TAG": {
+		"COUNT_one": "{{count}} ganaouenn",
+		"COUNT_other": "{{count}} a ganaouennoù",
+		"SEARCH": "Kanaouennoù gant {{tag}}"
+	},
+	"PLAYLIST_HEADER": {
+		"SHOW_SONGS": "Diskouez ar ganaouennoù"
+	},
+	"ADVANCED": {
+		"DOWNLOAD_ALL": "Pellgargañ an holl"
+	},
+	"KARA_MENU": {
+		"FAV": "Ouzhpennañ d'ar pennroll",
+		"FAV_DEL": "Dilemel diouzh ar pennroll",
+		"FAVORITES_ADDED": "Ouzhpennet er pennroll",
+		"FAVORITES_REMOVED": "Dilamet diouzh ar pennroll",
+		"FREE_SHORT": "Dieubiñ",
+		"FREED": "Dieubet !",
+		"VISIBLE_ON_SHORT": "Diskouez",
+		"VISIBLE_OFF_SHORT": "Kuzhat",
+		"HIDDEN": "Kuzhet !",
+		"SHOWN": "Diskouezet !"
+	},
+	"PUBLIC_HOMEPAGE": {
+		"SHOW_LYRICS": "Diskouez ar pozioù",
+		"SHOW_ALL_LYRICS": "Diskouez an holl pozioù",
+		"HIDE_LYRICS": "Kuzhat ar pozioù"
+	},
+	"ADMIN_MESSAGE": {
+		"CL_SCREEN": "Diskouez war skramm al lenner"
+	},
+	"MODAL": {
+		"START_QUIZ": {
+			"DISPLAY": {
+				"BLIND": "Kuzhat ar video"
+			},
+			"BUTTONS": {
+				"CANCEL_EDIT": "Nullañ ar gemmadennoù"
+			}
+		}
+	},
+	"SESSIONS": {
+		"TITLE": "Titl"
+	},
+	"TOOLTIP_CLOSEPARENT": "Serriñ",
+	"CHIBI": {
+		"CLOSE": "Serriñ al lenner chibi"
+	},
+	"CONFIG": {
+		"VALUE": "Talvoud"
+	},
+	"SPONSOR_TAGLINES": [
+		"Kono bangumi wa…"
+	]
 }
