@@ -243,6 +243,8 @@ export interface Config {
 			superuserPassword?: string;
 			database?: string;
 			bundledPostgresBinary?: boolean;
+			socket?: string;
+			connectionMethod?: 'tcp' | 'socket';
 			RestoreNeeded?: boolean;
 		};
 		Binaries: {
