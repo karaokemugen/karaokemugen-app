@@ -80,5 +80,29 @@
 		"ANIME_LIST": "自分のアニメの曲"
 	},
 	"WEBAPPMODE_CLOSED_MESSAGE": "インターフェイスを閉じたため、しばらくお待ちください。",
-	"MESSAGE": "メッセージ"
+	"MESSAGE": "メッセージ",
+	"PUBLIC_HOMEPAGE": {
+		"NEXT": "次",
+		"SHOW_LYRICS": "歌詞を見る",
+		"SHOW_ALL_LYRICS": "すべての歌詞を見る",
+		"HIDE_LYRICS": "歌詞を隠す"
+	},
+	"PROFILE_MAIL": "メール",
+	"PROFILE_PASSWORD": "パスワード",
+	"PLAYERS_CONTROLS": {
+		"NEXT_SONG_SHORT": "次",
+		"NEXT_SONG": "次の歌",
+		"PREVIOUS_SONG": "前の歌",
+		"PREVIOUS_SONG_SHORT": "前"
+	},
+	"POLL_TIME": "投票",
+	"USERS": {
+		"PASSWORD": "パスワード",
+		"EMAIL": "メール"
+	},
+	"INBOX": {
+		"CONTACT_INFOS_MODAL": {
+			"MAIL": "メール： "
+		}
+	}
 }
