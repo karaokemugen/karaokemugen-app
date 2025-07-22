@@ -28,5 +28,14 @@
 	"MENU_HELP_BLUESKY": "&Bluesky",
 	"MENU_HELP_GITLAB": "&GitLab",
 	"MENU_HELP_CONTRIB_DOC": "&Krouit ho Karaoke",
-	"UNKNOWN": "Dianav"
+	"UNKNOWN": "Dianav",
+	"REPO_DISABLED": {
+		"TITLE": "Diweredekaet ar c'havlec'hiad"
+	},
+	"REPOSITORY_ALREADY_EXISTS": {
+		"TITLE": "Ar c'havlec'hiad-mañ zo anezhañ dija"
+	},
+	"UNKNOWN_REPOSITORY_ADD": {
+		"TITLE": "Kavlec'hiad dianav"
+	}
 }
