@@ -60,7 +60,10 @@
 		"NEW_USER": "Implijer nevez"
 	},
 	"SUCCESS_CODES": {
-		"USER_CONVERTED": "Ho kont zo enlinenn bremañ"
+		"USER_CONVERTED": "Ho kont zo enlinenn bremañ",
+		"REPO_CREATED": "Ouzhpennet eo bet ar c'havlec'hiad gant berzh",
+		"REPO_DELETED": "Dilamet eo bet ar c'havlec'hiad gant berzh",
+		"REPO_EDITED": "Kemmet eo bet ar c'havlec'hiad gant berzh"
 	},
 	"PASSWORDCONF": "Kadarnadur ar ger-tremen",
 	"NEW_PASSWORD": "Ger-tremen nevez",
@@ -93,7 +96,9 @@
 	"PUBLIC_HOMEPAGE": {
 		"SHOW_LYRICS": "Diskouez ar pozioù",
 		"SHOW_ALL_LYRICS": "Diskouez an holl pozioù",
-		"HIDE_LYRICS": "Kuzhat ar pozioù"
+		"HIDE_LYRICS": "Kuzhat ar pozioù",
+		"EXPLORE": "Ergerzhout",
+		"OTHERS": "All…"
 	},
 	"ADMIN_MESSAGE": {
 		"CL_SCREEN": "Diskouez war skramm al lenner"
@@ -120,5 +125,46 @@
 	},
 	"SPONSOR_TAGLINES": [
 		"Kono bangumi wa…"
-	]
+	],
+	"WELCOME_PAGE": {
+		"REPOSITORY": "KAVLEC'HIADOÙ"
+	},
+	"KARA": {
+		"REPOSITORY": "Kavlec'hiad",
+		"COPY_SONG": "Eilañ ar ganaouenn war-du ur c'havlec'hiad all"
+	},
+	"UNUSED_FILES": {
+		"REPOSITORY": "Kavlec'hiad"
+	},
+	"TAGS": {
+		"REPOSITORY": "Kavlec'hiad",
+		"COPY_TAG": "Eilañ an tag war-du ur c'havlec'hiad all"
+	},
+	"REPOSITORIES": {
+		"NAME_DESC": "Petra eo anv ho kavlec'hiad ?",
+		"NAME": "Anv kavlec'hiad",
+		"ONLINE_NAME": "Anv domani ar c'havlec'hiad",
+		"NEW_REPOSITORY": "Kavlec'hiad nevez",
+		"REPOSITORY_TYPE": "Seurt kavlec'hiad",
+		"CHOOSE_REPOSITORY": "Dibab ar c'havlec'hiad",
+		"GIT": {
+			"URL": "Kavlec'hiad Git"
+		}
+	},
+	"ERROR_CODES": {
+		"UNKNOWN_REPOSITORY": "Kavlec'hiad dianav",
+		"REPO_CREATE_ERROR": "Fazi o krouiñ ar c'havlec'hiad",
+		"REPO_DELETE_ERROR": "Fazi o dilemel ar c'havlec'hiad",
+		"REPO_EDIT_ERROR": "Fazi o kemmañ ar c'havlec'hiad"
+	},
+	"HEADERS": {
+		"REPOSITORIES_NEW": {
+			"TITLE": "Krouiñ ur c'havlec'hiad",
+			"DESCRIPTION": "Furmenn krouiñ ar c'havlec'hiad"
+		},
+		"REPOSITORIES_EDIT": {
+			"TITLE": "Kemmañ ur c'havlec'hiad",
+			"DESCRIPTION": "Furmenn kemmañ ar c'havlec'hiad"
+		}
+	}
 }
