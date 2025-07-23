@@ -809,7 +809,7 @@ function Playlist(props: IProps) {
 	};
 
 	const deleteCheckedKaras = async () => {
-		let url;
+		let url: WSCmdDefinition<object, void>;
 		let dataApi;
 		const listKara = data?.content.filter(a => a.checked) || [];
 		if (listKara.length === 0) {
