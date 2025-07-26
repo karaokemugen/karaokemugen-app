@@ -1449,7 +1449,7 @@
 			"CONFLICT": "Conflitti in sospeso (usa il risolutore)",
 			"MODIFIED": "Modificato (cambiamenti da rilasciare)"
 		},
-		"TOOLTIP_NAME": "Se è un archivio online, inserisci solo il nome del dominio. Se è un archivio locale, inserisci il nome che preferisci. Per esempio \"Il mio piccolo karaoke privato\"",
+		"TOOLTIP_NAME": "Inserisci il nome che preferisci. Per esempio \"Il mio piccolo karaoke privato\"",
 		"OPEN_MEDIA_FOLDER": "Apri cartella multimediale",
 		"GIT": {
 			"EMAIL_TOOLTIP": "Email associata ai tuoi Commit",
