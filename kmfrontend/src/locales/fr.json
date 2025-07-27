@@ -930,6 +930,36 @@
 			"TITLE": "Arrêter le quiz ?",
 			"DESCRIPTION": "La partie s'arrêtera immédiatement. Elle peut être reprise depuis le menu Démarrer un quiz."
 		},
+		"KARA_LINE_SORT": {
+			"TITLE": "Paramètres de tri de la bibliothèque",
+			"DESCRIPTION": "Glissez-déplacez des éléments pour changer les <1>paramètres de tri de la bibliothèque</1>.",
+			"DESCRIPTION_ADD_REMOVE": "Cliquez sur \"Ajouter\" pour ajouter un autre élément ou X pour en retirer un.",
+			"REMOVE": "Retirer un élément du tri",
+			"WARNING_DESCRIPTION": "Toute modification peut prendre plusieurs secondes à être effective le temps que la base de données se mette à jour. Regardez la liste des tâches en bas de la fenêtre pour savoir quand la mise à jour sera terminée."
+		},
+		"KARA_LINE_DISPLAY": {
+			"TITLE": "Paramètres d'affichage des listes de chansons",
+			"DESCRIPTION": "Glissez-déplacez des éléments pour changer <1>la façon dont les chansons sont affichées</1> dans les listes.",
+			"DESCRIPTION_ADD_REMOVE": "Cliquez sur \"Ajouter\" pour en ajouter ou X pour en retirer un.",
+			"REMOVE": "Retirer un élément de l'affichage",
+			"EXAMPLE": "Exemple :",
+			"TITLE_ELEMENT": "Titre"
+		},
+		"KARA_LINE_ADD": {
+			"TITLE": "Ajouter un élément",
+			"TAG_TYPE": "Type de tag",
+			"ADD_TAG_TYPE": "Choisissez un type",
+			"TAG_TYPES_GROUP": "Groupe de types de tag",
+			"ADD_TAG_TYPES_GROUP": "Ajouter un type de tag à ce groupe ?",
+			"STRING_TO_DISPLAY": "Texte à afficher :",
+			"STRING_TO_DISPLAY_SHORT": "Texte court si disponible (AUDIO, ENG, etc.)",
+			"STRING_TO_DISPLAY_LONG": "Texte long, dépend de la langue (Audio Uniquement, Anglais, etc.)",
+			"STRING_TO_DISPLAY_TAG": "Bulle de tag",
+			"STRING_FORMAT": "Format du texte :",
+			"STRING_FORMAT_NONE": "Aucun",
+			"STRING_FORMAT_BOLD": "Gras",
+			"STRING_FORMAT_ITALIC": "Italique"
+		},
 		"EXPORT_PLAYLIST_MEDIA": {
 			"DONE": "Les fichiers média de la liste de lecture ont été exportés",
 			"DONE_PARTIALLY": "Les fichiers média des listes de lecture ont été exportés, mais ils n'ont pas pu être sauvegardés :",
@@ -1564,6 +1594,7 @@
 		}
 	},
 	"TASKS": {
+		"UPDATING_LIBRARY_SORT": "Mise à jour du tri",
 		"DOWNLOADING_APP_UPDATE": "Téléchargement d'une mise à jour de l'app",
 		"COPYING_LYRICS_IN_REPOS": "Mise à jour des lyrics…",
 		"FINDING_UNUSED_MEDIAS": "Recherche de médias inutilisés…",

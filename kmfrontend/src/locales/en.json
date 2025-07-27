@@ -565,7 +565,12 @@
 			"PUBLIC_PLAYER_CONTROLS": "Allow public to control the player",
 			"PUBLIC_PLAYER_CONTROLS_TOOLTIP": "Play/pause, stop, previosu and next controls will be visible in the public interface, allowing users to control the player from their devices. Use only in small groups!",
 			"DISPLAY_WELCOME_MESSAGE": "Show welcome message",
-			"DISPLAY_WELCOME_MESSAGE_TOOLTIP": "This message will be shown on your karaoke session's login page"
+			"DISPLAY_WELCOME_MESSAGE_TOOLTIP": "This message will be shown on your karaoke session's login page",
+			"KARA_LINE_SORT": "Sort library by...",
+			"KARA_LINE_SORT_TOOLTIP": "Define which parts of a song are used to sort the library",
+			"KARA_LINE_DISPLAY": "Song parts display",
+			"KARA_LINE_DISPLAY_TOOLTIP": "Define which parts of a song are displayed in song lists (operator only)",
+			"SET": "Set..."
 		}
 	},
 	"KARA_PAUSED_WAITING": "No song playing yet",
@@ -935,6 +940,36 @@
 		"STOP_QUIZ": {
 			"TITLE": "Stop quiz?",
 			"DESCRIPTION": "The game will be stopped immediately. It can be resumed using the Start a quiz menu."
+		},
+		"KARA_LINE_SORT": {
+			"TITLE": "Library Sort Settings",
+			"DESCRIPTION": "Drag and drop elements to change the <1>library's sort settings</1>.",
+			"DESCRIPTION_ADD_REMOVE": "Click on \"Add\" to add another element or X to remove one.",
+			"REMOVE": "Remove element from sort",
+			"WARNING_DESCRIPTION": "Any modification can take several seconds to appear while the database is being updated. Please look at the task list at the bottom of this window to see when the update is done."
+		},
+		"KARA_LINE_DISPLAY": {
+			"TITLE": "Song Line Display Settings",
+			"DESCRIPTION": "Drag and drop elements to change <1>the way songs are displayed</1> in lists.",
+			"DESCRIPTION_ADD_REMOVE": "Click on \"Add\" to add another element or X to remove one.",
+			"REMOVE": "Remove element from display",
+			"EXAMPLE": "Example:",
+			"TITLE_ELEMENT": "Title"
+		},
+		"KARA_LINE_ADD": {
+			"TITLE": "Add an element",
+			"TAG_TYPE": "Tag type",
+			"ADD_TAG_TYPE": "Choose type",
+			"TAG_TYPES_GROUP": "Group of tag types",
+			"ADD_TAG_TYPES_GROUP": "Add a tag type to this group?",
+			"STRING_TO_DISPLAY": "String to display:",
+			"STRING_TO_DISPLAY_SHORT": "Short string if available (AUDIO, ENG, etc.)",
+			"STRING_TO_DISPLAY_LONG": "Long string, depends on language (Audio Only, English, etc.)",
+			"STRING_TO_DISPLAY_TAG": "Tag bubble",
+			"STRING_FORMAT": "String format:",
+			"STRING_FORMAT_NONE": "None",
+			"STRING_FORMAT_BOLD": "Bold",
+			"STRING_FORMAT_ITALIC": "Italic"
 		}
 	},
 	"SETUP_PAGE": {
@@ -1564,6 +1599,7 @@
 		}
 	},
 	"TASKS": {
+		"UPDATING_LIBRARY_SORT": "Updating library sort",
 		"DOWNLOADING_APP_UPDATE": "Downloading application update",
 		"COPYING_LYRICS_IN_REPOS": "Updating lyrics…",
 		"FINDING_UNUSED_MEDIAS": "Searching unused media…",

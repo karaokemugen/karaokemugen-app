@@ -2,6 +2,7 @@ import { profile } from 'console';
 import Postgrator from 'postgrator';
 
 import { db, getSettings } from '../lib/dao/database.js';
+import { refreshSortables } from '../lib/dao/kara.js';
 import { setConfig } from '../lib/utils/config.js';
 import { getPlaylists } from '../services/playlist.js';
 import { adminToken } from '../utils/constants.js';
@@ -62,6 +63,9 @@ export async function postMigrationTasks(migrations: Postgrator.Migration[], did
 				break;
 			case 'betterSSHKeys':
 				renameSSHKeys();
+				break;
+			case 'changeSearchableFieldsInAllKaras':
+				if (!didGeneration) refreshSortables();
 				break;
 			default:
 		}

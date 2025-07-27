@@ -504,8 +504,6 @@ GROUP BY
 	ak.created_at,
 	ak.modified_at,
 	ak.mediasize,
-	ak.languages_sortable,
-	ak.songtypes_sortable,
 	pc.created_at,
 	pc.nickname,
 	pc.fk_login,

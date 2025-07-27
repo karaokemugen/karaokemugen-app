@@ -324,6 +324,7 @@ export async function generateDB(): Promise<boolean> {
 			emitWS('favoritesUpdated', user.login);
 			emitWS('animelistUpdated', user.login);
 		}
+		// Library is refreshed inside this so no need to add it here.
 		await updateAllSmartPlaylists();
 		emitWS('databaseGenerated');
 	} catch (err) {

@@ -238,7 +238,7 @@ export default function KaraDetail(props: IProps) {
 	};
 
 	if (kara) {
-		const [karaTags, karaBlockTags] = computeTagsElements(kara, props.scope);
+		const [karaTags, karaBlockTags] = computeTagsElements(kara, props.scope, context.globalState.settings.data);
 
 		const playTime = kara.time_before_play > 0 ? new Date(Date.now() + kara.time_before_play * 1000) : null;
 		const details = (

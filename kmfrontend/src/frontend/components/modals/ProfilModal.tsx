@@ -26,6 +26,7 @@ import Autocomplete from '../generic/Autocomplete';
 import CropAvatarModal from './CropAvatarModal';
 import OnlineProfileModal from './OnlineProfileModal';
 import { WS_CMD } from '../../../utils/ws';
+import { karaokeExample } from '../../../utils/karaexample';
 
 interface IProps {
 	scope?: 'public' | 'admin';
@@ -244,7 +245,7 @@ function ProfilModal(props: IProps) {
 				serieText =
 					data.series
 						.slice(0, 3)
-						.map(e => getTagInLanguage(e, user.main_series_lang, user.fallback_series_lang).i18n)
+						.map(e => getTagInLanguage(e, user?.main_series_lang, user?.fallback_series_lang).i18n)
 						.join(', ') + (data.series.length > 3 ? '...' : '');
 			} else if (data?.singergroups?.length > 0) {
 				serieText =
@@ -268,30 +269,22 @@ function ProfilModal(props: IProps) {
 				.join(' ');
 			const songorderText = data?.songorder > 0 ? ' ' + data.songorder : '';
 			const versions = sortAndHideTags(data?.versions).map(
-				t => `[${getTagInLanguage(t, user.main_series_lang, user.fallback_series_lang).i18n}]`
+				t => `[${getTagInLanguage(t, user?.main_series_lang, user?.fallback_series_lang).i18n}]`
 			);
 			const version = versions?.length > 0 ? ` ${versions.join(' ')}` : '';
 			const arrayElements = [
 				langsText,
 				serieText,
 				songtypeText || songorderText ? `${songtypeText} ${songorderText}` : null,
-				data.titles[user.main_series_lang]
-					? data.titles[user.main_series_lang]
-					: data.titles[user.fallback_series_lang]
-						? data.titles[user.fallback_series_lang]
+				data.titles[user?.main_series_lang]
+					? data.titles[user?.main_series_lang]
+					: data.titles[user?.fallback_series_lang]
+						? data.titles[user?.fallback_series_lang]
 						: data.titles[data.titles_default_language],
 			].filter(value => value != '');
 			return `${arrayElements.join(' - ')} ${version}`;
 		};
-		const getExampleForLinguisticsPreference = async () => {
-			try {
-				const data = await commandBackend(WS_CMD.GET_KARA, { kid: 'ed57440b-0410-4fd4-8fc0-b87eee2df9a0' });
-				setExampleForLinguisticsPreference(buildKaraTitleFuture(data));
-			} catch (_) {
-				// ignore error
-			}
-		};
-		getExampleForLinguisticsPreference();
+		setExampleForLinguisticsPreference(buildKaraTitleFuture(karaokeExample));
 	}, [user?.main_series_lang, user?.fallback_series_lang]);
 
 	useEffect(() => {
