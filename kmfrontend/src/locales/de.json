@@ -58,7 +58,6 @@
 		"CRITERIA_TYPE_1007": "Nach (Jahreszahl)",
 		"CRITERIA_TYPE_1008": "Bevor (Jahreszahl)"
 	},
-	"DOWNLOADING_APP_UPDATE": "Lade Anwendungsupdate herunter",
 	"PUBLIC_HOMEPAGE": {
 		"NOW_PLAYING": "Derzeit läuft",
 		"NEXT": "Demnächst",
@@ -2092,6 +2091,7 @@
 		"REPOSITORIES_PAGES": "Repositories Seite"
 	},
 	"TASKS": {
+		"DOWNLOADING_APP_UPDATE": "Lade Anwendungsupdate herunter",
 		"GENERATING_DATABASE": "Datenbank aktualisieren…",
 		"UPDATING_WORKDIR": "Arbeitsverzeichnis aktualisieren",
 		"CREATING_SONG": "Lieder erstellen…",

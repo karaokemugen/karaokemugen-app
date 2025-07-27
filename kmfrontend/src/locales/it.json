@@ -2035,6 +2035,7 @@
 		"REPOSITORIES_PAGES": "Pagina degli archivi"
 	},
 	"TASKS": {
+		"DOWNLOADING_APP_UPDATE": "Scaricando un aggiornamento dell'applicazione",
 		"GENERATING_DATABASE": "Aggiornando il database…",
 		"UPDATING_WORKDIR": "Aggiornando la cartella workdir",
 		"CREATING_SONG": "Creando il karaoke…",
