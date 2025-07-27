@@ -168,8 +168,8 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		orderClauses.push(...q.orderBy);
 		groupClauses.push(...q.groupBy);
 	}
-	if (params.from > 0) offsetClause = `OFFSET ${params.from} `;
-	if (params.size > 0) limitClause = `LIMIT ${params.size} `;
+	if (params.from > 0 && !offsetClause) offsetClause = `OFFSET ${params.from} `;
+	if (params.size > 0 && !limitClause) limitClause = `LIMIT ${params.size} `;
 	// If we're asking for random songs, here we modify the query to get them.
 	const collections = getConfig().Karaoke.Collections;
 	if (params.parentsOnly) {
