@@ -1,3 +1,5 @@
+@use 'sass:string';
+
 * {
 	forced-color-adjust: none;
 }
@@ -37,4 +39,46 @@ select {
 	top: 6.5em;
 	background-color: black;
 	padding: 0.5rem;
+}
+
+.flex-space-between {
+	justify-content: space-between !important;
+}
+
+.flex-align-center {
+	align-items: center;
+}
+
+.flex-line {
+	display: flex;
+	gap: 0.25em;
+}
+
+.flex-column {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25em;
+	align-items: flex-start;
+}
+
+$sides: (top, bottom, left, right);
+
+@for $space from 1 through 10 {
+	@each $side in $sides {
+		.m#{string.slice($side, 0, 1)}-#{$space} {
+			margin-#{$side}: #{$space * 0.25}em !important;
+		}
+
+		.p#{string.slice($side, 0, 1)}-#{$space} {
+			padding-#{$side}: #{$space * 0.25}em !important;
+		}
+	}
+}
+
+.italic {
+	font-style: italic;
+}
+
+.bold {
+	font-weight: bold;
 }

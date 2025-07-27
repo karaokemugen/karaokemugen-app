@@ -14,6 +14,7 @@ import { errorStep, initStep } from '../electron/electronLogger.js';
 import { registerShortcuts, unregisterShortcuts } from '../electron/electronShortcuts.js';
 import { closeDB, getSettings, saveSetting, vacuum } from '../lib/dao/database.js';
 import { initHooks } from '../lib/dao/hook.js';
+import { refreshSortables } from '../lib/dao/kara.js';
 import { generateDatabase as generateKaraBase } from '../lib/services/generation.js';
 import { readAllRepoManifests } from '../lib/services/repo.js';
 // Utils
@@ -21,6 +22,7 @@ import { getConfig, setConfig } from '../lib/utils/config.js';
 import { duration } from '../lib/utils/date.js';
 import logger, { archiveOldLogs, enableWSLogging, profile } from '../lib/utils/logger.js';
 import { createImagePreviews } from '../lib/utils/previews.js';
+import { emitWS } from '../lib/utils/ws.js';
 import { initDownloader, wipeDownloadQueue, wipeDownloads } from '../services/download.js';
 import { updateAllMedias } from '../services/downloadMedias.js';
 import { initFonts } from '../services/fonts.js';
@@ -33,6 +35,7 @@ import { checkDownloadStatus, statsEnabledRepositories, updateAllRepos } from '.
 import { initSession, stopSessionSystem } from '../services/session.js';
 import { initStats, stopStatsSystem } from '../services/stats.js';
 import { generateAdminPassword, initUserSystem } from '../services/user.js';
+import { compareSortableConfigs } from '../utils/config.js';
 import { initDiscordRPC, stopDiscordRPC } from '../utils/discordRPC.js';
 import { initKMServerCommunication } from '../utils/kmserver.js';
 import { checkPG, dumpPG, restorePG, stopPG } from '../utils/postgresql.js';
@@ -144,6 +147,9 @@ export async function initEngine() {
 			setConfig({ System: { FrontendPort: port } });
 			// Reinit menu since we switched ports. Only if first run has already been done.
 			if (!conf.App.FirstRun) applyMenu('DEFAULT');
+		}
+		if (await compareSortableConfigs()) {
+			refreshSortables().then(() => emitWS('refreshLibrary'));
 		}
 		try {
 			await initPlaylistSystem();

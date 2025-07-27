@@ -68,6 +68,30 @@ export async function deleteKara(kids: string[]) {
 	await db().query(sqldeleteKara, [kids]);
 }
 
+function getKaraLineSortOrder(direction: 'asc' | 'desc' = 'asc'): { orderBy: string[]; groupBy: string[] } {
+	const orderBy = [];
+	const groupBy = [];
+	const karaLineSort = getConfig().Frontend.Library.KaraLineSort;
+	for (const e of karaLineSort) {
+		if (typeof e === 'string' && Object.keys(tagTypes).includes(e)) {
+			orderBy.push(`aks.${e} ${direction}`);
+			groupBy.push(`aks.${e}`);
+		} else if (Array.isArray(e)) {
+			orderBy.push(`aks.${e.join('_')} ${direction}`);
+			groupBy.push(`aks.${e.join('_')}`);
+		} else if (e === 'title') {
+			orderBy.push(`aks.titles ${direction}`);
+			groupBy.push(`aks.titles`);
+		} else if (e === 'parents') {
+			orderBy.push('parents');
+		}
+	}
+	return {
+		orderBy,
+		groupBy,
+	};
+}
+
 export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	const filterClauses: WhereClause = params.filter
 		? buildClauses(params.filter, false, params.parentsOnly)
@@ -80,70 +104,73 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		params: { ...filterClauses.params, ...typeClauses.params },
 		additionalFrom: [...filterClauses.additionalFrom, ...typeClauses.additionalFrom],
 	};
-	let whereClauses = '';
+	const whereClauses = [];
 	const withCTEs = ['blank AS (SELECT true)'];
 	// Hide blacklisted songs
-	let blacklistClauses = '';
 	if (params.blacklist) {
 		withCTEs.push(
 			`blacklist AS (SELECT fk_kid AS kid FROM playlist_content WHERE fk_plaid = '${getState().blacklistPlaid}')`
 		);
-		blacklistClauses += ' AND ak.pk_kid NOT IN (SELECT kid FROM blacklist)';
+		whereClauses.push('ak.pk_kid NOT IN (SELECT kid FROM blacklist)');
 	}
-	let orderClauses = '';
+	const orderClauses = [];
 	let limitClause = '';
 	let offsetClause = '';
 	let havingClause = '';
-	let groupClause = '';
+	const groupClauses = [];
 	let selectRequested = `COUNT(rq.*)::integer AS requested,
 	MAX(rq.requested_at) AS lastrequested_at,
 	`;
 	const joinClauses = [' LEFT OUTER JOIN requested AS rq ON rq.fk_kid = ak.pk_kid '];
 	// This is normal behaviour without anyone.
-	let groupClauseEnd = '';
+	if (params.random > 0) {
+		orderClauses.push('RANDOM()');
+		limitClause = `LIMIT ${params.random}`;
+		whereClauses.push(`ak.pk_kid NOT IN (
+			SELECT pc.fk_kid
+			FROM playlist_content pc
+			WHERE pc.fk_plaid = '${getState().publicPlaid}'
+		)`);
+	}
 	// Search mode to filter karas played or requested in a particular session
 	if (params.order === 'mediasize') {
-		orderClauses = `mediasize ${params.direction === 'asc' ? '' : 'DESC'}, `;
+		orderClauses.push(`mediasize ${params.direction === 'asc' ? '' : 'DESC'}, `);
 	} else if (params.order === 'history') {
-		orderClauses = `lastplayed_at ${params.direction === 'asc' ? '' : 'DESC'} NULLS LAST, `;
+		orderClauses.push(`lastplayed_at ${params.direction === 'asc' ? '' : 'DESC'} NULLS LAST, `);
 	} else if (params.order === 'sessionPlayed') {
-		orderClauses = groupClause = 'p.played_at, ';
+		orderClauses.push('p.played_at');
+		groupClauses.push('p.played_at');
 	} else if (params.order === 'sessionRequested') {
-		orderClauses = groupClause = 'rq.requested_at, ';
+		orderClauses.push('rq.requested_at');
+		groupClauses.push('rq.requested_at');
 	} else if (params.order === 'recent') {
-		orderClauses = `created_at ${params.direction === 'asc' ? '' : 'DESC'}, `;
+		orderClauses.push(`created_at ${params.direction === 'asc' ? '' : 'DESC'}, `);
 	} else if (params.order === 'requested' && getConfig().Online.FetchPopularSongs) {
-		orderClauses = `requested ${params.direction === 'asc' ? '' : 'DESC'}, `;
-		groupClauseEnd = ', requested';
+		orderClauses.push(`requested ${params.direction === 'asc' ? '' : 'DESC'}, `);
+		groupClauses.push('requested');
 		selectRequested = 'orq.requested AS requested, ';
 		// Emptying joinClauses first before adding something to it.
 		joinClauses.splice(0, joinClauses.length);
 		joinClauses.push(' LEFT OUTER JOIN online_requested AS orq ON orq.fk_kid = ak.pk_kid ');
-		whereClauses = ' AND requested > 1';
+		whereClauses.push('requested > 1');
 	} else if (
 		params.order === 'requestedLocal' ||
 		(params.order === 'requested' && !getConfig().Online.FetchPopularSongs)
 	) {
-		orderClauses = `requested ${params.direction === 'asc' ? '' : 'DESC'}, `;
+		orderClauses.push(`requested ${params.direction === 'asc' ? '' : 'DESC'}, `);
 		havingClause = 'HAVING COUNT(rq.*) > 1';
 	} else if (params.order === 'played') {
-		orderClauses = `played ${params.direction === 'asc' ? '' : 'DESC'}, `;
+		orderClauses.push(`played ${params.direction === 'asc' ? '' : 'DESC'}, `);
 		havingClause = 'HAVING COUNT(p.*) > 1';
 	} else {
-		orderClauses = `ak.serie_singergroup_singer_sortable ${params.direction === 'desc' ? 'DESC' : ''},`;
+		// Build order here from config
+		const q = getKaraLineSortOrder(params.direction);
+		orderClauses.push(...q.orderBy);
+		groupClauses.push(...q.groupBy);
 	}
 	if (params.from > 0) offsetClause = `OFFSET ${params.from} `;
 	if (params.size > 0) limitClause = `LIMIT ${params.size} `;
 	// If we're asking for random songs, here we modify the query to get them.
-	if (params.random > 0) {
-		orderClauses = `RANDOM(), ${orderClauses}`;
-		limitClause = `LIMIT ${params.random}`;
-		whereClauses += ` AND ak.pk_kid NOT IN (
-			SELECT pc.fk_kid
-			FROM playlist_content pc
-			WHERE pc.fk_plaid = '${getState().publicPlaid}'
-		)`;
-	}
 	const collections = getConfig().Karaoke.Collections;
 	if (params.parentsOnly) {
 		const collectionsParentClauses = [];
@@ -165,14 +192,14 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 			${collectionsParentJoin}
 			${collectionsParentClauses.join(' OR ')}
 		)`);
-		whereClauses += ` AND (ak.pk_kid IN (
+		whereClauses.push(`(ak.pk_kid IN (
 			SELECT kid FROM parents
 		) OR ak.pk_kid NOT IN (
 			SELECT kid FROM children
-		))`;
+		))`);
 	}
 	if (params.userFavorites) {
-		whereClauses += ' AND uf.fk_login = :username_favs';
+		whereClauses.push('uf.fk_login = :username_favs');
 		joinClauses.push(' LEFT OUTER JOIN favorites AS uf ON uf.fk_login = :username_favs AND uf.fk_kid = ak.pk_kid ');
 		yesqlPayload.params.username_favs = params.userFavorites;
 	}
@@ -180,9 +207,9 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		withCTEs.push(
 			'anime_list_infos AS (SELECT anime_list_ids, anime_list_to_fetch FROM users where users.pk_login = :username_anime_list)'
 		);
-		whereClauses += ` AND ((SELECT anime_list_to_fetch FROM anime_list_infos) = 'myanimelist' AND myanimelist_ids::int[] && (SELECT anime_list_ids FROM anime_list_infos)
+		whereClauses.push(`((SELECT anime_list_to_fetch FROM anime_list_infos) = 'myanimelist' AND myanimelist_ids::int[] && (SELECT anime_list_ids FROM anime_list_infos)
 		OR (SELECT anime_list_to_fetch FROM anime_list_infos) = 'anilist' AND anilist_ids::int[] && (SELECT anime_list_ids FROM anime_list_infos)
-		OR (SELECT anime_list_to_fetch FROM anime_list_infos) = 'kitsu' AND kitsu_ids::int[] && (SELECT anime_list_ids FROM anime_list_infos))`;
+		OR (SELECT anime_list_to_fetch FROM anime_list_infos) = 'kitsu' AND kitsu_ids::int[] && (SELECT anime_list_ids FROM anime_list_infos))`);
 		yesqlPayload.params.username_anime_list = params.userAnimeList;
 	}
 	const collectionClauses = [];
@@ -197,18 +224,17 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		yesqlPayload.sql,
 		params.qType || 'AND',
 		whereClauses,
-		groupClause,
+		groupClauses,
 		orderClauses,
 		havingClause,
 		limitClause,
 		offsetClause,
 		yesqlPayload.additionalFrom,
 		selectRequested,
-		groupClauseEnd,
 		joinClauses,
 		collectionClauses,
 		withCTEs,
-		blacklistClauses
+		params.blacklist
 	);
 	const queryParams = {
 		publicPlaylist_id: getState().publicPlaid,

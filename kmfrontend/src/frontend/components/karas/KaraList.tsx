@@ -47,7 +47,7 @@ function KaraList({ karas, scope, addKara = false }: KaraListProps) {
 			{karas.content.map(kara => {
 				if (!kara) return undefined;
 				const tagsScope = kara.kid === kidOpened ? scope : 'admin';
-				const [karaTags, karaBlockTags] = computeTagsElements(kara, tagsScope, false, karas.i18n);
+				const [karaTags, karaBlockTags] = computeTagsElements(kara, tagsScope, context.globalState.settings.data, false, karas.i18n);
 
 				return (
 					<div key={kara.kid} className={`song${kara.kid === kidOpened ? ' open' : ''}`}>
