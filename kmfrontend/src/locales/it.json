@@ -1817,7 +1817,6 @@
 		"CREATE_ONLINE_ACCOUNT": "Voglio creare un nuovo account",
 		"ONLINE_ACCOUNT_INSTANCE": "Il tuo account online verrà ospitato dall'istanza {{instance}}",
 		"TITLE": "Configurazione Guidata",
-		"DOWNLOADING_APP_UPDATE": "Scaricando un aggiornamento dell'applicazione",
 		"CONNECTED_MESSAGE": "Complimenti, ti sei connesso a Karaoke Mugen, {{user}}!",
 		"ONLINE_ACCOUNT_INSTANCE_DESC": "Un'istanza è un server online che fornisce diversi servizi a Karaoke Mugen. Se non sei sicuro, lascia l'istanza predefinita ({{instance}}), se invece sai quello che fai, scegli l'istanza che preferisci.",
 		"ONLINE_ACCOUNT_DESC": "Un account online ti permette di:",
