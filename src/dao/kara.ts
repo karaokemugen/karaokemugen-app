@@ -134,9 +134,9 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	}
 	// Search mode to filter karas played or requested in a particular session
 	if (params.order === 'mediasize') {
-		orderClauses.push(`mediasize ${params.direction === 'asc' ? '' : 'DESC'}, `);
+		orderClauses.push(`mediasize ${params.direction === 'asc' ? '' : 'DESC'}`);
 	} else if (params.order === 'history') {
-		orderClauses.push(`lastplayed_at ${params.direction === 'asc' ? '' : 'DESC'} NULLS LAST, `);
+		orderClauses.push(`lastplayed_at ${params.direction === 'asc' ? '' : 'DESC'} NULLS LAST`);
 	} else if (params.order === 'sessionPlayed') {
 		orderClauses.push('p.played_at');
 		groupClauses.push('p.played_at');
@@ -144,9 +144,9 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		orderClauses.push('rq.requested_at');
 		groupClauses.push('rq.requested_at');
 	} else if (params.order === 'recent') {
-		orderClauses.push(`created_at ${params.direction === 'asc' ? '' : 'DESC'}, `);
+		orderClauses.push(`created_at ${params.direction === 'asc' ? '' : 'DESC'}`);
 	} else if (params.order === 'requested' && getConfig().Online.FetchPopularSongs) {
-		orderClauses.push(`requested ${params.direction === 'asc' ? '' : 'DESC'}, `);
+		orderClauses.push(`requested ${params.direction === 'asc' ? '' : 'DESC'}`);
 		groupClauses.push('requested');
 		selectRequested = 'orq.requested AS requested, ';
 		// Emptying joinClauses first before adding something to it.
@@ -157,10 +157,10 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		params.order === 'requestedLocal' ||
 		(params.order === 'requested' && !getConfig().Online.FetchPopularSongs)
 	) {
-		orderClauses.push(`requested ${params.direction === 'asc' ? '' : 'DESC'}, `);
+		orderClauses.push(`requested ${params.direction === 'asc' ? '' : 'DESC'}`);
 		havingClause = 'HAVING COUNT(rq.*) > 1';
 	} else if (params.order === 'played') {
-		orderClauses.push(`played ${params.direction === 'asc' ? '' : 'DESC'}, `);
+		orderClauses.push(`played ${params.direction === 'asc' ? '' : 'DESC'}`);
 		havingClause = 'HAVING COUNT(p.*) > 1';
 	} else {
 		// Build order here from config
