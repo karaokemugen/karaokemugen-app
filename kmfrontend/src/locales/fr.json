@@ -17,6 +17,7 @@
 		"404_3": "vous êtes ici",
 		"404_4": "Revenir au début"
 	},
+	"DOWNLOADING_APP_UPDATE": "Téléchargement d'une mise à jour de l'app",
 	"LOGIN_MANDATORY": "Le nom d'utilisateur est obligatoire",
 	"PASSWORD_MANDATORY": "Le mot de passe est obligatoire",
 	"SECURITY_CODE_MANDATORY": "Le code de sécurité est obligatoire pour créer un compte opérateur",

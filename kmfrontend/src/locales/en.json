@@ -985,6 +985,7 @@
 			}
 		}
 	},
+	"DOWNLOADING_APP_UPDATE": "Downloading application update",
 	"LOADING": "Loading…",
 	"LOADING_SUBTITLE": "It shouldn't take too long, try to clear your cache or update your browser if you get stuck here.",
 	"LOADING_SUBTITLE_ELECTRON": "It shouldn't take too long, try to restart Karaoke Mugen or update it if you get stuck here.",
