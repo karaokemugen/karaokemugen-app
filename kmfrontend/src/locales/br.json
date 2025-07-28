@@ -38,7 +38,10 @@
 		"LOGIN_ONLINE_ACCOUNT": "Ur gont enlinenn am eus dija"
 	},
 	"LOGIN": {
-		"ONLINE_ACCOUNT": "Kont enlinenn ?"
+		"ONLINE_ACCOUNT": "Kont enlinenn ?",
+		"GO_BACK": "Distro",
+		"BUTTON_LOGIN": "Kevreadenn",
+		"NEW_ACCOUNT": "Kont nevez"
 	},
 	"SETTINGS": {
 		"KARAOKE": {
@@ -111,6 +114,28 @@
 			"BUTTONS": {
 				"CANCEL_EDIT": "Nullañ ar gemmadennoù"
 			}
+		},
+		"PROFILE_MODAL": {
+			"SOCIAL_NETWORKS": {
+				"DISCORD": "Discord",
+				"INSTAGRAM": "Instagram",
+				"MYANIMELIST": "MyAnimeList",
+				"MYANIMELIST_PLACEHOLDER": "karaokemugen",
+				"ANILIST": "AniList",
+				"ANILIST_PLACEHOLDER": "karaokemugen",
+				"KITSU": "Kitsu",
+				"MASTODON": "Mastodon",
+				"MASTODON_PLACEHOLDER": "KaraokeMugen@shelter.moe",
+				"BLUESKY": "Bluesky",
+				"BLUESKY_PLACEHOLDER": "karaoke.bsky.social",
+				"TWITCH": "Twitch",
+				"TWITCH_PLACEHOLDER": "KaraokeLive",
+				"INSTAGRAM_PLACEHOLDER": "karaokemugen",
+				"DISCORD_PLACEHOLDER": "Karak#1423",
+				"KITSU_PLACEHOLDER": "karaokemugen",
+				"GITLAB": "Gitlab",
+				"GITLAB_PLACEHOLDER": "karaokemugen"
+			}
 		}
 	},
 	"SESSIONS": {
@@ -166,5 +191,21 @@
 			"TITLE": "Kemmañ ur c'havlec'hiad",
 			"DESCRIPTION": "Furmenn kemmañ ar c'havlec'hiad"
 		}
+	},
+	"LOGOUT": "Digevreañ",
+	"INBOX": {
+		"CONTACT_INFOS_MODAL": {
+			"SOCIAL_NETWORKS": {
+				"DISCORD": "Discord : ",
+				"INSTAGRAM": "Instagram : ",
+				"MASTODON": "Mastodon : ",
+				"BLUESKY": "Bluesky : ",
+				"TWITCH": "Twitch : "
+			}
+		}
+	},
+	"TAG_TYPES": {
+		"SINGERGROUPS_one": "Strollad sonerezh",
+		"SINGERGROUPS_other": "Strolladoù sonerezh"
 	}
 }
