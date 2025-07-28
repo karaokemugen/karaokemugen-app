@@ -566,11 +566,11 @@
 			"PUBLIC_PLAYER_CONTROLS_TOOLTIP": "Play/pause, stop, previosu and next controls will be visible in the public interface, allowing users to control the player from their devices. Use only in small groups!",
 			"DISPLAY_WELCOME_MESSAGE": "Show welcome message",
 			"DISPLAY_WELCOME_MESSAGE_TOOLTIP": "This message will be shown on your karaoke session's login page",
-			"KARA_LINE_SORT": "Sort library by...",
+			"KARA_LINE_SORT": "Sort library by…",
 			"KARA_LINE_SORT_TOOLTIP": "Define which parts of a song are used to sort the library",
 			"KARA_LINE_DISPLAY": "Song parts display",
 			"KARA_LINE_DISPLAY_TOOLTIP": "Define which parts of a song are displayed in song lists (operator only)",
-			"SET": "Set..."
+			"SET": "Set…"
 		}
 	},
 	"KARA_PAUSED_WAITING": "No song playing yet",
