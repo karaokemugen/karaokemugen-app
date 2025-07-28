@@ -420,7 +420,7 @@ function RepositoryForm(props: RepositoriesFormProps) {
 							>
 								<FoldersElement
 									openDirectory={true}
-									hideAdd={true}
+									hideAdd={!!searchParams.get('setup')}
 									onChange={value => form.setFieldsValue({ PathMedias: value })}
 									disabled={props.repository?.System}
 								/>
