@@ -565,7 +565,12 @@
 			"PUBLIC_PLAYER_CONTROLS": "Permettre au public de contrôler le lecteur",
 			"PUBLIC_PLAYER_CONTROLS_TOOLTIP": "Des boutons jouer/pause, stop, précédent et suivant seront visibles sur l'interface publique, permettant aux utilisateurs de contrôler le lecteur depuis leur appareil. A n'utiliser qu'en petits groupes !",
 			"DISPLAY_WELCOME_MESSAGE": "Afficher un message de bienvenue",
-			"DISPLAY_WELCOME_MESSAGE_TOOLTIP": "Ce message sera affiché sur la page de connexion de votre session de karaoké"
+			"DISPLAY_WELCOME_MESSAGE_TOOLTIP": "Ce message sera affiché sur la page de connexion de votre session de karaoké",
+			"KARA_LINE_SORT": "Trier la bibliothèque par…",
+			"KARA_LINE_SORT_TOOLTIP": "Définissez les parties d'une chanson qui sont utilisées pour trier la bibliothèque",
+			"KARA_LINE_DISPLAY": "Affichage des parties de la chanson",
+			"KARA_LINE_DISPLAY_TOOLTIP": "Définir les parties d'une chanson qui s'affichent dans les listes de chansons (opérateur uniquement)",
+			"SET": "Définir…"
 		}
 	},
 	"KARA_PAUSED_WAITING": "Pas de lecture en cours",
