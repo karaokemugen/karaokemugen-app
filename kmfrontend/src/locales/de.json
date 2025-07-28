@@ -1417,6 +1417,13 @@
 			"DESCRIPTION": "Drag and Drop, um Aspekte den <1>Sortiereinstellungen der Bibliothek</1> hinzuzufügen.",
 			"DESCRIPTION_ADD_REMOVE": "Klicke auf \"Hinzufügen\", um etwas hinzuzufügen, oder X, um etwas zu entfernen.",
 			"REMOVE": "Aspekt aus der Sortierung entfernen"
+		},
+		"KARA_LINE_ADD": {
+			"ADD_TAG_TYPE": "Typ auswählen",
+			"TAG_TYPES_GROUP": "Gruppe des Tag-Typs",
+			"ADD_TAG_TYPES_GROUP": "Dieser Gruppe einen Tag-Typ hinzufügen?",
+			"STRING_TO_DISPLAY": "Anzeigetext:",
+			"STRING_TO_DISPLAY_SHORT": "Kurztext, falls vorhanden (AUDIO, ENG, usw.)"
 		}
 	},
 	"REMOTE_STATUS": {
