@@ -679,7 +679,12 @@
 			"REQUIRE_USER_CREATION_CODE": "Code notwendig für die Benutzererstellung",
 			"PUBLIC_PLAYER_CONTROLS": "Publikumskontrolle des Player zulassen",
 			"REQUIRE_USER_CREATION_CODE_TOOLTIP": "Benutzer benötigen einen Code, um ein neues Benutzerkonto zu erstellen, den ausschließlich der Betreiber sehen und weitergeben kann. Der Code wird im Benutzerfenster im K-Menü angezeigt.",
-			"PUBLIC_PLAYER_CONTROLS_TOOLTIP": "Start/Pause, stopp, vor und zurück wird im Publikums-Interface sichtbar und gestattet den Benutzern den Player von ihrem Gerät aus zu steuern. Nur in kleinen Gruppen benutzen!"
+			"PUBLIC_PLAYER_CONTROLS_TOOLTIP": "Start/Pause, stopp, vor und zurück wird im Publikums-Interface sichtbar und gestattet den Benutzern den Player von ihrem Gerät aus zu steuern. Nur in kleinen Gruppen benutzen!",
+			"KARA_LINE_SORT": "Sortiere Bibliothek nach …",
+			"KARA_LINE_SORT_TOOLTIP": "Definiere, welcher Aspekt eines Liedes zur Sortierung der Bibliothek genutzt wird",
+			"KARA_LINE_DISPLAY": "Lied-Anzeige",
+			"KARA_LINE_DISPLAY_TOOLTIP": "Definiere, welche Aspekte eines Liedes in Liederlisten anzezeigt werden (nur Betreiber)",
+			"SET": "Einstellen …"
 		},
 		"FILTER_SETTINGS": "Sucheinstellungen",
 		"FILTER_SETTINGS_TOOLTIP": "Finde schnell die Einstellung, die du möchtest, mit dieser Suchleiste."
@@ -1406,6 +1411,12 @@
 		"CLASSIC_MODE": {
 			"TITLE": "Du bist mit dem Singen dran!",
 			"TEXT": "Klicke auf die Schaltfläche \"Play\", um dein Lied zu starten."
+		},
+		"KARA_LINE_SORT": {
+			"TITLE": "Sortiereinstellungen der Bibliothek",
+			"DESCRIPTION": "Drag and Drop, um Aspekte den <1>Sortiereinstellungen der Bibliothek</1> hinzuzufügen.",
+			"DESCRIPTION_ADD_REMOVE": "Klicke auf \"Hinzufügen\", um etwas hinzuzufügen, oder X, um etwas zu entfernen.",
+			"REMOVE": "Aspekt aus der Sortierung entfernen"
 		}
 	},
 	"REMOTE_STATUS": {
