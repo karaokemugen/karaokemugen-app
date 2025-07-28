@@ -85,7 +85,8 @@
 		"NEXT": "次",
 		"SHOW_LYRICS": "歌詞を見る",
 		"SHOW_ALL_LYRICS": "すべての歌詞を見る",
-		"HIDE_LYRICS": "歌詞を隠す"
+		"HIDE_LYRICS": "歌詞を隠す",
+		"SONG_SEARCH_SHORT": "検索"
 	},
 	"PROFILE_MAIL": "メール",
 	"PROFILE_PASSWORD": "パスワード",
@@ -102,7 +103,59 @@
 	},
 	"INBOX": {
 		"CONTACT_INFOS_MODAL": {
-			"MAIL": "メール： "
+			"MAIL": "メール： ",
+			"SOCIAL_NETWORKS": {
+				"DISCORD": "Discord : ",
+				"INSTAGRAM": "Instagram : ",
+				"MASTODON": "Mastodon : ",
+				"BLUESKY": "Bluesky : ",
+				"TWITCH": "Twitch : "
+			}
+		}
+	},
+	"LOGIN": {
+		"GO_BACK": "戻る",
+		"BUTTON_LOGIN": "ログイン",
+		"NEW_ACCOUNT": "新しいアカウント"
+	},
+	"LOGOUT": "ログアウト",
+	"MODAL": {
+		"PROFILE_MODAL": {
+			"SOCIAL_NETWORKS": {
+				"DISCORD": "Discord",
+				"INSTAGRAM": "Instagram",
+				"MYANIMELIST": "MyAnimeList",
+				"BLUESKY": "Bluesky",
+				"BLUESKY_PLACEHOLDER": "karaoke.bsky.social",
+				"GITLAB": "Gitlab",
+				"MASTODON": "Mastodon",
+				"MASTODON_PLACEHOLDER": "KaraokeMugen@shelter.moe",
+				"TWITCH": "Twitch",
+				"DISCORD_PLACEHOLDER": "Karak#1423"
+			}
+		},
+		"PLAY_CURRENT_MODAL": {
+			"TITLE": "警告！"
+		}
+	},
+	"TAG_TYPES": {
+		"SINGERGROUPS_one": "バンド",
+		"SINGERGROUPS_other": "バンド",
+		"SINGERS_one": "歌手",
+		"SINGERS_other": "歌手",
+		"WARNINGS_one": "警告",
+		"WARNINGS_other": "警告",
+		"SONGWRITERS_one": "作曲家",
+		"SONGWRITERS_other": "作曲家"
+	},
+	"SETTINGS": {
+		"PLAYER": {
+			"AUDIO_ONLY_EXPERIENCE": "音声のみ"
+		}
+	},
+	"LOGS": {
+		"LEVELS": {
+			"WARNING": "警告"
 		}
 	}
 }
