@@ -614,7 +614,10 @@ SELECT pk_plaid AS plaid,
 	smart_limit_type,
 	fk_plcid_playing AS plcid_playing,
 	fk_login AS username,
-	type_smart
+	type_smart,
+	slug,
+	nickname,
+	contributors
 FROM playlist
 WHERE 1 = 1
 ${singlePlaylist ? ' AND pk_plaid = $1 ' : ''}
