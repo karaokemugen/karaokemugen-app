@@ -8,7 +8,7 @@ This changelog will cover only changes between 8.0.90 and 9.0.0
 
 - **[Operators]** Operators can now set how the song lines are displayed in list. This doesn't affect users. (#1605)
     - The default still is "Language - Series/singergroup/singer - Song type - Title" but this may change in the future.
-- **[Operators]** Playlists can now be imported directly from and exported to the Karaoke Mugen Server your user depends on instead of using file exports. (#1605)
+- **[Operators]** Playlists can now be imported directly from and exported to the Karaoke Mugen Server your user depends on instead of using file exports. (#1503)
 - **[Users]** Operators can now set how the library is sorted. (#1605)
     - The default still is "Series/Singergroup/Singer - Language - Song type - Title" but this may change in the future.
 
