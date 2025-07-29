@@ -616,6 +616,7 @@ SELECT pk_plaid AS plaid,
 	fk_login AS username,
 	type_smart,
 	slug,
+	description,
 	nickname,
 	contributors
 FROM playlist
