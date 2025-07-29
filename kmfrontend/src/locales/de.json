@@ -1416,14 +1416,16 @@
 			"TITLE": "Sortiereinstellungen der Bibliothek",
 			"DESCRIPTION": "Drag and Drop, um Aspekte den <1>Sortiereinstellungen der Bibliothek</1> hinzuzufügen.",
 			"DESCRIPTION_ADD_REMOVE": "Klicke auf \"Hinzufügen\", um etwas hinzuzufügen, oder X, um etwas zu entfernen.",
-			"REMOVE": "Aspekt aus der Sortierung entfernen"
+			"REMOVE": "Aspekt aus der Sortierung entfernen",
+			"WARNING_DESCRIPTION": "Jede Veränderung kann einige Sekunden dauern während die Datenbank aktualisiert wird. Bitte beachte die Auftragsliste unten in diesem Fenster, um zu sehen, wann das Update beendet ist."
 		},
 		"KARA_LINE_ADD": {
 			"ADD_TAG_TYPE": "Typ auswählen",
 			"TAG_TYPES_GROUP": "Gruppe des Tag-Typs",
 			"ADD_TAG_TYPES_GROUP": "Dieser Gruppe einen Tag-Typ hinzufügen?",
 			"STRING_TO_DISPLAY": "Anzeigetext:",
-			"STRING_TO_DISPLAY_SHORT": "Kurztext, falls vorhanden (AUDIO, ENG, usw.)"
+			"STRING_TO_DISPLAY_SHORT": "Kurztext, falls vorhanden (AUDIO, ENG, usw.)",
+			"STRING_FORMAT_ITALIC": "Kursiv"
 		}
 	},
 	"REMOTE_STATUS": {
@@ -2151,7 +2153,8 @@
 			"ANALYZING_FILES": "Analysiere Dateien",
 			"CREATING_METADATA": "Erstelle Metadaten",
 			"IMPORTING_BASE": "Importiere Lieder …"
-		}
+		},
+		"UPDATING_LIBRARY_SORT": "Aktualisiere Bibliothekssortierung"
 	},
 	"ABOUT": {
 		"DONATORS": "Danke an <1>{{donators}}</1> für die Spende an Karaoke Mugen",
