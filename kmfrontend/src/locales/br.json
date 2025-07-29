@@ -56,6 +56,14 @@
 			"DISPLAY_WELCOME_MESSAGE": "Diskouez ur c'hemennad degemer",
 			"LABEL": "Etrefas",
 			"WEBAPPMODE_CLOSED_SHORT": "Serret"
+		},
+		"PLAYLIST": {
+			"PLAYLIST_SETTINGS": "Rolloù-lenn",
+			"ENDOFPLAYLISTACTION": {
+				"OPTIONS": {
+					"REPEAT": "Adlansañ ar roll-lenn adalek ar penn-kentañ"
+				}
+			}
 		}
 	},
 	"USERS": {
@@ -66,12 +74,14 @@
 		"USER_CONVERTED": "Ho kont zo enlinenn bremañ",
 		"REPO_CREATED": "Ouzhpennet eo bet ar c'havlec'hiad gant berzh",
 		"REPO_DELETED": "Dilamet eo bet ar c'havlec'hiad gant berzh",
-		"REPO_EDITED": "Kemmet eo bet ar c'havlec'hiad gant berzh"
+		"REPO_EDITED": "Kemmet eo bet ar c'havlec'hiad gant berzh",
+		"PL_IMPORTED": "Roll-lenn ouzhpennet : {{data}}"
 	},
 	"PASSWORDCONF": "Kadarnadur ar ger-tremen",
 	"NEW_PASSWORD": "Ger-tremen nevez",
 	"PLAYLISTS": {
-		"FAVORITES": "Pennroll"
+		"FAVORITES": "Pennroll",
+		"ANIME_LIST": "Kanaouennoù eus ma animeoù"
 	},
 	"INLINE_TAG": {
 		"COUNT_one": "{{count}} ganaouenn",
@@ -82,7 +92,10 @@
 		"SHOW_SONGS": "Diskouez ar ganaouennoù"
 	},
 	"ADVANCED": {
-		"DOWNLOAD_ALL": "Pellgargañ an holl"
+		"DOWNLOAD_ALL": "Pellgargañ an holl",
+		"DELETE": "Dilemel ar roll-lenn",
+		"EDIT": "Kemmañ ar roll-lenn",
+		"ADD": "Krouiñ ur roll-lenn nevez"
 	},
 	"KARA_MENU": {
 		"FAV": "Ouzhpennañ d'ar pennroll",
@@ -94,14 +107,16 @@
 		"VISIBLE_ON_SHORT": "Diskouez",
 		"VISIBLE_OFF_SHORT": "Kuzhat",
 		"HIDDEN": "Kuzhet !",
-		"SHOWN": "Diskouezet !"
+		"SHOWN": "Diskouezet !",
+		"VISIBLE_ON": "Diskouez er roll-lenn"
 	},
 	"PUBLIC_HOMEPAGE": {
 		"SHOW_LYRICS": "Diskouez ar pozioù",
 		"SHOW_ALL_LYRICS": "Diskouez an holl pozioù",
 		"HIDE_LYRICS": "Kuzhat ar pozioù",
 		"EXPLORE": "Ergerzhout",
-		"OTHERS": "All…"
+		"OTHERS": "All…",
+		"CURRENT": "Gwelout ar roll-lenn red"
 	},
 	"ADMIN_MESSAGE": {
 		"CL_SCREEN": "Diskouez war skramm al lenner"
@@ -113,7 +128,9 @@
 			},
 			"BUTTONS": {
 				"CANCEL_EDIT": "Nullañ ar gemmadennoù"
-			}
+			},
+			"EMPTY_PLAYLIST": "Dibabit ur roll-lenn",
+			"PLAYLIST": "Roll-lenn da implijout"
 		},
 		"PROFILE_MODAL": {
 			"SOCIAL_NETWORKS": {
@@ -136,6 +153,41 @@
 				"GITLAB": "Gitlab",
 				"GITLAB_PLACEHOLDER": "karaokemugen"
 			}
+		},
+		"PLAYLIST_MODAL": {
+			"NAME": "Anv",
+			"CURRENT": "Red",
+			"PUBLIC": "Foran",
+			"SMART": "Speredek",
+			"VISIBLE": "Gwelus",
+			"EDIT_PLAYLIST": "Kemmañ {{playlist}}",
+			"CREATE_PLAYLIST": "Krouiñ ur roll-lenn nevez",
+			"CREATE": "Krouiñ",
+			"EDIT": "Kemmañ"
+		},
+		"DELETE_PLAYLIST_MODAL": {
+			"TITLE": "Dilemel {{playlist}} da viken ?"
+		},
+		"PLAYLIST_IMPORT": {
+			"FILTER_LABELS": {
+				"my": "Diskouez ma rolloù-lenn",
+				"downloaded": "Diskouez rolloù-lenn pellgarget"
+			},
+			"SORT_OPTIONS_LABELS": {
+				"az": "Lizherennek",
+				"recent": "Deiziad ouzhpennet",
+				"karacount": "Niver a ganaouennoù",
+				"duration": "Padelezh",
+				"favorited": "Pennrolloù",
+				"username": "Anv implijer"
+			},
+			"BY_AUTHOR": "gant {{author}}",
+			"AND_CONTRIBUTORS": "(ha {{contributors, list}})",
+			"AND_CONTRIBUTORS_AND_MORE": "(ha {{contributors, list}}, {{numberOfOthers, number}} ouzhpenn)",
+			"KARA_COUNT": "{{karacount}} a ganaouennoù",
+			"DURATION": "Padelezh : {{duration}}",
+			"DOWNLOAD_PLAYLIST": "Pellgargañ ar roll-lenn",
+			"UPDATE_PLAYLIST": "Hizivaat ar roll-lenn"
 		}
 	},
 	"SESSIONS": {
@@ -156,7 +208,10 @@
 	},
 	"KARA": {
 		"REPOSITORY": "Kavlec'hiad",
-		"COPY_SONG": "Eilañ ar ganaouenn war-du ur c'havlec'hiad all"
+		"COPY_SONG": "Eilañ ar ganaouenn war-du ur c'havlec'hiad all",
+		"BATCH_EDIT": {
+			"SELECT_PLAYLIST": "Dibabit ur roll-lenn :"
+		}
 	},
 	"UNUSED_FILES": {
 		"REPOSITORY": "Kavlec'hiad"
@@ -180,7 +235,10 @@
 		"UNKNOWN_REPOSITORY": "Kavlec'hiad dianav",
 		"REPO_CREATE_ERROR": "Fazi o krouiñ ar c'havlec'hiad",
 		"REPO_DELETE_ERROR": "Fazi o dilemel ar c'havlec'hiad",
-		"REPO_EDIT_ERROR": "Fazi o kemmañ ar c'havlec'hiad"
+		"REPO_EDIT_ERROR": "Fazi o kemmañ ar c'havlec'hiad",
+		"UNKNOWN_PLAYLIST": "Roll-lenn dianav",
+		"UNKNOWN_PLAYLIST_ITEM": "Kanaouenn ar roll-lenn dianav",
+		"PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED": "Ouzhpennet e oa bet ar ganaouenn dija."
 	},
 	"HEADERS": {
 		"REPOSITORIES_NEW": {
@@ -207,5 +265,19 @@
 	"TAG_TYPES": {
 		"SINGERGROUPS_one": "Strollad sonerezh",
 		"SINGERGROUPS_other": "Strolladoù sonerezh"
-	}
+	},
+	"SELECT_PLACEHOLDER": "Dibabit ur roll-lenn",
+	"CRITERIA": {
+		"PLAYLIST_DURATION_TYPE_MINUTES": "m/vunutenn",
+		"PLAYLIST_DURATION_TYPE_SONGS": "kanaouennoù",
+		"PLAYLIST_DURATION_ORDER_MORE_RECENT": "nevesañ",
+		"PLAYLIST_DURATION_ORDER_LESS_RECENT": "koshañ"
+	},
+	"AUTOMIX_MODAL": {
+		"NAME": "Anv ar roll-lenn"
+	},
+	"CL_PLAYLISTS": "Listennoù ganaouennoù",
+	"BACK_PLAYLISTS": "Distro da listennoù ganaouennoù",
+	"GOTO_TOP": "Mont e penn ar roll-lenn",
+	"GOTO_BOTTOM": "Mont er fin ar roll-lenn"
 }
