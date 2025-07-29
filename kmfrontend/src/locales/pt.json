@@ -749,7 +749,7 @@
 			"VOTED": "Votado!",
 			"VOTES_other": "{{count}} votos ({{percent}}%)"
 		},
-		"UNKNOW_REPOS": {
+		"UNKNOWN_REPOS": {
 			"DESCRIPTION": "Esta lista de reprodução contém músicas de repositórios que você ainda não possui localmente.",
 			"DOWNLOAD_THEM": "Deseja adicioná-los agora?",
 			"TITLE": "Repositórios desconhecidos detectados"
@@ -1270,7 +1270,7 @@
 		"DATABASE_GENERATED_ERROR": "Erro durante a geração do banco de dados",
 		"REPO_GIT_CHECK_ERROR": "Não foi possível verificar o status do repositório git",
 		"SESSION_EXPORT_ERROR": "Erro ao exportar sessão",
-		"UNKNOW_CONVERT_ERROR": "Usuário desconhecido",
+		"UNKNOWN_CONVERT_ERROR": "Usuário desconhecido",
 		"UNKNOWN_STASH": "Esconderijo desconhecido",
 		"MEDIAS_FOLDER_OPEN_ERROR": "Falha ao abrir a pasta de mídia",
 		"UNKNOWN_SONG": "Música desconhecida",

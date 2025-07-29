@@ -789,7 +789,7 @@
 	"NEXT_SONG_MESSAGE": "Następne w kolejce:",
 	"USER_SONG_PLAYS_IN": "Twoja piosenka {{kara}} została dodana i będzie wyemitowana za {{time}} ({{date}})",
 	"MODAL": {
-		"UNKNOW_REPOS": {
+		"UNKNOWN_REPOS": {
 			"TITLE": "Wykryto nieznane repozytoria",
 			"DOWNLOAD_THEM": "Czy chcesz je teraz dodać?",
 			"DESCRIPTION": "Ta playlista zawiera utwory z repozytoriów, których jeszcze nie masz lokalnie."
@@ -1899,7 +1899,7 @@
 		"USER_EMPTY_PASSWORD": "Twoje hasło jest puste!",
 		"USER_DELETE_ERROR": "Błąd podczas usuwania użytkownika",
 		"USER_EDIT_ERROR": "Błąd podczas edycji użytkownika",
-		"UNKNOW_CONVERT_ERROR": "Użytkownik nieznany",
+		"UNKNOWN_CONVERT_ERROR": "Użytkownik nieznany",
 		"PASSWORD_TOO_SHORT": "Hasło jest za krótkie (minimum 8 znaków)",
 		"USER_DELETE_ERROR_ONLINE": "Błąd podczas usuwania konta online",
 		"UPDATING_MEDIAS_ERROR": "Repozytorium {{repo}} nie zaktualizowało poprawnie nośnika: {{err}}",

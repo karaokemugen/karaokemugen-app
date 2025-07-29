@@ -672,7 +672,7 @@
 	"NEXT_SONG_MESSAGE": "Coming up next :",
 	"USER_SONG_PLAYS_IN": "Your song {{kara}} has been added and will be airing in {{time}} ({{date}})",
 	"MODAL": {
-		"UNKNOW_REPOS": {
+		"UNKNOWN_REPOS": {
 			"TITLE": "Unknown repositories detected",
 			"DESCRIPTION": "This playlist contains songs from repositories you do not have yet locally.",
 			"DOWNLOAD_THEM": "Do you want to add them now?"
@@ -970,6 +970,41 @@
 			"STRING_FORMAT_NONE": "None",
 			"STRING_FORMAT_BOLD": "Bold",
 			"STRING_FORMAT_ITALIC": "Italic"
+		},
+		"PLAYLIST_IMPORT": {
+			"TITLE": "Import Playlists",
+			"IMPORT_FROM_FILE": "Import from file",
+			"FILTER": "Filters",
+			"FILTER_LABELS": {
+				"my": "Show my playlists",
+				"downloaded": "Show downloaded playlists"
+			},
+			"SORT_OPTIONS": "Sort playlists",
+			"SORT_OPTIONS_LABELS": {
+				"az": "Alphabetical",
+				"recent": "Date Added",
+				"karacount": "Number of songs",
+				"duration": "Duration",
+				"favorited": "Likes",
+				"username": "Author's Nickname"
+			},
+			"BY_AUTHOR": "by {{author}}",
+			"AND_CONTRIBUTORS": "(and {{contributors, list}})",
+			"AND_CONTRIBUTORS_AND_MORE": "(and {{contributors, list}}, {{numberOfOthers, number}} more)",
+			"KARA_COUNT": "{{karacount}} songs",
+			"DURATION": "Duration {{duration}}",
+			"DOWNLOAD_PLAYLIST": "Download playlist",
+			"UPDATE_PLAYLIST": "Update playlist",
+			"CONNECTION_ERROR_TO_REMOTE_SERVER": "Couldn't fetch playlists from {{serverName}}. Check your internet connection and if the problem persists, contact an admin of {{serverName}}."
+		},
+		"PLAYLIST_EXPORT": {
+			"TITLE": "Export {{playlistName}}",
+			"EXPORT_TO_FILE": "Export to file",
+			"EXPORT_TO_SERVER": "Export to server",
+			"COPY_PLAYLIST": "Copy playlist to my account",
+			"DESCRIPTION_NOT_OWNED_ON_SERVER": "This playlist is already present on {{serverName}}. Exporting this playlist to the server will create a copy of this playlist under your name.",
+			"DESCRIPTION_OWNED_ON_SERVER": "This playlist is already present on {{serverName}}. Exporting this playlist to the server will OVERWRITE the contents of the playlist. This CANNOT be undone.",
+			"DESCRIPTION_DOES_NOT_EXIST_ON_SERVER": "This playlist does not exists on {{serverName}}. Exporting this playlist to the server will create a new playlist."
 		}
 	},
 	"SETUP_PAGE": {
@@ -1830,7 +1865,7 @@
 		"USER_EDIT_ERROR": "Error editing user",
 		"USER_RESETPASSWORD_ERROR": "Error resetting user password",
 		"ADMIN_CONVERT_ERROR": "The \"admin\" account cannot be converted to an online account",
-		"UNKNOW_CONVERT_ERROR": "User unknown",
+		"UNKNOWN_CONVERT_ERROR": "User unknown",
 		"PASSWORD_TOO_SHORT": "Password too short (minimum 8 characters)",
 		"USER_DELETE_ERROR_ONLINE": "Error deleting your online account",
 		"USER_RESETPASSWORD_ONLINE_ERROR": "Could not reset your password: contact the the server's administrator your account belongs to.",
@@ -1890,7 +1925,9 @@
 		"IMPORT_SONG_TEMPLATE_ERROR_DUPLICATE_TAG": "Unable to identify songs from template, duplicate tag in the template",
 		"IMPORT_SONG_TEMPLATE_ERROR": "Unable to identify songs from template",
 		"IMPORT_NO_TITLE_ERROR": "Unable to import songs, title is missing in the template",
-		"IMPORT_SONG_ERROR": "Unable to import songs"
+		"IMPORT_SONG_ERROR": "Unable to import songs",
+		"PL_DO_NOT_MATCH_REPO": "Some playlist songs do not exist on the remote server",
+		"REMOTE_SERVER_CONNECTION_ERROR": "Couldn't connect to remote server"
 	},
 	"WARNING_CODES": {
 		"REMOTE_HIGH_LATENCY_DETECTED": "Your connection with {{host}} is slow, your users might encounter issues"
@@ -1941,7 +1978,8 @@
 		"REPO_OLD_MEDIAS_DELETED": "Older media from repository deleted",
 		"REPO_MEDIA_DELETED": "Media deleted",
 		"USER_RESETPASSWORD_SUCCESS": "User password successfully Reset",
-		"CHANGES_OCCUR_ON_NEXT_SONG": "This setting will be active on next song."
+		"CHANGES_OCCUR_ON_NEXT_SONG": "This setting will be active on next song.",
+		"PLAYLIST_EXPORTED_TO_SERVER": "Playlist successfully exported to server {{data}}"
 	},
 	"HEADERS": {
 		"HOME": {

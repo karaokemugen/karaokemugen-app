@@ -1,3 +1,4 @@
+import { v4 as UUIDv4 } from 'uuid';
 import { pg as yesql } from 'yesql';
 
 import { buildClauses, db, transaction } from '../lib/dao/database.js';
@@ -65,8 +66,10 @@ export function updatePlaylist(pl: DBPL) {
 }
 
 export async function insertPlaylist(pl: DBPL): Promise<string> {
-	const res = await db().query(
+	const plaid = pl.plaid || UUIDv4();
+	await db().query(
 		yesql(sqlcreatePlaylist)({
+			plaid: plaid,
 			name: pl.name,
 			created_at: pl.created_at || new Date(),
 			modified_at: pl.modified_at || new Date(),
@@ -79,9 +82,13 @@ export async function insertPlaylist(pl: DBPL): Promise<string> {
 			flag_fallback: pl.flag_fallback || false,
 			type_smart: pl.type_smart || 'INTERSECT',
 			username: pl.username.toLowerCase(),
+			nickname: pl.nickname,
+			description: pl.description,
+			slug: pl.slug,
+			contributors: pl.contributors,
 		})
 	);
-	return res.rows[0]?.pk_plaid;
+	return plaid;
 }
 
 export function truncatePlaylist(id: string) {

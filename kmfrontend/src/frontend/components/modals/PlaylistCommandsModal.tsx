@@ -7,16 +7,16 @@ import nanamiShockedWebP from '../../../assets/nanami-shocked.webp';
 import { showModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import { isElectron } from '../../../utils/electron';
-import { getOppositePlaylistInfo, getPlaylistInfo, setPlaylistInfo } from '../../../utils/kara';
-import { getFavoritesExportFileName, getPlaylistExportFileName } from '../../../utils/playlist';
-import { commandBackend, getSocket } from '../../../utils/socket';
+import { getOppositePlaylistInfo, getPlaylistInfo } from '../../../utils/kara';
+import { commandBackend } from '../../../utils/socket';
 import { callModal, displayMessage, isNonStandardPlaylist, nonStandardPlaylists } from '../../../utils/tools';
 import AutoMixModal from './AutoMixModal';
 import DeletePlaylistModal from './DeletePlaylistModal';
 import PlaylistModal from './PlaylistModal';
 import ShuffleModal from './ShuffleModal';
 import { WS_CMD } from '../../../utils/ws';
-import { HttpMessage, WSCmdDefinition } from '../../../../../src/lib/types/frontend';
+import PlaylistImportModal from './PlaylistImportModal';
+import PlaylistExportModal from './PlaylistExportModal';
 
 interface IProps {
 	side: 'left' | 'right';
@@ -39,42 +39,21 @@ function PlaylistCommandsModal(props: IProps) {
 		showModal(context.globalDispatch, <ShuffleModal playlist={playlist} />);
 	};
 
+	const openPlaylistImportModal = () => {
+		props.closePlaylistCommands();
+		showModal(context.globalDispatch, <PlaylistImportModal side={props.side} />);
+	};
+
+	const openPlaylistExportModal = () => {
+		props.closePlaylistCommands();
+		showModal(context.globalDispatch, <PlaylistExportModal side={props.side} />);
+	};
+
 	const startFavMix = async () => {
 		props.closePlaylistCommands();
 		const response = await commandBackend(WS_CMD.GET_USERS);
 		const userList = response.filter((u: User) => (u.type as number) < 2);
 		showModal(context.globalDispatch, <AutoMixModal side={props.side} userList={userList} />);
-	};
-
-	const exportPlaylist = async () => {
-		props.closePlaylistCommands();
-		let url;
-		let data;
-		const playlist = getPlaylistInfo(props.side, context);
-		if (playlist?.plaid === nonStandardPlaylists.favorites) {
-			url = WS_CMD.EXPORT_FAVORITES;
-		} else if (!isNonStandardPlaylist(playlist?.plaid)) {
-			url = WS_CMD.EXPORT_PLAYLIST;
-			data = { plaid: playlist?.plaid };
-		}
-		if (url) {
-			try {
-				const response = await commandBackend(url, data);
-				const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(response, null, 4));
-				const dlAnchorElem = document.getElementById('downloadAnchorElem');
-				if (dlAnchorElem) {
-					dlAnchorElem.setAttribute('href', dataStr);
-					const fileName =
-						playlist?.plaid === nonStandardPlaylists.favorites
-							? getFavoritesExportFileName(context.globalState.auth.data.username)
-							: getPlaylistExportFileName(playlist);
-					dlAnchorElem.setAttribute('download', fileName);
-					dlAnchorElem.click();
-				}
-			} catch (_) {
-				// already display
-			}
-		}
 	};
 
 	const exportPlaylistMediaEnabled = isElectron(); // Make sure it's an electron environment
@@ -134,92 +113,6 @@ function PlaylistCommandsModal(props: IProps) {
 		else showModal(context.globalDispatch, <DeletePlaylistModal side={props.side} playlistList={playlistList} />);
 	};
 
-	const importPlaylistResponse = (data, file) => {
-		if (data.reposUnknown?.length > 0) {
-			callModal(
-				context.globalDispatch,
-				'confirm',
-				i18next.t('MODAL.UNKNOW_REPOS.TITLE'),
-				<>
-					<p>{i18next.t('MODAL.UNKNOW_REPOS.DESCRIPTION')}</p>
-					<div>{i18next.t('MODAL.UNKNOW_REPOS.DOWNLOAD_THEM')}</div>
-					<br />
-					{data.reposUnknown.map((repository: string) => (
-						<label key={repository}>{repository}</label>
-					))}
-				</>,
-				() =>
-					data.reposUnknown.forEach((repoName: string) => {
-						commandBackend(WS_CMD.ADD_REPO, {
-							Name: repoName,
-							Online: true,
-							Enabled: true,
-							SendStats: false,
-							AutoMediaDownloads: 'updateOnly',
-							MaintainerMode: false,
-							Git: null,
-							BaseDir: `repos/${repoName}`,
-							Path: {
-								Medias: [`repos/${repoName}/medias`],
-							},
-						});
-					})
-			);
-		}
-		const plaid = file?.name.includes('.kmfavorites') ? nonStandardPlaylists.favorites : data.plaid;
-		setPlaylistInfo(props.side, context, plaid);
-	};
-
-	const importPlaylist = (e: any) => {
-		props.closePlaylistCommands();
-		let url: WSCmdDefinition<object, HttpMessage<{ plaid: string; reposUnknown?: string[] } | undefined>>;
-		let fr: FileReader;
-		let file: File;
-		if (!window.FileReader) return alert('FileReader API is not supported by your browser.');
-		if (e.target.files && e.target.files[0]) {
-			try {
-				file = e.target.files[0];
-				fr = new FileReader();
-				fr.onload = async () => {
-					const data: {
-						playlist?: string | ArrayBuffer | null;
-						favorites?: string | ArrayBuffer | null;
-						blcSet?: string | ArrayBuffer | null;
-					} = {};
-					let name: string;
-					const json = JSON.parse(fr.result as string);
-					if (file.name.includes('.kmfavorites')) {
-						data.favorites = json;
-						url = WS_CMD.IMPORT_FAVORITES;
-						name = 'Favs';
-					} else {
-						url = WS_CMD.IMPORT_PLAYLIST;
-						data.playlist = json;
-						name = json?.PlaylistInformation?.name;
-					}
-					const response = await commandBackend(url, data);
-					if (response.message.data.reposUnknown?.length > 0) {
-						importPlaylistResponse(response.message.data, file);
-					} else {
-						if (!file?.name.includes('.kmfavorites')) {
-							displayMessage(
-								'success',
-								i18next.t(`SUCCESS_CODES.${response.message.code}`, { data: name })
-							);
-						}
-						const plaid = file?.name.includes('.kmfavorites')
-							? nonStandardPlaylists.favorites
-							: response.message.data.plaid;
-						setPlaylistInfo(props.side, context, plaid);
-					}
-				};
-				fr.readAsText(file);
-			} catch (_) {
-				// already display
-			}
-		}
-	};
-
 	const deleteAllKaras = () => {
 		props.closePlaylistCommands();
 		const playlist = getPlaylistInfo(props.side, context);
@@ -251,13 +144,6 @@ function PlaylistCommandsModal(props: IProps) {
 			props.closePlaylistCommands();
 		}
 	};
-
-	useEffect(() => {
-		getSocket().on('playlistImported', importPlaylistResponse);
-		return () => {
-			getSocket().off('playlistImported', importPlaylistResponse);
-		};
-	}, []);
 
 	useEffect(() => {
 		document.getElementById('root').addEventListener('click', handleClick);
@@ -347,7 +233,7 @@ function PlaylistCommandsModal(props: IProps) {
 			) : null}
 			{playlist?.plaid !== nonStandardPlaylists.library && playlist?.plaid !== nonStandardPlaylists.animelist ? (
 				<li>
-					<div onClick={exportPlaylist}>
+					<div onClick={openPlaylistExportModal}>
 						<i className="fas fa-fw fa-upload" />
 						{i18next.t(
 							playlist?.plaid === nonStandardPlaylists.favorites ? 'FAVORITES_EXPORT' : 'ADVANCED.EXPORT'
@@ -395,22 +281,12 @@ function PlaylistCommandsModal(props: IProps) {
 				</li>
 			) : null}
 			<li>
-				<div>
+				<div onClick={openPlaylistImportModal}>
 					<label className="importFile" htmlFor={'import-file' + props.side}>
 						<i className="fas fa-fw fa-download" />
-						{i18next.t(
-							playlist?.plaid === nonStandardPlaylists.favorites ? 'FAVORITES_IMPORT' : 'ADVANCED.IMPORT'
-						)}
+						{i18next.t('ADVANCED.IMPORT')}
 					</label>
 				</div>
-				<input
-					id={'import-file' + props.side}
-					className="import-file"
-					type="file"
-					style={{ display: 'none' }}
-					accept=".kmplaylist, .kmfavorites, .kmblc"
-					onChange={importPlaylist}
-				/>
 			</li>
 		</ul>
 	);

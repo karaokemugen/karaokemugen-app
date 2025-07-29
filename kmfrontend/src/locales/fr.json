@@ -672,7 +672,7 @@
 	"NEXT_SONG_MESSAGE": "La suite avec :",
 	"USER_SONG_PLAYS_IN": "Votre chanson {{kara}} a été ajoutée et sera diffusée dans {{time}} ({{date}})",
 	"MODAL": {
-		"UNKNOW_REPOS": {
+		"UNKNOWN_REPOS": {
 			"TITLE": "Dépôts inconnus détectés",
 			"DESCRIPTION": "Cette liste de lecture contient des chansons depuis des dépôts que vous n'avez pas encore.",
 			"DOWNLOAD_THEM": "Voulez-vous les ajouter ?"
@@ -970,6 +970,32 @@
 			"DONE_PARTIALLY": "Les fichiers média des listes de lecture ont été exportés, mais ils n'ont pas pu être sauvegardés :",
 			"NOT_ALL_MEDIA_DOWNLOADED": "Tous les médias ne sont pas disponibles localement. Veuillez vous assurer de télécharger toutes les médias avant d'exporter la liste de lecture",
 			"START": "Les fichiers médias sont en cours d'exportation…"
+		},
+		"PLAYLIST_IMPORT": {
+			"TITLE": "Importation de listes de lecture",
+			"IMPORT_FROM_FILE": "Importer depuis un fichier",
+			"FILTER": "Filtres",
+			"FILTER_LABELS": {
+				"my": "Afficher mes listes de lecture",
+				"downloaded": "Afficher les listes de lecture téléchargées"
+			},
+			"SORT_OPTIONS": "Trier les listes de lecture",
+			"SORT_OPTIONS_LABELS": {
+				"az": "Alphabétique",
+				"recent": "Date d'ajout",
+				"karacount": "Nombre de chansons",
+				"duration": "Durée",
+				"favorited": "Favoris",
+				"username": "Nom d'utilisateur"
+			},
+			"BY_AUTHOR": "par {{author}}",
+			"AND_CONTRIBUTORS": "(et {{contributors, list}})",
+			"AND_CONTRIBUTORS_AND_MORE": "(et {{contributors, list}}, {{numberOfOthers, number}} de plus)",
+			"KARA_COUNT": "{{karacount}} chansons",
+			"DURATION": "Durée : {{duration}}",
+			"DOWNLOAD_PLAYLIST": "Télécharger la liste de lecture",
+			"UPDATE_PLAYLIST": "Mettre à jour la liste de lecture",
+			"CONNECTION_ERROR_TO_REMOTE_SERVER": "Les listes de lecture de {{serverName}} n'ont pas pu être chargées. Veuillez vérifier votre connexion internet et si le problème persiste contactez un administrateur de {{serverName}}."
 		}
 	},
 	"SETUP_PAGE": {
@@ -1827,7 +1853,7 @@
 		"USER_EDIT_ERROR": "Erreur lors de l'édition de l'utilisateur",
 		"USER_RESETPASSWORD_ERROR": "Erreur lors de la réinitialisation du mot de passe de l'utilisateur",
 		"ADMIN_CONVERT_ERROR": "Le compte 'admin' ne peut être converti vers un compte en ligne",
-		"UNKNOW_CONVERT_ERROR": "Utilisateur inconnu",
+		"UNKNOWN_CONVERT_ERROR": "Utilisateur inconnu",
 		"PASSWORD_TOO_SHORT": "Mot de passe trop court (8 caractères minimum)",
 		"USER_DELETE_ERROR_ONLINE": "Erreur lors de la suppression du compte en ligne",
 		"USER_RESETPASSWORD_ONLINE_ERROR": "Impossible de vous envoyer un email de réinitialisation : contactez l'administrateur du serveur dont vous dépendez.",
@@ -1890,7 +1916,8 @@
 		"IMPORT_SONG_TEMPLATE_ERROR_DUPLICATE_TAG": "Impossible d'identifier des chansons depuis le modèle, un tag est dupliqué dans le modèle",
 		"IMPORT_SONG_TEMPLATE_ERROR": "Impossible d'identifier des chansons depuis le modèle",
 		"IMPORT_NO_TITLE_ERROR": "Impossible d'importer des chansons, le titre est absent du modèle",
-		"IMPORT_SONG_ERROR": "Impossible d'importer des chansons"
+		"IMPORT_SONG_ERROR": "Impossible d'importer des chansons",
+		"PL_DO_NOT_MATCH_REPO": "Certaines chansons de la liste de lecture n'existent pas sur le serveur distant"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Ajout de {{data}} téléchargements à la file d'attente",
@@ -1938,7 +1965,8 @@
 		"REPO_OLD_MEDIAS_DELETED": "Suppression avec succès des médias les plus anciens du dépôt",
 		"REPO_MEDIA_DELETED": "Media supprimé avec succès",
 		"USER_RESETPASSWORD_SUCCESS": "Mot de passe de l'utilisateur réinitialisé avec succès",
-		"CHANGES_OCCUR_ON_NEXT_SONG": "La modification prendra effet à la prochaine chanson."
+		"CHANGES_OCCUR_ON_NEXT_SONG": "La modification prendra effet à la prochaine chanson.",
+		"PLAYLIST_EXPORTED_TO_SERVER": "La liste de lecture a été exportée avec succès au serveur {{data}}"
 	},
 	"HEADERS": {
 		"HOME": {

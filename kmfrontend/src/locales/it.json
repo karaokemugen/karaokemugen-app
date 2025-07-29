@@ -853,7 +853,7 @@
 			"LATER": "Chiedimelo dopo",
 			"TITLE": "Download in sospeso"
 		},
-		"UNKNOW_REPOS": {
+		"UNKNOWN_REPOS": {
 			"TITLE": "Rilevati archivi sconosciuti",
 			"DESCRIPTION": "Questa playlist contiene brani da archivi che non possiedi localmente.",
 			"DOWNLOAD_THEM": "Vuoi aggiungerli adesso?"
@@ -1147,7 +1147,7 @@
 		"ADMIN_CONVERT_ERROR": "L'account \"admin\" non può essere convertito ad account online",
 		"KARA_HISTORY_ERROR": "Errore durante il recupero dei brani ordinati per data di riproduzione",
 		"MEDIA_DELETE_ERROR": "Errore durante l'eliminazione del file multimediale",
-		"UNKNOW_CONVERT_ERROR": "Utente sconosciuto",
+		"UNKNOWN_CONVERT_ERROR": "Utente sconosciuto",
 		"INBOX_VIEW_ERROR": "Impossibile recuperare i brani dalla posta",
 		"CANNOT_INSTALL_REPO_AT_WINDOWS_ROOT_DRIVE": "L'archivio non può essere installato alla radice di un disco Windows.",
 		"REPO_GIT_STASH_ERROR": "Impossibile effettuare lo Stash dei cambiamenti",
