@@ -61,12 +61,17 @@ UPDATE playlist SET
 	type_smart = :type_smart,
 	smart_limit_order = :smart_limit_order,
 	smart_limit_type = :smart_limit_type,
-	smart_limit_number = :smart_limit_number
+	smart_limit_number = :smart_limit_number,
+	slug = :slug,
+	description = :description,
+	nickname = :nickname,
+	contributors = :contributors
 WHERE pk_plaid = :plaid;
 `;
 
 export const sqlcreatePlaylist = `
 INSERT INTO playlist(
+	pk_plaid,
 	name,
 	karacount,
 	duration,
@@ -81,9 +86,14 @@ INSERT INTO playlist(
 	flag_smart,
 	type_smart,
 	fk_login,
-	time_left
+	time_left,
+	slug,
+	description,
+	nickname,
+	contributors
 )
 VALUES(
+	:plaid,
 	:name,
 	0,
 	0,
@@ -98,7 +108,11 @@ VALUES(
 	:flag_smart,
 	:type_smart,
 	:username,
-	0
+	0,
+	:slug,
+	:description,
+	:nickname,
+	:contributors
 ) RETURNING pk_plaid
 `;
 

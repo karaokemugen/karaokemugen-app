@@ -20,7 +20,13 @@ import {
 	YearList,
 } from '../../../src/lib/types/kara.js';
 import { LogLine } from '../../../src/lib/types/logger.js';
-import { Criteria, PlaylistExport, PLCEditParams, PLCSearchParams } from '../../../src/lib/types/playlist.js';
+import {
+	Criteria,
+	PlaylistExport,
+	PLCEditParams,
+	PLCSearchParams,
+	ServerDBPL,
+} from '../../../src/lib/types/playlist.js';
 import { RemoteFailure, RemoteSuccess } from '../../../src/lib/types/remote.js';
 import { Repository, RepositoryBasic, RepositoryManifestV2 } from '../../../src/lib/types/repo.js';
 import { Tag, TagParams } from '../../../src/lib/types/tag.js';
@@ -64,8 +70,8 @@ export const WS_CMD = {
 	ADD_DOWNLOADS: defineWSCmd<{ downloads: KaraDownloadRequest[] }, APIMessageType<number>>('addDownloads'),
 	GET_DOWNLOADS: defineWSCmd<undefined, DBDownload[]>('getDownloads'),
 	GET_DOWNLOAD_QUEUE_STATUS: defineWSCmd<undefined, QueueStatus>('getDownloadQueueStatus'),
-	DELETE_DOWNLOADS: defineWSCmd<undefined, QueryResult<any>>('deleteDownloads'),
-	PAUSE_DOWNLOADS: defineWSCmd<undefined, any>('pauseDownloads'),
+	DELETE_DOWNLOADS: defineWSCmd<undefined, QueryResult<unknown>>('deleteDownloads'),
+	PAUSE_DOWNLOADS: defineWSCmd<undefined, unknown>('pauseDownloads'),
 	START_DOWNLOAD_QUEUE: defineWSCmd<undefined, APIMessageType<unknown>>('startDownloadQueue'),
 	UPDATE_ALL_MEDIAS: defineWSCmd<{ repoNames: string[]; dryRun?: boolean }, APIMessageType<unknown>>(
 		'updateAllMedias'
@@ -207,12 +213,19 @@ export const WS_CMD = {
 	RANDOMIZE_PLC: defineWSCmd<{ plc_ids: number[] }, void>('randomizePLC'),
 	VOTE_PLC: defineWSCmd<{ plc_id: number; downvote?: boolean }, void>('votePLC'),
 	EXPORT_PLAYLIST: defineWSCmd<{ plaid: string }, PlaylistExport>('exportPlaylist'),
-	IMPORT_PLAYLIST: defineWSCmd<{ playlist: PlaylistExport }, HttpMessage<{ plaid: string; unknownRepos: string[] }>>(
-		'importPlaylist'
-	),
+	IMPORT_PLAYLIST: defineWSCmd<
+		{ playlist: PlaylistExport; plaid?: string },
+		HttpMessage<{ plaid: string; unknownRepos: string[] }>
+	>('importPlaylist'),
 	SHUFFLE_PLAYLIST: defineWSCmd<{ plaid: string; method: ShuffleMethods; fullShuffle: boolean }, void>(
 		'shufflePlaylist'
 	),
+	// AREA src\controllers\frontend\playlistsOnline.ts
+	GET_PLAYLISTS_FROM_KM_SERVER: defineWSCmd<{ filter: string; myPlaylistsOnly?: boolean }, ServerDBPL[]>(
+		'getPlaylistsFromKMServer'
+	),
+	GET_PLAYLIST_FROM_KM_SERVER: defineWSCmd<{ plaid: string }, PlaylistExport>('getPlaylistFromKMServer'),
+	POST_PLAYLIST_TO_KM_SERVER: defineWSCmd<{ pl: PlaylistExport }, HttpMessage<string>>('postPlaylistToKMServer'),
 	// AREA src\controllers\frontend\poll.ts
 	GET_POLL: defineWSCmd<undefined, PollObject>('getPoll'),
 	VOTE_POLL: defineWSCmd<{ index: number }, HttpMessage<PollItem[]>>('votePoll'),

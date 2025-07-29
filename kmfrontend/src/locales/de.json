@@ -900,7 +900,7 @@
 		"ADMIN_CONVERT_ERROR": "Das lokale „Admin“-Konto kann nicht in ein Online-Konto umgewandelt werden",
 		"KARA_HISTORY_ERROR": "Fehler beim Sortieren der Songs nach Wiedergabedatum",
 		"MEDIA_DELETE_ERROR": "Fehler beim Löschen von Medien",
-		"UNKNOW_CONVERT_ERROR": "Benutzer unbekannt",
+		"UNKNOWN_CONVERT_ERROR": "Benutzer unbekannt",
 		"REPO_GIT_STASH_ERROR": "Deine Git Änderungen (git stash) können nicht gespeichert werden",
 		"REPO_GIT_PUSH_ERROR": "Git-Commits können nicht gepusht werden",
 		"DOWNLOADS_GET_ERROR": "Fehler beim Abrufen von Downloads aus der Warteschlange",
@@ -1245,7 +1245,7 @@
 			"EDIT": "Editieren",
 			"CANNOT_CURRENT_PLAYLIST": "Du kannst keine aktuelle Playlist haben. Bearbeite stattdessen die Playlist, die du als neue aktuelle Playlist festlegen möchtest."
 		},
-		"UNKNOW_REPOS": {
+		"UNKNOWN_REPOS": {
 			"TITLE": "Unbekannte Repositorys erkannt",
 			"DESCRIPTION": "Diese Playlist enthält Songs aus Repositories, die du noch nicht lokal hast.",
 			"DOWNLOAD_THEM": "Möchtest du sie jetzt hinzufügen?"
