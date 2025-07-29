@@ -13,7 +13,12 @@ import { getLanguageIn3B, langSupport } from './isoLanguages';
 import { isRemote } from './socket';
 import { getTagTypeName, tagTypes } from './tagTypes';
 import { getProtocolForOnline } from './tools';
-import { KaraLineDisplayElement, KaraLineDisplayType, KaraLineElement, StyleFontType } from '../../../src/types/config';
+import {
+	KaraLineDisplayElement,
+	KaraLineDisplayType,
+	KaraLineElement,
+	StyleFontType,
+} from '../../../src/lib/types/config';
 
 export function getDescriptionInLocale(settings: SettingsStoreData, description: Record<string, string>): string {
 	if (!description) return '';

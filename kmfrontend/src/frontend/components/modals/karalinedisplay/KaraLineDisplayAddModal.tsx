@@ -8,7 +8,7 @@ import type {
 	KaraLineDisplayType,
 	KaraLineElement,
 	StyleFontType,
-} from '../../../../../../src/types/config';
+} from '../../../../../../src/lib/types/config';
 import { tagTypes } from '../../../../utils/tagTypes';
 import KaraLineDisplayModal from './KaraLineDisplayModal';
 import KaraLineDisplayAddModalDndList from './KaraLineDisplayAddModalDndList';

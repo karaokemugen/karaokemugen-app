@@ -1,8 +1,7 @@
-import { PathType } from '../lib/types/config.js';
+import { KaraLineDisplayElement, KaraSortElement, PathType } from '../lib/types/config.js';
 import { PositionX, PositionY } from '../lib/types/index.js';
 import { PlaylistMediaType } from '../lib/types/playlistMedias.js';
 import { Collections, Repository } from '../lib/types/repo.js';
-import { TagType } from '../lib/types/tag.js';
 import { endOfPlaylistActions } from '../utils/defaultSettings.js';
 import { MpvHardwareDecodingOptions } from './mpvIPC.js';
 import { SongModifiers } from './player.js';
@@ -66,18 +65,6 @@ export interface DBConfig {
 	socket?: string;
 	connection?: 'tcp' | 'socket';
 	RestoreNeeded?: boolean;
-}
-
-export type KaraLineElement = TagType | 'title' | 'displayType';
-export type KaraSortType = TagType | 'title' | 'parents';
-export type KaraSortElement = KaraSortType | KaraSortType[];
-export type KaraLineDisplayType = 'short' | 'i18n' | 'tag';
-export type StyleFontType = 'bold' | 'italic';
-
-export interface KaraLineDisplayElement {
-	type: KaraLineElement | KaraLineElement[];
-	display: KaraLineDisplayType;
-	style?: StyleFontType;
 }
 
 export interface Config {
