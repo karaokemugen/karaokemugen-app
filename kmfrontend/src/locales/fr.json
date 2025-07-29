@@ -996,6 +996,15 @@
 			"DOWNLOAD_PLAYLIST": "Télécharger la liste de lecture",
 			"UPDATE_PLAYLIST": "Mettre à jour la liste de lecture",
 			"CONNECTION_ERROR_TO_REMOTE_SERVER": "Les listes de lecture de {{serverName}} n'ont pas pu être chargées. Veuillez vérifier votre connexion internet et si le problème persiste contactez un administrateur de {{serverName}}."
+		},
+		"PLAYLIST_EXPORT": {
+			"TITLE": "Exporter {{playlistName}}",
+			"EXPORT_TO_FILE": "Exporter vers un fichier",
+			"EXPORT_TO_SERVER": "Exporter vers le serveur",
+			"COPY_PLAYLIST": "Copier dans la liste de lecture dans mon compte",
+			"DESCRIPTION_NOT_OWNED_ON_SERVER": "Cette liste de lecture est déjà présente sur {{serverName}}. L'exportation de cette liste de lecture vers le serveur créera une copie de cette liste de lecture sous votre nom.",
+			"DESCRIPTION_OWNED_ON_SERVER": "Cette liste de lecture est déjà présente sur {{serverName}}. L'exportation de cette liste de lecture vers le serveur ÉCRASERA le contenu de la liste de lecture. Cette opération NE PEUT PAS être annulée.",
+			"DESCRIPTION_DOES_NOT_EXIST_ON_SERVER": "Cette liste de lecture n'existe pas sur {{serverName}}. L'exportation de cette liste de lecture vers le serveur créera une nouvelle liste de lecture."
 		}
 	},
 	"SETUP_PAGE": {
@@ -1917,7 +1926,8 @@
 		"IMPORT_SONG_TEMPLATE_ERROR": "Impossible d'identifier des chansons depuis le modèle",
 		"IMPORT_NO_TITLE_ERROR": "Impossible d'importer des chansons, le titre est absent du modèle",
 		"IMPORT_SONG_ERROR": "Impossible d'importer des chansons",
-		"PL_DO_NOT_MATCH_REPO": "Certaines chansons de la liste de lecture n'existent pas sur le serveur distant"
+		"PL_DO_NOT_MATCH_REPO": "Certaines chansons de la liste de lecture n'existent pas sur le serveur distant",
+		"REMOTE_SERVER_CONNECTION_ERROR": "Impossible de se connecter au serveur distant"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Ajout de {{data}} téléchargements à la file d'attente",
