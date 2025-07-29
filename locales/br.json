@@ -37,5 +37,8 @@
 	},
 	"UNKNOWN_REPOSITORY_ADD": {
 		"TITLE": "Kavlec'hiad dianav"
-	}
+	},
+	"MY_PLAYLIST": "Ma roll-lenn",
+	"CURRENT_PLAYLIST": "Roll-lenn",
+	"MENU_FILE_IMPORT_PLAYLIST": "&Roll-lenn…"
 }
