@@ -120,7 +120,7 @@ export default class Git {
 			if (origin && (origin.refs.fetch !== url || origin.refs.push !== url)) {
 				logger.debug(`${this.opts.repoName}: Rebuild remote`, { service });
 				await this.setRemote();
-				await this.git.branch(['--set-upstream-to=origin/master', 'master']);
+				await this.git.branch([`--set-upstream-to=origin/${repo.Git.Branch}`, repo.Git.Branch]);
 			}
 		}
 	}
@@ -202,7 +202,7 @@ export default class Git {
 		return this.git.pull(['--rebase']);
 	}
 
-	async push() {
+	async push(branch: string) {
 		logger.debug('Pushing...', { service });
 		this.task = new Task({
 			text: `${this.opts.repoName}: ${i18next.t('GIT.CURRENT_ACTION')} - ${i18next.t('GIT.METHODS.push')}`,
@@ -210,7 +210,7 @@ export default class Git {
 			total: 100,
 		});
 		try {
-			await this.git.push('origin', 'master');
+			await this.git.push('origin', branch);
 		} catch (err) {
 			throw err;
 		} finally {

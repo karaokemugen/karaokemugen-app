@@ -7,6 +7,7 @@ import { setConfig } from '../lib/utils/config.js';
 import { getPlaylists } from '../services/playlist.js';
 import { adminToken } from '../utils/constants.js';
 import {
+	branchRepositoryIsNowMandatory,
 	decoupleOnlineConfig,
 	removeKaraokeMugenFolderInPlaylistMedias,
 	renameSSHKeys,
@@ -66,6 +67,9 @@ export async function postMigrationTasks(migrations: Postgrator.Migration[], did
 				break;
 			case 'changeSearchableFieldsInAllKaras':
 				if (!didGeneration) refreshSortables();
+				break;
+			case 'branchRepositoryIsNowMandatory':
+				branchRepositoryIsNowMandatory();
 				break;
 			default:
 		}

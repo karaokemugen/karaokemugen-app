@@ -1556,6 +1556,7 @@
 		"STORAGE_INFO_MOVE": "You also have the ability, in the repositories management page to move the files of a repository somewhere else like on an external drive, USB key or a network share, allowing you to free space on your main drive.",
 		"NO_FREE_SPACE": "Not enough disk space to download! Make space on your disk and restart the queue.",
 		"GIT": {
+			"BRANCH":" Branch",
 			"URL": "Git Repository",
 			"USERNAME": "Git Username",
 			"PASSWORD": "Git Password (or Gitlab/Github token)",

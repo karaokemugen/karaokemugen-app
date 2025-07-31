@@ -572,7 +572,7 @@ export async function resetRepo(name: string) {
 		const repo = getRepo(name);
 		if (!repo) throw new ErrorKM('UNKNOWN_REPOSITORY', 404, false);
 		const git = await setupGit(repo);
-		await git.reset(['--hard', 'origin/master']);
+		await git.reset(['--hard', `origin/${repo.Git.Branch}`]);
 		await git.wipeChanges();
 	} catch (err) {
 		logger.error(`Error git resetting ${name} : ${err}`, { service });
@@ -1532,7 +1532,7 @@ export async function pushCommits(repoName: string, push: Push, ignoreFTP?: bool
 			}
 			// All our commits are hopefully done. Just in case we'll update repository now.
 			await updateGitRepo(repoName);
-			await git.push();
+			await git.push(repo.Git.Branch);
 			// Let's do deletes and renames on FTP now. And pray it doesn't fail.
 			if (!ignoreFTP && push.modifiedMedias.length > 0) {
 				await ftp.connect();

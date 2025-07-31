@@ -1,7 +1,6 @@
 import { pg as yesql } from 'yesql';
 
 import { buildClauses, buildTypeClauses, copyFromData, db, transaction } from '../lib/dao/database.js';
-import { getKaraLineSortOrder } from '../lib/dao/karafile.js';
 import { WhereClause } from '../lib/types/database.js';
 import { DBKara, DBKaraBase, DBYear, KaraOldData } from '../lib/types/database/kara.js';
 import { Kara, KaraFileV4, KaraParams } from '../lib/types/kara.js';
@@ -67,6 +66,30 @@ export async function insertKara(kara: KaraFileV4): Promise<KaraOldData> {
 
 export async function deleteKara(kids: string[]) {
 	await db().query(sqldeleteKara, [kids]);
+}
+
+function getKaraLineSortOrder(direction: 'asc' | 'desc' = 'asc'): { orderBy: string[]; groupBy: string[] } {
+	const orderBy = [];
+	const groupBy = [];
+	const karaLineSort = getConfig().Frontend.Library.KaraLineSort;
+	for (const e of karaLineSort) {
+		if (typeof e === 'string' && Object.keys(tagTypes).includes(e)) {
+			orderBy.push(`aks.${e} ${direction}`);
+			groupBy.push(`aks.${e}`);
+		} else if (Array.isArray(e)) {
+			orderBy.push(`aks.${e.join('_')} ${direction}`);
+			groupBy.push(`aks.${e.join('_')}`);
+		} else if (e === 'title') {
+			orderBy.push(`aks.titles ${direction}`);
+			groupBy.push(`aks.titles`);
+		} else if (e === 'parents') {
+			orderBy.push('parents');
+		}
+	}
+	return {
+		orderBy,
+		groupBy,
+	};
 }
 
 export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {

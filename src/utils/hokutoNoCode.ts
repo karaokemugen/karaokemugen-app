@@ -264,3 +264,14 @@ export function updateKaraMoeRepoConfig() {
 		editRepo('kara.moe', repo, false, false);
 	}
 }
+
+/** Remove in KM 10.0 */
+export async function branchRepositoryIsNowMandatory() {
+	const repos = getRepos();
+	for (const repository of repos) {
+		if (repository.Git) {
+			repository.Git.Branch = 'master';
+		}
+		editRepo(repository.Name, repository, false, false);
+	}
+}
