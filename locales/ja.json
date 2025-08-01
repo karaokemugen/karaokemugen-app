@@ -10,5 +10,8 @@
 		"SINGERS": "歌手",
 		"WARNINGS": "警告",
 		"SONGWRITERS": "作曲家"
+	},
+	"MOVED_USER_DIR_DIALOG": {
+		"UNDERSTOOD": "了解！"
 	}
 }
