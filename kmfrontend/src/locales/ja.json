@@ -146,7 +146,11 @@
 		"WARNINGS_one": "警告",
 		"WARNINGS_other": "警告",
 		"SONGWRITERS_one": "作曲家",
-		"SONGWRITERS_other": "作曲家"
+		"SONGWRITERS_other": "作曲家",
+		"SERIES_one": "作品",
+		"SERIES_other": "作品",
+		"VERSIONS_one": "バージョン",
+		"VERSIONS_other": "バージョン"
 	},
 	"SETTINGS": {
 		"PLAYER": {
