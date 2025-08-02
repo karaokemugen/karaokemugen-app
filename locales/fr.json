@@ -313,7 +313,7 @@
 	"OFFICIAL_WEBSITE": "Site officiel",
 	"SUGGEST_SONGS": "Suggérer des chansons !",
 	"QUIZ_RULES": {
-		"TITLE": "REGLES",
+		"TITLE": "RÈGLES",
 		"SECONDS_one": "{{count}} seconde",
 		"SECONDS_other": "{{count}} secondes",
 		"POINTS_one": "{{count}} point",
