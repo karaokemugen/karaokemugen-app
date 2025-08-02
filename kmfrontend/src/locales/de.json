@@ -1465,7 +1465,7 @@
 			"AND_CONTRIBUTORS": "(und {{contributors, list}})",
 			"AND_CONTRIBUTORS_AND_MORE": "(und {{contributors, list}}, {{numberOfOthers, number}} weitere)",
 			"KARA_COUNT": "{{karacount}} Lieder",
-			"DURATION": "Dauer:  {{duration}}",
+			"DURATION": "Dauer: {{duration}}",
 			"DOWNLOAD_PLAYLIST": "Playlist herunterladen",
 			"UPDATE_PLAYLIST": "Playlist aktualisieren",
 			"CONNECTION_ERROR_TO_REMOTE_SERVER": "Playlist konnte nicht von {{serverName}} heruntergeladen werden. Bitte prüfe deine Internetverbindung und kontaktiere den Administrator von {{serverName}}, falls das Problem weiterhin besteht."
