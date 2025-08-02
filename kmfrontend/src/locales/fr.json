@@ -1556,7 +1556,7 @@
 		"STORAGE_INFO_MOVE": "Vous avez aussi la possibilité, dans la page de gestion des dépôts, de déplacer les fichiers du dépôt ailleurs sur un disque externe, une clé USB ou un point de partage réseau, ceci afin de libérer votre disque principal.",
 		"NO_FREE_SPACE": "Plus assez d'espace disque pour télécharger ! Faites de la place sur votre disque dur et relancez la file d'attente.",
 		"GIT": {
-			"BRANCH":" Branche",
+			"BRANCH": "Branche",
 			"URL": "Dépôt Git",
 			"USERNAME": "Nom d'utilisateur Git",
 			"PASSWORD": "Mot de passe Git (ou Token Gitlab/Github)",
