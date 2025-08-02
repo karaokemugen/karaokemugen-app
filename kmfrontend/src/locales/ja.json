@@ -136,6 +136,16 @@
 		},
 		"PLAY_CURRENT_MODAL": {
 			"TITLE": "警告！"
+		},
+		"START_QUIZ": {
+			"END_GAME": {
+				"MAX_SCORE_PLACEHOLDER": "10",
+				"MAX_SONGS_PLACEHOLDER": "30",
+				"DURATION_PLACEHOLDER": "60"
+			},
+			"DISPLAY": {
+				"BLACK_SCREEN": "黒画面"
+			}
 		}
 	},
 	"TAG_TYPES": {
