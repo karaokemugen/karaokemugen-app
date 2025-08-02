@@ -24,7 +24,7 @@
 	},
 	"NEXT_SONG": "Kan war-lerc'h",
 	"MENU_HELP_ABOUT": "&A-zivout Karaoke Mugen",
-	"MENU_HELP_TRANSLATION": "&Kemer perzh e droidigezh",
+	"MENU_HELP_TRANSLATION": "Kemer &perzh e droidigezh",
 	"MENU_HELP_DISCORD": "&Discord",
 	"MENU_HELP_MASTODON": "&Mastodon",
 	"MENU_HELP_BLUESKY": "&Bluesky",
@@ -110,7 +110,8 @@
 	"INTERFACE_OPENED": "Digor",
 	"INTERFACE_CLOSED": "Serr",
 	"MOVING_USER_DIR_ERROR_DIALOG": {
-		"QUIT": "Serriñ"
+		"QUIT": "Serriñ",
+		"CONTINUE": "Kenderc'hel"
 	},
 	"DATABASE_CONNECTION_ERROR": {
 		"HELP": "Skoazell"
@@ -122,5 +123,35 @@
 		"QUIET!": "Grik...!"
 	},
 	"MENU_HELP_GUIDE": "&Sturlevr",
-	"CURRENT_VERSION_OK": "An handelv diwezhañ a zo ganeoc'h dija !"
+	"CURRENT_VERSION_OK": "An handelv diwezhañ a zo ganeoc'h dija !",
+	"GO_TO_QUIZ_MODE": "Mont da $url evit lenn !",
+	"VOTE_MESSAGE_SCREEN_WINNER": "Ur gounezer zo ganeomp !",
+	"MENU_EDIT_STARTSPEECH": "Kregiñ da gomz",
+	"MENU_EDIT_STOPSPEECH": "Paouez da gomz",
+	"MENU_HELP_CHANGELOG": "&Notennoù handelv",
+	"MENU_HELP_REPORT_BUG": "Danevellañ &ur gudenn",
+	"ERROR": "Fazi",
+	"UPDATE_FOUND": "Hizivadur hegerz",
+	"UPDATE_PROMPT": "Fellout a ra dit hizivaat Karaoke Mugen ?",
+	"UPDATE_NOT_AVAILABLE": "N'eus hizivadur ebet",
+	"UPDATE_DOWNLOADED": "Hizivadur pellgarget",
+	"DATABASE_IN_THE_FUTURE_ERROR": {
+		"DELETE_ALL_DATA": "DILEMEL an holl roadennoù"
+	},
+	"TIPS": {
+		"NORMAL": [
+			null,
+			null,
+			null,
+			null,
+			null,
+			"Nanamin on, maskotenn Karaoke Mugen ha krouet e oan bet gant Sedeto donezonet ! http://www.sedeto.fr"
+		]
+	},
+	"QUIZ_RULES": {
+		"TITLE": "REOLENNOÙ",
+		"SECONDS_one": "{{count}} eilenn",
+		"SECONDS_other": "{{count}} eilenn"
+	},
+	"MENU_EDIT_SELECT_ALL": "Dibab an &holl"
 }
