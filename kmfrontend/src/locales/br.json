@@ -35,7 +35,8 @@
 		"WELCOME": "Donemat e Karaoke Mugen !",
 		"ONLINE_ACCOUNT": "Kont enlinenn",
 		"CREATE_ONLINE_ACCOUNT": "Fellout a ra din krouiñ ur gont enlinenn",
-		"LOGIN_ONLINE_ACCOUNT": "Ur gont enlinenn am eus dija"
+		"LOGIN_ONLINE_ACCOUNT": "Ur gont enlinenn am eus dija",
+		"CONNECTED_MESSAGE": "Gourc'hemennoù, setu kevreet oc'h e Karaoke Mugen, {{user}} !"
 	},
 	"LOGIN": {
 		"ONLINE_ACCOUNT": "Kont enlinenn ?",
@@ -68,7 +69,14 @@
 	},
 	"USERS": {
 		"ONLINE": "Enlinenn",
-		"NEW_USER": "Implijer nevez"
+		"NEW_USER": "Implijer nevez",
+		"USER": "Implijer",
+		"LOGIN": "Anv implijer",
+		"PASSWORD": "Ger-tremen",
+		"EMAIL": "Postel",
+		"URL": "Lec'hienn web",
+		"DELETE_USER_CONFIRM": "Dilemel an implijer",
+		"LOG_IN": "Kevreañ"
 	},
 	"SUCCESS_CODES": {
 		"USER_CONVERTED": "Ho kont zo enlinenn bremañ",
@@ -129,13 +137,29 @@
 	"MODAL": {
 		"START_QUIZ": {
 			"DISPLAY": {
-				"BLIND": "Kuzhat ar video"
+				"BLIND": "Kuzhat ar video",
+				"BLACK_SCREEN": "Skramm du"
 			},
 			"BUTTONS": {
-				"CANCEL_EDIT": "Nullañ ar gemmadennoù"
+				"CANCEL_EDIT": "Nullañ ar gemmadennoù",
+				"COPY": "Eilañ ar c'hoariadenn-mañ"
 			},
 			"EMPTY_PLAYLIST": "Dibabit ur roll-lenn",
-			"PLAYLIST": "Roll-lenn da implijout"
+			"PLAYLIST": "Roll-lenn da implijout",
+			"NEW_GAME": "C’hoariadenn nevez",
+			"COPIED_GAME": "{{gameName}} (eilenn)",
+			"LOAD_GAME": "Kargañ ur c'hoariadenn",
+			"GAME_NAME_PLACEHOLDER": "Ma c'hoariadenn",
+			"PLAYER_MESSAGE_PLACEHOLDER": "Mont da $url evit c'hoari !",
+			"EMPTY_NAME": "Skrivit anv ar c'hoariadenn",
+			"END_GAME": {
+				"MAX_SCORE_PLACEHOLDER": "10",
+				"MAX_SONGS_PLACEHOLDER": "30",
+				"DURATION_PLACEHOLDER": "60"
+			},
+			"ANSWERS": {
+				"ANSWER_TITLE": "Titl"
+			}
 		},
 		"PROFILE_MODAL": {
 			"SOCIAL_NETWORKS": {
@@ -158,7 +182,10 @@
 				"GITLAB": "Gitlab",
 				"GITLAB_PLACEHOLDER": "karaokemugen"
 			},
-			"INTERFACE_LANGUAGE": "Yezh an etrefas"
+			"INTERFACE_LANGUAGE": "Yezh an etrefas",
+			"ONLINE_DELETE": "Diweredekaat ma c'hont enlinenn",
+			"REFRESH_ANIME_LIST": "Freskaat listenn an animeoù",
+			"CHOOSE_ANIME_LIST": "Dibab listenn an animeoù"
 		},
 		"PLAYLIST_MODAL": {
 			"NAME": "Anv",
@@ -169,7 +196,7 @@
 			"EDIT_PLAYLIST": "Kemmañ {{playlist}}",
 			"CREATE_PLAYLIST": "Krouiñ ur roll-lenn nevez",
 			"CREATE": "Krouiñ",
-			"EDIT": "Kemmañ"
+			"EDIT": "Embann"
 		},
 		"DELETE_PLAYLIST_MODAL": {
 			"TITLE": "Dilemel {{playlist}} da viken ?"
@@ -202,6 +229,20 @@
 			"EXPORT_TO_FILE": "Ezporzhiañ war-du ur restr",
 			"EXPORT_TO_SERVER": "Ezporzhiañ war-du ar servijer",
 			"COPY_PLAYLIST": "Eilañ er roll-lenn e ma c'hont"
+		},
+		"TUTORIAL": {
+			"NEXT": "War-lerc'h",
+			"BACK": "Distro",
+			"END": "Echuiñ",
+			"WELCOME": "Donemat e Karaoke Mugen ! Setu ar pezh hoc'h eus ezhomm da c'houzout.",
+			"TITLE_CLICK": "Klikit war titl ar ganaouenn evit gouzout hiroc'h <1>(kanerien, sonaozourien hag all)</1>."
+		},
+		"KARA_LINE_DISPLAY": {
+			"EXAMPLE": "Skouer :",
+			"TITLE_ELEMENT": "Titl"
+		},
+		"KARA_LINE_ADD": {
+			"TITLE": "Ouzhpennañ un elfenn"
 		}
 	},
 	"SESSIONS": {
@@ -219,24 +260,52 @@
 		"SAVE": "Saveteiñ",
 		"SELECT": "Dibab",
 		"CHOOSE_FILE": "Dibabit ur restr",
-		"ADD_FILE": "Ouzhpennañ ur restr"
+		"ADD_FILE": "Ouzhpennañ ur restr",
+		"BACK": "DISTRO"
 	},
 	"SPONSOR_TAGLINES": [
 		"Kono bangumi wa…"
 	],
 	"WELCOME_PAGE": {
-		"REPOSITORY": "KAVLEC'HIADOÙ"
+		"REPOSITORY": "KAVLEC'HIADOÙ",
+		"APP_UPDATE": "Handelv nevez"
 	},
 	"KARA": {
 		"REPOSITORY": "Kavlec'hiad",
 		"COPY_SONG": "Eilañ ar ganaouenn war-du ur c'havlec'hiad all",
 		"BATCH_EDIT": {
-			"SELECT_PLAYLIST": "Dibabit ur roll-lenn :"
+			"SELECT_PLAYLIST": "Dibabit ur roll-lenn :",
+			"SELECT": "Dibabit"
 		},
-		"DEFAULT_LANGUAGE": "Yezh dre ziouer da implijout"
+		"DEFAULT_LANGUAGE": "Yezh dre ziouer da implijout",
+		"VERSION_AVAILABILITY": "Hegerz e {{count}} handelv.",
+		"SECTIONS": {
+			"FILES": "Restroù",
+			"TITLES": "Titl(où)"
+		},
+		"MEDIA_FILE": "Restr media",
+		"MEDIA_FILE_INFO": {
+			"DURATION": "Padelezh"
+		},
+		"LYRICS_FILE_OPEN": "Digeriñ ar restr",
+		"TITLE": "Titloù",
+		"VIEW_DOWNLOAD_QUEUE": "Gwelout",
+		"PAUSE_DOWNLOAD_QUEUE": "Ehanañ",
+		"DOWNLOAD": "Pellgargañ",
+		"FILTER_ALL": "An holl",
+		"ORDER_MEDIA_NEW": "Nevez",
+		"SINGERGROUPS_BY": "eus strollad sonerezh",
+		"SINGERS_BY": "Kanet gant",
+		"CREATORS_BY": "Krouet gant",
+		"AUTHORS_BY": "Karaoké krouet gant",
+		"DELETE_KARA": "Dilemel ar ganaouenn",
+		"DELETE_KARA_MODAL": "Dilemel ar ganaouenn ?"
 	},
 	"UNUSED_FILES": {
-		"REPOSITORY": "Kavlec'hiad"
+		"REPOSITORY": "Kavlec'hiad",
+		"NAME": "Anv",
+		"FILE": "Restr",
+		"MEDIAS": "Mediaoù"
 	},
 	"TAGS": {
 		"REPOSITORY": "Kavlec'hiad",
@@ -247,7 +316,9 @@
 		"I18N_SELECT": "Ouzhpennañ ur yezh",
 		"SHORT_NAME": "Anv berr",
 		"I18N_ERROR": "Kasit ur troidigezh",
-		"I18N_DELETE": "Dilemel an anv"
+		"I18N_DELETE": "Dilemel an anv",
+		"NAME_REQUIRED": "Skrivit un anv",
+		"DESCRIPTION": "Deskrivadur"
 	},
 	"REPOSITORIES": {
 		"NAME_DESC": "Petra eo anv ho kavlec'hiad ?",
@@ -257,10 +328,14 @@
 		"REPOSITORY_TYPE": "Seurt kavlec'hiad",
 		"CHOOSE_REPOSITORY": "Dibab ar c'havlec'hiad",
 		"GIT": {
-			"URL": "Kavlec'hiad Git"
+			"URL": "Kavlec'hiad Git",
+			"USERNAME": "Anv implijer Git",
+			"PASSWORD": "Ger-tremen Git (pe Token Gitlab/Github)",
+			"EMAIL": "Postel Git"
 		},
 		"AUTO_MEDIA_DOWNLOADS_ALL": "An holl",
-		"AUTO_MEDIA_DOWNLOADS_UPDATE_ONLY": "Hizivaat hepken"
+		"AUTO_MEDIA_DOWNLOADS_UPDATE_ONLY": "Hizivaat hepken",
+		"GIT_DELETE": "Dilemel"
 	},
 	"ERROR_CODES": {
 		"UNKNOWN_REPOSITORY": "Kavlec'hiad dianav",
@@ -270,7 +345,9 @@
 		"UNKNOWN_PLAYLIST": "Roll-lenn dianav",
 		"UNKNOWN_PLAYLIST_ITEM": "Kanaouenn ar roll-lenn dianav",
 		"PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED": "Ouzhpennet e oa bet ar ganaouenn dija.",
-		"UNKNOWN_SONG": "Kanaouenn dianav"
+		"UNKNOWN_SONG": "Kanaouenn dianav",
+		"UNKNOWN_USER": "Implijer dianav",
+		"UNKNOWN_CONVERT_ERROR": "Implijer dianav"
 	},
 	"HEADERS": {
 		"REPOSITORIES_NEW": {
@@ -283,6 +360,21 @@
 		},
 		"KARAOKE_IMPORT": {
 			"TITLE": "Enporzhiañ kanaouennoù"
+		},
+		"USER_NEW": {
+			"TITLE": "Krouiñ ur implijer"
+		},
+		"USER_EDIT": {
+			"TITLE": "Kemmañ ur implijer"
+		},
+		"KARAOKE_LIST": {
+			"TITLE": "Listenn ar ganaouennoù"
+		},
+		"KARAOKE_NEW": {
+			"TITLE": "Ouzhpennañ ur c'haraoke"
+		},
+		"KARAOKE_EDIT": {
+			"TITLE": "Kemmañ ur c'haraoke"
 		}
 	},
 	"LOGOUT": "Digevreañ",
@@ -295,8 +387,14 @@
 				"BLUESKY": "Bluesky : ",
 				"TWITCH": "Twitch : "
 			},
-			"LANGUAGE": "Yezh : "
-		}
+			"LANGUAGE": "Yezh : ",
+			"MAIL": "Postel : ",
+			"URL": "Lec'hienn : ",
+			"USERNAME": "Anv implijer : "
+		},
+		"NAME": "Anv ar ganaouenn",
+		"DOWNLOAD": "Pellgargañ ar ganaouenn",
+		"DELETE_SONG": "Dilemel ar ganaouenn"
 	},
 	"TAG_TYPES": {
 		"SINGERGROUPS_one": "Strollad sonerezh",
@@ -310,7 +408,11 @@
 		"SONGWRITERS_one": "Sonaozour",
 		"SONGWRITERS_other": "Sonaozourien",
 		"PLATFORMS_one": "Savenn",
-		"PLATFORMS_other": "Savennoù"
+		"PLATFORMS_other": "Savennoù",
+		"VERSIONS_one": "Handelv",
+		"VERSIONS_other": "Handelvoù",
+		"WARNINGS_one": "Diwall",
+		"WARNINGS_other": "Diwalloù"
 	},
 	"SELECT_PLACEHOLDER": "Dibabit ur roll-lenn",
 	"CRITERIA": {
@@ -334,19 +436,28 @@
 		"IMPORT_START": "Kregiñ enporzhiañ"
 	},
 	"MENU": {
-		"KARAIMPORT": "Enporzhiañ kanaouennoù"
+		"KARAIMPORT": "Enporzhiañ kanaouennoù",
+		"KARAS": "Kanaouennoù",
+		"LIST": "Listenn",
+		"NEW": "Nevez",
+		"GIT": "Git",
+		"USERS": "Implijerien"
 	},
 	"TASKS": {
 		"IMPORTING_PLAYLIST": "Oc'h enporzhiañ ar roll-lenn…",
 		"BASE_IMPORT": {
 			"IMPORTING_BASE": "Oc'h enporzhiañ ar ganaouennoù…"
 		},
-		"EXPORTING_PLAYLIST_MEDIA": "Ezporzhiañ mediaoù eus ar roll-lenn…"
+		"EXPORTING_PLAYLIST_MEDIA": "Ezporzhiañ mediaoù eus ar roll-lenn…",
+		"CREATING_SONG": "O krouiñ ar c'haraoke…",
+		"EDITING_SONG": "O kemmañ ar c'haraoke…",
+		"DOWNLOADING": "O pellgargañ…"
 	},
 	"FAVORITES_EXPORT": "Ezporzhiañ pennrolloù",
 	"HOME": {
 		"KARAS": {
-			"CREATE": "Krouiñ ur c'haraoke"
+			"CREATE": "Krouiñ ur c'haraoke",
+			"DOWNLOAD": "Pellgargañ mediaoù"
 		},
 		"USERS": {
 			"CREATE": "Krouiñ un implijer"
@@ -354,5 +465,58 @@
 	},
 	"LANGUAGES": {
 		"QRO": "Lizherenneg Latin (Romanekadur)"
+	},
+	"VERSION": "Handelv",
+	"LOGS": {
+		"LEVELS": {
+			"ERROR": "Fazioù",
+			"WARNING": "Diwalloù",
+			"INFO": "Titouroù"
+		}
+	},
+	"MIGRATE": {
+		"CONTINUE": "Kenderc'hel."
+	},
+	"BACKGROUNDS_MGMT": {
+		"CHOOSE_FILE": "Dibab ur restr",
+		"SAVE": "Enrollañ",
+		"FILE": "Anv ar restr",
+		"PICTURES": "Skeudennoù",
+		"MUSIC": "Sonerezh",
+		"TYPE": {
+			"PAUSE": "Ehanañ",
+			"STOP": "Paouez"
+		}
+	},
+	"ABOUT": {
+		"LICENSE": "Dindan aotre MIT."
+	},
+	"QUIZ": {
+		"TAGLINE": "Petra eo ar ganaouenn-mañ ?",
+		"STATES": {
+			"WAITING": "O c'hortoz ar ganaouenn war-lec'h…",
+			"NEXT_SONG_one": "Echu eo, kanaouenn war-lerc'h e {{count}} eilenn.",
+			"NEXT_SONG_other": "Echu eo, kanaouenn war-lerc'h e {{count}} eilenn."
+		},
+		"PLACEHOLDER": "Gouzout a ran !",
+		"RULES": {
+			"TITLE": "Reolennoù",
+			"SECONDS_one": "{{count}} eilenn",
+			"SECONDS_other": "{{count}} eilenn"
+		}
+	},
+	"PLAYERS_CONTROLS": {
+		"NEXT_SONG_SHORT": "War-lerc'h",
+		"NEXT_SONG": "Kanaouenn war-lerc'h",
+		"PLAY": "Lenn",
+		"PAUSE": "Ehanañ"
+	},
+	"VIEW_FAVORITES": "Pennrolloù",
+	"LOADING": "O kargañ…",
+	"ADD": "Ouzhpennañ",
+	"REFRESH": "Freskaat",
+	"CONFIRM_SURE": "Sur oc'h ?",
+	"DATABASE": {
+		"CONFIRM_UPDATE": "Kadarnaat an hizivadenn"
 	}
 }
