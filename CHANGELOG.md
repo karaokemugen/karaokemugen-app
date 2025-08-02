@@ -14,6 +14,7 @@ This changelog will cover only changes between 8.0.90 and 9.0.0
 
 ## Changed
 
+- **[Maintainers]** Branch can now be configured for a git repository (#1790)
 - **[Operators]** Database can now be connected through UNIX domain sockets. This is only enabled on Linux systems as our node library doesn't allow to connect through sockets on Windows. This is to fix error on AppImages (#1779)
 
 ## Fixed
