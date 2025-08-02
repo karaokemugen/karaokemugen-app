@@ -1733,7 +1733,8 @@
 			"PASSWORD": "Git-Passwort (oder Gitlab/Github-Token)",
 			"COPY_SSH_KEY": "Kopiere den SSH-Schlüssel in die Zwischenablage",
 			"DELETE_SSH_KEY": "Lösche den SSH-Schlüssel",
-			"GENERATE_SSH_KEY": "Generiere den SSH-Schlüssel"
+			"GENERATE_SSH_KEY": "Generiere den SSH-Schlüssel",
+			"BRANCH": "Branch"
 		},
 		"MOVE": "Definiere die Priorität der Repositories",
 		"DELETE_ALL_MEDIAS": "Alle Medien löschen",
