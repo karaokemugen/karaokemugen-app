@@ -949,7 +949,7 @@
 			"WARNING_DESCRIPTION": "Any modification can take several seconds to appear while the database is being updated. Please look at the task list at the bottom of this window to see when the update is done."
 		},
 		"KARA_LINE_DISPLAY": {
-			"TITLE": "Song Line Display Settings",
+			"TITLE": "Song List Display Settings",
 			"DESCRIPTION": "Drag and drop elements to change <1>the way songs are displayed</1> in lists.",
 			"DESCRIPTION_ADD_REMOVE": "Click on \"Add\" to add another element or X to remove one.",
 			"REMOVE": "Remove element from display",
@@ -986,13 +986,13 @@
 				"karacount": "Number of songs",
 				"duration": "Duration",
 				"favorited": "Likes",
-				"username": "Author's Nickname"
+				"username": "Nickname"
 			},
 			"BY_AUTHOR": "by {{author}}",
 			"AND_CONTRIBUTORS": "(and {{contributors, list}})",
 			"AND_CONTRIBUTORS_AND_MORE": "(and {{contributors, list}}, {{numberOfOthers, number}} more)",
 			"KARA_COUNT": "{{karacount}} songs",
-			"DURATION": "Duration {{duration}}",
+			"DURATION": "Duration:  {{duration}}",
 			"DOWNLOAD_PLAYLIST": "Download playlist",
 			"UPDATE_PLAYLIST": "Update playlist",
 			"CONNECTION_ERROR_TO_REMOTE_SERVER": "Couldn't fetch playlists from {{serverName}}. Check your internet connection and if the problem persists, contact an admin of {{serverName}}."
