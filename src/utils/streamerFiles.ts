@@ -133,7 +133,7 @@ async function writePlaylistInfo() {
 				'utf-8'
 			),
 			fs.writeFile(
-				resolve(getState().dataPath, getConfig().System.Path.StreamFiles, 'curent_kara_count.txt'),
+				resolve(getState().dataPath, getConfig().System.Path.StreamFiles, 'current_kara_count.txt'),
 				`${currentPlaidInfo.karacount}`,
 				'utf-8'
 			),
