@@ -202,7 +202,7 @@
 		"SONG_SEARCH_SHORT": "Wyszukaj",
 		"EXPLORE": "Odkrywaj",
 		"OTHERS": "Inni…",
-		"REQUESTED_KARAOKES": "Popularne piosenki",
+		"REQUESTED_KARAOKES": "Najczęściej zamawiane piosenki",
 		"QUIZ": {
 			"POINTS": "Punkty: {{count}}",
 			"POINTS_TOTAL": "{{count}} punktów",
@@ -218,7 +218,8 @@
 		"SHOW_LYRICS": "Pokaż teksty",
 		"OPEN_POLL": "Zagłosuj na następną piosenkę",
 		"GET_LUCKY": "Miej szczęście",
-		"NEW_KARAOKES": "Nowe piosenki"
+		"NEW_KARAOKES": "Nowe piosenki",
+		"MY_INCOMING_SONGS": "Moje nadchodzące piosenki"
 	},
 	"ADMIN_MESSAGE": {
 		"CL_SCREEN": "Pokaż na ekranie odtwarzacza",
@@ -544,7 +545,7 @@
 			"ALWAYS_ON_TOP_TOOLTIP": "Jeśli ta opcja jest zaznaczona, okno odtwarzacza będzie zawsze znajdować się nad innymi na ekranie",
 			"VIDEO_POSITION_Y": "Pozycja wideo (Y)",
 			"FULLSCREEN_TOOLTIP": "Naciśnij F na odtwarzaczu pełnoekranowym, aby zmniejszyć go do trybu okienkowego.",
-			"DISPLAY_CONNECTION_INFO_QRCODE": "Pokaż QRCode",
+			"DISPLAY_CONNECTION_INFO_QRCODE": "Pokaż kod QR, gdy odtwarzacz jest zatrzymany",
 			"WINDOWBORDERS_TOOLTIP": "Wyłączenie ich nie spowoduje ich wyłączenia na monitorze operatora, gdzie są zawsze włączone.",
 			"LEFT": "Lewy",
 			"AUDIO_DEVICE_TOOLTIP": "Wybierz urządzenie wyjściowe audio. Jeśli nie wiesz, pozostaw to na \"Automatycznym wyborze urządzenia\". Jest to przydatne, jeśli chcesz odtwarzać dźwięk z odtwarzacza na innym urządzeniu dźwiękowym niż główne.",
@@ -557,7 +558,9 @@
 			"LIVE_COMMENTS_TOOLTIP": "Wiadomości z czatu na Twitchu zostaną wyświetlone w odtwarzaczu (Skonfiguruj poprawnie swojego AutoModa).",
 			"LIVE_COMMENTS": "Komentarze na żywo",
 			"AUDIO_ONLY_EXPERIENCE": "Tylko dźwięk",
-			"AUDIO_ONLY_EXPERIENCE_TOOLTIP": "Jeśli włączone, pokaże nieruchomy obraz zamiast wideo. Zmiana zostanie wprowadzona w następnym utworze."
+			"AUDIO_ONLY_EXPERIENCE_TOOLTIP": "Jeśli włączone, pokaże nieruchomy obraz zamiast wideo. Zmiana zostanie wprowadzona w następnym utworze.",
+			"DISPLAY_CONNECTION_INFO_QRCODE_DURING_SONG": "Pokaż kod QR podczas piosenek",
+			"DISPLAY_CONNECTION_INFO_QRCODE_DURING_SONG_TOOLTIP": "Kod QR będzie wyświetlany w prawym górnym rogu ekranu podczas słuchania piosenek."
 		},
 		"KARAOKE": {
 			"QUOTA_SETTINGS": "Ograniczenia",
@@ -664,7 +667,9 @@
 			"MINUTES_BEFORE_SESSION_ENDS_WARNING_TOOLTIP": "Powiadomienie ostrzeże Cię X minut przed końcem zaplanowanej sesji",
 			"ONLINE_SETTINGS": "Online",
 			"HIDE_INVISIBLE_SONGS_TOOLTIP": "Sposób, w jaki tajemnicze piosenki są prezentowane publiczności. Najlepszy na niespodzianki!",
-			"ONLINE_SETTINGS_TOOLTIP": "Podłącz swoje karaoke do Internetu i pozwól światu wybierać piosenki dla Ciebie!"
+			"ONLINE_SETTINGS_TOOLTIP": "Podłącz swoje karaoke do Internetu i pozwól światu wybierać piosenki dla Ciebie!",
+			"ALLOW_PLAYLIST_ITEM_SWAP": "Zezwól użytkownikom na zamianę utworów na bieżącej liście odtwarzania",
+			"ALLOW_PLAYLIST_ITEM_SWAP_TOOLTIP": "Użytkownicy mogą zamieniać piosenki, które zamówili na bieżącej liście odtwarzania, jeśli chcą zaśpiewać coś szybciej."
 		},
 		"SYSTEMPANEL_TIP": "Nie możesz znaleźć opcji, których szukasz? <2>Niektóre opcje znajdują się w panelu <3>system</3>.</2>",
 		"FILTER_SETTINGS_TOOLTIP": "Szybko znajdź potrzebne ustawienie za pomocą tego paska wyszukiwania.",
@@ -707,7 +712,12 @@
 			"WEBAPPMODE_LIMITED": "Ograniczone: tylko do odczytu",
 			"WEBAPPMODE_OPEN": "Otwarte (domyślne): użytkownicy mogą dodawać utwory",
 			"PUBLIC_PLAYER_CONTROLS_TOOLTIP": "Elementy sterujące odtwarzaniem/pauzą, zatrzymywaniem, poprzednią i następną będą widoczne w interfejsie publicznym, umożliwiając użytkownikom sterowanie odtwarzaczem ze swoich urządzeń. Używaj tylko w małych grupach!",
-			"DISPLAY_WELCOME_MESSAGE_TOOLTIP": "Ta wiadomość zostanie wyświetlona na stronie logowania do sesji karaoke"
+			"DISPLAY_WELCOME_MESSAGE_TOOLTIP": "Ta wiadomość zostanie wyświetlona na stronie logowania do sesji karaoke",
+			"KARA_LINE_SORT": "Sortuj bibliotekę według…",
+			"KARA_LINE_SORT_TOOLTIP": "Zdefiniuj, które części utworu są używane do sortowania biblioteki",
+			"KARA_LINE_DISPLAY": "Wyświetlanie części utworu",
+			"KARA_LINE_DISPLAY_TOOLTIP": "Zdefiniuj, które części utworu mają być wyświetlane na listach utworów (tylko operator)",
+			"SET": "Ustawić…"
 		}
 	},
 	"CONFIRM_FAV_IMPORT": "Nadpisać swoje ulubione za pomocą tego importu?",
@@ -761,7 +771,7 @@
 	"REMOTE_RESET_TOOLTIP": "Generuje nowy token, utracisz kod pokoju.",
 	"VIEW_STANDARD": "Standard",
 	"CLEAR_FILTER": "Wyczyść",
-	"VIEW_POPULAR": "Popularny",
+	"VIEW_POPULAR": "Żądany",
 	"VIEW_LIKES_TOOLTIP": "Piosenka z największą liczbą polubień zostanie wyświetlona jako pierwsza, nie zmienia to kolejności na liście odtwarzania.",
 	"ONLINE_STATS": {
 		"TITLE": "Statystyki",
@@ -937,7 +947,7 @@
 		"STATS_MODAL": {
 			"CHANGE": "Możesz to zmienić w dowolnym momencie w swoim profilu. Czy zgadzasz się na wykorzystanie historii swoich utworów do statystyk?",
 			"TITLE": "Użyj moich ulubionych i próśb o piosenki do statystyk",
-			"DESC": "Używamy Twoich ulubionych, jak również utworów, o które prosiłeś podczas sesji, aby tworzyć statystyki użytkowania (na przykład, aby znaleźć najpopularniejsze utwory).",
+			"DESC": "Używamy Twoich ulubionych, jak również utworów, o które prosiłeś podczas sesji, aby tworzyć statystyki użytkowania (na przykład, aby znaleźć żądane utwory).",
 			"REFUSE_DESC": "Jeśli nie chcesz brać udziału, nawet jeśli jest to anonimowe, w tych statystykach użytkowania, poinformuj nas o tym. W przypadku odmowy, Twoje dane zostaną zignorowane i nie zostaną przesłane przez Aplikację Karaoke Mugen."
 		},
 		"CLASSIC_MODE": {
@@ -1057,6 +1067,57 @@
 		"STOP_QUIZ": {
 			"TITLE": "Przerwać quiz?",
 			"DESCRIPTION": "Gra zostanie natychmiast zatrzymana. Można go wznowić za pomocą menu Rozpocznij quiz."
+		},
+		"KARA_LINE_SORT": {
+			"TITLE": "Ustawienia sortowania biblioteki",
+			"DESCRIPTION": "Przeciągnij i upuść elementy, aby zmienić <1>ustawienia sortowania biblioteki</1>.",
+			"DESCRIPTION_ADD_REMOVE": "Kliknij „Dodaj”, aby dodać kolejny element lub X, aby go usunąć.",
+			"REMOVE": "Usuń element z sortowania",
+			"WARNING_DESCRIPTION": "Każda modyfikacja może pojawić się po kilku sekundach podczas aktualizacji bazy danych. Sprawdź listę zadań u dołu tego okna, aby sprawdzić, kiedy aktualizacja się zakończy."
+		},
+		"KARA_LINE_DISPLAY": {
+			"TITLE": "Ustawienia wyświetlania listy utworów",
+			"DESCRIPTION": "Przeciągnij i upuść elementy, aby zmienić <1>sposób wyświetlania utworów</1> na listach.",
+			"DESCRIPTION_ADD_REMOVE": "Kliknij „Dodaj”, aby dodać kolejny element lub X, aby go usunąć.",
+			"REMOVE": "Usuń element z wyświetlacza",
+			"EXAMPLE": "Przykład:",
+			"TITLE_ELEMENT": "Tytuł"
+		},
+		"KARA_LINE_ADD": {
+			"TITLE": "Dodaj element",
+			"TAG_TYPE": "Typ tagu",
+			"ADD_TAG_TYPE": "Wybierz typ",
+			"TAG_TYPES_GROUP": "Grupa typów tagów",
+			"ADD_TAG_TYPES_GROUP": "Dodać typ tagu do tej grupy?",
+			"STRING_TO_DISPLAY": "Ciąg do wyświetlenia:",
+			"STRING_TO_DISPLAY_SHORT": "Krótki ciąg znaków, jeśli dostępny (AUDIO, ENG, itp.)",
+			"STRING_TO_DISPLAY_LONG": "Długi ciąg znaków, zależny od języka (tylko dźwięk, angielski itp.)",
+			"STRING_TO_DISPLAY_TAG": "Bańka tagów",
+			"STRING_FORMAT": "Format ciągu:",
+			"STRING_FORMAT_NONE": "Nic",
+			"STRING_FORMAT_BOLD": "Pogrubiony",
+			"STRING_FORMAT_ITALIC": "Pochylony"
+		},
+		"PLAYLIST_IMPORT": {
+			"TITLE": "Importuj listy odtwarzania",
+			"IMPORT_FROM_FILE": "Importuj z pliku",
+			"FILTER": "Filtry",
+			"FILTER_LABELS": {
+				"my": "Pokaż moje playlisty",
+				"downloaded": "Pokaż pobrane listy odtwarzania"
+			},
+			"SORT_OPTIONS": "Sortuj listy odtwarzania",
+			"SORT_OPTIONS_LABELS": {
+				"az": "Alfabetyczny",
+				"recent": "Data dodania",
+				"karacount": "Liczba piosenek",
+				"duration": "Czas trwania",
+				"favorited": "Polubienia",
+				"username": "Przydomek (Nick)"
+			},
+			"BY_AUTHOR": "przez {{author}}",
+			"AND_CONTRIBUTORS": "(i {{contributors, list}})",
+			"AND_CONTRIBUTORS_AND_MORE": "(i {{contributors, list}}, {{numberOfOthers, number}} więcej)"
 		}
 	},
 	"ENCORES_TAGLINES": [
