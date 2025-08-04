@@ -129,7 +129,8 @@
 		"HIDE_LYRICS": "Kuzhat ar pozioù",
 		"EXPLORE": "Ergerzhout",
 		"OTHERS": "All…",
-		"CURRENT": "Gwelout ar roll-lenn red"
+		"CURRENT": "Gwelout ar roll-lenn red",
+		"FAVORITES": "Pennrolloù"
 	},
 	"ADMIN_MESSAGE": {
 		"CL_SCREEN": "Diskouez war skramm al lenner"
@@ -422,7 +423,9 @@
 		"PLAYLIST_DURATION_ORDER_LESS_RECENT": "koshañ"
 	},
 	"AUTOMIX_MODAL": {
-		"NAME": "Anv ar roll-lenn"
+		"NAME": "Anv ar roll-lenn",
+		"FAVOURITES": "Pennrolloù",
+		"FAVOURITES_OF": "Pennrolloù {{name}}"
 	},
 	"CL_PLAYLISTS": "Listennoù ganaouennoù",
 	"BACK_PLAYLISTS": "Distro da listennoù ganaouennoù",
@@ -518,5 +521,7 @@
 	"CONFIRM_SURE": "Sur oc'h ?",
 	"DATABASE": {
 		"CONFIRM_UPDATE": "Kadarnaat an hizivadenn"
-	}
+	},
+	"TOOLTIP_DELETE_FAVS": "Dilemel ar ganaouenn-mañ diouzh ar pennrolloù",
+	"TOOLTIP_DELETE_SELECT_FAVS": "Dilemel ar ganaouennoù dibabet diouzh ar pennrolloù"
 }
