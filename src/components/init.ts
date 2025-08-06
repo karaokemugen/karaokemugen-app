@@ -169,6 +169,7 @@ async function checkPaths() {
 					}
 				}
 			} catch (err) {
+				logger.error(`Repository disabled : ${err}`, { obj: err, service });
 				// If there's a problem with these folders, let's disable the repository.
 				editRepo(repo.Name, {
 					...repo,

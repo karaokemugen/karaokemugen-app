@@ -870,7 +870,7 @@
 	"NEXT_SONG_MESSAGE": "Selanjutnya:",
 	"USER_SONG_PLAYS_IN": "Lagu {{kara}} kamu telah ditambahkan dan akan disiarkan pada {{time}} {{date}}",
 	"MODAL": {
-		"UNKNOW_REPOS": {
+		"UNKNOWN_REPOS": {
 			"TITLE": "Repositori tidak diketahui terdeteksi",
 			"DESCRIPTION": "Daftar putar ini berisi lagu dari repositori yang kamu tidak punya secara lokal.",
 			"DOWNLOAD_THEM": "Apakah kamu ingin menambahkan mereka sekarang?"
@@ -1155,7 +1155,7 @@
 		"USER_DELETE_ERROR": "Galat menghapus pengguna",
 		"USER_EDIT_ERROR": "Galat menyunting pengguna",
 		"USER_RESETPASSWORD_ERROR": "Galat mengatur ulang kata sandi pengguna",
-		"UNKNOW_CONVERT_ERROR": "Pengguna tidak diketahui",
+		"UNKNOWN_CONVERT_ERROR": "Pengguna tidak diketahui",
 		"PASSWORD_TOO_SHORT": "Kata sandi terlalu pendek (minimal 8 karakter)",
 		"USER_DELETE_ERROR_ONLINE": "Galat menghapus akun daring kamu",
 		"USER_RESETPASSWORD_ONLINE_ERROR": "Tidak bisa mengatur ulang kata sandi kamu; hubungi admin peladen akun kamu berada.",

@@ -13,6 +13,12 @@ import { getLanguageIn3B, langSupport } from './isoLanguages';
 import { isRemote } from './socket';
 import { getTagTypeName, tagTypes } from './tagTypes';
 import { getProtocolForOnline } from './tools';
+import {
+	KaraLineDisplayElement,
+	KaraLineDisplayType,
+	KaraLineElement,
+	StyleFontType,
+} from '../../../src/lib/types/config';
 
 export function getDescriptionInLocale(settings: SettingsStoreData, description: Record<string, string>): string {
 	if (!description) return '';
@@ -30,7 +36,7 @@ export function getTagInLanguage(
 	tag: DBKaraTag,
 	mainLanguage: string,
 	fallbackLanguage: string,
-	i18nParam?: any
+	i18nParam?: Record<string, string>
 ): { i18n: string; description: string } {
 	const i18n = i18nParam && i18nParam[tag.tid] ? i18nParam[tag.tid] : tag.i18n;
 	const desc = tag.description;
@@ -41,8 +47,8 @@ export function getTagInLanguage(
 			? i18n[mainLanguage]
 			: i18n[fallbackLanguage]
 				? i18n[fallbackLanguage]
-				: i18n.eng
-					? i18n.eng
+				: i18n['eng']
+					? i18n['eng']
 					: tag.name;
 	} else {
 		resulti18n = tag.name;
@@ -62,7 +68,11 @@ export function getTagInLanguage(
 	};
 }
 
-export function getTagInLocaleList(settings: SettingsStoreData, list: DBKaraTag[], i18n?: any): string[] {
+export function getTagInLocaleList(
+	settings: SettingsStoreData,
+	list: DBKaraTag[],
+	i18n?: Record<string, string>
+): string[] {
 	if (list) {
 		return list.map((tag: DBKaraTag) => getTagInLocale(settings, tag, i18n).i18n);
 	} else {
@@ -73,7 +83,7 @@ export function getTagInLocaleList(settings: SettingsStoreData, list: DBKaraTag[
 export function getTagInLocale(
 	settings: SettingsStoreData,
 	tag: DBKaraTag,
-	i18nParam?: any
+	i18nParam?: Record<string, string>
 ): { i18n: string; description: string } | undefined {
 	if (!tag) {
 		return undefined;
@@ -94,7 +104,7 @@ export function getTitleInLocale(
 	settings: SettingsStoreData,
 	titles: Record<string, string>,
 	default_language: string = 'eng'
-): any {
+): string {
 	const user = settings?.user;
 	if (user?.main_series_lang && user?.fallback_series_lang) {
 		return titles[user.main_series_lang]
@@ -107,7 +117,7 @@ export function getTitleInLocale(
 	}
 }
 
-export function sortTagByPriority(a: any, b: any) {
+export function sortTagByPriority(a: DBKaraTag, b: DBKaraTag) {
 	return a.priority < b.priority ? 1 : a.name.localeCompare(b.name);
 }
 
@@ -117,13 +127,17 @@ export function sortTagByPriority(a: any, b: any) {
  * @param {String} scope public or admin
  * @returns {Array} array of tags without hidden tags and sort
  */
-export function sortAndHideTags(tags: any[], scope: Scope = 'public') {
+export function sortAndHideTags(tags: DBKaraTag[], scope: Scope = 'public'): DBKaraTag[] {
 	return tags?.length > 0
 		? tags.filter(scope === 'public' ? tag => tag.priority >= 0 : tag => tag.priority >= -1).sort(sortTagByPriority)
 		: [];
 }
 
-export function getSerieOrSingerGroupsOrSingers(settings: SettingsStoreData, data: DBKara, i18nParam?: any) {
+export function getSerieOrSingerGroupsOrSingers(
+	settings: SettingsStoreData,
+	data: DBKara,
+	i18nParam?: Record<string, string>
+) {
 	if (data.from_display_type && data[data.from_display_type] && data[data.from_display_type].length > 0) {
 		return data[data.from_display_type].map(e => getTagInLocale(settings, e, i18nParam).i18n).join(', ');
 	}
@@ -136,6 +150,81 @@ export function getSerieOrSingerGroupsOrSingers(settings: SettingsStoreData, dat
 	return data.singers.map(e => getTagInLocale(settings, e, i18nParam).i18n).join(', ');
 }
 
+function buildDisplayTagElement(
+	kara: DBKara,
+	eType: KaraLineElement,
+	display: KaraLineDisplayType,
+	style: StyleFontType,
+	settings: SettingsStoreData,
+	i18nParam?: Record<string, string>
+): { text: string; type: string; style?: StyleFontType } {
+	if (eType === 'title') {
+		const title = getTitleInLocale(settings, kara.titles, kara.titles_default_language);
+		return {
+			text: title,
+			type: 'title',
+			style,
+		};
+	} else if (eType === 'displayType') {
+		// This is a joker. from_display_type is a priority setting set by the karaoke itself as to which tag it wants to display.
+		eType = kara.from_display_type;
+	} else if (eType === 'songtypes' && kara.songtypes) {
+		// Songtypes are specific because we add songorder to them and separate them with spaces instead of commas.
+		const tags: string[] = [];
+		kara.songtypes = sortAndHideTags(kara.songtypes);
+		for (const t of kara.songtypes) {
+			if (display === 'i18n') {
+				tags.push(getTagInLocale(settings, t, i18nParam).i18n);
+			} else if (display === 'short') {
+				tags.push(t.short?.toUpperCase() || t.name);
+			}
+		}
+		const text = tags.length > 0 ? tags.join(' ') + (kara.songorder ? ` ${kara.songorder}` : '') : '';
+		return {
+			text,
+			type: 'songtypes',
+			style,
+		};
+	} else if (kara[eType]) {
+		kara[eType] = sortAndHideTags(kara[eType]);
+		const tags = [];
+		for (const t of kara[eType]) {
+			if (display === 'i18n') {
+				tags.push(getTagInLocale(settings, t, i18nParam).i18n);
+			} else if (display === 'short') {
+				// New rule! All shorts are uppercased
+				tags.push(t.short?.toUpperCase() || t.name);
+			}
+		}
+		const text = tags.length > 0 ? tags.slice(0, 3).join(', ') + (tags.length > 3 ? '...' : '') : '';
+		return {
+			text,
+			type: eType,
+			style,
+		};
+	}
+}
+
+function buildDisplayElement(
+	kara: DBKara,
+	e: KaraLineDisplayElement,
+	settings: SettingsStoreData,
+	i18nParam?: Record<string, string>
+): { text: string; type: string; style?: StyleFontType } {
+	if (Array.isArray(e.type)) {
+		// If type is an array, we pick the first element that contains data
+		for (const eType of e.type) {
+			// If an element exists, we break from this loop.
+			const element = buildDisplayTagElement(kara, eType, e.display, e.style, settings, i18nParam);
+			if (element?.text) {
+				return element;
+			}
+		}
+	} else {
+		return buildDisplayTagElement(kara, e.type, e.display, e.style, settings, i18nParam);
+	}
+}
+
 /**
  * Build kara title for users depending on the data
  * @param {Object} data - data from the kara
@@ -146,52 +235,23 @@ export function buildKaraTitle(
 	settings: SettingsStoreData,
 	data: DBKara,
 	onlyText?: boolean,
-	i18nParam?: any
+	i18nParam?: Record<string, string>
 ): string | ReactNode {
+	// In case of multi-languages song (with language MUL) it takes priority and removes all other languages
 	const isMulti = data?.langs?.find(e => e.name.indexOf('mul') > -1);
 	if (data?.langs && isMulti) {
 		data.langs = [isMulti];
 	}
-	const serieText =
-		data.from_display_type && data[data.from_display_type] && data[data.from_display_type].length > 0
-			? data[data.from_display_type]
-					.slice(0, 3)
-					.map(e => getTagInLocale(settings, e, i18nParam).i18n)
-					.join(', ') + (data[data.from_display_type].length > 3 ? '...' : '')
-			: data?.series?.length > 0
-				? data.series
-						.slice(0, 3)
-						.map(e => getTagInLocale(settings, e, i18nParam).i18n)
-						.join(', ') + (data.series.length > 3 ? '...' : '')
-				: data?.singergroups?.length > 0
-					? data.singergroups
-							.slice(0, 3)
-							.map(e => getTagInLocale(settings, e, i18nParam).i18n)
-							.join(', ') + (data.singergroups.length > 3 ? '...' : '')
-					: data?.singers?.length > 0
-						? data.singers
-								.slice(0, 3)
-								.map(e => getTagInLocale(settings, e, i18nParam).i18n)
-								.join(', ') + (data.singers.length > 3 ? '...' : '')
-						: ''; // wtf?
-	const langsText = data?.langs
-		?.map(e => e.name)
-		.join(', ')
-		.toUpperCase();
-	const songtypeText = sortAndHideTags(data?.songtypes)
-		.map(e => (e.short ? +e.short : e.name))
-		.join(' ');
-	const songorderText = data?.songorder > 0 ? ' ' + data.songorder : '';
+	const displayLine = settings.config.Frontend.Library.KaraLineDisplay;
+	const karaLine = [];
+	for (const e of displayLine) {
+		const displayElement = buildDisplayElement(data, e, settings, i18nParam);
+		if (displayElement.text) karaLine.push(displayElement);
+	}
 	if (onlyText) {
 		const versions = sortAndHideTags(data?.versions).map(t => `[${getTagInLocale(settings, t, i18nParam).i18n}]`);
 		const version = versions?.length > 0 ? ` ${versions.join(' ')}` : '';
-		const arrayElements = [
-			langsText,
-			serieText,
-			songtypeText || songorderText ? `${songtypeText} ${songorderText}` : null,
-			getTitleInLocale(settings, data.titles, data.titles_default_language),
-		].filter(value => value != '');
-		return `${arrayElements.join(' - ')} ${version}`;
+		return `${karaLine.map(e => e.text).join(' - ')} ${version}`;
 	} else {
 		const versions = sortAndHideTags(data?.versions).map(t => (
 			<span className="tag inline white" key={t.tid}>
@@ -200,15 +260,12 @@ export function buildKaraTitle(
 		));
 		return (
 			<>
-				<span>{langsText}</span>
-				{langsText ? <span>&nbsp;-&nbsp;</span> : null}
-				<span className="karaTitleSerie">{serieText}</span>
-				{serieText ? <span>&nbsp;-&nbsp;</span> : null}
-				<span>{`${songtypeText} ${songorderText}`}</span>
-				{songtypeText || songorderText ? <span>&nbsp;-&nbsp;</span> : null}
-				<span className="karaTitleTitle">
-					{getTitleInLocale(settings, data.titles, data.titles_default_language)}
-				</span>
+				{karaLine.map((e, i) => (
+					<span key={i}>
+						{!!i && e.text && <span>&nbsp;-&nbsp;</span>}
+						<span className={e.style ? `${e.style}` : ''}>{e.text}</span>
+					</span>
+				))}
 				{versions}
 			</>
 		);
@@ -216,7 +273,6 @@ export function buildKaraTitle(
 }
 
 export function formatLyrics(lyrics: ASSLine[]) {
-	let computedLyrics = lyrics;
 	if (lyrics.length > 100) {
 		// Merge lines with the same text in it to mitigate karaokes with many effects
 		const map = new Map<string, ASSLine[][]>();
@@ -251,7 +307,6 @@ export function formatLyrics(lyrics: ASSLine[]) {
 		fixedLyrics.sort((el1, el2) => {
 			return el1.start - el2.start;
 		});
-		computedLyrics = fixedLyrics;
 	}
 	// Compute karaoke timings for public LyricsBox
 	const mappedLyrics: ASSLine[] = [];
@@ -315,28 +370,36 @@ export function getOppositePlaylistInfo(side: 'left' | 'right', context: GlobalC
 export function setPlaylistInfo(side: 'left' | 'right', context: GlobalContextInterface, plaid?: string) {
 	const oldIdPlaylist = getPlaylistInfo(side, context)?.plaid;
 	if (plaid === getOppositePlaylistInfo(side, context)?.plaid) {
-		side === 'left'
-			? setPlaylistInfoRight(context.globalDispatch, oldIdPlaylist)
-			: setPlaylistInfoLeft(context.globalDispatch, oldIdPlaylist);
+		if (side === 'left') {
+			setPlaylistInfoRight(context.globalDispatch, oldIdPlaylist);
+		} else {
+			setPlaylistInfoLeft(context.globalDispatch, oldIdPlaylist);
+		}
 	}
-	side === 'left'
-		? setPlaylistInfoLeft(context.globalDispatch, plaid)
-		: setPlaylistInfoRight(context.globalDispatch, plaid);
+	if (side === 'left') {
+		setPlaylistInfoLeft(context.globalDispatch, plaid);
+	} else {
+		setPlaylistInfoRight(context.globalDispatch, plaid);
+	}
 }
 
 export function setOppositePlaylistInfo(side: 'left' | 'right', context: GlobalContextInterface, plaid?: string) {
 	const oldIdPlaylist = getOppositePlaylistInfo(side, context)?.plaid;
 	if (plaid === getPlaylistInfo(side, context)?.plaid) {
-		side === 'left'
-			? setPlaylistInfoLeft(context.globalDispatch, oldIdPlaylist)
-			: setPlaylistInfoRight(context.globalDispatch, oldIdPlaylist);
+		if (side === 'left') {
+			setPlaylistInfoLeft(context.globalDispatch, oldIdPlaylist);
+		} else {
+			setPlaylistInfoRight(context.globalDispatch, oldIdPlaylist);
+		}
 	}
-	side === 'left'
-		? setPlaylistInfoRight(context.globalDispatch, plaid)
-		: setPlaylistInfoLeft(context.globalDispatch, plaid);
+	if (side === 'left') {
+		setPlaylistInfoRight(context.globalDispatch, plaid);
+	} else {
+		setPlaylistInfoLeft(context.globalDispatch, plaid);
+	}
 }
 
-function getInlineTag(e: DBKaraTag, tagType: number, scope: 'admin' | 'public', i18nParam?: any) {
+function getInlineTag(e: DBKaraTag, tagType: number, scope: 'admin' | 'public', i18nParam?: Record<string, string>) {
 	return (
 		<InlineTag
 			key={e.tid}
@@ -349,27 +412,35 @@ function getInlineTag(e: DBKaraTag, tagType: number, scope: 'admin' | 'public', 
 	);
 }
 
-export function computeTagsElements(kara: DBKara, scope: Scope, versions = true, i18nParam?: any) {
+export function computeTagsElements(
+	kara: DBKara,
+	scope: Scope,
+	settings: SettingsStoreData,
+	versions = true,
+	i18nParam?: Record<string, string>
+) {
 	// Tags in the header
 	const karaTags: ReactNode[] = [];
 
 	if (kara.langs) {
 		const isMulti = kara.langs.find(e => e.name.indexOf('mul') > -1);
-		isMulti
-			? karaTags.push(
-					<div key={isMulti.tid} className="tag black">
-						{getInlineTag(isMulti, tagTypes.LANGS.type, scope, i18nParam)}
-					</div>
-				)
-			: karaTags.push(
-					...sortAndHideTags(kara.langs, scope).map(tag => {
-						return (
-							<div key={tag.tid} className="tag black" title={tag.short ? tag.short : tag.name}>
-								{getInlineTag(tag, tagTypes.LANGS.type, scope, i18nParam)}
-							</div>
-						);
-					})
-				);
+		if (isMulti) {
+			karaTags.push(
+				<div key={isMulti.tid} className="tag black">
+					{getInlineTag(isMulti, tagTypes.LANGS.type, scope, i18nParam)}
+				</div>
+			);
+		} else {
+			karaTags.push(
+				...sortAndHideTags(kara.langs, scope).map(tag => {
+					return (
+						<div key={tag.tid} className="tag black" title={tag.short ? tag.short : tag.name}>
+							{getInlineTag(tag, tagTypes.LANGS.type, scope, i18nParam)}
+						</div>
+					);
+				})
+			);
+		}
 	}
 	if (kara.songtypes) {
 		karaTags.push(
@@ -384,9 +455,12 @@ export function computeTagsElements(kara: DBKara, scope: Scope, versions = true,
 		);
 	}
 
-	const types = versions
-		? ['VERSIONS', 'FAMILIES', 'PLATFORMS', 'GENRES', 'ORIGINS', 'MISC', 'WARNINGS']
-		: ['FAMILIES', 'PLATFORMS', 'GENRES', 'ORIGINS', 'MISC', 'WARNINGS'];
+	const types = settings.config.Frontend.Library.KaraLineDisplay.filter(
+		v => v.display === 'tag' && v.type === 'versions'
+	).map(e => (e.type as string).toUpperCase());
+	if (versions) {
+		types.push('VERSIONS');
+	}
 
 	for (const type of types) {
 		const tagData = tagTypes[type];

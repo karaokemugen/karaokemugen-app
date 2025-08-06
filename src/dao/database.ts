@@ -50,7 +50,12 @@ export async function initDB(): Promise<boolean> {
 	profile('initDB');
 	let baseEmpty = false;
 	const conf = getConfig();
-	await connectDB(errorFunction, { superuser: true, db: 'postgres', log: getState().opt.sql });
+	await connectDB(errorFunction, {
+		bundledPostgres: conf.System.Database.bundledPostgresBinary,
+		superuser: true,
+		db: 'postgres',
+		log: getState().opt.sql,
+	});
 	// Testing if database exists. If it does, no need to do the other stuff
 	const { rows } = await db().query(
 		`SELECT datname FROM pg_catalog.pg_database WHERE datname = '${conf.System.Database.database}'`
@@ -72,7 +77,12 @@ export async function initDB(): Promise<boolean> {
 		`GRANT ALL PRIVILEGES ON DATABASE ${conf.System.Database.database} TO ${conf.System.Database.username};`
 	);
 	// We need to reconnect to create the extension on our newly created database
-	await connectDB(errorFunction, { superuser: true, db: conf.System.Database.database, log: getState().opt.sql });
+	await connectDB(errorFunction, {
+		bundledPostgres: conf.System.Database.bundledPostgresBinary,
+		superuser: true,
+		db: conf.System.Database.database,
+		log: getState().opt.sql,
+	});
 	await db().query('CREATE EXTENSION IF NOT EXISTS unaccent;');
 	if (process.platform === 'win32') await db().query('CREATE EXTENSION IF NOT EXISTS pgcrypto;');
 	await db().query('GRANT CREATE ON SCHEMA public TO public;');
@@ -230,6 +240,7 @@ export async function initDBSystem(): Promise<Postgrator.Migration[]> {
 		}
 		logger.info('Initializing database connection', { service });
 		await connectDB(errorFunction, {
+			bundledPostgres: conf.System.Database.bundledPostgresBinary,
 			superuser: false,
 			db: conf.System.Database.database,
 			log: state.opt.sql,
@@ -313,6 +324,7 @@ export async function generateDB(): Promise<boolean> {
 			emitWS('favoritesUpdated', user.login);
 			emitWS('animelistUpdated', user.login);
 		}
+		// Library is refreshed inside this so no need to add it here.
 		await updateAllSmartPlaylists();
 		emitWS('databaseGenerated');
 	} catch (err) {

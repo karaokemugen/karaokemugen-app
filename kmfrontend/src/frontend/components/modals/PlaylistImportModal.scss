@@ -1,0 +1,136 @@
+@use '../../styles/variables.scss';
+
+#playlist-import-modal {
+	.closeModal {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.modal-search-bar {
+		display: flex;
+
+		.plSearch {
+			flex: 1;
+			margin: 0em;
+			font-weight: bold;
+			color: #ccc;
+			font-family: Lato, 'Font Awesome 6 Free', sans-serif;
+		}
+
+		.show-sort-options {
+			display: inline-flex;
+			justify-content: space-between;
+			min-width: 13em;
+
+			.sort-option-label {
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+
+			.small-arrow {
+				content: '';
+				display: inline-block;
+				position: relative;
+				top: 0.5em;
+				margin-left: 1em;
+				border-color: currentColor transparent transparent;
+				border-width: 5px;
+				border-style: solid;
+			}
+		}
+
+		.show-filter-options i:after {
+			content: '';
+			display: inline-block;
+			position: relative;
+			top: 0.75em;
+			border-color: currentColor transparent transparent;
+			border-width: 5px;
+			border-style: solid;
+		}
+
+		.dropdown-menu > li > div:not(.radiobutton-ui) {
+			text-align: left;
+		}
+	}
+
+	.modal-body {
+		min-height: 33em;
+
+		.playlist-cards {
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between;
+
+			.playlist-card {
+				display: flex;
+				justify-content: space-between;
+				border-bottom: 1px solid #5e6d6f;
+				padding-top: 0.7rem;
+				padding-bottom: 0.7rem;
+				margin-left: 0.7rem;
+				margin-right: 0.7rem;
+				min-height: 6.5rem;
+				align-items: center;
+
+				.card-title {
+					font-weight: bold;
+				}
+
+				.pl-infos {
+					align-items: flex-start;
+					display: flex;
+					flex-direction: column;
+					max-width: 90%;
+
+					& h3 {
+						text-wrap: nowrap;
+						text-overflow: ellipsis;
+						overflow: hidden;
+						max-width: 100%;
+					}
+				}
+
+				.pl-download {
+					aspect-ratio: 1/1;
+					height: 2.5em;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					font-size: x-large;
+				}
+			}
+		}
+
+		.page-numbers {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+
+			.page-number {
+				margin: 2px;
+
+				&.current {
+					background-color: variables.$mugen-btn-primary-background;
+					cursor: default;
+				}
+			}
+		}
+
+		.connection-error {
+			display: flex;
+			flex-direction: column;
+
+			.refresh-button {
+				font-size: x-large;
+			}
+
+			.nanami-thinking > img {
+				width: 60%;
+				align-self: center;
+			}
+		}
+	}
+}

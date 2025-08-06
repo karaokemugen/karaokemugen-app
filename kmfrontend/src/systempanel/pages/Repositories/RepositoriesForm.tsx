@@ -41,7 +41,7 @@ function RepositoryForm(props: RepositoriesFormProps) {
 	const [secure, setSecure] = useState(props.repository?.Secure);
 
 	const getRepositories = async () => {
-		const res: Repository[] = await commandBackend(WS_CMD.GET_REPOS);
+		const res: Repository[] = (await commandBackend(WS_CMD.GET_REPOS)) as Repository[];
 		setRepositoriesValue(
 			res.filter(repo => repo.Name !== props.repository.Name && !repo.System).map(repo => repo.Name)
 		);
@@ -112,6 +112,7 @@ function RepositoryForm(props: RepositoriesFormProps) {
 			Git: values.GitURL
 				? {
 						URL: values.GitURL,
+						Branch: values.GitBranch,
 						Username: values.GitURL.toLowerCase().startsWith('git@') ? undefined : values.GitUsername,
 						Password: values.GitURL.toLowerCase().startsWith('git@') ? undefined : values.GitPassword,
 						Author: values.GitAuthor,
@@ -128,7 +129,7 @@ function RepositoryForm(props: RepositoriesFormProps) {
 					}
 				: undefined,
 		};
-		props.save(repository, !values.Online && searchParams.get('setup'));
+		props.save(repository, !values.Online && !!searchParams.get('setup'));
 	};
 
 	const setDefaultFolders = (value: string): void => {
@@ -192,6 +193,7 @@ function RepositoryForm(props: RepositoriesFormProps) {
 				BaseDir: props.repository?.BaseDir,
 				PathMedias: props.repository?.Path.Medias,
 				GitURL: props.repository?.Git?.URL,
+				GitBranch: props.repository?.Git?.Branch,
 				GitUsername: props.repository?.Git?.Username,
 				GitPassword: props.repository?.Git?.Password,
 				GitAuthor: props.repository?.Git?.Author,
@@ -420,7 +422,7 @@ function RepositoryForm(props: RepositoriesFormProps) {
 							>
 								<FoldersElement
 									openDirectory={true}
-									hideAdd={true}
+									hideAdd={!!searchParams.get('setup')}
 									onChange={value => form.setFieldsValue({ PathMedias: value })}
 									disabled={props.repository?.System}
 								/>
@@ -458,6 +460,14 @@ function RepositoryForm(props: RepositoriesFormProps) {
 										</Button>
 									)
 								) : null}
+							</Form.Item>
+							<Form.Item
+								label={i18next.t('REPOSITORIES.GIT.BRANCH')}
+								labelCol={{ flex: '0 1 300px' }}
+								name="GitBranch"
+								rules={[{ required: update }]}
+							>
+								<Input placeholder={i18next.t('REPOSITORIES.GIT.BRANCH')} />
 							</Form.Item>
 							{isSshUrl ? null : (
 								<>

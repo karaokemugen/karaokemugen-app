@@ -54,6 +54,45 @@ Frontend:
   ShowAvatarsOnPlaylist: true
   # This message will be shown on the login page for your karaoke session
   WelcomeMessage: ''
+  # How items in the library are displayed and how they're sorted
+  Library:
+    KaraLineDisplay:
+      - type: langs
+        display: short
+      - type:
+          - displayType
+          - series
+          - singergroups
+          - singers
+        display: i18n
+        style: bold
+      - type: songtypes
+        display: short
+      - type: title
+        display: i18n
+        style: italic
+      - type: versions
+        display: tag
+      - type: families
+        display: tag
+      - type: platforms
+        display: tag
+      - type: genres
+        display: tag
+      - type: origins
+        display: tag
+      - type: misc
+        display: tag
+      - type: warnings
+        display: tag
+    KaraLineSort:
+      - - series
+        - singergroups
+        - singers
+      - songtypes
+      - langs
+      - parents
+      - title
 GUI:
   # Enable or disable chibi player
   ChibiPlayer:
@@ -232,11 +271,16 @@ System:
     bundledPostgresBinary: false
     database: karaokemugen_app
     host: localhost
+    socket: /var/run/postgres/
     password: musubi
     port: 6559
     superuser: postgres
     superuserPassword: musubi
     username: karaokemugen_app
+    # socket or tcp. If socket, the socket property should be a path to the Unix socket directory
+    # socket option does not work on Windows yet.
+    # Note that if you're using a bundledPostgresBinary, host and socket are ignored.
+    connection: tcp
   Binaries:
     Player:
       Linux: /usr/bin/mpv

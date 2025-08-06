@@ -1,1 +1,12 @@
-{}
+{
+	"SELECT_PLACEHOLDER": "Selecteer een afspeellijst",
+	"YES": "Ja",
+	"NO": "Nee",
+	"AND": "en",
+	"CANCEL": "Annuleren",
+	"OR": "of",
+	"UNKNOWN": "Onbekend",
+	"SEARCH": "Zoeken",
+	"SUBMIT": "Opslaan",
+	"CONFIRM": "Bevestigen"
+}

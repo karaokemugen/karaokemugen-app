@@ -58,7 +58,7 @@
 		"CRITERIA_TYPE_1002": "Más largo que (mm:ss)",
 		"CRITERIA_TYPE_1001": "Canción",
 		"AND": "Y",
-		"TYPE_SMART_DESC": "El tipo \"OR\" es más adecuado para una lista negra. \"Y\" para listas de reproducción clásicas",
+		"TYPE_SMART_DESC": "El tipo \"OR\" es más adecuado para una lista negra. \"Y\" para listas de reproducción clásicas.",
 		"OR": "O",
 		"TYPE_SMART": "Tipo de lista de reproducción inteligente",
 		"PLAYLIST_DURATION": "<1/> Limitar a <2/> <3/> (<4/> orden)",
@@ -558,7 +558,7 @@
 			"CANNOT_WHITELIST": "No puedes no tener ninguna lista blanca, edita la que quieras establecer como nueva lista blanca.",
 			"VISIBLE": "Visible"
 		},
-		"UNKNOW_REPOS": {
+		"UNKNOWN_REPOS": {
 			"TITLE": "Repositorios desconocidos detectados",
 			"DESCRIPTION": "Esta lista de reproducción contiene canciones de repositorios que aún no tienes localmente.",
 			"DOWNLOAD_THEM": "¿Quieres agregarlos ahora?"
@@ -1366,7 +1366,7 @@
 		"USER_DELETE_ERROR": "Error al eliminar el usuario",
 		"USER_RESETPASSWORD_ERROR": "Error al restablecer la contraseña de usuario",
 		"MEDIA_DELETE_ERROR": "Error al eliminar medios",
-		"UNKNOW_CONVERT_ERROR": "Usuario desconocido",
+		"UNKNOWN_CONVERT_ERROR": "Usuario desconocido",
 		"TAG_EDIT_ERROR": "Error al editar la etiqueta",
 		"USER_LIST_ERROR": "Error al obtener la lista de usuarios",
 		"SESSION_DELETE_ERROR": "Error al eliminar sesión",

@@ -4,6 +4,7 @@ export interface UserOpts {
 	editRemote?: false | string; // Supply online token
 	renameUser?: boolean;
 	noPasswordCheck?: boolean;
+	skipSecurityCode?: boolean;
 }
 
 export interface Tokens {

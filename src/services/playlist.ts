@@ -64,7 +64,7 @@ import { adminToken } from '../utils/constants.js';
 import sentry from '../utils/sentry.js';
 import { getState, setState } from '../utils/state.js';
 import { writeStreamFiles } from '../utils/streamerFiles.js';
-import { checkMediaAndDownload } from './download.js';
+import { checkMediaAndDownload, waitForSongsToDownload } from './download.js';
 import { getAllFavorites } from './favorites.js';
 import { getKaras, getKarasMicro } from './kara.js';
 import { getSongInfosForPlayer } from './karaEngine.js';
@@ -322,7 +322,7 @@ export async function removePlaylist(plaid: string) {
 }
 
 /** Empty playlist completely */
-export async function emptyPlaylist(plaid: string): Promise<string> {
+export async function emptyPlaylist(plaid: string, refresh = true): Promise<string> {
 	try {
 		profile('emptyPL');
 		const pl = await getPlaylistInfo(plaid);
@@ -333,8 +333,8 @@ export async function emptyPlaylist(plaid: string): Promise<string> {
 		updatePlaylistLastEditTime(plaid);
 		if (plaid === getState().currentPlaid) writeStreamFiles('current_playlist_info');
 		// If our playlist is the public one, the frontend should reset all buttons on the song library so it shows + for everything all over again.
-		if (plaid === getState().publicPlaid) emitWS('publicPlaylistEmptied', plaid);
-		emitWS('playlistContentsUpdated', plaid);
+		if (refresh && plaid === getState().publicPlaid) emitWS('publicPlaylistEmptied', plaid);
+		if (refresh) emitWS('playlistContentsUpdated', plaid);
 		return plaid;
 	} catch (err) {
 		logger.error(`Error emptying playlist ${plaid} : ${err}`, { service });
@@ -375,8 +375,12 @@ export async function exportPlaylistMedia(
 		value: 0,
 	});
 	try {
+		const songsToDownload = await checkMediaAndDownload(plMini);
+		if (songsToDownload.length > 0) {
+			await waitForSongsToDownload(songsToDownload);
+		}
 		let itemsProcessed = 0;
-		logger.debug(`Exporting media of playlist ${plaid}`, { service });
+		logger.debug(`Exporting media for playlist ${plaid}`, { service });
 		const exportedResult: Array<DBPLC & { exportSuccessful: boolean }> = [];
 		for (const kara of plMini) {
 			try {
@@ -464,7 +468,7 @@ function publicHook(plaid: string, name: string) {
 }
 
 /** Edit playlist properties */
-export async function editPlaylist(plaid: string, playlist: Partial<DBPL>) {
+export async function editPlaylist(plaid: string, playlist: Partial<DBPL>, refresh = true) {
 	try {
 		const pl = await getPlaylistInfo(plaid);
 		if (!pl) throw new ErrorKM('UNKNOWN_PLAYLIST', 404, false);
@@ -518,8 +522,10 @@ export async function editPlaylist(plaid: string, playlist: Partial<DBPL>) {
 			updateAllSmartPlaylists(isBlacklist, isWhitelist);
 		}
 		updatePlaylistLastEditTime(plaid);
-		emitWS('playlistInfoUpdated', plaid);
-		emitWS('playlistsUpdated');
+		if (refresh) {
+			emitWS('playlistInfoUpdated', plaid);
+			emitWS('playlistsUpdated');
+		}
 	} catch (err) {
 		logger.error(`Error editing playlist ${plaid} : ${err}`, { service });
 		sentry.error(err);
@@ -530,6 +536,7 @@ export async function editPlaylist(plaid: string, playlist: Partial<DBPL>) {
 /** Create new playlist */
 export async function createPlaylist(pl: DBPL, username: string): Promise<string> {
 	try {
+		const user = await getUser(username);
 		const plaid = await insertPlaylist({
 			...pl,
 			created_at: new Date(),
@@ -539,6 +546,7 @@ export async function createPlaylist(pl: DBPL, username: string): Promise<string
 			flag_whitelist: pl.flag_whitelist || null,
 			flag_blacklist: pl.flag_blacklist || null,
 			username,
+			nickname: user.nickname,
 		});
 		if (+pl.flag_current) currentHook(plaid, pl.name);
 		if (+pl.flag_public) publicHook(plaid, pl.name);
@@ -1329,7 +1337,7 @@ export async function exportPlaylist(plaid: string) {
 }
 
 /** Import playlist from JSON */
-export async function importPlaylist(playlist: PlaylistExport, username: string, plaid?: string) {
+export async function importPlaylist(playlist: PlaylistExport, username: string) {
 	// If all tests pass, then add playlist, then add karas
 	// Playlist can end up empty if no karaokes are found in database
 	const task = new Task({
@@ -1349,10 +1357,10 @@ export async function importPlaylist(playlist: PlaylistExport, username: string,
 			plaid: null,
 		};
 		let flag_playingDetected = false;
-		const users = new Map();
+		const users = new Map<string, User>();
 		for (const kara of playlist.PlaylistContents) {
 			kara.username = kara.username.toLowerCase();
-			let user: User = users.get(kara.username);
+			let user = users.get(kara.username);
 			if (!user) {
 				user = await getUser(kara.username);
 				if (!user) {
@@ -1377,16 +1385,20 @@ export async function importPlaylist(playlist: PlaylistExport, username: string,
 		if (!flag_playingDetected) {
 			playlist.PlaylistContents[0].flag_playing = true;
 		}
-		if (!plaid) {
-			plaid = await createPlaylist(playlist.PlaylistInformation, username);
+		if (!(playlist.PlaylistInformation.plaid && (await getPlaylistInfo(playlist.PlaylistInformation.plaid)))) {
+			playlist.PlaylistInformation.plaid = await createPlaylist(playlist.PlaylistInformation, username);
 		} else {
-			await emptyPlaylist(plaid);
+			await Promise.all([
+				emptyPlaylist(playlist.PlaylistInformation.plaid, false),
+				editPlaylist(playlist.PlaylistInformation.plaid, playlist.PlaylistInformation),
+			]);
 		}
 		const repos = getRepos();
 		const unknownRepos: Set<string> = new Set();
 		playlist.PlaylistContents.forEach((_: any, i: number) => {
 			// Do not replace here to not break old exports/imports
-			playlist.PlaylistContents[i].plaid = plaid;
+			// Remove this in KM 10.x
+			playlist.PlaylistContents[i].plaid = playlist.PlaylistInformation.plaid;
 			const repo = playlist.PlaylistContents[i].repository;
 			if (repo && !repos.find(r => r.Name === repo)) {
 				// Repository not found
@@ -1396,8 +1408,12 @@ export async function importPlaylist(playlist: PlaylistExport, username: string,
 
 		if (playlist.PlaylistContents?.length > 0) await insertKaraIntoPlaylist(playlist.PlaylistContents);
 		if (playingKara?.kid) {
-			const plcPlaying = await getPLCByKIDUser(playingKara.kid, playingKara.username, plaid);
-			await setPlaying(plcPlaying?.plcid || 0, plaid);
+			const plcPlaying = await getPLCByKIDUser(
+				playingKara.kid,
+				playingKara.username,
+				playlist.PlaylistInformation.plaid
+			);
+			await setPlaying(plcPlaying?.plcid || 0, playlist.PlaylistInformation.plaid);
 		}
 		if (playlist.PlaylistCriterias?.length > 0) {
 			await addCriteria(
@@ -1405,16 +1421,21 @@ export async function importPlaylist(playlist: PlaylistExport, username: string,
 					return {
 						type: c.type,
 						value: c.value,
-						plaid,
+						plaid: playlist.PlaylistInformation.plaid,
 					};
 				})
 			);
-			if (playlist.PlaylistInformation.flag_smart) await updateSmartPlaylist(plaid);
+			if (playlist.PlaylistInformation.flag_smart) await updateSmartPlaylist(playlist.PlaylistInformation.plaid);
 		}
-		await Promise.all([updatePlaylistKaraCount(plaid), updatePlaylistDuration(plaid)]);
+		await Promise.all([
+			updatePlaylistKaraCount(playlist.PlaylistInformation.plaid),
+			updatePlaylistDuration(playlist.PlaylistInformation.plaid),
+		]);
 		emitWS('playlistsUpdated');
+		emitWS('playlistInfoUpdated', playlist.PlaylistInformation.plaid);
+		emitWS('playlistContentsUpdated', playlist.PlaylistInformation.plaid);
 		return {
-			plaid,
+			plaid: playlist.PlaylistInformation.plaid,
 			reposUnknown: [...unknownRepos],
 		};
 	} catch (err) {

@@ -1,4 +1,4 @@
-import { PathType } from '../lib/types/config.js';
+import { KaraLineDisplayElement, KaraSortElement, PathType } from '../lib/types/config.js';
 import { PositionX, PositionY } from '../lib/types/index.js';
 import { PlaylistMediaType } from '../lib/types/playlistMedias.js';
 import { Collections, Repository } from '../lib/types/repo.js';
@@ -53,6 +53,20 @@ export interface QuizGameConfig {
 
 export type EndOfPlaylistAction = (typeof endOfPlaylistActions)[number];
 
+export interface DBConfig {
+	host?: string;
+	port?: number;
+	username?: string;
+	password?: string;
+	superuser?: string;
+	superuserPassword?: string;
+	database?: string;
+	bundledPostgresBinary?: boolean;
+	socket?: string;
+	connection?: 'tcp' | 'socket';
+	RestoreNeeded?: boolean;
+}
+
 export interface Config {
 	App: {
 		JwtSecret?: string;
@@ -105,6 +119,10 @@ export interface Config {
 		PublicPlayerControls?: boolean;
 		ShowAvatarsOnPlaylist?: boolean;
 		WelcomeMessage?: string;
+		Library?: {
+			KaraLineDisplay?: KaraLineDisplayElement[];
+			KaraLineSort?: KaraSortElement[];
+		};
 	};
 	GUI: {
 		ChibiPlayer?: {
@@ -234,17 +252,7 @@ export interface Config {
 	System: {
 		SystemRepositoryMaintainance?: boolean;
 		FrontendPort: number;
-		Database: {
-			host?: string;
-			port?: number;
-			username?: string;
-			password?: string;
-			superuser?: string;
-			superuserPassword?: string;
-			database?: string;
-			bundledPostgresBinary?: boolean;
-			RestoreNeeded?: boolean;
-		};
+		Database: DBConfig;
 		Binaries: {
 			Player: {
 				Windows?: string;

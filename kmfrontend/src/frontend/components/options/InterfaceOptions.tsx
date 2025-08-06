@@ -5,6 +5,9 @@ import GlobalContext from '../../../store/context';
 import { dotify } from '../../../utils/tools';
 import Switch from '../generic/Switch';
 import { sanitizeSettingsSearchValue } from './Options';
+import { showModal } from '../../../store/actions/modal';
+import KaraLineDisplayModal from '../modals/karalinedisplay/KaraLineDisplayModal';
+import KaraLineSortModal from '../modals/karalinesort/KaraLineSortModal';
 
 interface IProps {
 	onChange: (e: any) => void;
@@ -35,6 +38,14 @@ function InterfaceOptions(props: IProps) {
 	useEffect(() => {
 		setConfig(dotify(context.globalState.settings.data.config));
 	}, [context.globalState.settings.data.config]);
+
+	const toggleKaraLineSortModal = () => {
+		showModal(context.globalDispatch, <KaraLineSortModal />);
+	};
+
+	const toggleKaraLineDisplayModal = () => {
+		showModal(context.globalDispatch, <KaraLineDisplayModal />);
+	};
 
 	return (
 		<>
@@ -206,6 +217,38 @@ function InterfaceOptions(props: IProps) {
 								onBlur={onChange}
 								defaultValue={config['Frontend.WelcomeMessage']}
 							/>
+						</div>
+					</div>
+				))}
+			{filterValue === undefined ||
+				(sanitizeSettingsSearchValue(i18next.t('SETTINGS.INTERFACE.KARA_LINE_SORT')).includes(filterValue) && (
+					<div className="settings-line">
+						<label htmlFor="Frontend.Library.KaraLineSort">
+							<span className="title">{i18next.t('SETTINGS.INTERFACE.KARA_LINE_SORT')}</span>
+							<br />
+							<span className="tooltip">{i18next.t('SETTINGS.INTERFACE.KARA_LINE_SORT_TOOLTIP')}</span>
+						</label>
+						<div>
+							<button type="button" className="btn btn-default" onClick={toggleKaraLineSortModal}>
+								{i18next.t('SETTINGS.INTERFACE.SET')}
+							</button>
+						</div>
+					</div>
+				))}
+			{filterValue === undefined ||
+				(sanitizeSettingsSearchValue(i18next.t('SETTINGS.INTERFACE.KARA_LINE_DISPLAY')).includes(
+					filterValue
+				) && (
+					<div className="settings-line">
+						<label htmlFor="Frontend.Library.KaraLineDisplay">
+							<span className="title">{i18next.t('SETTINGS.INTERFACE.KARA_LINE_DISPLAY')}</span>
+							<br />
+							<span className="tooltip">{i18next.t('SETTINGS.INTERFACE.KARA_LINE_DISPLAY_TOOLTIP')}</span>
+						</label>
+						<div>
+							<button type="button" className="btn btn-default" onClick={toggleKaraLineDisplayModal}>
+								{i18next.t('SETTINGS.INTERFACE.SET')}
+							</button>
 						</div>
 					</div>
 				))}

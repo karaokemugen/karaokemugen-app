@@ -138,7 +138,7 @@
 		"OR": "OR",
 		"AND": "AND",
 		"TYPE_SMART": "Smart playlist type",
-		"TYPE_SMART_DESC": "The \"OR\" type is better suited for a blacklist. \"AND\" for classic playlists",
+		"TYPE_SMART_DESC": "The \"OR\" type is better suited for a blacklist. \"AND\" for classic playlists.",
 		"PLAYLIST_DURATION": "<1/> Limit to <2/> <3/> (<4/> order)",
 		"PLAYLIST_DURATION_TYPE_MINUTES": "minutes",
 		"PLAYLIST_DURATION_TYPE_SONGS": "songs",
@@ -565,7 +565,12 @@
 			"PUBLIC_PLAYER_CONTROLS": "Allow public to control the player",
 			"PUBLIC_PLAYER_CONTROLS_TOOLTIP": "Play/pause, stop, previosu and next controls will be visible in the public interface, allowing users to control the player from their devices. Use only in small groups!",
 			"DISPLAY_WELCOME_MESSAGE": "Show welcome message",
-			"DISPLAY_WELCOME_MESSAGE_TOOLTIP": "This message will be shown on your karaoke session's login page"
+			"DISPLAY_WELCOME_MESSAGE_TOOLTIP": "This message will be shown on your karaoke session's login page",
+			"KARA_LINE_SORT": "Sort library by…",
+			"KARA_LINE_SORT_TOOLTIP": "Define which parts of a song are used to sort the library",
+			"KARA_LINE_DISPLAY": "Song parts display",
+			"KARA_LINE_DISPLAY_TOOLTIP": "Define which parts of a song are displayed in song lists (operator only)",
+			"SET": "Set…"
 		}
 	},
 	"KARA_PAUSED_WAITING": "No song playing yet",
@@ -667,7 +672,7 @@
 	"NEXT_SONG_MESSAGE": "Coming up next :",
 	"USER_SONG_PLAYS_IN": "Your song {{kara}} has been added and will be airing in {{time}} ({{date}})",
 	"MODAL": {
-		"UNKNOW_REPOS": {
+		"UNKNOWN_REPOS": {
 			"TITLE": "Unknown repositories detected",
 			"DESCRIPTION": "This playlist contains songs from repositories you do not have yet locally.",
 			"DOWNLOAD_THEM": "Do you want to add them now?"
@@ -935,6 +940,71 @@
 		"STOP_QUIZ": {
 			"TITLE": "Stop quiz?",
 			"DESCRIPTION": "The game will be stopped immediately. It can be resumed using the Start a quiz menu."
+		},
+		"KARA_LINE_SORT": {
+			"TITLE": "Library Sort Settings",
+			"DESCRIPTION": "Drag and drop elements to change the <1>library's sort settings</1>.",
+			"DESCRIPTION_ADD_REMOVE": "Click on \"Add\" to add another element or X to remove one.",
+			"REMOVE": "Remove element from sort",
+			"WARNING_DESCRIPTION": "Any modification can take several seconds to appear while the database is being updated. Please look at the task list at the bottom of this window to see when the update is done."
+		},
+		"KARA_LINE_DISPLAY": {
+			"TITLE": "Song List Display Settings",
+			"DESCRIPTION": "Drag and drop elements to change <1>the way songs are displayed</1> in lists.",
+			"DESCRIPTION_ADD_REMOVE": "Click on \"Add\" to add another element or X to remove one.",
+			"REMOVE": "Remove element from display",
+			"EXAMPLE": "Example:",
+			"TITLE_ELEMENT": "Title"
+		},
+		"KARA_LINE_ADD": {
+			"TITLE": "Add an element",
+			"TAG_TYPE": "Tag type",
+			"ADD_TAG_TYPE": "Choose type",
+			"TAG_TYPES_GROUP": "Group of tag types",
+			"ADD_TAG_TYPES_GROUP": "Add a tag type to this group?",
+			"STRING_TO_DISPLAY": "String to display:",
+			"STRING_TO_DISPLAY_SHORT": "Short string if available (AUDIO, ENG, etc.)",
+			"STRING_TO_DISPLAY_LONG": "Long string, depends on language (Audio Only, English, etc.)",
+			"STRING_TO_DISPLAY_TAG": "Tag bubble",
+			"STRING_FORMAT": "String format:",
+			"STRING_FORMAT_NONE": "None",
+			"STRING_FORMAT_BOLD": "Bold",
+			"STRING_FORMAT_ITALIC": "Italic"
+		},
+		"PLAYLIST_IMPORT": {
+			"TITLE": "Import Playlists",
+			"IMPORT_FROM_FILE": "Import from file",
+			"FILTER": "Filters",
+			"FILTER_LABELS": {
+				"my": "Show my playlists",
+				"downloaded": "Show downloaded playlists"
+			},
+			"SORT_OPTIONS": "Sort playlists",
+			"SORT_OPTIONS_LABELS": {
+				"az": "Alphabetical",
+				"recent": "Date Added",
+				"karacount": "Number of songs",
+				"duration": "Duration",
+				"favorited": "Likes",
+				"username": "Nickname"
+			},
+			"BY_AUTHOR": "by {{author}}",
+			"AND_CONTRIBUTORS": "(and {{contributors, list}})",
+			"AND_CONTRIBUTORS_AND_MORE": "(and {{contributors, list}}, {{numberOfOthers, number}} more)",
+			"KARA_COUNT": "{{karacount}} songs",
+			"DURATION": "Duration: {{duration}}",
+			"DOWNLOAD_PLAYLIST": "Download playlist",
+			"UPDATE_PLAYLIST": "Update playlist",
+			"CONNECTION_ERROR_TO_REMOTE_SERVER": "Couldn't fetch playlists from {{serverName}}. Check your internet connection and if the problem persists, contact an admin of {{serverName}}."
+		},
+		"PLAYLIST_EXPORT": {
+			"TITLE": "Export {{playlistName}}",
+			"EXPORT_TO_FILE": "Export to file",
+			"EXPORT_TO_SERVER": "Export to server",
+			"COPY_PLAYLIST": "Copy playlist to my account",
+			"DESCRIPTION_NOT_OWNED_ON_SERVER": "This playlist is already present on {{serverName}}. Exporting this playlist to the server will create a copy of this playlist under your name.",
+			"DESCRIPTION_OWNED_ON_SERVER": "This playlist is already present on {{serverName}}. Exporting this playlist to the server will OVERWRITE the contents of the playlist. This CANNOT be undone.",
+			"DESCRIPTION_DOES_NOT_EXIST_ON_SERVER": "This playlist does not exists on {{serverName}}. Exporting this playlist to the server will create a new playlist."
 		}
 	},
 	"SETUP_PAGE": {
@@ -1486,6 +1556,7 @@
 		"STORAGE_INFO_MOVE": "You also have the ability, in the repositories management page to move the files of a repository somewhere else like on an external drive, USB key or a network share, allowing you to free space on your main drive.",
 		"NO_FREE_SPACE": "Not enough disk space to download! Make space on your disk and restart the queue.",
 		"GIT": {
+			"BRANCH": "Branch",
 			"URL": "Git Repository",
 			"USERNAME": "Git Username",
 			"PASSWORD": "Git Password (or Gitlab/Github token)",
@@ -1564,6 +1635,8 @@
 		}
 	},
 	"TASKS": {
+		"UPDATING_LIBRARY_SORT": "Updating library sort",
+		"DOWNLOADING_APP_UPDATE": "Downloading application update",
 		"COPYING_LYRICS_IN_REPOS": "Updating lyrics…",
 		"FINDING_UNUSED_MEDIAS": "Searching unused media…",
 		"COMPARING_LYRICS_IN_REPOS": "Comparing lyrics between repositories…",
@@ -1793,7 +1866,7 @@
 		"USER_EDIT_ERROR": "Error editing user",
 		"USER_RESETPASSWORD_ERROR": "Error resetting user password",
 		"ADMIN_CONVERT_ERROR": "The \"admin\" account cannot be converted to an online account",
-		"UNKNOW_CONVERT_ERROR": "User unknown",
+		"UNKNOWN_CONVERT_ERROR": "User unknown",
 		"PASSWORD_TOO_SHORT": "Password too short (minimum 8 characters)",
 		"USER_DELETE_ERROR_ONLINE": "Error deleting your online account",
 		"USER_RESETPASSWORD_ONLINE_ERROR": "Could not reset your password: contact the the server's administrator your account belongs to.",
@@ -1853,7 +1926,9 @@
 		"IMPORT_SONG_TEMPLATE_ERROR_DUPLICATE_TAG": "Unable to identify songs from template, duplicate tag in the template",
 		"IMPORT_SONG_TEMPLATE_ERROR": "Unable to identify songs from template",
 		"IMPORT_NO_TITLE_ERROR": "Unable to import songs, title is missing in the template",
-		"IMPORT_SONG_ERROR": "Unable to import songs"
+		"IMPORT_SONG_ERROR": "Unable to import songs",
+		"PL_DO_NOT_MATCH_REPO": "Some playlist songs do not exist on the remote server",
+		"REMOTE_SERVER_CONNECTION_ERROR": "Couldn't connect to remote server"
 	},
 	"WARNING_CODES": {
 		"REMOTE_HIGH_LATENCY_DETECTED": "Your connection with {{host}} is slow, your users might encounter issues"
@@ -1904,7 +1979,8 @@
 		"REPO_OLD_MEDIAS_DELETED": "Older media from repository deleted",
 		"REPO_MEDIA_DELETED": "Media deleted",
 		"USER_RESETPASSWORD_SUCCESS": "User password successfully Reset",
-		"CHANGES_OCCUR_ON_NEXT_SONG": "This setting will be active on next song."
+		"CHANGES_OCCUR_ON_NEXT_SONG": "This setting will be active on next song.",
+		"PLAYLIST_EXPORTED_TO_SERVER": "Playlist successfully exported to server {{data}}"
 	},
 	"HEADERS": {
 		"HOME": {
