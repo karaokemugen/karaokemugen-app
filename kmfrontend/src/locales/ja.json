@@ -171,5 +171,8 @@
 		"LEVELS": {
 			"WARNING": "警告"
 		}
+	},
+	"KARA": {
+		"SONGWRITERS_TOOLTIP": "作曲家と編曲家と作詞家"
 	}
 }
