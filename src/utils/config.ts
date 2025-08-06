@@ -13,6 +13,8 @@ import { selectUsers } from '../dao/user.js';
 import { applyMenu } from '../electron/electron.js';
 import { errorStep } from '../electron/electronLogger.js';
 import { registerShortcuts, unregisterShortcuts } from '../electron/electronShortcuts.js';
+import { getSettings, saveSetting } from '../lib/dao/database.js';
+import { refreshSortables } from '../lib/dao/kara.js';
 import { refreshTags } from '../lib/dao/tag.js';
 import { RecursivePartial } from '../lib/types/index.js';
 import { PlaylistMediaType } from '../lib/types/playlistMedias.js';
@@ -81,6 +83,11 @@ export async function editSetting(part: RecursivePartial<Config>) {
 	}
 }
 
+export async function compareSortableConfigs() {
+	const settings = await getSettings();
+	return settings.config_librarySort !== JSON.stringify(getConfig().Frontend.Library.KaraLineSort);
+}
+
 /** Merge and act according to config changes */
 export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	// Determine if mpv needs to be restarted
@@ -88,6 +95,13 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	// Collections changed!
 	if (!isEqual(oldConfig.Karaoke.Collections, newConfig.Karaoke.Collections)) {
 		if (state.DBReady) refreshTags();
+	}
+	if (!isEqual(oldConfig.Frontend.Library.KaraLineSort, newConfig.Frontend.Library.KaraLineSort)) {
+		// We save a copy of the settings in database so we can compare it at startup in case the config has changed.
+		refreshSortables().then(() => {
+			saveSetting('config_librarySort', JSON.stringify(newConfig.Frontend.Library.KaraLineSort));
+			emitWS('refreshLibrary');
+		});
 	}
 	if (!isEqual(oldConfig.Player, newConfig.Player)) {
 		// If these settings have been changed, a restart of mpv is necessary

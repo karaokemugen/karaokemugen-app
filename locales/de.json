@@ -339,6 +339,5 @@
 		"TITLE": "Flatpak-Nutzer!",
 		"DETAIL": "Der Inhalt des Benutzerorderners wurde verschoben. Da du Karaoke Mugen über Flatpak installiert hast, kann das Programm den alten Ordner nicht löschen. Daher solltest du diesen Ordner hier manuell löschen:\n\n{{oldDir}}\n\n(Er sollte leer sein!)",
 		"UNDERSTOOD": "Alles klar! Mache ich, bevor ich es vergesse!"
-	},
-	"DOWNLOADING_APP_UPDATE": "Lade Anwendungsupdate herunter"
+	}
 }

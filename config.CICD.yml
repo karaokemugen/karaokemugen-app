@@ -14,6 +14,7 @@ System:
     superuser: karaokemugen_app
     superuserPassword: musubi
     username: karaokemugen_app
+    connection: tcp
   Binaries:
     Player:
       Linux: mpv

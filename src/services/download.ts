@@ -21,7 +21,7 @@ import { resolveFileInDirs, smartMove } from '../lib/utils/files.js';
 import { fixedEncodeURIComponent } from '../lib/utils/http.js';
 import logger, { profile } from '../lib/utils/logger.js';
 import { createImagePreviews } from '../lib/utils/previews.js';
-import { emit } from '../lib/utils/pubsub.js';
+import { emit, on, once } from '../lib/utils/pubsub.js';
 import Task from '../lib/utils/taskManager.js';
 import { emitWS } from '../lib/utils/ws.js';
 import { KaraDownload, KaraDownloadRequest, MediaDownloadCheck, QueueStatus } from '../types/download.js';
@@ -148,11 +148,13 @@ async function processDownload(download: KaraDownload) {
 		downloadedKIDs.add(download.kid);
 		if (dq.length() > 0) logger.info(`${dq.length() - 1} items left in queue`, { service });
 		emitQueueStatus('updated');
+		emit('songDownloaded', download.kid);
 	} catch (err) {
 		setDownloadStatus(download.uuid, 'DL_FAILED');
 		emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.DOWNLOAD', err));
 		updateDownloaded([download.kid], 'MISSING');
 		emitWS('KIDUpdated', [{ kid: download.kid, download_status: 'MISSING' }]);
+		emit('songDownloadFailed', download.kid);
 		logger.error(`Failed to process download ${download.mediafile} (${download.uuid})`, { service, obj: err });
 		Sentry.error(err);
 		throw err;
@@ -178,19 +180,22 @@ export function resumeQueue() {
 	return dq.resume();
 }
 
-export async function checkMediaAndDownload(plcs: MediaDownloadCheck[], updateOnly = false) {
+/** Check if medias exists and downloads them if needed. Returns false if no download is done */
+export async function checkMediaAndDownload(plcs: MediaDownloadCheck[], updateOnly = false): Promise<string[]> {
 	if (!getConfig().Online.AllowDownloads) {
 		logger.info('No media will be downloaded, settings disallows downloads', { service });
 		return;
 	}
-	if (plcs.length === 0) return;
+	if (plcs.length === 0) return [];
 	const mapper = async (plc: MediaDownloadCheck) => {
 		return checkMediaAndDownloadSingleKara(plc, updateOnly);
 	};
-	await parallel(plcs, mapper, {
+	const kidsToDownload = await parallel(plcs, mapper, {
 		stopOnError: false,
 		concurrency: 32,
 	});
+	// We remove nulls before returning the array
+	return kidsToDownload.filter(k => k);
 }
 
 export async function checkMediaAndDownloadSingleKara(kara: MediaDownloadCheck, updateOnly = false) {
@@ -222,6 +227,8 @@ export async function checkMediaAndDownloadSingleKara(kara: MediaDownloadCheck, 
 			]);
 		} catch (err) {
 			// Non-fatal, probably the song is already in queue.
+		} finally {
+			return kara.kid;
 		}
 	}
 }
@@ -291,4 +298,25 @@ export function wipeDownloads() {
 		Sentry.error(err);
 		throw err instanceof ErrorKM ? err : new ErrorKM('DOWNLOADS_WIPE_ERROR');
 	}
+}
+
+export async function waitForSongsToDownload(kids: string[]): Promise<void> {
+	return new Promise((resolvePromise, reject) => {
+		const songs = new Set(kids);
+		on('songDownloaded', (kid: string) => {
+			songs.delete(kid);
+			if (songs.size === 0) resolvePromise();
+		});
+		once('songDownloadFailed', () => {
+			reject(new Error('Failed to download one song'));
+		});
+		once('downloadQueueDrained', () => {
+			// Just putting it here to error out if the queue is drained and we definitely still have songs left to download. Could be the user who drained the download queue willingly, that idiot.
+			// We wait a little bit just to make sure we're not caught at the same time/before songDownloaded above
+			setTimeout(() => {
+				if (songs.size > 0)
+					reject(new Error('Failed to download all songs, queue emptied before we were done.'));
+			}, 1000);
+		});
+	});
 }

@@ -37,7 +37,9 @@ function SetupPageStats() {
 				}).catch(() => {});
 				await commandBackend(WS_CMD.START_PLAYER).catch(() => {});
 				sessionStorage.setItem('dlQueueRestart', 'true');
-				navigate('/system/repositories/create?setup=true');
+				navigate('/welcome');
+				// TODO update setup for repository
+				//navigate('/system/repositories/create?setup=true');
 			} catch (err: any) {
 				const error = err?.message ? i18next.t(`ERROR_CODES.${err.message}`) : JSON.stringify(err);
 				setError(error);

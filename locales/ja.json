@@ -2,5 +2,16 @@
 	"CANCEL": "キャンセル",
 	"YES": "はい",
 	"NO": "いいえ",
-	"UNKNOWN": "不明"
+	"UNKNOWN": "不明",
+	"MENU_HELP_ABOUT": "&Karaoke Mugenについて",
+	"MENU_HELP_DISCORD": "&Discord",
+	"TAG_TYPES": {
+		"SINGERGROUPS": "バンド",
+		"SINGERS": "歌手",
+		"WARNINGS": "警告",
+		"SONGWRITERS": "作曲家"
+	},
+	"MOVED_USER_DIR_DIALOG": {
+		"UNDERSTOOD": "了解！"
+	}
 }

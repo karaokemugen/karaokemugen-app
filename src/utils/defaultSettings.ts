@@ -6,13 +6,15 @@ import { app } from 'electron';
 
 import { Repository } from '../lib/types/repo.js';
 import { bools, hostnameRegexp } from '../lib/utils/constants.js';
-import { Config } from '../types/config.js';
+import { Config, DBConfig } from '../types/config.js';
 
-export const dbConfig = {
+export const dbConfig: DBConfig = {
 	RestoreNeeded: false,
 	bundledPostgresBinary: true,
 	database: 'karaokemugen_app',
-	host: 'localhost',
+	host: '',
+	socket: '',
+	connection: 'socket',
 	password: 'musubi',
 	port: 6559,
 	superuser: 'postgres',
@@ -67,6 +69,57 @@ export const defaults: Config = {
 		PublicPlayerControls: false,
 		ShowAvatarsOnPlaylist: true,
 		WelcomeMessage: '',
+		Library: {
+			KaraLineDisplay: [
+				{
+					type: 'langs',
+					display: 'short',
+				},
+				{
+					type: ['displayType', 'series', 'singergroups', 'singers'],
+					display: 'i18n',
+					style: 'bold',
+				},
+				{
+					type: 'songtypes',
+					display: 'short',
+				},
+				{
+					type: 'title',
+					display: 'i18n',
+					style: 'italic',
+				},
+				{
+					type: 'versions',
+					display: 'tag',
+				},
+				{
+					type: 'families',
+					display: 'tag',
+				},
+				{
+					type: 'platforms',
+					display: 'tag',
+				},
+				{
+					type: 'genres',
+					display: 'tag',
+				},
+				{
+					type: 'origins',
+					display: 'tag',
+				},
+				{
+					type: 'misc',
+					display: 'tag',
+				},
+				{
+					type: 'warnings',
+					display: 'tag',
+				},
+			],
+			KaraLineSort: [['series', 'singergroups', 'singers'], 'songtypes', 'langs', 'parents', 'title'],
+		},
 	},
 	GUI: {
 		ChibiPlayer: {

@@ -1,3 +1,30 @@
+# [9.0.0] - 2025-08-10
+
+This is a major release. As usual, read previous changelog starting from 8.0.1 to this one to get all changes.
+
+This changelog will cover only changes between 8.0.90 and 9.0.0
+
+## Added
+
+- **[Operators]** Operators can now set how the song lines are displayed in list. This doesn't affect users. (#1605)
+    - The default still is "Language - Series/singergroup/singer - Song type - Title" but this may change in the future.
+- **[Operators]** Playlists can now be imported directly from and exported to the Karaoke Mugen Server your user depends on instead of using file exports. (#1503)
+- **[Users]** Operators can now set how the library is sorted. (#1605)
+    - The default still is "Series/Singergroup/Singer - Language - Song type - Title" but this may change in the future.
+
+## Changed
+
+- **[Maintainers]** Branch can now be configured for a git repository (#1790)
+- **[Operators]** Database can now be connected through UNIX domain sockets. This is only enabled on Linux systems as our node library doesn't allow to connect through sockets on Windows. This is to fix error on AppImages (#1779)
+
+## Fixed
+
+- **[Operators]** Fixed security code when "security code for new accounts" is enabled (#1781)
+- **[Operators]** Fixed medias not being downloaded before export when you decide to export medias from a playlist for use without KM. (#1776)
+- **[Operators]** Fixed missing locale for downloading app updates (#1786)
+- **[Operators]** Fixed delete button with checked songs
+- **[Developers]** Fixed yarn 4 support for flatpak builds.
+
 # [8.0.90] - 2025-07-08
 
 Two months after the last release, we're doing great.

@@ -80,5 +80,96 @@
 		"ANIME_LIST": "自分のアニメの曲"
 	},
 	"WEBAPPMODE_CLOSED_MESSAGE": "インターフェイスを閉じたため、しばらくお待ちください。",
-	"MESSAGE": "メッセージ"
+	"MESSAGE": "メッセージ",
+	"PUBLIC_HOMEPAGE": {
+		"NEXT": "次",
+		"SHOW_LYRICS": "歌詞を見る",
+		"SHOW_ALL_LYRICS": "すべての歌詞を見る",
+		"HIDE_LYRICS": "歌詞を隠す",
+		"SONG_SEARCH_SHORT": "検索"
+	},
+	"PROFILE_MAIL": "メール",
+	"PROFILE_PASSWORD": "パスワード",
+	"PLAYERS_CONTROLS": {
+		"NEXT_SONG_SHORT": "次",
+		"NEXT_SONG": "次の歌",
+		"PREVIOUS_SONG": "前の歌",
+		"PREVIOUS_SONG_SHORT": "前"
+	},
+	"POLL_TIME": "投票",
+	"USERS": {
+		"PASSWORD": "パスワード",
+		"EMAIL": "メール"
+	},
+	"INBOX": {
+		"CONTACT_INFOS_MODAL": {
+			"MAIL": "メール： ",
+			"SOCIAL_NETWORKS": {
+				"DISCORD": "Discord : ",
+				"INSTAGRAM": "Instagram : ",
+				"MASTODON": "Mastodon : ",
+				"BLUESKY": "Bluesky : ",
+				"TWITCH": "Twitch : "
+			}
+		}
+	},
+	"LOGIN": {
+		"GO_BACK": "戻る",
+		"BUTTON_LOGIN": "ログイン",
+		"NEW_ACCOUNT": "新しいアカウント"
+	},
+	"LOGOUT": "ログアウト",
+	"MODAL": {
+		"PROFILE_MODAL": {
+			"SOCIAL_NETWORKS": {
+				"DISCORD": "Discord",
+				"INSTAGRAM": "Instagram",
+				"MYANIMELIST": "MyAnimeList",
+				"BLUESKY": "Bluesky",
+				"BLUESKY_PLACEHOLDER": "karaoke.bsky.social",
+				"GITLAB": "Gitlab",
+				"MASTODON": "Mastodon",
+				"MASTODON_PLACEHOLDER": "KaraokeMugen@shelter.moe",
+				"TWITCH": "Twitch",
+				"DISCORD_PLACEHOLDER": "Karak#1423"
+			}
+		},
+		"PLAY_CURRENT_MODAL": {
+			"TITLE": "警告！"
+		},
+		"START_QUIZ": {
+			"END_GAME": {
+				"MAX_SCORE_PLACEHOLDER": "10",
+				"MAX_SONGS_PLACEHOLDER": "30",
+				"DURATION_PLACEHOLDER": "60"
+			},
+			"DISPLAY": {
+				"BLACK_SCREEN": "黒画面"
+			}
+		}
+	},
+	"TAG_TYPES": {
+		"SINGERGROUPS_one": "バンド",
+		"SINGERGROUPS_other": "バンド",
+		"SINGERS_one": "歌手",
+		"SINGERS_other": "歌手",
+		"WARNINGS_one": "警告",
+		"WARNINGS_other": "警告",
+		"SONGWRITERS_one": "作曲家",
+		"SONGWRITERS_other": "作曲家",
+		"SERIES_one": "作品",
+		"SERIES_other": "作品",
+		"VERSIONS_one": "バージョン",
+		"VERSIONS_other": "バージョン"
+	},
+	"SETTINGS": {
+		"PLAYER": {
+			"AUDIO_ONLY_EXPERIENCE": "音声のみ"
+		}
+	},
+	"LOGS": {
+		"LEVELS": {
+			"WARNING": "警告"
+		}
+	}
 }

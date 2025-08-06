@@ -54,7 +54,7 @@
 		"PLAYLIST_DURATION_TYPE_SONGS": "Lieder",
 		"EXPL_OPEN": "Das sind die Kriterien, nach denen <1>die Playlist</1> erstellt wird. Sie wird automatisch aktualisiert, wenn neue Lieder zur Datenbank hinzugefügt werden.",
 		"PLAYLIST_DURATION": "<1/> Limitierung auf <2/> <3/> (<4/> order)",
-		"TYPE_SMART_DESC": "Der Typ „ODER“ eignet sich besser für eine Blacklist. „UND“ für klassische Playlisten",
+		"TYPE_SMART_DESC": "Der Typ „ODER“ eignet sich besser für eine Blacklist. „UND“ für klassische Playlisten.",
 		"CRITERIA_TYPE_1007": "Nach (Jahreszahl)",
 		"CRITERIA_TYPE_1008": "Bevor (Jahreszahl)"
 	},
@@ -679,7 +679,12 @@
 			"REQUIRE_USER_CREATION_CODE": "Code notwendig für die Benutzererstellung",
 			"PUBLIC_PLAYER_CONTROLS": "Publikumskontrolle des Player zulassen",
 			"REQUIRE_USER_CREATION_CODE_TOOLTIP": "Benutzer benötigen einen Code, um ein neues Benutzerkonto zu erstellen, den ausschließlich der Betreiber sehen und weitergeben kann. Der Code wird im Benutzerfenster im K-Menü angezeigt.",
-			"PUBLIC_PLAYER_CONTROLS_TOOLTIP": "Start/Pause, stopp, vor und zurück wird im Publikums-Interface sichtbar und gestattet den Benutzern den Player von ihrem Gerät aus zu steuern. Nur in kleinen Gruppen benutzen!"
+			"PUBLIC_PLAYER_CONTROLS_TOOLTIP": "Start/Pause, stopp, vor und zurück wird im Publikums-Interface sichtbar und gestattet den Benutzern den Player von ihrem Gerät aus zu steuern. Nur in kleinen Gruppen benutzen!",
+			"KARA_LINE_SORT": "Sortiere Bibliothek nach …",
+			"KARA_LINE_SORT_TOOLTIP": "Definiere, welcher Aspekt eines Liedes zur Sortierung der Bibliothek genutzt wird",
+			"KARA_LINE_DISPLAY": "Lied-Anzeige",
+			"KARA_LINE_DISPLAY_TOOLTIP": "Definiere, welche Aspekte eines Liedes in Liederlisten anzezeigt werden (nur Betreiber)",
+			"SET": "Einstellen …"
 		},
 		"FILTER_SETTINGS": "Sucheinstellungen",
 		"FILTER_SETTINGS_TOOLTIP": "Finde schnell die Einstellung, die du möchtest, mit dieser Suchleiste."
@@ -895,7 +900,7 @@
 		"ADMIN_CONVERT_ERROR": "Das lokale „Admin“-Konto kann nicht in ein Online-Konto umgewandelt werden",
 		"KARA_HISTORY_ERROR": "Fehler beim Sortieren der Songs nach Wiedergabedatum",
 		"MEDIA_DELETE_ERROR": "Fehler beim Löschen von Medien",
-		"UNKNOW_CONVERT_ERROR": "Benutzer unbekannt",
+		"UNKNOWN_CONVERT_ERROR": "Benutzer unbekannt",
 		"REPO_GIT_STASH_ERROR": "Deine Git Änderungen (git stash) können nicht gespeichert werden",
 		"REPO_GIT_PUSH_ERROR": "Git-Commits können nicht gepusht werden",
 		"DOWNLOADS_GET_ERROR": "Fehler beim Abrufen von Downloads aus der Warteschlange",
@@ -989,7 +994,9 @@
 		"IMPORT_SONG_TEMPLATE_ERROR_DUPLICATE_TAG": "Zuordnung der Lieder aufgrund des Templates nicht möglich, Mehrfachnennung eines Tags im Template",
 		"IMPORT_SONG_ERROR": "Import der Lieder nicht möglich",
 		"IMPORT_SONG_TEMPLATE_ERROR": "Zuordnung der Lieder aufgrund des Templates nicht möglich",
-		"IMPORT_NO_TITLE_ERROR": "Import der Lieder nicht möglich, der Titel fehlt im Template"
+		"IMPORT_NO_TITLE_ERROR": "Import der Lieder nicht möglich, der Titel fehlt im Template",
+		"PL_DO_NOT_MATCH_REPO": "Einige Lieder der Playlist existieren auf dem Remote-Server nicht",
+		"REMOTE_SERVER_CONNECTION_ERROR": "Verbindung zum Remote-Server fehlgeschlagen"
 	},
 	"HEADERS": {
 		"DATABASE": {
@@ -1240,7 +1247,7 @@
 			"EDIT": "Editieren",
 			"CANNOT_CURRENT_PLAYLIST": "Du kannst keine aktuelle Playlist haben. Bearbeite stattdessen die Playlist, die du als neue aktuelle Playlist festlegen möchtest."
 		},
-		"UNKNOW_REPOS": {
+		"UNKNOWN_REPOS": {
 			"TITLE": "Unbekannte Repositorys erkannt",
 			"DESCRIPTION": "Diese Playlist enthält Songs aus Repositories, die du noch nicht lokal hast.",
 			"DOWNLOAD_THEM": "Möchtest du sie jetzt hinzufügen?"
@@ -1406,6 +1413,71 @@
 		"CLASSIC_MODE": {
 			"TITLE": "Du bist mit dem Singen dran!",
 			"TEXT": "Klicke auf die Schaltfläche \"Play\", um dein Lied zu starten."
+		},
+		"KARA_LINE_SORT": {
+			"TITLE": "Sortiereinstellungen der Bibliothek",
+			"DESCRIPTION": "Drag and Drop, um Elemente den <1>Sortiereinstellungen der Bibliothek</1> hinzuzufügen.",
+			"DESCRIPTION_ADD_REMOVE": "Klicke auf \"Hinzufügen\", um etwas hinzuzufügen, oder X, um etwas zu entfernen.",
+			"REMOVE": "Element aus der Sortierung entfernen",
+			"WARNING_DESCRIPTION": "Jede Veränderung kann einige Sekunden dauern während die Datenbank aktualisiert wird. Bitte beachte die Auftragsliste unten in diesem Fenster, um zu sehen, wann das Update beendet ist."
+		},
+		"KARA_LINE_ADD": {
+			"ADD_TAG_TYPE": "Typ auswählen",
+			"TAG_TYPES_GROUP": "Gruppe des Tag-Typs",
+			"ADD_TAG_TYPES_GROUP": "Dieser Gruppe einen Tag-Typ hinzufügen?",
+			"STRING_TO_DISPLAY": "Anzeigetext:",
+			"STRING_TO_DISPLAY_SHORT": "Kurztext, falls vorhanden (AUDIO, ENG, usw.)",
+			"STRING_FORMAT_ITALIC": "Kursiv",
+			"TITLE": "Element hinzufügen",
+			"TAG_TYPE": "Tag-Typ",
+			"STRING_TO_DISPLAY_LONG": "Langname, abhängig von der Sprache (Nur Ton, Englisch, usw.)",
+			"STRING_TO_DISPLAY_TAG": "Tag-Blase",
+			"STRING_FORMAT": "Text-Format:",
+			"STRING_FORMAT_NONE": "Keiner",
+			"STRING_FORMAT_BOLD": "Fett"
+		},
+		"KARA_LINE_DISPLAY": {
+			"TITLE": "Einstellungen für die Anzeige der Liederlisten",
+			"DESCRIPTION": "Drag and Drop Elemente, um <1>die Liederanzeige</1> in Listen zu verändern.",
+			"DESCRIPTION_ADD_REMOVE": "Klicke auf \"Hinzufügen\", um etwas hinzuzufügen, oder X, um etwas zu entfernen.",
+			"REMOVE": "Element aus der Anzeige entfernen",
+			"EXAMPLE": "Beispiel:",
+			"TITLE_ELEMENT": "Titel"
+		},
+		"PLAYLIST_IMPORT": {
+			"TITLE": "Playlist importieren",
+			"IMPORT_FROM_FILE": "Aus Datei importieren",
+			"FILTER": "Filter",
+			"FILTER_LABELS": {
+				"my": "Meine Playlisten anzeigen",
+				"downloaded": "Heruntergeladene Playlisten anzeigen"
+			},
+			"SORT_OPTIONS": "Playlisten sortieren",
+			"SORT_OPTIONS_LABELS": {
+				"az": "Alphabetisch",
+				"recent": "Erstelldatum",
+				"karacount": "Liederanzahl",
+				"duration": "Dauer",
+				"favorited": "Likes",
+				"username": "Benutzername"
+			},
+			"BY_AUTHOR": "von {{author}}",
+			"AND_CONTRIBUTORS": "(und {{contributors, list}})",
+			"AND_CONTRIBUTORS_AND_MORE": "(und {{contributors, list}}, {{numberOfOthers, number}} weitere)",
+			"KARA_COUNT": "{{karacount}} Lieder",
+			"DURATION": "Dauer: {{duration}}",
+			"DOWNLOAD_PLAYLIST": "Playlist herunterladen",
+			"UPDATE_PLAYLIST": "Playlist aktualisieren",
+			"CONNECTION_ERROR_TO_REMOTE_SERVER": "Playlist konnte nicht von {{serverName}} heruntergeladen werden. Bitte prüfe deine Internetverbindung und kontaktiere den Administrator von {{serverName}}, falls das Problem weiterhin besteht."
+		},
+		"PLAYLIST_EXPORT": {
+			"TITLE": "{{playlistName}} exportieren",
+			"EXPORT_TO_FILE": "In Datei exportieren",
+			"EXPORT_TO_SERVER": "Auf einen Server exportieren",
+			"COPY_PLAYLIST": "Playlist in mein Benutzerkonto kopieren",
+			"DESCRIPTION_NOT_OWNED_ON_SERVER": "Diese Playlist existiert bereits auf {{serverName}}. Der Export dieser Playlist auf den Server erstellt eine Kopie dieser Playlist unter deinem Namen.",
+			"DESCRIPTION_OWNED_ON_SERVER": "Diese Playlist existiert bereits auf {{serverName}}. Der Export dieser Playlist auf den Server ÜBERSCHREIBT diese Playlist. Dies ist IRREVERSIBEL.",
+			"DESCRIPTION_DOES_NOT_EXIST_ON_SERVER": "Diese Playlist existiert noch nicht auf {{serverName}}. Der Export dieser Playlist auf den Server erstellt eine neue Playlist."
 		}
 	},
 	"REMOTE_STATUS": {
@@ -1597,7 +1669,8 @@
 		"STOP_AFTER": "Die Karaoke wird am Ende des aktuellen Liedes angehalten. Um jetzt anzuhalten, klicke erneut auf die Schaltfläche.",
 		"PL_SONG_ADDED": "Erfolgreich \"{{song}}\"-Song hinzugefügt!",
 		"TAG_COPIED": "Tag erfolgreich in ein anderes Repository kopiert",
-		"CHANGES_OCCUR_ON_NEXT_SONG": "Diese Einstellung wird ab dem nächsten Lied übernommen."
+		"CHANGES_OCCUR_ON_NEXT_SONG": "Diese Einstellung wird ab dem nächsten Lied übernommen.",
+		"PLAYLIST_EXPORTED_TO_SERVER": "Playlist erfolgreich exportiert auf Server {{data}}"
 	},
 	"TAG_TYPES": {
 		"GROUPS_other": "Gruppen",
@@ -1660,7 +1733,8 @@
 			"PASSWORD": "Git-Passwort (oder Gitlab/Github-Token)",
 			"COPY_SSH_KEY": "Kopiere den SSH-Schlüssel in die Zwischenablage",
 			"DELETE_SSH_KEY": "Lösche den SSH-Schlüssel",
-			"GENERATE_SSH_KEY": "Generiere den SSH-Schlüssel"
+			"GENERATE_SSH_KEY": "Generiere den SSH-Schlüssel",
+			"BRANCH": "Branch"
 		},
 		"MOVE": "Definiere die Priorität der Repositories",
 		"DELETE_ALL_MEDIAS": "Alle Medien löschen",
@@ -2091,6 +2165,7 @@
 		"REPOSITORIES_PAGES": "Repositories Seite"
 	},
 	"TASKS": {
+		"DOWNLOADING_APP_UPDATE": "Lade Anwendungsupdate herunter",
 		"GENERATING_DATABASE": "Datenbank aktualisieren…",
 		"UPDATING_WORKDIR": "Arbeitsverzeichnis aktualisieren",
 		"CREATING_SONG": "Lieder erstellen…",
@@ -2132,7 +2207,8 @@
 			"ANALYZING_FILES": "Analysiere Dateien",
 			"CREATING_METADATA": "Erstelle Metadaten",
 			"IMPORTING_BASE": "Importiere Lieder …"
-		}
+		},
+		"UPDATING_LIBRARY_SORT": "Aktualisiere Bibliothekssortierung"
 	},
 	"ABOUT": {
 		"DONATORS": "Danke an <1>{{donators}}</1> für die Spende an Karaoke Mugen",

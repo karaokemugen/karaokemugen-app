@@ -1,1 +1,17 @@
-{}
+{
+	"REQUESTED_BY": "Aangevraagd door {{name}}",
+	"REQUESTED_WITH": "(met {{names}})",
+	"YES": "Ja",
+	"REQUESTED_AND_one": "en anderen",
+	"NO": "Nee",
+	"REQUESTED_AND_other": "en {{count}} anderen",
+	"CANCEL": "Annuleren",
+	"YEAR": "Jaar",
+	"UNKNOWN": "Onbekend",
+	"TITLE": "Titel",
+	"LIBRARY": "Bibliotheek",
+	"TAG_TYPES": {
+		"SINGERGROUPS": "Band",
+		"SINGERS": "Zanger"
+	}
+}

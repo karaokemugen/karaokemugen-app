@@ -31,19 +31,18 @@ VALUES(
 export const sqlgetAllKaras = (
 	filterClauses: string[],
 	filterType: 'AND' | 'OR',
-	whereClauses: string,
-	groupClauses: string,
-	orderClauses: string,
+	whereClauses: string[],
+	groupClauses: string[],
+	orderClauses: string[],
 	havingClause: string,
 	limitClause: string,
 	offsetClause: string,
 	additionalFrom: string[],
 	selectRequested: string,
-	groupClauseEnd: string,
 	joinClauses: string[],
 	collectionClauses: string[],
 	withCTE: string[],
-	blacklistClauses: string
+	blacklist: boolean
 ) => `
 WITH ${withCTE.join(', \n')}
 SELECT
@@ -97,16 +96,17 @@ SELECT
 FROM all_karas AS ak
 LEFT OUTER JOIN kara k ON k.pk_kid = ak.pk_kid
 LEFT OUTER JOIN kara_relation krp ON krp.fk_kid_parent = ak.pk_kid ${
-	blacklistClauses ? ' AND krp.fk_kid_child NOT IN (SELECT * FROM blacklist)' : ''
+	blacklist ? ' AND krp.fk_kid_child NOT IN (SELECT * FROM blacklist)' : ''
 }
 LEFT OUTER JOIN kara_relation krc ON krc.fk_kid_child = ak.pk_kid ${
-	blacklistClauses ? ' AND krc.fk_kid_parent NOT IN (SELECT * FROM blacklist)' : ''
+	blacklist ? ' AND krc.fk_kid_parent NOT IN (SELECT * FROM blacklist)' : ''
 }
 LEFT OUTER JOIN played AS p ON p.fk_kid = ak.pk_kid
 	LEFT OUTER JOIN playlist_content AS pc ON pc.fk_kid = ak.pk_kid AND pc.fk_plaid = :publicPlaylist_id
 LEFT OUTER JOIN playlist_content AS pc_self on pc_self.fk_kid = ak.pk_kid AND pc_self.fk_plaid = :publicPlaylist_id AND pc_self.fk_login = :username
 LEFT OUTER JOIN upvote up ON up.fk_plcid = pc.pk_plcid AND up.fk_login = :username
 LEFT OUTER JOIN favorites AS f ON f.fk_login = :username AND f.fk_kid = ak.pk_kid
+LEFT OUTER JOIN all_karas_sortable AS aks ON aks.fk_kid = ak.pk_kid
 ${joinClauses.join('')}
 ${additionalFrom.join('')}
 WHERE true
@@ -120,9 +120,8 @@ ${
 		: ''
 }
 ${filterClauses.map(clause => `${filterType} (${clause})`).reduce((a, b) => `${a} ${b}`, '')}
-${whereClauses}
-${blacklistClauses}
-GROUP BY ${groupClauses}
+${whereClauses.length > 0 ? `AND ${whereClauses.join('\nAND ')}` : ''}
+GROUP BY ${groupClauses.length > 0 ? `${groupClauses.join(',\n')},` : ''}
 	ak.pk_kid,
 	pc.fk_kid,
 	ak.titles,
@@ -130,7 +129,6 @@ GROUP BY ${groupClauses}
 	ak.titles_default_language,
 	ak.comment,
 	ak.songorder,
-	ak.serie_singergroup_singer_sortable,
 	ak.lyrics_infos,
 	ak.year,
 	ak.tags,
@@ -142,23 +140,14 @@ GROUP BY ${groupClauses}
 	ak.modified_at,
 	ak.mediasize,
 	ak.repository,
-	ak.songtypes_sortable,
 	ak.songname,
 	f.fk_kid,
 	ak.tid,
-	ak.languages_sortable,
 	ak.download_status,
 	ak.ignore_hooks,
-	ak.titles_sortable,
 	ak.from_display_type
-	${groupClauseEnd}
 ${havingClause}
-ORDER BY ${orderClauses}
-	ak.songtypes_sortable DESC,
-	ak.songorder,
-	ak.languages_sortable,
-	parents,
-	ak.titles_sortable
+ORDER BY ${orderClauses.join(',\n')}
 ${limitClause}
 ${offsetClause}
 `;

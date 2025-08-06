@@ -809,7 +809,7 @@ function Playlist(props: IProps) {
 	};
 
 	const deleteCheckedKaras = async () => {
-		let url;
+		let url: WSCmdDefinition<object, void>;
 		let dataApi;
 		const listKara = data?.content.filter(a => a.checked) || [];
 		if (listKara.length === 0) {
@@ -818,13 +818,13 @@ function Playlist(props: IProps) {
 		}
 		const playlist = getPlaylistInfo(props.side, context);
 		if (playlist?.plaid === nonStandardPlaylists.favorites) {
-			url = 'deleteFavorites';
+			url = WS_CMD.DELETE_FAVORITES;
 			dataApi = {
 				kids: listKara.map(a => a.kid),
 			};
 		} else if (!playlist?.flag_smart) {
 			const idsKaraPlaylist = listKara.map(a => a.plcid);
-			url = 'deleteKaraFromPlaylist';
+			url = WS_CMD.DELETE_KARA_FROM_PLAYLIST;
 			dataApi = {
 				plc_ids: idsKaraPlaylist,
 			};

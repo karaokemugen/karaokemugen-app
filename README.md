@@ -9,7 +9,7 @@ Next branch: [![pipeline status](https://gitlab.com/karaokemugen/code/karaokemug
 
 Project: ![Last commit](https://img.shields.io/github/last-commit/karaokemugen/karaokemugen-app.svg) ![Latest version](https://img.shields.io/gitlab/v/tag/karaokemugen/karaokemugen-app?sort=date) ![License](https://img.shields.io/github/license/karaoke-mugen/karaokemugen-app.svg) ![Size](https://img.shields.io/github/repo-size/karaokemugen/karaokemugen-app.svg) ![Commits since release on next](https://img.shields.io/github/commits-since/karaokemugen/karaokemugen-app/release/next) [![Weblate](https://img.shields.io/weblate/progress/karaoke-mugen)](https://hosted.weblate.org/projects/karaoke-mugen/)
 
-Social: [![Discord](https://img.shields.io/discord/84245347336982528.svg)](http://karaokes.moe/discord) [![Discourse](https://img.shields.io/discourse/posts?server=https%3A%2F%2Fdiscourse.karaokes.moe)](https://discourse.karaokes.moe) [![Bluesky](https://img.shields.io/static/v1?label=&message=Follow&logo=bluesky)](https://bsky.app/profile/karaokes.moe) [![Mastodon](https://img.shields.io/mastodon/follow/36233?domain=https%3A%2F%2Fshelter.moe&style=social)](https://shelter.moe/@KaraokeMugen)
+Social: [![Discord](https://img.shields.io/discord/1351894672384987148.svg)](http://karaokes.moe/discord) [![Discourse](https://img.shields.io/discourse/posts?server=https%3A%2F%2Fdiscourse.karaokes.moe)](https://discourse.karaokes.moe) [![Bluesky](https://img.shields.io/static/v1?label=&message=Follow&logo=bluesky)](https://bsky.app/profile/karaokes.moe) [![Mastodon](https://img.shields.io/mastodon/follow/36233?domain=https%3A%2F%2Fshelter.moe&style=social)](https://shelter.moe/@KaraokeMugen)
 
 Karaoke Mugen is a playlist manager and player for video and audio karaoke. It's made of a webapp and an engine. The webapp allows users to search for and add songs and admins to manage the karaoke session and playlists. The engine plays those songs on the computer used to display the video.
 
@@ -151,6 +151,8 @@ See [Database setup](#database-setup) for more information.
 
 If you don't have `yarn`, install it first from [Yarn's website](http://yarnpkg.com)
 
+Or simply do a `npm i -g yarn`
+
 ### Git submodules
 
 Initialize some git config values either via `yarn gitconfig` or by hand:
@@ -170,6 +172,7 @@ Use the `yarn pull` command (which is a shortcut for git pull with submodules) t
 Launch `yarn` to install dependencies and build the React frontend
 
 ```sh
+yarn install
 yarn setup
 ```
 

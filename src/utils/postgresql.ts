@@ -21,6 +21,7 @@ import { expectedPGVersion, pgctlRegex } from './constants.js';
 import { decompressGzip } from './files.js';
 import sentry from './sentry.js';
 import { getState } from './state.js';
+import { determineDBTarget } from '../lib/dao/database.js';
 
 const service = 'Postgres';
 
@@ -39,6 +40,7 @@ function determineEnv() {
 		env.LD_LIBRARY_PATH = resolve(state.appPath, state.binPath.postgres, '../lib/');
 		env.LC_ALL = 'en_US.UTF-8';
 	}
+	env.PGHOST = determineDBTarget(getConfig().System.Database.bundledPostgresBinary);
 	return env;
 }
 
@@ -314,6 +316,10 @@ export async function updatePGConf() {
 	// Parsing the ini file by hand since it can't be parsed well with ini package
 	pgConf = setPGConfig(pgConf, 'port', conf.System.Database.port);
 	pgConf = setPGConfig(pgConf, 'logging_collector', 'on');
+	if (process.platform !== 'win32') {
+		pgConf = setPGConfig(pgConf, 'listen_addresses', "''");
+		pgConf = setPGConfig(pgConf, 'unix_socket_directories', "'./'");
+	}
 	state.opt.sql
 		? (pgConf = setPGConfig(pgConf, 'log_statement', "'all'"))
 		: (pgConf = setPGConfig(pgConf, 'log_statement', "'none'"));

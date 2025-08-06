@@ -527,6 +527,7 @@ export async function startGame(gamename: string, playlist: string, settings?: Q
 					{
 						createRemote: false,
 						noPasswordCheck: true,
+						skipSecurityCode: true,
 					}
 				);
 			} else {
