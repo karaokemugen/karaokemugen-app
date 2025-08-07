@@ -111,7 +111,8 @@
 				"BLUESKY": "Bluesky : ",
 				"TWITCH": "Twitch : "
 			}
-		}
+		},
+		"DELETE_SONG": "曲を消す"
 	},
 	"LOGIN": {
 		"GO_BACK": "戻る",
@@ -165,6 +166,9 @@
 	"SETTINGS": {
 		"PLAYER": {
 			"AUDIO_ONLY_EXPERIENCE": "音声のみ"
+		},
+		"KARAOKE": {
+			"LABELS_MYSTERY_SONGS_DELETE": "消す"
 		}
 	},
 	"LOGS": {
@@ -173,6 +177,18 @@
 		}
 	},
 	"KARA": {
-		"SONGWRITERS_TOOLTIP": "作曲家と編曲家と作詞家"
+		"SONGWRITERS_TOOLTIP": "作曲家と編曲家と作詞家",
+		"MODIFIED_AT": "最終更新の日付",
+		"VIEW_DOWNLOAD_QUEUE": "見る",
+		"ORDER_MEDIA_NEW": "新",
+		"DELETE_KARA": "曲を消す",
+		"DELETE_KARA_MODAL": "曲を消しませんか？"
+	},
+	"SPONSOR_TAGLINES": [
+		"この番組は・・・"
+	],
+	"TOOLTIP_DELETEKARA": "この曲を消す",
+	"ERROR_CODES": {
+		"PL_DELETE_SONG_ERROR": "その曲を消してはいけません"
 	}
 }
