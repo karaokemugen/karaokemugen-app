@@ -13,5 +13,22 @@
 	},
 	"MOVED_USER_DIR_DIALOG": {
 		"UNDERSTOOD": "了解！"
+	},
+	"TIPS": {
+		"NORMAL": [
+			null,
+			null,
+			null,
+			null,
+			null,
+			null,
+			null,
+			null,
+			null,
+			null,
+			null,
+			null,
+			"お水を定期的に飲むべきですよ！"
+		]
 	}
 }
