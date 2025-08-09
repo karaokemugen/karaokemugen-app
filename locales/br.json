@@ -20,7 +20,8 @@
 		"ORIGINS": "Orin",
 		"PLATFORMS": "Savenn",
 		"WARNINGS": "Diwall",
-		"VERSIONS": "Handelv"
+		"VERSIONS": "Handelv",
+		"SERIES": "Oberenn"
 	},
 	"NEXT_SONG": "Kan war-lerc'h",
 	"MENU_HELP_ABOUT": "&A-zivout Karaoke Mugen",
@@ -76,7 +77,7 @@
 	"MENU_FILE_QUIT_OSX": "Kuitaat Karaoke Mugen",
 	"MENU_VIEW": "&Gwelout",
 	"MENU_VIEW_RELOAD": "&Adkargañ",
-	"MENU_VIEW_FULLSCREEN": "&Skramm leun",
+	"MENU_VIEW_FULLSCREEN": "&Skramm a-bezh",
 	"MENU_WINDOW": "&Prenestr",
 	"MENU_EDIT": "&Kemmañ",
 	"MENU_HELP": "&Skoazell",
@@ -117,7 +118,7 @@
 		"HELP": "Skoazell"
 	},
 	"NEW_SESSION_NAME": "Karaoke d'an {{date}}",
-	"FULLSCREEN_TIP": "Pouezit war F evit mont kuit eus skramm leun.",
+	"FULLSCREEN_TIP": "Pouezit war F evit mont kuit eus skramm a-bezh.",
 	"OFFICIAL_WEBSITE": "Lec'hienn ofisiel",
 	"DISCORD": {
 		"QUIET!": "Grik...!"
@@ -151,7 +152,17 @@
 	"QUIZ_RULES": {
 		"TITLE": "REOLENNOÙ",
 		"SECONDS_one": "{{count}} eilenn",
-		"SECONDS_other": "{{count}} eilenn"
+		"SECONDS_other": "{{count}} eilenn",
+		"END_GAME": "ECHU AR C'HOARIADENN"
 	},
-	"MENU_EDIT_SELECT_ALL": "Dibab an &holl"
+	"MENU_EDIT_SELECT_ALL": "Dibab an &holl",
+	"MENU_OPTIONS_OPERATORCONFIG": "&Arventennoù",
+	"MENU_OPTIONS_SYSTEMCONFIG": "Arventennoù ar &reizhiad",
+	"MENU_OPTIONS_OPERATORCONFIG_OSX": "Arventennoù…",
+	"MENU_OPTIONS_SYSTEMCONFIG_OSX": "Arventennoù ar reizhiad…",
+	"UPDATE_READY_TO_INSTALL_RESTARTING": "Adloc'hañ a raio Karaoke Mugen evit staliañ an hizivadenn…",
+	"UNKNOWN_ARTIST": "Arzour dianav",
+	"GENERATING_READING": "Pazenn 1 / 2 - O lenn roadennoù…",
+	"GENERATING_DATABASE": "Pazenn 2/2 - O hizivaat ar stlennvon…",
+	"INTERFACE_RESTRICTED": "Kinnig ebet"
 }
