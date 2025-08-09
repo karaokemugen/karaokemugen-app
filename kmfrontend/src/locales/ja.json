@@ -168,7 +168,11 @@
 			"AUDIO_ONLY_EXPERIENCE": "音声のみ"
 		},
 		"KARAOKE": {
-			"LABELS_MYSTERY_SONGS_DELETE": "消す"
+			"LABELS_MYSTERY_SONGS_DELETE": "消す",
+			"LABEL": "カラオケ",
+			"QUOTA_TYPE_ZERO": "無限",
+			"QUOTA_TYPE_ONE": "曲",
+			"SONGS": "曲"
 		}
 	},
 	"LOGS": {
@@ -190,5 +194,19 @@
 	"TOOLTIP_DELETEKARA": "この曲を消す",
 	"ERROR_CODES": {
 		"PL_DELETE_SONG_ERROR": "その曲を消してはいけません"
-	}
+	},
+	"CRITERIA": {
+		"PLAYLIST_DURATION_TYPE_MINUTES": "分",
+		"PLAYLIST_DURATION_TYPE_SONGS": "曲",
+		"PLAYLIST_DURATION_ORDER_MORE_RECENT": "最新",
+		"PLAYLIST_DURATION_ORDER_LESS_RECENT": "最古",
+		"CRITERIA_TYPE_1001": "曲"
+	},
+	"MENU": {
+		"KARAS": "曲"
+	},
+	"WELCOME_PAGE": {
+		"STATS_KARAS": "曲"
+	},
+	"ENCORES_TIME": "アンコール！アンコール！"
 }
