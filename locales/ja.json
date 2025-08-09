@@ -3,13 +3,15 @@
 	"YES": "はい",
 	"NO": "いいえ",
 	"UNKNOWN": "不明",
-	"MENU_HELP_ABOUT": "&Karaoke Mugenについて",
+	"MENU_HELP_ABOUT": "カラオケ無限について",
 	"MENU_HELP_DISCORD": "&Discord",
 	"TAG_TYPES": {
 		"SINGERGROUPS": "バンド",
 		"SINGERS": "歌手",
 		"WARNINGS": "警告",
-		"SONGWRITERS": "作曲家"
+		"SONGWRITERS": "作曲家",
+		"LANGS": "言語",
+		"VERSIONS": "バージョン"
 	},
 	"MOVED_USER_DIR_DIALOG": {
 		"UNDERSTOOD": "了解！"
@@ -30,5 +32,38 @@
 			null,
 			"お水を定期的に飲むべきですよ！"
 		]
-	}
+	},
+	"ABOUT": {
+		"TITLE": "カラオケ無限について"
+	},
+	"TITLE": "タイトル",
+	"LIBRARY": "ライブラリ",
+	"MIGRATION_MESSAGES": [
+		null,
+		null,
+		null,
+		null,
+		null,
+		null,
+		null,
+		null,
+		null,
+		null,
+		null,
+		null,
+		"Wikipediaをダウンロード中"
+	],
+	"NEXT_SONG": "次の曲へ",
+	"MENU_FILE": "ファイル",
+	"MENU_HELP_WEBSITE": "ウェブサイト",
+	"MENU_HELP": "ヘルプ",
+	"MENU_HELP_BLUESKY": "&Bluesky",
+	"MENU_HELP_MASTODON": "&Mastodon",
+	"MENU_HELP_GITLAB": "&GitLab",
+	"MENU_GOTO_HOME": "ホーム",
+	"ERROR": "エラー",
+	"MENU_OPTIONS_OPERATORCONFIG": "設定",
+	"MENU_OPTIONS_SYSTEMCONFIG": "システム設定",
+	"MENU_OPTIONS_OPERATORCONFIG_OSX": "設定・・・",
+	"MENU_OPTIONS_SYSTEMCONFIG_OSX": "システム設定・・・"
 }
