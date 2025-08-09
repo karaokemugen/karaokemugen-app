@@ -47,7 +47,7 @@ async function main() {
 		);
 		sentryCliSource.url = `https://downloads.sentry-cdn.com/sentry-cli/${sentrycliVersion}/sentry-cli-Linux-${arch}`;
 		sentryCliSource.sha256 = sentrycliSHA[arch];
-		sentryCliSource['only-arches'] = `[${arch}]`;
+		sentryCliSource['only-arches'] = [arch];
 	}
 
 	// Push new version into xml
