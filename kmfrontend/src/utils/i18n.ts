@@ -10,6 +10,7 @@ import it from '../locales/it.json';
 import pt from '../locales/pt.json';
 import pl from '../locales/pl.json';
 import ta from '../locales/ta.json';
+import br from '../locales/br.json';
 
 i18n
 	// use react-i18next
@@ -19,8 +20,10 @@ i18n
 	// for all options read: https://www.i18next.com/overview/configuration-options
 	.init({
 		load: 'languageOnly',
-		fallbackLng: 'en',
-
+		fallbackLng: {
+			br: ['fr'],
+			default: ['en'],
+		},
 		interpolation: {
 			escapeValue: false, // not needed for react as it escapes by default
 		},
@@ -51,6 +54,9 @@ i18n
 			},
 			ta: {
 				translation: ta,
+			},
+			br: {
+				translation: br,
 			},
 		},
 	});
