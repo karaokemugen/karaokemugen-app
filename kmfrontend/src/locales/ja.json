@@ -76,17 +76,19 @@
 	"VOLUME_LEVEL": "音量をセット",
 	"PLAYLISTS": {
 		"LIBRARY": "ライブラリ",
-		"FAVORITES": "好きの曲",
+		"FAVORITES": "お気に入り",
 		"ANIME_LIST": "自分のアニメの曲"
 	},
 	"WEBAPPMODE_CLOSED_MESSAGE": "インターフェイスを閉じたため、しばらくお待ちください。",
 	"MESSAGE": "メッセージ",
 	"PUBLIC_HOMEPAGE": {
 		"NEXT": "次",
-		"SHOW_LYRICS": "歌詞を見る",
-		"SHOW_ALL_LYRICS": "すべての歌詞を見る",
+		"SHOW_LYRICS": "歌詞を表示する",
+		"SHOW_ALL_LYRICS": "すべての歌詞を表示する",
 		"HIDE_LYRICS": "歌詞を隠す",
-		"SONG_SEARCH_SHORT": "検索"
+		"SONG_SEARCH_SHORT": "検索",
+		"FAVORITES": "お気に入り",
+		"SONG_SEARCH": "曲を検索する"
 	},
 	"PROFILE_MAIL": "メール",
 	"PROFILE_PASSWORD": "パスワード",
@@ -147,6 +149,12 @@
 			"DISPLAY": {
 				"BLACK_SCREEN": "黒画面"
 			}
+		},
+		"PLAYLIST_IMPORT": {
+			"FILTER_LABELS": {
+				"my": "自分のプレイリストを表示する",
+				"downloaded": "ダウンロードされたプレイリストを表示する"
+			}
 		}
 	},
 	"TAG_TYPES": {
@@ -172,7 +180,8 @@
 			"LABEL": "カラオケ",
 			"QUOTA_TYPE_ZERO": "無限",
 			"QUOTA_TYPE_ONE": "曲",
-			"SONGS": "曲"
+			"SONGS": "曲",
+			"OPEN_STREAMER_FILES": "ファイルを表示する。"
 		}
 	},
 	"LOGS": {
@@ -208,5 +217,17 @@
 	"WELCOME_PAGE": {
 		"STATS_KARAS": "曲"
 	},
-	"ENCORES_TIME": "アンコール！アンコール！"
+	"ENCORES_TIME": "アンコール！アンコール！",
+	"KARA_MENU": {
+		"VISIBLE_ON_SHORT": "表示",
+		"FAV": "お気に入りに追加する"
+	},
+	"CONFIG": {
+		"PROPERTIES": {
+			"ONLINE_DISCORD_DISPLAYACTIVITY": "Discordのプロフィールでカラオケ無限の活動を表示する"
+		}
+	},
+	"CHIBI": {
+		"ONTOP": "他のウィンドウの上に表示する"
+	}
 }
