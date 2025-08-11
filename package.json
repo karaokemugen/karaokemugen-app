@@ -194,7 +194,7 @@
     "@types/yesql": "^4.1.4",
     "chai": "^5.2.1",
     "electron": "^37.2.4",
-    "electron-builder": "^26.0.17",
+    "electron-builder": "^26.0.19",
     "esbuild": "^0.25.8",
     "eslint": "^9.32.0",
     "eslint-config-prettier": "^10.1.8",
