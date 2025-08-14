@@ -274,8 +274,8 @@
 		"TITLE": "Dépôt inconnu",
 		"DETAIL": "Vous êtes sur le point d'ajouter le dépôt {{repoName}}, êtes-vous sûr ?"
 	},
-	"GENERATING_READING": "Etape 1 / 2 - Lecture des données…",
-	"GENERATING_DATABASE": "Etape 2 / 2 - Mise à jour de la base de données…",
+	"GENERATING_READING": "Étape 1 / 2 - Lecture des données…",
+	"GENERATING_DATABASE": "Étape 2 / 2 - Mise à jour de la base de données…",
 	"TWITCH": {
 		"CHAT": {
 			"VOTE": "Nouveau vote : utilisez !vote x où x est le numéro de la chanson :",

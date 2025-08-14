@@ -2904,9 +2904,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"app-builder-lib@npm:26.0.17":
-  version: 26.0.17
-  resolution: "app-builder-lib@npm:26.0.17"
+"app-builder-lib@npm:26.0.19":
+  version: 26.0.19
+  resolution: "app-builder-lib@npm:26.0.19"
   dependencies:
     "@develar/schema-utils": "npm:~2.6.5"
     "@electron/asar": "npm:3.4.1"
@@ -2918,19 +2918,19 @@ __metadata:
     "@malept/flatpak-bundler": "npm:^0.4.0"
     "@types/fs-extra": "npm:9.0.13"
     async-exit-hook: "npm:^2.0.1"
-    builder-util: "npm:26.0.17"
-    builder-util-runtime: "npm:9.3.2"
+    builder-util: "npm:26.0.19"
+    builder-util-runtime: "npm:9.3.3"
     chromium-pickle-js: "npm:^0.2.0"
     ci-info: "npm:^4.2.0"
-    config-file-ts: "npm:0.2.8-rc1"
     debug: "npm:^4.3.4"
     dotenv: "npm:^16.4.5"
     dotenv-expand: "npm:^11.0.6"
     ejs: "npm:^3.1.8"
-    electron-publish: "npm:26.0.17"
+    electron-publish: "npm:26.0.19"
     fs-extra: "npm:^10.1.0"
     hosted-git-info: "npm:^4.1.0"
     isbinaryfile: "npm:^5.0.0"
+    jiti: "npm:^2.4.2"
     js-yaml: "npm:^4.1.0"
     json5: "npm:^2.2.3"
     lazy-val: "npm:^1.0.5"
@@ -2943,9 +2943,9 @@ __metadata:
     tiny-async-pool: "npm:1.3.0"
     which: "npm:^5.0.0"
   peerDependencies:
-    dmg-builder: 26.0.17
-    electron-builder-squirrel-windows: 26.0.17
-  checksum: 10c0/7f2da114955f3fd13eeeb7d070babcf8a3b79da4d881fa5f208e57ca3eff78ba92f6f8adeea7435b028b33ca08c5e9a98e991fb9018e96445dad122ffc307e98
+    dmg-builder: 26.0.19
+    electron-builder-squirrel-windows: 26.0.19
+  checksum: 10c0/d662e6ee85339511c1e5bd83e082b021a9d20f08e6c9385ebf730ede822ddbba78e47c9ed6842b6b2a317b96e36cf4fefdb80b378357dbd462aeb0f83decb85a
   languageName: node
   linkType: hard
 
@@ -3388,14 +3388,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"builder-util@npm:26.0.17":
-  version: 26.0.17
-  resolution: "builder-util@npm:26.0.17"
+"builder-util-runtime@npm:9.3.3":
+  version: 9.3.3
+  resolution: "builder-util-runtime@npm:9.3.3"
+  dependencies:
+    debug: "npm:^4.3.4"
+    sax: "npm:^1.2.4"
+  checksum: 10c0/a30e011f9ff55ed98802601713318a4e24fa0f027216260e64eee2d8bb06f37f51a7baab0721fc9ed512012d4b4b4e8f9a7a20853a542309af4ee15ff8b33a56
+  languageName: node
+  linkType: hard
+
+"builder-util@npm:26.0.19":
+  version: 26.0.19
+  resolution: "builder-util@npm:26.0.19"
   dependencies:
     7zip-bin: "npm:~5.2.0"
     "@types/debug": "npm:^4.1.6"
     app-builder-bin: "npm:5.0.0-alpha.12"
-    builder-util-runtime: "npm:9.3.2"
+    builder-util-runtime: "npm:9.3.3"
     chalk: "npm:^4.1.2"
     ci-info: "npm:^4.2.0"
     cross-spawn: "npm:^7.0.6"
@@ -3409,7 +3419,7 @@ __metadata:
     stat-mode: "npm:^1.0.0"
     temp-file: "npm:^3.4.0"
     tiny-async-pool: "npm:1.3.0"
-  checksum: 10c0/33c4829d1118211f2ff75aa2f34c19696fc1680ae9a547bc398d7535521ee73507983e667fefb799b1081490d58debdd1ac05e731da519ecb00891a63f310086
+  checksum: 10c0/65ed8c64a27368e2664978659d70944e2ace48fccece22612f93414ab36935b42b6aaee06ef2d9ef65d816fa3ff4524ca60edb41052731793f0c756b9dd0aace
   languageName: node
   linkType: hard
 
@@ -3973,16 +3983,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"config-file-ts@npm:0.2.8-rc1":
-  version: 0.2.8-rc1
-  resolution: "config-file-ts@npm:0.2.8-rc1"
-  dependencies:
-    glob: "npm:^10.3.12"
-    typescript: "npm:^5.4.3"
-  checksum: 10c0/9839a8e33111156665c45c4e5dd6bfa81ee80596f9dc0a078465769b951e28c0fa4bd75bb9bc56f747da285b993fb7998c4c07c0f368ab6bdb019d203764cdc8
-  languageName: node
-  linkType: hard
-
 "content-disposition@npm:^1.0.0":
   version: 1.0.0
   resolution: "content-disposition@npm:1.0.0"
@@ -4499,13 +4499,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dmg-builder@npm:26.0.17":
-  version: 26.0.17
-  resolution: "dmg-builder@npm:26.0.17"
+"dmg-builder@npm:26.0.19":
+  version: 26.0.19
+  resolution: "dmg-builder@npm:26.0.19"
   dependencies:
-    app-builder-lib: "npm:26.0.17"
-    builder-util: "npm:26.0.17"
-    builder-util-runtime: "npm:9.3.2"
+    app-builder-lib: "npm:26.0.19"
+    builder-util: "npm:26.0.19"
     dmg-license: "npm:^1.0.11"
     fs-extra: "npm:^10.1.0"
     iconv-lite: "npm:^0.6.2"
@@ -4513,7 +4512,7 @@ __metadata:
   dependenciesMeta:
     dmg-license:
       optional: true
-  checksum: 10c0/d2d0eb25e0b33465fb4dd093985771b054d88c5261353f64c48c9e0085b66b1a262721e982e505eaa2e8873d6df8718d16a8dc7d224d358baedd5eef467ee7d9
+  checksum: 10c0/29d80f3e337bfbebd65095b6bb13748e7f34460b63bfb8162453e69da93c41822a2f1ef80340666317cb139bff0d71301b526801c3452abff31824e704c2a090
   languageName: node
   linkType: hard
 
@@ -4638,16 +4637,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-builder@npm:^26.0.17":
-  version: 26.0.17
-  resolution: "electron-builder@npm:26.0.17"
+"electron-builder@npm:^26.0.19":
+  version: 26.0.19
+  resolution: "electron-builder@npm:26.0.19"
   dependencies:
-    app-builder-lib: "npm:26.0.17"
-    builder-util: "npm:26.0.17"
-    builder-util-runtime: "npm:9.3.2"
+    app-builder-lib: "npm:26.0.19"
+    builder-util: "npm:26.0.19"
+    builder-util-runtime: "npm:9.3.3"
     chalk: "npm:^4.1.2"
     ci-info: "npm:^4.2.0"
-    dmg-builder: "npm:26.0.17"
+    dmg-builder: "npm:26.0.19"
     fs-extra: "npm:^10.1.0"
     lazy-val: "npm:^1.0.5"
     simple-update-notifier: "npm:2.0.0"
@@ -4655,23 +4654,23 @@ __metadata:
   bin:
     electron-builder: cli.js
     install-app-deps: install-app-deps.js
-  checksum: 10c0/d3dbbd638974aa53c1007a33521005c8b6f83bfb74adf622ed0d10d3f3c1fca3920276881be15cd646296dcf1f9ac67778df72e3a156a27f01e2ce98110938d9
+  checksum: 10c0/4440c55377520d1e3b9d3acede74459ecb0d966f1fa550100fc7a56abf736992a47875f49848706797604c24c54fedb159f263b37295c6577f969be8ad9857a4
   languageName: node
   linkType: hard
 
-"electron-publish@npm:26.0.17":
-  version: 26.0.17
-  resolution: "electron-publish@npm:26.0.17"
+"electron-publish@npm:26.0.19":
+  version: 26.0.19
+  resolution: "electron-publish@npm:26.0.19"
   dependencies:
     "@types/fs-extra": "npm:^9.0.11"
-    builder-util: "npm:26.0.17"
-    builder-util-runtime: "npm:9.3.2"
+    builder-util: "npm:26.0.19"
+    builder-util-runtime: "npm:9.3.3"
     chalk: "npm:^4.1.2"
     form-data: "npm:^4.0.0"
     fs-extra: "npm:^10.1.0"
     lazy-val: "npm:^1.0.5"
     mime: "npm:^2.5.2"
-  checksum: 10c0/b15b28ef1e9f9495bd535a3ccd6415086e1349cbc4a7d7686da48881f296bc5a3fd0417ea6ef9afb9634eb82c41cc495c6d1884ffb738cd0ffe3042d3dc124fb
+  checksum: 10c0/91fd4cdc0eb4f51973daa0ffe9dfa50d24754c378492df03cee7b9a08ce7178fa305c35358183ce6d8de84a92c123f021e59e80b4ea8e9ceef9c3d319d93254d
   languageName: node
   linkType: hard
 
@@ -6304,7 +6303,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:^10.2.2, glob@npm:^10.3.12, glob@npm:^10.4.5":
+"glob@npm:^10.2.2, glob@npm:^10.4.5":
   version: 10.4.5
   resolution: "glob@npm:10.4.5"
   dependencies:
@@ -7486,6 +7485,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jiti@npm:^2.4.2":
+  version: 2.5.1
+  resolution: "jiti@npm:2.5.1"
+  bin:
+    jiti: lib/jiti-cli.mjs
+  checksum: 10c0/f0a38d7d8842cb35ffe883038166aa2d52ffd21f1a4fc839ae4076ea7301c22a1f11373f8fc52e2667de7acde8f3e092835620dd6f72a0fbe9296b268b0874bb
+  languageName: node
+  linkType: hard
+
 "js-tokens@npm:^9.0.1":
   version: 9.0.1
   resolution: "js-tokens@npm:9.0.1"
@@ -7707,7 +7715,7 @@ __metadata:
     discord-rpc: "npm:^4.0.1"
     dotenv: "npm:^17.2.1"
     electron: "npm:^37.2.4"
-    electron-builder: "npm:^26.0.17"
+    electron-builder: "npm:^26.0.19"
     electron-updater: "npm:^6.6.5"
     esbuild: "npm:^0.25.8"
     eslint: "npm:^9.32.0"
@@ -12050,16 +12058,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^5.4.3":
-  version: 5.6.3
-  resolution: "typescript@npm:5.6.3"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 10c0/44f61d3fb15c35359bc60399cb8127c30bae554cd555b8e2b46d68fa79d680354b83320ad419ff1b81a0bdf324197b29affe6cc28988cd6a74d4ac60c94f9799
-  languageName: node
-  linkType: hard
-
 "typescript@patch:typescript@npm%3A5.8.3#optional!builtin<compat/typescript>":
   version: 5.8.3
   resolution: "typescript@patch:typescript@npm%3A5.8.3#optional!builtin<compat/typescript>::version=5.8.3&hash=5786d5"
@@ -12067,16 +12065,6 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 10c0/39117e346ff8ebd87ae1510b3a77d5d92dae5a89bde588c747d25da5c146603a99c8ee588c7ef80faaf123d89ed46f6dbd918d534d641083177d5fac38b8a1cb
-  languageName: node
-  linkType: hard
-
-"typescript@patch:typescript@npm%3A^5.4.3#optional!builtin<compat/typescript>":
-  version: 5.6.3
-  resolution: "typescript@patch:typescript@npm%3A5.6.3#optional!builtin<compat/typescript>::version=5.6.3&hash=8c6c40"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 10c0/7c9d2e07c81226d60435939618c91ec2ff0b75fbfa106eec3430f0fcf93a584bc6c73176676f532d78c3594fe28a54b36eb40b3d75593071a7ec91301533ace7
   languageName: node
   linkType: hard
 

@@ -1,6 +1,6 @@
 {
   "name": "karaokemugen-app",
-  "version": "9.0.0-master",
+  "version": "9.0.2-master",
   "versionName": "Tomoyo Tapageuse",
   "description": "Karaoke playlist manager / player",
   "bin": {
@@ -194,7 +194,7 @@
     "@types/yesql": "^4.1.4",
     "chai": "^5.2.1",
     "electron": "^37.2.4",
-    "electron-builder": "^26.0.17",
+    "electron-builder": "^26.0.19",
     "esbuild": "^0.25.8",
     "eslint": "^9.32.0",
     "eslint-config-prettier": "^10.1.8",
@@ -221,7 +221,6 @@
   "build": {
     "appId": "KaraokeMugen",
     "afterSign": "build/notarize.cjs",
-    "afterPack": "build/electron-builder-sandbox-fix.cjs",
     "npmRebuild": "false",
     "fileAssociations": [
       {
