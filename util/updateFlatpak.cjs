@@ -37,19 +37,18 @@ async function main() {
 	karaokemugenAppSource.tag = process.env.CI_COMMIT_REF_NAME;
 
 	// Updating fetches
-	const sentryCliX64Source = karaokemugenModule.sources.find(e => e.url && e.url.includes('sentry-cli-Linux-x86_64'));
-	sentryCliX64Source.url = `https://downloads.sentry-cdn.com/sentry-cli/${sentrycliVersion}/sentry-cli-Linux-x86_64`;
-	sentryCliX64Source.sha256 = sentrycliX64SHA;
-	sentryCliX64Source['only-arches'] = '[x86_64]';
-
-	/** Not tested yet
-	const sentryCliARM64Source = karaokemugenModule.sources.find(
-		e => e.url && e.url.includes('sentry-cli-Linux-aarch64')
-	);
-	sentryCliARM64Source.url = `https://downloads.sentry-cdn.com/sentry-cli/${sentrycliVersion}/sentry-cli-Linux-aarch64`;
-	sentryCliARM64Source.sha256 = sentrycliARM64SHA;
-	sentryCliARM64Source['only-arches'] = '[aarch64]';
-	*/
+	const sentrycliSHA = {
+		x86_64: sentrycliX64SHA,
+		aarch64: sentrycliARM64SHA,
+	};
+	for (const arch of ['x86_64', 'aarch64']) {
+		const sentryCliSource = karaokemugenModule.sources.find(
+			e => e.url && e.url.includes(`sentry-cli-Linux-${arch}`)
+		);
+		sentryCliSource.url = `https://downloads.sentry-cdn.com/sentry-cli/${sentrycliVersion}/sentry-cli-Linux-${arch}`;
+		sentryCliSource.sha256 = sentrycliSHA[arch];
+		sentryCliSource['only-arches'] = [arch];
+	}
 
 	// Push new version into xml
 	const versions = metainfo.elements[1].elements.find(e => e.name === 'releases');

@@ -75,7 +75,7 @@ class KMSystem extends Component<unknown, unknown> {
 
 	getLocale() {
 		let locale = enUS;
-		if (navigator.languages[0].includes('fr')) {
+		if (navigator.languages[0].includes('fr') || navigator.languages[0].includes('br')) {
 			locale = frFR;
 		} else if (navigator.languages[0].includes('es')) {
 			locale = esES;

@@ -12,7 +12,7 @@ export const requiredMPVFFmpegVersion = '>=7.1';
 export const requiredMPVFFmpegMasterVersion = 115182;
 export const expectedPGVersion = 16;
 
-export const supportedLanguages = ['en', 'fr', 'es', 'id', 'pt', 'de', 'it', 'pl', 'ta'];
+export const supportedLanguages = ['en', 'fr', 'es', 'id', 'pt', 'de', 'it', 'pl', 'ta', 'br'];
 
 /** Default guest names used to fill up the database */
 export const defaultGuestNames = [

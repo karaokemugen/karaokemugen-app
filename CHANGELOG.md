@@ -1,3 +1,21 @@
+# [9.0.2] - 2025-08-14
+
+This is a hotfix release
+
+## Added
+
+- **[Users]** Added support for aarch64 in flatpak (#1384)
+- **[Users]** Added breton translation
+
+## Changed
+
+- **[Developers]** Upgraded electron-builder dependency
+
+## Fixed
+
+- **[Maintainers]** Fixed ffmpeg crop parameter (#1794)
+- **[User]** Fixed Flatpak build
+
 # [9.0.0] - 2025-08-10
 
 This is a major release. As usual, read previous changelog starting from 8.0.1 to this one to get all changes.
