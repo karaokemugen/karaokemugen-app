@@ -154,7 +154,7 @@ async function downloadMediaFromInbox(kara: Inbox, repoName: string) {
 			const repo = getRepo(repoName);
 			const downloadItem = {
 				filename: tempMedia,
-				url: `${repo.Secure ? 'https' : 'http'}://${repoName}/inbox/${fixedEncodeURIComponent(kara.name)}/${fixedEncodeURIComponent(
+				url: `${repo.Secure ? 'https' : 'http'}://${repoName}/staging/medias/${fixedEncodeURIComponent(
 					kara.mediafile
 				)}`,
 				id: kara.name,
