@@ -246,7 +246,7 @@ export function buildKaraTitle(
 	const karaLine = [];
 	for (const e of displayLine) {
 		const displayElement = buildDisplayElement(data, e, settings, i18nParam);
-		if (displayElement.text) karaLine.push(displayElement);
+		if (displayElement?.text) karaLine.push(displayElement);
 	}
 	if (onlyText) {
 		const versions = sortAndHideTags(data?.versions).map(t => `[${getTagInLocale(settings, t, i18nParam).i18n}]`);
