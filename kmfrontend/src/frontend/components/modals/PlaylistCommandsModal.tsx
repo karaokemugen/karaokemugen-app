@@ -171,7 +171,7 @@ function PlaylistCommandsModal(props: IProps) {
 			{!isNonStandardPlaylist(playlist?.plaid) ? (
 				<li>
 					<div onClick={openShuffleModal}>
-						<i className="fas fa-fw fa-random" />
+						<i className="fas fa-random" />
 						{i18next.t('ADVANCED.SHUFFLE')}
 					</div>
 				</li>
@@ -186,7 +186,7 @@ function PlaylistCommandsModal(props: IProps) {
 							}}
 							className="danger-hover"
 						>
-							<i className="fas fa-fw fa-share" />
+							<i className="fas fa-share" />
 							{i18next.t('ADVANCED.ADD_ALL')}
 						</div>
 					</li>
@@ -198,7 +198,7 @@ function PlaylistCommandsModal(props: IProps) {
 									props.addRandomKaras();
 								}}
 							>
-								<i className="fas fa-fw fa-dice" />
+								<i className="fas fa-dice" />
 								{i18next.t('ADVANCED.ADD_RANDOM')}
 							</div>
 						</li>
@@ -210,7 +210,7 @@ function PlaylistCommandsModal(props: IProps) {
 			playlist?.plaid === context.globalState.settings.data.state.whitelistPlaid ? (
 				<li>
 					<div onClick={deleteAllKaras} className="danger-hover">
-						<i className="fas fa-fw fa-eraser" />
+						<i className="fas fa-eraser" />
 						{i18next.t('ADVANCED.EMPTY_LIST')}
 					</div>
 				</li>
@@ -219,13 +219,13 @@ function PlaylistCommandsModal(props: IProps) {
 				<>
 					<li>
 						<div onClick={deletePlaylist} className="danger-hover">
-							<i className="fas fa-fw fa-trash" />
+							<i className="fas fa-trash" />
 							{i18next.t('ADVANCED.DELETE')}
 						</div>
 					</li>
 					<li>
 						<div onClick={() => addOrEditPlaylist('edit')}>
-							<i className="fas fa-fw fa-pencil-alt" />
+							<i className="fas fa-pencil-alt" />
 							{i18next.t('ADVANCED.EDIT')}
 						</div>
 					</li>
@@ -234,7 +234,7 @@ function PlaylistCommandsModal(props: IProps) {
 			{playlist?.plaid !== nonStandardPlaylists.library && playlist?.plaid !== nonStandardPlaylists.animelist ? (
 				<li>
 					<div onClick={openPlaylistExportModal}>
-						<i className="fas fa-fw fa-upload" />
+						<i className="fas fa-upload" />
 						{i18next.t(
 							playlist?.plaid === nonStandardPlaylists.favorites ? 'FAVORITES_EXPORT' : 'ADVANCED.EXPORT'
 						)}
@@ -247,7 +247,7 @@ function PlaylistCommandsModal(props: IProps) {
 			exportPlaylistMediaEnabled ? (
 				<li>
 					<div onClick={exportPlaylistMedia}>
-						<i className="fas fa-fw fa-file-export" />
+						<i className="fas fa-file-export" />
 						{i18next.t('ADVANCED.EXPORT_MEDIA')}
 					</div>
 				</li>
@@ -260,7 +260,7 @@ function PlaylistCommandsModal(props: IProps) {
 							props.downloadAllMedias();
 						}}
 					>
-						<i className="fas fa-fw fa-cloud-download-alt" />
+						<i className="fas fa-cloud-download-alt" />
 						{i18next.t('ADVANCED.DOWNLOAD_ALL')}
 					</div>
 				</li>
@@ -268,14 +268,14 @@ function PlaylistCommandsModal(props: IProps) {
 			<hr />
 			<li>
 				<div onClick={() => addOrEditPlaylist('create')}>
-					<i className="fas fa-fw fa-plus" />
+					<i className="fas fa-plus" />
 					{i18next.t('ADVANCED.ADD')}
 				</div>
 			</li>
 			{!props.criteriasOpen ? (
 				<li>
 					<div onClick={startFavMix}>
-						<i className="fas fa-fw fa-bolt" />
+						<i className="fas fa-bolt" />
 						{i18next.t('ADVANCED.AUTOMIX')}
 					</div>
 				</li>
@@ -283,7 +283,7 @@ function PlaylistCommandsModal(props: IProps) {
 			<li>
 				<div onClick={openPlaylistImportModal}>
 					<label className="importFile" htmlFor={'import-file' + props.side}>
-						<i className="fas fa-fw fa-download" />
+						<i className="fas fa-download" />
 						{i18next.t('ADVANCED.IMPORT')}
 					</label>
 				</div>

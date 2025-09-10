@@ -155,22 +155,22 @@ function QuizRanking() {
 							<span>
 								{mode === 'guess' && quiz.settings.Answers.QuickAnswer.Enabled && quickGuess > 0 ? (
 									<>
-										<i className="fas fa-fw fa-person-running" />{' '}
+										<i className="fas fa-person-running" />{' '}
 										{i18next.t('QUIZ.STATES.QUICK_GUESSING', { count: quickGuess })}
 									</>
 								) : mode === 'guess' && timeLeft > 0 ? (
 									<>
-										<i className="fas fa-fw fa-person-walking" />{' '}
+										<i className="fas fa-person-walking" />{' '}
 										{i18next.t('QUIZ.STATES.GUESSING', { count: timeLeft })}
 									</>
 								) : mode === 'answer' ? (
 									<>
-										<i className="fas fa-fw fa-person" />{' '}
+										<i className="fas fa-person" />{' '}
 										{i18next.t('QUIZ.STATES.NEXT_SONG', { count: revealTimer })}
 									</>
 								) : (
 									<>
-										<i className="fas fa-fw fa-hourglass" /> {i18next.t('QUIZ.STATES.WAITING')}
+										<i className="fas fa-hourglass" /> {i18next.t('QUIZ.STATES.WAITING')}
 									</>
 								)}
 							</span>
@@ -204,7 +204,7 @@ function QuizRanking() {
 						{quiz.settings.Answers.QuickAnswer.Enabled ? (
 							<>
 								<br />
-								<i className={`fas fa-bolt fa-fw`}></i>{' '}
+								<i className={`fas fa-bolt`}></i>{' '}
 								<Trans
 									t={i18next.t}
 									i18nKey="QUIZ.RULES.QUICK_ANSWER"
@@ -225,7 +225,7 @@ function QuizRanking() {
 							.filter(([_, { Enabled }]) => Enabled)
 							.map(([possibleAnswerType, { Points }]) => (
 								<li key={possibleAnswerType}>
-									<i className={`fas fa-${acceptedAnswerToIcon(possibleAnswerType)} fa-fw`}></i>
+									<i className={`fas fa-${acceptedAnswerToIcon(possibleAnswerType)}`}></i>
 									{i18next.t(
 										possibleAnswerType === 'title'
 											? 'KARA.TITLE'

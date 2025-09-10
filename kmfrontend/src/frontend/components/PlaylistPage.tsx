@@ -57,7 +57,7 @@ export default function PlaylistPage() {
 				}}
 			/>
 			<h3 className="following">
-				{i18next.t('PUBLIC_HOMEPAGE.NEXT')} <i className="fas fa-fw fa-chevron-right" />
+				{i18next.t('PUBLIC_HOMEPAGE.NEXT')} <i className="fas fa-chevron-right" />
 			</h3>
 			<ul>
 				{playlist.map(kara => {

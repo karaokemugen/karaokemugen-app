@@ -38,7 +38,7 @@ function RestartDownloadsModal() {
 						<div>{i18next.t('MODAL.RESTART_DOWNLOADS_MODAL.LABEL')}</div>
 						<div>
 							<button className="btn btn-default" type="button" onClick={closeModalWithContext}>
-								<i className="fas fa-fw fa-clock fa-2x" />
+								<i className="fas fa-clock fa-2x" />
 								<div className="btn-large-container">
 									<div className="title">{i18next.t('MODAL.RESTART_DOWNLOADS_MODAL.LATER')}</div>
 								</div>
@@ -46,7 +46,7 @@ function RestartDownloadsModal() {
 						</div>
 						<div>
 							<button className="btn btn-default" type="button" onClick={deleteQueue}>
-								<i className="fas fa-fw fa-eraser fa-2x" />
+								<i className="fas fa-eraser fa-2x" />
 								<div className="btn-large-container">
 									<div className="title">{i18next.t('MODAL.RESTART_DOWNLOADS_MODAL.DELETE')}</div>
 								</div>
@@ -54,7 +54,7 @@ function RestartDownloadsModal() {
 						</div>
 						<div>
 							<button className="btn btn-default" type="button" onClick={startQueue}>
-								<i className="fas fa-fw fa-download fa-2x" />
+								<i className="fas fa-download fa-2x" />
 								<div className="btn-large-container">
 									<div className="title">{i18next.t('MODAL.RESTART_DOWNLOADS_MODAL.CONTINUE')}</div>
 								</div>

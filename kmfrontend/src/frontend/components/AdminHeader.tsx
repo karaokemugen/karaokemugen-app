@@ -199,7 +199,7 @@ function AdminHeader(props: IProps) {
 					className="btn btn-dark backPlaylistsButton"
 					onClick={() => navigate('/admin')}
 				>
-					<i className="fas fa-fw fa-long-arrow-alt-left" />
+					<i className="fas fa-long-arrow-alt-left" />
 				</button>
 			) : null}
 			<div className="dropdown">
@@ -210,7 +210,7 @@ function AdminHeader(props: IProps) {
 					<ul className="dropdown-menu">
 						<li>
 							<a href="/welcome">
-								<i className="fas fa-fw fa-home" />
+								<i className="fas fa-home" />
 								&nbsp;{i18next.t('HOME_BUTTON')}
 							</a>
 						</li>
@@ -225,12 +225,12 @@ function AdminHeader(props: IProps) {
 							>
 								{location.pathname.includes('/options') ? (
 									<>
-										<i className="fas fa-fw fa-list-ul" />
+										<i className="fas fa-list-ul" />
 										&nbsp;{i18next.t('CL_PLAYLISTS')}
 									</>
 								) : (
 									<>
-										<i className="fas fa-fw fa-cog" />
+										<i className="fas fa-cog" />
 										&nbsp;{i18next.t('OPTIONS')}
 									</>
 								)}
@@ -238,27 +238,27 @@ function AdminHeader(props: IProps) {
 						</li>
 						<li>
 							<div onClick={toggleProfileModal}>
-								<i className="fas fa-fw fa-user" />
+								<i className="fas fa-user" />
 								&nbsp;{i18next.t('ACCOUNT')}
 							</div>
 						</li>
 						<li>
 							<div onClick={toggleUsersModal}>
-								<i className="fas fa-fw fa-users" />
+								<i className="fas fa-users" />
 								&nbsp;{i18next.t('USERLIST')}
 							</div>
 						</li>
 						{!quizInProgress ? (
 							<li>
 								<div onClick={toggleQuizModal}>
-									<i className="fas fa-fw fa-person-circle-question" />
+									<i className="fas fa-person-circle-question" />
 									&nbsp;{i18next.t('QUIZ.START')}
 								</div>
 							</li>
 						) : (
 							<li>
 								<div onClick={toggleStopQuizModal}>
-									<i className="fas fa-fw fa-person-circle-question" />
+									<i className="fas fa-person-circle-question" />
 									&nbsp;{i18next.t('QUIZ.STOP')}
 								</div>
 							</li>
@@ -272,21 +272,21 @@ function AdminHeader(props: IProps) {
 									setDropDownMenu(!dropDownMenu);
 								}}
 							>
-								<i className="fas fa-fw fa-question-circle" />
+								<i className="fas fa-question-circle" />
 								&nbsp;{i18next.t('MODAL.TUTORIAL.TITLE')}
 							</div>
 						</li>
 						<hr></hr>
 						<li>
 							<div onClick={() => logout(context.globalDispatch)}>
-								<i className="fas fa-fw fa-sign-out-alt" />
+								<i className="fas fa-sign-out-alt" />
 								&nbsp;{i18next.t('LOGOUT')}
 							</div>
 						</li>
 						{props.powerOff ? (
 							<li>
 								<div onClick={props.powerOff}>
-									<i className="fas fa-fw fa-power-off" />
+									<i className="fas fa-power-off" />
 									&nbsp;{i18next.t('SHUTDOWN')}
 								</div>
 							</li>
@@ -298,7 +298,7 @@ function AdminHeader(props: IProps) {
 									setDropDownMenu(!dropDownMenu);
 								}}
 							>
-								<i className="fas fa-fw fa-comment" />
+								<i className="fas fa-comment" />
 								&nbsp;{i18next.t('MESSAGE')}
 							</div>
 						</li>
@@ -311,7 +311,7 @@ function AdminHeader(props: IProps) {
 								data-namecommand={statusPlayer?.showSubs ? 'hideSubs' : 'showSubs'}
 								id="showSubs"
 							>
-								<i className="fas fa-fw fa-closed-captioning" />
+								<i className="fas fa-closed-captioning" />
 								&nbsp;{i18next.t(statusPlayer?.showSubs ? 'HIDE_SUBS' : 'SHOW_SUBS')}
 							</div>
 						</li>
@@ -324,7 +324,7 @@ function AdminHeader(props: IProps) {
 								id="goTo"
 								data-namecommand="goTo"
 							>
-								<i className="fas fa-fw fa-undo-alt" />
+								<i className="fas fa-undo-alt" />
 								&nbsp;{i18next.t('PLAYERS_CONTROLS.REWIND')}
 							</div>
 						</li>
@@ -338,13 +338,13 @@ function AdminHeader(props: IProps) {
 								data-namecommand={statusPlayer?.volume === 0 || statusPlayer?.mute ? 'unmute' : 'mute'}
 							>
 								{statusPlayer?.volume === 0 || statusPlayer?.mute ? (
-									<i className="fas fa-fw fa-volume-mute" />
+									<i className="fas fa-volume-mute" />
 								) : statusPlayer?.volume > 66 ? (
-									<i className="fas fa-fw fa-volume-up" />
+									<i className="fas fa-volume-up" />
 								) : statusPlayer?.volume > 33 ? (
-									<i className="fas fa-fw fa-volume-down" />
+									<i className="fas fa-volume-down" />
 								) : (
-									<i className="fas fa-fw fa-volume-off" />
+									<i className="fas fa-volume-off" />
 								)}
 								&nbsp;{i18next.t('MUTE_UNMUTE')}
 							</div>
@@ -361,7 +361,7 @@ function AdminHeader(props: IProps) {
 									id="stopNow"
 									data-namecommand="stopNow"
 								>
-									<i className="fas fa-fw fa-stop" />
+									<i className="fas fa-stop" />
 									&nbsp;{i18next.t('PLAYERS_CONTROLS.STOP_NOW')}
 								</div>
 							) : (
@@ -373,7 +373,7 @@ function AdminHeader(props: IProps) {
 									id="stopAfter"
 									data-namecommand="stopAfter"
 								>
-									<i className="fas fa-fw fa-stop" />
+									<i className="fas fa-stop" />
 									&nbsp;{i18next.t('PLAYERS_CONTROLS.STOP_AFTER')}
 								</div>
 							)}
@@ -389,7 +389,7 @@ function AdminHeader(props: IProps) {
 					title={i18next.t('ADMIN_HEADER.QUIZ_RANKING')}
 					onClick={props.updateQuizRanking}
 				>
-					<i className="fas fa-fw fa-user-graduate" />
+					<i className="fas fa-user-graduate" />
 				</button>
 			) : null}
 
@@ -508,7 +508,7 @@ function AdminHeader(props: IProps) {
 				className="btn btn-dark messageButton"
 				onClick={adminMessage}
 			>
-				<i className="fas fa-fw fa-comment" />
+				<i className="fas fa-comment" />
 			</button>
 
 			<div className="btn-tile-group displayModifierButtons" id="displayModifierButtons">
@@ -522,11 +522,11 @@ function AdminHeader(props: IProps) {
 					onClick={props.putPlayerCommando}
 				>
 					<span className="fa-stack">
-						<i className="fas fa-fw fa-closed-captioning fa-stack-1x" />
-						<i className="fas fa-fw fa-ban fa-stack-2x" style={{ color: '#943d42', opacity: 0.7 }} />
+						<i className="fas fa-closed-captioning fa-stack-1x" />
+						<i className="fas fa-ban fa-stack-2x" style={{ color: '#943d42', opacity: 0.7 }} />
 					</span>
 					<span className="fa-stack">
-						<i className="fas fa-fw fa-closed-captioning" />
+						<i className="fas fa-closed-captioning" />
 					</span>
 				</button>
 				<button
@@ -536,7 +536,7 @@ function AdminHeader(props: IProps) {
 					className={`btn btn-tile btn-dark ${statusPlayer?.blurVideo ? 'unblurVideo' : 'blurVideo'}`}
 					onClick={props.putPlayerCommando}
 				>
-					<i className={`fas fa-fw ${statusPlayer?.blurVideo ? 'fa-hand' : 'fa-hand-sparkles'}`} />
+					<i className={`fas ${statusPlayer?.blurVideo ? 'fa-hand' : 'fa-hand-sparkles'}`} />
 				</button>
 			</div>
 
@@ -547,13 +547,13 @@ function AdminHeader(props: IProps) {
 					onClick={props.putPlayerCommando}
 				>
 					{statusPlayer?.volume === 0 || statusPlayer?.mute ? (
-						<i className="fas fa-fw fa-volume-mute" />
+						<i className="fas fa-volume-mute" />
 					) : statusPlayer?.volume > 66 ? (
-						<i className="fas fa-fw fa-volume-up" />
+						<i className="fas fa-volume-up" />
 					) : statusPlayer?.volume > 33 ? (
-						<i className="fas fa-fw fa-volume-down" />
+						<i className="fas fa-volume-down" />
 					) : (
-						<i className="fas fa-fw fa-volume-off" />
+						<i className="fas fa-volume-off" />
 					)}
 				</div>
 				{statusPlayer ? (
@@ -574,7 +574,7 @@ function AdminHeader(props: IProps) {
 					title={i18next.t('ADMIN_HEADER.QUICK_ACCESS')}
 					onClick={() => setDropDownSettings(!dropDownSettings)}
 				>
-					<i className="fas fa-fw fa-sliders-h" />
+					<i className="fas fa-sliders-h" />
 				</button>
 				{dropDownSettings ? (
 					<ul className="dropdown-menu">

@@ -50,10 +50,7 @@ function Tutorial(props: IProps) {
 				<>
 					<p className="title">{i18next.t('MODAL.TUTORIAL.WELCOME')}</p>
 					<div className="playlists">
-						<Trans
-							i18nKey="MODAL.TUTORIAL.PLAYLIST"
-							components={{ 2: <i className="fas fa-fw fa-plus" /> }}
-						/>
+						<Trans i18nKey="MODAL.TUTORIAL.PLAYLIST" components={{ 2: <i className="fas fa-plus" /> }} />
 						<br />
 						<br />
 						<div className="kara-line-image">
@@ -67,9 +64,9 @@ function Tutorial(props: IProps) {
 								<Trans
 									i18nKey="MODAL.TUTORIAL.PLAY_BUTTONS"
 									components={{
-										1: <i className="fas fa-fw fa-play" />,
+										1: <i className="fas fa-play" />,
 										3: !isLargeDevice ? <span /> : <span style={{ display: 'none' }} />,
-										5: <i className="fas fa-fw fa-play-circle" />,
+										5: <i className="fas fa-play-circle" />,
 									}}
 								/>
 							</p>
@@ -77,7 +74,7 @@ function Tutorial(props: IProps) {
 								<Trans
 									i18nKey="MODAL.TUTORIAL.CHECK_CASE"
 									components={{
-										1: <i className="far fa-fw fa-square" />,
+										1: <i className="far fa-square" />,
 										3: <em />,
 									}}
 								/>
@@ -85,14 +82,14 @@ function Tutorial(props: IProps) {
 								<Trans
 									i18nKey="MODAL.TUTORIAL.ADD_TO_OTHER_PLAYLIST"
 									components={{
-										1: <i className="fas fa-fw fa-plus" />,
+										1: <i className="fas fa-plus" />,
 									}}
 								/>
 								<br />
 								<Trans
 									i18nKey="MODAL.TUTORIAL.WRENCH_BUTTON"
 									components={{
-										1: <i className="fas fa-fw fa-wrench" />,
+										1: <i className="fas fa-wrench" />,
 									}}
 								/>
 							</p>
@@ -101,7 +98,7 @@ function Tutorial(props: IProps) {
 							i18nKey="MODAL.TUTORIAL.KARAOKE_PLAYED"
 							components={{
 								1: <span className="orange" />,
-								2: <i className="fas fa-fw fa-history" />,
+								2: <i className="fas fa-history" />,
 							}}
 						/>
 						<br />
@@ -120,16 +117,16 @@ function Tutorial(props: IProps) {
 				<div className="header-presentation">
 					<ul>
 						<li>
-							<i className="fas fa-fw fa-cog" /> {i18next.t('MODAL.TUTORIAL.CREATE_PLAYLIST_BUTTON')}
+							<i className="fas fa-cog" /> {i18next.t('MODAL.TUTORIAL.CREATE_PLAYLIST_BUTTON')}
 						</li>
 						<li>
-							<i className="fas fa-fw fa-list-ol" /> {i18next.t('MODAL.TUTORIAL.SELECT_PLAYLIST_BUTTON')}
+							<i className="fas fa-list-ol" /> {i18next.t('MODAL.TUTORIAL.SELECT_PLAYLIST_BUTTON')}
 							<ul className="ul-l1">
 								<li>
-									<i className="fas fa-fw fa-book" /> {i18next.t('MODAL.TUTORIAL.LIBRARY')}
+									<i className="fas fa-book" /> {i18next.t('MODAL.TUTORIAL.LIBRARY')}
 								</li>
 								<li>
-									<i className="fas fa-fw fa-pencil-alt" />{' '}
+									<i className="fas fa-pencil-alt" />{' '}
 									<Trans
 										i18nKey="MODAL.TUTORIAL.PLAYLIST_ATTRIBUTES"
 										components={{
@@ -139,15 +136,15 @@ function Tutorial(props: IProps) {
 									/>
 								</li>
 								<li>
-									<i className="fas fa-fw fa-play-circle" />{' '}
+									<i className="fas fa-play-circle" />{' '}
 									<Trans i18nKey="MODAL.TUTORIAL.CURRENT_DESC" components={{ 1: <strong /> }} />
 								</li>
 								<li>
-									<i className="fas fa-fw fa-globe" />{' '}
+									<i className="fas fa-globe" />{' '}
 									<Trans i18nKey="MODAL.TUTORIAL.PUBLIC_DESC" components={{ 1: <strong /> }} />
 								</li>
 								<li>
-									<i className="fas fa-fw fa-info-circle" />{' '}
+									<i className="fas fa-info-circle" />{' '}
 									<Trans
 										i18nKey="MODAL.TUTORIAL.CURRENT_PUBLIC_DESC"
 										components={{
@@ -157,7 +154,7 @@ function Tutorial(props: IProps) {
 									/>
 								</li>
 								<li>
-									<i className="fas fa-fw fa-ban" /> {i18next.t('MODAL.TUTORIAL.BLACKLIST_DESC')}
+									<i className="fas fa-ban" /> {i18next.t('MODAL.TUTORIAL.BLACKLIST_DESC')}
 								</li>
 							</ul>
 						</li>
@@ -171,19 +168,19 @@ function Tutorial(props: IProps) {
 					<p>{i18next.t('MODAL.TUTORIAL.PLAYER_BAR')}</p>
 					<ul>
 						<li>
-							<i className="fas fa-fw fa-play-circle" />
+							<i className="fas fa-play-circle" />
 							<Trans i18nKey="MODAL.TUTORIAL.PLAYER_CURRENT_HINT" components={{ 1: <strong /> }} />
 						</li>
 						<li>
-							<i className="fas fa-fw fa-undo-alt" />
+							<i className="fas fa-undo-alt" />
 							<Trans i18nKey="MODAL.TUTORIAL.PLAYER_GO_BACK" components={{ 1: <strong /> }} />
 						</li>
 						<li>
-							<i className="fas fa-fw fa-stop" />
+							<i className="fas fa-stop" />
 							<Trans i18nKey="MODAL.TUTORIAL.PLAYER_STOP" components={{ 1: <strong /> }} />
 						</li>
 						<li>
-							<i className="fas fa-fw fa-comment" />
+							<i className="fas fa-comment" />
 							{i18next.t('MODAL.TUTORIAL.MESSAGE')}
 						</li>
 						<li>

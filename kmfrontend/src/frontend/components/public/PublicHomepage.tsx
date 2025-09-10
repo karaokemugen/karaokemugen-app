@@ -82,46 +82,45 @@ function PublicHomepage(props: IProps) {
 					<div className="home-actions">
 						{props.activePoll ? (
 							<button className="action yellow big" onClick={() => props.openPoll()}>
-								<i className="fas fa-fw fa-chart-line" /> {i18next.t('PUBLIC_HOMEPAGE.OPEN_POLL')}
+								<i className="fas fa-chart-line" /> {i18next.t('PUBLIC_HOMEPAGE.OPEN_POLL')}
 							</button>
 						) : null}
 						{props.currentVisible ? (
 							<Link className="action green" to="/public/playlist/current">
-								<i className="fas fa-fw fa-play-circle" /> {i18next.t('PUBLIC_HOMEPAGE.CURRENT')}
+								<i className="fas fa-play-circle" /> {i18next.t('PUBLIC_HOMEPAGE.CURRENT')}
 							</Link>
 						) : null}
 						{props.currentVisible ? (
 							<Link className="action purple" to="/public/playlist/current/me">
-								<i className="fas fa-fw fa-user" /> {i18next.t('PUBLIC_HOMEPAGE.MY_INCOMING_SONGS')}
+								<i className="fas fa-user" /> {i18next.t('PUBLIC_HOMEPAGE.MY_INCOMING_SONGS')}
 							</Link>
 						) : null}
 						{props.publicVisible &&
 						context.globalState.settings.data.state.currentPlaid !==
 							context.globalState.settings.data.state.publicPlaid ? (
 							<Link className="action orange" to="/public/playlist/public">
-								<i className="fas fa-fw fa-tasks" /> {i18next.t('PUBLIC_HOMEPAGE.PUBLIC_SUGGESTIONS')}
+								<i className="fas fa-tasks" /> {i18next.t('PUBLIC_HOMEPAGE.PUBLIC_SUGGESTIONS')}
 							</Link>
 						) : null}
 						{context?.globalState.auth.data.role !== 'guest' ? (
 							<Link className="action yellow" to="/public/favorites">
-								<i className="fas fa-fw fa-star" /> {i18next.t('PUBLIC_HOMEPAGE.FAVORITES')}
+								<i className="fas fa-star" /> {i18next.t('PUBLIC_HOMEPAGE.FAVORITES')}
 							</Link>
 						) : null}
 						{context?.globalState.settings.data.config?.Frontend?.Mode !== 0 ? (
 							<>
 								<Link className="action blue" to="/public/search">
-									<i className="fas fa-fw fa-search" /> {i18next.t('PUBLIC_HOMEPAGE.SONG_SEARCH')}
+									<i className="fas fa-search" /> {i18next.t('PUBLIC_HOMEPAGE.SONG_SEARCH')}
 								</Link>
 								<button className="action green" onClick={getLucky}>
-									<i className={`fas fa-fw fa-dice${diceAnimation ? ' fa-beat' : ''}`} />{' '}
+									<i className={`fas fa-dice${diceAnimation ? ' fa-beat' : ''}`} />{' '}
 									{i18next.t('PUBLIC_HOMEPAGE.GET_LUCKY')}
 								</button>
 								<Link className="action purple" to="/public/search/recent">
-									<i className="fas fa-fw fa-clock" /> {i18next.t('PUBLIC_HOMEPAGE.NEW_KARAOKES')}
+									<i className="fas fa-clock" /> {i18next.t('PUBLIC_HOMEPAGE.NEW_KARAOKES')}
 								</Link>
 								<Link className="action orange" to="/public/search/requested">
-									<i className="fas fa-fw fa-fire" />{' '}
-									{i18next.t('PUBLIC_HOMEPAGE.REQUESTED_KARAOKES')}
+									<i className="fas fa-fire" /> {i18next.t('PUBLIC_HOMEPAGE.REQUESTED_KARAOKES')}
 								</Link>
 								{context?.globalState.settings.data.user.anime_list_to_fetch ? (
 									<Link className="action yellow" to="/public/animelist">
@@ -140,7 +139,7 @@ function PublicHomepage(props: IProps) {
 												to={`/public/tags/${tagTypes[type].type}`}
 												key={`tag-${tagTypes[type].type}`}
 											>
-												<i className={`fas fa-fw fa-${tagTypes[type].icon}`} />{' '}
+												<i className={`fas fa-${tagTypes[type].icon}`} />{' '}
 												{i18next.t(`TAG_TYPES.${type}_other`)}
 											</Link>
 										);
@@ -148,10 +147,10 @@ function PublicHomepage(props: IProps) {
 									return undefined;
 								})}
 								<Link className="action" to={`/public/tags/${YEARS.type}`}>
-									<i className={`fas fa-fw fa-${YEARS.icon}`} /> {i18next.t('DETAILS.YEAR')}
+									<i className={`fas fa-${YEARS.icon}`} /> {i18next.t('DETAILS.YEAR')}
 								</Link>
 								<button className="action" onClick={() => setOthersMenu(!othersMenu)}>
-									<i className={othersMenu ? 'fa fa-fw fa-arrow-up' : 'fa fa-fw fa-arrow-down'} />
+									<i className={othersMenu ? 'fa fa-arrow-up' : 'fa fa-arrow-down'} />
 									{i18next.t('PUBLIC_HOMEPAGE.OTHERS')}
 								</button>
 								{othersMenu ? (
@@ -164,7 +163,7 @@ function PublicHomepage(props: IProps) {
 														to={`/public/tags/${tagTypes[type].type}`}
 														key={`tag-${tagTypes[type].type}`}
 													>
-														<i className={`fas fa-fw fa-${tagTypes[type].icon}`} />{' '}
+														<i className={`fas fa-${tagTypes[type].icon}`} />{' '}
 														{i18next.t(`TAG_TYPES.${type}_other`)}
 													</Link>
 												);

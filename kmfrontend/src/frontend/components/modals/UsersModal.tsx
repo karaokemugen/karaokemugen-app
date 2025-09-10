@@ -84,7 +84,7 @@ function UsersModal(props: IProps) {
 				) : null}
 				{props.scope === 'admin' ? ( // aka. it's a modal, otherwise it's a page and close button is not needed
 					<button className="closeModal" onClick={closeModalWithContext}>
-						<i className="fas fa-fw fa-times" />
+						<i className="fas fa-times" />
 					</button>
 				) : null}
 			</div>
@@ -104,7 +104,7 @@ function UsersModal(props: IProps) {
 									<div className="userDetails">
 										{userDetails?.url ? (
 											<div>
-												<i className="fas fa-fw fa-link" />
+												<i className="fas fa-link" />
 												<a href={userDetails.url} rel="noreferrer noopener">
 													{userDetails.url}
 												</a>
@@ -112,13 +112,13 @@ function UsersModal(props: IProps) {
 										) : null}
 										{userDetails?.bio ? (
 											<div>
-												<i className="fas fa-fw fa-pen" />
+												<i className="fas fa-pen" />
 												{userDetails.bio}
 											</div>
 										) : null}
 										{userDetails?.location ? (
 											<div>
-												<i className="fas fa-fw fa-globe" />
+												<i className="fas fa-globe" />
 												{getCountryName(
 													userDetails.location,
 													context.globalState.settings.data.user.language
@@ -127,13 +127,13 @@ function UsersModal(props: IProps) {
 										) : null}
 										{userDetails?.social_networks.discord ? (
 											<div>
-												<i className="fab fa-fw fa-discord" />
+												<i className="fab fa-discord" />
 												{userDetails.social_networks.discord}
 											</div>
 										) : null}
 										{userDetails?.social_networks.mastodon ? (
 											<div>
-												<i className="fab fa-fw fa-mastodon" />
+												<i className="fab fa-mastodon" />
 												<a
 													href={`https://${
 														userDetails.social_networks.mastodon.split('@')[1]
@@ -146,7 +146,7 @@ function UsersModal(props: IProps) {
 										) : null}
 										{userDetails?.social_networks.bluesky ? (
 											<div>
-												<i className="fab fa-fw fa-bluesky" />
+												<i className="fab fa-bluesky" />
 												<a
 													href={`https://bsky.app/profile/${userDetails.social_networks.bluesky}`}
 													rel="noreferrer noopener"
@@ -157,7 +157,7 @@ function UsersModal(props: IProps) {
 										) : null}
 										{userDetails?.social_networks.instagram ? (
 											<div>
-												<i className="fab fa-fw fa-instagram" />
+												<i className="fab fa-instagram" />
 												<a
 													href={`https://instagram.com/${userDetails.social_networks.instagram}`}
 													rel="noreferrer noopener"
@@ -168,7 +168,7 @@ function UsersModal(props: IProps) {
 										) : null}
 										{userDetails?.social_networks.twitch ? (
 											<div>
-												<i className="fab fa-fw fa-twitch" />
+												<i className="fab fa-twitch" />
 												<a
 													href={`https://twitch.tv/${userDetails.social_networks.twitch}`}
 													rel="noreferrer noopener"

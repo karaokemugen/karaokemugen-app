@@ -115,7 +115,7 @@ export default function About() {
 						),
 					}}
 				/>{' '}
-				<i className="fas fa-heart fa-fw" />
+				<i className="fas fa-heart" />
 			</p>
 		</div>
 	);

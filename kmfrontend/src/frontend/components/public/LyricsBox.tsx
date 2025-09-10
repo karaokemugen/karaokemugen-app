@@ -95,7 +95,7 @@ function LyricsBox(props: IProps) {
 				tabIndex={0}
 			>
 				{LyricsBox.i18nText(showLyrics)}
-				<i className={showLyrics > 1 ? 'fa fa-fw fa-arrow-up' : 'fa fa-fw fa-arrow-down'} />
+				<i className={showLyrics > 1 ? 'fa fa-arrow-up' : 'fa fa-arrow-down'} />
 			</div>
 			{showLyrics > 0 ? (
 				lyrics.length > 0 ? (

@@ -101,7 +101,7 @@ function PollModal() {
 								>
 									<div className="karaTitle">
 										{buildKaraTitle(context.globalState.settings.data, kara, false)}
-										{maxVotes === kara.votes ? <i className="fas fa-fw fa-star" /> : null}
+										{maxVotes === kara.votes ? <i className="fas fa-star" /> : null}
 									</div>
 									<div>
 										{i18next.t('MODAL.POLL.VOTES', {
