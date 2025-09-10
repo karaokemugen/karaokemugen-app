@@ -272,11 +272,9 @@ function KaraLine(props: IProps) {
 	const downloadIcon = () => {
 		// Tags in the header
 		if (kara.download_status === 'MISSING' && isAdmin) {
-			return <i className="fas fa-fw fa-cloud" title={i18next.t('KARA.MISSING_DOWNLOAD_TOOLTIP')} />;
+			return <i className="fas fa-cloud" title={i18next.t('KARA.MISSING_DOWNLOAD_TOOLTIP')} />;
 		} else if (kara.download_status === 'DOWNLOADING' && isAdmin) {
-			return (
-				<i className="fas fa-fw fa-cloud-download-alt" title={i18next.t('KARA.IN_PROGRESS_DOWNLOAD_TOOLTIP')} />
-			);
+			return <i className="fas fa-cloud-download-alt" title={i18next.t('KARA.IN_PROGRESS_DOWNLOAD_TOOLTIP')} />;
 		}
 		return null;
 	};
@@ -319,7 +317,7 @@ function KaraLine(props: IProps) {
 									onClick={playKara}
 									disabled={settings.state.quiz.running}
 								>
-									<i className="fas fa-fw fa-play" />
+									<i className="fas fa-play" />
 								</button>
 							) : null}
 							{isAdmin &&
@@ -333,7 +331,7 @@ function KaraLine(props: IProps) {
 									className="btn btn-action playKara karaLineButton"
 									onClick={editPlayingFlag}
 								>
-									<i className="fas fa-fw fa-play-circle" />
+									<i className="fas fa-play-circle" />
 								</button>
 							) : null}
 							{isAdmin && !isNonStandardPlaylist(plaid) && !kara.flag_visible ? (
@@ -355,12 +353,12 @@ function KaraLine(props: IProps) {
 							>
 								{props.plcidToSwap ? (
 									props.plcidToSwap === kara.plcid ? (
-										<i className="fas fa-fw fa-xmark" />
+										<i className="fas fa-xmark" />
 									) : (
-										<i className="fas fa-fw fa-arrows-turn-right" />
+										<i className="fas fa-arrows-turn-right" />
 									)
 								) : (
-									<i className="fas fa-fw fa-retweet" />
+									<i className="fas fa-retweet" />
 								)}
 							</button>
 						) : null}
@@ -389,7 +387,7 @@ function KaraLine(props: IProps) {
 									</span>
 									{kara.flag_dejavu && !kara.flag_playing ? (
 										<i
-											className="fas fa-fw fa-history dejavu-icon"
+											className="fas fa-history dejavu-icon"
 											title={i18next.t('KARA.DEJAVU_TOOLTIP')}
 										/>
 									) : null}
@@ -397,7 +395,7 @@ function KaraLine(props: IProps) {
 									{downloadIcon()}
 									{kara.warnings?.length > 0 ? (
 										<i
-											className="fas fa-fw fa-exclamation-triangle problematic"
+											className="fas fa-exclamation-triangle problematic"
 											title={i18next.t('KARA.PROBLEMATIC_TOOLTIP', {
 												tags: kara.warnings
 													.map(t => getTagInLocale(settings, t, props.i18nTag).i18n)
@@ -442,7 +440,7 @@ function KaraLine(props: IProps) {
 										) : (
 											<div className="playingIn">
 												<div>
-													<i className="fas fa-fw fa-clock" />
+													<i className="fas fa-clock" />
 													{secondsTimeSpanToHMS(kara.duration, 'mm:ss')}
 												</div>
 												{props.playingIn && kara.playing_at ? (
@@ -471,7 +469,7 @@ function KaraLine(props: IProps) {
 								<div className="disable-select karaTitle">
 									{kara.flag_dejavu && !kara.flag_playing ? (
 										<i
-											className="fas fa-fw fa-history dejavu-icon"
+											className="fas fa-history dejavu-icon"
 											title={i18next.t('KARA.DEJAVU_TOOLTIP')}
 										/>
 									) : null}
@@ -479,7 +477,7 @@ function KaraLine(props: IProps) {
 									{downloadIcon()}
 									{kara.warnings?.length > 0 ? (
 										<i
-											className="fas fa-fw fa-exclamation-triangle problematic"
+											className="fas fa-exclamation-triangle problematic"
 											title={i18next.t('KARA.PROBLEMATIC_TOOLTIP', {
 												tags: kara.warnings
 													.map(t => getTagInLocale(settings, t, props.i18nTag).i18n)
@@ -497,7 +495,7 @@ function KaraLine(props: IProps) {
 									<div>
 										<div className="playingIn">
 											<div>
-												<i className="fas fa-fw fa-clock" />
+												<i className="fas fa-clock" />
 												{secondsTimeSpanToHMS(kara.duration, 'mm:ss')}
 											</div>
 											{kara.playing_at ? (

@@ -190,7 +190,7 @@ function CheckedKaraMenuModal(props: IProps) {
 							props.closeKaraMenu();
 						}}
 					>
-						<i className={`fas fa-fw fa-long-arrow-alt-${props.side === 'left' ? 'right' : 'left'}`} />
+						<i className={`fas fa-long-arrow-alt-${props.side === 'left' ? 'right' : 'left'}`} />
 						&nbsp;
 						{i18next.t('KARA_MENU.TRANSFER_SELECT_KARA')}
 					</div>
@@ -204,7 +204,7 @@ function CheckedKaraMenuModal(props: IProps) {
 							props.closeKaraMenu();
 						}}
 					>
-						<i className="fas fa-fw fa-exchange-alt" />
+						<i className="fas fa-exchange-alt" />
 						&nbsp;
 						{i18next.t('KARA_MENU.TRANSFER_SELECT_KARA_AFTER_PLAYING')}
 					</div>
@@ -218,7 +218,7 @@ function CheckedKaraMenuModal(props: IProps) {
 						{i18next.t('KARA_MENU.FAV')}
 					</div>
 					<div className={`animate-button-success${effectFavorite ? ' activate' : ''}`}>
-						<i className="fas fa-fw fa-check-square" />
+						<i className="fas fa-check-square" />
 						&nbsp;
 						{i18next.t('KARA_MENU.FAVORITES_ADDED')}
 					</div>
@@ -232,7 +232,7 @@ function CheckedKaraMenuModal(props: IProps) {
 						{i18next.t('KARA_MENU.FREE_SHORT')}
 					</div>
 					<div className={`animate-button-success${effectFree ? ' activate' : ''}`}>
-						<i className="fas fa-fw fa-check-square" />
+						<i className="fas fa-check-square" />
 						&nbsp;
 						{i18next.t('KARA_MENU.FREED')}
 					</div>
@@ -246,7 +246,7 @@ function CheckedKaraMenuModal(props: IProps) {
 						{i18next.t('KARA_MENU.VISIBLE_ON_SHORT')}
 					</div>
 					<div className={`animate-button-success${effectVisibility ? ' activate' : ''}`}>
-						<i className="fas fa-fw fa-check-square" />
+						<i className="fas fa-check-square" />
 						&nbsp;
 						{i18next.t('KARA_MENU.SHOWN')}
 					</div>
@@ -260,7 +260,7 @@ function CheckedKaraMenuModal(props: IProps) {
 						{i18next.t('KARA_MENU.VISIBLE_OFF_SHORT')}
 					</div>
 					<div className={`animate-button-success${effectVisibility ? ' activate' : ''}`}>
-						<i className="fas fa-fw fa-check-square" />
+						<i className="fas fa-check-square" />
 						&nbsp;
 						{i18next.t('KARA_MENU.HIDDEN')}
 					</div>
@@ -274,7 +274,7 @@ function CheckedKaraMenuModal(props: IProps) {
 						{i18next.t('KARA_MENU.ADD_BLACKLIST')}
 					</div>
 					<div className={`animate-button-success${effectBlacklist ? ' activate' : ''}`}>
-						<i className="fas fa-fw fa-check-square" />
+						<i className="fas fa-check-square" />
 						&nbsp;
 						{i18next.t('KARA_MENU.BLACKLISTED')}
 					</div>
@@ -288,7 +288,7 @@ function CheckedKaraMenuModal(props: IProps) {
 						{i18next.t('KARA_MENU.ADD_WHITELIST')}
 					</div>
 					<div className={`animate-button-success${effectWhitelist ? ' activate' : ''}`}>
-						<i className="fas fa-fw fa-check-square" />
+						<i className="fas fa-check-square" />
 						&nbsp;
 						{i18next.t('KARA_MENU.WHITELISTED')}
 					</div>
@@ -302,7 +302,7 @@ function CheckedKaraMenuModal(props: IProps) {
 						{i18next.t('KARA_MENU.SHUFFLE')}
 					</div>
 					<div className={`animate-button-success${effectShuffle ? ' activate' : ''}`}>
-						<i className="fas fa-fw fa-check-square" />
+						<i className="fas fa-check-square" />
 						&nbsp;
 						{i18next.t('KARA_MENU.SHUFFLED')}
 					</div>

@@ -333,13 +333,13 @@ function ProfilModal(props: IProps) {
 			<div className={`modal-header${props.scope === 'public' ? ' public-modal' : ''}`}>
 				{props.scope === 'public' ? (
 					<button className="closeModal" type="button" onClick={() => closeModalWithContext()}>
-						<i className="fas fa-fw fa-arrow-left" />
+						<i className="fas fa-arrow-left" />
 					</button>
 				) : null}
 				<h4 className="modal-title">{i18next.t('PROFILE')}</h4>
 				{props.scope === 'admin' ? ( // aka. it's a modal, otherwise it's a page and close button is not needed
 					<button className="closeModal" onClick={closeModalWithContext}>
-						<i className="fas fa-fw fa-times" />
+						<i className="fas fa-times" />
 					</button>
 				) : null}
 			</div>
@@ -366,7 +366,7 @@ function ProfilModal(props: IProps) {
 										style={{ display: 'none' }}
 										onChange={importAvatar}
 									/>
-									<i className="fas fa-fw fa-portrait" />
+									<i className="fas fa-portrait" />
 									{i18next.t('AVATAR_IMPORT')}
 								</label>
 							) : null}
@@ -376,7 +376,7 @@ function ProfilModal(props: IProps) {
 						<div className="profileData">
 							<div className="profileLine">
 								<div className="profileLabel">
-									<i className="fas fa-fw fa-user" />
+									<i className="fas fa-user" />
 									<label htmlFor="nickname">{i18next.t('PROFILE_USERNAME')}</label>
 								</div>
 								<input
@@ -393,7 +393,7 @@ function ProfilModal(props: IProps) {
 							</div>
 							<div className="profileLine">
 								<div className="profileLabel">
-									<i className="fas fa-fw fa-envelope" />
+									<i className="fas fa-envelope" />
 									<label htmlFor="mail">{i18next.t('PROFILE_MAIL')}</label>
 								</div>
 								<input
@@ -409,14 +409,14 @@ function ProfilModal(props: IProps) {
 							{logInfos?.onlineToken && !user.email ? (
 								<div className="profileLine">
 									<div className="profileLabel warning">
-										<i className="fas fa-fw fa-exclamation-circle" />
+										<i className="fas fa-exclamation-circle" />
 										<div>{i18next.t('MODAL.PROFILE_MODAL.MISSING_EMAIL')}</div>
 									</div>
 								</div>
 							) : null}
 							<div className="profileLine">
 								<div className="profileLabel">
-									<i className="fas fa-fw fa-link" />
+									<i className="fas fa-link" />
 									<label htmlFor="url">{i18next.t('PROFILE_URL')}</label>
 								</div>
 								<input
@@ -431,7 +431,7 @@ function ProfilModal(props: IProps) {
 							</div>
 							<div className="profileLine">
 								<div className="profileLabel">
-									<i className="fas fa-fw fa-pen" />
+									<i className="fas fa-pen" />
 									<label htmlFor="bio">{i18next.t('PROFILE_BIO')}</label>
 								</div>
 								<input
@@ -446,7 +446,7 @@ function ProfilModal(props: IProps) {
 							</div>
 							<div className="profileLine">
 								<div className="profileLabel">
-									<i className="fas fa-fw fa-map-marked-alt" />
+									<i className="fas fa-map-marked-alt" />
 									<label>{i18next.t('MODAL.PROFILE_MODAL.LOCATION')}</label>
 								</div>
 								<Autocomplete
@@ -459,7 +459,7 @@ function ProfilModal(props: IProps) {
 							</div>
 							<div className="profileLine">
 								<div className="profileLabel">
-									<i className="fab fa-fw fa-discord" />
+									<i className="fab fa-discord" />
 									<label>{i18next.t('MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.DISCORD')}</label>
 								</div>
 								<input
@@ -474,7 +474,7 @@ function ProfilModal(props: IProps) {
 							</div>
 							<div className="profileLine">
 								<div className="profileLabel">
-									<i className="fab fa-fw fa-mastodon" />
+									<i className="fab fa-mastodon" />
 									<label>{i18next.t('MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.MASTODON')}</label>
 								</div>
 								<input
@@ -489,7 +489,7 @@ function ProfilModal(props: IProps) {
 							</div>
 							<div className="profileLine">
 								<div className="profileLabel">
-									<i className="fab fa-fw fa-bluesky" />
+									<i className="fab fa-bluesky" />
 									<label>{i18next.t('MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.BLUESKY')}</label>
 								</div>
 								<input
@@ -504,7 +504,7 @@ function ProfilModal(props: IProps) {
 							</div>
 							<div className="profileLine">
 								<div className="profileLabel">
-									<i className="fab fa-fw fa-instagram" />
+									<i className="fab fa-instagram" />
 									<label>{i18next.t('MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.INSTAGRAM')}</label>
 								</div>
 								<input
@@ -519,7 +519,7 @@ function ProfilModal(props: IProps) {
 							</div>
 							<div className="profileLine">
 								<div className="profileLabel">
-									<i className="fab fa-fw fa-twitch" />
+									<i className="fab fa-twitch" />
 									<label>{i18next.t('MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.TWITCH')}</label>
 								</div>
 								<input
@@ -534,7 +534,7 @@ function ProfilModal(props: IProps) {
 							</div>
 							<div className="profileLine">
 								<div className="profileLabel">
-									<i className="fab fa-fw fa-gitlab" />
+									<i className="fab fa-gitlab" />
 									<label>{i18next.t('MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.GITLAB')}</label>
 								</div>
 								<input
@@ -618,7 +618,7 @@ function ProfilModal(props: IProps) {
 							) : null}
 							<div className="profileLine">
 								<div className="profileLabel">
-									<i className="fas fa-fw fa-lock" />
+									<i className="fas fa-lock" />
 									<label htmlFor="password">{i18next.t('PROFILE_PASSWORD')}</label>
 								</div>
 								<div className="dualInput">
@@ -646,7 +646,7 @@ function ProfilModal(props: IProps) {
 							</div>
 							<div className="profileLine">
 								<div className="profileLabel">
-									<i className="fas fa-fw fa-star" />
+									<i className="fas fa-star" />
 									<label htmlFor="favorites">{i18next.t('PLAYLISTS.FAVORITES')}</label>
 								</div>
 								<label
@@ -654,7 +654,7 @@ function ProfilModal(props: IProps) {
 									title={i18next.t('FAVORITES_IMPORT')}
 									className="btn btn-action btn-default favImport"
 								>
-									<i className="fas fa-fw fa-download" /> {i18next.t('FAVORITES_IMPORT')}
+									<i className="fas fa-download" /> {i18next.t('FAVORITES_IMPORT')}
 								</label>
 								<input
 									id="favImport"
@@ -670,12 +670,12 @@ function ProfilModal(props: IProps) {
 									className="btn btn-action btn-default favExport"
 									onClick={favExport}
 								>
-									<i className="fas fa-fw fa-upload" /> {i18next.t('FAVORITES_EXPORT')}
+									<i className="fas fa-upload" /> {i18next.t('FAVORITES_EXPORT')}
 								</button>
 							</div>
 							<div className="profileLine row">
 								<div className="profileLabel">
-									<i className="fas fa-fw fa-language" />
+									<i className="fas fa-language" />
 									<label htmlFor="language">
 										{i18next.t('MODAL.PROFILE_MODAL.INTERFACE_LANGUAGE')}
 									</label>
@@ -692,7 +692,7 @@ function ProfilModal(props: IProps) {
 							</div>
 							<div className="profileLine row">
 								<div className="profileLabel">
-									<i className="fas fa-fw fa-globe" />
+									<i className="fas fa-globe" />
 									<label>{i18next.t('MODAL.PROFILE_MODAL.MAIN_SONG_NAME_LANG')}</label>
 								</div>
 								<div>
@@ -706,7 +706,7 @@ function ProfilModal(props: IProps) {
 							</div>
 							<div className="profileLine row">
 								<div className="profileLabel">
-									<i className="fas fa-fw fa-globe" />
+									<i className="fas fa-globe" />
 									<label>{i18next.t('MODAL.PROFILE_MODAL.FALLBACK_SONG_NAME_LANG')}</label>
 								</div>
 								<div>
@@ -801,13 +801,9 @@ function ProfilModal(props: IProps) {
 									className="btn btn-danger profileDelete"
 									onClick={() => setDangerousActions(!dangerousActions)}
 								>
-									<i className="fas fa-fw fa-exclamation-triangle" />
+									<i className="fas fa-exclamation-triangle" />
 									{i18next.t('MODAL.PROFILE_MODAL.DANGEROUS_ACTIONS')}
-									<i
-										className={`fas fa-fw ${
-											dangerousActions ? 'fa-chevron-left' : 'fa-chevron-right'
-										}`}
-									/>
+									<i className={`fas ${dangerousActions ? 'fa-chevron-left' : 'fa-chevron-right'}`} />
 								</button>
 								{dangerousActions ? (
 									<div>
@@ -819,7 +815,7 @@ function ProfilModal(props: IProps) {
 													className="btn btn-danger profileDelete"
 													onClick={profileDelete}
 												>
-													<i className="fas fa-fw fa-retweet" />{' '}
+													<i className="fas fa-retweet" />{' '}
 													{i18next.t('MODAL.PROFILE_MODAL.ONLINE_DELETE')}
 												</button>
 											) : (
@@ -828,7 +824,7 @@ function ProfilModal(props: IProps) {
 													className="btn btn-primary profileConvert"
 													onClick={profileConvert}
 												>
-													<i className="fas fa-fw fa-retweet" />{' '}
+													<i className="fas fa-retweet" />{' '}
 													{i18next.t('MODAL.PROFILE_MODAL.ONLINE_CONVERT')}
 												</button>
 											)
@@ -840,7 +836,7 @@ function ProfilModal(props: IProps) {
 											}`}
 											onClick={deleteAccount}
 										>
-											<i className="fas fa-fw fa-trash-alt" />{' '}
+											<i className="fas fa-trash-alt" />{' '}
 											{i18next.t('MODAL.PROFILE_MODAL.LOCAL_DELETE')}
 										</button>
 									</div>

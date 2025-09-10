@@ -485,7 +485,7 @@ export function computeTagsElements(
 		if (kara[tagData.karajson]?.length > 0) {
 			karaBlockTags.push(
 				<div className={`detailsKaraLine colored ${tagData.color}`} key={tagData.karajson}>
-					<i className={`fas fa-fw fa-${tagData.icon}`} />
+					<i className={`fas fa-${tagData.icon}`} />
 					<div>
 						{i18next.t(`KARA.${type}_BY`)}
 						<span key={`${type}${key}`} className="detailsKaraLineContent">

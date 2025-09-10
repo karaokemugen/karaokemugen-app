@@ -98,7 +98,7 @@ export default function InlineTag(props: Props) {
 					<p className="tag-stat">{i18next.t('INLINE_TAG.COUNT', { count: count })}</p>
 					<p className="tag-action">
 						<button className="btn" onClick={goToTagSearch}>
-							<i className="fas fa-fw fa-search" />
+							<i className="fas fa-search" />
 							{i18next.t('INLINE_TAG.SEARCH', {
 								tag: getTagInLocale(context.globalState.settings.data, props.tag, props.i18nParam)
 									?.i18n,

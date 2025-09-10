@@ -47,7 +47,13 @@ function KaraList({ karas, scope, addKara = false }: KaraListProps) {
 			{karas.content.map(kara => {
 				if (!kara) return undefined;
 				const tagsScope = kara.kid === kidOpened ? scope : 'admin';
-				const [karaTags, karaBlockTags] = computeTagsElements(kara, tagsScope, context.globalState.settings.data, false, karas.i18n);
+				const [karaTags, karaBlockTags] = computeTagsElements(
+					kara,
+					tagsScope,
+					context.globalState.settings.data,
+					false,
+					karas.i18n
+				);
 
 				return (
 					<div key={kara.kid} className={`song${kara.kid === kidOpened ? ' open' : ''}`}>
@@ -85,14 +91,14 @@ function KaraList({ karas, scope, addKara = false }: KaraListProps) {
 								<div className="modal-right">
 									<h6>
 										<span>
-											<i className={`fas fa-fw fa-${YEARS.icon}`} />
+											<i className={`fas fa-${YEARS.icon}`} />
 											{kara.year}
 										</span>
 									</h6>
 
 									<h6>
 										<span>
-											<i className="fas fa-fw fa-clock" />
+											<i className="fas fa-clock" />
 											{secondsTimeSpanToHMS(kara.duration, 'mm:ss')}
 										</span>
 									</h6>
@@ -144,14 +150,14 @@ function KaraList({ karas, scope, addKara = false }: KaraListProps) {
 							<VideoPreview kara={kara} show={showVideo && kidOpened === kara.kid} scope={scope} />
 							<div className="detailsKaraLine timeData">
 								<span>
-									<i className="fas fa-fw fa-clock" />
+									<i className="fas fa-clock" />
 									{secondsTimeSpanToHMS(kara.duration, 'mm:ss')}
 								</span>
 							</div>
 							{karaBlockTags}
 							<div className="detailsKaraLine">
 								<span className="boldDetails">
-									<i className={`fas fa-fw fa-${YEARS.icon}`} />
+									<i className={`fas fa-${YEARS.icon}`} />
 									{kara.year}
 								</span>
 							</div>

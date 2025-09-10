@@ -52,7 +52,7 @@ function ActionsButtons(props: IProps) {
 					className={`${classValue} ${props.kara?.flag_refused ? 'off' : ''}`}
 					onClick={props.refuseKara}
 				>
-					<i className="fas fa-fw fa-times" />
+					<i className="fas fa-times" />
 				</button>
 			) : null}
 
@@ -64,7 +64,7 @@ function ActionsButtons(props: IProps) {
 					className={`${classValue} ${props.kara?.flag_accepted ? 'on' : ''}`}
 					onClick={props.acceptKara}
 				>
-					<i className="fas fa-fw fa-check" />
+					<i className="fas fa-check" />
 				</button>
 			) : null}
 
@@ -92,7 +92,7 @@ function ActionsButtons(props: IProps) {
 					className={classValue}
 					onClick={props.deleteKara}
 				>
-					<i className="fas fa-fw fa-eraser" />
+					<i className="fas fa-eraser" />
 				</button>
 			) : null}
 
@@ -102,7 +102,7 @@ function ActionsButtons(props: IProps) {
 					className={classValue + ' yellow'}
 					onClick={props.deleteFavorite}
 				>
-					<i className="fas fa-fw fa-star" />
+					<i className="fas fa-star" />
 				</button>
 			) : null}
 
@@ -140,7 +140,7 @@ function ActionsButtons(props: IProps) {
 					onClick={props.addKara}
 					disabled={props?.checkedKaras === 0 || addingIsForbidden}
 				>
-					<i className="fas fa-fw fa-plus" />
+					<i className="fas fa-plus" />
 				</button>
 			) : null}
 
@@ -157,7 +157,7 @@ function ActionsButtons(props: IProps) {
 					onClick={props.upvoteKara}
 					disabled={props.kara.my_public_plc_id?.length > 0}
 				>
-					<i className={`fas fa-fw fa-thumbs-up ${props.kara?.flag_upvoted ? 'currentUpvote' : ''}`} />
+					<i className={`fas fa-thumbs-up ${props.kara?.flag_upvoted ? 'currentUpvote' : ''}`} />
 					{props.kara?.upvotes > 0 && props.kara?.upvotes}
 				</button>
 			) : null}

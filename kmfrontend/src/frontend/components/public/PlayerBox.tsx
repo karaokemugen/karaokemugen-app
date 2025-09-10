@@ -262,7 +262,7 @@ function PlayerBox(props: IProps) {
 					{props.currentVisible ? (
 						<p className="next" tabIndex={0} onKeyDown={() => navigate('/public/playlist/current')}>
 							{i18next.t('PUBLIC_HOMEPAGE.NEXT')}
-							<i className="fas fa-fw fa-chevron-right" />
+							<i className="fas fa-chevron-right" />
 						</p>
 					) : null}
 				</div>
@@ -286,7 +286,7 @@ function PlayerBox(props: IProps) {
 			)}
 			{props.mode === 'homepage' && length !== 0 && context.globalState.auth.data.role !== 'guest' ? (
 				<button className="btn favorites" onClick={toggleFavorite}>
-					<i className="fas fa-fw fa-star" />
+					<i className="fas fa-star" />
 					{favorites.has(kid) ? i18next.t('KARA_MENU.FAV_DEL') : i18next.t('KARA_MENU.FAV')}
 				</button>
 			) : null}

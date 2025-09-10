@@ -247,7 +247,7 @@ function PlaylistHeader(props: IProps) {
 					onKeyPress={() => getKarasList('search')}
 				>
 					<i
-						className={`fas fa-fw ${
+						className={`fas ${
 							!isNonStandardPlaylist(playlist?.plaid) ? 'fa-list-ol' : 'fa-sort-alpha-down'
 						}`}
 					/>{' '}
@@ -330,7 +330,7 @@ function PlaylistHeader(props: IProps) {
 								}
 								onClick={props.toggleSearchMenu}
 							>
-								<i className="fas fa-fw fa-filter" />
+								<i className="fas fa-filter" />
 								{activeFilter !== 'search' || activeFilterUUID !== ''
 									? i18next.t('PLAYLIST_HEADER.ACTIVE_FILTER')
 									: null}
@@ -345,7 +345,7 @@ function PlaylistHeader(props: IProps) {
 								className={'btn btn-default' + (props.criteriasOpen ? ' btn-primary' : '')}
 								onClick={props.openCloseCriterias}
 							>
-								<i className={`fas fa-fw ${props.criteriasOpen ? 'fa-list-ul' : 'fa-sliders-h'}`} />
+								<i className={`fas ${props.criteriasOpen ? 'fa-list-ul' : 'fa-sliders-h'}`} />
 								{i18next.t(
 									props.criteriasOpen ? 'PLAYLIST_HEADER.SHOW_SONGS' : 'PLAYLIST_HEADER.EDIT_CRITERIA'
 								)}

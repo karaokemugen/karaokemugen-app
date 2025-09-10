@@ -76,7 +76,7 @@ function KaraLineSortModal(props: IProps) {
 						</div>
 
 						<div className="text">
-							<i className="fas fa-fw fa-exclamation-circle" />{' '}
+							<i className="fas fa-exclamation-circle" />{' '}
 							{i18next.t('MODAL.KARA_LINE_SORT.WARNING_DESCRIPTION')}
 						</div>
 					</div>

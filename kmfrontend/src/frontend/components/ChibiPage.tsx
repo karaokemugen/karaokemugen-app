@@ -117,7 +117,7 @@ function ChibiPage() {
 						data-namecommand="focusMainWindow"
 						onClick={electronCmd}
 					>
-						<i className="fas fa-fw fa-external-link-alt" />
+						<i className="fas fa-external-link-alt" />
 					</button>
 					<button
 						className={`btn${
@@ -127,7 +127,7 @@ function ChibiPage() {
 						data-namecommand="setChibiPlayerAlwaysOnTop"
 						onClick={electronCmd}
 					>
-						<i className="fas fa-fw fa-window-restore" />
+						<i className="fas fa-window-restore" />
 					</button>
 					<button
 						className="btn btn-danger"
@@ -135,7 +135,7 @@ function ChibiPage() {
 						data-namecommand="closeChibiPlayer"
 						onClick={electronCmd}
 					>
-						<i className="fas fa-fw fa-times" />
+						<i className="fas fa-times" />
 					</button>
 				</div>
 				<KmAppHeaderDecorator mode="admin">

@@ -27,7 +27,7 @@ export default function UpvoteKaraButton(props: Props) {
 			onClick={upvoteKara}
 			disabled={props.kara.my_public_plc_id?.length > 0}
 		>
-			<i className={`fas fa-fw fa-thumbs-up ${props.kara?.flag_upvoted ? 'currentUpvote' : ''}`} />
+			<i className={`fas fa-thumbs-up ${props.kara?.flag_upvoted ? 'currentUpvote' : ''}`} />
 			{props.wide ? i18next.t('TOOLTIP_UPVOTE') : ''}
 		</button>
 	);
