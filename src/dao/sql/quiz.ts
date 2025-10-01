@@ -2,6 +2,11 @@ import { QuizAnswers } from '../../types/quiz.js';
 
 export const insertGame = `
 INSERT INTO game(pk_gamename, settings, state, date, flag_active) VALUES($1, $2, $3, $4, true)
+ON CONFLICT (pk_gamename) DO UPDATE SET
+   settings = $2,
+   state = $3,
+   date = $4,
+   flag_active = true
 `;
 
 export const insertScore = `
@@ -30,7 +35,7 @@ WHERE pk_gamename = $1
 `;
 
 export const selectGames = `
-SELECT 
+SELECT
 	pk_gamename AS gamename,
 	settings,
 	state,
@@ -40,7 +45,7 @@ FROM game
 `;
 
 export const selectScores = (user: string) => `
-SELECT 
+SELECT
 	fk_login AS login,
 	answer,
 	points,
@@ -67,7 +72,7 @@ WHERE fk_gamename = $1;
 `;
 
 export const fillTempTable = (type: QuizAnswers, tagType?: number) => `
-INSERT INTO game_possible_answers 
+INSERT INTO game_possible_answers
 ${
 	type === 'year'
 		? "SELECT DISTINCT year, NULL::jsonb, NULL, NULL::integer, to_tsvector('public.unaccent_conf', year::text), NULL::uuid FROM kara"
