@@ -570,7 +570,9 @@
 			"KARA_LINE_SORT_TOOLTIP": "Définissez les parties d'une chanson qui sont utilisées pour trier la bibliothèque",
 			"KARA_LINE_DISPLAY": "Affichage des parties de la chanson",
 			"KARA_LINE_DISPLAY_TOOLTIP": "Définir les parties d'une chanson qui s'affichent dans les listes de chansons (opérateur uniquement)",
-			"SET": "Définir…"
+			"SET": "Définir…",
+			"SWITCH_TO_RESTRICTED_AT_TIME": "Passer en Restreint à",
+			"SWITCH_TO_RESTRICTED_AT_TIME_TOOLTIP": "Passe automatiquement l'interface en Restreint après que la durée de la liste de lecture atteigne l'heure désirée. Exemple : si défini à 21:00, la liste de lecture n'acceptera plus aucun ajout si sa durée la fera finir au delà de 21:00."
 		}
 	},
 	"KARA_PAUSED_WAITING": "Pas de lecture en cours",
@@ -1051,7 +1053,8 @@
 				"PLAYER_RESTARTING": "Redémarrage du lecteur vidéo…",
 				"POLL_WINNER": "Le peuple a voté pour une nouvelle chanson !",
 				"POLL_STARTING": "Démarrage du sondage",
-				"END_OF_SESSION_NEAR": "La session de karaoké doit se terminer dans {{data}} minutes."
+				"END_OF_SESSION_NEAR": "La session de karaoké doit se terminer dans {{data}} minutes.",
+				"INTERFACE_SWITCHED_TO_RESTRICTED_PLAYLIST_LENGTH": "L'interface passe en mode Restreint car la longueur de la liste de lecture a atteint la limite définie."
 			}
 		}
 	},

@@ -4,6 +4,7 @@ import { createElement, useContext, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { useLocation, useNavigate } from 'react-router';
 
+import dayjs, { Dayjs } from 'dayjs';
 import { PublicPlayerState } from '../../../../src/types/state';
 import KLogo from '../../assets/Klogo.png';
 import { logout } from '../../store/actions/auth';
@@ -103,6 +104,30 @@ function AdminHeader(props: IProps) {
 
 	const changePublicInterfaceMode = (value: number) => {
 		const data = expand('Frontend.Mode', value);
+		commandBackend(WS_CMD.UPDATE_SETTINGS, { setting: data }).catch(() => {});
+	};
+
+	const getRestrictInterfaceAtTime = () =>
+		context?.globalState.settings.data.config?.Karaoke?.RestrictInterfaceAtTime
+			? dayjs(context?.globalState.settings.data.config?.Karaoke?.RestrictInterfaceAtTime).format('HH:mm')
+			: null;
+	const changeRestrictInterfaceAtTime = (timeString?: string | null) => {
+		let dateWithTime: Dayjs | null = null;
+		if (timeString) {
+			try {
+				const [hours, minutes] = timeString.split(':').map(s => Number(s));
+				dateWithTime = dayjs()
+					.set('hours', hours)
+					.set('minutes', minutes)
+					.set('seconds', 0)
+					.set('milliseconds', 0);
+				if (dateWithTime.isBefore(dayjs())) dateWithTime = dateWithTime.add(1, 'day');
+			} catch (e) {
+				// Invalid time format, reset
+				dateWithTime = null;
+			}
+		} else dateWithTime = null;
+		const data = expand('Karaoke.RestrictInterfaceAtTime', dateWithTime?.toDate());
 		commandBackend(WS_CMD.UPDATE_SETTINGS, { setting: data }).catch(() => {});
 	};
 
@@ -636,6 +661,34 @@ function AdminHeader(props: IProps) {
 									},
 								]}
 							/>
+						</li>
+						<li
+							className={
+								context?.globalState.settings.data.config?.Frontend?.Mode !== 2 ? 'disabled' : ''
+							}
+							title={i18next.t('SETTINGS.INTERFACE.SWITCH_TO_RESTRICTED_AT_TIME_TOOLTIP')}
+						>
+							<span
+								style={{
+									display: 'flex',
+									justifyContent: 'center',
+									alignContent: 'center',
+									gap: '10px',
+								}}
+							>
+								<div>
+									{i18next.t('SETTINGS.INTERFACE.SWITCH_TO_RESTRICTED_AT_TIME')}
+									&nbsp;
+									<i className="far fa-question-circle" />
+								</div>
+								<input
+									disabled={context?.globalState.settings.data.config?.Frontend?.Mode !== 2}
+									type="time"
+									defaultValue={getRestrictInterfaceAtTime()}
+									onBlur={event => changeRestrictInterfaceAtTime(event.target.value)}
+									onChange={event => changeRestrictInterfaceAtTime(event.target.value)}
+								></input>
+							</span>
 						</li>
 						{context?.globalState.settings.data.config?.Karaoke?.StreamerMode?.Twitch?.Enabled ? (
 							<li title={i18next.t('SETTINGS.PLAYER.LIVE_COMMENTS_TOOLTIP')}>

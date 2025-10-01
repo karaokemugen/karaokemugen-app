@@ -176,6 +176,7 @@ export interface Config {
 			FreeUpVotesRequiredMin?: number;
 			FreeAcceptedSongs?: boolean;
 		};
+		RestrictInterfaceAtTime?: Date;
 	};
 	Player: {
 		Display: {
