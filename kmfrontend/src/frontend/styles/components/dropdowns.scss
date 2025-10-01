@@ -6,10 +6,13 @@
 	cursor: pointer;
 	position: absolute;
 	list-style: none;
-	padding: 0;
+	padding: 5px 0;
 	z-index: 60;
 }
-
+.dropdown-menu > li {
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
 .dropdown-menu > li > a,
 .dropdown-menu > li > div:not(.radiobutton-ui) {
 	display: inline-block;

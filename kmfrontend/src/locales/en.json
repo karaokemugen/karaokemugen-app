@@ -570,7 +570,9 @@
 			"KARA_LINE_SORT_TOOLTIP": "Define which parts of a song are used to sort the library",
 			"KARA_LINE_DISPLAY": "Song parts display",
 			"KARA_LINE_DISPLAY_TOOLTIP": "Define which parts of a song are displayed in song lists (operator only)",
-			"SET": "Set…"
+			"SET": "Set...",
+			"SWITCH_TO_RESTRICTED_AT_TIME": "Switch to Restricted at",
+			"SWITCH_TO_RESTRICTED_AT_TIME_TOOLTIP": "Automatically switch the interface to restricted after the playlist length reached the defined time. Example: When set to 22:00, the playlist won't accept any new additions as soon as it is long enough to last until 22:00 or longer"
 		}
 	},
 	"KARA_PAUSED_WAITING": "No song playing yet",
@@ -1051,7 +1053,9 @@
 				"PLAYER_RESTARTING": "Restarting media player…",
 				"POLL_WINNER": "People voted for a new song!",
 				"POLL_STARTING": "Starting poll",
-				"END_OF_SESSION_NEAR": "The karaoke session should end in {{data}} minutes."
+				"END_OF_SESSION_NEAR": "The karaoke session should end in {{data}} minutes.",
+				"INTERFACE_SWITCHED_TO_RESTRICTED_PLAYLIST_LENGTH": "Interface switched to restricted mode because the playlist length reached the defined limit"
+				
 			}
 		}
 	},

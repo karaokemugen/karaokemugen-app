@@ -80,6 +80,8 @@ import {
 	whitelistHook,
 } from './smartPlaylist.js';
 import { getUser, getUsers, updateSongsLeft } from './user.js';
+import dayjs from 'dayjs';
+import { editSetting } from '../utils/config.js';
 
 const service = 'Playlist';
 
@@ -453,6 +455,7 @@ function currentHook(plaid: string, name: string) {
 	writeStreamFiles('next_song_name_and_requester');
 	writeStreamFiles('current_playlist_info');
 	downloadMediasInPlaylist(plaid);
+	checkCurrentPlaylistRestrictInterfaceTime();
 	logger.info(`Playlist ${name} is now current`, { service });
 }
 
@@ -882,6 +885,7 @@ export async function addKaraToPlaylist(params: AddKaraParams) {
 				await setPlaying(PLCsInserted[0].plcid, getState().currentPlaid);
 				await playPlayer(true);
 			}
+			await checkCurrentPlaylistRestrictInterfaceTime();
 		}
 		if (params.plaid === state.publicPlaid) {
 			emitWS(
@@ -1078,6 +1082,7 @@ export async function removeKaraFromPlaylist(
 				};
 			})
 		);
+		await checkCurrentPlaylistRestrictInterfaceTime();
 		for (const plaid of playlistsNeedingUpdate.values()) {
 			await Promise.all([updatePlaylistDuration(plaid), updatePlaylistKaraCount(plaid), reorderPlaylist(plaid)]);
 			updatePlaylistLastEditTime(plaid);
@@ -1447,6 +1452,49 @@ export async function importPlaylist(playlist: PlaylistExport, username: string)
 	}
 }
 
+export async function checkCurrentPlaylistRestrictInterfaceTime(
+	currentPlaylist?: DBPL,
+	dontChangeInterfaceMode?: boolean
+) {
+	const config = getConfig();
+	const currentPlaid = getState().currentPlaid;
+	if (currentPlaylist && currentPlaylist?.plaid !== currentPlaid) return;
+	const restrictionTime = config?.Karaoke?.RestrictInterfaceAtTime;
+	if (restrictionTime) {
+		currentPlaylist = currentPlaylist || (await getPlaylistInfo(currentPlaid));
+		const currentEndingDatetime = dayjs().add(currentPlaylist.time_left, 'seconds');
+
+		// Eventually clear the flag when the time has passed
+		if (dayjs().isAfter(dayjs(restrictionTime))) await editSetting({ Karaoke: { RestrictInterfaceAtTime: null } });
+
+		if (dontChangeInterfaceMode !== true) {
+			// Restrict or reopen interface
+			if (
+				currentPlaylist.time_left &&
+				currentEndingDatetime.isAfter(restrictionTime) &&
+				config?.Frontend?.Mode !== 1
+			) {
+				await editSetting({ Frontend: { Mode: 1 } });
+				emitWS(
+					'operatorNotificationWarning',
+					APIMessage(
+						'NOTIFICATION.OPERATOR.INFO.INTERFACE_SWITCHED_TO_RESTRICTED_PLAYLIST_LENGTH',
+						getConfig().Karaoke.MinutesBeforeEndOfSessionWarning
+					)
+				);
+			} else if (
+				currentPlaylist.time_left &&
+				!currentEndingDatetime.isAfter(restrictionTime) &&
+				config?.Frontend?.Mode !== 2
+			) {
+				// Automatically reopen the interface if the length got shorter
+				// Disabled for now
+				// await editSetting({ Frontend: { Mode: 2 } });
+			}
+		}
+	}
+}
+
 /** Find flag_playing index in a playlist */
 export async function findPlaying(plaid: string): Promise<number> {
 	const pl = await selectPlaylistContentsMicro(plaid);
@@ -1746,6 +1794,7 @@ export async function initPlaylistSystem() {
 	pls.forEach(pl => reorderPlaylist(pl.plaid));
 	await testPlaylists();
 	updateAllSmartPlaylists();
+	await checkCurrentPlaylistRestrictInterfaceTime(null, true);
 	logger.debug('Playlists initialized', { service });
 	profile('initPL');
 }
