@@ -125,6 +125,7 @@ export default ts.config(
 			},
 			parser: ts.parser,
 			parserOptions: {
+				tsconfigRootDir: __dirname,
 				ecmaVersion: 2020,
 				project: true,
 			},
