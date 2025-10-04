@@ -204,6 +204,15 @@ function KaraForm(props: KaraFormProps) {
 						value: kara.kid,
 					};
 				});
+				// Find missing songs if any, and add them to the result as missing song
+				for (const parent of parents) {
+					if (!res.content.find(k => k.kid === parent)) {
+						karaSearch.push({
+							label: i18next.t('KARA.MISSING_PARENT_SONG', { parent }),
+							value: parent,
+						});
+					}
+				}
 				setKaraSearch(karaSearch);
 			}
 		}
