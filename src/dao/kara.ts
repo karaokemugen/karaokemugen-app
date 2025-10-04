@@ -322,8 +322,6 @@ export async function updateKaraParents(kara: Kara) {
 	await db().query(sqldeleteChildrenKara, [kara.kid]);
 	if (!kara.parents) return;
 	for (const pkid of kara.parents) {
-		const pkara = await selectAllKIDs(pkid);
-		if (!pkara[0]) throw new Error(`Parent kara ${pkid} not in database!`);
 		await db().query(
 			yesql(sqlinsertChildrenParentKara)({
 				parent_kid: pkid,

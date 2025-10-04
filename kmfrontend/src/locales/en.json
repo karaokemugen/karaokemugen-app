@@ -1055,7 +1055,7 @@
 				"POLL_STARTING": "Starting poll",
 				"END_OF_SESSION_NEAR": "The karaoke session should end in {{data}} minutes.",
 				"INTERFACE_SWITCHED_TO_RESTRICTED_PLAYLIST_LENGTH": "Interface switched to restricted mode because the playlist length reached the defined limit"
-				
+
 			}
 		}
 	},
@@ -1900,6 +1900,7 @@
 		"PREVIEW_HOOKS_ERROR": "Error preview hooks",
 		"LYRICS_FILE_OPEN_ERROR": "Error opening the file",
 		"LYRICS_FOLDER_OPEN_ERROR": "Error opening lyrics folder",
+		"MISSING_PARENT_SONG": "Missing parent song ({{parent}})",
 		"COLLECTIONS_GET_ERROR": "Error fetching collections",
 		"UPLOADED_MEDIA_ERROR": "Error when uploading media",
 		"ENCODE_MEDIA_ERROR": "Error when encoding media",
