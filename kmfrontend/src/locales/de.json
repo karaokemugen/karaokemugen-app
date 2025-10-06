@@ -471,7 +471,8 @@
 		"USEEMBEDDEDLYRICS_TOOLTIP": "Falls im hochgeladenen Medium eine ASS-Datei integriert ist, wird diese extrahiert und ersetzt die aktuelle Liedtext-Datei.",
 		"SYNCHRONIZE_REPOSITORIES": "Repositorys zum Synchronisieren",
 		"SWAP_TOOLTIP": "Position von Liedern in der Playlist ändern, die du dir gewünscht hast",
-		"SWAP_DESCRIPTION": "Wähle ein zweites Lied, um sie zu tauschen"
+		"SWAP_DESCRIPTION": "Wähle ein zweites Lied, um sie zu tauschen",
+		"MISSING_PARENT_SONG": "Fehlendes Bezugslied ({{parent}})"
 	},
 	"SETTINGS": {
 		"KARAOKE": {
@@ -684,7 +685,9 @@
 			"KARA_LINE_SORT_TOOLTIP": "Definiere, welcher Aspekt eines Liedes zur Sortierung der Bibliothek genutzt wird",
 			"KARA_LINE_DISPLAY": "Lied-Anzeige",
 			"KARA_LINE_DISPLAY_TOOLTIP": "Definiere, welche Aspekte eines Liedes in Liederlisten anzezeigt werden (nur Betreiber)",
-			"SET": "Einstellen …"
+			"SET": "Einstellen …",
+			"SWITCH_TO_RESTRICTED_AT_TIME": "Auf „Eingeschränkt“ umstellen bei",
+			"SWITCH_TO_RESTRICTED_AT_TIME_TOOLTIP": "Das Interface automatisch auf „Eingeschränkt“umstellen, nachdem die Playlist die definierte Länge erreicht hat. Beispiel: Wenn 22:00 eingestellt ist, akzeptiert die Playlist keine weiteren Lieder, sobald sie 22:00 oder länger ist"
 		},
 		"FILTER_SETTINGS": "Sucheinstellungen",
 		"FILTER_SETTINGS_TOOLTIP": "Finde schnell die Einstellung, die du möchtest, mit dieser Suchleiste."
@@ -1612,7 +1615,8 @@
 				"END_OF_SESSION_NEAR": "Die Karaoke-Session wird aktuell in {{data}} Minuten enden.",
 				"POLL_STARTING": "Start der Umfrage",
 				"PLAYER_RESTARTING": "Neustart des Media Players…",
-				"BATCH_EDIT_COMPLETE": "Lieder-Bulk-Änderung abgeschlossen."
+				"BATCH_EDIT_COMPLETE": "Lieder-Bulk-Änderung abgeschlossen.",
+				"INTERFACE_SWITCHED_TO_RESTRICTED_PLAYLIST_LENGTH": "Das Interface wurde auf „Eingeschränkt“ umgestellt, da die Playlist die vorgegebene Länge erreicht hat"
 			}
 		}
 	},
