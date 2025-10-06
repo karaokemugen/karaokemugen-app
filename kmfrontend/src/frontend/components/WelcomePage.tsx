@@ -6,12 +6,13 @@ import { useContext, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import dayjs from 'dayjs';
-import { Repository } from '../../../../src/lib/types/repo';
-import { Tag } from '../../../../src/lib/types/tag';
-import { DBStats } from '../../../../src/types/database/database';
-import { DBDownload } from '../../../../src/types/database/download';
-import { Feed } from '../../../../src/types/feeds';
-import { Session } from '../../../../src/types/session';
+import type { DBTag } from '../../../../src/lib/types/database/tag';
+import type { DBKaraTag } from '../../../../src/lib/types/database/kara';
+import type { DBStats } from '../../../../src/types/database/database';
+import type { DBDownload } from '../../../../src/types/database/download';
+import type { Feed } from '../../../../src/types/feeds';
+import type { Repository } from '../../../../src/lib/types/repo';
+import type { Session } from '../../../../src/types/session';
 import TasksEvent from '../../TasksEvent';
 import logo from '../../assets/Logo-final-fond-transparent.png';
 import { logout } from '../../store/actions/auth';
@@ -28,6 +29,7 @@ import OnlineStatsModal from './modals/OnlineStatsModal';
 import ProfilModal from './modals/ProfilModal';
 import RestartDownloadsModal from './modals/RestartDownloadsModal';
 import { WS_CMD } from '../../utils/ws';
+import { getTagInLocale } from '../../utils/kara';
 
 function WelcomePage() {
 	const context = useContext(GlobalContext);
@@ -38,7 +40,7 @@ function WelcomePage() {
 	const [activeSession, setActiveSession] = useState<Session>();
 	const [catchphrase, setCatchphrase] = useState('');
 	const [repositories, setRepositories] = useState<Repository[]>([]);
-	const [collections, setCollections] = useState<Tag[]>([]);
+	const [collections, setCollections] = useState<DBTag[]>([]);
 	const [stats, setStats] = useState<DBStats>();
 	const [remoteStatus, setRemoteStatus] = useState<RemoteStatusData>();
 	let timeout: NodeJS.Timeout;
@@ -525,7 +527,14 @@ function WelcomePage() {
 												onClick={() => enableCollection(collection.tid)}
 											>
 												<i className="fas fa-layer-group" />
-												<span>{collection.name}</span>
+												<span>
+													{
+														getTagInLocale(
+															context.globalState.settings.data,
+															collection as unknown as DBKaraTag
+														).i18n
+													}
+												</span>
 											</li>
 										);
 									})}
