@@ -18,6 +18,7 @@ import {
 	MediaInfoValidationResult,
 	OrderParam as KaraOrderParam,
 	YearList,
+	BatchActions,
 } from '../../../src/lib/types/kara.js';
 import { LogLine } from '../../../src/lib/types/logger.js';
 import {
@@ -29,7 +30,7 @@ import {
 } from '../../../src/lib/types/playlist.js';
 import { RemoteFailure, RemoteSuccess } from '../../../src/lib/types/remote.js';
 import { Repository, RepositoryBasic, RepositoryManifestV2 } from '../../../src/lib/types/repo.js';
-import { Tag, TagParams } from '../../../src/lib/types/tag.js';
+import { Tag, TagParams, TagTypeNum } from '../../../src/lib/types/tag.js';
 import { OldJWTToken, OldTokenResponse, Role, User } from '../../../src/lib/types/user.js';
 import { HttpMessage, WSCmdDefinition } from '../../../src/lib/types/frontend.js';
 import { BackgroundList, BackgroundListRequest, BackgroundRequest } from '../../../src/types/backgrounds.js';
@@ -137,10 +138,7 @@ export const WS_CMD = {
 	GET_KARA_LYRICS: defineWSCmd<{ kid: string }, ASSLine[]>('getKaraLyrics'),
 	COPY_KARA_TO_REPO: defineWSCmd<{ kid: string; repo: string }, HttpMessage<string>>('copyKaraToRepo'),
 	PLAY_KARA: defineWSCmd<{ kid: string }, void>('playKara'),
-	EDIT_KARAS: defineWSCmd<
-		{ plaid: string; action: 'add' | 'remove' | 'fromDisplayType'; tid: string; type: number },
-		void
-	>('editKaras'),
+	EDIT_KARAS: defineWSCmd<{ plaid: string; action: BatchActions; id: string; type: TagTypeNum }, void>('editKaras'),
 	DELETE_MEDIA_FILES: defineWSCmd<{ files: string[]; repo: string }, void>('deleteMediaFiles'),
 	GET_STATS: defineWSCmd<{ repoNames: string[] }, DBStats>('getStats'),
 	// AREA src\controllers\frontend\misc.ts

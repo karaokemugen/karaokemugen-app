@@ -20,6 +20,9 @@ export default ts.config(
 				...globals.es2020,
 			},
 			parser: ts.parser,
+			parserOptions: {
+				tsconfigRootDir: __dirname,
+			},
 		},
 		rules: {
 			'react/react-in-jsx-scope': 'off',

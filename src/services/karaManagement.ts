@@ -19,7 +19,7 @@ import { refreshKarasAfterDBChange, updateTags } from '../lib/services/karaManag
 import { getRepoManifest } from '../lib/services/repo.js';
 import { DBKara, DBKaraTag } from '../lib/types/database/kara.js';
 import { DBTag } from '../lib/types/database/tag.js';
-import { KaraFileV4, KaraTag } from '../lib/types/kara.js';
+import { BatchActions, KaraFileV4, KaraTag } from '../lib/types/kara.js';
 import { TagTypeNum } from '../lib/types/tag.js';
 import { ASSFileSetMediaFile } from '../lib/utils/ass.js';
 import { resolvedPath, resolvedPathRepos } from '../lib/utils/config.js';
@@ -207,28 +207,30 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 	}
 }
 
-export async function batchEditKaras(
-	plaid: string,
-	action: 'add' | 'remove' | 'fromDisplayType',
-	tid: string,
-	type: TagTypeNum
-) {
+export async function batchEditKaras(plaid: string, action: BatchActions, id: string, type: TagTypeNum) {
 	// Checks
 	const task = new Task({
 		text: 'EDITING_KARAS_BATCH_TAGS',
 	});
 	try {
 		const tagType = getTagTypeName(type);
-		if (!tagType && action !== 'fromDisplayType') throw 'Type unknown';
+		if (!tagType && (action === 'addTag' || action === 'removeTag')) throw 'Type unknown';
 		const pl = await selectPlaylistContentsMicro(plaid);
 		if (pl.length === 0) throw 'Playlist unknown or empty';
 		task.update({
 			value: 0,
 			total: pl.length,
 		});
-		if (action !== 'add' && action !== 'remove' && action !== 'fromDisplayType') throw 'Unkown action';
+		if (
+			action !== 'addTag' &&
+			action !== 'removeTag' &&
+			action !== 'addParent' &&
+			action !== 'removeParent' &&
+			action !== 'fromDisplayType'
+		)
+			throw 'Unkown action';
 		const karas = [];
-		logger.info(`Batch tag edit starting : adding ${tid} in type ${type} for all songs in playlist ${plaid}`, {
+		logger.info(`Batch tag edit starting : adding ${id} in type ${type} for all songs in playlist ${plaid}`, {
 			service,
 		});
 
@@ -249,22 +251,29 @@ export async function batchEditKaras(
 			if (action === 'fromDisplayType' && kara.from_display_type !== tagType && kara[tagType].length > 0) {
 				modified = true;
 				kara.from_display_type = tagType;
-			}
-			if (action === 'remove' && kara[tagType]?.length > 0) {
-				if (kara[tagType].find((t: KaraTag) => t.tid === tid)) {
+			} else if (action === 'removeTag' && kara[tagType]?.length > 0) {
+				if (kara[tagType].find((t: KaraTag) => t.tid === id)) {
 					modified = true;
-					kara[tagType] = kara[tagType].filter((t: KaraTag) => t.tid !== tid);
+					kara[tagType] = kara[tagType].filter((t: KaraTag) => t.tid !== id);
 					// We remove the from_display_type if kara[tagType] becomes empty
 					if (kara.from_display_type === tagType && kara[tagType].length === 0) {
 						kara.from_display_type = null;
 					}
 				}
-			}
-			if (action === 'add' && kara[tagType] && !kara[tagType].find((t: KaraTag) => t.tid === tid)) {
+			} else if (action === 'addTag' && kara[tagType] && !kara[tagType].find((t: KaraTag) => t.tid === id)) {
 				modified = true;
 				kara[tagType].push({
-					tid,
+					tid: id,
 				} as DBKaraTag);
+			} else if (action === 'addParent') {
+				modified = true;
+				if (!kara.parents) kara.parents = [];
+				kara.parents.push(id);
+			} else if (action === 'removeParent') {
+				if (kara.parents && kara.parents.find(k => k === id)) {
+					modified = true;
+					kara.parents = kara.parents.filter(k => k !== id);
+				}
 			}
 			if (modified) {
 				profile('editKaraBatch');
