@@ -331,7 +331,10 @@
 			"REMOVE_TAG": "Tag entfernen",
 			"ADD_TAG": "Tag hinzufügen",
 			"SELECT_TAG_TYPE": "Wähle einen Tag-Typ aus:",
-			"EDIT_DISPLAY_TYPE": "\"Aus\"-Tag bearbeiten"
+			"EDIT_DISPLAY_TYPE": "\"Aus\"-Tag bearbeiten",
+			"ADD_PARENT": "Bezugslied hinzufügen",
+			"REMOVE_PARENT": "Bezugslied entfernen",
+			"SELECT_PARENT": "Wähle ein Bezugslied:"
 		},
 		"MEDIA_IN_PROCESS": "Die Mediendatei wird gerade verarbeitet, bitte warte auf die Bestätigung.",
 		"FAMILIES_TOOLTIP": "Legt fest, welche Art von Inhalt das Video hat.",
