@@ -690,7 +690,7 @@
 			"KARA_LINE_DISPLAY_TOOLTIP": "Definiere, welche Aspekte eines Liedes in Liederlisten anzezeigt werden (nur Betreiber)",
 			"SET": "Einstellen …",
 			"SWITCH_TO_RESTRICTED_AT_TIME": "Auf „Eingeschränkt“ umstellen bei",
-			"SWITCH_TO_RESTRICTED_AT_TIME_TOOLTIP": "Das Interface automatisch auf „Eingeschränkt“umstellen, nachdem die Playlist die definierte Länge erreicht hat. Beispiel: Wenn 22:00 eingestellt ist, akzeptiert die Playlist keine weiteren Lieder, sobald sie 22:00 oder länger ist"
+			"SWITCH_TO_RESTRICTED_AT_TIME_TOOLTIP": "Das Interface automatisch auf „Eingeschränkt“umstellen, nachdem die Playlist die definierte Länge erreicht hat. Beispiel: Wenn 22:00 eingestellt ist, akzeptiert die Playlist keine weiteren Lieder, sobald sie 22:00 oder länger ist."
 		},
 		"FILTER_SETTINGS": "Sucheinstellungen",
 		"FILTER_SETTINGS_TOOLTIP": "Finde schnell die Einstellung, die du möchtest, mit dieser Suchleiste."
