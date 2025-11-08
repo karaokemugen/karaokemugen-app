@@ -379,7 +379,91 @@
 			"VIDEO_POSITION_Y_TOOLTIP": "Где окно плеера будет находиться на экране при запуске",
 			"BOTTOM": "На дно",
 			"TOP": "Наверх",
-			"AUDIO_DEVICE": "Аудио устройство плеера"
+			"AUDIO_DEVICE": "Аудио устройство плеера",
+			"MONITOR_NUMBER": "Экран проигрывателя",
+			"WINDOWBORDERS": "Включить рамку для окна проигрывателя",
+			"MONITOR_NUMBER_TOOLTIP": "Экран, на котором Karaoke Mugen будет изображаться при запуске"
+		},
+		"KARAOKE": {
+			"ALLOW_PUBLIC_DUPLICATES_OPTIONS": {
+				"ALLOWED": "Разрешено"
+			},
+			"ONLINE_SETTINGS": "Онлайн",
+			"SONGPOLL": "Публичное голосование"
+		},
+		"PLAYLIST": {
+			"PLAYLIST_SETTINGS": "Плейлисты"
+		},
+		"INTERFACE": {
+			"SET": "Задать…",
+			"WEBAPPMODE_OPEN_SHORT": "Открыть",
+			"LABEL": "Интерфейс"
+		}
+	},
+	"PLAYERS_CONTROLS": {
+		"PAUSE": "Пауза"
+	},
+	"MODAL": {
+		"PROFILE_MODAL": {
+			"INTERFACE_LANGUAGE": "Язык интерфейса",
+			"SOCIAL_NETWORKS": {
+				"MASTODON": "Mastodon",
+				"MASTODON_PLACEHOLDER": "KaraokeMugen@shelter.moe",
+				"BLUESKY": "Bluesky",
+				"BLUESKY_PLACEHOLDER": "karaoke.bsky.social",
+				"TWITCH": "Twitch",
+				"TWITCH_PLACEHOLDER": "KaraokeLive",
+				"INSTAGRAM": "Instagram",
+				"INSTAGRAM_PLACEHOLDER": "karaokemugen",
+				"DISCORD": "Discord",
+				"DISCORD_PLACEHOLDER": "Karak#1423",
+				"MYANIMELIST": "MyAnimeList",
+				"MYANIMELIST_PLACEHOLDER": "karaokemugen",
+				"ANILIST": "AniList",
+				"ANILIST_PLACEHOLDER": "karaokemugen",
+				"KITSU": "Kitsu",
+				"KITSU_PLACEHOLDER": "karaokemugen",
+				"GITLAB": "Gitlab",
+				"GITLAB_PLACEHOLDER": "karaokemugen"
+			},
+			"FLAG_PUBLIC": "Сделать этот профиль публичным",
+			"REFRESH_ANIME_LIST": "Обновить список аниме",
+			"CHOOSE_ANIME_LIST": "Выбрать список аниме"
+		},
+		"POLL": {
+			"REMAINING_other": "{{count}} секунд осталось"
+		},
+		"CREATE_TAG": {
+			"OPEN": "Создать метку",
+			"TITLE": "Создать быструю метку"
+		},
+		"START_QUIZ": {
+			"TITLE": "Начать викторину",
+			"LOAD_GAME": "Загрузить игру",
+			"NEW_GAME": "Новая игра",
+			"GAME_IN_PROGRESS": {
+				"SONG_COUNT_one": "{{count}} песня была проиграна.",
+				"SONG_COUNT_other": "{{count}} песен было проиграно.",
+				"SCORES": "Вот результаты."
+			},
+			"GAME_NAME_PLACEHOLDER": "Моя игра",
+			"PLAYER_MESSAGE": "Отобразить сообщение на экране"
+		},
+		"SHUFFLE_MODAL": {
+			"TITLE": "Перемешать плейлист",
+			"MIX_ALREADY_PASSED_SONGS": "Также перемешать проигранные песни.",
+			"LABEL": "Выбрать способ перемешивания:",
+			"SHUFFLE": "Случайное",
+			"SMART_SHUFFLE": "Умное",
+			"SHUFFLE_DESC": "Плейлист будет перемешан случайно, никак не влияя на список песен.",
+			"BALANCE": "Сбалансированное",
+			"SORTUPVOTES": "Отсортировать по лайкам",
+			"SORTUPVOTES_DESC": "Отсортировать по числу лайков (сначала популярные)"
+		},
+		"PLAYLIST_MODAL": {
+			"NAME": "Название",
+			"CURRENT": "Текущий",
+			"PUBLIC": "Публичный"
 		}
 	}
 }
