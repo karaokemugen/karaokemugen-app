@@ -382,7 +382,9 @@
 			"AUDIO_DEVICE": "Аудио устройство плеера",
 			"MONITOR_NUMBER": "Экран проигрывателя",
 			"WINDOWBORDERS": "Включить рамку для окна проигрывателя",
-			"MONITOR_NUMBER_TOOLTIP": "Экран, на котором Karaoke Mugen будет изображаться при запуске"
+			"MONITOR_NUMBER_TOOLTIP": "Экран, на котором Karaoke Mugen будет изображаться при запуске",
+			"WINDOWBORDERS_TOOLTIP": "Её отключение не повлияет на экран оператора, где она всегда включена.",
+			"PLAYER_MONITOR": "Второе окно (экран)"
 		},
 		"KARAOKE": {
 			"ALLOW_PUBLIC_DUPLICATES_OPTIONS": {
