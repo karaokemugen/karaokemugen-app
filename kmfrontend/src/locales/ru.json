@@ -619,5 +619,31 @@
 		"SONGWRITERS_BY": "",
 		"CREATORS_BY": ""
 	},
-	"LOADING": "Загрузка…"
+	"LOADING": "Загрузка…",
+	"KARAOKE_IMPORT": {
+		"WARNING_IMPORT_TITLE": "ПОЖАЛУЙСТА ПРОЧТИТЕ",
+		"MEDIA_FILES": "Медиафайл",
+		"IMPORT_START": "Начать импорт",
+		"SOURCE": "Источник",
+		"FILENAME_TEMPLATE_ERROR": "Шаблон для имени файла обязателен"
+	},
+	"MENU": {
+		"LOGS": "Логи",
+		"SYSTEM": "Система",
+		"ADVANCED_OPTIONS": "Системные настройки",
+		"SESSIONS": "Сессии",
+		"REPOSITORIES": "Коллекции и репозитории",
+		"KARAS": "Песни",
+		"LIST": "Списки",
+		"NEW": "Новое",
+		"DOWNLOAD_QUEUE": "Очередь загрузок",
+		"DOWNLOAD": "Загрузка медиа",
+		"HISTORY": "История",
+		"TAGS": "Метки",
+		"DATABASE": "Базы данных",
+		"GIT": "Git",
+		"USERS": "Пользователи",
+		"UNUSED_FILES": "Неиспользуемые файлы",
+		"DUPLICATE": "Дубликаты"
+	}
 }
