@@ -1025,7 +1025,7 @@
 		"CREATE_ONLINE_ACCOUNT": "I want to create a new account",
 		"LOGIN_ONLINE_ACCOUNT": "I already have an account",
 		"CREATE_ONLINE_ACCOUNT_DESC": "Type in an account name and a password to create one.",
-		"SECURITY_CODE_DESC_CONSOLE": "Please also enter the 6-digit security code that you can find by looking for \"SECURITY CODE FOR THIS SESSION\" in the Karaoke Mugen log file or in the console.",
+		"SECURITY_CODE_DESC_CONSOLE": "Please also enter the 6-digit security code that you can find by looking for \"SECURITY CODE\" in the Karaoke Mugen log file or in the console.",
 		"SECURITY_CODE_USE": "This code makes sure you're really the one doing these actions. It changes after each use.",
 		"CONNECTED_MESSAGE": "Congratulations, you're logged in to Karaoke Mugen, {{user}}!"
 	},

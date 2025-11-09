@@ -1590,7 +1590,7 @@
 		"WELCOME": "Willkommen bei Karaoke Mugen!",
 		"NEED_ACCOUNT": "Bevor du anfangen kannst zu singen, brauchst du ein Konto, um die App zu nutzen.",
 		"LOCAL_ACCOUNT_DESC": "Du hast ein lokales Konto gewählt. Gib unten einen Kontonamen und ein Passwort ein:",
-		"SECURITY_CODE_DESC_CONSOLE": "Bitte gib auch den 6-stelligen Sicherheitscode ein, den du findest, indem du in der Karaoke Mugen-Logdatei oder in der Konsole nach \"SECURITY CODE FOR THIS SESSION\" suchst.",
+		"SECURITY_CODE_DESC_CONSOLE": "Bitte gib auch den 6-stelligen Sicherheitscode ein, den du findest, indem du in der Karaoke Mugen-Logdatei oder in der Konsole nach \"SECURITY CODE\" suchst.",
 		"LOCAL_ACCOUNT": "Lokal",
 		"LOGIN_ONLINE_ACCOUNT": "Ich habe bereits ein Konto"
 	},

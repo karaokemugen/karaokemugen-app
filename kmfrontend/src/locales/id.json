@@ -810,7 +810,7 @@
 		"LOGIN_ONLINE_ACCOUNT": "Saya sudah punya akun",
 		"CREATE_ONLINE_ACCOUNT_DESC": "Ketik nama akun dan kata sandi untuk membuat yang baru.",
 		"ONLINE_ACCOUNT_INSTANCE_DESC": "Peladen adalah layanan daring yang memberikan beberapa layanan terkait Karaoke Mugen. Jika kamu tidak yakin, biarkan peladen baku ({{instance}}), atau jika kamu tahu apa yang kamu lakukan, ubah ke peladen pilihanmu.",
-		"SECURITY_CODE_DESC_CONSOLE": "Mohon untuk memasukkan juga kode keamanan 6 digit yang bisa kamu temukan dengan mencari \"SECURITY CODE FOR THIS SESSION\" di berkas log Karaoke Mugen atau di konsol.",
+		"SECURITY_CODE_DESC_CONSOLE": "Mohon untuk memasukkan juga kode keamanan 6 digit yang bisa kamu temukan dengan mencari \"SECURITY CODE\" di berkas log Karaoke Mugen atau di konsol.",
 		"SECURITY_CODE_USE": "Kode ini memastikan bahwa kamu benar-benar yang melakukan tindakan ini. Ini berganti setelah setiap penggunaan.",
 		"CONNECTED_MESSAGE": "Selamat, kamu telah masuk ke Karaoke Mugen, {{user}}!"
 	},
