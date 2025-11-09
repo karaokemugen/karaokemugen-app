@@ -433,7 +433,7 @@ Karaoke Mugen will take care of moving this for you and warn you if it failed to
 - [Developers] ESBuild should output newer JS code now
 - [Developers] dropDatabase script now uses env vars or arguments for config location.
 - [Developers] Cleaned up some code by removing obsolete stuff.
-- [Developers] Refactored some quizz and repository manifest code
+- [Developers] Refactored some quiz and repository manifest code
 
 ## Removed
 
@@ -456,7 +456,7 @@ Karaoke Mugen will take care of moving this for you and warn you if it failed to
 - [Users] Fixed avatars not falling back to the default avatar when missing
 - [Users] Lyrics with more than 100 lines are now shown properly on the public interface
 - [Operators] A check for mpv running is now made before playing a song. #1644
-- [Operators] Fixed creating a quizz without blind modifiers.
+- [Operators] Fixed creating a quiz without blind modifiers.
 - [Operators] Fixed background issues on Chibi Playlist
 - [Operators] mpv now quits before deleting the last custom background listed so it can be safely removed. #1642
 - [Maintainers] Fixed "from display type" dropdown can't point to a non-existing type anymore
@@ -868,9 +868,9 @@ Bugfixes! Bugfixes!
 - Fixed the multiple mpv windows appearing sometimes when mpv ahs been closed incorrectly.
 - Fixed classic mode not being synced between front and backend sometimes
 - Fixed progress bar not showing after next song
-- Fixed stopping mechanism when quizz ends because end of playlist
-- Fixed encore playing during quizz
-- Fixed outros playing during quizz
+- Fixed stopping mechanism when quiz ends because end of playlist
+- Fixed encore playing during quiz
+- Fixed outros playing during quiz
 - Fixed mpv needing a restart when changing screens
 - Fixed mpv log getter
 - Fixed postgresql not being closed down with Karaoke Mugen, especially under Linux
