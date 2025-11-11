@@ -9,6 +9,7 @@ import pt from '@karaokemugen/i18n-iso-languages/langs/pt.json';
 import pl from '@karaokemugen/i18n-iso-languages/langs/pl.json';
 import ta from '@karaokemugen/i18n-iso-languages/langs/ta.json';
 import br from '@karaokemugen/i18n-iso-languages/langs/br.json';
+import ru from '@karaokemugen/i18n-iso-languages/langs/ru.json';
 import countries from 'i18n-iso-countries';
 import countries_de from 'i18n-iso-countries/langs/de.json';
 import countries_en from 'i18n-iso-countries/langs/en.json';
@@ -20,6 +21,7 @@ import countries_pt from 'i18n-iso-countries/langs/pt.json';
 import countries_pl from 'i18n-iso-countries/langs/pl.json';
 import countries_ta from 'i18n-iso-countries/langs/ta.json';
 import countries_br from 'i18n-iso-countries/langs/br.json';
+import countries_ru from 'i18n-iso-countries/langs/ru.json';
 
 import i18next from 'i18next';
 
@@ -35,6 +37,7 @@ countries.registerLocale(countries_it);
 countries.registerLocale(countries_pl);
 countries.registerLocale(countries_ta);
 countries.registerLocale(countries_br);
+countries.registerLocale(countries_ru);
 
 registerLocale(fr);
 registerLocale(en);
@@ -46,8 +49,9 @@ registerLocale(it);
 registerLocale(pl);
 registerLocale(ta);
 registerLocale(br);
+registerLocale(ru);
 
-export const supportedLanguages = ['en', 'fr', 'es', 'id', 'pt', 'de', 'it', 'pl', 'ta', 'br'];
+export const supportedLanguages = ['en', 'fr', 'es', 'id', 'pt', 'de', 'it', 'pl', 'ta', 'br', 'ru'];
 const navigatorLanguage: string = navigator.languages[0].substring(0, 2);
 export const langSupport = supportedLanguages.includes(navigatorLanguage) ? navigatorLanguage : 'en';
 
