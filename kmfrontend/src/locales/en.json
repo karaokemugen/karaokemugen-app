@@ -1054,7 +1054,7 @@
 				"POLL_WINNER": "People voted for a new song!",
 				"POLL_STARTING": "Starting poll",
 				"END_OF_SESSION_NEAR": "The karaoke session should end in {{data}} minutes.",
-				"INTERFACE_SWITCHED_TO_RESTRICTED_PLAYLIST_LENGTH": "Interface switched to restricted mode because the playlist length reached the defined limit"
+				"INTERFACE_SWITCHED_TO_RESTRICTED_PLAYLIST_LENGTH": "Interface switched to restricted mode because the playlist length reached the defined limit."
 			}
 		}
 	},
