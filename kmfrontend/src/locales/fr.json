@@ -572,7 +572,7 @@
 			"KARA_LINE_DISPLAY_TOOLTIP": "Définir les parties d'une chanson qui s'affichent dans les listes de chansons (opérateur uniquement)",
 			"SET": "Définir…",
 			"SWITCH_TO_RESTRICTED_AT_TIME": "Passer en Restreint à",
-			"SWITCH_TO_RESTRICTED_AT_TIME_TOOLTIP": "Passe automatiquement l'interface en Restreint après que la durée de la liste de lecture atteigne l'heure désirée. Exemple : si défini à 21:00, la liste de lecture n'acceptera plus aucun ajout si sa durée la fera finir au delà de 21:00."
+			"SWITCH_TO_RESTRICTED_AT_TIME_TOOLTIP": "Passe automatiquement l'interface en Restreint après que la durée de la liste de lecture atteigne l'heure désirée. Exemple : si défini à 21:00, la liste de lecture n'acceptera plus aucun ajout si sa durée la fera finir au delà de 21:00."
 		}
 	},
 	"KARA_PAUSED_WAITING": "Pas de lecture en cours",
@@ -1713,7 +1713,7 @@
 		"QUIZZ_RESET_SCORES_ERROR": "Erreur de réinitialisation des points",
 		"QUIZZ_GET_GAMES_SCORES_ERROR": "Erreur de récupération des points",
 		"QUIZZ_GET_TOTAL_GAME_SCORES_ERROR": "Erreur de récupération des points totaux de la partie",
-		"QUIZZ_GET_LAST_SONGS_ERROR": "Erreur de récupération des dernières chansons jouées de la partie",
+		"QUIZZ_GET_LAST_SONGS_ERROR": "Erreur de récupération des dernières chansons jouées lors du quizz",
 		"REPOS_GET_ERROR": "Erreur de récupération de la liste des dépôts",
 		"MOVING_MEDIAS_ERROR": "Erreur lors du déplacement des médias",
 		"OPEN_MEDIA_FOLDER_ERROR": "Erreur lors de l'ouverture du dossier des médias",
