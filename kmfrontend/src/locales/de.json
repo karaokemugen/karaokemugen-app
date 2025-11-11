@@ -1619,7 +1619,7 @@
 				"POLL_STARTING": "Start der Umfrage",
 				"PLAYER_RESTARTING": "Neustart des Media Players…",
 				"BATCH_EDIT_COMPLETE": "Lieder-Bulk-Änderung abgeschlossen.",
-				"INTERFACE_SWITCHED_TO_RESTRICTED_PLAYLIST_LENGTH": "Das Interface wurde auf „Eingeschränkt“ umgestellt, da die Playlist die vorgegebene Länge erreicht hat"
+				"INTERFACE_SWITCHED_TO_RESTRICTED_PLAYLIST_LENGTH": "Das Interface wurde auf „Eingeschränkt“ umgestellt, da die Playlist die vorgegebene Länge erreicht hat."
 			}
 		}
 	},
