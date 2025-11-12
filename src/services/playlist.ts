@@ -87,6 +87,25 @@ const service = 'Playlist';
 
 let freeOrphanedSongsIntervalID: NodeJS.Timeout;
 
+export async function autoRemoveSongsFromCurrentPlaylist() {
+	const conf = getConfig();
+	if (conf.Playlist.CurrentPlaylistAutoRemoveSongs === 0) return;
+	const plaid = getState().currentPlaid;
+	const [pl, plInfo] = await Promise.all([
+		getPlaylistContentsMicro(plaid, undefined, adminToken),
+		getPlaylistInfo(plaid),
+	]);
+	const currentPLCID = plInfo.plcid_playing;
+	const currentPLC = pl.find(plc => plc.plcid === currentPLCID);
+	if (!currentPLC) return;
+	const currentPos = currentPLC.pos;
+	const deleteBelowPosition = currentPos - conf.Playlist.CurrentPlaylistAutoRemoveSongs;
+	if (deleteBelowPosition < 1) return;
+	const plcsToDelete = pl.filter(plc => plc.pos <= deleteBelowPosition).map(plc => plc.plcid);
+	await removeKaraFromPlaylist(plcsToDelete, adminToken, false, true);
+	emitWS('playlistContentsUpdated', plaid);
+}
+
 /** Test if basic playlists exist */
 export async function testPlaylists() {
 	profile('testPlaylists');

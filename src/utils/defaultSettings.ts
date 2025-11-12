@@ -235,6 +235,7 @@ export const defaults: Config = {
 		},
 		EndOfPlaylistAction: 'none',
 		RandomSongsAfterEndMessage: true,
+		CurrentPlaylistAutoRemoveSongs: 0
 	},
 	System: {
 		FrontendPort: 1337,
@@ -361,6 +362,7 @@ export const configConstraints = {
 	'Playlist.MysterySongs.Labels': { arrayOneItemValidator: true },
 	'Playlist.EndOfPlaylistAction': { inclusion: endOfPlaylistActions },
 	'Playlist.RandomSongsAfterEndMessage': { inclusion: bools },
+	'Playlist.CurrentPlaylistAutoRemoveSongs': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0 } },
 	'System.Binaries.Player.Linux': { presence: true },
 	'System.Binaries.Player.Windows': { presence: true },
 	'System.Binaries.Player.OSX': { presence: true },

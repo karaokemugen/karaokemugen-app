@@ -507,6 +507,8 @@
 			"ADDED_SONG_VISIBILITY_MYSTERY_OPTION": "Mystery song",
 			"MINUTES_BEFORE_SESSION_ENDS_WARNING": "Show warning X minutes before end of playlist",
 			"MINUTES_BEFORE_SESSION_ENDS_WARNING_TOOLTIP": "A notification will warn you X minutes before the end of your planned session",
+			"AUTO_REMOVE_SONGS_FROM_CURRENT_PLAYLIST": "Keep only the last played songs from the current playlist",
+			"AUTO_REMOVE_SONGS_FROM_CURRENT_PLAYLIST_TOOLTIP": "Number of songs to keep in the playlist before the currently playing one. This can be useful to automatically remove old songs from a playlist to allow them to be suggested again. Songs are only removed when a song finished playing or the Next button is used. 0 = Delete nothing.",
 			"ENABLE_AUTOBALANCE": "Enable playlist auto balancing",
 			"ENABLE_AUTOBALANCE_TOOLTIP": "The playlist will be reorganized regularly so that user requests take turns.",
 			"ONLINE_SETTINGS": "Online",

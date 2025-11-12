@@ -249,6 +249,7 @@ export interface Config {
 		};
 		EndOfPlaylistAction: EndOfPlaylistAction;
 		RandomSongsAfterEndMessage: boolean;
+		CurrentPlaylistAutoRemoveSongs: number;
 	};
 	System: {
 		SystemRepositoryMaintainance?: boolean;
