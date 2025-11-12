@@ -507,6 +507,8 @@
 			"ADDED_SONG_VISIBILITY_MYSTERY_OPTION": "Chanson mystère",
 			"MINUTES_BEFORE_SESSION_ENDS_WARNING": "Afficher la notification de fin de session X minutes avant la fin",
 			"MINUTES_BEFORE_SESSION_ENDS_WARNING_TOOLTIP": "Une notification vous préviendra X minutes avant la fin de votre session (si vous l'avez renseignée)",
+			"AUTO_REMOVE_SONGS_FROM_CURRENT_PLAYLIST": "Nombre de chansons à garder dans la liste courante",
+			"AUTO_REMOVE_SONGS_FROM_CURRENT_PLAYLIST_TOOLTIP": "Garder ce nombre de chansons avant la chanson en cours. C'est utile si vous voulez automatiquement supprimer des chansons déjà passées de la liste courante afin que le public puisse les re-suggérer au fur et à mesure. Les chansons sont supprimées une fois que la chanson en cours a fini de jouer ou que vous passez à la suivante. 0 = ne rien supprimer.",
 			"ENABLE_AUTOBALANCE": "Activer l'équilibrage automatique de la liste de lecture",
 			"ENABLE_AUTOBALANCE_TOOLTIP": "La liste de lecture sera réorganisée régulièrement pour que les requêtes des utilisateurs passent à tour de rôle.",
 			"ONLINE_SETTINGS": "En ligne",

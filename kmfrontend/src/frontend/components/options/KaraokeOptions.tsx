@@ -581,6 +581,33 @@ function KaraokeOptions(props: IProps) {
 								</div>
 							</div>
 						))}
+
+					{filterValue === undefined ||
+						(sanitizeSettingsSearchValue(
+							i18next.t('SETTINGS.KARAOKE.AUTO_REMOVE_SONGS_FROM_CURRENT_PLAYLIST')
+						).includes(filterValue) && (
+							<div className="settings-line">
+								<label htmlFor="Playlist.CurrentPlaylistAutoRemoveSongs">
+									<span className="title">
+										{i18next.t('SETTINGS.KARAOKE.AUTO_REMOVE_SONGS_FROM_CURRENT_PLAYLIST')}
+									</span>
+									<br />
+									<span className="tooltip">
+										{i18next.t('SETTINGS.KARAOKE.AUTO_REMOVE_SONGS_FROM_CURRENT_PLAYLIST_TOOLTIP')}
+									</span>
+								</label>
+								<div>
+									<input
+										type="number"
+										data-exclude="true"
+										id="Playlist.CurrentPlaylistAutoRemoveSongs"
+										placeholder="0"
+										onBlur={onChange}
+										defaultValue={config['Playlist.CurrentPlaylistAutoRemoveSongs']}
+									/>
+								</div>
+							</div>
+						))}
 				</div>
 
 				{filterValue ? null : (

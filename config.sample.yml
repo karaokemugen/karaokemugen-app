@@ -221,6 +221,8 @@ Playlist:
   EndOfPlaylistAction: none
   # Should a message be displayed on screen inviting people to add songs?
   RandomSongsAfterEndMessage: true
+  # auto remove old songs from current playlist. 0 = Delete nothing
+  CurrentPlaylistAutoRemoveSongs: 0
   # Allow public to swap current playlist items they own
   AllowPublicCurrentPlaylistItemSwap: true;
   # Allow public to add the same song multiple times
