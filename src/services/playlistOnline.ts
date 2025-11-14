@@ -16,7 +16,6 @@ export async function getPlaylistsFromKMServer(
 	const conf = getConfig().Online;
 	try {
 		const res = await HTTP.get(`${conf.RemoteUsers.Secure ? 'https' : 'http'}://${instance}/api/playlist`, {
-			timeout: conf.Timeout,
 			headers: {
 				authorization: onlineAuthorization,
 			},
@@ -48,7 +47,6 @@ export async function getPlaylistFromKMServer(
 		const res = await HTTP.get(
 			`${conf.RemoteUsers.Secure ? 'https' : 'http'}://${instance}/api/playlist/${plaid}/export`,
 			{
-				timeout: conf.Timeout,
 				headers: {
 					authorization: onlineAuthorization,
 				},
@@ -78,7 +76,6 @@ export async function postPlaylistToKMServer(username: string, onlineAuthorizati
 			pl,
 		},
 		{
-			timeout: conf.Timeout,
 			headers: {
 				authorization: onlineAuthorization,
 			},
