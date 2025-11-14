@@ -821,8 +821,8 @@
 		},
 		"STATS_MODAL": {
 			"TITLE": "Utiliser mes favoris et demandes de chansons pour des statistiques",
-			"DESC": "Nous utilisons vos favoris ainsi que les chansons que vous avez demandé lors d'une session pour faire des statistiques d'utilisation (par exemple, permettre de connaître les chansons les plus demandées).",
-			"REFUSE_DESC": "Si vous ne voulez pas participer, même si c'est anonyme, à ces statistiques d'utilisation, merci de nous le dire. Si vous refusez, le serveur ignorera vos échantillons de statistiques et les applications Karaoke Mugen n'enverront pas vos données.",
+			"DESC": "Le serveur utilisera vos favoris ainsi que les chansons que vous avez demandé lors d'une session pour faire des statistiques d'utilisation (par exemple, permettre de connaître les chansons les plus demandées).",
+			"REFUSE_DESC": "Si vous refusez, le serveur ignorera vos échantillons de statistiques et les applications Karaoke Mugen n'enverront pas vos données.",
 			"CHANGE": "Vous pouvez changer ceci à tout moment dans votre profil. Acceptez-vous cet usage de votre historique de chansons à des fins de statistique ?"
 		},
 		"CLASSIC_MODE": {
