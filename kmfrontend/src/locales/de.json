@@ -585,7 +585,9 @@
 			"FREE_ACCEPTED_SONGS": "Freigegebene und angenommene Lieder",
 			"ALLOW_PUBLIC_DUPLICATES_TOOLTIP": "Gestatte/Nicht gestatte dem Publikum ein Lied mehr als einmal hinzuzufügen. Ein Benutzer kann ein Lied, das er selbst bereits hinzugefügt hat, kein zweites Mal hinzufügen, aber wiederum ein Lied, das ein anderer bereits hinzugefügt hat. \"Up-Votes\" bedeutet, dass ein Benutzer keine doppelten Lieder hinzufügen kann, aber bereits hinzugefügte Lieder unterstützen kann. \"Gestattet\" ist üblicherweise gut für klassisches Karaoke, \"Unterstützt\" für öffentliches Karaoke.",
 			"ALLOW_PLAYLIST_ITEM_SWAP": "Der Öffentlichkeit gestatten, die Position der Lieder in der Playlist zu verändern",
-			"ALLOW_PLAYLIST_ITEM_SWAP_TOOLTIP": "Benutzer können die Position von Liedern, die sie sich gewünscht haben, in der Playlist verändern, falls sie ein Lied früher singen wollen."
+			"ALLOW_PLAYLIST_ITEM_SWAP_TOOLTIP": "Benutzer können die Position von Liedern, die sie sich gewünscht haben, in der Playlist verändern, falls sie ein Lied früher singen wollen.",
+			"AUTO_REMOVE_SONGS_FROM_CURRENT_PLAYLIST": "Behalte nur die zuletzt gespielten Lieder der aktuellen Playlist",
+			"AUTO_REMOVE_SONGS_FROM_CURRENT_PLAYLIST_TOOLTIP": "Anzahl der Lieder, die in der Playlist bleiben sollen, vor dem aktuellen Lied. Dies kann nützlich sein, um alte Lieder aus der Playlist zu entfernen, damit sie erneut vorgeschlagen werden können. Die Lieder werden erst entfernt, sobald ein Lied zu Ende ist oder die Weiter-Taste betätigt wird. 0 = nichts löschen."
 		},
 		"PLAYER": {
 			"TOP": "Oben",
@@ -1372,9 +1374,9 @@
 			"TITLE": "Schnelles Erstellen von Tags"
 		},
 		"STATS_MODAL": {
-			"DESC": "Wir verwenden deine Favoriten sowie die Lieder, die während einer Sitzung gewünscht wurden, um Nutzungsstatistiken zu erstellen (z. B. um herauszufinden, welche Lieder am häufigsten gewünscht wurden).",
+			"DESC": "Der Server verwendet deine Favoriten sowie die Lieder, die während einer Sitzung gewünscht wurden, um Nutzungsstatistiken zu erstellen (z. B. um herauszufinden, welche Lieder am häufigsten gewünscht wurden).",
 			"TITLE": "Verwende meine Favoriten und Lieder-Anfragen für Statistiken",
-			"REFUSE_DESC": "Wenn du nicht an diesen Nutzungsstatistiken teilnehmen möchtest, auch wenn sie anonym sind, lass es uns bitte wissen. Wenn du dich weigerst, werden deine Daten ignoriert und nicht an den Karaoke Mugen Server gesendet.",
+			"REFUSE_DESC": "Wenn du ablehnst, werden deine Daten ignoriert und nicht an den Karaoke-Mugen-Server gesendet.",
 			"CHANGE": "Du kannst dies jederzeit in deinem Profil ändern. Bist du damit einverstanden, dass dein Liedverlauf für Statistiken verwendet wird?"
 		},
 		"GIT_DANGEROUS": {
