@@ -415,7 +415,7 @@ function KaraForm(props: KaraFormProps) {
 					onlineAuthorization: localStorage.getItem('kmOnlineToken'),
 				}}
 				action="/api/importFile"
-				accept=".jpg,.jpeg"
+				accept=".jpg,.jpeg,.png"
 				multiple={false}
 				maxCount={1}
 				onChange={onAudioCoverUploadChange}
