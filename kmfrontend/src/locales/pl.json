@@ -965,7 +965,7 @@
 			"CHANGE": "Możesz to zmienić w dowolnym momencie w swoim profilu. Czy zgadzasz się na wykorzystanie historii swoich utworów do statystyk?",
 			"TITLE": "Użyj moich ulubionych i próśb o piosenki do statystyk",
 			"DESC": "Używamy Twoich ulubionych, jak również utworów, o które prosiłeś podczas sesji, aby tworzyć statystyki użytkowania (na przykład, aby znaleźć żądane utwory).",
-			"REFUSE_DESC": "Jeśli nie chcesz brać udziału, nawet jeśli jest to anonimowe, w tych statystykach użytkowania, poinformuj nas o tym. W przypadku odmowy, Twoje dane zostaną zignorowane i nie zostaną przesłane przez Aplikację Karaoke Mugen."
+			"REFUSE_DESC": "W przypadku odmowy, Twoje dane zostaną zignorowane i nie zostaną przesłane przez Aplikację Karaoke Mugen."
 		},
 		"CLASSIC_MODE": {
 			"TITLE": "Twoja kolej na śpiewanie!",
@@ -1199,7 +1199,7 @@
 		"SECURITY_CODE_USE": "Ten kod upewnia się, że to naprawdę Ty wykonujesz te czynności. Zmienia się po każdym użyciu.",
 		"CONNECTED_MESSAGE": "Gratulacje, jesteś zalogowany do Karaoke Mugen, {{user}}!",
 		"NEED_ACCOUNT": "Zanim zaczniesz śpiewać, musisz mieć konto, aby korzystać z aplikacji.",
-		"SECURITY_CODE_DESC_CONSOLE": "Wprowadź również 6-cyfrowy kod zabezpieczający, który można znaleźć, szukając \"KOD ZABEZPIECZAJĄCY DLA TEJ SESJI\" w pliku dziennika Karaoke Mugen lub w konsoli.",
+		"SECURITY_CODE_DESC_CONSOLE": "Wprowadź również 6-cyfrowy kod zabezpieczający, który można znaleźć, szukając \"SECURITY CODE\" w pliku dziennika Karaoke Mugen lub w konsoli.",
 		"TITLE": "Kreator konfiguracji",
 		"WELCOME": "Witamy w Karaoke Mugen!",
 		"ACCOUNT_QUESTION": "Czy chcesz korzystać z konta lokalnego (tylko na komputerze) czy konta online (wymagany dostęp do Internetu)?",
