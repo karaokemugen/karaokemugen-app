@@ -353,8 +353,8 @@
 		"TITLE": "Opprett en automiks"
 	},
 	"ACCOUNT": "Min konto",
-	"FAVORITES_IMPORT": "Importer dine favoritter",
-	"FAVORITES_EXPORT": "Eksporter dine favoritter",
+	"FAVORITES_IMPORT": "Importer favoritter",
+	"FAVORITES_EXPORT": "Eksporter favoritter",
 	"QUOTA_KARA": "Sanger igjen",
 	"UNUSED_FILES": {
 		"NAME": "Navn",
