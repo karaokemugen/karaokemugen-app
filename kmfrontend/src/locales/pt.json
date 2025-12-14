@@ -777,7 +777,7 @@
 		"ONLINE_ACCOUNT_DESC": "Uma conta online permite que você:",
 		"ONLINE_ACCOUNT_INSTANCE_DESC": "Uma instância é um servidor online que fornece diversos serviços ao Karaokê Mugen. {{instance}}) ou, se você souber o que está fazendo, altere-o para a instância de sua escolha.",
 		"LOCAL_ACCOUNT_DESC": "Você escolheu uma conta local. Digite um nome de conta e uma senha abaixo:",
-		"SECURITY_CODE_DESC_CONSOLE": "Digite também o código de segurança de 6 dígitos que você pode encontrar procurando por \"CÓDIGO DE SEGURANÇA PARA ESTA SESSÃO\" no arquivo de log do Karaokê Mugen ou no console.",
+		"SECURITY_CODE_DESC_CONSOLE": "Digite também o código de segurança de 6 dígitos que você pode encontrar procurando por \"SECURITY CODE\" no arquivo de log do Karaokê Mugen ou no console.",
 		"SECURITY_CODE_USE": "Este código garante que você é realmente quem está executando essas ações.",
 		"ONLINE_ACCOUNT_SAVE_INFOS": "Faça backup de suas músicas favoritas, avatar e informações de perfil para usá-los em outro aplicativo Karaokê Mugen.",
 		"TITLE": "Assistente de configuração",
@@ -1188,7 +1188,7 @@
 			"PASSWORD": "Senha FTP",
 			"BASEDIR": "Diretório base FTP"
 		},
-		"TOOLTIP_NAME": "Se for um repositório online, coloque o nome do domínio apenas aqui. Se for um repositório local, nomeie-o como desejar. Por exemplo, 'Meus pequenos karaokês particulares'",
+		"TOOLTIP_NAME": "Nomeie-o como desejar. Por exemplo, 'Meus pequenos karaokês particulares'",
 		"AUTO_MEDIA_DOWNLOADS_TOOLTIP": "Caso sua conexão seja muito lenta, recomendamos que você selecione “Todas” para que as mídias sejam baixadas previamente. Isso também é recomendado para uso em convenções ou streams para evitar possíveis erros no meio de um karaokê!",
 		"MOVING_MEDIA_PANEL": "Mover mídia",
 		"GIT_ACTIONS": "Ações",
