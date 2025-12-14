@@ -64,7 +64,7 @@
 		"ACTIVE_FILTER": "Активный фильтр",
 		"EDIT_CRITERIA": "Изменить критерии",
 		"SHOW_SONGS": "Показать песни",
-		"REFRESH_LIBRARY_BANNER": "Критерии библиотеки изменились. Пожалуйста, обновите её."
+		"REFRESH_LIBRARY_BANNER": "Критерии библиотеки изменились. Пожалуйста, <1>обновите</1> её."
 	},
 	"NO": "Нет",
 	"OR": "или",
@@ -739,8 +739,8 @@
 			"AUDIO_COVER_ART": "Обложка"
 		},
 		"SINGERS_BY": "Исполнитель",
-		"SONGWRITERS_BY": "",
-		"CREATORS_BY": "",
+		"SONGWRITERS_BY": "Написана",
+		"CREATORS_BY": "Создана",
 		"FILTER_ALL": "Всё",
 		"FILTER_IN_PROGRESS": "Идёт скачивание",
 		"FILTER_NOT_DOWNLOADED": "Не скачано",
