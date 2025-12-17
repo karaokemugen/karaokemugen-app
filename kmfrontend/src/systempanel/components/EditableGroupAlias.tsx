@@ -34,6 +34,13 @@ export default function EditableGroupAlias(props: EditableGroupProps) {
 		if (props.onChange) props.onChange(tags);
 	};
 
+	const submitHandler = e => {
+		if (e.key === 'Enter') {
+			e.preventDefault();
+			handleInputConfirmAlias(currentVal);
+		}
+	};
+
 	return (
 		<div>
 			{value.map(tag => (
@@ -43,7 +50,7 @@ export default function EditableGroupAlias(props: EditableGroupProps) {
 			))}
 			{inputVisible && (
 				<Form.Item wrapperCol={{ span: 10 }}>
-					<Input ref={input} onChange={e => setCurrentVal(e.target.value)} />
+					<Input ref={input} onChange={e => setCurrentVal(e.target.value)} onKeyDown={submitHandler} />
 					<Button
 						style={{ marginTop: '10px' }}
 						type="primary"
