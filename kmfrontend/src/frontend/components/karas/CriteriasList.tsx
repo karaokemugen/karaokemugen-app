@@ -233,7 +233,7 @@ function CriteriasList(props: IProps) {
 							}`}
 							className="input-blc"
 							onChange={e => setCriteriaVal(e.target.value)}
-							onKeyPress={e => {
+							onKeyDown={e => {
 								if (e.key === 'Enter') addCriteria();
 							}}
 						/>

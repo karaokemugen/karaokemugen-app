@@ -244,7 +244,7 @@ function PlaylistHeader(props: IProps) {
 					tabIndex={0}
 					className={'filterElement ' + (activeFilter === 'search' ? 'filterElementActive' : '')}
 					onClick={() => getKarasList('search')}
-					onKeyPress={() => getKarasList('search')}
+					onKeyDown={() => getKarasList('search')}
 				>
 					<i
 						className={`fas ${
@@ -258,7 +258,7 @@ function PlaylistHeader(props: IProps) {
 						tabIndex={0}
 						className={'filterElement ' + (activeFilter === 'recent' ? 'filterElementActive' : '')}
 						onClick={() => getKarasList('recent')}
-						onKeyPress={() => getKarasList('recent')}
+						onKeyDown={() => getKarasList('recent')}
 					>
 						<i className="far fa-clock" /> {i18next.t('VIEW_RECENT')}
 					</div>
@@ -268,7 +268,7 @@ function PlaylistHeader(props: IProps) {
 						tabIndex={0}
 						className={'filterElement ' + (activeFilter === 'requested' ? 'filterElementActive' : '')}
 						onClick={() => getKarasList('requested')}
-						onKeyPress={() => getKarasList('requested')}
+						onKeyDown={() => getKarasList('requested')}
 					>
 						<i className="fas fa-fire" /> {i18next.t('VIEW_POPULAR')}
 					</div>
@@ -278,7 +278,7 @@ function PlaylistHeader(props: IProps) {
 						tabIndex={0}
 						className={'filterElement ' + (orderByLikes ? 'filterElementActive' : '')}
 						onClick={() => getKarasList(undefined, true)}
-						onKeyPress={() => getKarasList(undefined, true)}
+						onKeyDown={() => getKarasList(undefined, true)}
 						title={i18next.t('VIEW_LIKES_TOOLTIP')}
 					>
 						<i className="fas fa-thumbs-up" /> {i18next.t('VIEW_LIKES')}

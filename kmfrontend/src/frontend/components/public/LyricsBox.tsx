@@ -91,7 +91,7 @@ function LyricsBox(props: IProps) {
 			<div
 				className="toggle"
 				onClick={() => setShowLyrics(showLyrics === LyricsStatus.full ? LyricsStatus.hide : showLyrics + 1)}
-				onKeyPress={() => setShowLyrics(showLyrics === LyricsStatus.full ? LyricsStatus.hide : showLyrics + 1)}
+				onKeyDown={() => setShowLyrics(showLyrics === LyricsStatus.full ? LyricsStatus.hide : showLyrics + 1)}
 				tabIndex={0}
 			>
 				{LyricsBox.i18nText(showLyrics)}
