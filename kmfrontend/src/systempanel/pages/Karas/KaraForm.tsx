@@ -1206,8 +1206,8 @@ function KaraForm(props: KaraFormProps) {
 			></Form.Item>
 			<LanguagesList
 				value={titles}
-				onFieldIsTouched={isFieldTouched => titlesIsTouched !== true && setTitlesIsTouched(isFieldTouched)}
 				onChange={titles => {
+					setTitlesIsTouched(true);
 					setTitles(titles);
 					form.validateFields(['titles']);
 				}}
