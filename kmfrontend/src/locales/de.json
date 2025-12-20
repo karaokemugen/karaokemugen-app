@@ -725,7 +725,7 @@
 		"CONTACT": "Kontaktiere uns",
 		"ACTIVE_SESSION": "Aktive Sitzung: ",
 		"QUIZ": "QUIZ STARTEN",
-		"COLLECTIONS": "KOLLEKTIONEN",
+		"COLLECTIONS": "SAMMLUNGEN",
 		"STATS_KARAS": "Lieder",
 		"MASTODON_UPDATE": "Neuigkeiten von Karaoke Mugen",
 		"EDIT_SESSION": "Sitzung bearbeiten",
@@ -858,7 +858,7 @@
 		"PL_UPDATE_ERROR": "Fehler beim Aktualisieren der Playlist-Informationen",
 		"REPO_CREATE_ERROR": "Fehler beim Erstellen des Repositorys",
 		"PROBLEMATIC_SMART_PLAYLIST_ERROR": "Fehler beim Erstellen einer intelligenten Playlist mit problematischen Tags",
-		"COLLECTIONS_GET_ERROR": "Fehler beim Abrufen der Kollektionen/Sammlungen",
+		"COLLECTIONS_GET_ERROR": "Fehler beim Abrufen der Sammlungen",
 		"USER_DELETE_ADMIN_DAMEDESU": "Du kannst den Admin-Benutzer nicht entfernen!",
 		"REPO_GET_UNUSEDTAGS_ERROR": "Fehler beim Abrufen nicht verwendeter Tags",
 		"KARA_DELETED_ERROR": "Fehler beim Löschen des Songs",
@@ -1036,7 +1036,7 @@
 			"TITLE": "Hintergrundverwaltung"
 		},
 		"REPOSITORIES": {
-			"DESCRIPTION_COLLECTION": "Die Songsammlungen richten sich an unterschiedliche Zielgruppen. Wähle die Sammlungen aus, die du in deiner Karaoke-Datenbank sehen möchtest.",
+			"DESCRIPTION_COLLECTION": "Die Liedersammlungen richten sich an unterschiedliche Zielgruppen. Wähle die Sammlungen aus, die du in deiner Karaoke-Datenbank sehen möchtest.",
 			"TITLE": "Verwaltung von Sammlungen und Repositorien",
 			"DESCRIPTION": "Repositories sind Quellen für Karaoke. Auf dieser Seite kannst du Repositorys hinzufügen, aktivieren oder entfernen."
 		},
@@ -1690,7 +1690,7 @@
 		"SERIES_one": "Serie",
 		"PLATFORMS_one": "Plattform",
 		"AUTHORS_one": "Karaoke Autor",
-		"COLLECTIONS_one": "Kollektion",
+		"COLLECTIONS_one": "Sammlung",
 		"SINGERGROUPS_other": "Bands",
 		"ORIGINS_other": "Herkunft",
 		"FRANCHISES_other": "Franchises",
@@ -1709,7 +1709,7 @@
 		"LANGS_other": "Sprachen",
 		"VERSIONS_other": "Versionen",
 		"SONGTYPES_one": "Song-Typ",
-		"COLLECTIONS_other": "Kollektionen",
+		"COLLECTIONS_other": "Sammlungen",
 		"AUTHORS_other": "Karaoke Autoren",
 		"CREATORS_one": "Ersteller",
 		"LANGS_one": "Sprache",
@@ -1900,7 +1900,7 @@
 			"LOGS": "Systemprotokolle",
 			"SESSIONS": "Karaoke-Sitzungen",
 			"CONFIG": "Konfiguration bearbeiten",
-			"REPOSITORIES": "Karaoke Sammlungen und Repositorys"
+			"REPOSITORIES": "Karaoke-Sammlungen und -Repositorys"
 		},
 		"SYSTEM_DESCRIPTION": "Protokolle einsehen, Konfigurationsoptionen ändern, deine Datenbank sichern/wiederherstellen, eine manuelle Datenbank-Erzeugung auslösen und Karaoke-Sitzungen verwalten",
 		"TAGS_DESCRIPTION": "Tags auflisten, erstellen und bearbeiten (Sänger/innen, Songwriter/innen, Urheber/innen, Songtypen usw.)",
@@ -2232,7 +2232,7 @@
 	},
 	"COLLECTIONS": {
 		"ENABLED": "Aktiviert",
-		"NAME": "Kollektion Name"
+		"NAME": "Name der Sammlung"
 	},
 	"LANGUAGES": {
 		"QRO": "Lateinisches Alphabet (Romanisierung)"
