@@ -391,7 +391,7 @@ function KaraList(props: KaraListProps) {
 							{lyricsButton}
 							{playVideoButton}
 							{downloadVideoButton}
-							<Dropdown overlay={<Menu items={getMenu(record)} />}>
+							<Dropdown menu={{ items: getMenu(record) }}>
 								<Button icon={<DownOutlined />} loading={karasRemoving.indexOf(record.kid) >= 0} />
 							</Dropdown>
 						</div>

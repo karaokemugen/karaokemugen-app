@@ -128,3 +128,5 @@ WHERE pk_tid = $7;
 `;
 
 export const sqldeleteTag = 'DELETE FROM tag WHERE pk_tid = ANY ($1)';
+
+export const sqlselectKarasUsingTag = 'SELECT fk_kid FROM kara_tag WHERE fk_tid = $1';

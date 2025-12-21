@@ -1735,8 +1735,7 @@
 		},
 		"NO_REPOSITORY_ENABLED": "No hay repositorio en línea habilitado en modo de mantenedor",
 		"ONLINE_USER_REQUIRED": "Se requiere un usuario en línea para la bandeja de entrada",
-		"NAME": "Nombre del karaoke",
-		"TYPE": "Tipo de solicitud"
+		"NAME": "Nombre del karaoke"
 	},
 	"LOGS": {
 		"LEVELS": {

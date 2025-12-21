@@ -2056,7 +2056,6 @@
 			"MODIFICATION": "Modifikation"
 		},
 		"SONG_DOWNLOADED_FROM_INBOX": "Song {{song}} erfolgreich vom Posteingang heruntergeladen",
-		"TYPE": "Art der Anfrage",
 		"SONG_DOWNLOADED_FROM_INBOX_FAILED": "Song konnte nicht aus dem Posteingang heruntergeladen werden!",
 		"LINK_TO_ISSUE": "Link zur Meldung",
 		"TIMESTAMP": "Zeitstempel",

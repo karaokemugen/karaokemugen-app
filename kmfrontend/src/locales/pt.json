@@ -1713,7 +1713,6 @@
 		"NAME": "Nome do karaokê",
 		"REVIEW": "Análise",
 		"TIMESTAMP": "Carimbo de data e hora",
-		"TYPE": "Tipo de solicitação",
 		"DOWNLOAD": "Baixar karaokê",
 		"SONG_DOWNLOADED_FROM_INBOX": "Canção {{song}} baixado com sucesso da caixa de entrada",
 		"CONTACT_INFOS_MODAL": {

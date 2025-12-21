@@ -1920,7 +1920,6 @@
 			"MODIFICATION": "Modifica"
 		},
 		"SONG_DOWNLOADED_FROM_INBOX": "Brano {{song}} scaricato correttamente dalla posta",
-		"TYPE": "Tipo di richiesta",
 		"SONG_DOWNLOADED_FROM_INBOX_FAILED": "Non è stato possibile scaricare il brano dalla posta!",
 		"LINK_TO_ISSUE": "Link al problema",
 		"TIMESTAMP": "Data e ora",
