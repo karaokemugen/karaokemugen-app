@@ -40,7 +40,7 @@ import { getKara, getKaras } from './kara.js';
 import { editKara } from './karaCreation.js';
 import { getRepo, getRepos } from './repo.js';
 import { updateAllSmartPlaylists } from './smartPlaylist.js';
-import { getTag } from './tag.js';
+import { getKarasUsingTag, getTag, removeTag } from './tag.js';
 
 const service = 'KaraManager';
 
@@ -67,7 +67,8 @@ export async function removeKara(
 	kids: string[],
 	refresh = true,
 	deleteFiles = { media: true, kara: true },
-	batch = false
+	batch = false,
+	withTags = false
 ) {
 	try {
 		const parents: Family[] = [];
@@ -128,13 +129,34 @@ export async function removeKara(
 			}
 		}
 		saveSetting('baseChecksum', getStoreChecksum());
-		// Remove kara from database only if not in a batch
+		// Remove kara from database only if not in a batch for avoid concurrent modification
 		if (!batch) {
 			for (const parent of parents) {
 				await removeParentInKaras(parent.parent, parent.children);
 			}
 		}
 		await deleteKara(karas.map(k => k.kid));
+		if (withTags) {
+			const tagsToDelete: Set<string> = new Set();
+			for (const kara of karas) {
+				for (const tid of kara.tid) {
+					// Remembers tags in the tid field have a ~tagtype at the end
+					tagsToDelete.add(tid.split('~')[0]);
+				}
+			}
+			// For each tag we'll have to find out their ocunt. if >1 we remove them from tagsToDelete since they're likely used by another song
+			for (const tid of tagsToDelete.values()) {
+				const karasUsingTag = await getKarasUsingTag(tid);
+				if (karasUsingTag.length > 1) tagsToDelete.delete(tid);
+			}
+			if (tagsToDelete.size > 0) {
+				await removeTag(Array.from(tagsToDelete), {
+					refresh: false,
+					removeTagInKaras: false,
+					deleteFile: true,
+				});
+			}
+		}
 		if (refresh) {
 			await refreshKarasDelete(karas.map(k => k.kid));
 			refreshTags();

@@ -855,6 +855,10 @@
 			"OPEN": "Créer un tag",
 			"TITLE": "Création de tag rapide"
 		},
+		"CHANGE_STATUS_INBOX": {
+			"TITLE": "Changer le statut de la soumission",
+			"REASON": "Raison"
+		},
 		"START_QUIZ": {
 			"TITLE": "Démarrer un quiz",
 			"DESCRIPTION": "Confrontez les participants entre eux dans un blind-test ! Les participants vont devoir deviner le plus rapidement possible les chansons qui passent à l'écran. Vous pouvez paramétrer une nouvelle partie ou reprendre une configuration existante.",
@@ -1986,7 +1990,8 @@
 		"REPO_MEDIA_DELETED": "Media supprimé avec succès",
 		"USER_RESETPASSWORD_SUCCESS": "Mot de passe de l'utilisateur réinitialisé avec succès",
 		"CHANGES_OCCUR_ON_NEXT_SONG": "La modification prendra effet à la prochaine chanson.",
-		"PLAYLIST_EXPORTED_TO_SERVER": "La liste de lecture a été exportée avec succès au serveur {{data}}"
+		"PLAYLIST_EXPORTED_TO_SERVER": "La liste de lecture a été exportée avec succès au serveur {{data}}",
+		"INBOX_STATUS_UPDATED": "Changement de statut effectué"
 	},
 	"HEADERS": {
 		"HOME": {
@@ -2173,10 +2178,25 @@
 	"INBOX": {
 		"NAME": "Nom de la chanson",
 		"TIMESTAMP": "Horodatage",
-		"TYPE": "Type de demande",
 		"TYPES": {
 			"CREATION": "Création",
 			"MODIFICATION": "Modification"
+		},
+		"STATUS": {
+			"LABEL": "Statut",
+			"SENT": "Envoyée",
+			"IN_REVIEW": "En revue",
+			"IN_REVIEW_BY_ME": "En revue (par moi)",
+			"CHANGES_REQUESTED": "Changements requis",
+			"ACCEPTED": "Acceptée",
+			"REJECTED": "Rejetée"
+		},
+		"FILTER_BY_STATUS": "Filtrer par statut",
+		"CHANGE_STATUS": {
+			"LABEL": "Changer le statut",
+			"ACCEPT": "Accepter",
+			"REJECT": "Rejeter",
+			"ASK_FOR_CHANGES": "Demander des changements"
 		},
 		"REVIEW": "Révision",
 		"LINK_TO_ISSUE": "Lien vers le ticket",
@@ -2185,6 +2205,7 @@
 		"USER": "Utilisateur en charge de l'intégration du ticket",
 		"DOWNLOAD": "Télécharger la chanson",
 		"DELETE_SONG": "Supprimer la chanson",
+		"DELETE_SONG_LOCALLY": "Supprimer en local la chanson",
 		"UNASSIGN_FROM_SONG": "Se désassigner de la chanson",
 		"SONG_DOWNLOADED_FROM_INBOX": "La chanson {{song}} a bien été récupérée depuis la boîte de réception",
 		"SONG_DOWNLOADED_FROM_INBOX_FAILED": "La chanson n'a pas pu être récupérée depuis la boîte de réception !",

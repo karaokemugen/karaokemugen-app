@@ -12,7 +12,7 @@ import {
 	sortKaraStore,
 	sortTagsStore,
 } from '../dao/dataStore.js';
-import { deleteTag, insertTag, selectAllTags, updateKaraTagsTID, updateTag } from '../dao/tag.js';
+import { deleteTag, insertTag, selectAllTags, selectKarasUsingTag, updateKaraTagsTID, updateTag } from '../dao/tag.js';
 import { removeTagInKaras } from '../dao/tagfile.js';
 import { saveSetting } from '../lib/dao/database.js';
 import { refreshKarasUpdate } from '../lib/dao/kara.js';
@@ -517,4 +517,9 @@ export async function checkCollections() {
 		sentry.error(err);
 		throw err instanceof ErrorKM ? err : new ErrorKM('COLLECTIONS_GET_ERROR');
 	}
+}
+
+export async function getKarasUsingTag(tid: string) {
+	const tids = await selectKarasUsingTag(tid);
+	return tids.rows;
 }

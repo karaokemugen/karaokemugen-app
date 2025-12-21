@@ -9,7 +9,7 @@ import { DBTag } from '../../../src/lib/types/database/tag.js';
 import { DBUser } from '../../../src/lib/types/database/user.js';
 import { APIMessageType } from '../../../src/lib/types/frontend.js';
 import { HookResult } from '../../../src/lib/types/hook.js';
-import { Inbox } from '../../../src/lib/types/inbox.js';
+import { Inbox, InboxActions } from '../../../src/lib/types/inbox.js';
 import { RecursivePartial } from '../../../src/lib/types/index.js';
 import {
 	EditedKara,
@@ -96,8 +96,13 @@ export const WS_CMD = {
 	IMPORT_BASE: defineWSCmd<{ source: string; template: string; repoDest: string }, void>('importBase'),
 	// AREA src\controllers\frontend\inbox.ts
 	GET_INBOX: defineWSCmd<{ repoName: string }, Inbox[]>('getInbox'),
+	CHANGE_INBOX_STATUS: defineWSCmd<
+		{ inid: string; repoName: string; status: InboxActions; reason?: string },
+		HttpMessage<string>
+	>('changeInboxStatus'),
 	DOWNLOAD_KARA_FROM_INBOX: defineWSCmd<{ repoName: string; inid: string }, void>('downloadKaraFromInbox'),
 	DELETE_KARA_FROM_INBOX: defineWSCmd<{ repoName: string; inid: string }, void>('deleteKaraFromInbox'),
+	DELETE_KARA_INBOX_LOCALLY: defineWSCmd<{ kid: string }, void>('deleteKaraInboxLocally'),
 	UNASSIGN_KARA_FROM_INBOX: defineWSCmd<{ repoName: string; inid: string }, void>('unassignKaraFromInbox'),
 	// AREA src\controllers\frontend\kara.ts
 	GET_KARAS: defineWSCmd<

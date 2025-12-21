@@ -861,6 +861,10 @@
 			"OPEN": "Create a tag",
 			"TITLE": "Quick tag create"
 		},
+		"CHANGE_STATUS_INBOX": {
+			"TITLE": "Change inbox status",
+			"REASON": "Reason"
+		},
 		"START_QUIZ": {
 			"TITLE": "Start a quiz",
 			"DESCRIPTION": "Pit participants against each other in a blind test! Participants will have to guess the songs playing on the screen as quickly as possible. You can set up a new game or resume an existing one.",
@@ -1989,7 +1993,8 @@
 		"REPO_MEDIA_DELETED": "Media deleted",
 		"USER_RESETPASSWORD_SUCCESS": "User password successfully Reset",
 		"CHANGES_OCCUR_ON_NEXT_SONG": "This setting will be active on next song.",
-		"PLAYLIST_EXPORTED_TO_SERVER": "Playlist successfully exported to server {{data}}"
+		"PLAYLIST_EXPORTED_TO_SERVER": "Playlist successfully exported to server {{data}}",
+		"INBOX_STATUS_UPDATED": "Status change completed"
 	},
 	"HEADERS": {
 		"HOME": {
@@ -2176,10 +2181,25 @@
 	"INBOX": {
 		"NAME": "Song name",
 		"TIMESTAMP": "Timestamp",
-		"TYPE": "Type of request",
 		"TYPES": {
 			"CREATION": "Creation",
 			"MODIFICATION": "Modification"
+		},
+		"STATUS": {
+			"LABEL": "Status",
+			"SENT": "Sent",
+			"IN_REVIEW": "In review",
+			"IN_REVIEW_BY_ME": "In review (by me)",
+			"CHANGES_REQUESTED": "Changes requested",
+			"ACCEPTED": "Accepted",
+			"REJECTED": "Rejected"
+		},
+		"FILTER_BY_STATUS": "Filter by status",
+		"CHANGE_STATUS": {
+			"LABEL": "Change status",
+			"ACCEPT": "Accept",
+			"REJECT": "Reject",
+			"ASK_FOR_CHANGES": "Ask for changes"
 		},
 		"REVIEW": "Review",
 		"LINK_TO_ISSUE": "Link to issue",
@@ -2188,6 +2208,7 @@
 		"USER": "User in charge of issue integration",
 		"DOWNLOAD": "Download song",
 		"DELETE_SONG": "Delete song",
+		"DELETE_SONG_LOCALLY": "Delete song locally",
 		"UNASSIGN_FROM_SONG": "Unassign yourself from this song",
 		"SONG_DOWNLOADED_FROM_INBOX": "Song {{song}} succesfully downloaded from inbox",
 		"SONG_DOWNLOADED_FROM_INBOX_FAILED": "Song could not be downloaded from inbox!",

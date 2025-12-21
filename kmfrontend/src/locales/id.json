@@ -782,7 +782,6 @@
 			"MAIL": "Surel: "
 		},
 		"TIMESTAMP": "Tanda waktu",
-		"TYPE": "Jenis permintaan",
 		"NO_REPOSITORY_ENABLED": "Tidak ada repositori daring yang diaktifkan di mode pengelola",
 		"ONLINE_USER_REQUIRED": "Pengguna daring diperlukan untuk kotak masuk",
 		"SONG_DOWNLOADED_FROM_INBOX_FAILED": "Lagu tidak bisa diunduh dari kotak masuk!",

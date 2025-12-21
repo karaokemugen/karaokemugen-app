@@ -1604,7 +1604,6 @@
 			"MODIFICATION": "Modyfikacji",
 			"CREATION": "Kreacja"
 		},
-		"TYPE": "Rodzaj wniosku",
 		"USER": "Użytkownik odpowiedzialny za integrację zgłoszeń",
 		"ISSUE": "Wydanie {{number}}",
 		"CONTACT_INFOS": "Informacje kontaktowe autora",
