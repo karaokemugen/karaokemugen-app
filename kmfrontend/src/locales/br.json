@@ -79,7 +79,8 @@
 			"BOTTOM": "Izel",
 			"TOP": "Uhel",
 			"AUDIO_ONLY_EXPERIENCE": "Aodio hepken",
-			"FULLSCREEN": "Skramm a-bezh"
+			"FULLSCREEN": "Skramm a-bezh",
+			"DISPLAY_CONNECTION_INFO_TOOLTIP": "Ar c'hemenn \"Kit da http://xxx !\" eo"
 		},
 		"INTERFACE": {
 			"DISPLAY_WELCOME_MESSAGE": "Diskouez ur c'hemennadenn degemer",
@@ -179,7 +180,8 @@
 		"CL_SCREEN": "Diskouez war skramm al lenner",
 		"CL_USERS": "Diskouez war skramm an implijerien",
 		"CL_ALL": "Diskouez war an daou",
-		"DURATION": "Padelezh (en eilennoù)"
+		"DURATION": "Padelezh (en eilennoù)",
+		"ESSENTIAL_MESSAGE": "Kemmen hollbouezus"
 	},
 	"MODAL": {
 		"START_QUIZ": {
@@ -320,6 +322,9 @@
 		},
 		"CREATE_TAG": {
 			"OPEN": "Krouiñ ur tikedenn"
+		},
+		"CHANGE_STATUS_INBOX": {
+			"REASON": "Abeg"
 		}
 	},
 	"SESSIONS": {
@@ -393,7 +398,8 @@
 		"FILTER_MEDIA_STATUS": "Stad media : ",
 		"WIPE_DOWNLOAD_QUEUE": "Skarzhañ",
 		"START_DOWNLOAD_QUEUE": "Kregiñ",
-		"SONGWRITERS_BY": "Sonaozet gant"
+		"SONGWRITERS_BY": "Sonaozet gant",
+		"VIDEO_PREVIEW": "Alberz ar video"
 	},
 	"UNUSED_FILES": {
 		"REPOSITORY": "Kavlec'hiad",
@@ -491,7 +497,20 @@
 		},
 		"NAME": "Anv ar ganaouenn",
 		"DOWNLOAD": "Pellgargañ ar ganaouenn",
-		"DELETE_SONG": "Dilemel ar ganaouenn"
+		"DELETE_SONG": "Dilemel ar ganaouenn",
+		"CHANGE_STATUS": {
+			"ACCEPT": "Aotren",
+			"REJECT": "Disteuler",
+			"LABEL": "Kemmañ ar statud"
+		},
+		"STATUS": {
+			"ACCEPTED": "Aotreet",
+			"SENT": "Kaset",
+			"LABEL": "Statud",
+			"REJECTED": "Distaolet"
+		},
+		"DELETE_SONG_LOCALLY": "Dilemel ent lec'hel ar ganaouenn",
+		"LINK_TO_ISSUE": "Liamm war-du an tiked"
 	},
 	"TAG_TYPES": {
 		"SINGERGROUPS_one": "Strollad sonerezh",
@@ -610,7 +629,8 @@
 		"TYPE": {
 			"PAUSE": "Ehanañ",
 			"STOP": "Paouez"
-		}
+		},
+		"PREVIEW": "Alberz"
 	},
 	"ABOUT": {
 		"LICENSE": "Dindan aotre MIT."
@@ -674,7 +694,9 @@
 		"DOWNLOAD_MEDIA": "Pellgargañ ar media",
 		"LYRICS": "Pozioù",
 		"MODIFY_KARAOKE": "Kemmañ ar ganaouenn",
-		"ADDED": "Ouzhpennet "
+		"ADDED": "Ouzhpennet ",
+		"SHOW_VIDEO": "Diskouez un alberz video",
+		"HIDE_VIDEO": "Serriñ an alberz video"
 	},
 	"CHECKED": "Dibabet :",
 	"OUTRO_TAGLINES": [
