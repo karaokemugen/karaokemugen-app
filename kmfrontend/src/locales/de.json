@@ -1486,6 +1486,10 @@
 			"DESCRIPTION_NOT_OWNED_ON_SERVER": "Diese Playlist existiert bereits auf {{serverName}}. Der Export dieser Playlist auf den Server erstellt eine Kopie dieser Playlist unter deinem Namen.",
 			"DESCRIPTION_OWNED_ON_SERVER": "Diese Playlist existiert bereits auf {{serverName}}. Der Export dieser Playlist auf den Server ÜBERSCHREIBT diese Playlist. Dies ist IRREVERSIBEL.",
 			"DESCRIPTION_DOES_NOT_EXIST_ON_SERVER": "Diese Playlist existiert noch nicht auf {{serverName}}. Der Export dieser Playlist auf den Server erstellt eine neue Playlist."
+		},
+		"CHANGE_STATUS_INBOX": {
+			"TITLE": "Posteingangsstatus geändert",
+			"REASON": "Grund"
 		}
 	},
 	"REMOTE_STATUS": {
@@ -1679,7 +1683,8 @@
 		"PL_SONG_ADDED": "Erfolgreich \"{{song}}\"-Song hinzugefügt!",
 		"TAG_COPIED": "Tag erfolgreich in ein anderes Repository kopiert",
 		"CHANGES_OCCUR_ON_NEXT_SONG": "Diese Einstellung wird ab dem nächsten Lied übernommen.",
-		"PLAYLIST_EXPORTED_TO_SERVER": "Playlist erfolgreich exportiert auf Server {{data}}"
+		"PLAYLIST_EXPORTED_TO_SERVER": "Playlist erfolgreich exportiert auf Server {{data}}",
+		"INBOX_STATUS_UPDATED": "Statusänderung abgeschlossen"
 	},
 	"TAG_TYPES": {
 		"GROUPS_other": "Gruppen",
@@ -2068,7 +2073,24 @@
 		"NO_REPOSITORY_ENABLED": "Du hast kein Online-Repository im Maintainer-Modus aktiviert",
 		"REVIEW": "Review",
 		"DELETE_SONG": "Lied löschen",
-		"UNASSIGN_FROM_SONG": "Nicht mehr für das Lied zuständig sein"
+		"UNASSIGN_FROM_SONG": "Nicht mehr für das Lied zuständig sein",
+		"STATUS": {
+			"LABEL": "Status",
+			"SENT": "Gesendet",
+			"IN_REVIEW": "In Begutachtung",
+			"IN_REVIEW_BY_ME": "In Begutachtung (bei mir)",
+			"CHANGES_REQUESTED": "Änderungen erforderlich",
+			"ACCEPTED": "Angenommen",
+			"REJECTED": "Abgelehnt"
+		},
+		"FILTER_BY_STATUS": "Nach Status filtern",
+		"CHANGE_STATUS": {
+			"LABEL": "Status ändern",
+			"ACCEPT": "Annehmen",
+			"REJECT": "Ablehnen",
+			"ASK_FOR_CHANGES": "Änderung anfordern"
+		},
+		"DELETE_SONG_LOCALLY": "Lied lokal löschen"
 	},
 	"BACKGROUNDS_MGMT": {
 		"DESC": {
