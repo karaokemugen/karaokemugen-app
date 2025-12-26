@@ -464,7 +464,7 @@ function configuredBinariesForSystem(config: Config): BinariesConfig {
 				patch: isInContainer ? defaults.System.Binaries.patch.Linux : config.System.Binaries.patch.Linux,
 			};
 			if (isInContainer)
-				logger.debug('App is in an AppImage or Flatpak. Forcing default bianries to use bundled ones.', {
+				logger.debug('App is in an AppImage or Flatpak. Forcing default binaries to use bundled ones.', {
 					service,
 				});
 			return {
