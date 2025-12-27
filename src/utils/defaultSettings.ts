@@ -242,7 +242,8 @@ export const defaults: Config = {
 		Database: dbConfig,
 		Binaries: {
 			Player: {
-				Linux: app?.isPackaged || process.env.container || process.env.APPIMAGE ? 'app/bin/mpv' : 'usr/bin/mpv',
+				Linux:
+					app?.isPackaged || process.env.container || process.env.APPIMAGE ? 'app/bin/mpv' : '/usr/bin/mpv',
 				OSX: app?.isPackaged
 					? 'Karaoke Mugen.app/Contents/app/bin/mpv.app/Contents/MacOS/mpv'
 					: 'app/bin/mpv.app/Contents/MacOS/mpv',
@@ -252,7 +253,7 @@ export const defaults: Config = {
 				Linux:
 					app?.isPackaged || process.env.container || process.env.APPIMAGE
 						? 'app/bin/ffmpeg'
-						: 'usr/bin/ffmpeg',
+						: '/usr/bin/ffmpeg',
 				OSX: app?.isPackaged ? 'Karaoke Mugen.app/Contents/app/bin/ffmpeg' : 'app/bin/ffmpeg',
 				Windows: 'app\\bin\\ffmpeg.exe',
 			},
@@ -260,7 +261,7 @@ export const defaults: Config = {
 				Linux:
 					app?.isPackaged || process.env.container || process.env.APPIMAGE
 						? 'app/bin/postgres/bin/'
-						: 'usr/bin/postgres',
+						: '/usr/bin/',
 				OSX: app?.isPackaged ? 'Karaoke Mugen.app/Contents/app/bin/postgres/bin/' : 'app/bin/postgres/bin/',
 				Windows: 'app\\bin\\postgres\\bin\\',
 			},
@@ -268,7 +269,7 @@ export const defaults: Config = {
 				Linux:
 					app?.isPackaged || process.env.container || process.env.APPIMAGE
 						? 'app/bin/patch'
-						: 'usr/bin/patch',
+						: '/usr/bin/patch',
 				OSX: app?.isPackaged ? 'Karaoke Mugen.app/Contents/app/bin/patch' : 'app/bin/patch',
 				Windows: 'app\\bin\\patch.exe',
 			},
