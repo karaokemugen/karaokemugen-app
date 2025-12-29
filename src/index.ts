@@ -62,16 +62,18 @@ let appPath: string;
 let resourcePath: string;
 
 // Testing if we're in a packaged version of KM or not.
-// First, this is a test for unpacked electron mode.
-if (app.isPackaged) {
+// First, test if this is the .asar
+if (app.getAppPath().endsWith('.asar')) {
+	// Starting Electron from an asar directly (electron /path/to/app.asar)
+	appPath = dirname(app.getAppPath());
+	resourcePath = appPath;
+	// Then other packages (deb, dmg, win, etc.)
+} else if (app.isPackaged) {
 	// Starting Electron from the app's executable
 	appPath =
 		process.platform === 'darwin' ? resolve(app.getAppPath(), '../../../../') : resolve(app.getAppPath(), '../../');
 	resourcePath = process.resourcesPath;
-} else if (app.getAppPath().endsWith('.asar')) {
-	// Starting Electron from an asar directly (electron /path/to/app.asar)
-	appPath = dirname(app.getAppPath());
-	resourcePath = appPath;
+	// Else it runs from source
 } else {
 	// Starting Electron from source folder
 	appPath = app.getAppPath();
