@@ -213,7 +213,7 @@ export default function Inbox() {
 	};
 
 	const handleMenuClick = async (e, record: DBInbox) => {
-		if (e.key === 'accept') {
+		if (e.key === 'accepted') {
 			await commandBackend(WS_CMD.CHANGE_INBOX_STATUS, {
 				inid: record.inid,
 				repoName: instance.Name,
