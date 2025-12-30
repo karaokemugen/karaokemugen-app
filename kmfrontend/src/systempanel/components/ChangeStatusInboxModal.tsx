@@ -51,7 +51,11 @@ export function ChangeStatusInboxModal(props: ChangeStatusInboxModalProps) {
 			open={props.open}
 		>
 			<Form ref={formRef} onFinish={changeStatus}>
-				<Form.Item label={i18next.t('MODAL.CHANGE_STATUS_INBOX.REASON')} name="reason" required>
+				<Form.Item
+					label={i18next.t('MODAL.CHANGE_STATUS_INBOX.REASON')}
+					name="reason"
+					required={props.status === 'changes_requested' || props.status === 'rejected'}
+				>
 					<Input.TextArea autoSize placeholder={i18next.t('MODAL.CHANGE_STATUS_INBOX.REASON')} />
 				</Form.Item>
 			</Form>

@@ -214,18 +214,9 @@ export default function Inbox() {
 	};
 
 	const handleMenuClick = async (e, record: DBInbox) => {
-		if (e.key === 'accepted') {
-			await commandBackend(WS_CMD.CHANGE_INBOX_STATUS, {
-				inid: record.inid,
-				repoName: instance.Name,
-				status: e.key,
-			});
-			getInbox();
-		} else {
-			setInboxToupdate(record);
-			setNewStatus(e.key as InboxActions);
-			setOpenStatusModal(true);
-		}
+		setInboxToupdate(record);
+		setNewStatus(e.key as InboxActions);
+		setOpenStatusModal(true);
 	};
 
 	const seeReason = (reason: string) => {
