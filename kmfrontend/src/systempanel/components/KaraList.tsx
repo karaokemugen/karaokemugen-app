@@ -473,6 +473,13 @@ function KaraList(props: KaraListProps) {
 							}}
 							onChange={handleFilterTagSelection}
 							placeholder={i18next.t('KARA.TAG_FILTER')}
+							styles={{
+								popup: {
+									root: {
+										maxWidth: '80%',
+									},
+								},
+							}}
 						/>
 					</Col>
 				)}
