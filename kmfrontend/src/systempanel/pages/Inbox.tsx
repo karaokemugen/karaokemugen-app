@@ -25,6 +25,7 @@ import { getLanguagesInLocaleFromCode } from '../../utils/isoLanguages';
 import { MenuProps } from 'antd/lib';
 import { ChangeStatusInboxModal } from '../components/ChangeStatusInboxModal';
 import { ItemType } from 'antd/es/menu/interface';
+import DOMPurify from 'dompurify';
 
 type FilterInboxActions = InboxActions | 'in_review_by_me';
 
@@ -228,10 +229,13 @@ export default function Inbox() {
 	};
 
 	const seeReason = (reason: string) => {
+		//URLs starting with http://, https://, or ftp://
+		var replaceUrlPattern = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
+		var reasonWithUrl = reason.replace(replaceUrlPattern, '<a href="$1">$1</a>');
 		Modal.info({
 			style: { whiteSpace: 'pre-wrap' },
 			title: i18next.t('MODAL.CHANGE_STATUS_INBOX.REASON'),
-			content: reason,
+			content: <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(reasonWithUrl) }} />,
 		});
 	};
 
