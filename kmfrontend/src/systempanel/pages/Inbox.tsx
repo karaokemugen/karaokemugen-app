@@ -272,9 +272,9 @@ export default function Inbox() {
 			if (status === 'in_review_by_me') {
 				newFilteredInbox = newFilteredInbox.concat(
 					inbox.filter(
-						inbox =>
-							inbox.status === 'in_review' &&
-							inbox.username_downloaded === context.globalState.auth.data.username
+						inboxInReview =>
+							inboxInReview.status === 'in_review' &&
+							inboxInReview.username_downloaded === context.globalState.auth.data.username.split('@')[0]
 					)
 				);
 			} else {
