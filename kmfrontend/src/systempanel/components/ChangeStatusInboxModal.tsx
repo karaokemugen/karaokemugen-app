@@ -19,6 +19,7 @@ export function ChangeStatusInboxModal(props: ChangeStatusInboxModalProps) {
 	const formRef = useRef<FormInstance<{ reason: string }>>(undefined);
 
 	const changeStatus = async values => {
+		if ((props.status === 'changes_requested' || props.status === 'rejected') && !values.reason) return;
 		try {
 			setLoading(true);
 			await commandBackend(WS_CMD.CHANGE_INBOX_STATUS, {
