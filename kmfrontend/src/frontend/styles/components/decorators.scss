@@ -128,7 +128,7 @@
 			padding-right: 15px;
 		}
 		input {
-			background-color: scale-color(variables.$mugen-playlist-odd, $lightness: 15%);
+			background-color: color.scale(variables.$mugen-playlist-odd, $lightness: 15%);
 			color: white;
 			border: darkgrey 1px solid;
 		}
