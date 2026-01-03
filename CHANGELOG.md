@@ -1,3 +1,37 @@
+# [9.0.21] - 2026-01-03
+
+This is an overdue release
+
+## Added
+
+- **[Users]** Added support/translations for Russian language
+- **[Operators]** Added an option to automatically remove N-x songs from the current playlist as it's being played.
+- **[Operators]** Added an option to close the public interface when specific conditions are met (#1663)
+- **[Maintainers]** Maintainers can now change the status of an inbox, provide reasons for rejection/change requests, etc. (#1817)
+- **[Maintainers]** Added .png to file formats for covers
+- **[Maintainers]** Batch editing parent songs is now possible
+
+## Changed
+
+- **[Operators]** Increased deadlock timeout in database configuration
+- **[Users]** Updated translation for breton, german, tamil, indonesian, spanish, russian, italian, norwegian, polish, french, english and portugese
+- **[Maintainers]** Tag filenames are now trimmed to 60 characters (#1814)
+- **[Maintainers]** Missing parents are now displayed on a kara submitting form (#1805)
+
+## Fixed
+
+- **[Operators]** Collections locale is displayed on welcome page now
+- **[Operators]** Removed timeouts when trying to get remote playlists
+- **[Operators]** Fixed timestamp preservation when copying system repo, which caused regeneration on every launch of KM.
+- **[Operators]** Fixed ASAR app path, which should allow Arch users a better experience.
+- **[Operators]** Fixed potential gamename conflicts for quizzes
+- **[Operators]** Fixed downloading/syncing medias
+- **[Users]** Fixed some typos and missing messages
+- **[Maintainers]** Fixed parent kara information application on titles
+- **[Maintainers]** Hitting enter when adding an alias doesn't submit the whole song anymore
+- **[Developers]** Fixed SCSS deprecation warnings
+
+
 # [9.0.2] - 2025-08-14
 
 This is a hotfix release
