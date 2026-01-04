@@ -24,6 +24,8 @@ function KMMenu() {
 			repo => repo.Online && repo.MaintainerMode && repo.Enabled
 		).length > 0;
 
+	const isRemoteUsersActive = context.globalState.settings.data.config?.Online?.RemoteUsers?.Enabled;
+
 	return (
 		<Menu
 			mode="inline"
@@ -79,9 +81,11 @@ function KMMenu() {
 					<Menu.Item key="git">
 						<Link to="/system/git">{i18next.t('MENU.GIT')}</Link>
 					</Menu.Item>
-					<Menu.Item key="inbox">
-						<Link to="/system/inbox">{i18next.t('MENU.INBOX')}</Link>
-					</Menu.Item>
+					{isRemoteUsersActive ? (
+						<Menu.Item key="inbox">
+							<Link to="/system/inbox">{i18next.t('MENU.INBOX')}</Link>
+						</Menu.Item>
+					) : null}
 				</Menu.SubMenu>
 			) : null}
 			<Menu.SubMenu key="kara-dropdown" title={i18next.t('MENU.KARAS')} icon={<FileTextOutlined />}>
