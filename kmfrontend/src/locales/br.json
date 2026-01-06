@@ -501,13 +501,15 @@
 		"CHANGE_STATUS": {
 			"ACCEPT": "Aotren",
 			"REJECT": "Disteuler",
-			"LABEL": "Kemmañ ar statud"
+			"LABEL": "Kemmañ ar statud",
+			"ASK_FOR_CHANGES": "Goulenn cheñchamantoù"
 		},
 		"STATUS": {
 			"ACCEPTED": "Aotreet",
 			"SENT": "Kaset",
 			"LABEL": "Statud",
-			"REJECTED": "Distaolet"
+			"REJECTED": "Distaolet",
+			"CHANGES_REQUESTED": "Cheñchamantoù goulennet"
 		},
 		"DELETE_SONG_LOCALLY": "Dilemel ent lec'hel ar ganaouenn",
 		"LINK_TO_ISSUE": "Liamm war-du an tiked"
@@ -720,5 +722,8 @@
 			}
 		}
 	},
-	"FORGOT_PASSWORD": "Ankouaet ho ker-tremen ganeoc'h ?"
+	"FORGOT_PASSWORD": "Ankouaet ho ker-tremen ganeoc'h ?",
+	"LOG_OFFLINE": {
+		"MESSAGE": "Ne vo ket enrollet cheñchamantoù ho profil"
+	}
 }
