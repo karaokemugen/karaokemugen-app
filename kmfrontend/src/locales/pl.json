@@ -104,7 +104,7 @@
 	"AND": "i",
 	"OR": "albo",
 	"UNKNOWN": "Nieznany",
-	"SELECT_PLACEHOLDER": "Wybierz listę piosenek",
+	"SELECT_PLACEHOLDER": "Wybierz playliste",
 	"SUBMIT": "Zapisz",
 	"CANCEL": "Anuluj",
 	"WARNING": "Ostrzeżenie!",
@@ -686,7 +686,9 @@
 			"HIDE_INVISIBLE_SONGS_TOOLTIP": "Sposób, w jaki tajemnicze piosenki są prezentowane publiczności. Najlepszy na niespodzianki!",
 			"ONLINE_SETTINGS_TOOLTIP": "Podłącz swoje karaoke do Internetu i pozwól światu wybierać piosenki dla Ciebie!",
 			"ALLOW_PLAYLIST_ITEM_SWAP": "Zezwól użytkownikom na zamianę utworów na bieżącej liście odtwarzania",
-			"ALLOW_PLAYLIST_ITEM_SWAP_TOOLTIP": "Użytkownicy mogą zamieniać piosenki, które zamówili na bieżącej liście odtwarzania, jeśli chcą zaśpiewać coś szybciej."
+			"ALLOW_PLAYLIST_ITEM_SWAP_TOOLTIP": "Użytkownicy mogą zamieniać piosenki, które zamówili na bieżącej liście odtwarzania, jeśli chcą zaśpiewać coś szybciej.",
+			"AUTO_REMOVE_SONGS_FROM_CURRENT_PLAYLIST": "Zachowaj tylko ostatnio odtwarzane utwory z bieżącej listy odtwarzania",
+			"AUTO_REMOVE_SONGS_FROM_CURRENT_PLAYLIST_TOOLTIP": "Liczba utworów, które mają być zachowane na liście odtwarzania przed aktualnie odtwarzanym utworem. Funkcja ta może być przydatna do automatycznego usuwania starych utworów z listy odtwarzania, aby umożliwić ich ponowne zasugerowanie. Utwory są usuwane tylko po zakończeniu odtwarzania utworu lub po kliknięciu przycisku Dalej. 0 = Nic nie usuwaj."
 		},
 		"SYSTEMPANEL_TIP": "Nie możesz znaleźć opcji, których szukasz? <2>Niektóre opcje znajdują się w panelu <3>system</3>.</2>",
 		"FILTER_SETTINGS_TOOLTIP": "Szybko znajdź potrzebne ustawienie za pomocą tego paska wyszukiwania.",
@@ -734,7 +736,9 @@
 			"KARA_LINE_SORT_TOOLTIP": "Zdefiniuj, które części utworu są używane do sortowania biblioteki",
 			"KARA_LINE_DISPLAY": "Wyświetlanie części utworu",
 			"KARA_LINE_DISPLAY_TOOLTIP": "Zdefiniuj, które części utworu mają być wyświetlane na listach utworów (tylko operator)",
-			"SET": "Ustawić…"
+			"SET": "Ustawić…",
+			"SWITCH_TO_RESTRICTED_AT_TIME": "Przełącz na Ograniczone w",
+			"SWITCH_TO_RESTRICTED_AT_TIME_TOOLTIP": "Automatycznie przełącz interfejs na ograniczony, gdy długość playlisty osiągnie zdefiniowany czas. Przykład: po ustawieniu na 22:00, playlista nie będzie przyjmować nowych utworów, dopóki nie osiągnie wystarczającej długości, aby trwać do 22:00 lub dłużej."
 		}
 	},
 	"CONFIRM_FAV_IMPORT": "Nadpisać swoje ulubione za pomocą tego importu?",
@@ -964,7 +968,7 @@
 		"STATS_MODAL": {
 			"CHANGE": "Możesz to zmienić w dowolnym momencie w swoim profilu. Czy zgadzasz się na wykorzystanie historii swoich utworów do statystyk?",
 			"TITLE": "Użyj moich ulubionych i próśb o piosenki do statystyk",
-			"DESC": "Używamy Twoich ulubionych, jak również utworów, o które prosiłeś podczas sesji, aby tworzyć statystyki użytkowania (na przykład, aby znaleźć żądane utwory).",
+			"DESC": "Serwer użyje twoich ulubionych, jak również utworów, o które prosiłeś podczas sesji, aby tworzyć statystyki użytkowania (na przykład, aby znaleźć żądane utwory).",
 			"REFUSE_DESC": "W przypadku odmowy, Twoje dane zostaną zignorowane i nie zostaną przesłane przez Aplikację Karaoke Mugen."
 		},
 		"CLASSIC_MODE": {
@@ -1149,6 +1153,10 @@
 			"DESCRIPTION_NOT_OWNED_ON_SERVER": "Ta playlista jest już obecna na serwerze {{serverName}}. Wyeksportowanie tej playlisty na serwer spowoduje utworzenie jej kopii pod Twoim imieniem i nazwiskiem.",
 			"DESCRIPTION_OWNED_ON_SERVER": "Ta playlista jest już obecna na serwerze {{serverName}}. Wyeksportowanie tej playlisty na serwer spowoduje NADPISANIE jej zawartości. Tej operacji NIE MOŻNA cofnąć.",
 			"DESCRIPTION_DOES_NOT_EXIST_ON_SERVER": "Ta playlista nie istnieje na serwerze {{serverName}}. Wyeksportowanie tej playlisty na serwer spowoduje utworzenie nowej playlisty."
+		},
+		"CHANGE_STATUS_INBOX": {
+			"TITLE": "Zmień stan skrzynki odbiorczej",
+			"REASON": "Powód"
 		}
 	},
 	"ENCORES_TAGLINES": [
@@ -1231,7 +1239,8 @@
 				"POLL_WINNER": "Ludzie głosowali na nową piosenkę!",
 				"POLL_STARTING": "Rozpoczęcie ankiety",
 				"END_OF_SESSION_NEAR": "Sesja karaoke powinna zakończyć się za {{data}} minut.",
-				"BATCH_EDIT_COMPLETE": "Edycja wsadowa utworu zakończona."
+				"BATCH_EDIT_COMPLETE": "Edycja wsadowa utworu zakończona.",
+				"INTERFACE_SWITCHED_TO_RESTRICTED_PLAYLIST_LENGTH": "Interfejs przełączył się w tryb ograniczony, ponieważ długość listy odtwarzania osiągnęła zdefiniowany limit."
 			}
 		}
 	},
@@ -1346,7 +1355,10 @@
 			"SELECT_TAG": "Wybierz tag:",
 			"SELECT_TAG_TYPE": "Wybierz typ tagu:",
 			"EDIT": "Edycja wsadowa",
-			"SELECT": "Wybierz"
+			"SELECT": "Wybierz",
+			"ADD_PARENT": "Dodaj rodzica",
+			"REMOVE_PARENT": "Usuń rodzica",
+			"SELECT_PARENT": "Wybierz rodzica:"
 		},
 		"MEDIA_IN_PROCESS": "Plik multimedialny jest przetwarzany, poczekaj na powiadomienie o powodzeniu.",
 		"ALIASES_TOOLTIP": "Nazwy krótkie lub alternatywne, używane do wyszukiwania.",
@@ -1415,7 +1427,8 @@
 		"USEEMBEDDEDLYRICS_TOOLTIP": "Jeśli przesłane media zawierają osadzony plik ASS, zostanie on wyodrębniony i zastąpi bieżący plik z tekstem utworu.",
 		"SYNCHRONIZE_REPOSITORIES": "Repozytoria do synchronizacji",
 		"SWAP_TOOLTIP": "Zmień kolejność odtwarzania utworów, o które prosiłeś",
-		"SWAP_DESCRIPTION": "Wybierz drugą piosenkę, aby je zamienić"
+		"SWAP_DESCRIPTION": "Wybierz drugą piosenkę, aby je zamienić",
+		"MISSING_PARENT_SONG": "Brak piosenki nadrzędnej ({{parent}})"
 	},
 	"HEADERS": {
 		"SESSIONS": {
@@ -1631,7 +1644,24 @@
 		"SONG_DOWNLOADED_FROM_INBOX": "Piosenka {{song}} została pomyślnie pobrana ze skrzynki odbiorczej",
 		"REVIEW": "Recenzja",
 		"DELETE_SONG": "Usuń piosenkę",
-		"UNASSIGN_FROM_SONG": "Wypisz się z tej piosenki"
+		"UNASSIGN_FROM_SONG": "Wypisz się z tej piosenki",
+		"STATUS": {
+			"LABEL": "Status",
+			"SENT": "Wysłano",
+			"IN_REVIEW": "W recenzji",
+			"IN_REVIEW_BY_ME": "W recenzji (przeze mnie)",
+			"CHANGES_REQUESTED": "Zażądano zmian",
+			"ACCEPTED": "Przyjęty",
+			"REJECTED": "Odrzucony"
+		},
+		"FILTER_BY_STATUS": "Filtruj według stanu",
+		"CHANGE_STATUS": {
+			"LABEL": "Zmień status",
+			"ACCEPT": "Akceptuj",
+			"REJECT": "Odrzucić",
+			"ASK_FOR_CHANGES": "Zapytaj o zmiany"
+		},
+		"DELETE_SONG_LOCALLY": "Usuń utwór lokalnie"
 	},
 	"QUIZ": {
 		"CONTINUE": "Kontynuuj piosenkę po ujawnieniu odpowiedzi",
@@ -2224,7 +2254,8 @@
 		"PL_SONG_ADDED": "Pomyślnie dodano piosenkę \"{{song}}\"!",
 		"SESSION_ACTIVATED": "Sesja została pomyślnie aktywowana",
 		"CHANGES_OCCUR_ON_NEXT_SONG": "To ustawienie zostanie aktywowane od następnego utworu.",
-		"PLAYLIST_EXPORTED_TO_SERVER": "Lista odtwarzania została pomyślnie wyeksportowana na serwer {{data}}"
+		"PLAYLIST_EXPORTED_TO_SERVER": "Lista odtwarzania została pomyślnie wyeksportowana na serwer {{data}}",
+		"INBOX_STATUS_UPDATED": "Zmiana statusu zakończona"
 	},
 	"LANGUAGES": {
 		"QRO": "Alfabet łaciński (Romanizacja)"
