@@ -1282,10 +1282,12 @@
 		"SESSIONS": "Sessions",
 		"REPOSITORIES": "Collections et dépôts",
 		"KARAS": "Chansons",
+		"MEDIAS":" Médias",
+		"STATS":" Statistiques",
 		"LIST": "Liste",
 		"NEW": "Nouveau",
-		"DOWNLOAD_QUEUE": "File d'attente des téléchargements",
-		"DOWNLOAD": "Téléchargement des médias",
+		"DOWNLOAD_QUEUE": "File d'attente",
+		"DOWNLOAD": "Téléchargements",
 		"HISTORY": "Historique",
 		"RANKING": "Plus demandés",
 		"VIEWCOUNTS": "Plus joués",
@@ -1296,8 +1298,8 @@
 		"USERS": "Utilisateurs",
 		"UNUSED_FILES": "Fichiers inutilisés",
 		"DUPLICATE": "Dupliqués",
-		"BATCH_EDIT": "Édition en masse de kara/tags",
-		"STORAGE": "Gestion de l'espace disque",
+		"BATCH_EDIT": "Édition en masse",
+		"STORAGE": "Gestion de l'espace",
 		"BACKGROUNDS": "Fonds d'écran",
 		"INBOX": "Boîte de réception",
 		"MAINTAINER": "Mainteneur"
@@ -2090,7 +2092,7 @@
 			"DESCRIPTION": "Liste les chansons les plus jouées sur votre application"
 		},
 		"KARATAG_BATCH_EDIT": {
-			"TITLE": "Ajout/suppression de tag en masse",
+			"TITLE": "Édition de chanson en masse",
 			"DESCRIPTION": "Réservé aux mainteneurs : cette page vous permet d'ajouter ou supprimer un tag sur plusieurs chansons simultanément."
 		},
 		"TAG_LIST": {
