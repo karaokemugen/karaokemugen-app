@@ -1913,8 +1913,7 @@
 			"CREATE": "Einen Benutzer erstellen",
 			"BROWSE": "Benutzer durchsuchen"
 		},
-		"KARAS_DESCRIPTION": "Liste, bearbeite und erstelle Karaoke-Dateien. Du kannst auch Medien herunterladen und die meist gewünschten, meist gespielten Lieder sowie die Karaoke-Historie einsehen",
-		"USERS_DESCRIPTION": "Benutzer auflisten, bearbeiten, erstellen, ihr Passwort ändern, neue Gästekonten erstellen."
+		"KARAS_DESCRIPTION": "Liste, bearbeite und erstelle Karaoke-Dateien. Du kannst auch Medien herunterladen und die meist gewünschten, meist gespielten Lieder sowie die Karaoke-Historie einsehen"
 	},
 	"USERS": {
 		"EMAIL": "E-Mail",

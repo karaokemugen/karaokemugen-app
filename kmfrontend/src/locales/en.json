@@ -1621,10 +1621,11 @@
 		"ENABLED": "Enabled"
 	},
 	"HOME": {
-		"SYSTEM_DESCRIPTION": "See logs, change configuration options, backup/restore your database, trigger a manual generation and manage karaoke session",
-		"KARAS_DESCRIPTION": "List, edit, and create karaoke data files. You can also download media and view most requested, most played, and karaoke history",
+		"STATS_DESCRIPTION": "Manage karaoke sessions, view the most requested and played songs, and view history",
+		"SYSTEM_DESCRIPTION": "See logs, change configuration options, backup/restore your database, trigger a manual generation and manage users",
+		"MEDIAS_DESCRIPTION": "Download media and manage your storage space",
+		"KARAS_DESCRIPTION": "List, edit, and create karaoke data files",
 		"TAGS_DESCRIPTION": "List, create, edit tags (singers, songwriters, creators, song types, etc.)",
-		"USERS_DESCRIPTION": "List, edit, create users, change their password, create new guests accounts.",
 		"SYSTEM": {
 			"CONFIG": "Edit configuration",
 			"REPOSITORIES": "Karaoke collections and repositories",
@@ -2000,7 +2001,7 @@
 	},
 	"HEADERS": {
 		"HOME": {
-			"TITLE": "System Panel",
+			"TITLE": "System Panel dashboard",
 			"DESCRIPTION": "This is where it all begins. Choose your action."
 		},
 		"LOGS": {
@@ -2095,7 +2096,7 @@
 			"DESCRIPTION": "List the most played songs on your application"
 		},
 		"KARATAG_BATCH_EDIT": {
-			"TITLE": "Bulk song editing",
+			"TITLE": "Bulk songs editing",
 			"DESCRIPTION": "Maintainers only: this page allows you to add or remove a tag on several songs simultaneously."
 		},
 		"TAG_LIST": {

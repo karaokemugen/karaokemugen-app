@@ -7,6 +7,8 @@ import {
 	SettingOutlined,
 	TagOutlined,
 	UserOutlined,
+	BarChartOutlined,
+	VideoCameraOutlined,
 } from '@ant-design/icons';
 import { Menu } from 'antd';
 import i18next from 'i18next';
@@ -40,7 +42,7 @@ function KMMenu() {
 			<Menu.Item key="home" icon={<DashboardOutlined />}>
 				<Link to="/system/home">{i18next.t('MENU.HOME')}</Link>
 			</Menu.Item>
-			<Menu.SubMenu key="stats-dropdown" title={i18next.t('MENU.STATS')} icon={<FileTextOutlined />}>
+			<Menu.SubMenu key="stats-dropdown" title={i18next.t('MENU.STATS')} icon={<BarChartOutlined />}>
 				<Menu.Item key="sessions">
 					<Link to="/system/sessions">{i18next.t('MENU.SESSIONS')}</Link>
 				</Menu.Item>
@@ -80,7 +82,7 @@ function KMMenu() {
 					<Link to="/system/log">{i18next.t('MENU.LOGS')}</Link>
 				</Menu.Item>
 			</Menu.SubMenu>
-			<Menu.SubMenu key="medias-dropdown" title={i18next.t('MENU.MEDIAS')} icon={<FileTextOutlined />}>
+			<Menu.SubMenu key="medias-dropdown" title={i18next.t('MENU.MEDIAS')} icon={<VideoCameraOutlined />}>
 				<Menu.Item key="queuedownload">
 					<Link to="/system/karas/download/queue">{i18next.t('MENU.DOWNLOAD_QUEUE')}</Link>
 				</Menu.Item>

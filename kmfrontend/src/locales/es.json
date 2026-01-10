@@ -1479,7 +1479,6 @@
 		"DECOMPRESSING": "Comprimiendo objetos"
 	},
 	"HOME": {
-		"USERS_DESCRIPTION": "Listar, editar, crear usuarios, cambiar su contraseña, crear nuevas cuentas de invitados.",
 		"SYSTEM": {
 			"REPOSITORIES": "Colecciones y repositorios de karaoke",
 			"DATABASE": "Base de datos",

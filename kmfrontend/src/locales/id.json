@@ -707,7 +707,6 @@
 		"TAGS_DESCRIPTION": "Daftar, buat, sunting tanda (penyanyi, penulis lagu, pembuat, jenis lagu, dll.)",
 		"SYSTEM_DESCRIPTION": "Lihat log, ubah opsi konfigurasi, cadangkan/pulihkan basis data kamu, picu pembuatan manual, dan kelola sesi karaoke",
 		"KARAS_DESCRIPTION": "Daftar, sunting, dan buat berkas data karaoke. Kamu juga bisa mengunduh media dan melihat yang paling banyak diminta, paling banyak diputar, dan riwayat karaoke",
-		"USERS_DESCRIPTION": "Daftar, sunting, buat pengguna, ubah kata sandi mereka, buat akun tamu baru.",
 		"TAGS": {
 			"CREATE": "Buat tanda",
 			"BROWSE": "Jelajah tanda",

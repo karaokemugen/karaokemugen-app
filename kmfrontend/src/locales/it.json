@@ -1753,8 +1753,7 @@
 			"CREATE": "Crea un utente",
 			"BROWSE": "Esplora utenti"
 		},
-		"KARAS_DESCRIPTION": "Elenca, modifica e crea i file di dati del karaoke. Puoi anche scaricare file multimediali e vedere i più richiesti, i più riprodotti e la cronologia.",
-		"USERS_DESCRIPTION": "Elenca, modifica, crea utenti, cambia le loro password, crea nuovi account ospiti."
+		"KARAS_DESCRIPTION": "Elenca, modifica e crea i file di dati del karaoke. Puoi anche scaricare file multimediali e vedere i più richiesti, i più riprodotti e la cronologia."
 	},
 	"USERS": {
 		"EMAIL": "Email",

@@ -1621,10 +1621,11 @@
 		"ENABLED": "Active"
 	},
 	"HOME": {
-		"SYSTEM_DESCRIPTION": "Voir les journaux, changer les options de configuration, sauvegarder et restaurer votre base de données, lancer une génération manuelle et gérer les sessions de karaokés",
-		"KARAS_DESCRIPTION": "Lister, modifier, et créer des fichiers de karaokés. Vous pouvez aussi télécharger des médias, voir les karaokés les plus demandés, joués et l'historique",
+		"STATS_DESCRIPTION": "Gérer les sessions de karaokés, voir les karaokés les plus demandés, joués et l'historique",
+		"SYSTEM_DESCRIPTION": "Voir les journaux, changer les options de configuration, sauvegarder et restaurer votre base de données, lancer une génération manuelle et gérer les utilisateurs",
+		"MEDIAS_DESCRIPTION": "Télécharger des médias et gérer son espace de stockage",
+		"KARAS_DESCRIPTION": "Lister, modifier, et créer des fichiers de karaokés",
 		"TAGS_DESCRIPTION": "Créer, lister, éditer les tags (œuvres, chanteurs, compositeurs, créateurs, types de chanson, etc.)",
-		"USERS_DESCRIPTION": "Lister, créer et modifier les utilisateurs, changer leur mot de passe, créer de nouveaux comptes invités.",
 		"SYSTEM": {
 			"CONFIG": "Modifier la configuration",
 			"REPOSITORIES": "Dépôts et collections de karaokés",
@@ -1997,7 +1998,7 @@
 	},
 	"HEADERS": {
 		"HOME": {
-			"TITLE": "Panneau Système",
+			"TITLE": "Tableau de bord du panneau système",
 			"DESCRIPTION": "C'est ici que tout commence. Choisissez votre action."
 		},
 		"LOGS": {
@@ -2015,7 +2016,7 @@
 		},
 		"SESSIONS": {
 			"TITLE": "Gestion des sessions",
-			"DESCRIPTION": "Ajoutez, supprimez, ou afficher les données des différentes sessions de Karaoke que vous avez faites."
+			"DESCRIPTION": "Ajoutez, supprimez, ou afficher les données des différentes sessions de karaoké que vous avez faites."
 		},
 		"SESSIONS_NEW": {
 			"TITLE": "Créer une session de karaoké",
@@ -2092,7 +2093,7 @@
 			"DESCRIPTION": "Liste les chansons les plus jouées sur votre application"
 		},
 		"KARATAG_BATCH_EDIT": {
-			"TITLE": "Édition de chanson en masse",
+			"TITLE": "Édition de chansons en masse",
 			"DESCRIPTION": "Réservé aux mainteneurs : cette page vous permet d'ajouter ou supprimer un tag sur plusieurs chansons simultanément."
 		},
 		"TAG_LIST": {

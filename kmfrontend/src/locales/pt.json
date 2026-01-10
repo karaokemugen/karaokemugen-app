@@ -1509,7 +1509,6 @@
 			"CREATE": "Crie um usuário"
 		},
 		"SYSTEM_DESCRIPTION": "Veja logs, altere opções de configuração, faça backup/restaure seu banco de dados, acione uma geração manual e gerencie sessões de karaokê",
-		"USERS_DESCRIPTION": "Liste, edite, crie usuários, altere suas senhas, crie novas contas de convidados.",
 		"KARAS": {
 			"CREATE": "Crie um karaokê",
 			"HISTORY": "História do karaokê tocado",

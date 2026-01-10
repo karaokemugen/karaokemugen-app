@@ -362,7 +362,6 @@
 		"SYSTEM_DESCRIPTION": "Przeglądaj dzienniki, zmieniaj opcje konfiguracji, twórz kopie zapasowe/przywracaj bazę danych, uruchamiaj ręczne generowanie i zarządzaj sesją karaoke",
 		"KARAS_DESCRIPTION": "Wyświetlanie, edytowanie i tworzenie plików danych karaoke. Możesz także pobierać multimedia i przeglądać żądane, najczęściej odtwarzane i historię karaoke",
 		"TAGS_DESCRIPTION": "Wyświetlaj, twórz, edytuj tagi (piosenkarze, autorzy piosenek, twórcy, typy utworów itp.)",
-		"USERS_DESCRIPTION": "Wyświetlaj, edytuj, twórz użytkowników, zmieniaj ich hasło, twórz nowe konta gości.",
 		"SYSTEM": {
 			"CONFIG": "Edytuj konfigurację",
 			"REPOSITORIES": "Kolekcje i repozytoria karaoke",
