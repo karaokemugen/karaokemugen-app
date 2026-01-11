@@ -285,11 +285,11 @@ System:
     connection: tcp
   Binaries:
     Player:
-      Linux: /usr/bin/mpv
+      Linux: app/bin/mpv
       OSX: app/bin/mpv.app/Contents/MacOS/mpv
       Windows: app/bin/mpv.exe
     ffmpeg:
-      Linux: /usr/bin/ffmpeg
+      Linux: app/bin/ffmpeg
       OSX: app/bin/ffmpeg
       Windows: app/bin/ffmpeg.exe
     Postgres:
@@ -297,7 +297,7 @@ System:
       OSX: app/bin/postgres/bin/
       Windows: app/bin/postgres/bin/
     patch:
-      Linux: /usr/bin/patch
+      Linux: app/bin/patch
       OSX: app/bin/patch
       Windows: app/bin/patch.exe
   Repositories:
