@@ -1282,8 +1282,8 @@
 		"SESSIONS": "Sessions",
 		"REPOSITORIES": "Collections and repositories",
 		"KARAS": "Songs",
-		"MEDIAS":" Medias",
-		"STATS":" Statistics",
+		"MEDIAS": " Media",
+		"STATS": " Statistics",
 		"LIST": "List",
 		"NEW": "New",
 		"DOWNLOAD_QUEUE": "Queue",
@@ -1621,7 +1621,7 @@
 		"ENABLED": "Enabled"
 	},
 	"HOME": {
-		"STATS_DESCRIPTION": "Manage karaoke sessions, view the most requested and played songs, and view history",
+		"STATS_DESCRIPTION": "Manage karaoke sessions, view the most requested and played songs, and access the history",
 		"SYSTEM_DESCRIPTION": "See logs, change configuration options, backup/restore your database, trigger a manual generation and manage users",
 		"MEDIAS_DESCRIPTION": "Download media and manage your storage space",
 		"KARAS_DESCRIPTION": "List, edit, and create karaoke data files",
