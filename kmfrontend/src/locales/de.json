@@ -1086,7 +1086,7 @@
 		},
 		"KARATAG_BATCH_EDIT": {
 			"DESCRIPTION": "Nur für Maintainer: Auf dieser Seite kannst du einen Tag für mehrere Lieder gleichzeitig hinzufügen oder entfernen.",
-			"TITLE": "Massenhaftes Hinzufügen / Entfernen von Tags"
+			"TITLE": "Bulk-Liederbearbeitung"
 		},
 		"SESSIONS_NEW": {
 			"TITLE": "Füge eine Karaoke-Sitzung hinzu",
@@ -1907,13 +1907,15 @@
 			"CONFIG": "Konfiguration bearbeiten",
 			"REPOSITORIES": "Karaoke-Sammlungen und -Repositorys"
 		},
-		"SYSTEM_DESCRIPTION": "Protokolle einsehen, Konfigurationsoptionen ändern, deine Datenbank sichern/wiederherstellen, eine manuelle Datenbank-Erzeugung auslösen und Karaoke-Sitzungen verwalten",
+		"SYSTEM_DESCRIPTION": "Logs einsehen, Konfigurationsoptionen ändern, Datenbank sichern/wiederherstellen, eine manuelle Datenbank-Erzeugung auslösen und Benutzer verwalten",
 		"TAGS_DESCRIPTION": "Tags auflisten, erstellen und bearbeiten (Sänger/innen, Songwriter/innen, Urheber/innen, Songtypen usw.)",
 		"USERS": {
 			"CREATE": "Einen Benutzer erstellen",
 			"BROWSE": "Benutzer durchsuchen"
 		},
-		"KARAS_DESCRIPTION": "Liste, bearbeite und erstelle Karaoke-Dateien. Du kannst auch Medien herunterladen und die meist gewünschten, meist gespielten Lieder sowie die Karaoke-Historie einsehen"
+		"KARAS_DESCRIPTION": "Liste, bearbeite und erstelle Karaoke-Dateien",
+		"STATS_DESCRIPTION": "Verwalte Karaoke-Sitzungen, sieh dir die meist gewünschten und gespielten Lieder an und überprüfe den Verlauf",
+		"MEDIAS_DESCRIPTION": "Medien herunterladen und Speicherplatz verwalten"
 	},
 	"USERS": {
 		"EMAIL": "E-Mail",
@@ -1945,9 +1947,9 @@
 		"DATABASE": "Datenbank",
 		"SESSIONS": "Sitzungen",
 		"LOGS": "Log",
-		"STORAGE": "Verwaltung des Festplattenspeichers",
+		"STORAGE": "Speicher-Verwaltung",
 		"SYSTEM": "System",
-		"DOWNLOAD_QUEUE": "Download Warteschlange",
+		"DOWNLOAD_QUEUE": "Warteschlange",
 		"LIST": "Liste",
 		"REPOSITORIES": "Sammlungen und Repositories",
 		"ADVANCED_OPTIONS": "Systemeinstellungen",
@@ -1962,12 +1964,14 @@
 		"NEW": "Neu",
 		"VIEWCOUNTS": "Meist abgespielt",
 		"CONFIGURATION": "Erweiterte Konfiguration",
-		"DOWNLOAD": "Medien herunterladen",
+		"DOWNLOAD": "Downloads",
 		"KARAS": "Lieder",
-		"BATCH_EDIT": "Tag-Batch-Bearbeitung",
+		"BATCH_EDIT": "Batch-Bearbeitung",
 		"DUPLICATE": "Duplikate",
 		"RANKING": "Meist gewünscht",
-		"KARAIMPORT": "Lieder importieren"
+		"KARAIMPORT": "Lieder importieren",
+		"MEDIAS": " Medien",
+		"STATS": " Statistiken"
 	},
 	"QUIZ": {
 		"RULES": {
