@@ -1282,8 +1282,8 @@
 		"SESSIONS": "Sessions",
 		"REPOSITORIES": "Collections et dépôts",
 		"KARAS": "Chansons",
-		"MEDIAS": " Médias",
-		"STATS": " Statistiques",
+		"MEDIAS": "Médias",
+		"STATS": "Statistiques",
 		"LIST": "Liste",
 		"NEW": "Nouveau",
 		"DOWNLOAD_QUEUE": "File d'attente",
@@ -1621,7 +1621,7 @@
 		"ENABLED": "Active"
 	},
 	"HOME": {
-		"STATS_DESCRIPTION": "Gérer les sessions de karaokés, voir les karaokés les plus demandés, joués et l'historique",
+		"STATS_DESCRIPTION": "Gérer les sessions de karaokés, voir les karaokés les plus demandés, joués et accéder à l'historique",
 		"SYSTEM_DESCRIPTION": "Voir les journaux, changer les options de configuration, sauvegarder et restaurer votre base de données, lancer une génération manuelle et gérer les utilisateurs",
 		"MEDIAS_DESCRIPTION": "Télécharger des médias et gérer son espace de stockage",
 		"KARAS_DESCRIPTION": "Lister, modifier, et créer des fichiers de karaokés",
