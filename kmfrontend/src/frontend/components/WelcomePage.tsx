@@ -364,7 +364,7 @@ function WelcomePage() {
 						{context?.globalState.settings.data.user?.flag_tutorial_done ? (
 							<article className="tile-manage">
 								<button type="button" onClick={() => navigate('/admin' + window.location.search)}>
-									<i className="fas fa-list" />
+									<i className="fas fa-circle-play" />
 									<span>{i18next.t('WELCOME_PAGE.KARAMANAGER')}</span>
 								</button>
 							</article>
