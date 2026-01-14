@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import type { DBKara } from '../../../../../src/lib/types/database/kara';
-import { addListener, removeListener } from '../../../utils/electron';
 import { commandBackend } from '../../../utils/socket';
 import Title from '../../components/Title';
 import KaraForm from './KaraForm';
@@ -21,7 +20,6 @@ function KaraEdit() {
 	const saveUpdate = async (kara: EditedKara) => {
 		try {
 			await commandBackend(WS_CMD.EDIT_KARA, kara, true, 300000);
-			addListener();
 			navigate('/system/karas');
 		} catch (_) {
 			// already display
@@ -29,7 +27,6 @@ function KaraEdit() {
 	};
 
 	const loadKara = async () => {
-		removeListener();
 		const res = await commandBackend(WS_CMD.GET_KARA, { kid }, true);
 		setKara(res);
 		setLoaded(true);
