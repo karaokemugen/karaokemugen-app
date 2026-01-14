@@ -148,7 +148,7 @@
 	"MENU_TOOLS_DATABASE": "&Gestion de la base de données",
 	"MENU_OPTIONS": "&Options",
 	"MENU_OPTIONS_CHECKFORUPDATES": "&Vérifier les mises à jour au démarrage",
-	"MENU_OPTIONS_OPERATORCONFIG": "&Préférences",
+	"MENU_OPTIONS_OPERATORCONFIG": "&Options Opérateur",
 	"MENU_OPTIONS_SYSTEMCONFIG": "Préférences &système",
 	"MENU_OPTIONS_OPERATORCONFIG_OSX": "Réglages…",
 	"MENU_OPTIONS_SYSTEMCONFIG_OSX": "Réglages système…",

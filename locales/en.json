@@ -148,7 +148,7 @@
 	"MENU_TOOLS_DATABASE": "Data&base",
 	"MENU_OPTIONS": "&Options",
 	"MENU_OPTIONS_CHECKFORUPDATES": "&Check for updates on startup",
-	"MENU_OPTIONS_OPERATORCONFIG": "&Settings",
+	"MENU_OPTIONS_OPERATORCONFIG": "&Operator Settings",
 	"MENU_OPTIONS_SYSTEMCONFIG": "S&ystem settings",
 	"MENU_OPTIONS_OPERATORCONFIG_OSX": "Settings…",
 	"MENU_OPTIONS_SYSTEMCONFIG_OSX": "System Settings…",
