@@ -335,5 +335,6 @@
 	"QUIZ_SCORES": {
 		"SCORES": "SCORES",
 		"PLAYER_POINTS": "$t(QUIZ_RULES.POINTS, {\"count\": {{points}} })"
-	}
+	},
+	"KARAOKE_MUGEN_PLAYER_WINDOW_TITLE": "Lecteur Karaoke Mugen"
 }

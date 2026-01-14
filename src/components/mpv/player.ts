@@ -89,7 +89,7 @@ export class Player {
 			'--sub-visibility',
 			isMpvGreaterThan39() ? '--sub-ass-use-video-data=none' : '--sub-ass-vsfilter-aspect-compat=no',
 			'--loop-file=no',
-			`--title=${options.monitor ? '[MONITOR] ' : ''}\${force-media-title} - Karaoke Mugen Player`,
+			`--title=${options.monitor ? '[MONITOR] ' : ''}\${force-media-title} - ${i18n.t('KARAOKE_MUGEN_PLAYER_WINDOW_TITLE')}`,
 			'--force-media-title=Loading...',
 			`--audio-device=${conf.Player.AudioDevice}`,
 			`--screenshot-directory=${resolve(state.dataPath)}`,
