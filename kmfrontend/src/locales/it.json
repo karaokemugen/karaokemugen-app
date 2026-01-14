@@ -457,7 +457,6 @@
 	"WELCOME_PAGE": {
 		"ACTIVE_SESSION": "Sessione Attiva: ",
 		"STATS_TAGS": "Tag",
-		"QUIZ": "INIZIA QUIZ",
 		"COLLECTIONS": "COLLEZIONI",
 		"STATS_KARAS": "Brani",
 		"MASTODON_UPDATE": "Novità di Karaoke Mugen",
@@ -467,7 +466,6 @@
 		"REPOSITORY": "ARCHIVI",
 		"KARAMANAGER": "INTERFACCIA OPERATORE",
 		"ADMINISTRATION": "PANNELLO DI SISTEMA",
-		"LOGS": "LOG",
 		"GETSTARTED": "INIZIA TUTORIAL",
 		"SITE": "Sito Web",
 		"STATS_PLAYTIME": "Tempo di riproduzione",

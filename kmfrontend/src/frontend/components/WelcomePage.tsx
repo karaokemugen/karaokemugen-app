@@ -394,18 +394,6 @@ function WelcomePage() {
 								<span>{i18next.t('WELCOME_PAGE.HELP')}</span>
 							</button>
 						</article>
-						<article className="tile-download">
-							<button type="button" onClick={() => navigate('/admin/?quizMode=true')}>
-								<i className="fas fa-person-circle-question" />
-								<span>{i18next.t('WELCOME_PAGE.QUIZ')}</span>
-							</button>
-						</article>
-						<article className="tile-logs">
-							<button type="button" onClick={() => navigate('/system/log')}>
-								<i className="fas fa-terminal" />
-								<span>{i18next.t('WELCOME_PAGE.LOGS')}</span>
-							</button>
-						</article>
 						<article className="tile-stats">
 							<blockquote>
 								<label>
