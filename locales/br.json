@@ -44,7 +44,6 @@
 	},
 	"MY_PLAYLIST": "Ma roll-lenn",
 	"CURRENT_PLAYLIST": "Roll-lenn",
-	"MENU_FILE_IMPORT_PLAYLIST": "&Roll-lenn…",
 	"ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE": "OUZHPENNAÑ UR GANAOUENN ER ROLL-LENN !",
 	"INIT_VALIDATION": "O gwiriekaat ho restroù…",
 	"INIT_DUMPDB": "O saveteiñ ar stlennvon…",
@@ -74,7 +73,6 @@
 	"INIT_INIT": "O kregiñ…",
 	"INIT_BASEUPDATE": "O hizivaat kanaouennoù…",
 	"MENU_FILE": "&Restr",
-	"MENU_FILE_IMPORT_FAVORITES": "&Pennrolloù…",
 	"MENU_FILE_QUIT_OSX": "Kuitaat Karaoke Mugen",
 	"MENU_VIEW": "&Gwelout",
 	"MENU_VIEW_RELOAD": "&Adkargañ",
@@ -89,7 +87,6 @@
 	"MENU_EDIT_DELETE": "&Dilemel",
 	"MENU_EDIT_UNDO": "&Dizober",
 	"MENU_EDIT_REDO": "&Adober",
-	"MENU_FILE_IMPORT": "&Enporzhiañ ur restr",
 	"ABOUT": {
 		"TITLE": "A-zivout Karaoke Mugen"
 	},

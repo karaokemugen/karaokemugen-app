@@ -5,7 +5,7 @@ import { getConfig, setConfig } from '../../lib/utils/config.js';
 import { MenuItemBuilderFunction } from '../../types/electron.js';
 import { getState } from '../../utils/state.js';
 import { showAbout } from '../electron.js';
-import { checkForUpdates, importFile, urls } from './index.js';
+import { checkForUpdates, urls } from './index.js';
 
 const builder: MenuItemBuilderFunction = options => {
 	const { isMac, layout } = options;
@@ -45,22 +45,7 @@ const builder: MenuItemBuilderFunction = options => {
 				click: () => {
 					setConfig({ Online: { Updates: { App: !getConfig().Online.Updates.App } } });
 				},
-			},
-			{
-				visible: !isReduced,
-				label: i18next.t('MENU_FILE_IMPORT'),
-				type: 'submenu',
-				submenu: [
-					{
-						label: i18next.t('MENU_FILE_IMPORT_PLAYLIST'),
-						click: importFile,
-					},
-					{
-						label: i18next.t('MENU_FILE_IMPORT_FAVORITES'),
-						click: importFile,
-					},
-				],
-			},
+			},			
 			{ type: 'separator', visible: !isReduced },
 			{
 				label: isMac ? i18next.t('MENU_FILE_QUIT_OSX') : i18next.t('MENU_FILE_QUIT'),
