@@ -57,7 +57,7 @@ async function listRemoteMedias(type: PlaylistMediaType, repoName: string): Prom
 		const res = await HTTP.get(`${repo.Secure ? 'https' : 'http'}://${repo.Name}/api/playlistMedias/${type}`);
 		return res.data as PlaylistMediaFile[];
 	} catch (err) {
-		logger.warn(`Unable to fetch remote playlist medias list : ${err}`, { service, obj: err });
+		logger.warn(`Unable to fetch ${repoName} playlist medias ${type} list : ${err}`, { service, obj: err });
 	}
 }
 
