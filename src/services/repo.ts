@@ -398,8 +398,13 @@ async function getLocalRepoLastCommit(repo: Repository): Promise<string | null> 
 }
 
 async function newZipRepo(repo: Repository): Promise<string> {
-	const { FullArchiveURL, LatestCommit } = await getRepoMetadata(repo);
-	await downloadAndExtractZip(FullArchiveURL, resolve(getState().dataPath, repo.BaseDir), repo.Name);
+	const { FullArchiveURL, SourceArchiveURL, LatestCommit,  } = await getRepoMetadata(repo);
+	try {
+		await downloadAndExtractZip(FullArchiveURL, resolve(getState().dataPath, repo.BaseDir), repo.Name);
+	} catch (err) {
+		logger.warn(`Failed to download and extract from KM Server, trying source archive if it exsits... : ${err}`, { service, obj: err });
+		await downloadAndExtractZip(SourceArchiveURL, resolve(getState().dataPath, repo.BaseDir), repo.Name);
+	}
 	await oldFilenameFormatKillSwitch(repo.Name);
 	if (repo.AutoMediaDownloads === 'all') {
 		updateMedias(repo.Name).catch(e => {
