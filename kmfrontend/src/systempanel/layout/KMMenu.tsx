@@ -61,7 +61,13 @@ function KMMenu() {
 					<Link to="/system/repositories">{i18next.t('MENU.REPOSITORIES')}</Link>
 				</Menu.Item>
 				<Menu.Item key="options">
-					<Link to="/system/options">{i18next.t('MENU.ADVANCED_OPTIONS')}</Link>
+					<Link to="/system/options">
+						{i18next.t(
+							navigator.platform.indexOf('Mac') === 0
+								? 'HEADERS.SYSTEM_PREFERENCES.TITLEMAC'
+								: 'MENU.ADVANCED_OPTIONS'
+						)}
+					</Link>
 				</Menu.Item>
 				<Menu.Item key="users">
 					<Link to="/system/users">{i18next.t('MENU.USERS')}</Link>
