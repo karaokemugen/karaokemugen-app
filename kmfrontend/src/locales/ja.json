@@ -229,5 +229,10 @@
 	},
 	"CHIBI": {
 		"ONTOP": "他のウィンドウの上に表示する"
+	},
+	"HEADERS": {
+		"KARAOKE_NEW": {
+			"TITLE": "曲を追加する"
+		}
 	}
 }
