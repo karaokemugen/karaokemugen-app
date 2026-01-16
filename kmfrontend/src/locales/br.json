@@ -117,10 +117,13 @@
 		"USER_CONVERTED": "Ho kont zo enlinenn bremañ",
 		"REPO_CREATED": "Ouzhpennet eo bet ar c'havlec'hiad gant berzh",
 		"REPO_DELETED": "Dilamet eo bet ar c'havlec'hiad gant berzh",
-		"REPO_EDITED": "Kemmet eo bet ar c'havlec'hiad gant berzh",
+		"REPO_EDITED": "Embannet eo bet ar c'havlec'hiad gant berzh",
 		"PL_IMPORTED": "Roll-lenn ouzhpennet : {{data}}",
 		"FAVORITES_IMPORTED": "Pennrolloù enporzhiet",
-		"PLAYLIST_EXPORTED_TO_SERVER": "Ezporzhiet eo bet ar roll-lenn gant berzh war-du ar servijer {{data}}"
+		"PLAYLIST_EXPORTED_TO_SERVER": "Ezporzhiet eo bet ar roll-lenn gant berzh war-du ar servijer {{data}}",
+		"KARA_DELETED": "Kanaouenn dilamet",
+		"KARA_EDITED": "Kanaouenn embannet",
+		"KARA_CREATED": "Kanaouenn krouet"
 	},
 	"PASSWORDCONF": "Kadarnadur ar ger-tremen",
 	"NEW_PASSWORD": "Ger-tremen nevez",
@@ -399,7 +402,8 @@
 		"WIPE_DOWNLOAD_QUEUE": "Skarzhañ",
 		"START_DOWNLOAD_QUEUE": "Kregiñ",
 		"SONGWRITERS_BY": "Sonaozet gant",
-		"VIDEO_PREVIEW": "Alberz ar video"
+		"VIDEO_PREVIEW": "Alberz ar video",
+		"DELETE_MEDIA_TOOLTIP": "Dilemel media ar ganaouenn"
 	},
 	"UNUSED_FILES": {
 		"REPOSITORY": "Kavlec'hiad",
@@ -441,7 +445,7 @@
 		"UNKNOWN_REPOSITORY": "Kavlec'hiad dianav",
 		"REPO_CREATE_ERROR": "Fazi o krouiñ ar c'havlec'hiad",
 		"REPO_DELETE_ERROR": "Fazi o dilemel ar c'havlec'hiad",
-		"REPO_EDIT_ERROR": "Fazi o kemmañ ar c'havlec'hiad",
+		"REPO_EDIT_ERROR": "Fazi oc'h embann ar c'havlec'hiad",
 		"UNKNOWN_PLAYLIST": "Roll-lenn dianav",
 		"UNKNOWN_PLAYLIST_ITEM": "Kanaouenn ar roll-lenn dianav",
 		"PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED": "Ouzhpennet e oa bet ar ganaouenn dija.",
@@ -455,26 +459,26 @@
 			"DESCRIPTION": "Furmenn krouiñ ar c'havlec'hiad."
 		},
 		"REPOSITORIES_EDIT": {
-			"TITLE": "Kemmañ ur c'havlec'hiad",
+			"TITLE": "Embann ur c'havlec'hiad",
 			"DESCRIPTION": "Furmenn kemmañ ar c'havlec'hiad."
 		},
 		"KARAOKE_IMPORT": {
 			"TITLE": "Enporzhiañ kanaouennoù"
 		},
 		"USER_NEW": {
-			"TITLE": "Krouiñ ur implijer"
+			"TITLE": "Krouiñ un implijer"
 		},
 		"USER_EDIT": {
-			"TITLE": "Kemmañ ur implijer"
+			"TITLE": "Embann un implijer"
 		},
 		"KARAOKE_LIST": {
 			"TITLE": "Listenn ar ganaouennoù"
 		},
 		"KARAOKE_NEW": {
-			"TITLE": "Ouzhpennañ ur c'haraoke"
+			"TITLE": "Ouzhpennañ ur ganaouenn"
 		},
 		"KARAOKE_EDIT": {
-			"TITLE": "Kemmañ ur c'haraoke"
+			"TITLE": "Embann ur ganaouenn"
 		},
 		"TAG_NEW": {
 			"TITLE": "Krouiñ ur tikedenn"
@@ -593,15 +597,16 @@
 			"IMPORTING_BASE": "Oc'h enporzhiañ ar ganaouennoù…"
 		},
 		"EXPORTING_PLAYLIST_MEDIA": "Ezporzhiañ mediaoù eus ar roll-lenn…",
-		"CREATING_SONG": "O krouiñ ar c'haraoke…",
-		"EDITING_SONG": "O kemmañ ar c'haraoke…",
+		"CREATING_SONG": "O krouiñ ar ganaouenn…",
+		"EDITING_SONG": "Oc'h embann ar ganaouenn…",
 		"DOWNLOADING": "O pellgargañ…"
 	},
 	"FAVORITES_EXPORT": "Ezporzhiañ pennrolloù",
 	"HOME": {
 		"KARAS": {
-			"CREATE": "Krouiñ ur c'haraoke",
-			"DOWNLOAD": "Pellgargañ mediaoù"
+			"CREATE": "Krouiñ ur ganaouenn",
+			"DOWNLOAD": "Pellgargañ mediaoù",
+			"BROWSE": "Merdeiñ ar c'hanaouennoù"
 		},
 		"USERS": {
 			"CREATE": "Krouiñ un implijer"
@@ -637,7 +642,8 @@
 		"PREVIEW": "Alberz"
 	},
 	"ABOUT": {
-		"LICENSE": "Dindan aotre MIT."
+		"LICENSE": "Dindan aotre MIT.",
+		"CONTRIBUTORS": "Gant tud dispar e oa bet savet pozioù ar c'hanaouennoù, evel <1>{{contributors}}</1> da skouer."
 	},
 	"QUIZ": {
 		"TAGLINE": "Petra eo ar ganaouenn-mañ ?",
@@ -700,7 +706,8 @@
 		"MODIFY_KARAOKE": "Kemmañ ar ganaouenn",
 		"ADDED": "Ouzhpennet ",
 		"SHOW_VIDEO": "Diskouez un alberz video",
-		"HIDE_VIDEO": "Serriñ an alberz video"
+		"HIDE_VIDEO": "Serriñ an alberz video",
+		"CREATED": "Kanaouenn krouet "
 	},
 	"CHECKED": "Dibabet :",
 	"OUTRO_TAGLINES": [
