@@ -310,7 +310,7 @@
 	"TOOLTIP_ACCEPT_SELECT_KARA": "Accepter les chansons (copie dans la liste courante)",
 	"TOOLTIP_CLOSEPARENT": "Fermer",
 	"KARA_DETAIL": {
-		"CREATED": "Chanson créé ",
+		"CREATED": "Chanson créée ",
 		"ADDED": "Ajouté ",
 		"ADDED_2": "le ",
 		"ADDED_3": " par ",
@@ -1654,8 +1654,8 @@
 		"COPYING_LYRICS_IN_REPOS": "Mise à jour des lyrics…",
 		"FINDING_UNUSED_MEDIAS": "Recherche de médias inutilisés…",
 		"COMPARING_LYRICS_IN_REPOS": "Comparaison des lyrics entre dépôts…",
-		"CREATING_SONG": "Création du chanson…",
-		"EDITING_SONG": "Modification du chanson…",
+		"CREATING_SONG": "Création de la chanson…",
+		"EDITING_SONG": "Modification de la chanson…",
 		"EDITING_KARAS_BATCH_TAGS": "Modification des tags…",
 		"DATASTORE_UPDATE": "Mise à jour des données locales…",
 		"GENERATING": "Génération de la base de données…",
@@ -2058,7 +2058,7 @@
 			"DESCRIPTION": "D'ici vous pouvez éditer, ajouter ou supprimer des chansons. Habituellement réservé aux mainteneurs de dépôts de karaokés."
 		},
 		"KARAOKE_NEW": {
-			"TITLE": "Ajouter ue chanson",
+			"TITLE": "Ajouter une chanson",
 			"DESCRIPTION": "Ce formulaire vous permet d'ajouter un chanson déjà existant à l'un de vos dépôts."
 		},
 		"KARAOKE_EDIT": {
