@@ -1543,7 +1543,7 @@
 		"MAINTAINER_MODE_TOOLTIP": "A activer si vous participez au maintien du dépôt. Le dépôt sera dorénavant mis à jour via Git. Git doit être installé sur votre système.",
 		"FOLDERS_REQUIRED": "Un dossier de {{name}} est obligatoire.",
 		"MOVE": "Définir la priorité des dépôts",
-		"MOVE_TOOLTIP": "Cela vous permet de définir quels dépôts ont priorité lors de la création de votre base de données : les dépôts le plus en haut seront pris en compte d'abord si jamais deux dépôts ont le même karaoké",
+		"MOVE_TOOLTIP": "Cela vous permet de définir quels dépôts ont priorité lors de la création de votre base de données : les dépôts le plus en haut seront pris en compte d'abord si jamais deux dépôts ont la même chanson",
 		"CONVERT_TO_UUID_BUTTON": "Convertir au format UUID…",
 		"CONVERT_TO_UUID_PANEL": "Convertir au format UUID",
 		"CONVERT_TO_UUID_ABOUT_MESSAGE": "Votre dépôt utilise peut-être un ancien schéma de nommage des noms de fichiers. (avant Karaoke Mugen 8.0.56 - Janvier 2025). Si votre dépôt a été crée avant cela, vous pouvez utiliser ce bouton pour renommer tous les fichiers (métadonnées, paroles, médias...) au nouveau format. Attention cette action n'est pas réversible.",
@@ -2027,7 +2027,7 @@
 		"REPOSITORIES": {
 			"TITLE": "Gestion des collections et des dépôts",
 			"DESCRIPTION_COLLECTION": "Les Collections de chansons sont destinées à des publics différents. Choisissez les collections que vous souhaitez voir dans votre base de karaokés.",
-			"DESCRIPTION": "Les dépôts sont des sources de karaokés. Ajoutez, (dés)activez, ou supprimez des dépôts depuis cette page."
+			"DESCRIPTION": "Les dépôts sont des sources de chansons. Ajoutez, (dés)activez, ou supprimez des dépôts depuis cette page."
 		},
 		"REPOSITORIES_NEW": {
 			"TITLE": "Créer un dépôt",
@@ -2043,7 +2043,7 @@
 		},
 		"UNUSED_FILES": {
 			"TITLE": "Fichiers inutilisés",
-			"DESCRIPTION": "Vous pouvez lister les fichiers inutiles (utilisés par aucun karaoké) dans vos dépôts d'ici."
+			"DESCRIPTION": "Vous pouvez lister les fichiers inutiles (utilisés par aucune chanson) dans vos dépôts d'ici."
 		},
 		"DATABASE": {
 			"TITLE": "Base de données",
@@ -2055,7 +2055,7 @@
 		},
 		"KARAOKE_LIST": {
 			"TITLE": "Liste des chansons",
-			"DESCRIPTION": "D'ici vous pouvez éditer, ajouter ou supprimer des chansons. Habituellement réservé aux mainteneurs de dépôts de karaokés."
+			"DESCRIPTION": "D'ici vous pouvez éditer, ajouter ou supprimer des chansons. Habituellement réservé aux mainteneurs de dépôts de chansons."
 		},
 		"KARAOKE_NEW": {
 			"TITLE": "Ajouter une chanson",
@@ -2227,7 +2227,7 @@
 		"ONLINE_USER_REQUIRED": "Un utilisateur en ligne est requis pour la boîte de réception"
 	},
 	"ABOUT": {
-		"DESCRIPTION": "Un lecteur de karaoké et un outil d'organisation de soirées entre amis ou en public.",
+		"DESCRIPTION": "Un lecteur de karaoké et un outil de gestion de soirées entre amis ou en public.",
 		"LICENSE": "Sous licence MIT.",
 		"CONTRIBUTORS": "Les paroles des chansons ont été créés par des gens géniaux, comme par exemple <1>{{contributors}}</1>.",
 		"DONATORS": "Merci à <1>{{donators}}</1> pour leur don à Karaoke Mugen"
