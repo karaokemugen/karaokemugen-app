@@ -2216,7 +2216,6 @@
 		"DELETE": "Are you sure you want to delete the song from the inbox as well as its files on the server?",
 		"CONTACT_INFOS_MODAL": {
 			"USERNAME": "Username: ",
-			"MAIL": "Email: ",
 			"LANGUAGE": "Language: ",
 			"URL": "Website: ",
 			"SOCIAL_NETWORKS": {

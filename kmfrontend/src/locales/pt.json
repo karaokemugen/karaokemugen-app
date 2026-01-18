@@ -1721,8 +1721,7 @@
 				"INSTAGRAM": "Instagram: ",
 				"DISCORD": "Discórdia: "
 			},
-			"USERNAME": "Nome de usuário: ",
-			"MAIL": "E-mail: "
+			"USERNAME": "Nome de usuário: "
 		},
 		"DELETE": "Tem certeza de que deseja excluir o karaokê da caixa de entrada, bem como seus arquivos no servidor?",
 		"ISSUE": "Emitir {{number}}",

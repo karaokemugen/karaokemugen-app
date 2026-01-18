@@ -142,12 +142,6 @@ export default function Inbox() {
 							</span>
 						</div>
 					) : null}
-					{userDetails?.email ? (
-						<div>
-							<label>{i18next.t('INBOX.CONTACT_INFOS_MODAL.MAIL')}</label>
-							<span>{userDetails.email}</span>
-						</div>
-					) : null}
 					{userDetails?.url ? (
 						<div>
 							<label>{i18next.t('INBOX.CONTACT_INFOS_MODAL.URL')}</label>

@@ -2213,7 +2213,6 @@
 		"DELETE": "Êtes-vous sûr de vouloir supprimer la chanson de la boite de réception ainsi que ses fichiers sur le serveur ?",
 		"CONTACT_INFOS_MODAL": {
 			"USERNAME": "Nom d'utilisateur : ",
-			"MAIL": "Courriel : ",
 			"URL": "Site web : ",
 			"LANGUAGE": "Langue : ",
 			"SOCIAL_NETWORKS": {

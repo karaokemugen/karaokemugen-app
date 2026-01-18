@@ -776,8 +776,7 @@
 				"DISCORD": "Discord: ",
 				"TWITCH": "Twitch: "
 			},
-			"USERNAME": "Nama pengguna: ",
-			"MAIL": "Surel: "
+			"USERNAME": "Nama pengguna: "
 		},
 		"TIMESTAMP": "Tanda waktu",
 		"NO_REPOSITORY_ENABLED": "Tidak ada repositori daring yang diaktifkan di mode pengelola",

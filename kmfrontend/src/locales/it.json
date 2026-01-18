@@ -1908,8 +1908,7 @@
 				"TWITCH": "Twitch: ",
 				"INSTAGRAM": "Instagram: ",
 				"BLUESKY": "Bluesky: "
-			},
-			"MAIL": "Email: "
+			}
 		},
 		"DELETE": "Sei sicuro di voler eliminare i file del karaoke sia dalla posta che dal server?",
 		"TYPES": {
