@@ -315,9 +315,7 @@ export default function Inbox() {
 				<div>
 					{text}
 					<Tag style={{ marginLeft: '0.5em' }}>
-						{record.flag_fix || record.fix
-							? i18next.t('INBOX.TYPES.MODIFICATION')
-							: i18next.t('INBOX.TYPES.CREATION')}
+						{record.flag_fix ? i18next.t('INBOX.TYPES.MODIFICATION') : i18next.t('INBOX.TYPES.CREATION')}
 					</Tag>
 				</div>
 			),
@@ -398,7 +396,7 @@ export default function Inbox() {
 			title: i18next.t('ACTION'),
 			render: (_text, record: LibInbox) => (
 				<div style={{ display: 'flex', gap: '0.5em' }}>
-					{record.available_locally && !(record.flag_fix || record.fix) ? (
+					{record.available_locally && !record.flag_fix ? (
 						<Button
 							onClick={() => deleteKaraFromInboxLocally(record.kid)}
 							style={{ marginLeft: '1em' }}
