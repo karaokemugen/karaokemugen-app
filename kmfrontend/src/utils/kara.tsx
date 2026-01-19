@@ -158,6 +158,10 @@ function buildDisplayTagElement(
 	settings: SettingsStoreData,
 	i18nParam?: Record<string, Record<string, string>>
 ): { text: string; type: string; style?: StyleFontType } {
+	if (eType === 'displayType') {
+		// This is a joker. from_display_type is a priority setting set by the karaoke itself as to which tag it wants to display.
+		eType = kara.from_display_type;
+	}
 	if (eType === 'title') {
 		const title = getTitleInLocale(settings, kara.titles, kara.titles_default_language);
 		return {
@@ -165,9 +169,6 @@ function buildDisplayTagElement(
 			type: 'title',
 			style,
 		};
-	} else if (eType === 'displayType') {
-		// This is a joker. from_display_type is a priority setting set by the karaoke itself as to which tag it wants to display.
-		eType = kara.from_display_type;
 	} else if (eType === 'songtypes' && kara.songtypes) {
 		// Songtypes are specific because we add songorder to them and separate them with spaces instead of commas.
 		const tags: string[] = [];
