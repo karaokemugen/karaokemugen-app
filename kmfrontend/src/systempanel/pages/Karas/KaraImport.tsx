@@ -57,7 +57,7 @@ function KaraImport() {
 					template: fileNameTemplate,
 				},
 				false,
-				30000,
+				120000,
 				true
 			);
 			setFilesToImport(res.map(r => ({ ...r.newFile, ...r })));
