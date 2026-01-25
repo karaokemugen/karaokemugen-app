@@ -94,8 +94,9 @@ export class Player {
 			`--audio-device=${conf.Player.AudioDevice}`,
 			`--screenshot-directory=${resolve(state.dataPath)}`,
 			'--screenshot-format=png',
-			'--no-osc',
-			'--no-osd-bar',
+			'--osc=no',
+			'--osd-level=0',
+			'--osd-bar=no'
 		];
 
 		if (options.monitor) {
