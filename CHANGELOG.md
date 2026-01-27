@@ -1,4 +1,4 @@
-# [9.0.21] - 2026-01-03
+# [9.0.28] - 2026-02-01
 
 This is an overdue release
 
@@ -13,13 +13,25 @@ This is an overdue release
 
 ## Changed
 
+- **[Operators]** Changed icon of operator interface on welcome screen
+- **[Operators]** Reworked system panel dashboard and menus
 - **[Operators]** Increased deadlock timeout in database configuration
 - **[Users]** Updated translation for breton, german, tamil, indonesian, spanish, russian, italian, norwegian, polish, french, english and portugese
 - **[Maintainers]** Tag filenames are now trimmed to 60 characters (#1814)
 - **[Maintainers]** Missing parents are now displayed on a kara submitting form (#1805)
+- **[Maintainers]** All manifest checks are now made when validating kara files
+
+## Removed
+
+- **[Uperators]** Removed logs and quiz buttons from welcome screen for better UX
+- **[Operators]** Removed import file menus
 
 ## Fixed
 
+- **[Operators]** Try to download song database from gitlab directly if it's not available/damaged through KM Server
+- **[Operators]** Fixed timeout for importing a lot of files through the import base feature
+- **[Operators]** Fixed from_display_type not being used in operator view
+- **[Operators]** Updated error message when listing remote media from different repositories
 - **[Operators]** Collections locale is displayed on welcome page now
 - **[Operators]** Removed timeouts when trying to get remote playlists
 - **[Operators]** Fixed timestamp preservation when copying system repo, which caused regeneration on every launch of KM.
