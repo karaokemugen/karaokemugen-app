@@ -54,7 +54,6 @@ class Log extends Component<unknown, LogState> {
 	refresh = async () => {
 		const res = await commandBackend(WS_CMD.GET_LOGS, { level: this.state.level });
 		if (res) this.setState({ log: res });
-		console.debug(res.filter(x => typeof x.message !== 'string'))
 	};
 
 	setLevel = level => {
