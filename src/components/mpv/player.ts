@@ -78,7 +78,6 @@ export class Player {
 		this.logFile = `mpv${options.monitor ? '-monitor' : ''}.${today}.${now}.log`;
 		const mpvArgs = [
 			'--keep-open=always',
-			'--osd-level=0',
 			`--log-file=${resolve(resolvedPath('Logs'), this.logFile)}`,
 			`--hwdec=${conf.Player.HardwareDecoding}`,
 			`--volume=${+conf.Player.Volume}`,
@@ -94,7 +93,6 @@ export class Player {
 			`--audio-device=${conf.Player.AudioDevice}`,
 			`--screenshot-directory=${resolve(state.dataPath)}`,
 			'--screenshot-format=png',
-			'--osc=no',
 			'--osd-level=0',
 			'--osd-bar=no'
 		];
