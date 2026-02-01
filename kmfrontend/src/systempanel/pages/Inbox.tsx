@@ -343,7 +343,7 @@ export default function Inbox() {
 						<span>{i18next.t(`INBOX.STATUS.${text.toUpperCase()}`)}</span>
 						{record.reject_reason && (
 							<Button
-								className="mt-1"
+								className="ml-1 mt-1"
 								type="primary"
 								htmlType="button"
 								onClick={() => seeReason(record.reject_reason)}
