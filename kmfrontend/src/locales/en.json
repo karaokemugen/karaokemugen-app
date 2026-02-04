@@ -1120,7 +1120,14 @@
 			"LABEL": "Encode media",
 			"OPTIONS": {
 				"TRIM_MEDIA": "Trim start/end",
-				"TRIM_MEDIA_TOOLTIP": "Detect and remove black frames and silence at the beginning and end of the media"
+				"TRIM_MEDIA_TOOLTIP": "Detect and remove black frames and silence at the beginning and end of the media",
+				"FIXASPECTRATIO": "Fix aspect ratio",
+				"FIXASPECTRATIO_TOOLTIP": "Changes aspect ratio of a video. Example: convert vertical videos to horizontal orientation. Will take more time to encode depending on the chosen background effect",
+				"FIXASPECTRATIO_BACKGROUND": "Background:",
+				"FIXASPECTRATIO_MODE": {
+					"BLUR_VIDEO": "Blur video",
+					"BLACK": "Black"
+				}
 			},
 			"TIMING_CHANGE_WARNING": "The selected options might change the start and end time of the media. Check the lyrics timings after the media is encoded and saved."
 		},

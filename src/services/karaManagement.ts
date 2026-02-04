@@ -28,7 +28,7 @@ import { ErrorKM } from '../lib/utils/error.js';
 import { embedCoverImage } from '../lib/utils/ffmpeg.js';
 import { fileExists, resolveFileInDirs } from '../lib/utils/files.js';
 import logger, { profile } from '../lib/utils/logger.js';
-import { encodeMediaToRepoDefault } from '../lib/utils/mediaInfoValidation.js';
+import { encodeMediaToRepoDefault, FixAspectRatioBackgroundMode } from '../lib/utils/mediaInfoValidation.js';
 import { createImagePreviews } from '../lib/utils/previews.js';
 import Task from '../lib/utils/taskManager.js';
 import { emitWS } from '../lib/utils/ws.js';
@@ -436,7 +436,7 @@ export async function encodeMediaFileToRepoDefaults(
 	kid?: string,
 	tempFileName?: string,
 	repo?: string,
-	encodeOptions?: { trim?: boolean },
+	encodeOptions?: { trim?: boolean, fixAspectRatioMode?: FixAspectRatioBackgroundMode },
 	task = new Task({
 		value: 0,
 	})
@@ -466,6 +466,7 @@ export async function encodeMediaFileToRepoDefaults(
 		const repoManifest = getRepoManifest(repo ?? kara.repository);
 		const encodedFileInfo = await encodeMediaToRepoDefault(mediaFilePaths[0], currentMediaInfo, repoManifest, {
 			trim: encodeOptions?.trim,
+			fixAspectRatio: encodeOptions?.fixAspectRatioMode && {newAspectRatio: {x: 16, y: 9}, backgroundMode: encodeOptions?.fixAspectRatioMode },
 			outputFolder: resolvedPath('Temp'),
 			onProgress: progress => {
 				task.update({

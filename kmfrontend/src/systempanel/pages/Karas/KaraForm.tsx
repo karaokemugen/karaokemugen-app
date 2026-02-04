@@ -42,6 +42,7 @@ import i18next from 'i18next';
 import { ReactNode, useContext, useEffect, useRef, useState } from 'react';
 import { v4 as UUIDv4 } from 'uuid';
 
+import dayjs from 'dayjs';
 import { PositionX, PositionY } from '../../../../../src/lib/types';
 import { DBKara, DBKaraTag } from '../../../../../src/lib/types/database/kara';
 import type {
@@ -52,21 +53,20 @@ import type {
 	MediaInfoValidationResult,
 } from '../../../../../src/lib/types/kara';
 import type { Repository, RepositoryManifestV2 } from '../../../../../src/lib/types/repo';
+import type { TagType } from '../../../../../src/lib/types/tag';
 import { blobToBase64 } from '../../../../../src/lib/utils/filesCommon';
 import GlobalContext from '../../../store/context';
 import { buildKaraTitle, getPreviewLink, getPreviewPath, getTagInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { getTagTypeName, tagTypes, tagTypesKaraFileV4Order } from '../../../utils/tagTypes';
 import { secondsTimeSpanToHMS } from '../../../utils/tools';
+import { WS_CMD } from '../../../utils/ws';
 import EditableGroupAlias from '../../components/EditableGroupAlias';
 import AutocompleteTag from '../../components/karas/AutocompleteTag';
+import CheckBoxTag from '../../components/karas/CheckBoxTag';
 import LanguagesList from '../../components/LanguagesList';
 import OpenLyricsFileButton from '../../components/OpenLyricsFileButton';
 import TaskProgress from '../../components/TaskProgressBar';
-import dayjs from 'dayjs';
-import type { TagType } from '../../../../../src/lib/types/tag';
-import CheckBoxTag from '../../components/karas/CheckBoxTag';
-import { WS_CMD } from '../../../utils/ws';
 
 const { Paragraph } = Typography;
 const { Panel } = Collapse;
@@ -116,7 +116,7 @@ function KaraForm(props: KaraFormProps) {
 	const [mediaInfo, setMediaInfo] = useState<MediaInfo>(null);
 	const [mediaInfoValidationResults, setMediaInfoValidationResults] = useState<MediaInfoValidationResult[]>([]);
 	const [isEncodingMedia, setIsEncodingMedia] = useState(false);
-	const [encodeMediaOptions, setEncodeMediaOptions] = useState<{ trim: boolean }>({ trim: false });
+	const [encodeMediaOptions, setEncodeMediaOptions] = useState<{ trim: boolean, fixAspectRatioMode: 'blackbars' | 'blurvideo' | '' | null }>({ trim: false, fixAspectRatioMode: null });
 	const [repositoriesValue, setRepositoriesValue] = useState<string[]>(null);
 	const [repositoryManifest, setRepositoryManifest] = useState<RepositoryManifestV2>();
 	const [repoToCopySong, setRepoToCopySong] = useState<string>(null);
@@ -315,6 +315,7 @@ function KaraForm(props: KaraFormProps) {
 					value?.pixelAspectRatio || value?.displayAspectRatio
 						? `SAR ${value?.pixelAspectRatio} DAR ${value?.displayAspectRatio}`
 						: '-',
+				formatSuggestedValue: value => value,
 			},
 			{
 				name: 'videoResolution',
@@ -376,6 +377,7 @@ function KaraForm(props: KaraFormProps) {
 							? 'unmet-warning'
 							: '',
 			}));
+			console.debug({rows, propertiesToDisplay})
 
 		return (
 			<>
@@ -896,6 +898,8 @@ function KaraForm(props: KaraFormProps) {
 		setTagsCheckbox(newTagsCheckbox);
 	};
 
+	
+
 	return (
 		<Form
 			form={form}
@@ -1069,6 +1073,49 @@ function KaraForm(props: KaraFormProps) {
 												<QuestionCircleOutlined />
 											</Tooltip>
 										</Checkbox>
+
+
+										{mediaInfo.videoAspectRatio.displayAspectRatio && mediaInfo.videoAspectRatio.displayAspectRatio !== (
+											repositoryManifest?.rules?.videoFile?.resolution?.aspectRatio &&
+											`${repositoryManifest?.rules?.videoFile?.resolution?.aspectRatio.x}:${repositoryManifest?.rules?.videoFile?.resolution?.aspectRatio.y}` ||
+											'16:9'
+										) ? 
+										<Flex align='center'>
+											<Checkbox
+												style={{width: '100%'}}
+												disabled={isEncodingMedia}
+												defaultChecked={mediaInfoValidationResults?.some(res => res.name === 'videoAspectRatio')}
+												onChange={(e) =>
+													setEncodeMediaOptions({
+														...encodeMediaOptions,
+														fixAspectRatioMode: e.target.checked ? 'blurvideo' : null,
+													})
+												}
+											>
+												{i18next.t('KARA.MEDIA_ENCODE.OPTIONS.FIXASPECTRATIO')}&nbsp;
+												<Tooltip title={i18next.t('KARA.MEDIA_ENCODE.OPTIONS.FIXASPECTRATIO_TOOLTIP')}>
+													<QuestionCircleOutlined />
+												</Tooltip>
+											</Checkbox>
+											
+											<Flex align='center' gap={'5px'}>
+												{i18next.t('KARA.MEDIA_ENCODE.OPTIONS.FIXASPECTRATIO_BACKGROUND')}
+												<Select
+													disabled={!encodeMediaOptions?.fixAspectRatioMode || isEncodingMedia}
+													onChange={(value: any) => 
+														setEncodeMediaOptions({
+															...encodeMediaOptions,
+															fixAspectRatioMode: value,
+														})}
+													defaultValue={'blurvideo'}
+													options={[
+														{label: i18next.t('KARA.MEDIA_ENCODE.OPTIONS.FIXASPECTRATIO_MODE.BLUR_VIDEO'),  value: 'blurvideo'},
+														{label: i18next.t('KARA.MEDIA_ENCODE.OPTIONS.FIXASPECTRATIO_MODE.BLACK'), value: 'black'}]}
+													tagRender={tagRender}
+												></Select>
+											</Flex>
+										</Flex>
+										: null }
 
 										{encodeMediaOptions?.trim ? (
 											<Alert
