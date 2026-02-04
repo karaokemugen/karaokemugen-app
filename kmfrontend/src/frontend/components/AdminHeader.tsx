@@ -676,18 +676,21 @@ function AdminHeader(props: IProps) {
 									gap: '10px',
 								}}
 							>
-								<div>
+								<label>
 									{i18next.t('SETTINGS.INTERFACE.SWITCH_TO_RESTRICTED_AT_TIME')}
 									&nbsp;
 									<i className="far fa-question-circle" />
-								</div>
-								<input
-									disabled={context?.globalState.settings.data.config?.Frontend?.Mode !== 2}
-									type="time"
-									defaultValue={getRestrictInterfaceAtTime()}
-									onBlur={event => changeRestrictInterfaceAtTime(event.target.value)}
-									onChange={event => changeRestrictInterfaceAtTime(event.target.value)}
-								></input>
+								</label>
+								<span className='input-time'>
+									<input
+										disabled={context?.globalState.settings.data.config?.Frontend?.Mode !== 2}
+										type="time"
+										defaultValue={getRestrictInterfaceAtTime()}
+										onBlur={event => changeRestrictInterfaceAtTime(event.target.value)}
+										onChange={event => changeRestrictInterfaceAtTime(event.target.value)}
+									></input>
+									<i className="far fa-clock" />
+								</span>
 							</span>
 						</li>
 						{context?.globalState.settings.data.config?.Karaoke?.StreamerMode?.Twitch?.Enabled ? (

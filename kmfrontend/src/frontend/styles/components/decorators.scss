@@ -114,37 +114,64 @@
 
 	.dropdown-settings {
 		label {
-			display: block;
-			font-size: 1.5em;
+			margin-left: 1em;
+			margin-right: 1em;
 		}
-		li {
-			> div {
-				margin-top: 0.25em;
-			}
+		div {
+			margin-top: 0.25em;
 		}
-		label,
-		span {
-			padding-left: 15px;
-			padding-right: 15px;
+		button {
+			padding: 0.25em;
+			height: 100%;
 		}
 		input {
 			background-color: color.scale(variables.$mugen-playlist-odd, $lightness: 15%);
 			color: white;
 			border: darkgrey 1px solid;
 		}
-		button {
-			padding: 0.25em;
-			height: 100%;
-		}
 		.dropdown-menu {
+			font-size: 1em;
 			left: initial;
 			right: 0;
 			position: absolute;
 			z-index: 50;
+
+			font-size: auto;
+			padding: 5px 0;
+
+			.input-time {
+				display: flex;
+				align-items: center;
+				gap: 0.3em;
+				margin-right: 1em;
+
+				input {
+					cursor: pointer;
+				}
+
+				i {
+					opacity: 0.8;
+					cursor: default;
+				}
+			}
+
+			& > li {
+			padding-top: 5px;
+			padding-bottom: 5px;
+		}		
 		}
 		.disabled {
 			opacity: 0.4;
 		}
+	}
+
+	.admin-header-dropdown-settings {
+
+			li {
+			> div {
+				margin-top: 0.25em;
+			}
+		}		
 	}
 
 	.dropdown {
