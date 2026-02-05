@@ -571,7 +571,7 @@
 			"KARA_LINE_DISPLAY": "Affichage des parties de la chanson",
 			"KARA_LINE_DISPLAY_TOOLTIP": "Définir les parties d'une chanson qui s'affichent dans les listes de chansons (opérateur uniquement)",
 			"SET": "Définir…",
-			"SWITCH_TO_RESTRICTED_AT_TIME": "Passer en Restreint à",
+			"SWITCH_TO_RESTRICTED_AT_TIME": "Passer en restreint à",
 			"SWITCH_TO_RESTRICTED_AT_TIME_TOOLTIP": "Passe automatiquement l'interface en Restreint après que la durée de la liste de lecture atteigne l'heure désirée. Exemple : si défini à 21:00, la liste de lecture n'acceptera plus aucun ajout si sa durée la fera finir au delà de 21:00."
 		}
 	},
@@ -1234,7 +1234,14 @@
 			"LABEL": "Encoder les médias",
 			"OPTIONS": {
 				"TRIM_MEDIA": "Couper",
-				"TRIM_MEDIA_TOOLTIP": "Détecter et supprimer les images noires et les silences au début et à la fin du média"
+				"TRIM_MEDIA_TOOLTIP": "Détecter et supprimer les images noires et les silences au début et à la fin du média",
+				"FIXASPECTRATIO": "Corriger le format d'image",
+				"FIXASPECTRATIO_TOOLTIP": "Modifie le format d'image d'une vidéo. Exemple : convertit les vidéos verticales en format horizontal. Le temps d'encodage dépendra de l'effet d'arrière-plan choisi",
+				"FIXASPECTRATIO_BACKGROUND": "Arrière-plan :",
+				"FIXASPECTRATIO_MODE": {
+					"BLUR_VIDEO": "Vidéo floutée",
+					"BLACK": "Noir"
+				}
 			},
 			"TIMING_CHANGE_WARNING": "Les options sélectionnées peuvent modifier le début et la fin du média. Vérifiez le minutage des paroles après l'encodage et l'enregistrement du média."
 		},
