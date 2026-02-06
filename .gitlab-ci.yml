@@ -9,7 +9,7 @@ variables:
   ELECTRON_CACHE: '.cache/electron'
   DS_INCLUDE_DEV_DEPENDENCIES: 'false'
   DIST_LINUX_X64: dist_linux-x64-9.0.tar.gz
-  DIST_LINUX_ARM64: dist_linux-arm64-8.0.tar.gz
+  DIST_LINUX_ARM64: dist_linux-arm64-9.0.tar.gz
   DIST_WIN: dist_win-9.0.tar.gz
   DIST_MAC: dist_mac-9.0.tar.gz
 include:
