@@ -194,7 +194,14 @@
 		"VIEW_DOWNLOAD_QUEUE": "見る",
 		"ORDER_MEDIA_NEW": "新",
 		"DELETE_KARA": "曲を消す",
-		"DELETE_KARA_MODAL": "曲を消しませんか？"
+		"DELETE_KARA_MODAL": "曲を消しませんか？",
+		"MEDIA_ENCODE": {
+			"OPTIONS": {
+				"FIXASPECTRATIO_MODE": {
+					"BLACK": "黒"
+				}
+			}
+		}
 	},
 	"SPONSOR_TAGLINES": [
 		"この番組は・・・"
