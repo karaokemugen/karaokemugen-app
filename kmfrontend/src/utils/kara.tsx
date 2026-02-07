@@ -459,7 +459,7 @@ export function computeTagsElements(
 	const types = settings.config.Frontend.Library.KaraLineDisplay.filter(
 		v => v.display === 'tag' && v.type === 'versions'
 	).map(e => (e.type as string).toUpperCase());
-	if (versions) {
+	if (!types.includes('VERSIONS') && versions) {
 		types.push('VERSIONS');
 	}
 
