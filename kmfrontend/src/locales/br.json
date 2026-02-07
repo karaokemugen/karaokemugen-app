@@ -403,7 +403,15 @@
 		"START_DOWNLOAD_QUEUE": "Kregiñ",
 		"SONGWRITERS_BY": "Sonaozet gant",
 		"VIDEO_PREVIEW": "Alberz ar video",
-		"DELETE_MEDIA_TOOLTIP": "Dilemel media ar ganaouenn"
+		"DELETE_MEDIA_TOOLTIP": "Dilemel media ar ganaouenn",
+		"MEDIA_ENCODE": {
+			"OPTIONS": {
+				"FIXASPECTRATIO_MODE": {
+					"BLACK": "Du"
+				},
+				"FIXASPECTRATIO_BACKGROUND": "Drekleur :"
+			}
+		}
 	},
 	"UNUSED_FILES": {
 		"REPOSITORY": "Kavlec'hiad",
