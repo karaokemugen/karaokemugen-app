@@ -357,6 +357,7 @@ function KaraForm(props: KaraFormProps) {
 				valueFormatted:
 					mediaInfo &&
 					typeof mediaInfo[property.name] !== 'undefined' &&
+					mediaInfo[property.name] !== null &&
 					((property.format && property.format(mediaInfo[property.name])) ||
 						String(mediaInfo[property.name])),
 				validationResult: mediaInfoValidationResults?.find(r => r.name === property.name),
