@@ -15,14 +15,10 @@
 	"SHUTDOWN": "Encerrar o Karaoke Mugen",
 	"SHUTDOWN_POPUP": "Ligação com o Karaoke Mugen foi perdida",
 	"HOME_BUTTON": "Mudar a interface",
-	"MUTE_UNMUTE": "Desativar o som/Ativar o som",
-	"SHOW_SUBS": "Mostrar letras no ecrã",
-	"HIDE_SUBS": "Ocultar as letras no ecrã",
 	"OPTIONS": "Opções",
 	"PASSWORD": "Palavra-passe (Mínimo de 8 caracteres)",
 	"PASSWORDCONF": "Confirmação de palavra-passe",
 	"NEW_PASSWORD": "Nova palavra-passe",
-	"VOLUME_LEVEL": "Ajustar volume",
 	"PLAYLISTS": {
 		"LIBRARY": "Biblioteca",
 		"FAVORITES": "Favoritos",
@@ -73,14 +69,11 @@
 	"DURATION_REMAINING": "restante",
 	"VERSION": "Versão",
 	"WEBAPPMODE_CLOSED_MESSAGE": "A interface está fechada, por favor aguarde.",
-	"MESSAGE": "Mensagem",
 	"WARNING": "Atenção!",
 	"SHOW-HIDE": "Mostrar/Esconder",
-	"BLURVIDEO_BLUR": "Desfocar vídeo",
 	"UNKNOWN": "Desconhecido",
 	"SECURITY_CODE_MANDATORY": "O código de segurança é requerido para criar uma conta de operador",
 	"OR": "ou",
-	"BLURVIDEO_UNBLUR": "Focar vídeo",
 	"LANGUAGES": {
 		"QRO": "Alfabeto latino (romanização)"
 	},
@@ -95,7 +88,27 @@
 		"NEXT_SONG_SHORT": "Próximo",
 		"STOP_AFTER_SHORT": "Pare depois",
 		"STOP_NOW_SHORT": "Pare agora",
-		"PREVIOUS_SONG_SHORT": "Anterior"
+		"PREVIOUS_SONG_SHORT": "Anterior",
+		"MUTE_UNMUTE": "Desativar o som/Ativar o som",
+		"VOLUME_LEVEL": "Ajustar volume",
+		"SUBS": {
+			"SHOW": "Mostrar letras no ecrã",
+			"HIDE": "Ocultar as letras no ecrã"
+		},
+		"SPEED": {
+			"UP": "Aumentar velocidade",
+			"RESET": "Velocidade normal",
+			"DOWN": "Diminuir velocidade"
+		},
+		"PITCH": {
+			"UP": "Aumentar tom",
+			"RESET": "Reestabelecer tom",
+			"DOWN": "Diminuir tom"
+		},
+		"BLURVIDEO": {
+			"BLUR": "Desfocar vídeo",
+			"UNBLUR": "Focar vídeo"
+		}
 	},
 	"KARA_MENU": {
 		"FAV": "Adicionar aos favoritos",
@@ -126,12 +139,6 @@
 		"FAVORITES_ADDED": "Adicionado aos favoritos",
 		"VISIBLE_OFF_SHORT": "Ocultar"
 	},
-	"SPEED_UP": "Aumentar velocidade",
-	"SPEED_RESET": "Velocidade normal",
-	"SPEED_DOWN": "Diminuir velocidade",
-	"PITCH_UP": "Aumentar tom",
-	"PITCH_RESET": "Reestabelecer tom",
-	"PITCH_DOWN": "Diminuir tom",
 	"KAROULETTE": {
 		"START": "Revisar sugestões do público",
 		"STATS_one": "{{count}} processado ({{accepted}} / {{refused}})",

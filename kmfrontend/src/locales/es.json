@@ -126,7 +126,6 @@
 		"SHOW_SONGS": "Mostrar canciones",
 		"REFRESH_LIBRARY_BANNER": "Los criterios de la biblioteca han cambiado, por favor <1>actualízala</1>."
 	},
-	"MESSAGE": "Mensaje",
 	"INLINE_TAG": {
 		"SEARCH": "Karaokes con {{tag}}",
 		"COUNT_one": "{{count}} karaoke",
@@ -138,12 +137,9 @@
 		"LIBRARY": "Librería",
 		"ANIME_LIST": "Canciones para mis animes"
 	},
-	"VOLUME_LEVEL": "Establecer volumen",
 	"NEW_PASSWORD": "Contraseña nueva",
 	"PASSWORDCONF": "Confirmar contraseña",
 	"PASSWORD": "Contraseña (mínimo 8 caracteres)",
-	"HIDE_SUBS": "Esconder letra en pantalla",
-	"SHOW_SUBS": "Mostrar letra en pantalla",
 	"HOME_BUTTON": "Cambiar interfaz",
 	"SHUTDOWN": "Apagar Karaoke Mugen",
 	"DURATION_REMAINING": "restantes",
@@ -496,7 +492,6 @@
 		"STATS_PLAYTIME": "Tiempo de reproducción"
 	},
 	"TOOLTIP_UPVOTE": "Votar por esta canción",
-	"MUTE_UNMUTE": "Silenciar/Desilenciar",
 	"CL_DELETE_CRITERIAS_PLAYLIST": "Eliminar el criterio '{{type}}' que contiene todas estas canciones :",
 	"KAROULETTE": {
 		"STATS_one": "{{count}} procesado ({{accepted}} / {{refused}})",
@@ -729,7 +724,6 @@
 	],
 	"JINGLE_TIME": "¡Hora de Jingle!",
 	"USER_SONG_PLAYS_IN": "Su canción {{kara}} ha sido añadida y se emitirá en {{time}} ({{date}})",
-	"SPEED_RESET": "Reestablecer a velocidad normal",
 	"VIEW_LIKES_TOOLTIP": "La canción con más likes se mostrará primero, esto no afecta al orden real de la lista de reproducción.",
 	"REPO_IN_PROGRESS": "Karaoke Mugen aún no está listo, por favor espera a que terminen las siguientes tareas.",
 	"REMOTE_STATUS": {
@@ -760,13 +754,8 @@
 		"El final :(",
 		"¡Gracias a todos!"
 	],
-	"SPEED_DOWN": "Reducir la velocidad",
-	"SPEED_UP": "Aumentar la velocidad",
 	"SPONSOR_TIME": "¡TIEMPO COMERCIAL!",
 	"WARNING": "Aviso!",
-	"PITCH_UP": "Aumentar el tono",
-	"PITCH_RESET": "Reestablecer tono",
-	"PITCH_DOWN": "Reducir el tono",
 	"TOOLTIP_KARA_ALREADY_ADDED": "Esta canción ya está en la lista de reproducción opuesta.",
 	"INTRO_TIME": "Introducción de la lista de reproducción",
 	"OUTRO_TIME": "Final de la lista de reproducción",
@@ -1761,8 +1750,6 @@
 	},
 	"SHOW-HIDE": "Mostrar/Ocultar",
 	"UNKNOWN": "Desconocido",
-	"BLURVIDEO_BLUR": "Desenfocar video",
-	"BLURVIDEO_UNBLUR": "Enfocar video",
 	"LANGUAGES": {
 		"QRO": "Alfabeto latino (romanización)"
 	},
@@ -1773,7 +1760,27 @@
 		"PREVIOUS_SONG": "Canción anterior",
 		"PLAY": "Reproducir",
 		"PAUSE": "Pausar",
-		"NEXT_SONG": "Siguiente canción"
+		"NEXT_SONG": "Siguiente canción",
+		"MUTE_UNMUTE": "Silenciar/Desilenciar",
+		"VOLUME_LEVEL": "Establecer volumen",
+		"SUBS": {
+			"HIDE": "Esconder letra en pantalla",
+			"SHOW": "Mostrar letra en pantalla"
+		},
+		"SPEED": {
+			"DOWN": "Reducir la velocidad",
+			"RESET": "Reestablecer a velocidad normal",
+			"UP": "Aumentar la velocidad"
+		},
+		"PITCH": {
+			"UP": "Aumentar el tono",
+			"RESET": "Reestablecer tono",
+			"DOWN": "Reducir el tono"
+		},
+		"BLURVIDEO": {
+			"BLUR": "Desenfocar video",
+			"UNBLUR": "Enfocar video"
+		}
 	},
 	"OR": "o"
 }

@@ -64,7 +64,6 @@
 		"ACTIVE_FILTER": "Aktivt filter",
 		"FILTERS": "Filtre"
 	},
-	"MESSAGE": "Melding",
 	"INLINE_TAG": {
 		"SEARCH": "Karaoke med {{tag}}",
 		"COUNT_one": "{{count}} karaoke",
@@ -75,13 +74,10 @@
 		"FAVORITES": "Favoritter",
 		"LIBRARY": "Bibliotek"
 	},
-	"VOLUME_LEVEL": "Sett lydstyrke",
 	"NEW_PASSWORD": "Nytt passord",
 	"PASSWORDCONF": "Passordbekreftelse",
 	"PASSWORD": "Passord (minst 8 tegn)",
 	"OPTIONS": "Innstillinger",
-	"HIDE_SUBS": "Skjul sangtekster på skjermen",
-	"SHOW_SUBS": "Vis sangtekster på skjermen",
 	"HOME_BUTTON": "Endre grensesnitt",
 	"SHUTDOWN_POPUP": "Mistet tilkoblingen til Karaoke Mugen",
 	"SHUTDOWN": "Slå av Karaoke Mugen",
@@ -368,6 +364,11 @@
 		"PREVIOUS_SONG": "Forrige spor",
 		"PLAY": "Spill av",
 		"PAUSE": "Pause",
-		"NEXT_SONG": "Neste spor"
+		"NEXT_SONG": "Neste spor",
+		"VOLUME_LEVEL": "Sett lydstyrke",
+		"SUBS": {
+			"HIDE": "Skjul sangtekster på skjermen",
+			"SHOW": "Vis sangtekster på skjermen"
+		}
 	}
 }

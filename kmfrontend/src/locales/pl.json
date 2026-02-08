@@ -1,18 +1,14 @@
 {
 	"VERSION": "Wersja",
 	"NO": "Nie",
-	"PITCH_UP": "Podnieś ton",
 	"CONFIRM": "Potwierdź",
-	"BLURVIDEO_UNBLUR": "Wyostrzyć wideo",
 	"YES": "Tak",
-	"SHOW_SUBS": "Pokaż tekst na ekranie",
 	"NOT_FOUND_PAGE": {
 		"404_2": "Nie panikuj, możemy ci pomóc.",
 		"404_4": "Idź do domu",
 		"404": "Zgubiłeś się w Karaoke Mugen?",
 		"404_3": "Jesteś tu"
 	},
-	"SPEED_UP": "Przyśpiesz prędkość",
 	"KARA_MENU": {
 		"VISIBLE_OFF": "Ukryj na liście odtwarzania",
 		"HIDDEN": "Ukryta!",
@@ -72,9 +68,6 @@
 		"SHUFFLE": "Losowo / Sortuj…",
 		"DOWNLOAD_ALL": "Pobierz wszystko"
 	},
-	"MESSAGE": "Wiadomość",
-	"SPEED_RESET": "Resetuj do normalnej prędkości",
-	"SPEED_DOWN": "Zwolnij prędkość",
 	"ADMIN_HEADER": {
 		"QUICK_ACCESS": "Szybki dostęp",
 		"QUIZ_RANKING": "Ranking quizów",
@@ -100,7 +93,6 @@
 		"PLAYLIST_REMAINING_one": "Pozostały czas aktualnej listy: {{count}} minut"
 	},
 	"PASSWORD_DIFFERENT": "Hasła do siebie nie pasują",
-	"HIDE_SUBS": "Ukryj tekst na ekranie",
 	"AND": "i",
 	"OR": "albo",
 	"UNKNOWN": "Nieznany",
@@ -114,15 +106,10 @@
 	"SECURITY_CODE_MANDATORY": "Do utworzenia konta operatora wymagany jest kod bezpieczeństwa",
 	"SHUTDOWN": "Zamknij Karaoke Mugen",
 	"HOME_BUTTON": "Strona domowa",
-	"MUTE_UNMUTE": "Wycisz/Włącz",
-	"BLURVIDEO_BLUR": "Rozmazać wideo",
-	"PITCH_RESET": "Resetuj ton",
-	"PITCH_DOWN": "Obniż ton",
 	"OPTIONS": "Opcje",
 	"PASSWORD": "Hasło (minimum 8 znaków)",
 	"PASSWORDCONF": "Potwierdź hasło",
 	"NEW_PASSWORD": "Nowe hasło",
-	"VOLUME_LEVEL": "Ustaw głośność",
 	"WEBAPPMODE_CLOSED_MESSAGE": "Interfejs jest zamknięty, proszę czekać.",
 	"INLINE_TAG": {
 		"COUNT_one": "{{count}}piosenka",
@@ -2267,7 +2254,27 @@
 		"STOP_NOW_SHORT": "Zatrzymaj się TERAZ",
 		"PREVIOUS_SONG": "Poprzednia piosenka",
 		"STOP_NOW": "Zatrzymaj się teraz (to niebezpieczne!)",
-		"NEXT_SONG_SHORT": "Następny"
+		"NEXT_SONG_SHORT": "Następny",
+		"MUTE_UNMUTE": "Wycisz/Włącz",
+		"VOLUME_LEVEL": "Ustaw głośność",
+		"SUBS": {
+			"SHOW": "Pokaż tekst na ekranie",
+			"HIDE": "Ukryj tekst na ekranie"
+		},
+		"BLURVIDEO": {
+			"BLUR": "Rozmazać wideo",
+			"UNBLUR": "Wyostrzyć wideo"
+		},
+		"PITCH": {
+			"UP": "Podnieś ton",
+			"RESET": "Resetuj ton",
+			"DOWN": "Obniż ton"
+		},
+		"SPEED": {
+			"UP": "Przyśpiesz prędkość",
+			"RESET": "Resetuj do normalnej prędkości",
+			"DOWN": "Zwolnij prędkość"
+		}
 	},
 	"KARAOKE_IMPORT": {
 		"CONFIGURATION": "Konfiguracja",

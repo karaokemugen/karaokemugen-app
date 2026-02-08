@@ -6,7 +6,6 @@
 		"404_2": "Keine Panik, wir können helfen.",
 		"404_3": "Du bist hier"
 	},
-	"MESSAGE": "Nachricht",
 	"CRITERIA": {
 		"LABEL": {
 			"TAG_VERBS": {
@@ -169,9 +168,7 @@
 	"YES": "Ja",
 	"SHUTDOWN": "Karaoke Mugen herunterfahren",
 	"SHUTDOWN_POPUP": "Verbindung zu Karaoke Mugen verloren",
-	"HIDE_SUBS": "Liedtext auf dem Bildschirm ausblenden",
 	"OPTIONS": "Optionen",
-	"VOLUME_LEVEL": "Lautstärke einstellen",
 	"PASSWORD_DIFFERENT": "Passwort stimmt nicht überein",
 	"DURATION_REMAINING": "verbleibend",
 	"CANCEL": "Abbrechen",
@@ -183,8 +180,6 @@
 	"SUBMIT": "Speichern",
 	"LOGIN_MANDATORY": "Anmeldung erforderlich",
 	"SECURITY_CODE_MANDATORY": "Ein Sicherheitscode ist erforderlich, um ein Benutzerkonto mit erhöhten Rechten zu erstellen",
-	"MUTE_UNMUTE": "Stummschalten / Stummschaltung aufheben",
-	"SHOW_SUBS": "Liedtext auf dem Bildschirm anzeigen",
 	"PLAYLISTS": {
 		"LIBRARY": "Bibliothek",
 		"FAVORITES": "Favoriten",
@@ -290,13 +285,8 @@
 	"TOOLTIP_CLOSEPARENT": "Schließen",
 	"TOOLTIP_DELETE_FAVS": "Lied aus den Favoriten entfernen",
 	"SHOW-HIDE": "Anzeigen/Ausblenden",
-	"BLURVIDEO_BLUR": "Video verschwommen darstellen",
-	"BLURVIDEO_UNBLUR": "Video-Vermilchung aufheben",
 	"OR": "oder",
 	"UNKNOWN": "Unbekannt",
-	"SPEED_UP": "Schneller abspielen",
-	"SPEED_RESET": "Auf normale Geschwindigkeit zurücksetzen",
-	"SPEED_DOWN": "Langsamer abspielen",
 	"WARNING": "Warnung!",
 	"KARA": {
 		"SECTIONS": {
@@ -745,10 +735,7 @@
 		"APP_UPDATE": "Neue Version"
 	},
 	"CHECKED": "Ausgewählt:",
-	"PITCH_DOWN": "Tonlage herabsetzen",
-	"PITCH_RESET": "Tonlage zurücksetzen",
 	"CL_ABOUT_TO_ADD": "Du fügst gerade hinzu",
-	"PITCH_UP": "Tonlage erhöhen",
 	"TOOLTIP_DELETE_SELECT_FAVS": "Ausgewähltes Lied aus den Favoriten entfernen",
 	"TOOLTIP_UPVOTE": "Für dieses Lied stimmen",
 	"QUOTA_KARA": "Übrige Lieder",
@@ -2276,7 +2263,27 @@
 		"NEXT_SONG_SHORT": "Danach",
 		"STOP_AFTER_SHORT": "Stoppe nach",
 		"STOP_NOW_SHORT": "Stoppe JETZT",
-		"PREVIOUS_SONG_SHORT": "Davor"
+		"PREVIOUS_SONG_SHORT": "Davor",
+		"MUTE_UNMUTE": "Stummschalten / Stummschaltung aufheben",
+		"VOLUME_LEVEL": "Lautstärke einstellen",
+		"SUBS": {
+			"SHOW": "Liedtext auf dem Bildschirm anzeigen",
+			"HIDE": "Liedtext auf dem Bildschirm ausblenden"
+		},
+		"SPEED": {
+			"UP": "Schneller abspielen",
+			"RESET": "Auf normale Geschwindigkeit zurücksetzen",
+			"DOWN": "Langsamer abspielen"
+		},
+		"BLURVIDEO": {
+			"BLUR": "Video verschwommen darstellen",
+			"UNBLUR": "Video-Vermilchung aufheben"
+		},
+		"PITCH": {
+			"UP": "Tonlage erhöhen",
+			"RESET": "Tonlage zurücksetzen",
+			"DOWN": "Tonlage herabsetzen"
+		}
 	},
 	"NEW_ACCOUNT_CODE_SHORT": "Neuer Benutzer-Code",
 	"NEW_ACCOUNT_CODE": "Neuer Benutzer-Code (beim Veranstalter melden)",

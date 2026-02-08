@@ -30,22 +30,10 @@
 	"SHUTDOWN": "Shutdown Karaoke Mugen",
 	"SHUTDOWN_POPUP": "Connection with Karaoke Mugen lost",
 	"HOME_BUTTON": "Home",
-	"MUTE_UNMUTE": "Mute/unmute",
-	"SHOW_SUBS": "Show lyrics on screen",
-	"HIDE_SUBS": "Hide lyrics on screen",
-	"SPEED_UP": "Increase speed",
-	"SPEED_RESET": "Reset to normal speed",
-	"SPEED_DOWN": "Decrease speed",
-	"BLURVIDEO_BLUR": "Blur video",
-	"BLURVIDEO_UNBLUR": "Unblur video",
-	"PITCH_UP": "Increase pitch",
-	"PITCH_RESET": "Reset pitch",
-	"PITCH_DOWN": "Decrease pitch",
 	"OPTIONS": "Options",
 	"PASSWORD": "Password (8 characters minimum)",
 	"PASSWORDCONF": "Password confirmation",
 	"NEW_PASSWORD": "New Password",
-	"VOLUME_LEVEL": "Set volume",
 	"PLAYLISTS": {
 		"LIBRARY": "Library",
 		"FAVORITES": "Favorites",
@@ -63,7 +51,6 @@
 		"CURRENT_PLAYLIST": "Current playlist",
 		"PUBLIC_PLAYLIST": "Public playlist"
 	},
-	"MESSAGE": "Message",
 	"PLAYLIST_HEADER": {
 		"FILTERS": "Filters",
 		"ACTIVE_FILTER": "Active filter",
@@ -2303,6 +2290,29 @@
 		"NEXT_SONG": "Next song",
 		"NEXT_SONG_SHORT": "Next",
 		"PLAY": "Play",
-		"PAUSE": "Pause"
+		"PAUSE": "Pause",
+		"MUTE_UNMUTE": "Mute/unmute",
+		"VOLUME_LEVEL": "Set volume",
+		"MESSAGE": "Send a message to the public",
+		"SUBS": {
+			"SHOW": "Show lyrics on screen",
+			"HIDE": "Hide lyrics on screen"
+		},
+		"SPEED": {
+			"TITLE": "Change speed",
+			"UP": "Increase speed",
+			"RESET": "Reset to normal speed",
+			"DOWN": "Decrease speed"
+		},
+		"BLURVIDEO": {
+			"BLUR": "Blur video",
+			"UNBLUR": "Unblur video"
+		},
+		"PITCH": {
+			"TITLE": "Change pitch",
+			"UP": "Increase pitch",
+			"RESET": "Reset pitch",
+			"DOWN": "Decrease pitch"
+		}
 	}
 }

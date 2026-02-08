@@ -15,8 +15,6 @@
 		"404_4": "Vai alla home",
 		"404": "Ti sei perso in Karaoke Mugen?"
 	},
-	"MUTE_UNMUTE": "Muta/Smuta",
-	"SHOW_SUBS": "Mostra il testo a schermo",
 	"DURATION_REMAINING": "Rimanente",
 	"INLINE_TAG": {
 		"SEARCH": "Brani con {{tag}}",
@@ -32,7 +30,6 @@
 	},
 	"LOGIN_MANDATORY": "È necessario accedere",
 	"PASSWORD_DIFFERENT": "Le password non corrispondono",
-	"MESSAGE": "Messaggio",
 	"SECURITY_CODE_MANDATORY": "È necessario il codice di sicurezza per creare un account operatore",
 	"PASSWORD_MANDATORY": "È richiesta la password",
 	"SELECT_PLACEHOLDER": "Seleziona una playlist",
@@ -48,7 +45,6 @@
 	"SUBMIT": "Salva",
 	"SHUTDOWN_POPUP": "Connessione con Karaoke Mugen interrotta",
 	"SHUTDOWN": "Spegni Karaoke Mugen",
-	"HIDE_SUBS": "Nascondi il testo a schermo",
 	"ADMIN_HEADER": {
 		"QUICK_ACCESS": "Accesso rapido",
 		"QUIZ_RANKING": "Classifica Quiz",
@@ -71,7 +67,6 @@
 		"ADD_RANDOM": "Aggiungi brani casuali",
 		"ADD": "Aggiungi nuova playlist"
 	},
-	"VOLUME_LEVEL": "Imposta il volume",
 	"OPTIONS": "Opzioni",
 	"WEBAPPMODE_CLOSED_MESSAGE": "L'interfaccia è chiusa, si prega di attendere.",
 	"PROFILE_PASSWORDCONF": "Conferma",
@@ -503,7 +498,6 @@
 	},
 	"GOTO_PLAYING": "Vai al brano in riproduzione",
 	"AVATAR_IMPORT": "Cambia avatar",
-	"PITCH_DOWN": "Diminuisci la frequenza",
 	"PROFILE_MAIL": "Email",
 	"LOG_OFFLINE": {
 		"TITLE": "Modalità Offline",
@@ -526,15 +520,12 @@
 	"PROFILE_PASSWORD_AGAIN": "Inserisci la password",
 	"CL_ADD_RANDOM_TITLE": "Quanti brani casuali vuoi aggiungere?",
 	"GOTO_BOTTOM": "Vai in fondo alla playlist",
-	"BLURVIDEO_BLUR": "Sfoca il video",
 	"KARAOKE_one": "{{count}} brano",
 	"PROFILE_BIO": "Biografia",
 	"FAVORITES_EXPORT": "Esporta preferiti",
 	"TOOLTIP_DELETE_SELECT_FAVS": "Rimuovi i brani selezionati dai preferiti",
 	"HOME_BUTTON": "Home",
-	"PITCH_RESET": "Ripristina la frequenza",
 	"PROFILE_URL": "Sito Web",
-	"SPEED_DOWN": "Diminuisci la velocità",
 	"ACCOUNT": "Il mio account",
 	"UNKNOWN": "Sconosciuto",
 	"LOG_SUCCESS": "Connesso come {{name}}",
@@ -542,9 +533,7 @@
 	"CL_ABOUT_TO_ADD": "Stai per aggiungere",
 	"USERLIST": "Utenti",
 	"PROFILE": "Profilo",
-	"SPEED_UP": "Aumenta la velocità",
 	"TOOLTIP_DELETE_SELECT_KARA": "Elimina i brani selezionati",
-	"PITCH_UP": "Aumenta la frequenza",
 	"CL_EMPTY_LIST": "Svuotare la lista?",
 	"CHECKED": "Selezione:",
 	"PROFILE_USERNAME": "Soprannome",
@@ -562,8 +551,6 @@
 	"TOOLTIP_REFUSE_KARA": "Rifiuta brano (libera brano)",
 	"TOOLTIP_CLOSEPARENT": "Chiudi",
 	"TOOLTIP_KARA_ALREADY_ADDED": "Questo brano è già presente nella playlist opposta.",
-	"BLURVIDEO_UNBLUR": "Metti a fuoco il video",
-	"SPEED_RESET": "Reimposta la velocità normale",
 	"CONFIRM_FAV_IMPORT": "Sovrascrivere i tuoi preferiti con quelli importati?",
 	"KARAOKE_other": "{{count}} brani",
 	"REMOTE_STATUS": {
@@ -2131,7 +2118,27 @@
 		"STOP_NOW_SHORT": "Interrompi ORA",
 		"PREVIOUS_SONG_SHORT": "Precedente",
 		"NEXT_SONG_SHORT": "Successivo",
-		"STOP_AFTER_SHORT": "Interrompi dopo"
+		"STOP_AFTER_SHORT": "Interrompi dopo",
+		"MUTE_UNMUTE": "Muta/Smuta",
+		"VOLUME_LEVEL": "Imposta il volume",
+		"SUBS": {
+			"SHOW": "Mostra il testo a schermo",
+			"HIDE": "Nascondi il testo a schermo"
+		},
+		"SPEED": {
+			"UP": "Aumenta la velocità",
+			"RESET": "Reimposta la velocità normale",
+			"DOWN": "Diminuisci la velocità"
+		},
+		"PITCH": {
+			"UP": "Aumenta la frequenza",
+			"RESET": "Ripristina la frequenza",
+			"DOWN": "Diminuisci la frequenza"
+		},
+		"BLURVIDEO": {
+			"BLUR": "Sfoca il video",
+			"UNBLUR": "Metti a fuoco il video"
+		}
 	},
 	"NEW_ACCOUNT_CODE_SHORT": "Nuovo codice account",
 	"NEW_ACCOUNT_CODE": "Nuovo codice account (chiedi all'operatore)",

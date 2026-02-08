@@ -26,11 +26,6 @@
 	"SHUTDOWN": "Kuitaat Karaoke Mugen",
 	"SHUTDOWN_POPUP": "Kollet eo bet kevreadenn gant Karaoke Mugen",
 	"HOME_BUTTON": "Degemer",
-	"MUTE_UNMUTE": "Mudañ / dimudañ",
-	"SHOW_SUBS": "Diskouez ar pozioù war ar skramm",
-	"HIDE_SUBS": "Kuzhat ar pozioù war ar skramm",
-	"SPEED_UP": "Kreskiñ an tizh",
-	"SPEED_DOWN": "Digreskiñ an tizh",
 	"SETUP_PAGE": {
 		"WELCOME": "Donemat e Karaoke Mugen !",
 		"ONLINE_ACCOUNT": "Kont enlinenn",
@@ -670,7 +665,16 @@
 		"NEXT_SONG_SHORT": "War-lerc'h",
 		"NEXT_SONG": "Kanaouenn war-lerc'h",
 		"PLAY": "Lenn",
-		"PAUSE": "Ehanañ"
+		"PAUSE": "Ehanañ",
+		"MUTE_UNMUTE": "Mudañ / dimudañ",
+		"SUBS": {
+			"SHOW": "Diskouez ar pozioù war ar skramm",
+			"HIDE": "Kuzhat ar pozioù war ar skramm"
+		},
+		"SPEED": {
+			"UP": "Kreskiñ an tizh",
+			"DOWN": "Digreskiñ an tizh"
+		}
 	},
 	"VIEW_FAVORITES": "Pennrolloù",
 	"LOADING": "O kargañ…",

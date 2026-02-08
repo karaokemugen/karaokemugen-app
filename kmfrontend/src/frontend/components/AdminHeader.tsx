@@ -324,7 +324,7 @@ function AdminHeader(props: IProps) {
 								}}
 							>
 								<i className="fas fa-comment" />
-								&nbsp;{i18next.t('MESSAGE')}
+								&nbsp;{i18next.t('PLAYERS_CONTROLS.MESSAGE')}
 							</div>
 						</li>
 						<li className="buttonsMobileMenu">
@@ -337,7 +337,10 @@ function AdminHeader(props: IProps) {
 								id="showSubs"
 							>
 								<i className="fas fa-closed-captioning" />
-								&nbsp;{i18next.t(statusPlayer?.showSubs ? 'HIDE_SUBS' : 'SHOW_SUBS')}
+								&nbsp;
+								{i18next.t(
+									statusPlayer?.showSubs ? 'PLAYERS_CONTROLS.SUBS.HIDE' : 'PLAYERS_CONTROLS.SUBS.SHOW'
+								)}
 							</div>
 						</li>
 						<li className="buttonsMobileMenu">
@@ -371,7 +374,7 @@ function AdminHeader(props: IProps) {
 								) : (
 									<i className="fas fa-volume-off" />
 								)}
-								&nbsp;{i18next.t('MUTE_UNMUTE')}
+								&nbsp;{i18next.t('PLAYERS_CONTROLS.MUTE_UNMUTE')}
 							</div>
 						</li>
 						<li className="buttonsMobileMenuSmaller">
@@ -447,13 +450,17 @@ function AdminHeader(props: IProps) {
 					putPlayerCommando={props.putPlayerCommando}
 				/>
 			</div>
-			<div className={`btn btn-dark splitValueButton speedControl`} id="speedControl">
+			<div
+				className={`btn btn-dark splitValueButton speedControl`}
+				id="speedControl"
+				title={i18next.t('PLAYERS_CONTROLS.SPEED.TITLE')}
+			>
 				{statusPlayer?.speed === 100 && <i className={'icon fa-solid fa-gauge'}></i>}
 				{statusPlayer?.speed > 100 && <i className={'icon fa-solid fa-gauge-high'}></i>}
 				{statusPlayer?.speed < 100 && <i className={'icon fa-solid fa-gauge-high mirrored-horiz'}></i>}
-				<div className={'modifier-buttons'}>
+				<div className={'buttons-group'}>
 					<button
-						title={i18next.t('SPEED_DOWN')}
+						title={i18next.t('PLAYERS_CONTROLS.SPEED.DOWN')}
 						id="speedDown"
 						className={'button-filled'}
 						onMouseDown={_ => changeSpeed(-25)}
@@ -464,7 +471,7 @@ function AdminHeader(props: IProps) {
 						-
 					</button>
 					<button
-						title={i18next.t('SPEED_RESET')}
+						title={i18next.t('PLAYERS_CONTROLS.SPEED.RESET')}
 						id="speedReset"
 						onMouseDown={_ => changeSpeed(null)}
 						data-namecommand="setSpeed"
@@ -474,7 +481,7 @@ function AdminHeader(props: IProps) {
 						{(statusPlayer?.speed / 100).toFixed(2)}x
 					</button>
 					<button
-						title={i18next.t('SPEED_UP')}
+						title={i18next.t('PLAYERS_CONTROLS.SPEED.UP')}
 						id="speedUp"
 						className={'button-filled'}
 						onMouseDown={_ => changeSpeed(+25)}
@@ -487,14 +494,18 @@ function AdminHeader(props: IProps) {
 				</div>
 			</div>
 
-			<div className={`btn btn-dark splitValueButton pitchControl`} id="pitchControl">
+			<div
+				className={`btn btn-dark splitValueButton pitchControl`}
+				id="pitchControl"
+				title={i18next.t('PLAYERS_CONTROLS.PITCH.TITLE')}
+			>
 				{statusPlayer?.pitch === 0 && <i className={'icon fa-solid fa-braille'}></i>}
 				{statusPlayer?.pitch > 0 && <i className={'icon fa-solid fa-arrow-up-right-dots'}></i>}
 				{statusPlayer?.pitch < 0 && <i className={'icon fa-solid fa-arrow-up-right-dots mirrored-vert'}></i>}
 
-				<div className={'modifier-buttons'}>
+				<div className={'buttons-group'}>
 					<button
-						title={i18next.t('PITCH_DOWN')}
+						title={i18next.t('PLAYERS_CONTROLS.PITCH.DOWN')}
 						id="pitchDown"
 						className={'button-filled'}
 						onMouseDown={_ => changePitch(-1)}
@@ -505,7 +516,7 @@ function AdminHeader(props: IProps) {
 						-
 					</button>
 					<button
-						title={i18next.t('PITCH_RESET')}
+						title={i18next.t('PLAYERS_CONTROLS.PITCH.RESET')}
 						id="pitchReset"
 						onMouseDown={_ => changePitch(null)}
 						data-namecommand="setPitch"
@@ -515,7 +526,7 @@ function AdminHeader(props: IProps) {
 						{statusPlayer?.pitch}
 					</button>
 					<button
-						title={i18next.t('PITCH_UP')}
+						title={i18next.t('PLAYERS_CONTROLS.PITCH.UP')}
 						id="pitchUp"
 						className={'button-filled'}
 						onMouseDown={_ => changePitch(+1)}
@@ -528,7 +539,7 @@ function AdminHeader(props: IProps) {
 				</div>
 			</div>
 			<button
-				title={i18next.t('MESSAGE')}
+				title={i18next.t('PLAYERS_CONTROLS.MESSAGE')}
 				id="adminMessage"
 				className="btn btn-dark messageButton"
 				onClick={adminMessage}
@@ -538,7 +549,9 @@ function AdminHeader(props: IProps) {
 
 			<div className="btn-tile-group displayModifierButtons" id="displayModifierButtons">
 				<button
-					title={i18next.t(statusPlayer?.showSubs ? 'HIDE_SUBS' : 'SHOW_SUBS')}
+					title={i18next.t(
+						statusPlayer?.showSubs ? 'PLAYERS_CONTROLS.SUBS.HIDE' : 'PLAYERS_CONTROLS.SUBS.SHOW'
+					)}
 					id="showSubs"
 					data-namecommand={statusPlayer?.showSubs ? 'hideSubs' : 'showSubs'}
 					className={`btn btn-tile btn-dark subtitleButton ${
@@ -555,7 +568,11 @@ function AdminHeader(props: IProps) {
 					</span>
 				</button>
 				<button
-					title={i18next.t(statusPlayer?.blurVideo ? 'BLURVIDEO_UNBLUR' : 'BLURVIDEO_BLUR')}
+					title={i18next.t(
+						statusPlayer?.blurVideo
+							? 'PLAYERS_CONTROLS.BLURVIDEO.UNBLUR'
+							: 'PLAYERS_CONTROLS.BLURVIDEO.BLUR'
+					)}
 					id="blurVideo"
 					data-namecommand={statusPlayer?.blurVideo ? 'unblurVideo' : 'blurVideo'}
 					className={`btn btn-tile btn-dark ${statusPlayer?.blurVideo ? 'unblurVideo' : 'blurVideo'}`}
@@ -565,7 +582,11 @@ function AdminHeader(props: IProps) {
 				</button>
 			</div>
 
-			<button type="button" title={i18next.t('MUTE_UNMUTE')} className="btn btn-dark volumeButton">
+			<button
+				type="button"
+				title={i18next.t('PLAYERS_CONTROLS.MUTE_UNMUTE')}
+				className="btn btn-dark volumeButton"
+			>
 				<div
 					id="mute"
 					data-namecommand={statusPlayer?.volume === 0 || statusPlayer?.mute ? 'unmute' : 'mute'}
@@ -583,7 +604,7 @@ function AdminHeader(props: IProps) {
 				</div>
 				{statusPlayer ? (
 					<input
-						title={i18next.t('VOLUME_LEVEL')}
+						title={i18next.t('PLAYERS_CONTROLS.VOLUME_LEVEL')}
 						data-namecommand="setVolume"
 						id="volume"
 						value={statusPlayer.volume}
@@ -681,7 +702,7 @@ function AdminHeader(props: IProps) {
 									&nbsp;
 									<i className="far fa-question-circle" />
 								</label>
-								<span className='input-time'>
+								<span className="input-time">
 									<input
 										disabled={context?.globalState.settings.data.config?.Frontend?.Mode !== 2}
 										type="time"

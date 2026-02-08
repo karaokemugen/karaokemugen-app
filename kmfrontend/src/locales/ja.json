@@ -2,7 +2,6 @@
 	"YES": "はい",
 	"NO": "いいえ",
 	"PASSWORD_MANDATORY": "パスワードが必要",
-	"PITCH_DOWN": "ピッチを下げる",
 	"OPTIONS": "オプション",
 	"PASSWORD": "パスワード（最低8文字）",
 	"AND": "と",
@@ -62,25 +61,13 @@
 	"VERSION": "バージョン",
 	"SHUTDOWN": "カラオケ無限を閉じる",
 	"HOME_BUTTON": "ホーム",
-	"MUTE_UNMUTE": "ミュート/ミュート解除",
-	"SHOW_SUBS": "画面に歌詞を表示",
-	"HIDE_SUBS": "画面に歌詞を隠す",
-	"SPEED_UP": "スピードアップ",
-	"SPEED_RESET": "通常速度に戻す",
-	"SPEED_DOWN": "スピードを落とす",
-	"BLURVIDEO_BLUR": "ブラービデオ",
-	"BLURVIDEO_UNBLUR": "アンブラービデオ",
-	"PITCH_UP": "ピッチを上げる",
-	"PITCH_RESET": "ピッチをリセット",
 	"NEW_PASSWORD": "新しいパスワード",
-	"VOLUME_LEVEL": "音量をセット",
 	"PLAYLISTS": {
 		"LIBRARY": "ライブラリ",
 		"FAVORITES": "お気に入り",
 		"ANIME_LIST": "自分のアニメの曲"
 	},
 	"WEBAPPMODE_CLOSED_MESSAGE": "インターフェイスを閉じたため、しばらくお待ちください。",
-	"MESSAGE": "メッセージ",
 	"PUBLIC_HOMEPAGE": {
 		"NEXT": "次",
 		"SHOW_LYRICS": "歌詞を表示する",
@@ -96,7 +83,27 @@
 		"NEXT_SONG_SHORT": "次",
 		"NEXT_SONG": "次の歌",
 		"PREVIOUS_SONG": "前の歌",
-		"PREVIOUS_SONG_SHORT": "前"
+		"PREVIOUS_SONG_SHORT": "前",
+		"MUTE_UNMUTE": "ミュート/ミュート解除",
+		"VOLUME_LEVEL": "音量をセット",
+		"SUBS": {
+			"SHOW": "画面に歌詞を表示",
+			"HIDE": "画面に歌詞を隠す"
+		},
+		"SPEED": {
+			"UP": "スピードアップ",
+			"RESET": "通常速度に戻す",
+			"DOWN": "スピードを落とす"
+		},
+		"BLURVIDEO": {
+			"BLUR": "ブラービデオ",
+			"UNBLUR": "アンブラービデオ"
+		},
+		"PITCH": {
+			"UP": "ピッチを上げる",
+			"RESET": "ピッチをリセット",
+			"DOWN": "ピッチを下げる"
+		}
 	},
 	"POLL_TIME": "投票",
 	"USERS": {

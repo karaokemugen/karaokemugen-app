@@ -30,22 +30,10 @@
 	"SHUTDOWN": "Arrêter Karaoke Mugen",
 	"SHUTDOWN_POPUP": "Communication avec Karaoke Mugen perdue",
 	"HOME_BUTTON": "Accueil",
-	"MUTE_UNMUTE": "Rendre muet (ou pas)",
-	"SHOW_SUBS": "Montrer les paroles à l'écran",
-	"HIDE_SUBS": "Cacher les paroles à l'écran",
-	"SPEED_UP": "Augmenter la vitesse",
-	"SPEED_RESET": "Revenir à la vitesse normale",
-	"SPEED_DOWN": "Baisser la vitesse",
-	"BLURVIDEO_BLUR": "Flouter la vidéo",
-	"BLURVIDEO_UNBLUR": "Déflouter la vidéo",
-	"PITCH_UP": "Augmenter la hauteur",
-	"PITCH_RESET": "Revenir à la hauteur normale",
-	"PITCH_DOWN": "Diminuer la hauteur",
 	"OPTIONS": "Options",
 	"PASSWORD": "Mot de passe (8 caractères minimum)",
 	"PASSWORDCONF": "Confirmation du mot de passe",
 	"NEW_PASSWORD": "Nouveau mot de passe",
-	"VOLUME_LEVEL": "Changer le volume",
 	"PLAYLISTS": {
 		"LIBRARY": "Bibliothèque",
 		"FAVORITES": "Favoris",
@@ -186,7 +174,6 @@
 		"EXPL": "Les listes intelligente sont créées à partir des <1>critères</1>, vous pouvez également ajouter des chansons manuellement à cette liste.",
 		"EXPL_OPEN": "Voici les critères utilisés pour créer la <1>liste</1>, celle-ci sera mise à jour dès que de nouvelles chansons sont ajoutées."
 	},
-	"MESSAGE": "Passer un message au public",
 	"LOG_SUCCESS": "Connecté en tant que {{name}}",
 	"LOG_OFFLINE": {
 		"TITLE": "Instance hors-ligne",
@@ -2300,7 +2287,30 @@
 		"NEXT_SONG": "Chanson suivante",
 		"NEXT_SONG_SHORT": "Suivante",
 		"PLAY": "Jouer",
-		"PAUSE": "Pause"
+		"PAUSE": "Pause",
+		"SPEED": {
+			"TITLE": "Changer la vitesse",
+			"UP": "Augmenter la vitesse",
+			"RESET": "Revenir à la vitesse normale",
+			"DOWN": "Baisser la vitesse"
+		},
+		"MUTE_UNMUTE": "Rendre muet (ou pas)",
+		"MESSAGE": "Passer un message au public",
+		"VOLUME_LEVEL": "Changer le volume",
+		"SUBS": {
+			"SHOW": "Montrer les paroles à l'écran",
+			"HIDE": "Cacher les paroles à l'écran"
+		},
+		"BLURVIDEO": {
+			"BLUR": "Flouter la vidéo",
+			"UNBLUR": "Déflouter la vidéo"
+		},
+		"PITCH": {
+			"TITLE": "Changer la hauteur",
+			"UP": "Augmenter la hauteur",
+			"RESET": "Revenir à la hauteur normale",
+			"DOWN": "Diminuer la hauteur"
+		}
 	},
 	"WARNING_CODES": {
 		"REMOTE_HIGH_LATENCY_DETECTED": "Votre connexion avec {{host}} est lente, vos utilisateurs peuvent rencontrer des problèmes"
