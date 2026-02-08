@@ -457,7 +457,14 @@
 		"MEDIA_ENCODE": {
 			"OPTIONS": {
 				"TRIM_MEDIA": "Start/Ende zurechtschneiden",
-				"TRIM_MEDIA_TOOLTIP": "Finde und entferne schwarze Bilder und Stille zu Beginn und Ende des Mediums"
+				"TRIM_MEDIA_TOOLTIP": "Finde und entferne schwarze Bilder und Stille zu Beginn und Ende des Mediums",
+				"FIXASPECTRATIO": "Bildformat korrigieren",
+				"FIXASPECTRATIO_TOOLTIP": "Bildformat eines Videos verändern, beispielsweise vertikal ausgerichtete Videos in horizontal ausgerichtete umwandeln. Nimmt abhängig vom gewählten Hintergrundeffekt mehr Zeit in Anspruch",
+				"FIXASPECTRATIO_BACKGROUND": "Hintergrund:",
+				"FIXASPECTRATIO_MODE": {
+					"BLUR_VIDEO": "Video verschwommen darstellen",
+					"BLACK": "Schwarz"
+				}
 			},
 			"TIMING_CHANGE_WARNING": "Die gewählte Option kann die Start- und Endzeit des Mediums verändern. Prüfe das Timing der Lyrics, nachdem das Medium encodet und gespeichert wurde.",
 			"LABEL": "Encode Medium"
@@ -691,7 +698,7 @@
 			"KARA_LINE_DISPLAY": "Lied-Anzeige",
 			"KARA_LINE_DISPLAY_TOOLTIP": "Definiere, welche Aspekte eines Liedes in Liederlisten anzezeigt werden (nur Betreiber)",
 			"SET": "Einstellen …",
-			"SWITCH_TO_RESTRICTED_AT_TIME": "Auf „Eingeschränkt“ umstellen bei",
+			"SWITCH_TO_RESTRICTED_AT_TIME": "Auf „eingeschränkt“ umstellen bei",
 			"SWITCH_TO_RESTRICTED_AT_TIME_TOOLTIP": "Das Interface automatisch auf „Eingeschränkt“umstellen, nachdem die Playlist die definierte Länge erreicht hat. Beispiel: Wenn 22:00 eingestellt ist, akzeptiert die Playlist keine weiteren Lieder, sobald sie 22:00 oder länger ist."
 		},
 		"FILTER_SETTINGS": "Sucheinstellungen",
