@@ -346,11 +346,8 @@ function WelcomePage() {
 										acceptNewValues={true}
 									/>
 								</article>
-								<article>
-									<a
-										href={`/system/sessions/${activeSession?.seid}`}
-										title={i18next.t('WELCOME_PAGE.EDIT_SESSION')}
-									>
+								<article title={i18next.t('WELCOME_PAGE.EDIT_SESSION')}>
+									<a href={`/system/sessions/${activeSession?.seid}?route=/welcome`}>
 										<i className="fas fa-edit" />
 									</a>
 								</article>
