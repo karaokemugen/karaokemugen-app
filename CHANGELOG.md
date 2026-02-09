@@ -1,3 +1,56 @@
+# [9.0.30] - 2026-02-09
+
+This is an overdue release. Thanks to Cani for some useful UX feedback and Mio and red5h4dow for help with mpv 0.41!
+
+## Added
+
+- **[Users]** Added support/translations for Russian language
+- **[Operators]** Added an option to automatically remove N-x songs from the current playlist as it's being played.
+- **[Operators]** Added an option to close the public interface when specific conditions are met (#1663)
+- **[Maintainers]** Maintainers can now change the status of an inbox, provide reasons for rejection/change requests, etc. (#1817)
+- **[Maintainers]** Added .png to file formats for covers
+- **[Maintainers]** Batch editing parent songs is now possible
+- **[Maintainers]** Added option to choose between black bars or blurry video as background when reencoding a song in a non 16:9 aspect ratio.
+
+## Changed
+
+- **[Operators]** mpv (video player) has been updated to version 0.41
+- **[Operators]** Changed icon of operator interface on welcome screen
+- **[Operators]** Reworked system panel dashboard and menus
+- **[Operators]** Increased deadlock timeout in database configuration
+- **[Operators]** Added some missing tooltips on the operator interface (#1833)
+- **[Operators]** Editing a session now leads you back to the welcome screen (#1840)
+- **[Users]** Updated translation for breton, german, tamil, indonesian, spanish, russian, italian, norwegian, polish, french, english and portugese
+- **[Maintainers]** **Important note : ** Songs can now be added to the database even if some tags are missing. Maintainers should be careful and check if some tags are missing by editing the song after importing it, or check logs to see if there's any warning for a missing tag. At least now it won't error out.
+- **[Maintainers]** Tag filenames are now trimmed to 60 characters (#1814)
+- **[Maintainers]** Missing parents are now displayed on a kara submitting form (#1805)
+- **[Maintainers]** All manifest checks are now made when validating kara files
+
+## Removed
+
+- **[Uperators]** Removed logs and quiz buttons from welcome screen for better UX
+- **[Operators]** Removed import file menus
+
+## Fixed
+
+- **[Operators]** Fixed log page crashing when log isn't a string
+- **[Operators]** Fixed duplicate version tags on some song details (#1859)
+- **[Operators]** Try to download song database from gitlab directly if it's not available/damaged through KM Server
+- **[Operators]** Fixed timeout for importing a lot of files through the import base feature
+- **[Operators]** Fixed from_display_type not being used in operator view
+- **[Operators]** Updated error message when listing remote media from different repositories
+- **[Operators]** Collections locale is displayed on welcome page now
+- **[Operators]** Removed timeouts when trying to get remote playlists
+- **[Operators]** Fixed timestamp preservation when copying system repo, which caused regeneration on every launch of KM.
+- **[Operators]** Fixed ASAR app path, which should allow Arch users a better experience.
+- **[Operators]** Fixed potential gamename conflicts for quizzes
+- **[Operators]** Fixed downloading/syncing medias
+- **[Users]** Fixed some typos and missing messages
+- **[Maintainers]** Fixed parent kara information application on titles
+- **[Maintainers]** Hitting enter when adding an alias doesn't submit the whole song anymore
+- **[Maintainers]** Fixed some media encode errors when some properties were null.
+- **[Developers]** Fixed SCSS deprecation warnings
+
 # [9.0.2] - 2025-08-14
 
 This is a hotfix release
@@ -433,7 +486,7 @@ Karaoke Mugen will take care of moving this for you and warn you if it failed to
 - [Developers] ESBuild should output newer JS code now
 - [Developers] dropDatabase script now uses env vars or arguments for config location.
 - [Developers] Cleaned up some code by removing obsolete stuff.
-- [Developers] Refactored some quizz and repository manifest code
+- [Developers] Refactored some quiz and repository manifest code
 
 ## Removed
 
@@ -456,7 +509,7 @@ Karaoke Mugen will take care of moving this for you and warn you if it failed to
 - [Users] Fixed avatars not falling back to the default avatar when missing
 - [Users] Lyrics with more than 100 lines are now shown properly on the public interface
 - [Operators] A check for mpv running is now made before playing a song. #1644
-- [Operators] Fixed creating a quizz without blind modifiers.
+- [Operators] Fixed creating a quiz without blind modifiers.
 - [Operators] Fixed background issues on Chibi Playlist
 - [Operators] mpv now quits before deleting the last custom background listed so it can be safely removed. #1642
 - [Maintainers] Fixed "from display type" dropdown can't point to a non-existing type anymore
@@ -868,9 +921,9 @@ Bugfixes! Bugfixes!
 - Fixed the multiple mpv windows appearing sometimes when mpv ahs been closed incorrectly.
 - Fixed classic mode not being synced between front and backend sometimes
 - Fixed progress bar not showing after next song
-- Fixed stopping mechanism when quizz ends because end of playlist
-- Fixed encore playing during quizz
-- Fixed outros playing during quizz
+- Fixed stopping mechanism when quiz ends because end of playlist
+- Fixed encore playing during quiz
+- Fixed outros playing during quiz
 - Fixed mpv needing a restart when changing screens
 - Fixed mpv log getter
 - Fixed postgresql not being closed down with Karaoke Mugen, especially under Linux

@@ -57,7 +57,7 @@ async function listRemoteMedias(type: PlaylistMediaType, repoName: string): Prom
 		const res = await HTTP.get(`${repo.Secure ? 'https' : 'http'}://${repo.Name}/api/playlistMedias/${type}`);
 		return res.data as PlaylistMediaFile[];
 	} catch (err) {
-		logger.warn(`Unable to fetch remote playlist medias list : ${err}`, { service, obj: err });
+		logger.warn(`Unable to fetch ${repoName} playlist medias ${type} list : ${err}`, { service, obj: err });
 	}
 }
 
@@ -84,6 +84,8 @@ async function removeFiles(files: string[], dir: string) {
 export async function updateMediasHTTP(type: PlaylistMediaType, repoName: string, task: Task) {
 	try {
 		const remoteFiles = await listRemoteMedias(type, repoName);
+		// Unable to fetch remote playlist medias list, we stop now
+		if (!remoteFiles) return;
 		const localDir = resolve(resolvedMediaPath(type)[0], repoName);
 		await asyncCheckOrMkdir(localDir);
 		// Setting additional path if it doesn't exist in config (but it should if you used the defaults)

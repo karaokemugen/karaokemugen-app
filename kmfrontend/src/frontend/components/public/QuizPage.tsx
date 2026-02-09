@@ -252,22 +252,22 @@ export default function QuizPage() {
 							<span>
 								{mode === 'guess' && quiz.settings.Answers.QuickAnswer.Enabled && quickGuess > 0 ? (
 									<>
-										<i className="fas fa-fw fa-person-running" />{' '}
+										<i className="fas fa-person-running" />{' '}
 										{i18next.t('QUIZ.STATES.QUICK_GUESSING', { count: quickGuess })}
 									</>
 								) : mode === 'guess' && timeLeft > 0 ? (
 									<>
-										<i className="fas fa-fw fa-person-walking" />{' '}
+										<i className="fas fa-person-walking" />{' '}
 										{i18next.t('QUIZ.STATES.GUESSING', { count: timeLeft })}
 									</>
 								) : mode === 'answer' ? (
 									<>
-										<i className="fas fa-fw fa-person" />{' '}
+										<i className="fas fa-person" />{' '}
 										{i18next.t('QUIZ.STATES.NEXT_SONG', { count: revealTimer })}
 									</>
 								) : (
 									<>
-										<i className="fas fa-fw fa-hourglass" /> {i18next.t('QUIZ.STATES.WAITING')}
+										<i className="fas fa-hourglass" /> {i18next.t('QUIZ.STATES.WAITING')}
 									</>
 								)}
 							</span>
@@ -280,9 +280,7 @@ export default function QuizPage() {
 									<>
 										<i
 											className={
-												awardedPointsDetailed?.quickPoints > 0
-													? 'fas fa-fw fa-bolt'
-													: 'fas fa-fw fa-award'
+												awardedPointsDetailed?.quickPoints > 0 ? 'fas fa-bolt' : 'fas fa-award'
 											}
 										></i>{' '}
 										{i18next.t(
@@ -296,7 +294,7 @@ export default function QuizPage() {
 									</>
 								) : (
 									<>
-										<i className="fas fa-fw fa-ban"></i>{' '}
+										<i className="fas fa-ban"></i>{' '}
 										{i18next.t('QUIZ.STATES.SORRY', { answer: answerSnapshot })}
 									</>
 								)}
@@ -307,9 +305,7 @@ export default function QuizPage() {
 									<>
 										<i
 											className={
-												responseMode === 'OK_QUICK'
-													? 'fas fa-fw fa-person-running'
-													: 'fas fa-fw fa-check'
+												responseMode === 'OK_QUICK' ? 'fas fa-person-running' : 'fas fa-check'
 											}
 										></i>{' '}
 										{i18next.t('QUIZ.STATES.REGISTERED', { answer: answerSnapshot })}
@@ -317,13 +313,13 @@ export default function QuizPage() {
 								) : null}
 								{responseMode === 'TOO_LATE' ? (
 									<>
-										<i className="fas fa-fw fa-clock-four"></i>{' '}
+										<i className="fas fa-clock-four"></i>{' '}
 										{i18next.t('QUIZ.STATES.TOO_LATE', { answer: answerSnapshot })}
 									</>
 								) : null}
 								{responseMode === null ? (
 									<>
-										<i className="fas fa-fw fa-times"></i> {i18next.t('QUIZ.STATES.NO_ANSWER')}
+										<i className="fas fa-times"></i> {i18next.t('QUIZ.STATES.NO_ANSWER')}
 									</>
 								) : null}
 							</>
@@ -364,7 +360,7 @@ export default function QuizPage() {
 				) : (
 					<>
 						<div>
-							<i className="fas fa-fw fa-hourglass-end"></i> {i18next.t('QUIZ.END')}
+							<i className="fas fa-hourglass-end"></i> {i18next.t('QUIZ.END')}
 						</div>
 						<a className="action" href="/public" onClick={quitQuiz}>
 							{i18next.t('QUIZ.QUIT')}
@@ -476,7 +472,7 @@ export default function QuizPage() {
 						{quiz.settings.Answers.QuickAnswer.Enabled ? (
 							<>
 								<br />
-								<i className={`fas fa-bolt fa-fw`}></i>{' '}
+								<i className={`fas fa-bolt`}></i>{' '}
 								<Trans
 									t={i18next.t}
 									i18nKey="QUIZ.RULES.QUICK_ANSWER"
@@ -497,7 +493,7 @@ export default function QuizPage() {
 							.filter(([_, { Enabled }]) => Enabled)
 							.map(([possibleAnswerType, { Points }]) => (
 								<li key={possibleAnswerType}>
-									<i className={`fas fa-${acceptedAnswerToIcon(possibleAnswerType)} fa-fw`}></i>
+									<i className={`fas fa-${acceptedAnswerToIcon(possibleAnswerType)}`}></i>
 									{i18next.t(
 										possibleAnswerType === 'title'
 											? 'KARA.TITLE'

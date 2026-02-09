@@ -126,7 +126,6 @@
 		"SHOW_SONGS": "Mostrar canciones",
 		"REFRESH_LIBRARY_BANNER": "Los criterios de la biblioteca han cambiado, por favor <1>actualízala</1>."
 	},
-	"MESSAGE": "Mensaje",
 	"INLINE_TAG": {
 		"SEARCH": "Karaokes con {{tag}}",
 		"COUNT_one": "{{count}} karaoke",
@@ -138,12 +137,9 @@
 		"LIBRARY": "Librería",
 		"ANIME_LIST": "Canciones para mis animes"
 	},
-	"VOLUME_LEVEL": "Establecer volumen",
 	"NEW_PASSWORD": "Contraseña nueva",
 	"PASSWORDCONF": "Confirmar contraseña",
 	"PASSWORD": "Contraseña (mínimo 8 caracteres)",
-	"HIDE_SUBS": "Esconder letra en pantalla",
-	"SHOW_SUBS": "Mostrar letra en pantalla",
 	"HOME_BUTTON": "Cambiar interfaz",
 	"SHUTDOWN": "Apagar Karaoke Mugen",
 	"DURATION_REMAINING": "restantes",
@@ -202,7 +198,7 @@
 			"MEDIAS_SETTINGS": "Medios",
 			"FREE_UPVOTES_REQUIREDMIN": "Votos mínimos requeridos para liberar una canción",
 			"QUOTA_TYPE_TWO": "Duración",
-			"ALLOW_DUPLICATES_TOOLTIP": "Con esta opción, una lista de reproducción puede contener la misma canción dos veces (o más). Solo los operadores pueden agregar la misma canción más de una vez a la lista de reproducción. La canción puede ser agregada de nuevo solo si ha sido reproducida anteriormente.",
+			"ALLOW_DUPLICATES_TOOLTIP": "Con esta opción, una lista de reproducción puede contener la misma canción dos veces (o más). Solo los operadores pueden agregar la misma canción más de una vez a la lista de reproducción.",
 			"PLAYLIST_RANDOMSONGSAFTERENDMESSAGE_TOOLTIP": "El mensaje se mostrará en el centro de la pantalla cuando Karaoke Mugen reproduzca canciones aleatorias, invitando a los usuarios a agregar canciones a la lista de reproducción",
 			"QUOTA_TYPE_ONE": "Por canción",
 			"QUOTA_TYPE": "Tipo de cuota",
@@ -484,7 +480,6 @@
 		"STATS_KARAS": "Karaokes",
 		"STATS": "ESTADO",
 		"REPOSITORY": "REPOSITORIOS",
-		"LOGS": "REGISTROS",
 		"PUBLIC": "INTERFAZ PÚBLICA",
 		"SITE": "Sitio web",
 		"HELP": "AYUDA ONLINE",
@@ -497,7 +492,6 @@
 		"STATS_PLAYTIME": "Tiempo de reproducción"
 	},
 	"TOOLTIP_UPVOTE": "Votar por esta canción",
-	"MUTE_UNMUTE": "Silenciar/Desilenciar",
 	"CL_DELETE_CRITERIAS_PLAYLIST": "Eliminar el criterio '{{type}}' que contiene todas estas canciones :",
 	"KAROULETTE": {
 		"STATS_one": "{{count}} procesado ({{accepted}} / {{refused}})",
@@ -730,7 +724,6 @@
 	],
 	"JINGLE_TIME": "¡Hora de Jingle!",
 	"USER_SONG_PLAYS_IN": "Su canción {{kara}} ha sido añadida y se emitirá en {{time}} ({{date}})",
-	"SPEED_RESET": "Reestablecer a velocidad normal",
 	"VIEW_LIKES_TOOLTIP": "La canción con más likes se mostrará primero, esto no afecta al orden real de la lista de reproducción.",
 	"REPO_IN_PROGRESS": "Karaoke Mugen aún no está listo, por favor espera a que terminen las siguientes tareas.",
 	"REMOTE_STATUS": {
@@ -761,13 +754,8 @@
 		"El final :(",
 		"¡Gracias a todos!"
 	],
-	"SPEED_DOWN": "Reducir la velocidad",
-	"SPEED_UP": "Aumentar la velocidad",
 	"SPONSOR_TIME": "¡TIEMPO COMERCIAL!",
 	"WARNING": "Aviso!",
-	"PITCH_UP": "Aumentar el tono",
-	"PITCH_RESET": "Reestablecer tono",
-	"PITCH_DOWN": "Reducir el tono",
 	"TOOLTIP_KARA_ALREADY_ADDED": "Esta canción ya está en la lista de reproducción opuesta.",
 	"INTRO_TIME": "Introducción de la lista de reproducción",
 	"OUTRO_TIME": "Final de la lista de reproducción",
@@ -922,7 +910,7 @@
 		"NEED_ACCOUNT": "Antes de empezar a cantar, necesitarás una cuenta para utilizar la aplicación.",
 		"ACCOUNT_QUESTION": "¿Desea utilizar una cuenta local (sólo en su ordenador) o una cuenta en línea (requiere acceso a Internet)?",
 		"LOGIN_ONLINE_ACCOUNT": "Ya tengo una cuenta",
-		"SECURITY_CODE_DESC_CONSOLE": "Introduce también el código de seguridad de 6 dígitos que encontrarás buscando \"CÓDIGO DE SEGURIDAD PARA ESTA SESIÓN\" en el archivo de registro de Karaoke Mugen o en la consola.",
+		"SECURITY_CODE_DESC_CONSOLE": "Introduce también el código de seguridad de 6 dígitos que encontrarás buscando \"SECURITY CODE\" en el archivo de registro de Karaoke Mugen o en la consola.",
 		"CREATE_ONLINE_ACCOUNT_DESC": "Introduce un nombre de cuenta y una contraseña para crear una.",
 		"SECURITY_CODE_USE": "Este código asegura que usted es realmente quien realiza estas acciones. Cambia después de cada uso.",
 		"CONNECTED_MESSAGE": "¡Grandioso, has iniciado sesión en Karaoke Mugen, {{user}}!",
@@ -1028,7 +1016,7 @@
 		"ANIME_ID_ERROR": "Introduzca un número positivo",
 		"I18N": "Nombres por idioma",
 		"REPOSITORY": "Depósito",
-		"NOLIVEDOWNLOAD": "No permitir descargas en vivo/web",
+		"NOLIVEDOWNLOAD": "No permitir descargas web",
 		"COPY_TAG": "Copiar etiqueta a otro repositorio",
 		"DESCRIPTION_TOOLTIP": "Una descripción de la etiqueta, utilizada solo para colecciones.",
 		"KITSU_ID": "Kitsu ID/URL",
@@ -1070,7 +1058,7 @@
 		"UPDATE_REPOS_DESCRIPTION": "Fuerza una actualización del repositorio, esto puede ser útil si uno de los repositorios está en estado anormal.",
 		"CONFIRM_UPDATE": "Confirmación de actualización",
 		"REGENERATE_DB": "Regenerar la base de datos",
-		"DUMP_DATABASE_DESCRIPTION": "Crea un archivo de copia de seguridad .sql karaokemugen en la carpeta de datos. Este archivo se puede usar para crear un punto de restauración o para enviar la base de datos a los desarrolladores si se lo piden.",
+		"DUMP_DATABASE_DESCRIPTION": "Crea un archivo de copia de seguridad karaokemugen .sql.gz en la carpeta de datos. Este archivo se puede usar para crear un punto de restauración o para enviar la base de datos a los desarrolladores si se lo piden.",
 		"UPDATE_REPOS": "Actualizar todos los repositorios",
 		"UPDATING_REPOS": "Actualización de repositorios",
 		"REGENERATE_DB_DESCRIPTION": "<1>Regenerar base de datos. La generación hace que Karaoke Mugen sea consciente de todos los archivos que tienes en tus carpetas de datos.</1>Esto se hace normalmente cuando se inicia la app, pero puede que quieras hacerlo manualmente si : <3>Añadiste un repositorio y ya pusiste archivos dentro</3><4>Modificaste archivos desde fuera de la app</4>",
@@ -1114,7 +1102,7 @@
 			"USERNAME": "Nombre de usuario FTP",
 			"BASEDIR": "Directorio base FTP"
 		},
-		"TOOLTIP_NAME": "Si es un repositorio en línea, ponga aquí sólo su nombre de dominio. Si es un repositorio local, ponle el nombre que quieras. Por ejemplo 'Mis pequeños karaokes privados'",
+		"TOOLTIP_NAME": "Ponle el nombre que quieras. Por ejemplo 'Mis pequeños karaokes privados'",
 		"BASE_DIR": "Directorio base",
 		"NEW_REPOSITORY": "Nuevo repositorio",
 		"ONLINE": "En línea",
@@ -1152,7 +1140,7 @@
 		"LYRICS_ARE_DIFFERENT": "Las letras de estas canciones son diferentes entre el repositorio {{first}} y el repositorio {{second}}:",
 		"GIT_CUSTOM_MESSAGE": "Mensaje personalizado",
 		"DELETE_ALL_MEDIAS": "Borrar todos los medios",
-		"NO_FREE_SPACE": "No hay espacio suficiente en el disco para descargar. Haga espacio en su disco duro y reinicie la cola.",
+		"NO_FREE_SPACE": "No hay espacio suficiente en el disco para descargar. Haga espacio en su disco y reinicie la cola.",
 		"GIT_DELETE": "Eliminar",
 		"CONFIRM_SURE": "¿Desea sincronizar las letras del repositorio {{second}} con las del repositorio {{first}}?",
 		"STORAGE_INFO_DELETE": "Como has visto antes, tienes la posibilidad de eliminar los medios no utilizados durante un mes o todos los medios. Serán redonwloaded cuando sea necesario de nuevo, pero esto le permitirá liberar espacio si usted hace una larga noche de karaoke recientemente, por ejemplo.",
@@ -1479,7 +1467,6 @@
 		"DECOMPRESSING": "Comprimiendo objetos"
 	},
 	"HOME": {
-		"USERS_DESCRIPTION": "Listar, editar, crear usuarios, cambiar su contraseña, crear nuevas cuentas de invitados.",
 		"SYSTEM": {
 			"REPOSITORIES": "Colecciones y repositorios de karaoke",
 			"DATABASE": "Base de datos",
@@ -1723,7 +1710,6 @@
 		"DELETE": "¿Estás seguro de que quieres borrar el karaoke de la bandeja de entrada, así como sus archivos en el servidor?",
 		"CONTACT_INFOS_MODAL": {
 			"USERNAME": "Nombre de usuario: ",
-			"MAIL": "Correo electrónico: ",
 			"URL": "Sitio web: ",
 			"SOCIAL_NETWORKS": {
 				"INSTAGRAM": "Instagram: ",
@@ -1735,8 +1721,7 @@
 		},
 		"NO_REPOSITORY_ENABLED": "No hay repositorio en línea habilitado en modo de mantenedor",
 		"ONLINE_USER_REQUIRED": "Se requiere un usuario en línea para la bandeja de entrada",
-		"NAME": "Nombre del karaoke",
-		"TYPE": "Tipo de solicitud"
+		"NAME": "Nombre del karaoke"
 	},
 	"LOGS": {
 		"LEVELS": {
@@ -1765,8 +1750,6 @@
 	},
 	"SHOW-HIDE": "Mostrar/Ocultar",
 	"UNKNOWN": "Desconocido",
-	"BLURVIDEO_BLUR": "Desenfocar video",
-	"BLURVIDEO_UNBLUR": "Enfocar video",
 	"LANGUAGES": {
 		"QRO": "Alfabeto latino (romanización)"
 	},
@@ -1777,7 +1760,27 @@
 		"PREVIOUS_SONG": "Canción anterior",
 		"PLAY": "Reproducir",
 		"PAUSE": "Pausar",
-		"NEXT_SONG": "Siguiente canción"
+		"NEXT_SONG": "Siguiente canción",
+		"MUTE_UNMUTE": "Silenciar/Desilenciar",
+		"VOLUME_LEVEL": "Establecer volumen",
+		"SUBS": {
+			"HIDE": "Esconder letra en pantalla",
+			"SHOW": "Mostrar letra en pantalla"
+		},
+		"SPEED": {
+			"DOWN": "Reducir la velocidad",
+			"RESET": "Reestablecer a velocidad normal",
+			"UP": "Aumentar la velocidad"
+		},
+		"PITCH": {
+			"UP": "Aumentar el tono",
+			"RESET": "Reestablecer tono",
+			"DOWN": "Reducir el tono"
+		},
+		"BLURVIDEO": {
+			"BLUR": "Desenfocar video",
+			"UNBLUR": "Enfocar video"
+		}
 	},
 	"OR": "o"
 }

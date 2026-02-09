@@ -18,7 +18,7 @@ interface CreateTagModalProps {
 
 export function CreateTagModal(props: CreateTagModalProps) {
 	const [loading, setLoading] = useState(false);
-	const formRef = useRef<FormInstance<{ name: string; types: number[] }>>();
+	const formRef = useRef<FormInstance<{ name: string; types: number[] }>>(undefined);
 
 	return (
 		<Modal

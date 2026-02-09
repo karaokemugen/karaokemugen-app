@@ -391,7 +391,7 @@ function KaraList(props: KaraListProps) {
 							{lyricsButton}
 							{playVideoButton}
 							{downloadVideoButton}
-							<Dropdown overlay={<Menu items={getMenu(record)} />}>
+							<Dropdown menu={{ items: getMenu(record) }}>
 								<Button icon={<DownOutlined />} loading={karasRemoving.indexOf(record.kid) >= 0} />
 							</Dropdown>
 						</div>
@@ -473,6 +473,13 @@ function KaraList(props: KaraListProps) {
 							}}
 							onChange={handleFilterTagSelection}
 							placeholder={i18next.t('KARA.TAG_FILTER')}
+							styles={{
+								popup: {
+									root: {
+										maxWidth: '80%',
+									},
+								},
+							}}
 						/>
 					</Col>
 				)}

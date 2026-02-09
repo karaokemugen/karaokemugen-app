@@ -91,14 +91,14 @@ function KaraList({ karas, scope, addKara = false }: KaraListProps) {
 								<div className="modal-right">
 									<h6>
 										<span>
-											<i className={`fas fa-fw fa-${YEARS.icon}`} />
+											<i className={`fas fa-${YEARS.icon}`} />
 											{kara.year}
 										</span>
 									</h6>
 
 									<h6>
 										<span>
-											<i className="fas fa-fw fa-clock" />
+											<i className="fas fa-clock" />
 											{secondsTimeSpanToHMS(kara.duration, 'mm:ss')}
 										</span>
 									</h6>
@@ -150,14 +150,14 @@ function KaraList({ karas, scope, addKara = false }: KaraListProps) {
 							<VideoPreview kara={kara} show={showVideo && kidOpened === kara.kid} scope={scope} />
 							<div className="detailsKaraLine timeData">
 								<span>
-									<i className="fas fa-fw fa-clock" />
+									<i className="fas fa-clock" />
 									{secondsTimeSpanToHMS(kara.duration, 'mm:ss')}
 								</span>
 							</div>
 							{karaBlockTags}
 							<div className="detailsKaraLine">
 								<span className="boldDetails">
-									<i className={`fas fa-fw fa-${YEARS.icon}`} />
+									<i className={`fas fa-${YEARS.icon}`} />
 									{kara.year}
 								</span>
 							</div>

@@ -155,7 +155,7 @@ function PlaylistExportModal(props: IProps) {
 										disabled={!copyPlaylist && playlistRemoteStatus === 'not-owned'}
 										onClick={exportPlaylistToRemote}
 									>
-										<i className="fas fa-fw fa-cloud fa-2x" />
+										<i className="fas fa-cloud fa-2x" />
 										<div className="btn-large-container">
 											<div className="title">
 												{i18next.t('MODAL.PLAYLIST_EXPORT.EXPORT_TO_SERVER')}
@@ -167,7 +167,7 @@ function PlaylistExportModal(props: IProps) {
 						)}
 						<div>
 							<button className="btn btn-default" type="button" onClick={exportPlaylistToFile}>
-								<i className="fas fa-fw fa-file fa-2x" />
+								<i className="fas fa-file fa-2x" />
 								<div className="btn-large-container">
 									<div className="title">{i18next.t('MODAL.PLAYLIST_EXPORT.EXPORT_TO_FILE')}</div>
 								</div>

@@ -8,7 +8,7 @@
 	"LIBRARY": "Bibliothek",
 	"TAG_TYPES": {
 		"MISC": "Verschiedenes",
-		"COLLECTIONS": "Kollektion",
+		"COLLECTIONS": "Sammlung",
 		"WARNINGS": "Warnung",
 		"ORIGINS": "Herkunft",
 		"FAMILIES": "Video-Inhalt",
@@ -65,7 +65,6 @@
 	"ERROR_INIT_PG_DATA": "Fehler bei der Initialisierung der Datenbank",
 	"MENU_HELP_GUIDE": "&Leitfaden",
 	"VOTE_MESSAGE_SCREEN": "Stimme für den nächsten Song ab!",
-	"MENU_FILE_IMPORT_PLAYLIST": "&Playliste…",
 	"MENU_HELP_WEBSITE": "&Webseite",
 	"MENU_WINDOW_PLAYERMONITOR": "&Zeige Player Fenster",
 	"INIT_LAST": "Fast bereit…",
@@ -114,8 +113,6 @@
 	"MENU_TOOLS_LOGS": "&Ereignisprotokoll",
 	"MENU_EDIT_DELETE": "&Löschen",
 	"MENU_VIEW_RELOADFORCE": "&Aktualisieren erzwingen",
-	"MENU_FILE_IMPORT": "&Importiere Datei",
-	"MENU_FILE_IMPORT_FAVORITES": "&Favoriten Liste…",
 	"MENU_HELP_TRANSLATION": "&Beteiligung an der Übersetzung",
 	"MENU_HELP_FORUM": "&Forum",
 	"ERROR_MISSING_BINARIES": "Einige benötigte Binärdateien (mpv/postgresql/ffmpeg) scheinen zu fehlen.",
@@ -157,7 +154,6 @@
 			"Vergesse nicht, deinen Sicherheitsgurt anzulegen, bevor du Karaoke spielst. Singe sicher und achte darauf, dass kein Lautsprecher herunterfällt!",
 			"Vergiss nicht, die Repositorys ab und zu zu synchronisieren: Vielleicht entdeckst du ja neue Lieder!",
 			"Karaoke Mugen ist ein 100 % Open-Source- und Gemeinschaftsprojekt, an dem jeder teilnehmen kann!",
-			"Du kannst Dateien über das Menü „Datei“ -> „Importieren“ importieren, per Drag & Drop importieren oder die ausführbare Datei „Karaoke Mugen“ damit verknüpfen, damit KM sie öffnen und verwenden kann: Wiedergabelisten, Favoriten …",
 			"Ich bin Nanamin, das Maskottchen von Karaoke Mugen, und ich wurde von der wunderbaren Sedeto erschaffen! http://www.sedeto.fr",
 			"Es gibt viele Möglichkeiten, das Karaoke zu konfigurieren! Nehme Dir etwas Zeit, sie alle durchzugehen, bevor du eine Sitzung beginnst!",
 			"Sessions sind individuelle Karaoke-Events. Sie ermöglichen es, gewünschte und gespielte Lieder zu wieder abzuspielen, um sich daran zu erinnern, was während eines Geburtstages, einer Hochzeit oder einer Veranstaltung gespielt wurde!",
@@ -314,7 +310,7 @@
 		"MESSAGE": "Eine oder mehrere von Karaoke Mugen benötigte Binärdateien konnten nicht gefunden werden.\n\nBearbeiten Sie Ihre config.yml und stellen Sie die Variablen System.Binaries.ffmpeg, System.Binaries.Player und System.Binaries.Postgres korrekt für Ihr Betriebssystem ein.\n\nSie können mpv für Ihr Betriebssystem von http://mpv.io/ herunterladen.\n\nSie können PostgreSQL für Ihr Betriebssystem von http://postgresql.org/ herunterladen.\n\nSie können ffmpeg für Ihr Betriebssystem von http://ffmpeg.org herunterladen\n\nSie können das Patch-Dienstprogramm unter https://mugen.karaokes.moe/downloads/patch.exe (Windows) oder https://mugen.karaokes.moe/downloads/patch (macOS) oder im GNU Patch 2.7+-Paket (Linux) herunterladen )\n\nFehlerdetails: ",
 		"TITLE": "Fehlende Binärdateien"
 	},
-	"MENU_OPTIONS_OPERATORCONFIG": "Ein&stellungen",
+	"MENU_OPTIONS_OPERATORCONFIG": "&Betreiber-Einstellungen",
 	"INTERFACE_OPENED": "Öffnen",
 	"UPDATE_DOWNLOADED": "Aktualisierung heruntergeladen",
 	"MENU_OPTIONS_SYSTEMCONFIG_OSX": "System Einstellungen…",
@@ -339,5 +335,6 @@
 		"TITLE": "Flatpak-Nutzer!",
 		"DETAIL": "Der Inhalt des Benutzerorderners wurde verschoben. Da du Karaoke Mugen über Flatpak installiert hast, kann das Programm den alten Ordner nicht löschen. Daher solltest du diesen Ordner hier manuell löschen:\n\n{{oldDir}}\n\n(Er sollte leer sein!)",
 		"UNDERSTOOD": "Alles klar! Mache ich, bevor ich es vergesse!"
-	}
+	},
+	"KARAOKE_MUGEN_PLAYER_WINDOW_TITLE": "Karaoke-Mugen-Player"
 }

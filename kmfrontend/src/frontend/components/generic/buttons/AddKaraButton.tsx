@@ -30,7 +30,7 @@ export default function AddKaraButton(props: Props) {
 
 	return (
 		<button type="button" onClick={addKara} className="btn btn-action">
-			<i className="fas fa-fw fa-plus" />
+			<i className="fas fa-plus" />
 			<span>{i18next.t('TOOLTIP_ADDKARA')}</span>
 		</button>
 	);

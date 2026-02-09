@@ -230,9 +230,9 @@ function AutoMixModal(props: IProps) {
 												className="btn btn-default"
 												onClick={() => deleteCriterion('favorites', el.value)}
 											>
-												<i className="fas fa-fw fa-trash"></i>
+												<i className="fas fa-trash"></i>
 											</button>{' '}
-											<i className="fas fa-fw fa-star"></i>{' '}
+											<i className="fas fa-star"></i>{' '}
 											{i18next.t('AUTOMIX_MODAL.FAVOURITES_OF', { name: el.label })}
 										</li>
 									);
@@ -244,9 +244,9 @@ function AutoMixModal(props: IProps) {
 												className="btn btn-default"
 												onClick={() => deleteCriterion('animelist', el.value)}
 											>
-												<i className="fas fa-fw fa-trash"></i>
+												<i className="fas fa-trash"></i>
 											</button>{' '}
-											<i className="fas fa-fw fa-th-list"></i>{' '}
+											<i className="fas fa-th-list"></i>{' '}
 											{i18next.t('AUTOMIX_MODAL.ANIMELISTS_OF', { name: el.label })}
 										</li>
 									);
@@ -261,13 +261,9 @@ function AutoMixModal(props: IProps) {
 												className="btn btn-default"
 												onClick={() => deleteCriterion('tag', el.value)}
 											>
-												<i className="fas fa-fw fa-trash"></i>
+												<i className="fas fa-trash"></i>
 											</button>{' '}
-											<i
-												className={
-													'fas fa-fw fa-' + tagTypes[getTagTypeName(el.value.type)].icon
-												}
-											></i>{' '}
+											<i className={'fas fa-' + tagTypes[getTagTypeName(el.value.type)].icon}></i>{' '}
 											{el.label}
 										</li>
 									);
@@ -279,9 +275,9 @@ function AutoMixModal(props: IProps) {
 												className="btn btn-default"
 												onClick={() => deleteCriterion('year', el.value)}
 											>
-												<i className="fas fa-fw fa-trash"></i>
+												<i className="fas fa-trash"></i>
 											</button>{' '}
-											<i className="fas fa-fw fa-calendar-days"></i> {el.label}
+											<i className="fas fa-calendar-days"></i> {el.label}
 										</li>
 									);
 								})}
@@ -326,12 +322,11 @@ function AutoMixModal(props: IProps) {
 								tagList.length === 0 &&
 								yearList.length === 0) ? (
 								<>
-									<i className="fas fa-fw fa-exclamation-triangle" />{' '}
-									{i18next.t('AUTOMIX_MODAL.EMPTY')}
+									<i className="fas fa-exclamation-triangle" /> {i18next.t('AUTOMIX_MODAL.EMPTY')}
 								</>
 							) : (
 								<>
-									<i className="fas fa-fw fa-check" /> {i18next.t('AUTOMIX_MODAL.MIX')}
+									<i className="fas fa-check" /> {i18next.t('AUTOMIX_MODAL.MIX')}
 								</>
 							)}
 						</button>

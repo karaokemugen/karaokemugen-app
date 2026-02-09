@@ -21,7 +21,8 @@
 		"PLATFORMS": "Savenn",
 		"WARNINGS": "Diwall",
 		"VERSIONS": "Handelv",
-		"SERIES": "Oberenn"
+		"SERIES": "Oberenn",
+		"GENRES": "Doare"
 	},
 	"NEXT_SONG": "Kan war-lerc'h",
 	"MENU_HELP_ABOUT": "&A-zivout Karaoke Mugen",
@@ -43,7 +44,6 @@
 	},
 	"MY_PLAYLIST": "Ma roll-lenn",
 	"CURRENT_PLAYLIST": "Roll-lenn",
-	"MENU_FILE_IMPORT_PLAYLIST": "&Roll-lenn…",
 	"ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE": "OUZHPENNAÑ UR GANAOUENN ER ROLL-LENN !",
 	"INIT_VALIDATION": "O gwiriekaat ho restroù…",
 	"INIT_DUMPDB": "O saveteiñ ar stlennvon…",
@@ -73,7 +73,6 @@
 	"INIT_INIT": "O kregiñ…",
 	"INIT_BASEUPDATE": "O hizivaat kanaouennoù…",
 	"MENU_FILE": "&Restr",
-	"MENU_FILE_IMPORT_FAVORITES": "&Pennrolloù…",
 	"MENU_FILE_QUIT_OSX": "Kuitaat Karaoke Mugen",
 	"MENU_VIEW": "&Gwelout",
 	"MENU_VIEW_RELOAD": "&Adkargañ",
@@ -88,7 +87,6 @@
 	"MENU_EDIT_DELETE": "&Dilemel",
 	"MENU_EDIT_UNDO": "&Dizober",
 	"MENU_EDIT_REDO": "&Adober",
-	"MENU_FILE_IMPORT": "&Enporzhiañ ur restr",
 	"ABOUT": {
 		"TITLE": "A-zivout Karaoke Mugen"
 	},
@@ -145,8 +143,8 @@
 			null,
 			null,
 			null,
-			null,
-			"Nanamin on, maskotenn Karaoke Mugen ha krouet e oan bet gant Sedeto donezonet ! http://www.sedeto.fr"
+			"Nanamin on, maskotenn Karaoke Mugen ha krouet e oan bet gant Sedeto donezonet ! http://www.sedeto.fr",
+			""
 		]
 	},
 	"QUIZ_RULES": {

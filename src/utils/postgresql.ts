@@ -316,6 +316,8 @@ export async function updatePGConf() {
 	// Parsing the ini file by hand since it can't be parsed well with ini package
 	pgConf = setPGConfig(pgConf, 'port', conf.System.Database.port);
 	pgConf = setPGConfig(pgConf, 'logging_collector', 'on');
+	// Raising this to avoid deadlocks. This should be fine for a server like KM App uses. Downside is that it'll be more difficult investigating randomly slow queries because deadlocks will occur less, but at least they won't fail.
+	pgConf = setPGConfig(pgConf, 'deadlock_timeout', 5000);
 	if (process.platform !== 'win32') {
 		pgConf = setPGConfig(pgConf, 'listen_addresses', "''");
 		pgConf = setPGConfig(pgConf, 'unix_socket_directories', "'./'");

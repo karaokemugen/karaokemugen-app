@@ -4,6 +4,7 @@ import { createElement, useContext, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { useLocation, useNavigate } from 'react-router';
 
+import dayjs, { Dayjs } from 'dayjs';
 import { PublicPlayerState } from '../../../../src/types/state';
 import KLogo from '../../assets/Klogo.png';
 import { logout } from '../../store/actions/auth';
@@ -106,6 +107,30 @@ function AdminHeader(props: IProps) {
 		commandBackend(WS_CMD.UPDATE_SETTINGS, { setting: data }).catch(() => {});
 	};
 
+	const getRestrictInterfaceAtTime = () =>
+		context?.globalState.settings.data.config?.Karaoke?.RestrictInterfaceAtTime
+			? dayjs(context?.globalState.settings.data.config?.Karaoke?.RestrictInterfaceAtTime).format('HH:mm')
+			: null;
+	const changeRestrictInterfaceAtTime = (timeString?: string | null) => {
+		let dateWithTime: Dayjs | null = null;
+		if (timeString) {
+			try {
+				const [hours, minutes] = timeString.split(':').map(s => Number(s));
+				dateWithTime = dayjs()
+					.set('hours', hours)
+					.set('minutes', minutes)
+					.set('seconds', 0)
+					.set('milliseconds', 0);
+				if (dateWithTime.isBefore(dayjs())) dateWithTime = dateWithTime.add(1, 'day');
+			} catch (e) {
+				// Invalid time format, reset
+				dateWithTime = null;
+			}
+		} else dateWithTime = null;
+		const data = expand('Karaoke.RestrictInterfaceAtTime', dateWithTime?.toDate());
+		commandBackend(WS_CMD.UPDATE_SETTINGS, { setting: data }).catch(() => {});
+	};
+
 	const changeLiveComments = (liveComments: boolean) => {
 		const data = expand('Player.LiveComments', liveComments);
 		commandBackend(WS_CMD.UPDATE_SETTINGS, { setting: data }).catch(() => {});
@@ -199,7 +224,7 @@ function AdminHeader(props: IProps) {
 					className="btn btn-dark backPlaylistsButton"
 					onClick={() => navigate('/admin')}
 				>
-					<i className="fas fa-fw fa-long-arrow-alt-left" />
+					<i className="fas fa-long-arrow-alt-left" />
 				</button>
 			) : null}
 			<div className="dropdown">
@@ -210,7 +235,7 @@ function AdminHeader(props: IProps) {
 					<ul className="dropdown-menu">
 						<li>
 							<a href="/welcome">
-								<i className="fas fa-fw fa-home" />
+								<i className="fas fa-home" />
 								&nbsp;{i18next.t('HOME_BUTTON')}
 							</a>
 						</li>
@@ -225,12 +250,12 @@ function AdminHeader(props: IProps) {
 							>
 								{location.pathname.includes('/options') ? (
 									<>
-										<i className="fas fa-fw fa-list-ul" />
+										<i className="fas fa-list-ul" />
 										&nbsp;{i18next.t('CL_PLAYLISTS')}
 									</>
 								) : (
 									<>
-										<i className="fas fa-fw fa-cog" />
+										<i className="fas fa-cog" />
 										&nbsp;{i18next.t('OPTIONS')}
 									</>
 								)}
@@ -238,27 +263,27 @@ function AdminHeader(props: IProps) {
 						</li>
 						<li>
 							<div onClick={toggleProfileModal}>
-								<i className="fas fa-fw fa-user" />
+								<i className="fas fa-user" />
 								&nbsp;{i18next.t('ACCOUNT')}
 							</div>
 						</li>
 						<li>
 							<div onClick={toggleUsersModal}>
-								<i className="fas fa-fw fa-users" />
+								<i className="fas fa-users" />
 								&nbsp;{i18next.t('USERLIST')}
 							</div>
 						</li>
 						{!quizInProgress ? (
 							<li>
 								<div onClick={toggleQuizModal}>
-									<i className="fas fa-fw fa-person-circle-question" />
+									<i className="fas fa-person-circle-question" />
 									&nbsp;{i18next.t('QUIZ.START')}
 								</div>
 							</li>
 						) : (
 							<li>
 								<div onClick={toggleStopQuizModal}>
-									<i className="fas fa-fw fa-person-circle-question" />
+									<i className="fas fa-person-circle-question" />
 									&nbsp;{i18next.t('QUIZ.STOP')}
 								</div>
 							</li>
@@ -272,21 +297,21 @@ function AdminHeader(props: IProps) {
 									setDropDownMenu(!dropDownMenu);
 								}}
 							>
-								<i className="fas fa-fw fa-question-circle" />
+								<i className="fas fa-question-circle" />
 								&nbsp;{i18next.t('MODAL.TUTORIAL.TITLE')}
 							</div>
 						</li>
 						<hr></hr>
 						<li>
 							<div onClick={() => logout(context.globalDispatch)}>
-								<i className="fas fa-fw fa-sign-out-alt" />
+								<i className="fas fa-sign-out-alt" />
 								&nbsp;{i18next.t('LOGOUT')}
 							</div>
 						</li>
 						{props.powerOff ? (
 							<li>
 								<div onClick={props.powerOff}>
-									<i className="fas fa-fw fa-power-off" />
+									<i className="fas fa-power-off" />
 									&nbsp;{i18next.t('SHUTDOWN')}
 								</div>
 							</li>
@@ -298,8 +323,8 @@ function AdminHeader(props: IProps) {
 									setDropDownMenu(!dropDownMenu);
 								}}
 							>
-								<i className="fas fa-fw fa-comment" />
-								&nbsp;{i18next.t('MESSAGE')}
+								<i className="fas fa-comment" />
+								&nbsp;{i18next.t('PLAYERS_CONTROLS.MESSAGE')}
 							</div>
 						</li>
 						<li className="buttonsMobileMenu">
@@ -311,8 +336,11 @@ function AdminHeader(props: IProps) {
 								data-namecommand={statusPlayer?.showSubs ? 'hideSubs' : 'showSubs'}
 								id="showSubs"
 							>
-								<i className="fas fa-fw fa-closed-captioning" />
-								&nbsp;{i18next.t(statusPlayer?.showSubs ? 'HIDE_SUBS' : 'SHOW_SUBS')}
+								<i className="fas fa-closed-captioning" />
+								&nbsp;
+								{i18next.t(
+									statusPlayer?.showSubs ? 'PLAYERS_CONTROLS.SUBS.HIDE' : 'PLAYERS_CONTROLS.SUBS.SHOW'
+								)}
 							</div>
 						</li>
 						<li className="buttonsMobileMenu">
@@ -324,7 +352,7 @@ function AdminHeader(props: IProps) {
 								id="goTo"
 								data-namecommand="goTo"
 							>
-								<i className="fas fa-fw fa-undo-alt" />
+								<i className="fas fa-undo-alt" />
 								&nbsp;{i18next.t('PLAYERS_CONTROLS.REWIND')}
 							</div>
 						</li>
@@ -338,15 +366,15 @@ function AdminHeader(props: IProps) {
 								data-namecommand={statusPlayer?.volume === 0 || statusPlayer?.mute ? 'unmute' : 'mute'}
 							>
 								{statusPlayer?.volume === 0 || statusPlayer?.mute ? (
-									<i className="fas fa-fw fa-volume-mute" />
+									<i className="fas fa-volume-mute" />
 								) : statusPlayer?.volume > 66 ? (
-									<i className="fas fa-fw fa-volume-up" />
+									<i className="fas fa-volume-up" />
 								) : statusPlayer?.volume > 33 ? (
-									<i className="fas fa-fw fa-volume-down" />
+									<i className="fas fa-volume-down" />
 								) : (
-									<i className="fas fa-fw fa-volume-off" />
+									<i className="fas fa-volume-off" />
 								)}
-								&nbsp;{i18next.t('MUTE_UNMUTE')}
+								&nbsp;{i18next.t('PLAYERS_CONTROLS.MUTE_UNMUTE')}
 							</div>
 						</li>
 						<li className="buttonsMobileMenuSmaller">
@@ -361,7 +389,7 @@ function AdminHeader(props: IProps) {
 									id="stopNow"
 									data-namecommand="stopNow"
 								>
-									<i className="fas fa-fw fa-stop" />
+									<i className="fas fa-stop" />
 									&nbsp;{i18next.t('PLAYERS_CONTROLS.STOP_NOW')}
 								</div>
 							) : (
@@ -373,7 +401,7 @@ function AdminHeader(props: IProps) {
 									id="stopAfter"
 									data-namecommand="stopAfter"
 								>
-									<i className="fas fa-fw fa-stop" />
+									<i className="fas fa-stop" />
 									&nbsp;{i18next.t('PLAYERS_CONTROLS.STOP_AFTER')}
 								</div>
 							)}
@@ -389,7 +417,7 @@ function AdminHeader(props: IProps) {
 					title={i18next.t('ADMIN_HEADER.QUIZ_RANKING')}
 					onClick={props.updateQuizRanking}
 				>
-					<i className="fas fa-fw fa-user-graduate" />
+					<i className="fas fa-user-graduate" />
 				</button>
 			) : null}
 
@@ -422,13 +450,17 @@ function AdminHeader(props: IProps) {
 					putPlayerCommando={props.putPlayerCommando}
 				/>
 			</div>
-			<div className={`btn btn-dark splitValueButton speedControl`} id="speedControl">
+			<div
+				className={`btn btn-dark splitValueButton speedControl`}
+				id="speedControl"
+				title={i18next.t('PLAYERS_CONTROLS.SPEED.TITLE')}
+			>
 				{statusPlayer?.speed === 100 && <i className={'icon fa-solid fa-gauge'}></i>}
 				{statusPlayer?.speed > 100 && <i className={'icon fa-solid fa-gauge-high'}></i>}
 				{statusPlayer?.speed < 100 && <i className={'icon fa-solid fa-gauge-high mirrored-horiz'}></i>}
-				<div className={'modifier-buttons'}>
+				<div className={'buttons-group'}>
 					<button
-						title={i18next.t('SPEED_DOWN')}
+						title={i18next.t('PLAYERS_CONTROLS.SPEED.DOWN')}
 						id="speedDown"
 						className={'button-filled'}
 						onMouseDown={_ => changeSpeed(-25)}
@@ -439,7 +471,7 @@ function AdminHeader(props: IProps) {
 						-
 					</button>
 					<button
-						title={i18next.t('SPEED_RESET')}
+						title={i18next.t('PLAYERS_CONTROLS.SPEED.RESET')}
 						id="speedReset"
 						onMouseDown={_ => changeSpeed(null)}
 						data-namecommand="setSpeed"
@@ -449,7 +481,7 @@ function AdminHeader(props: IProps) {
 						{(statusPlayer?.speed / 100).toFixed(2)}x
 					</button>
 					<button
-						title={i18next.t('SPEED_UP')}
+						title={i18next.t('PLAYERS_CONTROLS.SPEED.UP')}
 						id="speedUp"
 						className={'button-filled'}
 						onMouseDown={_ => changeSpeed(+25)}
@@ -462,14 +494,18 @@ function AdminHeader(props: IProps) {
 				</div>
 			</div>
 
-			<div className={`btn btn-dark splitValueButton pitchControl`} id="pitchControl">
+			<div
+				className={`btn btn-dark splitValueButton pitchControl`}
+				id="pitchControl"
+				title={i18next.t('PLAYERS_CONTROLS.PITCH.TITLE')}
+			>
 				{statusPlayer?.pitch === 0 && <i className={'icon fa-solid fa-braille'}></i>}
 				{statusPlayer?.pitch > 0 && <i className={'icon fa-solid fa-arrow-up-right-dots'}></i>}
 				{statusPlayer?.pitch < 0 && <i className={'icon fa-solid fa-arrow-up-right-dots mirrored-vert'}></i>}
 
-				<div className={'modifier-buttons'}>
+				<div className={'buttons-group'}>
 					<button
-						title={i18next.t('PITCH_DOWN')}
+						title={i18next.t('PLAYERS_CONTROLS.PITCH.DOWN')}
 						id="pitchDown"
 						className={'button-filled'}
 						onMouseDown={_ => changePitch(-1)}
@@ -480,7 +516,7 @@ function AdminHeader(props: IProps) {
 						-
 					</button>
 					<button
-						title={i18next.t('PITCH_RESET')}
+						title={i18next.t('PLAYERS_CONTROLS.PITCH.RESET')}
 						id="pitchReset"
 						onMouseDown={_ => changePitch(null)}
 						data-namecommand="setPitch"
@@ -490,7 +526,7 @@ function AdminHeader(props: IProps) {
 						{statusPlayer?.pitch}
 					</button>
 					<button
-						title={i18next.t('PITCH_UP')}
+						title={i18next.t('PLAYERS_CONTROLS.PITCH.UP')}
 						id="pitchUp"
 						className={'button-filled'}
 						onMouseDown={_ => changePitch(+1)}
@@ -503,17 +539,19 @@ function AdminHeader(props: IProps) {
 				</div>
 			</div>
 			<button
-				title={i18next.t('MESSAGE')}
+				title={i18next.t('PLAYERS_CONTROLS.MESSAGE')}
 				id="adminMessage"
 				className="btn btn-dark messageButton"
 				onClick={adminMessage}
 			>
-				<i className="fas fa-fw fa-comment" />
+				<i className="fas fa-comment" />
 			</button>
 
 			<div className="btn-tile-group displayModifierButtons" id="displayModifierButtons">
 				<button
-					title={i18next.t(statusPlayer?.showSubs ? 'HIDE_SUBS' : 'SHOW_SUBS')}
+					title={i18next.t(
+						statusPlayer?.showSubs ? 'PLAYERS_CONTROLS.SUBS.HIDE' : 'PLAYERS_CONTROLS.SUBS.SHOW'
+					)}
 					id="showSubs"
 					data-namecommand={statusPlayer?.showSubs ? 'hideSubs' : 'showSubs'}
 					className={`btn btn-tile btn-dark subtitleButton ${
@@ -522,43 +560,51 @@ function AdminHeader(props: IProps) {
 					onClick={props.putPlayerCommando}
 				>
 					<span className="fa-stack">
-						<i className="fas fa-fw fa-closed-captioning fa-stack-1x" />
-						<i className="fas fa-fw fa-ban fa-stack-2x" style={{ color: '#943d42', opacity: 0.7 }} />
+						<i className="fas fa-closed-captioning fa-stack-1x" />
+						<i className="fas fa-ban fa-stack-2x" style={{ color: '#943d42', opacity: 0.7 }} />
 					</span>
 					<span className="fa-stack">
-						<i className="fas fa-fw fa-closed-captioning" />
+						<i className="fas fa-closed-captioning" />
 					</span>
 				</button>
 				<button
-					title={i18next.t(statusPlayer?.blurVideo ? 'BLURVIDEO_UNBLUR' : 'BLURVIDEO_BLUR')}
+					title={i18next.t(
+						statusPlayer?.blurVideo
+							? 'PLAYERS_CONTROLS.BLURVIDEO.UNBLUR'
+							: 'PLAYERS_CONTROLS.BLURVIDEO.BLUR'
+					)}
 					id="blurVideo"
 					data-namecommand={statusPlayer?.blurVideo ? 'unblurVideo' : 'blurVideo'}
 					className={`btn btn-tile btn-dark ${statusPlayer?.blurVideo ? 'unblurVideo' : 'blurVideo'}`}
 					onClick={props.putPlayerCommando}
 				>
-					<i className={`fas fa-fw ${statusPlayer?.blurVideo ? 'fa-hand' : 'fa-hand-sparkles'}`} />
+					<i className={`fas ${statusPlayer?.blurVideo ? 'fa-hand' : 'fa-hand-sparkles'}`} />
 				</button>
 			</div>
 
-			<button type="button" title={i18next.t('MUTE_UNMUTE')} className="btn btn-dark volumeButton">
+			<button
+				type="button"
+				title={i18next.t('PLAYERS_CONTROLS.MUTE_UNMUTE')}
+				className="btn btn-dark volumeButton"
+			>
 				<div
 					id="mute"
 					data-namecommand={statusPlayer?.volume === 0 || statusPlayer?.mute ? 'unmute' : 'mute'}
 					onClick={props.putPlayerCommando}
 				>
 					{statusPlayer?.volume === 0 || statusPlayer?.mute ? (
-						<i className="fas fa-fw fa-volume-mute" />
+						<i className="fas fa-volume-mute" />
 					) : statusPlayer?.volume > 66 ? (
-						<i className="fas fa-fw fa-volume-up" />
+						<i className="fas fa-volume-up" />
 					) : statusPlayer?.volume > 33 ? (
-						<i className="fas fa-fw fa-volume-down" />
+						<i className="fas fa-volume-down" />
 					) : (
-						<i className="fas fa-fw fa-volume-off" />
+						<i className="fas fa-volume-off" />
 					)}
 				</div>
 				{statusPlayer ? (
 					<input
-						title={i18next.t('VOLUME_LEVEL')}
+						title={i18next.t('PLAYERS_CONTROLS.VOLUME_LEVEL')}
 						data-namecommand="setVolume"
 						id="volume"
 						value={statusPlayer.volume}
@@ -574,7 +620,7 @@ function AdminHeader(props: IProps) {
 					title={i18next.t('ADMIN_HEADER.QUICK_ACCESS')}
 					onClick={() => setDropDownSettings(!dropDownSettings)}
 				>
-					<i className="fas fa-fw fa-sliders-h" />
+					<i className="fas fa-sliders-h" />
 				</button>
 				{dropDownSettings ? (
 					<ul className="dropdown-menu">
@@ -636,6 +682,37 @@ function AdminHeader(props: IProps) {
 									},
 								]}
 							/>
+						</li>
+						<li
+							className={
+								context?.globalState.settings.data.config?.Frontend?.Mode !== 2 ? 'disabled' : ''
+							}
+							title={i18next.t('SETTINGS.INTERFACE.SWITCH_TO_RESTRICTED_AT_TIME_TOOLTIP')}
+						>
+							<span
+								style={{
+									display: 'flex',
+									justifyContent: 'center',
+									alignContent: 'center',
+									gap: '10px',
+								}}
+							>
+								<label>
+									{i18next.t('SETTINGS.INTERFACE.SWITCH_TO_RESTRICTED_AT_TIME')}
+									&nbsp;
+									<i className="far fa-question-circle" />
+								</label>
+								<span className="input-time">
+									<input
+										disabled={context?.globalState.settings.data.config?.Frontend?.Mode !== 2}
+										type="time"
+										defaultValue={getRestrictInterfaceAtTime()}
+										onBlur={event => changeRestrictInterfaceAtTime(event.target.value)}
+										onChange={event => changeRestrictInterfaceAtTime(event.target.value)}
+									></input>
+									<i className="far fa-clock" />
+								</span>
+							</span>
 						</li>
 						{context?.globalState.settings.data.config?.Karaoke?.StreamerMode?.Twitch?.Enabled ? (
 							<li title={i18next.t('SETTINGS.PLAYER.LIVE_COMMENTS_TOOLTIP')}>

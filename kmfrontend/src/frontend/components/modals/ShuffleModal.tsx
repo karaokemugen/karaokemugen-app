@@ -56,7 +56,7 @@ function ShuffleModal(props: IProps) {
 						<div>{i18next.t('MODAL.SHUFFLE_MODAL.LABEL')}</div>
 						<div>
 							<button className="btn btn-default" type="button" onClick={() => shuffle('normal')}>
-								<i className="fas fa-fw fa-random fa-2x" />
+								<i className="fas fa-random fa-2x" />
 								<div className="btn-large-container">
 									<div className="title">{i18next.t('MODAL.SHUFFLE_MODAL.SHUFFLE')}</div>
 									<div className="desc">{i18next.t('MODAL.SHUFFLE_MODAL.SHUFFLE_DESC')}</div>
@@ -65,7 +65,7 @@ function ShuffleModal(props: IProps) {
 						</div>
 						<div>
 							<button className="btn btn-default" type="button" onClick={() => shuffle('smart')}>
-								<i className="fas fa-fw fa-lightbulb fa-2x" />
+								<i className="fas fa-lightbulb fa-2x" />
 								<div className="btn-large-container">
 									<div className="title">{i18next.t('MODAL.SHUFFLE_MODAL.SMART_SHUFFLE')}</div>
 									<div className="desc">{i18next.t('MODAL.SHUFFLE_MODAL.SMART_SHUFFLE_DESC')}</div>
@@ -74,7 +74,7 @@ function ShuffleModal(props: IProps) {
 						</div>
 						<div>
 							<button className="btn btn-default" type="button" onClick={() => shuffle('balance')}>
-								<i className="fas fa-fw fa-balance-scale fa-2x" />
+								<i className="fas fa-balance-scale fa-2x" />
 								<div className="btn-large-container">
 									<div className="title">{i18next.t('MODAL.SHUFFLE_MODAL.BALANCE')}</div>
 									<div className="desc">{i18next.t('MODAL.SHUFFLE_MODAL.BALANCE_DESC')}</div>
@@ -83,7 +83,7 @@ function ShuffleModal(props: IProps) {
 						</div>
 						<div>
 							<button className="btn btn-default" type="button" onClick={() => shuffle('upvotes')}>
-								<i className="fas fa-fw fa-thumbs-up fa-2x" />
+								<i className="fas fa-thumbs-up fa-2x" />
 								<div className="btn-large-container">
 									<div className="title">{i18next.t('MODAL.SHUFFLE_MODAL.SORTUPVOTES')}</div>
 									<div className="desc">{i18next.t('MODAL.SHUFFLE_MODAL.SORTUPVOTES_DESC')}</div>

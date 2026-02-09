@@ -6,12 +6,13 @@ import { useContext, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import dayjs from 'dayjs';
-import { Repository } from '../../../../src/lib/types/repo';
-import { Tag } from '../../../../src/lib/types/tag';
-import { DBStats } from '../../../../src/types/database/database';
-import { DBDownload } from '../../../../src/types/database/download';
-import { Feed } from '../../../../src/types/feeds';
-import { Session } from '../../../../src/types/session';
+import type { DBTag } from '../../../../src/lib/types/database/tag';
+import type { DBKaraTag } from '../../../../src/lib/types/database/kara';
+import type { DBStats } from '../../../../src/types/database/database';
+import type { DBDownload } from '../../../../src/types/database/download';
+import type { Feed } from '../../../../src/types/feeds';
+import type { Repository } from '../../../../src/lib/types/repo';
+import type { Session } from '../../../../src/types/session';
 import TasksEvent from '../../TasksEvent';
 import logo from '../../assets/Logo-final-fond-transparent.png';
 import { logout } from '../../store/actions/auth';
@@ -28,6 +29,7 @@ import OnlineStatsModal from './modals/OnlineStatsModal';
 import ProfilModal from './modals/ProfilModal';
 import RestartDownloadsModal from './modals/RestartDownloadsModal';
 import { WS_CMD } from '../../utils/ws';
+import { getTagInLocale } from '../../utils/kara';
 
 function WelcomePage() {
 	const context = useContext(GlobalContext);
@@ -38,7 +40,7 @@ function WelcomePage() {
 	const [activeSession, setActiveSession] = useState<Session>();
 	const [catchphrase, setCatchphrase] = useState('');
 	const [repositories, setRepositories] = useState<Repository[]>([]);
-	const [collections, setCollections] = useState<Tag[]>([]);
+	const [collections, setCollections] = useState<DBTag[]>([]);
 	const [stats, setStats] = useState<DBStats>();
 	const [remoteStatus, setRemoteStatus] = useState<RemoteStatusData>();
 	let timeout: NodeJS.Timeout;
@@ -302,19 +304,19 @@ function WelcomePage() {
 						<ul>
 							<li>
 								<a href="https://mugen.karaokes.moe/contact.html">
-									<i className="fas fa-fw fa-pencil-alt" />
+									<i className="fas fa-pencil-alt" />
 									{i18next.t('WELCOME_PAGE.CONTACT')}
 								</a>
 							</li>
 							<li>
 								<a href="https://mugen.karaokes.moe/">
-									<i className="fas fa-fw fa-link" />
+									<i className="fas fa-link" />
 									{i18next.t('WELCOME_PAGE.SITE')}
 								</a>
 							</li>
 							<li>
 								<a href="#" onClick={toggleProfileModal}>
-									<i className="fas fa-fw fa-user" />
+									<i className="fas fa-user" />
 									<span>{context.globalState.settings.data.user.nickname}</span>
 								</a>
 							</li>
@@ -325,7 +327,7 @@ function WelcomePage() {
 									className="logout"
 									onClick={() => logout(context.globalDispatch)}
 								>
-									<i className="fas fa-fw fa-sign-out-alt" />
+									<i className="fas fa-sign-out-alt" />
 									<span>{i18next.t('LOGOUT')}</span>
 								</a>
 							</li>
@@ -344,12 +346,9 @@ function WelcomePage() {
 										acceptNewValues={true}
 									/>
 								</article>
-								<article>
-									<a
-										href={`/system/sessions/${activeSession?.seid}`}
-										title={i18next.t('WELCOME_PAGE.EDIT_SESSION')}
-									>
-										<i className="fas fa-fw fa-edit" />
+								<article title={i18next.t('WELCOME_PAGE.EDIT_SESSION')}>
+									<a href={`/system/sessions/${activeSession?.seid}?route=/welcome`}>
+										<i className="fas fa-edit" />
 									</a>
 								</article>
 							</>
@@ -362,52 +361,40 @@ function WelcomePage() {
 						{context?.globalState.settings.data.user?.flag_tutorial_done ? (
 							<article className="tile-manage">
 								<button type="button" onClick={() => navigate('/admin' + window.location.search)}>
-									<i className="fas fa-fw fa-list" />
+									<i className="fas fa-circle-play" />
 									<span>{i18next.t('WELCOME_PAGE.KARAMANAGER')}</span>
 								</button>
 							</article>
 						) : (
 							<article className="tile-tutorial">
 								<button type="button" onClick={() => navigate('/admin' + window.location.search)}>
-									<i className="fas fa-fw fa-hand-point-right" />
+									<i className="fas fa-hand-point-right" />
 									<span>{i18next.t('WELCOME_PAGE.GETSTARTED')}</span>
 								</button>
 							</article>
 						)}
 						<article className="tile-system">
 							<button type="button" onClick={() => navigate('/system')}>
-								<i className="fas fa-fw fa-cog" />
+								<i className="fas fa-cog" />
 								<span>{i18next.t('WELCOME_PAGE.ADMINISTRATION')}</span>
 							</button>
 						</article>
 						<article className="tile-system">
 							<button type="button" onClick={() => navigate('/public' + window.location.search)}>
-								<i className="fas fa-fw fa-user" />
+								<i className="fas fa-user" />
 								<span>{i18next.t('WELCOME_PAGE.PUBLIC')}</span>
 							</button>
 						</article>
 						<article className="tile-help">
 							<button type="button" onClick={() => window.open('https://docs.karaokes.moe/')}>
-								<i className="fas fa-fw fa-question-circle" />
+								<i className="fas fa-question-circle" />
 								<span>{i18next.t('WELCOME_PAGE.HELP')}</span>
-							</button>
-						</article>
-						<article className="tile-download">
-							<button type="button" onClick={() => navigate('/admin/?quizMode=true')}>
-								<i className="fas fa-fw fa-person-circle-question" />
-								<span>{i18next.t('WELCOME_PAGE.QUIZ')}</span>
-							</button>
-						</article>
-						<article className="tile-logs">
-							<button type="button" onClick={() => navigate('/system/log')}>
-								<i className="fas fa-fw fa-terminal" />
-								<span>{i18next.t('WELCOME_PAGE.LOGS')}</span>
 							</button>
 						</article>
 						<article className="tile-stats">
 							<blockquote>
 								<label>
-									<i className="fas fa-fw fa-chart-line" />
+									<i className="fas fa-chart-line" />
 									{i18next.t('WELCOME_PAGE.STATS')}
 								</label>
 								<ul>
@@ -486,7 +473,7 @@ function WelcomePage() {
 						<article className="tile-repositories">
 							<blockquote>
 								<button type="button" onClick={() => navigate('/system/repositories')}>
-									<i className="fas fa-fw fa-network-wired" />
+									<i className="fas fa-network-wired" />
 									{i18next.t('WELCOME_PAGE.REPOSITORY')}
 								</button>
 								<ul>
@@ -497,11 +484,7 @@ function WelcomePage() {
 												className={repository.Enabled ? '' : 'disabled'}
 												onClick={() => navigate(`/system/repositories/${repository.Name}`)}
 											>
-												<i
-													className={`fas fa-fw ${
-														repository.Online ? ' fa-globe' : 'fa-laptop'
-													}`}
-												/>
+												<i className={`fas ${repository.Online ? ' fa-globe' : 'fa-laptop'}`} />
 												<span>{repository.Name}</span>
 											</li>
 										);
@@ -510,7 +493,7 @@ function WelcomePage() {
 							</blockquote>
 							<blockquote>
 								<button type="button" onClick={() => navigate('/system/repositories')}>
-									<i className="fas fa-fw fa-network-wired" />
+									<i className="fas fa-network-wired" />
 									{i18next.t('WELCOME_PAGE.COLLECTIONS')}
 								</button>
 								<ul>
@@ -528,8 +511,15 @@ function WelcomePage() {
 												}
 												onClick={() => enableCollection(collection.tid)}
 											>
-												<i className="fas fa-fw fa-layer-group" />
-												<span>{collection.name}</span>
+												<i className="fas fa-layer-group" />
+												<span>
+													{
+														getTagInLocale(
+															context.globalState.settings.data,
+															collection as unknown as DBKaraTag
+														).i18n
+													}
+												</span>
 											</li>
 										);
 									})}

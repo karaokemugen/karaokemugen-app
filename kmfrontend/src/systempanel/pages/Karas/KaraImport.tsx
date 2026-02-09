@@ -57,7 +57,7 @@ function KaraImport() {
 					template: fileNameTemplate,
 				},
 				false,
-				30000,
+				120000,
 				true
 			);
 			setFilesToImport(res.map(r => ({ ...r.newFile, ...r })));
@@ -255,7 +255,7 @@ function KaraImport() {
 											form.setFieldValue('fileNameTemplate', fileNameTemplate.concat(value));
 										}}
 										options={templateOptions.filter(
-											option => !fileNameTemplate.match(/{[a-zA-Z]*}/g).includes(option.value)
+											option => !fileNameTemplate.match(/{[a-zA-Z]*}/g)?.includes(option.value)
 										)}
 										placeholder={i18next.t('KARAOKE_IMPORT.ADD_TAG_TEMPLATE')}
 										labelRender={option => i18next.t(option.label as string)}

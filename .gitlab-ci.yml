@@ -8,10 +8,10 @@ variables:
   GIT_SUBMODULE_STRATEGY: recursive
   ELECTRON_CACHE: '.cache/electron'
   DS_INCLUDE_DEV_DEPENDENCIES: 'false'
-  DIST_LINUX_X64: dist_linux-x64-8.0.tar.gz
-  DIST_LINUX_ARM64: dist_linux-arm64-8.0.tar.gz
-  DIST_WIN: dist_win-8.0.tar.gz
-  DIST_MAC: dist_mac-8.0.tar.gz
+  DIST_LINUX_X64: dist_linux-x64-9.0.tar.gz
+  DIST_LINUX_ARM64: dist_linux-arm64-9.0.tar.gz
+  DIST_WIN: dist_win-9.0.tar.gz
+  DIST_MAC: dist_mac-9.0.tar.gz
 include:
   - template: Security/Dependency-Scanning.gitlab-ci.yml
   - template: Security/Secret-Detection.gitlab-ci.yml

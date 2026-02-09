@@ -9,7 +9,6 @@ import { getLanguagesInLocaleFromCode, getListLanguagesInLocale, langWithRomaniz
 interface IProps {
 	value: Record<string, string>;
 	onChange: (i18n: Record<string, string>) => void;
-	onFieldIsTouched?: (boolean) => void;
 	defaultLanguage?: string;
 	onDefaultLanguageSelect?: (name: string) => void;
 }

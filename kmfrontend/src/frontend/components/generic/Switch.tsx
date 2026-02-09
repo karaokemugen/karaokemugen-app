@@ -15,13 +15,13 @@ interface IProps {
 function Switch(props: IProps) {
 	const checkbox = useRef<HTMLInputElement>();
 
-	const onKeyPress = e => {
+	const onKeyDown = e => {
 		e.preventDefault();
 		checkbox.current.click();
 	};
 
 	return (
-		<label className="switch-ui" tabIndex={0} onKeyPress={onKeyPress}>
+		<label className="switch-ui" tabIndex={0} onKeyDown={onKeyDown}>
 			<input
 				checked={props.isChecked}
 				onChange={props.handleChange}

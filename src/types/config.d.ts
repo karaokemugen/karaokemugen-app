@@ -176,6 +176,7 @@ export interface Config {
 			FreeUpVotesRequiredMin?: number;
 			FreeAcceptedSongs?: boolean;
 		};
+		RestrictInterfaceAtTime?: Date;
 	};
 	Player: {
 		Display: {
@@ -248,6 +249,7 @@ export interface Config {
 		};
 		EndOfPlaylistAction: EndOfPlaylistAction;
 		RandomSongsAfterEndMessage: boolean;
+		CurrentPlaylistAutoRemoveSongs: number;
 	};
 	System: {
 		SystemRepositoryMaintainance?: boolean;

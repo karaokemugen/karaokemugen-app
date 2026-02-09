@@ -86,7 +86,7 @@ function AdminMessageModal() {
 						/>
 						<button className="btn btn-default confirm" onClick={onClick}>
 							{message.length === 0 ? (
-								<i className="fas fa-fw fa-exclamation-triangle" />
+								<i className="fas fa-exclamation-triangle" />
 							) : (
 								<i className="fas fa-check" />
 							)}

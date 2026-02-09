@@ -2,6 +2,28 @@
 @use 'minireset.css/minireset';
 @use 'styles/variables';
 
+// Our stylesheet
+@use 'styles/components/buttons';
+@use 'styles/components/dropdowns';
+@use 'styles/components/decorators';
+@use 'styles/components/details';
+@use 'styles/components/settings';
+@use 'styles/components/tags';
+@use 'styles/components/input';
+@use 'styles/components/loader';
+@use 'styles/components/titles';
+
+// React Toastify
+@use '../toast';
+
+// Fonts
+@use 'styles/fonts/Lato/stylesheet';
+
+@use 'styles/al-icons/css/al-icons.css';
+
+// FontAwesome
+@use '@fortawesome/fontawesome-free/css/all.min.css';
+
 // Virtual element to be probed by KmAppWrapperDecorator to workaround URL bar resizing
 // https://developers.google.com/web/updates/2016/12/url-bar-resizing
 #height-compute {
@@ -30,29 +52,3 @@ a {
 		color: unset;
 	}
 }
-
-// Our stylesheet
-@import 'styles/components/buttons';
-@import 'styles/components/dropdowns';
-@import 'styles/components/decorators';
-@import 'styles/components/details';
-@import 'styles/components/settings';
-@import 'styles/components/tags';
-@import 'styles/components/input';
-@import 'styles/components/loader';
-@import 'styles/components/titles';
-
-// React Toastify
-@import '../toast';
-
-// Fonts
-@import 'styles/fonts/Lato/stylesheet';
-
-@import 'styles/al-icons/css/al-icons.css';
-
-// FontAwesome
-$fa-font-path: '@fortawesome/fontawesome-free/webfonts';
-@import '@fortawesome/fontawesome-free/scss/fontawesome';
-@import '@fortawesome/fontawesome-free/scss/solid';
-@import '@fortawesome/fontawesome-free/scss/regular';
-@import '@fortawesome/fontawesome-free/scss/brands';

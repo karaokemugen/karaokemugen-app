@@ -78,7 +78,6 @@ export class Player {
 		this.logFile = `mpv${options.monitor ? '-monitor' : ''}.${today}.${now}.log`;
 		const mpvArgs = [
 			'--keep-open=always',
-			'--osd-level=0',
 			`--log-file=${resolve(resolvedPath('Logs'), this.logFile)}`,
 			`--hwdec=${conf.Player.HardwareDecoding}`,
 			`--volume=${+conf.Player.Volume}`,
@@ -89,13 +88,13 @@ export class Player {
 			'--sub-visibility',
 			isMpvGreaterThan39() ? '--sub-ass-use-video-data=none' : '--sub-ass-vsfilter-aspect-compat=no',
 			'--loop-file=no',
-			`--title=${options.monitor ? '[MONITOR] ' : ''}\${force-media-title} - Karaoke Mugen Player`,
+			`--title=${options.monitor ? '[MONITOR] ' : ''}\${force-media-title} - ${i18n.t('KARAOKE_MUGEN_PLAYER_WINDOW_TITLE')}`,
 			'--force-media-title=Loading...',
 			`--audio-device=${conf.Player.AudioDevice}`,
 			`--screenshot-directory=${resolve(state.dataPath)}`,
 			'--screenshot-format=png',
-			'--no-osc',
-			'--no-osd-bar',
+			'--osd-level=0',
+			'--osd-bar=no'
 		];
 
 		if (options.monitor) {

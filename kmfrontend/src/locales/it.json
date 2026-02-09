@@ -15,8 +15,6 @@
 		"404_4": "Vai alla home",
 		"404": "Ti sei perso in Karaoke Mugen?"
 	},
-	"MUTE_UNMUTE": "Muta/Smuta",
-	"SHOW_SUBS": "Mostra il testo a schermo",
 	"DURATION_REMAINING": "Rimanente",
 	"INLINE_TAG": {
 		"SEARCH": "Brani con {{tag}}",
@@ -32,7 +30,6 @@
 	},
 	"LOGIN_MANDATORY": "È necessario accedere",
 	"PASSWORD_DIFFERENT": "Le password non corrispondono",
-	"MESSAGE": "Messaggio",
 	"SECURITY_CODE_MANDATORY": "È necessario il codice di sicurezza per creare un account operatore",
 	"PASSWORD_MANDATORY": "È richiesta la password",
 	"SELECT_PLACEHOLDER": "Seleziona una playlist",
@@ -48,7 +45,6 @@
 	"SUBMIT": "Salva",
 	"SHUTDOWN_POPUP": "Connessione con Karaoke Mugen interrotta",
 	"SHUTDOWN": "Spegni Karaoke Mugen",
-	"HIDE_SUBS": "Nascondi il testo a schermo",
 	"ADMIN_HEADER": {
 		"QUICK_ACCESS": "Accesso rapido",
 		"QUIZ_RANKING": "Classifica Quiz",
@@ -71,7 +67,6 @@
 		"ADD_RANDOM": "Aggiungi brani casuali",
 		"ADD": "Aggiungi nuova playlist"
 	},
-	"VOLUME_LEVEL": "Imposta il volume",
 	"OPTIONS": "Opzioni",
 	"WEBAPPMODE_CLOSED_MESSAGE": "L'interfaccia è chiusa, si prega di attendere.",
 	"PROFILE_PASSWORDCONF": "Conferma",
@@ -457,7 +452,6 @@
 	"WELCOME_PAGE": {
 		"ACTIVE_SESSION": "Sessione Attiva: ",
 		"STATS_TAGS": "Tag",
-		"QUIZ": "INIZIA QUIZ",
 		"COLLECTIONS": "COLLEZIONI",
 		"STATS_KARAS": "Brani",
 		"MASTODON_UPDATE": "Novità di Karaoke Mugen",
@@ -467,7 +461,6 @@
 		"REPOSITORY": "ARCHIVI",
 		"KARAMANAGER": "INTERFACCIA OPERATORE",
 		"ADMINISTRATION": "PANNELLO DI SISTEMA",
-		"LOGS": "LOG",
 		"GETSTARTED": "INIZIA TUTORIAL",
 		"SITE": "Sito Web",
 		"STATS_PLAYTIME": "Tempo di riproduzione",
@@ -505,7 +498,6 @@
 	},
 	"GOTO_PLAYING": "Vai al brano in riproduzione",
 	"AVATAR_IMPORT": "Cambia avatar",
-	"PITCH_DOWN": "Diminuisci la frequenza",
 	"PROFILE_MAIL": "Email",
 	"LOG_OFFLINE": {
 		"TITLE": "Modalità Offline",
@@ -528,15 +520,12 @@
 	"PROFILE_PASSWORD_AGAIN": "Inserisci la password",
 	"CL_ADD_RANDOM_TITLE": "Quanti brani casuali vuoi aggiungere?",
 	"GOTO_BOTTOM": "Vai in fondo alla playlist",
-	"BLURVIDEO_BLUR": "Sfoca il video",
 	"KARAOKE_one": "{{count}} brano",
 	"PROFILE_BIO": "Biografia",
 	"FAVORITES_EXPORT": "Esporta preferiti",
 	"TOOLTIP_DELETE_SELECT_FAVS": "Rimuovi i brani selezionati dai preferiti",
 	"HOME_BUTTON": "Home",
-	"PITCH_RESET": "Ripristina la frequenza",
 	"PROFILE_URL": "Sito Web",
-	"SPEED_DOWN": "Diminuisci la velocità",
 	"ACCOUNT": "Il mio account",
 	"UNKNOWN": "Sconosciuto",
 	"LOG_SUCCESS": "Connesso come {{name}}",
@@ -544,9 +533,7 @@
 	"CL_ABOUT_TO_ADD": "Stai per aggiungere",
 	"USERLIST": "Utenti",
 	"PROFILE": "Profilo",
-	"SPEED_UP": "Aumenta la velocità",
 	"TOOLTIP_DELETE_SELECT_KARA": "Elimina i brani selezionati",
-	"PITCH_UP": "Aumenta la frequenza",
 	"CL_EMPTY_LIST": "Svuotare la lista?",
 	"CHECKED": "Selezione:",
 	"PROFILE_USERNAME": "Soprannome",
@@ -564,8 +551,6 @@
 	"TOOLTIP_REFUSE_KARA": "Rifiuta brano (libera brano)",
 	"TOOLTIP_CLOSEPARENT": "Chiudi",
 	"TOOLTIP_KARA_ALREADY_ADDED": "Questo brano è già presente nella playlist opposta.",
-	"BLURVIDEO_UNBLUR": "Metti a fuoco il video",
-	"SPEED_RESET": "Reimposta la velocità normale",
 	"CONFIRM_FAV_IMPORT": "Sovrascrivere i tuoi preferiti con quelli importati?",
 	"KARAOKE_other": "{{count}} brani",
 	"REMOTE_STATUS": {
@@ -801,7 +786,7 @@
 		"STATS_MODAL": {
 			"DESC": "Utilizziamo i tuoi preferiti e le tue richieste di brani per creare statistiche sul consumo (ad esempio per definire i brani più richiesti).",
 			"TITLE": "Utilizza i miei preferiti e le mie richieste di brani per le statistiche",
-			"REFUSE_DESC": "Se non vuoi partecipare, nonostante l'anonimato, a queste statistiche, si prega di farcelo sapere. Se rifiuti, i tuoi dati verranno ignorati e non saranno inviati dall'app di Karaoke Mugen.",
+			"REFUSE_DESC": "Se rifiuti, i tuoi dati verranno ignorati e non saranno inviati dall'app di Karaoke Mugen.",
 			"CHANGE": "Puoi cambiare opzione in qualsiasi momento sul tuo profilo. Acconsenti all'utilizzo della tua cronologia dei brani per le statistiche?"
 		},
 		"PLAYLIST_MODAL": {
@@ -1753,8 +1738,7 @@
 			"CREATE": "Crea un utente",
 			"BROWSE": "Esplora utenti"
 		},
-		"KARAS_DESCRIPTION": "Elenca, modifica e crea i file di dati del karaoke. Puoi anche scaricare file multimediali e vedere i più richiesti, i più riprodotti e la cronologia.",
-		"USERS_DESCRIPTION": "Elenca, modifica, crea utenti, cambia le loro password, crea nuovi account ospiti."
+		"KARAS_DESCRIPTION": "Elenca, modifica e crea i file di dati del karaoke. Puoi anche scaricare file multimediali e vedere i più richiesti, i più riprodotti e la cronologia."
 	},
 	"USERS": {
 		"EMAIL": "Email",
@@ -1826,7 +1810,7 @@
 		"WELCOME": "Benvenuto su Karaoke Mugen!",
 		"NEED_ACCOUNT": "Prima di poter iniziare a cantare, avrai bisogno di un account per utilizzare l'app.",
 		"LOCAL_ACCOUNT_DESC": "Hai scelto un account locale. Inserisci un nome ed una password qui sotto:",
-		"SECURITY_CODE_DESC_CONSOLE": "Si prega di inserire anche il codice di sicurezza di 6 cifre che puoi trovare nella console o nel file di log di Karaoke Mugen cercando \"SECURITY CODE FOR THIS SESSION\".",
+		"SECURITY_CODE_DESC_CONSOLE": "Si prega di inserire anche il codice di sicurezza di 6 cifre che puoi trovare nella console o nel file di log di Karaoke Mugen cercando \"SECURITY CODE\".",
 		"LOCAL_ACCOUNT": "Locale",
 		"LOGIN_ONLINE_ACCOUNT": "Ho già un account"
 	},
@@ -1911,8 +1895,7 @@
 				"TWITCH": "Twitch: ",
 				"INSTAGRAM": "Instagram: ",
 				"BLUESKY": "Bluesky: "
-			},
-			"MAIL": "Email: "
+			}
 		},
 		"DELETE": "Sei sicuro di voler eliminare i file del karaoke sia dalla posta che dal server?",
 		"TYPES": {
@@ -1920,7 +1903,6 @@
 			"MODIFICATION": "Modifica"
 		},
 		"SONG_DOWNLOADED_FROM_INBOX": "Brano {{song}} scaricato correttamente dalla posta",
-		"TYPE": "Tipo di richiesta",
 		"SONG_DOWNLOADED_FROM_INBOX_FAILED": "Non è stato possibile scaricare il brano dalla posta!",
 		"LINK_TO_ISSUE": "Link al problema",
 		"TIMESTAMP": "Data e ora",
@@ -2136,7 +2118,27 @@
 		"STOP_NOW_SHORT": "Interrompi ORA",
 		"PREVIOUS_SONG_SHORT": "Precedente",
 		"NEXT_SONG_SHORT": "Successivo",
-		"STOP_AFTER_SHORT": "Interrompi dopo"
+		"STOP_AFTER_SHORT": "Interrompi dopo",
+		"MUTE_UNMUTE": "Muta/Smuta",
+		"VOLUME_LEVEL": "Imposta il volume",
+		"SUBS": {
+			"SHOW": "Mostra il testo a schermo",
+			"HIDE": "Nascondi il testo a schermo"
+		},
+		"SPEED": {
+			"UP": "Aumenta la velocità",
+			"RESET": "Reimposta la velocità normale",
+			"DOWN": "Diminuisci la velocità"
+		},
+		"PITCH": {
+			"UP": "Aumenta la frequenza",
+			"RESET": "Ripristina la frequenza",
+			"DOWN": "Diminuisci la frequenza"
+		},
+		"BLURVIDEO": {
+			"BLUR": "Sfoca il video",
+			"UNBLUR": "Metti a fuoco il video"
+		}
 	},
 	"NEW_ACCOUNT_CODE_SHORT": "Nuovo codice account",
 	"NEW_ACCOUNT_CODE": "Nuovo codice account (chiedi all'operatore)",

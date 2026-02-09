@@ -244,10 +244,10 @@ function PlaylistHeader(props: IProps) {
 					tabIndex={0}
 					className={'filterElement ' + (activeFilter === 'search' ? 'filterElementActive' : '')}
 					onClick={() => getKarasList('search')}
-					onKeyPress={() => getKarasList('search')}
+					onKeyDown={() => getKarasList('search')}
 				>
 					<i
-						className={`fas fa-fw ${
+						className={`fas ${
 							!isNonStandardPlaylist(playlist?.plaid) ? 'fa-list-ol' : 'fa-sort-alpha-down'
 						}`}
 					/>{' '}
@@ -258,7 +258,7 @@ function PlaylistHeader(props: IProps) {
 						tabIndex={0}
 						className={'filterElement ' + (activeFilter === 'recent' ? 'filterElementActive' : '')}
 						onClick={() => getKarasList('recent')}
-						onKeyPress={() => getKarasList('recent')}
+						onKeyDown={() => getKarasList('recent')}
 					>
 						<i className="far fa-clock" /> {i18next.t('VIEW_RECENT')}
 					</div>
@@ -268,7 +268,7 @@ function PlaylistHeader(props: IProps) {
 						tabIndex={0}
 						className={'filterElement ' + (activeFilter === 'requested' ? 'filterElementActive' : '')}
 						onClick={() => getKarasList('requested')}
-						onKeyPress={() => getKarasList('requested')}
+						onKeyDown={() => getKarasList('requested')}
 					>
 						<i className="fas fa-fire" /> {i18next.t('VIEW_POPULAR')}
 					</div>
@@ -278,7 +278,7 @@ function PlaylistHeader(props: IProps) {
 						tabIndex={0}
 						className={'filterElement ' + (orderByLikes ? 'filterElementActive' : '')}
 						onClick={() => getKarasList(undefined, true)}
-						onKeyPress={() => getKarasList(undefined, true)}
+						onKeyDown={() => getKarasList(undefined, true)}
 						title={i18next.t('VIEW_LIKES_TOOLTIP')}
 					>
 						<i className="fas fa-thumbs-up" /> {i18next.t('VIEW_LIKES')}
@@ -330,7 +330,7 @@ function PlaylistHeader(props: IProps) {
 								}
 								onClick={props.toggleSearchMenu}
 							>
-								<i className="fas fa-fw fa-filter" />
+								<i className="fas fa-filter" />
 								{activeFilter !== 'search' || activeFilterUUID !== ''
 									? i18next.t('PLAYLIST_HEADER.ACTIVE_FILTER')
 									: null}
@@ -345,7 +345,7 @@ function PlaylistHeader(props: IProps) {
 								className={'btn btn-default' + (props.criteriasOpen ? ' btn-primary' : '')}
 								onClick={props.openCloseCriterias}
 							>
-								<i className={`fas fa-fw ${props.criteriasOpen ? 'fa-list-ul' : 'fa-sliders-h'}`} />
+								<i className={`fas ${props.criteriasOpen ? 'fa-list-ul' : 'fa-sliders-h'}`} />
 								{i18next.t(
 									props.criteriasOpen ? 'PLAYLIST_HEADER.SHOW_SONGS' : 'PLAYLIST_HEADER.EDIT_CRITERIA'
 								)}

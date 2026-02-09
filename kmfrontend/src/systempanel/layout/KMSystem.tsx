@@ -10,6 +10,7 @@ import itIT from 'antd/es/locale/it_IT';
 import ptPT from 'antd/es/locale/pt_PT';
 import plPL from 'antd/es/locale/pl_PL';
 import taIN from 'antd/es/locale/ta_IN';
+import ruRU from 'antd/es/locale/ru_RU';
 import i18next from 'i18next';
 import { Component } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
@@ -91,6 +92,8 @@ class KMSystem extends Component<unknown, unknown> {
 			locale = plPL;
 		} else if (navigator.languages[0].includes('ta')) {
 			locale = taIN;
+		} else if (navigator.languages[0].includes('ru')) {
+			locale = ruRU;
 		}
 		return locale;
 	}

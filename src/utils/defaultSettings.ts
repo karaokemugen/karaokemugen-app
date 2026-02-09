@@ -163,6 +163,7 @@ export const defaults: Config = {
 				Enabled: false,
 			},
 		},
+		RestrictInterfaceAtTime: null,
 	},
 	Player: {
 		Display: {
@@ -234,30 +235,41 @@ export const defaults: Config = {
 		},
 		EndOfPlaylistAction: 'none',
 		RandomSongsAfterEndMessage: true,
+		CurrentPlaylistAutoRemoveSongs: 0,
 	},
 	System: {
 		FrontendPort: 1337,
 		Database: dbConfig,
 		Binaries: {
 			Player: {
-				Linux: 'app/bin/mpv',
+				Linux:
+					app?.isPackaged || process.env.container || process.env.APPIMAGE ? 'app/bin/mpv' : '/usr/bin/mpv',
 				OSX: app?.isPackaged
 					? 'Karaoke Mugen.app/Contents/app/bin/mpv.app/Contents/MacOS/mpv'
 					: 'app/bin/mpv.app/Contents/MacOS/mpv',
 				Windows: 'app\\bin\\mpv.exe',
 			},
 			ffmpeg: {
-				Linux: 'app/bin/ffmpeg',
+				Linux:
+					app?.isPackaged || process.env.container || process.env.APPIMAGE
+						? 'app/bin/ffmpeg'
+						: '/usr/bin/ffmpeg',
 				OSX: app?.isPackaged ? 'Karaoke Mugen.app/Contents/app/bin/ffmpeg' : 'app/bin/ffmpeg',
 				Windows: 'app\\bin\\ffmpeg.exe',
 			},
 			Postgres: {
-				Linux: 'app/bin/postgres/bin/',
+				Linux:
+					app?.isPackaged || process.env.container || process.env.APPIMAGE
+						? 'app/bin/postgres/bin/'
+						: '/usr/bin/',
 				OSX: app?.isPackaged ? 'Karaoke Mugen.app/Contents/app/bin/postgres/bin/' : 'app/bin/postgres/bin/',
 				Windows: 'app\\bin\\postgres\\bin\\',
 			},
 			patch: {
-				Linux: 'app/bin/patch',
+				Linux:
+					app?.isPackaged || process.env.container || process.env.APPIMAGE
+						? 'app/bin/patch'
+						: '/usr/bin/patch',
 				OSX: app?.isPackaged ? 'Karaoke Mugen.app/Contents/app/bin/patch' : 'app/bin/patch',
 				Windows: 'app\\bin\\patch.exe',
 			},
@@ -360,6 +372,7 @@ export const configConstraints = {
 	'Playlist.MysterySongs.Labels': { arrayOneItemValidator: true },
 	'Playlist.EndOfPlaylistAction': { inclusion: endOfPlaylistActions },
 	'Playlist.RandomSongsAfterEndMessage': { inclusion: bools },
+	'Playlist.CurrentPlaylistAutoRemoveSongs': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0 } },
 	'System.Binaries.Player.Linux': { presence: true },
 	'System.Binaries.Player.Windows': { presence: true },
 	'System.Binaries.Player.OSX': { presence: true },
