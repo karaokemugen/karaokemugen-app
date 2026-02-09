@@ -2273,7 +2273,8 @@
 		"SPEED": {
 			"UP": "Schneller abspielen",
 			"RESET": "Auf normale Geschwindigkeit zurücksetzen",
-			"DOWN": "Langsamer abspielen"
+			"DOWN": "Langsamer abspielen",
+			"TITLE": "Geschwindigkeit verändern"
 		},
 		"BLURVIDEO": {
 			"BLUR": "Video verschwommen darstellen",
@@ -2282,8 +2283,10 @@
 		"PITCH": {
 			"UP": "Tonlage erhöhen",
 			"RESET": "Tonlage zurücksetzen",
-			"DOWN": "Tonlage herabsetzen"
-		}
+			"DOWN": "Tonlage herabsetzen",
+			"TITLE": "Tonlage verändern"
+		},
+		"MESSAGE": "Eine Nachricht an die Zuschauer senden"
 	},
 	"NEW_ACCOUNT_CODE_SHORT": "Neuer Benutzer-Code",
 	"NEW_ACCOUNT_CODE": "Neuer Benutzer-Code (beim Veranstalter melden)",
