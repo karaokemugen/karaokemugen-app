@@ -812,7 +812,7 @@
 		},
 		"CLASSIC_MODE": {
 			"TITLE": "C'est à vous de chanter !",
-			"TEXT": "Appuyez sur le bouton PLAY pour lancer votre chanson."
+			"TEXT": "Appuyez sur le bouton Play pour lancer votre chanson."
 		},
 		"GIT_DANGEROUS": {
 			"TITLE": "Actions dangereuses",
@@ -1388,9 +1388,9 @@
 		"ADD_DESCRIPTION": "Ajouter une description",
 		"KARAOKES_WITH_TAGS": "Chansons ayant ce tag",
 		"MAL_ID": "Identifiant/URL MyAnimeList",
-		"MAL_ID_TOOLTIP": "Si c'est un anime, indiquez son ID/url sur myanimelist.net",
+		"MAL_ID_TOOLTIP": "Si c'est un anime, indiquez son id/url sur myanimelist.net",
 		"ANILIST_ID": "Identifiant/URL Anilist",
-		"ANILIST_ID_TOOLTIP": "Si c'est un anime, indiquez son ID/url sur anilist.co",
+		"ANILIST_ID_TOOLTIP": "Si c'est un anime, indiquez son id/url sur anilist.co",
 		"KITSU_ID": "Identifiant/URL Kitsu",
 		"KITSU_ID_TOOLTIP": "Si c'est un anime, indiquez son url sur kitsu.app",
 		"NOT_MAL_URL_ERROR": "C'est une url myanimelist",
