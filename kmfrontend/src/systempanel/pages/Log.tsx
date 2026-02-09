@@ -89,7 +89,15 @@ class Log extends Component<unknown, LogState> {
 									<strong>{dayjs(line.timestamp).format('L LTS')}</strong> -{' '}
 									<strong>{line.service}</strong>
 									<ArrowRightOutlined style={{ margin: '0 0.5em' }} />
-									<code style={{ whiteSpace: 'pre-wrap' }}>{line.message}</code>
+									<code style={{ whiteSpace: 'pre-wrap' }}> 
+										{(
+											typeof line.message === 'string' ?
+												line.message :
+													typeof line.message === 'object' ?
+														JSON.stringify(line.message) :
+															String(line.message)
+										)}
+									</code>
 									{line.obj !== undefined ? (
 										<Collapse>
 											<Collapse.Panel header={i18n.t('LOGS.SHOW_DETAILS')} key="1">

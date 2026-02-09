@@ -6,7 +6,7 @@ import { baseChecksum } from '../dao/dataStore.js';
 import { saveSetting } from '../lib/dao/database.js';
 import { writeKara } from '../lib/dao/karafile.js';
 import { writeTagFile } from '../lib/dao/tagfile.js';
-import { Inbox } from '../lib/types/inbox.js';
+import { Inbox, InboxActions } from '../lib/types/inbox.js';
 import { ASSFileCleanup } from '../lib/utils/ass.js';
 import { resolvedPath, resolvedPathRepos } from '../lib/utils/config.js';
 import { downloadFile } from '../lib/utils/downloader.js';
@@ -19,7 +19,7 @@ import { emitWS } from '../lib/utils/ws.js';
 import { adminToken } from '../utils/constants.js';
 import Sentry from '../utils/sentry.js';
 import { getKara, getKarasMicro } from './kara.js';
-import { integrateKaraFile } from './karaManagement.js';
+import { integrateKaraFile, removeKara } from './karaManagement.js';
 import { checkDownloadStatus, getRepo } from './repo.js';
 import { updateAllSmartPlaylists } from './smartPlaylist.js';
 import { integrateTagFile } from './tag.js';
@@ -154,7 +154,7 @@ async function downloadMediaFromInbox(kara: Inbox, repoName: string) {
 			const repo = getRepo(repoName);
 			const downloadItem = {
 				filename: tempMedia,
-				url: `${repo.Secure ? 'https' : 'http'}://${repoName}/inbox/${fixedEncodeURIComponent(kara.name)}/${fixedEncodeURIComponent(
+				url: `${repo.Secure ? 'https' : 'http'}://${repoName}/staging/medias/${fixedEncodeURIComponent(
 					kara.mediafile
 				)}`,
 				id: kara.name,
@@ -261,4 +261,34 @@ export async function markKaraAsDownloadedInInbox(
 			Sentry.error(err);
 		});
 	}
+	await changeInboxStatus(inid, repoName, token, 'in_review');
+}
+
+export async function removeInboxLocally(kid: string) {
+	await removeKara([kid], true, { media: true, kara: true }, false, true);
+}
+
+export async function changeInboxStatus(
+	inid: string,
+	repoName: string,
+	token: string,
+	status: InboxActions,
+	reject_reason?: string
+) {
+	const repo = getRepo(repoName);
+	await HTTP.post(
+		`${repo.Secure ? 'https' : 'http'}://${repoName}/api/inbox/${inid}/status`,
+		{
+			status,
+			reject_reason,
+		},
+		{
+			headers: {
+				authorization: token,
+			},
+		}
+	).catch(err => {
+		logger.warn(`Unable to change inbox status : ${err}`, { service, obj: err });
+		Sentry.error(err);
+	});
 }

@@ -54,28 +54,45 @@ function Home() {
 			<Title title={i18next.t('HEADERS.HOME.TITLE')} description={i18next.t('HEADERS.HOME.DESCRIPTION')} />
 			<Layout.Content>
 				<Row gutter={[16, 16]}>
-					<Col span={12}>
-						<Card title={i18next.t('MENU.SYSTEM')}>
-							{i18next.t('HOME.SYSTEM_DESCRIPTION')}
+					<Col xl={8} md={12}>
+						<Card title={i18next.t('MENU.STATS')} style={{ height: '100%' }}>
+							{i18next.t('HOME.STATS_DESCRIPTION')}
 							<div className="km-system-btn-group">
-								<Link to="/system/options">
-									<Button block type="primary">
-										<SettingOutlined /> {i18next.t('HOME.SYSTEM.CONFIG')}
-									</Button>
-								</Link>
-								<Link to="/system/repositories">
-									<Button block type="primary">
-										<FolderOpenOutlined /> {i18next.t('HOME.SYSTEM.REPOSITORIES')}
-									</Button>
-								</Link>
 								<Link to="/system/sessions">
 									<Button block>
 										<ScheduleOutlined /> {i18next.t('HOME.SYSTEM.SESSIONS')}
 									</Button>
 								</Link>
-								<Link to="/system/log">
+								<Link to="/system/karas/history">
+									<Button block type="primary">
+										<HistoryOutlined /> {i18next.t('HOME.KARAS.HISTORY')}
+									</Button>
+								</Link>
+								<Link to="/system/karas/viewcounts">
 									<Button block>
-										<HddOutlined /> {i18next.t('HOME.SYSTEM.LOGS')}
+										<PlayCircleOutlined /> {i18next.t('HOME.KARAS.MOST_PLAYED')}
+									</Button>
+								</Link>
+							</div>
+						</Card>
+					</Col>
+					<Col xl={8} md={12}>
+						<Card title={i18next.t('MENU.SYSTEM')}>
+							{i18next.t('HOME.SYSTEM_DESCRIPTION')}
+							<div className="km-system-btn-group">
+								<Link to="/system/repositories">
+									<Button block type="primary">
+										<FolderOpenOutlined /> {i18next.t('HOME.SYSTEM.REPOSITORIES')}
+									</Button>
+								</Link>
+								<Link to="/system/options">
+									<Button block>
+										<SettingOutlined /> {i18next.t('HOME.SYSTEM.CONFIG')}
+									</Button>
+								</Link>
+								<Link to="/system/users">
+									<Button block>
+										<SearchOutlined /> {i18next.t('HOME.USERS.BROWSE')}
 									</Button>
 								</Link>
 								<Link to="/system/db">
@@ -83,11 +100,33 @@ function Home() {
 										<DatabaseOutlined /> {i18next.t('HOME.SYSTEM.DATABASE')}
 									</Button>
 								</Link>
+								<Link to="/system/log">
+									<Button block>
+										<HddOutlined /> {i18next.t('HOME.SYSTEM.LOGS')}
+									</Button>
+								</Link>
 							</div>
 						</Card>
 					</Col>
-					<Col span={12}>
-						<Card title={i18next.t('MENU.KARAS')}>
+					<Col xl={8} md={12}>
+						<Card title={i18next.t('MENU.MEDIAS')} style={{ height: '100%' }}>
+							{i18next.t('HOME.MEDIAS_DESCRIPTION')}
+							<div className="km-system-btn-group">
+								<Link to="/system/karas/download">
+									<Button block type="primary">
+										<DownloadOutlined /> {i18next.t('HOME.KARAS.DOWNLOAD')}
+									</Button>
+								</Link>
+								<Link to="/system/storage">
+									<Button block>
+										<DownloadOutlined /> {i18next.t('HEADERS.STORAGE.TITLE')}
+									</Button>
+								</Link>
+							</div>
+						</Card>
+					</Col>
+					<Col xl={8} md={12}>
+						<Card title={i18next.t('MENU.KARAS')} style={{ height: '100%' }}>
 							{i18next.t('HOME.KARAS_DESCRIPTION')}
 							<div className="km-system-btn-group">
 								<Link to="/system/karas/download">
@@ -105,21 +144,11 @@ function Home() {
 										<PlusOutlined /> {i18next.t('HOME.KARAS.CREATE')}
 									</Button>
 								</Link>
-								<Link to="/system/karas/history">
-									<Button block>
-										<HistoryOutlined /> {i18next.t('HOME.KARAS.HISTORY')}
-									</Button>
-								</Link>
-								<Link to="/system/karas/viewcounts">
-									<Button block>
-										<PlayCircleOutlined /> {i18next.t('HOME.KARAS.MOST_PLAYED')}
-									</Button>
-								</Link>
 							</div>
 						</Card>
 					</Col>
-					<Col span={12}>
-						<Card title={i18next.t('MENU.TAGS')}>
+					<Col xl={8} md={12}>
+						<Card title={i18next.t('MENU.TAGS')} style={{ height: '100%' }}>
 							{i18next.t('HOME.TAGS_DESCRIPTION')}
 							<div className="km-system-btn-group">
 								<Link to="/system/tags/create">
@@ -135,23 +164,6 @@ function Home() {
 								<Link to="/system/tags/duplicate">
 									<Button block>
 										<BlockOutlined /> {i18next.t('HOME.TAGS.MERGE')}
-									</Button>
-								</Link>
-							</div>
-						</Card>
-					</Col>
-					<Col span={12}>
-						<Card title={i18next.t('MENU.USERS')}>
-							{i18next.t('HOME.USERS_DESCRIPTION')}
-							<div className="km-system-btn-group">
-								<Link to="/system/users/create">
-									<Button block type="primary">
-										<PlusOutlined /> {i18next.t('HOME.USERS.CREATE')}
-									</Button>
-								</Link>
-								<Link to="/system/users">
-									<Button block type="primary">
-										<SearchOutlined /> {i18next.t('HOME.USERS.BROWSE')}
 									</Button>
 								</Link>
 							</div>

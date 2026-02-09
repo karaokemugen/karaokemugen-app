@@ -12,6 +12,7 @@ import {
 	sqlgetAllTags,
 	sqlinsertKaraTags,
 	sqlinsertTag,
+	sqlselectKarasUsingTag,
 	sqlupdateKaraTagsTID,
 	sqlupdateTag,
 } from './sql/tag.js';
@@ -136,4 +137,8 @@ export async function updateTag(tag: Tag) {
 
 export async function deleteTag(tids: string[]) {
 	await db().query(sqldeleteTag, [tids]);
+}
+
+export async function selectKarasUsingTag(tid: string) {
+	return await db().query(sqlselectKarasUsingTag, [tid]);
 }

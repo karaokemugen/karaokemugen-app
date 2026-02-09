@@ -30,22 +30,10 @@
 	"SHUTDOWN": "Shutdown Karaoke Mugen",
 	"SHUTDOWN_POPUP": "Connection with Karaoke Mugen lost",
 	"HOME_BUTTON": "Home",
-	"MUTE_UNMUTE": "Mute/unmute",
-	"SHOW_SUBS": "Show lyrics on screen",
-	"HIDE_SUBS": "Hide lyrics on screen",
-	"SPEED_UP": "Increase speed",
-	"SPEED_RESET": "Reset to normal speed",
-	"SPEED_DOWN": "Decrease speed",
-	"BLURVIDEO_BLUR": "Blur video",
-	"BLURVIDEO_UNBLUR": "Unblur video",
-	"PITCH_UP": "Increase pitch",
-	"PITCH_RESET": "Reset pitch",
-	"PITCH_DOWN": "Decrease pitch",
 	"OPTIONS": "Options",
 	"PASSWORD": "Password (8 characters minimum)",
 	"PASSWORDCONF": "Password confirmation",
 	"NEW_PASSWORD": "New Password",
-	"VOLUME_LEVEL": "Set volume",
 	"PLAYLISTS": {
 		"LIBRARY": "Library",
 		"FAVORITES": "Favorites",
@@ -63,7 +51,6 @@
 		"CURRENT_PLAYLIST": "Current playlist",
 		"PUBLIC_PLAYLIST": "Public playlist"
 	},
-	"MESSAGE": "Message",
 	"PLAYLIST_HEADER": {
 		"FILTERS": "Filters",
 		"ACTIVE_FILTER": "Active filter",
@@ -311,7 +298,7 @@
 	"TOOLTIP_ACCEPT_SELECT_KARA": "Accept songs (free songs and copy to current list)",
 	"TOOLTIP_CLOSEPARENT": "Close",
 	"KARA_DETAIL": {
-		"CREATED": "Karaoke created ",
+		"CREATED": "Song created ",
 		"ADDED": "Added ",
 		"ADDED_2": "on ",
 		"ADDED_3": " by ",
@@ -338,8 +325,6 @@
 		"HELP": "ONLINE HELP",
 		"SITE": "Website",
 		"PUBLIC": "PUBLIC INTERFACE",
-		"QUIZ": "START QUIZ",
-		"LOGS": "LOGS",
 		"REPOSITORY": "REPOSITORIES",
 		"STATS": "STATUS",
 		"STATS_KARAS": "Songs",
@@ -507,6 +492,8 @@
 			"ADDED_SONG_VISIBILITY_MYSTERY_OPTION": "Mystery song",
 			"MINUTES_BEFORE_SESSION_ENDS_WARNING": "Show warning X minutes before end of playlist",
 			"MINUTES_BEFORE_SESSION_ENDS_WARNING_TOOLTIP": "A notification will warn you X minutes before the end of your planned session",
+			"AUTO_REMOVE_SONGS_FROM_CURRENT_PLAYLIST": "Keep only the last played songs from the current playlist",
+			"AUTO_REMOVE_SONGS_FROM_CURRENT_PLAYLIST_TOOLTIP": "Number of songs to keep in the playlist before the currently playing one. This can be useful to automatically remove old songs from a playlist to allow them to be suggested again. Songs are only removed when a song finished playing or the Next button is used. 0 = Delete nothing.",
 			"ENABLE_AUTOBALANCE": "Enable playlist auto balancing",
 			"ENABLE_AUTOBALANCE_TOOLTIP": "The playlist will be reorganized regularly so that user requests take turns.",
 			"ONLINE_SETTINGS": "Online",
@@ -570,7 +557,9 @@
 			"KARA_LINE_SORT_TOOLTIP": "Define which parts of a song are used to sort the library",
 			"KARA_LINE_DISPLAY": "Song parts display",
 			"KARA_LINE_DISPLAY_TOOLTIP": "Define which parts of a song are displayed in song lists (operator only)",
-			"SET": "Set…"
+			"SET": "Set…",
+			"SWITCH_TO_RESTRICTED_AT_TIME": "Switch to restricted at",
+			"SWITCH_TO_RESTRICTED_AT_TIME_TOOLTIP": "Automatically switch the interface to restricted after the playlist length reached the defined time. Example: When set to 22:00, the playlist won't accept any new additions as soon as it is long enough to last until 22:00 or longer."
 		}
 	},
 	"KARA_PAUSED_WAITING": "No song playing yet",
@@ -823,8 +812,8 @@
 		},
 		"STATS_MODAL": {
 			"TITLE": "Use my favorites and songs requests for stats",
-			"DESC": "We use your favorites as well as the songs that you have requested during a session to make usage statistics (for example, to find out the most requested songs).",
-			"REFUSE_DESC": "If you do not want to participate, even if it's anonymous, in these usage statistics, please let us know. If you refuse, your data will be ignored and not sent by the Karaoke Mugen Application.",
+			"DESC": "The server will use your favorites as well as the songs that you have requested during a session to make usage statistics (for example, to find out the most requested songs).",
+			"REFUSE_DESC": "If you refuse, your data will be ignored and not sent by the Karaoke Mugen Application.",
 			"CHANGE": "You can change this at any time in your profile. Do you accept usage of your song history for stats?"
 		},
 		"CLASSIC_MODE": {
@@ -856,6 +845,10 @@
 		"CREATE_TAG": {
 			"OPEN": "Create a tag",
 			"TITLE": "Quick tag create"
+		},
+		"CHANGE_STATUS_INBOX": {
+			"TITLE": "Change inbox status",
+			"REASON": "Reason"
 		},
 		"START_QUIZ": {
 			"TITLE": "Start a quiz",
@@ -1023,7 +1016,7 @@
 		"CREATE_ONLINE_ACCOUNT": "I want to create a new account",
 		"LOGIN_ONLINE_ACCOUNT": "I already have an account",
 		"CREATE_ONLINE_ACCOUNT_DESC": "Type in an account name and a password to create one.",
-		"SECURITY_CODE_DESC_CONSOLE": "Please also enter the 6-digit security code that you can find by looking for \"SECURITY CODE FOR THIS SESSION\" in the Karaoke Mugen log file or in the console.",
+		"SECURITY_CODE_DESC_CONSOLE": "Please also enter the 6-digit security code that you can find by looking for \"SECURITY CODE\" in the Karaoke Mugen log file or in the console.",
 		"SECURITY_CODE_USE": "This code makes sure you're really the one doing these actions. It changes after each use.",
 		"CONNECTED_MESSAGE": "Congratulations, you're logged in to Karaoke Mugen, {{user}}!"
 	},
@@ -1051,7 +1044,8 @@
 				"PLAYER_RESTARTING": "Restarting media player…",
 				"POLL_WINNER": "People voted for a new song!",
 				"POLL_STARTING": "Starting poll",
-				"END_OF_SESSION_NEAR": "The karaoke session should end in {{data}} minutes."
+				"END_OF_SESSION_NEAR": "The karaoke session should end in {{data}} minutes.",
+				"INTERFACE_SWITCHED_TO_RESTRICTED_PLAYLIST_LENGTH": "Interface switched to restricted mode because the playlist length reached the defined limit."
 			}
 		}
 	},
@@ -1113,13 +1107,21 @@
 			"LABEL": "Encode media",
 			"OPTIONS": {
 				"TRIM_MEDIA": "Trim start/end",
-				"TRIM_MEDIA_TOOLTIP": "Detect and remove black frames and silence at the beginning and end of the media"
+				"TRIM_MEDIA_TOOLTIP": "Detect and remove black frames and silence at the beginning and end of the media",
+				"FIXASPECTRATIO": "Fix aspect ratio",
+				"FIXASPECTRATIO_TOOLTIP": "Changes aspect ratio of a video. Example: convert vertical videos to horizontal orientation. Will take more time to encode depending on the chosen background effect",
+				"FIXASPECTRATIO_BACKGROUND": "Background:",
+				"FIXASPECTRATIO_MODE": {
+					"BLUR_VIDEO": "Blur video",
+					"BLACK": "Black"
+				}
 			},
 			"TIMING_CHANGE_WARNING": "The selected options might change the start and end time of the media. Check the lyrics timings after the media is encoded and saved."
 		},
 		"LYRICS_FILE": "Lyrics file",
 		"LYRICS_FILE_TOOLTIP": "Supported file formats: {{formats}}",
 		"LYRICS_FILE_OPEN": "Open file",
+		"MISSING_PARENT_SONG": "Missing parent song ({{parent}})",
 		"ADD_FILE_SUCCESS": "{{name}} file added successfully",
 		"ADD_FILE_MEDIA_ERROR": "{{name}} is not a media file",
 		"ADD_FILE_LYRICS_ERROR": "{{name}} is not a subtitle file",
@@ -1191,11 +1193,14 @@
 		"BATCH_EDIT": {
 			"ADD_TAG": "Add tag",
 			"REMOVE_TAG": "Remove tag",
+			"ADD_PARENT": "Add parent",
+			"REMOVE_PARENT": "Remove parent",
 			"EDIT_DISPLAY_TYPE": "Edit from tag type display",
 			"CREATE_PLAYLIST": "First, you need to create a playlist in the operator panel.",
 			"SELECT_PLAYLIST": "Select a playlist:",
 			"SELECT_ACTION": "Select an operation:",
 			"SELECT_TAG": "Select a tag:",
+			"SELECT_PARENT": "Select a parent:",
 			"SELECT_TAG_TYPE": "Select a tag type :",
 			"EDIT": "Batch edit",
 			"SELECT": "Select"
@@ -1214,11 +1219,11 @@
 		"SWAP_DESCRIPTION": "Choose a second song to swap them",
 		"DELETE_ALL_TOOLTIP": "Remove all displayed songs at once",
 		"DELETE_KARA_TITLE": "You're going to remove {{count}} displayed songs, are you sure?",
-		"DELETE_MEDIA_TOOLTIP": "Delete karaoke media",
-		"UPLOAD_MEDIA_TOOLTIP": "Re-upload karaoke media",
+		"DELETE_MEDIA_TOOLTIP": "Delete song media",
+		"UPLOAD_MEDIA_TOOLTIP": "Re-upload song media",
 		"SHOW_LYRICS_IN_FOLDER": "Show lyrics in folder",
 		"SHOW_MEDIA_IN_FOLDER": "Show media in folder",
-		"PLAY_KARAOKE": "Play karaoke",
+		"PLAY_KARAOKE": "Play song",
 		"MISSING_DOWNLOAD_TOOLTIP": "This song is not downloaded, you will need Internet in order to play it. You can make it work offline by downloading the media.",
 		"IN_PROGRESS_DOWNLOAD_TOOLTIP": "Download in progress",
 		"ONLINE_REPOSITORIES": "Some of your songs are from remote repositories, these songs are not editable through this interface, to make sure that the repositories stay in sync. You can check the \"Maintainer mode\" checkbox in the repository settings, you will not receive any updates anymore but you will be able to edit or delete songs.",
@@ -1242,11 +1247,11 @@
 		"CONFIGURATION": "Configuration",
 		"SOURCE_DIR": "Source directory",
 		"SOURCE_DIR_DESC": "Please select the folder your songs are located at. They will be copied to your target repository.",
-		"SOURCE_DIR_TOOLTIP": "Directory with karaoke media (video/audio) to import",
+		"SOURCE_DIR_TOOLTIP": "Directory with song media (video/audio) to import",
 		"DESTINATION_REPOSITORY": "Target repository",
 		"DESTINATION_REPOSITORY_TOOLTIP": "Repository to which the new songs will be imported",
 		"FILENAME_TEMPLATE": "Filename template",
-		"FILENAME_TEMPLATE_TOOLTIP": "If your existing files have a structured filename - for example containing the song name, artist and year - you can provide the format here. The recognized fields will automatically be saved as new karaoke metadata.",
+		"FILENAME_TEMPLATE_TOOLTIP": "If your existing files have a structured filename - for example containing the song name, artist and year - you can provide the format here. The recognized fields will automatically be saved as new song metadata.",
 		"FILENAME_TEMPLATE_DESC": "Please specify the format of filenames you're using:",
 		"WARNING_IMPORT_TITLE": "PLEASE READ",
 		"WARNING_IMPORT": "Karaoke Mugen will look into the source folder and try to find songs to import.",
@@ -1269,10 +1274,12 @@
 		"SESSIONS": "Sessions",
 		"REPOSITORIES": "Collections and repositories",
 		"KARAS": "Songs",
+		"MEDIAS": "Media",
+		"STATS": "Statistics",
 		"LIST": "List",
 		"NEW": "New",
-		"DOWNLOAD_QUEUE": "Download queue",
-		"DOWNLOAD": "Media download",
+		"DOWNLOAD_QUEUE": "Queue",
+		"DOWNLOAD": "Downloads",
 		"HISTORY": "History",
 		"RANKING": "Most requested",
 		"VIEWCOUNTS": "Most played",
@@ -1283,8 +1290,8 @@
 		"USERS": "Users",
 		"UNUSED_FILES": "Unused files",
 		"DUPLICATE": "Duplicates",
-		"BATCH_EDIT": "Batch edit song tags",
-		"STORAGE": "Disk storage management",
+		"BATCH_EDIT": "Batch edit",
+		"STORAGE": "Storage management",
 		"BACKGROUNDS": "Backgrounds",
 		"INBOX": "Inbox",
 		"MAINTAINER": "Maintainer"
@@ -1343,8 +1350,8 @@
 		"NAME_TOOLTIP": "This is the internal name used to reference the tags in Karaoke Mugen's database",
 		"SHORT_NAME": "Short name",
 		"SHORT_NAME_TOOLTIP": "This is the short name used in the operator interface when displaying song titles",
-		"KARAFILETAG": "Karaoke file name optional tag",
-		"KARAFILETAG_TOOLTIP": "This will be added in the types section of karaoke file names",
+		"KARAFILETAG": "Song name optional tag",
+		"KARAFILETAG_TOOLTIP": "This will be added in the types section of song names",
 		"TYPES": "Tag types",
 		"TYPES_TOOLTIP": "This is the tag type, so it can be properly searched for by users",
 		"TYPES_REQUIRED": "Please enter a type",
@@ -1530,10 +1537,10 @@
 		"MAINTAINER_MODE_TOOLTIP": "Enable this if you participate in the repository's maintenance. The app will switch to a git-based repository. Git needs to be installed on your system.",
 		"FOLDERS_REQUIRED": "A folder of {{name}} is required.",
 		"MOVE": "Define the priority of repositories",
-		"MOVE_TOOLTIP": "This allows you to define which repositories take priority when creating your database: the highest repositories will be taken into account first if two repositories have the same karaoke",
+		"MOVE_TOOLTIP": "This allows you to define which repositories take priority when creating your database: the highest repositories will be taken into account first if two repositories have the same song",
 		"CONVERT_TO_UUID_BUTTON": "Convert to UUID file format…",
 		"CONVERT_TO_UUID_PANEL": "Convert to UUID file format",
-		"CONVERT_TO_UUID_ABOUT_MESSAGE": "Your repository might name its files in an old format (before Karaoke Mugen 8.0.56 - January 2025). If your repository was created before that, you can use this button to rename all files (karaoke metadata, lyrics and media) to the UUID format. Please note that this is not reversible.",
+		"CONVERT_TO_UUID_ABOUT_MESSAGE": "Your repository might name its files in an old format (before Karaoke Mugen 8.0.56 - January 2025). If your repository was created before that, you can use this button to rename all files (song metadata, lyrics and media) to the UUID format. Please note that this is not reversible.",
 		"MOVING_MEDIA": "Destination where to move media",
 		"MOVING_MEDIA_BUTTON": "Move media…",
 		"MOVING_MEDIA_PANEL": "Move media",
@@ -1606,13 +1613,14 @@
 		"ENABLED": "Enabled"
 	},
 	"HOME": {
-		"SYSTEM_DESCRIPTION": "See logs, change configuration options, backup/restore your database, trigger a manual generation and manage karaoke session",
-		"KARAS_DESCRIPTION": "List, edit, and create karaoke data files. You can also download media and view most requested, most played, and karaoke history",
+		"STATS_DESCRIPTION": "Manage karaoke sessions, view the most requested and played songs, and access the history",
+		"SYSTEM_DESCRIPTION": "See logs, change configuration options, backup/restore your database, trigger a manual generation and manage users",
+		"MEDIAS_DESCRIPTION": "Download media and manage your storage space",
+		"KARAS_DESCRIPTION": "List, edit, and create song data files",
 		"TAGS_DESCRIPTION": "List, create, edit tags (singers, songwriters, creators, song types, etc.)",
-		"USERS_DESCRIPTION": "List, edit, create users, change their password, create new guests accounts.",
 		"SYSTEM": {
 			"CONFIG": "Edit configuration",
-			"REPOSITORIES": "Karaoke collections and repositories",
+			"REPOSITORIES": "Song collections and repositories",
 			"SESSIONS": "Karaoke sessions",
 			"LOGS": "System logs",
 			"DATABASE": "Database"
@@ -1620,7 +1628,7 @@
 		"KARAS": {
 			"DOWNLOAD": "Download media",
 			"BROWSE": "Browse songs",
-			"CREATE": "Create a karaoke",
+			"CREATE": "Create a song",
 			"HISTORY": "Played song history",
 			"MOST_PLAYED": "Most played song history"
 		},
@@ -1640,8 +1648,8 @@
 		"COPYING_LYRICS_IN_REPOS": "Updating lyrics…",
 		"FINDING_UNUSED_MEDIAS": "Searching unused media…",
 		"COMPARING_LYRICS_IN_REPOS": "Comparing lyrics between repositories…",
-		"CREATING_SONG": "Creating karaoke…",
-		"EDITING_SONG": "Editing karaoke…",
+		"CREATING_SONG": "Creating song…",
+		"EDITING_SONG": "Editing song…",
 		"EDITING_KARAS_BATCH_TAGS": "Editing tags in songs…",
 		"DATASTORE_UPDATE": "Updating local data store…",
 		"GENERATING": "Generating database…",
@@ -1700,13 +1708,13 @@
 		"PL_DELETE_PLAYING_ERROR": "You can't remove the curerntly playing song",
 		"PL_RANDOMIZE_ERROR": "Error shuffling playlist",
 		"CHECK_YOUR_PRIVILEGES": "You cannot do that",
-		"QUIZZ_START_ERROR": "Error starting quizz",
-		"QUIZZ_STOP_ERROR": "Error stopping quizz",
-		"QUIZZ_DELETE_ERROR": "Error removing a quizz",
+		"QUIZZ_START_ERROR": "Error starting quiz",
+		"QUIZZ_STOP_ERROR": "Error stopping quiz",
+		"QUIZZ_DELETE_ERROR": "Error removing a quiz",
 		"QUIZZ_RESET_SCORES_ERROR": "Error resetting game scores",
 		"QUIZZ_GET_GAMES_SCORES_ERROR": "Error getting score",
 		"QUIZZ_GET_TOTAL_GAME_SCORES_ERROR": "Error getting total game scores",
-		"QUIZZ_GET_LAST_SONGS_ERROR": "Error getting last songs played in the quizz",
+		"QUIZZ_GET_LAST_SONGS_ERROR": "Error getting last songs played in the quiz",
 		"REPOS_GET_ERROR": "Error getting repository list",
 		"MOVING_MEDIAS_ERROR": "Error while moving media",
 		"OPEN_MEDIA_FOLDER_ERROR": "Error while opening media folder",
@@ -1721,8 +1729,8 @@
 		"MEDIA_ENCODING_ABORTED": "Media encoding was cancelled",
 		"INBOX_VIEW_FORBIDDEN_ERROR": "You don't have permission to view the song inbox",
 		"INBOX_VIEW_ERROR": "Unable to fetch songs from inbox",
-		"INBOX_DOWNLOAD_ERROR": "Unable to download karaoke from inbox",
-		"INBOX_DELETE_ERROR": "Unable to delete karaoke from inbox",
+		"INBOX_DOWNLOAD_ERROR": "Unable to download song from inbox",
+		"INBOX_DELETE_ERROR": "Unable to delete song from inbox",
 		"INBOX_DELETE_FORBIDDEN_ERROR": "Inbox deletion forbidden",
 		"WEBAPPMODE_CLOSED_API_MESSAGE": "API is disabled at the moment",
 		"CRITERIAS_EMPTY_ERROR": "Error emptying list of criteria",
@@ -1761,8 +1769,8 @@
 		"FAVORITES_IMPORTED_WRONG_FILETYPE_ERROR": "Error importing favorites : not a favorites list file",
 		"FAVORITES_IMPORTED_BAD_DATA_ERROR": "Error importing favorites : invalid data in file",
 		"FAVORITES_IMPORTED_ERROR": "Error importing favorites",
-		"KARA_CREATED_ERROR": "Error creating the karaoke",
-		"KARA_FILE_EXISTS_ERROR": "Error saving files: A karaoke with the same filename already exists. Please make sure this is not a duplicate and the tags are set correctly.",
+		"KARA_CREATED_ERROR": "Error creating song",
+		"KARA_FILE_EXISTS_ERROR": "Error saving files: A song with the same filename already exists. Please make sure this is not a duplicate and the tags are set correctly.",
 		"KARA_HISTORY_ERROR": "Error getting songs sorted by date played",
 		"KARA_RANKING_ERROR": "Error sorting songs by most requested",
 		"KARA_PLAYED_ERROR": "Error getting songs sorted by most played",
@@ -1771,8 +1779,8 @@
 		"KARA_EDIT_ERROR_UNMOVABLE_LYRICS": "Unable to rename lyrics. Is the file busy in another app?",
 		"KARA_EDIT_ERROR_UNMOVABLE_MEDIA": "Unable to rename media. Is the file busy in another app?",
 		"KARA_EDITED_ERROR": "Error editing song",
-		"REPOSITORY_MANIFEST_KARA_METADATA_RULE_VIOLATION_ERROR": "Error : Karaoke metadata violates a rule from its repository. Check the Event Log for more information.",
-		"REPOSITORY_MANIFEST_KARA_PARENTS_RULE_VIOLATION_ERROR": "Error : Karaoke family violates a rule from its repository. Check the Event Log for more information.",
+		"REPOSITORY_MANIFEST_KARA_METADATA_RULE_VIOLATION_ERROR": "Error : Song metadata violates a rule from its repository. Check the Event Log for more information.",
+		"REPOSITORY_MANIFEST_KARA_PARENTS_RULE_VIOLATION_ERROR": "Error : Song family violates a rule from its repository. Check the Event Log for more information.",
 		"TIME_PARADOX": "Time Paradox Detected ! A song cannot be its own parent!",
 		"PIME_TARADOX": "Pime Taradox Detected ! A song's parent cannot be its own child as well!",
 		"PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED": "This song has already been added.",
@@ -1937,9 +1945,9 @@
 		"DOWNLOADS_QUEUED": "Added {{data}} downloads to the queue",
 		"DOWNLOADS_STARTED": "Downloads starting",
 		"UPDATING_MEDIAS_IN_PROGRESS": "Media update in progress",
-		"KARA_CREATED": "Karaoke created",
-		"KARA_EDITED": "Karaoke edited",
-		"KARA_DELETED": "Karaoke deleted",
+		"KARA_CREATED": "Song created",
+		"KARA_EDITED": "Song edited",
+		"KARA_DELETED": "Song deleted",
 		"SONG_COPIED": "Successfully copied song to another repository",
 		"TAG_COPIED": "Successfully copied tag to another repository",
 		"CONFIG_BACKUPED": "Configuration file backuped to config.yml.backup",
@@ -1980,11 +1988,12 @@
 		"REPO_MEDIA_DELETED": "Media deleted",
 		"USER_RESETPASSWORD_SUCCESS": "User password successfully Reset",
 		"CHANGES_OCCUR_ON_NEXT_SONG": "This setting will be active on next song.",
-		"PLAYLIST_EXPORTED_TO_SERVER": "Playlist successfully exported to server {{data}}"
+		"PLAYLIST_EXPORTED_TO_SERVER": "Playlist successfully exported to server {{data}}",
+		"INBOX_STATUS_UPDATED": "Status change completed"
 	},
 	"HEADERS": {
 		"HOME": {
-			"TITLE": "System Panel",
+			"TITLE": "System Panel dashboard",
 			"DESCRIPTION": "This is where it all begins. Choose your action."
 		},
 		"LOGS": {
@@ -2015,7 +2024,7 @@
 		"REPOSITORIES": {
 			"TITLE": "Collections and repositories management",
 			"DESCRIPTION_COLLECTION": "The Song Collections are intended for different audiences. Choose the collections you want to see in your karaoke database.",
-			"DESCRIPTION": "Repositories are sources of karaoke. Add, enable, or remove repositories from this page."
+			"DESCRIPTION": "Repositories are sources of songs. Add, enable, or remove repositories from this page."
 		},
 		"BACKGROUNDS": {
 			"TITLE": "Backgrounds management",
@@ -2031,7 +2040,7 @@
 		},
 		"UNUSED_FILES": {
 			"TITLE": "Unused files",
-			"DESCRIPTION": "You can list unnecessary files (used by no karaoke) in your repositories from here."
+			"DESCRIPTION": "You can list unnecessary files (used by no song) in your repositories from here."
 		},
 		"DATABASE": {
 			"TITLE": "Database",
@@ -2043,15 +2052,15 @@
 		},
 		"KARAOKE_LIST": {
 			"TITLE": "List of songs",
-			"DESCRIPTION": "From here you can edit, add or delete songs. Usually for karaoke repository maintainers only."
+			"DESCRIPTION": "From here you can edit, add or delete songs. Usually for song repository maintainers only."
 		},
 		"KARAOKE_NEW": {
-			"TITLE": "Add a karaoke",
-			"DESCRIPTION": "This form allows you to add an already existing karaoke to one of your repositories."
+			"TITLE": "Add a song",
+			"DESCRIPTION": "This form allows you to add an already existing song to one of your repositories."
 		},
 		"KARAOKE_EDIT": {
-			"TITLE": "Edit a karaoke",
-			"DESCRIPTION": "Karaoke modification form."
+			"TITLE": "Edit a song",
+			"DESCRIPTION": "Song modification form."
 		},
 		"KARAOKE_IMPORT": {
 			"TITLE": "Import songs",
@@ -2063,11 +2072,11 @@
 		},
 		"DOWNLOAD": {
 			"TITLE": "Media download manager",
-			"DESCRIPTION": "Find and get media linked to karaoke from your configured repositories."
+			"DESCRIPTION": "Find and get media linked to songs from your configured repositories."
 		},
 		"HISTORY": {
 			"TITLE": "Reading history",
-			"DESCRIPTION": "Lists all the karaoke played on your application, in descending chronological order."
+			"DESCRIPTION": "Lists all the songs played on your application, in descending chronological order."
 		},
 		"MOST_REQUESTED": {
 			"TITLE": "Most Requested Songs",
@@ -2079,7 +2088,7 @@
 			"DESCRIPTION": "List the most played songs on your application"
 		},
 		"KARATAG_BATCH_EDIT": {
-			"TITLE": "Bulk add / remove tag",
+			"TITLE": "Bulk songs editing",
 			"DESCRIPTION": "Maintainers only: this page allows you to add or remove a tag on several songs simultaneously."
 		},
 		"TAG_LIST": {
@@ -2116,7 +2125,7 @@
 		},
 		"INBOX": {
 			"TITLE": "Inbox for songs to integrate",
-			"DESCRIPTION": "As maintainer of this karaoke base, your duty is to make this list empty."
+			"DESCRIPTION": "As maintainer of this song database, your duty is to make this list empty."
 		}
 	},
 	"LOGS": {
@@ -2167,10 +2176,25 @@
 	"INBOX": {
 		"NAME": "Song name",
 		"TIMESTAMP": "Timestamp",
-		"TYPE": "Type of request",
 		"TYPES": {
 			"CREATION": "Creation",
 			"MODIFICATION": "Modification"
+		},
+		"STATUS": {
+			"LABEL": "Status",
+			"SENT": "Sent",
+			"IN_REVIEW": "In review",
+			"IN_REVIEW_BY_ME": "In review (by me)",
+			"CHANGES_REQUESTED": "Changes requested",
+			"ACCEPTED": "Accepted",
+			"REJECTED": "Rejected"
+		},
+		"FILTER_BY_STATUS": "Filter by status",
+		"CHANGE_STATUS": {
+			"LABEL": "Change status",
+			"ACCEPT": "Accept",
+			"REJECT": "Reject",
+			"ASK_FOR_CHANGES": "Ask for changes"
 		},
 		"REVIEW": "Review",
 		"LINK_TO_ISSUE": "Link to issue",
@@ -2179,13 +2203,13 @@
 		"USER": "User in charge of issue integration",
 		"DOWNLOAD": "Download song",
 		"DELETE_SONG": "Delete song",
+		"DELETE_SONG_LOCALLY": "Delete song locally",
 		"UNASSIGN_FROM_SONG": "Unassign yourself from this song",
 		"SONG_DOWNLOADED_FROM_INBOX": "Song {{song}} succesfully downloaded from inbox",
 		"SONG_DOWNLOADED_FROM_INBOX_FAILED": "Song could not be downloaded from inbox!",
 		"DELETE": "Are you sure you want to delete the song from the inbox as well as its files on the server?",
 		"CONTACT_INFOS_MODAL": {
 			"USERNAME": "Username: ",
-			"MAIL": "Email: ",
 			"LANGUAGE": "Language: ",
 			"URL": "Website: ",
 			"SOCIAL_NETWORKS": {
@@ -2200,9 +2224,9 @@
 		"ONLINE_USER_REQUIRED": "A online user is required for inbox"
 	},
 	"ABOUT": {
-		"DESCRIPTION": "A karaoke player and a party organizer, between friends or in public.",
+		"DESCRIPTION": "A karaoke player and a party manager, between friends or in public.",
 		"LICENSE": "MIT-licensed.",
-		"CONTRIBUTORS": "The karaoke subs were created by awesome people, like <1>{{contributors}}</1> for example.",
+		"CONTRIBUTORS": "Song lyrics were created by awesome people, like <1>{{contributors}}</1> for example.",
 		"DONATORS": "Thanks to <1>{{donators}}</1> for their donations to Karaoke Mugen"
 	},
 	"QUIZ": {
@@ -2266,6 +2290,29 @@
 		"NEXT_SONG": "Next song",
 		"NEXT_SONG_SHORT": "Next",
 		"PLAY": "Play",
-		"PAUSE": "Pause"
+		"PAUSE": "Pause",
+		"MUTE_UNMUTE": "Mute/unmute",
+		"VOLUME_LEVEL": "Set volume",
+		"MESSAGE": "Send a message to the public",
+		"SUBS": {
+			"SHOW": "Show lyrics on screen",
+			"HIDE": "Hide lyrics on screen"
+		},
+		"SPEED": {
+			"TITLE": "Change speed",
+			"UP": "Increase speed",
+			"RESET": "Reset to normal speed",
+			"DOWN": "Decrease speed"
+		},
+		"BLURVIDEO": {
+			"BLUR": "Blur video",
+			"UNBLUR": "Unblur video"
+		},
+		"PITCH": {
+			"TITLE": "Change pitch",
+			"UP": "Increase pitch",
+			"RESET": "Reset pitch",
+			"DOWN": "Decrease pitch"
+		}
 	}
 }

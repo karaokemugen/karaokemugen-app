@@ -246,14 +246,14 @@ export default function KaraDetail(props: IProps) {
 				{props.criteriaLabel ? (
 					<div className="detailsKaraLine">
 						<span>
-							<i className="fas fa-fw fa-ban" />
+							<i className="fas fa-ban" />
 							{props.criteriaLabel}
 						</span>
 					</div>
 				) : null}
 				<div className="detailsKaraLine timeData">
 					<span>
-						<i className="fas fa-fw fa-clock" />
+						<i className="fas fa-clock" />
 						{secondsTimeSpanToHMS(kara.duration, 'mm:ss')}
 					</span>
 					<span>
@@ -318,7 +318,7 @@ export default function KaraDetail(props: IProps) {
 				{karaBlockTags}
 				<div className="detailsKaraLine">
 					<span className="boldDetails">
-						<i className={`fas fa-fw fa-${YEARS.icon}`} />
+						<i className={`fas fa-${YEARS.icon}`} />
 						{kara.year}
 					</span>
 				</div>
@@ -340,7 +340,7 @@ export default function KaraDetail(props: IProps) {
 		const downloadVideoButton =
 			kara.download_status !== 'MISSING' ? null : (
 				<button type="button" className="btn btn-action" onClick={downloadMedia}>
-					<i className="fas fa-fw fa-file-download" />
+					<i className="fas fa-file-download" />
 					<span>{i18next.t('KARA_DETAIL.DOWNLOAD_MEDIA')}</span>
 				</button>
 			);
@@ -350,7 +350,7 @@ export default function KaraDetail(props: IProps) {
 		)[0].MaintainerMode ? (
 			<a href={`/system/karas/${kara.kid}`}>
 				<button type="button" className="btn btn-action">
-					<i className="fas fa-fw fa-edit" />
+					<i className="fas fa-edit" />
 					<span>{i18next.t('KARA_DETAIL.MODIFY_KARAOKE')}</span>
 				</button>
 			</a>
@@ -360,7 +360,7 @@ export default function KaraDetail(props: IProps) {
 			<div className="lyricsKara detailsKaraLine">
 				{lyrics?.length > 0 ? (
 					<div className="boldDetails">
-						<i className="fas fa-fw fa-closed-captioning" />
+						<i className="fas fa-closed-captioning" />
 						{i18next.t('KARA_DETAIL.LYRICS')}
 					</div>
 				) : null}
@@ -382,7 +382,7 @@ export default function KaraDetail(props: IProps) {
 				<div className="modal-header-title">
 					{!isAdmin ? (
 						<button className="transparent-btn" type="button" onClick={props.closeOnPublic}>
-							<i className="fas fa-fw fa-arrow-left" />
+							<i className="fas fa-arrow-left" />
 						</button>
 					) : null}
 					<div className="modal-title-block">
@@ -403,7 +403,7 @@ export default function KaraDetail(props: IProps) {
 					</div>
 					{isAdmin ? (
 						<button className="transparent-btn" type="button" onClick={closeModalWithContext}>
-							<i className="fas fa-fw fa-times" />
+							<i className="fas fa-times" />
 						</button>
 					) : null}
 				</div>
@@ -411,7 +411,7 @@ export default function KaraDetail(props: IProps) {
 				{props.karoulette ? (
 					<div className="karoulette">
 						<button className="btn btn-action" disabled={pending} onClick={() => karoulette_submit(false)}>
-							<i className="fas fa-fw fa-times" />
+							<i className="fas fa-times" />
 							{i18next.t('KAROULETTE.REFUSE')}
 						</button>
 						<p>
@@ -426,7 +426,7 @@ export default function KaraDetail(props: IProps) {
 							})}
 						</p>
 						<button className="btn btn-action" disabled={pending} onClick={() => karoulette_submit(true)}>
-							<i className="fas fa-fw fa-check" />
+							<i className="fas fa-check" />
 							{i18next.t('KAROULETTE.ACCEPT')}
 						</button>
 					</div>

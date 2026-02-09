@@ -121,7 +121,7 @@ async function setupSystemRepo() {
 	const destDir = resolve(getState().dataPath, 'repos/system');
 	logger.debug('Copying system repository', { service });
 	await remove(destDir);
-	await copy(baseDir, destDir);
+	await copy(baseDir, destDir, { preserveTimestamps: true });
 }
 
 /* Checking if application paths exist. * */

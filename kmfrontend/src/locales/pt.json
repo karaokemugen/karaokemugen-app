@@ -15,14 +15,10 @@
 	"SHUTDOWN": "Encerrar o Karaoke Mugen",
 	"SHUTDOWN_POPUP": "Ligação com o Karaoke Mugen foi perdida",
 	"HOME_BUTTON": "Mudar a interface",
-	"MUTE_UNMUTE": "Desativar o som/Ativar o som",
-	"SHOW_SUBS": "Mostrar letras no ecrã",
-	"HIDE_SUBS": "Ocultar as letras no ecrã",
 	"OPTIONS": "Opções",
 	"PASSWORD": "Palavra-passe (Mínimo de 8 caracteres)",
 	"PASSWORDCONF": "Confirmação de palavra-passe",
 	"NEW_PASSWORD": "Nova palavra-passe",
-	"VOLUME_LEVEL": "Ajustar volume",
 	"PLAYLISTS": {
 		"LIBRARY": "Biblioteca",
 		"FAVORITES": "Favoritos",
@@ -73,14 +69,11 @@
 	"DURATION_REMAINING": "restante",
 	"VERSION": "Versão",
 	"WEBAPPMODE_CLOSED_MESSAGE": "A interface está fechada, por favor aguarde.",
-	"MESSAGE": "Mensagem",
 	"WARNING": "Atenção!",
 	"SHOW-HIDE": "Mostrar/Esconder",
-	"BLURVIDEO_BLUR": "Desfocar vídeo",
 	"UNKNOWN": "Desconhecido",
 	"SECURITY_CODE_MANDATORY": "O código de segurança é requerido para criar uma conta de operador",
 	"OR": "ou",
-	"BLURVIDEO_UNBLUR": "Focar vídeo",
 	"LANGUAGES": {
 		"QRO": "Alfabeto latino (romanização)"
 	},
@@ -95,7 +88,27 @@
 		"NEXT_SONG_SHORT": "Próximo",
 		"STOP_AFTER_SHORT": "Pare depois",
 		"STOP_NOW_SHORT": "Pare agora",
-		"PREVIOUS_SONG_SHORT": "Anterior"
+		"PREVIOUS_SONG_SHORT": "Anterior",
+		"MUTE_UNMUTE": "Desativar o som/Ativar o som",
+		"VOLUME_LEVEL": "Ajustar volume",
+		"SUBS": {
+			"SHOW": "Mostrar letras no ecrã",
+			"HIDE": "Ocultar as letras no ecrã"
+		},
+		"SPEED": {
+			"UP": "Aumentar velocidade",
+			"RESET": "Velocidade normal",
+			"DOWN": "Diminuir velocidade"
+		},
+		"PITCH": {
+			"UP": "Aumentar tom",
+			"RESET": "Reestabelecer tom",
+			"DOWN": "Diminuir tom"
+		},
+		"BLURVIDEO": {
+			"BLUR": "Desfocar vídeo",
+			"UNBLUR": "Focar vídeo"
+		}
 	},
 	"KARA_MENU": {
 		"FAV": "Adicionar aos favoritos",
@@ -126,12 +139,6 @@
 		"FAVORITES_ADDED": "Adicionado aos favoritos",
 		"VISIBLE_OFF_SHORT": "Ocultar"
 	},
-	"SPEED_UP": "Aumentar velocidade",
-	"SPEED_RESET": "Velocidade normal",
-	"SPEED_DOWN": "Diminuir velocidade",
-	"PITCH_UP": "Aumentar tom",
-	"PITCH_RESET": "Reestabelecer tom",
-	"PITCH_DOWN": "Diminuir tom",
 	"KAROULETTE": {
 		"START": "Revisar sugestões do público",
 		"STATS_one": "{{count}} processado ({{accepted}} / {{refused}})",
@@ -270,8 +277,6 @@
 		"ADMINISTRATION": "PAINEL DO SISTEMA",
 		"HELP": "AJUDA ONLINE",
 		"SITE": "Local na rede Internet",
-		"QUIZ": "INICIAR TESTE",
-		"LOGS": "HISTÓRICO",
 		"REPOSITORY": "REPOSITÓRIOS",
 		"STATS": "STATUS",
 		"STATS_KARAS": "Karaokês",
@@ -777,7 +782,7 @@
 		"ONLINE_ACCOUNT_DESC": "Uma conta online permite que você:",
 		"ONLINE_ACCOUNT_INSTANCE_DESC": "Uma instância é um servidor online que fornece diversos serviços ao Karaokê Mugen. {{instance}}) ou, se você souber o que está fazendo, altere-o para a instância de sua escolha.",
 		"LOCAL_ACCOUNT_DESC": "Você escolheu uma conta local. Digite um nome de conta e uma senha abaixo:",
-		"SECURITY_CODE_DESC_CONSOLE": "Digite também o código de segurança de 6 dígitos que você pode encontrar procurando por \"CÓDIGO DE SEGURANÇA PARA ESTA SESSÃO\" no arquivo de log do Karaokê Mugen ou no console.",
+		"SECURITY_CODE_DESC_CONSOLE": "Digite também o código de segurança de 6 dígitos que você pode encontrar procurando por \"SECURITY CODE\" no arquivo de log do Karaokê Mugen ou no console.",
 		"SECURITY_CODE_USE": "Este código garante que você é realmente quem está executando essas ações.",
 		"ONLINE_ACCOUNT_SAVE_INFOS": "Faça backup de suas músicas favoritas, avatar e informações de perfil para usá-los em outro aplicativo Karaokê Mugen.",
 		"TITLE": "Assistente de configuração",
@@ -1188,7 +1193,7 @@
 			"PASSWORD": "Senha FTP",
 			"BASEDIR": "Diretório base FTP"
 		},
-		"TOOLTIP_NAME": "Se for um repositório online, coloque o nome do domínio apenas aqui. Se for um repositório local, nomeie-o como desejar. Por exemplo, 'Meus pequenos karaokês particulares'",
+		"TOOLTIP_NAME": "Nomeie-o como desejar. Por exemplo, 'Meus pequenos karaokês particulares'",
 		"AUTO_MEDIA_DOWNLOADS_TOOLTIP": "Caso sua conexão seja muito lenta, recomendamos que você selecione “Todas” para que as mídias sejam baixadas previamente. Isso também é recomendado para uso em convenções ou streams para evitar possíveis erros no meio de um karaokê!",
 		"MOVING_MEDIA_PANEL": "Mover mídia",
 		"GIT_ACTIONS": "Ações",
@@ -1509,7 +1514,6 @@
 			"CREATE": "Crie um usuário"
 		},
 		"SYSTEM_DESCRIPTION": "Veja logs, altere opções de configuração, faça backup/restaure seu banco de dados, acione uma geração manual e gerencie sessões de karaokê",
-		"USERS_DESCRIPTION": "Liste, edite, crie usuários, altere suas senhas, crie novas contas de convidados.",
 		"KARAS": {
 			"CREATE": "Crie um karaokê",
 			"HISTORY": "História do karaokê tocado",
@@ -1713,7 +1717,6 @@
 		"NAME": "Nome do karaokê",
 		"REVIEW": "Análise",
 		"TIMESTAMP": "Carimbo de data e hora",
-		"TYPE": "Tipo de solicitação",
 		"DOWNLOAD": "Baixar karaokê",
 		"SONG_DOWNLOADED_FROM_INBOX": "Canção {{song}} baixado com sucesso da caixa de entrada",
 		"CONTACT_INFOS_MODAL": {
@@ -1725,8 +1728,7 @@
 				"INSTAGRAM": "Instagram: ",
 				"DISCORD": "Discórdia: "
 			},
-			"USERNAME": "Nome de usuário: ",
-			"MAIL": "E-mail: "
+			"USERNAME": "Nome de usuário: "
 		},
 		"DELETE": "Tem certeza de que deseja excluir o karaokê da caixa de entrada, bem como seus arquivos no servidor?",
 		"ISSUE": "Emitir {{number}}",

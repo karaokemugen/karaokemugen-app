@@ -221,6 +221,8 @@ Playlist:
   EndOfPlaylistAction: none
   # Should a message be displayed on screen inviting people to add songs?
   RandomSongsAfterEndMessage: true
+  # auto remove old songs from current playlist. 0 = Delete nothing
+  CurrentPlaylistAutoRemoveSongs: 0
   # Allow public to swap current playlist items they own
   AllowPublicCurrentPlaylistItemSwap: true;
   # Allow public to add the same song multiple times
@@ -283,11 +285,11 @@ System:
     connection: tcp
   Binaries:
     Player:
-      Linux: /usr/bin/mpv
+      Linux: app/bin/mpv
       OSX: app/bin/mpv.app/Contents/MacOS/mpv
       Windows: app/bin/mpv.exe
     ffmpeg:
-      Linux: /usr/bin/ffmpeg
+      Linux: app/bin/ffmpeg
       OSX: app/bin/ffmpeg
       Windows: app/bin/ffmpeg.exe
     Postgres:
@@ -295,7 +297,7 @@ System:
       OSX: app/bin/postgres/bin/
       Windows: app/bin/postgres/bin/
     patch:
-      Linux: /usr/bin/patch
+      Linux: app/bin/patch
       OSX: app/bin/patch
       Windows: app/bin/patch.exe
   Repositories:

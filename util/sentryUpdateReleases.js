@@ -1,6 +1,6 @@
 import { promises as fs } from 'node:fs';
 
-import SentryCli from '@sentry/cli';
+import { SentryCli } from '@sentry/cli';
 
 const { version } = JSON.parse(await fs.readFile('package.json', 'utf-8'));
 

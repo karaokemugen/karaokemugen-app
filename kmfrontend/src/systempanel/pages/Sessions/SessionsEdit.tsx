@@ -1,7 +1,7 @@
 import { Layout } from 'antd';
 import i18next from 'i18next';
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import { Session } from '../../../../../src/types/session';
 import { commandBackend } from '../../../utils/socket';
@@ -19,23 +19,24 @@ const newsession: Session = {
 function SessionEdit() {
 	const navigate = useNavigate();
 	const { seid } = useParams();
+	const [searchParams] = useSearchParams();
 
 	const [session, setSession] = useState<Session>();
 	const [sessions, setSessions] = useState<Session[]>([]);
 
 	const saveNew = async (session: Session) => {
 		await commandBackend(WS_CMD.CREATE_SESSION, session, true);
-		navigate('/system/sessions');
+		navigate(searchParams.get('route') ?? '/system/sessions');
 	};
 
 	const saveUpdate = async (session: Session) => {
 		await commandBackend(WS_CMD.EDIT_SESSION, session, true);
-		navigate('/system/sessions');
+		navigate(searchParams.get('route') ?? '/system/sessions');
 	};
 
 	const handleSessionMerge = async (seid1: string, seid2: string) => {
 		await commandBackend(WS_CMD.MERGE_SESSIONS, { seid1: seid1, seid2: seid2 }, true);
-		navigate('/system/sessions/');
+		navigate(searchParams.get('route') ?? '/system/sessions/');
 	};
 
 	const loadsession = async () => {

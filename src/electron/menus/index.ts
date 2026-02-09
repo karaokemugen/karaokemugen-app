@@ -1,9 +1,9 @@
-import { dialog, shell } from 'electron';
+import { shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
 
 import logger from '../../lib/utils/logger.js';
 import { getState } from '../../utils/state.js';
-import { handleFile, win } from '../electron.js';
+import { win } from '../electron.js';
 import { setManualUpdate } from '../electronAutoUpdate.js';
 
 export const urls = {
@@ -50,13 +50,3 @@ export async function checkForUpdates() {
 	setManualUpdate(false);
 }
 
-export async function importFile() {
-	const files = await dialog.showOpenDialog({
-		properties: ['openFile', 'multiSelections'],
-	});
-	if (!files.canceled) {
-		for (const file of files.filePaths) {
-			await handleFile(file);
-		}
-	}
-}

@@ -51,7 +51,7 @@
 			&:before {
 				pointer-events: none;
 				display: inline-block;
-				font-family: 'Font Awesome 6 Free';
+				font-family: 'Font Awesome 7 Free';
 				content: '\f0d7';
 				position: absolute;
 				right: 0.5em;
@@ -150,7 +150,7 @@
 	background-color: #454545b3;
 	input {
 		font-weight: bold;
-		font-family: Lato, 'Font Awesome 6 Free', sans-serif;
+		font-family: Lato, 'Font Awesome 7 Free', sans-serif;
 		border: 1px solid transparent;
 		border-radius: 4px;
 	}
@@ -179,7 +179,7 @@
 		button {
 			height: 2em;
 		}
-		.fas.fa-fw.fa-filter {
+		.fas.fa-filter {
 			width: unset;
 		}
 		.plSearch {

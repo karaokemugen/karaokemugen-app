@@ -1,11 +1,20 @@
-import { DeleteOutlined, DownloadOutlined, RollbackOutlined, UserOutlined } from '@ant-design/icons';
+import {
+	CheckCircleTwoTone,
+	CloseCircleTwoTone,
+	DeleteOutlined,
+	DownloadOutlined,
+	DownOutlined,
+	RollbackOutlined,
+	UserOutlined,
+	WarningTwoTone,
+} from '@ant-design/icons';
 import { EditOutlined, PlayCircleOutlined } from '@ant-design/icons';
-import { Alert, Button, Layout, Modal, Table } from 'antd';
+import { Alert, Button, Dropdown, Layout, Modal, Select, Space, Table, Tag } from 'antd';
 import i18next from 'i18next';
 import { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import { Inbox as LibInbox } from '../../../../src/lib/types/inbox';
+import { DBInbox, InboxActions, Inbox as LibInbox } from '../../../../src/lib/types/inbox';
 import { User } from '../../../../src/lib/types/user';
 import GlobalContext from '../../store/context';
 import { commandBackend } from '../../utils/socket';
@@ -13,11 +22,22 @@ import Title from '../components/Title';
 import dayjs from 'dayjs';
 import { WS_CMD } from '../../utils/ws';
 import { getLanguagesInLocaleFromCode } from '../../utils/isoLanguages';
+import { MenuProps } from 'antd/lib';
+import { ChangeStatusInboxModal } from '../components/ChangeStatusInboxModal';
+import { ItemType } from 'antd/es/menu/interface';
+import DOMPurify from 'dompurify';
+
+type FilterInboxActions = InboxActions | 'in_review_by_me';
 
 export default function Inbox() {
 	const context = useContext(GlobalContext);
 
-	const [inbox, setInbox] = useState([] as LibInbox[]);
+	const [inbox, setInbox] = useState<LibInbox[]>([]);
+	const [filteredInbox, setFilteredInbox] = useState<LibInbox[]>([]);
+	const [openStatusModal, setOpenStatusModal] = useState(false);
+	const [inboxToUpdate, setInboxToupdate] = useState<DBInbox>();
+	const [newStatus, setNewStatus] = useState<InboxActions>();
+	const [selectedStatus, setSelectedStatus] = useState<FilterInboxActions[]>(['sent', 'in_review_by_me']);
 
 	const repoList = context.globalState.settings.data.config?.System?.Repositories.filter(
 		repo =>
@@ -53,6 +73,15 @@ export default function Inbox() {
 	const unassignKaraFromInbox = async (inid: string) => {
 		try {
 			await commandBackend(WS_CMD.UNASSIGN_KARA_FROM_INBOX, { repoName: instance.Name, inid });
+		} catch (_) {
+			// already display
+		}
+		getInbox();
+	};
+
+	const deleteKaraFromInboxLocally = async (kid: string) => {
+		try {
+			await commandBackend(WS_CMD.DELETE_KARA_INBOX_LOCALLY, { kid });
 		} catch (_) {
 			// already display
 		}
@@ -111,12 +140,6 @@ export default function Inbox() {
 									context.globalState.settings.data.user.language
 								)}
 							</span>
-						</div>
-					) : null}
-					{userDetails?.email ? (
-						<div>
-							<label>{i18next.t('INBOX.CONTACT_INFOS_MODAL.MAIL')}</label>
-							<span>{userDetails.email}</span>
 						</div>
 					) : null}
 					{userDetails?.url ? (
@@ -184,19 +207,95 @@ export default function Inbox() {
 		});
 	};
 
+	const handleMenuClick = async (e, record: DBInbox) => {
+		setInboxToupdate(record);
+		setNewStatus(e.key as InboxActions);
+		setOpenStatusModal(true);
+	};
+
+	const seeReason = (reason: string) => {
+		//URLs starting with http://, https://, or ftp://
+		var replaceUrlPattern = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
+		var reasonWithUrl = reason.replace(replaceUrlPattern, '<a href="$1">$1</a>');
+		Modal.info({
+			style: { whiteSpace: 'pre-wrap' },
+			title: i18next.t('MODAL.CHANGE_STATUS_INBOX.REASON'),
+			content: <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(reasonWithUrl) }} />,
+		});
+	};
+
+	const items: MenuProps['items'] = [
+		{
+			label: i18next.t('INBOX.CHANGE_STATUS.ACCEPT'),
+			key: 'accepted',
+			icon: <CheckCircleTwoTone twoToneColor="#52c41a" />,
+		},
+		{
+			label: i18next.t('INBOX.CHANGE_STATUS.ASK_FOR_CHANGES'),
+			key: 'changes_requested',
+			icon: <WarningTwoTone twoToneColor="#ffa500" />,
+		},
+		{
+			label: i18next.t('INBOX.CHANGE_STATUS.REJECT'),
+			key: 'rejected',
+			icon: <CloseCircleTwoTone twoToneColor="#cc1b7cff" />,
+			danger: true,
+		},
+	];
+
 	useEffect(() => {
-		const getInbox = async () => {
-			if (repoList.length > 0) {
-				try {
-					const res = await commandBackend(WS_CMD.GET_INBOX, { repoName: instance.Name });
-					setInbox(res);
-				} catch (_) {
-					// already display
-				}
-			}
-		};
+		filterInbox(selectedStatus);
+	}, [inbox]);
+
+	useEffect(() => {
 		getInbox();
 	}, [instance, repoList.length]);
+
+	const status_filter = ['sent', 'in_review', 'in_review_by_me', 'changes_requested', 'accepted', 'rejected'];
+
+	const filterInbox = (valuesStatus: FilterInboxActions[]) => {
+		setSelectedStatus(valuesStatus);
+		let newFilteredInbox = [];
+		if (valuesStatus.length === 0) newFilteredInbox = newFilteredInbox.concat(inbox);
+		valuesStatus.forEach(status => {
+			if (status === 'in_review_by_me') {
+				newFilteredInbox = newFilteredInbox.concat(
+					inbox.filter(
+						inboxInReview =>
+							inboxInReview.status === 'in_review' &&
+							inboxInReview.username_downloaded === context.globalState.auth.data.username.split('@')[0]
+					)
+				);
+			} else {
+				newFilteredInbox = newFilteredInbox.concat(inbox.filter(inbox => inbox.status === status));
+			}
+		});
+		setFilteredInbox(newFilteredInbox);
+	};
+
+	const getMenu = (record: LibInbox) => {
+		const menu: ItemType[] = [];
+		const deleteButton = {
+			key: '1',
+			label: i18next.t('INBOX.DELETE_SONG'),
+			icon: <DeleteOutlined />,
+			danger: true,
+			onClick: () => deleteKaraFromInbox(record.inid),
+		};
+
+		const unassignButton = {
+			key: '2',
+			label: i18next.t('INBOX.UNASSIGN_FROM_SONG'),
+			icon: <RollbackOutlined />,
+			danger: true,
+			onClick: () => unassignKaraFromInbox(record.inid),
+		};
+		if (record.username_downloaded === context.globalState.auth.data.username.split('@')[0]) {
+			menu.push(unassignButton);
+		}
+		menu.push(deleteButton);
+		return menu;
+	};
 
 	const columns = [
 		{
@@ -212,17 +311,14 @@ export default function Inbox() {
 			title: i18next.t('INBOX.NAME'),
 			dataIndex: 'name',
 			key: 'name',
-		},
-		{
-			title: i18next.t('INBOX.TYPE'),
-			dataIndex: 'fix',
-			key: 'fix',
-			render: text => (text ? i18next.t('INBOX.TYPES.MODIFICATION') : i18next.t('INBOX.TYPES.CREATION')),
-		},
-		{
-			title: i18next.t('INBOX.USER'),
-			dataIndex: 'username_downloaded',
-			key: 'username_downloaded',
+			render: (text, record: LibInbox) => (
+				<div>
+					{text}
+					<Tag style={{ marginLeft: '0.5em' }}>
+						{record.flag_fix ? i18next.t('INBOX.TYPES.MODIFICATION') : i18next.t('INBOX.TYPES.CREATION')}
+					</Tag>
+				</div>
+			),
 		},
 		{
 			title: i18next.t('INBOX.CONTACT_INFOS'),
@@ -236,6 +332,32 @@ export default function Inbox() {
 				) : (
 					text
 				),
+		},
+		{
+			title: i18next.t('INBOX.STATUS.LABEL'),
+			dataIndex: 'status',
+			key: 'status',
+			render: (text, record: LibInbox) =>
+				text && (
+					<>
+						<span>{i18next.t(`INBOX.STATUS.${text.toUpperCase()}`)}</span>
+						{record.reject_reason && (
+							<Button
+								className="ml-1 mt-1"
+								type="primary"
+								htmlType="button"
+								onClick={() => seeReason(record.reject_reason)}
+							>
+								{i18next.t('MODAL.CHANGE_STATUS_INBOX.REASON')}
+							</Button>
+						)}
+					</>
+				),
+		},
+		{
+			title: i18next.t('INBOX.USER'),
+			dataIndex: 'username_downloaded',
+			key: 'username_downloaded',
 		},
 		{
 			title: i18next.t('INBOX.LINK_TO_ISSUE'),
@@ -252,7 +374,7 @@ export default function Inbox() {
 			title: i18next.t('INBOX.REVIEW'),
 			render: (_text, record: LibInbox) =>
 				record.available_locally &&
-				record.username_downloaded === context.globalState.auth.data.username.split('@')[0] ? (
+				record.username_downloaded === context.globalState.auth.data.username.split('@')[0] && (
 					<div style={{ display: 'flex' }}>
 						<Link to={`/system/karas/${record.edited_kid || record.kid}`} style={{ marginRight: '0.75em' }}>
 							<Button type="primary" icon={<EditOutlined />} title={i18next.t('KARA.EDIT_KARA')} />
@@ -268,37 +390,43 @@ export default function Inbox() {
 							title={i18next.t('KARA.PLAY_KARAOKE')}
 						/>
 					</div>
-				) : (
-					''
 				),
 		},
-
 		{
 			title: i18next.t('ACTION'),
 			render: (_text, record: LibInbox) => (
-				<div style={{ display: 'flex' }}>
-					<Button
-						type="primary"
-						icon={<DownloadOutlined />}
-						onClick={() => downloadKaraFromInbox(record.inid)}
-						title={i18next.t('INBOX.DOWNLOAD')}
-					/>
-					<Button
-						type="primary"
-						danger
-						onClick={() => unassignKaraFromInbox(record.inid)}
-						style={{ marginLeft: '1em' }}
-						title={i18next.t('INBOX.UNASSIGN_FROM_SONG')}
-						icon={<RollbackOutlined />}
-					/>
-					<Button
-						type="primary"
-						danger
-						onClick={() => deleteKaraFromInbox(record.inid)}
-						style={{ marginLeft: '1em' }}
-						title={i18next.t('INBOX.DELETE_SONG')}
-						icon={<DeleteOutlined />}
-					/>
+				<div style={{ display: 'flex', gap: '0.5em' }}>
+					{record.available_locally && !record.flag_fix ? (
+						<Button
+							onClick={() => deleteKaraFromInboxLocally(record.kid)}
+							style={{ marginLeft: '1em' }}
+							title={i18next.t('INBOX.DELETE_SONG_LOCALLY')}
+							icon={<DeleteOutlined />}
+						/>
+					) : (
+						<Button
+							type="primary"
+							icon={<DownloadOutlined />}
+							onClick={() => downloadKaraFromInbox(record.inid)}
+							title={i18next.t('INBOX.DOWNLOAD')}
+						/>
+					)}
+					<Dropdown menu={{ items: getMenu(record) }}>
+						<Button icon={<DownOutlined />} />
+					</Dropdown>
+					<Dropdown
+						menu={{
+							items,
+							onClick: e => handleMenuClick(e, record),
+						}}
+					>
+						<Button>
+							<Space>
+								{i18next.t('INBOX.CHANGE_STATUS.LABEL')}
+								<DownOutlined />
+							</Space>
+						</Button>
+					</Dropdown>
 				</div>
 			),
 		},
@@ -317,8 +445,22 @@ export default function Inbox() {
 		<>
 			<Title title={i18next.t('HEADERS.INBOX.TITLE')} description={i18next.t('HEADERS.INBOX.DESCRIPTION')} />
 			<Layout.Content>
+				<div style={{ display: 'flex', marginBottom: '1em', alignItems: 'center' }}>
+					<label style={{ marginLeft: '2em', paddingRight: '1em' }}>
+						{i18next.t('INBOX.FILTER_BY_STATUS')} :
+					</label>
+					<Select mode="multiple" style={{ width: 300 }} onChange={filterInbox} defaultValue={selectedStatus}>
+						{status_filter.map(status => {
+							return (
+								<Select.Option key={status} value={status}>
+									{i18next.t(`INBOX.STATUS.${status.toLocaleUpperCase()}`)}
+								</Select.Option>
+							);
+						})}
+					</Select>
+				</div>
 				<Table
-					dataSource={inbox}
+					dataSource={filteredInbox}
 					columns={columns}
 					rowKey="inid"
 					scroll={{
@@ -329,6 +471,16 @@ export default function Inbox() {
 					}}
 				/>
 			</Layout.Content>
+			<ChangeStatusInboxModal
+				open={openStatusModal}
+				inbox={inboxToUpdate}
+				status={newStatus}
+				repoName={instance.Name}
+				close={() => {
+					setOpenStatusModal(false);
+					getInbox();
+				}}
+			/>
 		</>
 	);
 }

@@ -7,6 +7,8 @@ import {
 	SettingOutlined,
 	TagOutlined,
 	UserOutlined,
+	BarChartOutlined,
+	VideoCameraOutlined,
 } from '@ant-design/icons';
 import { Menu } from 'antd';
 import i18next from 'i18next';
@@ -24,6 +26,8 @@ function KMMenu() {
 			repo => repo.Online && repo.MaintainerMode && repo.Enabled
 		).length > 0;
 
+	const isRemoteUsersActive = context.globalState.settings.data.config?.Online?.RemoteUsers?.Enabled;
+
 	return (
 		<Menu
 			mode="inline"
@@ -38,36 +42,61 @@ function KMMenu() {
 			<Menu.Item key="home" icon={<DashboardOutlined />}>
 				<Link to="/system/home">{i18next.t('MENU.HOME')}</Link>
 			</Menu.Item>
+			<Menu.SubMenu key="stats-dropdown" title={i18next.t('MENU.STATS')} icon={<BarChartOutlined />}>
+				<Menu.Item key="sessions">
+					<Link to="/system/sessions">{i18next.t('MENU.SESSIONS')}</Link>
+				</Menu.Item>
+				<Menu.Item key="karahistory">
+					<Link to="/system/karas/history">{i18next.t('MENU.HISTORY')}</Link>
+				</Menu.Item>
+				<Menu.Item key="karaviewcounts">
+					<Link to="/system/karas/viewcounts">{i18next.t('MENU.VIEWCOUNTS')}</Link>
+				</Menu.Item>
+				<Menu.Item key="kararanking">
+					<Link to="/system/karas/ranking">{i18next.t('MENU.RANKING')}</Link>
+				</Menu.Item>
+			</Menu.SubMenu>
 			<Menu.SubMenu key="system-dropdown" title={i18next.t('MENU.SYSTEM')} icon={<SettingOutlined />}>
-				<Menu.Item key="log">
-					<Link to="/system/log">{i18next.t('MENU.LOGS')}</Link>
+				<Menu.Item key="repositories">
+					<Link to="/system/repositories">{i18next.t('MENU.REPOSITORIES')}</Link>
 				</Menu.Item>
 				<Menu.Item key="options">
-					<Link to="/system/options">{i18next.t('MENU.ADVANCED_OPTIONS')}</Link>
-				</Menu.Item>
-				<Menu.Item key="config">
-					<Link to="/system/config">{i18next.t('MENU.CONFIGURATION')}</Link>
+					<Link to="/system/options">
+						{i18next.t(
+							navigator.platform.indexOf('Mac') === 0
+								? 'HEADERS.SYSTEM_PREFERENCES.TITLEMAC'
+								: 'MENU.ADVANCED_OPTIONS'
+						)}
+					</Link>
 				</Menu.Item>
 				<Menu.Item key="users">
 					<Link to="/system/users">{i18next.t('MENU.USERS')}</Link>
 				</Menu.Item>
-				<Menu.Item key="sessions">
-					<Link to="/system/sessions">{i18next.t('MENU.SESSIONS')}</Link>
-				</Menu.Item>
-				<Menu.Item key="repositories">
-					<Link to="/system/repositories">{i18next.t('MENU.REPOSITORIES')}</Link>
-				</Menu.Item>
-				<Menu.Item key="storage">
-					<Link to="/system/storage">{i18next.t('MENU.STORAGE')}</Link>
-				</Menu.Item>
-				<Menu.Item key="unused">
-					<Link to="/system/unused">{i18next.t('MENU.UNUSED_FILES')}</Link>
+				<Menu.Item key="background">
+					<Link to="/system/backgrounds">{i18next.t('MENU.BACKGROUNDS')}</Link>
 				</Menu.Item>
 				<Menu.Item key="db">
 					<Link to="/system/db">{i18next.t('MENU.DATABASE')}</Link>
 				</Menu.Item>
-				<Menu.Item key="background">
-					<Link to="/system/backgrounds">{i18next.t('MENU.BACKGROUNDS')}</Link>
+				<Menu.Item key="unused">
+					<Link to="/system/unused">{i18next.t('MENU.UNUSED_FILES')}</Link>
+				</Menu.Item>
+				<Menu.Item key="config">
+					<Link to="/system/config">{i18next.t('MENU.CONFIGURATION')}</Link>
+				</Menu.Item>
+				<Menu.Item key="log">
+					<Link to="/system/log">{i18next.t('MENU.LOGS')}</Link>
+				</Menu.Item>
+			</Menu.SubMenu>
+			<Menu.SubMenu key="medias-dropdown" title={i18next.t('MENU.MEDIAS')} icon={<VideoCameraOutlined />}>
+				<Menu.Item key="queuedownload">
+					<Link to="/system/karas/download/queue">{i18next.t('MENU.DOWNLOAD_QUEUE')}</Link>
+				</Menu.Item>
+				<Menu.Item key="karadownload">
+					<Link to="/system/karas/download">{i18next.t('MENU.DOWNLOAD')}</Link>
+				</Menu.Item>
+				<Menu.Item key="storage">
+					<Link to="/system/storage">{i18next.t('MENU.STORAGE')}</Link>
 				</Menu.Item>
 			</Menu.SubMenu>
 			{haveMaintainerModeRepo ? (
@@ -79,9 +108,11 @@ function KMMenu() {
 					<Menu.Item key="git">
 						<Link to="/system/git">{i18next.t('MENU.GIT')}</Link>
 					</Menu.Item>
-					<Menu.Item key="inbox">
-						<Link to="/system/inbox">{i18next.t('MENU.INBOX')}</Link>
-					</Menu.Item>
+					{isRemoteUsersActive ? (
+						<Menu.Item key="inbox">
+							<Link to="/system/inbox">{i18next.t('MENU.INBOX')}</Link>
+						</Menu.Item>
+					) : null}
 				</Menu.SubMenu>
 			) : null}
 			<Menu.SubMenu key="kara-dropdown" title={i18next.t('MENU.KARAS')} icon={<FileTextOutlined />}>
@@ -91,23 +122,8 @@ function KMMenu() {
 				<Menu.Item key="karacreate">
 					<Link to="/system/karas/create">{i18next.t('MENU.NEW')}</Link>
 				</Menu.Item>
-				<Menu.Item key="queuedownload">
-					<Link to="/system/karas/download/queue">{i18next.t('MENU.DOWNLOAD_QUEUE')}</Link>
-				</Menu.Item>
-				<Menu.Item key="karadownload">
-					<Link to="/system/karas/download">{i18next.t('MENU.DOWNLOAD')}</Link>
-				</Menu.Item>
 				<Menu.Item key="karaimport">
 					<Link to="/system/karas/import">{i18next.t('MENU.KARAIMPORT')}</Link>
-				</Menu.Item>
-				<Menu.Item key="karahistory">
-					<Link to="/system/karas/history">{i18next.t('MENU.HISTORY')}</Link>
-				</Menu.Item>
-				<Menu.Item key="kararanking">
-					<Link to="/system/karas/ranking">{i18next.t('MENU.RANKING')}</Link>
-				</Menu.Item>
-				<Menu.Item key="karaviewcounts">
-					<Link to="/system/karas/viewcounts">{i18next.t('MENU.VIEWCOUNTS')}</Link>
 				</Menu.Item>
 				<Menu.Item key="karabatchedit">
 					<Link to="/system/karas/batch">{i18next.t('MENU.BATCH_EDIT')}</Link>

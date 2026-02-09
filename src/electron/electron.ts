@@ -155,11 +155,6 @@ async function registerIPCEvents() {
 	ipcMain.on('getSecurityCode', (event, _eventData) => {
 		event.sender.send('getSecurityCodeResponse', getState().securityCode);
 	});
-	ipcMain.on('droppedFiles', async (_event, eventData) => {
-		for (const path of eventData.files) {
-			await handleFile(path, eventData.username, eventData.onlineToken);
-		}
-	});
 	ipcMain.on('tip', (_event, _eventData) => {
 		emitIPC('techTip', tip());
 	});

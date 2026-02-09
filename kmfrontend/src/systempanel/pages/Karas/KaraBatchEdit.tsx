@@ -1,42 +1,43 @@
 import { Button, Cascader, Col, Layout, Radio, Row, Select, Table } from 'antd';
 import i18next from 'i18next';
-import { useContext, useEffect, useState } from 'react';
+import { ReactNode, useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import type { DBKara } from '../../../../../src/lib/types/database/kara';
 import type { TagTypeNum } from '../../../../../src/lib/types/tag';
 import GlobalContext from '../../../store/context';
-import { getSerieOrSingerGroupsOrSingers, getTagInLocaleList, getTitleInLocale } from '../../../utils/kara';
+import {
+	buildKaraTitle,
+	getSerieOrSingerGroupsOrSingers,
+	getTagInLocaleList,
+	getTitleInLocale,
+} from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 import Title from '../../components/Title';
-import { DBTag } from '../../../../../src/lib/types/database/tag';
+import type { DBTag } from '../../../../../src/lib/types/database/tag';
 import { WS_CMD } from '../../../utils/ws';
-
-interface PlaylistElem {
-	plaid: string;
-	name: string;
-	karacount?: number;
-	flag_current?: boolean;
-	flag_public?: boolean;
-	flag_visible?: boolean;
-}
+import type { BatchActions, KaraList } from '../../../../../src/lib/types/kara';
+import type { DBPL } from '../../../../../src/types/database/playlist';
 
 function KaraBatchEdit() {
 	const context = useContext(GlobalContext);
 
 	const [karas, setKaras] = useState<DBKara[]>([]);
-	const [i18n, setI18n] = useState([]);
+	const [i18n, setI18n] = useState<Record<string, Record<string, string>>>();
 	const [tags, setTags] = useState([]);
-	const [playlists, setPlaylists] = useState<PlaylistElem[]>([]);
+	const [playlists, setPlaylists] = useState<DBPL[]>([]);
 	const [plaid, setPlaid] = useState<string>();
 	const [tid, setTid] = useState<string>();
-	const [action, setAction] = useState<'add' | 'remove' | 'fromDisplayType'>();
-	const [type, setType] = useState<TagTypeNum | ''>();
+	const [kid, setKid] = useState<string>();
+	const [action, setAction] = useState<BatchActions>();
+	const [type, setType] = useState<TagTypeNum>();
+	const [karaSearch, setKaraSearch] = useState<{ label: ReactNode; value: string }[]>([]);
 
 	useEffect(() => {
 		getPlaylists();
 		getTags();
+		searchKaras('');
 	}, []);
 
 	const getPlaylists = async () => {
@@ -88,7 +89,7 @@ function KaraBatchEdit() {
 		await commandBackend(WS_CMD.EDIT_KARAS, {
 			plaid: plaid,
 			action: action,
-			tid: tid,
+			id: action === 'addParent' || action === 'removeParent' ? kid : tid,
 			type: type,
 		});
 	};
@@ -98,6 +99,28 @@ function KaraBatchEdit() {
 			{i18next.t(tagType ? `TAG_TYPES.${tagType}_one` : 'TAG_TYPES.DEFAULT')}
 		</Select.Option>
 	);
+
+	const searchKaras = value => {
+		setTimeout(async () => {
+			const karas: KaraList = await commandBackend(WS_CMD.GET_KARAS, {
+				filter: value,
+				size: 50,
+				ignoreCollections: true,
+			}).catch(() => {
+				return { content: [], avatars: undefined, i18n: undefined, infos: { count: 0, from: 0, to: 0 } };
+			});
+			if (karas.content) {
+				setKaraSearch(
+					karas.content.map((k: DBKara) => {
+						return {
+							label: buildKaraTitle(context.globalState.settings.data, k, true, karas.i18n),
+							value: k.kid,
+						};
+					})
+				);
+			}
+		}, 1000);
+	};
 
 	const columns = [
 		{
@@ -163,7 +186,7 @@ function KaraBatchEdit() {
 				description={i18next.t('HEADERS.KARATAG_BATCH_EDIT.DESCRIPTION')}
 			/>
 			<Layout.Content>
-				<Row justify="space-between" style={{ flexWrap: 'nowrap', marginBottom: '0.5em' }}>
+				<Row justify="space-between" style={{ flexWrap: 'nowrap', marginBottom: '0.5em', gap: '0.5em' }}>
 					<Col flex={'15%'} style={{ marginRight: '0.5em' }}>
 						<Link to="/admin">{i18next.t('KARA.BATCH_EDIT.CREATE_PLAYLIST')}</Link>
 					</Col>
@@ -185,12 +208,22 @@ function KaraBatchEdit() {
 					</Col>
 					<Col flex={4} style={{ display: 'flex', flexDirection: 'column' }}>
 						<label>{i18next.t('KARA.BATCH_EDIT.SELECT_ACTION')}</label>
-						<Radio checked={action === 'add'} onChange={() => setAction('add')}>
-							{i18next.t('KARA.BATCH_EDIT.ADD_TAG')}
-						</Radio>
-						<Radio checked={action === 'remove'} onChange={() => setAction('remove')}>
-							{i18next.t('KARA.BATCH_EDIT.REMOVE_TAG')}
-						</Radio>
+						<Row>
+							<Radio checked={action === 'addTag'} onChange={() => setAction('addTag')}>
+								{i18next.t('KARA.BATCH_EDIT.ADD_TAG')}
+							</Radio>
+							<Radio checked={action === 'removeTag'} onChange={() => setAction('removeTag')}>
+								{i18next.t('KARA.BATCH_EDIT.REMOVE_TAG')}
+							</Radio>
+						</Row>
+						<Row>
+							<Radio checked={action === 'addParent'} onChange={() => setAction('addParent')}>
+								{i18next.t('KARA.BATCH_EDIT.ADD_PARENT')}
+							</Radio>
+							<Radio checked={action === 'removeParent'} onChange={() => setAction('removeParent')}>
+								{i18next.t('KARA.BATCH_EDIT.REMOVE_PARENT')}
+							</Radio>
+						</Row>
 						<Radio checked={action === 'fromDisplayType'} onChange={() => setAction('fromDisplayType')}>
 							{i18next.t('KARA.BATCH_EDIT.EDIT_DISPLAY_TYPE')}
 						</Radio>
@@ -201,12 +234,13 @@ function KaraBatchEdit() {
 							<Select
 								defaultValue={null}
 								style={{ maxWidth: '180px', marginTop: '0.5em' }}
-								onChange={(value: TagTypeNum | '') => setType(value)}
+								onChange={(value: TagTypeNum) => setType(value)}
 							>
 								{Object.keys(tagTypes).concat('').map(mapTagTypesToSelectOption)}
 							</Select>
 						</Col>
-					) : (
+					) : null}
+					{action === 'addTag' || action === 'removeTag' ? (
 						<Col flex={4} style={{ display: 'flex', flexDirection: 'column' }}>
 							<label>{i18next.t('KARA.BATCH_EDIT.SELECT_TAG')}</label>
 							<Cascader
@@ -222,10 +256,21 @@ function KaraBatchEdit() {
 								}}
 							/>
 						</Col>
-					)}
+					) : null}
+					{action === 'addParent' || action === 'removeParent' ? (
+						<Col flex={4} style={{ display: 'flex', flexDirection: 'column' }}>
+							<label>{i18next.t('KARA.BATCH_EDIT.SELECT_PARENT')}</label>
+							<Select showSearch onSearch={searchKaras} onChange={setKid} options={karaSearch} />
+						</Col>
+					) : null}
 					<Col flex={1}>
 						<Button
-							disabled={!plaid || !action || (!tid && action !== 'fromDisplayType')}
+							disabled={
+								!plaid ||
+								!action ||
+								(!tid && (action === 'addTag' || action === 'removeTag')) ||
+								(!kid && (action === 'addParent' || action === 'removeParent'))
+							}
 							onClick={batchEdit}
 						>
 							{i18next.t('KARA.BATCH_EDIT.EDIT')}

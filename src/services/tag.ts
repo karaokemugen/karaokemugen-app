@@ -12,7 +12,7 @@ import {
 	sortKaraStore,
 	sortTagsStore,
 } from '../dao/dataStore.js';
-import { deleteTag, insertTag, selectAllTags, updateKaraTagsTID, updateTag } from '../dao/tag.js';
+import { deleteTag, insertTag, selectAllTags, selectKarasUsingTag, updateKaraTagsTID, updateTag } from '../dao/tag.js';
 import { removeTagInKaras } from '../dao/tagfile.js';
 import { saveSetting } from '../lib/dao/database.js';
 import { refreshKarasUpdate } from '../lib/dao/kara.js';
@@ -37,6 +37,7 @@ import sentry from '../utils/sentry.js';
 import { getKaras } from './kara.js';
 import { editKara } from './karaCreation.js';
 import { getRepoMetadata, getRepos } from './repo.js';
+import { applyTagHooks } from '../lib/dao/hook.js';
 
 const service = 'Tag';
 
@@ -80,6 +81,7 @@ export async function addTag(tagObj: Tag, opts = { silent: false, refresh: true 
 		if (!tagObj.tid) tagObj.tid = uuidV4();
 		if (!tagObj.tagfile) tagObj.tagfile = defineTagFilename(tagObj);
 		const tagfile = tagObj.tagfile;
+		await applyTagHooks(tagObj);
 		const promises = [insertTag(tagObj), writeTagFile(tagObj, resolvedPathRepos('Tags', tagObj.repository)[0])];
 		await Promise.all(promises);
 		emitWS('statsRefresh');
@@ -203,6 +205,7 @@ export async function editTag(
 		}
 		tagObj = trimTagData(tagObj);
 		tagObj.tagfile = defineTagFilename(tagObj, oldTag);
+		await applyTagHooks(tagObj);
 		await updateTag(tagObj);
 		if (opts.writeFile) {
 			// Try to find old tag
@@ -514,4 +517,9 @@ export async function checkCollections() {
 		sentry.error(err);
 		throw err instanceof ErrorKM ? err : new ErrorKM('COLLECTIONS_GET_ERROR');
 	}
+}
+
+export async function getKarasUsingTag(tid: string) {
+	const tids = await selectKarasUsingTag(tid);
+	return tids.rows;
 }

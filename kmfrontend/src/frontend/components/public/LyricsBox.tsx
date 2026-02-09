@@ -91,11 +91,11 @@ function LyricsBox(props: IProps) {
 			<div
 				className="toggle"
 				onClick={() => setShowLyrics(showLyrics === LyricsStatus.full ? LyricsStatus.hide : showLyrics + 1)}
-				onKeyPress={() => setShowLyrics(showLyrics === LyricsStatus.full ? LyricsStatus.hide : showLyrics + 1)}
+				onKeyDown={() => setShowLyrics(showLyrics === LyricsStatus.full ? LyricsStatus.hide : showLyrics + 1)}
 				tabIndex={0}
 			>
 				{LyricsBox.i18nText(showLyrics)}
-				<i className={showLyrics > 1 ? 'fa fa-fw fa-arrow-up' : 'fa fa-fw fa-arrow-down'} />
+				<i className={showLyrics > 1 ? 'fa fa-arrow-up' : 'fa fa-arrow-down'} />
 			</div>
 			{showLyrics > 0 ? (
 				lyrics.length > 0 ? (

@@ -36,7 +36,7 @@ export function getTagInLanguage(
 	tag: DBKaraTag,
 	mainLanguage: string,
 	fallbackLanguage: string,
-	i18nParam?: Record<string, string>
+	i18nParam?: Record<string, Record<string, string>>
 ): { i18n: string; description: string } {
 	const i18n = i18nParam && i18nParam[tag.tid] ? i18nParam[tag.tid] : tag.i18n;
 	const desc = tag.description;
@@ -71,7 +71,7 @@ export function getTagInLanguage(
 export function getTagInLocaleList(
 	settings: SettingsStoreData,
 	list: DBKaraTag[],
-	i18n?: Record<string, string>
+	i18n?: Record<string, Record<string, string>>
 ): string[] {
 	if (list) {
 		return list.map((tag: DBKaraTag) => getTagInLocale(settings, tag, i18n).i18n);
@@ -83,7 +83,7 @@ export function getTagInLocaleList(
 export function getTagInLocale(
 	settings: SettingsStoreData,
 	tag: DBKaraTag,
-	i18nParam?: Record<string, string>
+	i18nParam?: Record<string, Record<string, string>>
 ): { i18n: string; description: string } | undefined {
 	if (!tag) {
 		return undefined;
@@ -136,7 +136,7 @@ export function sortAndHideTags(tags: DBKaraTag[], scope: Scope = 'public'): DBK
 export function getSerieOrSingerGroupsOrSingers(
 	settings: SettingsStoreData,
 	data: DBKara,
-	i18nParam?: Record<string, string>
+	i18nParam?: Record<string, Record<string, string>>
 ) {
 	if (data.from_display_type && data[data.from_display_type] && data[data.from_display_type].length > 0) {
 		return data[data.from_display_type].map(e => getTagInLocale(settings, e, i18nParam).i18n).join(', ');
@@ -156,8 +156,12 @@ function buildDisplayTagElement(
 	display: KaraLineDisplayType,
 	style: StyleFontType,
 	settings: SettingsStoreData,
-	i18nParam?: Record<string, string>
+	i18nParam?: Record<string, Record<string, string>>
 ): { text: string; type: string; style?: StyleFontType } {
+	if (eType === 'displayType') {
+		// This is a joker. from_display_type is a priority setting set by the karaoke itself as to which tag it wants to display.
+		eType = kara.from_display_type;
+	}
 	if (eType === 'title') {
 		const title = getTitleInLocale(settings, kara.titles, kara.titles_default_language);
 		return {
@@ -165,9 +169,6 @@ function buildDisplayTagElement(
 			type: 'title',
 			style,
 		};
-	} else if (eType === 'displayType') {
-		// This is a joker. from_display_type is a priority setting set by the karaoke itself as to which tag it wants to display.
-		eType = kara.from_display_type;
 	} else if (eType === 'songtypes' && kara.songtypes) {
 		// Songtypes are specific because we add songorder to them and separate them with spaces instead of commas.
 		const tags: string[] = [];
@@ -209,7 +210,7 @@ function buildDisplayElement(
 	kara: DBKara,
 	e: KaraLineDisplayElement,
 	settings: SettingsStoreData,
-	i18nParam?: Record<string, string>
+	i18nParam?: Record<string, Record<string, string>>
 ): { text: string; type: string; style?: StyleFontType } {
 	if (Array.isArray(e.type)) {
 		// If type is an array, we pick the first element that contains data
@@ -235,7 +236,7 @@ export function buildKaraTitle(
 	settings: SettingsStoreData,
 	data: DBKara,
 	onlyText?: boolean,
-	i18nParam?: Record<string, string>
+	i18nParam?: Record<string, Record<string, string>>
 ): string | ReactNode {
 	// In case of multi-languages song (with language MUL) it takes priority and removes all other languages
 	const isMulti = data?.langs?.find(e => e.name.indexOf('mul') > -1);
@@ -246,7 +247,7 @@ export function buildKaraTitle(
 	const karaLine = [];
 	for (const e of displayLine) {
 		const displayElement = buildDisplayElement(data, e, settings, i18nParam);
-		if (displayElement.text) karaLine.push(displayElement);
+		if (displayElement?.text) karaLine.push(displayElement);
 	}
 	if (onlyText) {
 		const versions = sortAndHideTags(data?.versions).map(t => `[${getTagInLocale(settings, t, i18nParam).i18n}]`);
@@ -458,7 +459,7 @@ export function computeTagsElements(
 	const types = settings.config.Frontend.Library.KaraLineDisplay.filter(
 		v => v.display === 'tag' && v.type === 'versions'
 	).map(e => (e.type as string).toUpperCase());
-	if (versions) {
+	if (!types.includes('VERSIONS') && versions) {
 		types.push('VERSIONS');
 	}
 
@@ -485,7 +486,7 @@ export function computeTagsElements(
 		if (kara[tagData.karajson]?.length > 0) {
 			karaBlockTags.push(
 				<div className={`detailsKaraLine colored ${tagData.color}`} key={tagData.karajson}>
-					<i className={`fas fa-fw fa-${tagData.icon}`} />
+					<i className={`fas fa-${tagData.icon}`} />
 					<div>
 						{i18next.t(`KARA.${type}_BY`)}
 						<span key={`${type}${key}`} className="detailsKaraLineContent">

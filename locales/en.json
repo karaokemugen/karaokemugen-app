@@ -93,9 +93,6 @@
 	"ERROR_START_PLAYER": "Error starting up media player",
 	"ERROR_INIT_PATHS": "Error creating default directories",
 	"MENU_FILE": "&File",
-	"MENU_FILE_IMPORT": "&Import file",
-	"MENU_FILE_IMPORT_PLAYLIST": "&Playlist…",
-	"MENU_FILE_IMPORT_FAVORITES": "&Favorites list…",
 	"MENU_FILE_QUIT": "&Quit",
 	"MENU_FILE_QUIT_OSX": "Quit Karaoke Mugen",
 	"MENU_FILE_UPDATE": "&Search for update…",
@@ -148,7 +145,7 @@
 	"MENU_TOOLS_DATABASE": "Data&base",
 	"MENU_OPTIONS": "&Options",
 	"MENU_OPTIONS_CHECKFORUPDATES": "&Check for updates on startup",
-	"MENU_OPTIONS_OPERATORCONFIG": "&Settings",
+	"MENU_OPTIONS_OPERATORCONFIG": "&Operator Settings",
 	"MENU_OPTIONS_SYSTEMCONFIG": "S&ystem settings",
 	"MENU_OPTIONS_OPERATORCONFIG_OSX": "Settings…",
 	"MENU_OPTIONS_SYSTEMCONFIG_OSX": "System Settings…",
@@ -207,7 +204,6 @@
 			"Don't forget to put your safety belt before doing karaoke. Sing safely and be careful of speaker drops !",
 			"Don't forget to sync the base sometimes: you may discover some new songs!",
 			"Karaoke Mugen is a 100% open source and collaborative project, everyone can participate!",
-			"You can import files via the File Menu -> Import, drag & drop them or associate the Karaoke Mugen executable to it to allow KM to open them and use them : playlists, favorites…",
 			"I'm Nanamin, Karaoke Mugen's mascott, and I was created by the wonderful Sedeto! http://www.sedeto.fr",
 			"There are a lot of options to configure your karaoke! Take some time to review them all before starting a session!",
 			"Sessions are individual karaoke events. They allow you to group requested and played songs to remind yourself of what was played during a birthday, wedding, or event!",
@@ -339,5 +335,6 @@
 	"QUIZ_SCORES": {
 		"SCORES": "SCORES",
 		"PLAYER_POINTS": "$t(QUIZ_RULES.POINTS, {\"count\": {{points}} })"
-	}
+	},
+	"KARAOKE_MUGEN_PLAYER_WINDOW_TITLE": "Karaoke Mugen Player"
 }

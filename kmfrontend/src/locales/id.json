@@ -27,14 +27,10 @@
 	"SHUTDOWN": "Matikan Karaoke Mugen",
 	"SHUTDOWN_POPUP": "Koneksi dengan Karaoke Mugen terputus",
 	"HOME_BUTTON": "Ubah tampilan",
-	"MUTE_UNMUTE": "Bisu/batal bisu",
-	"SHOW_SUBS": "Tampilkan lirik di layar",
-	"HIDE_SUBS": "Sembunyikan lirik di layar",
 	"OPTIONS": "Pilihan",
 	"PASSWORD": "Kata sandi (minimal 8 karakter)",
 	"PASSWORDCONF": "Konfirmasi kata sandi",
 	"NEW_PASSWORD": "Kata Sandi Baru",
-	"VOLUME_LEVEL": "Atur volume",
 	"PLAYLISTS": {
 		"LIBRARY": "Pustaka",
 		"FAVORITES": "Favorit",
@@ -49,7 +45,6 @@
 	"ADMIN_HEADER": {
 		"QUICK_ACCESS": "Akses cepat"
 	},
-	"MESSAGE": "Pesan",
 	"PLAYLIST_HEADER": {
 		"FILTERS": "Filter",
 		"ACTIVE_FILTER": "Filter aktif",
@@ -223,7 +218,7 @@
 			"ADDED_SONG_VISIBILITY_MYSTERY_OPTION": "Lagu misterius",
 			"MINUTES_BEFORE_SESSION_ENDS_WARNING_TOOLTIP": "Sebuah notifikasi akan mengingatkan kamu X menit sebelum akhir dari sesi terencana kamu",
 			"ALLOW_DUPLICATES": "Perbolehkan lagu duplikat di daftar putar",
-			"ALLOW_DUPLICATES_TOOLTIP": "Dengan opsi ini, sebuah daftar putar bisa berisi lagu yang sama dua kali (atau lebih). Hanya operator yang bisa menambahkan lagu yang sama lebih dari sekali ke sebuah daftar putar. Lagu bisa ditambahkan lagi jika itu sudah diputar sebelumnya.",
+			"ALLOW_DUPLICATES_TOOLTIP": "Dengan opsi ini, sebuah daftar putar bisa berisi lagu yang sama dua kali (atau lebih). Hanya operator yang bisa menambahkan lagu yang sama lebih dari sekali ke sebuah daftar putar.",
 			"MEDIAS_SETTINGS": "Media",
 			"EVERY": "setiap",
 			"SONGS": "lagu",
@@ -492,7 +487,6 @@
 		"HELP": "BANTUAN DARING",
 		"SITE": "Situs Web",
 		"PUBLIC": "TAMPILAN PUBLIK",
-		"LOGS": "LOG",
 		"REPOSITORY": "REPOSITORI",
 		"STATS": "STATUS",
 		"STATS_KARAS": "Karaoke",
@@ -707,7 +701,6 @@
 		"TAGS_DESCRIPTION": "Daftar, buat, sunting tanda (penyanyi, penulis lagu, pembuat, jenis lagu, dll.)",
 		"SYSTEM_DESCRIPTION": "Lihat log, ubah opsi konfigurasi, cadangkan/pulihkan basis data kamu, picu pembuatan manual, dan kelola sesi karaoke",
 		"KARAS_DESCRIPTION": "Daftar, sunting, dan buat berkas data karaoke. Kamu juga bisa mengunduh media dan melihat yang paling banyak diminta, paling banyak diputar, dan riwayat karaoke",
-		"USERS_DESCRIPTION": "Daftar, sunting, buat pengguna, ubah kata sandi mereka, buat akun tamu baru.",
 		"TAGS": {
 			"CREATE": "Buat tanda",
 			"BROWSE": "Jelajah tanda",
@@ -778,11 +771,9 @@
 				"DISCORD": "Discord: ",
 				"TWITCH": "Twitch: "
 			},
-			"USERNAME": "Nama pengguna: ",
-			"MAIL": "Surel: "
+			"USERNAME": "Nama pengguna: "
 		},
 		"TIMESTAMP": "Tanda waktu",
-		"TYPE": "Jenis permintaan",
 		"NO_REPOSITORY_ENABLED": "Tidak ada repositori daring yang diaktifkan di mode pengelola",
 		"ONLINE_USER_REQUIRED": "Pengguna daring diperlukan untuk kotak masuk",
 		"SONG_DOWNLOADED_FROM_INBOX_FAILED": "Lagu tidak bisa diunduh dari kotak masuk!",
@@ -810,7 +801,7 @@
 		"LOGIN_ONLINE_ACCOUNT": "Saya sudah punya akun",
 		"CREATE_ONLINE_ACCOUNT_DESC": "Ketik nama akun dan kata sandi untuk membuat yang baru.",
 		"ONLINE_ACCOUNT_INSTANCE_DESC": "Peladen adalah layanan daring yang memberikan beberapa layanan terkait Karaoke Mugen. Jika kamu tidak yakin, biarkan peladen baku ({{instance}}), atau jika kamu tahu apa yang kamu lakukan, ubah ke peladen pilihanmu.",
-		"SECURITY_CODE_DESC_CONSOLE": "Mohon untuk memasukkan juga kode keamanan 6 digit yang bisa kamu temukan dengan mencari \"SECURITY CODE FOR THIS SESSION\" di berkas log Karaoke Mugen atau di konsol.",
+		"SECURITY_CODE_DESC_CONSOLE": "Mohon untuk memasukkan juga kode keamanan 6 digit yang bisa kamu temukan dengan mencari \"SECURITY CODE\" di berkas log Karaoke Mugen atau di konsol.",
 		"SECURITY_CODE_USE": "Kode ini memastikan bahwa kamu benar-benar yang melakukan tindakan ini. Ini berganti setelah setiap penggunaan.",
 		"CONNECTED_MESSAGE": "Selamat, kamu telah masuk ke Karaoke Mugen, {{user}}!"
 	},
@@ -1047,7 +1038,7 @@
 		"AUTO_MEDIA_DOWNLOADS_NONE": "Tidak ada",
 		"NAME": "Nama repositori",
 		"ONLINE_NAME": "Nama domain repositori",
-		"TOOLTIP_NAME": "Jika ini adalah repositori daring, taruh hanya nama domainnya di sini. Jika ini adalah repositori lokal, beri nama terserah kamu. Contoh \"Karaoke privat aku'",
+		"TOOLTIP_NAME": "Beri nama terserah kamu. Contoh \"Karaoke privat aku'",
 		"BASE_DIR": "Direktori dasar",
 		"ONLINE": "Daring",
 		"ENABLED": "Diaktifkan",
@@ -1679,17 +1670,13 @@
 	"CHECKED": "Dipilih:",
 	"POLL_TIME": "Pilih",
 	"TOOLTIP_ADD_SELECT_KARA": "Tambahkan lagu yang dipilih ke daftar putar - klik kanan untuk menambahkannya ke setelah lagu yang sedang diputar",
-	"SPEED_UP": "Putar lebih cepat",
-	"SPEED_DOWN": "Putar lebih lambat",
 	"COLLECTIONS": {
 		"NAME": "Nama koleksi",
 		"ENABLED": "Diaktifkan"
 	},
-	"SPEED_RESET": "Atur ulang ke kecepatan normal",
 	"TOOLTIP_KARA_ALREADY_ADDED": "Lagu ini telah ada di daftar putar.",
 	"SHOW-HIDE": "Munculkan/Sembunyikan",
 	"UNKNOWN": "Tidak diketahui",
-	"BLURVIDEO_BLUR": "Buramkan Vidio",
 	"LANGUAGES": {
 		"QRO": "Alfabet Latin (Romanisasi)"
 	},
@@ -1700,6 +1687,20 @@
 		"PREVIOUS_SONG": "Lagu sebelumnya",
 		"PLAY": "Putar",
 		"PAUSE": "Jeda",
-		"NEXT_SONG": "Lagu selanjutnya"
+		"NEXT_SONG": "Lagu selanjutnya",
+		"MUTE_UNMUTE": "Bisu/batal bisu",
+		"VOLUME_LEVEL": "Atur volume",
+		"SUBS": {
+			"SHOW": "Tampilkan lirik di layar",
+			"HIDE": "Sembunyikan lirik di layar"
+		},
+		"SPEED": {
+			"UP": "Putar lebih cepat",
+			"RESET": "Atur ulang ke kecepatan normal",
+			"DOWN": "Putar lebih lambat"
+		},
+		"BLURVIDEO": {
+			"BLUR": "Buramkan Vidio"
+		}
 	}
 }

@@ -119,8 +119,8 @@ function KaraokeOptions(props: IProps) {
 						className="settings-line subCategoryGroupPanel fold"
 					>
 						<span className="title">
-							<i className="fas fa-fw fa-chevron-right" />
-							<i className="fas fa-fw fa-chevron-down" />
+							<i className="fas fa-chevron-right" />
+							<i className="fas fa-chevron-down" />
 							{i18next.t('SETTINGS.KARAOKE.QUOTA_SETTINGS')}
 						</span>
 						<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.QUOTA_SETTINGS_TOOLTIP')}</span>
@@ -352,8 +352,8 @@ function KaraokeOptions(props: IProps) {
 						className="settings-line subCategoryGroupPanel fold"
 					>
 						<span className="title">
-							<i className="fas fa-fw fa-chevron-right" />
-							<i className="fas fa-fw fa-chevron-down" />
+							<i className="fas fa-chevron-right" />
+							<i className="fas fa-chevron-down" />
 							{i18next.t('SETTINGS.PLAYLIST.PLAYLIST_SETTINGS')}
 						</span>
 						<span className="tooltip">{i18next.t('SETTINGS.PLAYLIST.PLAYLIST_SETTINGS_TOOLTIP')}</span>
@@ -581,6 +581,33 @@ function KaraokeOptions(props: IProps) {
 								</div>
 							</div>
 						))}
+
+					{filterValue === undefined ||
+						(sanitizeSettingsSearchValue(
+							i18next.t('SETTINGS.KARAOKE.AUTO_REMOVE_SONGS_FROM_CURRENT_PLAYLIST')
+						).includes(filterValue) && (
+							<div className="settings-line">
+								<label htmlFor="Playlist.CurrentPlaylistAutoRemoveSongs">
+									<span className="title">
+										{i18next.t('SETTINGS.KARAOKE.AUTO_REMOVE_SONGS_FROM_CURRENT_PLAYLIST')}
+									</span>
+									<br />
+									<span className="tooltip">
+										{i18next.t('SETTINGS.KARAOKE.AUTO_REMOVE_SONGS_FROM_CURRENT_PLAYLIST_TOOLTIP')}
+									</span>
+								</label>
+								<div>
+									<input
+										type="number"
+										data-exclude="true"
+										id="Playlist.CurrentPlaylistAutoRemoveSongs"
+										placeholder="0"
+										onBlur={onChange}
+										defaultValue={config['Playlist.CurrentPlaylistAutoRemoveSongs']}
+									/>
+								</div>
+							</div>
+						))}
 				</div>
 
 				{filterValue ? null : (
@@ -591,8 +618,8 @@ function KaraokeOptions(props: IProps) {
 						className="settings-line subCategoryGroupPanel fold"
 					>
 						<span className="title">
-							<i className="fas fa-fw fa-chevron-right" />
-							<i className="fas fa-fw fa-chevron-down" />
+							<i className="fas fa-chevron-right" />
+							<i className="fas fa-chevron-down" />
 							{i18next.t('SETTINGS.KARAOKE.MEDIAS_SETTINGS')}
 						</span>
 						<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.MEDIAS_SETTINGS_TOOLTIP')}</span>
@@ -814,8 +841,8 @@ function KaraokeOptions(props: IProps) {
 						className="settings-line subCategoryGroupPanel fold"
 					>
 						<span className="title">
-							<i className="fas fa-fw fa-chevron-right" />
-							<i className="fas fa-fw fa-chevron-down" />
+							<i className="fas fa-chevron-right" />
+							<i className="fas fa-chevron-down" />
 							{i18next.t('SETTINGS.KARAOKE.SESSION_SETTINGS')}
 						</span>
 						<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.SESSION_SETTINGS_TOOLTIP')}</span>
@@ -934,8 +961,8 @@ function KaraokeOptions(props: IProps) {
 						className="settings-line subCategoryGroupPanel fold"
 					>
 						<span className="title">
-							<i className="fas fa-fw fa-chevron-right" />
-							<i className="fas fa-fw fa-chevron-down" />
+							<i className="fas fa-chevron-right" />
+							<i className="fas fa-chevron-down" />
 							{i18next.t('SETTINGS.KARAOKE.STREAM_SETTINGS')}
 						</span>
 						<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.STREAM_SETTINGS_TOOLTIP')}</span>
@@ -1119,8 +1146,8 @@ function KaraokeOptions(props: IProps) {
 						className="settings-line subCategoryGroupPanel fold"
 					>
 						<span className="title">
-							<i className="fas fa-fw fa-chevron-right" />
-							<i className="fas fa-fw fa-chevron-down" />
+							<i className="fas fa-chevron-right" />
+							<i className="fas fa-chevron-down" />
 							{i18next.t('SETTINGS.KARAOKE.ONLINE_SETTINGS')}
 						</span>
 						<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.ONLINE_SETTINGS_TOOLTIP')}</span>
@@ -1164,8 +1191,8 @@ function KaraokeOptions(props: IProps) {
 						className="settings-line subCategoryGroupPanel fold"
 					>
 						<span className="title">
-							<i className="fas fa-fw fa-chevron-right" />
-							<i className="fas fa-fw fa-chevron-down" />
+							<i className="fas fa-chevron-right" />
+							<i className="fas fa-chevron-down" />
 							{i18next.t('SETTINGS.KARAOKE.MYSTERY_SONG_SETTINGS')}
 						</span>
 						<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.MYSTERY_SONG_SETTINGS_TOOLTIP')}</span>

@@ -191,7 +191,7 @@ export default function karaController(router: SocketIOApp) {
 	router.route(WS_CMD.EDIT_KARAS, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		// This is async so we always return
-		batchEditKaras(req.body.plaid, req.body.action, req.body.tid, +req.body.type as TagTypeNum).catch(() => {});
+		batchEditKaras(req.body.plaid, req.body.action, req.body.id, +req.body.type as TagTypeNum).catch(() => {});
 	});
 	router.route(WS_CMD.DELETE_MEDIA_FILES, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');

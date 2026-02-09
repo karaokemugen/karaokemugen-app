@@ -117,7 +117,7 @@ function ChibiPage() {
 						data-namecommand="focusMainWindow"
 						onClick={electronCmd}
 					>
-						<i className="fas fa-fw fa-external-link-alt" />
+						<i className="fas fa-external-link-alt" />
 					</button>
 					<button
 						className={`btn${
@@ -127,7 +127,7 @@ function ChibiPage() {
 						data-namecommand="setChibiPlayerAlwaysOnTop"
 						onClick={electronCmd}
 					>
-						<i className="fas fa-fw fa-window-restore" />
+						<i className="fas fa-window-restore" />
 					</button>
 					<button
 						className="btn btn-danger"
@@ -135,12 +135,16 @@ function ChibiPage() {
 						data-namecommand="closeChibiPlayer"
 						onClick={electronCmd}
 					>
-						<i className="fas fa-fw fa-times" />
+						<i className="fas fa-times" />
 					</button>
 				</div>
 				<KmAppHeaderDecorator mode="admin">
 					<div className="header-group controls">
-						<button type="button" title={i18next.t('MUTE_UNMUTE')} className="btn btn-dark volumeButton">
+						<button
+							type="button"
+							title={i18next.t('PLAYERS_CONTROLS.MUTE_UNMUTE')}
+							className="btn btn-dark volumeButton"
+						>
 							<div
 								id="mute"
 								data-namecommand={statusPlayer?.volume === 0 || statusPlayer?.mute ? 'unmute' : 'mute'}
@@ -157,7 +161,7 @@ function ChibiPage() {
 								)}
 							</div>
 							<input
-								title={i18next.t('VOLUME_LEVEL')}
+								title={i18next.t('PLAYERS_CONTROLS.VOLUME_LEVEL')}
 								data-namecommand="setVolume"
 								id="volume"
 								value={statusPlayer?.volume}
@@ -172,7 +176,9 @@ function ChibiPage() {
 							scope="chibi"
 						/>
 						<button
-							title={i18next.t(statusPlayer?.showSubs ? 'HIDE_SUBS' : 'SHOW_SUBS')}
+							title={i18next.t(
+								statusPlayer?.showSubs ? 'PLAYERS_CONTROLS.SUBS.HIDE' : 'PLAYERS_CONTROLS.SUBS.SHOW'
+							)}
 							id="showSubs"
 							data-namecommand={statusPlayer?.showSubs ? 'hideSubs' : 'showSubs'}
 							className={`btn btn-dark subtitleButton ${

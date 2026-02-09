@@ -18,7 +18,7 @@ import { PlayerCommand } from '../types/player.js';
 import Sentry from '../utils/sentry.js';
 import { getPlayerState, getState, setState } from '../utils/state.js';
 import { playCurrentSong, playRandomSongAfterPlaylist } from './karaEngine.js';
-import { getCurrentSong, getCurrentSongPLCID, getNextSong, getPreviousSong, setPlaying } from './playlist.js';
+import { autoRemoveSongsFromCurrentPlaylist, getCurrentSong, getCurrentSongPLCID, getNextSong, getPreviousSong, setPlaying } from './playlist.js';
 import { startPoll } from './poll.js';
 import { stopGame } from './quiz.js';
 
@@ -79,6 +79,7 @@ export async function next() {
 		// Now fetch the next song
 		const song = await getNextSong();
 		if (song) {
+			await autoRemoveSongsFromCurrentPlaylist();
 			await setPlaying(song.plcid, currentPlaid);
 			if (conf.Karaoke.ClassicMode) {
 				await stopPlayer();
