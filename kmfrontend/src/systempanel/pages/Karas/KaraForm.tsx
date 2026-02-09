@@ -461,7 +461,7 @@ function KaraForm(props: KaraFormProps) {
 				{coverImageEmbedRunning ? <Spin style={{ margin: '0 10px' }} /> : null}
 			</Upload>
 			<Image
-				wrapperStyle={{ display: 'none' }}
+				styles={{ root: { display: 'none' } }}
 				preview={{
 					visible: coverImagePreviewOpen,
 					onVisibleChange: visible => setCoverImagePreviewOpen(visible),
@@ -859,12 +859,6 @@ function KaraForm(props: KaraFormProps) {
 		);
 	};
 
-	const mapRepoToSelectOption = (repo: string) => (
-		<Select.Option key={repo} value={repo}>
-			{repo}
-		</Select.Option>
-	);
-
 	const tagRender = ({ label, value, closable, onClose }) => {
 		return (
 			<Tag closable={closable} onClose={onClose} style={{ whiteSpace: 'normal' }}>
@@ -950,7 +944,7 @@ function KaraForm(props: KaraFormProps) {
 					{i18next.t('KARA.REPOSITORY_DOCUMENTATION', { instance: repositoryManifest.name })}
 				</Button>
 			)}
-			<Divider orientation="left">{i18next.t('KARA.SECTIONS.FILES')}</Divider>
+			<Divider titlePlacement="start">{i18next.t('KARA.SECTIONS.FILES')}</Divider>
 			<Form.Item
 				label={
 					<span>
@@ -1030,7 +1024,7 @@ function KaraForm(props: KaraFormProps) {
 									<Divider></Divider>
 									<Space
 										style={{ width: '100%' }} // Shoud be block={true} but seems not supported
-										direction="vertical"
+										orientation="vertical"
 									>
 										<Flex gap={'5px'}>
 											<Button
@@ -1222,7 +1216,7 @@ function KaraForm(props: KaraFormProps) {
 					</Col>
 				</Row>
 			</Form.Item>
-			<Divider orientation="left">{i18next.t('KARA.SECTIONS.PARENTS')}</Divider>
+			<Divider titlePlacement="start">{i18next.t('KARA.SECTIONS.PARENTS')}</Divider>
 			<Paragraph style={{ marginLeft: '200px' }}>{i18next.t('KARA.DESC.PARENTS')}</Paragraph>
 			<Paragraph style={{ marginLeft: '200px' }}>{i18next.t('KARA.DESC.PARENTS_PUBLIC')}</Paragraph>
 			<Form.Item
@@ -1249,7 +1243,7 @@ function KaraForm(props: KaraFormProps) {
 					tagRender={tagRender}
 				/>
 			</Form.Item>
-			<Divider orientation="left">{i18next.t('KARA.SECTIONS.TITLES')}</Divider>
+			<Divider titlePlacement="start">{i18next.t('KARA.SECTIONS.TITLES')}</Divider>
 			<Paragraph style={{ marginLeft: '200px' }}>{i18next.t('KARA.DESC.TITLES')}</Paragraph>
 			<Paragraph style={{ marginLeft: '200px' }}>{i18next.t('KARA.DESC.TITLES_DEFAULT_LANGUAGE')}</Paragraph>
 			<Form.Item
@@ -1296,7 +1290,7 @@ function KaraForm(props: KaraFormProps) {
 			>
 				<EditableGroupAlias onChange={aliases => form?.setFieldsValue({ titles_aliases: aliases })} />
 			</Form.Item>
-			<Divider orientation="left">{i18next.t('KARA.SECTIONS.IDENTITY')}</Divider>
+			<Divider titlePlacement="start">{i18next.t('KARA.SECTIONS.IDENTITY')}</Divider>
 			<Form.Item
 				label={i18next.t('TAG_TYPES.LANGS_other')}
 				labelCol={{ flex: '0 1 220px' }}
@@ -1461,7 +1455,7 @@ function KaraForm(props: KaraFormProps) {
 			tagsCheckbox.get(7)?.length > 0 ||
 			tagsCheckbox.get(15)?.length > 0 ||
 			tagsCheckbox.get(9)?.length > 0 ? (
-				<Divider orientation="left">{i18next.t('KARA.SECTIONS.CATEGORIZATION')}</Divider>
+				<Divider titlePlacement="start">{i18next.t('KARA.SECTIONS.CATEGORIZATION')}</Divider>
 			) : null}
 			{tagsCheckbox.get(16)?.length > 0 ? (
 				<Form.Item
@@ -1577,7 +1571,7 @@ function KaraForm(props: KaraFormProps) {
 					<CheckBoxTag tags={tagsCheckbox.get(9)} onChange={tags => updateField({ groups: tags })} />
 				</Form.Item>
 			) : null}
-			<Divider orientation="left">{i18next.t('KARA.SECTIONS.META')}</Divider>
+			<Divider titlePlacement="start">{i18next.t('KARA.SECTIONS.META')}</Divider>
 			<Form.Item
 				className="wrap-label"
 				label={
@@ -1724,9 +1718,10 @@ function KaraForm(props: KaraFormProps) {
 						disabled={props.kara?.repository !== undefined}
 						placeholder={i18next.t('KARA.REPOSITORY')}
 						onChange={value => getRepoManifest(value)}
-					>
-						{repositoriesValue.map(mapRepoToSelectOption)}
-					</Select>
+						options={repositoriesValue.map(repo => {
+							return { value: repo, label: repo };
+						})}
+					/>
 				</Form.Item>
 			) : null}
 			<Form.Item
@@ -1762,18 +1757,22 @@ function KaraForm(props: KaraFormProps) {
 			</Form.Item>
 			{repositoriesValue && props.kara?.repository ? (
 				<>
-					<Divider orientation="left">{i18next.t('KARA.COPY_SONG')}</Divider>
+					<Divider titlePlacement="start">{i18next.t('KARA.COPY_SONG')}</Divider>
 					<Form.Item
 						hasFeedback
 						label={i18next.t('KARA.REPOSITORY')}
 						labelCol={{ flex: '0 1 220px' }}
 						wrapperCol={{ span: 8 }}
 					>
-						<Select placeholder={i18next.t('KARA.REPOSITORY')} onChange={setRepoToCopySong}>
-							{repositoriesValue
+						<Select
+							placeholder={i18next.t('KARA.REPOSITORY')}
+							onChange={setRepoToCopySong}
+							options={repositoriesValue
 								.filter(value => value !== props.kara?.repository)
-								.map(mapRepoToSelectOption)}
-						</Select>
+								.map(repo => {
+									return { value: repo, label: repo };
+								})}
+						/>
 					</Form.Item>
 
 					<Form.Item wrapperCol={{ span: 8, offset: 3 }} style={{ textAlign: 'right' }}>
@@ -1787,11 +1786,11 @@ function KaraForm(props: KaraFormProps) {
 						</Button>
 					</Form.Item>
 
-					<Divider orientation="left">{i18next.t('KARA.DELETE_KARA')}</Divider>
+					<Divider titlePlacement="start">{i18next.t('KARA.DELETE_KARA')}</Divider>
 					<Form.Item wrapperCol={{ span: 8, offset: 3 }} style={{ textAlign: 'center' }}>
 						<Alert
 							style={{ textAlign: 'left', marginBottom: '20px' }}
-							message={i18next.t('WARNING')}
+							title={i18next.t('WARNING')}
 							description={i18next.t('CONFIRM_SURE')}
 							type="warning"
 						/>

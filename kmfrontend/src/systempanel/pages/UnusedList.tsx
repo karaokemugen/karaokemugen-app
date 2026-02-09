@@ -164,15 +164,13 @@ function UnusedList() {
 					{repositories && repository ? (
 						<Col style={{ paddingRight: '5em' }}>
 							<label style={{ paddingRight: '15px' }}>{i18next.t('UNUSED_FILES.REPOSITORY')}</label>
-							<Select style={{ width: 150 }} defaultValue={repository}>
-								{repositories.map(repo => {
-									return (
-										<Select.Option key={repo} value={repo}>
-											{repo}
-										</Select.Option>
-									);
+							<Select
+								style={{ width: 150 }}
+								defaultValue={repository}
+								options={repositories.map(repo => {
+									return { value: repo, label: repo };
 								})}
-							</Select>
+							/>
 						</Col>
 					) : null}
 					<Col style={{ paddingTop: '5px' }}>
@@ -194,15 +192,10 @@ function UnusedList() {
 								style={{ width: 300 }}
 								onChange={setTagType}
 								defaultValue={tagType}
-							>
-								{Object.entries(tagTypes).map(([key, value]) => {
-									return (
-										<Select.Option key={value.type} value={value.type}>
-											{i18next.t(`TAG_TYPES.${key}_other`)}
-										</Select.Option>
-									);
+								options={Object.entries(tagTypes).map(([key, value]) => {
+									return { value: value.type, label: i18next.t(`TAG_TYPES.${key}_other`) };
 								})}
-							</Select>
+							/>
 						</Col>
 					) : null}
 				</Row>

@@ -106,20 +106,21 @@ class Config extends Component<ConfigProps, ConfigState> {
 							this.putPlayerCommando(value, 'Player.HardwareDecoding', 'setHwDec');
 						}}
 						value={record.value}
-					>
-						<Select.Option value="auto-safe">
-							{' '}
-							{i18next.t('CONFIG.PROPERTIES.PLAYER_HARDWAREDECODING_OPTIONS.AUTOSAFE')}{' '}
-						</Select.Option>
-						<Select.Option value="no">
-							{' '}
-							{i18next.t('CONFIG.PROPERTIES.PLAYER_HARDWAREDECODING_OPTIONS.NO')}{' '}
-						</Select.Option>
-						<Select.Option value="yes">
-							{' '}
-							{i18next.t('CONFIG.PROPERTIES.PLAYER_HARDWAREDECODING_OPTIONS.FORCE')}{' '}
-						</Select.Option>
-					</Select>
+						options={[
+							{
+								value: 'auto-safe',
+								label: i18next.t('CONFIG.PROPERTIES.PLAYER_HARDWAREDECODING_OPTIONS.AUTOSAFE'),
+							},
+							{
+								value: 'no',
+								label: i18next.t('CONFIG.PROPERTIES.PLAYER_HARDWAREDECODING_OPTIONS.NO'),
+							},
+							{
+								value: 'yes',
+								label: i18next.t('CONFIG.PROPERTIES.PLAYER_HARDWAREDECODING_OPTIONS.FORCE'),
+							},
+						]}
+					/>
 				) : record.key === 'System.Repositories' ? (
 					<label>
 						<Link to={'/system/repositories'}>{i18next.t('CONFIG.REPOSITORIES_PAGES')}</Link>

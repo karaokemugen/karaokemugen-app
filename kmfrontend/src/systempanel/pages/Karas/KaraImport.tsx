@@ -139,7 +139,7 @@ function KaraImport() {
 				title={i18next.t('HEADERS.KARAOKE_IMPORT.TITLE')}
 				description={i18next.t('HEADERS.KARAOKE_IMPORT.DESCRIPTION')}
 			/>
-			<Divider orientation="left">{i18next.t('KARAOKE_IMPORT.CONFIGURATION')}</Divider>
+			<Divider titlePlacement="start">{i18next.t('KARAOKE_IMPORT.CONFIGURATION')}</Divider>
 			<Layout.Content style={{ paddingRight: '5em', paddingLeft: '110px' }}>
 				{repositories?.length > 0 ? (
 					<Form form={form} initialValues={{ sourceDir, destinationRepository, fileNameTemplate }}>
@@ -180,19 +180,14 @@ function KaraImport() {
 								style={{ width: 150 }}
 								disabled={!!searchParams.get('repository')}
 								onChange={setDestinationRepository}
-							>
-								{repositories.map(repo => {
-									return (
-										<Select.Option key={repo} value={repo}>
-											{repo}
-										</Select.Option>
-									);
+								options={repositories.map(repo => {
+									return { value: repo, label: repo };
 								})}
-							</Select>
+							/>
 						</Form.Item>
 						<Alert
 							style={{ marginBottom: '0.5em' }}
-							message={i18next.t('KARAOKE_IMPORT.WARNING_IMPORT_TITLE')}
+							title={i18next.t('KARAOKE_IMPORT.WARNING_IMPORT_TITLE')}
 							description={
 								<>
 									<div>{i18next.t('KARAOKE_IMPORT.WARNING_IMPORT')}</div>
@@ -236,7 +231,7 @@ function KaraImport() {
 								</Form.Item>
 								<Alert
 									style={{ marginBottom: '1em', marginTop: '0.5em' }}
-									message={
+									title={
 										<>
 											<div>{i18next.t('KARAOKE_IMPORT.FILENAME_TEMPLATE_TOOLTIP')}</div>
 											<br />
@@ -269,7 +264,7 @@ function KaraImport() {
 			</Layout.Content>
 			{sourceDir ? (
 				<>
-					<Divider orientation="left">{i18next.t('KARAOKE_IMPORT.MEDIA_FILES')}</Divider>
+					<Divider titlePlacement="start">{i18next.t('KARAOKE_IMPORT.MEDIA_FILES')}</Divider>
 					<Layout.Content style={{ paddingRight: '5em', paddingLeft: '110px' }}>
 						<Row>
 							<Col>

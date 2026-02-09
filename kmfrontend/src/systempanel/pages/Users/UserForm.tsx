@@ -63,15 +63,18 @@ class UserForm extends Component<UserFormProps, UserFormState> {
 						type="info"
 						showIcon
 						style={{ marginBottom: '10px' }}
-						message={i18next.t('USERS.EDIT_ONLINE_ACCOUNT')}
+						title={i18next.t('USERS.EDIT_ONLINE_ACCOUNT')}
 					></Alert>
 				) : null}
 				<Form.Item label={i18next.t('USERS.TYPE')} name="type" required={true}>
-					<Select onChange={value => this.setState({ type: parseInt(value.toString()) })}>
-						<Select.Option value="0">{i18next.t('USERS.ADMIN')}</Select.Option>
-						<Select.Option value="1">{i18next.t('USERS.USER')}</Select.Option>
-						<Select.Option value="2">{i18next.t('USERS.GUEST')}</Select.Option>
-					</Select>
+					<Select
+						onChange={value => this.setState({ type: parseInt(value.toString()) })}
+						options={[
+							{ value: '0', label: i18next.t('USERS.ADMIN') },
+							{ value: '1', label: i18next.t('USERS.USER') },
+							{ value: '2', label: i18next.t('USERS.GUEST') },
+						]}
+					/>
 				</Form.Item>
 				<Form.Item label={i18next.t('USERS.REPLAY_TUTORIAL')} valuePropName="checked" name="flag_tutorial_done">
 					<Checkbox />

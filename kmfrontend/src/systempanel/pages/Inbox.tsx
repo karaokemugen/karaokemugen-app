@@ -440,7 +440,7 @@ export default function Inbox() {
 		}
 	}
 	return repoList.length === 0 ? (
-		<Alert style={{ textAlign: 'left', margin: '20px' }} message={message} type="error" />
+		<Alert style={{ textAlign: 'left', margin: '20px' }} title={message} type="error" />
 	) : (
 		<>
 			<Title title={i18next.t('HEADERS.INBOX.TITLE')} description={i18next.t('HEADERS.INBOX.DESCRIPTION')} />
@@ -449,15 +449,15 @@ export default function Inbox() {
 					<label style={{ marginLeft: '2em', paddingRight: '1em' }}>
 						{i18next.t('INBOX.FILTER_BY_STATUS')} :
 					</label>
-					<Select mode="multiple" style={{ width: 300 }} onChange={filterInbox} defaultValue={selectedStatus}>
-						{status_filter.map(status => {
-							return (
-								<Select.Option key={status} value={status}>
-									{i18next.t(`INBOX.STATUS.${status.toLocaleUpperCase()}`)}
-								</Select.Option>
-							);
+					<Select
+						mode="multiple"
+						style={{ width: 300 }}
+						onChange={filterInbox}
+						defaultValue={selectedStatus}
+						options={status_filter.map(status => {
+							return { value: status, label: i18next.t(`INBOX.STATUS.${status.toLocaleUpperCase()}`) };
 						})}
-					</Select>
+					/>
 				</div>
 				<Table
 					dataSource={filteredInbox}

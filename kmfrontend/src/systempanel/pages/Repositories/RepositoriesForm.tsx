@@ -235,7 +235,7 @@ function RepositoryForm(props: RepositoriesFormProps) {
 							<Checkbox />
 						</Form.Item>
 					) : null}
-					<Divider orientation="left"></Divider>
+					<Divider titlePlacement="start"></Divider>
 					{!name ? (
 						<div style={{ fontSize: 17, marginBottom: '0.5em' }}>{i18next.t('REPOSITORIES.NAME_DESC')}</div>
 					) : null}
@@ -350,17 +350,16 @@ function RepositoryForm(props: RepositoriesFormProps) {
 								labelCol={{ flex: '0 1 300px' }}
 								name="AutoMediaDownloads"
 							>
-								<Select>
-									<Select.Option value="none">
-										{i18next.t('REPOSITORIES.AUTO_MEDIA_DOWNLOADS_NONE')}
-									</Select.Option>
-									<Select.Option value="updateOnly">
-										{i18next.t('REPOSITORIES.AUTO_MEDIA_DOWNLOADS_UPDATE_ONLY')}
-									</Select.Option>
-									<Select.Option value="all">
-										{i18next.t('REPOSITORIES.AUTO_MEDIA_DOWNLOADS_ALL')}
-									</Select.Option>
-								</Select>
+								<Select
+									options={[
+										{ value: 'none', label: i18next.t('REPOSITORIES.AUTO_MEDIA_DOWNLOADS_NONE') },
+										{
+											value: 'updateOnly',
+											label: i18next.t('REPOSITORIES.AUTO_MEDIA_DOWNLOADS_UPDATE_ONLY'),
+										},
+										{ value: 'all', label: i18next.t('REPOSITORIES.AUTO_MEDIA_DOWNLOADS_ALL') },
+									]}
+								/>
 							</Form.Item>
 							<Form.Item
 								label={
@@ -381,7 +380,7 @@ function RepositoryForm(props: RepositoriesFormProps) {
 					) : null}
 					{nameChosen ? (
 						<>
-							<Divider orientation="left"></Divider>
+							<Divider titlePlacement="start"></Divider>
 							<Form.Item
 								label={i18next.t('REPOSITORIES.BASE_DIR')}
 								labelCol={{ flex: '0 1 300px' }}
@@ -570,10 +569,10 @@ function RepositoryForm(props: RepositoriesFormProps) {
 						<>
 							{props.repository.System ? null : (
 								<>
-									<Divider orientation="left">{i18next.t('REPOSITORIES.COMPARE_LYRICS')}</Divider>
+									<Divider titlePlacement="start">{i18next.t('REPOSITORIES.COMPARE_LYRICS')}</Divider>
 									<Alert
 										style={{ textAlign: 'left', marginBottom: '10px' }}
-										message={i18next.t('REPOSITORIES.COMPARE_ABOUT_MESSAGE')}
+										title={i18next.t('REPOSITORIES.COMPARE_ABOUT_MESSAGE')}
 										type="info"
 									/>
 									{repositoriesValue ? (
@@ -586,15 +585,10 @@ function RepositoryForm(props: RepositoriesFormProps) {
 													style={{ maxWidth: '50%', minWidth: '150px' }}
 													placeholder={i18next.t('TAGS.REPOSITORY')}
 													onChange={value => setCompareRepo(value.toString())}
-												>
-													{repositoriesValue.map(repo => {
-														return (
-															<Select.Option key={repo} value={repo}>
-																{repo}
-															</Select.Option>
-														);
+													options={repositoriesValue.map(repo => {
+														return { value: repo, label: repo };
 													})}
-												</Select>
+												/>
 											</Form.Item>
 											<Form.Item labelCol={{ flex: '0 1 300px' }} style={{ textAlign: 'right' }}>
 												<div>
@@ -611,10 +605,10 @@ function RepositoryForm(props: RepositoriesFormProps) {
 									) : null}
 								</>
 							)}
-							<Divider orientation="left">{i18next.t('REPOSITORIES.SYNCHRONIZE_TAGS')}</Divider>
+							<Divider titlePlacement="start">{i18next.t('REPOSITORIES.SYNCHRONIZE_TAGS')}</Divider>
 							<Alert
 								style={{ textAlign: 'left', marginBottom: '10px' }}
-								message={i18next.t('REPOSITORIES.SYNCHRONIZE_ABOUT_MESSAGE')}
+								title={i18next.t('REPOSITORIES.SYNCHRONIZE_ABOUT_MESSAGE')}
 								type="info"
 							/>
 							{repositoriesValue ? (
@@ -627,15 +621,10 @@ function RepositoryForm(props: RepositoriesFormProps) {
 											style={{ maxWidth: '50%', minWidth: '150px' }}
 											placeholder={i18next.t('TAGS.REPOSITORY')}
 											onChange={value => setCompareRepo(value.toString())}
-										>
-											{repositoriesValue.map(repo => {
-												return (
-													<Select.Option key={repo} value={repo}>
-														{repo}
-													</Select.Option>
-												);
+											options={repositoriesValue.map(repo => {
+												return { value: repo, label: repo };
 											})}
-										</Select>
+										/>
 									</Form.Item>
 									<Form.Item labelCol={{ flex: '0 1 300px' }} style={{ textAlign: 'right' }}>
 										<div>
@@ -652,7 +641,9 @@ function RepositoryForm(props: RepositoriesFormProps) {
 							) : null}
 							{props.repository.System ? null : (
 								<>
-									<Divider orientation="left">{i18next.t('REPOSITORIES.MOVING_MEDIA_PANEL')}</Divider>
+									<Divider titlePlacement="start">
+										{i18next.t('REPOSITORIES.MOVING_MEDIA_PANEL')}
+									</Divider>
 
 									<Form.Item
 										hasFeedback
@@ -675,12 +666,12 @@ function RepositoryForm(props: RepositoriesFormProps) {
 										</Button>
 										<Alert
 											style={{ textAlign: 'left', marginTop: '10px' }}
-											message={i18next.t('WARNING')}
+											title={i18next.t('WARNING')}
 											description={i18next.t('REPOSITORIES.MOVING_MEDIA_ABOUT_MESSAGE')}
 											type="warning"
 										/>
 									</Form.Item>
-									<Divider orientation="left">
+									<Divider titlePlacement="start">
 										{i18next.t('REPOSITORIES.CONVERT_TO_UUID_PANEL')}
 									</Divider>
 
@@ -695,7 +686,7 @@ function RepositoryForm(props: RepositoriesFormProps) {
 										</Button>
 										<Alert
 											style={{ textAlign: 'left', marginTop: '10px' }}
-											message={i18next.t('WARNING')}
+											title={i18next.t('WARNING')}
 											description={i18next.t('REPOSITORIES.CONVERT_TO_UUID_ABOUT_MESSAGE')}
 											type="warning"
 										/>

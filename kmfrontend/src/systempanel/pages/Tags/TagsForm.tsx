@@ -358,16 +358,10 @@ function TagForm(props: TagsFormProps) {
 						mode="multiple"
 						placeholder={i18next.t('TAGS.TYPES')}
 						showSearch={false}
-					>
-						{Object.keys(tagTypes).map(type => {
-							const value = tagTypes[type].type;
-							return (
-								<Select.Option key={value} value={value}>
-									{i18next.t(`TAG_TYPES.${type}_other`)}
-								</Select.Option>
-							);
+						options={Object.entries(tagTypes).map(([key, value]) => {
+							return { value: value.type, label: i18next.t(`TAG_TYPES.${key}_other`) };
 						})}
-					</Select>
+					/>
 				</Form.Item>
 				{repositoriesValue ? (
 					<Form.Item
@@ -385,15 +379,10 @@ function TagForm(props: TagsFormProps) {
 							disabled={props.tag?.repository !== undefined}
 							style={{ maxWidth: '20%', minWidth: '150px' }}
 							placeholder={i18next.t('TAGS.REPOSITORY')}
-						>
-							{repositoriesValue.map(repo => {
-								return (
-									<Select.Option key={repo} value={repo}>
-										{repo}
-									</Select.Option>
-								);
+							options={repositoriesValue.map(repo => {
+								return { value: repo, label: repo };
 							})}
-						</Select>
+						/>
 					</Form.Item>
 				) : null}
 				<Form.Item
@@ -534,14 +523,14 @@ function TagForm(props: TagsFormProps) {
 				)}
 				{props.tag ? (
 					<>
-						<Divider orientation="left">{i18next.t('TAGS.DELETE_TAG')}</Divider>
+						<Divider titlePlacement="start">{i18next.t('TAGS.DELETE_TAG')}</Divider>
 						<Form.Item wrapperCol={{ span: 8, offset: 3 }} style={{ textAlign: 'right' }}>
 							<Button type="primary" danger onClick={() => setDeleteModal(true)}>
 								{i18next.t('TAGS.DELETE_TAG')}
 							</Button>
 						</Form.Item>
 
-						<Divider orientation="left">{i18next.t('TAGS.MERGE_TAGS')}</Divider>
+						<Divider titlePlacement="start">{i18next.t('TAGS.MERGE_TAGS')}</Divider>
 						<Form.Item
 							label={
 								<span>
@@ -568,7 +557,7 @@ function TagForm(props: TagsFormProps) {
 							</Button>
 							<Alert
 								style={{ textAlign: 'left', marginTop: '20px' }}
-								message={i18next.t('TAGS.MERGE_ABOUT')}
+								title={i18next.t('TAGS.MERGE_ABOUT')}
 								description={i18next.t('TAGS.MERGE_ABOUT_MESSAGE')}
 								type="warning"
 							/>
@@ -577,24 +566,22 @@ function TagForm(props: TagsFormProps) {
 				) : null}
 				{repositoriesValue && props.tag?.repository ? (
 					<>
-						<Divider orientation="left">{i18next.t('TAGS.COPY_TAG')}</Divider>
+						<Divider titlePlacement="start">{i18next.t('TAGS.COPY_TAG')}</Divider>
 						<Form.Item
 							hasFeedback
 							label={i18next.t('TAGS.REPOSITORY')}
 							labelCol={{ flex: '0 1 200px' }}
 							wrapperCol={{ span: 8 }}
 						>
-							<Select placeholder={i18next.t('TAGS.REPOSITORY')} onChange={setRepoToCopySong}>
-								{repositoriesValue
+							<Select
+								placeholder={i18next.t('TAGS.REPOSITORY')}
+								onChange={setRepoToCopySong}
+								options={repositoriesValue
 									.filter(value => value !== props.tag.repository)
 									.map(repo => {
-										return (
-											<Select.Option key={repo} value={repo}>
-												{repo}
-											</Select.Option>
-										);
+										return { value: repo, label: repo };
 									})}
-							</Select>
+							/>
 						</Form.Item>
 
 						<Form.Item wrapperCol={{ span: 8, offset: 3 }} style={{ textAlign: 'right' }}>

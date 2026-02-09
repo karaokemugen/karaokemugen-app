@@ -349,7 +349,7 @@ export default function Git() {
 						>
 							{i18next.t('REPOSITORIES.GIT_DANGEROUS')}
 						</Button>
-						<Divider type="vertical" />
+						<Divider orientation="vertical" />
 						<Button
 							type="primary"
 							icon={<CloudUploadOutlined />}
@@ -359,7 +359,7 @@ export default function Git() {
 						>
 							{i18next.t('REPOSITORIES.GIT_PUSH')}
 						</Button>
-						<Divider type="vertical" />
+						<Divider orientation="vertical" />
 						<Button
 							type="primary"
 							icon={<CloudDownloadOutlined />}
@@ -573,7 +573,11 @@ export default function Git() {
 			>
 				<p>{i18next.t('MODAL.GIT_DANGEROUS.DESCRIPTION')}</p>
 				{gitStatus?.files?.length > 0 ? (
-					<ul>{gitStatus?.files?.map((file, i) => <li key={i.toString()}>{file.path}</li>)}</ul>
+					<ul>
+						{gitStatus?.files?.map((file, i) => (
+							<li key={i.toString()}>{file.path}</li>
+						))}
+					</ul>
 				) : (
 					<ul>
 						<li>{i18next.t('MODAL.GIT_DANGEROUS.EMPTY')}</li>

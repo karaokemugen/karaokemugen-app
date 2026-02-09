@@ -128,7 +128,7 @@ export default function AutocompleteTag(props: AutocompleteTagProps) {
 				<Form.Item wrapperCol={{ span: 14 }}>
 					<AutoComplete
 						ref={input}
-						onSearch={search}
+						showSearch={{ onSearch: search }}
 						onChange={setCurrentVal}
 						onSelect={val => handleInputConfirm(val)}
 						options={tags.map((tag: DBKaraTag) => {

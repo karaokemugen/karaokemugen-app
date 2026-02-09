@@ -159,15 +159,15 @@ function TagsList() {
 						onSearch={refresh}
 					/>
 					<label style={{ marginLeft: '2em', paddingRight: '1em' }}>{i18next.t('TAGS.TYPES')} :</label>
-					<Select allowClear={true} style={{ width: 300 }} onChange={changeType} defaultValue={typeTag}>
-						{Object.entries(tagTypes).map(([key, value]) => {
-							return (
-								<Select.Option key={value.type} value={value.type}>
-									{i18next.t(`TAG_TYPES.${key}_other`)}
-								</Select.Option>
-							);
+					<Select
+						allowClear={true}
+						style={{ width: 300 }}
+						onChange={changeType}
+						defaultValue={typeTag}
+						options={Object.entries(tagTypes).map(([key, value]) => {
+							return { value: value.type, label: i18next.t(`TAG_TYPES.${key}_other`) };
 						})}
-					</Select>
+					/>
 				</div>
 				<Table
 					onChange={handleTableChange}
@@ -181,7 +181,7 @@ function TagsList() {
 						showExpandColumn: false,
 					}}
 					pagination={{
-						position: ['topRight', 'bottomRight'],
+						placement: ['topEnd', 'bottomEnd'],
 						current: currentPage || 1,
 						defaultPageSize: currentPageSize,
 						pageSize: currentPageSize,
