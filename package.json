@@ -1,6 +1,6 @@
 {
   "name": "karaokemugen-app",
-  "version": "9.0.29-master",
+  "version": "9.0.30-master",
   "versionName": "Tomoyo Tapageuse",
   "description": "Karaoke playlist manager / player",
   "bin": {
