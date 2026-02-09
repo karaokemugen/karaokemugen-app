@@ -673,7 +673,8 @@
 		},
 		"SPEED": {
 			"UP": "Kreskiñ an tizh",
-			"DOWN": "Digreskiñ an tizh"
+			"DOWN": "Digreskiñ an tizh",
+			"TITLE": "Cheñch an tizh"
 		}
 	},
 	"VIEW_FAVORITES": "Pennrolloù",
