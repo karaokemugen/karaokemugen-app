@@ -631,7 +631,10 @@ export class Players {
 		this.players = {
 			main: new Player({ monitor: false }, this),
 		};
-		if (playerState.monitorEnabled) this.players.monitor = new Player({ monitor: true }, this);
+		if (getConfig().Player.Monitor) {
+			this.players.monitor = new Player({ monitor: true }, this);
+			playerState.monitorEnabled = true;
+		}
 		logger.debug(`Players: ${JSON.stringify(Object.keys(this.players))}`, { service });
 		await this.exec('start');
 	}
@@ -642,7 +645,6 @@ export class Players {
 		playerState.onTop = conf.Player.StayOnTop;
 		playerState.border = conf.Player.Borders;
 		playerState.volume = conf.Player.Volume;
-		playerState.monitorEnabled = conf.Player.Monitor;
 		const audioDevices = await getMpvAudioOutputs();
 		const audioDevicesList = audioDevices.map(ad => ad[0]);
 		if (!audioDevicesList.includes(getConfig().Player.AudioDevice)) {
@@ -679,18 +681,18 @@ export class Players {
 		// Check change in monitor setting
 		if (playerState.monitorEnabled !== getConfig().Player.Monitor) {
 			// Determine if we have to destroy the monitor or create it.
-			// Refresh monitor setting
-			playerState.monitorEnabled = getConfig().Player.Monitor;
-			if (playerState.monitorEnabled) {
+			if (getConfig().Player.Monitor) {
 				// Monitor needs to be created
 				await checkMpv();
 				this.players.monitor = new Player({ monitor: true }, this);
+				playerState.monitorEnabled = true;
 			} else {
 				// Monitor needs to be destroyed
 				await this.exec('destroy', [null], 'monitor', true, true).catch(() => {
 					// Non-fatal, it probably means it's destroyed.
 				});
 				delete this.players.monitor;
+				playerState.monitorEnabled = false;
 			}
 		}
 		await this.exec('recreate', [null, true], undefined, true).catch(err => {
