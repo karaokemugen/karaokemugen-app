@@ -94,7 +94,8 @@ export class Player {
 			`--screenshot-directory=${resolve(state.dataPath)}`,
 			'--screenshot-format=png',
 			'--osd-level=0',
-			'--osd-bar=no'
+			'--osd-bar=no',
+			'--osc=no'
 		];
 
 		if (options.monitor) {
