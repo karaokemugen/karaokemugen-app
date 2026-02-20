@@ -591,7 +591,12 @@
 		"GIT": "Git",
 		"USERS": "Implijerien",
 		"STATS": "Stadegoù",
-		"MEDIAS": "Mediaoù"
+		"MEDIAS": "Mediaoù",
+		"HOME": "Taolenn-stur",
+		"SYSTEM": "Reizhiad",
+		"ADVANCED_OPTIONS": "Arventennoù reizhiad",
+		"DOWNLOAD": "Pellgargadennoù",
+		"HISTORY": "Roll istor"
 	},
 	"TASKS": {
 		"IMPORTING_PLAYLIST": "Oc'h enporzhiañ ar roll-lenn…",
