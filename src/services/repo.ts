@@ -121,6 +121,7 @@ export async function addRepo(repo: Repository) {
 					repo.Git.ProjectID = manifest.ProjectID;
 				}
 			} catch (err) {
+				logger.error(`Repository ${repo.Name} unreachable`, { service });
 				throw new ErrorKM('REPOSITORY_UNREACHABLE', 404, false);
 			}
 		}
