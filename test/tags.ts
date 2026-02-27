@@ -147,6 +147,6 @@ function testTagFile(tag: TagFile, tagData: DBTag) {
 	}
 	expect(tag.tag.types).to.be.an('array');
 	for (const type of tag.tag.types) {
-		expect(type).to.be.a('string');
+		expect(type).to.be.a('number');
 	}
 }
