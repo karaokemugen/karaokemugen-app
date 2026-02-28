@@ -206,7 +206,8 @@ export async function updateAllMedias(repoNames?: string[], dryRun = false): Pro
 			results.push(await updateMedias(repo.Name, dryRun));
 		} catch (err) {
 			logger.warn(`Repository ${repo.Name} failed to update medias properly`, { service, obj: err });
-			Sentry.error(err);
+			// KM Server errors shouldn't trigger sentry
+			if (err.code !== 500) Sentry.error(err);
 			emitWS(
 				'operatorNotificationError',
 				APIMessage('ERROR_CODES.UPDATING_MEDIAS_ERROR', { repo: repo.Name, err: err })
