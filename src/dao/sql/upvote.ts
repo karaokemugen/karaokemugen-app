@@ -8,7 +8,8 @@ INSERT INTO upvote(
 VALUES(
 	:plc_id,
 	:username
-);
+)
+ON CONFLICT (fk_plcid,fk_login) DO NOTHING;
 `;
 
 export const sqldeleteUpvote = `
