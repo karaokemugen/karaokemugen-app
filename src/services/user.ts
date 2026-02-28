@@ -684,6 +684,8 @@ export async function updateSongsLeft(username: string, plaid?: string) {
 		const conf = getConfig();
 		username = username.toLowerCase();
 		const user = await getUser(username);
+		// Non-fatal, user has probably been removed at some point.
+		if (!user) return;
 		let quotaLeft: number;
 		if (!plaid) plaid = getState().publicPlaid;
 		const playlistsToConsider =
