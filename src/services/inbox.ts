@@ -99,7 +99,8 @@ export async function downloadKaraFromInbox(inid: string, repoName: string, toke
 		}
 		if (!kara.edited_kid) kara.kara.data.data.created_at = new Date().toISOString();
 		kara.kara.data.data.modified_at = new Date().toISOString();
-		const promises = [downloadMediaFromInbox(kara, repoName)];
+		const medias = await downloadMediaFromInbox(kara, repoName);
+		await smartMove(medias.tempMedia, medias.localMedia, { overwrite: true });
 		// Code to integrate kara and download medias
 		let lyricsFile = '';
 		if (kara.lyrics?.file) {
@@ -118,8 +119,7 @@ export async function downloadKaraFromInbox(inid: string, repoName: string, toke
 		saveSetting('baseChecksum', await baseChecksum());
 		const newKaraKid = await integrateKaraFile(karaFile, true, true, false);
 		updateAllSmartPlaylists();
-		await Promise.all(promises);
-
+				
 		const newDbKara = await getKara(newKaraKid, adminToken);
 		// ASS file post processing
 		if (lyricsFile) {
@@ -164,7 +164,10 @@ async function downloadMediaFromInbox(kara: Inbox, repoName: string) {
 			} catch (err) {
 				throw err;
 			}
-			await smartMove(tempMedia, localMedia, { overwrite: true });
+			return {
+				tempMedia,
+				localMedia
+			}
 		} else {
 			downloadTask.update({
 				value: 100,
