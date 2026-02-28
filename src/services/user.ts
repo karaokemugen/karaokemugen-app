@@ -80,6 +80,7 @@ async function checkNicknameExists(nickname: string) {
 		})
 	)[0];
 }
+
 /** Edit local user profile */
 export async function editUser(
 	username: string,
@@ -458,6 +459,11 @@ async function checkGuestAvatars() {
 }
 
 export async function createTemporaryGuest(name: string) {
+	const userExists = await checkNicknameExists(name);
+	if (userExists) {
+		logger.error(`Nickname ${name} already exists, cannot create temporary guest`, { service });
+		throw new ErrorKM('USER_ALREADY_EXISTS', 409, false);
+	}
 	const user = {
 		login: sanitizeLogin(name),
 		nickname: name,
