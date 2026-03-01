@@ -144,8 +144,17 @@
 			null,
 			null,
 			"Nanamin on, maskotenn Karaoke Mugen ha krouet e oan bet gant Sedeto donezonet ! http://www.sedeto.fr",
-			""
-		]
+			"",
+			null,
+			null,
+			null,
+			null,
+			null,
+			"Dourennit alies !"
+		],
+		"TITLES": {
+			"NORMAL": "Alioù injinus gant Nanamin"
+		}
 	},
 	"QUIZ_RULES": {
 		"TITLE": "REOLENNOÙ",
