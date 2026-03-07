@@ -37,6 +37,15 @@ export async function registerShortcuts(configChange = false) {
 	globalShortcut.register('MediaPlayPause', () => {
 		getState().player.playerStatus === 'play' ? pausePlayer() : playPlayer().catch(() => {});
 	});
+	globalShortcut.register('MediaPlay', () => {
+		playPlayer().catch(() => {});
+	});
+	globalShortcut.register('MediaPause', () => {
+		pausePlayer();
+	});
+	globalShortcut.register('MediaStop', () => {
+		stopPlayer();
+	});
 	globalShortcut.register('MediaNextTrack', () => {
 		setState({ singlePlay: false, randomPlaying: false });
 		next().catch(() => {});
