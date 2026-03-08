@@ -86,11 +86,11 @@ export async function mprisService() {
 	});
 
 	player.on('play', () => {
-		getState().player.playerStatus === 'play' ? pausePlayer() : playPlayer().catch(() => {});
+		playPlayer().catch(() => {});
 	});
 
 	player.on('pause', () => {
-		getState().player.playerStatus === 'play' ? pausePlayer() : playPlayer().catch(() => {});
+		pausePlayer();
 	});
 
 	player.on('playpause', () => {
