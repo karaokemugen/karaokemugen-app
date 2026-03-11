@@ -1193,6 +1193,13 @@
 			"PASSWORD": "Senha FTP",
 			"BASEDIR": "Diretório base FTP"
 		},
+		"SFTP": {
+			"USERNAME": "Nome de usuário SFTP",
+			"HOST": "Anfitrião SFTP",
+			"PORT": "Porta SFTP",
+			"PASSWORD": "Senha SFTP",
+			"BASEDIR": "Diretório base SFTP"
+		},
 		"TOOLTIP_NAME": "Nomeie-o como desejar. Por exemplo, 'Meus pequenos karaokês particulares'",
 		"AUTO_MEDIA_DOWNLOADS_TOOLTIP": "Caso sua conexão seja muito lenta, recomendamos que você selecione “Todas” para que as mídias sejam baixadas previamente. Isso também é recomendado para uso em convenções ou streams para evitar possíveis erros no meio de um karaokê!",
 		"MOVING_MEDIA_PANEL": "Mover mídia",

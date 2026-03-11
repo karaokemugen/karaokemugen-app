@@ -12,7 +12,7 @@ const buildOptions = {
 	bundle: true,
 	sourcemap: true,
 	conditions: ['module'],
-	external: ['electron', 'pg-native', 'fsevents'],
+	external: ['cpu-features', 'electron', 'pg-native', 'fsevents'],
 	legalComments: 'external',
 	color: true,
 	logLevel: 'info',

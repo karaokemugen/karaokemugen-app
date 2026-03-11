@@ -1575,12 +1575,20 @@
 			"GENERATE_SSH_KEY": "Generate a SSH key",
 			"DELETE_SSH_KEY": "Delete the SSH key"
 		},
+		"UPLOAD_METHOD0": "Media upload method",
 		"FTP": {
 			"HOST": "FTP Host",
 			"PORT": "FTP Port",
 			"USERNAME": "FTP Username",
 			"PASSWORD": "FTP Password",
 			"BASEDIR": "FTP Base Directory"
+		},
+		"SFTP": {
+			"HOST": "SFTP Host",
+			"PORT": "SFTP Port",
+			"USERNAME": "SFTP Username",
+			"PASSWORD": "SFTP Password",
+			"BASEDIR": "SFTP Base Directory"
 		},
 		"GIT_STATUS": "Git status",
 		"GIT_STATUSES": {

@@ -275,3 +275,14 @@ export async function branchRepositoryIsNowMandatory() {
 		editRepo(repository.Name, repository, false, false);
 	}
 }
+
+/** Remove in KM 11.0 */
+export async function setDefaultUploadMethodForMaintainers() {
+	const repos = getRepos();
+	for (const respository of repos) {
+		if (respository.FTP) {
+			respository.UploadMethod = 'FTP';
+		}
+		editRepo(respository.Name, respository, false, false);
+	}
+}

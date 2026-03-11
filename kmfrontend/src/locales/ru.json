@@ -1070,6 +1070,13 @@
 			"PASSWORD": "FTP Пароль",
 			"BASEDIR": "FTP Основная папка"
 		},
+		"SFTP": {
+			"HOST": "SFTP Хост",
+			"PORT": "SFTP Порт",
+			"USERNAME": "SFTP Имя пользователя",
+			"PASSWORD": "SFTP Пароль",
+			"BASEDIR": "SFTP Основная папка"
+		},
 		"GIT_STATUS": "Git статус",
 		"GIT_STATUSES": {
 			"CLEAN": "Чистая копия",

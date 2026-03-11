@@ -1085,6 +1085,13 @@
 			"PASSWORD": "Kata Sandi FTP",
 			"BASEDIR": "Direktori Dasar FTP"
 		},
+		"SFTP": {
+			"HOST": "Hos SFTP",
+			"PORT": "Porta SFTP",
+			"USERNAME": "Nama Pengguna SFTP",
+			"PASSWORD": "Kata Sandi SFTP",
+			"BASEDIR": "Direktori Dasar SFTP"
+		},
 		"GIT_STATUSES": {
 			"MODIFIED": "Disunting (perubahan untuk didorong)",
 			"CLEAN": "Salinan bersih"

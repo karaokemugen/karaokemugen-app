@@ -23,6 +23,11 @@ interface RepositoriesFormProps {
 
 function RepositoryForm(props: RepositoriesFormProps) {
 	const [form] = useForm();
+	const uploadMethod = Form.useWatch('UploadMethod', form);
+	const onlineMode = Form.useWatch('Online', form);
+	const maintainerMode = Form.useWatch('MaintainerMode', form);
+	const secure = Form.useWatch('Secure', form);
+	const update = Form.useWatch('Update', form);
 	let timeout: NodeJS.Timeout;
 
 	const [movingMediaPath, setMovingMediaPath] = useState<string>();
@@ -32,13 +37,9 @@ function RepositoryForm(props: RepositoriesFormProps) {
 
 	const [repositoriesValue, setRepositoriesValue] = useState<string[]>();
 	const [zipUpdateInProgress, setZipUpdateInProgress] = useState(false);
-	const [maintainerMode, setMaintainerMode] = useState(props.repository?.MaintainerMode);
-	const [onlineMode, setOnlineMode] = useState(props.repository?.Online);
-	const [update, setUpdate] = useState(props.repository?.Update);
 	const [sshKey, setSshKey] = useState<string>();
 	const [isSshUrl, setIsSShUrl] = useState(props.repository?.Git?.URL.toLowerCase().startsWith('git@'));
 	const [nameChosen, setNameChosen] = useState(props.repository?.Name != null);
-	const [secure, setSecure] = useState(props.repository?.Secure);
 
 	const getRepositories = async () => {
 		const res: Repository[] = (await commandBackend(WS_CMD.GET_REPOS)) as Repository[];
@@ -119,15 +120,27 @@ function RepositoryForm(props: RepositoriesFormProps) {
 						Email: values.GitEmail,
 					}
 				: undefined,
-			FTP: values.FTPHost
-				? {
-						Host: values.FTPHost,
-						Port: values.FTPPort,
-						Username: values.FTPUsername,
-						Password: values.FTPPassword,
-						BaseDir: values.FTPBaseDir,
-					}
-				: undefined,
+			UploadMethod: values.UploadMethod,
+			FTP:
+				values.UploadMethod === 'FTP'
+					? {
+							Host: values.FTPHost,
+							Port: values.FTPPort,
+							Username: values.FTPUsername,
+							Password: values.FTPPassword,
+							BaseDir: values.FTPBaseDir,
+						}
+					: undefined,
+			SFTP:
+				values.UploadMethod === 'SFTP'
+					? {
+							Host: values.SFTPHost,
+							Port: values.SFTPPort,
+							Username: values.SFTPUsername,
+							Password: values.SFTPPassword,
+							BaseDir: values.SFTPBaseDir,
+						}
+					: undefined,
 		};
 		props.save(repository, !values.Online && !!searchParams.get('setup'));
 	};
@@ -198,11 +211,17 @@ function RepositoryForm(props: RepositoriesFormProps) {
 				GitPassword: props.repository?.Git?.Password,
 				GitAuthor: props.repository?.Git?.Author,
 				GitEmail: props.repository?.Git?.Email,
+				UploadMethod: props.repository?.UploadMethod,
 				FTPHost: props.repository?.FTP?.Host,
 				FTPPort: props.repository?.FTP?.Port,
 				FTPUsername: props.repository?.FTP?.Username,
 				FTPPassword: props.repository?.FTP?.Password,
 				FTPBaseDir: props.repository?.FTP?.BaseDir,
+				SFTPHost: props.repository?.SFTP?.Host,
+				SFTPPort: props.repository?.SFTP?.Port,
+				SFTPUsername: props.repository?.SFTP?.Username,
+				SFTPPassword: props.repository?.SFTP?.Password,
+				SFTPBaseDir: props.repository?.SFTP?.BaseDir,
 			}}
 			style={{ maxWidth: '900px' }}
 		>
@@ -215,7 +234,6 @@ function RepositoryForm(props: RepositoriesFormProps) {
 				<Radio.Group
 					style={{ display: 'flex', flexDirection: 'column' }}
 					defaultValue={props.repository?.Online}
-					onChange={e => setOnlineMode(e.target.value)}
 					disabled={props.repository?.System}
 					options={[
 						{ value: false, label: i18next.t('REPOSITORIES.LOCAL') },
@@ -287,7 +305,7 @@ function RepositoryForm(props: RepositoriesFormProps) {
 								valuePropName="checked"
 								name="Secure"
 							>
-								<Checkbox defaultChecked onChange={e => setSecure(e.target.checked)} />
+								<Checkbox />
 							</Form.Item>
 
 							<p style={{ marginBottom: '0.5em' }}>{i18next.t('ONLINE_STATS.INTRO')}</p>
@@ -336,7 +354,7 @@ function RepositoryForm(props: RepositoriesFormProps) {
 								valuePropName="checked"
 								name="Update"
 							>
-								<Checkbox onChange={e => setUpdate(e.target.checked)} />
+								<Checkbox />
 							</Form.Item>
 							<Form.Item
 								label={
@@ -374,7 +392,7 @@ function RepositoryForm(props: RepositoriesFormProps) {
 								valuePropName="checked"
 								name="MaintainerMode"
 							>
-								<Checkbox onChange={e => setMaintainerMode(e.target.checked)} />
+								<Checkbox />
 							</Form.Item>
 						</>
 					) : null}
@@ -519,45 +537,107 @@ function RepositoryForm(props: RepositoriesFormProps) {
 								<Input placeholder={i18next.t('REPOSITORIES.GIT.EMAIL')} />
 							</Form.Item>
 							<Form.Item
-								label={i18next.t('REPOSITORIES.FTP.HOST')}
+								label={i18next.t('REPOSITORIES.UPLOAD_METHOD')}
 								labelCol={{ flex: '0 1 300px' }}
-								name="FTPHost"
+								name="UploadMethod"
 								rules={[{ required: update }]}
 							>
-								<Input placeholder={i18next.t('REPOSITORIES.FTP.HOST')} />
+								<Select
+									placeholder={i18next.t('REPOSITORIES.UPLOAD_METHOD')}
+									options={[
+										{ value: 'FTP', label: 'FTP' },
+										{ value: 'SFTP', label: 'SFTP' },
+									]}
+								/>
 							</Form.Item>
-							<Form.Item
-								label={i18next.t('REPOSITORIES.FTP.PORT')}
-								labelCol={{ flex: '0 1 300px' }}
-								name="FTPPort"
-								rules={[{ required: update }]}
-							>
-								<Input placeholder={i18next.t('REPOSITORIES.FTP.PORT')} />
-							</Form.Item>
-							<Form.Item
-								label={i18next.t('REPOSITORIES.FTP.USERNAME')}
-								labelCol={{ flex: '0 1 300px' }}
-								name="FTPUsername"
-								rules={[{ required: update }]}
-							>
-								<Input placeholder={i18next.t('REPOSITORIES.FTP.USERNAME')} />
-							</Form.Item>
-							<Form.Item
-								label={i18next.t('REPOSITORIES.FTP.PASSWORD')}
-								labelCol={{ flex: '0 1 300px' }}
-								name="FTPPassword"
-								rules={[{ required: update }]}
-							>
-								<Input type="password" placeholder={i18next.t('REPOSITORIES.FTP.PASSWORD')} />
-							</Form.Item>
-							<Form.Item
-								label={i18next.t('REPOSITORIES.FTP.BASEDIR')}
-								labelCol={{ flex: '0 1 300px' }}
-								name="FTPBaseDir"
-								rules={[{ required: update }]}
-							>
-								<Input placeholder={i18next.t('REPOSITORIES.FTP.BASEDIR')} />
-							</Form.Item>
+							{uploadMethod === 'FTP' ? (
+								<>
+									<Form.Item
+										label={i18next.t('REPOSITORIES.FTP.HOST')}
+										labelCol={{ flex: '0 1 300px' }}
+										name="FTPHost"
+										rules={[{ required: update }]}
+									>
+										<Input placeholder={i18next.t('REPOSITORIES.FTP.HOST')} />
+									</Form.Item>
+									<Form.Item
+										label={i18next.t('REPOSITORIES.FTP.PORT')}
+										labelCol={{ flex: '0 1 300px' }}
+										name="FTPPort"
+										rules={[{ required: update }]}
+									>
+										<Input placeholder={i18next.t('REPOSITORIES.FTP.PORT')} />
+									</Form.Item>
+									<Form.Item
+										label={i18next.t('REPOSITORIES.FTP.USERNAME')}
+										labelCol={{ flex: '0 1 300px' }}
+										name="FTPUsername"
+										rules={[{ required: update }]}
+									>
+										<Input placeholder={i18next.t('REPOSITORIES.FTP.USERNAME')} />
+									</Form.Item>
+									<Form.Item
+										label={i18next.t('REPOSITORIES.FTP.PASSWORD')}
+										labelCol={{ flex: '0 1 300px' }}
+										name="FTPPassword"
+										rules={[{ required: update }]}
+									>
+										<Input type="password" placeholder={i18next.t('REPOSITORIES.FTP.PASSWORD')} />
+									</Form.Item>
+									<Form.Item
+										label={i18next.t('REPOSITORIES.FTP.BASEDIR')}
+										labelCol={{ flex: '0 1 300px' }}
+										name="FTPBaseDir"
+										rules={[{ required: update }]}
+									>
+										<Input placeholder={i18next.t('REPOSITORIES.FTP.BASEDIR')} />
+									</Form.Item>
+								</>
+							) : null}
+							{uploadMethod === 'SFTP' ? (
+								<>
+									<Form.Item
+										label={i18next.t('REPOSITORIES.SFTP.HOST')}
+										labelCol={{ flex: '0 1 300px' }}
+										name="SFTPHost"
+										rules={[{ required: update }]}
+									>
+										<Input placeholder={i18next.t('REPOSITORIES.SFTP.HOST')} />
+									</Form.Item>
+									<Form.Item
+										label={i18next.t('REPOSITORIES.SFTP.PORT')}
+										labelCol={{ flex: '0 1 300px' }}
+										name="SFTPPort"
+										rules={[{ required: update }]}
+									>
+										<Input placeholder={i18next.t('REPOSITORIES.SFTP.PORT')} />
+									</Form.Item>
+									<Form.Item
+										label={i18next.t('REPOSITORIES.SFTP.USERNAME')}
+										labelCol={{ flex: '0 1 300px' }}
+										name="SFTPUsername"
+										rules={[{ required: update }]}
+									>
+										<Input placeholder={i18next.t('REPOSITORIES.SFTP.USERNAME')} />
+									</Form.Item>
+									<Form.Item
+										label={i18next.t('REPOSITORIES.SFTP.PASSWORD')}
+										labelCol={{ flex: '0 1 300px' }}
+										name="SFTPPassword"
+										rules={[{ required: update }]}
+									>
+										<Input type="password" placeholder={i18next.t('REPOSITORIES.SFTP.PASSWORD')} />
+									</Form.Item>
+									<Form.Item
+										label={i18next.t('REPOSITORIES.SFTP.BASEDIR')}
+										labelCol={{ flex: '0 1 300px' }}
+										name="SFTPBaseDir"
+										rules={[{ required: update }]}
+									>
+										<Input placeholder={i18next.t('REPOSITORIES.SFTP.BASEDIR')} />
+									</Form.Item>
+								</>
+							) : null}
 						</>
 					) : null}
 					<Form.Item style={{ textAlign: 'right' }}>

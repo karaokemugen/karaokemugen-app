@@ -287,6 +287,13 @@
 			"HOST": "Host FTP",
 			"BASEDIR": "Katalog podstawowy FTP"
 		},
+		"SFTP": {
+			"PORT": "Port SFTP",
+			"USERNAME": "Nazwa użytkownika SFTP",
+			"PASSWORD": "Hasło SFTP",
+			"HOST": "Host SFTP",
+			"BASEDIR": "Katalog podstawowy SFTP"
+		},
 		"GIT_STATUS": "Stan usługi Git",
 		"GIT_STATUSES": {
 			"CLEAN": "Czysta kopia",
