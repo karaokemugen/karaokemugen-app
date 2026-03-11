@@ -11,6 +11,7 @@ import {
 	decoupleOnlineConfig,
 	removeKaraokeMugenFolderInPlaylistMedias,
 	renameSSHKeys,
+	setDefaultUploadMethodForMaintainers,
 } from '../utils/hokutoNoCode.js';
 import { compareKarasChecksum, generateDB } from './database.js';
 import { updatePlaylistDuration } from './playlist.js';
@@ -70,6 +71,9 @@ export async function postMigrationTasks(migrations: Postgrator.Migration[], did
 				break;
 			case 'branchRepositoryIsNowMandatory':
 				branchRepositoryIsNowMandatory();
+				break;
+			case 'dummyChangeMaintainerCOnfig':
+				setDefaultUploadMethodForMaintainers();
 				break;
 			default:
 		}

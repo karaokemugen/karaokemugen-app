@@ -1463,6 +1463,13 @@
 			"USERNAME": "Nome utente FTP",
 			"HOST": "Host FTP"
 		},
+		"SFTP": {
+			"PORT": "Porta SFTP",
+			"PASSWORD": "Password SFTP",
+			"BASEDIR": "Cartella Base SFTP",
+			"USERNAME": "Nome utente SFTP",
+			"HOST": "Host SFTP"
+		},
 		"NAME": "Nome dell'archivio",
 		"GIT_UNSTASH": "Applica",
 		"MOVING_MEDIA_PANEL": "Sposta file multimediali",

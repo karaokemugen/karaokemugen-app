@@ -1575,12 +1575,20 @@
 			"GENERATE_SSH_KEY": "Générer une clé SSH",
 			"DELETE_SSH_KEY": "Supprimer la clé SSH"
 		},
+		"UPLOAD_METHOD": "Méthode d'envoi des médias",
 		"FTP": {
 			"HOST": "Hôte FTP",
 			"PORT": "Port FTP",
 			"USERNAME": "Nom d'utilisateur FTP",
 			"PASSWORD": "Mot de passe FTP",
 			"BASEDIR": "Répertoire base FTP"
+		},
+		"SFTP": {
+			"HOST": "Hôte SFTP",
+			"PORT": "Port SFTP",
+			"USERNAME": "Nom d'utilisateur SFTP",
+			"PASSWORD": "Mot de passe SFTP",
+			"BASEDIR": "Répertoire base SFTP"
 		},
 		"GIT_STATUS": "Statut Git",
 		"GIT_STATUSES": {

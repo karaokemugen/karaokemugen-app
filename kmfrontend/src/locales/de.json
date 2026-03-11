@@ -1757,6 +1757,13 @@
 			"USERNAME": "FTP-Benutzername",
 			"HOST": "FTP-Server"
 		},
+		"SFTP": {
+			"PORT": "SFTP-Port",
+			"PASSWORD": "SFTP-Passwort",
+			"BASEDIR": "SFTP-Basisverzeichnis",
+			"USERNAME": "SFTP-Benutzername",
+			"HOST": "SFTP-Server"
+		},
 		"NAME": "Name des Repositorys",
 		"GIT_UNSTASH": "Anwenden",
 		"MOVING_MEDIA_PANEL": "Medien verschieben",

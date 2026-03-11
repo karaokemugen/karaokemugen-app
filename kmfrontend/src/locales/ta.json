@@ -1348,6 +1348,13 @@
 			"PASSWORD": "FTP கடவுச்சொல்",
 			"BASEDIR": "FTP அடிப்படை அடைவு"
 		},
+		"SFTP": {
+			"HOST": "SFTP புரவலன்",
+			"PORT": "SFTP துறைமுகம்",
+			"USERNAME": "SFTP பயனர்பெயர்",
+			"PASSWORD": "SFTP கடவுச்சொல்",
+			"BASEDIR": "SFTP அடிப்படை அடைவு"
+		},
 		"GIT_STATUS": "அறிவிலி நிலை",
 		"GIT_STATUSES": {
 			"CLEAN": "தூய்மையான நகல்",
