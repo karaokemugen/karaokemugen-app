@@ -1575,7 +1575,6 @@
 			"GENERATE_SSH_KEY": "Générer une clé SSH",
 			"DELETE_SSH_KEY": "Supprimer la clé SSH"
 		},
-		"UPLOAD_METHOD": "Méthode d'envoi des médias",
 		"FTP": {
 			"HOST": "Hôte FTP",
 			"PORT": "Port FTP",
