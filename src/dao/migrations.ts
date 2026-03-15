@@ -72,7 +72,7 @@ export async function postMigrationTasks(migrations: Postgrator.Migration[], did
 			case 'branchRepositoryIsNowMandatory':
 				branchRepositoryIsNowMandatory();
 				break;
-			case 'dummyChangeMaintainerCOnfig':
+			case 'dummyChangeMaintainerConfig':
 				setDefaultUploadMethodForMaintainers();
 				break;
 			default:
