@@ -26,7 +26,7 @@ export default function CheckBoxTag(props: AutocompleteTagProps) {
 
 	const tids = value.map(tag => tag.tid);
 	return (
-		<Checkbox.Group value={tids} onChange={onCheck}>
+		<Checkbox.Group value={tids} onChange={onCheck} style={{ width: '100%' }}>
 			<Row>
 				{props.tags.map((tag: DBKaraTag) => {
 					const tagi18n = getTagInLocale(context?.globalState.settings.data, tag);
