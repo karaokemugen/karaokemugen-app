@@ -93,6 +93,7 @@ export default class Git {
 			baseDir: this.opts.baseDir,
 			unsafe: {
 				allowUnsafeCustomBinary: true,
+				allowUnsafeSshCommand: true,
 			},
 			progress: this.progressHandler.bind(this),
 			config: ['core.autocrlf=true', `user.name=${repo.Git.Author}`, `user.email=${repo.Git.Email}`],
