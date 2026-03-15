@@ -376,7 +376,10 @@ export default function Inbox() {
 				record.available_locally &&
 				record.username_downloaded === context.globalState.auth.data.username.split('@')[0] && (
 					<div style={{ display: 'flex' }}>
-						<Link to={`/system/karas/${record.edited_kid || record.kid}`} style={{ marginRight: '0.75em' }}>
+						<Link
+							to={`/system/karas/${record.edited_kid || record.kid}?route=/system/inbox`}
+							style={{ marginRight: '0.75em' }}
+						>
 							<Button type="primary" icon={<EditOutlined />} title={i18next.t('KARA.EDIT_KARA')} />
 						</Link>
 						<Button
