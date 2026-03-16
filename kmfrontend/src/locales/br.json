@@ -442,7 +442,12 @@
 		},
 		"AUTO_MEDIA_DOWNLOADS_ALL": "An holl",
 		"AUTO_MEDIA_DOWNLOADS_UPDATE_ONLY": "Hizivaat hepken",
-		"GIT_DELETE": "Dilemel"
+		"GIT_DELETE": "Dilemel",
+		"SFTP": {
+			"PORT": "Porzh SFTP",
+			"USERNAME": "Anv implijer SFTP",
+			"PASSWORD": "Ger-tremen SFTP"
+		}
 	},
 	"ERROR_CODES": {
 		"UNKNOWN_REPOSITORY": "Kavlec'hiad dianav",
