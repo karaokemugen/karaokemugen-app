@@ -1823,7 +1823,8 @@
 		"LOCAL": "Lokal (für deine privaten Lieder)",
 		"REPOSITORY_TYPE": "Repository-Typ",
 		"REPOSITORY_TYPE_DESC": "Entscheide zunächst, ob das neue Repository online oder lokal sein soll.",
-		"PATH_MEDIAS_DESC": "Bitte gibt hier an, wo die Medien gespeichert werden sollen. Wenn du viele Lieder nutzen willst, sollte eine großzügige Menge Speicherplatz vorhanden sein."
+		"PATH_MEDIAS_DESC": "Bitte gibt hier an, wo die Medien gespeichert werden sollen. Wenn du viele Lieder nutzen willst, sollte eine großzügige Menge Speicherplatz vorhanden sein.",
+		"UPLOAD_METHOD0": "Methode für den Medien-Upload"
 	},
 	"TAGS": {
 		"KITSU_SLUG_ERROR": "Ungültiger Kitsu-Slug",
@@ -1838,7 +1839,7 @@
 		"NOLIVEDOWNLOAD": "Web-Downloads verbieten",
 		"ANIME_ID_ERROR": "Bitte gib eine positive Zahl ein",
 		"ALIASES": "Aliasnamen",
-		"NOT_ANILIST_URL_ERROR": "Dies ist eine anilist URL",
+		"NOT_ANILIST_URL_ERROR": "Dies ist eine anilist-URL",
 		"ALIASES_TOOLTIP": "Kurznamen oder alternative Namen, die für die Suche verwendet werden.",
 		"ANILIST_ID": "Anilist ID/URL",
 		"TYPES_TOOLTIP": "Dies ist der Tag-Typ, damit er von den Nutzern richtig gesucht werden kann",
@@ -1849,10 +1850,10 @@
 		"NAME_TOOLTIP": "Dies ist der interne Name, der verwendet wird, um die Tags in der Datenbank von Karaoke Mugen zu referenzieren",
 		"NAME_REQUIRED": "Bitte gib einen Namen ein",
 		"REPOSITORY_REQUIRED": "Repository ist erforderlich",
-		"NOT_MAL_URL_ERROR": "Dies ist eine myanimelist URL",
+		"NOT_MAL_URL_ERROR": "Dies ist eine myanimelist-URL",
 		"COPY_TAG": "Tag in ein anderes Repository kopieren",
 		"SHORT_NAME": "Kurzname",
-		"NOT_KITSU_URL_ERROR": "Dies ist eine kitsu URL",
+		"NOT_KITSU_URL_ERROR": "Dies ist eine kitsu-URL",
 		"I18N_NAME": "Name in dieser Sprache",
 		"DESCRIPTION_TOOLTIP": "Eine Beschreibung des Tags, die nur für Sammlungen verwendet wird.",
 		"I18N_SELECT": "Eine Sprache hinzufügen",
