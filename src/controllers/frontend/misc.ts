@@ -12,7 +12,7 @@ import { getMigrationsFrontend, setMigrationsFrontend } from '../../services/mig
 import { getFeeds } from '../../services/proxyFeeds.js';
 import { destroyRemote, initRemote } from '../../services/remote.js';
 import { updateSongsLeft } from '../../services/user.js';
-import { backupConfig, editSetting, getPublicConfig } from '../../utils/config.js';
+import { backupConfig, editConfig, getPublicConfig } from '../../utils/config.js';
 import { initializationCatchphrases } from '../../utils/constants.js';
 import { getDisplays } from '../../utils/displays.js';
 import { browseFs } from '../../utils/files.js';
@@ -89,7 +89,7 @@ export default function miscController(router: SocketIOApp) {
 	router.route(WS_CMD.UPDATE_SETTINGS, async (socket, req) => {
 		await runChecklist(socket, req);
 		try {
-			return await editSetting(req.body.setting);
+			return await editConfig(req.body.setting);
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}

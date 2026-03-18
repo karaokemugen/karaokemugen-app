@@ -63,7 +63,7 @@ import { initTwitch, stopTwitch } from './twitch.js';
 const service = 'Config';
 
 /** Edit a config item, verify the new config is valid, and act according to settings changed */
-export async function editSetting(part: RecursivePartial<Config>) {
+export async function editConfig(part: RecursivePartial<Config>) {
 	try {
 		const config = getConfig();
 		const oldConfig = removeNulls(cloneDeep(config));

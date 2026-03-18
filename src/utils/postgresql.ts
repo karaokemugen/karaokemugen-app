@@ -16,7 +16,7 @@ import { downloadFile } from '../lib/utils/downloader.js';
 import { fileExists, smartMove } from '../lib/utils/files.js';
 import logger, { profile } from '../lib/utils/logger.js';
 import { PGVersion } from '../types/database.js';
-import { checkBinaries, editSetting } from './config.js';
+import { checkBinaries, editConfig } from './config.js';
 import { expectedPGVersion, pgctlRegex } from './constants.js';
 import { decompressGzip } from './files.js';
 import sentry from './sentry.js';
@@ -260,7 +260,7 @@ async function detectPGBinPath(): Promise<string> {
 	}
 	if (tempPGPath) {
 		// Path has changed, let's update settings and state
-		await editSetting({
+		await editConfig({
 			System: {
 				Binaries: {
 					Postgres: {

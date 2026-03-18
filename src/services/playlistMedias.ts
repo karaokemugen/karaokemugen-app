@@ -11,7 +11,7 @@ import { asyncCheckOrMkdir, isMediaFile } from '../lib/utils/files.js';
 import HTTP, { fixedEncodeURIComponent } from '../lib/utils/http.js';
 import logger from '../lib/utils/logger.js';
 import Task from '../lib/utils/taskManager.js';
-import { editSetting, resolvedMediaPath } from '../utils/config.js';
+import { editConfig, resolvedMediaPath } from '../utils/config.js';
 import { getRepo, getRepos } from './repo.js';
 
 const service = 'PlaylistMedias';
@@ -96,7 +96,7 @@ export async function updateMediasHTTP(type: PlaylistMediaType, repoName: string
 			const configPart: any = {};
 			configPart.System = { MediaPath: {} };
 			configPart.System.MediaPath[type] = conf.System.MediaPath[type];
-			editSetting(configPart);
+			editConfig(configPart);
 		}
 		const localFiles = await listLocalFiles(localDir);
 		const removedFiles: PlaylistMediaFile[] = [];

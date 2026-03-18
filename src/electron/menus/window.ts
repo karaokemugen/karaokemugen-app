@@ -4,7 +4,7 @@ import i18next from 'i18next';
 import { getConfig, setConfig } from '../../lib/utils/config.js';
 import { generateAdminPassword } from '../../services/user.js';
 import { MenuItemBuilderFunction } from '../../types/electron.js';
-import { editSetting } from '../../utils/config.js';
+import { editConfig } from '../../utils/config.js';
 import { getState } from '../../utils/state.js';
 import { updateChibiPlayerWindow, updateChibiPlaylistWindow, updateChibiRankingWindow } from '../electron.js';
 
@@ -75,7 +75,7 @@ const builder: MenuItemBuilderFunction = options => {
 				accelerator: 'CmdOrCtrl+E',
 				checked: getConfig().Player.Monitor,
 				click: () => {
-					editSetting({ Player: { Monitor: !getConfig().Player.Monitor } });
+					editConfig({ Player: { Monitor: !getConfig().Player.Monitor } });
 				},
 				visible: !isReduced,
 			},
