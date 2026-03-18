@@ -675,7 +675,7 @@ export async function updateGitRepo(name: string) {
 				...status,
 				repoName: repo.Name,
 			});
-			throw new ErrorKM('GIT_PULL_FAILED');
+			throw new ErrorKM('GIT_PULL_FAILED', 500, false);
 		}
 		const newCommit = await git.getCurrentCommit();
 		logger.debug(`Original commit : ${originalCommit} and new commit : ${newCommit}`, { service });
