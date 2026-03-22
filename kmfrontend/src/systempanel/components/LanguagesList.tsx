@@ -117,7 +117,9 @@ export default function LanguagesList(props: IProps) {
 				{selectVisible ? (
 					<Select
 						style={{ maxWidth: '40%', minWidth: '150px' }}
-						showSearch
+						showSearch={{
+							optionFilterProp: 'label',
+						}}
 						autoFocus={selectVisible}
 						onChange={value => addLang(value)}
 						options={languages
