@@ -211,7 +211,7 @@ export function getSingleMedia(type: PlaylistMediaType): PlaylistMedia | null {
 		currentMedias[type] = currentMedias[type].filter(m => m.series !== media.series);
 		logger.info(`${type} time !`, { service });
 		return media;
-	} catch {
+	} catch (err) {
 		logger.error(`No media could be returned. Possible race condition? : ${err}`, {service})
 		return null;
 	}
