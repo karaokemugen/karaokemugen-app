@@ -30,7 +30,7 @@
 	"INIT_ERROR": "Error al iniciar!",
 	"ERROR_MISSING_BINARIES": "Algunos binarios necesarios (mpv/postgresql/ffmpeg) no fueron encontrados.",
 	"ERROR_UNKNOWN": "¡Acaba de ocurrir un error desconocido! Eche un vistazo a los registros para obtener más detalles.",
-	"ERROR_INIT_PG_DATA": "Error al iniciar la base de datos de PostgreSQL",
+	"ERROR_INIT_PG_DATA": "Error al iniciar la base de datos",
 	"ERROR_START_PG": "Error al iniciar el servidor de la base de datos",
 	"ERROR_CONNECT_PG": "Error al conectar a la base de datos",
 	"ERROR_GENERATION": "Error al generar la base de datos",
