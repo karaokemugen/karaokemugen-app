@@ -916,7 +916,7 @@ export class Players {
 				throw err;
 			}
 		} else {
-			logger.debug(`No ${mediaType} to play.`, { service });
+			logger.debug(`No ${mediaType} to play`, { service });
 			playerState.playerStatus = 'play';
 			await this.loadBackground('stop');
 			logger.debug('No jingle DI', { service });

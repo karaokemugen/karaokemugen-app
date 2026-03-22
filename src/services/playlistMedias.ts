@@ -207,7 +207,12 @@ export function getSingleMedia(type: PlaylistMediaType): PlaylistMedia | null {
 	let media: PlaylistMedia | null = null;
 	media = sample(currentMedias[type]);
 	// Let's remove the series of the jingle we just selected so it won't be picked again next time.
-	currentMedias[type] = currentMedias[type].filter(m => m.series !== media.series);
-	logger.info(`${type} time !`, { service });
-	return media;
+	try {
+		currentMedias[type] = currentMedias[type].filter(m => m.series !== media.series);
+		logger.info(`${type} time !`, { service });
+		return media;
+	} catch {
+		logger.error(`No media could be returned. Possible race condition? : ${err}`, {service})
+		return null;
+	}
 }
