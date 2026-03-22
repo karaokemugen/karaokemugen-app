@@ -1531,7 +1531,7 @@
 		"DELETE_TAG": "Elimina tag",
 		"PRIORITY": "Visualizza priorità",
 		"DESCRIPTION": "Descrizione",
-		"I18N_ERROR": "SI prega di inserire una traduzione",
+		"I18N_ERROR": "Si prega di inserire una traduzione",
 		"LANG_ERROR": "La tag deve avere almeno un nome tradotto.",
 		"I18N": "Nomi per lingua",
 		"MERGE_WITH_TOOLTIP": "Unisci la tag attuale ad un'altra",
