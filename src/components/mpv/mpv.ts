@@ -94,6 +94,15 @@ async function resolveMediaURL(file: string, repoName: string): Promise<string> 
 	// If all else fails, throw up
 	throw up;
 }
+/** Lower or raise font size of mpv text display command depending on config */
+export function getFontSize(initial: number) {
+	const sizeModifier = getConfig().Player.Display.FontSize;
+	if (!isNaN(sizeModifier)) {
+		return initial + (+sizeModifier * 10);
+	} else {
+		return initial;
+	}
+}
 
 async function waitForLockRelease() {
 	if (playerState.isOperating) logger.debug('Waiting for lock...', { service });
@@ -529,7 +538,8 @@ export class Players {
 			for (const _nothing of Array(10 - ticked)) {
 				progressBar += '□';
 			}
-			this.messages.addMessage('pauseScreen', `${position}{\\fscx70\\fscy70\\fsp-3}${progressBar}`, 'infinite');
+			const fontSize = getFontSize(70);
+			this.messages.addMessage('pauseScreen', `${position}{\\fscx${fontSize}\\fscy${fontSize}\\fsp-3}${progressBar}`, 'infinite');
 			this.progressBarTimeout = setTimeout(() => {
 				this.tickProgressBar(nextTick, ticked + 1, position);
 			}, nextTick);
@@ -543,7 +553,8 @@ export class Players {
 		if ((getState().streamerPause && getState().pauseInProgress) || getState().quiz.running) {
 			if (this.progressBarTimeout) clearTimeout(this.progressBarTimeout);
 			const timeLeft = Math.ceil(this.countdownTimer.getTimeLeft() / 1000);
-			this.messages.addMessage('countdown', `${position}{\\fscx250\\fscy250}${timeLeft}`, 'infinite');
+			const fontSize = getFontSize(250);
+			this.messages.addMessage('countdown', `${position}{\\fscx${fontSize}\\fscy${fontSize}}${timeLeft}`, 'infinite');
 			this.progressBarTimeout = setTimeout(() => {
 				this.tickCountdown(position);
 			}, 1000);
@@ -1323,7 +1334,8 @@ export class Players {
 				const warningArr = warnings.map(t => {
 					return getTagNameInLanguage(t, langs);
 				});
-				warningString = `{\\fscx80}{\\fscy80}{\\b1}{\\c&H0808E8&}⚠ WARNING: ${warningArr.join(
+				const fontSize = getFontSize(80);
+				warningString = `{\\fscx${fontSize}}{\\fscy${fontSize}}{\\b1}{\\c&H0808E8&}⚠ WARNING: ${warningArr.join(
 					', '
 				)} ⚠{\\b0}\\N{\\c&HFFFFFF&}`;
 			}
@@ -1370,7 +1382,12 @@ export class Players {
 					? sample(initializationCatchphrases)
 					: '';
 			const version = `Karaoke Mugen ${state.version.number} (${state.version.name}) - https://karaokes.moe`;
-			const message = `{\\an${this.getMessagePosition()}}{\\fscx80}{\\fscy80}${text}\\N{\\fscx60}{\\fscy60}{\\i1}${version}{\\i0}\\N{\\fscx40}{\\fscy40}${catchphrase}`;
+			const fontSizes = {
+				banner: getFontSize(80),
+				version: getFontSize(60),
+				text: getFontSize(40)
+			}
+			const message = `{\\an${this.getMessagePosition()}}{\\fscx${fontSizes.banner}}{\\fscy${fontSizes.banner}${text}\\N{\\fscx${fontSizes.version}{\\fscy${fontSizes.version}{\\i1}${version}{\\i0}\\N{\\fscx${fontSizes.text}{\\fscy${fontSizes.text}}${catchphrase}`;
 			this.messages?.addMessage('DI', message, duration === -1 ? 'infinite' : duration);
 		} catch (err) {
 			logger.error('Unable to display infos', { service, obj: err });

@@ -36,6 +36,7 @@ import {
 import { startPoll } from './poll.js';
 import { checkIfSongIsQuizzable, setQuizModifier, startQuizRound } from './quiz.js';
 import { getUser } from './user.js';
+import { getFontSize } from '../components/mpv/mpv.js';
 
 const service = 'KaraEngine';
 
@@ -100,7 +101,8 @@ export async function getSongInfosForPlayer(kara: DBKara | DBPLC): Promise<{ inf
 		const upvoters = await selectUpvotesByPLC(kara.plcid);
 		// Escaping {} because it'll be interpreted as ASS tags below.
 		kara.nickname = kara.nickname.replace(/[{}]/g, '');
-		requestedBy = `\\N{\\fscx50}{\\fscy50}${i18next.t('REQUESTED_BY', { name: kara.nickname })}`;
+		const fontSize = getFontSize(50);
+		requestedBy = `\\N{\\fscx${fontSize}}{\\fscy${fontSize}}${i18next.t('REQUESTED_BY', { name: kara.nickname })}`;
 		if (upvoters.length > 0) {
 			// Add each upvoter's nickname until the string is too long
 			// 80 is the max length of the line, but we set 100 for the escaping to not count
@@ -135,12 +137,14 @@ export async function getSongInfosForPlayer(kara: DBKara | DBPLC): Promise<{ inf
 		`${kara.songtypes.length > 0 ? kara.songtypes.map(s => s.name).join(' ') : ''}${kara.songorder || ''}`,
 		`${getSongTitle(kara, lang)}${versions}`,
 	];
-	let infos = `{\\bord2}{\\fscx70}{\\fscy70}{\\b1}${firstLine}{\\b0}\\N{\\i1}${secondLine.join(' - ')}{\\i0}${requestedBy}`;
+	const fontSize = getFontSize(70);
+	let infos = `{\\bord2}{\\fscx${fontSize}}{\\fscy${fontSize}}{\\b1}${firstLine}{\\b0}\\N{\\i1}${secondLine.join(' - ')}{\\i0}${requestedBy}`;
 	if ('flag_visible' in kara && kara.flag_visible === false && !getState().quiz.running) {
 		// We're on a PLC with a flag_visible set to false, let's hide stuff!
 		// But we don't hide it if we're in quiz mode. Because you know.
 		const invisibleSong = sample(getConfig().Playlist.MysterySongs.Labels);
-		infos = `{\\bord2}{\\fscx70}{\\fscy70}{\\b1}${invisibleSong}{\\b0}${requestedBy}`;
+		const fontSize = getFontSize(70);
+		infos = `{\\bord2}{\\fscx${fontSize}}{\\fscy${fontSize}}{\\b1}${invisibleSong}{\\b0}${requestedBy}`;
 	}
 	return {
 		infos,

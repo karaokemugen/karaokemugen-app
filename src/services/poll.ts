@@ -18,6 +18,7 @@ import { getState, setState } from '../utils/state.js';
 import { sayTwitch } from '../utils/twitch.js';
 import { displayInfo, playerMessage } from './player.js';
 import { copyKaraToPlaylist, editPLC, getPlaylistContentsMini } from './playlist.js';
+import { getFontSize } from '../components/mpv/mpv.js';
 
 const service = 'Poll';
 
@@ -49,8 +50,12 @@ async function displayPoll(winner?: number) {
 		return `${boldWinnerOpen}${kara.index}. ${percentageStr}% : ${kara.songname || kara.mediafile}${boldWinnerClose}`;
 	});
 	const voteMessage = winner ? i18n.t('VOTE_MESSAGE_SCREEN_WINNER') : i18n.t('VOTE_MESSAGE_SCREEN');
+	const fontSizes = {
+		title: getFontSize(80),
+		items: getFontSize(70)
+	}
 	await playerMessage(
-		`{\\fscx80}{\\fscy80}{\\b1}${voteMessage}{\\b0}\\N{\\fscx70}{\\fscy70}${votes.join('\\N')}`,
+		`{\\fscx${fontSizes.title}{\\fscy${fontSizes.title}{\\b1}${voteMessage}{\\b0}\\N{\\fscx${fontSizes.items}{\\fscy${fontSizes.items}${votes.join('\\N')}`,
 		-1,
 		4,
 		'poll'
