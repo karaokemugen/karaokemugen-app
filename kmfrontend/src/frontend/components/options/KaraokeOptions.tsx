@@ -171,7 +171,7 @@ function KaraokeOptions(props: IProps) {
 											data-exclude="true"
 											id="Karaoke.Quota.Time"
 											placeholder="1000"
-											onBlur={(e: any) => {
+											onChange={(e: any) => {
 												if (!e.target.value) e.target.value = 1;
 												onChange(e);
 											}}
@@ -201,7 +201,7 @@ function KaraokeOptions(props: IProps) {
 											data-exclude="true"
 											id="Karaoke.Quota.Songs"
 											placeholder="1000"
-											onBlur={onChange}
+											onChange={onChange}
 											defaultValue={config['Karaoke.Quota.Songs']}
 										/>
 									</div>
@@ -228,7 +228,7 @@ function KaraokeOptions(props: IProps) {
 											data-exclude="true"
 											id="Karaoke.Quota.FreeAutoTime"
 											placeholder="0"
-											onBlur={(e: any) => {
+											onChange={(e: any) => {
 												if (!e.target.value) e.target.value = 0;
 												onChange(e);
 											}}
@@ -306,7 +306,7 @@ function KaraokeOptions(props: IProps) {
 												type="number"
 												data-exclude="true"
 												id="Karaoke.Quota.FreeUpVotesRequiredMin"
-												onBlur={(e: any) => {
+												onChange={(e: any) => {
 													if (!e.target.value) e.target.value = 1;
 													onChange(e);
 												}}
@@ -334,7 +334,7 @@ function KaraokeOptions(props: IProps) {
 												type="number"
 												data-exclude="true"
 												id="Karaoke.Quota.FreeUpVotesRequiredPercent"
-												onBlur={onChange}
+												onChange={onChange}
 												defaultValue={config['Karaoke.Quota.FreeUpVotesRequiredPercent']}
 											/>
 										</div>
@@ -575,7 +575,7 @@ function KaraokeOptions(props: IProps) {
 										data-exclude="true"
 										id="Karaoke.MinutesBeforeSessionEndsWarning"
 										placeholder="15"
-										onBlur={onChange}
+										onChange={onChange}
 										defaultValue={config['Karaoke.MinutesBeforeSessionEndsWarning']}
 									/>
 								</div>
@@ -602,7 +602,7 @@ function KaraokeOptions(props: IProps) {
 										data-exclude="true"
 										id="Playlist.CurrentPlaylistAutoRemoveSongs"
 										placeholder="0"
-										onBlur={onChange}
+										onChange={onChange}
 										defaultValue={config['Playlist.CurrentPlaylistAutoRemoveSongs']}
 									/>
 								</div>
@@ -658,7 +658,7 @@ function KaraokeOptions(props: IProps) {
 												className="input-number-options"
 												id="Playlist.Medias.Jingles.Interval"
 												placeholder="20"
-												onBlur={(e: any) => {
+												onChange={(e: any) => {
 													if (!e.target.value) e.target.value = 1;
 													onChange(e);
 												}}
@@ -704,7 +704,7 @@ function KaraokeOptions(props: IProps) {
 												className="input-number-options"
 												id="Playlist.Medias.Sponsors.Interval"
 												placeholder="50"
-												onBlur={onChange}
+												onChange={onChange}
 												defaultValue={config['Playlist.Medias.Sponsors.Interval']}
 											/>
 											<label className="label-input-options">
@@ -919,7 +919,7 @@ function KaraokeOptions(props: IProps) {
 												type="number"
 												data-exclude="true"
 												id="Karaoke.Poll.Choices"
-												onBlur={onChange}
+												onChange={onChange}
 												defaultValue={config['Karaoke.Poll.Choices']}
 											/>
 										</div>
@@ -944,7 +944,7 @@ function KaraokeOptions(props: IProps) {
 												type="number"
 												data-exclude="true"
 												id="Karaoke.Poll.Timeout"
-												onBlur={onChange}
+												onChange={onChange}
 												defaultValue={config['Karaoke.Poll.Timeout']}
 											/>
 										</div>
@@ -1042,7 +1042,7 @@ function KaraokeOptions(props: IProps) {
 												data-exclude="true"
 												id="Karaoke.StreamerMode.PauseDuration"
 												placeholder="20"
-												onBlur={(e: any) => {
+												onChange={(e: any) => {
 													if (!e.target.value) e.target.value = 0;
 													onChange(e);
 												}}
