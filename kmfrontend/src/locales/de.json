@@ -640,7 +640,9 @@
 			"AUDIO_ONLY_EXPERIENCE": "Nur Ton",
 			"AUDIO_ONLY_EXPERIENCE_TOOLTIP": "Zeigt ein Standbild statt des Videos bei Aktivierung. Die Änderung wird zum nächsten Lied übernommen.",
 			"DISPLAY_CONNECTION_INFO_QRCODE_DURING_SONG": "QR-Code während eines Liedes anzeigen",
-			"DISPLAY_CONNECTION_INFO_QRCODE_DURING_SONG_TOOLTIP": "Der QR-Code wird während eines Liedes in der oberen rechten Ecke angezeigt."
+			"DISPLAY_CONNECTION_INFO_QRCODE_DURING_SONG_TOOLTIP": "Der QR-Code wird während eines Liedes in der oberen rechten Ecke angezeigt.",
+			"DISPLAY_FONT_SIZE": "Fontgröße für Nachrichten verändern",
+			"DISPLAY_FONT_SIZE_TOOLTIP": "Fontgröße kann von -5 bis 5 eingestellt werden. Diese bezieht sich NUR auf Bildschirmnachrichten (Quiz, Umfragen, Liedinfo usw.) und nicht auf Liedtexte."
 		},
 		"SYSTEMPANEL_TIP": "Du kannst die gesuchten Optionen nicht finden? <2>Einige Optionen befinden sich in den <3>System-Einstellungen</3>.</2>",
 		"PLAYLIST": {
