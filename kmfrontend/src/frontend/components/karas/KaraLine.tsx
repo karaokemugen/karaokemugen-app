@@ -2,7 +2,7 @@ import './KaraLine.scss';
 
 import i18next from 'i18next';
 import { Key, MouseEvent, useContext, useState } from 'react';
-import { DraggableProvided } from 'react-beautiful-dnd';
+import { DraggableProvided } from '@hello-pangea/dnd';
 import { toast } from 'react-toastify';
 
 import { closeModal, showModal } from '../../../store/actions/modal';
@@ -299,7 +299,7 @@ function KaraLine(props: IProps) {
 						<div>
 							{
 								(settings.config.Playlist.MysterySongs.Labels as string[])[
-									kara.pos % (settings.config.Playlist.MysterySongs.Labels as string[]).length | 0
+									(kara.pos % (settings.config.Playlist.MysterySongs.Labels as string[]).length) | 0
 								]
 							}
 						</div>

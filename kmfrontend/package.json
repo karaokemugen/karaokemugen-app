@@ -2,6 +2,7 @@
 	"name": "kmfrontend",
 	"private": true,
 	"dependencies": {
+		"@hello-pangea/dnd": "^18.0.1",
 		"@karaokemugen/i18n-iso-languages": "^4.2.2",
 		"@sentry/react": "^10.45.0",
 		"antd": "6.3.3",
@@ -18,7 +19,6 @@
 		"react": "19.2.4",
 		"react-aria-menubutton": "^8.0.0",
 		"react-audio-player": "^0.17.0",
-		"react-beautiful-dnd": "^13.1.1",
 		"react-dom": "19.2.4",
 		"react-i18next": "^16.6.1",
 		"react-image-crop": "^11.0.10",
@@ -38,7 +38,6 @@
 		"@types/lodash": "^4.17.24",
 		"@types/react": "19.2.14",
 		"@types/react-aria-menubutton": "^6.2.14",
-		"@types/react-beautiful-dnd": "^13.1.8",
 		"@types/react-dom": "19.2.3",
 		"@typescript-eslint/eslint-plugin": "^8.57.0",
 		"@typescript-eslint/parser": "^8.57.0",

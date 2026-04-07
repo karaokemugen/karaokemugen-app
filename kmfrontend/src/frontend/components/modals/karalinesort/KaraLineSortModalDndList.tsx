@@ -1,7 +1,7 @@
 import i18next from 'i18next';
 
 import type { KaraSortElement } from '../../../../../../src/types/config';
-import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
+import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd';
 
 interface IProps {
 	karaLineSort: KaraSortElement[];
