@@ -209,7 +209,21 @@ export async function playCurrentSong(now: boolean) {
 				// The intro is never played when there is a quiz
 				if (conf.Playlist.Medias.Intros.Enabled && !getState().introPlayed && !getState().quiz.running) {
 					setState({ introPlayed: true, counterToJingle: 1 });
-					await mpv.playMedia('Intros');
+					try {
+						await mpv.playMedia('Intros')
+					} catch (_err) {
+						// Possibly no intro to play, so we're going with sponsors if enabled, or play current song if not.
+						// Playing the current song is usually done via playerEnding after sponsors, so we're just calling it again if no sponsors
+						if (conf.Playlist.Medias.Sponsors.Enabled) {
+							try {
+								await mpv.playMedia('Sponsors'); 
+							} catch (_err) {
+								await playCurrentSong(now);
+							}
+						} else {
+							await playCurrentSong(now);
+						}
+					}
 					return;
 				}
 			}
@@ -426,14 +440,10 @@ export async function playerEnding() {
 					await mpv.playMedia('Outros');
 				} catch (err) {
 					logger.error('Unable to play outro file', { service, obj: err });
-					emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYER_PLMEDIA', err));
-					if (conf.Playlist.EndOfPlaylistAction === 'random') {
-						await playRandomSongAfterPlaylist();
-					} else {
-						stopPlayer();
-					}
+					emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYER_PLMEDIA', err));					
 				}
-			} else if (['random', 'random_fallback'].includes(conf.Playlist.EndOfPlaylistAction)) {
+			}
+			if (['random', 'random_fallback'].includes(conf.Playlist.EndOfPlaylistAction)) {
 				await playRandomSongAfterPlaylist();
 			} else if (conf.Playlist.EndOfPlaylistAction === 'play_fallback') {
 				await editPlaylist(getState().fallbackPlaid, { flag_current: true });

@@ -21,7 +21,6 @@ import { convert1LangTo2B } from '../../lib/utils/langs.js';
 import logger, { profile } from '../../lib/utils/logger.js';
 import { emitWS } from '../../lib/utils/ws.js';
 import { getBackgroundAndMusic } from '../../services/backgrounds.js';
-import { playerEnding } from '../../services/karaEngine.js';
 import { getPromoMessage, next } from '../../services/player.js';
 import { getSingleMedia } from '../../services/playlistMedias.js';
 import { BackgroundType } from '../../types/backgrounds.js';
@@ -879,7 +878,7 @@ export class Players {
 	}
 
 	/* Function playing playlist medias (jingles, intros, etc.) */
-	async playMedia(mediaType: PlaylistMediaType): Promise<PlayerState> {
+	async playMedia(mediaType: PlaylistMediaType) {
 		const conf = getConfig();
 		const media = getSingleMedia(mediaType);
 		if (media) {
@@ -920,7 +919,6 @@ export class Players {
 						: this.messages.removeMessage('DI');
 				this.messages.removeMessages(['poll', 'pauseScreen']);
 				emitPlayerState();
-				return playerState;
 			} catch (err) {
 				logger.error(`Error loading media ${mediaType}: ${media.filename}`, { service, obj: err });
 				sentry.error(err);
@@ -928,7 +926,7 @@ export class Players {
 			}
 		} else {
 			logger.debug(`No ${mediaType} to play`, { service });
-			playerState.playerStatus = 'play';
+			/** playerState.playerStatus = 'play';
 			await this.loadBackground('stop');
 			logger.debug('No jingle DI', { service });
 			await this.displayInfo();
@@ -936,6 +934,8 @@ export class Players {
 			emitPlayerState();
 			playerEnding();
 			return playerState;
+			*/
+			throw false;
 		}
 	}
 
