@@ -177,18 +177,26 @@ export async function buildMediasList(type: PlaylistMediaType) {
 	medias[type] = [];
 	for (const resolvedPath of resolvedMediaPath(type)) {
 		const files = [];
-		const dirFiles = await fs.readdir(resolvedPath);
-		for (const file of dirFiles) {
-			const fullFilePath = resolve(resolvedPath, file);
-			if (isMediaFile(file)) {
-				files.push({
-					type,
-					filename: fullFilePath,
-					series: file.split(' - ')[0],
-				});
+		for (const repo of getRepos()) {			
+			const resolvedPathWithRepo = resolve(resolvedPath, repo.Name);
+			let dirFiles = [];
+			try {
+				dirFiles = await fs.readdir(resolvedPathWithRepo);
+			} catch (err) {
+				// Unable to read the repo's subfolder in that particular media type. It's okay, it doesn't have to exist.
 			}
-		}
-		medias[type] = files;
+			for (const file of dirFiles) {
+				const fullFilePath = resolve(resolvedPathWithRepo, file);
+				if (isMediaFile(file)) {
+					files.push({
+						type,
+						filename: fullFilePath,
+						series: file.split(' - ')[0],
+					});
+				}
+			}
+		}		
+		medias[type] = medias[type].concat(files);		
 	}
 	currentMedias[type] = cloneDeep(medias[type]);
 }
