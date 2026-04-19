@@ -1377,6 +1377,7 @@ export class Players {
 			const conf = getConfig();
 			const state = getState();
 			const text = getPromoMessage();
+			console.log(text);
 			const catchphrase =
 				playerState.mediaType !== 'song' && conf.Player.Display.RandomQuotes
 					? sample(initializationCatchphrases)
@@ -1387,7 +1388,8 @@ export class Players {
 				version: getFontSize(60),
 				text: getFontSize(40)
 			}
-			const message = `{\\an${this.getMessagePosition()}}{\\fscx${fontSizes.banner}}{\\fscy${fontSizes.banner}${text}\\N{\\fscx${fontSizes.version}{\\fscy${fontSizes.version}{\\i1}${version}{\\i0}\\N{\\fscx${fontSizes.text}{\\fscy${fontSizes.text}}${catchphrase}`;
+			const message = `{\\an${this.getMessagePosition()}}{\\fscx${fontSizes.banner}}{\\fscy${fontSizes.banner}}${text}\\N{\\fscx${fontSizes.version}{\\fscy${fontSizes.version}{\\i1}${version}{\\i0}\\N{\\fscx${fontSizes.text}{\\fscy${fontSizes.text}}${catchphrase}`;
+			console.log(message);
 			this.messages?.addMessage('DI', message, duration === -1 ? 'infinite' : duration);
 		} catch (err) {
 			logger.error('Unable to display infos', { service, obj: err });
