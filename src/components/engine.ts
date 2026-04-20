@@ -244,8 +244,7 @@ async function internetCheck(): Promise<boolean> {
 /** Updates KM's app base as a whole. It adds checks and other inits to updateAllRepos() that are not needed when doing tests. */
 export async function updateBase(internet: boolean) {
 	const state = getState();
-	const conf = getConfig();
-	if (!state.isTest && !conf.App.FirstRun && internet) {
+	if (!state.isTest && internet) {
 		await updateAllRepos();
 	}
 	initFetchPopularSongs();
