@@ -356,7 +356,8 @@
 		"STATS_TAGS": "Tikedennoù",
 		"STATS_USAGETIME": "Amzer an implijout",
 		"STATS_PLAYTIME": "Amzer lenn",
-		"MASTODON_UPDATE": "Keleier Karaoke Mugen"
+		"MASTODON_UPDATE": "Keleier Karaoke Mugen",
+		"COLLECTIONS": "DASTUMADOÙ"
 	},
 	"KARA": {
 		"REPOSITORY": "Kavlec'hiad",
@@ -490,6 +491,9 @@
 		},
 		"TAG_NEW": {
 			"TITLE": "Krouiñ ur tikedenn"
+		},
+		"REPOSITORIES": {
+			"TITLE": "Merañ dastumadoù ha kavlec'hiadoù"
 		}
 	},
 	"LOGOUT": "Digevreañ",
@@ -541,7 +545,9 @@
 		"VERSIONS_one": "Handelv",
 		"VERSIONS_other": "Handelvoù",
 		"WARNINGS_one": "Diwall",
-		"WARNINGS_other": "Diwalloù"
+		"WARNINGS_other": "Diwalloù",
+		"COLLECTIONS_one": "Dastumad",
+		"COLLECTIONS_other": "Dastumadoù"
 	},
 	"SELECT_PLACEHOLDER": "Dibabit ur roll-lenn",
 	"CRITERIA": {
@@ -601,7 +607,8 @@
 		"SYSTEM": "Reizhiad",
 		"ADVANCED_OPTIONS": "Arventennoù reizhiad",
 		"DOWNLOAD": "Pellgargadennoù",
-		"HISTORY": "Roll istor"
+		"HISTORY": "Roll istor",
+		"REPOSITORIES": "Dastumadoù ha kavlec'hiadoù"
 	},
 	"TASKS": {
 		"IMPORTING_PLAYLIST": "Oc'h enporzhiañ ar roll-lenn…",
@@ -625,6 +632,9 @@
 		},
 		"TAGS": {
 			"CREATE": "Krouiñ ur tikedenn"
+		},
+		"SYSTEM": {
+			"REPOSITORIES": "Kavlec'hiadoù ha dastumadoù kanaouennoù"
 		}
 	},
 	"LANGUAGES": {
@@ -756,5 +766,8 @@
 	"FORGOT_PASSWORD": "Ankouaet ho ker-tremen ganeoc'h ?",
 	"LOG_OFFLINE": {
 		"MESSAGE": "Ne vo ket enrollet cheñchamantoù ho profil"
+	},
+	"COLLECTIONS": {
+		"NAME": "Anv an dastumad"
 	}
 }
