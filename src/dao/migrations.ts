@@ -9,6 +9,7 @@ import { adminToken } from '../utils/constants.js';
 import {
 	branchRepositoryIsNowMandatory,
 	decoupleOnlineConfig,
+	decoupleOnlineConfigPart2TheRevengeOfTheDeadCode,
 	removeKaraokeMugenFolderInPlaylistMedias,
 	renameSSHKeys,
 	setDefaultUploadMethodForMaintainers,
@@ -74,6 +75,9 @@ export async function postMigrationTasks(migrations: Postgrator.Migration[], did
 				break;
 			case 'dummyChangeMaintainerConfig':
 				setDefaultUploadMethodForMaintainers();
+				break;
+			case 'dummyDecoupleOnlineConfigPt2':
+				decoupleOnlineConfigPart2TheRevengeOfTheDeadCode();
 				break;
 			default:
 		}
