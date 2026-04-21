@@ -63,7 +63,7 @@ export default function miscController(router: SocketIOApp) {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			await destroyRemote();
-			setConfig({ Online: { RemoteToken: null } });
+			setConfig({ Online: { RemoteAccess: { Token: null } } });
 			await initRemote();
 		} catch (err) {
 			throw { code: 500 };
