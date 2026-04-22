@@ -80,6 +80,7 @@ async function checkNicknameExists(nickname: string) {
 		})
 	)[0];
 }
+
 /** Edit local user profile */
 export async function editUser(
 	username: string,
@@ -458,6 +459,11 @@ async function checkGuestAvatars() {
 }
 
 export async function createTemporaryGuest(name: string) {
+	const userExists = await checkNicknameExists(name);
+	if (userExists) {
+		logger.error(`Nickname ${name} already exists, cannot create temporary guest`, { service });
+		throw new ErrorKM('USER_ALREADY_EXISTS', 409, false);
+	}
 	const user = {
 		login: sanitizeLogin(name),
 		nickname: name,
@@ -678,6 +684,8 @@ export async function updateSongsLeft(username: string, plaid?: string) {
 		const conf = getConfig();
 		username = username.toLowerCase();
 		const user = await getUser(username);
+		// Non-fatal, user has probably been removed at some point.
+		if (!user) return;
 		let quotaLeft: number;
 		if (!plaid) plaid = getState().publicPlaid;
 		const playlistsToConsider =

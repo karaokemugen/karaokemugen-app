@@ -1011,7 +1011,7 @@
 		"MERGE_WITH_SELECT": "Seleccionar una etiqueta",
 		"ADD_DESCRIPTION": "Añadir una descripción",
 		"KARAOKES_WITH_TAGS": "Karaokes con esta etiqueta",
-		"NOT_KITSU_URL_ERROR": "Esta es una URL kitsu",
+		"NOT_KITSU_URL_ERROR": "Esta es una url kitsu",
 		"NOT_VALID_URL_ERROR": "Esta url no es válida",
 		"ANIME_ID_ERROR": "Introduzca un número positivo",
 		"I18N": "Nombres por idioma",
@@ -1101,6 +1101,13 @@
 			"PORT": "FTP Puerto",
 			"USERNAME": "Nombre de usuario FTP",
 			"BASEDIR": "Directorio base FTP"
+		},
+		"SFTP": {
+			"PASSWORD": "Contraseña SFTP",
+			"HOST": "Host SFTP",
+			"PORT": "SFTP Puerto",
+			"USERNAME": "Nombre de usuario SFTP",
+			"BASEDIR": "Directorio base SFTP"
 		},
 		"TOOLTIP_NAME": "Ponle el nombre que quieras. Por ejemplo 'Mis pequeños karaokes privados'",
 		"BASE_DIR": "Directorio base",

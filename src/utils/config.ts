@@ -63,7 +63,7 @@ import { initTwitch, stopTwitch } from './twitch.js';
 const service = 'Config';
 
 /** Edit a config item, verify the new config is valid, and act according to settings changed */
-export async function editSetting(part: RecursivePartial<Config>) {
+export async function editConfig(part: RecursivePartial<Config>) {
 	try {
 		const config = getConfig();
 		const oldConfig = removeNulls(cloneDeep(config));
@@ -302,7 +302,7 @@ export async function initConfig(argv: any) {
 		publicConfig.System.Database.superuserPassword = 'xxxxx';
 		publicConfig.App.JwtSecret = 'xxxxx';
 		publicConfig.App.InstanceID = 'xxxxx';
-		publicConfig.Online.RemoteToken = 'xxxxx';
+		publicConfig.Online.RemoteAccess.Token = 'xxxxx';
 		for (const repo of publicConfig.System.Repositories) {
 			if (repo.MaintainerMode) {
 				if (repo.FTP?.Password) repo.FTP.Password = 'xxxxx';
@@ -330,10 +330,10 @@ export async function initConfig(argv: any) {
 		)
 			setConfig({ App: { InstanceID: uuidV4() } });
 		if (
-			config.Online.RemoteToken === 'Change me' ||
-			(config.Online.RemoteToken && !config.Online.RemoteToken.match(uuidRegexp))
+			config.Online.RemoteAccess.Token === 'Change me' ||
+			(config.Online.RemoteAccess.Token && !config.Online.RemoteAccess.Token.match(uuidRegexp))
 		)
-			setConfig({ Online: { RemoteToken: null } });
+			setConfig({ Online: { RemoteAccess: { Token: null }}});
 		return getConfig();
 	} catch (err) {
 		logger.error('InitConfig failed', { service, obj: err });
@@ -393,7 +393,7 @@ export function backupConfig() {
 export function getPublicConfig(removeSystem = true, removeInstanceID = true) {
 	const publicSettings = cloneDeep(getConfig());
 	if (removeInstanceID) delete publicSettings.App.InstanceID;
-	delete publicSettings.Online.RemoteToken;
+	delete publicSettings.Online.RemoteAccess.Token;
 	delete publicSettings.App.JwtSecret;
 	delete publicSettings.System.Database;
 	for (const repo of publicSettings.System.Repositories) {

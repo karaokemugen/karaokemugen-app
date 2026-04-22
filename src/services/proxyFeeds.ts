@@ -33,10 +33,12 @@ export async function getFeeds(): Promise<Feed[]> {
 		for (const feed of feeds) {
 			feedPromises.push(fetchFeed(feed.url, feed.name));
 		}
-		for (const repo of getRepos()) {
+		for (const [index, repo] of getRepos().entries()) {
 			const manifest = getRepoManifest(repo.Name);
-			if (manifest?.feedURL) {
-				feedPromises.push(fetchFeed(manifest.feedURL, `repo_${repo.Name}`));
+			if (manifest?.feedsURL) {
+				for (const feed of manifest.feedsURL) {
+					feedPromises.push(fetchFeed(feed, `repo_${index}_${repo.Name}`));
+				}
 			}
 		}
 	} catch (err) {
@@ -79,7 +81,7 @@ async function fetchFeed(url: string, name: string): Promise<Feed> {
 		} else {
 			feed.feed.entry.forEach((element: any) => {
 				if (element.content._text)
-					element.content._text = element.content._text.replace(/href="\//g, 'href="https://gitlab.com/');
+					element.content._text = element.content._text.replace(/href="\//g, `href="${new URL(url).origin}/`);
 			});
 		}
 		body = JSON.stringify(feed);

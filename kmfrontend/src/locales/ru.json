@@ -876,15 +876,15 @@
 		"ADD_DESCRIPTION": "Добавить описание",
 		"KARAOKES_WITH_TAGS": "Песни с этой меткой",
 		"MAL_ID": "MAL ID/URL",
-		"MAL_ID_TOOLTIP": "Если это аниме, укажите его ID/URL на myanimelist.net",
+		"MAL_ID_TOOLTIP": "Если это аниме, укажите его id/url на myanimelist.net",
 		"ANILIST_ID": "Anilist ID/URL",
-		"ANILIST_ID_TOOLTIP": "Если это аниме, пожалуйста укажите его ID/URL на anilist.co",
+		"ANILIST_ID_TOOLTIP": "Если это аниме, пожалуйста укажите его id/url на anilist.co",
 		"KITSU_ID": "Kitsu ID/URL",
-		"KITSU_ID_TOOLTIP": "Если это аниме, пожалуйста укажите его URL на kitsu.app",
-		"NOT_MAL_URL_ERROR": "Это URL myanimelist",
-		"NOT_ANILIST_URL_ERROR": "Это URL anilist",
-		"NOT_KITSU_URL_ERROR": "Это URL kitsu",
-		"NOT_VALID_URL_ERROR": "Этот URL не действителен",
+		"KITSU_ID_TOOLTIP": "Если это аниме, пожалуйста укажите его url на kitsu.app",
+		"NOT_MAL_URL_ERROR": "Это url myanimelist",
+		"NOT_ANILIST_URL_ERROR": "Это url anilist",
+		"NOT_KITSU_URL_ERROR": "Это url kitsu",
+		"NOT_VALID_URL_ERROR": "Этот url не действителен",
 		"ANIME_ID_ERROR": "Пожалуйста введите положительное число",
 		"KITSU_SLUG_ERROR": "Недействительный slug",
 		"KITSU_REQUEST_ERROR": "Ошибка сети"
@@ -1069,6 +1069,13 @@
 			"USERNAME": "FTP Имя пользователя",
 			"PASSWORD": "FTP Пароль",
 			"BASEDIR": "FTP Основная папка"
+		},
+		"SFTP": {
+			"HOST": "SFTP Хост",
+			"PORT": "SFTP Порт",
+			"USERNAME": "SFTP Имя пользователя",
+			"PASSWORD": "SFTP Пароль",
+			"BASEDIR": "SFTP Основная папка"
 		},
 		"GIT_STATUS": "Git статус",
 		"GIT_STATUSES": {

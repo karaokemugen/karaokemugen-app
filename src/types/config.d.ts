@@ -182,6 +182,7 @@ export interface Config {
 		Display: {
 			Avatar?: boolean;
 			Nickname?: boolean;
+			FontSize?: number;
 			ConnectionInfo?: {
 				Enabled?: boolean;
 				Host?: string;

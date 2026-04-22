@@ -40,6 +40,7 @@ import { Change, Commit, DifferentChecksumReport, ModifiedMedia, Push } from '..
 import { adminToken } from '../utils/constants.js';
 import { getFreeSpace, pathIsContainedInAnother } from '../utils/files.js';
 import FTP from '../utils/ftp.js';
+import SFTP from '../utils/sftp.js';
 import Git, { checkGitInstalled, isGit } from '../utils/git.js';
 import { oldFilenameFormatKillSwitch } from '../utils/hokutoNoCode.js';
 import { applyPatch, cleanFailedPatch, downloadAndExtractZip, writeFullPatchedFiles } from '../utils/patch.js';
@@ -121,6 +122,7 @@ export async function addRepo(repo: Repository) {
 					repo.Git.ProjectID = manifest.ProjectID;
 				}
 			} catch (err) {
+				logger.error(`Repository ${repo.Name} unreachable`, { service });
 				throw new ErrorKM('REPOSITORY_UNREACHABLE', 404, false);
 			}
 		}
@@ -673,7 +675,7 @@ export async function updateGitRepo(name: string) {
 				...status,
 				repoName: repo.Name,
 			});
-			throw new ErrorKM('GIT_PULL_FAILED');
+			throw new ErrorKM('GIT_PULL_FAILED', 500, false);
 		}
 		const newCommit = await git.getCurrentCommit();
 		logger.debug(`Original commit : ${originalCommit} and new commit : ${newCommit}`, { service });
@@ -1283,7 +1285,7 @@ export async function generateCommits(repoName: string) {
 			};
 			// Let's check if the kara has been renamed and is actually a modified kara.
 
-			// If oldMediaFile is still null, this is a new media that will be pushed later to the FTP.
+			// If oldMediaFile is still null, this is a new media that will be pushed later to the server.
 			modifiedMedias.push({
 				old: null,
 				new: kara.mediafile,
@@ -1352,7 +1354,7 @@ export async function generateCommits(repoName: string) {
 					new: kara.mediafile,
 					commit: commit.message,
 				});
-				// If filesizes are the same, no medias are pushed to the ftp
+				// If filesizes are the same, no medias are pushed to the server
 			}
 
 			for (const tid of kara.tid) {
@@ -1471,10 +1473,12 @@ export async function uploadMedia(kid: string) {
 	try {
 		const kara = await getKara(kid, adminToken);
 		const repo = getRepo(kara.repository);
-		const ftp = new FTP({ repoName: repo.Name });
-		await ftp.connect();
+		let server: FTP | SFTP;
+		if (repo.UploadMethod === 'FTP') server = new FTP({ repoName: repo.Name });
+		if (repo.UploadMethod === 'SFTP') server = new SFTP({ repoName: repo.Name, baseDir: repo.SFTP.BaseDir});
+		await server.connect();
 		const path = await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', repo.Name));
-		await ftp.upload(path[0]);
+		await server.upload(path[0]);
 	} catch (err) {
 		logger.error(`Error uploading media for ${kid} : ${err}`, { service });
 		sentry.error(err);
@@ -1483,31 +1487,33 @@ export async function uploadMedia(kid: string) {
 }
 
 /** Commit and Push all modifications */
-export async function pushCommits(repoName: string, push: Push, ignoreFTP?: boolean) {
-	let ftp: FTP;
+export async function pushCommits(repoName: string, push: Push, ignoreUpload?: boolean) {
+	let server: FTP | SFTP;	
 	try {
 		const repo = getRepo(repoName);
 		const git = await setupGit(repo, true);
-		if (!ignoreFTP && push.modifiedMedias.length > 0) {
+		if (!ignoreUpload && push.modifiedMedias.length > 0) {
 			// Before making any commits, we have to send stuff via FTP
-			ftp = new FTP({ repoName });
-			await ftp.connect();
+			if (repo.UploadMethod === 'FTP') server = new FTP({ repoName: repo.Name });
+			if (repo.UploadMethod === 'SFTP') server = new SFTP({ repoName: repo.Name, baseDir: repo.SFTP.BaseDir });
+
+			await server.connect();
 			for (const media of push.modifiedMedias) {
 				// New or updated file
 				if (media.old === null || media.old === media.new) {
 					const path = await resolveFileInDirs(media.new, resolvedPathRepos('Medias', repoName));
-					await ftp.upload(path[0]);
+					await server.upload(path[0]);
 				} else if (media.new !== media.old && media.sizeDifference) {
 					const path = await resolveFileInDirs(media.new, resolvedPathRepos('Medias', repoName));
-					await ftp.upload(path[0]);
+					await server.upload(path[0]);
 					try {
-						await ftp.delete(media.old);
+						await server.delete(media.old);
 					} catch (err) {
 						logger.warn(`File ${media.old} could not be deleted on FTP`, { service });
 					}
 				}
 			}
-			await ftp.disconnect();
+			await server.disconnect();
 		}
 		// Let's work on our commits
 		const task = new Task({
@@ -1539,26 +1545,26 @@ export async function pushCommits(repoName: string, push: Push, ignoreFTP?: bool
 			await updateGitRepo(repoName);
 			await git.push(repo.Git.Branch);
 			// Let's do deletes and renames on FTP now. And pray it doesn't fail.
-			if (!ignoreFTP && push.modifiedMedias.length > 0) {
-				await ftp.connect();
+			if (!ignoreUpload && push.modifiedMedias.length > 0) {
+				await server.connect();
 				for (const media of push.modifiedMedias) {
 					if (media.old === null || media.old === media.new) {
 						// Upload, do nothing
 					} else if (media.new === null) {
 						// Deleted file
 						try {
-							await ftp.delete(media.old);
+							await server.delete(media.old);
 						} catch (err) {
 							logger.warn(`File ${media.old} could not be deleted on FTP`, { service });
 						}
 					} else if (media.new !== media.old) {
 						// Renamed file or new upload with different sizes, let's find out!
 						if (!media.sizeDifference) {
-							await ftp.rename(basename(media.old), basename(media.new));
+							await server.rename(basename(media.old), basename(media.new));
 						}
 					}
 				}
-				await ftp.disconnect();
+				await server.disconnect();
 			}
 			emitWS('pushComplete', repoName);
 		} catch (err) {
@@ -1574,7 +1580,7 @@ export async function pushCommits(repoName: string, push: Push, ignoreFTP?: bool
 			APIMessage(err instanceof ErrorKM ? `ERROR_CODES.${err.message}` : 'ERROR_CODES.REPO_GIT_PUSH_ERROR')
 		);
 	} finally {
-		if (ftp) ftp.disconnect().catch(() => {});
+		if (server) server.disconnect().catch(() => {});
 	}
 }
 

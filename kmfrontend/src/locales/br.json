@@ -442,7 +442,12 @@
 		},
 		"AUTO_MEDIA_DOWNLOADS_ALL": "An holl",
 		"AUTO_MEDIA_DOWNLOADS_UPDATE_ONLY": "Hizivaat hepken",
-		"GIT_DELETE": "Dilemel"
+		"GIT_DELETE": "Dilemel",
+		"SFTP": {
+			"PORT": "Porzh SFTP",
+			"USERNAME": "Anv implijer SFTP",
+			"PASSWORD": "Ger-tremen SFTP"
+		}
 	},
 	"ERROR_CODES": {
 		"UNKNOWN_REPOSITORY": "Kavlec'hiad dianav",
@@ -591,7 +596,12 @@
 		"GIT": "Git",
 		"USERS": "Implijerien",
 		"STATS": "Stadegoù",
-		"MEDIAS": "Mediaoù"
+		"MEDIAS": "Mediaoù",
+		"HOME": "Taolenn-stur",
+		"SYSTEM": "Reizhiad",
+		"ADVANCED_OPTIONS": "Arventennoù reizhiad",
+		"DOWNLOAD": "Pellgargadennoù",
+		"HISTORY": "Roll istor"
 	},
 	"TASKS": {
 		"IMPORTING_PLAYLIST": "Oc'h enporzhiañ ar roll-lenn…",
@@ -673,7 +683,8 @@
 		},
 		"SPEED": {
 			"UP": "Kreskiñ an tizh",
-			"DOWN": "Digreskiñ an tizh"
+			"DOWN": "Digreskiñ an tizh",
+			"TITLE": "Cheñch an tizh"
 		}
 	},
 	"VIEW_FAVORITES": "Pennrolloù",

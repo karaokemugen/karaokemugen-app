@@ -252,7 +252,6 @@ function PlayerOptions(props: IProps) {
 								data-namecommand="setAudioDelay"
 								id="Player.AudioDelay"
 								placeholder="0"
-								onBlur={putPlayerCommando}
 								onChange={putPlayerCommando}
 								step={20}
 								size={4}
@@ -361,6 +360,32 @@ function PlayerOptions(props: IProps) {
 									);
 								})}
 							</select>
+						</div>
+					</div>
+				))}
+			{filterValue === undefined ||
+				(sanitizeSettingsSearchValue(i18next.t('SETTINGS.PLAYER.DISPLAY_FONT_SIZE')).includes(filterValue) && (
+					<div className="settings-line">
+						<label htmlFor="Player.Display.FontSize">
+							<span className="title">{i18next.t('SETTINGS.PLAYER.DISPLAY_FONT_SIZE')}</span>
+							<br />
+							<span className="tooltip">{i18next.t('SETTINGS.PLAYER.DISPLAY_FONT_SIZE_TOOLTIP')}</span>
+						</label>
+						<div>
+							<input
+								type="number"
+								id="Player.Display.FontSize"
+								placeholder="0"
+								onChange={(e: any) => {
+									if (!e.target.value || e.target.value > 5 || e.target.value < -5)
+										e.target.value = 0;
+									onChange(e);
+								}}
+								step={1}
+								min={-5}
+								max={5}
+								defaultValue={config['Player.Display.FontSize']}
+							/>
 						</div>
 					</div>
 				))}

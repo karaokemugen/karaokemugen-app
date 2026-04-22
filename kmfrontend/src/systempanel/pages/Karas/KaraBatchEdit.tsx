@@ -94,12 +94,6 @@ function KaraBatchEdit() {
 		});
 	};
 
-	const mapTagTypesToSelectOption = (tagType: string) => (
-		<Select.Option key={tagType} value={tagType ? tagTypes[tagType].type : null}>
-			{i18next.t(tagType ? `TAG_TYPES.${tagType}_one` : 'TAG_TYPES.DEFAULT')}
-		</Select.Option>
-	);
-
 	const searchKaras = value => {
 		setTimeout(async () => {
 			const karas: KaraList = await commandBackend(WS_CMD.GET_KARAS, {
@@ -196,15 +190,10 @@ function KaraBatchEdit() {
 							style={{ maxWidth: '20%', minWidth: '150px', marginTop: '0.5em' }}
 							onChange={changePlaylist}
 							placeholder={i18next.t('KARA.BATCH_EDIT.SELECT')}
-						>
-							{playlists.map(playlist => {
-								return (
-									<Select.Option key={playlist.plaid} value={playlist.plaid}>
-										{playlist.name}
-									</Select.Option>
-								);
+							options={playlists.map(playlist => {
+								return { value: playlist.plaid, label: playlist.name };
 							})}
-						</Select>
+						/>
 					</Col>
 					<Col flex={4} style={{ display: 'flex', flexDirection: 'column' }}>
 						<label>{i18next.t('KARA.BATCH_EDIT.SELECT_ACTION')}</label>
@@ -235,9 +224,17 @@ function KaraBatchEdit() {
 								defaultValue={null}
 								style={{ maxWidth: '180px', marginTop: '0.5em' }}
 								onChange={(value: TagTypeNum) => setType(value)}
-							>
-								{Object.keys(tagTypes).concat('').map(mapTagTypesToSelectOption)}
-							</Select>
+								options={Object.keys(tagTypes)
+									.concat('')
+									.map((tagType: string) => {
+										return {
+											value: tagType ? tagTypes[tagType].type : null,
+											label: i18next.t(
+												tagType ? `TAG_TYPES.${tagType}_one` : 'TAG_TYPES.DEFAULT'
+											),
+										};
+									})}
+							/>
 						</Col>
 					) : null}
 					{action === 'addTag' || action === 'removeTag' ? (

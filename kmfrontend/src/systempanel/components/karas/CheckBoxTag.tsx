@@ -1,5 +1,3 @@
-import './CheckBoxTag.scss';
-
 import { Checkbox, Col, Row } from 'antd';
 import { useContext, useState } from 'react';
 import GlobalContext from '../../../store/context';
@@ -28,7 +26,7 @@ export default function CheckBoxTag(props: AutocompleteTagProps) {
 
 	const tids = value.map(tag => tag.tid);
 	return (
-		<Checkbox.Group className="checkbox-tag-form" value={tids} style={{ width: '100%' }} onChange={onCheck}>
+		<Checkbox.Group value={tids} onChange={onCheck} style={{ width: '100%' }}>
 			<Row>
 				{props.tags.map((tag: DBKaraTag) => {
 					const tagi18n = getTagInLocale(context?.globalState.settings.data, tag);

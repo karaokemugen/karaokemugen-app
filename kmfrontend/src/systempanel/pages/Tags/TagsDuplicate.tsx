@@ -4,13 +4,14 @@ import i18next from 'i18next';
 import { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import { DBTag } from '../../../../../src/lib/types/database/tag';
+import type { DBTag } from '../../../../../src/lib/types/database/tag';
 import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 import { getTagTypeName, tagTypes } from '../../../utils/tagTypes';
 import { isModifiable } from '../../../utils/tools';
 import Title from '../../components/Title';
 import { WS_CMD } from '../../../utils/ws';
+import type { TagTypeNum } from '../../../../../src/lib/types/tag';
 
 function TagsDuplicate() {
 	const context = useContext(GlobalContext);
@@ -18,12 +19,12 @@ function TagsDuplicate() {
 	const [tags, setTags] = useState<DBTag[]>([]);
 	const [tag, setTag] = useState<DBTag>();
 	const [deleteModal, setDeleteModal] = useState(false);
-	const [typesTag, setTypeTag] = useState(
+	const [typesTag, setTypeTag] = useState<TagTypeNum[]>(
 		localStorage.getItem('typeTagDuplicate')
-			? localStorage
+			? (localStorage
 					.getItem('typeTagDuplicate')
 					.split(',')
-					.map(value => parseInt(value))
+					.map(value => parseInt(value)) as TagTypeNum[])
 			: []
 	);
 
@@ -147,15 +148,10 @@ function TagsDuplicate() {
 						style={{ width: 300 }}
 						onChange={changeType}
 						defaultValue={typesTag}
-					>
-						{Object.entries(tagTypes).map(([key, value]) => {
-							return (
-								<Select.Option key={value.type} value={value.type}>
-									{i18next.t(`TAG_TYPES.${key}_other`)}
-								</Select.Option>
-							);
+						options={Object.entries(tagTypes).map(([key, value]) => {
+							return { value: value.type, label: i18next.t(`TAG_TYPES.${key}_other`) };
 						})}
-					</Select>
+					/>
 				</div>
 				<Table
 					dataSource={tags}

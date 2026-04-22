@@ -379,6 +379,8 @@
 			"PLAYER_MONITOR": "Seconde fenêtre du lecteur vidéo (moniteur)",
 			"PLAYER_MONITOR_TOOLTIP": "Affiche un second lecteur pour l'opérateur s'il ne peut pas voir l'écran principal directement",
 			"PLAYER_LANGUAGE": "Langue des messages et du lecteur vidéo",
+			"DISPLAY_FONT_SIZE": "Modificateur de taille de la police des messages à l'écran",
+			"DISPLAY_FONT_SIZE_TOOLTIP": "De -5 à 5. Ceci n'affecte QUE les messages affichés à l'écran (quizz, sondage, informations de chanson, etc.) et pas les paroles.",
 			"DISPLAY_RANDOMQUOTES": "Afficher les citations aléatoires",
 			"DISPLAY_RANDOMQUOTES_TOOLTIP": "Des citations aléatoires sont affichées en bas de l'écran quand le lecteur est arrêté",
 			"DISPLAY_CONNECTION_INFO_HOST": "Forcer le nom d'hôte/Adresse IP",
@@ -812,7 +814,7 @@
 		},
 		"CLASSIC_MODE": {
 			"TITLE": "C'est à vous de chanter !",
-			"TEXT": "Appuyez sur le bouton PLAY pour lancer votre chanson."
+			"TEXT": "Appuyez sur le bouton Play pour lancer votre chanson."
 		},
 		"GIT_DANGEROUS": {
 			"TITLE": "Actions dangereuses",
@@ -1388,9 +1390,9 @@
 		"ADD_DESCRIPTION": "Ajouter une description",
 		"KARAOKES_WITH_TAGS": "Chansons ayant ce tag",
 		"MAL_ID": "Identifiant/URL MyAnimeList",
-		"MAL_ID_TOOLTIP": "Si c'est un anime, indiquez son ID/url sur myanimelist.net",
+		"MAL_ID_TOOLTIP": "Si c'est un anime, indiquez son id/url sur myanimelist.net",
 		"ANILIST_ID": "Identifiant/URL Anilist",
-		"ANILIST_ID_TOOLTIP": "Si c'est un anime, indiquez son ID/url sur anilist.co",
+		"ANILIST_ID_TOOLTIP": "Si c'est un anime, indiquez son id/url sur anilist.co",
 		"KITSU_ID": "Identifiant/URL Kitsu",
 		"KITSU_ID_TOOLTIP": "Si c'est un anime, indiquez son url sur kitsu.app",
 		"NOT_MAL_URL_ERROR": "C'est une url myanimelist",
@@ -1582,6 +1584,13 @@
 			"PASSWORD": "Mot de passe FTP",
 			"BASEDIR": "Répertoire base FTP"
 		},
+		"SFTP": {
+			"HOST": "Hôte SFTP",
+			"PORT": "Port SFTP",
+			"USERNAME": "Nom d'utilisateur SFTP",
+			"PASSWORD": "Mot de passe SFTP",
+			"BASEDIR": "Répertoire base SFTP"
+		},
 		"GIT_STATUS": "Statut Git",
 		"GIT_STATUSES": {
 			"CLEAN": "Copie propre",
@@ -1606,7 +1615,8 @@
 		"GIT_SEE_DIFF_IN_FILE": "Voir les différences dans le fichier",
 		"GIT_SQUASH_COMMITS": "Fusionner les changements",
 		"GIT_SQUASH_MESSAGE": "Message de commit",
-		"GIT_TOO_MANY_CHANGES": "On dirait que vous faites {{changes}} changements. Lorsque vous effectuez de nombreux changements liés au même type d'action, il est conseillé de regrouper vos commits en un seul."
+		"GIT_TOO_MANY_CHANGES": "On dirait que vous faites {{changes}} changements. Lorsque vous effectuez de nombreux changements liés au même type d'action, il est conseillé de regrouper vos commits en un seul.",
+		"UPLOAD_METHOD0": "Méthode d'envoi des médias"
 	},
 	"COLLECTIONS": {
 		"NAME": "Nom de la collection",

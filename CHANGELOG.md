@@ -1,3 +1,39 @@
+# [9.0.41] - 2026-04-22
+
+## Added
+
+- **[Operators]** New option to set font size of banners (useful for 4K screens) (#1862)
+- **[Maintainers]** Added SFTP option for media transfers (#1783)
+- **[Maintainers]** Maintainers can now provide multiple feed URLs for repositories
+
+## Changed
+
+- **[Operators]** Better MPRIS implementation for Linux users and media keys (#1866)
+- **[Operators]** Removed Tools menu from main window
+- **[Maintainers]** Added checks for year/songorder/duration (#1856)
+- **[Users]** Updated breton, german, tamil, russian, protugese, polish and italian translations
+- **[Maintainers]** Added fallback for unknown formats in cover images (#1873)
+- **[Developers]** Moved from react-beautiful-dnd to @hello-pangea/dnd
+- **[Developers]** Upgraded backend deps
+- **[Developers]** Upgraded frontend deps
+- **[Developers]** Tags can now only be numbers in tag.json files now (#1796)
+- **[Developers]** Upgrade to Yarn 4.12
+
+## Fixed
+
+- **[Operators]** Overlay menu is now  hidden again in mpv
+- **[Operators]** Fixed enabling/disabling monitor when playing a media (#1797)
+- **[Operators]** Fixed race condition when 
+- **[Operators]** Repositories are now correctly updated on app's first run
+- **[Operators]** Fixed some problems with Remote Access token manipulation in config
+- **[Operators]** Fixed intermissions not being correctly parsed on startup
+- **[Operators]** Fixed intermissions times blocking karaoke session when no intermissions are present
+- **[Maintainers]** Fixed memdia trimming (#1861)
+- **[Maintainers]** Better handling of media downloads from Inbox
+- **[Maintainers]** Fixed routing back to inbox from editing page
+- **[Developers]** Fixed tsconfig for Typescript 6
+- **[Developers]** Better catching of some errors (thanks to Sentry)
+
 # [9.0.30] - 2026-02-09
 
 This is an overdue release. Thanks to Cani for some useful UX feedback and Mio and red5h4dow for help with mpv 0.41!

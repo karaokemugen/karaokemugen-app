@@ -175,7 +175,7 @@ class SessionList extends Component<unknown, SessionListState> {
 						''
 					) : (
 						<>
-							<Divider type="vertical" />
+							<Divider orientation="vertical" />
 							<Button
 								type="primary"
 								danger

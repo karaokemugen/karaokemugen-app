@@ -16,7 +16,7 @@ import { notificationNextSong } from '../../services/playlist.js';
 import { endPoll } from '../../services/poll.js';
 import { getCurrentSongTimers } from '../../services/quiz.js';
 import { MpvOptions } from '../../types/player.js';
-import { editSetting } from '../../utils/config.js';
+import { editConfig } from '../../utils/config.js';
 import { isMpvGreaterThan39 } from '../../utils/hokutoNoCode.js';
 import sentry from '../../utils/sentry.js';
 import { getState } from '../../utils/state.js';
@@ -94,7 +94,8 @@ export class Player {
 			`--screenshot-directory=${resolve(state.dataPath)}`,
 			'--screenshot-format=png',
 			'--osd-level=0',
-			'--osd-bar=no'
+			'--osd-bar=no',
+			'--osc=no'
 		];
 
 		if (options.monitor) {
@@ -247,7 +248,7 @@ export class Player {
 				playerState[status.name] = status.data;
 				if (status.name === 'fullscreen') {
 					const fullScreen = !!status.data;
-					editSetting({ Player: { FullScreen: fullScreen } });
+					editConfig({ Player: { FullScreen: fullScreen } });
 					if (fullScreen) {
 						this.log.info('Player going to full screen');
 						this.control.messages.addMessage('fsTip', `{\\an7\\i1\\fs20}${i18n.t('FULLSCREEN_TIP')}`, 3000);
