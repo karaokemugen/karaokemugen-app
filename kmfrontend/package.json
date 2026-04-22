@@ -37,7 +37,6 @@
 		"@fortawesome/fontawesome-free": "^7.2.0",
 		"@types/lodash": "^4.17.24",
 		"@types/react": "19.2.14",
-		"@types/react-aria-menubutton": "^6.2.14",
 		"@types/react-dom": "19.2.3",
 		"@typescript-eslint/eslint-plugin": "^8.57.0",
 		"@typescript-eslint/parser": "^8.57.0",
