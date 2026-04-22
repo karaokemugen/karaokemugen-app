@@ -355,8 +355,6 @@
 			"ALWAYS_ON_TOP_TOOLTIP": "If checked, the player window will always be above the others on the screen",
 			"FULLSCREEN": "Fullscreen",
 			"FULLSCREEN_TOOLTIP": "Press F on a fullscreen player to reduce it to windowed mode.",
-			"FULLSCREEN_ON_STARTUP": "Fullscreen on startup",
-			"FULLSCREEN_ON_STARTUP_TOOLTIP": "Always start the player in fullscreen, regardless of its last state",
 			"VIDEO_SIZE": "Video size",
 			"VIDEO_SIZE_TOOLTIP": "Size of the player window : {{value}}. Any change will trigger a player restart after the current song ends if one is playing.",
 			"VIDEO_POSITION_X": "Video position (X)",
