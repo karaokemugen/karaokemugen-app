@@ -16,6 +16,7 @@ import sentry from '../utils/sentry.js';
 import { startSub, stopSub } from '../utils/userPubSub.js';
 import { convertToRemoteFavorites } from './favorites.js';
 import { checkPassword, createJwtToken, createUser, editUser, getUser } from './user.js';
+import { AxiosResponse } from 'axios';
 
 const service = 'RemoteUser';
 
@@ -191,14 +192,14 @@ export async function editRemoteUser(user: User, token: string, avatar = true) {
 /** Get remote avatar from KM Server */
 export async function fetchRemoteAvatar(instance: string, avatarFile: string): Promise<string> {
 	const conf = getConfig().Online;
-	let res;
+	let res: AxiosResponse;
 	try {
 		res = await HTTP.get(`${conf.RemoteUsers.Secure ? 'https' : 'http'}://${instance}/avatars/${avatarFile}`, {
 			responseType: 'stream',
 		});
 	} catch (err) {
 		// If avatar is not present, we can safely assume this is a KM Server issue with a specific user
-		if (res.code === 404) {
+		if (err?.code === 404) {
 			return;
 		}
 		throw err;
