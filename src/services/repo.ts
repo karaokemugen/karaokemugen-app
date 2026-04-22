@@ -1684,7 +1684,6 @@ export async function convertToUUIDFormat(repoName: string) {
 						await fs.rename(subpath, newSubpath);
 						kara.medias[0].lyrics[0].filename = basename(newSubpath);
 					} catch (err) {
-						console.log(err);
 						throw err;
 					}
 				}
@@ -1697,7 +1696,6 @@ export async function convertToUUIDFormat(repoName: string) {
 				await fs.unlink(karapath);
 			} catch (err) {
 				logger.error(`Error while converting file ${karapath} to UUID`, { service });
-				console.log(err);
 				logger.error(err);
 			}
 		}

@@ -64,7 +64,6 @@ export default function repoController(router: SocketIOApp) {
 		try {
 			return convertToUUIDFormat(req.body.repoName);
 		} catch (err) {
-			console.log(err);
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
