@@ -651,7 +651,7 @@ export class Players {
 
 	async initPlayerSystem() {
 		const conf = getConfig();
-		playerState.fullscreen = conf.Player.FullScreen;
+		playerState.fullscreen = conf.Player.FullScreenOnStartup || conf.Player.FullScreen;
 		playerState.onTop = conf.Player.StayOnTop;
 		playerState.border = conf.Player.Borders;
 		playerState.volume = conf.Player.Volume;

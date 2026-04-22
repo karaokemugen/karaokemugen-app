@@ -197,6 +197,7 @@ export interface Config {
 		};
 		StayOnTop?: boolean;
 		FullScreen?: boolean;
+		FullScreenOnStartup?: boolean;
 		Screen?: number;
 		AudioDevice?: string;
 		Monitor?: boolean;

@@ -183,8 +183,10 @@ Player:
       QRCodeDuringSong: false
   # Override mpv's video output driver
   mpvVideoOutput: null
-  # Fullscreen ?
+  # Last fullscreen state of player
   FullScreen: false
+  # Always start the player in fullscreen, independent of the last fullscreen state
+  FullScreenOnStartup: false
   # Spawn a second monitor window in PIP mode to check what the player is displaying
   Monitor: false
   # Should the player window have borders ?
