@@ -28,6 +28,17 @@ import { getState, setState } from './state.js';
 
 const service = 'YouAreAlreadyDeadCode';
 
+/** Also remove in KM 10 */
+export function decoupleOnlineConfigPart2TheRevengeOfTheDeadCode() {
+	const conf = getConfig();
+	delete conf.Online.RemoteToken;
+	delete conf.Online.Remote;
+	delete conf.Online.Host;
+	delete conf.Online.Secure;
+	delete conf.Online.Users;
+	setConfig({Online: conf.Online});
+}
+
 /** Remove when we ship KM 10 */
 export function decoupleOnlineConfig() {
 	try {
@@ -47,6 +58,11 @@ export function decoupleOnlineConfig() {
 				},
 			},
 		});
+		delete conf.Online.RemoteToken;
+		delete conf.Online.Remote;
+		delete conf.Online.Host;
+		delete conf.Online.Secure;
+		delete conf.Online.Users;		
 	} catch (err) {
 		logger.warn(`Failed to decouple online config. Should not be too bad : ${err}`, { service });
 	}
@@ -273,5 +289,16 @@ export async function branchRepositoryIsNowMandatory() {
 			repository.Git.Branch = 'master';
 		}
 		editRepo(repository.Name, repository, false, false);
+	}
+}
+
+/** Remove in KM 11.0 */
+export async function setDefaultUploadMethodForMaintainers() {
+	const repos = getRepos();
+	for (const respository of repos) {
+		if (respository.FTP) {
+			respository.UploadMethod = 'FTP';
+		}
+		editRepo(respository.Name, respository, false, false);
 	}
 }

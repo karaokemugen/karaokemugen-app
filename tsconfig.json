@@ -1,5 +1,6 @@
 {
 	"compilerOptions": {
+		"types": ["mocha"],
 		// Target latest version of ECMAScript.
 		"target": "ESNext",
 		"module": "NodeNext",
@@ -23,7 +24,6 @@
 		"inlineSources": true,
 		"pretty": true,
 		"removeComments": true,
-		"downlevelIteration": true,
 		"listFiles": false,
 		"listEmittedFiles": false,
 		"noUnusedParameters": true,

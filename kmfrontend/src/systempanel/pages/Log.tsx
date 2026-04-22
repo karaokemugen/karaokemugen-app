@@ -69,12 +69,17 @@ class Log extends Component<unknown, LogState> {
 			<>
 				<Title title={i18next.t('HEADERS.LOGS.TITLE')} description={i18next.t('HEADERS.LOGS.DESCRIPTION')} />
 				<Layout.Content>
-					<Select defaultValue="info" onChange={this.setLevel} style={{ marginBottom: '1em' }}>
-						<Select.Option value="error">{i18next.t('LOGS.LEVELS.ERROR')}</Select.Option>
-						<Select.Option value="warn">{i18next.t('LOGS.LEVELS.WARNING')}</Select.Option>
-						<Select.Option value="info">{i18next.t('LOGS.LEVELS.INFO')}</Select.Option>
-						<Select.Option value="debug">{i18next.t('LOGS.LEVELS.DEBUG')}</Select.Option>
-					</Select>
+					<Select
+						defaultValue="info"
+						onChange={this.setLevel}
+						style={{ marginBottom: '1em' }}
+						options={[
+							{ value: 'error', label: i18next.t('LOGS.LEVELS.ERROR') },
+							{ value: 'warn', label: i18next.t('LOGS.LEVELS.WARNING') },
+							{ value: 'info', label: i18next.t('LOGS.LEVELS.INFO') },
+							{ value: 'debug', label: i18next.t('LOGS.LEVELS.DEBUG') },
+						]}
+					/>
 					<Button type="primary" style={{ marginRight: '1em' }} onClick={this.openLogFile}>
 						{i18next.t('LOGS.SELECT_LOG')}
 					</Button>
@@ -89,14 +94,12 @@ class Log extends Component<unknown, LogState> {
 									<strong>{dayjs(line.timestamp).format('L LTS')}</strong> -{' '}
 									<strong>{line.service}</strong>
 									<ArrowRightOutlined style={{ margin: '0 0.5em' }} />
-									<code style={{ whiteSpace: 'pre-wrap' }}> 
-										{(
-											typeof line.message === 'string' ?
-												line.message :
-													typeof line.message === 'object' ?
-														JSON.stringify(line.message) :
-															String(line.message)
-										)}
+									<code style={{ whiteSpace: 'pre-wrap' }}>
+										{typeof line.message === 'string'
+											? line.message
+											: typeof line.message === 'object'
+												? JSON.stringify(line.message)
+												: String(line.message)}
 									</code>
 									{line.obj !== undefined ? (
 										<Collapse>

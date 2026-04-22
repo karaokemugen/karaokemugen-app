@@ -21,7 +21,6 @@ import { convert1LangTo2B } from '../../lib/utils/langs.js';
 import logger, { profile } from '../../lib/utils/logger.js';
 import { emitWS } from '../../lib/utils/ws.js';
 import { getBackgroundAndMusic } from '../../services/backgrounds.js';
-import { playerEnding } from '../../services/karaEngine.js';
 import { getPromoMessage, next } from '../../services/player.js';
 import { getSingleMedia } from '../../services/playlistMedias.js';
 import { BackgroundType } from '../../types/backgrounds.js';
@@ -93,6 +92,15 @@ async function resolveMediaURL(file: string, repoName: string): Promise<string> 
 	}
 	// If all else fails, throw up
 	throw up;
+}
+/** Lower or raise font size of mpv text display command depending on config */
+export function getFontSize(initial: number) {
+	const sizeModifier = getConfig().Player.Display.FontSize;
+	if (!isNaN(sizeModifier)) {
+		return initial + (+sizeModifier * 10);
+	} else {
+		return initial;
+	}
 }
 
 async function waitForLockRelease() {
@@ -529,7 +537,8 @@ export class Players {
 			for (const _nothing of Array(10 - ticked)) {
 				progressBar += '□';
 			}
-			this.messages.addMessage('pauseScreen', `${position}{\\fscx70\\fscy70\\fsp-3}${progressBar}`, 'infinite');
+			const fontSize = getFontSize(70);
+			this.messages.addMessage('pauseScreen', `${position}{\\fscx${fontSize}\\fscy${fontSize}\\fsp-3}${progressBar}`, 'infinite');
 			this.progressBarTimeout = setTimeout(() => {
 				this.tickProgressBar(nextTick, ticked + 1, position);
 			}, nextTick);
@@ -543,7 +552,8 @@ export class Players {
 		if ((getState().streamerPause && getState().pauseInProgress) || getState().quiz.running) {
 			if (this.progressBarTimeout) clearTimeout(this.progressBarTimeout);
 			const timeLeft = Math.ceil(this.countdownTimer.getTimeLeft() / 1000);
-			this.messages.addMessage('countdown', `${position}{\\fscx250\\fscy250}${timeLeft}`, 'infinite');
+			const fontSize = getFontSize(250);
+			this.messages.addMessage('countdown', `${position}{\\fscx${fontSize}\\fscy${fontSize}}${timeLeft}`, 'infinite');
 			this.progressBarTimeout = setTimeout(() => {
 				this.tickCountdown(position);
 			}, 1000);
@@ -631,7 +641,10 @@ export class Players {
 		this.players = {
 			main: new Player({ monitor: false }, this),
 		};
-		if (playerState.monitorEnabled) this.players.monitor = new Player({ monitor: true }, this);
+		if (getConfig().Player.Monitor) {
+			this.players.monitor = new Player({ monitor: true }, this);
+			playerState.monitorEnabled = true;
+		}
 		logger.debug(`Players: ${JSON.stringify(Object.keys(this.players))}`, { service });
 		await this.exec('start');
 	}
@@ -642,7 +655,6 @@ export class Players {
 		playerState.onTop = conf.Player.StayOnTop;
 		playerState.border = conf.Player.Borders;
 		playerState.volume = conf.Player.Volume;
-		playerState.monitorEnabled = conf.Player.Monitor;
 		const audioDevices = await getMpvAudioOutputs();
 		const audioDevicesList = audioDevices.map(ad => ad[0]);
 		if (!audioDevicesList.includes(getConfig().Player.AudioDevice)) {
@@ -679,18 +691,18 @@ export class Players {
 		// Check change in monitor setting
 		if (playerState.monitorEnabled !== getConfig().Player.Monitor) {
 			// Determine if we have to destroy the monitor or create it.
-			// Refresh monitor setting
-			playerState.monitorEnabled = getConfig().Player.Monitor;
-			if (playerState.monitorEnabled) {
+			if (getConfig().Player.Monitor) {
 				// Monitor needs to be created
 				await checkMpv();
 				this.players.monitor = new Player({ monitor: true }, this);
+				playerState.monitorEnabled = true;
 			} else {
 				// Monitor needs to be destroyed
 				await this.exec('destroy', [null], 'monitor', true, true).catch(() => {
 					// Non-fatal, it probably means it's destroyed.
 				});
 				delete this.players.monitor;
+				playerState.monitorEnabled = false;
 			}
 		}
 		await this.exec('recreate', [null, true], undefined, true).catch(err => {
@@ -866,7 +878,7 @@ export class Players {
 	}
 
 	/* Function playing playlist medias (jingles, intros, etc.) */
-	async playMedia(mediaType: PlaylistMediaType): Promise<PlayerState> {
+	async playMedia(mediaType: PlaylistMediaType) {
 		const conf = getConfig();
 		const media = getSingleMedia(mediaType);
 		if (media) {
@@ -907,15 +919,14 @@ export class Players {
 						: this.messages.removeMessage('DI');
 				this.messages.removeMessages(['poll', 'pauseScreen']);
 				emitPlayerState();
-				return playerState;
 			} catch (err) {
 				logger.error(`Error loading media ${mediaType}: ${media.filename}`, { service, obj: err });
 				sentry.error(err);
 				throw err;
 			}
 		} else {
-			logger.debug(`No ${mediaType} to play.`, { service });
-			playerState.playerStatus = 'play';
+			logger.debug(`No ${mediaType} to play`, { service });
+			/** playerState.playerStatus = 'play';
 			await this.loadBackground('stop');
 			logger.debug('No jingle DI', { service });
 			await this.displayInfo();
@@ -923,6 +934,8 @@ export class Players {
 			emitPlayerState();
 			playerEnding();
 			return playerState;
+			*/
+			throw false;
 		}
 	}
 
@@ -1321,7 +1334,8 @@ export class Players {
 				const warningArr = warnings.map(t => {
 					return getTagNameInLanguage(t, langs);
 				});
-				warningString = `{\\fscx80}{\\fscy80}{\\b1}{\\c&H0808E8&}⚠ WARNING: ${warningArr.join(
+				const fontSize = getFontSize(80);
+				warningString = `{\\fscx${fontSize}}{\\fscy${fontSize}}{\\b1}{\\c&H0808E8&}⚠ WARNING: ${warningArr.join(
 					', '
 				)} ⚠{\\b0}\\N{\\c&HFFFFFF&}`;
 			}
@@ -1363,12 +1377,19 @@ export class Players {
 			const conf = getConfig();
 			const state = getState();
 			const text = getPromoMessage();
+			console.log(text);
 			const catchphrase =
 				playerState.mediaType !== 'song' && conf.Player.Display.RandomQuotes
 					? sample(initializationCatchphrases)
 					: '';
 			const version = `Karaoke Mugen ${state.version.number} (${state.version.name}) - https://karaokes.moe`;
-			const message = `{\\an${this.getMessagePosition()}}{\\fscx80}{\\fscy80}${text}\\N{\\fscx60}{\\fscy60}{\\i1}${version}{\\i0}\\N{\\fscx40}{\\fscy40}${catchphrase}`;
+			const fontSizes = {
+				banner: getFontSize(80),
+				version: getFontSize(60),
+				text: getFontSize(40)
+			}
+			const message = `{\\an${this.getMessagePosition()}}{\\fscx${fontSizes.banner}}{\\fscy${fontSizes.banner}}${text}\\N{\\fscx${fontSizes.version}{\\fscy${fontSizes.version}{\\i1}${version}{\\i0}\\N{\\fscx${fontSizes.text}{\\fscy${fontSizes.text}}${catchphrase}`;
+			console.log(message);
 			this.messages?.addMessage('DI', message, duration === -1 ? 'infinite' : duration);
 		} catch (err) {
 			logger.error('Unable to display infos', { service, obj: err });

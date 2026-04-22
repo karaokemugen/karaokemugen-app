@@ -11,7 +11,7 @@ import { asyncCheckOrMkdir, isMediaFile } from '../lib/utils/files.js';
 import HTTP, { fixedEncodeURIComponent } from '../lib/utils/http.js';
 import logger from '../lib/utils/logger.js';
 import Task from '../lib/utils/taskManager.js';
-import { editSetting, resolvedMediaPath } from '../utils/config.js';
+import { editConfig, resolvedMediaPath } from '../utils/config.js';
 import { getRepo, getRepos } from './repo.js';
 
 const service = 'PlaylistMedias';
@@ -96,7 +96,7 @@ export async function updateMediasHTTP(type: PlaylistMediaType, repoName: string
 			const configPart: any = {};
 			configPart.System = { MediaPath: {} };
 			configPart.System.MediaPath[type] = conf.System.MediaPath[type];
-			editSetting(configPart);
+			editConfig(configPart);
 		}
 		const localFiles = await listLocalFiles(localDir);
 		const removedFiles: PlaylistMediaFile[] = [];
@@ -177,18 +177,26 @@ export async function buildMediasList(type: PlaylistMediaType) {
 	medias[type] = [];
 	for (const resolvedPath of resolvedMediaPath(type)) {
 		const files = [];
-		const dirFiles = await fs.readdir(resolvedPath);
-		for (const file of dirFiles) {
-			const fullFilePath = resolve(resolvedPath, file);
-			if (isMediaFile(file)) {
-				files.push({
-					type,
-					filename: fullFilePath,
-					series: file.split(' - ')[0],
-				});
+		for (const repo of getRepos()) {			
+			const resolvedPathWithRepo = resolve(resolvedPath, repo.Name);
+			let dirFiles = [];
+			try {
+				dirFiles = await fs.readdir(resolvedPathWithRepo);
+			} catch (err) {
+				// Unable to read the repo's subfolder in that particular media type. It's okay, it doesn't have to exist.
 			}
-		}
-		medias[type] = files;
+			for (const file of dirFiles) {
+				const fullFilePath = resolve(resolvedPathWithRepo, file);
+				if (isMediaFile(file)) {
+					files.push({
+						type,
+						filename: fullFilePath,
+						series: file.split(' - ')[0],
+					});
+				}
+			}
+		}		
+		medias[type] = medias[type].concat(files);		
 	}
 	currentMedias[type] = cloneDeep(medias[type]);
 }
@@ -207,7 +215,12 @@ export function getSingleMedia(type: PlaylistMediaType): PlaylistMedia | null {
 	let media: PlaylistMedia | null = null;
 	media = sample(currentMedias[type]);
 	// Let's remove the series of the jingle we just selected so it won't be picked again next time.
-	currentMedias[type] = currentMedias[type].filter(m => m.series !== media.series);
-	logger.info(`${type} time !`, { service });
-	return media;
+	try {
+		currentMedias[type] = currentMedias[type].filter(m => m.series !== media.series);
+		logger.info(`${type} time !`, { service });
+		return media;
+	} catch (err) {
+		logger.error(`No media could be returned. Possible race condition? : ${err}`, {service})
+		return null;
+	}
 }

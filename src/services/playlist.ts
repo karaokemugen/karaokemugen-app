@@ -81,7 +81,7 @@ import {
 } from './smartPlaylist.js';
 import { getUser, getUsers, updateSongsLeft } from './user.js';
 import dayjs from 'dayjs';
-import { editSetting } from '../utils/config.js';
+import { editConfig } from '../utils/config.js';
 
 const service = 'Playlist';
 
@@ -1484,7 +1484,7 @@ export async function checkCurrentPlaylistRestrictInterfaceTime(
 		const currentEndingDatetime = dayjs().add(currentPlaylist.time_left, 'seconds');
 
 		// Eventually clear the flag when the time has passed
-		if (dayjs().isAfter(dayjs(restrictionTime))) await editSetting({ Karaoke: { RestrictInterfaceAtTime: null } });
+		if (dayjs().isAfter(dayjs(restrictionTime))) await editConfig({ Karaoke: { RestrictInterfaceAtTime: null } });
 
 		if (dontChangeInterfaceMode !== true) {
 			// Restrict or reopen interface
@@ -1493,7 +1493,7 @@ export async function checkCurrentPlaylistRestrictInterfaceTime(
 				currentEndingDatetime.isAfter(restrictionTime) &&
 				config?.Frontend?.Mode !== 1
 			) {
-				await editSetting({ Frontend: { Mode: 1 } });
+				await editConfig({ Frontend: { Mode: 1 } });
 				emitWS(
 					'operatorNotificationWarning',
 					APIMessage(
@@ -1508,7 +1508,7 @@ export async function checkCurrentPlaylistRestrictInterfaceTime(
 			) {
 				// Automatically reopen the interface if the length got shorter
 				// Disabled for now
-				// await editSetting({ Frontend: { Mode: 2 } });
+				// await editConfig({ Frontend: { Mode: 2 } });
 			}
 		}
 	}

@@ -385,7 +385,7 @@ function QueueDownload() {
 					columns={columns}
 					rowKey="kid"
 					pagination={{
-						position: ['topRight', 'bottomRight'],
+						placement: ['topEnd', 'bottomEnd'],
 						current: currentPage || 1,
 						defaultPageSize: currentPageSize,
 						pageSize: currentPageSize,

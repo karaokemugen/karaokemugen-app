@@ -432,8 +432,8 @@ function WelcomePage() {
 												'host' in remoteStatus.info ? (
 													<a
 														href={`http${
-															context.globalState.settings.data.config.Online.Secure &&
-															's'
+															context.globalState.settings.data.config.Online.RemoteAccess
+																.Secure && 's'
 														}://${remoteStatus.info.host}`}
 													>
 														{remoteStatus.info.host}

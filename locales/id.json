@@ -62,10 +62,6 @@
 	"MENU_GOTO_OSX": "Pergi",
 	"MENU_GOTO_PUBLIC": "&Tampilan publik",
 	"MENU_GOTO_SYSTEM": "&Bilah sistem",
-	"MENU_TOOLS": "&Alat",
-	"MENU_TOOLS_LOGS": "&Catatan Peristiwa",
-	"MENU_TOOLS_DOWNLOADS": "&Unduh media",
-	"MENU_TOOLS_KARAOKES": "&Daftar lagu",
 	"MENU_OPTIONS": "&Opsi",
 	"MENU_OPTIONS_CHECKFORUPDATES": "&Periksa pembaruan saat aplikasi menyala",
 	"MENU_OPTIONS_OPERATORCONFIG": "&Pengaturan",
@@ -212,7 +208,6 @@
 	"MENU_VIEW_RESETZOOM": "Mengembalikan perspektif",
 	"MENU_VIEW_ZOOMIN": "&Perbesar",
 	"MENU_EDIT_SPEECH": "Kata-kata",
-	"MENU_TOOLS_DATABASE": "Basis&data",
 	"PERMISSIONS_KEYBOARD_INFO_MACOS": {
 		"MESSAGE": "Permintaan izin",
 		"DETAIL": "macOS akan meminta kamu untuk menambahkan Karaoke Mugen ke perizinan aksesibilitas sistem. Izin ini memperbolehkan kamu untuk menggunakan kunci media papan tik kamu untuk mengontrol pemutar video. Kamu bisa menolak untuk menambahkan izini ini, tapi kunci media tidak akan bekerja."

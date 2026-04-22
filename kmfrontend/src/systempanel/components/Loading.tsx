@@ -25,7 +25,7 @@ class Loading extends Component<unknown, unknown> {
 		return this.state.loading ? (
 			<div className="UI-notification-loading">
 				<Spin tip={i18next.t('LOADING')}>
-					<Alert message="Loading" description="Please wait..." type="info" />
+					<Alert title="Loading" description="Please wait..." type="info" />
 				</Spin>
 			</div>
 		) : null;

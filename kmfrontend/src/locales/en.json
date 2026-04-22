@@ -379,6 +379,8 @@
 			"PLAYER_MONITOR": "Second window (monitor)",
 			"PLAYER_MONITOR_TOOLTIP": "Displays a second window for the operator if he cannot see the main screen directly",
 			"PLAYER_LANGUAGE": "Messages and player language",
+			"DISPLAY_FONT_SIZE": "Messages font size modifier",
+			"DISPLAY_FONT_SIZE_TOOLTIP": "Size modifier from -5 to 5. This ONLY works on screen messages (quiz, polls, song info, etc.) and not on lyrics.",
 			"DISPLAY_RANDOMQUOTES": "Display random quotes",
 			"DISPLAY_RANDOMQUOTES_TOOLTIP": "Random quotes are displayed at the bottom of the player screen when it is stopped",
 			"DISPLAY_CONNECTION_INFO_HOST": "Force hostname or IP",
@@ -1575,12 +1577,20 @@
 			"GENERATE_SSH_KEY": "Generate a SSH key",
 			"DELETE_SSH_KEY": "Delete the SSH key"
 		},
+		"UPLOAD_METHOD0": "Media upload method",
 		"FTP": {
 			"HOST": "FTP Host",
 			"PORT": "FTP Port",
 			"USERNAME": "FTP Username",
 			"PASSWORD": "FTP Password",
 			"BASEDIR": "FTP Base Directory"
+		},
+		"SFTP": {
+			"HOST": "SFTP Host",
+			"PORT": "SFTP Port",
+			"USERNAME": "SFTP Username",
+			"PASSWORD": "SFTP Password",
+			"BASEDIR": "SFTP Base Directory"
 		},
 		"GIT_STATUS": "Git status",
 		"GIT_STATUSES": {

@@ -225,7 +225,7 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 					</Link>
 					{this.state.repositories.length > 1 ? (
 						<>
-							<Divider type="vertical" />
+							<Divider orientation="vertical" />
 							<Button
 								type="primary"
 								danger

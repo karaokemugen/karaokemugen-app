@@ -449,7 +449,7 @@ function KaraList(props: KaraListProps) {
 					type="info"
 					showIcon
 					style={{ marginBottom: '10px' }}
-					message={i18next.t('KARA.ONLINE_REPOSITORIES')}
+					title={i18next.t('KARA.ONLINE_REPOSITORIES')}
 				/>
 			) : null}
 			<Row>
@@ -490,7 +490,7 @@ function KaraList(props: KaraListProps) {
 				columns={columns}
 				rowKey="kid"
 				pagination={{
-					position: ['topRight', 'bottomRight'],
+					placement: ['topEnd', 'bottomEnd'],
 					current: currentPage || 1,
 					defaultPageSize: currentPageSize,
 					pageSize: currentPageSize,

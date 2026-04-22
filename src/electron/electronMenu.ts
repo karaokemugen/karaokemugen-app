@@ -8,7 +8,6 @@ import fileMenu from './menus/file.js';
 import goToMenu from './menus/goTo.js';
 import helpMenu from './menus/help.js';
 import optionsMenu from './menus/options.js';
-import toolsMenu from './menus/tools.js';
 import viewMenu from './menus/view.js';
 import windowMenu from './menus/window.js';
 
@@ -26,8 +25,6 @@ function initMenu(layout: MenuLayout) {
 		editMenu(options),
 		// GO TO MENU
 		goToMenu(options),
-		// TOOLS MENU
-		toolsMenu(options),
 		// OPTIONS
 		optionsMenu(options),
 		// WINDOW MENU

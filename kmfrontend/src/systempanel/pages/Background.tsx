@@ -140,7 +140,7 @@ export default function Background() {
 				<Alert
 					type="info"
 					showIcon
-					message={
+					title={
 						<ul>
 							{i18next
 								.t<
@@ -148,7 +148,9 @@ export default function Background() {
 									{ returnObjects: true },
 									string[]
 								>('BACKGROUNDS_MGMT.INFO', { returnObjects: true })
-								?.map((info, i) => <li key={i}>{info}</li>)}
+								?.map((info, i) => (
+									<li key={i}>{info}</li>
+								))}
 						</ul>
 					}
 				/>
@@ -196,17 +198,21 @@ export default function Background() {
 							defaultValue="pause"
 							style={{ marginLeft: '1em' }}
 							onChange={(value: BackgroundType) => setType(value)}
-						>
-							<Select.Option key="pause" value="pause">
-								{i18next.t('BACKGROUNDS_MGMT.TYPE.PAUSE')} - {i18next.t('BACKGROUNDS_MGMT.DESC.PAUSE')}
-							</Select.Option>
-							<Select.Option key="stop" value="stop">
-								{i18next.t('BACKGROUNDS_MGMT.TYPE.STOP')} - {i18next.t('BACKGROUNDS_MGMT.DESC.STOP')}
-							</Select.Option>
-							<Select.Option key="poll" value="poll">
-								{i18next.t('BACKGROUNDS_MGMT.TYPE.POLL')} - {i18next.t('BACKGROUNDS_MGMT.DESC.POLL')}
-							</Select.Option>
-						</Select>
+							options={[
+								{
+									value: 'pause',
+									label: `${i18next.t('BACKGROUNDS_MGMT.TYPE.PAUSE')} - ${i18next.t('BACKGROUNDS_MGMT.DESC.PAUSE')}`,
+								},
+								{
+									value: 'stop',
+									label: `${i18next.t('BACKGROUNDS_MGMT.TYPE.STOP')} - ${i18next.t('BACKGROUNDS_MGMT.DESC.STOP')}`,
+								},
+								{
+									value: 'poll',
+									label: `${i18next.t('BACKGROUNDS_MGMT.TYPE.POLL')} - ${i18next.t('BACKGROUNDS_MGMT.DESC.POLL')}`,
+								},
+							]}
+						/>
 					</div>
 				</Modal>
 			</Layout.Content>

@@ -109,7 +109,7 @@ function Storage() {
 				<Table dataSource={repositories} columns={columns} rowKey="name" />
 				<Alert
 					type="info"
-					message={i18next.t('REPOSITORIES.STORAGE_INFO')}
+					title={i18next.t('REPOSITORIES.STORAGE_INFO')}
 					description={
 						<ul>
 							<li>{i18next.t('REPOSITORIES.STORAGE_INFO_DELETE')}</li>

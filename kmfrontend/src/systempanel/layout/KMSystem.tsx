@@ -112,6 +112,13 @@ class KMSystem extends Component<unknown, unknown> {
 						},
 					},
 				}}
+				tag={{
+					styles: {
+						root: {
+							marginInlineEnd: 8,
+						},
+					},
+				}}
 			>
 				<Layout style={{ minHeight: '100vh' }}>
 					<Layout.Sider collapsible>

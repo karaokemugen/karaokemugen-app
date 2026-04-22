@@ -83,7 +83,7 @@ function UserList() {
 					<Link to={`/system/users/${record.login}`}>
 						<Button type="primary" icon={<EditOutlined />} />
 					</Link>
-					<Divider type="vertical" />
+					<Divider orientation="vertical" />
 					<Button
 						type="primary"
 						danger

@@ -1,7 +1,7 @@
 import { Layout } from 'antd';
 import i18next from 'i18next';
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import type { DBKara } from '../../../../../src/lib/types/database/kara';
 import { commandBackend } from '../../../utils/socket';
@@ -13,6 +13,7 @@ import { WS_CMD } from '../../../utils/ws';
 function KaraEdit() {
 	const navigate = useNavigate();
 	const { kid } = useParams();
+	const [searchParams] = useSearchParams();
 
 	const [kara, setKara] = useState<DBKara>();
 	const [loaded, setLoaded] = useState(false);
@@ -20,7 +21,7 @@ function KaraEdit() {
 	const saveUpdate = async (kara: EditedKara) => {
 		try {
 			await commandBackend(WS_CMD.EDIT_KARA, kara, true, 300000);
-			navigate('/system/karas');
+			navigate(searchParams.get('route') ?? '/system/karas');
 		} catch (_) {
 			// already display
 		}
@@ -34,13 +35,13 @@ function KaraEdit() {
 
 	const handleCopy = async (kid, repo) => {
 		await commandBackend(WS_CMD.COPY_KARA_TO_REPO, { repo, kid }, true);
-		navigate('/system/karas');
+		navigate(searchParams.get('route') ?? '/system/karas');
 	};
 
 	const handleDelete = async (kid: string) => {
 		try {
 			await commandBackend(WS_CMD.DELETE_KARAS, { kids: [kid] }, true);
-			navigate('/system/karas/');
+			navigate(searchParams.get('route') ?? '/system/karas/');
 		} catch (_) {
 			// already display
 		}

@@ -116,7 +116,10 @@ function KaraForm(props: KaraFormProps) {
 	const [mediaInfo, setMediaInfo] = useState<MediaInfo>(null);
 	const [mediaInfoValidationResults, setMediaInfoValidationResults] = useState<MediaInfoValidationResult[]>([]);
 	const [isEncodingMedia, setIsEncodingMedia] = useState(false);
-	const [encodeMediaOptions, setEncodeMediaOptions] = useState<{ trim: boolean, fixAspectRatioMode: 'blackbars' | 'blurvideo' | '' | null }>({ trim: false, fixAspectRatioMode: null });
+	const [encodeMediaOptions, setEncodeMediaOptions] = useState<{
+		trim: boolean;
+		fixAspectRatioMode: 'blackbars' | 'blurvideo' | '' | null;
+	}>({ trim: false, fixAspectRatioMode: null });
 	const [repositoriesValue, setRepositoriesValue] = useState<string[]>(null);
 	const [repositoryManifest, setRepositoryManifest] = useState<RepositoryManifestV2>();
 	const [repoToCopySong, setRepoToCopySong] = useState<string>(null);
@@ -378,7 +381,6 @@ function KaraForm(props: KaraFormProps) {
 							? 'unmet-warning'
 							: '',
 			}));
-			console.debug({rows, propertiesToDisplay})
 
 		return (
 			<>
@@ -459,7 +461,7 @@ function KaraForm(props: KaraFormProps) {
 				{coverImageEmbedRunning ? <Spin style={{ margin: '0 10px' }} /> : null}
 			</Upload>
 			<Image
-				wrapperStyle={{ display: 'none' }}
+				styles={{ root: { display: 'none' } }}
 				preview={{
 					visible: coverImagePreviewOpen,
 					onVisibleChange: visible => setCoverImagePreviewOpen(visible),
@@ -857,12 +859,6 @@ function KaraForm(props: KaraFormProps) {
 		);
 	};
 
-	const mapRepoToSelectOption = (repo: string) => (
-		<Select.Option key={repo} value={repo}>
-			{repo}
-		</Select.Option>
-	);
-
 	const tagRender = ({ label, value, closable, onClose }) => {
 		return (
 			<Tag closable={closable} onClose={onClose} style={{ whiteSpace: 'normal' }}>
@@ -898,8 +894,6 @@ function KaraForm(props: KaraFormProps) {
 		}
 		setTagsCheckbox(newTagsCheckbox);
 	};
-
-	
 
 	return (
 		<Form
@@ -950,7 +944,7 @@ function KaraForm(props: KaraFormProps) {
 					{i18next.t('KARA.REPOSITORY_DOCUMENTATION', { instance: repositoryManifest.name })}
 				</Button>
 			)}
-			<Divider orientation="left">{i18next.t('KARA.SECTIONS.FILES')}</Divider>
+			<Divider titlePlacement="start">{i18next.t('KARA.SECTIONS.FILES')}</Divider>
 			<Form.Item
 				label={
 					<span>
@@ -1030,7 +1024,7 @@ function KaraForm(props: KaraFormProps) {
 									<Divider></Divider>
 									<Space
 										style={{ width: '100%' }} // Shoud be block={true} but seems not supported
-										direction="vertical"
+										orientation="vertical"
 									>
 										<Flex gap={'5px'}>
 											<Button
@@ -1075,48 +1069,67 @@ function KaraForm(props: KaraFormProps) {
 											</Tooltip>
 										</Checkbox>
 
-
-										{mediaInfo.videoAspectRatio.displayAspectRatio && mediaInfo.videoAspectRatio.displayAspectRatio !== (
-											repositoryManifest?.rules?.videoFile?.resolution?.aspectRatio &&
-											`${repositoryManifest?.rules?.videoFile?.resolution?.aspectRatio.x}:${repositoryManifest?.rules?.videoFile?.resolution?.aspectRatio.y}` ||
-											'16:9'
-										) ? 
-										<Flex align='center'>
-											<Checkbox
-												style={{width: '100%'}}
-												disabled={isEncodingMedia}
-												defaultChecked={mediaInfoValidationResults?.some(res => res.name === 'videoAspectRatio')}
-												onChange={(e) =>
-													setEncodeMediaOptions({
-														...encodeMediaOptions,
-														fixAspectRatioMode: e.target.checked ? 'blurvideo' : null,
-													})
-												}
-											>
-												{i18next.t('KARA.MEDIA_ENCODE.OPTIONS.FIXASPECTRATIO')}&nbsp;
-												<Tooltip title={i18next.t('KARA.MEDIA_ENCODE.OPTIONS.FIXASPECTRATIO_TOOLTIP')}>
-													<QuestionCircleOutlined />
-												</Tooltip>
-											</Checkbox>
-											
-											<Flex align='center' gap={'5px'}>
-												{i18next.t('KARA.MEDIA_ENCODE.OPTIONS.FIXASPECTRATIO_BACKGROUND')}
-												<Select
-													disabled={!encodeMediaOptions?.fixAspectRatioMode || isEncodingMedia}
-													onChange={(value: any) => 
+										{mediaInfo.videoAspectRatio.displayAspectRatio &&
+										mediaInfo.videoAspectRatio.displayAspectRatio !==
+											((repositoryManifest?.rules?.videoFile?.resolution?.aspectRatio &&
+												`${repositoryManifest?.rules?.videoFile?.resolution?.aspectRatio.x}:${repositoryManifest?.rules?.videoFile?.resolution?.aspectRatio.y}`) ||
+												'16:9') ? (
+											<Flex align="center">
+												<Checkbox
+													style={{ width: '100%' }}
+													disabled={isEncodingMedia}
+													defaultChecked={mediaInfoValidationResults?.some(
+														res => res.name === 'videoAspectRatio'
+													)}
+													onChange={e =>
 														setEncodeMediaOptions({
 															...encodeMediaOptions,
-															fixAspectRatioMode: value,
-														})}
-													defaultValue={'blurvideo'}
-													options={[
-														{label: i18next.t('KARA.MEDIA_ENCODE.OPTIONS.FIXASPECTRATIO_MODE.BLUR_VIDEO'),  value: 'blurvideo'},
-														{label: i18next.t('KARA.MEDIA_ENCODE.OPTIONS.FIXASPECTRATIO_MODE.BLACK'), value: 'black'}]}
-													tagRender={tagRender}
-												></Select>
+															fixAspectRatioMode: e.target.checked ? 'blurvideo' : null,
+														})
+													}
+												>
+													{i18next.t('KARA.MEDIA_ENCODE.OPTIONS.FIXASPECTRATIO')}&nbsp;
+													<Tooltip
+														title={i18next.t(
+															'KARA.MEDIA_ENCODE.OPTIONS.FIXASPECTRATIO_TOOLTIP'
+														)}
+													>
+														<QuestionCircleOutlined />
+													</Tooltip>
+												</Checkbox>
+
+												<Flex align="center" gap={'5px'}>
+													{i18next.t('KARA.MEDIA_ENCODE.OPTIONS.FIXASPECTRATIO_BACKGROUND')}
+													<Select
+														disabled={
+															!encodeMediaOptions?.fixAspectRatioMode || isEncodingMedia
+														}
+														onChange={(value: any) =>
+															setEncodeMediaOptions({
+																...encodeMediaOptions,
+																fixAspectRatioMode: value,
+															})
+														}
+														defaultValue={'blurvideo'}
+														options={[
+															{
+																label: i18next.t(
+																	'KARA.MEDIA_ENCODE.OPTIONS.FIXASPECTRATIO_MODE.BLUR_VIDEO'
+																),
+																value: 'blurvideo',
+															},
+															{
+																label: i18next.t(
+																	'KARA.MEDIA_ENCODE.OPTIONS.FIXASPECTRATIO_MODE.BLACK'
+																),
+																value: 'black',
+															},
+														]}
+														tagRender={tagRender}
+													></Select>
+												</Flex>
 											</Flex>
-										</Flex>
-										: null }
+										) : null}
 
 										{encodeMediaOptions?.trim ? (
 											<Alert
@@ -1203,7 +1216,7 @@ function KaraForm(props: KaraFormProps) {
 					</Col>
 				</Row>
 			</Form.Item>
-			<Divider orientation="left">{i18next.t('KARA.SECTIONS.PARENTS')}</Divider>
+			<Divider titlePlacement="start">{i18next.t('KARA.SECTIONS.PARENTS')}</Divider>
 			<Paragraph style={{ marginLeft: '200px' }}>{i18next.t('KARA.DESC.PARENTS')}</Paragraph>
 			<Paragraph style={{ marginLeft: '200px' }}>{i18next.t('KARA.DESC.PARENTS_PUBLIC')}</Paragraph>
 			<Form.Item
@@ -1230,7 +1243,7 @@ function KaraForm(props: KaraFormProps) {
 					tagRender={tagRender}
 				/>
 			</Form.Item>
-			<Divider orientation="left">{i18next.t('KARA.SECTIONS.TITLES')}</Divider>
+			<Divider titlePlacement="start">{i18next.t('KARA.SECTIONS.TITLES')}</Divider>
 			<Paragraph style={{ marginLeft: '200px' }}>{i18next.t('KARA.DESC.TITLES')}</Paragraph>
 			<Paragraph style={{ marginLeft: '200px' }}>{i18next.t('KARA.DESC.TITLES_DEFAULT_LANGUAGE')}</Paragraph>
 			<Form.Item
@@ -1277,7 +1290,7 @@ function KaraForm(props: KaraFormProps) {
 			>
 				<EditableGroupAlias onChange={aliases => form?.setFieldsValue({ titles_aliases: aliases })} />
 			</Form.Item>
-			<Divider orientation="left">{i18next.t('KARA.SECTIONS.IDENTITY')}</Divider>
+			<Divider titlePlacement="start">{i18next.t('KARA.SECTIONS.IDENTITY')}</Divider>
 			<Form.Item
 				label={i18next.t('TAG_TYPES.LANGS_other')}
 				labelCol={{ flex: '0 1 220px' }}
@@ -1442,7 +1455,7 @@ function KaraForm(props: KaraFormProps) {
 			tagsCheckbox.get(7)?.length > 0 ||
 			tagsCheckbox.get(15)?.length > 0 ||
 			tagsCheckbox.get(9)?.length > 0 ? (
-				<Divider orientation="left">{i18next.t('KARA.SECTIONS.CATEGORIZATION')}</Divider>
+				<Divider titlePlacement="start">{i18next.t('KARA.SECTIONS.CATEGORIZATION')}</Divider>
 			) : null}
 			{tagsCheckbox.get(16)?.length > 0 ? (
 				<Form.Item
@@ -1558,7 +1571,7 @@ function KaraForm(props: KaraFormProps) {
 					<CheckBoxTag tags={tagsCheckbox.get(9)} onChange={tags => updateField({ groups: tags })} />
 				</Form.Item>
 			) : null}
-			<Divider orientation="left">{i18next.t('KARA.SECTIONS.META')}</Divider>
+			<Divider titlePlacement="start">{i18next.t('KARA.SECTIONS.META')}</Divider>
 			<Form.Item
 				className="wrap-label"
 				label={
@@ -1705,9 +1718,10 @@ function KaraForm(props: KaraFormProps) {
 						disabled={props.kara?.repository !== undefined}
 						placeholder={i18next.t('KARA.REPOSITORY')}
 						onChange={value => getRepoManifest(value)}
-					>
-						{repositoriesValue.map(mapRepoToSelectOption)}
-					</Select>
+						options={repositoriesValue.map(repo => {
+							return { value: repo, label: repo };
+						})}
+					/>
 				</Form.Item>
 			) : null}
 			<Form.Item
@@ -1743,18 +1757,22 @@ function KaraForm(props: KaraFormProps) {
 			</Form.Item>
 			{repositoriesValue && props.kara?.repository ? (
 				<>
-					<Divider orientation="left">{i18next.t('KARA.COPY_SONG')}</Divider>
+					<Divider titlePlacement="start">{i18next.t('KARA.COPY_SONG')}</Divider>
 					<Form.Item
 						hasFeedback
 						label={i18next.t('KARA.REPOSITORY')}
 						labelCol={{ flex: '0 1 220px' }}
 						wrapperCol={{ span: 8 }}
 					>
-						<Select placeholder={i18next.t('KARA.REPOSITORY')} onChange={setRepoToCopySong}>
-							{repositoriesValue
+						<Select
+							placeholder={i18next.t('KARA.REPOSITORY')}
+							onChange={setRepoToCopySong}
+							options={repositoriesValue
 								.filter(value => value !== props.kara?.repository)
-								.map(mapRepoToSelectOption)}
-						</Select>
+								.map(repo => {
+									return { value: repo, label: repo };
+								})}
+						/>
 					</Form.Item>
 
 					<Form.Item wrapperCol={{ span: 8, offset: 3 }} style={{ textAlign: 'right' }}>
@@ -1768,11 +1786,11 @@ function KaraForm(props: KaraFormProps) {
 						</Button>
 					</Form.Item>
 
-					<Divider orientation="left">{i18next.t('KARA.DELETE_KARA')}</Divider>
+					<Divider titlePlacement="start">{i18next.t('KARA.DELETE_KARA')}</Divider>
 					<Form.Item wrapperCol={{ span: 8, offset: 3 }} style={{ textAlign: 'center' }}>
 						<Alert
 							style={{ textAlign: 'left', marginBottom: '20px' }}
-							message={i18next.t('WARNING')}
+							title={i18next.t('WARNING')}
 							description={i18next.t('CONFIRM_SURE')}
 							type="warning"
 						/>

@@ -117,19 +117,17 @@ export default function LanguagesList(props: IProps) {
 				{selectVisible ? (
 					<Select
 						style={{ maxWidth: '40%', minWidth: '150px' }}
-						showSearch
-						optionFilterProp="children"
+						showSearch={{
+							optionFilterProp: 'label',
+						}}
 						autoFocus={selectVisible}
 						onChange={value => addLang(value)}
-					>
-						{languages
+						options={languages
 							.filter(value => !Object.keys(i18n).includes(value.value))
-							.map(lang => (
-								<Select.Option key={lang.value} value={lang.value}>
-									{lang.label} ({lang.value.toUpperCase()})
-								</Select.Option>
-							))}
-					</Select>
+							.map(lang => {
+								return { value: lang.value, label: `${lang.label} (${lang.value.toUpperCase()})` };
+							})}
+					/>
 				) : (
 					<Tag onClick={showSelect} style={{ borderStyle: 'dashed' }}>
 						<PlusOutlined />
@@ -143,15 +141,12 @@ export default function LanguagesList(props: IProps) {
 						style={{ maxWidth: '40%', minWidth: '150px' }}
 						value={props.defaultLanguage}
 						onChange={props.onDefaultLanguageSelect}
-					>
-						{languages
+						options={languages
 							.filter(value => Object.keys(i18n).includes(value.value))
-							.map(lang => (
-								<Select.Option key={lang.value} value={lang.value}>
-									{lang.label} ({lang.value.toUpperCase()})
-								</Select.Option>
-							))}
-					</Select>
+							.map(lang => {
+								return { value: lang.value, label: `${lang.label} (${lang.value.toUpperCase()})` };
+							})}
+					/>
 				</Form.Item>
 			) : null}
 		</>

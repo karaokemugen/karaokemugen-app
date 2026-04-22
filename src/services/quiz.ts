@@ -35,6 +35,7 @@ import { displayMessage, getPromoMessage, next, sendCommand, stopPlayer } from '
 import { editPlaylist } from './playlist.js';
 import { getTag } from './tag.js';
 import { createUser, editUser, getUser, getUsers } from './user.js';
+import { getFontSize } from '../components/mpv/mpv.js';
 
 const service = 'Quiz';
 
@@ -74,7 +75,7 @@ function translateQuizAnswers(quizAnswer: QuizAnswers) {
 
 export async function buildEndGameScoreString(): Promise<string> {
 	const [users, scores] = await Promise.all([getUsers({}), getTotalGameScore(getState().quiz.currentQuizGame)]);
-	const sizeMax = 100;
+	const sizeMax = getFontSize(100);
 	const leaderboards = [];
 	// Build leaderboard for the first only 10
 	const scoresToDisplay = scores

@@ -640,7 +640,9 @@
 			"AUDIO_ONLY_EXPERIENCE": "Nur Ton",
 			"AUDIO_ONLY_EXPERIENCE_TOOLTIP": "Zeigt ein Standbild statt des Videos bei Aktivierung. Die Änderung wird zum nächsten Lied übernommen.",
 			"DISPLAY_CONNECTION_INFO_QRCODE_DURING_SONG": "QR-Code während eines Liedes anzeigen",
-			"DISPLAY_CONNECTION_INFO_QRCODE_DURING_SONG_TOOLTIP": "Der QR-Code wird während eines Liedes in der oberen rechten Ecke angezeigt."
+			"DISPLAY_CONNECTION_INFO_QRCODE_DURING_SONG_TOOLTIP": "Der QR-Code wird während eines Liedes in der oberen rechten Ecke angezeigt.",
+			"DISPLAY_FONT_SIZE": "Fontgröße für Nachrichten verändern",
+			"DISPLAY_FONT_SIZE_TOOLTIP": "Fontgröße kann von -5 bis 5 eingestellt werden. Diese bezieht sich NUR auf Bildschirmnachrichten (Quiz, Umfragen, Liedinfo usw.) und nicht auf Liedtexte."
 		},
 		"SYSTEMPANEL_TIP": "Du kannst die gesuchten Optionen nicht finden? <2>Einige Optionen befinden sich in den <3>System-Einstellungen</3>.</2>",
 		"PLAYLIST": {
@@ -1757,6 +1759,13 @@
 			"USERNAME": "FTP-Benutzername",
 			"HOST": "FTP-Server"
 		},
+		"SFTP": {
+			"PORT": "SFTP-Port",
+			"PASSWORD": "SFTP-Passwort",
+			"BASEDIR": "SFTP-Basisverzeichnis",
+			"USERNAME": "SFTP-Benutzername",
+			"HOST": "SFTP-Server"
+		},
 		"NAME": "Name des Repositorys",
 		"GIT_UNSTASH": "Anwenden",
 		"MOVING_MEDIA_PANEL": "Medien verschieben",
@@ -1816,7 +1825,8 @@
 		"LOCAL": "Lokal (für deine privaten Lieder)",
 		"REPOSITORY_TYPE": "Repository-Typ",
 		"REPOSITORY_TYPE_DESC": "Entscheide zunächst, ob das neue Repository online oder lokal sein soll.",
-		"PATH_MEDIAS_DESC": "Bitte gibt hier an, wo die Medien gespeichert werden sollen. Wenn du viele Lieder nutzen willst, sollte eine großzügige Menge Speicherplatz vorhanden sein."
+		"PATH_MEDIAS_DESC": "Bitte gibt hier an, wo die Medien gespeichert werden sollen. Wenn du viele Lieder nutzen willst, sollte eine großzügige Menge Speicherplatz vorhanden sein.",
+		"UPLOAD_METHOD0": "Methode für den Medien-Upload"
 	},
 	"TAGS": {
 		"KITSU_SLUG_ERROR": "Ungültiger Kitsu-Slug",
@@ -1831,7 +1841,7 @@
 		"NOLIVEDOWNLOAD": "Web-Downloads verbieten",
 		"ANIME_ID_ERROR": "Bitte gib eine positive Zahl ein",
 		"ALIASES": "Aliasnamen",
-		"NOT_ANILIST_URL_ERROR": "Dies ist eine anilist URL",
+		"NOT_ANILIST_URL_ERROR": "Dies ist eine anilist-URL",
 		"ALIASES_TOOLTIP": "Kurznamen oder alternative Namen, die für die Suche verwendet werden.",
 		"ANILIST_ID": "Anilist ID/URL",
 		"TYPES_TOOLTIP": "Dies ist der Tag-Typ, damit er von den Nutzern richtig gesucht werden kann",
@@ -1842,10 +1852,10 @@
 		"NAME_TOOLTIP": "Dies ist der interne Name, der verwendet wird, um die Tags in der Datenbank von Karaoke Mugen zu referenzieren",
 		"NAME_REQUIRED": "Bitte gib einen Namen ein",
 		"REPOSITORY_REQUIRED": "Repository ist erforderlich",
-		"NOT_MAL_URL_ERROR": "Dies ist eine myanimelist URL",
+		"NOT_MAL_URL_ERROR": "Dies ist eine myanimelist-URL",
 		"COPY_TAG": "Tag in ein anderes Repository kopieren",
 		"SHORT_NAME": "Kurzname",
-		"NOT_KITSU_URL_ERROR": "Dies ist eine kitsu URL",
+		"NOT_KITSU_URL_ERROR": "Dies ist eine kitsu-URL",
 		"I18N_NAME": "Name in dieser Sprache",
 		"DESCRIPTION_TOOLTIP": "Eine Beschreibung des Tags, die nur für Sammlungen verwendet wird.",
 		"I18N_SELECT": "Eine Sprache hinzufügen",
@@ -2273,7 +2283,8 @@
 		"SPEED": {
 			"UP": "Schneller abspielen",
 			"RESET": "Auf normale Geschwindigkeit zurücksetzen",
-			"DOWN": "Langsamer abspielen"
+			"DOWN": "Langsamer abspielen",
+			"TITLE": "Geschwindigkeit verändern"
 		},
 		"BLURVIDEO": {
 			"BLUR": "Video verschwommen darstellen",
@@ -2282,8 +2293,10 @@
 		"PITCH": {
 			"UP": "Tonlage erhöhen",
 			"RESET": "Tonlage zurücksetzen",
-			"DOWN": "Tonlage herabsetzen"
-		}
+			"DOWN": "Tonlage herabsetzen",
+			"TITLE": "Tonlage verändern"
+		},
+		"MESSAGE": "Eine Nachricht an die Zuschauer senden"
 	},
 	"NEW_ACCOUNT_CODE_SHORT": "Neuer Benutzer-Code",
 	"NEW_ACCOUNT_CODE": "Neuer Benutzer-Code (beim Veranstalter melden)",

@@ -160,6 +160,8 @@ Karaoke:
     Type: 0
 Player:
   Display:
+    # Font size modifier, from -5 to 5
+    FontSize: 0
     # Show random quotes on pause screens
     RandomQuotes: true
     # Show song information at the beginning and end of song
