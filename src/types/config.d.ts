@@ -190,6 +190,7 @@ export interface Config {
 				QRCode?: boolean;
 				QRCodeDuringSong?: boolean;
 			};
+			Banner?: boolean;
 			RandomQuotes?: boolean;
 			SongInfo?: boolean;
 			SongInfoLanguage?: string;

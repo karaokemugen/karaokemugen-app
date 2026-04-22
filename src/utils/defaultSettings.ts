@@ -169,6 +169,7 @@ export const defaults: Config = {
 		Display: {
 			FontSize: 0,
 			Avatar: true,
+			Banner: true,
 			Nickname: true,
 			ConnectionInfo: {
 				Enabled: true,

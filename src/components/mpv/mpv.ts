@@ -1381,7 +1381,7 @@ export class Players {
 				playerState.mediaType !== 'song' && conf.Player.Display.RandomQuotes
 					? sample(initializationCatchphrases)
 					: '';
-			const version = `Karaoke Mugen ${state.version.number} (${state.version.name}) - https://karaokes.moe`;
+			const version = conf.Player.Display.Banner ? `Karaoke Mugen ${state.version.number} (${state.version.name}) - https://karaokes.moe` : '';
 			const fontSizes = {
 				banner: getFontSize(80),
 				version: getFontSize(60),

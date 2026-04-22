@@ -381,6 +381,8 @@
 			"PLAYER_LANGUAGE": "Langue des messages et du lecteur vidéo",
 			"DISPLAY_FONT_SIZE": "Modificateur de taille de la police des messages à l'écran",
 			"DISPLAY_FONT_SIZE_TOOLTIP": "De -5 à 5. Ceci n'affecte QUE les messages affichés à l'écran (quizz, sondage, informations de chanson, etc.) et pas les paroles.",
+			"DISPLAY_BANNER": "Afficher la bannière de version",
+			"DISPLAY_BANNER_TOOLTIP": "Cette bannière, qui affiche la version de Karaoke Mugen et son site web permettent au logiciel d'être connu quand il est utilisé en public. Les gens peuvent ainsi aller voir et l'utiliser à leur tour. Soyez sympa, gardez cette option activée s'il vous plaît !",
 			"DISPLAY_RANDOMQUOTES": "Afficher les citations aléatoires",
 			"DISPLAY_RANDOMQUOTES_TOOLTIP": "Des citations aléatoires sont affichées en bas de l'écran quand le lecteur est arrêté",
 			"DISPLAY_CONNECTION_INFO_HOST": "Forcer le nom d'hôte/Adresse IP",

@@ -390,6 +390,25 @@ function PlayerOptions(props: IProps) {
 					</div>
 				))}
 			{filterValue === undefined ||
+				(sanitizeSettingsSearchValue(i18next.t('SETTINGS.PLAYER.DISPLAY_BANNER')).includes(
+					filterValue
+				) && (
+					<div className="settings-line">
+						<label htmlFor="Player.Display.Banner">
+							<span className="title">{i18next.t('SETTINGS.PLAYER.DISPLAY_BANNER')}</span>
+							<br />
+							<span className="tooltip">{i18next.t('SETTINGS.PLAYER.DISPLAY_BANNER_TOOLTIP')}</span>
+						</label>
+						<div>
+							<Switch
+								idInput="Player.Display.Banner"
+								handleChange={onChange}
+								isChecked={config['Player.Display.Banner']}
+							/>
+						</div>
+					</div>
+				))}
+			{filterValue === undefined ||
 				(sanitizeSettingsSearchValue(i18next.t('SETTINGS.PLAYER.DISPLAY_RANDOMQUOTES')).includes(
 					filterValue
 				) && (

@@ -117,7 +117,11 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 			playerNeedsRestart();
 		}
 		if (
-			oldConfig.Player.Display.ConnectionInfo.Message !== newConfig.Player.Display.ConnectionInfo.Message &&
+			(oldConfig.Player.Display.ConnectionInfo.Message !== newConfig.Player.Display.ConnectionInfo.Message 
+			|| oldConfig.Player.Display.Banner !== newConfig.Player.Display.Banner
+			|| oldConfig.Player.Display.FontSize !== newConfig.Player.Display.FontSize
+			|| oldConfig.Player.Display.RandomQuotes !== newConfig.Player.Display.RandomQuotes
+			) &&
 			(getState().player.mediaType === 'pause' || getState().player.mediaType === 'stop')
 		) {
 			displayInfo();
