@@ -10,6 +10,9 @@ import { setTimeout as sleep } from 'timers/promises';
 
 import { errorStep } from '../../electron/electronLogger.js';
 import { APIMessage } from '../../lib/services/frontend.js';
+import { getSongSeriesSingers, getSongTitle } from '../../lib/services/kara.js';
+import { getRepoManifest } from '../../lib/services/repo.js';
+import { getTagNameInLanguage } from '../../lib/services/tag.js';
 import { DBKaraTag } from '../../lib/types/database/kara.js';
 import { PlaylistMediaType } from '../../lib/types/playlistMedias.js';
 import { getConfig, resolvedPath, resolvedPathRepos, setConfig } from '../../lib/utils/config.js';
@@ -23,6 +26,7 @@ import { emitWS } from '../../lib/utils/ws.js';
 import { getBackgroundAndMusic } from '../../services/backgrounds.js';
 import { getPromoMessage, next } from '../../services/player.js';
 import { getSingleMedia } from '../../services/playlistMedias.js';
+import { getRepo } from '../../services/repo.js';
 import { BackgroundType } from '../../types/backgrounds.js';
 import { MpvCommand } from '../../types/mpvIPC.js';
 import { PlayerState, SongModifiers } from '../../types/player.js';
@@ -31,15 +35,11 @@ import { FFmpegRegex, initializationCatchphrases, mpvRegex, requiredMPVVersion }
 import { setDiscordActivity } from '../../utils/discordRPC.js';
 import sentry from '../../utils/sentry.js';
 import { getState, setState } from '../../utils/state.js';
-import { isShutdownInProgress } from '../engine.js';
-import Timeout = NodeJS.Timeout;
-import { getSongSeriesSingers, getSongTitle } from '../../lib/services/kara.js';
-import { getRepoManifest } from '../../lib/services/repo.js';
-import { getTagNameInLanguage } from '../../lib/services/tag.js';
-import { getRepo } from '../../services/repo.js';
 import { writeStreamFiles } from '../../utils/streamerFiles.js';
+import { isShutdownInProgress } from '../engine.js';
 import { lavfiGenerator } from './lavfiGenerator.js';
 import { Player } from './player.js';
+import Timeout = NodeJS.Timeout;
 
 type PlayerType = 'main' | 'monitor';
 
@@ -655,6 +655,7 @@ export class Players {
 		playerState.onTop = conf.Player.StayOnTop;
 		playerState.border = conf.Player.Borders;
 		playerState.volume = conf.Player.Volume;
+		playerState.mute = conf.Player.AudioMute;
 		const audioDevices = await getMpvAudioOutputs();
 		const audioDevicesList = audioDevices.map(ad => ad[0]);
 		if (!audioDevicesList.includes(getConfig().Player.AudioDevice)) {

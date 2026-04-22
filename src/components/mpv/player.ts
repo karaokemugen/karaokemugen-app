@@ -81,6 +81,7 @@ export class Player {
 			`--log-file=${resolve(resolvedPath('Logs'), this.logFile)}`,
 			`--hwdec=${conf.Player.HardwareDecoding}`,
 			`--volume=${+conf.Player.Volume}`,
+			`--mute=${+conf.Player.AudioMute ? "yes" : "no"}`,
 			`--audio-delay=${(conf.Player.AudioDelay && +conf.Player.AudioDelay / 1000) || 0}`,
 			'--autoload-files=no',
 			`--config-dir=${resolvedPath('Temp')}`,
@@ -174,6 +175,7 @@ export class Player {
 		};
 
 		this.log.debug(`options:`, { obj: { options: mpvOptions, args: mpvArgs } });
+		console.log({mpvArgs})
 		return [state.binPath.mpv, socket, mpvArgs];
 	}
 

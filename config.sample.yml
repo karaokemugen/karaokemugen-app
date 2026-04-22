@@ -205,6 +205,8 @@ Player:
     Size: 30
   # Volume
   Volume: 100
+  # Audio muted
+  AudioMute: false
   # AudioDelay for audio/video sync
   AudioDelay: 0
   # Decide if a still image should be shown instead of video for an audio-only experience(tm)

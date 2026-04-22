@@ -283,11 +283,13 @@ export async function pausePlayer() {
 
 async function mutePlayer() {
 	await mpv.setMute(true);
+	setConfig({ Player: { AudioMute: true } });
 	logger.info('Player muted', { service });
 }
 
 async function unmutePlayer() {
 	await mpv.setMute(false);
+	setConfig({ Player: { AudioMute: false } });
 	logger.info('Player unmuted', { service });
 }
 
