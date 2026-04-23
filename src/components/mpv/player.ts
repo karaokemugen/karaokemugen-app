@@ -81,8 +81,6 @@ export class Player {
 			`--log-file=${resolve(resolvedPath('Logs'), this.logFile)}`,
 			`--hwdec=${conf.Player.HardwareDecoding}`,
 			`--volume=${+conf.Player.Volume}`,
-			`--mute=${+conf.Player.AudioMute ? "yes" : "no"}`,
-			`--fullscreen=${+conf.Player.FullScreenOnStartup || conf.Player.FullScreen ? "yes" : "no"}`,
 			`--audio-delay=${(conf.Player.AudioDelay && +conf.Player.AudioDelay / 1000) || 0}`,
 			'--autoload-files=no',
 			`--config-dir=${resolvedPath('Temp')}`,
@@ -105,9 +103,11 @@ export class Player {
 		} else {
 			mpvArgs.push('--reset-on-next-file=pause,loop-file,audio-files,aid,sid');
 			if (!conf.Player.Borders) mpvArgs.push('--no-border');
-			if (conf.Player.FullScreen) {
-				mpvArgs.push('--fullscreen');
+			if (conf.Player.FullScreenOnStartup || conf.Player.FullScreen) {
+				mpvArgs.push('--fullscreen=yes');
 			}
+			if (conf.Player.AudioMute)
+			    mpvArgs.push('--mute=yes');
 		}
 
 		if (conf.Player.Screen) {
