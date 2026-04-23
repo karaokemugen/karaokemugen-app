@@ -97,7 +97,7 @@ const socketLatencyCheck$ = (socket: Socket, remoteHost: string, intervalMs = 10
 		pairwise(),
 		map(([previousValue, currentValue]) => {
 			currentValue.lastNotification = previousValue.lastNotification;
-			const maxLatencyForWarning = 200;
+			const maxLatencyForWarning = 300;
 			const notifyOperatorInterval = 15; // Minutes
 			if (previousValue?.latencyMs >= maxLatencyForWarning && currentValue?.latencyMs >= maxLatencyForWarning) {
 				if (

@@ -181,6 +181,16 @@ function KaraForm(props: KaraFormProps) {
 	}, [mediaInfo]);
 
 	useEffect(() => {
+		// Auto enable aspect ratio fix when unsupported aspect ratio is detected
+		if (mediaInfoValidationResults?.some(res => res.name === 'videoAspectRatio')) {	
+			setEncodeMediaOptions({
+				...encodeMediaOptions,
+				fixAspectRatioMode: 'blurvideo'})
+			}
+
+	}, [mediaInfoValidationResults]);
+
+	useEffect(() => {
 		const oldFormFields = form.getFieldsValue(['mediafile', 'lyrics_infos', 'useEmbeddedLyrics']); // Fields to take over to the applied kara
 		form.resetFields();
 		form.setFieldsValue(oldFormFields); // Re-sets media and lyrics file, if already uploaded
@@ -1070,17 +1080,12 @@ function KaraForm(props: KaraFormProps) {
 										</Checkbox>
 
 										{mediaInfo.videoAspectRatio.displayAspectRatio &&
-										mediaInfo.videoAspectRatio.displayAspectRatio !==
-											((repositoryManifest?.rules?.videoFile?.resolution?.aspectRatio &&
-												`${repositoryManifest?.rules?.videoFile?.resolution?.aspectRatio.x}:${repositoryManifest?.rules?.videoFile?.resolution?.aspectRatio.y}`) ||
-												'16:9') ? (
+											mediaInfoValidationResults?.some(res => res.name === 'videoAspectRatio') ? (
 											<Flex align="center">
 												<Checkbox
 													style={{ width: '100%' }}
 													disabled={isEncodingMedia}
-													defaultChecked={mediaInfoValidationResults?.some(
-														res => res.name === 'videoAspectRatio'
-													)}
+													checked={!!encodeMediaOptions?.fixAspectRatioMode}
 													onChange={e =>
 														setEncodeMediaOptions({
 															...encodeMediaOptions,
