@@ -145,6 +145,23 @@ function PlayerOptions(props: IProps) {
 						</div>
 					</div>
 				))}
+			{filterValue === undefined ||
+				(sanitizeSettingsSearchValue(i18next.t('SETTINGS.PLAYER.FULLSCREEN_ON_STARTUP')).includes(filterValue) && (
+					<div className="settings-line">
+						<label htmlFor="Player.FullScreenOnStartup">
+							<span className="title">{i18next.t('SETTINGS.PLAYER.FULLSCREEN_ON_STARTUP')}</span>
+							<br />
+							<span className="tooltip">{i18next.t('SETTINGS.PLAYER.FULLSCREEN_ON_STARTUP_TOOLTIP')}</span>
+						</label>
+						<div>
+							<Switch
+								idInput="Player.FullScreenOnStartup"
+								handleChange={onChange}
+								isChecked={config['Player.FullScreenOnStartup']}
+							/>
+						</div>
+					</div>
+				))}
 			{!config['Player.FullScreen'] ? (
 				<div id="pipSettings" className="settingsGroupPanel">
 					{filterValue === undefined ||
