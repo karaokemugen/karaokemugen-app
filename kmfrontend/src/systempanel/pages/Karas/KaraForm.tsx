@@ -83,6 +83,7 @@ function KaraForm(props: KaraFormProps) {
 	const context = useContext(GlobalContext);
 
 	const typeTagCheckbox = [3, 14, 16, 10, 13, 12, 11, 7, 15, 9];
+	const LOAD_AND_PROCESS_MEDIA_TIMEOUT = 1000 * 60 * 10 // Bigger files will silently timeout, so rather set a high limit
 
 	// State
 	const [tagsCheckbox, setTagsCheckbox] = useState<Map<number, DBKaraTag[]>>(new Map());
@@ -237,7 +238,7 @@ function KaraForm(props: KaraFormProps) {
 				WS_CMD.GET_KARA_MEDIA_INFO,
 				{ kid: props.kara.kid },
 				false,
-				60000
+				LOAD_AND_PROCESS_MEDIA_TIMEOUT
 			);
 			if (!props.kara.mediafile || mediaInfo.filename === form.getFieldValue('mediafile'))
 				// Avoid showing wrong mediaInfo when mediafile is changed too quickly
@@ -685,7 +686,7 @@ function KaraForm(props: KaraFormProps) {
 						filename: info.file.response.filename,
 					},
 					false,
-					60000
+					LOAD_AND_PROCESS_MEDIA_TIMEOUT // Keep this high (~10 minutes), otherwise bigger files will silently timeout
 				);
 				setMediaInfo(mediaInfo);
 				form.setFieldsValue({ mediafile: mediaInfo.filename });
