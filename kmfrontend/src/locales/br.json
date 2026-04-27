@@ -75,7 +75,10 @@
 			"TOP": "Uhel",
 			"AUDIO_ONLY_EXPERIENCE": "Aodio hepken",
 			"FULLSCREEN": "Skramm a-bezh",
-			"DISPLAY_CONNECTION_INFO_TOOLTIP": "Ar c'hemenn \"Kit da http://xxx !\" eo"
+			"DISPLAY_CONNECTION_INFO_TOOLTIP": "Ar c'hemenn \"Kit da http://xxx !\" eo",
+			"FULLSCREEN_ON_STARTUP": "Skramm a-bezh en ur loc'hañ",
+			"DISPLAY_BANNER": "Diskouez banniel handelv Karaoke Mugen",
+			"DISPLAY_BANNER_TOOLTIP": "Ar banniel-mañ emañ o tiskouez handelv ha lec'hienn web Karaoke Mugen ha sikour a ra ar meziant da vezañ brudet pa vez implijet war al leurenn foran. An dud a furch anv an arload a c'hall implijout anezhañ en o dro. Bezit mat ha lezit an dibarzh-mañ gweredekaet mar plij !"
 		},
 		"INTERFACE": {
 			"DISPLAY_WELCOME_MESSAGE": "Diskouez ur c'hemennadenn degemer",
