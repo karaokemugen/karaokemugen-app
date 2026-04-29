@@ -120,7 +120,7 @@ function PlayerControls(props: IProps) {
 				<button
 					title={i18next.t('PLAYERS_CONTROLS.STOP_AFTER')}
 					data-namecommand="stopAfter"
-					className="btn btn-danger-low stopButton"
+					className="btn stopButton"
 					onClick={props.putPlayerCommando}
 				>
 					<i className="fas fa-stop" />
