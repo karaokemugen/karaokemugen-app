@@ -383,7 +383,7 @@
 			"DISPLAY_FONT_SIZE": "Modificateur de taille de la police des messages à l'écran",
 			"DISPLAY_FONT_SIZE_TOOLTIP": "De -5 à 5. Ceci n'affecte QUE les messages affichés à l'écran (quizz, sondage, informations de chanson, etc.) et pas les paroles.",
 			"DISPLAY_BANNER": "Afficher la bannière de version",
-			"DISPLAY_BANNER_TOOLTIP": "Cette bannière, qui affiche la version de Karaoke Mugen et son site web permettent au logiciel d'être connu quand il est utilisé en public. Les gens peuvent ainsi aller voir et l'utiliser à leur tour. Soyez sympa, gardez cette option activée s'il vous plaît !",
+			"DISPLAY_BANNER_TOOLTIP": "Cette bannière, qui affiche la version de Karaoke Mugen et son site web permettent au logiciel d'être connu quand il est utilisé en public. Les gens peuvent ainsi aller voir et l'utiliser à leur tour. Soyez sympa, gardez cette option activée s'il vous plaît !",
 			"DISPLAY_RANDOMQUOTES": "Afficher les citations aléatoires",
 			"DISPLAY_RANDOMQUOTES_TOOLTIP": "Des citations aléatoires sont affichées en bas de l'écran quand le lecteur est arrêté",
 			"DISPLAY_CONNECTION_INFO_HOST": "Forcer le nom d'hôte/Adresse IP",
@@ -406,7 +406,8 @@
 			"LIVE_COMMENTS_TOOLTIP": "Les messages de votre chat Twitch seront affichés sur le lecteur (Veuillez configurer proprement votre AutoMod).",
 			"BLUR_VIDEO_ON_WARNING_TAG": "Flouter les vidéos avec un tag warning",
 			"BLUR_VIDEO_ON_WARNING_TAG_TOOLTIP": "Ajoute un floutage aux vidéos qui contiennent un tag de type warning et peuvent donc potentiellement choquer un public. Cela peut entraîner des lenteurs sur les ordinateurs les moins puissants.",
-			"FULLSCREEN_ON_STARTUP": "Plein écran au démarrage"
+			"FULLSCREEN_ON_STARTUP": "Plein écran au démarrage",
+			"FULLSCREEN_ON_STARTUP_TOOLTIP": "Lancez toujours le lecteur en plein écran, quel que soit son état précédent"
 		},
 		"KARAOKE": {
 			"LABEL": "Karaoké",
