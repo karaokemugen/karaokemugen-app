@@ -336,7 +336,8 @@
 		"APP_UPDATE": "New version",
 		"ACTIVE_SESSION": "Active Session: ",
 		"EDIT_SESSION": "Edit session",
-		"COLLECTIONS": "COLLECTIONS"
+		"COLLECTIONS": "COLLECTIONS",
+		"NEWS": "News"
 	},
 	"CHECKED": "Selected:",
 	"LOGOUT": "Log out",

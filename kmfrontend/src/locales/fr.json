@@ -336,7 +336,8 @@
 		"MASTODON_UPDATE": "Actualités de Karaoke Mugen",
 		"ACTIVE_SESSION": "Session Active : ",
 		"EDIT_SESSION": "Éditer la session",
-		"COLLECTIONS": "COLLECTIONS"
+		"COLLECTIONS": "COLLECTIONS",
+		"NEWS": "Actualités"
 	},
 	"CHECKED": "Sélectionnés :",
 	"LOGOUT": "Se déconnecter",

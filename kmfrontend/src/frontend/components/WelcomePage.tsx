@@ -530,6 +530,7 @@ function WelcomePage() {
 
 					<section className="feed-panel">
 						<header>
+							<div className="feed-panel-title">{i18next.t('WELCOME_PAGE.NEWS')}</div>
 							<p>{catchphrase}</p>
 						</header>
 						<div>
