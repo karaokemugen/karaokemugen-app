@@ -642,7 +642,11 @@
 			"DISPLAY_CONNECTION_INFO_QRCODE_DURING_SONG": "QR-Code während eines Liedes anzeigen",
 			"DISPLAY_CONNECTION_INFO_QRCODE_DURING_SONG_TOOLTIP": "Der QR-Code wird während eines Liedes in der oberen rechten Ecke angezeigt.",
 			"DISPLAY_FONT_SIZE": "Fontgröße für Nachrichten verändern",
-			"DISPLAY_FONT_SIZE_TOOLTIP": "Fontgröße kann von -5 bis 5 eingestellt werden. Diese bezieht sich NUR auf Bildschirmnachrichten (Quiz, Umfragen, Liedinfo usw.) und nicht auf Liedtexte."
+			"DISPLAY_FONT_SIZE_TOOLTIP": "Fontgröße kann von -5 bis 5 eingestellt werden. Diese bezieht sich NUR auf Bildschirmnachrichten (Quiz, Umfragen, Liedinfo usw.) und nicht auf Liedtexte.",
+			"FULLSCREEN_ON_STARTUP": "Im Vollbild starten",
+			"FULLSCREEN_ON_STARTUP_TOOLTIP": "Den Player immer im Vollbild starten unabhängig vom zuletzt genutzten Zustand",
+			"DISPLAY_BANNER": "Karaoke Mugens Version als Banner anzeigen",
+			"DISPLAY_BANNER_TOOLTIP": "Dieser Banner zeigt Karaoke Mugens Version und seine URL. Bitte aktiviere das Banner, um Karaoke Mugen auch anderen Nutzern näherzubringen. Danke!"
 		},
 		"SYSTEMPANEL_TIP": "Du kannst die gesuchten Optionen nicht finden? <2>Einige Optionen befinden sich in den <3>System-Einstellungen</3>.</2>",
 		"PLAYLIST": {
