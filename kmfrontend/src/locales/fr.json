@@ -1621,7 +1621,7 @@
 		"GIT_SQUASH_COMMITS": "Fusionner les changements",
 		"GIT_SQUASH_MESSAGE": "Message de commit",
 		"GIT_TOO_MANY_CHANGES": "On dirait que vous faites {{changes}} changements. Lorsque vous effectuez de nombreux changements liés au même type d'action, il est conseillé de regrouper vos commits en un seul.",
-		"UPLOAD_METHOD0": "Méthode d'envoi des médias"
+		"UPLOAD_METHOD": "Méthode d'envoi des médias"
 	},
 	"COLLECTIONS": {
 		"NAME": "Nom de la collection",

@@ -1830,7 +1830,7 @@
 		"REPOSITORY_TYPE": "Repository-Typ",
 		"REPOSITORY_TYPE_DESC": "Entscheide zunächst, ob das neue Repository online oder lokal sein soll.",
 		"PATH_MEDIAS_DESC": "Bitte gibt hier an, wo die Medien gespeichert werden sollen. Wenn du viele Lieder nutzen willst, sollte eine großzügige Menge Speicherplatz vorhanden sein.",
-		"UPLOAD_METHOD0": "Methode für den Medien-Upload"
+		"UPLOAD_METHOD": "Methode für den Medien-Upload"
 	},
 	"TAGS": {
 		"KITSU_SLUG_ERROR": "Ungültiger Kitsu-Slug",
