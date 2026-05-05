@@ -18,7 +18,14 @@ import { PlayerCommand } from '../types/player.js';
 import Sentry from '../utils/sentry.js';
 import { getPlayerState, getState, setState } from '../utils/state.js';
 import { playCurrentSong, playRandomSongAfterPlaylist } from './karaEngine.js';
-import { autoRemoveSongsFromCurrentPlaylist, getCurrentSong, getCurrentSongPLCID, getNextSong, getPreviousSong, setPlaying } from './playlist.js';
+import {
+	autoRemoveSongsFromCurrentPlaylist,
+	getCurrentSong,
+	getCurrentSongPLCID,
+	getNextSong,
+	getPreviousSong,
+	setPlaying,
+} from './playlist.js';
 import { startPoll } from './poll.js';
 import { stopGame } from './quiz.js';
 
@@ -27,7 +34,7 @@ const service = 'Player';
 export const mpv = new Players();
 
 export function playerComment(msg: string) {
-	return mpv.comments.addComment(msg);
+	return mpv.comments?.addComment(msg);
 }
 
 export function playerMessage(

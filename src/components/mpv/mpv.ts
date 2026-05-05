@@ -97,7 +97,7 @@ async function resolveMediaURL(file: string, repoName: string): Promise<string> 
 export function getFontSize(initial: number) {
 	const sizeModifier = getConfig().Player.Display.FontSize;
 	if (!isNaN(sizeModifier)) {
-		return initial + (+sizeModifier * 10);
+		return initial + +sizeModifier * 10;
 	} else {
 		return initial;
 	}
@@ -177,10 +177,6 @@ class CommentHandler {
 	addComment(message: string) {
 		if (!this.isRunning) {
 			this.isRunning = true;
-			/* //TODO: test code, remove this
-			for(let i = 0; i < 1000; i++) {
-				this.addComment(`test${i}`);
-			} */
 			// TODO: Test if this causes screen tearing? How to time this so it doesn't if so?
 			this.intervalId = setInterval(this.tick.bind(this), 16);
 		}
@@ -538,7 +534,11 @@ export class Players {
 				progressBar += '□';
 			}
 			const fontSize = getFontSize(70);
-			this.messages.addMessage('pauseScreen', `${position}{\\fscx${fontSize}\\fscy${fontSize}\\fsp-3}${progressBar}`, 'infinite');
+			this.messages.addMessage(
+				'pauseScreen',
+				`${position}{\\fscx${fontSize}\\fscy${fontSize}\\fsp-3}${progressBar}`,
+				'infinite'
+			);
 			this.progressBarTimeout = setTimeout(() => {
 				this.tickProgressBar(nextTick, ticked + 1, position);
 			}, nextTick);
@@ -553,7 +553,11 @@ export class Players {
 			if (this.progressBarTimeout) clearTimeout(this.progressBarTimeout);
 			const timeLeft = Math.ceil(this.countdownTimer.getTimeLeft() / 1000);
 			const fontSize = getFontSize(250);
-			this.messages.addMessage('countdown', `${position}{\\fscx${fontSize}\\fscy${fontSize}}${timeLeft}`, 'infinite');
+			this.messages.addMessage(
+				'countdown',
+				`${position}{\\fscx${fontSize}\\fscy${fontSize}}${timeLeft}`,
+				'infinite'
+			);
 			this.progressBarTimeout = setTimeout(() => {
 				this.tickCountdown(position);
 			}, 1000);
@@ -1382,12 +1386,14 @@ export class Players {
 				playerState.mediaType !== 'song' && conf.Player.Display.RandomQuotes
 					? sample(initializationCatchphrases)
 					: '';
-			const version = conf.Player.Display.Banner ? `Karaoke Mugen ${state.version.number} (${state.version.name}) - https://karaokes.moe` : '';
+			const version = conf.Player.Display.Banner
+				? `Karaoke Mugen ${state.version.number} (${state.version.name}) - https://karaokes.moe`
+				: '';
 			const fontSizes = {
 				banner: getFontSize(80),
 				version: getFontSize(60),
-				text: getFontSize(40)
-			}
+				text: getFontSize(40),
+			};
 			const message = `{\\an${this.getMessagePosition()}}{\\fscx${fontSizes.banner}}{\\fscy${fontSizes.banner}}${text}\\N{\\fscx${fontSizes.version}{\\fscy${fontSizes.version}{\\i1}${version}{\\i0}\\N{\\fscx${fontSizes.text}{\\fscy${fontSizes.text}}${catchphrase}`;
 			this.messages?.addMessage('DI', message, duration === -1 ? 'infinite' : duration);
 		} catch (err) {
