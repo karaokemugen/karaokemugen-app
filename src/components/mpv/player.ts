@@ -184,8 +184,11 @@ export class Player {
 		// Returns the position in seconds in the current song
 		if (playerState.mediaType === 'song' && playerState.currentSong?.duration) {
 			playerState.timeposition = position;
-			playerState.quiz = getCurrentSongTimers();
 			const conf = getConfig();
+			if (getState().quiz.running && getState().quiz.currentSong				
+			) {
+				playerState.quiz = getCurrentSongTimers();			
+			}
 			// Send notification to frontend if timeposition is 15 seconds before end of song
 			if (
 				position >= playerState.currentSong.duration - 15 &&
