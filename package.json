@@ -53,30 +53,9 @@
   },
   "author": "Guillaume Lebigot <axel@teri-chan.net> (http://www.meido-rando.net)",
   "contributors": [
-    "Mathieu Delestre <ldbglobe@gmail.com>",
-    "spokeek <spokeek@gmail.com>",
-    "jaerdoster",
-    "Ziassan <m.mary.corentin@gmail.com> (@Ziassan)",
-    "coyoyann <yoann.drevet0@laposte.net>",
     "Florent Berthelot <florentius.b@gmail.com> (@Aeden_)",
-    "lukino <LukinoProg@gmail.com>",
-    "Benoît Courtine <benoit.courtine@gmail.com>",
-    "Lua <deformer.lua@gmail.com>",
-    "mirukyu <A13x7950@gmail.com>",
-    "Kmeuh <clemalbo@cegetel.net> (@Kmeuh)",
-    "Bibah <thebibah14@gmail.com> (@TheBibah14)",
-    "Fabrice S.",
-    "zeograd <zeograd@gmail.com>",
-    "leonekmi <git+km@leonekmi.fr>",
-    "Pierre CAMILLI <camillipierre@gmail.com> (@Shueisha64)",
-    "Pierre Ellul <pierreellul.epi@gmail.com> (@Snak)",
     "Themio <themio@protonmail.ch>",
-    "Damien HERBERT <dherbert98@gmail.com> (Dragicafit)",
-    "Ismaël Bussière <bussiereismael@gmail.com> (@red5h4d0w)",
-    "Alex Tan (@senpai-notices)",
-    "Sunseille (sunseille@shelter.moe)",
-    "sorc278 <19523514-sorc278@users.noreply.gitlab.com> (@sorc278)",
-    "Mitune_e <mitune.e.music@gmail.com> (@Mitune_e)"
+    "Ismaël Bussière <bussiereismael@gmail.com> (@red5h4d0w)"    
   ],
   "engines": {
     "node": ">=24.14.0"
