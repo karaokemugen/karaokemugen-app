@@ -91,11 +91,7 @@ async function getARemoteUser(login: string, instance: string): Promise<User> {
 	} catch (err) {
 		if ([404].includes(err.response?.status)) return null;
 		logger.debug('Got error when trying to get an online user', { service, obj: err });
-		throw {
-			code: 500,
-			msg: 'USER_GET_ERROR_ONLINE',
-			message: err,
-		};
+		throw err;
 	}
 }
 
@@ -104,11 +100,7 @@ export async function createRemoteUser(user: User) {
 	const [login, instance] = user.login.split('@');
 	const conf = getConfig().Online;
 	if (await getARemoteUser(login, instance)) {
-		throw {
-			code: 409,
-			msg: 'USER_ALREADY_EXISTS_ONLINE',
-			message: `User already exists on ${instance} or incorrect password`,
-		};
+		throw new ErrorKM('USER_ALREADY_EXISTS_ONLINE', 409, false)		
 	}
 	try {
 		await HTTP.post(`${conf.RemoteUsers.Secure ? 'https' : 'http'}://${instance}/api/users`, {
@@ -118,11 +110,7 @@ export async function createRemoteUser(user: User) {
 		startSub(login, instance);
 	} catch (err) {
 		logger.debug(`Got error when create remote user ${login}`, { service, obj: err });
-		throw {
-			code: 500,
-			msg: 'USER_CREATE_ERROR_ONLINE',
-			message: err,
-		};
+		throw new ErrorKM('USER_CREATE_ERROR_ONLINE', 500)		
 	}
 }
 
