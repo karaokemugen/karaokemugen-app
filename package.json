@@ -7,7 +7,7 @@
     "karaokemugen": "./dist/src/index.js"
   },
   "type": "module",
-  "main": "dist/index.cjs",
+  "main": "dist/index.mjs",
   "scripts": {
     "start": "yarn build && yarn electron:start",
     "qstart": "node util/esbuild.js && yarn electron:start",
@@ -79,7 +79,7 @@
     "Mitune_e <mitune.e.music@gmail.com> (@Mitune_e)"
   ],
   "engines": {
-    "node": ">=22.12.0"
+    "node": ">=24.14.0"
   },
   "license": "MIT",
   "private": true,

@@ -133,7 +133,7 @@ function registerKMProtocol() {
 	protocol.handle('km', req => {
 		const args = req.url.slice('atom://'.length);
 		handleProtocol(args);
-		return net.fetch(url.pathToFileURL(join(__dirname, args)).toString());
+		return net.fetch(url.pathToFileURL(join(import.meta.dirname, args)).toString());
 	});
 }
 
