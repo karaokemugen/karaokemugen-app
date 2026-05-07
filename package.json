@@ -55,7 +55,7 @@
   "contributors": [
     "Florent Berthelot <florentius.b@gmail.com> (@Aeden_)",
     "Themio <themio@protonmail.ch>",
-    "Ismaël Bussière <bussiereismael@gmail.com> (@red5h4d0w)"    
+    "Ismaël Bussière <bussiereismael@gmail.com> (@red5h4d0w)"
   ],
   "engines": {
     "node": ">=24.14.0"
