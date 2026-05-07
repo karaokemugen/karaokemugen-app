@@ -182,7 +182,9 @@
 		"CL_USERS": "Diskouez war skramm an implijerien",
 		"CL_ALL": "Diskouez war an daou",
 		"DURATION": "Padelezh (en eilennoù)",
-		"ESSENTIAL_MESSAGE": "Kemmen hollbouezus"
+		"ESSENTIAL_MESSAGE": "Kemmen hollbouezus",
+		"MESSAGE": "Kemennad",
+		"CONFIRM": "Kar ar c'hemennad"
 	},
 	"MODAL": {
 		"START_QUIZ": {
@@ -361,7 +363,8 @@
 		"STATS_PLAYTIME": "Amzer lenn",
 		"MASTODON_UPDATE": "Keleier Karaoke Mugen",
 		"COLLECTIONS": "DASTUMADOÙ",
-		"NEWS": "Keleier"
+		"NEWS": "Keleier",
+		"ADMINISTRATION": "PANELL REIZHIAD"
 	},
 	"KARA": {
 		"REPOSITORY": "Kavlec'hiad",
