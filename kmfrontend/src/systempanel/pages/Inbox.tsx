@@ -270,7 +270,7 @@ export default function Inbox() {
 				newFilteredInbox = newFilteredInbox.concat(inbox.filter(inbox => inbox.status === status));
 			}
 		});
-		setFilteredInbox(newFilteredInbox);
+		setFilteredInbox([...new Set(newFilteredInbox)]);
 	};
 
 	const getMenu = (record: LibInbox) => {
