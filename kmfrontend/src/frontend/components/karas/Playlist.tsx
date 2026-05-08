@@ -376,7 +376,9 @@ function Playlist(props: IProps) {
 							</>
 						)}
 					</div>
-				) : null}
+				) : (
+					<div className="list-group-item empty">{i18next.t('PLAYLIST.NO_SONG')}</div>
+				)}
 			</>
 		);
 	}, [getPlaylistInfo(props.side, context)?.plaid, repoInProgress, getFilterValue(props.side)]);

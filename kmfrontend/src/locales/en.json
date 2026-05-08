@@ -2329,5 +2329,8 @@
 			"RESET": "Reset pitch",
 			"DOWN": "Decrease pitch"
 		}
+	},
+	"PLAYLIST": {
+		"NO_SONG": "no song found"
 	}
 }

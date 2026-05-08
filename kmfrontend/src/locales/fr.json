@@ -2329,5 +2329,8 @@
 	},
 	"WARNING_CODES": {
 		"REMOTE_HIGH_LATENCY_DETECTED": "Votre connexion avec {{host}} est lente, vos utilisateurs peuvent rencontrer des problèmes"
+	},
+	"PLAYLIST": {
+		"NO_SONG": "Pas de chanson trouvée"
 	}
 }
