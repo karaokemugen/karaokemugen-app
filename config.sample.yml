@@ -172,6 +172,11 @@ Player:
     SongInfoLanguage: qro
     # Show nickname of the person who requested a song
     Nickname: true
+    NextSongInfo:
+      # NextSongInfo is displayed during Classic karaoke mode or streams
+      Enabled: true
+      PositionX: Center
+      PositionY: Center
     ConnectionInfo:
       Enabled: true
       # Message to display to invite people to connect (or not)

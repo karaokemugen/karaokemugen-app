@@ -1301,21 +1301,22 @@ export class Players {
 		}
 	}
 
-	getMessagePosition(): number {
+	getMessagePosition(nextSong = false): number {
 		// Returns a number from 1 to 9 depending on the position on screen. 1 is bottom left, 9 is top right.
 		let pos = 9;
-		// No song playing
-		if (!playerState.currentSong) return 1;
 		// Song playing
-		const manifest = getRepoManifest(playerState.currentSong.repository);
+		const conf = getConfig();
+		const defaultX = nextSong ? conf.Player.Display.NextSongInfo.PositionX : 'Left';
+		const defaultY = nextSong ? conf.Player.Display.NextSongInfo.PositionY : 'Bottom';
+		const manifest = playerState.currentSong && getRepoManifest(playerState.currentSong.repository);
 		const X =
-			playerState.currentSong.lyrics_infos[0]?.announce_position_x ??
+			playerState.currentSong?.lyrics_infos[0]?.announce_position_x ??
 			manifest?.rules?.lyrics?.defaultAnnouncePositionX ??
-			'Left';
+			defaultX;
 		const Y =
-			playerState.currentSong.lyrics_infos[0]?.announce_position_y ??
+			playerState.currentSong?.lyrics_infos[0]?.announce_position_y ??
 			manifest?.rules?.lyrics?.defaultAnnouncePositionY ??
-			'Bottom';
+			defaultY;
 
 		// We lower pos if X pos isn't right or Y pos isn't top since 9 is top right already.
 		if (X === 'Center') pos -= 1;
@@ -1328,7 +1329,7 @@ export class Players {
 	async displaySongInfo(infos: string, duration = -1, nextSong = false, warnings?: DBKaraTag[], visible = true) {
 		try {
 			const nextSongString = nextSong ? `${i18n.t('NEXT_SONG')}\\N\\N` : '';
-			const position = nextSong ? '{\\an5}' : `{\\an${this.getMessagePosition()}}`;
+			const position = `{\\an${this.getMessagePosition(nextSong)}}`;
 			let warningString = '';
 			if (warnings?.length > 0) {
 				const langs = [

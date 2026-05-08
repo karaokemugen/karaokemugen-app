@@ -146,12 +146,16 @@ function PlayerOptions(props: IProps) {
 					</div>
 				))}
 			{filterValue === undefined ||
-				(sanitizeSettingsSearchValue(i18next.t('SETTINGS.PLAYER.FULLSCREEN_ON_STARTUP')).includes(filterValue) && (
+				(sanitizeSettingsSearchValue(i18next.t('SETTINGS.PLAYER.FULLSCREEN_ON_STARTUP')).includes(
+					filterValue
+				) && (
 					<div className="settings-line">
 						<label htmlFor="Player.FullScreenOnStartup">
 							<span className="title">{i18next.t('SETTINGS.PLAYER.FULLSCREEN_ON_STARTUP')}</span>
 							<br />
-							<span className="tooltip">{i18next.t('SETTINGS.PLAYER.FULLSCREEN_ON_STARTUP_TOOLTIP')}</span>
+							<span className="tooltip">
+								{i18next.t('SETTINGS.PLAYER.FULLSCREEN_ON_STARTUP_TOOLTIP')}
+							</span>
 						</label>
 						<div>
 							<Switch
@@ -407,9 +411,7 @@ function PlayerOptions(props: IProps) {
 					</div>
 				))}
 			{filterValue === undefined ||
-				(sanitizeSettingsSearchValue(i18next.t('SETTINGS.PLAYER.DISPLAY_BANNER')).includes(
-					filterValue
-				) && (
+				(sanitizeSettingsSearchValue(i18next.t('SETTINGS.PLAYER.DISPLAY_BANNER')).includes(filterValue) && (
 					<div className="settings-line">
 						<label htmlFor="Player.Display.Banner">
 							<span className="title">{i18next.t('SETTINGS.PLAYER.DISPLAY_BANNER')}</span>
@@ -632,6 +634,87 @@ function PlayerOptions(props: IProps) {
 						))}
 				</div>
 			) : null}
+
+			{filterValue === undefined ||
+				(sanitizeSettingsSearchValue(i18next.t('SETTINGS.PLAYER.DISPLAY_NEXT_SONGINFO')).includes(
+					filterValue
+				) && (
+					<div className="settings-line">
+						<label htmlFor="Player.Display.NextSongInfo.Enabled">
+							<span className="title">{i18next.t('SETTINGS.PLAYER.DISPLAY_NEXT_SONGINFO')}</span>
+							<br />
+							<span className="tooltip">
+								{i18next.t('SETTINGS.PLAYER.DISPLAY_NEXT_SONGINFO_TOOLTIP')}
+							</span>
+						</label>
+						<div>
+							<Switch
+								idInput="Player.Display.NextSongInfo.Enabled"
+								handleChange={onChange}
+								isChecked={config['Player.Display.NextSongInfo.Enabled']}
+							/>
+						</div>
+					</div>
+				))}
+
+			{config['Player.Display.NextSongInfo.Enabled'] ? (
+				<div id="connexionInfoSettings" className="settingsGroupPanel">
+					{filterValue === undefined ||
+						((sanitizeSettingsSearchValue(i18next.t('SETTINGS.PLAYER.NEXT_SONGINFO_POSITION_X')).includes(
+							filterValue
+						) ||
+							sanitizeSettingsSearchValue(i18next.t('SETTINGS.PLAYER.DISPLAY_NEXT_SONGINFO')).includes(
+								filterValue
+							)) && (
+							<div className="settings-line">
+								<label htmlFor="Player.Display.NextSongInfo.PositionX">
+									<span className="title">
+										{i18next.t('SETTINGS.PLAYER.NEXT_SONGINFO_POSITION_X')}
+									</span>
+								</label>
+								<div>
+									<select
+										id="Player.Display.NextSongInfo.PositionX"
+										onChange={onChange}
+										value={config['Player.Display.NextSongInfo.PositionX']}
+									>
+										<option value="Left"> {i18next.t('SETTINGS.PLAYER.LEFT')} </option>
+										<option value="Center">{i18next.t('SETTINGS.PLAYER.CENTER')}</option>
+										<option value="Right"> {i18next.t('SETTINGS.PLAYER.RIGHT')} </option>
+									</select>
+								</div>
+							</div>
+						))}
+
+					{filterValue === undefined ||
+						((sanitizeSettingsSearchValue(i18next.t('SETTINGS.PLAYER.NEXT_SONGINFO_POSITION_Y')).includes(
+							filterValue
+						) ||
+							sanitizeSettingsSearchValue(i18next.t('SETTINGS.PLAYER.DISPLAY_NEXT_SONGINFO')).includes(
+								filterValue
+							)) && (
+							<div className="settings-line">
+								<label htmlFor="Player.Display.NextSongInfo.PositionY">
+									<span className="title">
+										{i18next.t('SETTINGS.PLAYER.NEXT_SONGINFO_POSITION_Y')}
+									</span>
+								</label>
+								<div>
+									<select
+										id="Player.Display.NextSongInfo.PositionY"
+										onChange={onChange}
+										value={config['Player.Display.NextSongInfo.PositionY']}
+									>
+										<option value="Bottom"> {i18next.t('SETTINGS.PLAYER.BOTTOM')} </option>
+										<option value="Center">{i18next.t('SETTINGS.PLAYER.CENTER')}</option>
+										<option value="Top"> {i18next.t('SETTINGS.PLAYER.TOP')} </option>
+									</select>
+								</div>
+							</div>
+						))}
+				</div>
+			) : null}
+
 			{filterValue === undefined ||
 				(sanitizeSettingsSearchValue(i18next.t('SETTINGS.PLAYER.BLUR_VIDEO_ON_WARNING_TAG')).includes(
 					filterValue
