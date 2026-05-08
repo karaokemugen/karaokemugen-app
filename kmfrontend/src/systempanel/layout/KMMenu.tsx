@@ -40,7 +40,13 @@ function KMMenu() {
 	const getRepoManifest = async () => {
 		if (repoMaintainerAccount.length > 0) {
 			try {
-				const res = await commandBackend(WS_CMD.GET_REPO_MANIFEST, { name: repoMaintainerAccount[0].Name });
+				const res = await commandBackend(
+					WS_CMD.GET_REPO_MANIFEST,
+					{ name: repoMaintainerAccount[0].Name },
+					false,
+					30000,
+					true
+				);
 				setRepositoryManifest(res);
 			} catch (_) {
 				// silent error

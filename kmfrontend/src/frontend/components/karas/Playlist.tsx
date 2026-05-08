@@ -1024,9 +1024,15 @@ function Playlist(props: IProps) {
 				value => value.Enabled && value.Online
 			)) {
 				if (isAdmin) {
-					const manifest: RepositoryManifestV2 = await commandBackend(WS_CMD.GET_REPO_MANIFEST, {
-						name: value.Name,
-					});
+					const manifest: RepositoryManifestV2 = await commandBackend(
+						WS_CMD.GET_REPO_MANIFEST,
+						{
+							name: value.Name,
+						},
+						false,
+						30000,
+						true
+					);
 					newRepos.push({
 						name: value.Name,
 						url: `http${value.Secure && 's'}://${value.Name}/`,
