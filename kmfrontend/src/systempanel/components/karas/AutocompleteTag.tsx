@@ -21,7 +21,7 @@ export default function AutocompleteTag(props: AutocompleteTagProps) {
 	const context = useContext(GlobalContext);
 	const timer: NodeJS.Timeout[] = [];
 
-	const input = useRef();
+	const input = useRef(undefined);
 
 	const [value, setValue] = useState(props.value || []);
 	const [inputVisible, setInputVisible] = useState(false);

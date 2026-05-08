@@ -50,9 +50,9 @@ type IProps = LabelProps | DefaultProps;
 function AutocompleteQuiz(props: IProps) {
 	const options = props.options || [];
 
-	const node: any = useRef();
+	const node: any = useRef(undefined);
 
-	const searchInputRef = useRef<HTMLInputElement>();
+	const searchInputRef = useRef<HTMLInputElement>(undefined);
 	const [activeIndex, setActiveIndex] = useState(-1);
 
 	const updateSelectedValue = (v: any) => {

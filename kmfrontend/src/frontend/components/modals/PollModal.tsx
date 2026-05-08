@@ -19,7 +19,7 @@ function PollModal() {
 	const [totalVotes, setTotalVotes] = useState(0);
 	const [maxVotes, setMaxVotes] = useState(-1);
 	const [poll, setPoll] = useState<PollItem[]>([]);
-	const interval = useRef<NodeJS.Timeout>();
+	const interval = useRef<NodeJS.Timeout>(undefined);
 
 	const getSongPoll = async () => {
 		const response: PollObject = await commandBackend(WS_CMD.GET_POLL);

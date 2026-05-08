@@ -74,7 +74,7 @@ interface KaraList {
 
 function Playlist(props: IProps) {
 	const context = useContext(GlobalContext);
-	const refContainer = useRef<HTMLDivElement>();
+	const refContainer = useRef<HTMLDivElement>(undefined);
 	const [searchValue, setSearchValue] = useState(props.searchValue);
 	const [searchCriteria, setSearchCriteria] = useState<'year' | 'tag'>(props.searchCriteria);
 	const [searchType, setSearchType] = useState<'search' | 'recent' | 'requested' | 'incoming'>(

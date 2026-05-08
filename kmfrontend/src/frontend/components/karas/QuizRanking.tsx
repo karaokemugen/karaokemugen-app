@@ -24,7 +24,7 @@ function QuizRanking() {
 	const [revealTimer, setRevealTimer] = useState(0);
 	const [progressWidth, setProgressWidth] = useState('0px');
 	const [progressColor, setProgressColor] = useState('forestgreen');
-	const progressBarRef: RefObject<HTMLDivElement> = useRef();
+	const progressBarRef: RefObject<HTMLDivElement> = useRef(undefined);
 
 	const quiz = context.globalState.settings.data.state.quiz;
 

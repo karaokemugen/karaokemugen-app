@@ -44,12 +44,12 @@ type IProps = LabelProps | DefaultProps;
 function Autocomplete(props: IProps) {
 	const options = props.options || [];
 
-	const node: any = useRef();
+	const node: any = useRef(undefined);
 	const [placeholder, setPlaceholder] = useState(props.placeholder || undefined);
 	const [selectedValue, setSelectedValue] = useState<string | number>('');
 	const [searchValue, setSearchValue] = useState('');
 
-	const searchInputRef = useRef<HTMLInputElement>();
+	const searchInputRef = useRef<HTMLInputElement>(undefined);
 	const [activeIndex, setActiveIndex] = useState(-1);
 	const [focus, setFocus] = useState(false);
 

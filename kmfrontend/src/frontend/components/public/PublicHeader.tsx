@@ -38,7 +38,7 @@ function PublicHeader(props: IProps) {
 	const [quotaType, setQuotaType] = useState<number>();
 	const [quotaLeft, setQuotaLeft] = useState<number>();
 	const [height, setHeight] = useState('0px');
-	const ref = useRef<HTMLElement>();
+	const ref = useRef<HTMLElement>(undefined);
 
 	const score = useAsyncMemo<GameScore[]>(
 		async () => {
