@@ -180,6 +180,11 @@ export const defaults: Config = {
 			},
 			RandomQuotes: true,
 			SongInfo: true,
+			NextSongInfo: {
+				Enabled: true,
+				PositionX: 'Center',
+				PositionY: 'Center'
+			}
 		},
 		FullScreen: false,
 		AudioDevice: 'auto',

@@ -194,6 +194,11 @@ export interface Config {
 			RandomQuotes?: boolean;
 			SongInfo?: boolean;
 			SongInfoLanguage?: string;
+			NextSongInfo: {
+				Enabled: boolean;
+				PositionX?: PositionX;
+				PositionY?: PositionY;	
+			}
 		};
 		StayOnTop?: boolean;
 		FullScreen?: boolean;
