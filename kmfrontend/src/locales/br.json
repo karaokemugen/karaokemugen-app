@@ -109,7 +109,9 @@
 		"EMAIL": "Postel",
 		"URL": "Lec'hienn web",
 		"DELETE_USER_CONFIRM": "Dilemel an implijer",
-		"LOG_IN": "Kevreañ"
+		"LOG_IN": "Kevreañ",
+		"ADMIN": "Oberataer",
+		"REPLAY_TUTORIAL": "Heforzhiadur oberataer echuet"
 	},
 	"SUCCESS_CODES": {
 		"USER_CONVERTED": "Ho kont zo enlinenn bremañ",
@@ -364,7 +366,8 @@
 		"MASTODON_UPDATE": "Keleier Karaoke Mugen",
 		"COLLECTIONS": "DASTUMADOÙ",
 		"NEWS": "Keleier",
-		"ADMINISTRATION": "PANELL REIZHIAD"
+		"ADMINISTRATION": "PANELL REIZHIAD",
+		"KARAMANAGER": "ETREFAS OBERATAER"
 	},
 	"KARA": {
 		"REPOSITORY": "Kavlec'hiad",
@@ -467,7 +470,8 @@
 		"PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED": "Ouzhpennet e oa bet ar ganaouenn dija.",
 		"UNKNOWN_SONG": "Kanaouenn dianav",
 		"UNKNOWN_USER": "Implijer dianav",
-		"UNKNOWN_CONVERT_ERROR": "Implijer dianav"
+		"UNKNOWN_CONVERT_ERROR": "Implijer dianav",
+		"ADMIN_PLEASE": "Implijit ur gont oberataer mar plij"
 	},
 	"HEADERS": {
 		"REPOSITORIES_NEW": {
@@ -766,7 +770,8 @@
 	"NOTIFICATION": {
 		"OPERATOR": {
 			"ERROR": {
-				"IMPORT_BASE_FAILED": "Fazi enporzhiañ kanaouennoù"
+				"IMPORT_BASE_FAILED": "Fazi enporzhiañ kanaouennoù",
+				"DOWNLOAD": "Fazi o pellgargañ ar ganaouenn"
 			}
 		}
 	},
@@ -776,5 +781,9 @@
 	},
 	"COLLECTIONS": {
 		"NAME": "Anv an dastumad"
-	}
+	},
+	"PLAYLIST": {
+		"NO_SONG": "N'eus bet kavet kanaouenn ebet"
+	},
+	"NEW_ACCOUNT_CODE": "Kod kont nevez (da c'houlenn digant an oberataer)"
 }
