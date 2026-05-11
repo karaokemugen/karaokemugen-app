@@ -161,7 +161,7 @@
 		"END_GAME": "ECHU AR C'HOARIADENN"
 	},
 	"MENU_EDIT_SELECT_ALL": "Dibab an &holl",
-	"MENU_OPTIONS_OPERATORCONFIG": "&Arventennoù",
+	"MENU_OPTIONS_OPERATORCONFIG": "&Arventennoù oberataer",
 	"MENU_OPTIONS_SYSTEMCONFIG": "Arventennoù ar &reizhiad",
 	"MENU_OPTIONS_OPERATORCONFIG_OSX": "Arventennoù…",
 	"MENU_OPTIONS_SYSTEMCONFIG_OSX": "Arventennoù ar reizhiad…",
@@ -169,5 +169,7 @@
 	"UNKNOWN_ARTIST": "Arzour dianav",
 	"GENERATING_READING": "Pazenn 1 / 2 - O lenn roadennoù…",
 	"GENERATING_DATABASE": "Pazenn 2/2 - O hizivaat ar stlennvon…",
-	"INTERFACE_RESTRICTED": "Kinnig ebet"
+	"INTERFACE_RESTRICTED": "Kinnig ebet",
+	"MENU_HELP_TUTORIAL": "&Heforzhiadur oberataer",
+	"MENU_GOTO_OPERATOR": "Etrefas &oberataer"
 }
