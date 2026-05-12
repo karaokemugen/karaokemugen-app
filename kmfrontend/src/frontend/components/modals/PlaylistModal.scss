@@ -6,6 +6,10 @@
 		margin: 0.5em;
 	}
 
+	.modal-dialog {
+		top: 5%;
+	}
+
 	.modal-body.flex-direction-btns > div {
 		width: 95%;
 
@@ -25,6 +29,11 @@
 
 			.desc {
 				text-align: left;
+			}
+
+			&.contributor-btn {
+				width: auto;
+				display: inline;
 			}
 		}
 	}
