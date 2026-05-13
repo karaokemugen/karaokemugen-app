@@ -2318,15 +2318,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/uuid@npm:^11.0.0":
-  version: 11.0.0
-  resolution: "@types/uuid@npm:11.0.0"
-  dependencies:
-    uuid: "npm:*"
-  checksum: 10c0/6ebf1448d8fdc78d348a8a84389b74083f2f58bed75a5a6cf3be8419d33dcf757735c8b2de746b066ff8ef07f4384d02549774dc84195ffa46b24745471e9d8e
-  languageName: node
-  linkType: hard
-
 "@types/verror@npm:^1.10.3":
   version: 1.10.11
   resolution: "@types/verror@npm:1.10.11"
@@ -7393,7 +7384,6 @@ __metadata:
     "@types/slug": "npm:^5.0.9"
     "@types/ssh2-sftp-client": "npm:^9.0.6"
     "@types/tmi.js": "npm:^1.8.6"
-    "@types/uuid": "npm:^11.0.0"
     "@types/which": "npm:^3.0.4"
     "@types/yesql": "npm:^4.1.4"
     agentkeepalive: "npm:^4.6.0"
@@ -7484,7 +7474,6 @@ __metadata:
     typescript: "npm:6.0.3"
     typescript-eslint: "npm:^8.59.0"
     ultrastar2ass: "npm:^1.1.3"
-    uuid: "npm:^14.0.0"
     validate.js: "npm:^0.13.1"
     vitest: "npm:^4.1.5"
     winston: "npm:^3.19.0"
@@ -11884,24 +11873,6 @@ __metadata:
   version: 1.0.2
   resolution: "util-deprecate@npm:1.0.2"
   checksum: 10c0/41a5bdd214df2f6c3ecf8622745e4a366c4adced864bc3c833739791aeeeb1838119af7daed4ba36428114b5c67dcda034a79c882e97e43c03e66a4dd7389942
-  languageName: node
-  linkType: hard
-
-"uuid@npm:*":
-  version: 13.0.0
-  resolution: "uuid@npm:13.0.0"
-  bin:
-    uuid: dist-node/bin/uuid
-  checksum: 10c0/950e4c18d57fef6c69675344f5700a08af21e26b9eff2bf2180427564297368c538ea11ac9fb2e6528b17fc3966a9fd2c5049361b0b63c7d654f3c550c9b3d67
-  languageName: node
-  linkType: hard
-
-"uuid@npm:^14.0.0":
-  version: 14.0.0
-  resolution: "uuid@npm:14.0.0"
-  bin:
-    uuid: dist-node/bin/uuid
-  checksum: 10c0/a57ae7794c45005c1a9208989196c5baf79a7679c30f43c1bee9033a2c4d113a2cea216fa6fcc9663b08b0d55635df1a7c6eb7e7f3d21c3e50688c698fa39a50
   languageName: node
   linkType: hard
 

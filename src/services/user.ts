@@ -6,7 +6,7 @@ import { sign, verify } from 'jsonwebtoken';
 import { deburr, merge, sample } from 'lodash';
 import { resolve } from 'path';
 import randomstring from 'randomstring';
-import { v4 as uuidV4 } from 'uuid';
+import { randomUUID } from 'crypto';
 
 import { selectSongCountForUser, selectSongTimeSpentForUser } from '../dao/playlist.js';
 import {
@@ -183,7 +183,7 @@ async function replaceAvatar(oldImageFile: string, avatar: Express.Multer.File):
 		const fileType = await detectFileType(avatar.path);
 		if (!imageFileTypes.includes(fileType.toLowerCase())) throw 'Wrong avatar file type';
 		// Construct the name of the new avatar file with its ID and filetype.
-		const newAvatarFile = `${uuidV4()}.${fileType}`;
+		const newAvatarFile = `${randomUUID()}.${fileType}`;
 		const newAvatarPath = resolve(resolvedPath('Avatars'), newAvatarFile);
 		const oldAvatarPath = resolve(resolvedPath('Avatars'), oldImageFile);
 		if ((await fileExists(oldAvatarPath)) && oldImageFile !== 'blank.png') {

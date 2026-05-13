@@ -7,7 +7,7 @@ import i18next from 'i18next';
 import { address } from 'ip';
 import { cloneDeep, isEqual, merge } from 'lodash';
 import { resolve } from 'path';
-import { v4 as uuidV4 } from 'uuid';
+import { randomUUID } from 'crypto';
 
 import { selectUsers } from '../dao/user.js';
 import { applyMenu } from '../electron/electron.js';
@@ -332,7 +332,7 @@ export async function initConfig(argv: any) {
 			config.App.InstanceID === 'Change me' ||
 			(config.App.InstanceID && !config.App.InstanceID.match(uuidRegexp))
 		)
-			setConfig({ App: { InstanceID: uuidV4() } });
+			setConfig({ App: { InstanceID: randomUUID() } });
 		if (
 			config.Online.RemoteAccess.Token === 'Change me' ||
 			(config.Online.RemoteAccess.Token && !config.Online.RemoteAccess.Token.match(uuidRegexp))

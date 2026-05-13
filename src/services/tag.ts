@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs';
 import internetAvailable from 'internet-available';
 import { basename, dirname, resolve } from 'path';
-import { v4 as uuidV4 } from 'uuid';
+import { randomUUID } from 'crypto';
 
 import {
 	addTagToStore,
@@ -78,7 +78,7 @@ export async function addTag(tagObj: Tag, opts = { silent: false, refresh: true 
 	}
 	try {
 		tagObj = trimTagData(tagObj);
-		if (!tagObj.tid) tagObj.tid = uuidV4();
+		if (!tagObj.tid) tagObj.tid = randomUUID();
 		if (!tagObj.tagfile) tagObj.tagfile = defineTagFilename(tagObj);
 		const tagfile = tagObj.tagfile;
 		await applyTagHooks(tagObj);
