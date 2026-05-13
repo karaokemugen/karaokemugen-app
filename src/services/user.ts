@@ -2,7 +2,7 @@ import { compare, genSalt, hash } from 'bcryptjs';
 import { createHash } from 'crypto';
 import { promises as fs } from 'fs';
 import { copy } from 'fs-extra';
-import { sign, verify } from 'jsonwebtoken';
+import { SignJWT, jwtVerify } from 'jose';
 import { deburr, merge, sample } from 'lodash';
 import { resolve } from 'path';
 import randomstring from 'randomstring';
@@ -49,16 +49,23 @@ export async function getAvailableGuest() {
 	return guest;
 }
 
+function getSecretKey(secret: string): Uint8Array {
+    return new TextEncoder().encode(secret);
+}
+
 /** Create JSON Web Token from timestamp, JWT Secret, role and username */
-export function createJwtToken(username: string, role: string, config?: Config): string {
+export async function createJwtToken(username: string, role: string, config?: Config): Promise<string> {
 	const conf = config || getConfig();
-	return sign({ username, role }, conf.App.JwtSecret);
+	return new SignJWT({ username, role })
+        .setProtectedHeader({ alg: 'HS256' })
+        .sign(getSecretKey(conf.App.JwtSecret));
 }
 
 /** Decode token to see if it matches */
-export function decodeJwtToken(token: string, config?: Config): OldJWTToken {
-	const conf = config || getConfig();
-	return verify(token, conf.App.JwtSecret) as any;
+export async function decodeJwtToken(token: string, config?: Config): Promise<OldJWTToken> {
+    const conf = config || getConfig();
+    const { payload } = await jwtVerify(token, getSecretKey(conf.App.JwtSecret));
+    return payload as any;
 }
 
 /** To avoid flooding database UPDATEs, only update login time every 5 minute for a user */

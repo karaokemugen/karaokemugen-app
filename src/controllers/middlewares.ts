@@ -39,7 +39,7 @@ export async function runChecklist(
 		checkWebAppMode(data, webappModeNeeded);
 		return;
 	}
-	checkAuthPresence(data);
+	await checkAuthPresence(data);
 	await requireValidUser(data);
 	requireUserType(data, roleNeeded);
 	updateLastLoginName(data.token.username);
@@ -56,9 +56,9 @@ function checkWebAppMode(data: APIData, webappModeNeeded: WebappModes) {
 	}
 }
 
-function checkAuthPresence(data: APIData) {
+async function checkAuthPresence(data: APIData) {
 	if (data.authorization) {
-		data.token = decodeJwtToken(data.authorization);
+		data.token = await decodeJwtToken(data.authorization);
 	} else {
 		throw { code: 401 };
 	}

@@ -340,7 +340,7 @@ export async function removeRemoteUser(token: OldJWTToken, password: string): Pr
 		});
 		emitWS('userUpdated', token.username);
 		return {
-			token: createJwtToken(onlineUser.login, token.role),
+			token: await createJwtToken(onlineUser.login, token.role),
 		};
 	} catch (err) {
 		logger.error(`Error converting online user to local : ${err}`, { service });
@@ -371,7 +371,7 @@ export async function convertToRemoteUser(token: OldJWTToken, password: string, 
 		emitWS('userUpdated', user.login);
 		return {
 			onlineToken: remoteUserToken,
-			token: createJwtToken(user.login, token.role),
+			token: await createJwtToken(user.login, token.role),
 		};
 	} catch (err) {
 		logger.error(`Error converting local user to online user ${token.username}@${instance} : ${err}`, { service });
