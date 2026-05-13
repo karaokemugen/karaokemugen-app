@@ -93,7 +93,6 @@
     "i18next": "^26.0.8",
     "i18next-fs-backend": "2.6.5",
     "iconv-lite": "^0.7.2",
-    "internet-available": "^1.0.0",
     "ip": "^2.0.1",
     "jose": "^6.2.3",
     "js-yaml": "^4.1.1",

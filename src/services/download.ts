@@ -1,6 +1,5 @@
 import { promise as fastq, queueAsPromised } from 'fastq';
 import { promises as fs } from 'fs';
-import internet from 'internet-available';
 import parallel from 'p-map';
 import { resolve } from 'path';
 import { randomUUID } from 'crypto';
@@ -29,6 +28,7 @@ import Sentry from '../utils/sentry.js';
 import { getState } from '../utils/state.js';
 import { getKaras } from './kara.js';
 import { getRepo, getRepoFreeSpace } from './repo.js';
+import { checkInternet } from '../utils/net.js';
 
 const service = 'Downloads';
 
@@ -93,7 +93,7 @@ export async function startDownloads() {
 		if (dq?.length() === 0) {
 			const downloads = await selectDownloads(true);
 			try {
-				await internet();
+				await checkInternet();
 				downloads.forEach(dl => dq.push(dl));
 				logger.info('Download queue starting up', { service });
 				emitQueueStatus('started');
