@@ -171,5 +171,7 @@
 	"GENERATING_DATABASE": "Pazenn 2/2 - O hizivaat ar stlennvon…",
 	"INTERFACE_RESTRICTED": "Kinnig ebet",
 	"MENU_HELP_TUTORIAL": "&Heforzhiadur oberataer",
-	"MENU_GOTO_OPERATOR": "Etrefas &oberataer"
+	"MENU_GOTO_OPERATOR": "Etrefas &oberataer",
+	"KARAOKE_MUGEN_PLAYER_WINDOW_TITLE": "Lenner Karaoke Mugen",
+	"RESTARTING_PLAYER": "OC'H ADLOC'HAÑ AL LENNER…"
 }
