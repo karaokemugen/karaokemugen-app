@@ -78,7 +78,12 @@
 			"DISPLAY_CONNECTION_INFO_TOOLTIP": "Ar c'hemenn \"Kit da http://xxx !\" eo",
 			"FULLSCREEN_ON_STARTUP": "Skramm a-bezh en ur loc'hañ",
 			"DISPLAY_BANNER": "Diskouez banniel handelv Karaoke Mugen",
-			"DISPLAY_BANNER_TOOLTIP": "Ar banniel-mañ emañ o tiskouez handelv ha lec'hienn web Karaoke Mugen ha sikour a ra ar meziant da vezañ brudet pa vez implijet war al leurenn foran. Evel-se e c'hall an dud mont da welet anezhañ hag implijout en o dro. Bezit mat ha lezit an dibarzh-mañ gweredekaet mar plij !"
+			"DISPLAY_BANNER_TOOLTIP": "Ar banniel-mañ emañ o tiskouez handelv ha lec'hienn web Karaoke Mugen ha sikour a ra ar meziant da vezañ brudet pa vez implijet war al leurenn foran. Evel-se e c'hall an dud mont da welet anezhañ hag implijout en o dro. Bezit mat ha lezit an dibarzh-mañ gweredekaet mar plij !",
+			"LABEL": "Lenner",
+			"MONITOR_NUMBER": "Skramm al lenner",
+			"DISPLAY_RANDOMQUOTES": "Diskouez an arroudennoù dre zegouezh",
+			"DISPLAY_CONNECTION_INFO_QRCODE": "Diskouez ar c'hod QR pa vez ehanet al lenner",
+			"LIVE_COMMENTS": "Evezhiadennoù war-eeun"
 		},
 		"INTERFACE": {
 			"DISPLAY_WELCOME_MESSAGE": "Diskouez ur c'hemennadenn degemer",
@@ -88,7 +93,8 @@
 			"WEBAPPMODE_CLOSED": "Serret : Kemennadenn \"Digarez, serret hon eus\"",
 			"WEBAPPMODE_SHORT": "Mod etrefas",
 			"WEBAPPMODE": "Mod an etrefas foran",
-			"WEBAPPMODE_OPEN": "Digor (diouer) : Kanaouennoù a c'hell bezañ ouzhpennet gant an implijerien"
+			"WEBAPPMODE_OPEN": "Digor (diouer) : Kanaouennoù a c'hell bezañ ouzhpennet gant an implijerien",
+			"PUBLIC_PLAYER_CONTROLS": "Aotren kontroll al lenner gant an holl"
 		},
 		"PLAYLIST": {
 			"PLAYLIST_SETTINGS": "Rolloù-lenn",
@@ -227,7 +233,8 @@
 			},
 			"GAME_NAME": "Anv ar c'hoariadenn",
 			"PLAYERS": {
-				"TITLE": "Piv a c'hoari ?"
+				"TITLE": "Piv a c'hoari ?",
+				"ALLOW_GUESTS": "Aotren kouvied da gemer perzh"
 			},
 			"TIME": {
 				"TITLE": "Amzer evit respont"
@@ -676,7 +683,8 @@
 	},
 	"ABOUT": {
 		"LICENSE": "Dindan aotre MIT.",
-		"CONTRIBUTORS": "Gant tud dispar e oa bet savet pozioù ar c'hanaouennoù, evel <1>{{contributors}}</1> da skouer."
+		"CONTRIBUTORS": "Gant tud dispar e oa bet savet pozioù ar c'hanaouennoù, evel <1>{{contributors}}</1> da skouer.",
+		"DESCRIPTION": "Ul lenner karaoke hag un ostilh evit merañ nozvezhioù etre mignoned ha dirak an holl."
 	},
 	"QUIZ": {
 		"TAGLINE": "Petra eo ar ganaouenn-mañ ?",
@@ -772,6 +780,9 @@
 			"ERROR": {
 				"IMPORT_BASE_FAILED": "Fazi enporzhiañ kanaouennoù",
 				"DOWNLOAD": "Fazi o pellgargañ ar ganaouenn"
+			},
+			"INFO": {
+				"PLAYER_RESTARTING": "Oc'h adloc'hañ al lenner video…"
 			}
 		}
 	},
