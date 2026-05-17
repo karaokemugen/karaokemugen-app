@@ -646,7 +646,11 @@
 			"FULLSCREEN_ON_STARTUP": "Im Vollbild starten",
 			"FULLSCREEN_ON_STARTUP_TOOLTIP": "Den Player immer im Vollbild starten unabhängig vom zuletzt genutzten Zustand",
 			"DISPLAY_BANNER": "Karaoke Mugens Version als Banner anzeigen",
-			"DISPLAY_BANNER_TOOLTIP": "Dieser Banner zeigt Karaoke Mugens Version und seine URL. Bitte aktiviere das Banner, um Karaoke Mugen auch anderen Nutzern näherzubringen. Danke!"
+			"DISPLAY_BANNER_TOOLTIP": "Dieser Banner zeigt Karaoke Mugens Version und seine URL. Bitte aktiviere das Banner, um Karaoke Mugen auch anderen Nutzern näherzubringen. Danke!",
+			"DISPLAY_NEXT_SONGINFO": "Nächstes Lied auf Pausenbildschirm anzeigen",
+			"DISPLAY_NEXT_SONGINFO_TOOLTIP": "Bei Aktivierung: Zeigt während einer Pause eine Ankündigung des nächsten Liedes auf dem Bildschirm, bspw. im Classic-Karaoke- oder Streaming-Modus. Dies gilt NICHT für die Anzeige des nächsten Liedes am Ende eines Liedes.",
+			"NEXT_SONGINFO_POSITION_X": "Horizontale Position",
+			"NEXT_SONGINFO_POSITION_Y": "Vertikale Position"
 		},
 		"SYSTEMPANEL_TIP": "Du kannst die gesuchten Optionen nicht finden? <2>Einige Optionen befinden sich in den <3>System-Einstellungen</3>.</2>",
 		"PLAYLIST": {
@@ -738,7 +742,8 @@
 		"STATS": "STATUS",
 		"PUBLIC": "ÖFFENTLICHES INTERFACE",
 		"HELP": "ONLINE-HILFE",
-		"APP_UPDATE": "Neue Version"
+		"APP_UPDATE": "Neue Version",
+		"NEWS": "News"
 	},
 	"CHECKED": "Ausgewählt:",
 	"CL_ABOUT_TO_ADD": "Du fügst gerade hinzu",
@@ -1235,7 +1240,7 @@
 			"NAME": "Name",
 			"FALLBACK": "Zurückgreifen",
 			"BLACKLIST": "Schwarze Liste",
-			"VISIBLE_DESC": "Für die Öffentlichkeit sichtbar",
+			"VISIBLE_DESC": "Für die Karaoke-Gäste sichtbar",
 			"WHITELIST_DESC": "Die Songs auf dieser Liste werden nicht ausgeblendet, auch wenn sie auf der schwarzen Liste stehen.",
 			"VISIBLE": "Sichtbar",
 			"BLACKLIST_DESC": "Die Songs auf dieser Liste werden für Benutzer ausgeblendet (es sei denn, sie stehen ebenfalls auf der Whitelist)",
@@ -1251,7 +1256,12 @@
 			"CURRENT_DESC": "Die aktuelle Liste wird vom Mediaplayer gelesen",
 			"CANNOT_PUBLIC": "Du kannst keine öffentliche Playlist haben. Bearbeite stattdessen die Playlist, die Du als neue öffentliche Playlist festlegen möchtest.",
 			"EDIT": "Editieren",
-			"CANNOT_CURRENT_PLAYLIST": "Du kannst keine aktuelle Playlist haben. Bearbeite stattdessen die Playlist, die du als neue aktuelle Playlist festlegen möchtest."
+			"CANNOT_CURRENT_PLAYLIST": "Du kannst keine aktuelle Playlist haben. Bearbeite stattdessen die Playlist, die du als neue aktuelle Playlist festlegen möchtest.",
+			"DESCRIPTION": "Beschreibung",
+			"VISIBLE_ONLINE": "Online-Sichtbarkeit",
+			"VISIBLE_ONLINE_DESC": "Sichtbar für Nutzer auf der Webseite des Repositorys, das zur jeweiligen Playlist gehört",
+			"CONTRIBUTORS": "Contributors",
+			"DELETE_CONTRIBUTOR": "Contributor von Playlist entfernen"
 		},
 		"UNKNOWN_REPOS": {
 			"TITLE": "Unbekannte Repositorys erkannt",
@@ -2328,5 +2338,8 @@
 		"FILENAME_TEMPLATE_DESC": "Bitte nenne das Dateinamen-Format, das du nutzt:",
 		"SOURCE": "Quelle",
 		"IMPORT_START": "Import starten"
+	},
+	"PLAYLIST": {
+		"NO_SONG": "kein Lied gefunden"
 	}
 }
