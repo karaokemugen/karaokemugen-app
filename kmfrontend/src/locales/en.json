@@ -757,7 +757,7 @@
 			"VISIBLE_DESC": "Visible for your karaoke sessions' guests",
 			"VISIBLE_ONLINE": "Online visibility",
 			"VISIBLE_ONLINE_DESC": "Visible for users on the playlist's repository website",
-			"CONTRIBUTORS": "Contributeurs",
+			"CONTRIBUTORS": "Contributors",
 			"DELETE_CONTRIBUTOR": "Delete contributor from playlist",
 			"EDIT_PLAYLIST": "Edit {{playlist}}",
 			"CREATE_PLAYLIST": "Create new playlist",
