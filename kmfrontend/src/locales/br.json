@@ -275,7 +275,9 @@
 			"EDIT_PLAYLIST": "Kemmañ {{playlist}}",
 			"CREATE_PLAYLIST": "Krouiñ ur roll-lenn nevez",
 			"CREATE": "Krouiñ",
-			"EDIT": "Embann"
+			"EDIT": "Embann",
+			"DESCRIPTION": "Deskrivadur",
+			"CONTRIBUTORS": "Kenoberien"
 		},
 		"DELETE_PLAYLIST_MODAL": {
 			"TITLE": "Dilemel {{playlist}} da viken ?"
