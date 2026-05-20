@@ -260,27 +260,6 @@ export function updateKaraMoeSecureConfig() {
 	}
 }
 
-/** Remove in KM 9.0 */
-export function updateKaraMoeRepoConfig() {
-	// Because we're idiots who didn't push the default Update=true to kara.moe repository (it's in the default for new installs but not for existing ones)
-	// Also, we're idiots for not realizing BaseDir might be missing
-	let repo: Repository;
-	try {
-		repo = getRepo('kara.moe');
-	} catch (err) {
-		// No repository found. It's daijoubou.
-		return;
-	}
-	if (repo && repo.Update === undefined) {
-		repo.Update = true;
-		editRepo('kara.moe', repo, false, false);
-	}
-	if (repo && !repo.BaseDir) {
-		repo.BaseDir = process.platform === 'win32' ? 'repos\\kara.moe\\json' : 'repos/kara.moe/json';
-		editRepo('kara.moe', repo, false, false);
-	}
-}
-
 /** Remove in KM 10.0 */
 export async function branchRepositoryIsNowMandatory() {
 	const repos = getRepos();

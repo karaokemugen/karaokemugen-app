@@ -17,7 +17,7 @@ import { editRepo, getRepos } from '../services/repo.js';
 import { initConfig } from '../utils/config.js';
 import { logo } from '../utils/constants.js';
 import { defaultRepositories } from '../utils/defaultSettings.js';
-import { checkMovedUserDir, updateKaraMoeRepoConfig, updateKaraMoeSecureConfig } from '../utils/hokutoNoCode.js';
+import { checkMovedUserDir, updateKaraMoeSecureConfig } from '../utils/hokutoNoCode.js';
 import Sentry from '../utils/sentry.js';
 import { getState, setState } from '../utils/state.js';
 import { parseArgs, setupFromCommandLineArgs } from './args.js';
@@ -74,7 +74,6 @@ export async function preInit() {
 	if (conf.System.Repositories.length === 0) {
 		setConfig({ System: { Repositories: [...defaultRepositories] } });
 	} else {
-		updateKaraMoeRepoConfig();
 		updateKaraMoeSecureConfig();
 	}
 	// Test if network ports are available
