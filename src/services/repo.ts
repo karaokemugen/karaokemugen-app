@@ -117,10 +117,7 @@ export async function addRepo(repo: Repository) {
 		if (repo.Online) {
 			// Testing if repository is reachable
 			try {
-				const manifest = await getRepoMetadata(repo);
-				if (repo.MaintainerMode && repo.Git) {
-					repo.Git.ProjectID = manifest.ProjectID;
-				}
+				await getRepoMetadata(repo);				
 			} catch (err) {
 				logger.error(`Repository ${repo.Name} unreachable`, { service });
 				throw new ErrorKM('REPOSITORY_UNREACHABLE', 404, false);
@@ -436,8 +433,7 @@ export async function editRepo(
 		if (repo.Online && onlineCheck) {
 			// Testing if repository is reachable
 			try {
-				const manifest = await getRepoMetadata(repo);
-				if (repo.MaintainerMode && repo.Git) repo.Git.ProjectID = manifest.ProjectID;
+				await getRepoMetadata(repo);				
 			} catch (err) {
 				throw new ErrorKM('REPOSITORY_UNREACHABLE', 404, false);
 			}
