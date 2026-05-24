@@ -325,7 +325,6 @@ System:
         Password: pass
         Author: Nanamin
         Email: nanamin@eternity.ln
-        ProjectID: 32123952
       FTP:
         Host: ftphost
         Port: 21
