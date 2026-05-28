@@ -75,7 +75,7 @@
 			"TOP": "Uhel",
 			"AUDIO_ONLY_EXPERIENCE": "Aodio hepken",
 			"FULLSCREEN": "Skramm a-bezh",
-			"DISPLAY_CONNECTION_INFO_TOOLTIP": "Ar c'hemenn \"Kit da http://xxx !\" eo",
+			"DISPLAY_CONNECTION_INFO_TOOLTIP": "Ar gemennadenn \"Kit da http://xxx !\" eo",
 			"FULLSCREEN_ON_STARTUP": "Skramm a-bezh en ur loc'hañ",
 			"DISPLAY_BANNER": "Diskouez banniel handelv Karaoke Mugen",
 			"DISPLAY_BANNER_TOOLTIP": "Ar banniel-mañ emañ o tiskouez handelv ha lec'hienn web Karaoke Mugen ha sikour a ra ar meziant da vezañ brudet pa vez implijet war al leurenn foran. Evel-se e c'hall an dud mont da welet anezhañ hag implijout en o dro. Bezit mat ha lezit an dibarzh-mañ gweredekaet mar plij !",
@@ -129,7 +129,8 @@
 		"PLAYLIST_EXPORTED_TO_SERVER": "Ezporzhiet eo bet ar roll-lenn gant berzh war-du ar servijer {{data}}",
 		"KARA_DELETED": "Kanaouenn dilamet",
 		"KARA_EDITED": "Kanaouenn embannet",
-		"KARA_CREATED": "Kanaouenn krouet"
+		"KARA_CREATED": "Kanaouenn krouet",
+		"MESSAGE_SENT": "Kemennadenn kaset"
 	},
 	"PASSWORDCONF": "Kadarnadur ar ger-tremen",
 	"NEW_PASSWORD": "Ger-tremen nevez",
@@ -191,8 +192,8 @@
 		"CL_ALL": "Diskouez war an daou",
 		"DURATION": "Padelezh (en eilennoù)",
 		"ESSENTIAL_MESSAGE": "Kemmen hollbouezus",
-		"MESSAGE": "Kemennad",
-		"CONFIRM": "Kar ar c'hemennad"
+		"MESSAGE": "Kemennadenn",
+		"CONFIRM": "Kar ar gemennadenn"
 	},
 	"MODAL": {
 		"START_QUIZ": {
@@ -467,7 +468,8 @@
 			"PORT": "Porzh SFTP",
 			"USERNAME": "Anv implijer SFTP",
 			"PASSWORD": "Ger-tremen SFTP"
-		}
+		},
+		"GIT_CUSTOM_MESSAGE": "Kemennadenn personelaet"
 	},
 	"ERROR_CODES": {
 		"UNKNOWN_REPOSITORY": "Kavlec'hiad dianav",
@@ -480,7 +482,8 @@
 		"UNKNOWN_SONG": "Kanaouenn dianav",
 		"UNKNOWN_USER": "Implijer dianav",
 		"UNKNOWN_CONVERT_ERROR": "Implijer dianav",
-		"ADMIN_PLEASE": "Implijit ur gont oberataer mar plij"
+		"ADMIN_PLEASE": "Implijit ur gont oberataer mar plij",
+		"WEBAPPMODE_CLOSED_API_MESSAGE": "Diweredekaet eo an API evit ar mare-mañ"
 	},
 	"HEADERS": {
 		"REPOSITORIES_NEW": {
