@@ -474,16 +474,18 @@ export default function Inbox() {
 					}}
 				/>
 			</Layout.Content>
-			<ChangeStatusInboxModal
-				open={openStatusModal}
-				inbox={inboxToUpdate}
-				status={newStatus}
-				repoName={instance.Name}
-				close={() => {
-					setOpenStatusModal(false);
-					getInbox();
-				}}
-			/>
+			{openStatusModal ? (
+				<ChangeStatusInboxModal
+					open={openStatusModal}
+					inbox={inboxToUpdate}
+					status={newStatus}
+					instance={instance}
+					close={() => {
+						setOpenStatusModal(false);
+						getInbox();
+					}}
+				/>
+			) : null}
 		</>
 	);
 }

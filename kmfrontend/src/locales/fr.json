@@ -857,8 +857,11 @@
 			"TITLE": "Création de tag rapide"
 		},
 		"CHANGE_STATUS_INBOX": {
-			"TITLE": "Changer le statut de la soumission",
-			"REASON": "Raison"
+			"TITLE": "Changer le statut de la soumission à \"{{status}}\"",
+			"NAME": "Nom de la chanson : {{name}}",
+			"REASON": "Raison",
+			"LANGUAGE_AUTHOR_INBOX": "Langue de l'auteur de la soumission : {{language}}",
+			"CONFIRM_CLOSING": "Le contenu du champ « Raison » sera perdu, êtes-vous sûr de vouloir fermer cette fenêtre ?"
 		},
 		"START_QUIZ": {
 			"TITLE": "Démarrer un quiz",
