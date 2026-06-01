@@ -339,7 +339,8 @@
 			"OPEN": "Krouiñ ur tikedenn"
 		},
 		"CHANGE_STATUS_INBOX": {
-			"REASON": "Abeg"
+			"REASON": "Abeg",
+			"NAME": "Anv ar ganaouenn : {{name}}"
 		}
 	},
 	"SESSIONS": {
