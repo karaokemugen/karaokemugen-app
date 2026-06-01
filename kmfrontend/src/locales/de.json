@@ -1496,8 +1496,11 @@
 			"DESCRIPTION_DOES_NOT_EXIST_ON_SERVER": "Diese Playlist existiert noch nicht auf {{serverName}}. Der Export dieser Playlist auf den Server erstellt eine neue Playlist."
 		},
 		"CHANGE_STATUS_INBOX": {
-			"TITLE": "Posteingangsstatus geändert",
-			"REASON": "Grund"
+			"TITLE": "Posteingangsstatus geändert zu \"{{status}}\"",
+			"REASON": "Grund",
+			"NAME": "Liedname: {{name}}",
+			"LANGUAGE_AUTHOR_INBOX": "Sprache des Contributors: {{language}}",
+			"CONFIRM_CLOSING": "Der Inhalt des „Grund“-Feldes wird verworfen. Bist du sicher, dass du das Fenster schließen möchtest?"
 		}
 	},
 	"REMOTE_STATUS": {
