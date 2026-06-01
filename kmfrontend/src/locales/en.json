@@ -867,7 +867,7 @@
 			"NAME": "Song name : {{name}}",
 			"REASON": "Reason",
 			"LANGUAGE_AUTHOR_INBOX": "Language of the inbox's author : {{language}}",
-			"CONFIRM_CLOSING": "The content of the \"Reason\" field will be discarded, are you sure you want to close this modal?"
+			"CONFIRM_CLOSING": "The content of the \"Reason\" field will be discarded. Are you sure you want to close this window?"
 		},
 		"START_QUIZ": {
 			"TITLE": "Start a quiz",
