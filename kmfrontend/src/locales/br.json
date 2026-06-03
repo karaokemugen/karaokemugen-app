@@ -144,7 +144,7 @@
 		"SEARCH": "Kanaouennoù gant {{tag}}"
 	},
 	"PLAYLIST_HEADER": {
-		"SHOW_SONGS": "Diskouez ar ganaouennoù",
+		"SHOW_SONGS": "Diskouez ar c'hanaouennoù",
 		"FILTERS": "Silioù"
 	},
 	"ADVANCED": {
@@ -154,7 +154,8 @@
 		"ADD": "Krouiñ ur roll-lenn nevez",
 		"IMPORT": "Enporzhiañ ur roll-lenn",
 		"EXPORT": "Ezporzhiañ ar roll-lenn",
-		"EXPORT_MEDIA": "Ezporzhiañ mediaoù ar roll-lenn"
+		"EXPORT_MEDIA": "Ezporzhiañ mediaoù ar roll-lenn",
+		"SELECT_ALL": "Diuzañ an holl ganaouennoù gwelus"
 	},
 	"KARA_MENU": {
 		"FAV": "Ouzhpennañ d'ar pennroll",
@@ -167,7 +168,9 @@
 		"VISIBLE_OFF_SHORT": "Kuzhat",
 		"HIDDEN": "Kuzhet !",
 		"SHOWN": "Diskouezet !",
-		"VISIBLE_ON": "Diskouez er roll-lenn"
+		"VISIBLE_ON": "Diskouez er roll-lenn",
+		"SHUFFLE": "Meskañ ar c'hanaouennoù",
+		"SHUFFLED": "Kanaouennoù mesket !"
 	},
 	"PUBLIC_HOMEPAGE": {
 		"SHOW_LYRICS": "Diskouez ar pozioù",
@@ -184,7 +187,8 @@
 		"ANIME_LIST": "Ma animeoù",
 		"QUIZ": {
 			"POINTS": "Poentoù : {{count}}"
-		}
+		},
+		"MY_INCOMING_SONGS": "Ma c'hanaouennoù da zont"
 	},
 	"ADMIN_MESSAGE": {
 		"CL_SCREEN": "Diskouez war skramm al lenner",
@@ -201,7 +205,7 @@
 				"BLIND": "Kuzhat ar video",
 				"BLACK_SCREEN": "Skramm du",
 				"TIME": "Kregiñ ar ganaouenn",
-				"TITLE": "Penaos e vez diskouezet ar ganaouennoù ?"
+				"TITLE": "Penaos e vez diskouezet ar c'hanaouennoù ?"
 			},
 			"BUTTONS": {
 				"CANCEL_EDIT": "Nullañ ar gemmadennoù",
@@ -224,7 +228,7 @@
 				"DURATION_PLACEHOLDER": "60",
 				"POINTS": "poentoù",
 				"MAX_SONGS": "pa",
-				"SONGS": "ganaouenn zo bet lennet.",
+				"SONGS": "a ganaouennoù zo bet lennet.",
 				"DURATION": "goude",
 				"MINUTES": "m/vunutenn da c'hoari."
 			},
@@ -428,7 +432,8 @@
 				},
 				"FIXASPECTRATIO_BACKGROUND": "Drekleur :"
 			}
-		}
+		},
+		"QUEUE_LABEL_SONGS": "({{numberSongs}} a gananouennoù) :"
 	},
 	"UNUSED_FILES": {
 		"REPOSITORY": "Kavlec'hiad",
@@ -447,7 +452,8 @@
 		"I18N_ERROR": "Kasit ur troidigezh",
 		"I18N_DELETE": "Dilemel an anv",
 		"NAME_REQUIRED": "Skrivit un anv",
-		"DESCRIPTION": "Deskrivadur"
+		"DESCRIPTION": "Deskrivadur",
+		"KARAOKES_WITH_TAGS": "Kanaouennoù gant an tikedenn-mañ"
 	},
 	"REPOSITORIES": {
 		"NAME_DESC": "Petra eo anv ho kavlec'hiad ?",
@@ -505,7 +511,7 @@
 			"TITLE": "Embann un implijer"
 		},
 		"KARAOKE_LIST": {
-			"TITLE": "Listenn ar ganaouennoù"
+			"TITLE": "Listenn ar c'hanaouennoù"
 		},
 		"KARAOKE_NEW": {
 			"TITLE": "Ouzhpennañ ur ganaouenn"
@@ -584,14 +590,20 @@
 		"CRITERIA_TYPE_1001": "Kanaouenn",
 		"CRITERIA_TYPE_1002": "Hiroc'h eget (mm:ee)",
 		"CRITERIA_TYPE_1003": "Berroc'h eget (mm:ee)",
-		"CRITERIA_TYPE_1006": "Kuzhat ar ganaouennoù na c'haller ket hegerz ezlinenn",
+		"CRITERIA_TYPE_1006": "Kuzhat ar c'hanaouennoù na c'haller ket hegerz ezlinenn",
 		"LABEL": {
 			"TAG_VERBS": {
 				"2": "kanet gant",
 				"4": "krouet gant",
 				"5": "e",
 				"8": "sonaozet gant"
-			}
+			},
+			"TAG": "Ar c'hanaouennoù {{verb}} {{tag}} a zo e-barzh al listenn.",
+			"YEAR": "Kanaouennoù ar bloaz {{year}} a zo e-barzh al listenn.",
+			"AFTER_YEAR": "Ar c'hanaouennoù goude ar bloaz {{year}} a zo e-barzh al listenn.",
+			"BEFORE_YEAR": "Ar c'hanaouennoù a-raok ar bloaz {{year}} a zo e-barzh al listenn.",
+			"LONGER": "Ar c'hanaouennoù hiroc'h eget {{time}} eilenn a zo e-barzh al listenn.",
+			"SHORTER": "Ar c'hanaouennoù berroc'h eget {{time}} eilenn a zo e-barzh al listenn."
 		}
 	},
 	"AUTOMIX_MODAL": {
@@ -637,7 +649,7 @@
 	"TASKS": {
 		"IMPORTING_PLAYLIST": "Oc'h enporzhiañ ar roll-lenn…",
 		"BASE_IMPORT": {
-			"IMPORTING_BASE": "Oc'h enporzhiañ ar ganaouennoù…"
+			"IMPORTING_BASE": "Oc'h enporzhiañ ar c'hanaouennoù…"
 		},
 		"EXPORTING_PLAYLIST_MEDIA": "Ezporzhiañ mediaoù eus ar roll-lenn…",
 		"CREATING_SONG": "O krouiñ ar ganaouenn…",
@@ -703,8 +715,11 @@
 		"RULES": {
 			"TITLE": "Reolennoù",
 			"SECONDS_one": "{{count}} eilenn",
-			"SECONDS_other": "{{count}} eilenn"
-		}
+			"SECONDS_other": "{{count}} eilenn",
+			"MAX_SONGS_one": "a-benn <1>{{count}} ganaouenn</1>",
+			"MAX_SONGS_other": "a-benn <1>{{count}} a ganaouennoù</1>"
+		},
+		"PREVIOUS_KARAOKES": "Kanaouennoù a-raok"
 	},
 	"PLAYERS_CONTROLS": {
 		"NEXT_SONG_SHORT": "War-lerc'h",
@@ -731,7 +746,7 @@
 		"CONFIRM_UPDATE": "Kadarnaat an hizivadenn"
 	},
 	"TOOLTIP_DELETE_FAVS": "Dilemel ar ganaouenn-mañ diouzh ar pennrolloù",
-	"TOOLTIP_DELETE_SELECT_FAVS": "Dilemel ar ganaouennoù dibabet diouzh ar pennrolloù",
+	"TOOLTIP_DELETE_SELECT_FAVS": "Dilemel ar c'hanaouennoù dibabet diouzh ar pennrolloù",
 	"OPTIONS": "Dibarzhioù",
 	"SEARCH_FILTER": "Sil klask",
 	"CLEAR_FILTER": "Skarzhañ",
@@ -802,5 +817,9 @@
 	"PLAYLIST": {
 		"NO_SONG": "N'eus bet kavet kanaouenn ebet"
 	},
-	"NEW_ACCOUNT_CODE": "Kod kont nevez (da c'houlenn digant an oberataer)"
+	"NEW_ACCOUNT_CODE": "Kod kont nevez (da c'houlenn digant an oberataer)",
+	"KARAOKE_other": "{{count}} a ganaouennoù",
+	"TOOLTIP_DELETE_SELECT_KARA": "Dilemel ar c'hanaouennoù diuzet",
+	"QUOTA_KARA": "Kanaouennoù a chom",
+	"PL_MULTIPLE_ADDED": "Ouzhpennañ {{count}} a ganaouennoù"
 }
