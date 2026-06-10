@@ -156,7 +156,7 @@ export async function downloadKaraFromInbox(inid: string, repoName: string, toke
 		logger.error(`Inbox item ${inid} failed to download`, { service, obj: err });
 		Sentry.error(err);
 		emitWS('songDownloadedFromInboxFailed');
-		throw err instanceof ErrorKM ? err : new ErrorKM('INBOX_DOWNLOAD_ERROR');
+		throw err instanceof ErrorKM ? err : new ErrorKM('INBOX_DOWNLOAD_ERROR', 500, false);
 	}
 }
 
