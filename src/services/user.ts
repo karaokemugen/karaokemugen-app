@@ -50,22 +50,20 @@ export async function getAvailableGuest() {
 }
 
 function getSecretKey(secret: string): Uint8Array {
-    return new TextEncoder().encode(secret);
+	return new TextEncoder().encode(secret);
 }
 
 /** Create JSON Web Token from timestamp, JWT Secret, role and username */
 export async function createJwtToken(username: string, role: string, config?: Config): Promise<string> {
 	const conf = config || getConfig();
-	return new SignJWT({ username, role })
-        .setProtectedHeader({ alg: 'HS256' })
-        .sign(getSecretKey(conf.App.JwtSecret));
+	return new SignJWT({ username, role }).setProtectedHeader({ alg: 'HS256' }).sign(getSecretKey(conf.App.JwtSecret));
 }
 
 /** Decode token to see if it matches */
 export async function decodeJwtToken(token: string, config?: Config): Promise<OldJWTToken> {
-    const conf = config || getConfig();
-    const { payload } = await jwtVerify(token, getSecretKey(conf.App.JwtSecret));
-    return payload as any;
+	const conf = config || getConfig();
+	const { payload } = await jwtVerify(token, getSecretKey(conf.App.JwtSecret));
+	return payload as any;
 }
 
 /** To avoid flooding database UPDATEs, only update login time every 5 minute for a user */
@@ -361,8 +359,8 @@ export async function createUser(
 async function newUserIntegrityChecks(user: User) {
 	if (!user.login.split('@')[0].match(userRegexp)) {
 		logger.error(`Invalid user name: ${user.login}`, { service });
-		throw new ErrorKM('USER_ASCII_CHARACTERS_ONLY', 400, false);
-	}		
+		throw new ErrorKM('USER_LOGIN_INVALID', 400, false);
+	}
 	if (user.type < 2 && !user.password) throw new ErrorKM('USER_EMPTY_PASSWORD', 400, false);
 	if (user.type === 2 && user.password) throw new ErrorKM('GUEST_WITH_PASSWORD', 400, false);
 	// Check if login already exists.

@@ -826,7 +826,6 @@
 		"USER_NOT_ALLOWED_TO_SING": "Der Benutzer darf den Song nicht starten",
 		"PL_DELETE_SONG_ERROR": "Du kannst dieses Lied nicht löschen",
 		"PREVIEW_HOOKS_ERROR": "Fehler bei der Vorschau Abfrage",
-		"USER_ASCII_CHARACTERS_ONLY": "Bitte verwende in deinem Benutzernamen nur alphanumerische Zeichen (Du kannst deinen Spitznamen später beliebig ändern).",
 		"CONFIG_BACKUPED_ERROR": "Fehler beim Sichern der Konfigurationsdatei",
 		"REPO_PATH_ERROR_IN_BASE_PATH": "Der Repository-Medienpfad darf nicht unter seinem Basispfad liegen",
 		"DATABASE_DUMPED_ERROR": "Fehler beim Dumping der Datenbank",

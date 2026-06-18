@@ -1667,7 +1667,6 @@
 		"UPDATING_MEDIAS_ERROR": "El repositorio {{repo}} no pudo actualizar los medios correctamente: {{err}}",
 		"SESSION_END_BEFORE_START_ERROR": "El fin de la sesión está antes de su comienzo!",
 		"USER_ALREADY_EXISTS": "El usuario ya existe",
-		"USER_ASCII_CHARACTERS_ONLY": "Sólo caracteres alfanuméricos en tu nombre de usuario, por favor (puedes cambiar tu apodo más tarde por el que desees).",
 		"USER_GET_ERROR_ONLINE": "Error al obtener usuarios en línea",
 		"SESSION_EXPORT_ERROR": "Error al exportar sesión",
 		"UNKNOWN_SESSION": "Sesión desconocida",
