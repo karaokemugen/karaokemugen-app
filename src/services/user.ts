@@ -22,7 +22,7 @@ import {
 import { DBUser } from '../lib/types/database/user.js';
 import { OldJWTToken, User, UserParams } from '../lib/types/user.js';
 import { getConfig, resolvedPath, setConfig } from '../lib/utils/config.js';
-import { asciiRegexp, imageFileTypes, userRegexp } from '../lib/utils/constants.js';
+import { imageFileTypes, userRegexp } from '../lib/utils/constants.js';
 import { ErrorKM } from '../lib/utils/error.js';
 import { detectFileType, fileExists } from '../lib/utils/files.js';
 import logger, { profile } from '../lib/utils/logger.js';
@@ -288,10 +288,6 @@ export async function createUser(
 		}
 		user.login = user.login.trim().toLowerCase();
 		if (user.password) user.password = user.password.trim();
-		if (!user.login.split('@')[0].match(userRegexp)) {
-			logger.error(`Invalid user name: ${user.login}`, { service });
-			throw new ErrorKM('USER_LOGIN_INVALID', 400, false);
-		}
 		// If nickname is not supplied, guess one
 		user.nickname ||= user.login.includes('@') ? user.login.split('@')[0] : user.login;
 		user = {
@@ -363,7 +359,10 @@ export async function createUser(
 
 /** Checks if a user can be created */
 async function newUserIntegrityChecks(user: User) {
-	if (!asciiRegexp.test(user.login)) throw new ErrorKM('USER_ASCII_CHARACTERS_ONLY', 400, false);
+	if (!user.login.split('@')[0].match(userRegexp)) {
+		logger.error(`Invalid user name: ${user.login}`, { service });
+		throw new ErrorKM('USER_ASCII_CHARACTERS_ONLY', 400, false);
+	}		
 	if (user.type < 2 && !user.password) throw new ErrorKM('USER_EMPTY_PASSWORD', 400, false);
 	if (user.type === 2 && user.password) throw new ErrorKM('GUEST_WITH_PASSWORD', 400, false);
 	// Check if login already exists.
