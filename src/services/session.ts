@@ -1,7 +1,7 @@
 import { createObjectCsvWriter as csvWriter } from 'csv-writer';
 import i18next from 'i18next';
 import { resolve } from 'path';
-import { v4 as uuidV4 } from 'uuid';
+import { randomUUID } from 'crypto';
 
 import { selectAllKaras } from '../dao/kara.js';
 import {
@@ -51,7 +51,7 @@ export async function addSession(
 ): Promise<Session> {
 	try {
 		const date = started_at ? new Date(started_at) : new Date();
-		const seid = uuidV4();
+		const seid = randomUUID();
 		const session = {
 			seid,
 			name,
@@ -152,7 +152,7 @@ export async function mergeSessions(seid1: string, seid2: string): Promise<Sessi
 		const started_at = session1.started_at < session2.started_at ? session1.started_at : session2.started_at;
 		const ended_at = session1.ended_at > session2.ended_at ? session1.ended_at : session2.ended_at;
 		const name = session1.started_at < session2.started_at ? session1.name : session2.name;
-		const seid = uuidV4();
+		const seid = randomUUID();
 		const session = {
 			name,
 			seid,

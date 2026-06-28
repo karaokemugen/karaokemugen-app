@@ -13,7 +13,7 @@ interface IProps {
 }
 
 function Switch(props: IProps) {
-	const checkbox = useRef<HTMLInputElement>();
+	const checkbox = useRef<HTMLInputElement>(undefined);
 
 	const onKeyDown = e => {
 		e.preventDefault();

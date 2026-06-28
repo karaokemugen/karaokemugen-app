@@ -2,11 +2,11 @@ import { compare, genSalt, hash } from 'bcryptjs';
 import { createHash } from 'crypto';
 import { promises as fs } from 'fs';
 import { copy } from 'fs-extra';
-import { sign, verify } from 'jsonwebtoken';
+import { SignJWT, jwtVerify } from 'jose';
 import { deburr, merge, sample } from 'lodash';
 import { resolve } from 'path';
 import randomstring from 'randomstring';
-import { v4 as uuidV4 } from 'uuid';
+import { randomUUID } from 'crypto';
 
 import { selectSongCountForUser, selectSongTimeSpentForUser } from '../dao/playlist.js';
 import {
@@ -22,7 +22,7 @@ import {
 import { DBUser } from '../lib/types/database/user.js';
 import { OldJWTToken, User, UserParams } from '../lib/types/user.js';
 import { getConfig, resolvedPath, setConfig } from '../lib/utils/config.js';
-import { asciiRegexp, imageFileTypes, userRegexp } from '../lib/utils/constants.js';
+import { imageFileTypes, userRegexp } from '../lib/utils/constants.js';
 import { ErrorKM } from '../lib/utils/error.js';
 import { detectFileType, fileExists } from '../lib/utils/files.js';
 import logger, { profile } from '../lib/utils/logger.js';
@@ -49,16 +49,21 @@ export async function getAvailableGuest() {
 	return guest;
 }
 
+function getSecretKey(secret: string): Uint8Array {
+	return new TextEncoder().encode(secret);
+}
+
 /** Create JSON Web Token from timestamp, JWT Secret, role and username */
-export function createJwtToken(username: string, role: string, config?: Config): string {
+export async function createJwtToken(username: string, role: string, config?: Config): Promise<string> {
 	const conf = config || getConfig();
-	return sign({ username, role }, conf.App.JwtSecret);
+	return new SignJWT({ username, role }).setProtectedHeader({ alg: 'HS256' }).sign(getSecretKey(conf.App.JwtSecret));
 }
 
 /** Decode token to see if it matches */
-export function decodeJwtToken(token: string, config?: Config): OldJWTToken {
+export async function decodeJwtToken(token: string, config?: Config): Promise<OldJWTToken> {
 	const conf = config || getConfig();
-	return verify(token, conf.App.JwtSecret) as any;
+	const { payload } = await jwtVerify(token, getSecretKey(conf.App.JwtSecret));
+	return payload as any;
 }
 
 /** To avoid flooding database UPDATEs, only update login time every 5 minute for a user */
@@ -183,7 +188,7 @@ async function replaceAvatar(oldImageFile: string, avatar: Express.Multer.File):
 		const fileType = await detectFileType(avatar.path);
 		if (!imageFileTypes.includes(fileType.toLowerCase())) throw 'Wrong avatar file type';
 		// Construct the name of the new avatar file with its ID and filetype.
-		const newAvatarFile = `${uuidV4()}.${fileType}`;
+		const newAvatarFile = `${randomUUID()}.${fileType}`;
 		const newAvatarPath = resolve(resolvedPath('Avatars'), newAvatarFile);
 		const oldAvatarPath = resolve(resolvedPath('Avatars'), oldImageFile);
 		if ((await fileExists(oldAvatarPath)) && oldImageFile !== 'blank.png') {
@@ -281,10 +286,6 @@ export async function createUser(
 		}
 		user.login = user.login.trim().toLowerCase();
 		if (user.password) user.password = user.password.trim();
-		if (!user.login.split('@')[0].match(userRegexp)) {
-			logger.error(`Invalid user name: ${user.login}`, { service });
-			throw new ErrorKM('USER_LOGIN_INVALID', 400, false);
-		}
 		// If nickname is not supplied, guess one
 		user.nickname ||= user.login.includes('@') ? user.login.split('@')[0] : user.login;
 		user = {
@@ -356,7 +357,10 @@ export async function createUser(
 
 /** Checks if a user can be created */
 async function newUserIntegrityChecks(user: User) {
-	if (!asciiRegexp.test(user.login)) throw new ErrorKM('USER_ASCII_CHARACTERS_ONLY', 400, false);
+	if (!user.login.split('@')[0].match(userRegexp)) {
+		logger.error(`Invalid user name: ${user.login}`, { service });
+		throw new ErrorKM('USER_LOGIN_INVALID', 400, false);
+	}
 	if (user.type < 2 && !user.password) throw new ErrorKM('USER_EMPTY_PASSWORD', 400, false);
 	if (user.type === 2 && user.password) throw new ErrorKM('GUEST_WITH_PASSWORD', 400, false);
 	// Check if login already exists.

@@ -1,5 +1,4 @@
 import { promises as fs } from 'fs';
-import internet from 'internet-available';
 import { cloneDeep } from 'lodash';
 import { resolve } from 'path';
 import prettyBytes from 'pretty-bytes';
@@ -16,6 +15,7 @@ import sentry from '../utils/sentry.js';
 import { getState } from '../utils/state.js';
 import { statsEnabledRepositories } from './repo.js';
 import { getSessions } from './session.js';
+import { checkInternet } from '../utils/net.js';
 
 const service = 'Stats';
 
@@ -43,7 +43,7 @@ export async function sendPayload(host: string, secure: boolean) {
 	let payload: any;
 	try {
 		try {
-			await internet();
+			await checkInternet();
 		} catch (err) {
 			throw 'This instance is not connected to the internets';
 		}

@@ -83,6 +83,7 @@ function KaraForm(props: KaraFormProps) {
 	const context = useContext(GlobalContext);
 
 	const typeTagCheckbox = [3, 14, 16, 10, 13, 12, 11, 7, 15, 9];
+	const LOAD_AND_PROCESS_MEDIA_TIMEOUT = 1000 * 60 * 10 // Bigger files will silently timeout, so rather set a high limit
 
 	// State
 	const [tagsCheckbox, setTagsCheckbox] = useState<Map<number, DBKaraTag[]>>(new Map());
@@ -181,6 +182,16 @@ function KaraForm(props: KaraFormProps) {
 	}, [mediaInfo]);
 
 	useEffect(() => {
+		// Auto enable aspect ratio fix when unsupported aspect ratio is detected
+		if (mediaInfoValidationResults?.some(res => res.name === 'videoAspectRatio')) {	
+			setEncodeMediaOptions({
+				...encodeMediaOptions,
+				fixAspectRatioMode: 'blurvideo'})
+			}
+
+	}, [mediaInfoValidationResults]);
+
+	useEffect(() => {
 		const oldFormFields = form.getFieldsValue(['mediafile', 'lyrics_infos', 'useEmbeddedLyrics']); // Fields to take over to the applied kara
 		form.resetFields();
 		form.setFieldsValue(oldFormFields); // Re-sets media and lyrics file, if already uploaded
@@ -227,7 +238,7 @@ function KaraForm(props: KaraFormProps) {
 				WS_CMD.GET_KARA_MEDIA_INFO,
 				{ kid: props.kara.kid },
 				false,
-				60000
+				LOAD_AND_PROCESS_MEDIA_TIMEOUT
 			);
 			if (!props.kara.mediafile || mediaInfo.filename === form.getFieldValue('mediafile'))
 				// Avoid showing wrong mediaInfo when mediafile is changed too quickly
@@ -675,7 +686,7 @@ function KaraForm(props: KaraFormProps) {
 						filename: info.file.response.filename,
 					},
 					false,
-					60000
+					LOAD_AND_PROCESS_MEDIA_TIMEOUT // Keep this high (~10 minutes), otherwise bigger files will silently timeout
 				);
 				setMediaInfo(mediaInfo);
 				form.setFieldsValue({ mediafile: mediaInfo.filename });
@@ -1070,17 +1081,12 @@ function KaraForm(props: KaraFormProps) {
 										</Checkbox>
 
 										{mediaInfo.videoAspectRatio.displayAspectRatio &&
-										mediaInfo.videoAspectRatio.displayAspectRatio !==
-											((repositoryManifest?.rules?.videoFile?.resolution?.aspectRatio &&
-												`${repositoryManifest?.rules?.videoFile?.resolution?.aspectRatio.x}:${repositoryManifest?.rules?.videoFile?.resolution?.aspectRatio.y}`) ||
-												'16:9') ? (
+											mediaInfoValidationResults?.some(res => res.name === 'videoAspectRatio') ? (
 											<Flex align="center">
 												<Checkbox
 													style={{ width: '100%' }}
 													disabled={isEncodingMedia}
-													defaultChecked={mediaInfoValidationResults?.some(
-														res => res.name === 'videoAspectRatio'
-													)}
+													checked={!!encodeMediaOptions?.fixAspectRatioMode}
 													onChange={e =>
 														setEncodeMediaOptions({
 															...encodeMediaOptions,

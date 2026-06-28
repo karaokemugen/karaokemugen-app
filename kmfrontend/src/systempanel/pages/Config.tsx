@@ -186,7 +186,7 @@ class Config extends Component<ConfigProps, ConfigState> {
 				}
 				return { key: k, value: v, primary: Array.isArray(v) ? v[0] : undefined };
 			})
-			.filter(value => value);
+			.filter(value => value && value.key !== 'Frontend.Library.KaraLineDisplay');
 	};
 
 	configBackup = async () => {

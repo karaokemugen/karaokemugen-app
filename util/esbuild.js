@@ -1,21 +1,32 @@
+import { createRequire } from 'node:module';
+import { fileURLToPath } from 'node:url';
 import electron from 'electron';
-import { build, buildSync } from 'esbuild';
+import { build, context } from 'esbuild';
 import { execa } from 'execa';
 import { rimraf } from 'rimraf';
 
 const buildOptions = {
-	outfile: 'dist/index.cjs',
+	outfile: 'dist/index.mjs',
 	entryPoints: ['src/index.ts'],
 	platform: 'node',
-	target: 'node20',
-	format: 'cjs',
+	target: 'node24',
+	format: 'esm',
 	bundle: true,
 	sourcemap: true,
-	conditions: ['module'],
 	external: ['cpu-features', 'electron', 'pg-native', 'fsevents'],
 	legalComments: 'external',
 	color: true,
 	logLevel: 'info',
+	banner: {
+		js: `
+import { createRequire as _createRequire } from 'node:module';
+import { fileURLToPath as _fileURLToPath } from 'node:url';
+import { dirname as _dirname } from 'node:path';
+const require = _createRequire(import.meta.url);
+const __filename = _fileURLToPath(import.meta.url);
+const __dirname = _dirname(__filename);
+`.trim(),
+	},
 };
 
 let edited = true;
@@ -23,23 +34,9 @@ let edited = true;
 console.log('Clearing dist/');
 await rimraf('dist/');
 
-if (process.argv[2] === 'watch') {
-	console.log('Launching esbuild');
-	const builder = await build({
-		...buildOptions,
-		watch: {
-			onRebuild: err => {
-				edited = !err;
-			},
-		},
-		minify: false,
-	});
-	console.log('Electron watch, close the app to rerun after edits, close without edits to quit');
-	while (edited) {
-		edited = false;
-		await execa(electron, ['.'], { stdio: 'inherit' });
-	}
-	builder.stop();
-} else {
-	buildSync(buildOptions);
+try {
+	await build(buildOptions);
+} catch (err) {
+	console.error('Build failed:', err);
+	process.exit(1);
 }

@@ -642,7 +642,15 @@
 			"DISPLAY_CONNECTION_INFO_QRCODE_DURING_SONG": "QR-Code während eines Liedes anzeigen",
 			"DISPLAY_CONNECTION_INFO_QRCODE_DURING_SONG_TOOLTIP": "Der QR-Code wird während eines Liedes in der oberen rechten Ecke angezeigt.",
 			"DISPLAY_FONT_SIZE": "Fontgröße für Nachrichten verändern",
-			"DISPLAY_FONT_SIZE_TOOLTIP": "Fontgröße kann von -5 bis 5 eingestellt werden. Diese bezieht sich NUR auf Bildschirmnachrichten (Quiz, Umfragen, Liedinfo usw.) und nicht auf Liedtexte."
+			"DISPLAY_FONT_SIZE_TOOLTIP": "Fontgröße kann von -5 bis 5 eingestellt werden. Diese bezieht sich NUR auf Bildschirmnachrichten (Quiz, Umfragen, Liedinfo usw.) und nicht auf Liedtexte.",
+			"FULLSCREEN_ON_STARTUP": "Im Vollbild starten",
+			"FULLSCREEN_ON_STARTUP_TOOLTIP": "Den Player immer im Vollbild starten unabhängig vom zuletzt genutzten Zustand",
+			"DISPLAY_BANNER": "Karaoke Mugens Version als Banner anzeigen",
+			"DISPLAY_BANNER_TOOLTIP": "Dieser Banner zeigt Karaoke Mugens Version und seine URL. Bitte aktiviere das Banner, um Karaoke Mugen auch anderen Nutzern näherzubringen. Danke!",
+			"DISPLAY_NEXT_SONGINFO": "Nächstes Lied auf Pausenbildschirm anzeigen",
+			"DISPLAY_NEXT_SONGINFO_TOOLTIP": "Bei Aktivierung: Zeigt während einer Pause eine Ankündigung des nächsten Liedes auf dem Bildschirm, bspw. im Classic-Karaoke- oder Streaming-Modus. Dies gilt NICHT für die Anzeige des nächsten Liedes am Ende eines Liedes.",
+			"NEXT_SONGINFO_POSITION_X": "Horizontale Position",
+			"NEXT_SONGINFO_POSITION_Y": "Vertikale Position"
 		},
 		"SYSTEMPANEL_TIP": "Du kannst die gesuchten Optionen nicht finden? <2>Einige Optionen befinden sich in den <3>System-Einstellungen</3>.</2>",
 		"PLAYLIST": {
@@ -734,7 +742,8 @@
 		"STATS": "STATUS",
 		"PUBLIC": "ÖFFENTLICHES INTERFACE",
 		"HELP": "ONLINE-HILFE",
-		"APP_UPDATE": "Neue Version"
+		"APP_UPDATE": "Neue Version",
+		"NEWS": "News"
 	},
 	"CHECKED": "Ausgewählt:",
 	"CL_ABOUT_TO_ADD": "Du fügst gerade hinzu",
@@ -817,7 +826,6 @@
 		"USER_NOT_ALLOWED_TO_SING": "Der Benutzer darf den Song nicht starten",
 		"PL_DELETE_SONG_ERROR": "Du kannst dieses Lied nicht löschen",
 		"PREVIEW_HOOKS_ERROR": "Fehler bei der Vorschau Abfrage",
-		"USER_ASCII_CHARACTERS_ONLY": "Bitte verwende in deinem Benutzernamen nur alphanumerische Zeichen (Du kannst deinen Spitznamen später beliebig ändern).",
 		"CONFIG_BACKUPED_ERROR": "Fehler beim Sichern der Konfigurationsdatei",
 		"REPO_PATH_ERROR_IN_BASE_PATH": "Der Repository-Medienpfad darf nicht unter seinem Basispfad liegen",
 		"DATABASE_DUMPED_ERROR": "Fehler beim Dumping der Datenbank",
@@ -1231,7 +1239,7 @@
 			"NAME": "Name",
 			"FALLBACK": "Zurückgreifen",
 			"BLACKLIST": "Schwarze Liste",
-			"VISIBLE_DESC": "Für die Öffentlichkeit sichtbar",
+			"VISIBLE_DESC": "Für die Karaoke-Gäste sichtbar",
 			"WHITELIST_DESC": "Die Songs auf dieser Liste werden nicht ausgeblendet, auch wenn sie auf der schwarzen Liste stehen.",
 			"VISIBLE": "Sichtbar",
 			"BLACKLIST_DESC": "Die Songs auf dieser Liste werden für Benutzer ausgeblendet (es sei denn, sie stehen ebenfalls auf der Whitelist)",
@@ -1247,7 +1255,12 @@
 			"CURRENT_DESC": "Die aktuelle Liste wird vom Mediaplayer gelesen",
 			"CANNOT_PUBLIC": "Du kannst keine öffentliche Playlist haben. Bearbeite stattdessen die Playlist, die Du als neue öffentliche Playlist festlegen möchtest.",
 			"EDIT": "Editieren",
-			"CANNOT_CURRENT_PLAYLIST": "Du kannst keine aktuelle Playlist haben. Bearbeite stattdessen die Playlist, die du als neue aktuelle Playlist festlegen möchtest."
+			"CANNOT_CURRENT_PLAYLIST": "Du kannst keine aktuelle Playlist haben. Bearbeite stattdessen die Playlist, die du als neue aktuelle Playlist festlegen möchtest.",
+			"DESCRIPTION": "Beschreibung",
+			"VISIBLE_ONLINE": "Online-Sichtbarkeit",
+			"VISIBLE_ONLINE_DESC": "Sichtbar für Nutzer auf der Webseite des Repositorys, das zur jeweiligen Playlist gehört",
+			"CONTRIBUTORS": "Contributors",
+			"DELETE_CONTRIBUTOR": "Contributor von Playlist entfernen"
 		},
 		"UNKNOWN_REPOS": {
 			"TITLE": "Unbekannte Repositorys erkannt",
@@ -1482,8 +1495,11 @@
 			"DESCRIPTION_DOES_NOT_EXIST_ON_SERVER": "Diese Playlist existiert noch nicht auf {{serverName}}. Der Export dieser Playlist auf den Server erstellt eine neue Playlist."
 		},
 		"CHANGE_STATUS_INBOX": {
-			"TITLE": "Posteingangsstatus geändert",
-			"REASON": "Grund"
+			"TITLE": "Posteingangsstatus geändert zu \"{{status}}\"",
+			"REASON": "Grund",
+			"NAME": "Liedname: {{name}}",
+			"LANGUAGE_AUTHOR_INBOX": "Sprache des Contributors: {{language}}",
+			"CONFIRM_CLOSING": "Der Inhalt des „Grund“-Feldes wird verworfen. Bist du sicher, dass du das Fenster schließen möchtest?"
 		}
 	},
 	"REMOTE_STATUS": {
@@ -1826,7 +1842,7 @@
 		"REPOSITORY_TYPE": "Repository-Typ",
 		"REPOSITORY_TYPE_DESC": "Entscheide zunächst, ob das neue Repository online oder lokal sein soll.",
 		"PATH_MEDIAS_DESC": "Bitte gibt hier an, wo die Medien gespeichert werden sollen. Wenn du viele Lieder nutzen willst, sollte eine großzügige Menge Speicherplatz vorhanden sein.",
-		"UPLOAD_METHOD0": "Methode für den Medien-Upload"
+		"UPLOAD_METHOD": "Methode für den Medien-Upload"
 	},
 	"TAGS": {
 		"KITSU_SLUG_ERROR": "Ungültiger Kitsu-Slug",
@@ -2324,5 +2340,8 @@
 		"FILENAME_TEMPLATE_DESC": "Bitte nenne das Dateinamen-Format, das du nutzt:",
 		"SOURCE": "Quelle",
 		"IMPORT_START": "Import starten"
+	},
+	"PLAYLIST": {
+		"NO_SONG": "kein Lied gefunden"
 	}
 }

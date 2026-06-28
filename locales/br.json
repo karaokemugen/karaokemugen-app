@@ -22,7 +22,8 @@
 		"WARNINGS": "Diwall",
 		"VERSIONS": "Handelv",
 		"SERIES": "Oberenn",
-		"GENRES": "Doare"
+		"GENRES": "Doare",
+		"COLLECTIONS": "Dastumad"
 	},
 	"NEXT_SONG": "Kan war-lerc'h",
 	"MENU_HELP_ABOUT": "&A-zivout Karaoke Mugen",
@@ -60,7 +61,7 @@
 		null,
 		null,
 		null,
-		null,
+		"O pellgargañ Wikipedia",
 		null,
 		null,
 		null,
@@ -71,7 +72,7 @@
 		"O tommañ rakletez"
 	],
 	"INIT_INIT": "O kregiñ…",
-	"INIT_BASEUPDATE": "O hizivaat kanaouennoù…",
+	"INIT_BASEUPDATE": "O hizivaat ar c'hanaouennoù…",
 	"MENU_FILE": "&Restr",
 	"MENU_FILE_QUIT_OSX": "Kuitaat Karaoke Mugen",
 	"MENU_VIEW": "&Gwelout",
@@ -125,7 +126,7 @@
 	"MENU_EDIT_STARTSPEECH": "Kregiñ da gomz",
 	"MENU_EDIT_STOPSPEECH": "Paouez da gomz",
 	"MENU_HELP_CHANGELOG": "&Notennoù handelv",
-	"MENU_HELP_REPORT_BUG": "Danevellañ &ur gudenn",
+	"MENU_HELP_REPORT_BUG": "Danevelliñ &ur gudenn",
 	"ERROR": "Fazi",
 	"UPDATE_FOUND": "Hizivadur hegerz",
 	"UPDATE_PROMPT": "Fellout a ra dit hizivaat Karaoke Mugen ?",
@@ -160,7 +161,7 @@
 		"END_GAME": "ECHU AR C'HOARIADENN"
 	},
 	"MENU_EDIT_SELECT_ALL": "Dibab an &holl",
-	"MENU_OPTIONS_OPERATORCONFIG": "&Arventennoù",
+	"MENU_OPTIONS_OPERATORCONFIG": "&Arventennoù oberataer",
 	"MENU_OPTIONS_SYSTEMCONFIG": "Arventennoù ar &reizhiad",
 	"MENU_OPTIONS_OPERATORCONFIG_OSX": "Arventennoù…",
 	"MENU_OPTIONS_SYSTEMCONFIG_OSX": "Arventennoù ar reizhiad…",
@@ -168,5 +169,9 @@
 	"UNKNOWN_ARTIST": "Arzour dianav",
 	"GENERATING_READING": "Pazenn 1 / 2 - O lenn roadennoù…",
 	"GENERATING_DATABASE": "Pazenn 2/2 - O hizivaat ar stlennvon…",
-	"INTERFACE_RESTRICTED": "Kinnig ebet"
+	"INTERFACE_RESTRICTED": "Kinnig ebet",
+	"MENU_HELP_TUTORIAL": "&Heforzhiadur oberataer",
+	"MENU_GOTO_OPERATOR": "Etrefas &oberataer",
+	"KARAOKE_MUGEN_PLAYER_WINDOW_TITLE": "Lenner Karaoke Mugen",
+	"RESTARTING_PLAYER": "OC'H ADLOC'HAÑ AL LENNER…"
 }

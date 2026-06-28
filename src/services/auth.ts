@@ -46,7 +46,7 @@ export async function checkLogin(
 	const role = getRole(user);
 	updateLastLoginName(username);
 	return {
-		token: createJwtToken(username, role, conf),
+		token: await createJwtToken(username, role, conf),
 		onlineToken,
 		username,
 		role,

@@ -8,7 +8,7 @@ interface EditableGroupProps {
 }
 
 export default function EditableGroupAlias(props: EditableGroupProps) {
-	const input = useRef<InputRef>();
+	const input = useRef<InputRef>(undefined);
 
 	const [value, setValue] = useState(props.value || []);
 	const [inputVisible, setInputVisible] = useState(false);

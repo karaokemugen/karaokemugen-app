@@ -3,9 +3,9 @@ import logger from '../lib/utils/logger.js';
 import { decodeJwtToken } from '../services/user.js';
 import { checkValidUser } from './middlewares.js';
 
-export function requireHTTPAuth(req: any, res: any, next: any) {
+export async function requireHTTPAuth(req: any, res: any, next: any) {
 	if (req.get('authorization')) {
-		req.token = decodeJwtToken(req.get('authorization'));
+		req.token = await decodeJwtToken(req.get('authorization'));
 		next();
 	} else {
 		res.status(401).json(APIMessage('USER_UNKNOWN'));

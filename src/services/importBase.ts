@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
 import { basename, dirname, extname, resolve } from 'path';
-import { v4 as uuidV4 } from 'uuid';
+import { randomUUID } from 'crypto';
 
 import { APIMessage } from '../lib/services/frontend.js';
 import { defineSongname, processUploadedMedia } from '../lib/services/karaCreation.js';
@@ -135,7 +135,7 @@ async function populateTags(baseKaras: ImportBaseFile[], repoDest: string): Prom
 				items.forEach((_, i2) => (items[i2] = items[i2].trim()));
 				for (const item of items) {
 					const tag = tags.content.find(t => t.name === item && t.types.includes(tagTypes[key]));
-					const tid = tag?.tid || uuidV4();
+					const tid = tag?.tid || randomUUID();
 					if (!tag) {
 						tagPromises.push(
 							await addTag({
@@ -181,7 +181,7 @@ async function importBaseKara(karaObj: ImportBaseFile, repoDest: string, tags: D
 		const date = new Date();
 		// We process subfile but don't remove the source as it belogns to the user.
 		const media = await processUploadedMedia(mediafile, mediafile, false);
-		const kid = uuidV4();
+		const kid = randomUUID();
 		if (subfile) {
 			const tempSubFile = resolve(resolvedPath('Temp'), `temp_${kid}.${subfileExt}`);
 			await fs.copyFile(subfile, tempSubFile);

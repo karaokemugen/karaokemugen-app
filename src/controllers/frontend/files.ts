@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { promises as fs } from 'fs';
 import multer from 'multer';
 import { resolve } from 'path';
-import { v4 as uuidV4 } from 'uuid';
+import { randomUUID } from 'crypto';
 
 import { WS_CMD } from '../../../kmfrontend/src/utils/ws.js';
 import { APIMessage } from '../../lib/services/frontend.js';
@@ -25,7 +25,7 @@ export function filesSocketController(router: SocketIOApp) {
 		await runChecklist(socket, req, 'user', 'closed');
 		try {
 			const extension = req.body.extension ? `.${req.body.extension}` : '';
-			const filename = `${uuidV4()}${extension}`;
+			const filename = `${randomUUID()}${extension}`;
 			const fullPath = resolve(resolvedPath('Temp'), filename);
 			await fs.writeFile(fullPath, req.body.buffer);
 			return {

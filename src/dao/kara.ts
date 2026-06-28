@@ -21,6 +21,9 @@ import {
 	sqlselectAllKIDs,
 	sqlTruncateOnlineRequested,
 } from './sql/kara.js';
+import logger from '../lib/utils/logger.js';
+
+const service = 'KaraDAO';
 
 export async function selectYears(): Promise<DBYear[]> {
 	const collectionsClauses = [];
@@ -242,8 +245,13 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		username: params.username || 'admin',
 		...yesqlPayload.params,
 	};
-	const res = await db().query(yesql(query)(queryParams));
-	return res.rows.map(row => organizeTagsInKara(row));
+	try {
+		const res = await db().query(yesql(query)(queryParams));
+		return res.rows.map(row => organizeTagsInKara(row));
+	} catch (err) {
+		logger.debug(`SelectAllKaras failed with params : ${JSON.stringify(params)}`, { service });
+		throw err;
+	}
 }
 
 export function organizeTagsInKara<T extends DBKara>(row: T & { tags: any }): T {

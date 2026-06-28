@@ -1,5 +1,4 @@
 // Node modules
-import internet from 'internet-available';
 import { xml2js } from 'xml-js';
 
 import { getRepoManifest } from '../lib/services/repo.js';
@@ -11,6 +10,7 @@ import { Feed } from '../types/feeds.js';
 import { SystemMessage } from '../types/state.js';
 import { getState, setState } from '../utils/state.js';
 import { getRepos } from './repo.js';
+import { checkInternet } from '../utils/net.js';
 
 const service = 'Feeds';
 
@@ -29,7 +29,7 @@ const feeds = [
 export async function getFeeds(): Promise<Feed[]> {
 	const feedPromises: Promise<Feed>[] = [];
 	try {
-		await internet();
+		await checkInternet();
 		for (const feed of feeds) {
 			feedPromises.push(fetchFeed(feed.url, feed.name));
 		}

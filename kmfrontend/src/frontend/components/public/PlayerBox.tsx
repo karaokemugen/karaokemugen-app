@@ -34,8 +34,8 @@ function PlayerBox(props: IProps) {
 	const [kid, setKid] = useState('');
 	const [favorites, setFavorites] = useState(new Set<string>());
 	const [karaVersions, setKaraVersions] = useState<ReactNode>();
-	const ref: RefObject<HTMLDivElement> = useRef();
-	const containerRef: RefObject<HTMLDivElement> = useRef();
+	const ref: RefObject<HTMLDivElement> = useRef(undefined);
+	const containerRef: RefObject<HTMLDivElement> = useRef(undefined);
 
 	const resetBox = () => {
 		setTitle(i18next.t('KARA_PAUSED_WAITING'));
@@ -173,9 +173,9 @@ function PlayerBox(props: IProps) {
 					kara.flag_visible
 						? getTitleInLocale(context.globalState.settings.data, kara.titles, kara.titles_default_language)
 						: (context.globalState.settings.data.config.Playlist.MysterySongs.Labels as string[])[
-								kara.pos %
+								(kara.pos %
 									(context.globalState.settings.data.config.Playlist.MysterySongs.Labels as string[])
-										.length |
+										.length) |
 									0
 							]
 				);

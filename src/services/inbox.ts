@@ -24,8 +24,21 @@ import { checkDownloadStatus, getRepo } from './repo.js';
 import { updateAllSmartPlaylists } from './smartPlaylist.js';
 import { integrateTagFile } from './tag.js';
 import { getUser } from './user.js';
+import { getState } from '../utils/state.js';
 
 const service = 'Inbox';
+
+export async function getInboxCache(repoName: string): Promise<Inbox[]> {
+	try {
+		const data = await fs.readFile(resolve(getState().dataPath, `${repoName}-cache.json`), 'utf-8');
+		const inboxes = JSON.parse(data);
+		return inboxes;
+	} catch(err) {
+		// Non-fatal
+		logger.warn(`Unable to read inbox cache : ${err}`, { service });
+		return [];
+	}
+}
 
 export async function getInbox(repoName: string, token: string): Promise<Inbox[]> {
 	const repo = getRepo(repoName);
@@ -40,10 +53,17 @@ export async function getInbox(repoName: string, token: string): Promise<Inbox[]
 			res.data.flatMap(d => [d.kid, d.edited_kid]),
 			true
 		);
-		return res.data.map(resdata => ({
+		const inboxes = res.data.map(resdata => ({
 			...resdata,
 			available_locally: availableKaras.some(kara => kara.kid === resdata.kid || kara.kid === resdata.edited_kid),
 		}));
+		try {
+			fs.writeFile(resolve(getState().dataPath, `${repoName}-cache.json`), JSON.stringify(inboxes, null, 2), 'utf-8');
+		} catch(err) {
+			// Non-fatal
+			logger.warn(`Unable to write inbox cache : ${err}`, { service });
+		}
+		return inboxes;
 	} catch (err) {
 		if (err.response?.statusCode === 403) {
 			throw new ErrorKM('INBOX_VIEW_FORBIDDEN_ERROR', 403, false);
@@ -136,7 +156,7 @@ export async function downloadKaraFromInbox(inid: string, repoName: string, toke
 		logger.error(`Inbox item ${inid} failed to download`, { service, obj: err });
 		Sentry.error(err);
 		emitWS('songDownloadedFromInboxFailed');
-		throw err instanceof ErrorKM ? err : new ErrorKM('INBOX_DOWNLOAD_ERROR');
+		throw err instanceof ErrorKM ? err : new ErrorKM('INBOX_DOWNLOAD_ERROR', 500, false);
 	}
 }
 

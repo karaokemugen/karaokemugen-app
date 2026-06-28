@@ -74,7 +74,7 @@ interface KaraList {
 
 function Playlist(props: IProps) {
 	const context = useContext(GlobalContext);
-	const refContainer = useRef<HTMLDivElement>();
+	const refContainer = useRef<HTMLDivElement>(undefined);
 	const [searchValue, setSearchValue] = useState(props.searchValue);
 	const [searchCriteria, setSearchCriteria] = useState<'year' | 'tag'>(props.searchCriteria);
 	const [searchType, setSearchType] = useState<'search' | 'recent' | 'requested' | 'incoming'>(
@@ -376,7 +376,9 @@ function Playlist(props: IProps) {
 							</>
 						)}
 					</div>
-				) : null}
+				) : (
+					<div className="list-group-item empty">{i18next.t('PLAYLIST.NO_SONG')}</div>
+				)}
 			</>
 		);
 	}, [getPlaylistInfo(props.side, context)?.plaid, repoInProgress, getFilterValue(props.side)]);
@@ -1022,9 +1024,15 @@ function Playlist(props: IProps) {
 				value => value.Enabled && value.Online
 			)) {
 				if (isAdmin) {
-					const manifest: RepositoryManifestV2 = await commandBackend(WS_CMD.GET_REPO_MANIFEST, {
-						name: value.Name,
-					});
+					const manifest: RepositoryManifestV2 = await commandBackend(
+						WS_CMD.GET_REPO_MANIFEST,
+						{
+							name: value.Name,
+						},
+						false,
+						30000,
+						true
+					);
 					newRepos.push({
 						name: value.Name,
 						url: `http${value.Secure && 's'}://${value.Name}/`,

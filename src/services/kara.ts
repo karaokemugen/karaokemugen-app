@@ -1,5 +1,4 @@
 import { convertToASS as srt2ass } from 'convert-srt-to-ass';
-import internet from 'internet-available';
 import { parse } from 'path';
 
 import { getStats } from '../dao/database.js';
@@ -25,6 +24,7 @@ import logger, { profile } from '../lib/utils/logger.js';
 import { isUUID } from '../lib/utils/validators.js';
 import { adminToken } from '../utils/constants.js';
 import sentry from '../utils/sentry.js';
+import { checkInternet } from '../utils/net.js';
 
 const service = 'Kara';
 
@@ -161,7 +161,7 @@ export async function fetchPopularSongs() {
 		// Requested number is a number but we store it as a string because we feed it to COPY FROM later.
 		const popularKIDs: Map<string, string> = new Map();
 		try {
-			await internet();
+			await checkInternet();
 		} catch (err) {
 			logger.warn('Internet not available, cannot init popular songs', { service, obj: err });
 			profile('initPopularSongs');

@@ -167,13 +167,23 @@ export default function Git() {
 
 	const generateCommits = useCallback(async (repoName: string) => {
 		setLoading(true);
-		const commits = await commandBackend(WS_CMD.GET_COMMITS, { repoName }, false, 600000).catch(() => null);
+		const commits: { commits: CommitWithComment[]; modifiedMedias: ModifiedMedia[] } = await commandBackend(
+			WS_CMD.GET_COMMITS,
+			{ repoName },
+			false,
+			600000
+		).catch(() => null);
 		if (!commits) {
 			const dummyPush = { commits: [], modifiedMedias: [] };
 			setPendingPush({ repoName, commits: dummyPush });
 			await commandBackend(WS_CMD.PUSH_COMMITS, { repoName, commits: dummyPush });
 			displayMessage('info', i18next.t('REPOSITORIES.GIT_NOTHING_TO_PUSH'));
 		} else {
+			const newExcludeList = [];
+			for (let index = 0; index < commits.commits.length; index++) {
+				if (!commits.commits[index].checked) newExcludeList.push(index);
+			}
+			setExcludeList(newExcludeList);
 			setPendingPush({ repoName, commits });
 			setShowPushModal(true);
 		}

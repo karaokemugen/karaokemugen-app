@@ -190,12 +190,19 @@ export interface Config {
 				QRCode?: boolean;
 				QRCodeDuringSong?: boolean;
 			};
+			Banner?: boolean;
 			RandomQuotes?: boolean;
 			SongInfo?: boolean;
 			SongInfoLanguage?: string;
+			NextSongInfo: {
+				Enabled: boolean;
+				PositionX?: PositionX;
+				PositionY?: PositionY;	
+			}
 		};
 		StayOnTop?: boolean;
 		FullScreen?: boolean;
+		FullScreenOnStartup?: boolean;
 		Screen?: number;
 		AudioDevice?: string;
 		Monitor?: boolean;
@@ -210,6 +217,7 @@ export interface Config {
 		HardwareDecoding?: MpvHardwareDecodingOptions;
 		KeyboardMediaShortcuts?: boolean;
 		Volume?: number;
+		AudioMute?: boolean;
 		AudioDelay?: number;
 		LiveComments?: boolean;
 		BlurVideoOnWarningTag?: boolean;

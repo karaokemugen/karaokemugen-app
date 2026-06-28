@@ -191,6 +191,13 @@
 				height: 500px;
 			}
 			border: 1px solid #ffffff80;
+
+			.feed-panel-title {
+				font-size: 1.6em;
+				font-weight: bold;
+				margin-bottom: 0.5em;
+			}
+
 			> div {
 				max-height: 75vh;
 				overflow: auto;

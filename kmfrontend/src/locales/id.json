@@ -1142,7 +1142,6 @@
 		"USER_LIST_ERROR": "Galat mengambil daftar pengguna",
 		"USER_CREATE_ERROR": "Galat membuat pengguna",
 		"USER_ALREADY_EXISTS": "Pengguna sudah ada",
-		"USER_ASCII_CHARACTERS_ONLY": "Mohon hanya karakter alfanumerik di nama pengguna kamu (kamu dapat mengubah nama panggilan nanti menjadi apa pun yang diinginkan).",
 		"USER_EMPTY_PASSWORD": "Kata sandi kamu kosong!",
 		"TAGS_LIST_ERROR": "Galat mengambil daftar tanda",
 		"TAG_CREATE_ERROR": "Galat membuat tanda",

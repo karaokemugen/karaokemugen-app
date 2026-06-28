@@ -1,7 +1,7 @@
 import './PlaylistModal.scss';
 
 import i18next from 'i18next';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 import { closeModal } from '../../../store/actions/modal';
 import { setSettings } from '../../../store/actions/settings';
@@ -11,6 +11,8 @@ import { commandBackend } from '../../../utils/socket';
 import { displayMessage } from '../../../utils/tools';
 import Switch from '../generic/Switch';
 import { WS_CMD } from '../../../utils/ws';
+import Autocomplete from '../generic/Autocomplete';
+import type { User } from '../../../../../src/lib/types/user';
 
 interface IProps {
 	side: 'left' | 'right';
@@ -19,16 +21,23 @@ interface IProps {
 
 function PlaylistModal(props: IProps) {
 	const context = useContext(GlobalContext);
+	const instance = context.globalState.settings.data.user.login.split('@')[1];
 	const playlist = getPlaylistInfo(props.side, context);
 	const [name, setName] = useState((props.mode === 'edit' && playlist?.name) || undefined);
+	const [description, setDescription] = useState((props.mode === 'edit' && playlist?.description) || undefined);
+	const [contributors, setContributors] = useState((props.mode === 'edit' && playlist?.contributors) || []);
 	const [flagCurrent, setFlagCurrent] = useState(props.mode === 'edit' ? playlist?.flag_current : false);
 	const [flagPublic, setFlagPublic] = useState(props.mode === 'edit' ? playlist?.flag_public : false);
 	const [flagVisible, setFlagVisible] = useState(props.mode === 'edit' ? playlist?.flag_visible : true);
+	const [flagVisibleOnline, setFlagVisibleOnline] = useState(
+		props.mode === 'edit' ? playlist?.flag_visible_online : true
+	);
 	const [flagWhitelist, setFlagWhitelist] = useState(props.mode === 'edit' ? playlist?.flag_whitelist : false);
 	const [flagBlacklist, setFlagBlacklist] = useState(props.mode === 'edit' ? playlist?.flag_blacklist : false);
 	const [flagFallback, setFlagFallback] = useState(props.mode === 'edit' ? playlist?.flag_fallback : false);
 	const [flagSmart, setFlagSmart] = useState(props.mode === 'edit' ? playlist?.flag_smart : false);
 	const [error, setError] = useState<string>();
+	const [onlineUsers, setOnlineUsers] = useState<User[]>([]);
 
 	const createPlaylist = async () => {
 		if (!name) {
@@ -38,7 +47,9 @@ function PlaylistModal(props: IProps) {
 				setError(undefined);
 				const response = await commandBackend(WS_CMD.CREATE_PLAYLIST, {
 					name: name,
+					description: description,
 					flag_visible: flagVisible,
+					flag_visible_online: flagVisibleOnline,
 					flag_current: flagCurrent,
 					flag_smart: flagSmart,
 					flag_whitelist: flagWhitelist,
@@ -60,8 +71,10 @@ function PlaylistModal(props: IProps) {
 		} else {
 			setError(undefined);
 			await commandBackend(WS_CMD.EDIT_PLAYLIST, {
-				name: name,
+				name,
+				description,
 				flag_visible: flagVisible,
+				flag_visible_online: flagVisibleOnline,
 				flag_current: flagCurrent,
 				flag_smart: flagSmart,
 				flag_whitelist: flagWhitelist,
@@ -69,6 +82,7 @@ function PlaylistModal(props: IProps) {
 				flag_fallback: flagFallback,
 				flag_public: flagPublic,
 				plaid: playlist.plaid,
+				contributors,
 			});
 			setSettings(context.globalDispatch);
 			closeModalWithContext();
@@ -143,6 +157,31 @@ function PlaylistModal(props: IProps) {
 
 	const closeModalWithContext = () => closeModal(context.globalDispatch);
 
+	const updateContributors = (value: string) => {
+		const newContributors = contributors;
+		const user = onlineUsers.filter(u => u.login === value)[0];
+		contributors.push({
+			nickname: user.nickname,
+			username: user.login,
+			avatar_file: user.avatar_file,
+		});
+		setContributors(newContributors);
+	};
+
+	const getRemoteUsers = async (filter = '') => {
+		if (!instance) return;
+		setOnlineUsers(
+			await commandBackend(WS_CMD.GET_REMOTE_USERS, {
+				filter,
+				instance,
+			})
+		);
+	};
+
+	useEffect(() => {
+		getRemoteUsers();
+	}, []);
+
 	return (
 		<div id="playlistModal" className="modal modalPage">
 			<div className="modal-dialog">
@@ -167,7 +206,55 @@ function PlaylistModal(props: IProps) {
 								onChange={event => setName(event.target.value)}
 							/>
 						</div>
+						<div>{i18next.t('MODAL.PLAYLIST_MODAL.DESCRIPTION')}</div>
+						<div className="form">
+							<input
+								type="text"
+								autoFocus
+								className="modal-input"
+								defaultValue={description}
+								onChange={event => setDescription(event.target.value)}
+							/>
+						</div>
 						<label className="error">{error}</label>
+						<div>{i18next.t('MODAL.PLAYLIST_MODAL.CONTRIBUTORS')}</div>
+						<div className="form">
+							<div className="flex-line flex-space-between">
+								<div className="flex-line flex-wrap">
+									{contributors.map(contributor => (
+										<div key={contributor.username} className="tag">
+											{contributor.nickname}
+											{instance ? (
+												<button
+													title={i18next.t('MODAL.PLAYLIST_MODAL.DELETE_CONTRIBUTOR')}
+													className="btn contributor-btn ml-2"
+													onClick={() => {
+														const newContributors = [
+															...contributors.filter(
+																c => c.username != contributor.username
+															),
+														];
+														setContributors(newContributors);
+													}}
+												>
+													<i className="fas fa-times" />
+												</button>
+											) : null}
+										</div>
+									))}
+								</div>
+								{instance ? (
+									<Autocomplete
+										value={''}
+										options={onlineUsers.map(u => {
+											return { label: u.nickname, value: u.login };
+										})}
+										onType={getRemoteUsers}
+										onChange={updateContributors}
+									/>
+								) : null}
+							</div>
+						</div>
 						<div>
 							<button
 								className="btn btn-default"
@@ -315,6 +402,27 @@ function PlaylistModal(props: IProps) {
 									<div className="desc">{i18next.t('MODAL.PLAYLIST_MODAL.VISIBLE_DESC')}</div>
 								</div>
 								<Switch isChecked={flagVisible} onLabel={i18next.t('YES')} offLabel={i18next.t('NO')} />
+							</button>
+						</div>
+						<div>
+							<button
+								className="btn btn-default"
+								type="button"
+								onClick={e => {
+									e.preventDefault();
+									setFlagVisibleOnline(!flagVisibleOnline);
+								}}
+							>
+								<i className="fas fa-eye fa-2x" />
+								<div className="btn-large-container">
+									<div className="title">{i18next.t('MODAL.PLAYLIST_MODAL.VISIBLE_ONLINE')}</div>
+									<div className="desc">{i18next.t('MODAL.PLAYLIST_MODAL.VISIBLE_ONLINE_DESC')}</div>
+								</div>
+								<Switch
+									isChecked={flagVisibleOnline}
+									onLabel={i18next.t('YES')}
+									offLabel={i18next.t('NO')}
+								/>
 							</button>
 						</div>
 					</div>

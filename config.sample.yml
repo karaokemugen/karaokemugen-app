@@ -162,6 +162,8 @@ Player:
   Display:
     # Font size modifier, from -5 to 5
     FontSize: 0
+    # Show product version/URL
+    Banner: true
     # Show random quotes on pause screens
     RandomQuotes: true
     # Show song information at the beginning and end of song
@@ -170,6 +172,11 @@ Player:
     SongInfoLanguage: qro
     # Show nickname of the person who requested a song
     Nickname: true
+    NextSongInfo:
+      # NextSongInfo is displayed during Classic karaoke mode or streams
+      Enabled: true
+      PositionX: Center
+      PositionY: Center
     ConnectionInfo:
       Enabled: true
       # Message to display to invite people to connect (or not)
@@ -181,8 +188,10 @@ Player:
       QRCodeDuringSong: false
   # Override mpv's video output driver
   mpvVideoOutput: null
-  # Fullscreen ?
+  # Last fullscreen state of player
   FullScreen: false
+  # Always start the player in fullscreen, independent of the last fullscreen state
+  FullScreenOnStartup: false
   # Spawn a second monitor window in PIP mode to check what the player is displaying
   Monitor: false
   # Should the player window have borders ?
@@ -203,6 +212,8 @@ Player:
     Size: 30
   # Volume
   Volume: 100
+  # Audio muted
+  AudioMute: false
   # AudioDelay for audio/video sync
   AudioDelay: 0
   # Decide if a still image should be shown instead of video for an audio-only experience(tm)
@@ -314,7 +325,6 @@ System:
         Password: pass
         Author: Nanamin
         Email: nanamin@eternity.ln
-        ProjectID: 32123952
       FTP:
         Host: ftphost
         Port: 21

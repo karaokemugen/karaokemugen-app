@@ -18,16 +18,24 @@ import { PlayerCommand } from '../types/player.js';
 import Sentry from '../utils/sentry.js';
 import { getPlayerState, getState, setState } from '../utils/state.js';
 import { playCurrentSong, playRandomSongAfterPlaylist } from './karaEngine.js';
-import { autoRemoveSongsFromCurrentPlaylist, getCurrentSong, getCurrentSongPLCID, getNextSong, getPreviousSong, setPlaying } from './playlist.js';
+import {
+	autoRemoveSongsFromCurrentPlaylist,
+	getCurrentSong,
+	getCurrentSongPLCID,
+	getNextSong,
+	getPreviousSong,
+	setPlaying,
+} from './playlist.js';
 import { startPoll } from './poll.js';
 import { stopGame } from './quiz.js';
+import { CurrentSong } from '../types/playlist.js';
 
 const service = 'Player';
 
 export const mpv = new Players();
 
 export function playerComment(msg: string) {
-	return mpv.comments.addComment(msg);
+	return mpv.comments?.addComment(msg);
 }
 
 export function playerMessage(
@@ -84,18 +92,18 @@ export async function next() {
 			if (conf.Karaoke.ClassicMode) {
 				await stopPlayer();
 			} else if (conf.Karaoke.StreamerMode.Enabled) {
-				setState({ currentRequester: null });
-				const kara = await getCurrentSong();
-				setState({ streamerPause: true });
+				setState({ currentRequester: null, streamerPause: true });
 				await stopPlayer();
+				let kara: CurrentSong;
+				if (conf.Player.Display.NextSongInfo.Enabled) kara = await getCurrentSong();				
 				if (conf.Karaoke.StreamerMode.PauseDuration > 0 && conf.Karaoke.Poll.Enabled) {
 					switchToPollScreen();
 					const poll = await startPoll();
 					if (!poll) {
 						// False quiz.running means startPoll couldn't start a poll
-						mpv.displaySongInfo(kara.infos, -1, true, kara.warnings, !getState().quiz.running);
+						if (kara) mpv.displaySongInfo(kara.infos, -1, true, kara.warnings, !getState().quiz.running);
 					}
-				} else {
+				} else if (kara) {
 					mpv.displaySongInfo(kara.infos, -1, true, kara.warnings, !getState().quiz.running);
 				}
 				if (conf.Karaoke.StreamerMode.PauseDuration > 0) {
@@ -263,10 +271,11 @@ export function getPromoMessage(): string {
 
 export async function prepareClassicPauseScreen() {
 	try {
-		const kara = await getCurrentSong();
-		if (!kara) throw 'No song selected, current playlist must be empty';
+		let kara: CurrentSong;
+		const conf = getConfig();
+		if (conf.Player.Display.NextSongInfo.Enabled) kara = await getCurrentSong();
 		setState({ currentRequester: kara?.username || null });
-		mpv.displaySongInfo(kara.infos, -1, true, null, !getState().quiz.running);
+		if (getConfig().Player.Display.NextSongInfo.Enabled && kara) mpv.displaySongInfo(kara.infos, -1, true, null, !getState().quiz.running);
 	} catch (err) {
 		// Failed to get current song, this can happen if the current playlist gets emptied or changed to an empty one inbetween songs. In this case, just display KM infos
 		mpv.displayInfo();
@@ -283,11 +292,13 @@ export async function pausePlayer() {
 
 async function mutePlayer() {
 	await mpv.setMute(true);
+	setConfig({ Player: { AudioMute: true } });
 	logger.info('Player muted', { service });
 }
 
 async function unmutePlayer() {
 	await mpv.setMute(false);
+	setConfig({ Player: { AudioMute: false } });
 	logger.info('Player unmuted', { service });
 }
 

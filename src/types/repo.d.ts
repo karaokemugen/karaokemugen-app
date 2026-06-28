@@ -20,6 +20,7 @@ export interface Push {
 export interface Commit {
 	addedFiles: string[];
 	removedFiles: string[];
+	checked: boolean;
 	message: string;
 }
 
