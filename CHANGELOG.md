@@ -1,3 +1,49 @@
+# [9.0.51] - 2026-06-28
+
+## Added
+
+- **[Operators]** Karaoke Mugen banner (displaying the version and link to website) can now be disabled entirely
+- **[Operators]** Added new option "Player Fullscreen on Startup" so player is always put on fullscreen when you start the app, regardless of the last state you left it on before closing Karaoke Mugen (#1874)
+- **[Operators]** You can now edit visibility, description and contributors from a playlist (#1850)
+- **[Operators]** Added option to disable or move "next song" message n classic and stream mode (#1875)
+- **[Operators]** Added "Operator tutorial" in the Help menu (#1829)
+- **[Operators]** Added title to news section on welcome screen (#1838)
+- **[Maintainers]** Inbox option can be enabled/disabled in repository manifest (#1723)
+- **[Maintainers]** Media upload method can be specified in manifest now
+
+## Changed
+
+- **[Operators]** Mute status is now persistent after player restarts (#1863)
+- **[Operators]** "Stop after" button in media controls is now white, and changes colors to indicate it's going to stop RIGHT NOW after you click once on it (#1831)
+- **[Operators]** Removed `Frontend.Library.KaraLineDisplay` from advanced onfig page
+- **[Operators]** Ignore case hen searching for users
+- **[Users]** Updated french, spanish, english, german and breton translations
+- **[Maintainers]** Added multiple aspect ratios in manifest (#1865)
+- **[Maintainers]** Added more inbox context in reason modal when rejecting a song
+- **[Maintainers]** Better filtering when generating commits (#1879)
+- **[Developers]** Fixed generated-sources.json for flatpaks to use sha512 instead of sha1 for integrity checks on packages
+- **[Developers]** Remove sentry reporting for some common errors
+- **[Developers]** Added log when selectAllKaras fail
+- **[Developers]** Reworked how getRepoMetadata works
+- **[Developers]** Removed some Hokuto No Code
+- **[Developers]** Removed some now useless packages uuid and itnernet-available)(#1787)
+- **[Developers]** Upgraded frontend and backend dependencies
+- **[Developers]** Moved contributor list from package.json to CONTRIBUTORS.md
+- **[Developers]** esbuild now produces esm instead of cjs code. Node 24.x is now required
+
+## Fixed
+
+- **[Operators]** Better handling of "user not found" errors
+- **[Users]** Fixed song timers sometimes not working properly during quizzes
+- **[Users]** Fixed message for "song not found" for users (#1734)
+- **[Users]** Fixed animelist icon display (#1882)
+- **[Users]** Fixed user integrity checks when creating new users (prevent the user of some characters)
+- **[Maintainers]** Raised timeouts when loading media information as some medias could take a long time
+- **[Maintainers]** Fixed inboxes being duplicated visually in inbox page (#1881)
+- **[Maintainers]** Fixed media/subfile import in form (#1884)
+- **[Maintainers]** Fixed removal of aegisub comments 
+- **[Maintainers]** Epsilon character is now sanitized in filenames
+
 # [9.0.41] - 2026-04-22
 
 ## Added
