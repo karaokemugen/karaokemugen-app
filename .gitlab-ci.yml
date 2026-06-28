@@ -531,7 +531,6 @@ flatpak-generated-sources:
   script:
     - git clone https://github.com/flatpak/flatpak-builder-tools.git
     - cd flatpak-builder-tools/node
-    - git checkout yarn2
     - pip install .
     - cd ../..
     - flatpak-node-generator yarn -r yarn.lock -R kmfrontend/yarn.lock -R yarn.lock
