@@ -15,7 +15,7 @@ interface IProps {
 function SelectWithIcon(props: IProps) {
 	const [maxHeight, setMaxHeight] = useState(0);
 	const [maxWidth, setMaxWidth] = useState(0);
-	const menuRef = useRef<HTMLSpanElement>();
+	const menuRef = useRef<HTMLSpanElement>(undefined);
 
 	const onResize = useCallback(() => {
 		if (menuRef.current) {
@@ -45,7 +45,7 @@ function SelectWithIcon(props: IProps) {
 										&nbsp;
 									</Fragment>
 								);
-						  })
+							})
 						: null}
 					<span className="selectWithIcon-label">
 						{props.value ? select?.label : i18next.t('SELECT_PLACEHOLDER')}
@@ -67,7 +67,7 @@ function SelectWithIcon(props: IProps) {
 												&nbsp;
 											</Fragment>
 										);
-								  })
+									})
 								: null}
 							<span className="selectWithIcon-label">{element.label}</span>
 						</MenuItem>

@@ -336,7 +336,8 @@
 		"APP_UPDATE": "New version",
 		"ACTIVE_SESSION": "Active Session: ",
 		"EDIT_SESSION": "Edit session",
-		"COLLECTIONS": "COLLECTIONS"
+		"COLLECTIONS": "COLLECTIONS",
+		"NEWS": "News"
 	},
 	"CHECKED": "Selected:",
 	"LOGOUT": "Log out",
@@ -355,6 +356,8 @@
 			"ALWAYS_ON_TOP_TOOLTIP": "If checked, the player window will always be above the others on the screen",
 			"FULLSCREEN": "Fullscreen",
 			"FULLSCREEN_TOOLTIP": "Press F on a fullscreen player to reduce it to windowed mode.",
+			"FULLSCREEN_ON_STARTUP": "Fullscreen on startup",
+			"FULLSCREEN_ON_STARTUP_TOOLTIP": "Always start the player in fullscreen, regardless of its last state",
 			"VIDEO_SIZE": "Video size",
 			"VIDEO_SIZE_TOOLTIP": "Size of the player window : {{value}}. Any change will trigger a player restart after the current song ends if one is playing.",
 			"VIDEO_POSITION_X": "Video position (X)",
@@ -381,6 +384,8 @@
 			"PLAYER_LANGUAGE": "Messages and player language",
 			"DISPLAY_FONT_SIZE": "Messages font size modifier",
 			"DISPLAY_FONT_SIZE_TOOLTIP": "Size modifier from -5 to 5. This ONLY works on screen messages (quiz, polls, song info, etc.) and not on lyrics.",
+			"DISPLAY_BANNER": "Display Karaoke Mugen version banner",
+			"DISPLAY_BANNER_TOOLTIP": "This banner, showing Karaoke Mugen's version and URL, allows the software to be recognized when used in public. This way, people can check it out and try it for themselves. Please be kind and keep this option enabled!",
 			"DISPLAY_RANDOMQUOTES": "Display random quotes",
 			"DISPLAY_RANDOMQUOTES_TOOLTIP": "Random quotes are displayed at the bottom of the player screen when it is stopped",
 			"DISPLAY_CONNECTION_INFO_HOST": "Force hostname or IP",
@@ -399,6 +404,10 @@
 			"DISPLAY_AVATAR_TOOLTIP": "The song requester's avatar will be displayed at the beginning and the end of the song in the lower right corner of the player's screen.",
 			"DISPLAY_SONGINFO": "Show song information",
 			"DISPLAY_SONGINFO_TOOLTIP": "Information (title, series/singer, etc.) are displayed at the beginning and end of a song, as well as during pause screens in Stream/Classic modes. Disable to hide these, for blind tests for example.",
+			"DISPLAY_NEXT_SONGINFO": "Show next song on pause screens",
+			"DISPLAY_NEXT_SONGINFO_TOOLTIP": "If enabled, an announcement showing the next song will appear on screen during karaoke pauses like in the Classic Mode or Stream Mode. This does NOT include the next song announcement at the end of a song.",
+			"NEXT_SONGINFO_POSITION_X": "Horizontal position",
+			"NEXT_SONGINFO_POSITION_Y": "Vertical position",
 			"LIVE_COMMENTS": "Live comments",
 			"LIVE_COMMENTS_TOOLTIP": "Your Twitch chat's messages will be shown on the player (Please configure your AutoMod properly).",
 			"BLUR_VIDEO_ON_WARNING_TAG": "Blur videos with warning tags",
@@ -731,6 +740,7 @@
 		},
 		"PLAYLIST_MODAL": {
 			"NAME": "Name",
+			"DESCRIPTION": "Description",
 			"CURRENT": "Current",
 			"CURRENT_DESC": "The current list is the one read by the media player",
 			"PUBLIC": "Public",
@@ -744,7 +754,11 @@
 			"FALLBACK": "Fallback",
 			"FALLBACK_DESC": "The songs on this list will play after a playlist ends, if enabled in settings",
 			"VISIBLE": "Visible",
-			"VISIBLE_DESC": "Visible by the public",
+			"VISIBLE_DESC": "Visible for your karaoke sessions' guests",
+			"VISIBLE_ONLINE": "Online visibility",
+			"VISIBLE_ONLINE_DESC": "Visible for users on the playlist's repository website",
+			"CONTRIBUTORS": "Contributors",
+			"DELETE_CONTRIBUTOR": "Delete contributor from playlist",
 			"EDIT_PLAYLIST": "Edit {{playlist}}",
 			"CREATE_PLAYLIST": "Create new playlist",
 			"CREATE": "Create",
@@ -849,8 +863,11 @@
 			"TITLE": "Quick tag create"
 		},
 		"CHANGE_STATUS_INBOX": {
-			"TITLE": "Change inbox status",
-			"REASON": "Reason"
+			"TITLE": "Change inbox status to \"{{status}}\"",
+			"NAME": "Song name : {{name}}",
+			"REASON": "Reason",
+			"LANGUAGE_AUTHOR_INBOX": "Language of the inbox's author : {{language}}",
+			"CONFIRM_CLOSING": "The content of the \"Reason\" field will be discarded. Are you sure you want to close this window?"
 		},
 		"START_QUIZ": {
 			"TITLE": "Start a quiz",
@@ -1577,7 +1594,7 @@
 			"GENERATE_SSH_KEY": "Generate a SSH key",
 			"DELETE_SSH_KEY": "Delete the SSH key"
 		},
-		"UPLOAD_METHOD0": "Media upload method",
+		"UPLOAD_METHOD": "Media upload method",
 		"FTP": {
 			"HOST": "FTP Host",
 			"PORT": "FTP Port",
@@ -1874,7 +1891,6 @@
 		"USER_LIST_ERROR": "Error fetching users list",
 		"USER_CREATE_ERROR": "Error creating user",
 		"USER_ALREADY_EXISTS": "User already exists",
-		"USER_ASCII_CHARACTERS_ONLY": "Only alphanumeric characters in your username please (you can change your nickname later to whatever you wish).",
 		"USER_EMPTY_PASSWORD": "Your password is empty!",
 		"USER_ALREADY_EXISTS_ONLINE": "User already exists online",
 		"USER_GET_ERROR_ONLINE": "Error getting online users",
@@ -2324,5 +2340,8 @@
 			"RESET": "Reset pitch",
 			"DOWN": "Decrease pitch"
 		}
+	},
+	"PLAYLIST": {
+		"NO_SONG": "no song found"
 	}
 }

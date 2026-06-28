@@ -12,21 +12,51 @@ import {
 } from '@ant-design/icons';
 import { Menu } from 'antd';
 import i18next from 'i18next';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { logout } from '../../store/actions/auth';
 import GlobalContext from '../../store/context';
+import { commandBackend } from '../../utils/socket';
+import type { RepositoryManifestV2 } from '../../../../src/lib/types/repo';
+import { WS_CMD } from '../../utils/ws';
 
 function KMMenu() {
 	const context = useContext(GlobalContext);
+	const [repositoryManifest, setRepositoryManifest] = useState<RepositoryManifestV2>();
 
-	const haveMaintainerModeRepo =
-		context.globalState.settings.data.config?.System?.Repositories.filter(
-			repo => repo.Online && repo.MaintainerMode && repo.Enabled
-		).length > 0;
+	const listMaintainerModeRepo = context.globalState.settings.data.config?.System?.Repositories.filter(
+		repo => repo.Online && repo.MaintainerMode && repo.Enabled
+	);
 
 	const isRemoteUsersActive = context.globalState.settings.data.config?.Online?.RemoteUsers?.Enabled;
+
+	const repoMaintainerAccount = listMaintainerModeRepo.filter(
+		repo =>
+			context.globalState.auth.data.onlineToken &&
+			repo.Name === context.globalState.auth.data.username.split('@')[1]
+	);
+
+	const getRepoManifest = async () => {
+		if (repoMaintainerAccount.length > 0) {
+			try {
+				const res = await commandBackend(
+					WS_CMD.GET_REPO_MANIFEST,
+					{ name: repoMaintainerAccount[0].Name },
+					false,
+					30000,
+					true
+				);
+				setRepositoryManifest(res);
+			} catch (_) {
+				// silent error
+			}
+		}
+	};
+
+	useEffect(() => {
+		getRepoManifest();
+	}, []);
 
 	return (
 		<Menu
@@ -99,7 +129,7 @@ function KMMenu() {
 					<Link to="/system/storage">{i18next.t('MENU.STORAGE')}</Link>
 				</Menu.Item>
 			</Menu.SubMenu>
-			{haveMaintainerModeRepo ? (
+			{listMaintainerModeRepo.length > 0 ? (
 				<Menu.SubMenu
 					key="maintainer-dropdown"
 					title={i18next.t('MENU.MAINTAINER')}
@@ -108,7 +138,7 @@ function KMMenu() {
 					<Menu.Item key="git">
 						<Link to="/system/git">{i18next.t('MENU.GIT')}</Link>
 					</Menu.Item>
-					{isRemoteUsersActive ? (
+					{isRemoteUsersActive && (!repositoryManifest || repositoryManifest.inboxEnabled) ? (
 						<Menu.Item key="inbox">
 							<Link to="/system/inbox">{i18next.t('MENU.INBOX')}</Link>
 						</Menu.Item>

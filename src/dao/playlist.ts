@@ -1,4 +1,4 @@
-import { v4 as UUIDv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 import { pg as yesql } from 'yesql';
 
 import { buildClauses, db, transaction } from '../lib/dao/database.js';
@@ -66,7 +66,7 @@ export function updatePlaylist(pl: DBPL) {
 }
 
 export async function insertPlaylist(pl: DBPL): Promise<string> {
-	const plaid = pl.plaid || UUIDv4();
+	const plaid = pl.plaid || randomUUID();
 	await db().query(
 		yesql(sqlcreatePlaylist)({
 			plaid: plaid,
@@ -74,6 +74,7 @@ export async function insertPlaylist(pl: DBPL): Promise<string> {
 			created_at: pl.created_at || new Date(),
 			modified_at: pl.modified_at || new Date(),
 			flag_visible: pl.flag_visible || false,
+			flag_visible_online: pl.flag_visible_online || false,
 			flag_current: pl.flag_current || false,
 			flag_public: pl.flag_public || false,
 			flag_smart: pl.flag_smart || false,

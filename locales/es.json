@@ -20,7 +20,7 @@
 	"INIT_VALIDATION": "Validando archivos…",
 	"INIT_MIGRATION": "Migrando la base de datos…",
 	"INIT_GEN": "Generando la base de datos…",
-	"INIT_UPDATEMEDIAS": "Actualizando medias…",
+	"INIT_UPDATEMEDIAS": "Actualizando medios…",
 	"INIT_BASEUPDATE": "Actualizando canciones…",
 	"INIT_USER": "Iniciando usuarios…",
 	"INIT_ONLINEURL": "Conectando al servidor de Karaoke Mugen…",
@@ -50,7 +50,7 @@
 	"MENU_VIEW_FULLSCREEN": "Pan&talla Completa",
 	"MENU_WINDOW": "&Ventana",
 	"MENU_WINDOW_MINIMIZE": "M&inimizar",
-	"MENU_EDIT": "&Edit",
+	"MENU_EDIT": "&Editar",
 	"MENU_EDIT_REDO": "Re&hacer",
 	"MENU_EDIT_UNDO": "&Deshacer",
 	"MENU_EDIT_CUT": "C&ortar",
@@ -83,7 +83,7 @@
 	"MENU_GOTO_SYSTEM": "&Interface de sistema",
 	"MENU_OPTIONS": "&Opciones",
 	"MENU_OPTIONS_CHECKFORUPDATES": "&Buscar actualizaciones al iniciar",
-	"MENU_OPTIONS_OPERATORCONFIG": "Configuración de &operador",
+	"MENU_OPTIONS_OPERATORCONFIG": "Configuración de &Operador",
 	"MENU_OPTIONS_SYSTEMCONFIG": "Configuración de &sistema",
 	"MENU_OPTIONS_OPERATORCONFIG_OSX": "Configuraciones…",
 	"MENU_OPTIONS_SYSTEMCONFIG_OSX": "Configuraciones de sistema…",
@@ -142,7 +142,7 @@
 		],
 		"ERRORS": [
 			"Ven a vernos en Discord si necesitas ayuda: https://karaokes.moe/discord",
-			"Verifique si una instancia de Karaoke Mugen en ejecución se ejecuta en segundo plano.",
+			"Verifique si una instancia de Karaoke Mugen está en ejecución en segundo plano.",
 			"Eche un vistazo a los registros, ¡la razón detrás del error podría estar dentro!",
 			"Por favor, no se asuste, todo va a estar bien"
 		]
@@ -157,7 +157,9 @@
 			"no hace absolutamente nada",
 			"en una estafa (en su cabeza)",
 			"mira pasar los trenes"
-		]
+		],
+		"QUIZ_IN_PROGRESS": "¡Concurso en marcha!",
+		"QUIET!": "¡Shhh...!"
 	},
 	"UNKNOWN_ARTIST": "Artista desconocido",
 	"REPOSITORY_ALREADY_EXISTS": {
@@ -204,14 +206,17 @@
 		"CURRENT_ACTION": "Git action",
 		"METHODS": {
 			"pull": "Pull",
-			"clone": "Clone",
+			"clone": "Clonar",
 			"checkout": "Checkout",
 			"fetch": "Fetch",
 			"push": "Push"
 		},
 		"STAGES": {
 			"resolving": "Resolving delta",
-			"receiving": "Receiving data"
+			"receiving": "Receiving data",
+			"writing": "Escribiendo archivos",
+			"counting": "Contando archivos",
+			"updating": "Actualizando archivos"
 		}
 	},
 	"OFFICIAL_WEBSITE": "Sitio web oficial",
@@ -266,8 +271,66 @@
 		"Cortando Salchichas",
 		"Removiendo bytes cuánticos",
 		"Lidiando con los vecinos",
-		"Manipulando barómetro"
+		"Manipulando barómetro",
+		"Acelerando partículas cantantes",
+		"Aumento de nanobots en el aire"
 	],
 	"FALLBACK": "Retroceder",
-	"UNKNOWN": "Desconocido"
+	"UNKNOWN": "Desconocido",
+	"GO_TO_QUIZ_MODE": "Navega a $url para jugar!",
+	"MENU_WINDOW_PLAYERMONITOR": "Mostrar monitor del reproductor",
+	"MENU_HELP_TUTORIAL": "Tutorial del operador",
+	"MENU_OPTIONS_CHIBIRANKING": "Mostrar clasificación de cuestionario en ventana",
+	"MENU_OPTIONS_CHIBIRANKING_LINK": "Copiar enlace a la clasificación del cuestionario",
+	"MOVED_USER_DIR_DIALOG": {
+		"TITLE": "¡Carpeta de usuario movida!",
+		"DETAIL": "Para cumplir con los estándares de tu sistema operativo, la carpeta de Datos de Usuario se ha movido. Antes estaba en:\n\n{{oldDir}}\n\nAhora está en:\n\n{{newDir}}\n\nSi eres streamer, te recomendamos actualizar la configuración de OBS para que apunte a los archivos de texto correctos en su nueva ubicación.",
+		"UNDERSTOOD": "¡Listo!"
+	},
+	"MOVED_USER_DIR_FLATPAK_DIALOG": {
+		"TITLE": "¡Usuarios de Flatpak!",
+		"DETAIL": "El contenido de la carpeta de usuario se ha movido, pero como estás usando una versión Flatpak de Karaoke Mugen, la aplicación no puede eliminar la carpeta antigua. Debes eliminarla manualmente aquí:\n\n{{oldDir}}\n\n(¡Debería estar vacía!)",
+		"UNDERSTOOD": "¡Lo comprendo, lo haré antes de que se me olvide!"
+	},
+	"MOVING_USER_DIR_ERROR_DIALOG": {
+		"TITLE": "No se puede mover la carpeta de datos de Karaoke Mugen",
+		"DETAIL": "La carpeta de datos de Karaoke Mugen se ha movido. Antes estaba aquí:\n\n{{oldDir}}\n\nAhora está aquí:\n\n{{newDir}}\n\nSe produjo un error al intentar mover la carpeta. Haz clic en \"Salir\" y muévela manualmente.\n\nTambién puedes hacer clic en \"Continuar\". Si lo haces, se creará una nueva carpeta de datos. Te recomendamos que elimines la carpeta anterior.",
+		"CONTINUE": "Continuar",
+		"QUIT": "Salir"
+	},
+	"DATABASE_IN_THE_FUTURE_ERROR": {
+		"TITLE": "¡La base de datos está en el futuro, Marty!",
+		"DETAIL": "La base de datos a la que Karaoke Mugen intenta acceder ha sido utilizada por una versión posterior de la aplicación y es incompatible. Intentemos solucionarlo.\n\nSi haces clic en \"CANCELAR\", la aplicación se cerrará sin hacer nada. Deberías iniciar una versión más reciente de Karaoke Mugen.\n\nSi haces clic en \"BORRAR todos los datos\", la aplicación eliminará las listas de reproducción, los usuarios locales, las estadísticas, etc., y se iniciará normalmente.",
+		"DELETE_ALL_DATA": "ELIMINAR todos los datos",
+		"CONTINUE_ANYWAY": "Continúe bajo su propia responsabilidad"
+	},
+	"QUIZ_RULES": {
+		"TITLE": "REGLAS",
+		"SECONDS_one": "{{count}} segundos",
+		"SECONDS_other": "{{count}} segundos",
+		"POINTS_one": "{{count}} puntos",
+		"POINTS_other": "{{count}} puntos",
+		"BONUS_POINTS_one": "{{count}} puntos extras",
+		"BONUS_POINTS_other": "{{count}} puntos extras",
+		"GUESS_TIME": "Adivina la canción en menos de <1>$t(QUIZ_RULES.SECONDS, {\"count\": {{seconds}} })</1>.",
+		"SCORE": "PUNTOS",
+		"QUICK_ANSWER": "- Buena respuesta rápida ( < <1>$t(QUIZ_RULES.SECONDS, {\"count\": {{seconds}} })</1>): <1>$t(QUIZ_RULES.BONUS_POINTS, {\"count\": {{points}} })</1>.",
+		"ACCEPTED_ANSWERS": "Respuestas aceptadas:",
+		"ACCEPTED_ANSWERS_POINTS": "($t(QUIZ_RULES.POINTS, {\"count\": {{points}} }))",
+		"END_GAME": "FIN DEL JUEGO",
+		"MAX_SCORE": "- Alguien gana a los <1>$t(QUIZ_RULES.POINTS, {\"count\": {{points}} })</1>",
+		"SONGS_one": "<1>{{count}} canción</1>",
+		"SONGS_other": "<1>{{count}} canciones</1>",
+		"MAX_SONGS": "- En <1>$t(QUIZ_RULES.SONGS, {\"count\": {{songs}} })</1>",
+		"MINUTES_one": "<1>{{count}} minutos</1>",
+		"MINUTES_other": "<1>{{count}} minutos</1>",
+		"DURATION": "- En <1>$t(QUIZ_RULES.MINUTES, {\"count\": {{duration}} })</1>",
+		"END_OF_PLAYLIST": "- Cuando la lista de reproducción llegue a su fin"
+	},
+	"GOOD_ANSWER": "Buena respuesta",
+	"QUIZ_SCORES": {
+		"SCORES": "PUNTUACIÓN",
+		"PLAYER_POINTS": "$t(QUIZ_RULES.POINTS, {\"count\": {{points}} })"
+	},
+	"KARAOKE_MUGEN_PLAYER_WINDOW_TITLE": "Reproductor Karaoke Mugen"
 }

@@ -132,7 +132,7 @@ function UserList() {
 					onChange={event => setFilter(event.target.value)}
 				/>
 				<Table
-					dataSource={users.filter(user => user.login.includes(filter) || user.nickname.includes(filter))}
+					dataSource={users.filter(user => user.login.toLowerCase().includes(filter.toLowerCase()) || user.nickname.toLowerCase().includes(filter.toLowerCase()))}
 					columns={columns}
 					rowKey="nickname"
 					scroll={{

@@ -2,7 +2,6 @@
 import { app, autoUpdater as nativeUpdater, BrowserWindow, shell } from 'electron';
 import { execa } from 'execa';
 import i18next from 'i18next';
-import internetAvailable from 'internet-available';
 
 import { compareKarasChecksum, generateDB, getStats, initDBSystem } from '../dao/database.js';
 import { baseChecksum } from '../dao/dataStore.js';
@@ -44,6 +43,7 @@ import { getState, setState } from '../utils/state.js';
 import { writeStreamFiles } from '../utils/streamerFiles.js';
 import { getTwitchClient, initTwitch, stopTwitch } from '../utils/twitch.js';
 import initFrontend from './frontend.js';
+import { checkInternet } from '../utils/net.js';
 
 let usageTime = 0;
 let usageTimeInterval: NodeJS.Timeout;
@@ -232,7 +232,7 @@ export async function initEngine() {
 async function internetCheck(): Promise<boolean> {
 	try {
 		profile('InternetCheck');
-		await internetAvailable();
+		await checkInternet();
 		return true;
 	} catch (err) {
 		return false;
@@ -253,7 +253,7 @@ export async function updateBase(internet: boolean) {
 	if (!state.isTest)
 		createImagePreviews(
 			await getKaras({
-				q: 'm:downloaded',
+				q: 'm:DOWNLOADED',
 				ignoreCollections: true,
 			}),
 			'single'

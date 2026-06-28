@@ -2167,7 +2167,6 @@
 		"REPO_PATH_ERROR_IN_BASE_PATH": "Ścieżka nośnika repozytorium nie może znajdować się w ścieżce podstawowej",
 		"TAG_GET_ERROR": "Błąd podczas pobierania tagu",
 		"REPO_MANIFEST_GET_ERROR": "Nie można odnaleźć manifestu repozytorium",
-		"USER_ASCII_CHARACTERS_ONLY": "Proszę tylko znaki alfanumeryczne w nazwie użytkownika (możesz później zmienić swój pseudonim na dowolny).",
 		"USER_ALREADY_EXISTS_ONLINE": "Użytkownik już istnieje online",
 		"COLLECTIONS_GET_ERROR": "Błąd podczas pobierania kolekcji",
 		"QUIZZ_ALREADY_IN_PROGRESS": "Nie można rozpocząć quizu, jeden jest już w toku",

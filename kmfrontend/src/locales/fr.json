@@ -336,7 +336,8 @@
 		"MASTODON_UPDATE": "Actualités de Karaoke Mugen",
 		"ACTIVE_SESSION": "Session Active : ",
 		"EDIT_SESSION": "Éditer la session",
-		"COLLECTIONS": "COLLECTIONS"
+		"COLLECTIONS": "COLLECTIONS",
+		"NEWS": "Actualités"
 	},
 	"CHECKED": "Sélectionnés :",
 	"LOGOUT": "Se déconnecter",
@@ -381,6 +382,8 @@
 			"PLAYER_LANGUAGE": "Langue des messages et du lecteur vidéo",
 			"DISPLAY_FONT_SIZE": "Modificateur de taille de la police des messages à l'écran",
 			"DISPLAY_FONT_SIZE_TOOLTIP": "De -5 à 5. Ceci n'affecte QUE les messages affichés à l'écran (quizz, sondage, informations de chanson, etc.) et pas les paroles.",
+			"DISPLAY_BANNER": "Afficher la bannière de version",
+			"DISPLAY_BANNER_TOOLTIP": "Cette bannière, qui affiche la version de Karaoke Mugen et son site web permettent au logiciel d'être connu quand il est utilisé en public. Les gens peuvent ainsi aller voir et l'utiliser à leur tour. Soyez sympa, gardez cette option activée s'il vous plaît !",
 			"DISPLAY_RANDOMQUOTES": "Afficher les citations aléatoires",
 			"DISPLAY_RANDOMQUOTES_TOOLTIP": "Des citations aléatoires sont affichées en bas de l'écran quand le lecteur est arrêté",
 			"DISPLAY_CONNECTION_INFO_HOST": "Forcer le nom d'hôte/Adresse IP",
@@ -399,10 +402,16 @@
 			"DISPLAY_AVATAR_TOOLTIP": "L'avatar de la personne ayant demandé la chanson sera affiché au début et à la fin de la chanson, en bas à droite de l'écran.",
 			"DISPLAY_SONGINFO": "Afficher les informations de la chanson",
 			"DISPLAY_SONGINFO_TOOLTIP": "Les informations (titres, œuvres/artistes, etc.) sont affichées au début et à la fin d'une chanson, ainsi que durant les écrans de pause en mode Stream/Classique. Désactivez pour les cacher. Idéal pour les blind tests !",
+			"DISPLAY_NEXT_SONGINFO": "Afficher la chanson suivante sur les écrans de pause",
+			"DISPLAY_NEXT_SONGINFO_TOOLTIP": "Si activé, une annonce montrant la chanson suivante apparaîtra à l'écran durant les pauses de karaoké, comme sur le Mode Classique ou le Mode Stream. Ceci n'affecte PAS les annonces en fin de chanson.",
+			"NEXT_SONGINFO_POSITION_X": "Position horizontale",
+			"NEXT_SONGINFO_POSITION_Y": "Position verticale",
 			"LIVE_COMMENTS": "Commentaires Live",
 			"LIVE_COMMENTS_TOOLTIP": "Les messages de votre chat Twitch seront affichés sur le lecteur (Veuillez configurer proprement votre AutoMod).",
 			"BLUR_VIDEO_ON_WARNING_TAG": "Flouter les vidéos avec un tag warning",
-			"BLUR_VIDEO_ON_WARNING_TAG_TOOLTIP": "Ajoute un floutage aux vidéos qui contiennent un tag de type warning et peuvent donc potentiellement choquer un public. Cela peut entraîner des lenteurs sur les ordinateurs les moins puissants."
+			"BLUR_VIDEO_ON_WARNING_TAG_TOOLTIP": "Ajoute un floutage aux vidéos qui contiennent un tag de type warning et peuvent donc potentiellement choquer un public. Cela peut entraîner des lenteurs sur les ordinateurs les moins puissants.",
+			"FULLSCREEN_ON_STARTUP": "Plein écran au démarrage",
+			"FULLSCREEN_ON_STARTUP_TOOLTIP": "Lancez toujours le lecteur en plein écran, quel que soit son état précédent"
 		},
 		"KARAOKE": {
 			"LABEL": "Karaoké",
@@ -731,6 +740,7 @@
 		},
 		"PLAYLIST_MODAL": {
 			"NAME": "Nom",
+			"DESCRIPTION": "Description",
 			"CURRENT": "Courante",
 			"CURRENT_DESC": "La liste courante est celle lue par le lecteur vidéo",
 			"PUBLIC": "Publique",
@@ -744,7 +754,11 @@
 			"FALLBACK": "Liste de secours",
 			"FALLBACK_DESC": "Les chansons de cette liste seront jouées après que la liste courante soit finie, si l'option correspondante est activée",
 			"VISIBLE": "Visible",
-			"VISIBLE_DESC": "Visible par le public",
+			"VISIBLE_DESC": "Visible par le public de vos sessions de karaoké",
+			"VISIBLE_ONLINE": "Visibilité en ligne",
+			"VISIBLE_ONLINE_DESC": "Visible pour les utilisateurs sur le site du dépôt de la liste de lecture",
+			"CONTRIBUTORS": "Contributeurs",
+			"DELETE_CONTRIBUTOR": "Supprimer le contributeur de la liste de lecture",
 			"EDIT_PLAYLIST": "Editer {{playlist}}",
 			"CREATE_PLAYLIST": "Créer une nouvelle liste de lecture",
 			"CREATE": "Créer",
@@ -843,8 +857,11 @@
 			"TITLE": "Création de tag rapide"
 		},
 		"CHANGE_STATUS_INBOX": {
-			"TITLE": "Changer le statut de la soumission",
-			"REASON": "Raison"
+			"TITLE": "Changer le statut de la soumission à \"{{status}}\"",
+			"NAME": "Nom de la chanson : {{name}}",
+			"REASON": "Raison",
+			"LANGUAGE_AUTHOR_INBOX": "Langue de l'auteur de la soumission : {{language}}",
+			"CONFIRM_CLOSING": "Le contenu du champ « Raison » sera perdu. Êtes-vous sûr de vouloir fermer cette fenêtre ?"
 		},
 		"START_QUIZ": {
 			"TITLE": "Démarrer un quiz",
@@ -1616,7 +1633,7 @@
 		"GIT_SQUASH_COMMITS": "Fusionner les changements",
 		"GIT_SQUASH_MESSAGE": "Message de commit",
 		"GIT_TOO_MANY_CHANGES": "On dirait que vous faites {{changes}} changements. Lorsque vous effectuez de nombreux changements liés au même type d'action, il est conseillé de regrouper vos commits en un seul.",
-		"UPLOAD_METHOD0": "Méthode d'envoi des médias"
+		"UPLOAD_METHOD": "Méthode d'envoi des médias"
 	},
 	"COLLECTIONS": {
 		"NAME": "Nom de la collection",
@@ -1871,7 +1888,6 @@
 		"USER_LIST_ERROR": "Erreur lors de la récupération de la liste des utilisateurs",
 		"USER_CREATE_ERROR": "Erreur lors de la création de l'utilisateur",
 		"USER_ALREADY_EXISTS": "L'utilisateur existe déjà",
-		"USER_ASCII_CHARACTERS_ONLY": "Uniquement des caractères de l'alphabet latin et des nombres dans votre nom d'utilisateur s'il vous plaît (vous pourrez changer votre pseudo plus tard et mettre ce que vous voudrez).",
 		"USER_EMPTY_PASSWORD": "Votre mot de passe est vide !",
 		"USER_ALREADY_EXISTS_ONLINE": "L'utilisateur existe déjà en ligne",
 		"USER_GET_ERROR_ONLINE": "Erreur lors de la récupération des utilisateurs en ligne",
@@ -2324,5 +2340,8 @@
 	},
 	"WARNING_CODES": {
 		"REMOTE_HIGH_LATENCY_DETECTED": "Votre connexion avec {{host}} est lente, vos utilisateurs peuvent rencontrer des problèmes"
+	},
+	"PLAYLIST": {
+		"NO_SONG": "Pas de chanson trouvée"
 	}
 }

@@ -51,7 +51,7 @@ export default function QuizPage() {
 	const [answerSnapshot, setAnswerSnapshot] = useState('');
 	const [focus, setFocus] = useState(true);
 	const [disabled, setDisabled] = useState(false);
-	const progressBarRef: RefObject<HTMLDivElement> = useRef();
+	const progressBarRef: RefObject<HTMLDivElement> = useRef(undefined);
 
 	const quiz = context.globalState.settings.data.state.quiz;
 

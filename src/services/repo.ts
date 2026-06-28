@@ -53,6 +53,7 @@ import { createKaraInDB, integrateKaraFile, removeKara } from './karaManagement.
 import { createProblematicSmartPlaylist, updateAllSmartPlaylists } from './smartPlaylist.js';
 import { sendPayload } from './stats.js';
 import { getTags, integrateTagFile, removeTag } from './tag.js';
+import { getInboxCache } from './inbox.js';
 
 const service = 'Repo';
 
@@ -117,10 +118,7 @@ export async function addRepo(repo: Repository) {
 		if (repo.Online) {
 			// Testing if repository is reachable
 			try {
-				const manifest = await getRepoMetadata(repo);
-				if (repo.MaintainerMode && repo.Git) {
-					repo.Git.ProjectID = manifest.ProjectID;
-				}
+				await getRepoMetadata(repo);				
 			} catch (err) {
 				logger.error(`Repository ${repo.Name} unreachable`, { service });
 				throw new ErrorKM('REPOSITORY_UNREACHABLE', 404, false);
@@ -436,8 +434,7 @@ export async function editRepo(
 		if (repo.Online && onlineCheck) {
 			// Testing if repository is reachable
 			try {
-				const manifest = await getRepoMetadata(repo);
-				if (repo.MaintainerMode && repo.Git) repo.Git.ProjectID = manifest.ProjectID;
+				await getRepoMetadata(repo);				
 			} catch (err) {
 				throw new ErrorKM('REPOSITORY_UNREACHABLE', 404, false);
 			}
@@ -1115,9 +1112,7 @@ export async function findUnusedMedias(repo: string): Promise<string[]> {
 /** Get metadata. Throws if KM Server is not up to date */
 export async function getRepoMetadata(repo: Repository) {
 	try {
-		// FIXME : This should be depracted in KM 9.0
-		// Repository metadata will have to come from the manifest file provided by each repository, not from their online server.
-		// Only LastCommit will need to be fetched from KM Server.
+		// Only LastCommit will need to be fetched from KM Server, but we get everything anyways.
 		const ret = await HTTP.get(`${repo.Secure ? 'https' : 'http'}://${repo.Name}/api/karas/repository`);
 		return ret.data as RepositoryManifest;
 	} catch (err) {
@@ -1229,6 +1224,7 @@ export async function generateCommits(repoName: string) {
 			const commit: Commit = {
 				addedFiles: [],
 				removedFiles: [],
+				checked: true,
 				message: `🔥 🎤 Delete ${song}`,
 			};
 			// Find out if we have a deleted lyrics as well (we should have one but you never know, it could be a zxx song!)
@@ -1258,6 +1254,7 @@ export async function generateCommits(repoName: string) {
 			const commit: Commit = {
 				addedFiles: [],
 				removedFiles: [file],
+				checked: true,				
 				message: `🔥 🏷️ Delete ${tag}`,
 			};
 			commits.push(commit);
@@ -1269,7 +1266,11 @@ export async function generateCommits(repoName: string) {
 			task.incr();
 		}
 		// Added songs
-		const [karas, tags] = await Promise.all([getKaras({ ignoreCollections: true }), getTags({})]);
+		const [karas, tags, inboxes] = await Promise.all([
+			getKaras({ ignoreCollections: true }), 
+			getTags({}),
+			getInboxCache(repoName)
+		]);
 		for (const file of addedSongs) {
 			// We need to find out if some tags have been added or modified and add them to our commit
 			const kara = karas.content.find(k => k.karafile === basename(file));
@@ -1278,9 +1279,13 @@ export async function generateCommits(repoName: string) {
 				continue;
 			}
 			const song = (await defineSongname(formatKaraV4(kara))).songname;
+			let isValidInbox = true;
+			const inbox = inboxes.find(i => i.kid === kara.kid)
+			if (inbox?.status === 'rejected' || inbox?.status === 'changes_requested') isValidInbox = false;
 			const commit: Commit = {
 				addedFiles: [file],
 				removedFiles: [],
+				checked: isValidInbox,				
 				message: `🆕 🎤 Add ${song}`,
 			};
 			// Let's check if the kara has been renamed and is actually a modified kara.
@@ -1329,9 +1334,13 @@ export async function generateCommits(repoName: string) {
 				continue;
 			}
 			const song = (await defineSongname(formatKaraV4(kara))).songname;
+			let isValidInbox = true;
+			const inbox = inboxes.find(i => i.kid === kara.kid || i.edited_kid === kara.kid)
+			if (inbox?.status === 'rejected' || inbox?.status === 'changes_requested') isValidInbox = false;
 			const commit: Commit = {
 				addedFiles: [file],
 				removedFiles: [],
+				checked: isValidInbox,
 				message: `📝 🎤 Update ${song}`,
 			};
 
@@ -1403,6 +1412,7 @@ export async function generateCommits(repoName: string) {
 			const commit: Commit = {
 				addedFiles: [file],
 				removedFiles: [],
+				checked: true,
 				message: `🆕 🏷️ Add ${tag}`,
 			};
 			commits.push(commit);
@@ -1414,6 +1424,7 @@ export async function generateCommits(repoName: string) {
 			const commit: Commit = {
 				addedFiles: [file],
 				removedFiles: [],
+				checked: true,
 				message: `📝 🏷️ Modify ${tag}`,
 			};
 			commits.push(commit);
@@ -1433,6 +1444,7 @@ export async function generateCommits(repoName: string) {
 			const commit: Commit = {
 				addedFiles: [file],
 				removedFiles: [],
+				checked: true,
 				message: `📝 ✏️ Modify ${songname ?? filename}`,
 			};
 			commits.push(commit);
@@ -1450,6 +1462,7 @@ export async function generateCommits(repoName: string) {
 			const commit: Commit = {
 				addedFiles: [],
 				removedFiles: [file],
+				checked: true,
 				message: `🔥 ✏️ Delete ${songname ?? filename}`,
 			};
 			commits.push(commit);
@@ -1684,7 +1697,6 @@ export async function convertToUUIDFormat(repoName: string) {
 						await fs.rename(subpath, newSubpath);
 						kara.medias[0].lyrics[0].filename = basename(newSubpath);
 					} catch (err) {
-						console.log(err);
 						throw err;
 					}
 				}
@@ -1697,7 +1709,6 @@ export async function convertToUUIDFormat(repoName: string) {
 				await fs.unlink(karapath);
 			} catch (err) {
 				logger.error(`Error while converting file ${karapath} to UUID`, { service });
-				console.log(err);
 				logger.error(err);
 			}
 		}

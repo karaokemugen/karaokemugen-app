@@ -24,7 +24,7 @@ export default function InlineTag(props: Props) {
 	const [showPopup, setShowPopup] = useState(false);
 	const [rightClass, setRightClass] = useState(false);
 	const [count, setCount] = useState(0);
-	const node = useRef<HTMLDivElement>();
+	const node = useRef<HTMLDivElement>(undefined);
 
 	const goToTagSearch = () => {
 		const searchValue = `${props.tag.tid}~${props.tagType}`;

@@ -7,6 +7,7 @@ import { getKaras } from '../../services/kara.js';
 import { createAdminUser, createUser, editUser, getUser, getUsers, removeUser } from '../../services/user.js';
 import {
 	convertToRemoteUser,
+	getRemoteUsers,
 	refreshAnimeList,
 	removeRemoteUser,
 	resetRemotePassword,
@@ -21,6 +22,15 @@ export default function userController(router: SocketIOApp) {
 			return await getUsers({
 				publicOnly: req.token.role !== 'admin',
 			});
+		} catch (err) {
+			throw { code: err.code || 500, message: APIMessage(err.message) };
+		}
+	});
+	router.route(WS_CMD.GET_REMOTE_USERS, async (socket, req) => {
+		await runChecklist(socket, req, 'guest', 'limited');
+		try {
+			return await getRemoteUsers(req.body.filter, req.body.instance
+			);
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}

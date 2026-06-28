@@ -502,7 +502,7 @@ export async function openLyricsFile(kid: string) {
 	} catch (err) {
 		logger.error('Failed to open lyrics file', { service });
 		sentry.error(err);
-		throw err instanceof ErrorKM ? err : new ErrorKM('LYRICS_FILE_OPEN_ERROR');
+		throw err instanceof ErrorKM ? err : new ErrorKM('LYRICS_FILE_OPEN_ERROR', 500, false);
 	}
 }
 

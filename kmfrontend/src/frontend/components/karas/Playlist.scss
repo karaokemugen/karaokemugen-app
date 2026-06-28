@@ -5,12 +5,15 @@
 	display: flex;
 	flex-direction: row;
 	flex: 1 0 auto;
+
 	.panel {
 		flex: 1;
 		border: 0.5em solid color.adjust(variables.$mugen-background, $lightness: -20%, $space: hsl);
 	}
+
 	@media screen and (max-width: variables.$mugen-breakpoint-large) {
 		flex-direction: column;
+
 		#panel2 {
 			display: none;
 		}
@@ -47,6 +50,15 @@
 	a {
 		cursor: pointer;
 	}
+}
+
+.list-group-item.empty {
+	font-size: 120%;
+	padding: 1em;
+	display: flex;
+	flex-direction: column;
+	flex-wrap: wrap;
+	align-items: center;
 }
 
 .playlist-main .list-group-item.liType {
@@ -86,9 +98,11 @@
 .playlist-dragged-item {
 	cursor: grabbing;
 	list-style: none;
+
 	&.side-left .list-group-item:not(.karaSuggestion) {
 		flex-direction: row-reverse;
 	}
+
 	.list-group-item {
 		background: #333;
 		z-index: 200;

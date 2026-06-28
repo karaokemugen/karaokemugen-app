@@ -1,7 +1,6 @@
 import { promises as fs } from 'fs';
-import internetAvailable from 'internet-available';
 import { basename, dirname, resolve } from 'path';
-import { v4 as uuidV4 } from 'uuid';
+import { randomUUID } from 'crypto';
 
 import {
 	addTagToStore,
@@ -38,6 +37,7 @@ import { getKaras } from './kara.js';
 import { editKara } from './karaCreation.js';
 import { getRepoMetadata, getRepos } from './repo.js';
 import { applyTagHooks } from '../lib/dao/hook.js';
+import { checkInternet } from '../utils/net.js';
 
 const service = 'Tag';
 
@@ -78,7 +78,7 @@ export async function addTag(tagObj: Tag, opts = { silent: false, refresh: true 
 	}
 	try {
 		tagObj = trimTagData(tagObj);
-		if (!tagObj.tid) tagObj.tid = uuidV4();
+		if (!tagObj.tid) tagObj.tid = randomUUID();
 		if (!tagObj.tagfile) tagObj.tagfile = defineTagFilename(tagObj);
 		const tagfile = tagObj.tagfile;
 		await applyTagHooks(tagObj);
@@ -472,7 +472,7 @@ export async function syncTagsFromRepo(repoSourceName: string, repoDestName: str
 export async function checkCollections() {
 	const internet = await (async () => {
 		try {
-			await internetAvailable();
+			await checkInternet();
 			return true;
 		} catch (err) {
 			return false;

@@ -24,9 +24,9 @@ function ProgressBar() {
 	const [duration, setDuration] = useState(0);
 	const [animationPause, setAnimationPause] = useState(false);
 
-	const refBar = useRef<HTMLDivElement>();
-	const refCont = useRef<HTMLDivElement>();
-	const refP = useRef<HTMLParagraphElement>();
+	const refBar = useRef<HTMLDivElement>(undefined);
+	const refCont = useRef<HTMLDivElement>(undefined);
+	const refP = useRef<HTMLParagraphElement>(undefined);
 	let timeout: NodeJS.Timeout;
 
 	const mouseDownAction = (e: React.MouseEvent) => {

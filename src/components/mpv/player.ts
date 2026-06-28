@@ -103,9 +103,11 @@ export class Player {
 		} else {
 			mpvArgs.push('--reset-on-next-file=pause,loop-file,audio-files,aid,sid');
 			if (!conf.Player.Borders) mpvArgs.push('--no-border');
-			if (conf.Player.FullScreen) {
-				mpvArgs.push('--fullscreen');
+			if (conf.Player.FullScreenOnStartup || conf.Player.FullScreen) {
+				mpvArgs.push('--fullscreen=yes');
 			}
+			if (conf.Player.AudioMute)
+			    mpvArgs.push('--mute=yes');
 		}
 
 		if (conf.Player.Screen) {
@@ -174,6 +176,7 @@ export class Player {
 		};
 
 		this.log.debug(`options:`, { obj: { options: mpvOptions, args: mpvArgs } });
+		console.log({mpvArgs})
 		return [state.binPath.mpv, socket, mpvArgs];
 	}
 
@@ -181,8 +184,11 @@ export class Player {
 		// Returns the position in seconds in the current song
 		if (playerState.mediaType === 'song' && playerState.currentSong?.duration) {
 			playerState.timeposition = position;
-			playerState.quiz = getCurrentSongTimers();
 			const conf = getConfig();
+			if (getState().quiz.running && getState().quiz.currentSong				
+			) {
+				playerState.quiz = getCurrentSongTimers();			
+			}
 			// Send notification to frontend if timeposition is 15 seconds before end of song
 			if (
 				position >= playerState.currentSong.duration - 15 &&

@@ -1376,7 +1376,6 @@
 		"USER_LIST_ERROR": "Erro ao buscar lista de usuários",
 		"TAG_GET_ERROR": "Erro ao buscar a tag",
 		"USER_CREATE_ERROR_ONLINE": "Erro ao criar usuário online",
-		"USER_ASCII_CHARACTERS_ONLY": "Apenas caracteres alfanuméricos em seu nome de usuário (você pode alterar seu apelido posteriormente para o que desejar).",
 		"USER_EDIT_ERROR": "Erro ao editar usuário",
 		"USER_RESETPASSWORD_ERROR": "Erro ao redefinir a senha do usuário",
 		"ERROR_READING_LOGS": "Não é possível ler os logs de eventos",

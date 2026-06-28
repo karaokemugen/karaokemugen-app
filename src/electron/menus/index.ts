@@ -18,6 +18,7 @@ export const urls = {
 	karas: () => openURL('/system/karas'),
 	database: () => openURL('/system/db'),
 	helpGuide: () => shell.openExternal('https://docs.karaokes.moe/user-guide/getting-started/'),
+	tutorial: () => openURL('/admin?tutorial=true'),
 	website: () => shell.openExternal('https://karaokes.moe'),
 	mastodon: () => shell.openExternal('https://shelter.moe/@KaraokeMugen'),
 	bluesky: () => shell.openExternal('https://bsky.app/profile/karaokes.moe'),
@@ -49,4 +50,3 @@ export async function checkForUpdates() {
 	});
 	setManualUpdate(false);
 }
-

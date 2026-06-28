@@ -318,6 +318,7 @@ export const WS_CMD = {
 	GET_FULL_CONFIG: defineWSCmd<undefined, Config>('getFullConfig'),
 	// AREA src\controllers\frontend\user.ts
 	GET_USERS: defineWSCmd<undefined, DBUser[]>('getUsers'),
+	GET_REMOTE_USERS: defineWSCmd<{ instance: string, filter: string }, User[]>('getRemoteUsers'),
 	CREATE_USER: defineWSCmd<User & { role?: Role }, HttpMessage<string>>('createUser'),
 	GET_USER: defineWSCmd<{ username: string }, DBUser>('getUser'),
 	DELETE_USER: defineWSCmd<{ username: string }, HttpMessage<string>>('deleteUser'),

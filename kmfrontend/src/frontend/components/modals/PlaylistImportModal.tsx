@@ -49,7 +49,7 @@ function PlaylistImportModal(props: IProps) {
 
 	const [page, setPage] = useState(1);
 
-	const [loading, setLoading] = useState(true);
+	const [loading, setLoading] = useState(false);
 
 	const [connectionError, setConnectionError] = useState(false);
 
@@ -89,6 +89,7 @@ function PlaylistImportModal(props: IProps) {
 	}, []);
 
 	const fetchRemoteServerData = () => {
+		if (!remoteServerName) return;
 		setLoading(true);
 		setConnectionError(false);
 		commandBackend(WS_CMD.GET_PLAYLISTS).then(downloadedPlaylists => {

@@ -157,7 +157,7 @@ function AdminPage(props: IProps) {
 		if (context.globalState.auth.isAuthenticated) {
 			getPlaylistList();
 		}
-		if (!context?.globalState.settings.data.user?.flag_tutorial_done) {
+		if (!context?.globalState.settings.data.user?.flag_tutorial_done || searchParams.get('tutorial')) {
 			const container = document.getElementById('tuto');
 			const root = createRoot(container);
 			root.render(createElement(Tutorial, { unmount: () => root.unmount() }));

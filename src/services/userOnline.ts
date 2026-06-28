@@ -16,6 +16,7 @@ import sentry from '../utils/sentry.js';
 import { startSub, stopSub } from '../utils/userPubSub.js';
 import { convertToRemoteFavorites } from './favorites.js';
 import { checkPassword, createJwtToken, createUser, editUser, getUser } from './user.js';
+import { AxiosResponse } from 'axios';
 
 const service = 'RemoteUser';
 
@@ -81,15 +82,22 @@ export async function resetRemotePassword(user: string) {
 	}
 }
 
-/** Get a user from KM Server */
-async function getARemoteUser(login: string, instance: string): Promise<User> {
+export async function getRemoteUsers(filter: string, instance: string): Promise<User[]> {
 	try {
 		const conf = getConfig().Online;
-		const user = await HTTP.get(`${conf.RemoteUsers.Secure ? 'https' : 'http'}://${instance}/api/users/${login}`);
-		return user.data as User;
+		const users = await HTTP.get<{ content: User[] }>(
+			`${conf.RemoteUsers.Secure ? 'https' : 'http'}://${instance}/api/users/`,
+			{
+				params: {
+					filter,
+					size: 20,
+				},
+			}
+		);
+		return users.data.content as User[];
 	} catch (err) {
 		if ([404].includes(err.response?.status)) return null;
-		logger.debug('Got error when trying to get an online user', { service, obj: err });
+		logger.debug('Got error when trying to get online users', { service, obj: err });
 		throw {
 			code: 500,
 			msg: 'USER_GET_ERROR_ONLINE',
@@ -98,16 +106,25 @@ async function getARemoteUser(login: string, instance: string): Promise<User> {
 	}
 }
 
+/** Get a user from KM Server */
+async function getARemoteUser(login: string, instance: string): Promise<User> {
+	try {
+		const conf = getConfig().Online;
+		const user = await HTTP.get(`${conf.RemoteUsers.Secure ? 'https' : 'http'}://${instance}/api/users/${login}`);
+		return user.data as User;
+	} catch (err) {
+		if (err.response?.status == 404) return null;
+		logger.debug('Got error when trying to get an online user', { service, obj: err });
+		throw err;
+	}
+}
+
 /** Create a user on KM Server */
 export async function createRemoteUser(user: User) {
 	const [login, instance] = user.login.split('@');
 	const conf = getConfig().Online;
 	if (await getARemoteUser(login, instance)) {
-		throw {
-			code: 409,
-			msg: 'USER_ALREADY_EXISTS_ONLINE',
-			message: `User already exists on ${instance} or incorrect password`,
-		};
+		throw new ErrorKM('USER_ALREADY_EXISTS_ONLINE', 409, false);
 	}
 	try {
 		await HTTP.post(`${conf.RemoteUsers.Secure ? 'https' : 'http'}://${instance}/api/users`, {
@@ -117,11 +134,7 @@ export async function createRemoteUser(user: User) {
 		startSub(login, instance);
 	} catch (err) {
 		logger.debug(`Got error when create remote user ${login}`, { service, obj: err });
-		throw {
-			code: 500,
-			msg: 'USER_CREATE_ERROR_ONLINE',
-			message: err,
-		};
+		throw new ErrorKM('USER_CREATE_ERROR_ONLINE', 500);
 	}
 }
 
@@ -191,14 +204,14 @@ export async function editRemoteUser(user: User, token: string, avatar = true) {
 /** Get remote avatar from KM Server */
 export async function fetchRemoteAvatar(instance: string, avatarFile: string): Promise<string> {
 	const conf = getConfig().Online;
-	let res;
+	let res: AxiosResponse;
 	try {
 		res = await HTTP.get(`${conf.RemoteUsers.Secure ? 'https' : 'http'}://${instance}/avatars/${avatarFile}`, {
 			responseType: 'stream',
 		});
 	} catch (err) {
 		// If avatar is not present, we can safely assume this is a KM Server issue with a specific user
-		if (res.code === 404) {
+		if (err?.code === 404) {
 			return;
 		}
 		throw err;
@@ -327,7 +340,7 @@ export async function removeRemoteUser(token: OldJWTToken, password: string): Pr
 		});
 		emitWS('userUpdated', token.username);
 		return {
-			token: createJwtToken(onlineUser.login, token.role),
+			token: await createJwtToken(onlineUser.login, token.role),
 		};
 	} catch (err) {
 		logger.error(`Error converting online user to local : ${err}`, { service });
@@ -358,7 +371,7 @@ export async function convertToRemoteUser(token: OldJWTToken, password: string, 
 		emitWS('userUpdated', user.login);
 		return {
 			onlineToken: remoteUserToken,
-			token: createJwtToken(user.login, token.role),
+			token: await createJwtToken(user.login, token.role),
 		};
 	} catch (err) {
 		logger.error(`Error converting local user to online user ${token.username}@${instance} : ${err}`, { service });

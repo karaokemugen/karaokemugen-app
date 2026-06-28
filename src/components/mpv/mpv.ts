@@ -10,6 +10,9 @@ import { setTimeout as sleep } from 'timers/promises';
 
 import { errorStep } from '../../electron/electronLogger.js';
 import { APIMessage } from '../../lib/services/frontend.js';
+import { getSongSeriesSingers, getSongTitle } from '../../lib/services/kara.js';
+import { getRepoManifest } from '../../lib/services/repo.js';
+import { getTagNameInLanguage } from '../../lib/services/tag.js';
 import { DBKaraTag } from '../../lib/types/database/kara.js';
 import { PlaylistMediaType } from '../../lib/types/playlistMedias.js';
 import { getConfig, resolvedPath, resolvedPathRepos, setConfig } from '../../lib/utils/config.js';
@@ -23,6 +26,7 @@ import { emitWS } from '../../lib/utils/ws.js';
 import { getBackgroundAndMusic } from '../../services/backgrounds.js';
 import { getPromoMessage, next } from '../../services/player.js';
 import { getSingleMedia } from '../../services/playlistMedias.js';
+import { getRepo } from '../../services/repo.js';
 import { BackgroundType } from '../../types/backgrounds.js';
 import { MpvCommand } from '../../types/mpvIPC.js';
 import { PlayerState, SongModifiers } from '../../types/player.js';
@@ -31,15 +35,11 @@ import { FFmpegRegex, initializationCatchphrases, mpvRegex, requiredMPVVersion }
 import { setDiscordActivity } from '../../utils/discordRPC.js';
 import sentry from '../../utils/sentry.js';
 import { getState, setState } from '../../utils/state.js';
-import { isShutdownInProgress } from '../engine.js';
-import Timeout = NodeJS.Timeout;
-import { getSongSeriesSingers, getSongTitle } from '../../lib/services/kara.js';
-import { getRepoManifest } from '../../lib/services/repo.js';
-import { getTagNameInLanguage } from '../../lib/services/tag.js';
-import { getRepo } from '../../services/repo.js';
 import { writeStreamFiles } from '../../utils/streamerFiles.js';
+import { isShutdownInProgress } from '../engine.js';
 import { lavfiGenerator } from './lavfiGenerator.js';
 import { Player } from './player.js';
+import Timeout = NodeJS.Timeout;
 
 type PlayerType = 'main' | 'monitor';
 
@@ -97,7 +97,7 @@ async function resolveMediaURL(file: string, repoName: string): Promise<string> 
 export function getFontSize(initial: number) {
 	const sizeModifier = getConfig().Player.Display.FontSize;
 	if (!isNaN(sizeModifier)) {
-		return initial + (+sizeModifier * 10);
+		return initial + +sizeModifier * 10;
 	} else {
 		return initial;
 	}
@@ -177,10 +177,6 @@ class CommentHandler {
 	addComment(message: string) {
 		if (!this.isRunning) {
 			this.isRunning = true;
-			/* //TODO: test code, remove this
-			for(let i = 0; i < 1000; i++) {
-				this.addComment(`test${i}`);
-			} */
 			// TODO: Test if this causes screen tearing? How to time this so it doesn't if so?
 			this.intervalId = setInterval(this.tick.bind(this), 16);
 		}
@@ -538,7 +534,11 @@ export class Players {
 				progressBar += '□';
 			}
 			const fontSize = getFontSize(70);
-			this.messages.addMessage('pauseScreen', `${position}{\\fscx${fontSize}\\fscy${fontSize}\\fsp-3}${progressBar}`, 'infinite');
+			this.messages.addMessage(
+				'pauseScreen',
+				`${position}{\\fscx${fontSize}\\fscy${fontSize}\\fsp-3}${progressBar}`,
+				'infinite'
+			);
 			this.progressBarTimeout = setTimeout(() => {
 				this.tickProgressBar(nextTick, ticked + 1, position);
 			}, nextTick);
@@ -553,7 +553,11 @@ export class Players {
 			if (this.progressBarTimeout) clearTimeout(this.progressBarTimeout);
 			const timeLeft = Math.ceil(this.countdownTimer.getTimeLeft() / 1000);
 			const fontSize = getFontSize(250);
-			this.messages.addMessage('countdown', `${position}{\\fscx${fontSize}\\fscy${fontSize}}${timeLeft}`, 'infinite');
+			this.messages.addMessage(
+				'countdown',
+				`${position}{\\fscx${fontSize}\\fscy${fontSize}}${timeLeft}`,
+				'infinite'
+			);
 			this.progressBarTimeout = setTimeout(() => {
 				this.tickCountdown(position);
 			}, 1000);
@@ -651,10 +655,11 @@ export class Players {
 
 	async initPlayerSystem() {
 		const conf = getConfig();
-		playerState.fullscreen = conf.Player.FullScreen;
+		playerState.fullscreen = conf.Player.FullScreenOnStartup || conf.Player.FullScreen;
 		playerState.onTop = conf.Player.StayOnTop;
 		playerState.border = conf.Player.Borders;
 		playerState.volume = conf.Player.Volume;
+		playerState.mute = conf.Player.AudioMute;
 		const audioDevices = await getMpvAudioOutputs();
 		const audioDevicesList = audioDevices.map(ad => ad[0]);
 		if (!audioDevicesList.includes(getConfig().Player.AudioDevice)) {
@@ -1296,21 +1301,22 @@ export class Players {
 		}
 	}
 
-	getMessagePosition(): number {
+	getMessagePosition(nextSong = false): number {
 		// Returns a number from 1 to 9 depending on the position on screen. 1 is bottom left, 9 is top right.
 		let pos = 9;
-		// No song playing
-		if (!playerState.currentSong) return 1;
 		// Song playing
-		const manifest = getRepoManifest(playerState.currentSong.repository);
+		const conf = getConfig();
+		const defaultX = nextSong ? conf.Player.Display.NextSongInfo.PositionX : 'Left';
+		const defaultY = nextSong ? conf.Player.Display.NextSongInfo.PositionY : 'Bottom';
+		const manifest = playerState.currentSong && getRepoManifest(playerState.currentSong.repository);
 		const X =
-			playerState.currentSong.lyrics_infos[0]?.announce_position_x ??
+			playerState.currentSong?.lyrics_infos[0]?.announce_position_x ??
 			manifest?.rules?.lyrics?.defaultAnnouncePositionX ??
-			'Left';
+			defaultX;
 		const Y =
-			playerState.currentSong.lyrics_infos[0]?.announce_position_y ??
+			playerState.currentSong?.lyrics_infos[0]?.announce_position_y ??
 			manifest?.rules?.lyrics?.defaultAnnouncePositionY ??
-			'Bottom';
+			defaultY;
 
 		// We lower pos if X pos isn't right or Y pos isn't top since 9 is top right already.
 		if (X === 'Center') pos -= 1;
@@ -1323,7 +1329,7 @@ export class Players {
 	async displaySongInfo(infos: string, duration = -1, nextSong = false, warnings?: DBKaraTag[], visible = true) {
 		try {
 			const nextSongString = nextSong ? `${i18n.t('NEXT_SONG')}\\N\\N` : '';
-			const position = nextSong ? '{\\an5}' : `{\\an${this.getMessagePosition()}}`;
+			const position = `{\\an${this.getMessagePosition(nextSong)}}`;
 			let warningString = '';
 			if (warnings?.length > 0) {
 				const langs = [
@@ -1377,19 +1383,19 @@ export class Players {
 			const conf = getConfig();
 			const state = getState();
 			const text = getPromoMessage();
-			console.log(text);
 			const catchphrase =
 				playerState.mediaType !== 'song' && conf.Player.Display.RandomQuotes
 					? sample(initializationCatchphrases)
 					: '';
-			const version = `Karaoke Mugen ${state.version.number} (${state.version.name}) - https://karaokes.moe`;
+			const version = conf.Player.Display.Banner
+				? `Karaoke Mugen ${state.version.number} (${state.version.name}) - https://karaokes.moe`
+				: '';
 			const fontSizes = {
 				banner: getFontSize(80),
 				version: getFontSize(60),
-				text: getFontSize(40)
-			}
+				text: getFontSize(40),
+			};
 			const message = `{\\an${this.getMessagePosition()}}{\\fscx${fontSizes.banner}}{\\fscy${fontSizes.banner}}${text}\\N{\\fscx${fontSizes.version}{\\fscy${fontSizes.version}{\\i1}${version}{\\i0}\\N{\\fscx${fontSizes.text}{\\fscy${fontSizes.text}}${catchphrase}`;
-			console.log(message);
 			this.messages?.addMessage('DI', message, duration === -1 ? 'infinite' : duration);
 		} catch (err) {
 			logger.error('Unable to display infos', { service, obj: err });

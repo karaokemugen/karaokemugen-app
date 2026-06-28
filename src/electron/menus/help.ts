@@ -6,7 +6,8 @@ import { showAbout } from '../electron.js';
 import { urls } from './index.js';
 
 const builder: MenuItemBuilderFunction = options => {
-	const { isMac } = options;
+	const { isMac, layout } = options;
+	const isReduced = layout === 'REDUCED';
 	return {
 		label: i18next.t('MENU_HELP'),
 		role: 'help',
@@ -14,6 +15,11 @@ const builder: MenuItemBuilderFunction = options => {
 			{
 				label: i18next.t('MENU_HELP_GUIDE'),
 				click: urls.helpGuide,
+			},
+			{
+				label: i18next.t('MENU_HELP_TUTORIAL'),
+				click: urls.tutorial,
+				visible: !isReduced,
 			},
 			{
 				label: i18next.t('MENU_HELP_WEBSITE'),

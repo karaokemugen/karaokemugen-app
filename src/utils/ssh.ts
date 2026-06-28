@@ -62,7 +62,7 @@ export function getKeyFileName(repoName: string, username?: string) {
 
 export function getKnownHostsFileName(repoName: string) {
 	const knownHostsFile = resolve(resolvedPath('SSHKeys'), `known_hosts_KaraokeMugen_${repoName}`);
-	logger.debug(`Known hosts file selected: ${knownHostsFile}`);
+	logger.debug(`Known hosts file selected: ${knownHostsFile}`, { service });
 	return knownHostsFile;
 }
 
@@ -93,7 +93,7 @@ export async function updateKnownHostsFile(repoURL: string, repoName: string) {
 		logger.debug(`Scanning key for host ${host}`, { service });
 		const { stdout } = await execa('ssh-keyscan', ['-t', 'rsa,ed25519', host]);
 		const hostSignature = stdout;
-		logger.debug(`Finished scanning key for host ${host}`);
+		logger.debug(`Finished scanning key for host ${host}`, { service });
 		await writeFile(knownHostsFile, hostSignature, 'utf-8');
 	}
 }

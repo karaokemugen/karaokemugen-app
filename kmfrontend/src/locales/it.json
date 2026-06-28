@@ -1008,7 +1008,6 @@
 		"INBOX_VIEW_FORBIDDEN_ERROR": "Non hai il permesso di vedere la posta dei brani",
 		"PL_DELETE_SONG_ERROR": "Non puoi eliminare quel brano",
 		"PREVIEW_HOOKS_ERROR": "Errore durante la richiesta dell'anteprima",
-		"USER_ASCII_CHARACTERS_ONLY": "Si prega di utilizzare solo caratteri alfanumerici nel nome utente (puoi impostare il soprannome che preferisci più tardi).",
 		"WEBAPPMODE_CLOSED_API_MESSAGE": "API momentaneamente disabilitata",
 		"CONFIG_BACKUPED_ERROR": "Errore durante la creazione del backup del file di configurazione",
 		"REPO_PATH_ERROR_IN_BASE_PATH": "Il percorso della cartella multimediale non può essere nel percorso di base",
