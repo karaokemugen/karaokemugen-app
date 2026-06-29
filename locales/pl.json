@@ -330,5 +330,7 @@
 	"NO": "Nie",
 	"YES": "Tak",
 	"CANCEL": "Anuluj",
-	"UNKNOWN": "Nieznany"
+	"UNKNOWN": "Nieznany",
+	"MENU_HELP_TUTORIAL": "&Samouczek operatora",
+	"KARAOKE_MUGEN_PLAYER_WINDOW_TITLE": "Karaoke Mugen Player"
 }
