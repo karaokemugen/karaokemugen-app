@@ -310,7 +310,7 @@
 		"SECONDS_other": "{{count}} segundos",
 		"POINTS_one": "{{count}} puntos",
 		"POINTS_other": "{{count}} puntos",
-		"BONUS_POINTS_one": "{{count}} puntos extras",
+		"BONUS_POINTS_one": "{{count}} punto extras",
 		"BONUS_POINTS_other": "{{count}} puntos extras",
 		"GUESS_TIME": "Adivina la canción en menos de <1>$t(QUIZ_RULES.SECONDS, {\"count\": {{seconds}} })</1>.",
 		"SCORE": "PUNTOS",
