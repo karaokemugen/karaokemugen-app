@@ -1759,6 +1759,7 @@
 		"INBOX_DOWNLOAD_ERROR": "Unable to download song from inbox",
 		"INBOX_DELETE_ERROR": "Unable to delete song from inbox",
 		"INBOX_DELETE_FORBIDDEN_ERROR": "Inbox deletion forbidden",
+		"INSTANCE_NOT_RESPONDING": "The instance is not responding",
 		"WEBAPPMODE_CLOSED_API_MESSAGE": "API is disabled at the moment",
 		"CRITERIAS_EMPTY_ERROR": "Error emptying list of criteria",
 		"CRITERIAS_GET_ERROR": "Criteria could not be viewed",

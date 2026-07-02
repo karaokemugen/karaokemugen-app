@@ -33,7 +33,7 @@ export async function getInboxCache(repoName: string): Promise<Inbox[]> {
 		const data = await fs.readFile(resolve(getState().dataPath, `${repoName}-cache.json`), 'utf-8');
 		const inboxes = JSON.parse(data);
 		return inboxes;
-	} catch(err) {
+	} catch (err) {
 		// Non-fatal
 		logger.warn(`Unable to read inbox cache : ${err}`, { service });
 		return [];
@@ -58,14 +58,20 @@ export async function getInbox(repoName: string, token: string): Promise<Inbox[]
 			available_locally: availableKaras.some(kara => kara.kid === resdata.kid || kara.kid === resdata.edited_kid),
 		}));
 		try {
-			fs.writeFile(resolve(getState().dataPath, `${repoName}-cache.json`), JSON.stringify(inboxes, null, 2), 'utf-8');
-		} catch(err) {
+			fs.writeFile(
+				resolve(getState().dataPath, `${repoName}-cache.json`),
+				JSON.stringify(inboxes, null, 2),
+				'utf-8'
+			);
+		} catch (err) {
 			// Non-fatal
 			logger.warn(`Unable to write inbox cache : ${err}`, { service });
 		}
 		return inboxes;
 	} catch (err) {
-		if (err.response?.statusCode === 403) {
+		if (err.status === 504) {
+			throw new ErrorKM('INSTANCE_NOT_RESPONDING', 504, false);
+		} else if (err.response?.statusCode === 403) {
 			throw new ErrorKM('INBOX_VIEW_FORBIDDEN_ERROR', 403, false);
 		} else {
 			logger.error(`Unable to get inbox contents : ${err}`, { service, obj: err });
@@ -139,7 +145,7 @@ export async function downloadKaraFromInbox(inid: string, repoName: string, toke
 		saveSetting('baseChecksum', await baseChecksum());
 		const newKaraKid = await integrateKaraFile(karaFile, true, true, false);
 		updateAllSmartPlaylists();
-				
+
 		const newDbKara = await getKara(newKaraKid, adminToken);
 		// ASS file post processing
 		if (lyricsFile) {
@@ -186,8 +192,8 @@ async function downloadMediaFromInbox(kara: Inbox, repoName: string) {
 			}
 			return {
 				tempMedia,
-				localMedia
-			}
+				localMedia,
+			};
 		} else {
 			downloadTask.update({
 				value: 100,
@@ -213,7 +219,9 @@ export async function deleteKaraInInbox(inid: string, repoName: string, token: s
 				},
 			});
 		} catch (err) {
-			if (err.response?.statusCode === 403) {
+			if (err.status === 504) {
+				throw new ErrorKM('INSTANCE_NOT_RESPONDING', 504, false);
+			} else if (err.response?.statusCode === 403) {
 				throw new ErrorKM('INBOX_DELETE_FORBIDDEN_ERROR', 403, false);
 			} else {
 				logger.error(`Unable to get inbox contents for INID ${inid} on ${repoName}: ${err}`, {

@@ -1754,6 +1754,7 @@
 		"INBOX_VIEW_ERROR": "Impossible de récupérer la boite de réception",
 		"INBOX_DOWNLOAD_ERROR": "Impossible de récupérer la chanson de la boîte de réception",
 		"INBOX_DELETE_FORBIDDEN_ERROR": "Suppression d'une chanson de la boîte de réception interdite",
+		"INSTANCE_NOT_RESPONDING": "L'instance ne répond pas",
 		"INBOX_VIEW_FORBIDDEN_ERROR": "Vous n'avez pas la permission de voir la boite de réception",
 		"INBOX_DELETE_ERROR": "Impossible de supprimer la chanson de la boîte de réception",
 		"WEBAPPMODE_CLOSED_API_MESSAGE": "L'API est désactivé pour le moment",

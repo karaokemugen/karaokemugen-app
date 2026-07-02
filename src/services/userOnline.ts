@@ -115,6 +115,9 @@ async function getARemoteUser(login: string, instance: string): Promise<User> {
 	} catch (err) {
 		if (err.response?.status == 404) return null;
 		logger.debug('Got error when trying to get an online user', { service, obj: err });
+		if (err.status === 504) {
+			throw new ErrorKM('INSTANCE_NOT_RESPONDING', 504, false);
+		}
 		throw err;
 	}
 }

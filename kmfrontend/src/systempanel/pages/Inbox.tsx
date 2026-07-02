@@ -38,6 +38,7 @@ export default function Inbox() {
 	const [inboxToUpdate, setInboxToupdate] = useState<DBInbox>();
 	const [newStatus, setNewStatus] = useState<InboxActions>();
 	const [selectedStatus, setSelectedStatus] = useState<FilterInboxActions[]>(['sent', 'in_review_by_me']);
+	const [loading, setLoading] = useState(false);
 
 	const repoList = context.globalState.settings.data.config?.System?.Repositories.filter(
 		repo =>
@@ -53,10 +54,12 @@ export default function Inbox() {
 	const getInbox = async () => {
 		if (repoList.length > 0) {
 			try {
+				setLoading(true);
 				const res = await commandBackend(WS_CMD.GET_INBOX, { repoName: instance.Name });
+				setLoading(false);
 				setInbox(res);
 			} catch (_) {
-				// already display
+				setLoading(false);
 			}
 		}
 	};
@@ -472,6 +475,7 @@ export default function Inbox() {
 					expandable={{
 						showExpandColumn: false,
 					}}
+					loading={loading}
 				/>
 			</Layout.Content>
 			{openStatusModal ? (

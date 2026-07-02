@@ -45,6 +45,9 @@ async function listRemoteMedias(repo: string) {
 		return remote;
 	} catch (err) {
 		logger.error(`Failed to fetch current media list : ${err}`, { service, obj: err });
+		if (err.status === 504) {
+			throw new ErrorKM('INSTANCE_NOT_RESPONDING', 504, false);
+		}
 		Sentry.error(err);
 		throw err;
 	}
