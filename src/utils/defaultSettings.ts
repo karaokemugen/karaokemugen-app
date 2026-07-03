@@ -183,8 +183,8 @@ export const defaults: Config = {
 			NextSongInfo: {
 				Enabled: true,
 				PositionX: 'Center',
-				PositionY: 'Center'
-			}
+				PositionY: 'Center',
+			},
 		},
 		FullScreen: false,
 		AudioDevice: 'auto',

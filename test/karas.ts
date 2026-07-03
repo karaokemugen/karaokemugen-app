@@ -57,18 +57,17 @@ describe('Karas information', () => {
 		}
 	});
 
-	let karasCount: number;
-
 	it('Get complete list of karaokes (pagination test)', async () => {
 		const data = await commandBackend(token, 'getKaras', { size: 10 });
-		expect(data.content).to.have.lengthOf(10);
-		karasCount = data.infos.count;
+		expect(data.content).to.have.lengthOf(10);		
 	});
 
 	it('Get complete list of PARENTS ONLY karaokes', async () => {
 		const data = await commandBackend(token, 'getKaras', { parentsOnly: true, size: 10 });
 		expect(data.content).to.have.lengthOf(10);
-		expect(data.infos.count).to.be.lessThan(karasCount);
+		for (const kara of data.content) {
+			expect(kara.parents).to.have.lengthOf(0);
+		}
 	});
 
 	it('Get song info from database', async () => {

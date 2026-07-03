@@ -7,12 +7,12 @@ import { tagTypes, uuidPlusTypeRegexp, uuidRegexp } from '../../src/lib/utils/co
 import { Config } from '../../src/types/config.js';
 
 const testSongs = [
-	'5737c5b2-7ea4-414f-8c92-143838a402f6',
-	'a6108863-0ae9-48ad-adb5-cb703651f6bf',
-	'31f60393-8bd3-4b84-843e-a92d03a1a314',
-	'f99df658-9c61-4ea2-a46c-624a1a4c4768',
-	'495e2635-38a9-42db-bdd0-df4d27329c87',
-	'2581dec1-4f92-4f5a-a3ec-71dd6874b990',
+	'0129fd45-787e-4100-bd46-69420bd75e7a',
+	'03cebdff-55d2-472a-bee9-55288dde65f8',
+	'1709c9f9-04d5-4d86-a008-08ef0458e157',
+	'c5408356-1db3-421f-887d-fe3371d9cb6c',
+	'd2c44d98-303c-4d54-867d-c8a2ea76c09a',
+	'ffa73e6b-48ed-4c61-b30d-5a495a339ea0',
 ];
 
 export const socket = io('http://localhost:1337');
