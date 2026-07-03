@@ -170,7 +170,7 @@
     "@types/which": "^3.0.4",
     "@types/yesql": "^4.1.4",
     "chai": "^6.2.2",
-    "electron": "^43.0.0",
+    "electron": "^42.5.0",
     "electron-builder": "^26.15.3",
     "esbuild": "^0.28.1",
     "eslint": "^10.6.0",

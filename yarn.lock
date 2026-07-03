@@ -4036,9 +4036,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:^43.0.0":
-  version: 43.0.0
-  resolution: "electron@npm:43.0.0"
+"electron@npm:^42.5.0":
+  version: 42.5.2
+  resolution: "electron@npm:42.5.2"
   dependencies:
     "@electron-internal/extract-zip": "npm:^1.0.1"
     "@electron/get": "npm:^5.0.0"
@@ -4046,7 +4046,7 @@ __metadata:
   bin:
     electron: cli.js
     install-electron: install.js
-  checksum: 10c0/9f0bfb4e55dd97102941d009ce44ea1c5aa82325e877733284d75be8880ead11305ff45198d059e5127b441c94391ed159136cee23f2474e2416e2bbab2e9940
+  checksum: 10c0/12c0138c56723ccffd6dd85ec606e82c74b66831e7932f647979e2aaa7378dc34927ad0859d4a8f683241744842c41a1f1a75bc6e0759ccd5a6ddca3551e620f
   languageName: node
   linkType: hard
 
@@ -6868,7 +6868,7 @@ __metadata:
     dayjs: "npm:^1.11.21"
     discord-rpc: "npm:^4.0.1"
     dotenv: "npm:^17.4.2"
-    electron: "npm:^43.0.0"
+    electron: "npm:^42.5.0"
     electron-builder: "npm:^26.15.3"
     electron-updater: "npm:^6.8.9"
     esbuild: "npm:^0.28.1"
