@@ -63,6 +63,7 @@ export async function startElectron() {
 	if (!app.requestSingleInstanceLock()) process.exit();
 	app.on('second-instance', (_event, args) => {
 		if (args[args.length - 1] === '--kill') {
+			console.log('An instance of Karaoke Mugen Desktop App is already running, exiting.');
 			exit(0);
 		} else {
 			focusWindow();
