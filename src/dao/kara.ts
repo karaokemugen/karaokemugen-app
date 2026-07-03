@@ -179,10 +179,7 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		const collectionsParentClauses = [];
 		let collectionsParentJoin = '';
 		if (!params.ignoreCollections) {
-			collectionsParentJoin = `LEFT JOIN all_karas ak2 ON ak2.pk_kid = kr.fk_kid_parent
-			WHERE
-			${params.blacklist ? 'fk_kid_parent NOT IN (SELECT * FROM blacklist) AND ' : ''}
-			`;
+			collectionsParentJoin = `LEFT JOIN all_karas ak2 ON ak2.pk_kid = kr.fk_kid_parent`;
 			if (collections)
 				for (const collection of Object.keys(collections)) {
 					if (collections[collection] === true)
@@ -193,7 +190,9 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		withCTEs.push('parents AS (SELECT fk_kid_parent AS kid FROM kara_relation)');
 		withCTEs.push(`children AS (SELECT kr.fk_kid_child AS kid FROM kara_relation kr
 			${collectionsParentJoin}
-			${collectionsParentClauses.join(' OR ')}
+			WHERE true
+			${params.blacklist ? ' AND fk_kid_parent NOT IN (SELECT * FROM blacklist) AND ' : ''}			
+			${collectionsParentClauses.length > 0 ? ' AND ' : ''}${collectionsParentClauses.join(' OR ')}
 		)`);
 		whereClauses.push(`(ak.pk_kid IN (
 			SELECT kid FROM parents

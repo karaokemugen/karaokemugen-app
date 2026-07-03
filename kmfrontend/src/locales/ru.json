@@ -1105,7 +1105,7 @@
 		"COMMITING_CHANGES": "Применение изменений",
 		"PREPARING_CHANGES": "Подготовка изменений",
 		"REFRESHING_DATA": "Обновление данных…",
-		"UPLOADING_FTP": "Загрузка на FTP…",
+		"UPLOADING_MEDIA": "Загрузка на FTP…",
 		"EXPORTING_PLAYLIST_MEDIA": "Экспорт медиа из плейлиста…",
 		"CALCULATING_MEDIA_ENCODING_PARAMETERS": "Вычисление параметров кодирования медиа…",
 		"ENCODING_MEDIA": "Кодирование медиафайла…",

@@ -2246,7 +2246,7 @@
 		"DOWNLOADING": "Herunterladen…",
 		"DOWNLOADING_ZIP": "Herunterladen der Datenbank",
 		"REFRESHING_DATA": "Daten aktualisieren…",
-		"UPLOADING_FTP": "Hochladen auf den FTP-Server …",
+		"UPLOADING_MEDIA": "Hochladen auf den FTP-Server …",
 		"MERGING_TAGS_IN_PROGRESS": "Tags zusammenführen…",
 		"CREATING_TAG_IN_PROGRESS": "Tag erstellen…",
 		"GENERATING_READING": "Daten einlesen…",
