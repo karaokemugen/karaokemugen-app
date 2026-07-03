@@ -46,6 +46,7 @@ function determineEnv() {
 
 /** Kill ALL pg process - windows only - handle with care */
 async function killPG() {
+	if (process.platform !== 'win32') return;
 	const state = getState();
 	const conf = getConfig();
 	if (!conf.System.Database.bundledPostgresBinary) return;
