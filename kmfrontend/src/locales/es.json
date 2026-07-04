@@ -1035,7 +1035,9 @@
 			"REMOVE_PARENT": "Eliminar padre",
 			"EDIT_DISPLAY_TYPE": "Editar desde la visualización del tipo de etiqueta",
 			"SELECT_PARENT": "Seleccione un padre:",
-			"SELECT_TAG_TYPE": "Seleccione un tipo de etiqueta:"
+			"SELECT_TAG_TYPE": "Seleccione un tipo de etiqueta:",
+			"COPY_SONGS_TO_REPOSITORY": "Copiar canciones al repositorio",
+			"SELECT_REPOSITORY": "Seleccione un repositorio:"
 		},
 		"SINGERGROUPS_BY": "de la banda de música",
 		"SYNCHRONIZE_DESC": "Descarga todo el multimedia de los repositorios seleccionados",
@@ -1816,7 +1818,8 @@
 		"IMPORT_NO_TITLE_ERROR": "No se pueden importar las canciones, falta el título en la plantilla",
 		"IMPORT_SONG_ERROR": "No se pueden importar canciones",
 		"PL_DO_NOT_MATCH_REPO": "Algunas canciones de la lista de reproducción no existen en el servidor remoto",
-		"REMOTE_SERVER_CONNECTION_ERROR": "No se pudo conectar con el servidor remoto"
+		"REMOTE_SERVER_CONNECTION_ERROR": "No se pudo conectar con el servidor remoto",
+		"INSTANCE_NOT_RESPONDING": "La instancia no responde"
 	},
 	"CONFIG": {
 		"PROPERTIES": {
@@ -1886,7 +1889,7 @@
 		"EDITING_SONG": "Editando canción…",
 		"GENERATION_DONE": "Generación exitosa",
 		"DATASTORE_UPDATE": "Actualizando el almacén de datos local…",
-		"UPLOADING_MEDIA": "Subiendo al FTP…",
+		"UPLOADING_MEDIA": "Subiendo medios…",
 		"CREATING_TAG_IN_PROGRESS": "Creando etiqueta…",
 		"PREPARING_CHANGES": "Preparando cambios",
 		"GENERATING": "Generando base de datos…",
