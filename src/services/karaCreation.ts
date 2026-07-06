@@ -188,7 +188,7 @@ export async function editKara(editedKara: EditedKara, refresh = true) {
 		// ASS file post processing
 		if (kara.medias[0].lyrics[0]?.filename) await ASSFileCleanup(subDest, newKara);
 	} catch (err) {
-		logger.error('Error while editing kara', { service, obj: err });
+		logger.error(`Error while editing kara : ${err}`, { service, obj: err });
 		sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
 		if (err! instanceof ErrorKM) sentry.error(err);
 		throw err instanceof ErrorKM ? err : new ErrorKM('KARA_EDITED_ERROR');
@@ -266,7 +266,7 @@ export async function createKara(editedKara: EditedKara) {
 		// ASS file post processing
 		if (kara.medias[0].lyrics[0]?.filename) await ASSFileCleanup(subDest, newKara);
 	} catch (err) {
-		logger.error('Error while creating kara', { service, obj: err });
+		logger.error(`Error while creating kara : ${err}`, { service, obj: err });
 		sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
 		sentry.addErrorInfo('kara', JSON.stringify(kara, null, 2));
 		if (err! instanceof ErrorKM) sentry.error(err);
