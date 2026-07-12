@@ -165,7 +165,6 @@ h5 > a {
 	}
 }
 
-.volumeButton,
 .displayModifierButtons,
 .messageButton {
 	order: 90;
@@ -191,15 +190,24 @@ h5 > a {
 }
 
 .volumeButton {
+	display: flex !important;
+	button {
+		margin: 3px;
+		border: solid 1px #949494 !important;
+		background-color: #2e2e2e;
+		color: white;
+	}
+
 	input[type='range'] {
+		flex-grow: 1;
+		appearance: none;
 		-webkit-appearance: none;
-		margin: 0;
-		position: absolute;
-		bottom: 0;
-		left: 0;
+		padding: 0.3em;
+		border: none !important;
 		width: calc(100% - 2px); // Compensate 2px of border, 1px on each side
 		margin-left: 1px;
 		margin-right: 1px;
+		background-color: transparent !important;
 	}
 }
 
@@ -311,8 +319,7 @@ h5 > a {
 }
 
 @media (max-width: variables.$mugen-breakpoint-smaller) {
-	.stopButton,
-	.volumeButton {
+	.stopButton {
 		display: none;
 	}
 

@@ -156,9 +156,9 @@
 			}
 
 			& > li {
-			padding-top: 5px;
-			padding-bottom: 5px;
-		}		
+				padding-top: 5px;
+				padding-bottom: 5px;
+			}
 		}
 		.disabled {
 			opacity: 0.4;
@@ -166,12 +166,11 @@
 	}
 
 	.admin-header-dropdown-settings {
-
-			li {
+		li {
 			> div {
 				margin-top: 0.25em;
 			}
-		}		
+		}
 	}
 
 	.dropdown {
@@ -193,6 +192,10 @@
 			text-align: center;
 			> .btn {
 				height: 100%;
+			}
+
+			> .slider-chibi {
+				height: 80%;
 			}
 		}
 	}
