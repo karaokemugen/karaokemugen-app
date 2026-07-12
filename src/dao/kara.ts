@@ -191,7 +191,7 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		withCTEs.push(`children AS (SELECT kr.fk_kid_child AS kid FROM kara_relation kr
 			${collectionsParentJoin}
 			WHERE true
-			${params.blacklist ? ' AND fk_kid_parent NOT IN (SELECT * FROM blacklist) AND ' : ''}			
+			${params.blacklist ? ' AND fk_kid_parent NOT IN (SELECT * FROM blacklist) ' : ''}
 			${collectionsParentClauses.length > 0 ? ' AND ' : ''}${collectionsParentClauses.join(' OR ')}
 		)`);
 		whereClauses.push(`(ak.pk_kid IN (
