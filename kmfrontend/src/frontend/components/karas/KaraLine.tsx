@@ -180,7 +180,6 @@ function KaraLine(props: IProps) {
 		} else {
 			url = WS_CMD.ADD_KARA_TO_PUBLIC_PLAYLIST;
 			data = {
-				requestedby: authData.username,
 				kids: [kara.kid],
 			};
 		}

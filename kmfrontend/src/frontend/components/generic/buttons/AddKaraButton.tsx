@@ -19,7 +19,6 @@ export default function AddKaraButton(props: Props) {
 		let response;
 		try {
 			response = await commandBackend(WS_CMD.ADD_KARA_TO_PUBLIC_PLAYLIST, {
-				requestedby: context.globalState.auth.data.username,
 				kids: [props.kara.kid],
 			});
 		} catch (_) {

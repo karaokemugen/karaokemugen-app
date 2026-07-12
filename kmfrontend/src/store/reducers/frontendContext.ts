@@ -25,6 +25,8 @@ export default function frontendContextReducer(state: FrontendContextStore, acti
 			return { ...state, indexKaraDetail: action.payload.indexKaraDetail };
 		case FrontendContextAction.FUTURE_TIME:
 			return { ...state, futurTime: action.payload.futurTime };
+		case FrontendContextAction.GO_BACK:
+			return { ...state, goBack: action.payload.goBack };
 		default:
 			return state;
 	}

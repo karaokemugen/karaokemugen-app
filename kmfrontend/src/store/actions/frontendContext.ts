@@ -9,6 +9,7 @@ import {
 	FilterValue,
 	FrontendContextAction,
 	FuturTime,
+	GoBack,
 	IndexKaraDetail,
 	PlaylistInfo,
 } from '../types/frontendContext';
@@ -91,6 +92,15 @@ export function setFutureTime(dispatch: Dispatch<FuturTime>, futurTime: string) 
 		type: FrontendContextAction.FUTURE_TIME,
 		payload: {
 			futurTime,
+		},
+	});
+}
+
+export function setGoBack(dispatch: Dispatch<GoBack>, goBack: boolean) {
+	dispatch({
+		type: FrontendContextAction.GO_BACK,
+		payload: {
+			goBack,
 		},
 	});
 }

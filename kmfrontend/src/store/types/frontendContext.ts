@@ -9,6 +9,7 @@ export enum FrontendContextAction {
 	PLAYLIST_INFO_RIGHT = 'playlistInfoRight',
 	INDEX_KARA_DETAIL = 'indexKaraDetail',
 	FUTURE_TIME = 'futurTime',
+	GO_BACK = 'goBack',
 }
 
 // Dispatch action
@@ -51,6 +52,13 @@ export interface FuturTime {
 	};
 }
 
+export interface GoBack {
+	type: FrontendContextAction.GO_BACK;
+	payload: {
+		goBack: boolean;
+	};
+}
+
 // store
 export interface FrontendContextStore {
 	loading: boolean;
@@ -65,4 +73,5 @@ export interface FrontendContextStore {
 		content: DBPLCBase[];
 	};
 	futurTime: string;
+	goBack: boolean;
 }
