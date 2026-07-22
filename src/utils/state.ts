@@ -175,7 +175,7 @@ export function getPublicCurrentGame(admin: boolean, gameState: RecursivePartial
 }
 
 /** Set one or more settings in app state */
-export function setState(part: RecursivePartial<State>) {
+export function setState(part: RecursivePartial<State>, quizEventWS: boolean = true) {
 	// lodash merges must not merge karas info.
 	if (part?.player?.currentSong && part?.player?.currentSong.kid !== state?.player?.currentSong?.kid) {
 		state.player.currentSong = null;
@@ -183,6 +183,6 @@ export function setState(part: RecursivePartial<State>) {
 	state = merge(state, part);
 	emit('stateUpdated', state);
 	emitPlayerState(part);
-	emitQuizState(part);
+	if (quizEventWS) emitQuizState(part);
 	return getState();
 }

@@ -698,7 +698,7 @@ export function setAnswer(login: string, input: string): GameAnswerResult {
 	// If an answer has already been given by this player or if it's a new answer, we update it with the input given.
 	answer.answer = input;
 	answer.quickAnswer = gameState.currentSong.quickGuessOK;
-	setState({ quiz: gameState });
+	setState({ quiz: gameState }, false);
 	return gameState.currentSong.quickGuessOK ? 'OK_QUICK' : 'OK';
 }
 
