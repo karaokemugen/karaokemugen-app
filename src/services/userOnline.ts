@@ -113,6 +113,10 @@ async function getARemoteUser(login: string, instance: string): Promise<User> {
 		const user = await HTTP.get(`${conf.RemoteUsers.Secure ? 'https' : 'http'}://${instance}/api/users/${login}`);
 		return user.data as User;
 	} catch (err) {
+		if (err.code === 'ENOTFOUND') {
+			logger.error(`Instance ${instance} not found via DNS.`, { service });
+			throw new ErrorKM('INSTANCE_NOT_RESPONDING', 404, false);
+		}
 		if (err.response?.status == 404) return null;
 		logger.debug('Got error when trying to get an online user', { service, obj: err });
 		if (err.status === 504) {
