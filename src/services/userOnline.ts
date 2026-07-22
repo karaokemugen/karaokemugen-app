@@ -76,9 +76,13 @@ export async function resetRemotePassword(user: string) {
 			`${conf.RemoteUsers.Secure ? 'https' : 'http'}://${instance}/api/users/${username}/resetpassword`
 		);
 	} catch (err) {
+		let sentry = true;
 		logger.error(`Could not trigger reset password for ${user}`, { service, obj: err });
-		sentry.error(err);
-		throw err instanceof ErrorKM ? err : new ErrorKM('USER_RESETPASSWORD_ONLINE_ERROR');
+		if (err.code === 'ENOTFOUND') {
+			logger.error(`Instance ${instance} not found via DNS`, { service });
+			sentry = false;
+		}
+		throw err instanceof ErrorKM ? err : new ErrorKM('USER_RESETPASSWORD_ONLINE_ERROR', 500, sentry);
 	}
 }
 
