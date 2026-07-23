@@ -22,6 +22,7 @@ import Sentry from '../utils/sentry.js';
 import { getState, setState } from '../utils/state.js';
 import { parseArgs, setupFromCommandLineArgs } from './args.js';
 import { exit, initEngine } from './engine.js';
+import { ErrorKM } from '../lib/utils/error.js';
 
 const service = 'Init';
 
@@ -185,7 +186,7 @@ async function checkPaths() {
 		logger.debug('Directory checks complete', { service });
 	} catch (err) {
 		errorStep(i18next.t('ERROR_INIT_PATHS'));
-		throw err;
+		throw err instanceof ErrorKM ? ErrorKM : new ErrorKM('INIT_ERROR', 500, true) ;
 	} finally {
 		profile('checkPaths');
 	}
