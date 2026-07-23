@@ -25,6 +25,7 @@ import { updateAllSmartPlaylists } from './smartPlaylist.js';
 import { integrateTagFile } from './tag.js';
 import { getUser } from './user.js';
 import { getState } from '../utils/state.js';
+import { isAxiosError } from 'axios';
 
 const service = 'Inbox';
 
@@ -69,9 +70,9 @@ export async function getInbox(repoName: string, token: string): Promise<Inbox[]
 		}
 		return inboxes;
 	} catch (err) {
-		if (err.status === 504) {
+		if (isAxiosError(err) && err.response?.status === 504) {
 			throw new ErrorKM('INSTANCE_NOT_RESPONDING', 504, false);
-		} else if (err.response?.statusCode === 403) {
+		} else if (isAxiosError(err) && err.response?.status === 403) {
 			throw new ErrorKM('INBOX_VIEW_FORBIDDEN_ERROR', 403, false);
 		} else {
 			logger.error(`Unable to get inbox contents : ${err}`, { service, obj: err });
@@ -96,7 +97,7 @@ export async function downloadKaraFromInbox(inid: string, repoName: string, toke
 			});
 			kara = res.data;
 		} catch (err) {
-			if (err.response?.statusCode === 403) {
+			if (isAxiosError(err) && err.response?.status === 403) {
 				throw new ErrorKM('INBOX_VIEW_FORBIDDEN_ERROR', 403, false);
 			} else {
 				logger.error(`Unable to get inbox contents for INID ${inid} on ${repoName}: ${err}`, {
@@ -219,9 +220,9 @@ export async function deleteKaraInInbox(inid: string, repoName: string, token: s
 				},
 			});
 		} catch (err) {
-			if (err.status === 504) {
+			if (isAxiosError(err) && err.response?.status === 504) {
 				throw new ErrorKM('INSTANCE_NOT_RESPONDING', 504, false);
-			} else if (err.response?.statusCode === 403) {
+			} else if (isAxiosError(err) && err.response?.status === 403) {
 				throw new ErrorKM('INBOX_DELETE_FORBIDDEN_ERROR', 403, false);
 			} else {
 				logger.error(`Unable to get inbox contents for INID ${inid} on ${repoName}: ${err}`, {
