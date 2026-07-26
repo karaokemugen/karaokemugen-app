@@ -1119,7 +1119,9 @@
 			"AUDIO_CHANNEL_LAYOUT": "Audio channel layout",
 			"AUDIO_COVER_ART": "Cover art",
 			"WARNINGS": {
-				"LIBAVCODEC_ENCODER": "The audio is encoded with the libavcodec (ffmpeg reference aac) encoder, which can create audible artifacts and is discouraged to utilize. Please use the libfdk_aac encoder for aac or another codec like opus, to get the best possible quality."
+				"LIBAVCODEC_ENCODER": "The audio is encoded with the libavcodec (ffmpeg reference aac) encoder, which can create audible artifacts and is discouraged to utilize. Please use the libfdk_aac encoder for aac or another codec like opus, to get the best possible quality.",
+				"HAS_EMBEDDED_SUBTITLES": "Embedded subtitles in the media file are not recommended and will be removed automatically when saving. Please make the subtitle is correctly applied or uploaded in the 'Lyrics' section",
+				"HAS_ATTACHMENTS": "The media file contains embedded attachments (likely fonts), which will be removed when saving."
 			}
 		},
 		"MEDIA_ENCODE": {
@@ -1140,6 +1142,8 @@
 		"LYRICS_FILE": "Lyrics file",
 		"LYRICS_FILE_TOOLTIP": "Supported file formats: {{formats}}",
 		"LYRICS_FILE_OPEN": "Open file",
+		"EMBEDDED_LYRICS_FOUND": "Embedded lyrics found",
+		"USE_EMBEDDED_LYRICS_CONFIRM": "The media file contains an embedded lyrics file. Replace the current lyrics by the one in the media file?",
 		"MISSING_PARENT_SONG": "Missing parent song ({{parent}})",
 		"ADD_FILE_SUCCESS": "{{name}} file added successfully",
 		"ADD_FILE_MEDIA_ERROR": "{{name}} is not a media file",
@@ -1165,8 +1169,6 @@
 		"KARA_AUTHORS_TOOLTIP": "You should add yourself here ;)",
 		"COMMENT": "Any comments?",
 		"COMMENT_TOOLTIP": "A commentary field for things like \"To all my fans!\" or \"Don't modify the effects!\" or \"Made with lots of coffee\".",
-		"USEEMBEDDEDLYRICS": "Prioritize embedded lyrics from media",
-		"USEEMBEDDEDLYRICS_TOOLTIP": "If the media uploaded contains an embedded ASS file, it'll be extracted and replace the current lyrics file.",
 		"IGNOREHOOKS": "Ignore automatic tags",
 		"IGNOREHOOKS_TOOLTIP": "Some tags can be added automatically to this song if it meets some conditions.",
 		"PREVIEW_HOOKS": "Preview tags added automatically",
