@@ -1146,7 +1146,9 @@
 			"AUDIO_CHANNEL_LAYOUT": "Canales de audio",
 			"AUDIO_COVER_ART": "Portada",
 			"WARNINGS": {
-				"LIBAVCODEC_ENCODER": "El audio está codificado con el codificador libavcodec (códec AAC de referencia de ffmpeg), que puede generar artefactos audibles y cuyo uso no se recomienda. Para obtener la mejor calidad posible, utilice el codificador libfdk_aac para AAC u otro códec como Opus."
+				"LIBAVCODEC_ENCODER": "El audio está codificado con el codificador libavcodec (códec AAC de referencia de ffmpeg), que puede generar artefactos audibles y cuyo uso no se recomienda. Para obtener la mejor calidad posible, utilice el codificador libfdk_aac para AAC u otro códec como Opus.",
+				"HAS_EMBEDDED_SUBTITLES": "No se recomienda el uso de subtítulos incrustados en el video, ya que se eliminarán automáticamente al guardarlo. Asegúrese de que el subtítulo se aplicó correctamente o se cargó en la sección \"Letra\"",
+				"HAS_ATTACHMENTS": "El archivo multimedia contiene archivos incrustados (probablemente fuentes), que se eliminarán al guardarlo."
 			}
 		},
 		"PREVIEW_HOOKS_MODAL": "Los siguientes cambios serán aplicados a los tags para esta canción",
@@ -1198,7 +1200,9 @@
 			"SET": "Anular la posición predeterminada",
 			"UNSET": "Eliminar posición personalizada"
 		},
-		"REPOSITORY_DOCUMENTATION": "Consulta las reglas de {{instance}} aquí"
+		"REPOSITORY_DOCUMENTATION": "Consulta las reglas de {{instance}} aquí",
+		"EMBEDDED_LYRICS_FOUND": "Letras incrustadas encontradas",
+		"USE_EMBEDDED_LYRICS_CONFIRM": "El archivo multimedia contiene un archivo de letra incrustado. ¿Desea reemplazar la letra actual por la que se encuentra en el archivo multimedia?"
 	},
 	"SETUP_PAGE": {
 		"LOCAL_ACCOUNT_DESC": "Ha elegido una cuenta local. Escriba un nombre de cuenta y una contraseña a continuación:",
