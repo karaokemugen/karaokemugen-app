@@ -1132,8 +1132,6 @@
 		"KARA_AUTHORS_TOOLTIP": "Vous devriez vous ajouter ici ;)",
 		"COMMENT": "Un commentaire ?",
 		"COMMENT_TOOLTIP": "Un champ pour un commentaire comme \"Spéciale dédicace à ma maman\" ou \"Ne pas toucher aux effets!\" ou \"Fait avec trop de café\".",
-		"USEEMBEDDEDLYRICS": "Utiliser les paroles du fichier média en priorité",
-		"USEEMBEDDEDLYRICS_TOOLTIP": "Si le média envoyé contient un fichier de paroles, ce dernier sera alors utilisé à la place du fichier de paroles envoyé ci-dessous.",
 		"IGNOREHOOKS": "Ignorer les tags automatiques",
 		"IGNOREHOOKS_TOOLTIP": "Certains tags pourront être ajoutés automatiquement à cette chanson si elle remplit certaines conditions.",
 		"PREVIEW_HOOKS": "Prévisualiser les tags ajoutés automatiquement",

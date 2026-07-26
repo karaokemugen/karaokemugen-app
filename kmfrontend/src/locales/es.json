@@ -1178,8 +1178,6 @@
 		"KARA_GROUP_FIELD_REQUIRED": "Los campos {{fields}} no pueden estar vacíos al mismo tiempo.",
 		"ALIASES": "Aliases",
 		"FAMILIES_TOOLTIP": "Define qué tipo de contenido tiene el vídeo.",
-		"USEEMBEDDEDLYRICS": "Priorizar las letras incrustadas de los medios",
-		"USEEMBEDDEDLYRICS_TOOLTIP": "Si el archivo multimedia subido contiene un archivo ASS incrustado, este se extraerá y reemplazará el archivo de letra actual.",
 		"SYNCHRONIZE_REPOSITORIES": "Repositorios para sincronizar",
 		"ORDER_MEDIA": "Solicitar material multimedia por: ",
 		"ORDER_MEDIA_STANDARD": "Estándar",

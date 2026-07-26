@@ -731,8 +731,6 @@
 		"ORDER_MEDIA_STANDARD": "தரநிலை",
 		"KARA_FIELD_REQUIRED": "{{field}} ఫీల్డ్ తప్పనిసరి",
 		"KARA_GROUP_FIELD_REQUIRED": "{{fields}} ఫీల్డ్‌లు ఒకే సమయంలో ఖాళీగా ఉండకూడదు.",
-		"USEEMBEDDEDLYRICS": "మీడియా నుండి పొందుపరిచిన సాహిత్యానికి ప్రాధాన్యత ఇవ్వండి",
-		"USEEMBEDDEDLYRICS_TOOLTIP": "అప్‌లోడ్ చేయబడిన మీడియాలో ఎంబెడెడ్ ASS ఫైల్ ఉంటే, అది సంగ్రహించబడుతుంది మరియు ప్రస్తుత లిరిక్స్ ఫైల్‌ను భర్తీ చేస్తుంది.",
 		"SYNCHRONIZE_REPOSITORIES": "సమకాలీకరించడానికి రిపోజిటరీలు",
 		"ORDER_MEDIA": "మీడియాను దీని ద్వారా ఆర్డర్ చేయండి: ",
 		"ORDER_MEDIA_MEDIASIZE": "మీడియాసైజ్",

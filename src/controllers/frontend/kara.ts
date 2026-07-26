@@ -72,8 +72,8 @@ export default function karaController(router: SocketIOApp) {
 	router.route(WS_CMD.PROCESS_UPLOADED_MEDIA, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
-			const mediaInfo = await processUploadedMedia(req.body.filename, req.body.origFilename);
-			return { ...mediaInfo, filePath: undefined };
+			const processMediaResult = await processUploadedMedia(req.body.filename, req.body.origFilename);
+			return { ...processMediaResult, filePath: undefined };
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}

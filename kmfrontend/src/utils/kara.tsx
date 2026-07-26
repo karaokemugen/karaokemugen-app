@@ -33,7 +33,7 @@ export function getDescriptionInLocale(settings: SettingsStoreData, description:
 }
 
 export function getTagInLanguage(
-	tag: DBKaraTag,
+	tag: DBKaraTag | DBTag,
 	mainLanguage: string,
 	fallbackLanguage: string,
 	i18nParam?: Record<string, Record<string, string>>
@@ -82,7 +82,7 @@ export function getTagInLocaleList(
 
 export function getTagInLocale(
 	settings: SettingsStoreData,
-	tag: DBKaraTag,
+	tag: DBTag | DBKaraTag,
 	i18nParam?: Record<string, Record<string, string>>
 ): { i18n: string; description: string } | undefined {
 	if (!tag) {
@@ -90,7 +90,7 @@ export function getTagInLocale(
 	}
 	const user = settings?.user;
 	const tagLang =
-		tagTypes[getTagTypeName(tag.type_in_kara ? tag.type_in_kara : (tag as unknown as DBTag).types[0])].language;
+		tagTypes[getTagTypeName(('type_in_kara' in tag && tag.type_in_kara) ? tag.type_in_kara : (tag as DBTag).types[0])].language;
 	if (tagLang === 'user' && user?.language) {
 		return getTagInLanguage(tag, getLanguageIn3B(user.language), 'eng', i18nParam);
 	} else if (tagLang === 'song_name' && user?.main_series_lang && user?.fallback_series_lang) {

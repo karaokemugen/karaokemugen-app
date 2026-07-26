@@ -467,8 +467,6 @@
 		"CHANGE_ORDER_DIRECTION": "Ordnungsrichtung ändern",
 		"KARA_FIELD_REQUIRED": "{{field}} ist ein Pflichtfeld",
 		"KARA_GROUP_FIELD_REQUIRED": "{{fields}} können nicht alle leer sein.",
-		"USEEMBEDDEDLYRICS": "Ins Medium eingebetteten Liedtext priorisieren",
-		"USEEMBEDDEDLYRICS_TOOLTIP": "Falls im hochgeladenen Medium eine ASS-Datei integriert ist, wird diese extrahiert und ersetzt die aktuelle Liedtext-Datei.",
 		"SYNCHRONIZE_REPOSITORIES": "Repositorys zum Synchronisieren",
 		"SWAP_TOOLTIP": "Position von Liedern in der Playlist ändern, die du dir gewünscht hast",
 		"SWAP_DESCRIPTION": "Wähle ein zweites Lied, um sie zu tauschen",
