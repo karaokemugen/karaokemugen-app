@@ -12,6 +12,7 @@ import pl from '../locales/pl.json';
 import ta from '../locales/ta.json';
 import br from '../locales/br.json';
 import ru from '../locales/ru.json';
+import cs from '../locales/cs.json';
 
 i18n
 	// use react-i18next
@@ -61,6 +62,9 @@ i18n
 			},
 			ru: {
 				translation: ru,
+			},
+			cs: {
+				translation: cs,
 			},
 		},
 	});

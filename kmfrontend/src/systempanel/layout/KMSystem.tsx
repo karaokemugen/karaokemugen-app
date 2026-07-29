@@ -11,6 +11,7 @@ import ptPT from 'antd/es/locale/pt_PT';
 import plPL from 'antd/es/locale/pl_PL';
 import taIN from 'antd/es/locale/ta_IN';
 import ruRU from 'antd/es/locale/ru_RU';
+import csCZ from 'antd/es/locale/cs_CZ';
 import i18next from 'i18next';
 import { Component } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
@@ -76,14 +77,14 @@ class KMSystem extends Component<unknown, unknown> {
 
 	getLocale() {
 		let locale = enUS;
-		if (navigator.languages[0].includes('fr') || navigator.languages[0].includes('br')) {
+		if (navigator.languages[0].includes('pt')) {
+			locale = ptPT;
+		} else if (navigator.languages[0].includes('fr') || navigator.languages[0].includes('br')) {
 			locale = frFR;
 		} else if (navigator.languages[0].includes('es')) {
 			locale = esES;
 		} else if (navigator.languages[0].includes('id')) {
 			locale = idID;
-		} else if (navigator.languages[0].includes('pt')) {
-			locale = ptPT;
 		} else if (navigator.languages[0].includes('de')) {
 			locale = deDE;
 		} else if (navigator.languages[0].includes('it')) {
@@ -94,6 +95,8 @@ class KMSystem extends Component<unknown, unknown> {
 			locale = taIN;
 		} else if (navigator.languages[0].includes('ru')) {
 			locale = ruRU;
+		} else if (navigator.languages[0].includes('cs')) {
+			locale = csCZ;
 		}
 		return locale;
 	}
