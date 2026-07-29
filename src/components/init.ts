@@ -94,7 +94,6 @@ export async function init() {
 	console.log(`Version ${state.version.number} "${state.version.name}" (${sha || 'UNKNOWN'})`);
 	console.log('================================================================================');
 	logger.debug('Initial state', { service, obj: state });
-
 	// Checking paths, create them if needed.
 	await checkPaths();
 	// Copy avatar blank.png if it doesn't exist to the avatar path

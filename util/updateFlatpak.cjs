@@ -7,15 +7,6 @@ const fs = require('fs/promises');
 
 const { mainModule } = require('process');
 
-const [
-	_,
-	// eslint-disable-next-line no-redeclare
-	__,
-	sentrycliVersion,
-	sentrycliX64SHA,
-	sentrycliARM64SHA,
-] = process.argv;
-
 const yamlFile = 'moe.karaokes.mugen/moe.karaokes.mugen.yml';
 const xmlFile = 'moe.karaokes.mugen/moe.karaokes.mugen.metainfo.xml';
 
@@ -35,20 +26,6 @@ async function main() {
 	// Updating git info
 	karaokemugenAppSource.commit = process.env.CI_COMMIT_SHA;
 	karaokemugenAppSource.tag = process.env.CI_COMMIT_REF_NAME;
-
-	// Updating fetches
-	const sentrycliSHA = {
-		x86_64: sentrycliX64SHA,
-		aarch64: sentrycliARM64SHA,
-	};
-	for (const arch of ['x86_64', 'aarch64']) {
-		const sentryCliSource = karaokemugenModule.sources.find(
-			e => e.url && e.url.includes(`sentry-cli-Linux-${arch}`)
-		);
-		sentryCliSource.url = `https://downloads.sentry-cdn.com/sentry-cli/${sentrycliVersion}/sentry-cli-Linux-${arch}`;
-		sentryCliSource.sha256 = sentrycliSHA[arch];
-		sentryCliSource['only-arches'] = [arch];
-	}
 
 	// Push new version into xml
 	const versions = metainfo.elements[1].elements.find(e => e.name === 'releases');

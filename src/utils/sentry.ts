@@ -19,6 +19,7 @@ class ElectronSentryLogger extends SentryLogger {
 		}
 		if (!process.env.SENTRY_DSN) {
 			// No DSN provided, return.
+			console.log('No DSN provided for Sentry, disabling.')
 			return;
 		}
 		const options: any = {
@@ -46,6 +47,7 @@ class ElectronSentryLogger extends SentryLogger {
 		options.enableJavaScript = false;
 		this.Sentry.init(options);
 		this.SentryInitialized = true;
+		console.log('Sentry initialized');
 	}
 }
 

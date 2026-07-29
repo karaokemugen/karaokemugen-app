@@ -57,3 +57,6 @@ build/export
 build/build
 build/km
 repo/
+
+# Sentry Config File
+.env.sentry-build-plugin

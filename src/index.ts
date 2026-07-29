@@ -79,7 +79,7 @@ if (app.isPackaged) {
 }
 
 try {
-	process.env.SENTRY_DSN = readFileSync(resolve(resourcePath, 'assets/sentry.txt'), 'utf-8').replaceAll('\n', '');
+	if (!process.env.SENTRY_DSN) process.env.SENTRY_DSN = readFileSync(resolve(resourcePath, 'assets/sentry.txt'), 'utf-8').replaceAll('\n', '');
 } catch (err) {
 	// Non-fatal, continue
 }
