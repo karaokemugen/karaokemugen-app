@@ -156,7 +156,7 @@ async function processDownload(download: KaraDownload) {
 		emitWS('KIDUpdated', [{ kid: download.kid, download_status: 'MISSING' }]);
 		emit('songDownloadFailed', download.kid);
 		logger.error(`Failed to process download ${download.mediafile} (${download.uuid})`, { service, obj: err });
-		if (err.code !== 'ETIMEDOUT') {
+		if (err.code !== 'ETIMEDOUT' && err.code !== 'ECONNRESET') {
 			Sentry.error(err);
 		}
 		throw err;
