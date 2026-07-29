@@ -79,7 +79,7 @@ async function writeKarasInPublicPL() {
 	const pl = await getPlaylistInfo(getState().publicPlaid);
 	await fs.writeFile(
 		resolve(resolvedPath('StreamFiles'), 'public_kara_count.txt'),
-		pl?.karacount?.toString(),
+		pl?.karacount?.toString() || '',
 		'utf-8'
 	);
 }
