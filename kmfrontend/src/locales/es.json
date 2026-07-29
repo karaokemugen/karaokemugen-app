@@ -1147,7 +1147,7 @@
 			"AUDIO_COVER_ART": "Portada",
 			"WARNINGS": {
 				"LIBAVCODEC_ENCODER": "El audio está codificado con el codificador libavcodec (códec AAC de referencia de ffmpeg), que puede generar artefactos audibles y cuyo uso no se recomienda. Para obtener la mejor calidad posible, utilice el codificador libfdk_aac para AAC u otro códec como Opus.",
-				"HAS_EMBEDDED_SUBTITLES": "No se recomienda el uso de subtítulos incrustados en el video, ya que se eliminarán automáticamente al guardarlo. Asegúrese de que el subtítulo se aplicó correctamente o se cargó en la sección \"Letra\"",
+				"HAS_EMBEDDED_SUBTITLES": "No se recomienda el uso de subtítulos incrustados en el video, ya que se eliminarán automáticamente al guardarlo. Asegúrese de que el subtítulo se aplicó correctamente o se cargó en la sección \"Letra\".",
 				"HAS_ATTACHMENTS": "El archivo multimedia contiene archivos incrustados (probablemente fuentes), que se eliminarán al guardarlo."
 			}
 		},
