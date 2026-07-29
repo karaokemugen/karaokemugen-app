@@ -167,12 +167,12 @@
 	"MOVED_USER_DIR_DIALOG": {
 		"TITLE": "Uživatelská složka byla přesunuta!",
 		"DETAIL": "Aby aplikace vyhovovala standardům vašeho operačního systému, byla přesunuta složka s uživatelskými daty. Původně byla zde:\n\n{{oldDir}}\n\nNyní je zde:\n\n{{newDir}}\n\nPokud streamujete, možná budete muset upravit rozložení v OBS tak, aby odkazovalo na textové soubory v jejich novém umístění.",
-		"UNDERSTOOD": "Rozumím"
+		"UNDERSTOOD": "Rozumím!"
 	},
 	"MOVED_USER_DIR_FLATPAK_DIALOG": {
-		"TITLE": "Upozornění pro uživatele Flatpaku",
+		"TITLE": "Upozornění pro uživatele Flatpaku!",
 		"DETAIL": "Obsah uživatelské složky byl přesunut. Protože však používáte verzi Karaoke Mugen pro Flatpak, aplikace nemůže starou složku odstranit. Odstraňte ji ručně zde:\n\n{{oldDir}}\n\n(Měla by být prázdná.)",
-		"UNDERSTOOD": "Rozumím, udělám to, než zapomenu"
+		"UNDERSTOOD": "Rozumím, udělám to, než zapomenu!"
 	},
 	"MOVING_USER_DIR_ERROR_DIALOG": {
 		"TITLE": "Datovou složku Karaoke Mugen nelze přesunout",
@@ -212,12 +212,12 @@
 			"Nezapomeňte občas udělat přestávku a vyvětrat místnost!",
 			"Pokud někdo chce přehrát svou skladbu dříve, než přijde na řadu, nepřijímejte peníze. Studené nápoje a jídlo jsou mnohem lepší!",
 			"Máte-li online účet, nezapomeňte přidávat oblíbené skladby do oblíbených. Snadno je pak znovu najdete zde i v jiné aplikaci Karaoke Mugen!",
-			"Karaoke Mugen potřebuje právě VÁS! Další informace najdete na http://mugen.karaokes.moe/en/participate.html.",
+			"Karaoke Mugen potřebuje právě VÁS! Další informace najdete na http://mugen.karaokes.moe/en/participate.html!",
 			"Další tip zakončený vykřičníkem!",
 			"Monitor zobrazuje právě přehrávanou skladbu, když ze svého místa nevidíte na obrazovku.",
 			"Režim klasického karaoke napodobuje japonské karaoke boxy nebo karaoke soutěže na anime akcích: mezi skladbami je přestávka a na obrazovce se zobrazuje název další skladby i uživatel, který si ji přál.",
 			"Blíží se konec karaoke relace? Přepněte rozhraní do omezeného režimu. Uživatelé už nebudou moci přidávat skladby, ale stále uvidí, co bude následovat.",
-			"Potřebujete návštěvníkům poslat zprávu? Pomocí zpráv můžete zobrazit text na jejich mobilních zařízeních, na karaoke obrazovce nebo na obou místech.",
+			"Potřebujete návštěvníkům poslat zprávu? Pomocí zpráv můžete zobrazit text na jejich mobilních zařízeních, na karaoke obrazovce nebo na obou místech!",
 			"Při hledání můžete zadat „-slovo“ a vyloučit z výsledků skladby, které toto slovo obsahují v názvu, sérii, interpretech nebo jiných údajích.",
 			"Skladby ve veřejném playlistu můžete přijímat nebo odmítat. Zobrazte si veřejný a aktuální playlist vedle sebe.",
 			"Přijetím nebo odmítnutím veřejného návrhu vrátíte uživateli, který si skladbu přál, místo v kvótě. Přijatou skladbu zároveň přidáte do aktuálního playlistu!",
@@ -227,7 +227,7 @@
 			"Potřebujete-li pomoc, navštivte nás na Discordu: https://karaokes.moe/discord",
 			"Zkontrolujte, zda na pozadí neběží jiná aplikace Karaoke Mugen.",
 			"Podívejte se do protokolů. Možná v nich najdete příčinu chyby!",
-			"Hlavně nepanikařte, všechno bude daijokay."
+			"Hlavně nepanikařte, všechno bude daijokay"
 		]
 	},
 	"DISCORD": {
