@@ -1230,7 +1230,9 @@
 			"AUDIO_COVER_ART": "Pochette d'album",
 			"VIDEO_ASPECT_RATIO": "Format d'image",
 			"WARNINGS": {
-				"LIBAVCODEC_ENCODER": "L'audio est encodé avec libavcodec (l'aac de référence dans ffmpeg), qui peut créer des artefacts audibles et il est donc déconseillé de l'utiliser. Veillez à utiliser l'encodeur libfdk_aac pour l'aac ou un autre codec comme opus, pour obtenir la meilleure qualité possible."
+				"LIBAVCODEC_ENCODER": "L'audio est encodé avec libavcodec (l'aac de référence dans ffmpeg), qui peut créer des artefacts audibles et il est donc déconseillé de l'utiliser. Veillez à utiliser l'encodeur libfdk_aac pour l'aac ou un autre codec comme opus, pour obtenir la meilleure qualité possible.",
+				"HAS_EMBEDDED_SUBTITLES": "Les sous-titres embarqués dans les fichiers média ne sont pas recommandés. Ils seront supprimés une fois le formulaire validé. Assurez-vous que le sous-titre est correctement appliqué ou envoyé via la section 'Paroles'.",
+				"HAS_ATTACHMENTS": "Le fichier média contient des fichiers joints (probablement des polices de caractères). Ces fichiers seront supprimés une fois le formulaire validé."
 			},
 			"AUDIO_SAMPLE_RATE": "Taux d’échantillonnage audio",
 			"DURATION": "Durée",
@@ -1260,7 +1262,9 @@
 			"SET": "Ecraser la position par défaut",
 			"UNSET": "Rétablir la position par défaut"
 		},
-		"REPOSITORY_DOCUMENTATION": "Accéder aux règles de {{instance}}"
+		"REPOSITORY_DOCUMENTATION": "Accéder aux règles de {{instance}}",
+		"EMBEDDED_LYRICS_FOUND": "Paroles trouvées dans le fichier",
+		"USE_EMBEDDED_LYRICS_CONFIRM": "Le fichier média contient des paroles embarquées. Voulez-vous remplacer les paroles actuelles par celles du fichier média ?"
 	},
 	"KARAOKE_IMPORT": {
 		"CONFIGURATION": "Configuration",
