@@ -1120,7 +1120,7 @@
 			"AUDIO_COVER_ART": "Obrázek obalu",
 			"WARNINGS": {
 				"LIBAVCODEC_ENCODER": "Zvuk je zakódován enkodérem libavcodec (referenční AAC ve FFmpegu), který může vytvářet slyšitelné artefakty, a jeho použití se proto nedoporučuje. Pro nejlepší možnou kvalitu použijte pro AAC enkodér libfdk_aac nebo jiný kodek, například Opus.",
-				"HAS_EMBEDDED_SUBTITLES": "Vložené titulky v souboru média se nedoporučují a při uložení budou automaticky odebrány. Zkontrolujte, že jsou titulky správně použité nebo nahrané v části „Text písně“",
+				"HAS_EMBEDDED_SUBTITLES": "Vložené titulky v souboru média se nedoporučují a při uložení budou automaticky odebrány. Zkontrolujte, že jsou titulky správně použité nebo nahrané v části „Text písně“.",
 				"HAS_ATTACHMENTS": "Soubor média obsahuje vložené přílohy (pravděpodobně písma), které se při uložení odeberou."
 			}
 		},
@@ -1571,11 +1571,11 @@
 		"COMPARE_LYRICS": "Aktualizovat texty písní mezi dvěma repozitáři",
 		"CHOOSE_REPOSITORY": "Vybrat repozitář",
 		"COMPARE_BUTTON": "Porovnat",
-		"COMPARE_ABOUT_MESSAGE": "Umožní porovnat a případně zkopírovat soubory s texty písní z jednoho repozitáře do druhého, pokud se u stejných skladeb liší. Vyberte repozitář k porovnání (při kopírování textů bude cílový).",
+		"COMPARE_ABOUT_MESSAGE": "Umožní porovnat a případně zkopírovat soubory s texty písní z jednoho repozitáře do druhého, pokud se u stejných skladeb liší. Vyberte repozitář k porovnání (při kopírování textů bude cílový)",
 		"LYRICS_ARE_DIFFERENT": "Texty těchto skladeb se v repozitářích {{first}} a {{second}} liší:",
 		"CONFIRM_SURE": "Chcete synchronizovat texty v repozitáři {{second}} podle repozitáře {{first}}?",
 		"SYNCHRONIZE_TAGS": "Synchronizovat štítky mezi dvěma repozitáři",
-		"SYNCHRONIZE_ABOUT_MESSAGE": "Umožní synchronizovat soubory štítků z jednoho repozitáře do druhého. Vyberte repozitář, se kterým se mají štítky synchronizovat (bude cílem kopírování).",
+		"SYNCHRONIZE_ABOUT_MESSAGE": "Umožní synchronizovat soubory štítků z jednoho repozitáře do druhého. Vyberte repozitář, se kterým se mají štítky synchronizovat (bude cílem kopírování)",
 		"SYNCHRONIZE_BUTTON": "Synchronizovat",
 		"FREE_SPACE": "Volné místo",
 		"OPEN_MEDIA_FOLDER": "Otevřít složku médií",
