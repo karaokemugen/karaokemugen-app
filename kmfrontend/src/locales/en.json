@@ -2347,6 +2347,7 @@
 		}
 	},
 	"PLAYLIST": {
-		"NO_SONG": "The playlist is empty"
+		"NO_SONG": "No song found",
+		"EMPTY": "The playlist is empty"
 	}
 }

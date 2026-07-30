@@ -2347,6 +2347,7 @@
 		"REMOTE_HIGH_LATENCY_DETECTED": "Votre connexion avec {{host}} est lente, vos utilisateurs peuvent rencontrer des problèmes"
 	},
 	"PLAYLIST": {
-		"NO_SONG": "Pas de chanson trouvée"
+		"NO_SONG": "Pas de chanson trouvée",
+		"EMPTY": "La liste de lecture est vide"
 	}
 }

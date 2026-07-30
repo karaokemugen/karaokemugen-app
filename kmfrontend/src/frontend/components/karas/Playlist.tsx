@@ -343,9 +343,10 @@ function Playlist(props: IProps) {
 	const [repoInProgress, setRepoInProgress] = useState(false);
 
 	const noRowsRenderer = useCallback(() => {
+		const playlistInfo = getPlaylistInfo(props.side, context);
 		return (
 			<>
-				{getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.library && isAdmin ? (
+				{playlistInfo?.plaid === nonStandardPlaylists.library && isAdmin ? (
 					<div className="list-group-item karaSuggestion">
 						<TasksEvent
 							limit={6}
@@ -377,7 +378,11 @@ function Playlist(props: IProps) {
 						)}
 					</div>
 				) : (
-					<div className="list-group-item empty">{i18next.t('PLAYLIST.NO_SONG')}</div>
+					<div className="list-group-item empty">
+						{isNonStandardPlaylist(playlistInfo?.plaid) || data?.infos.count > 0
+							? i18next.t('PLAYLIST.NO_SONG')
+							: i18next.t('PLAYLIST.EMPTY')}
+					</div>
 				)}
 			</>
 		);
