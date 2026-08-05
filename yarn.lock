@@ -2174,13 +2174,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/yesql@npm:^4.1.4":
-  version: 4.1.4
-  resolution: "@types/yesql@npm:4.1.4"
-  checksum: 10c0/b040ec322b4354c1a72b5e7767ae63f9ec5dd7bfcba617751c67824f7d7367254c67915d6041426c4a9cba9e1272944a2ae72ef4e066fee4df98da8a4cd40e95
-  languageName: node
-  linkType: hard
-
 "@typescript-eslint/eslint-plugin@npm:8.65.0":
   version: 8.65.0
   resolution: "@typescript-eslint/eslint-plugin@npm:8.65.0"
@@ -7051,7 +7044,6 @@ __metadata:
     "@types/ssh2-sftp-client": "npm:^9.0.6"
     "@types/tmi.js": "npm:^1.8.6"
     "@types/which": "npm:^3.0.4"
-    "@types/yesql": "npm:^4.1.4"
     "@xhayper/discord-rpc": "npm:^1.3.4"
     agentkeepalive: "npm:^4.6.0"
     ass-compiler: "npm:^0.1.16"
@@ -7142,7 +7134,6 @@ __metadata:
     x11: "npm:^3.2.1"
     xml-js: "npm:^1.6.11"
     xregexp: "npm:^5.1.2"
-    yesql: "npm:^7.0.0"
     zod: "npm:^4.4.3"
   dependenciesMeta:
     x11:
@@ -12156,13 +12147,6 @@ __metadata:
     y18n: "npm:^5.0.5"
     yargs-parser: "npm:^21.1.1"
   checksum: 10c0/ccd7e723e61ad5965fffbb791366db689572b80cca80e0f96aad968dfff4156cd7cd1ad18607afe1046d8241e6fb2d6c08bf7fa7bfb5eaec818735d8feac8f05
-  languageName: node
-  linkType: hard
-
-"yesql@npm:^7.0.0":
-  version: 7.0.0
-  resolution: "yesql@npm:7.0.0"
-  checksum: 10c0/83485a0a2ec8889c3eb38a3cd561097dccf601430618da2926baeae9a63d353044e1f9cfad0151e4cc38327e531ccf54498c80f0311f497eb46248c1930d24fb
   languageName: node
   linkType: hard
 

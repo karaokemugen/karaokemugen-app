@@ -133,7 +133,6 @@
     "winston-transport": "^4.9.0",
     "xml-js": "^1.6.11",
     "xregexp": "^5.1.2",
-    "yesql": "^7.0.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
@@ -163,7 +162,6 @@
     "@types/ssh2-sftp-client": "^9.0.6",
     "@types/tmi.js": "^1.8.6",
     "@types/which": "^3.0.4",
-    "@types/yesql": "^4.1.4",
     "chai": "^6.2.2",
     "electron": "^43.2.0",
     "electron-builder": "^26.15.3",

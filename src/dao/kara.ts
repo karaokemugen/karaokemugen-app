@@ -1,6 +1,4 @@
-import { pg as yesql } from 'yesql';
-
-import { buildClauses, buildTypeClauses, copyFromData, db, transaction } from '../lib/dao/database.js';
+import { buildClauses, buildTypeClauses, copyFromData, db, prepareNamedParamsQuery, transaction } from '../lib/dao/database.js';
 import { WhereClause } from '../lib/types/database.js';
 import { DBKara, DBKaraBase, DBYear, KaraOldData } from '../lib/types/database/kara.js';
 import { Kara, KaraFileV4, KaraParams } from '../lib/types/kara.js';
@@ -38,7 +36,7 @@ export async function selectYears(): Promise<DBYear[]> {
 
 export async function insertKara(kara: KaraFileV4): Promise<KaraOldData> {
 	const data = await db().query(
-		yesql(sqlinsertKara)({
+		prepareNamedParamsQuery(sqlinsertKara)({
 			karafile: kara.meta.karaFile,
 			mediafile: kara.medias[0].filename,
 			lyrics_infos: JSON.stringify(kara.medias[0].lyrics),
@@ -244,7 +242,7 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		...yesqlPayload.params,
 	};
 	try {
-		const res = await db().query(yesql(query)(queryParams));
+		const res = await db().query(prepareNamedParamsQuery(query)(queryParams));
 		return res.rows.map(row => organizeTagsInKara(row));
 	} catch (err) {
 		logger.debug(`SelectAllKaras failed with params : ${JSON.stringify(params)}`, { service });
@@ -291,13 +289,13 @@ export async function selectAllKarasMicro(params: KaraParams): Promise<DBKaraBas
 	const queryParams = {
 		...yesqlPayload.params,
 	};
-	const res = await db().query(yesql(query)(queryParams));
+	const res = await db().query(prepareNamedParamsQuery(query)(queryParams));
 	return res.rows;
 }
 
 export function insertPlayed(kid: string) {
 	return db().query(
-		yesql(sqladdViewcount)({
+		prepareNamedParamsQuery(sqladdViewcount)({
 			kid,
 			played_at: new Date(),
 			seid: getState().currentSessionID,
@@ -324,7 +322,7 @@ export async function updateKaraParents(kara: Kara) {
 	if (!kara.parents) return;
 	for (const pkid of kara.parents) {
 		await db().query(
-			yesql(sqlinsertChildrenParentKara)({
+			prepareNamedParamsQuery(sqlinsertChildrenParentKara)({
 				parent_kid: pkid,
 				child_kid: kara.kid,
 			})
