@@ -1,6 +1,7 @@
-import { WS_CMD } from '../../../kmfrontend/src/utils/ws.js';
+import z from 'zod';
+import { WS_CMD } from '../../../kmfrontend/src/utils/ws.mjs';
 import { APIMessage } from '../../lib/services/frontend.js';
-import { check } from '../../lib/utils/validators.js';
+import { check, zNonEmptyString, zNonNegativeInt } from '../../lib/utils/validators.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
 import {
 	activateSession,
@@ -26,9 +27,7 @@ export default function sessionController(router: SocketIOApp) {
 	router.route(WS_CMD.CREATE_SESSION, async (socket, req) => {
 		await runChecklist(socket, req);
 		// Validate form data
-		const validationErrors = check(req.body, {
-			name: { presence: { allowEmpty: false } },
-		});
+		const validationErrors = check(req.body, z.object({ index: zNonNegativeInt }));
 		if (!validationErrors) {
 			// No errors detected
 			try {
@@ -62,9 +61,7 @@ export default function sessionController(router: SocketIOApp) {
 	router.route(WS_CMD.EDIT_SESSION, async (socket, req) => {
 		await runChecklist(socket, req);
 		// Validate form data
-		const validationErrors = check(req.body, {
-			name: { presence: { allowEmpty: false } },
-		});
+		const validationErrors = check(req.body, z.object({ name: zNonEmptyString }));
 		if (!validationErrors) {
 			// No errors detected
 			try {

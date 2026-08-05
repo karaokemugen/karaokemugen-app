@@ -1,7 +1,8 @@
-import { WS_CMD } from '../../../kmfrontend/src/utils/ws.js';
+import z from 'zod';
+import { WS_CMD } from '../../../kmfrontend/src/utils/ws.mjs';
 import { APIMessage } from '../../lib/services/frontend.js';
 import { getConfig } from '../../lib/utils/config.js';
-import { check } from '../../lib/utils/validators.js';
+import { check, zIntegerOrNull, zNonEmptyString } from '../../lib/utils/validators.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
 import { initPlayer, isPlayerRunning, playerMessage, playPlayer, sendCommand } from '../../services/player.js';
 import { runChecklist } from '../middlewares.js';
@@ -18,11 +19,14 @@ export default function playerController(router: SocketIOApp) {
 
 	router.route(WS_CMD.DISPLAY_PLAYER_MESSAGE, async (socket, req) => {
 		await runChecklist(socket, req);
-		const validationErrors = check(req.body, {
-			duration: { integerValidator: true },
-			message: { presence: true },
-			destination: { inclusion: ['screen', 'users', 'all'] },
-		});
+		const validationErrors = check(
+			req.body,
+			z.object({
+				duration: zIntegerOrNull,
+				message: zNonEmptyString,
+				destination: z.enum(['screen', 'users', 'all']),
+			})
+		);
 		if (!validationErrors) {
 			try {
 				await playerMessage(req.body.message, +req.body.duration, 5, 'admin', req.body.destination);

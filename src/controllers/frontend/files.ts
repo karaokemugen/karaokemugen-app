@@ -4,7 +4,7 @@ import multer from 'multer';
 import { resolve } from 'path';
 import { randomUUID } from 'crypto';
 
-import { WS_CMD } from '../../../kmfrontend/src/utils/ws.js';
+import { WS_CMD } from '../../../kmfrontend/src/utils/ws.mjs';
 import { APIMessage } from '../../lib/services/frontend.js';
 import { resolvedPath } from '../../lib/utils/config.js';
 import logger from '../../lib/utils/logger.js';

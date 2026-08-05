@@ -24,7 +24,6 @@ import {
 	getConfig,
 	loadConfigFiles,
 	setConfig,
-	setConfigConstraints,
 	verifyConfig,
 } from '../lib/utils/config.js';
 import { uuidRegexp } from '../lib/utils/constants.js';
@@ -51,7 +50,7 @@ import { updateSongsLeft } from '../services/user.js';
 import { BinariesConfig } from '../types/binChecker.js';
 import { Config } from '../types/config.js';
 import { supportedLanguages } from './constants.js';
-import { configConstraints, defaults } from './defaultSettings.js';
+import { defaults } from './defaultSettings.js';
 import { initDiscordRPC, stopDiscordRPC } from './discordRPC.js';
 import { initKMServerCommunication } from './kmserver.js';
 import { createQRCodeFile } from './qrcode.js';
@@ -316,7 +315,6 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 /** Initializing configuration */
 export async function initConfig(argv: any) {
 	try {
-		setConfigConstraints(configConstraints);
 		await loadConfigFiles(getState().dataPath, argv.config, defaults, getState().appPath);
 		const publicConfig = cloneDeep(getConfig());
 		publicConfig.Karaoke.StreamerMode.Twitch.OAuth = 'xxxxx';
@@ -526,3 +524,4 @@ async function binMissing(binariesPath: any, err: string) {
 export function resolvedMediaPath(type: PlaylistMediaType) {
 	return getConfig().System.MediaPath[type].map((path: string) => resolve(getState().dataPath, path));
 }
+

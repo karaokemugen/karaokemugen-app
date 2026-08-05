@@ -1,6 +1,7 @@
-import { WS_CMD } from '../../../kmfrontend/src/utils/ws.js';
+import z from 'zod';
+import { WS_CMD } from '../../../kmfrontend/src/utils/ws.mjs';
 import { APIMessage } from '../../lib/services/frontend.js';
-import { check } from '../../lib/utils/validators.js';
+import { check, zNonEmptyString } from '../../lib/utils/validators.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
 import { resetSecurityCode } from '../../services/auth.js';
 import { getKaras } from '../../services/kara.js';
@@ -38,11 +39,14 @@ export default function userController(router: SocketIOApp) {
 	router.route(WS_CMD.CREATE_USER, async (socket, req) => {
 		await runChecklist(socket, req, 'guest', 'limited', { optionalAuth: true });
 		// Validate form data
-		const validationErrors = check(req.body, {
-			login: { presence: { allowEmpty: false } },
-			password: { presence: { allowEmpty: false } },
-			role: { inclusion: ['user', 'admin'] },
-		});
+		const validationErrors = check(
+			req.body,
+			z.object({
+				login: zNonEmptyString,
+				password: zNonEmptyString,
+				role: z.enum(['user', 'admin']),
+			})
+		);
 		if (!validationErrors) {
 			// No errors detected
 			try {
@@ -166,10 +170,13 @@ export default function userController(router: SocketIOApp) {
 
 	router.route(WS_CMD.CONVERT_MY_LOCAL_USER_TO_ONLINE, async (socket, req) => {
 		await runChecklist(socket, req, 'user', 'closed');
-		const validationErrors = check(req.body, {
-			instance: { presence: true },
-			password: { presence: true },
-		});
+		const validationErrors = check(
+			req.body,
+			z.object({
+				instance: zNonEmptyString,
+				password: zNonEmptyString,
+			})
+		);
 		if (!validationErrors) {
 			// No errors detected
 			try {
@@ -187,9 +194,7 @@ export default function userController(router: SocketIOApp) {
 
 	router.route(WS_CMD.CONVERT_MY_ONLINE_USER_TO_LOCAL, async (socket, req) => {
 		await runChecklist(socket, req, 'user', 'closed');
-		const validationErrors = check(req.body, {
-			password: { presence: true },
-		});
+		const validationErrors = check(req.body, z.object({ password: zNonEmptyString }));
 		if (!validationErrors) {
 			// No errors detected
 			try {

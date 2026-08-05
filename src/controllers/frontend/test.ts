@@ -1,6 +1,6 @@
 // These routes are only available in --test mode
 
-import { WS_CMD } from '../../../kmfrontend/src/utils/ws.js';
+import { WS_CMD } from '../../../kmfrontend/src/utils/ws.mjs';
 import { getConfig } from '../../lib/utils/config.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
 import { getState } from '../../utils/state.js';

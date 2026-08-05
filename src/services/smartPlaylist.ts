@@ -16,7 +16,6 @@ import { Criteria } from '../lib/types/playlist.js';
 import { uuidRegexp } from '../lib/utils/constants.js';
 import { ErrorKM } from '../lib/utils/error.js';
 import logger, { profile } from '../lib/utils/logger.js';
-import { isNumber } from '../lib/utils/validators.js';
 import { emitWS } from '../lib/utils/ws.js';
 import { DBPL } from '../types/database/playlist.js';
 import { adminToken } from '../utils/constants.js';
@@ -33,6 +32,7 @@ import {
 	removeKaraFromPlaylist,
 } from './playlist.js';
 import { getTag, getTags } from './tag.js';
+import { isNumber } from '../lib/utils/validators.js';
 
 const service = 'SmartPlaylist';
 

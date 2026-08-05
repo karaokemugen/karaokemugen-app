@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io';
 
-import { WS_CMD } from '../../../kmfrontend/src/utils/ws.js';
+import { WS_CMD } from '../../../kmfrontend/src/utils/ws.mjs';
 import { APIMessage } from '../../lib/services/frontend.js';
 import { APIData } from '../../lib/types/api.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';

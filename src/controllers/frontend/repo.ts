@@ -1,4 +1,4 @@
-import { WS_CMD } from '../../../kmfrontend/src/utils/ws.js';
+import { WS_CMD } from '../../../kmfrontend/src/utils/ws.mjs';
 import { APIMessage } from '../../lib/services/frontend.js';
 import { getRepoManifest } from '../../lib/services/repo.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
