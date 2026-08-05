@@ -18,7 +18,6 @@ import {
 	sqlgetYears,
 	sqlinsertChildrenParentKara,
 	sqlinsertKara,
-	sqlselectAllKIDs,
 	sqlTruncateOnlineRequested,
 } from './sql/kara.js';
 import logger from '../lib/utils/logger.js';
@@ -309,11 +308,6 @@ export function insertPlayed(kid: string) {
 export function insertKaraToRequests(username: string, karaList: string[]) {
 	const karas = karaList.map(kara => [username, kara, new Date(), getState().currentSessionID]);
 	return transaction({ params: karas, sql: sqladdRequested });
-}
-
-export async function selectAllKIDs(kid?: string): Promise<string[]> {
-	const res = await db().query(sqlselectAllKIDs(kid));
-	return res.rows.map((k: Kara) => k.kid);
 }
 
 export function truncateOnlineRequested() {
