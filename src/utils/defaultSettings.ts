@@ -7,8 +7,9 @@ import { z } from 'zod';
 
 import { hostnameRegexp } from '../lib/utils/constants.js';
 import { Config, DBConfig } from '../types/config.js';
-import { zArrayOneItem, zBool, zBoolUndefined, zFloat, zInclusion, zInt, zNonEmptyString, zRepositories } from '../lib/utils/validators.js';
+import { zArrayOneItem, zBool, zBoolUndefined, zFloat, zInclusion, zInt, zNonEmptyString } from '../lib/utils/validators.js';
 import { Repository } from '../lib/types/repo.js';
+import { zRepository } from '../lib/dao/repo.js';
 
 export const dbConfig: DBConfig = {
 	RestoreNeeded: false,
@@ -499,7 +500,7 @@ export const configConstraints = z
 						Outros: zArrayOneItem,
 					})
 					.loose(),
-				Repositories: zRepositories,
+				Repositories: z.array(zRepository),
 			})
 			.loose(),
 	})
