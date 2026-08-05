@@ -393,7 +393,9 @@
 			"ADD_TAG": "Ouzhpennañ tikedenn",
 			"REMOVE_TAG": "Dilemel tikedenn",
 			"SELECT_TAG": "Dibabit ur tikedenn :",
-			"SELECT_TAG_TYPE": "Dibabit seurt tikedenn :"
+			"SELECT_TAG_TYPE": "Dibabit seurt tikedenn :",
+			"COPY_SONGS_TO_REPOSITORY": "Eilañ ar c'hanaouennoù er c'havlec'hiad",
+			"SELECT_REPOSITORY": "Diuzañ ur c'havlec'hiad :"
 		},
 		"DEFAULT_LANGUAGE": "Yezh dre ziouer da implijout",
 		"VERSION_AVAILABILITY": "Hegerz e {{count}} handelv.",
@@ -815,7 +817,8 @@
 		"NAME": "Anv an dastumad"
 	},
 	"PLAYLIST": {
-		"NO_SONG": "N'eus bet kavet kanaouenn ebet"
+		"NO_SONG": "N'eus bet kavet kanaouenn ebet",
+		"EMPTY": "Goullo eo ar roll-lenn"
 	},
 	"NEW_ACCOUNT_CODE": "Kod kont nevez (da c'houlenn digant an oberataer)",
 	"KARAOKE_other": "{{count}} a ganaouennoù",
