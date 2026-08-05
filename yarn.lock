@@ -7115,7 +7115,6 @@ __metadata:
     mpris-service: "npm:^2.1.2"
     multer: "npm:^2.2.0"
     node-id3: "npm:^0.2.9"
-    os-locale: "npm:^8.0.0"
     p-map: "npm:^7.0.6"
     p-retry: "npm:^8.0.0"
     pg: "npm:^8.22.0"
@@ -8681,13 +8680,6 @@ __metadata:
     type-check: "npm:^0.4.0"
     word-wrap: "npm:^1.2.5"
   checksum: 10c0/4afb687a059ee65b61df74dfe87d8d6815cd6883cb8b3d5883a910df72d0f5d029821f37025e4bccf4048873dbdb09acc6d303d27b8f76b1a80dd5a7d5334675
-  languageName: node
-  linkType: hard
-
-"os-locale@npm:^8.0.0":
-  version: 8.0.0
-  resolution: "os-locale@npm:8.0.0"
-  checksum: 10c0/5e7bea7afcbfb70c8b36424aadf85f7f170aabc7b50735f73ebe45046082a346f354bc9b79718bd304c0d7f2439825258617b67c7d9440cff7e88131b5426329
   languageName: node
   linkType: hard
 
