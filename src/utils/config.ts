@@ -4,8 +4,8 @@
 import { dialog } from 'electron';
 import { copy } from 'fs-extra';
 import i18next from 'i18next';
-import { address } from 'ip';
 import { cloneDeep, isEqual, merge } from 'lodash';
+import os from 'node:os';
 import { resolve } from 'path';
 import { randomUUID } from 'crypto';
 
@@ -61,6 +61,24 @@ import { writeStreamFiles } from './streamerFiles.js';
 import { initTwitch, stopTwitch } from './twitch.js';
 
 const service = 'Config';
+
+function address() {
+  const interfaces = os.networkInterfaces();
+  const ipv4 = [];
+  const ipv6 = [];
+
+  for (const ifaceList of Object.values(interfaces)) {
+    for (const iface of ifaceList) {
+	  // No use for localhost.
+      if (iface.internal) continue; 
+
+      if (iface.family === 'IPv4') ipv4.push(iface.address);
+      if (iface.family === 'IPv6') ipv6.push(iface.address);
+    }
+  }
+
+  return { ipv4, ipv6 };
+}
 
 /** Edit a config item, verify the new config is valid, and act according to settings changed */
 export async function editConfig(part: RecursivePartial<Config>) {
@@ -350,7 +368,8 @@ export async function configureHost() {
 	const state = getState();
 	const config = getConfig();
 	const URLPort = +config.System.FrontendPort === 80 ? '' : `:${config.System.FrontendPort}`;
-	setState({ osHost: { v4: address(undefined, 'ipv4'), v6: address(undefined, 'ipv6') } });
+	const addresses = address();
+	setState({ osHost: { v4: addresses.ipv4[0], v6: addresses.ipv6[0] } });
 	if (state.remoteAccess && 'host' in state.remoteAccess) {
 		setState({ osURL: `${config.Online.RemoteAccess.Secure ? 'https' : 'http'}://${state.remoteAccess.host}` });
 	} else if (!config.Player.Display.ConnectionInfo.Host) {

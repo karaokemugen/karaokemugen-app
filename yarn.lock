@@ -1760,15 +1760,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/discord-rpc@npm:4.0.11":
-  version: 4.0.11
-  resolution: "@types/discord-rpc@npm:4.0.11"
-  dependencies:
-    "@types/events": "npm:*"
-  checksum: 10c0/b9fb5680788cf82d0007df2054b86aa46fc6b7d3415fcd20a65704f7de716a4a60533d6d9b57be94b8316f15f91a25e263d7c62f72f8548a6323176a843c0777
-  languageName: node
-  linkType: hard
-
 "@types/esrecurse@npm:^4.3.1":
   version: 4.3.1
   resolution: "@types/esrecurse@npm:4.3.1"
@@ -1794,13 +1785,6 @@ __metadata:
   version: 1.0.8
   resolution: "@types/estree@npm:1.0.8"
   checksum: 10c0/39d34d1afaa338ab9763f37ad6066e3f349444f9052b9676a7cc0252ef9485a41c6d81c9c4e0d26e9077993354edf25efc853f3224dd4b447175ef62bdcc86a5
-  languageName: node
-  linkType: hard
-
-"@types/events@npm:*":
-  version: 3.0.3
-  resolution: "@types/events@npm:3.0.3"
-  checksum: 10c0/3a56f8c51eb4ebc0d05dcadca0c6636c816acc10216ce36c976fad11e54a01f4bb979a07211355686015884753b37f17d74bfdc7aaf4ebb027c1e8a501c7b21d
   languageName: node
   linkType: hard
 
@@ -1867,15 +1851,6 @@ __metadata:
   dependencies:
     i18next-fs-backend: "npm:*"
   checksum: 10c0/5f1b6f07ecb78d27e92002b00526c681269f12d7b2a2dba1e009eff5aef1c6c42d30887a0df81828f42f86338552d8b2ded6853c0105ed4a836d63996abf344c
-  languageName: node
-  linkType: hard
-
-"@types/ip@npm:^1.1.3":
-  version: 1.1.3
-  resolution: "@types/ip@npm:1.1.3"
-  dependencies:
-    "@types/node": "npm:*"
-  checksum: 10c0/af576e33830196be01b71c48ad5f83380a1c51d62f394a5601e8c2a5b8b31cf6dc8fe71ac39c38d806bcf1d6f1c5c8205c129eca6b6d168c0df7ab3722df23b9
   languageName: node
   linkType: hard
 
@@ -3036,7 +3011,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bindings@npm:^1.2.1, bindings@npm:^1.3.0":
+"bindings@npm:^1.2.1":
   version: 1.5.0
   resolution: "bindings@npm:1.5.0"
   dependencies:
@@ -4098,20 +4073,6 @@ __metadata:
     minimatch: "npm:^3.0.5"
     p-limit: "npm:^3.1.0 "
   checksum: 10c0/615c6f6804095f912d98d49f9b56798ceebbc83612d660b7faa6bdb4894d978c02cfa1a30853a7319a269141e4f2a2034d4988a1985b58382614a3942f94e5b2
-  languageName: node
-  linkType: hard
-
-"discord-rpc@npm:^4.0.1":
-  version: 4.0.1
-  resolution: "discord-rpc@npm:4.0.1"
-  dependencies:
-    node-fetch: "npm:^2.6.1"
-    register-scheme: "github:devsnek/node-register-scheme"
-    ws: "npm:^7.3.1"
-  dependenciesMeta:
-    register-scheme:
-      optional: true
-  checksum: 10c0/9a055efcbd252b5ba91cbfc2c1a0130eba75e389c2b7ede5b0db2d7c7499b36d1a36c3503dad50370df184cfabd7e4e5c4689a7e043222fc4baf37a020fa3957
   languageName: node
   linkType: hard
 
@@ -6273,13 +6234,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ip@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "ip@npm:2.0.1"
-  checksum: 10c0/cab8eb3e88d0abe23e4724829621ec4c4c5cb41a7f936a2e626c947128c1be16ed543448d42af7cca95379f9892bfcacc1ccd8d09bc7e8bea0e86d492ce33616
-  languageName: node
-  linkType: hard
-
 "ipaddr.js@npm:1.9.1":
   version: 1.9.1
   resolution: "ipaddr.js@npm:1.9.1"
@@ -7016,10 +6970,8 @@ __metadata:
     "@types/compression": "npm:^1.8.1"
     "@types/cors": "npm:^2.8.19"
     "@types/damerau-levenshtein": "npm:^1.0.2"
-    "@types/discord-rpc": "npm:4.0.11"
     "@types/fs-extra": "npm:^11.0.4"
     "@types/i18next-fs-backend": "npm:^1.2.0"
-    "@types/ip": "npm:^1.1.3"
     "@types/js-yaml": "npm:^4.0.9"
     "@types/langs": "npm:^2.0.5"
     "@types/lodash": "npm:4.17.24"
@@ -7052,7 +7004,6 @@ __metadata:
     csv-writer: "npm:^1.6.0"
     damerau-levenshtein: "npm:^1.0.8"
     dayjs: "npm:^1.11.21"
-    discord-rpc: "npm:^4.0.1"
     dotenv: "npm:^17.4.2"
     electron: "npm:^43.2.0"
     electron-builder: "npm:^26.15.3"
@@ -7076,7 +7027,6 @@ __metadata:
     i18next-fs-backend: "npm:2.6.7"
     i18next-scanner: "npm:^4.6.0"
     iconv-lite: "npm:^0.7.3"
-    ip: "npm:^2.0.1"
     jose: "npm:^6.2.4"
     js-yaml: "npm:^5.2.2"
     jschardet: "npm:^3.1.4"
@@ -8344,15 +8294,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-addon-api@npm:^1.3.0":
-  version: 1.7.2
-  resolution: "node-addon-api@npm:1.7.2"
-  dependencies:
-    node-gyp: "npm:latest"
-  checksum: 10c0/bcf526f2ce788182730d3c3df5206585873d1e837a6e1378ff84abccf2f19cf3f93a8274f9c1245af0de63a0dbd1bb95ca2f767ecf5c678d6930326aaf396c4e
-  languageName: node
-  linkType: hard
-
 "node-api-version@npm:^0.2.1":
   version: 0.2.1
   resolution: "node-api-version@npm:0.2.1"
@@ -9547,16 +9488,6 @@ __metadata:
   version: 3.2.0
   resolution: "regexpp@npm:3.2.0"
   checksum: 10c0/d1da82385c8754a1681416b90b9cca0e21b4a2babef159099b88f640637d789c69011d0bc94705dacab85b81133e929d027d85210e8b8b03f8035164dbc14710
-  languageName: node
-  linkType: hard
-
-"register-scheme@github:devsnek/node-register-scheme":
-  version: 0.0.2
-  resolution: "register-scheme@https://github.com/devsnek/node-register-scheme.git#commit=e7cc9a63a1f512565da44cb57316d9fb10750e17"
-  dependencies:
-    bindings: "npm:^1.3.0"
-    node-addon-api: "npm:^1.3.0"
-  checksum: 10c0/a73a5ea3f07fc9a916329b7c304ee891eff7bd3e24d2f00be3e775743423c47a1281de12874308f39fa05ebefee825c99467f465817872f4e09d35634fc50104
   languageName: node
   linkType: hard
 
@@ -11940,21 +11871,6 @@ __metadata:
   version: 1.0.2
   resolution: "wrappy@npm:1.0.2"
   checksum: 10c0/56fece1a4018c6a6c8e28fbc88c87e0fbf4ea8fd64fc6c63b18f4acc4bd13e0ad2515189786dd2c30d3eec9663d70f4ecf699330002f8ccb547e4a18231fc9f0
-  languageName: node
-  linkType: hard
-
-"ws@npm:^7.3.1":
-  version: 7.5.9
-  resolution: "ws@npm:7.5.9"
-  peerDependencies:
-    bufferutil: ^4.0.1
-    utf-8-validate: ^5.0.2
-  peerDependenciesMeta:
-    bufferutil:
-      optional: true
-    utf-8-validate:
-      optional: true
-  checksum: 10c0/aec4ef4eb65821a7dde7b44790f8699cfafb7978c9b080f6d7a98a7f8fc0ce674c027073a78574c94786ba7112cc90fa2cc94fc224ceba4d4b1030cff9662494
   languageName: node
   linkType: hard
 
