@@ -1,4 +1,4 @@
-import discordRPC from 'discord-rpc';
+import discordRPC from '@xhayper/discord-rpc';
 import i18next from 'i18next';
 import { sample } from 'lodash';
 
@@ -59,7 +59,7 @@ export async function setDiscordActivity(activityType: 'song' | 'idle', activity
 			label: i18next.t('OFFICIAL_WEBSITE'),
 			url: 'https://karaokes.moe',
 		});
-		await rpc.setActivity({
+		await rpc.user?.setActivity({
 			details: sanitizeText(activity),
 			state: sanitizeText(activityDetail),
 			startTimestamp,
@@ -108,14 +108,16 @@ function stopCheckingDiscordRPC() {
 export function setupDiscordRPC() {
 	try {
 		if (rpc || !getConfig().Online.Discord.DisplayActivity) return;
-		rpc = new discordRPC.Client({ transport: 'ipc' });
+		rpc = new discordRPC.Client({ 
+				clientId: discordClientID
+		});
 
 		rpc.on('ready', () => {
 			setDiscordActivity('idle');
 			stopCheckingDiscordRPC();
 			// activity can only be set every 15 seconds
 		});
-		rpc.login({ clientId: discordClientID }).catch(() => {
+		rpc.login().catch(() => {
 			stopDiscordRPC();
 			if (getConfig().Online.Discord.DisplayActivity) startCheckingDiscordRPC();
 		});
