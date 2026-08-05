@@ -106,13 +106,12 @@ export async function addTag(tagObj: Tag, opts = { silent: false, refresh: true 
 	}
 }
 
-export async function getTag(tid: string, throwOnMissingTag = true) {
+export async function getTag(tid: string) {
 	try {
 		const tags = await selectAllTags({ tid });
 		if (!tags[0]) throw new ErrorKM('UNKNOWN_TAG', 404, false);
 		return tags[0];
 	} catch (err) {
-		if (!throwOnMissingTag) return;
 		logger.error(`Error getting tags : ${err}`, { service });
 		sentry.error(err);
 		throw err instanceof ErrorKM ? err : new ErrorKM('TAG_GET_ERROR');
@@ -342,8 +341,13 @@ export async function integrateTagFile(file: string, refresh = true): Promise<st
 	if (!tagFileData) return null;
 	try {
 		logger.debug(`Integrating tag ${tagFileData.tid} (${tagFileData.name})`, { service });
-		// This is allowed to fail
-		const tagDBData = await getTag(tagFileData.tid, false);
+		let tagDBData;
+		try {
+			tagDBData = await getTag(tagFileData.tid);
+		} catch(err) {
+			// This is allowed to fail
+		
+		}
 		if (tagDBData) {
 			if (tagDBData.repository === tagFileData.repository) {
 				// Refresh always disabled for editing tags.
