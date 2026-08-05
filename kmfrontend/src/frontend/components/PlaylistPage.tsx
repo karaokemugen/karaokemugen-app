@@ -9,7 +9,7 @@ import { getTagInLocale, getTitleInLocale, sortAndHideTags } from '../../utils/k
 import { commandBackend, getSocket } from '../../utils/socket';
 import { tagTypes } from '../../utils/tagTypes';
 import PlayerBox from './public/PlayerBox';
-import { WS_CMD } from '../../utils/ws';
+import { WS_CMD } from '../../utils/ws.mjs';
 
 async function fetchNextSongs(plaid: string) {
 	const { index } = await commandBackend(WS_CMD.FIND_PLAYING_SONG_IN_PLAYLIST, { plaid });

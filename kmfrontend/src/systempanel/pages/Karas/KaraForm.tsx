@@ -62,7 +62,7 @@ import { buildKaraTitle, getPreviewLink, getPreviewPath, getTagInLocale } from '
 import { commandBackend } from '../../../utils/socket';
 import { getTagTypeName, tagTypes, tagTypesKaraFileV4Order } from '../../../utils/tagTypes';
 import { secondsTimeSpanToHMS } from '../../../utils/tools';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 import EditableGroupAlias from '../../components/EditableGroupAlias';
 import AutocompleteTag from '../../components/karas/AutocompleteTag';
 import CheckBoxTag from '../../components/karas/CheckBoxTag';

@@ -31,7 +31,7 @@ import { KaraElement } from '../../types/kara';
 import KaraMenuModal from '../modals/KaraMenuModal';
 import ActionsButtons from './ActionsButtons';
 import dayjs from 'dayjs';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 import { DBPLCInfo } from '../../../../../src/types/database/playlist';
 import { WSCmdDefinition } from '../../../../../src/lib/types/frontend';
 

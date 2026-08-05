@@ -8,7 +8,7 @@ import { Session, SessionExports } from '../../../../../src/types/session';
 import { commandBackend } from '../../../utils/socket';
 import Title from '../../components/Title';
 import dayjs from 'dayjs';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 interface SessionListState {
 	sessions: Session[];

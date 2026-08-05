@@ -8,7 +8,7 @@ import { getOppositePlaylistInfo, getPlaylistInfo } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { is_touch_device, isNonStandardPlaylist, nonStandardPlaylists } from '../../../utils/tools';
 import { KaraElement } from '../../types/kara';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 import { DBKara } from '../../../../../src/lib/types/database/kara';
 import { WSCmdDefinition } from '../../../../../src/lib/types/frontend';
 

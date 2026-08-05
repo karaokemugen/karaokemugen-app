@@ -9,7 +9,7 @@ import { closeModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 interface IProps {
 	currentPlaylist: PlaylistElem;

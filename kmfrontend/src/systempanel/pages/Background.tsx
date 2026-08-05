@@ -8,7 +8,7 @@ import ReactAudioPlayer from 'react-audio-player';
 import { supportedFiles } from '../../../../src/lib/utils/constants';
 import { commandBackend } from '../../utils/socket';
 import Title from '../components/Title';
-import { WS_CMD } from '../../utils/ws';
+import { WS_CMD } from '../../utils/ws.mjs';
 
 export type BackgroundType = 'pause' | 'stop' | 'poll';
 

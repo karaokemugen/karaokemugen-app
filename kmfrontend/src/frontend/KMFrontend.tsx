@@ -19,7 +19,7 @@ import PlaylistPage from './components/PlaylistPage';
 import PublicPage from './components/public/PublicPage';
 import SetupPage from './components/setup/SetupPage';
 import WelcomePage from './components/WelcomePage';
-import { WS_CMD } from '../utils/ws';
+import { WS_CMD } from '../utils/ws.mjs';
 
 function KMFrontend() {
 	const context = useContext(GlobalContext);

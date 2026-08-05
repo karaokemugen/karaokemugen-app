@@ -26,7 +26,7 @@ import KaraList from '../../components/KaraList';
 import LanguagesList from '../../components/LanguagesList';
 import type { Repository } from '../../../../../src/lib/types/repo';
 import GlobalContext from '../../../store/context';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 interface TagsFormProps {
 	tags: Tag[];

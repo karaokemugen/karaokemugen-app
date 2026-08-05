@@ -8,7 +8,7 @@ import { User } from '../../../../../src/lib/types/user';
 import { commandBackend } from '../../../utils/socket';
 import Title from '../../components/Title';
 import dayjs from 'dayjs';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 function UserList() {
 	const [users, setUsers] = useState([] as User[]);

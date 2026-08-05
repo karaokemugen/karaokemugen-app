@@ -33,7 +33,7 @@ import { getProtocolForOnline } from '../../../utils/tools';
 import Title from '../../components/Title';
 import { DefaultOptionType } from 'antd/es/cascader';
 import { Repository } from '../../../../../src/lib/types/repo';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 function KaraDownload() {
 	const context = useContext(GlobalContext);

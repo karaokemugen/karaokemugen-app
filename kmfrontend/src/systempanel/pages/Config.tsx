@@ -8,7 +8,7 @@ import { commandBackend } from '../../utils/socket';
 import { dotify, expand } from '../../utils/tools';
 import FoldersElement from '../components/FoldersElement';
 import Title from '../components/Title';
-import { WS_CMD } from '../../utils/ws';
+import { WS_CMD } from '../../utils/ws.mjs';
 import { PlayerCommand } from '../../../../src/types/player';
 
 interface ConfigProps {

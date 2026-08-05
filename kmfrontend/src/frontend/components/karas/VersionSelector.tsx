@@ -9,7 +9,7 @@ import { getTitleInLocale } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { PLCCallback } from '../../../utils/tools';
 import KaraList from './KaraList';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 import { setGoBack } from '../../../store/actions/frontendContext';
 
 interface Props {

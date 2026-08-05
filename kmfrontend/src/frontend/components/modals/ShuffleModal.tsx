@@ -5,7 +5,7 @@ import { DBPL } from '../../../../../src/types/database/playlist';
 import { closeModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 import { ShuffleMethods } from '../../../../../src/types/playlist';
 
 interface IProps {

@@ -13,7 +13,7 @@ import { commandBackend, getSocket } from '../../../utils/socket';
 import { acceptedAnswerToIcon } from '../../../utils/tagTypes';
 import KaraList from './KaraList';
 import QuizScore from './QuizScore';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 function QuizRanking() {
 	const context = useContext(GlobalContext);

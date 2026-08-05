@@ -5,7 +5,7 @@ import { DBKara } from '../../../../../../src/lib/types/database/kara';
 import GlobalContext from '../../../../store/context';
 import { commandBackend } from '../../../../utils/socket';
 import { PLCCallback } from '../../../../utils/tools';
-import { WS_CMD } from '../../../../utils/ws';
+import { WS_CMD } from '../../../../utils/ws.mjs';
 
 interface Props {
 	kara: DBKara;

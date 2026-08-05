@@ -4,7 +4,7 @@ import { useContext } from 'react';
 import { closeModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 function RestartDownloadsModal() {
 	const context = useContext(GlobalContext);

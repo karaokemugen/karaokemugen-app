@@ -8,7 +8,7 @@ import { getSerieOrSingerGroupsOrSingers, getTagInLocaleList, getTitleInLocale }
 import { commandBackend } from '../../../utils/socket';
 import Title from '../../components/Title';
 import { SortOrder } from 'antd/es/table/interface';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 function Viewcounts() {
 	const context = useContext(GlobalContext);

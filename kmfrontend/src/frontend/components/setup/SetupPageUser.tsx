@@ -8,7 +8,7 @@ import { isElectron } from '../../../utils/electron';
 import { langSupport } from '../../../utils/isoLanguages';
 import { commandBackend } from '../../../utils/socket';
 import { displayMessage } from '../../../utils/tools';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 function SetupPageUser() {
 	const context = useContext(GlobalContext);

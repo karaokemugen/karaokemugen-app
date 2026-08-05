@@ -22,7 +22,7 @@ import QuizModal from './modals/QuizModal';
 import Tutorial from './modals/Tutorial';
 import UsersModal from './modals/UsersModal';
 import PlayerControls from './PlayerControls';
-import { WS_CMD } from '../../utils/ws';
+import { WS_CMD } from '../../utils/ws.mjs';
 
 interface IProps {
 	currentPlaylist: PlaylistElem;

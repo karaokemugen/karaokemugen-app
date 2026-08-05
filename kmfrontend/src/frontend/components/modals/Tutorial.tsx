@@ -9,7 +9,7 @@ import TutoKaraLine from '../../../assets/tuto_karaline.png';
 import { useResizeListener } from '../../../utils/hooks';
 import { commandBackend } from '../../../utils/socket';
 import { is_large_device } from '../../../utils/tools';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 interface IProps {
 	unmount: () => void;

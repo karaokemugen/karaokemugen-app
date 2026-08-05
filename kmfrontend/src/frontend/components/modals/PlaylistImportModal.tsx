@@ -6,7 +6,7 @@ import { useContext, useEffect, useMemo, useState } from 'react';
 import { closeModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import { commandBackend, getSocket } from '../../../utils/socket';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 import { setPlaylistInfo } from '../../../utils/kara';
 import { callModal, displayMessage, secondsTimeSpanToHMS } from '../../../utils/tools';
 import type { OrderParam, PlaylistExport, ServerDBPL } from '../../../../../src/lib/types/playlist';

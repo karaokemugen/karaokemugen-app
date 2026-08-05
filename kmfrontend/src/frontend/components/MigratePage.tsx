@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { MigrationsFrontend } from '../../../../src/types/database/migrationsFrontend';
 import logo from '../../assets/Logo-final-fond-transparent.png';
 import { commandBackend } from '../../utils/socket';
-import { WS_CMD } from '../../utils/ws';
+import { WS_CMD } from '../../utils/ws.mjs';
 
 export default function MigratePage() {
 	const components = {};

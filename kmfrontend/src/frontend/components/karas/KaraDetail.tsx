@@ -31,7 +31,7 @@ import UpvoteKaraButton from '../generic/buttons/UpvoteKaraButton';
 import VideoPreview from '../generic/VideoPreview';
 import InlineTag from './InlineTag';
 import dayjs from 'dayjs';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 import { WSCmdDefinition } from '../../../../../src/lib/types/frontend';
 
 interface IProps {

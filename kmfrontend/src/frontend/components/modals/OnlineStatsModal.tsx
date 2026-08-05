@@ -5,7 +5,7 @@ import { closeModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 import RadioButton from '../generic/RadioButton';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 function OnlineStatsModal() {
 	const context = useContext(GlobalContext);

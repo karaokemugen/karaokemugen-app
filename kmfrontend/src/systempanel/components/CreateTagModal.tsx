@@ -6,7 +6,7 @@ import { useRef, useState } from 'react';
 import type { DBKaraTag } from '../../../../src/lib/types/database/kara';
 import { commandBackend } from '../../utils/socket';
 import { tagTypes } from '../../utils/tagTypes';
-import { WS_CMD } from '../../utils/ws';
+import { WS_CMD } from '../../utils/ws.mjs';
 
 interface CreateTagModalProps {
 	initialTagTypes?: number[];

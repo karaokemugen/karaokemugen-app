@@ -8,7 +8,7 @@ import GlobalContext from '../../store/context';
 import { commandBackend, getSocket } from '../../utils/socket';
 import { is_touch_device, isNonStandardPlaylist } from '../../utils/tools';
 import PlayCurrentModal from './modals/PlayCurrentModal';
-import { WS_CMD } from '../../utils/ws';
+import { WS_CMD } from '../../utils/ws.mjs';
 
 interface IProps {
 	currentPlaylist: PlaylistElem;

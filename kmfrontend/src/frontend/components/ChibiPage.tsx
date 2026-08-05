@@ -14,7 +14,7 @@ import KmAppHeaderDecorator from './decorators/KmAppHeaderDecorator';
 import KmAppWrapperDecorator from './decorators/KmAppWrapperDecorator';
 import ProgressBar from './karas/ProgressBar';
 import PlayerControls from './PlayerControls';
-import { WS_CMD } from '../../utils/ws';
+import { WS_CMD } from '../../utils/ws.mjs';
 
 function ChibiPage() {
 	const context = useContext(GlobalContext);

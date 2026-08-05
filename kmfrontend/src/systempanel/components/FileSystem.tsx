@@ -4,7 +4,7 @@ import i18next from 'i18next';
 import { useEffect, useState } from 'react';
 
 import { commandBackend } from '../../utils/socket';
-import { WS_CMD } from '../../utils/ws';
+import { WS_CMD } from '../../utils/ws.mjs';
 
 interface IProps {
 	path: string;

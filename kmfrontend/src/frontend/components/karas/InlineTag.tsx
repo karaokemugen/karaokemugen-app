@@ -9,7 +9,7 @@ import GlobalContext from '../../../store/context';
 import { useDeferredEffect } from '../../../utils/hooks';
 import { getTagInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 interface Props {
 	tag: DBKaraTag;

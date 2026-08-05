@@ -10,7 +10,7 @@ import FoldersElement from '../../components/FoldersElement';
 import { tagTypes } from '../../../utils/tagTypes';
 import { useForm } from 'antd/es/form/Form';
 import { useSearchParams } from 'react-router-dom';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 import { Repository } from '../../../../../src/lib/types/repo';
 
 type TemplateOption = { value?: string; type?: string; label?: string };

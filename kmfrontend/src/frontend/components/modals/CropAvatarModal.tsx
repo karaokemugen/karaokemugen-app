@@ -7,7 +7,7 @@ import { createRoot } from 'react-dom/client';
 import ReactCrop, { Crop } from 'react-image-crop';
 
 import { commandBackend, isRemote } from '../../../utils/socket';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 interface IProps {
 	src: any;

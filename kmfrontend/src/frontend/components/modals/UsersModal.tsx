@@ -9,7 +9,7 @@ import GlobalContext from '../../../store/context';
 import ProfilePicture from '../../../utils/components/ProfilePicture';
 import { getCountryName } from '../../../utils/isoLanguages';
 import { commandBackend } from '../../../utils/socket';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 interface IProps {
 	scope?: 'public' | 'admin';

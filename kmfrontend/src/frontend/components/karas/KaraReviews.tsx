@@ -7,7 +7,7 @@ import GlobalContext from '../../../store/context';
 import { getPlaylistInfo } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import KaraDetail from './KaraDetail';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 interface Props {
 	side: 'left' | 'right';

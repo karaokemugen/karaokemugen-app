@@ -7,7 +7,7 @@ import { Session } from '../../../../../src/types/session';
 import { commandBackend } from '../../../utils/socket';
 import Title from '../../components/Title';
 import SessionForm from './SessionsForm';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 const newsession: Session = {
 	name: null,

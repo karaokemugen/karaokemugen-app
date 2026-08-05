@@ -17,7 +17,7 @@ import { useResizeListener } from '../../../utils/hooks';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { displayMessage, secondsTimeSpanToHMS } from '../../../utils/tools';
 import PlayerControls from '../PlayerControls';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 import { PlayerCommand } from '../../../../../src/types/player';
 
 interface IProps {

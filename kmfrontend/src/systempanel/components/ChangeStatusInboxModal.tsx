@@ -3,7 +3,7 @@ import i18next from 'i18next';
 import { useContext, useEffect, useRef, useState } from 'react';
 
 import { commandBackend } from '../../utils/socket';
-import { WS_CMD } from '../../utils/ws';
+import { WS_CMD } from '../../utils/ws.mjs';
 import type { DBInbox, InboxActions } from '../../../../src/lib/types/inbox';
 import type { Repository } from '../../../../src/lib/types/repo';
 import { getLanguagesInLocaleFromCode } from '../../utils/isoLanguages';

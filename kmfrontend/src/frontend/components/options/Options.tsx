@@ -8,7 +8,7 @@ import { expand } from '../../../utils/tools';
 import InterfaceOptions from './InterfaceOptions';
 import KaraokeOptions from './KaraokeOptions';
 import PlayerOptions from './PlayerOptions';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 export function sanitizeSettingsSearchValue(value: string) {
 	return value.toLocaleLowerCase().replace(/[^a-z0-9]/g, '');

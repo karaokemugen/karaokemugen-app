@@ -8,7 +8,7 @@ import { closeModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 const colorPalette = [0, 63, 127, 191, 255];
 

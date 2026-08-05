@@ -16,7 +16,7 @@ import { commandBackend } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 import Title from '../../components/Title';
 import type { DBTag } from '../../../../../src/lib/types/database/tag';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 import type { BatchActions, KaraList } from '../../../../../src/lib/types/kara';
 import type { DBPL } from '../../../../../src/types/database/playlist';
 import type { Repository } from '../../../../../src/lib/types/repo';

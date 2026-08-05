@@ -6,7 +6,7 @@ import { Tag } from '../../../../../src/lib/types/tag';
 import GlobalContext from '../../../store/context';
 import { getDescriptionInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 function CollectionsActivation() {
 	const context = useContext(GlobalContext);

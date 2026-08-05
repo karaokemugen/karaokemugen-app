@@ -28,7 +28,7 @@ import PublicHeader from './PublicHeader';
 import PublicHomepage from './PublicHomepage';
 import PublicList from './PublicList';
 import QuizPage from './QuizPage';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 let timer: NodeJS.Timeout;
 

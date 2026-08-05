@@ -31,7 +31,7 @@ import QuizRanking from './QuizRanking';
 import type { TagTypeNum } from '../../../../../src/lib/types/tag';
 import { setIndexKaraDetail } from '../../../store/actions/frontendContext';
 import type { RepositoryManifestV2 } from '../../../../../src/lib/types/repo';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 import { KaraList as DBKaraList } from '../../../../../src/lib/types/kara';
 import { WSCmdDefinition } from '../../../../../src/lib/types/frontend';
 

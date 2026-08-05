@@ -9,7 +9,7 @@ import TextTransition, { presets } from 'react-text-transition';
 import imgMugenFullLogo from '../../assets/Logo-final-fond-transparent.png';
 import GlobalContext from '../../store/context';
 import { commandBackend } from '../../utils/socket';
-import { WS_CMD } from '../../utils/ws';
+import { WS_CMD } from '../../utils/ws.mjs';
 
 export default function About() {
 	const context = useContext(GlobalContext);

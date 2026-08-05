@@ -7,7 +7,7 @@ import { User } from '../../../../../src/lib/types/user';
 import { commandBackend } from '../../../utils/socket';
 import Title from '../../components/Title';
 import UserForm from './UserForm';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 const newUser = {
 	type: 1,

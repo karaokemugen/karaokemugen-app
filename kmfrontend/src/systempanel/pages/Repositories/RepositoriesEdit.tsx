@@ -8,7 +8,7 @@ import { DifferentChecksumReport } from '../../../../../src/types/repo';
 import { commandBackend } from '../../../utils/socket';
 import Title from '../../components/Title';
 import RepositoryForm from './RepositoriesForm';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 const newrepository: Repository = {
 	Name: undefined,

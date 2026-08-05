@@ -31,7 +31,7 @@ import { commandBackend, getSocket } from '../../utils/socket';
 import { tagTypes } from '../../utils/tagTypes';
 import { isModifiable, isRepoOnline, isRepoOnlineAndMaintainer } from '../../utils/tools';
 import { ItemType } from 'antd/es/menu/interface';
-import { WS_CMD } from '../../utils/ws';
+import { WS_CMD } from '../../utils/ws.mjs';
 
 interface KaraListProps {
 	tagFilter?: string;

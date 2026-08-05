@@ -14,7 +14,7 @@ import AutoMixModal from './AutoMixModal';
 import DeletePlaylistModal from './DeletePlaylistModal';
 import PlaylistModal from './PlaylistModal';
 import ShuffleModal from './ShuffleModal';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 import PlaylistImportModal from './PlaylistImportModal';
 import PlaylistExportModal from './PlaylistExportModal';
 

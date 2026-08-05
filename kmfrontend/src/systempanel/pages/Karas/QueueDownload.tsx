@@ -21,7 +21,7 @@ import { tagTypes } from '../../../utils/tagTypes';
 import { getProtocolForOnline } from '../../../utils/tools';
 import Title from '../../components/Title';
 import { DefaultOptionType } from 'antd/es/select';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 function QueueDownload() {
 	const context = useContext(GlobalContext);

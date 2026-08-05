@@ -5,7 +5,7 @@ import { useContext, useEffect, useState } from 'react';
 import GlobalContext from '../../../store/context';
 import { getPlaylistInfo } from '../../../utils/kara';
 import { nonStandardPlaylists } from '../../../utils/tools';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 import { commandBackend } from '../../../utils/socket';
 import { DBPL } from '../../../../../src/types/database/playlist';
 import Switch from '../generic/Switch';

@@ -7,7 +7,7 @@ import { Tag } from '../../../../../src/lib/types/tag';
 import { commandBackend } from '../../../utils/socket';
 import Title from '../../components/Title';
 import TagsForm from './TagsForm';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 function TagEdit() {
 	const navigate = useNavigate();

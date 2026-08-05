@@ -5,7 +5,7 @@ import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 import { callModal } from '../../../utils/tools';
 import { RemoteStatusData } from '../../types/remote';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 function RemoteStatus() {
 	const context = useContext(GlobalContext);

@@ -25,7 +25,7 @@ import { commandBackend, getSocket } from '../../../utils/socket';
 import { acceptedAnswerToIcon } from '../../../utils/tagTypes';
 import AutocompleteQuiz, { AutocompleteOption, AutocompleteOptions } from '../generic/AutocompleteQuiz';
 import KaraList from '../karas/KaraList';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 export default function QuizPage() {
 	const navigate = useNavigate();

@@ -20,7 +20,7 @@ import GlobalContext from '../../store/context';
 import { commandBackend } from '../../utils/socket';
 import Title from '../components/Title';
 import dayjs from 'dayjs';
-import { WS_CMD } from '../../utils/ws';
+import { WS_CMD } from '../../utils/ws.mjs';
 import { getLanguagesInLocaleFromCode } from '../../utils/isoLanguages';
 import { MenuProps } from 'antd/lib';
 import { ChangeStatusInboxModal } from '../components/ChangeStatusInboxModal';
