@@ -1,12 +1,13 @@
 import { Config } from './config.js';
 import { DBStatsPlayed, DBStatsRequested } from './database/stats.js';
+import { Session } from './session.js';
 
 export interface StatsPayload {
 	payloadVersion: number;
 	instance: Instance;
 	viewcounts: DBStatsPlayed[];
 	requests: DBStatsRequested[];
-	favorites: Favorite[];
+	sessions: Session[];
 }
 
 interface Instance {
