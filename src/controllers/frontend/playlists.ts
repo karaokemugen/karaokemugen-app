@@ -55,14 +55,14 @@ export default function playlistsController(router: SocketIOApp) {
 			req.body,
 			z.object({
 				name: zNonEmptyString,
-				flag_visible: zBool,
-				flag_public: zBool,
-				flag_current: zBool,
-				flag_smart: zBool,
-				flag_whitelist: zBool,
-				flag_blacklist: zBool,
-				flag_fallback: zBool,
-			})
+				flag_visible: zBool.optional(),
+				flag_public: zBool.optional(),
+				flag_current: zBool.optional(),
+				flag_smart: zBool.optional(),
+				flag_whitelist: zBool.optional(),
+				flag_blacklist: zBool.optional(),
+				flag_fallback: zBool.optional(),
+			}).loose()
 		);
 		if (!validationErrors) {
 			// No errors detected
@@ -204,7 +204,7 @@ export default function playlistsController(router: SocketIOApp) {
 	});
 	router.route(WS_CMD.DELETE_KARA_FROM_PLAYLIST, async (socket, req) => {
 		await runChecklist(socket, req, 'guest');
-		const validationErrors = check(req.body, z.object({ plc_ids: zNumbersArray }));
+		const validationErrors = check(req.body, z.object({ plc_ids: z.array(z.coerce.number()) }));
 		if (!validationErrors) {
 			try {
 				return await removeKaraFromPlaylist(req.body.plc_ids, req.token);
@@ -239,12 +239,13 @@ export default function playlistsController(router: SocketIOApp) {
 		const validationErrors = check(
 			req.body,
 			z.object({
-				plc_ids: zNumbersArray.optional(),
-				flag_playing: zBool,
-				flag_free: zBool,
-				flag_visible: zBool,
-				flag_accepted: zBool,
-				flag_refused: zBool,
+				plc_ids: zNumbersArray,
+				pos: z.number().int().optional(),
+				flag_playing: zBool.optional(),
+				flag_free: zBool.optional(),
+				flag_visible: zBool.optional(),
+				flag_accepted: zBool.optional(),
+				flag_refused: zBool.optional(),
 			})
 		);
 		if (!validationErrors) {

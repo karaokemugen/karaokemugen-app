@@ -20,7 +20,8 @@ System:
     MaintainerMode: false
     BaseDir: repos/mugen.re/json
     Path:
-      Medias: repos/mugen.re/medias
+      Medias: 
+        - repos/mugen.re/medias
   Binaries:
     Player:
       Linux: mpv

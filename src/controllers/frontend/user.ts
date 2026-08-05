@@ -44,7 +44,7 @@ export default function userController(router: SocketIOApp) {
 			z.object({
 				login: zNonEmptyString,
 				password: zNonEmptyString,
-				role: z.enum(['user', 'admin']),
+				role: z.enum(['user', 'guest', 'admin']).optional(),
 			})
 		);
 		if (!validationErrors) {

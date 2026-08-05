@@ -215,6 +215,7 @@ export async function initEngine() {
 				// If we are testing, we're awaiting updateAllGitRepos
 				updateBase(internet).catch();
 			});
+			console.log(state);
 			if (state.isTest && !state.opt.noAutoTest) {
 				runTests();
 			}
@@ -396,6 +397,7 @@ async function preFlightCheck(): Promise<boolean> {
 
 async function runTests() {
 	try {
+		console.log('Starting tests');
 		const ret = await execa('mocha', {
 			cwd: getState().appPath,
 		});

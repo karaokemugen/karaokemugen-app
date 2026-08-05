@@ -1,7 +1,7 @@
 import z from 'zod';
 import { WS_CMD } from '../../../kmfrontend/src/utils/ws.mjs';
 import { APIMessage } from '../../lib/services/frontend.js';
-import { check, zJSON, zUUIDArray } from '../../lib/utils/validators.js';
+import { check, zUUIDArray } from '../../lib/utils/validators.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
 import {
 	addToFavorites,
@@ -95,7 +95,7 @@ export default function favoritesController(router: SocketIOApp) {
 	});
 	router.route(WS_CMD.IMPORT_FAVORITES, async (socket, req) => {
 		await runChecklist(socket, req, 'user', 'closed');
-		const validationErrors = check(req.body, z.object({ favorites: zJSON }));
+		const validationErrors = check(req.body, z.object({ favorites: z.object({}).loose() }));
 		if (!validationErrors) {
 			try {
 				await importFavorites(req.body?.favorites, req.token.username, req.onlineAuthorization);
