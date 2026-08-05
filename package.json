@@ -167,7 +167,6 @@
     "electron-builder": "^26.15.3",
     "esbuild": "^0.28.1",
     "eslint": "^10.8.0",
-    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-security": "^4.0.1",
