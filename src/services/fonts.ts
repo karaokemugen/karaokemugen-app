@@ -16,6 +16,7 @@ export async function initFonts() {
 		for (const dir of fontsDirs) {
 			const files = await fs.readdir(dir);
 			for (const file of files) {
+				if (file === '.gitkeep') continue;
 				installedFonts.add(file);
 				const source = resolve(dir, file);
 				logger.info(`Copying font ${file} from ${dir} to ${destDir}...`, { service });
