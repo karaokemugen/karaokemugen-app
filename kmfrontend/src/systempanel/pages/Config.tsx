@@ -133,11 +133,11 @@ class Config extends Component<ConfigProps, ConfigState> {
 						style={{ maxWidth: '700px' }}
 						onPressEnter={e => {
 							const target = e.target as HTMLInputElement;
-							this.saveSetting(record.key, target.value);
+							this.saveSetting(record.key, Number(target.value));
 						}}
 						onBlur={e => {
 							const target = e.target as HTMLInputElement;
-							this.saveSetting(record.key, target.value);
+							this.saveSetting(record.key, Number(target.value));
 						}}
 						defaultValue={record.value}
 					/>
