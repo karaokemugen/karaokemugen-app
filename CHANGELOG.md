@@ -15,12 +15,12 @@
 - **[Developers]** Unit tests now rely on mugen.re database.
 - **[Developers]** Changed our validation framework from validate.js to zod. This means some constraints are now better checked and will allow us better input validation
 - **[Developers]** Upgraded discord-rpc to a more maintained fork 
-- **[Developers]** Changed how errors are handled in psotgresql to better identify them via Sentry
+- **[Developers]** Changed how errors are handled in PostgreSQL to better identify them via Sentry
 - **[Developers]** Upgraded backend dependencies
 
 ## Removed
 
-- **[Developers]** Removed prettier as it was not really maintained on our side and wasn't used anymore
+- **[Developers]** Removed prettier in backend as it was not really maintained on our side and wasn't used anymore
 - **[Developers]** Removed yesql to use our own function instead
 - **[Developers]** Removed some dead code
 - **[Developers]** Removed os-locale now that node can handle it
@@ -33,7 +33,7 @@
 - **[Operators]** Fixed macOS auto-update bug
 - **[Operators]** Fixed unzipping performance when downloading repositories and fixed another zip-related bug along with it
 - **[Operators]** Fixed tag filter not being kept in kara lists
-- **[Operators]** Fixed a privilege escalation sexurity vulnerability (thanks Mio!)
+- **[Operators]** Fixed a privilege escalation security vulnerability (thanks Mio!)
 - **[Operators]** Better messages for "no song found" and "empty playlist" messages
 - **[Operators]** Fixed (hopefully) deadlock issues with refreshKaraParents
 - **[Operators]** Fixed songname property creation
