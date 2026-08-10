@@ -4,6 +4,7 @@
 // you can change the default settings by using config.yml to bypass the default values.
 import { app } from 'electron';
 import { z } from 'zod';
+import { existsSync } from 'node:fs';
 
 import { hostnameRegexp } from '../lib/utils/constants.js';
 import { Config, DBConfig } from '../types/config.js';
@@ -253,7 +254,7 @@ export const defaults: Config = {
 		Binaries: {
 			Player: {
 				Linux:
-					app?.isPackaged || process.env.container || process.env.APPIMAGE ? 'app/bin/mpv' : '/usr/bin/mpv',
+					app?.isPackaged || process.env.container || process.env.APPIMAGE || existsSync('app/bin/mpv') ? 'app/bin/mpv' : '/usr/bin/mpv',
 				OSX: app?.isPackaged
 					? 'Karaoke Mugen.app/Contents/app/bin/mpv.app/Contents/MacOS/mpv'
 					: 'app/bin/mpv.app/Contents/MacOS/mpv',
@@ -261,7 +262,7 @@ export const defaults: Config = {
 			},
 			ffmpeg: {
 				Linux:
-					app?.isPackaged || process.env.container || process.env.APPIMAGE
+					app?.isPackaged || process.env.container || process.env.APPIMAGE || existsSync('app/bin/ffmpeg')
 						? 'app/bin/ffmpeg'
 						: '/usr/bin/ffmpeg',
 				OSX: app?.isPackaged ? 'Karaoke Mugen.app/Contents/app/bin/ffmpeg' : 'app/bin/ffmpeg',
@@ -269,7 +270,7 @@ export const defaults: Config = {
 			},
 			Postgres: {
 				Linux:
-					app?.isPackaged || process.env.container || process.env.APPIMAGE
+					app?.isPackaged || process.env.container || process.env.APPIMAGE || existsSync('app/bin/postgres/bin/')
 						? 'app/bin/postgres/bin/'
 						: '/usr/bin/',
 				OSX: app?.isPackaged ? 'Karaoke Mugen.app/Contents/app/bin/postgres/bin/' : 'app/bin/postgres/bin/',
@@ -277,7 +278,7 @@ export const defaults: Config = {
 			},
 			patch: {
 				Linux:
-					app?.isPackaged || process.env.container || process.env.APPIMAGE
+					app?.isPackaged || process.env.container || process.env.APPIMAGE || existsSync('app/bin/patch')
 						? 'app/bin/patch'
 						: '/usr/bin/patch',
 				OSX: app?.isPackaged ? 'Karaoke Mugen.app/Contents/app/bin/patch' : 'app/bin/patch',
