@@ -9,7 +9,7 @@ import { sentryEsbuildPlugin } from "@sentry/esbuild-plugin";
 const buildOptions = {
 	outfile: 'dist/index.mjs',
 	entryPoints: ['src/index.ts'],
-	plugins: process.env.SENTRY_AUTH_TOKEN && process.env.CI_COMMIT_TAG && CI_JOB_STAGE !== 'test' ? [
+	plugins: process.env.SENTRY_AUTH_TOKEN && process.env.CI_COMMIT_TAG && process.env.CI_JOB_STAGE !== 'test' ? [
     // Put the Sentry esbuild plugin after all other plugins
     sentryEsbuildPlugin({
 			authToken: process.env.SENTRY_AUTH_TOKEN,
