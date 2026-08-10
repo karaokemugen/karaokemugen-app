@@ -1,6 +1,6 @@
 import { sample } from 'lodash';
 
-import { WS_CMD } from '../../../kmfrontend/src/utils/ws.js';
+import { WS_CMD } from '../../../kmfrontend/src/utils/ws.mjs';
 import { initKaraBase, shutdown } from '../../components/engine.js';
 import { getMpvAudioOutputs } from '../../components/mpv/mpv.js';
 import { APIMessage } from '../../lib/services/frontend.js';

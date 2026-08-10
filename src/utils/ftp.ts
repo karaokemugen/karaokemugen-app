@@ -76,7 +76,7 @@ export default class FTP {
 			throw `File "${file}" unknown on local folder`;
 		});
 		const task = new Task({
-			text: 'UPLOADING_FTP',
+			text: 'UPLOADING_MEDIA',
 			value: 0,
 			total: stat.size,
 		});

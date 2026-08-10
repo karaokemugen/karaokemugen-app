@@ -7,7 +7,7 @@ import GlobalContext from '../../../store/context';
 import { getSerieOrSingerGroupsOrSingers, getTagInLocaleList, getTitleInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import Title from '../../components/Title';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 function Ranking() {
 	const context = useContext(GlobalContext);

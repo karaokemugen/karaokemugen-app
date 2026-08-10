@@ -4,7 +4,7 @@ import i18next from 'i18next';
 
 import { DBKara } from '../../../../src/lib/types/database/kara';
 import { commandBackend } from '../../utils/socket';
-import { WS_CMD } from '../../utils/ws';
+import { WS_CMD } from '../../utils/ws.mjs';
 
 interface IProps {
 	kara: DBKara;

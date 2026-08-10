@@ -8,7 +8,7 @@ import { PublicPlayerState } from '../../../../../src/types/state';
 import { formatLyrics } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { is_touch_device } from '../../../utils/tools';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 enum LyricsStatus {
 	hide,

@@ -8,7 +8,7 @@ import { commandBackend } from '../../../utils/socket';
 import Title from '../../components/Title';
 import KaraForm from './KaraForm';
 import type { EditedKara } from '../../../../../src/lib/types/kara';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 function KaraEdit() {
 	const navigate = useNavigate();

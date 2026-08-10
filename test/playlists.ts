@@ -423,7 +423,7 @@ describe('Playlists', () => {
 	});
 
 	it('Add song to whitelist', async () => {
-		whitelistedKID = sample(allKIDs);
+		whitelistedKID = allKIDs[5];
 		const data = {
 			kids: [whitelistedKID],
 			requestedby: 'Test',

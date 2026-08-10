@@ -1,6 +1,4 @@
-import { pg as yesql } from 'yesql';
-
-import { db, newDBTask } from '../lib/dao/database.js';
+import { db, newDBTask, prepareNamedParamsQuery } from '../lib/dao/database.js';
 import { DBUser } from '../lib/types/database/user.js';
 import { User, UserParams } from '../lib/types/user.js';
 import { now } from '../lib/utils/date.js';
@@ -27,7 +25,7 @@ export function deleteUser(username: string) {
 
 export async function selectUsers(params: UserParams = {}): Promise<DBUser[]> {
 	const res = await db().query(
-		yesql(sqlselectUsers(params))({
+		prepareNamedParamsQuery(sqlselectUsers(params))({
 			last_login_time_limit: new Date(now() - 15 * 60 * 1000),
 			username: params.singleUser,
 			nickname: params.singleNickname,
@@ -38,7 +36,7 @@ export async function selectUsers(params: UserParams = {}): Promise<DBUser[]> {
 
 export function insertUser(user: User) {
 	return db().query(
-		yesql(sqlcreateUser)({
+		prepareNamedParamsQuery(sqlcreateUser)({
 			type: user.type,
 			login: user.login,
 			password: user.password,
@@ -55,7 +53,7 @@ export function insertUser(user: User) {
 export async function updateUser(user: User): Promise<User> {
 	if (!user.old_login) user.old_login = user.login;
 	const ret = await db().query(
-		yesql(sqleditUser)({
+		prepareNamedParamsQuery(sqleditUser)({
 			nickname: user.nickname,
 			avatar_file: user.avatar_file || 'blank.png',
 			login: user.login,
@@ -90,19 +88,19 @@ export async function updateUser(user: User): Promise<User> {
 export function reassignToUser(oldUsername: string, username: string) {
 	return Promise.all([
 		db().query(
-			yesql(sqlreassignPlaylistToUser)({
+			prepareNamedParamsQuery(sqlreassignPlaylistToUser)({
 				username,
 				old_username: oldUsername,
 			})
 		),
 		db().query(
-			yesql(sqlreassignPlaylistContentToUser)({
+			prepareNamedParamsQuery(sqlreassignPlaylistContentToUser)({
 				username,
 				old_username: oldUsername,
 			})
 		),
 		db().query(
-			yesql(sqlreassignRequestedToUser)({
+			prepareNamedParamsQuery(sqlreassignRequestedToUser)({
 				username,
 				old_username: oldUsername,
 			})
@@ -121,7 +119,7 @@ export function updateUserLastLogin(username: string) {
 
 export async function updateUserLastLoginTask(username: string) {
 	await db().query(
-		yesql(sqlupdateLastLogin)({
+		prepareNamedParamsQuery(sqlupdateLastLogin)({
 			username,
 			now: new Date(),
 		})
@@ -130,7 +128,7 @@ export async function updateUserLastLoginTask(username: string) {
 
 export function updateUserPassword(username: string, password: string) {
 	return db().query(
-		yesql(sqleditUserPassword)({
+		prepareNamedParamsQuery(sqleditUserPassword)({
 			username,
 			password,
 		})

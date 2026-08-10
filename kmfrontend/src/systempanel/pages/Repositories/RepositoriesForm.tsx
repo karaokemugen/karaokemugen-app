@@ -10,7 +10,7 @@ import { commandBackend, getSocket } from '../../../utils/socket';
 import FoldersElement from '../../components/FoldersElement';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { debounce } from 'lodash';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 interface RepositoriesFormProps {
 	repository: Repository;

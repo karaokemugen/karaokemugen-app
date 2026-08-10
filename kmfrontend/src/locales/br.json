@@ -94,13 +94,15 @@
 			"WEBAPPMODE_SHORT": "Mod etrefas",
 			"WEBAPPMODE": "Mod an etrefas foran",
 			"WEBAPPMODE_OPEN": "Digor (diouer) : Kanaouennoù a c'hell bezañ ouzhpennet gant an implijerien",
-			"PUBLIC_PLAYER_CONTROLS": "Aotren kontroll al lenner gant an holl"
+			"PUBLIC_PLAYER_CONTROLS": "Aotren kontroll al lenner gant an holl",
+			"KARA_LINE_SORT": "Rummañ ar sonaoueg dre…"
 		},
 		"PLAYLIST": {
 			"PLAYLIST_SETTINGS": "Rolloù-lenn",
 			"ENDOFPLAYLISTACTION": {
 				"OPTIONS": {
-					"REPEAT": "Adlansañ ar roll-lenn adalek ar penn-kentañ"
+					"REPEAT": "Adlansañ ar roll-lenn adalek ar penn-kentañ",
+					"RANDOM": "Lenn kanaouennoù eus ar sonaoueg dre zegouezh"
 				}
 			}
 		},
@@ -136,7 +138,8 @@
 	"NEW_PASSWORD": "Ger-tremen nevez",
 	"PLAYLISTS": {
 		"FAVORITES": "Pennroll",
-		"ANIME_LIST": "Kanaouennoù eus ma animeoù"
+		"ANIME_LIST": "Kanaouennoù eus ma animeoù",
+		"LIBRARY": "Sonaoueg"
 	},
 	"INLINE_TAG": {
 		"COUNT_one": "{{count}} ganaouenn",
@@ -170,7 +173,8 @@
 		"SHOWN": "Diskouezet !",
 		"VISIBLE_ON": "Diskouez er roll-lenn",
 		"SHUFFLE": "Meskañ ar c'hanaouennoù",
-		"SHUFFLED": "Kanaouennoù mesket !"
+		"SHUFFLED": "Kanaouennoù mesket !",
+		"PLAY_LIBRARY": "Lenn bremañ"
 	},
 	"PUBLIC_HOMEPAGE": {
 		"SHOW_LYRICS": "Diskouez ar pozioù",
@@ -345,6 +349,9 @@
 		"CHANGE_STATUS_INBOX": {
 			"REASON": "Abeg",
 			"NAME": "Anv ar ganaouenn : {{name}}"
+		},
+		"KARA_LINE_SORT": {
+			"TITLE": "Arventennoù rummañ ar sonaoueg"
 		}
 	},
 	"SESSIONS": {
@@ -393,7 +400,9 @@
 			"ADD_TAG": "Ouzhpennañ tikedenn",
 			"REMOVE_TAG": "Dilemel tikedenn",
 			"SELECT_TAG": "Dibabit ur tikedenn :",
-			"SELECT_TAG_TYPE": "Dibabit seurt tikedenn :"
+			"SELECT_TAG_TYPE": "Dibabit seurt tikedenn :",
+			"COPY_SONGS_TO_REPOSITORY": "Eilañ ar c'hanaouennoù er c'havlec'hiad",
+			"SELECT_REPOSITORY": "Diuzañ ur c'havlec'hiad :"
 		},
 		"DEFAULT_LANGUAGE": "Yezh dre ziouer da implijout",
 		"VERSION_AVAILABILITY": "Hegerz e {{count}} handelv.",
@@ -490,7 +499,8 @@
 		"UNKNOWN_USER": "Implijer dianav",
 		"UNKNOWN_CONVERT_ERROR": "Implijer dianav",
 		"ADMIN_PLEASE": "Implijit ur gont oberataer mar plij",
-		"WEBAPPMODE_CLOSED_API_MESSAGE": "Diweredekaet eo an API evit ar mare-mañ"
+		"WEBAPPMODE_CLOSED_API_MESSAGE": "Diweredekaet eo an API evit ar mare-mañ",
+		"SONG_LIST_ERROR": "Fazi o kargañ ar sonaoueg"
 	},
 	"HEADERS": {
 		"REPOSITORIES_NEW": {
@@ -654,7 +664,8 @@
 		"EXPORTING_PLAYLIST_MEDIA": "Ezporzhiañ mediaoù eus ar roll-lenn…",
 		"CREATING_SONG": "O krouiñ ar ganaouenn…",
 		"EDITING_SONG": "Oc'h embann ar ganaouenn…",
-		"DOWNLOADING": "O pellgargañ…"
+		"DOWNLOADING": "O pellgargañ…",
+		"UPDATING_LIBRARY_SORT": "O hizivaat rummañ ar sonaoueg"
 	},
 	"FAVORITES_EXPORT": "Ezporzhiañ pennrolloù",
 	"HOME": {
@@ -815,7 +826,8 @@
 		"NAME": "Anv an dastumad"
 	},
 	"PLAYLIST": {
-		"NO_SONG": "N'eus bet kavet kanaouenn ebet"
+		"NO_SONG": "N'eus bet kavet kanaouenn ebet",
+		"EMPTY": "Goullo eo ar roll-lenn"
 	},
 	"NEW_ACCOUNT_CODE": "Kod kont nevez (da c'houlenn digant an oberataer)",
 	"KARAOKE_other": "{{count}} a ganaouennoù",

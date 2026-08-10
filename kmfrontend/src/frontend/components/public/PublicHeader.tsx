@@ -2,7 +2,7 @@ import './PublicHeader.scss';
 
 import i18next from 'i18next';
 import { useContext, useEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import ResizeObserver from 'resize-observer-polyfill';
 import { useAsyncMemo } from 'use-async-memo';
 
@@ -17,7 +17,7 @@ import { useResizeListener } from '../../../utils/hooks';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { displayMessage, secondsTimeSpanToHMS } from '../../../utils/tools';
 import PlayerControls from '../PlayerControls';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 import { PlayerCommand } from '../../../../../src/types/player';
 
 interface IProps {
@@ -31,6 +31,7 @@ interface IProps {
 function PublicHeader(props: IProps) {
 	const navigate = useNavigate();
 	const context = useContext(GlobalContext);
+	const location = useLocation();
 	const isQuiz = context.globalState.settings.data.state.quiz.running;
 	const [quizMode, setQuizMode] = useState<'guess' | 'answer' | 'waiting'>('waiting');
 	const [dropDownMenu, setDropDownMenu] = useState(false);
@@ -142,13 +143,35 @@ function PublicHeader(props: IProps) {
 			ref={ref}
 		>
 			<div className="menu">
-				<Link to={isQuiz ? '/public/quiz' : '/public'} className="nanamin-logo">
-					<picture>
-						<source srcSet={nanamiWebP} type="image/webp" />
-						<source srcSet={nanamiPNG} type="image/png" />
-						<img src={nanamiPNG} alt="Nanamin logo" />
-					</picture>
-				</Link>
+				<div>
+					<Link to={isQuiz ? '/public/quiz' : '/public'} className="nanamin-logo">
+						<picture>
+							<source srcSet={nanamiWebP} type="image/webp" />
+							<source srcSet={nanamiPNG} type="image/png" />
+							<img src={nanamiPNG} alt="Nanamin logo" />
+						</picture>
+					</Link>
+
+					<div className="menu-title">
+						{!context.globalState.settings.data.config.Frontend.PublicPlayerControls ? (
+							<>
+								{location.pathname ===
+									`/public/playlist/${context.globalState.settings.data.state.currentPlaid}` &&
+									i18next.t('ADMIN_HEADER.CURRENT_PLAYLIST')}
+								{location.pathname ===
+									`/public/playlist/${context.globalState.settings.data.state.currentPlaid}/me` &&
+									i18next.t('PUBLIC_HOMEPAGE.MY_INCOMING_SONGS')}
+								{location.pathname === '/public/favorites' && i18next.t('PUBLIC_HOMEPAGE.FAVORITES')}
+								{location.pathname === '/public/search' && i18next.t('PUBLIC_HOMEPAGE.SONG_SEARCH')}
+								{location.pathname === '/public/search/recent' &&
+									i18next.t('PUBLIC_HOMEPAGE.NEW_KARAOKES')}
+								{location.pathname === '/public/search/requested' &&
+									i18next.t('PUBLIC_HOMEPAGE.REQUESTED_KARAOKES')}
+								{location.pathname === '/public/animelist' && i18next.t('PUBLIC_HOMEPAGE.ANIME_LIST')}
+							</>
+						) : null}
+					</div>
+				</div>
 				{context.globalState.settings.data.config.Frontend.PublicPlayerControls ? (
 					<div className="menu-controls">
 						<PlayerControls

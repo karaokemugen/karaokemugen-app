@@ -10,16 +10,24 @@ header.menu-container {
 	background-color: variables.$mugen-topbar-background;
 	z-index: 999;
 	--img: none;
+
 	@media screen and (max-width: variables.$mugen-breakpoint-large) {
 		padding: 0.5em 0;
 	}
+
 	@include blurred-bg.blurred-bg;
+
 	> .menu {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 		height: 3em;
 		margin: 0 0.5em;
+
+		.menu-title {
+			min-height: 19px;
+		}
+
 		img {
 			width: auto;
 			height: auto;
@@ -33,6 +41,7 @@ header.menu-container {
 			display: flex;
 			align-items: center;
 			z-index: 1000;
+
 			> a,
 			> div {
 				display: flex;
@@ -45,6 +54,7 @@ header.menu-container {
 				text-decoration: none;
 				color: unset;
 				text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.75);
+
 				> i {
 					margin: 0 1em;
 
@@ -52,6 +62,7 @@ header.menu-container {
 						margin: 0 0.5em;
 					}
 				}
+
 				@each $name, $color in variables.$mugen-colors {
 					@if $name != 'black' {
 						&.#{$name} {
@@ -59,6 +70,7 @@ header.menu-container {
 							&:focus {
 								color: color.adjust($color, $lightness: 25%, $saturation: 10%, $space: hsl);
 							}
+
 							> i {
 								color: color.adjust($color, $lightness: 10%, $saturation: 20%, $space: hsl);
 							}
@@ -82,9 +94,11 @@ header.menu-container {
 			border-radius: 8px;
 			height: min-content;
 			z-index: 1000;
+
 			&.exhaust {
 				color: goldenrod;
 			}
+
 			&.quiz {
 				cursor: pointer;
 				user-select: none;
@@ -93,11 +107,14 @@ header.menu-container {
 
 		.dropdown-container {
 			position: relative;
+
 			> .closeHandler {
 				display: none;
+
 				&.active {
 					display: initial;
 				}
+
 				cursor: initial;
 				position: fixed;
 				top: 0;
@@ -110,9 +127,11 @@ header.menu-container {
 		.dropdown {
 			position: absolute;
 			display: none;
+
 			&.active {
 				display: flex;
 			}
+
 			flex-direction: column;
 			background-color: black;
 			left: auto;
@@ -137,6 +156,7 @@ header.menu-container {
 
 			.info {
 				font-weight: bold;
+
 				> .data {
 					color: gold;
 				}
@@ -144,10 +164,12 @@ header.menu-container {
 
 			> .link {
 				padding: 0.5em;
+
 				> a {
 					> i {
 						margin-right: 0.25em;
 					}
+
 					display: flex;
 					flex-wrap: nowrap;
 					align-items: center;
@@ -171,6 +193,7 @@ header.menu-container {
 		width: 75%;
 		margin: 0.5em auto;
 		height: 4em;
+
 		img {
 			max-height: 4em;
 		}

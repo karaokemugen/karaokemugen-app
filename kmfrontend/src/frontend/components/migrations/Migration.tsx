@@ -1,7 +1,7 @@
 import i18next from 'i18next';
 
 import { commandBackend } from '../../../utils/socket';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 export default function useMigration(name: string, onEnd: () => void): [() => JSX.Element, () => void] {
 	const EndButton = () => (

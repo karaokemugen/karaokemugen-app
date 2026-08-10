@@ -6,7 +6,7 @@ import { useContext, useEffect, useState } from 'react';
 import { closeModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 function AdminMessageModal() {
 	const context = useContext(GlobalContext);

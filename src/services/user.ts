@@ -120,7 +120,7 @@ export async function editUser(
 			const password = await hashPasswordbcrypt(user.password);
 			await updateUserPassword(username, password);
 		}
-		if (user.type && +user.type !== currentUser.type && role !== 'admin') {
+		if (user.type != null && +user.type !== currentUser.type && role !== 'admin') {
 			throw new ErrorKM('USER_CANNOT_CHANGE_TYPE', 403, false);
 		}
 		// If we're renaming a user, mergedUser.login is going to be set to something different than username
@@ -299,6 +299,10 @@ export async function createUser(
 		};
 
 		if (opts.admin) user.type = 0;
+		if (user.type === 0 && !opts.admin) { // Important validation, prevents privilege escalation by passing user type 0 at signup
+			logger.error(`Denied creation of user with type 0 without admin option (${user.login})`, { service });
+			throw new ErrorKM('USER_CREATE_ERROR', 403, false);
+		}
 		if (user.type === 2) {
 			user.flag_sendstats = true;
 			user.language = null;

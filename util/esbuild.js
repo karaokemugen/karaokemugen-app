@@ -4,10 +4,28 @@ import electron from 'electron';
 import { build, context } from 'esbuild';
 import { execa } from 'execa';
 import { rimraf } from 'rimraf';
+import { sentryEsbuildPlugin } from "@sentry/esbuild-plugin";
 
 const buildOptions = {
 	outfile: 'dist/index.mjs',
 	entryPoints: ['src/index.ts'],
+	plugins: process.env.SENTRY_AUTH_TOKEN && process.env.CI_COMMIT_TAG && CI_JOB_STAGE !== 'test' ? [
+    // Put the Sentry esbuild plugin after all other plugins
+    sentryEsbuildPlugin({
+			authToken: process.env.SENTRY_AUTH_TOKEN,
+			org: "karaoke-mugen",
+			project: "km-app",
+			release: {
+				name: process.env.CI_COMMIT_TAG,
+				dist: process.env.CI_COMMIT_SHORT_SHA,
+				setCommits: {
+					repo: 'Karaoke Mugen / Code / Karaoke Mugen Application',
+					commit: process.env.CI_COMMIT_SHA,
+				},
+				...(process.env.CI_COMMIT_TAG ? { deploy: { env: 'release' } } : {}),				
+			}
+		}),
+  	] : [],
 	platform: 'node',
 	target: 'node24',
 	format: 'esm',

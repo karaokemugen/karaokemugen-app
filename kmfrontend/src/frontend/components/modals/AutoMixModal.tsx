@@ -13,7 +13,7 @@ import { commandBackend } from '../../../utils/socket';
 import { ANIMELISTS, FAVORITES, getTagTypeName, tagTypes, YEARS } from '../../../utils/tagTypes';
 import Autocomplete, { AutocompleteOption } from '../generic/Autocomplete';
 import QuizModal from './QuizModal';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 interface IProps {
 	userList: User[];

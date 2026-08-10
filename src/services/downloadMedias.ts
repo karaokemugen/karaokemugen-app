@@ -17,6 +17,7 @@ import { UpdateMediasResult } from '../types/download.js';
 import Sentry from '../utils/sentry.js';
 import { addDownloads } from './download.js';
 import { checkDownloadStatus, checkRepoMediaPaths, getRepo, getRepos } from './repo.js';
+import { isAxiosError } from 'axios';
 
 const service = 'MediasUpdater';
 
@@ -45,6 +46,9 @@ async function listRemoteMedias(repo: string) {
 		return remote;
 	} catch (err) {
 		logger.error(`Failed to fetch current media list : ${err}`, { service, obj: err });
+		if (isAxiosError(err) && err.response?.status === 504) {
+			throw new ErrorKM('INSTANCE_NOT_RESPONDING', 504, false);
+		}
 		Sentry.error(err);
 		throw err;
 	}

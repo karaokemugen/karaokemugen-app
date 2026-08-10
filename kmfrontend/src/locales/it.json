@@ -1331,8 +1331,6 @@
 		"SYNCHRONIZE_REPOSITORIES": "Archivi da sincronizzare",
 		"KARA_FIELD_REQUIRED": "Il campo {{field}} è obbligatorio",
 		"KARA_GROUP_FIELD_REQUIRED": "I campi {{fields}} non possono essere entrambi vuoti.",
-		"USEEMBEDDEDLYRICS": "Prioritizza il testo allegato al file multimediale",
-		"USEEMBEDDEDLYRICS_TOOLTIP": "Se il file multimediale caricato contiene un file ASS, questo verrà estratto e sostituirà il file del testo attuale.",
 		"SWAP_DESCRIPTION": "Scegli un secondo brano con cui scambiarne la posizione",
 		"SWAP_TOOLTIP": "Cambia l'ordine dei brani da te richiesti"
 	},
@@ -2054,7 +2052,7 @@
 		"DOWNLOADING": "Download in corso…",
 		"DOWNLOADING_ZIP": "Scaricando il database",
 		"REFRESHING_DATA": "Ricaricando i dati…",
-		"UPLOADING_FTP": "Caricamento a FTP…",
+		"UPLOADING_MEDIA": "Caricamento a FTP…",
 		"MERGING_TAGS_IN_PROGRESS": "Unendo le tag…",
 		"CREATING_TAG_IN_PROGRESS": "Creando la tag…",
 		"GENERATING_READING": "Leggendo i dati…",

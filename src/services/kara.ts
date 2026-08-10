@@ -136,6 +136,7 @@ export async function getKarasMicro(kids: string[], ignoreCollectionsAndBlacklis
 export async function getKaras(params: KaraParams): Promise<KaraList> {
 	profile('getKaras');
 	try {
+		logger.debug(`Params for getKaras : ${JSON.stringify(params)}`, { service });
 		const pl = await selectAllKaras({
 			...params,
 			username: params?.username || 'admin',

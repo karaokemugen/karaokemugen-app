@@ -10,7 +10,7 @@ import { getPlaylistInfo, setPlaylistInfo } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { displayMessage } from '../../../utils/tools';
 import Switch from '../generic/Switch';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 import Autocomplete from '../generic/Autocomplete';
 import type { User } from '../../../../../src/lib/types/user';
 

@@ -4,7 +4,7 @@ import { useCallback, useContext, useMemo } from 'react';
 import GlobalContext from '../../../../store/context';
 import { commandBackend } from '../../../../utils/socket';
 import { displayMessage } from '../../../../utils/tools';
-import { WS_CMD } from '../../../../utils/ws';
+import { WS_CMD } from '../../../../utils/ws.mjs';
 
 interface Props {
 	kid: string;

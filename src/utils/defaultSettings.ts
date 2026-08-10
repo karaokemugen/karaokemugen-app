@@ -3,10 +3,14 @@
 // this file is overwritten during updates, editing is ill-advised .
 // you can change the default settings by using config.yml to bypass the default values.
 import { app } from 'electron';
+import { z } from 'zod';
+import { existsSync } from 'node:fs';
 
-import { Repository } from '../lib/types/repo.js';
-import { bools, hostnameRegexp } from '../lib/utils/constants.js';
+import { hostnameRegexp } from '../lib/utils/constants.js';
 import { Config, DBConfig } from '../types/config.js';
+import { zArrayOneItem, zBool, zBoolUndefined, zFloat, zInclusion, zInt, zNonEmptyString } from '../lib/utils/validators.js';
+import { Repository } from '../lib/types/repo.js';
+import { zRepository } from '../lib/dao/repo.js';
 
 export const dbConfig: DBConfig = {
 	RestoreNeeded: false,
@@ -183,8 +187,8 @@ export const defaults: Config = {
 			NextSongInfo: {
 				Enabled: true,
 				PositionX: 'Center',
-				PositionY: 'Center'
-			}
+				PositionY: 'Center',
+			},
 		},
 		FullScreen: false,
 		AudioDevice: 'auto',
@@ -250,7 +254,7 @@ export const defaults: Config = {
 		Binaries: {
 			Player: {
 				Linux:
-					app?.isPackaged || process.env.container || process.env.APPIMAGE ? 'app/bin/mpv' : '/usr/bin/mpv',
+					app?.isPackaged || process.env.container || process.env.APPIMAGE || existsSync('app/bin/mpv') ? 'app/bin/mpv' : '/usr/bin/mpv',
 				OSX: app?.isPackaged
 					? 'Karaoke Mugen.app/Contents/app/bin/mpv.app/Contents/MacOS/mpv'
 					: 'app/bin/mpv.app/Contents/MacOS/mpv',
@@ -258,7 +262,7 @@ export const defaults: Config = {
 			},
 			ffmpeg: {
 				Linux:
-					app?.isPackaged || process.env.container || process.env.APPIMAGE
+					app?.isPackaged || process.env.container || process.env.APPIMAGE || existsSync('app/bin/ffmpeg')
 						? 'app/bin/ffmpeg'
 						: '/usr/bin/ffmpeg',
 				OSX: app?.isPackaged ? 'Karaoke Mugen.app/Contents/app/bin/ffmpeg' : 'app/bin/ffmpeg',
@@ -266,7 +270,7 @@ export const defaults: Config = {
 			},
 			Postgres: {
 				Linux:
-					app?.isPackaged || process.env.container || process.env.APPIMAGE
+					app?.isPackaged || process.env.container || process.env.APPIMAGE || existsSync('app/bin/postgres/bin/')
 						? 'app/bin/postgres/bin/'
 						: '/usr/bin/',
 				OSX: app?.isPackaged ? 'Karaoke Mugen.app/Contents/app/bin/postgres/bin/' : 'app/bin/postgres/bin/',
@@ -274,7 +278,7 @@ export const defaults: Config = {
 			},
 			patch: {
 				Linux:
-					app?.isPackaged || process.env.container || process.env.APPIMAGE
+					app?.isPackaged || process.env.container || process.env.APPIMAGE || existsSync('app/bin/patch')
 						? 'app/bin/patch'
 						: '/usr/bin/patch',
 				OSX: app?.isPackaged ? 'Karaoke Mugen.app/Contents/app/bin/patch' : 'app/bin/patch',
@@ -311,97 +315,197 @@ export const hwdecModes = ['auto-safe', 'no', 'yes'];
 export const endOfPlaylistActions = ['random', 'random_fallback', 'play_fallback', 'repeat', 'none'];
 
 /** Config constraints. */
-export const configConstraints = {
-	'App.FirstRun': { inclusion: bools },
-	// 'App.InstanceID': {presence: true, format: uuidRegexp}, // Broken on regular installations since InstanceID is stored in database. We'll implement this in KM 10.0 aka KMX
-	'Online.ErrorTracking': { boolUndefinedValidator: true },
-	'Online.RemoteAccess.Enabled': { inclusion: bools },
-	'Online.RemoteAccess.Secure': { inclusion: bools },
-	'Online.RemoteAccess.Domain': { presence: true, format: hostnameRegexp },
-	'Online.Timeout': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0 } },
-	'Online.RemoteUsers.Enabled': { inclusion: bools },
-	'Online.RemoteUsers.DefaultHost': { format: hostnameRegexp },
-	'Online.RemoteUsers.Secure': { inclusion: bools },
-	'Online.Discord.DisplayActivity': { inclusion: bools },
-	'Online.Updates.Medias.Jingles': { inclusion: bools },
-	'Online.Updates.Medias.Outros': { inclusion: bools },
-	'Online.Updates.Medias.Encores': { inclusion: bools },
-	'Online.Updates.Medias.Intros': { inclusion: bools },
-	'Online.Updates.App': { inclusion: bools },
-	'Frontend.Mode': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 2 } },
-	'System.FrontendPort': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0 } },
-	'Frontend.ShowAvatarsOnPlaylist': { inclusion: bools },
-	'Karaoke.Autoplay': { inclusion: bools },
-	'Karaoke.ClassicMode': { inclusion: bools },
-	'Karaoke.MinutesBeforeEndOfSessionWarning': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0 } },
-	'Karaoke.StreamerMode.Enabled': { inclusion: bools },
-	'Karaoke.StreamerMode.PauseDuration': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0 } },
-	'Karaoke.StreamerMode.Twitch.Enabled': { inclusion: bools },
-	'Karaoke.Poll.Choices': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 1 } },
-	'Karaoke.Poll.Timeout': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 1 } },
-	'Karaoke.Poll.Enabled': { inclusion: bools },
-	'Karaoke.Quota.Type': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 2 } },
-	'Karaoke.Quota.FreeUpVotes': { inclusion: bools },
-	'Karaoke.Quota.FreeAutoTime': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0 } },
-	'Karaoke.Quota.FreeUpVotesRequiredMin': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 1 } },
-	'Karaoke.Quota.FreeUpVotesRequiredPercent': {
-		numericality: { onlyInteger: true, greaterThanOrEqualTo: 1, lowerThanOrEqualTo: 100 },
-	},
-	'Karaoke.Quota.Songs': { numericality: { onlyInteger: true } },
-	'Karaoke.Quota.Time': { numericality: { onlyInteger: true } },
-	'Player.Display.Avatar': { inclusion: bools },
-	'Player.Display.Nickname': { inclusion: bools },
-	'Player.Display.ConnectionInfo.Enabled': { inclusion: bools },
-	'Player.Display.ConnectionInfo.QRCode': { inclusion: bools },
-	'Player.Display.ConnectionInfo.Message': { presence: { allowEmpty: true } },
-	'Player.FullScreen': { inclusion: bools },
-	'Player.Monitor': { inclusion: bools },
-	'Player.StayOnTop': { inclusion: bools },
-	'Player.Screen': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0 } },
-	'Player.PIP.PositionX': { inclusion: horizontalPosArray },
-	'Player.PIP.PositionY': { inclusion: verticalPosArray },
-	'Player.PIP.Size': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 100 } },
-	'Player.Volume': { numericality: { greaterThanOrEqualTo: 0, lessThanOrEqualTo: 100 } },
-	'Player.AudioDelay': { numericality: { greaterThanOrEqualTo: -5000, lessThanOrEqualTo: 5000 } },
-	'Player.HardwareDecoding': { inclusion: hwdecModes },
-	'Playlist.AllowDuplicates': { inclusion: bools },
-	'Playlist.MaxDejaVuTime': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 1 } },
-	'Playlist.Medias.Intros.Enabled': { inclusion: bools },
-	'Playlist.Medias.Sponsors.Enabled': { inclusion: bools },
-	'Playlist.Medias.Sponsors.Interval': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 1 } },
-	'Playlist.Medias.Outros.Enabled': { inclusion: bools },
-	'Playlist.Medias.Encores.Enabled': { inclusion: bools },
-	'Playlist.Medias.Jingles.Enabled': { inclusion: bools },
-	'Playlist.Medias.Jingles.Interval': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 1 } },
-	'Playlist.MysterySongs.Hide': { inclusion: bools },
-	'Playlist.MysterySongs.AddedSongVisibilityAdmin': { inclusion: bools },
-	'Playlist.MysterySongs.AddedSongVisibilityPublic': { inclusion: bools },
-	'Playlist.MysterySongs.Labels': { arrayOneItemValidator: true },
-	'Playlist.EndOfPlaylistAction': { inclusion: endOfPlaylistActions },
-	'Playlist.RandomSongsAfterEndMessage': { inclusion: bools },
-	'Playlist.CurrentPlaylistAutoRemoveSongs': { numericality: { onlyInteger: true, greaterThanOrEqualTo: 0 } },
-	'System.Binaries.Player.Linux': { presence: true },
-	'System.Binaries.Player.Windows': { presence: true },
-	'System.Binaries.Player.OSX': { presence: true },
-	'System.Binaries.ffmpeg.Linux': { presence: true },
-	'System.Binaries.ffmpeg.Windows': { presence: true },
-	'System.Binaries.ffmpeg.OSX': { presence: true },
-	'System.Binaries.Postgres.Linux': { presence: true },
-	'System.Binaries.Postgres.Windows': { presence: true },
-	'System.Binaries.Postgres.OSX': { presence: true },
-	'System.Path.Avatars': { presence: true },
-	'System.Path.Backgrounds': { presence: true },
-	'System.Path.Bin': { presence: true },
-	'System.Path.DB': { presence: true },
-	'System.MediaPath.Encores': { arrayOneItemValidator: true },
-	'System.MediaPath.Jingles': { arrayOneItemValidator: true },
-	'System.MediaPath.Intros': { arrayOneItemValidator: true },
-	'System.MediaPath.Sponsors': { arrayOneItemValidator: true },
-	'System.MediaPath.Outros': { arrayOneItemValidator: true },
-	'System.Path.Previews': { presence: true },
-	'System.Path.Import': { presence: true },
-	'System.Repositories': { repositoriesValidator: true },
-};
+export const configConstraints = z
+	.object({
+		App: z
+			.object({
+				FirstRun: zBool,
+			})
+			.loose(),
+		Online: z
+			.object({
+				ErrorTracking: zBoolUndefined,
+				RemoteAccess: z
+					.object({
+						Enabled: zBool,
+						Secure: zBool,
+						Domain: zNonEmptyString.regex(hostnameRegexp),
+					})
+					.loose(),
+				Timeout: zInt({ min: 0 }),
+				RemoteUsers: z
+					.object({
+						Enabled: zBool,
+						DefaultHost: z.string().regex(hostnameRegexp).optional(),
+						Secure: zBool,
+					})
+					.loose(),
+				Discord: z.object({ DisplayActivity: zBool }).loose(),
+				Updates: z
+					.object({
+						Medias: z
+							.object({
+								Jingles: zBool,
+								Outros: zBool,
+								Encores: zBool,
+								Intros: zBool,
+							})
+							.loose(),
+						App: zBool,
+					})
+					.loose(),
+			})
+			.loose(),
+		Frontend: z
+			.object({
+				Mode: zInt({ min: 0, max: 2 }),
+				ShowAvatarsOnPlaylist: zBool,
+			})
+			.loose(),
+		Karaoke: z
+			.object({
+				Autoplay: zBool,
+				ClassicMode: zBool,
+				MinutesBeforeEndOfSessionWarning: zInt({ min: 0 }),
+				StreamerMode: z
+					.object({
+						Enabled: zBool,
+						PauseDuration: zInt({ min: 0 }),
+						Twitch: z.object({ Enabled: zBool }).loose(),
+					})
+					.loose(),
+				Poll: z
+					.object({
+						Choices: zInt({ min: 1 }),
+						Timeout: zInt({ min: 1 }),
+						Enabled: zBool,
+					})
+					.loose(),
+				Quota: z
+					.object({
+						Type: zInt({ min: 0, max: 2 }),
+						FreeUpVotes: zBool,
+						FreeAutoTime: zInt({ min: 0 }),
+						FreeUpVotesRequiredMin: zInt({ min: 1 }),
+						FreeUpVotesRequiredPercent: zInt({ min: 1, max: 100 }),
+						Songs: z.number().int(),
+						Time: z.number().int(),
+					})
+					.loose(),
+			})
+			.loose(),
+		Player: z
+			.object({
+				Display: z
+					.object({
+						Avatar: zBool,
+						Nickname: zBool,
+						ConnectionInfo: z
+							.object({
+								Enabled: zBool,
+								QRCode: zBool,
+								Message: z.string(),
+							})
+							.loose(),
+					})
+					.loose(),
+				FullScreen: zBool,
+				Monitor: zBool,
+				StayOnTop: zBool,
+				Screen: zInt({ min: 0 }),
+				PIP: z
+					.object({
+						PositionX: zInclusion(horizontalPosArray),
+						PositionY: zInclusion(verticalPosArray),
+						Size: zInt({ min: 0, max: 100 }),
+					})
+					.loose(),
+				Volume: zFloat({ min: 0, max: 100 }),
+				AudioDelay: zFloat({ min: -5000, max: 5000 }),
+				HardwareDecoding: zInclusion(hwdecModes),
+			})
+			.loose(),
+		Playlist: z
+			.object({
+				AllowDuplicates: zBool,
+				MaxDejaVuTime: zInt({ min: 1 }),
+				Medias: z
+					.object({
+						Intros: z.object({ Enabled: zBool }).loose(),
+						Sponsors: z
+							.object({ Enabled: zBool, Interval: zInt({ min: 1 }) })
+							.loose(),
+						Outros: z.object({ Enabled: zBool }).loose(),
+						Encores: z.object({ Enabled: zBool }).loose(),
+						Jingles: z
+							.object({ Enabled: zBool, Interval: zInt({ min: 1 }) })
+							.loose(),
+					})
+					.loose(),
+				MysterySongs: z
+					.object({
+						Hide: zBool,
+						AddedSongVisibilityAdmin: zBool,
+						AddedSongVisibilityPublic: zBool,
+						Labels: zArrayOneItem,
+					})
+					.loose(),
+				EndOfPlaylistAction: zInclusion(endOfPlaylistActions),
+				RandomSongsAfterEndMessage: zBool,
+				CurrentPlaylistAutoRemoveSongs: zInt({ min: 0 }),
+			})
+			.loose(),
+		System: z
+			.object({
+				Binaries: z
+					.object({
+						Player: z
+							.object({
+								Linux: zNonEmptyString,
+								Windows: zNonEmptyString,
+								OSX: zNonEmptyString,
+							})
+							.loose(),
+						ffmpeg: z
+							.object({
+								Linux: zNonEmptyString,
+								Windows: zNonEmptyString,
+								OSX: zNonEmptyString,
+							})
+							.loose(),
+						Postgres: z
+							.object({
+								Linux: zNonEmptyString,
+								Windows: zNonEmptyString,
+								OSX: zNonEmptyString,
+							})
+							.loose(),
+					})
+					.loose(),
+				Path: z
+					.object({
+						Avatars: zNonEmptyString,
+						Backgrounds: zNonEmptyString,
+						Bin: zNonEmptyString,
+						DB: zNonEmptyString,
+						Previews: zNonEmptyString,
+						Import: zNonEmptyString,
+					})
+					.loose(),
+				MediaPath: z
+					.object({
+						Encores: zArrayOneItem,
+						Jingles: zArrayOneItem,
+						Intros: zArrayOneItem,
+						Sponsors: zArrayOneItem,
+						Outros: zArrayOneItem,
+					})
+					.loose(),
+				Repositories: z.array(zRepository),
+			})
+			.loose(),
+	})
+	.loose();
 
 export const defaultRepositories: Repository[] = [
 	{

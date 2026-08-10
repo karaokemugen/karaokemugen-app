@@ -146,8 +146,7 @@ build-react:
   script:
     - yarn build
     - yarn installkmfrontend
-    - yarn buildkmfrontend
-    - node util/sentryUpdateReleases.js
+    - yarn buildkmfrontend    
   rules:
     - if: $SCHEDULED_RELEASES == "true"
       when: never

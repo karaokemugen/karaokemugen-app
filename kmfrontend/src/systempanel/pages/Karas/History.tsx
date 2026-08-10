@@ -9,7 +9,7 @@ import Title from '../../components/Title';
 import dayjs from 'dayjs';
 import { SortOrder } from 'antd/es/table/interface';
 import { useContext, useEffect, useState } from 'react';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 function KaraHistory() {
 	const context = useContext(GlobalContext);

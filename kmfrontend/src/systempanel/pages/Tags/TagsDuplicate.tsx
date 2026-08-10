@@ -10,7 +10,7 @@ import { commandBackend } from '../../../utils/socket';
 import { getTagTypeName, tagTypes } from '../../../utils/tagTypes';
 import { isModifiable } from '../../../utils/tools';
 import Title from '../../components/Title';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 import type { TagTypeNum } from '../../../../../src/lib/types/tag';
 
 function TagsDuplicate() {

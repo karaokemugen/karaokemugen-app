@@ -215,6 +215,7 @@ export async function initEngine() {
 				// If we are testing, we're awaiting updateAllGitRepos
 				updateBase(internet).catch();
 			});
+			console.log(state);
 			if (state.isTest && !state.opt.noAutoTest) {
 				runTests();
 			}
@@ -316,6 +317,25 @@ export async function exit(rc = 0, update = false) {
 	}
 }
 
+export function macOSQuitForUpdate() {
+	app.removeAllListeners('before-quit');
+	app.removeAllListeners('window-all-closed');
+	BrowserWindow.getAllWindows().forEach(win => {
+		if (win.isDestroyed()) return;
+		win.removeAllListeners('close');
+		win.close();
+	});
+
+	nativeUpdater.once('before-quit-for-update', async () => {
+		try {
+			await exit(0, true);
+		} catch (err) {
+			logger.warn('Cleanup before update install failed', { service, obj: err });
+		}
+		app.exit(0);
+	});
+}
+
 function mataNe(rc: number, update = false) {
 	logger.info('Closing', { service });
 	console.log('\nMata ne !\n');
@@ -325,19 +345,7 @@ function mataNe(rc: number, update = false) {
 	// This makes sure the app is shutdown properly so the auto-updater actually works.
 	// On other systems, the auto-updater doesn't need an explicit app.exit()
 	if (update) {
-		if (process.platform === 'darwin') {
-			app.removeAllListeners('before-quit');
-			app.removeAllListeners('window-all-closed');
-			BrowserWindow.getAllWindows().forEach(win => {
-				if (win.isDestroyed()) return;
-				win.removeAllListeners('close');
-				win.close();
-			});
-
-			nativeUpdater.once('before-quit-for-update', () => {
-				app.exit(0);
-			});
-		}
+		// Do nothing here, it's already being exited by the updater
 	} else {
 		app.exit(rc);
 	}
@@ -389,6 +397,7 @@ async function preFlightCheck(): Promise<boolean> {
 
 async function runTests() {
 	try {
+		console.log('Starting tests');
 		const ret = await execa('mocha', {
 			cwd: getState().appPath,
 		});

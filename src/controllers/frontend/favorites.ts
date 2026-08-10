@@ -1,6 +1,7 @@
-import { WS_CMD } from '../../../kmfrontend/src/utils/ws.js';
+import z from 'zod';
+import { WS_CMD } from '../../../kmfrontend/src/utils/ws.mjs';
 import { APIMessage } from '../../lib/services/frontend.js';
-import { check } from '../../lib/utils/validators.js';
+import { check, zUUIDArray } from '../../lib/utils/validators.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
 import {
 	addToFavorites,
@@ -59,9 +60,7 @@ export default function favoritesController(router: SocketIOApp) {
 	});
 	router.route(WS_CMD.ADD_FAVORITES, async (socket, req) => {
 		await runChecklist(socket, req, 'user', 'limited');
-		const validationErrors = check(req.body, {
-			kids: { presence: true, uuidArrayValidator: true },
-		});
+		const validationErrors = check(req.body, z.object({ kids: zUUIDArray }));
 		if (!validationErrors) {
 			try {
 				return await addToFavorites(req.token.username, req.body?.kids, req.onlineAuthorization);
@@ -76,9 +75,7 @@ export default function favoritesController(router: SocketIOApp) {
 	});
 	router.route(WS_CMD.DELETE_FAVORITES, async (socket, req) => {
 		await runChecklist(socket, req, 'user', 'closed');
-		const validationErrors = check(req.body, {
-			kids: { presence: true, uuidArrayValidator: true },
-		});
+		const validationErrors = check(req.body, z.object({ kids: zUUIDArray }));
 		if (!validationErrors) {
 			try {
 				return await removeFavorites(req.token.username, req.body?.kids, req.onlineAuthorization);
@@ -98,9 +95,7 @@ export default function favoritesController(router: SocketIOApp) {
 	});
 	router.route(WS_CMD.IMPORT_FAVORITES, async (socket, req) => {
 		await runChecklist(socket, req, 'user', 'closed');
-		const validationErrors = check(req.body, {
-			favorites: { isJSON: true },
-		});
+		const validationErrors = check(req.body, z.object({ favorites: z.object({}).loose() }));
 		if (!validationErrors) {
 			try {
 				await importFavorites(req.body?.favorites, req.token.username, req.onlineAuthorization);

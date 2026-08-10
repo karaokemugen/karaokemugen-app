@@ -1,9 +1,9 @@
 import { execa } from 'execa';
-import extract from 'extract-zip';
-import { promises as fs } from 'fs';
+import { createWriteStream, promises as fs } from 'fs';
 import { move, remove } from 'fs-extra';
 import parallel from 'p-map';
-import { resolve } from 'path';
+import { dirname, resolve } from 'path';
+import { Open as openZip } from 'unzipper-esm';
 
 import { DiffChanges, Repository } from '../lib/types/repo.js';
 import { resolvedPath } from '../lib/utils/config.js';
@@ -18,20 +18,33 @@ const service = 'Patch';
 
 async function extractZip(path: string, outDir: string, task: Task): Promise<string> {
 	let firstDir: string;
-	await extract(path, {
-		dir: outDir,
-		onEntry: (entry, zipFile) => {
-			if (entry.crc32 === 0 && !firstDir) {
-				firstDir = entry.fileName.slice(0, entry.fileName.length - 1);
-			}
-			task.update({
-				subtext: entry.fileName,
-				value: zipFile.entriesRead,
-				total: zipFile.entryCount,
+	const directory = await openZip.file(path);
+	const total = directory.files.length;
+	for (const [i, entry] of directory.files.entries()) {
+		const isDir = entry.type === 'Directory';
+		if (isDir && !firstDir) {
+			firstDir = entry.path.slice(0, -1);
+		}
+		task.update({
+			subtext: entry.path,
+			value: i + 1,
+			total,
+		});
+		const destPath = resolve(outDir, entry.path);
+		if (isDir) {
+			await fs.mkdir(destPath, { recursive: true });
+		} else {
+			await fs.mkdir(dirname(destPath), { recursive: true });
+			await new Promise<void>((resolve, reject) => {
+				entry
+					.stream()
+					.pipe(createWriteStream(destPath))
+					.on('finish', resolve)
+					.on('error', reject);
 			});
-		},
-	});
-	return firstDir;
+		}
+	}
+	return firstDir;	
 }
 
 export async function downloadAndExtractZip(zipURL: string, outDir: string, repo: string) {

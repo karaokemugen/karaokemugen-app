@@ -1902,7 +1902,7 @@
 		"DECOMPRESSING": "Compactando objetos",
 		"ANALYZING_WORKDIR": "Analisando diretório de trabalho",
 		"REFRESHING_DATA": "Atualizando dados…",
-		"UPLOADING_FTP": "Fazendo upload para o FTP…",
+		"UPLOADING_MEDIA": "Fazendo upload para o FTP…",
 		"DOWNLOADING_ZIP": "Baixando banco de dados",
 		"EXTRACTING_ZIP": "Extraindo banco de dados",
 		"COMMITING_CHANGES": "Confirmando alterações"

@@ -180,7 +180,8 @@ async function importBaseKara(karaObj: ImportBaseFile, repoDest: string, tags: D
 		const language = karaObj.newFile.langs ? convertLangTo2B(karaObj.newFile.langs[0]) : 'und';
 		const date = new Date();
 		// We process subfile but don't remove the source as it belogns to the user.
-		const media = await processUploadedMedia(mediafile, mediafile, false);
+		const processUploadedMediaResult = await processUploadedMedia(mediafile, mediafile, false);
+		const media = processUploadedMediaResult.mediaInfo;
 		const kid = randomUUID();
 		if (subfile) {
 			const tempSubFile = resolve(resolvedPath('Temp'), `temp_${kid}.${subfileExt}`);

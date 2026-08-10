@@ -417,7 +417,7 @@
 		"DUMMY_TASK": "Brak bieżących zadań",
 		"PREPARING_CHANGES": "Przygotowanie zmian",
 		"REFRESHING_DATA": "Odświeżanie danych…",
-		"UPLOADING_FTP": "Przesyłanie na FTP…",
+		"UPLOADING_MEDIA": "Przesyłanie na FTP…",
 		"UPDATING_LIBRARY_SORT": "Aktualizowanie sortowania biblioteki",
 		"DOWNLOADING_APP_UPDATE": "Pobieranie aktualizacji",
 		"BASE_IMPORT": {
@@ -1414,8 +1414,6 @@
 		"CHANGE_ORDER_DIRECTION": "Zmień kierunek zamówienia",
 		"KARA_FIELD_REQUIRED": "Pole {{field}} jest obowiązkowe",
 		"KARA_GROUP_FIELD_REQUIRED": "Pola {{fields}} nie mogą być jednocześnie puste.",
-		"USEEMBEDDEDLYRICS": "Nadaj priorytet osadzonym tekstom z multimediów",
-		"USEEMBEDDEDLYRICS_TOOLTIP": "Jeśli przesłane media zawierają osadzony plik ASS, zostanie on wyodrębniony i zastąpi bieżący plik z tekstem utworu.",
 		"SYNCHRONIZE_REPOSITORIES": "Repozytoria do synchronizacji",
 		"SWAP_TOOLTIP": "Zmień kolejność odtwarzania utworów, o które prosiłeś",
 		"SWAP_DESCRIPTION": "Wybierz drugą piosenkę, aby je zamienić",

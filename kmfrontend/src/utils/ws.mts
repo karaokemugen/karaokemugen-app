@@ -19,6 +19,7 @@ import {
 	OrderParam as KaraOrderParam,
 	YearList,
 	BatchActions,
+	ProcessUploadedMediaResult,
 } from '../../../src/lib/types/kara.js';
 import { LogLine } from '../../../src/lib/types/logger.js';
 import {
@@ -125,7 +126,7 @@ export const WS_CMD = {
 	VALIDATE_MEDIA_INFO: defineWSCmd<{ mediaInfo: MediaInfo; repository: string }, MediaInfoValidationResult[]>(
 		'validateMediaInfo'
 	),
-	PROCESS_UPLOADED_MEDIA: defineWSCmd<{ filename: string; origFilename: string }, MediaInfo>('processUploadedMedia'),
+	PROCESS_UPLOADED_MEDIA: defineWSCmd<{ filename: string; origFilename: string }, ProcessUploadedMediaResult>('processUploadedMedia'),
 	EMBED_AUDIO_FILE_COVER_ART: defineWSCmd<
 		{ kid: string; tempFilename: string; coverPictureFilename: string },
 		MediaInfo

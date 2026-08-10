@@ -22,7 +22,7 @@ import { Session, SessionExports } from '../../../../../src/types/session';
 import GlobalContext from '../../../store/context';
 import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 interface SessionsFormProps extends FormProps {
 	sessions: Session[];

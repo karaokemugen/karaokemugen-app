@@ -4,8 +4,8 @@
 import { dialog } from 'electron';
 import { copy } from 'fs-extra';
 import i18next from 'i18next';
-import { address } from 'ip';
 import { cloneDeep, isEqual, merge } from 'lodash';
+import os from 'node:os';
 import { resolve } from 'path';
 import { randomUUID } from 'crypto';
 
@@ -24,7 +24,6 @@ import {
 	getConfig,
 	loadConfigFiles,
 	setConfig,
-	setConfigConstraints,
 	verifyConfig,
 } from '../lib/utils/config.js';
 import { uuidRegexp } from '../lib/utils/constants.js';
@@ -51,7 +50,7 @@ import { updateSongsLeft } from '../services/user.js';
 import { BinariesConfig } from '../types/binChecker.js';
 import { Config } from '../types/config.js';
 import { supportedLanguages } from './constants.js';
-import { configConstraints, defaults } from './defaultSettings.js';
+import { defaults } from './defaultSettings.js';
 import { initDiscordRPC, stopDiscordRPC } from './discordRPC.js';
 import { initKMServerCommunication } from './kmserver.js';
 import { createQRCodeFile } from './qrcode.js';
@@ -61,6 +60,24 @@ import { writeStreamFiles } from './streamerFiles.js';
 import { initTwitch, stopTwitch } from './twitch.js';
 
 const service = 'Config';
+
+function address() {
+  const interfaces = os.networkInterfaces();
+  const ipv4 = [];
+  const ipv6 = [];
+
+  for (const ifaceList of Object.values(interfaces)) {
+    for (const iface of ifaceList) {
+	  // No use for localhost.
+      if (iface.internal) continue; 
+
+      if (iface.family === 'IPv4') ipv4.push(iface.address);
+      if (iface.family === 'IPv6') ipv6.push(iface.address);
+    }
+  }
+
+  return { ipv4, ipv6 };
+}
 
 /** Edit a config item, verify the new config is valid, and act according to settings changed */
 export async function editConfig(part: RecursivePartial<Config>) {
@@ -298,7 +315,6 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 /** Initializing configuration */
 export async function initConfig(argv: any) {
 	try {
-		setConfigConstraints(configConstraints);
 		await loadConfigFiles(getState().dataPath, argv.config, defaults, getState().appPath);
 		const publicConfig = cloneDeep(getConfig());
 		publicConfig.Karaoke.StreamerMode.Twitch.OAuth = 'xxxxx';
@@ -350,7 +366,8 @@ export async function configureHost() {
 	const state = getState();
 	const config = getConfig();
 	const URLPort = +config.System.FrontendPort === 80 ? '' : `:${config.System.FrontendPort}`;
-	setState({ osHost: { v4: address(undefined, 'ipv4'), v6: address(undefined, 'ipv6') } });
+	const addresses = address();
+	setState({ osHost: { v4: addresses.ipv4[0], v6: addresses.ipv6[0] } });
 	if (state.remoteAccess && 'host' in state.remoteAccess) {
 		setState({ osURL: `${config.Online.RemoteAccess.Secure ? 'https' : 'http'}://${state.remoteAccess.host}` });
 	} else if (!config.Player.Display.ConnectionInfo.Host) {
@@ -507,3 +524,4 @@ async function binMissing(binariesPath: any, err: string) {
 export function resolvedMediaPath(type: PlaylistMediaType) {
 	return getConfig().System.MediaPath[type].map((path: string) => resolve(getState().dataPath, path));
 }
+
