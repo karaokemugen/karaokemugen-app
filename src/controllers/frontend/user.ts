@@ -1,6 +1,7 @@
 import z from 'zod';
 import { WS_CMD } from '../../../kmfrontend/src/utils/ws.mjs';
 import { APIMessage } from '../../lib/services/frontend.js';
+import { Role, User } from '../../lib/types/user.js';
 import { check, zNonEmptyString } from '../../lib/utils/validators.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
 import { resetSecurityCode } from '../../services/auth.js';
@@ -49,13 +50,21 @@ export default function userController(router: SocketIOApp) {
 		);
 		if (!validationErrors) {
 			// No errors detected
+
+			// Sanitize object and only pass valid options (prevent user.type privilege escalation)
+			const userSanitized: User & { role?: Role } = { ...req.body };
+			if (req.user?.type !== 0) {
+				delete userSanitized.type;
+				delete userSanitized.flag_temporary;
+			}
+
 			try {
-				if (req.body.role === 'admin' && req.user) {
-					await createAdminUser(req.body, req.body.login.includes('@'), req.user);
+				if (userSanitized.role === 'admin' && req.user) {
+					await createAdminUser(userSanitized, userSanitized.login.includes('@'), req.user);
 				} else {
-					await createUser(req.body, {
+					await createUser(userSanitized, {
 						admin: req.token?.role === 'admin',
-						createRemote: req.body.login.includes('@'),
+						createRemote: userSanitized.login.includes('@'),
 					});
 				}
 				return { code: 200, message: APIMessage('USER_CREATED') };
