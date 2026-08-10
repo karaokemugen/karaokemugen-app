@@ -287,12 +287,6 @@ GROUP BY k.year
 ORDER BY year NULLS LAST;
 `;
 
-export const sqlselectAllKIDs = (kid?: string) => `
-SELECT pk_kid AS kid
-FROM kara
-${kid ? `WHERE pk_kid = '${kid}'` : ''}
-`;
-
 export const sqlTruncateOnlineRequested = 'TRUNCATE online_requested';
 
 export const sqldeleteChildrenKara = 'DELETE FROM kara_relation WHERE fk_kid_child = $1';

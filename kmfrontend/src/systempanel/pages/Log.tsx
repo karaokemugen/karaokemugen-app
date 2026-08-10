@@ -8,7 +8,7 @@ import i18n from '../../utils/i18n';
 import { commandBackend, getSocket, isRemote } from '../../utils/socket';
 import Title from '../components/Title';
 import dayjs from 'dayjs';
-import { WS_CMD } from '../../utils/ws';
+import { WS_CMD } from '../../utils/ws.mjs';
 
 interface LogState {
 	log: { level: string; message: string; timestamp: string; service: string; obj?: any }[];

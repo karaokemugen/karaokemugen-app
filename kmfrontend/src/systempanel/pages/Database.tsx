@@ -4,7 +4,7 @@ import { Trans } from 'react-i18next';
 
 import { commandBackend } from '../../utils/socket';
 import Title from '../components/Title';
-import { WS_CMD } from '../../utils/ws';
+import { WS_CMD } from '../../utils/ws.mjs';
 
 function Database() {
 	const dbregen = async () => {

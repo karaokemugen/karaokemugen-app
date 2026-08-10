@@ -22,7 +22,7 @@ import QuizModal from './modals/QuizModal';
 import Tutorial from './modals/Tutorial';
 import Options from './options/Options';
 import { PlayerCommand } from '../../../../src/types/player';
-import { WS_CMD } from '../../utils/ws';
+import { WS_CMD } from '../../utils/ws.mjs';
 
 interface IProps {
 	powerOff: (() => void) | undefined;

@@ -17,7 +17,7 @@ import { commandBackend } from '../../../utils/socket';
 import { displayMessage } from '../../../utils/tools';
 import Title from '../../components/Title';
 import CollectionsActivation from './CollectionsActivation';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 interface RepositoryListState {
 	repositories: Repository[];

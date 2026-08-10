@@ -15,7 +15,7 @@ import { getTagTypeName, tagTypes, YEARS } from '../../../utils/tagTypes';
 import { hmsToSecondsOnly, secondsTimeSpanToHMS } from '../../../utils/tools';
 import Autocomplete from '../generic/Autocomplete';
 import Switch from '../generic/Switch';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 const listTypeCriteria = [1002, 1003, 1006, 1007, 1008];
 

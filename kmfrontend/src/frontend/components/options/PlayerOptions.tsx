@@ -7,7 +7,7 @@ import { commandBackend } from '../../../utils/socket';
 import { dotify } from '../../../utils/tools';
 import Switch from '../generic/Switch';
 import { sanitizeSettingsSearchValue } from './Options';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 interface IProps {
 	onChange: (e: any) => void;

@@ -16,9 +16,10 @@ import { commandBackend } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 import Title from '../../components/Title';
 import type { DBTag } from '../../../../../src/lib/types/database/tag';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 import type { BatchActions, KaraList } from '../../../../../src/lib/types/kara';
 import type { DBPL } from '../../../../../src/types/database/playlist';
+import type { Repository } from '../../../../../src/lib/types/repo';
 
 function KaraBatchEdit() {
 	const context = useContext(GlobalContext);
@@ -33,12 +34,22 @@ function KaraBatchEdit() {
 	const [action, setAction] = useState<BatchActions>();
 	const [type, setType] = useState<TagTypeNum>();
 	const [karaSearch, setKaraSearch] = useState<{ label: ReactNode; value: string }[]>([]);
+	const [repositories, setRepositories] = useState<string[]>([]);
+	const [repository, setRepository] = useState<string>();
 
 	useEffect(() => {
 		getPlaylists();
+		getRepositories();
 		getTags();
 		searchKaras('');
 	}, []);
+
+	const getRepositories = async () => {
+		const res = (await commandBackend(WS_CMD.GET_REPOS)) as Repository[];
+		setRepositories(
+			res.filter(repo => repo.MaintainerMode || (!repo.Online && !repo.System)).map(repo => repo.Name)
+		);
+	};
 
 	const getPlaylists = async () => {
 		const playlists = await commandBackend(WS_CMD.GET_PLAYLISTS);
@@ -86,10 +97,19 @@ function KaraBatchEdit() {
 	};
 
 	const batchEdit = async () => {
+		let id;
+		if (action === 'addParent' || action === 'removeParent') {
+			id = kid;
+		} else if (action === 'copyToRepo') {
+			id = repository;
+		} else {
+			id = tid;
+		}
+
 		await commandBackend(WS_CMD.EDIT_KARAS, {
 			plaid: plaid,
 			action: action,
-			id: action === 'addParent' || action === 'removeParent' ? kid : tid,
+			id,
 			type: type,
 		});
 	};
@@ -216,7 +236,26 @@ function KaraBatchEdit() {
 						<Radio checked={action === 'fromDisplayType'} onChange={() => setAction('fromDisplayType')}>
 							{i18next.t('KARA.BATCH_EDIT.EDIT_DISPLAY_TYPE')}
 						</Radio>
+						<Radio checked={action === 'copyToRepo'} onChange={() => setAction('copyToRepo')}>
+							{i18next.t('KARA.BATCH_EDIT.COPY_SONGS_TO_REPOSITORY')}
+						</Radio>
 					</Col>
+					{action === 'copyToRepo' ? (
+						<Col flex={4} style={{ display: 'flex', flexDirection: 'column' }}>
+							<label>{i18next.t('KARA.BATCH_EDIT.SELECT_REPOSITORY')}</label>
+							<Select
+								defaultValue={repository}
+								style={{ maxWidth: '180px', marginTop: '0.5em' }}
+								onChange={(value: string) => setRepository(value)}
+								options={repositories.map((repository: string) => {
+									return {
+										value: repository,
+										label: repository,
+									};
+								})}
+							/>
+						</Col>
+					) : null}
 					{action === 'fromDisplayType' ? (
 						<Col flex={4} style={{ display: 'flex', flexDirection: 'column' }}>
 							<label>{i18next.t('KARA.BATCH_EDIT.SELECT_TAG_TYPE')}</label>
@@ -266,7 +305,8 @@ function KaraBatchEdit() {
 								!plaid ||
 								!action ||
 								(!tid && (action === 'addTag' || action === 'removeTag')) ||
-								(!kid && (action === 'addParent' || action === 'removeParent'))
+								(!kid && (action === 'addParent' || action === 'removeParent')) ||
+								(!repository && action === 'copyToRepo')
 							}
 							onClick={batchEdit}
 						>

@@ -248,13 +248,12 @@ export async function batchEditKaras(plaid: string, action: BatchActions, id: st
 			action !== 'removeTag' &&
 			action !== 'addParent' &&
 			action !== 'removeParent' &&
-			action !== 'fromDisplayType'
+			action !== 'fromDisplayType' &&
+			action !== 'copyToRepo'
 		)
 			throw 'Unkown action';
 		const karas = [];
-		logger.info(`Batch tag edit starting : adding ${id} in type ${type} for all songs in playlist ${plaid}`, {
-			service,
-		});
+		logger.info(`Batch song edit starting with action : ${action} (id: ${id}, type ${type})`, { service });
 
 		for (const plc of pl) {
 			profile('getKaraBatch');
@@ -269,6 +268,7 @@ export async function batchEditKaras(plaid: string, action: BatchActions, id: st
 				subtext: kara.karafile,
 			});
 			let modified = false;
+			const repos = getRepos();
 			// We also test if karaoke has elements in that tagtype when modifying the fromDisplayType
 			if (action === 'fromDisplayType' && kara.from_display_type !== tagType && kara[tagType].length > 0) {
 				modified = true;
@@ -296,6 +296,15 @@ export async function batchEditKaras(plaid: string, action: BatchActions, id: st
 					modified = true;
 					kara.parents = kara.parents.filter(k => k !== id);
 				}
+			} else if(action === 'copyToRepo' && repos.find(r => r.Name === id)) {
+				const karasToCopy = [];
+				for (const parent of kara.parents) {
+					karasToCopy.push(parent);
+				}
+				karasToCopy.push(kara.kid);
+				for (const kid of karasToCopy) {
+					await copyKaraToRepo(kid, id);
+				}				
 			}
 			if (modified) {
 				profile('editKaraBatch');

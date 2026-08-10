@@ -1,7 +1,6 @@
 import { randomUUID } from 'crypto';
-import { pg as yesql } from 'yesql';
 
-import { buildClauses, db, transaction } from '../lib/dao/database.js';
+import { buildClauses, db, prepareNamedParamsQuery, transaction } from '../lib/dao/database.js';
 import { WhereClause } from '../lib/types/database.js';
 import { DBPLC, DBPLCBase, PLCInsert } from '../lib/types/database/playlist.js';
 import { Criteria, PLCParams, UnaggregatedCriteria } from '../lib/types/playlist.js';
@@ -62,13 +61,13 @@ export function updatePLCCriterias(plcs: number[], criterias: Criteria[]) {
 }
 
 export function updatePlaylist(pl: DBPL) {
-	return db().query(yesql(sqleditPlaylist)(pl));
+	return db().query(prepareNamedParamsQuery(sqleditPlaylist)(pl));
 }
 
 export async function insertPlaylist(pl: DBPL): Promise<string> {
 	const plaid = pl.plaid || randomUUID();
 	await db().query(
-		yesql(sqlcreatePlaylist)({
+		prepareNamedParamsQuery(sqlcreatePlaylist)({
 			plaid: plaid,
 			name: pl.name,
 			created_at: pl.created_at || new Date(),
@@ -122,7 +121,7 @@ export function updatePLCRefused(plc_ids: number[], flag_refused: boolean) {
 
 export function updatePLCFreeBeforePos(pos: number, plaid: string) {
 	return db().query(
-		yesql(sqlsetPLCFreeBeforePos)({
+		prepareNamedParamsQuery(sqlsetPLCFreeBeforePos)({
 			pos,
 			plaid,
 		})
@@ -135,7 +134,7 @@ export function updatePlaylistKaraCount(id: string) {
 
 export function updatePlaylistLastEditTime(id: string) {
 	return db().query(
-		yesql(sqlupdatePlaylistLastEditTime)({
+		prepareNamedParamsQuery(sqlupdatePlaylistLastEditTime)({
 			plaid: id,
 			modified_at: new Date(),
 		})
@@ -144,7 +143,7 @@ export function updatePlaylistLastEditTime(id: string) {
 
 export function shiftPosInPlaylist(id: string, pos: number, shift: number) {
 	return db().query(
-		yesql(sqlshiftPosInPlaylist)({
+		prepareNamedParamsQuery(sqlshiftPosInPlaylist)({
 			shift,
 			plaid: id,
 			pos,
@@ -173,7 +172,7 @@ export function updatePos(plc_id: number, pos: number) {
 
 export function updatePlaylistDuration(id: string) {
 	return db().query(
-		yesql(sqlupdatePlaylistDuration)({
+		prepareNamedParamsQuery(sqlupdatePlaylistDuration)({
 			plaid: id,
 			...getIntermissionSettings(),
 		})
@@ -182,7 +181,7 @@ export function updatePlaylistDuration(id: string) {
 
 export async function selectPlaylistContentsMini(id: string): Promise<DBPLC[]> {
 	const res = await db().query(
-		yesql(sqlgetPlaylistContentsMini)({
+		prepareNamedParamsQuery(sqlgetPlaylistContentsMini)({
 			plaid: id,
 			dejavu_time: new Date(now() - getConfig().Playlist.MaxDejaVuTime * 60 * 1000),
 		})
@@ -261,7 +260,7 @@ export async function selectPlaylistContents(params: PLCParams): Promise<DBPLC[]
 		params.filterByUser
 	);
 	const res = await db().query(
-		yesql(query)({
+		prepareNamedParamsQuery(query)({
 			plaid: params.plaid,
 			username: params.username,
 			dejavu_time: new Date(now() - getConfig().Playlist.MaxDejaVuTime * 60 * 1000),
@@ -292,7 +291,7 @@ export async function selectPlaylistContentsMicro(id: string, login?: string): P
 export async function selectPLCInfo(id: number, forUser: boolean, username: string): Promise<DBPLCInfo> {
 	const query = sqlgetPLCInfo(forUser);
 	const res = await db().query(
-		yesql(query)({
+		prepareNamedParamsQuery(query)({
 			plcid: id,
 			dejavu_time: new Date(now() - getConfig().Playlist.MaxDejaVuTime * 60 * 1000),
 			username,
@@ -316,7 +315,7 @@ export async function selectPLCInfoMini(ids: number[]): Promise<DBPLC[]> {
 
 export async function selectPLCByKIDAndUser(kid: string, username: string, plaid: string): Promise<DBPLC> {
 	const res = await db().query(
-		yesql(sqlgetPLCByKIDUser)({
+		prepareNamedParamsQuery(sqlgetPLCByKIDUser)({
 			kid,
 			plaid,
 			dejavu_time: new Date((now() - getConfig().Playlist.MaxDejaVuTime * 60) * 1000),

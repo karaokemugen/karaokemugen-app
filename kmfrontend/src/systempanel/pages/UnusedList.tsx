@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { commandBackend } from '../../utils/socket';
 import { getTagTypeName, tagTypes } from '../../utils/tagTypes';
 import Title from '../components/Title';
-import { WS_CMD } from '../../utils/ws';
+import { WS_CMD } from '../../utils/ws.mjs';
 
 function UnusedList() {
 	const [unused, setUnused] = useState([]);

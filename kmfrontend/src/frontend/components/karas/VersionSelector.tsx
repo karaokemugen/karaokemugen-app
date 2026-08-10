@@ -9,7 +9,8 @@ import { getTitleInLocale } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { PLCCallback } from '../../../utils/tools';
 import KaraList from './KaraList';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
+import { setGoBack } from '../../../store/actions/frontendContext';
 
 interface Props {
 	kid: string;
@@ -39,7 +40,6 @@ export default function VersionSelector(props: Props) {
 		try {
 			e.stopPropagation();
 			const res = await commandBackend(WS_CMD.ADD_KARA_TO_PUBLIC_PLAYLIST, {
-				requestedby: context.globalState.auth.data.username,
 				kids: [kara.kid],
 			});
 			PLCCallback(res, context, kara, props.scope);
@@ -49,6 +49,11 @@ export default function VersionSelector(props: Props) {
 	};
 
 	const getKaras = useCallback(() => fetchKaras(id).then(setKaras), [id]);
+
+	const goBack = async () => {
+		setGoBack(context.globalDispatch, true);
+		navigate(-1);
+	};
 
 	useEffect(() => {
 		const refreshKaras = updated => {
@@ -75,7 +80,7 @@ export default function VersionSelector(props: Props) {
 			{karas?.content ? (
 				<div className="modal-content">
 					<div className="modal-header public-modal">
-						<button className="closeModal" type="button" onClick={() => navigate(-1)}>
+						<button className="closeModal" type="button" onClick={goBack}>
 							<i className="fas fa-arrow-left" />
 						</button>
 						<h4 className="modal-title">

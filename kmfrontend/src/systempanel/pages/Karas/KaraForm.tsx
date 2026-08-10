@@ -43,6 +43,7 @@ import { ReactNode, useContext, useEffect, useRef, useState } from 'react';
 import { v4 as UUIDv4 } from 'uuid';
 
 import dayjs from 'dayjs';
+import { basename } from 'path';
 import { PositionX, PositionY } from '../../../../../src/lib/types';
 import { DBKara, DBKaraTag } from '../../../../../src/lib/types/database/kara';
 import type {
@@ -51,16 +52,17 @@ import type {
 	KaraList,
 	MediaInfo,
 	MediaInfoValidationResult,
+	ProcessUploadedMediaResult,
 } from '../../../../../src/lib/types/kara';
 import type { Repository, RepositoryManifestV2 } from '../../../../../src/lib/types/repo';
-import type { TagType } from '../../../../../src/lib/types/tag';
+import type { TagType, TagTypeNum } from '../../../../../src/lib/types/tag';
 import { blobToBase64 } from '../../../../../src/lib/utils/filesCommon';
 import GlobalContext from '../../../store/context';
 import { buildKaraTitle, getPreviewLink, getPreviewPath, getTagInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { getTagTypeName, tagTypes, tagTypesKaraFileV4Order } from '../../../utils/tagTypes';
 import { secondsTimeSpanToHMS } from '../../../utils/tools';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 import EditableGroupAlias from '../../components/EditableGroupAlias';
 import AutocompleteTag from '../../components/karas/AutocompleteTag';
 import CheckBoxTag from '../../components/karas/CheckBoxTag';
@@ -82,7 +84,7 @@ function KaraForm(props: KaraFormProps) {
 	const [form] = useForm();
 	const context = useContext(GlobalContext);
 
-	const typeTagCheckbox = [3, 14, 16, 10, 13, 12, 11, 7, 15, 9];
+	const typeTagCheckbox = [3, 14, 16, 10, 13, 12, 11, 7, 15, 9] as TagTypeNum[];
 	const LOAD_AND_PROCESS_MEDIA_TIMEOUT = 1000 * 60 * 10 // Bigger files will silently timeout, so rather set a high limit
 
 	// State
@@ -94,7 +96,7 @@ function KaraForm(props: KaraFormProps) {
 		props.kara?.lyrics_infos?.[0]
 			? [
 					{
-						uid: -1,
+						uid: UUIDv4(),
 						name: props.kara.lyrics_infos[0].filename,
 						status: 'done',
 					},
@@ -105,7 +107,7 @@ function KaraForm(props: KaraFormProps) {
 		props.kara?.mediafile
 			? [
 					{
-						uid: -1,
+						uid: UUIDv4(),
 						name: props.kara.mediafile,
 						status: 'done',
 					},
@@ -116,6 +118,7 @@ function KaraForm(props: KaraFormProps) {
 	const [subfileIsTouched, setSubfileIsTouched] = useState(false);
 	const [mediaInfo, setMediaInfo] = useState<MediaInfo>(null);
 	const [mediaInfoValidationResults, setMediaInfoValidationResults] = useState<MediaInfoValidationResult[]>([]);
+	const isUploadingAndProcessingMedia = mediafileIsTouched && !mediaInfo?.loudnorm;
 	const [isEncodingMedia, setIsEncodingMedia] = useState(false);
 	const [encodeMediaOptions, setEncodeMediaOptions] = useState<{
 		trim: boolean;
@@ -192,7 +195,7 @@ function KaraForm(props: KaraFormProps) {
 	}, [mediaInfoValidationResults]);
 
 	useEffect(() => {
-		const oldFormFields = form.getFieldsValue(['mediafile', 'lyrics_infos', 'useEmbeddedLyrics']); // Fields to take over to the applied kara
+		const oldFormFields = form.getFieldsValue(['mediafile', 'lyrics_infos']); // Fields to take over to the applied kara
 		form.resetFields();
 		form.setFieldsValue(oldFormFields); // Re-sets media and lyrics file, if already uploaded
 	}, [parentKara]);
@@ -512,7 +515,7 @@ function KaraForm(props: KaraFormProps) {
 	};
 
 	const getRepositories = async () => {
-		const res: Repository[] = await commandBackend(WS_CMD.GET_REPOS);
+		const res: Repository[] = await commandBackend(WS_CMD.GET_REPOS) as Repository[];
 		setRepositoriesValue(
 			res.filter(repo => repo.MaintainerMode || (!repo.Online && !repo.System)).map(repo => repo.Name)
 		);
@@ -561,7 +564,7 @@ function KaraForm(props: KaraFormProps) {
 
 	const handleSubmit = values => {
 		setErrors([]);
-		if ((mediafileIsTouched && !mediaInfo?.loudnorm) || coverImageEmbedRunning) {
+		if (isUploadingAndProcessingMedia || coverImageEmbedRunning) {
 			message.error(i18next.t('KARA.MEDIA_IN_PROCESS'));
 		} else if (
 			mediafileIsTouched &&
@@ -648,8 +651,7 @@ function KaraForm(props: KaraFormProps) {
 		return {
 			kara: karaFile,
 			modifiedLyrics: subfileIsTouched,
-			modifiedMedia: mediafileIsTouched,
-			useEmbeddedLyrics: form?.getFieldValue('useEmbeddedLyrics'),
+			modifiedMedia: mediafileIsTouched
 		};
 	};
 
@@ -679,7 +681,7 @@ function KaraForm(props: KaraFormProps) {
 		} else if (info.file.status === 'done') {
 			if (isMediaFile(info.file.name)) {
 				setMediafileIsTouched(true);
-				const mediaInfo: MediaInfo = await commandBackend(
+				const processUploadedMediaResult: ProcessUploadedMediaResult = await commandBackend(
 					WS_CMD.PROCESS_UPLOADED_MEDIA,
 					{
 						origFilename: info.file.response.originalname,
@@ -688,8 +690,35 @@ function KaraForm(props: KaraFormProps) {
 					false,
 					LOAD_AND_PROCESS_MEDIA_TIMEOUT // Keep this high (~10 minutes), otherwise bigger files will silently timeout
 				);
-				setMediaInfo(mediaInfo);
-				form.setFieldsValue({ mediafile: mediaInfo.filename });
+				setMediaInfo(processUploadedMediaResult.mediaInfo);
+				form.setFieldsValue({ mediafile: processUploadedMediaResult.mediaInfo.filename });
+				
+				// Check embedded lyrics and add if exists
+				if (processUploadedMediaResult.extractedEmbeddedSubtitleFileName) {
+					const subReplaceConfirmationDialog = (): Promise<boolean> =>
+						new Promise(resolve => {
+							Modal.confirm({
+								title: i18next.t('KARA.EMBEDDED_LYRICS_FOUND'),
+								content: i18next.t('KARA.USE_EMBEDDED_LYRICS_CONFIRM'),
+								okText: i18next.t('YES'),
+								cancelText: i18next.t('NO'),
+								onOk: () => resolve(true),
+								onCancel: () => resolve(false),
+							});
+						});
+
+
+					if (!subfile?.length || await subReplaceConfirmationDialog()) {
+						setSubfile([{
+							uid: UUIDv4(),
+							name: basename(processUploadedMediaResult.extractedEmbeddedSubtitleFileName),
+							status: 'done',
+						}]);
+						setSubfileIsTouched(true);
+						form.setFieldsValue({ lyrics_infos: [{ filename: basename(processUploadedMediaResult.extractedEmbeddedSubtitleFileName) }] });
+					}
+				}
+
 				message.success(i18next.t('KARA.ADD_FILE_SUCCESS', { name: info.file.name }));
 			} else {
 				form.setFieldsValue({ mediafile: null });
@@ -885,7 +914,7 @@ function KaraForm(props: KaraFormProps) {
 		form.validateFields();
 	};
 
-	const getTags = async (type: number) => {
+	const getTags = async (type: TagTypeNum) => {
 		const tags = await commandBackend(WS_CMD.GET_TAGS, {
 			type: [type],
 		});
@@ -1002,9 +1031,9 @@ function KaraForm(props: KaraFormProps) {
 							</Upload>
 						</Form.Item>
 					</Col>
-					{props.kara?.download_status === 'DOWNLOADED' || mediaInfo?.size ? (
+					{props.kara?.download_status === 'DOWNLOADED' || isUploadingAndProcessingMedia || mediaInfo?.size ? (
 						<Card style={{ minWidth: '400px', maxWidth: '700px' }}>
-							{!mediaInfo?.overallBitrate ? (
+							{isUploadingAndProcessingMedia || !mediaInfo?.overallBitrate ? (
 								<Flex
 									gap="small"
 									vertical
@@ -1152,28 +1181,6 @@ function KaraForm(props: KaraFormProps) {
 						</Card>
 					) : null}
 				</Row>
-			</Form.Item>
-			<Form.Item
-				className="wrap-label"
-				label={
-					<span>
-						{i18next.t('KARA.USEEMBEDDEDLYRICS')}&nbsp;
-						<Tooltip title={i18next.t('KARA.USEEMBEDDEDLYRICS_TOOLTIP')}>
-							<QuestionCircleOutlined />
-						</Tooltip>
-					</span>
-				}
-				valuePropName="checked"
-				labelCol={{ flex: '0 1 220px' }}
-				wrapperCol={{ span: 8 }}
-				rules={[
-					{
-						required: false,
-					},
-				]}
-				name="useEmbeddedLyrics"
-			>
-				<Checkbox />
 			</Form.Item>
 			<Form.Item
 				label={

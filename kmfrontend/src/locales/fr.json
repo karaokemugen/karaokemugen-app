@@ -1132,8 +1132,6 @@
 		"KARA_AUTHORS_TOOLTIP": "Vous devriez vous ajouter ici ;)",
 		"COMMENT": "Un commentaire ?",
 		"COMMENT_TOOLTIP": "Un champ pour un commentaire comme \"Spéciale dédicace à ma maman\" ou \"Ne pas toucher aux effets!\" ou \"Fait avec trop de café\".",
-		"USEEMBEDDEDLYRICS": "Utiliser les paroles du fichier média en priorité",
-		"USEEMBEDDEDLYRICS_TOOLTIP": "Si le média envoyé contient un fichier de paroles, ce dernier sera alors utilisé à la place du fichier de paroles envoyé ci-dessous.",
 		"IGNOREHOOKS": "Ignorer les tags automatiques",
 		"IGNOREHOOKS_TOOLTIP": "Certains tags pourront être ajoutés automatiquement à cette chanson si elle remplit certaines conditions.",
 		"PREVIEW_HOOKS": "Prévisualiser les tags ajoutés automatiquement",
@@ -1182,9 +1180,11 @@
 			"ADD_PARENT": "Ajout de parent",
 			"REMOVE_PARENT": "Suppression de parent",
 			"EDIT_DISPLAY_TYPE": "Editer l'affichage du tag de la provenance de la chanson",
+			"COPY_SONGS_TO_REPOSITORY": "Copier les chansons dans le dépôt",
 			"CREATE_PLAYLIST": "Tout d'abord, vous devez créer dans la vue opérateur une liste de lecture.",
 			"SELECT_PLAYLIST": "Sélectionnez une liste de lecture :",
 			"SELECT_ACTION": "Sélectionnez une action :",
+			"SELECT_REPOSITORY": "Sélectionnez un dépôt :",
 			"SELECT_TAG": "Sélectionnez un tag :",
 			"SELECT_PARENT": "Sélectionnez un parent :",
 			"SELECT_TAG_TYPE": "Sélectionnez un type de tag :",
@@ -1230,7 +1230,9 @@
 			"AUDIO_COVER_ART": "Pochette d'album",
 			"VIDEO_ASPECT_RATIO": "Format d'image",
 			"WARNINGS": {
-				"LIBAVCODEC_ENCODER": "L'audio est encodé avec libavcodec (l'aac de référence dans ffmpeg), qui peut créer des artefacts audibles et il est donc déconseillé de l'utiliser. Veillez à utiliser l'encodeur libfdk_aac pour l'aac ou un autre codec comme opus, pour obtenir la meilleure qualité possible."
+				"LIBAVCODEC_ENCODER": "L'audio est encodé avec libavcodec (l'aac de référence dans ffmpeg), qui peut créer des artefacts audibles et il est donc déconseillé de l'utiliser. Veillez à utiliser l'encodeur libfdk_aac pour l'aac ou un autre codec comme opus, pour obtenir la meilleure qualité possible.",
+				"HAS_EMBEDDED_SUBTITLES": "Les sous-titres embarqués dans les fichiers média ne sont pas recommandés. Ils seront supprimés une fois le formulaire validé. Assurez-vous que le sous-titre est correctement appliqué ou envoyé via la section 'Paroles'.",
+				"HAS_ATTACHMENTS": "Le fichier média contient des fichiers joints (probablement des polices de caractères). Ces fichiers seront supprimés une fois le formulaire validé."
 			},
 			"AUDIO_SAMPLE_RATE": "Taux d’échantillonnage audio",
 			"DURATION": "Durée",
@@ -1260,7 +1262,9 @@
 			"SET": "Ecraser la position par défaut",
 			"UNSET": "Rétablir la position par défaut"
 		},
-		"REPOSITORY_DOCUMENTATION": "Accéder aux règles de {{instance}}"
+		"REPOSITORY_DOCUMENTATION": "Accéder aux règles de {{instance}}",
+		"EMBEDDED_LYRICS_FOUND": "Paroles trouvées dans le fichier",
+		"USE_EMBEDDED_LYRICS_CONFIRM": "Le fichier média contient des paroles embarquées. Voulez-vous remplacer les paroles actuelles par celles du fichier média ?"
 	},
 	"KARAOKE_IMPORT": {
 		"CONFIGURATION": "Configuration",
@@ -1703,7 +1707,7 @@
 		"COMMITING_CHANGES": "Réalisation des modifications",
 		"PREPARING_CHANGES": "Préparation des modifications",
 		"REFRESHING_DATA": "Rafraichissement des données…",
-		"UPLOADING_FTP": "Envoi sur le FTP…",
+		"UPLOADING_MEDIA": "Envoi du média…",
 		"CALCULATING_MEDIA_ENCODING_PARAMETERS": "Calcul des paramètres d'encodage des médias…",
 		"ENCODING_MEDIA": "Encodage du fichier média…",
 		"EXPORTING_PLAYLIST_MEDIA": "Export des médias de la liste de lecture…",
@@ -1754,6 +1758,7 @@
 		"INBOX_VIEW_ERROR": "Impossible de récupérer la boite de réception",
 		"INBOX_DOWNLOAD_ERROR": "Impossible de récupérer la chanson de la boîte de réception",
 		"INBOX_DELETE_FORBIDDEN_ERROR": "Suppression d'une chanson de la boîte de réception interdite",
+		"INSTANCE_NOT_RESPONDING": "L'instance ne répond pas",
 		"INBOX_VIEW_FORBIDDEN_ERROR": "Vous n'avez pas la permission de voir la boite de réception",
 		"INBOX_DELETE_ERROR": "Impossible de supprimer la chanson de la boîte de réception",
 		"WEBAPPMODE_CLOSED_API_MESSAGE": "L'API est désactivé pour le moment",
@@ -2342,6 +2347,7 @@
 		"REMOTE_HIGH_LATENCY_DETECTED": "Votre connexion avec {{host}} est lente, vos utilisateurs peuvent rencontrer des problèmes"
 	},
 	"PLAYLIST": {
-		"NO_SONG": "Pas de chanson trouvée"
+		"NO_SONG": "Pas de chanson trouvée",
+		"EMPTY": "La liste de lecture est vide"
 	}
 }

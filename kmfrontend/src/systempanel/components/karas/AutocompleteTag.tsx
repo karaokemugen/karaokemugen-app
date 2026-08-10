@@ -8,7 +8,7 @@ import GlobalContext from '../../../store/context';
 import { getTagInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { CreateTagModal } from '../CreateTagModal';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 interface AutocompleteTagProps {
 	onChange: (e: unknown[]) => void;

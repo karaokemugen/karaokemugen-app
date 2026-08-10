@@ -10,7 +10,7 @@ import { getOppositePlaylistInfo, getPlaylistInfo, setPlaylistInfo } from '../..
 import { commandBackend } from '../../../utils/socket';
 import { nonStandardPlaylists } from '../../../utils/tools';
 import SelectWithIcon from '../generic/SelectWithIcon';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 interface IProps {
 	side: 'left' | 'right';

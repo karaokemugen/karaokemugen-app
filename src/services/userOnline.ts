@@ -16,7 +16,7 @@ import sentry from '../utils/sentry.js';
 import { startSub, stopSub } from '../utils/userPubSub.js';
 import { convertToRemoteFavorites } from './favorites.js';
 import { checkPassword, createJwtToken, createUser, editUser, getUser } from './user.js';
-import { AxiosResponse } from 'axios';
+import { AxiosResponse, isAxiosError } from 'axios';
 
 const service = 'RemoteUser';
 
@@ -57,7 +57,7 @@ export async function remoteLogin(username: string, password: string): Promise<s
 	} catch (err) {
 		// Remote login returned 401 so we throw an error
 		// For other errors, no error is thrown
-		if (err.statusCode === 401) throw 'Unauthorized';
+		if (isAxiosError(err) && err.response?.status === 401) throw 'Unauthorized';
 		if (testJSON(err.config.data)) {
 			const data = JSON.parse(err.config.data);
 			if (data.password) data.password = 'xxx';
@@ -76,9 +76,13 @@ export async function resetRemotePassword(user: string) {
 			`${conf.RemoteUsers.Secure ? 'https' : 'http'}://${instance}/api/users/${username}/resetpassword`
 		);
 	} catch (err) {
+		let sentry = true;
 		logger.error(`Could not trigger reset password for ${user}`, { service, obj: err });
-		sentry.error(err);
-		throw err instanceof ErrorKM ? err : new ErrorKM('USER_RESETPASSWORD_ONLINE_ERROR');
+		if (err.code === 'ENOTFOUND') {
+			logger.error(`Instance ${instance} not found via DNS`, { service });
+			sentry = false;
+		}
+		throw err instanceof ErrorKM ? err : new ErrorKM('USER_RESETPASSWORD_ONLINE_ERROR', 500, sentry);
 	}
 }
 
@@ -113,8 +117,15 @@ async function getARemoteUser(login: string, instance: string): Promise<User> {
 		const user = await HTTP.get(`${conf.RemoteUsers.Secure ? 'https' : 'http'}://${instance}/api/users/${login}`);
 		return user.data as User;
 	} catch (err) {
-		if (err.response?.status == 404) return null;
+		if (err.code === 'ENOTFOUND') {
+			logger.error(`Instance ${instance} not found via DNS.`, { service });
+			throw new ErrorKM('INSTANCE_NOT_RESPONDING', 404, false);
+		}
+		if (isAxiosError(err) && err.response?.status === 404) return null;
 		logger.debug('Got error when trying to get an online user', { service, obj: err });
+		if (isAxiosError(err) && err.response?.status === 504) {
+			throw new ErrorKM('INSTANCE_NOT_RESPONDING', 504, false);
+		}
 		throw err;
 	}
 }
@@ -251,7 +262,7 @@ export async function fetchAndUpdateRemoteUser(
 		try {
 			remoteUser = await getRemoteUser(username, onlineToken);
 		} catch (err) {
-			if (err.statusCode !== 401 && err.statusCode !== 403) sentry.error(err);
+			if (isAxiosError(err) && err.response?.status !== 401 && err.response.status !== 403) sentry.error(err);
 			throw err;
 		}
 		// Check if user exists. If it does not, create it.

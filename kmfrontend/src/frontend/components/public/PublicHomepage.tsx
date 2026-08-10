@@ -10,7 +10,7 @@ import { tagTypes, YEARS } from '../../../utils/tagTypes';
 import { is_touch_device, secondsTimeSpanToHMS } from '../../../utils/tools';
 import LyricsBox from './LyricsBox';
 import PlayerBox from './PlayerBox';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 interface IProps {
 	activePoll: boolean;

@@ -12,7 +12,7 @@ import { getPreviewLink, getTagInLocale, getTitleInLocale, sortAndHideTags } fro
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 import { secondsTimeSpanToHMS } from '../../../utils/tools';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 interface IProps {
 	mode: 'fixed' | 'homepage' | 'playlist';

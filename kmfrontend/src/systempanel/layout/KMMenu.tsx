@@ -19,7 +19,7 @@ import { logout } from '../../store/actions/auth';
 import GlobalContext from '../../store/context';
 import { commandBackend } from '../../utils/socket';
 import type { RepositoryManifestV2 } from '../../../../src/lib/types/repo';
-import { WS_CMD } from '../../utils/ws';
+import { WS_CMD } from '../../utils/ws.mjs';
 
 function KMMenu() {
 	const context = useContext(GlobalContext);

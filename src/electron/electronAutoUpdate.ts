@@ -2,7 +2,7 @@ import { dialog } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import i18next from 'i18next';
 
-import { exit } from '../components/engine.js';
+import { exit, macOSQuitForUpdate } from '../components/engine.js';
 import { getConfig } from '../lib/utils/config.js';
 import logger from '../lib/utils/logger.js';
 import Task from '../lib/utils/taskManager.js';
@@ -86,14 +86,18 @@ export function initAutoUpdate() {
 			detail: i18next.t('UPDATE_READY_TO_INSTALL_RESTARTING'),
 		});
 		try {
-			await exit(0, true);
+			// Yes, squirrel.mac is bugged.
+			if (process.platform === 'darwin') {
+				macOSQuitForUpdate();			
+			} else {
+				await exit(0, true);				
+			}
 			autoUpdater.quitAndInstall();
 		} catch (err) {
 			sentry.error(err);
 			logger.error('Failed to quit and install', { service, obj: err });
 		}
 	});
-
 	if (getConfig().Online.Updates.App) {
 		try {
 			logger.info('Checking for updates and notify', { service });

@@ -4,7 +4,7 @@ import { FavExport } from '../src/types/favorites.js';
 import { commandBackend, getToken } from './util/util.js';
 
 describe('Favorites', () => {
-	const favoriteKID = 'a6108863-0ae9-48ad-adb5-cb703651f6bf';
+	const favoriteKID = '0129fd45-787e-4100-bd46-69420bd75e7a';
 	let token: string;
 	before(async () => {
 		token = await getToken();
@@ -37,7 +37,7 @@ describe('Favorites', () => {
 	it('Generate a automix playlist', async () => {
 		const data = {
 			filters: {
-				years: [2000],
+				years: [2009],
 			},
 			limitType: 'duration',
 			limitNumber: 20,

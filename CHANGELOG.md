@@ -1,3 +1,46 @@
+# [9.0.60] - 2026-08-10
+
+## Added
+
+- **[Users]** Added czech translations
+- **[Users]** Search is now kept when going to a previous page in public interface
+- **[Maintainers]** Extract embedded subtitles directly from the song submission form (#1791)
+
+## Changed
+
+- **[Users]** Updated czech, polish, breton, german, spanish and english translations,
+- **[Operators]** Moved "Volume" button to quick access menu
+- **[Operators]** Local binaries are now checked before defaulting to system ones if available
+- **[Maintainers]** FromDisplayType is now properly used in songname creation (#1891)
+- **[Developers]** Unit tests now rely on mugen.re database.
+- **[Developers]** Changed our validation framework from validate.js to zod. This means some constraints are now better checked and will allow us better input validation
+- **[Developers]** Upgraded discord-rpc to a more maintained fork 
+- **[Developers]** Changed how errors are handled in PostgreSQL to better identify them via Sentry
+- **[Developers]** Upgraded backend dependencies
+
+## Removed
+
+- **[Developers]** Removed prettier in backend as it was not really maintained on our side and wasn't used anymore
+- **[Developers]** Removed yesql to use our own function instead
+- **[Developers]** Removed some dead code
+- **[Developers]** Removed os-locale now that node can handle it
+- **[Developers]** Removed ip module now that node can handle it just fine
+- **[Developers]** Removed need for sentry-cli 
+
+## Fixed
+
+- **[Users]** Fixed quiz mode being too bandwidth hungry, which should allow better responses on slower networks
+- **[Operators]** Fixed macOS auto-update bug
+- **[Operators]** Fixed unzipping performance when downloading repositories and fixed another zip-related bug along with it
+- **[Operators]** Fixed tag filter not being kept in kara lists
+- **[Operators]** Fixed a privilege escalation security vulnerability (thanks Mio!)
+- **[Operators]** Better messages for "no song found" and "empty playlist" messages
+- **[Operators]** Fixed (hopefully) deadlock issues with refreshKaraParents
+- **[Operators]** Fixed songname property creation
+- **[Maintainers]** Fixed error when a song has the same tag and type
+- **[Maintainers]** Fixed font copy logic to exclude .gitkeep
+- **[Developers]** Fixed some types to be more faithful to reality
+
 # [9.0.52] - 2026-06-28
 
 ## Added

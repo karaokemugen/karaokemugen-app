@@ -8,7 +8,7 @@ import { DBPLCInfo } from '../../../../../src/types/database/playlist';
 import { PublicPlayerState } from '../../../../../src/types/state';
 import nanamiSingingPng from '../../../assets/nanami-sing.png';
 import nanamiSingingWebP from '../../../assets/nanami-sing.webp';
-import { setPlaylistInfoLeft, setPlaylistInfoRight } from '../../../store/actions/frontendContext';
+import { setGoBack, setPlaylistInfoLeft, setPlaylistInfoRight } from '../../../store/actions/frontendContext';
 import { closeModal, showModal } from '../../../store/actions/modal';
 import { setSettings } from '../../../store/actions/settings';
 import GlobalContext from '../../../store/context';
@@ -28,7 +28,7 @@ import PublicHeader from './PublicHeader';
 import PublicHomepage from './PublicHomepage';
 import PublicList from './PublicList';
 import QuizPage from './QuizPage';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 let timer: NodeJS.Timeout;
 
@@ -179,6 +179,11 @@ function PublicPage() {
 		}
 	};
 
+	const goBack = async () => {
+		setGoBack(context.globalDispatch, true);
+		navigate(-1);
+	};
+
 	useEffect(() => {
 		getSocket().on('publicPlaylistUpdated', publicPlaylistUpdated);
 		return () => {
@@ -271,18 +276,13 @@ function PublicPage() {
 				}
 			>
 				<Routes>
-					<Route
-						path="/user"
-						element={<ProfilModal scope="public" closeProfileModal={() => navigate(-1)} />}
-					/>
-					<Route path="/users" element={<UsersModal scope="public" closeModal={() => navigate(-1)} />} />
+					<Route path="/user" element={<ProfilModal scope="public" closeProfileModal={goBack} />} />
+					<Route path="/users" element={<UsersModal scope="public" closeModal={goBack} />} />
 					{!context.globalState.settings.data.state.quiz.running ? ( // Disable routes
 						<>
 							<Route
 								path="/karaoke/:kid"
-								element={
-									<KaraDetail kid={params.kid} scope="public" closeOnPublic={() => navigate(-1)} />
-								}
+								element={<KaraDetail kid={params.kid} scope="public" closeOnPublic={goBack} />}
 							/>
 							<Route
 								path="/plc/:plcid"
@@ -290,7 +290,7 @@ function PublicPage() {
 									<KaraDetail
 										playlistcontentId={parseInt(params.plcid)}
 										scope="public"
-										closeOnPublic={() => navigate(-1)}
+										closeOnPublic={goBack}
 									/>
 								}
 							/>

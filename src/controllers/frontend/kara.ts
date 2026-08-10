@@ -1,10 +1,11 @@
-import { WS_CMD } from '../../../kmfrontend/src/utils/ws.js';
+import z from 'zod';
+import { WS_CMD } from '../../../kmfrontend/src/utils/ws.mjs';
 import { validateMediaInfo } from '../../lib/dao/karafile.js';
 import { APIMessage } from '../../lib/services/frontend.js';
 import { previewHooks, processUploadedMedia } from '../../lib/services/karaCreation.js';
 import { TagTypeNum } from '../../lib/types/tag.js';
 import { abortAllMediaEncodingProcesses } from '../../lib/utils/ffmpeg.js';
-import { check, isUUID } from '../../lib/utils/validators.js';
+import { check, isUUID, zUUIDArray } from '../../lib/utils/validators.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
 import { getKara, getKaraLyrics, getKaraMediaInfo, getKaras, getKMStats } from '../../services/kara.js';
 import { createKara, editKara } from '../../services/karaCreation.js';
@@ -72,8 +73,8 @@ export default function karaController(router: SocketIOApp) {
 	router.route(WS_CMD.PROCESS_UPLOADED_MEDIA, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
-			const mediaInfo = await processUploadedMedia(req.body.filename, req.body.origFilename);
-			return { ...mediaInfo, filePath: undefined };
+			const processMediaResult = await processUploadedMedia(req.body.filename, req.body.origFilename);
+			return { ...processMediaResult, filePath: undefined };
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
@@ -129,9 +130,7 @@ export default function karaController(router: SocketIOApp) {
 	});
 	router.route(WS_CMD.DELETE_KARAS, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
-		const validationErrors = check(req.body, {
-			kids: { presence: true, uuidArrayValidator: true },
-		});
+		const validationErrors = check(req.body, z.object({ kids: zUUIDArray }));
 		if (!validationErrors) {
 			try {
 				await removeKara(req.body.kids);

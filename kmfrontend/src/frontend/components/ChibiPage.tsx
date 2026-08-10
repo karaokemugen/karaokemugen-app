@@ -14,7 +14,7 @@ import KmAppHeaderDecorator from './decorators/KmAppHeaderDecorator';
 import KmAppWrapperDecorator from './decorators/KmAppWrapperDecorator';
 import ProgressBar from './karas/ProgressBar';
 import PlayerControls from './PlayerControls';
-import { WS_CMD } from '../../utils/ws';
+import { WS_CMD } from '../../utils/ws.mjs';
 
 function ChibiPage() {
 	const context = useContext(GlobalContext);
@@ -140,35 +140,6 @@ function ChibiPage() {
 				</div>
 				<KmAppHeaderDecorator mode="admin">
 					<div className="header-group controls">
-						<button
-							type="button"
-							title={i18next.t('PLAYERS_CONTROLS.MUTE_UNMUTE')}
-							className="btn btn-dark volumeButton"
-						>
-							<div
-								id="mute"
-								data-namecommand={statusPlayer?.volume === 0 || statusPlayer?.mute ? 'unmute' : 'mute'}
-								onClick={putPlayerCommando}
-							>
-								{statusPlayer?.volume === 0 || statusPlayer?.mute ? (
-									<i className="fas fa-volume-mute"></i>
-								) : statusPlayer?.volume > 66 ? (
-									<i className="fas fa-volume-up"></i>
-								) : statusPlayer?.volume > 33 ? (
-									<i className="fas fa-volume-down"></i>
-								) : (
-									<i className="fas fa-volume-off"></i>
-								)}
-							</div>
-							<input
-								title={i18next.t('PLAYERS_CONTROLS.VOLUME_LEVEL')}
-								data-namecommand="setVolume"
-								id="volume"
-								value={statusPlayer?.volume}
-								type="range"
-								onInput={setVolume}
-							/>
-						</button>
 						<PlayerControls
 							putPlayerCommando={putPlayerCommando}
 							statusPlayer={statusPlayer}
@@ -176,22 +147,32 @@ function ChibiPage() {
 							scope="chibi"
 						/>
 						<button
-							title={i18next.t(
-								statusPlayer?.showSubs ? 'PLAYERS_CONTROLS.SUBS.HIDE' : 'PLAYERS_CONTROLS.SUBS.SHOW'
-							)}
-							id="showSubs"
-							data-namecommand={statusPlayer?.showSubs ? 'hideSubs' : 'showSubs'}
-							className={`btn btn-dark subtitleButton ${
-								statusPlayer?.showSubs ? 'hideSubs' : 'showSubs'
-							}`}
+							className="btn"
+							title={i18next.t('PLAYERS_CONTROLS.MUTE_UNMUTE')}
+							id="mute"
+							data-namecommand={statusPlayer?.volume === 0 || statusPlayer?.mute ? 'unmute' : 'mute'}
 							onClick={putPlayerCommando}
 						>
-							<span className="fa-stack">
-								<i className="fas fa-closed-captioning fa-stack-1x" />
-								<i className="fas fa-ban fa-stack-2x" style={{ color: '#943d42', opacity: 0.7 }} />
-							</span>
-							<i className="fas fa-closed-captioning" />
+							{statusPlayer?.volume === 0 || statusPlayer?.mute ? (
+								<i className="fas fa-volume-mute" />
+							) : statusPlayer?.volume > 66 ? (
+								<i className="fas fa-volume-up" />
+							) : statusPlayer?.volume > 33 ? (
+								<i className="fas fa-volume-down" />
+							) : (
+								<i className="fas fa-volume-off" />
+							)}
 						</button>
+						{statusPlayer ? (
+							<input
+								title={i18next.t('PLAYERS_CONTROLS.VOLUME_LEVEL')}
+								data-namecommand="setVolume"
+								id="volume"
+								value={statusPlayer.volume}
+								type="range"
+								onInput={setVolume}
+							/>
+						) : null}
 					</div>
 				</KmAppHeaderDecorator>
 				<ProgressBar />

@@ -30,7 +30,7 @@ import { Commit, ModifiedMedia } from '../../../../src/types/repo';
 import { commandBackend, getSocket } from '../../utils/socket';
 import { displayMessage } from '../../utils/tools';
 import Title from '../components/Title';
-import { WS_CMD } from '../../utils/ws';
+import { WS_CMD } from '../../utils/ws.mjs';
 
 type CommitWithComment = Commit & { comment: string; filesModified: boolean };
 

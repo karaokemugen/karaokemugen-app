@@ -6,7 +6,7 @@ import prettyBytes from 'pretty-bytes';
 import { commandBackend } from '../../utils/socket';
 import Title from '../components/Title';
 import { useEffect, useState } from 'react';
-import { WS_CMD } from '../../utils/ws';
+import { WS_CMD } from '../../utils/ws.mjs';
 
 function Storage() {
 	const [repositories, setRepositories] = useState<{ name: string; freeSpace: string }[]>([]);

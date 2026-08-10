@@ -1,6 +1,4 @@
-import { pg as yesql } from 'yesql';
-
-import { db, paramWords } from '../lib/dao/database.js';
+import { db, paramWords, prepareNamedParamsQuery } from '../lib/dao/database.js';
 import { WhereClause } from '../lib/types/database.js';
 import { DBTag } from '../lib/types/database/tag.js';
 import { Tag, TagAndType, TagParams } from '../lib/types/tag.js';
@@ -60,7 +58,7 @@ export async function selectAllTags(params: TagParams): Promise<DBTag[]> {
 		stripClause,
 		whereClause
 	);
-	const res = await db().query(yesql(query)(filterClauses.params));
+	const res = await db().query(prepareNamedParamsQuery(query)(filterClauses.params));
 	return res.rows;
 }
 
@@ -104,7 +102,7 @@ export async function updateKaraTags(kid: string, tags: TagAndType[]) {
 	for (const tag of tags) {
 		try {
 			await db().query(
-				yesql(sqlinsertKaraTags)({
+				prepareNamedParamsQuery(sqlinsertKaraTags)({
 					kid,
 					tid: tag.tid,
 					type: tag.type,

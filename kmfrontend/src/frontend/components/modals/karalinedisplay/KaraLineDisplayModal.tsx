@@ -9,7 +9,7 @@ import { karaokeExample } from '../../../../utils/karaexample';
 import KaraLineDisplayAddModal from './KaraLineDisplayAddModal';
 import KaraLineDisplayModalDndList from './KaraLineDisplayModalDndList';
 import { commandBackend } from '../../../../utils/socket';
-import { WS_CMD } from '../../../../utils/ws';
+import { WS_CMD } from '../../../../utils/ws.mjs';
 import { Trans } from 'react-i18next';
 
 interface IProps {

@@ -22,6 +22,7 @@ import Sentry from '../utils/sentry.js';
 import { getState, setState } from '../utils/state.js';
 import { parseArgs, setupFromCommandLineArgs } from './args.js';
 import { exit, initEngine } from './engine.js';
+import { ErrorKM } from '../lib/utils/error.js';
 
 const service = 'Init';
 
@@ -93,7 +94,6 @@ export async function init() {
 	console.log(`Version ${state.version.number} "${state.version.name}" (${sha || 'UNKNOWN'})`);
 	console.log('================================================================================');
 	logger.debug('Initial state', { service, obj: state });
-
 	// Checking paths, create them if needed.
 	await checkPaths();
 	// Copy avatar blank.png if it doesn't exist to the avatar path
@@ -185,7 +185,7 @@ async function checkPaths() {
 		logger.debug('Directory checks complete', { service });
 	} catch (err) {
 		errorStep(i18next.t('ERROR_INIT_PATHS'));
-		throw err;
+		throw err instanceof ErrorKM ? ErrorKM : new ErrorKM('INIT_ERROR', 500, true) ;
 	} finally {
 		profile('checkPaths');
 	}

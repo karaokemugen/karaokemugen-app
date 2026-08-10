@@ -1,6 +1,4 @@
-import { pg as yesql } from 'yesql';
-
-import { db, transaction } from '../lib/dao/database.js';
+import { db, prepareNamedParamsQuery, transaction } from '../lib/dao/database.js';
 import { KaraParams } from '../lib/types/kara.js';
 import { FavoritesMicro } from '../types/favorites.js';
 import { sqlclearFavorites, sqlgetFavoritesMicro, sqlinsertFavorites, sqlremoveFavorites } from './sql/favorites.js';
@@ -12,7 +10,7 @@ export async function selectFavoritesMicro(params: KaraParams): Promise<Favorite
 	if (params.from > 0) offsetClause = `OFFSET ${params.from} `;
 	if (params.size > 0) limitClause = `LIMIT ${params.size} `;
 	const query = sqlgetFavoritesMicro(limitClause, offsetClause);
-	const res = await db().query(yesql(query)(finalParams));
+	const res = await db().query(prepareNamedParamsQuery(query)(finalParams));
 	return res.rows;
 }
 

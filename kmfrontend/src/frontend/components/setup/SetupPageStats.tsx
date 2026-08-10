@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router';
 
 import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 function SetupPageStats() {
 	const context = useContext(GlobalContext);

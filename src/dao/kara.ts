@@ -1,6 +1,4 @@
-import { pg as yesql } from 'yesql';
-
-import { buildClauses, buildTypeClauses, copyFromData, db, transaction } from '../lib/dao/database.js';
+import { buildClauses, buildTypeClauses, copyFromData, db, prepareNamedParamsQuery, transaction } from '../lib/dao/database.js';
 import { WhereClause } from '../lib/types/database.js';
 import { DBKara, DBKaraBase, DBYear, KaraOldData } from '../lib/types/database/kara.js';
 import { Kara, KaraFileV4, KaraParams } from '../lib/types/kara.js';
@@ -18,7 +16,6 @@ import {
 	sqlgetYears,
 	sqlinsertChildrenParentKara,
 	sqlinsertKara,
-	sqlselectAllKIDs,
 	sqlTruncateOnlineRequested,
 } from './sql/kara.js';
 import logger from '../lib/utils/logger.js';
@@ -39,7 +36,7 @@ export async function selectYears(): Promise<DBYear[]> {
 
 export async function insertKara(kara: KaraFileV4): Promise<KaraOldData> {
 	const data = await db().query(
-		yesql(sqlinsertKara)({
+		prepareNamedParamsQuery(sqlinsertKara)({
 			karafile: kara.meta.karaFile,
 			mediafile: kara.medias[0].filename,
 			lyrics_infos: JSON.stringify(kara.medias[0].lyrics),
@@ -179,10 +176,7 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		const collectionsParentClauses = [];
 		let collectionsParentJoin = '';
 		if (!params.ignoreCollections) {
-			collectionsParentJoin = `LEFT JOIN all_karas ak2 ON ak2.pk_kid = kr.fk_kid_parent
-			WHERE
-			${params.blacklist ? 'fk_kid_parent NOT IN (SELECT * FROM blacklist) AND ' : ''}
-			`;
+			collectionsParentJoin = `LEFT JOIN all_karas ak2 ON ak2.pk_kid = kr.fk_kid_parent`;
 			if (collections)
 				for (const collection of Object.keys(collections)) {
 					if (collections[collection] === true)
@@ -193,7 +187,9 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		withCTEs.push('parents AS (SELECT fk_kid_parent AS kid FROM kara_relation)');
 		withCTEs.push(`children AS (SELECT kr.fk_kid_child AS kid FROM kara_relation kr
 			${collectionsParentJoin}
-			${collectionsParentClauses.join(' OR ')}
+			WHERE true
+			${params.blacklist ? ' AND fk_kid_parent NOT IN (SELECT * FROM blacklist) ' : ''}
+			${collectionsParentClauses.length > 0 ? ' AND ' : ''}${collectionsParentClauses.join(' OR ')}
 		)`);
 		whereClauses.push(`(ak.pk_kid IN (
 			SELECT kid FROM parents
@@ -246,7 +242,7 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		...yesqlPayload.params,
 	};
 	try {
-		const res = await db().query(yesql(query)(queryParams));
+		const res = await db().query(prepareNamedParamsQuery(query)(queryParams));
 		return res.rows.map(row => organizeTagsInKara(row));
 	} catch (err) {
 		logger.debug(`SelectAllKaras failed with params : ${JSON.stringify(params)}`, { service });
@@ -293,13 +289,13 @@ export async function selectAllKarasMicro(params: KaraParams): Promise<DBKaraBas
 	const queryParams = {
 		...yesqlPayload.params,
 	};
-	const res = await db().query(yesql(query)(queryParams));
+	const res = await db().query(prepareNamedParamsQuery(query)(queryParams));
 	return res.rows;
 }
 
 export function insertPlayed(kid: string) {
 	return db().query(
-		yesql(sqladdViewcount)({
+		prepareNamedParamsQuery(sqladdViewcount)({
 			kid,
 			played_at: new Date(),
 			seid: getState().currentSessionID,
@@ -310,11 +306,6 @@ export function insertPlayed(kid: string) {
 export function insertKaraToRequests(username: string, karaList: string[]) {
 	const karas = karaList.map(kara => [username, kara, new Date(), getState().currentSessionID]);
 	return transaction({ params: karas, sql: sqladdRequested });
-}
-
-export async function selectAllKIDs(kid?: string): Promise<string[]> {
-	const res = await db().query(sqlselectAllKIDs(kid));
-	return res.rows.map((k: Kara) => k.kid);
 }
 
 export function truncateOnlineRequested() {
@@ -331,7 +322,7 @@ export async function updateKaraParents(kara: Kara) {
 	if (!kara.parents) return;
 	for (const pkid of kara.parents) {
 		await db().query(
-			yesql(sqlinsertChildrenParentKara)({
+			prepareNamedParamsQuery(sqlinsertChildrenParentKara)({
 				parent_kid: pkid,
 				child_kid: kara.kid,
 			})

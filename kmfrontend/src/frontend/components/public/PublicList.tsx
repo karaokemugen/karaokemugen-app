@@ -3,7 +3,12 @@ import { debounce } from 'lodash';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { setFilterValue, setIndexKaraDetail, setPlaylistInfoLeft } from '../../../store/actions/frontendContext';
+import {
+	setFilterValue,
+	setGoBack,
+	setIndexKaraDetail,
+	setPlaylistInfoLeft,
+} from '../../../store/actions/frontendContext';
 import { showModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import { nonStandardPlaylists } from '../../../utils/tools';
@@ -72,8 +77,17 @@ export default function PublicList(props: Props) {
 	}, [props.plaid, plaid]);
 
 	useEffect(() => {
-		setSearchFilter('');
-		setFilterValue(context.globalDispatch, '', 'left', context.globalState.frontendContext.playlistInfoLeft.plaid);
+		if (context.globalState.frontendContext.goBack) {
+			setGoBack(context.globalDispatch, false);
+		} else {
+			setSearchFilter('');
+			setFilterValue(
+				context.globalDispatch,
+				'',
+				'left',
+				context.globalState.frontendContext.playlistInfoLeft.plaid
+			);
+		}
 	}, [props.plaid, plaid, tid, year, tagType]);
 
 	return (

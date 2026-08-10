@@ -17,7 +17,7 @@ import { commandBackend } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 import { displayMessage } from '../../../utils/tools';
 import SelectWithIcon from '../generic/SelectWithIcon';
-import { WS_CMD } from '../../../utils/ws';
+import { WS_CMD } from '../../../utils/ws.mjs';
 
 type RecursivePartial<T> = {
 	[P in keyof T]?: T[P] extends (infer U)[]

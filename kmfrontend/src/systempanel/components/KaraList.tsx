@@ -31,7 +31,7 @@ import { commandBackend, getSocket } from '../../utils/socket';
 import { tagTypes } from '../../utils/tagTypes';
 import { isModifiable, isRepoOnline, isRepoOnlineAndMaintainer } from '../../utils/tools';
 import { ItemType } from 'antd/es/menu/interface';
-import { WS_CMD } from '../../utils/ws';
+import { WS_CMD } from '../../utils/ws.mjs';
 
 interface KaraListProps {
 	tagFilter?: string;
@@ -50,7 +50,7 @@ function KaraList(props: KaraListProps) {
 	const [filter, setFilter] = useState(props.tagFilter ? '' : localStorage.getItem('karaFilter') || '');
 	const [tags, setTags] = useState<DBTag[]>([]);
 	const [tagOptions, setTagOptions] = useState([]);
-	const [tagFilter, setTagFilter] = useState(props.tagFilter || '');
+	const [tagFilter, setTagFilter] = useState(props.tagFilter || localStorage.getItem('karaTagFilter') || '');
 	const tagFilterType: 'AND' | 'OR' = props.tagFilterType || 'AND';
 
 	useEffect(() => {
@@ -145,6 +145,8 @@ function KaraList(props: KaraListProps) {
 		setTagFilter(t);
 		setCurrentPage(0);
 		localStorage.setItem('karaPage', '1');
+		localStorage.setItem('karaTagFilter', t);
+		localStorage.setItem('karaTagFilterValue', value ? JSON.stringify(value) : null);
 	};
 
 	const confirmDeleteKara = kara => {
@@ -471,6 +473,10 @@ function KaraList(props: KaraListProps) {
 								filter: filterTagCascaderFilter,
 								matchInputWidth: false,
 							}}
+							value={
+								localStorage.getItem('karaTagFilterValue') &&
+								JSON.parse(localStorage.getItem('karaTagFilterValue'))
+							}
 							onChange={handleFilterTagSelection}
 							placeholder={i18next.t('KARA.TAG_FILTER')}
 							styles={{

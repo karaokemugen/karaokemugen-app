@@ -1119,7 +1119,9 @@
 			"AUDIO_CHANNEL_LAYOUT": "Audio channel layout",
 			"AUDIO_COVER_ART": "Cover art",
 			"WARNINGS": {
-				"LIBAVCODEC_ENCODER": "The audio is encoded with the libavcodec (ffmpeg reference aac) encoder, which can create audible artifacts and is discouraged to utilize. Please use the libfdk_aac encoder for aac or another codec like opus, to get the best possible quality."
+				"LIBAVCODEC_ENCODER": "The audio is encoded with the libavcodec (ffmpeg reference aac) encoder, which can create audible artifacts and is discouraged to utilize. Please use the libfdk_aac encoder for aac or another codec like opus, to get the best possible quality.",
+				"HAS_EMBEDDED_SUBTITLES": "Embedded subtitles in the media file are not recommended and will be removed automatically when saving. Please make the subtitle is correctly applied or uploaded in the 'Lyrics' section.",
+				"HAS_ATTACHMENTS": "The media file contains embedded attachments (likely fonts), which will be removed when saving."
 			}
 		},
 		"MEDIA_ENCODE": {
@@ -1140,6 +1142,8 @@
 		"LYRICS_FILE": "Lyrics file",
 		"LYRICS_FILE_TOOLTIP": "Supported file formats: {{formats}}",
 		"LYRICS_FILE_OPEN": "Open file",
+		"EMBEDDED_LYRICS_FOUND": "Embedded lyrics found",
+		"USE_EMBEDDED_LYRICS_CONFIRM": "The media file contains an embedded lyrics file. Replace the current lyrics by the one in the media file?",
 		"MISSING_PARENT_SONG": "Missing parent song ({{parent}})",
 		"ADD_FILE_SUCCESS": "{{name}} file added successfully",
 		"ADD_FILE_MEDIA_ERROR": "{{name}} is not a media file",
@@ -1165,8 +1169,6 @@
 		"KARA_AUTHORS_TOOLTIP": "You should add yourself here ;)",
 		"COMMENT": "Any comments?",
 		"COMMENT_TOOLTIP": "A commentary field for things like \"To all my fans!\" or \"Don't modify the effects!\" or \"Made with lots of coffee\".",
-		"USEEMBEDDEDLYRICS": "Prioritize embedded lyrics from media",
-		"USEEMBEDDEDLYRICS_TOOLTIP": "If the media uploaded contains an embedded ASS file, it'll be extracted and replace the current lyrics file.",
 		"IGNOREHOOKS": "Ignore automatic tags",
 		"IGNOREHOOKS_TOOLTIP": "Some tags can be added automatically to this song if it meets some conditions.",
 		"PREVIEW_HOOKS": "Preview tags added automatically",
@@ -1215,9 +1217,11 @@
 			"ADD_PARENT": "Add parent",
 			"REMOVE_PARENT": "Remove parent",
 			"EDIT_DISPLAY_TYPE": "Edit from tag type display",
+			"COPY_SONGS_TO_REPOSITORY": "Copy songs to repository",
 			"CREATE_PLAYLIST": "First, you need to create a playlist in the operator panel.",
 			"SELECT_PLAYLIST": "Select a playlist:",
 			"SELECT_ACTION": "Select an operation:",
+			"SELECT_REPOSITORY": "Select a repository :",
 			"SELECT_TAG": "Select a tag:",
 			"SELECT_PARENT": "Select a parent:",
 			"SELECT_TAG_TYPE": "Select a tag type :",
@@ -1703,7 +1707,7 @@
 		"COMMITING_CHANGES": "Committing changes",
 		"PREPARING_CHANGES": "Preparing changes",
 		"REFRESHING_DATA": "Refreshing data…",
-		"UPLOADING_FTP": "Uploading to FTP…",
+		"UPLOADING_MEDIA": "Uploading media…",
 		"EXPORTING_PLAYLIST_MEDIA": "Exporting media from playlist…",
 		"CALCULATING_MEDIA_ENCODING_PARAMETERS": "Calculating media encoding parameters…",
 		"ENCODING_MEDIA": "Encoding media file…",
@@ -1732,7 +1736,7 @@
 		"NICKNAME_ALREADY_IN_USE": "Nickname already in use",
 		"ONLINE_CONVERT_ERROR": "Error converting online online account",
 		"PLAY_ERROR": "Error playing song",
-		"PL_DELETE_PLAYING_ERROR": "You can't remove the curerntly playing song",
+		"PL_DELETE_PLAYING_ERROR": "You can't remove the currently playing song",
 		"PL_RANDOMIZE_ERROR": "Error shuffling playlist",
 		"CHECK_YOUR_PRIVILEGES": "You cannot do that",
 		"QUIZZ_START_ERROR": "Error starting quiz",
@@ -1759,6 +1763,7 @@
 		"INBOX_DOWNLOAD_ERROR": "Unable to download song from inbox",
 		"INBOX_DELETE_ERROR": "Unable to delete song from inbox",
 		"INBOX_DELETE_FORBIDDEN_ERROR": "Inbox deletion forbidden",
+		"INSTANCE_NOT_RESPONDING": "The instance is not responding",
 		"WEBAPPMODE_CLOSED_API_MESSAGE": "API is disabled at the moment",
 		"CRITERIAS_EMPTY_ERROR": "Error emptying list of criteria",
 		"CRITERIAS_GET_ERROR": "Criteria could not be viewed",
@@ -1945,7 +1950,7 @@
 		"INVALID_ONLINE_TOKEN": "Invalid online token",
 		"LOG_VIEW_ERROR": "Unable to open file explorer on log directory",
 		"USER_ALREADY_EXISTS_LOCALLY": "User already exists locally",
-		"SESSION_DELETE_ACTIVE_ERROR": "The active session cannot be delete.",
+		"SESSION_DELETE_ACTIVE_ERROR": "The active session cannot be deleted.",
 		"SESSION_GET_ERROR": "Error getting session",
 		"CANNOT_DELETE_LAST_REPOSITORY": "The last repository cannot be deleted",
 		"GIT_PULL_FAILED": "The git pull has failed",
@@ -2342,6 +2347,7 @@
 		}
 	},
 	"PLAYLIST": {
-		"NO_SONG": "no song found"
+		"NO_SONG": "No song found",
+		"EMPTY": "The playlist is empty"
 	}
 }
