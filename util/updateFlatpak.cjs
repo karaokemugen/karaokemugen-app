@@ -40,7 +40,23 @@ async function main() {
 				version: process.env.CI_COMMIT_REF_NAME,
 				date: `${d.getFullYear()}-${month}-${day}`,
 			},
+			elements: [
+				{
+					type: 'element',
+					name: 'url',
+					attributes: {
+						type: 'details',
+					},
+					elements: [
+						{
+							type: 'text',
+							text: `https://gitlab.com/karaokemugen/code/karaokemugen-app/-/releases/${process.env.CI_COMMIT_REF_NAME}`,
+						},
+					],
+				},
+			],	
 		});
+
 	}
 
 	// Write files
