@@ -5,7 +5,7 @@
 		"@hello-pangea/dnd": "^18.0.1",
 		"@karaokemugen/i18n-iso-languages": "^4.2.2",
 		"@sentry/react": "^10.65.0",
-		"antd": "6.3.7",
+		"antd": "6.4.5",
 		"dayjs": "^1.11.21",
 		"diff2html": "^3.4.56",
 		"dompurify": "^3.4.12",
@@ -58,6 +58,9 @@
 		"typescript": "6.0.3",
 		"vite": "^8.1.4",
 		"vite-plugin-node-polyfills": "^0.26.0"
+	},
+	"resolutions": {
+		"@rc-component/util": "1.11.1"
 	},
 	"scripts": {
 		"analyze": "source-map-explorer 'build/static/js/*.js'",

@@ -349,7 +349,7 @@ export function getPreviewLink(kara: DBKara, context: GlobalContextInterface) {
 }
 
 export function getPreviewPath(options: { contentid: string; mediasize: number }) {
-	return `/previews/${options.contentid}.${options.mediasize}.25.jpg`;
+	return `/previews/${options.contentid}.${options.mediasize}.25.avif`;
 }
 
 export function getPlaylistInfo(side: 'left' | 'right', context: GlobalContextInterface) {
