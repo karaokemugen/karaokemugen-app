@@ -29,7 +29,7 @@ export async function getFavorites(params: KaraParams): Promise<KaraList> {
 		profile('getFavorites');
 		return await getKaras(params);
 	} catch (err) {
-		logger.error(`Failed to fetch favorites for user ${params.userFavorites}`, { service });
+		logger.error(`Failed to fetch favorites for user ${params.favorites}`, { service });
 		sentry.error(err);
 		throw new ErrorKM('FAVORITES_VIEW_ERROR', 500);
 	} finally {
@@ -100,7 +100,7 @@ export async function convertToRemoteFavorites(username: string, token: string) 
 		filter: null,
 		lang: null,
 		username,
-		userFavorites: username,
+		favorites: username,
 	});
 	const localFavorites = favorites.content.map(fav => fav.kid);
 	if (localFavorites.length > 0) {
@@ -150,7 +150,7 @@ export async function exportFavorites(username: string): Promise<FavExport> {
 	try {
 		username = username.toLowerCase();
 		const favs = await getFavorites({
-			userFavorites: username,
+			favorites: username,
 		});
 		if (favs.content.length === 0) throw new ErrorKM('FAVORITES_EXPORTED_NO_FAVORITES_ERROR', 404, false);
 		return {
@@ -197,7 +197,7 @@ export async function importFavorites(
 			await truncateFavorites(username);
 		}
 		const favorites = favs.Favorites.map(f => f.kid);
-		const userFavorites = await getFavorites({ userFavorites: username });
+		const userFavorites = await getFavorites({ favorites: username });
 		// Removing favorites already added
 		const mappedUserFavorites = userFavorites.content.map(uf => uf.kid);
 		const favoritesToAdd = favorites.filter(f => !mappedUserFavorites.includes(f));
@@ -220,7 +220,7 @@ export async function getAllFavorites(userList: string[]): Promise<DBKara[]> {
 			logger.warn(`Username ${user} does not exist`, { service });
 		} else {
 			const favs = await getFavorites({
-				userFavorites: user,
+				favorites: user,
 			});
 			for (const f of favs.content) {
 				if (!faves.find(fav => fav.kid === f.kid)) {

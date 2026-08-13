@@ -197,10 +197,10 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 			SELECT kid FROM children
 		))`);
 	}
-	if (params.userFavorites) {
+	if (params.favorites) {
 		whereClauses.push('uf.fk_login = :username_favs');
 		joinClauses.push(' LEFT OUTER JOIN favorites AS uf ON uf.fk_login = :username_favs AND uf.fk_kid = ak.pk_kid ');
-		yesqlPayload.params.username_favs = params.userFavorites;
+		yesqlPayload.params.username_favs = params.favorites;
 	}
 	if (params.userAnimeList) {
 		withCTEs.push(
