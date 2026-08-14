@@ -341,15 +341,9 @@ export async function integrateTagFile(file: string, refresh = true): Promise<st
 	if (!tagFileData) return null;
 	try {
 		logger.debug(`Integrating tag ${tagFileData.tid} (${tagFileData.name})`, { service });
-		let tagDBData;
-		try {
-			tagDBData = await getTag(tagFileData.tid);
-		} catch(err) {
-			// This is allowed to fail
-		
-		}
-		if (tagDBData) {
-			if (tagDBData.repository === tagFileData.repository) {
+		const tags = await selectAllTags({ tid: tagFileData.tid });
+		if (tags[0]) {
+			if (tags[0].repository === tagFileData.repository) {
 				// Refresh always disabled for editing tags.
 				await editTag(tagFileData.tid, tagFileData, {
 					silent: true,
