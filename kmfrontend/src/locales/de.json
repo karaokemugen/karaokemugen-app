@@ -324,7 +324,9 @@
 			"EDIT_DISPLAY_TYPE": "\"Aus\"-Tag bearbeiten",
 			"ADD_PARENT": "Bezugslied hinzufügen",
 			"REMOVE_PARENT": "Bezugslied entfernen",
-			"SELECT_PARENT": "Wähle ein Bezugslied:"
+			"SELECT_PARENT": "Wähle ein Bezugslied:",
+			"COPY_SONGS_TO_REPOSITORY": "Kopiere Lieder ins Repository",
+			"SELECT_REPOSITORY": "Wähle ein Repository:"
 		},
 		"MEDIA_IN_PROCESS": "Die Mediendatei wird gerade verarbeitet, bitte warte auf die Bestätigung.",
 		"FAMILIES_TOOLTIP": "Legt fest, welche Art von Inhalt das Video hat.",
@@ -352,7 +354,9 @@
 			"AUDIO_SAMPLE_RATE": "Tonfrequenz",
 			"AUDIO_CHANNEL_LAYOUT": "Audiokanal-Layout",
 			"WARNINGS": {
-				"LIBAVCODEC_ENCODER": "Die Tonspurt wurde mit libavcodec-Encoder (AAC in ffmpeg ) encodet, was hörbare Artefakte erzeugen kann und daher nicht genutzt werden sollte. Nutzen Sie bitte stattdessen libfdk_aac-Encoder für AAC oder ein anderes Codec-Paket wie bspw. Opus, um die bestmögliche Audioqualität zu erhalten."
+				"LIBAVCODEC_ENCODER": "Die Tonspurt wurde mit libavcodec-Encoder (AAC in ffmpeg ) encodet, was hörbare Artefakte erzeugen kann und daher nicht genutzt werden sollte. Nutzen Sie bitte stattdessen libfdk_aac-Encoder für AAC oder ein anderes Codec-Paket wie bspw. Opus, um die bestmögliche Audioqualität zu erhalten.",
+				"HAS_EMBEDDED_SUBTITLES": "In die Mediendatei eingebettete Untertitel werden nicht empfohlen und beim Speichern automatisch entfernt. Bitte stelle sicher, dass der Untertitel korrekt ausgelesen wird oder lade ihn als separate Liedtext-Datei im entsprechenden Feld hoch.",
+				"HAS_ATTACHMENTS": "Die Mediendatei enthält eingebettete Anhänge (wahrscheinlich Schriftarten), die beim Speichern entfernt werden."
 			}
 		},
 		"COPY_SONG": "Song in ein anderes Repository kopieren",
@@ -470,7 +474,9 @@
 		"SYNCHRONIZE_REPOSITORIES": "Repositorys zum Synchronisieren",
 		"SWAP_TOOLTIP": "Position von Liedern in der Playlist ändern, die du dir gewünscht hast",
 		"SWAP_DESCRIPTION": "Wähle ein zweites Lied, um sie zu tauschen",
-		"MISSING_PARENT_SONG": "Fehlendes Bezugslied ({{parent}})"
+		"MISSING_PARENT_SONG": "Fehlendes Bezugslied ({{parent}})",
+		"EMBEDDED_LYRICS_FOUND": "Eingebetteter Liedtext erkannt",
+		"USE_EMBEDDED_LYRICS_CONFIRM": "Die Mediendatei enthält eine eingebettete Liedtext-Datei. Möchtest du den aktuellen Liedtext durch den in der Mediendatei ersetzen?"
 	},
 	"SETTINGS": {
 		"KARAOKE": {
@@ -1004,7 +1010,8 @@
 		"IMPORT_SONG_TEMPLATE_ERROR": "Zuordnung der Lieder aufgrund des Templates nicht möglich",
 		"IMPORT_NO_TITLE_ERROR": "Import der Lieder nicht möglich, der Titel fehlt im Template",
 		"PL_DO_NOT_MATCH_REPO": "Einige Lieder der Playlist existieren auf dem Remote-Server nicht",
-		"REMOTE_SERVER_CONNECTION_ERROR": "Verbindung zum Remote-Server fehlgeschlagen"
+		"REMOTE_SERVER_CONNECTION_ERROR": "Verbindung zum Remote-Server fehlgeschlagen",
+		"INSTANCE_NOT_RESPONDING": "Die Instanz reagiert nicht"
 	},
 	"HEADERS": {
 		"DATABASE": {
@@ -2339,6 +2346,7 @@
 		"IMPORT_START": "Import starten"
 	},
 	"PLAYLIST": {
-		"NO_SONG": "Kein Lied gefunden"
+		"NO_SONG": "Kein Lied gefunden",
+		"EMPTY": "Die Playlist ist leer"
 	}
 }
