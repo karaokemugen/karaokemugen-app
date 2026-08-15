@@ -1120,7 +1120,7 @@
 			"AUDIO_COVER_ART": "Cover art",
 			"WARNINGS": {
 				"LIBAVCODEC_ENCODER": "The audio is encoded with the libavcodec (ffmpeg reference aac) encoder, which can create audible artifacts and is discouraged to utilize. Please use the libfdk_aac encoder for aac or another codec like opus, to get the best possible quality.",
-				"HAS_EMBEDDED_SUBTITLES": "Embedded subtitles in the media file are not recommended and will be removed automatically when saving. Please make the subtitle is correctly applied or uploaded in the 'Lyrics' section.",
+				"HAS_EMBEDDED_SUBTITLES": "Embedded subtitles in the media file are not recommended and will be removed automatically when saving. Please make sure the subtitle is correctly applied or uploaded in the 'Lyrics' section.",
 				"HAS_ATTACHMENTS": "The media file contains embedded attachments (likely fonts), which will be removed when saving."
 			}
 		},
@@ -1221,7 +1221,7 @@
 			"CREATE_PLAYLIST": "First, you need to create a playlist in the operator panel.",
 			"SELECT_PLAYLIST": "Select a playlist:",
 			"SELECT_ACTION": "Select an operation:",
-			"SELECT_REPOSITORY": "Select a repository :",
+			"SELECT_REPOSITORY": "Select a repository:",
 			"SELECT_TAG": "Select a tag:",
 			"SELECT_PARENT": "Select a parent:",
 			"SELECT_TAG_TYPE": "Select a tag type :",
