@@ -2218,8 +2218,7 @@
 	"ABOUT": {
 		"DONATORS": "Gracias a 1 <>{{donators}}</1> para sus donaciones a Karaoke Mugen",
 		"DESCRIPTION": "Reproductor de karaoke y organizador de fiestas, entre amigos o en público.",
-		"LICENSE": "Con licencia MIT.",
-		"CONTRIBUTORS": "Las letras de las canciones fueron creadas por gente increíble, como <1>{{contributors}}</1> por ejemplo."
+		"LICENSE": "Con licencia MIT."
 	},
 	"CHIBI": {
 		"FOCUS": "Volver a Karaoke Mugen",

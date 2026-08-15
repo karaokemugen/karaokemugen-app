@@ -2257,7 +2257,6 @@
 	"ABOUT": {
 		"DESCRIPTION": "Karaoke přehrávač a správce večírků pro přátele i veřejnost.",
 		"LICENSE": "S licencí MIT.",
-		"CONTRIBUTORS": "Texty skladeb vytvořili skvělí lidé, například <1>{{contributors}}</1>.",
 		"DONATORS": "Děkujeme <1>{{donators}}</1> za dary projektu Karaoke Mugen"
 	},
 	"QUIZ": {

@@ -1700,7 +1700,6 @@
 	},
 	"ABOUT": {
 		"DESCRIPTION": "Graj karaoke i organizuj imprezy, między przyjaciółmi lub publicznie.",
-		"CONTRIBUTORS": "Subskrypcje karaoke zostały stworzone przez niesamowitych ludzi, takich jak na przykład <1>{{contributors}}</1>.",
 		"LICENSE": "Licencja MIT.",
 		"DONATORS": "Podziękowania dla <1>{{donators}}</1> za darowizny na rzecz Karaoke Mugen"
 	},

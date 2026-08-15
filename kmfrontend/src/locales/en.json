@@ -2257,7 +2257,6 @@
 	"ABOUT": {
 		"DESCRIPTION": "A karaoke player and a party manager, between friends or in public.",
 		"LICENSE": "MIT-licensed.",
-		"CONTRIBUTORS": "Song lyrics were created by awesome people, like <1>{{contributors}}</1> for example.",
 		"DONATORS": "Thanks to <1>{{donators}}</1> for their donations to Karaoke Mugen"
 	},
 	"QUIZ": {

@@ -1977,7 +1977,6 @@
 	},
 	"ABOUT": {
 		"DESCRIPTION": "Jogador de karaokê e organizador de festas, entre amigos ou em público.",
-		"CONTRIBUTORS": "Os karaokês foram criados por pessoas incríveis, como <1>{{contributors}}</1> por exemplo.",
 		"DONATORS": "Graças a <1>{{donators}}</1> por suas doações ao Karaokê Mugen"
 	},
 	"MIGRATE": {

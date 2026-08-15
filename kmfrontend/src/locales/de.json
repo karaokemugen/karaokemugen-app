@@ -2261,8 +2261,7 @@
 	"ABOUT": {
 		"DONATORS": "Danke an <1>{{donators}}</1> für die Spende an Karaoke Mugen",
 		"DESCRIPTION": "Ein Karaoke-Player und Party-Tool – unter Freunden oder in der Öffentlichkeit.",
-		"LICENSE": "MIT-lizenziert.",
-		"CONTRIBUTORS": "Die Lied-Untertitel wurden von großartigen Menschen wie beispielsweise <1>{{contributors}}</1> erstellt."
+		"LICENSE": "MIT-lizenziert."
 	},
 	"CHIBI": {
 		"FOCUS": "Zurück zu Karaoke Mugen",
