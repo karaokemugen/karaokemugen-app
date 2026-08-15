@@ -57,7 +57,7 @@
 		"terser": "^5.50.0",
 		"typescript": "6.0.3",
 		"vite": "^8.2.1",
-		"vite-plugin-node-polyfills": "^0.28.0"
+		"vite-plugin-node-polyfills": "^0.26.0"
 	},
 	"scripts": {
 		"analyze": "source-map-explorer 'build/static/js/*.js'",
