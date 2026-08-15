@@ -1,5 +1,5 @@
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { Button, Input, Layout, Modal, Select, Table, Tag, Tooltip } from 'antd';
+import { Button, Col, Input, Layout, Modal, Select, Table, Tag, Tooltip } from 'antd';
 import i18next from 'i18next';
 import { useContext, useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
@@ -151,13 +151,15 @@ function TagsList() {
 			/>
 			<Layout.Content>
 				<div style={{ display: 'flex', marginBottom: '1em' }}>
-					<Input.Search
-						value={filter}
-						placeholder={i18next.t('SEARCH_FILTER')}
-						onChange={changeFilter}
-						enterButton={i18next.t('SEARCH')}
-						onSearch={refresh}
-					/>
+					<Col flex={3}>
+						<Input.Search
+							value={filter}
+							placeholder={i18next.t('SEARCH_FILTER')}
+							onChange={changeFilter}
+							enterButton={i18next.t('SEARCH')}
+							onSearch={refresh}
+						/>
+					</Col>
 					<label style={{ marginLeft: '2em', paddingRight: '1em' }}>{i18next.t('TAGS.TYPES')} :</label>
 					<Select
 						allowClear={true}
