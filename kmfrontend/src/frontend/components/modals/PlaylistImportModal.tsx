@@ -238,7 +238,7 @@ function PlaylistImportModal(props: IProps) {
 							AutoMediaDownloads: 'updateOnly',
 							MaintainerMode: false,
 							Git: null,
-							BaseDir: `repos/${repoName}`,
+							BaseDir: `repos/${repoName}/json`,
 							Path: {
 								Medias: [`repos/${repoName}/medias`],
 							},
