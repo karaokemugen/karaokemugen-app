@@ -17,7 +17,7 @@
 	"INLINE_TAG": {
 		"COUNT_other": "{{count}}カラオケ",
 		"COUNT_one": "{{count}}カラオケ",
-		"SEARCH": "{{tag}}とカラオケする"
+		"SEARCH": "Songs with {{tag}}"
 	},
 	"PLAYLIST_HEADER": {
 		"FILTERS": "フィルター",
@@ -82,7 +82,19 @@
 		"FAVORITES": "お気に入り",
 		"SONG_SEARCH": "曲を検索する",
 		"QUOTA_KARA_DESCRIPTION_one": "{{count}}曲のみをご提案できます。 オペレーターがあなたの提案を承諾または拒否したり、あなたの曲が画面上で再生されたら、再び曲を提案することができます.",
-		"QUOTA_TIME_DESCRIPTION": "曲の時刻の{{time}}のみをご提案できます。 オペレーターがあなたの提案を承諾または拒否したり、あなたの曲が画面上で再生されたら、もっと提案することができます."
+		"QUOTA_TIME_DESCRIPTION": "曲の時刻の{{time}}のみをご提案できます。 オペレーターがあなたの提案を承諾または拒否したり、あなたの曲が画面上で再生されたら、もっと提案することができます.",
+		"HELLO": "{{name}}さん、こんにちは！",
+		"NOW_PLAYING": "再生中",
+		"LYRICS_EXPL": {
+			"LINES": "再生中の歌詞がここに表示されます。",
+			"CURRENT": "太字の行は現在の歌詞を示します。"
+		},
+		"NEW_KARAOKES": "新しい曲",
+		"EXPLORE": "探す",
+		"OTHERS": "その他…",
+		"GET_LUCKY": "運がいいと感じる",
+		"REQUESTED_KARAOKES": "最もリクエストの多い曲",
+		"ANIME_LIST": "自分のアニメの曲"
 	},
 	"PROFILE_MAIL": "メール",
 	"PROFILE_PASSWORD": "パスワード",
@@ -113,7 +125,11 @@
 		},
 		"STOP_NOW": "今すぐ停止 （危ないぞ！）",
 		"STOP_NOW_SHORT": "今すぐ停止",
-		"REWIND": "最初から再生"
+		"REWIND": "最初から再生",
+		"PLAY": "再生",
+		"PAUSE": "一時停止",
+		"MESSAGE": "公開メッセージを送信",
+		"STOP_AFTER": "現在の曲の後に停止"
 	},
 	"POLL_TIME": "投票",
 	"USERS": {
@@ -209,7 +225,9 @@
 		"SERIES_other": "作品",
 		"VERSIONS_one": "バージョン",
 		"VERSIONS_other": "バージョン",
-		"LANGS_other": "言語"
+		"LANGS_other": "言語",
+		"CREATORS_one": "作成者",
+		"CREATORS_other": "作成者"
 	},
 	"SETTINGS": {
 		"PLAYER": {
@@ -222,7 +240,13 @@
 			"QUOTA_TYPE_ONE": "曲",
 			"SONGS": "曲",
 			"OPEN_STREAMER_FILES": "ファイルを表示する。",
-			"FREE_ACCEPTED_SONGS": "承認した曲を解放"
+			"FREE_ACCEPTED_SONGS": "承認した曲を解放",
+			"ADDED_SONG_VISIBILITY_ADMIN_SHORT": "曲の追加可視性",
+			"LABELS_MYSTERY_SONGS_ADD": "追加",
+			"ADDED_SONG_VISIBILITY_MYSTERY_OPTION": "ミステリーソング",
+			"MYSTERY_SONG_SETTINGS": "ミステリーソング",
+			"ADDED_SONG_VISIBILITY_NORMAL_OPTION": "普通",
+			"PLAYLIST_INTRO_VIDEOS": "プレイリストイントロ動画"
 		},
 		"INTERFACE": {
 			"WEBAPPMODE": "公開インターフェースモード",
@@ -280,7 +304,10 @@
 	],
 	"TOOLTIP_DELETEKARA": "この曲を消す",
 	"ERROR_CODES": {
-		"PL_DELETE_SONG_ERROR": "その曲を消してはいけません"
+		"PL_DELETE_SONG_ERROR": "その曲を消してはいけません",
+		"FAVORITES_EXPORTED_ERROR": "お気に入りをエクスポートするエラー",
+		"AUTOMIX_NO_SONGS_MEET_CRITERIAS_ERROR": "このAutoMixで選ばれた検索条件を満たしていない曲",
+		"MESSAGE_SEND_ERROR": "メッセージを送信できませんでした"
 	},
 	"CRITERIA": {
 		"PLAYLIST_DURATION_TYPE_MINUTES": "分",
@@ -304,8 +331,11 @@
 		"LABEL": {
 			"TAG_VERBS": {
 				"1": "から"
-			}
-		}
+			},
+			"KID": "この曲はリストにあります."
+		},
+		"EXPL": "スマートプレイリストは <1>検索条件</1>から作成されます。また、手動でこのリストに曲を追加することもできます.",
+		"EXPL_OPEN": "これは、<1>プレイリスト</1>を生成するために使用される検索条件です。新しい曲がデータベースに追加されると、自動的に更新されます."
 	},
 	"MENU": {
 		"KARAS": "曲",
@@ -327,7 +357,8 @@
 		"COLLECTIONS": "コレクション",
 		"NEWS": "お知らせ",
 		"PUBLIC": "公開ンターフェイス",
-		"REPOSITORY": "リポジトリ"
+		"REPOSITORY": "リポジトリ",
+		"STATS_PLAYTIME": "再生時間"
 	},
 	"ENCORES_TIME": "アンコール！アンコール！",
 	"KARA_MENU": {
@@ -401,7 +432,8 @@
 		"MOVING_MEDIAS_REPO": "リポジトリのメディアの移動中…",
 		"CLEANING_REPO": "リポジトリから削除された曲の掃除中…",
 		"UPDATING_REPO": "リポジトリから曲を更新中",
-		"UPDATING_PLMEDIAS": "プレイリストメディアの更新中…"
+		"UPDATING_PLMEDIAS": "プレイリストメディアの更新中…",
+		"DUMMY_TASK": "進行中のタスクなし"
 	},
 	"USERLIST": "ユーザー一覧",
 	"HOME": {
@@ -413,7 +445,8 @@
 		}
 	},
 	"ADMIN_MESSAGE": {
-		"ESSENTIAL_MESSAGE": "重要なお知らせ"
+		"ESSENTIAL_MESSAGE": "重要なお知らせ",
+		"CONFIRM": "送信"
 	},
 	"PROFILE_USERNAME": "ニックネーム",
 	"QUIZ": {
@@ -444,5 +477,20 @@
 	"LANGUAGES": {
 		"QRO": "ラテン文字（ローマ字）"
 	},
-	"CONFIRM_SURE": "本当によろしいですか？"
+	"CONFIRM_SURE": "本当によろしいですか？",
+	"FAVORITES_EXPORT": "お気に入りをエクスポート",
+	"PLAYLIST": {
+		"EMPTY": "プレイリストは空です"
+	},
+	"KARA_PAUSED_WAITING": "曲がまだ再生しない",
+	"SUCCESS_CODES": {
+		"MESSAGE_SENT": "メッセージ送信済み"
+	},
+	"INTRO_TIME": "プレイリストイントロ",
+	"TOOLTIP_ADDKARA": "この曲を追加",
+	"KARA_PAUSED_TAGLINES": [
+		"まもなく始まるはずです！"
+	],
+	"KARAOKE_other": "{{count}}曲",
+	"KARAOKE_one": "{{count}}曲"
 }
