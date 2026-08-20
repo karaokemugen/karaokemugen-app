@@ -35,7 +35,12 @@
 		"SELECT_ALL": "表示されているすべての曲を選択",
 		"EDIT": "プレイリストを編集する",
 		"EXPORT": "プレイリストをエクスポートする",
-		"EXPORT_MEDIA": "すべてのプレイリストメディアをエクスポート"
+		"EXPORT_MEDIA": "すべてのプレイリストメディアをエクスポート",
+		"ADD": "新しいプレイリストを作成",
+		"AUTOMIX": "オートミックスを作成",
+		"IMPORT": "プレイリストをインポート",
+		"SHUFFLE": "シャッフル／ソート…",
+		"DOWNLOAD_ALL": "すべてをダウンロード"
 	},
 	"SELECT_PLACEHOLDER": "プレイリストを選択",
 	"OR": "または",
@@ -75,7 +80,9 @@
 		"HIDE_LYRICS": "歌詞を隠す",
 		"SONG_SEARCH_SHORT": "検索",
 		"FAVORITES": "お気に入り",
-		"SONG_SEARCH": "曲を検索する"
+		"SONG_SEARCH": "曲を検索する",
+		"QUOTA_KARA_DESCRIPTION_one": "{{count}}曲のみをご提案できます。 オペレーターがあなたの提案を承諾または拒否したり、あなたの曲が画面上で再生されたら、再び曲を提案することができます.",
+		"QUOTA_TIME_DESCRIPTION": "曲の時刻の{{time}}のみをご提案できます。 オペレーターがあなたの提案を承諾または拒否したり、あなたの曲が画面上で再生されたら、もっと提案することができます."
 	},
 	"PROFILE_MAIL": "メール",
 	"PROFILE_PASSWORD": "パスワード",
@@ -103,12 +110,16 @@
 			"UP": "ピッチを上げる",
 			"RESET": "ピッチをリセット",
 			"DOWN": "ピッチを下げる"
-		}
+		},
+		"STOP_NOW": "今すぐ停止 （危ないぞ！）",
+		"STOP_NOW_SHORT": "今すぐ停止",
+		"REWIND": "最初から再生"
 	},
 	"POLL_TIME": "投票",
 	"USERS": {
 		"PASSWORD": "パスワード",
-		"EMAIL": "メール"
+		"EMAIL": "メール",
+		"NICKNAME": "ニックネーム"
 	},
 	"INBOX": {
 		"CONTACT_INFOS_MODAL": {
@@ -141,7 +152,11 @@
 				"MASTODON_PLACEHOLDER": "KaraokeMugen@shelter.moe",
 				"TWITCH": "Twitch",
 				"DISCORD_PLACEHOLDER": "Karak#1423"
-			}
+			},
+			"INTERFACE_LANGUAGE": "インターフェイス言語",
+			"MAIN_SONG_NAME_LANG": "曲名表示好み",
+			"FALLBACK_SONG_NAME_LANG": "曲名フォールバック表示設定",
+			"SONG_NAME_DISPLAY_EXAMPLE": "曲名の例"
 		},
 		"PLAY_CURRENT_MODAL": {
 			"TITLE": "警告！"
@@ -154,13 +169,31 @@
 			},
 			"DISPLAY": {
 				"BLACK_SCREEN": "黒画面"
-			}
+			},
+			"TITLE": "クイズを始める"
 		},
 		"PLAYLIST_IMPORT": {
 			"FILTER_LABELS": {
 				"my": "自分のプレイリストを表示する",
 				"downloaded": "ダウンロードされたプレイリストを表示する"
+			},
+			"SORT_OPTIONS_LABELS": {
+				"username": "ユーザー名"
 			}
+		},
+		"PLAYLIST_MODAL": {
+			"BLACKLIST": "ブラックリスト",
+			"WHITELIST": "ホワイトリスト",
+			"FALLBACK": "フォールバック"
+		},
+		"STOP_QUIZ": {
+			"TITLE": "クイズを停止しますか?"
+		},
+		"TUTORIAL": {
+			"TITLE": "チュートリアル",
+			"NEXT": "次へ",
+			"BACK": "戻る",
+			"END": "終わる"
 		}
 	},
 	"TAG_TYPES": {
@@ -175,7 +208,8 @@
 		"SERIES_one": "作品",
 		"SERIES_other": "作品",
 		"VERSIONS_one": "バージョン",
-		"VERSIONS_other": "バージョン"
+		"VERSIONS_other": "バージョン",
+		"LANGS_other": "言語"
 	},
 	"SETTINGS": {
 		"PLAYER": {
@@ -187,7 +221,17 @@
 			"QUOTA_TYPE_ZERO": "無限",
 			"QUOTA_TYPE_ONE": "曲",
 			"SONGS": "曲",
-			"OPEN_STREAMER_FILES": "ファイルを表示する。"
+			"OPEN_STREAMER_FILES": "ファイルを表示する。",
+			"FREE_ACCEPTED_SONGS": "承認した曲を解放"
+		},
+		"INTERFACE": {
+			"WEBAPPMODE": "公開インターフェースモード",
+			"WEBAPPMODE_SHORT": "公開インターフェイス",
+			"WEBAPPMODE_CLOSED_SHORT": "閉",
+			"WEBAPPMODE_LIMITED_SHORT": "制限",
+			"WEBAPPMODE_OPEN_SHORT": "開",
+			"WEBAPPMODE_LIMITED": "制限：読み取り専用",
+			"WEBAPPMODE_OPEN": "開（デフォルト）： ユーザーは曲を追加できます"
 		}
 	},
 	"LOGS": {
@@ -208,7 +252,28 @@
 					"BLACK": "黒"
 				}
 			}
-		}
+		},
+		"VIDEO_PREVIEW": "ビデオプレビュー",
+		"AUTHORS_BY": "カラオケ作成者",
+		"SONGWRITERS_BY": "作曲家",
+		"SINGERGROUPS_BY": "バンドー",
+		"CREATORS_BY": "作成者",
+		"SINGERS_BY": "歌手",
+		"SECTIONS": {
+			"FILES": "ファイル",
+			"PARENTS": "親曲",
+			"TITLES": "タイトル",
+			"IDENTITY": "身元",
+			"CATEGORIZATION": "分類",
+			"META": "メタデータ"
+		},
+		"MEDIA_FILE": "メディアファイル",
+		"MEDIA_FILE_TOOLTIP": "対応ファイル形式： {{formats}}",
+		"MEDIA_REQUIRED": "メディアファイルが必要です",
+		"AUDIO_COVER": {
+			"UPLOAD": "カバーアートをアップロード"
+		},
+		"ORDER": "曲順"
 	},
 	"SPONSOR_TAGLINES": [
 		"この番組は・・・"
@@ -222,18 +287,76 @@
 		"PLAYLIST_DURATION_TYPE_SONGS": "曲",
 		"PLAYLIST_DURATION_ORDER_MORE_RECENT": "最新",
 		"PLAYLIST_DURATION_ORDER_LESS_RECENT": "最古",
-		"CRITERIA_TYPE_1001": "曲"
+		"CRITERIA_TYPE_1001": "曲",
+		"OR": "または",
+		"AND": "かつ",
+		"TYPE_SMART": "スマートプレイリストタイプ",
+		"TYPE_SMART_DESC": "「OR」(または) タイプはブラックリストに適しています。 「AND」(かつ) はクラシックプレイリスト。",
+		"PLAYLIST_DURATION": "<1/>限定: <2/> <3/> ( 並び順: <4/>)",
+		"CRITERIA_DESC": "特定の曲を自動的に含める基準を選択します。",
+		"ADD": "検索条件を追加",
+		"DELETE": "この条件を削除",
+		"CRITERIA_TYPE_1002": "より長い (mm:ss)",
+		"CRITERIA_TYPE_1003": "より短い (mm:ss)",
+		"CRITERIA_TYPE_1006": "オフラインで曲を非表示",
+		"CRITERIA_TYPE_1008": "以前（年を含む）",
+		"CRITERIA_TYPE_1007": "以後（年を含む）",
+		"LABEL": {
+			"TAG_VERBS": {
+				"1": "から"
+			}
+		}
 	},
 	"MENU": {
-		"KARAS": "曲"
+		"KARAS": "曲",
+		"TAGS": "タグ"
 	},
 	"WELCOME_PAGE": {
-		"STATS_KARAS": "曲"
+		"STATS_KARAS": "曲",
+		"GETSTARTED": "スタート・チュートリアル",
+		"STATS": "スタタス",
+		"KARAMANAGER": "オペレーター・インターフェイス",
+		"ADMINISTRATION": "システム・パネル",
+		"HELP": "オンラインヘルプ",
+		"SITE": "ウェブサイト",
+		"MASTODON_UPDATE": "カラオケ無限のお知らせ",
+		"APP_UPDATE": "新しいバージョン",
+		"BASE_UPDATE": "データベース更新",
+		"STATS_USAGETIME": "使用時間",
+		"STATS_TAGS": "タグ",
+		"COLLECTIONS": "コレクション",
+		"NEWS": "お知らせ",
+		"PUBLIC": "公開ンターフェイス",
+		"REPOSITORY": "リポジトリ"
 	},
 	"ENCORES_TIME": "アンコール！アンコール！",
 	"KARA_MENU": {
 		"VISIBLE_ON_SHORT": "表示",
-		"FAV": "お気に入りに追加する"
+		"FAV": "お気に入りに追加する",
+		"TRANSFER_SELECT_KARA": "選択した曲を転送",
+		"TRANSFER_SELECT_KARA_AFTER_PLAYING": "現在再生中の曲の後に転送",
+		"FAV_DEL": "お気に入りから削除",
+		"PLAY_LIBRARY": "今すぐ再生",
+		"FAVORITES_ADDED": "お気に入りに追加済み",
+		"FAVORITES_REMOVED": "お気に入りから削除済み",
+		"FREE": "ユーザー割り当てからこの曲を解放",
+		"FREE_SHORT": "解放",
+		"FREED": "解放済み！",
+		"VISIBLE_ON": "プレイリストで表示",
+		"VISIBLE_OFF": "プレイリストで非表示",
+		"VISIBLE_OFF_SHORT": "非表示",
+		"HIDDEN": "非表示した！",
+		"SHOWN": "可視！",
+		"ADD_BLACKLIST": "ブラックリストに追加",
+		"BLACKLISTED": "ブラックリストに追加した！",
+		"ADD_WHITELIST": "ホワイトリストに追加",
+		"WHITELISTED": "ホワイトリストに追加した！",
+		"TRANSFER_KARA": "この曲を転送",
+		"TRANSFER_KARA_AFTER_PLAYING": "現在再生中の曲の後に転送",
+		"MOVE_KARA": "現在の曲の後に移動",
+		"SHUFFLE": "曲をシャッフル",
+		"SHUFFLED": "曲をシャッフルした！",
+		"KARA_COMMANDS": "曲コマンド"
 	},
 	"CONFIG": {
 		"PROPERTIES": {
@@ -247,5 +370,79 @@
 		"KARAOKE_NEW": {
 			"TITLE": "曲を追加する"
 		}
-	}
+	},
+	"CONFIRM": "確認",
+	"KAROULETTE": {
+		"START": "公共の提案のレビュー",
+		"STATS_one": "{{count}} 処理済み ({{accepted}}/{{refused}})",
+		"STATS_other": "{{count}} 処理済み ({{accepted}}/{{refused}})",
+		"ACCEPTED_one": "{{count}} 承認済み",
+		"ACCEPTED_other": "{{count}} 承認済み",
+		"REFUSED_one": "{{count}} 拒否済み",
+		"REFUSED_other": "{{count}} 拒否済み",
+		"ACCEPT": "受け入れる",
+		"REFUSE": "拒否",
+		"PLAYLIST_REMAINING_one": "現在のリスト残時間: {{count}} 分",
+		"PLAYLIST_REMAINING_other": "現在のリスト残時間: {{count}} 分"
+	},
+	"FLAGS": {
+		"PUBLIC": "公開",
+		"CURRENT": "現在"
+	},
+	"TASKS": {
+		"CREATING_SONG": "曲作り中…",
+		"EDITING_SONG": "曲の編集中…",
+		"EDITING_KARAS_BATCH_TAGS": "曲のタグの編集中…",
+		"DATASTORE_UPDATE": "ローカルデータストアの更新中…",
+		"GENERATING": "データベースの生成中…",
+		"GENERATING_READING": "データを読み中…",
+		"GENERATING_DATABASE": "データベースの更新中…",
+		"GENERATION_DONE": "生成の成功",
+		"MOVING_MEDIAS_REPO": "リポジトリのメディアの移動中…",
+		"CLEANING_REPO": "リポジトリから削除された曲の掃除中…",
+		"UPDATING_REPO": "リポジトリから曲を更新中",
+		"UPDATING_PLMEDIAS": "プレイリストメディアの更新中…"
+	},
+	"USERLIST": "ユーザー一覧",
+	"HOME": {
+		"KARAS": {
+			"DOWNLOAD": "メディアをダウンロード",
+			"BROWSE": "曲をブラウズ",
+			"CREATE": "曲を作成",
+			"HISTORY": "再生された曲の履歴"
+		}
+	},
+	"ADMIN_MESSAGE": {
+		"ESSENTIAL_MESSAGE": "重要なお知らせ"
+	},
+	"PROFILE_USERNAME": "ニックネーム",
+	"QUIZ": {
+		"STOP": "クイズを停止"
+	},
+	"ACCOUNT": "マイアカウント",
+	"LOADING": "読み込み中…",
+	"KARA_DETAIL": {
+		"LYRICS": "歌詞",
+		"SHOW_VIDEO": "ビデオプレビューを表示",
+		"HIDE_VIDEO": "ビデオプレビューを閉じる"
+	},
+	"ADD": "追加",
+	"ACTION": "アクション",
+	"SEARCH_FILTER": "検索フィルター",
+	"REFRESH": "更新",
+	"UNUSED_FILES": {
+		"TAGS": "タグ"
+	},
+	"TAGS": {
+		"NAME": "内部名",
+		"NAME_REQUIRED": "アイテム名を入力してください"
+	},
+	"VIEW_FAVORITES": "お気に入り",
+	"VIEW_RECENT": "最新",
+	"CHECKED": "選択：",
+	"PROFILE": "プロフィール",
+	"LANGUAGES": {
+		"QRO": "ラテン文字（ローマ字）"
+	},
+	"CONFIRM_SURE": "本当によろしいですか？"
 }
