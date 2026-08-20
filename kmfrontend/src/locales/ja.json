@@ -100,8 +100,8 @@
 	"PROFILE_PASSWORD": "パスワード",
 	"PLAYERS_CONTROLS": {
 		"NEXT_SONG_SHORT": "次",
-		"NEXT_SONG": "次の歌",
-		"PREVIOUS_SONG": "前の歌",
+		"NEXT_SONG": "次の曲",
+		"PREVIOUS_SONG": "前の曲",
 		"PREVIOUS_SONG_SHORT": "前",
 		"MUTE_UNMUTE": "ミュート/ミュート解除",
 		"VOLUME_LEVEL": "音量をセット",
@@ -115,8 +115,8 @@
 			"DOWN": "スピードを落とす"
 		},
 		"BLURVIDEO": {
-			"BLUR": "ブラービデオ",
-			"UNBLUR": "アンブラービデオ"
+			"BLUR": "動画ぼかし",
+			"UNBLUR": "ぼかし解除"
 		},
 		"PITCH": {
 			"UP": "ピッチを上げる",
@@ -339,7 +339,8 @@
 	},
 	"MENU": {
 		"KARAS": "曲",
-		"TAGS": "タグ"
+		"TAGS": "タグ",
+		"HOME": "ダッシュボード"
 	},
 	"WELCOME_PAGE": {
 		"STATS_KARAS": "曲",
@@ -400,6 +401,12 @@
 	"HEADERS": {
 		"KARAOKE_NEW": {
 			"TITLE": "曲を追加する"
+		},
+		"HOME": {
+			"TITLE": "システムダッシュボード"
+		},
+		"LOGS": {
+			"TITLE": "ログ"
 		}
 	},
 	"CONFIRM": "確認",
@@ -492,5 +499,7 @@
 		"まもなく始まるはずです！"
 	],
 	"KARAOKE_other": "{{count}}曲",
-	"KARAOKE_one": "{{count}}曲"
+	"KARAOKE_one": "{{count}}曲",
+	"QUOTA_KARA": "残りの曲",
+	"QUOTA_TIME": "残り時間"
 }
