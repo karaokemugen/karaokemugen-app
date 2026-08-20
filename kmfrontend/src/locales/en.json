@@ -998,7 +998,7 @@
 				"karacount": "Number of songs",
 				"duration": "Duration",
 				"favorited": "Likes",
-				"username": "Nickname"
+				"username": "Username"
 			},
 			"BY_AUTHOR": "by {{author}}",
 			"AND_CONTRIBUTORS": "(and {{contributors, list}})",
