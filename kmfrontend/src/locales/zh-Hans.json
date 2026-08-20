@@ -295,6 +295,16 @@
 	},
 	"TOOLTIP_CLOSEPARENT": "关闭",
 	"KARA_DETAIL": {
-		"ADDED": "添加了 "
+		"ADDED": "添加了 ",
+		"LYRICS": "歌词"
+	},
+	"CONFIRM": "确认",
+	"MODAL": {
+		"PROFILE_MODAL": {
+			"INTERFACE_LANGUAGE": "界面语文",
+			"MAIN_SONG_NAME_LANG": "歌曲名称显示偏好",
+			"FALLBACK_SONG_NAME_LANG": "歌曲名称显示备用设置",
+			"SONG_NAME_DISPLAY_EXAMPLE": "歌曲名称示例"
+		}
 	}
 }
