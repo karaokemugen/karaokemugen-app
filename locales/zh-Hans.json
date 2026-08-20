@@ -16,7 +16,10 @@
 		"SINGERS": "歌手",
 		"SINGERGROUPS": "乐队",
 		"SONGTYPES": "歌曲类型",
-		"WARNINGS": "警告"
+		"WARNINGS": "警告",
+		"ORIGINS": "起源",
+		"GENRES": "曲风",
+		"COLLECTIONS": "收藏"
 	},
 	"REQUESTED_AND_other": "以及其他{{count}}人",
 	"MY_PLAYLIST": "我的播放列表",
@@ -26,7 +29,7 @@
 	"PUBLIC_PLAYLIST": "公开建议",
 	"MIGRATION_MESSAGES": [
 		null,
-		null,
+		"计算声波正规化中",
 		"美酒佳酿冰镇中",
 		"校准声带",
 		null,
@@ -62,5 +65,7 @@
 	"INIT_ERROR": "初始化失败！",
 	"ERROR_MISSING_BINARIES": "似乎缺少一些必需的可执行文件（mpv/postgresql/ffmpeg）。",
 	"ERROR_UNKNOWN": "发生未知错误。请查看日志了解更多详情。",
-	"ERROR_INIT_PG_DATA": "初始化数据库数据时出错"
+	"ERROR_INIT_PG_DATA": "初始化数据库数据时出错",
+	"FALLBACK": "备用列表",
+	"MENU_GOTO_OPERATOR": "操作员界面"
 }
