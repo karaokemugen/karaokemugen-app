@@ -112,5 +112,12 @@
 	"MENU_EDIT_PASTE": "&ペースト",
 	"MENU_EDIT_DELETE": "削除",
 	"MENU_EDIT_SELECT_ALL": "すべて選択",
-	"MENU_EDIT_SPEECH": "スピーチ"
+	"MENU_EDIT_SPEECH": "スピーチ",
+	"MENU_OPTIONS": "オプション",
+	"MENU_GOTO": "移動",
+	"MENU_GOTO_OSX": "移動",
+	"MENU_GOTO_OPERATOR": "オペレーターインターフェース",
+	"MENU_GOTO_PUBLIC": "公開インターフェースモード",
+	"MENU_GOTO_SYSTEM": "システムパネル",
+	"INIT_INIT": "起動中…"
 }
