@@ -80,7 +80,9 @@
 			"TAG_VERBS": {
 				"2": "演唱者",
 				"4": "创建者",
-				"13": "在平台上"
+				"13": "在平台上",
+				"5": "在",
+				"1": "来源"
 			}
 		},
 		"OR": "或",
@@ -271,7 +273,7 @@
 		"PAUSE": "暂停",
 		"NEXT_SONG": "下一首",
 		"PLAY": "播放",
-		"NEXT_SONG_SHORT": "下一步",
+		"NEXT_SONG_SHORT": "下首",
 		"MUTE_UNMUTE": "静音/取消静音",
 		"VOLUME_LEVEL": "设置音量",
 		"SUBS": {
@@ -291,7 +293,14 @@
 			"UP": "升调",
 			"RESET": "重置音高",
 			"DOWN": "降调"
-		}
+		},
+		"STOP_AFTER": "本首歌之后停止",
+		"STOP_AFTER_SHORT": "此后停止",
+		"STOP_NOW": "立即停止（危险！）",
+		"STOP_NOW_SHORT": "立即停止",
+		"REWIND": "倒带",
+		"PREVIOUS_SONG": "上一首",
+		"PREVIOUS_SONG_SHORT": "上首"
 	},
 	"TOOLTIP_CLOSEPARENT": "关闭",
 	"KARA_DETAIL": {
@@ -305,6 +314,114 @@
 			"MAIN_SONG_NAME_LANG": "歌曲名称显示偏好",
 			"FALLBACK_SONG_NAME_LANG": "歌曲名称显示备用设置",
 			"SONG_NAME_DISPLAY_EXAMPLE": "歌曲名称示例"
+		},
+		"TUTORIAL": {
+			"TITLE": "教程",
+			"NEXT": "下一步",
+			"BACK": "退一步",
+			"END": "结束"
+		},
+		"START_QUIZ": {
+			"TITLE": "开始测验"
 		}
-	}
+	},
+	"WELCOME_PAGE": {
+		"KARAMANAGER": "操作员界面",
+		"GETSTARTED": "开始教程",
+		"ADMINISTRATION": "系统面板",
+		"HELP": "在线帮助",
+		"SITE": "网站",
+		"PUBLIC": "公开界面",
+		"REPOSITORY": "存储库",
+		"STATS": "状态",
+		"STATS_KARAS": "歌曲",
+		"STATS_TAGS": "标签",
+		"STATS_USAGETIME": "使用时间",
+		"STATS_PLAYTIME": "播放时间",
+		"BASE_UPDATE": "数据库更新",
+		"MASTODON_UPDATE": "Karaoke Mugen公告",
+		"APP_UPDATE": "新版本",
+		"ACTIVE_SESSION": "进行中房间： ",
+		"EDIT_SESSION": "编辑房间",
+		"COLLECTIONS": "收藏",
+		"NEWS": "公告"
+	},
+	"SETTINGS": {
+		"INTERFACE": {
+			"WEBAPPMODE_SHORT": "公开界面",
+			"WEBAPPMODE": "公开界面",
+			"WEBAPPMODE_CLOSED_SHORT": "关闭",
+			"WEBAPPMODE_LIMITED_SHORT": "受限",
+			"WEBAPPMODE_OPEN_SHORT": "开放",
+			"WEBAPPMODE_LIMITED": "受限：只读",
+			"WEBAPPMODE_OPEN": "开放（默认）： 用户可以添加歌曲",
+			"DISPLAY_WELCOME_MESSAGE": "显示欢迎信息",
+			"KARA_LINE_SORT": "音乐库排序依据……",
+			"LABEL": "界面"
+		},
+		"KARAOKE": {
+			"QUOTA_TYPE_ONE": "歌曲"
+		}
+	},
+	"TAG_TYPES": {
+		"LANGS_other": "语言"
+	},
+	"LANGUAGES": {
+		"QRO": "拉丁字母（罗马字）"
+	},
+	"HEADERS": {
+		"HOME": {
+			"TITLE": "系统仪表板"
+		},
+		"LOGS": {
+			"TITLE": "日志"
+		},
+		"SYSTEM_PREFERENCES": {
+			"TITLE": "系统偏好设置",
+			"TITLEMAC": "系统设置"
+		}
+	},
+	"MENU": {
+		"HOME": "仪表板",
+		"ADVANCED_OPTIONS": "系统设置",
+		"TAGS": "标签"
+	},
+	"CHECKED": "选择：",
+	"LOGOUT": "退出账号",
+	"QUOTA_TIME": "剩余时间",
+	"QUOTA_KARA": "剩余歌曲",
+	"KARA_PAUSED_WAITING": "暂无播放歌曲",
+	"KARA_PAUSED_TAGLINES": [
+		"……但应该很快就开始咯！",
+		null,
+		null,
+		"太安静了，我不喜欢……",
+		"还在准备！"
+	],
+	"JINGLE_TAGLINES": [
+		"马上会回来的！"
+	],
+	"INTRO_TIME": "序言",
+	"INTRO_TAGLINES": [
+		"走吧！",
+		"开始了……",
+		"初始化中……",
+		"麦克风准备好！"
+	],
+	"OUTRO_TIME": "播放结束了",
+	"SPONSOR_TIME": "广告插播！",
+	"SPONSOR_TAGLINES": [
+		"この番組は・・・"
+	],
+	"TASKS": {
+		"DUMMY_TASK": "暂无进行中的任务"
+	},
+	"TAGS": {
+		"NAME": "内用名称",
+		"NAME_REQUIRED": "名称必填",
+		"SHORT_NAME": "简称",
+		"TYPES": "标签类型",
+		"ALIASES": "别名"
+	},
+	"VIEW_FAVORITES": "收藏夹"
 }
