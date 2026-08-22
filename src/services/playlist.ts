@@ -1048,6 +1048,7 @@ export async function removeKaraFromPlaylist(
 	profile('deleteKara');
 	// If we get a single song, it's a user deleting it (most probably)
 	try {
+		if (plc_ids.length === 0) return;
 		const usersNeedingUpdate: Set<string> = new Set();
 		const playlistsNeedingUpdate: Set<string> = new Set();
 		const plcsNeedingDelete: any[] = [];
