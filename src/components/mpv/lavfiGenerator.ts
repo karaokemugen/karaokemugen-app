@@ -6,6 +6,9 @@ import { getAvatarResolution } from '../../lib/utils/ffmpeg.js';
 import { CurrentSong } from '../../types/playlist.js';
 import { requiredMPVFFmpegMasterVersion, requiredMPVFFmpegVersion } from '../../utils/constants.js';
 import { playerState } from './mpv.js';
+import logger from '../../lib/utils/logger.js';
+
+const service = "lavfiGenerator";
 
 export class lavfiGenerator {
 	// Define lavfi-complex commands when we need to display stuff on screen or adjust audio volume. And it's... complex.
@@ -55,7 +58,9 @@ export class lavfiGenerator {
 			const [input_i, input_tp, input_lra, input_thresh, target_offset] = song.loudnorm.split(',');
 			audio = `[aid1]loudnorm=measured_i=${input_i}:measured_tp=${input_tp}:measured_lra=${input_lra}:measured_thresh=${input_thresh}:linear=true:offset=${target_offset}:lra=15:i=-15[ao]`;
 		} else {
-			audio = '';
+			// Karas without loudnorm will make MPV disappear if no fallback is defined
+			audio = '[aid1]loudnorm[ao]';
+			logger.warn(`Song has no loudnorm: ${song.kid}`, { service });
 		}
 		return audio;
 	}
