@@ -361,6 +361,7 @@ export default function Inbox() {
 			title: i18next.t('INBOX.USER'),
 			dataIndex: 'username_downloaded',
 			key: 'username_downloaded',
+			width: "10%"
 		},
 		{
 			title: i18next.t('INBOX.LINK_TO_ISSUE'),
@@ -469,6 +470,7 @@ export default function Inbox() {
 					dataSource={filteredInbox}
 					columns={columns}
 					rowKey="inid"
+					size='medium'
 					scroll={{
 						x: true,
 					}}
