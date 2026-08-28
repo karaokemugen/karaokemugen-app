@@ -189,13 +189,10 @@ function PlayerBox(props: IProps) {
 			}
 		}
 
-		if (ref.current) {
+		if (ref.current && data.timeposition && length !== 0) {
 			const newWidth = (ref.current.offsetWidth * data.timeposition) / length + 'px';
-
-			if (data.timeposition && length !== 0) {
-				setWidth(newWidth);
-				setTimePosition(data.timeposition);
-			}
+			setWidth(newWidth);
+			setTimePosition(data.timeposition);
 		}
 	};
 

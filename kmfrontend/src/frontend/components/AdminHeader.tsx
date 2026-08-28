@@ -55,10 +55,7 @@ function AdminHeader(props: IProps) {
 		const pow = 0.76;
 		val = val / base;
 		if (!isNaN(val)) data.volume = base * Math.pow(val, 1 / pow);
-		setStatusPlayer(oldState => {
-			const state = { ...oldState };
-			return merge(state, data);
-		});
+		setStatusPlayer(oldState => merge({}, oldState, data));
 	};
 
 	const toggleProfileModal = () => {

@@ -19,6 +19,7 @@ import { Alert, Button, Checkbox, Divider, Input, Layout, List, Modal, Table } f
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { html, parse } from 'diff2html';
 import { ColorSchemeType } from 'diff2html/lib/types';
+import DOMPurify from 'dompurify';
 import i18next from 'i18next';
 import { RenderExpandIconProps } from 'rc-table/lib/interface';
 import { Dispatch, memo, MouseEvent, useCallback, useEffect, useState } from 'react';
@@ -29,8 +30,8 @@ import { GitLogResult, GitStatusResult } from '../../../../src/types/git';
 import { Commit, ModifiedMedia } from '../../../../src/types/repo';
 import { commandBackend, getSocket } from '../../utils/socket';
 import { displayMessage } from '../../utils/tools';
-import Title from '../components/Title';
 import { WS_CMD } from '../../utils/ws.mjs';
+import Title from '../components/Title';
 
 type CommitWithComment = Commit & { comment: string; filesModified: boolean };
 
@@ -293,11 +294,11 @@ export default function Git() {
 			content: (
 				<div
 					dangerouslySetInnerHTML={{
-						__html: html(diffJson, {
+						__html: DOMPurify.sanitize(html(diffJson, {
 							drawFileList: false,
 							outputFormat: 'side-by-side',
 							colorScheme: ColorSchemeType.DARK,
-						}),
+						})),
 					}}
 				/>
 			),

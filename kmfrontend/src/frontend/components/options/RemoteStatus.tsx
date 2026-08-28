@@ -10,7 +10,6 @@ import { WS_CMD } from '../../../utils/ws.mjs';
 function RemoteStatus() {
 	const context = useContext(GlobalContext);
 	const [remoteStatus, setRemoteStatus] = useState<RemoteStatusData>();
-	let timeout: NodeJS.Timeout;
 
 	const updateRemoteData = async () => {
 		try {
@@ -36,9 +35,9 @@ function RemoteStatus() {
 
 	useEffect(() => {
 		updateRemoteData();
-		timeout = setInterval(updateRemoteData, 500);
+		const interval = setInterval(updateRemoteData, 500);
 		return () => {
-			clearInterval(timeout);
+			clearInterval(interval);
 		};
 	}, []);
 
