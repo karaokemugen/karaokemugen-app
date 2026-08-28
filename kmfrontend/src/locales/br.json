@@ -744,7 +744,8 @@
 		"SPEED": {
 			"UP": "Kreskiñ an tizh",
 			"DOWN": "Digreskiñ an tizh",
-			"TITLE": "Cheñch an tizh"
+			"TITLE": "Cheñch an tizh",
+			"RESET": "Distreiñ d'an tizh normal"
 		}
 	},
 	"VIEW_FAVORITES": "Pennrolloù",
