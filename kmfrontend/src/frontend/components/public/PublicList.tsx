@@ -1,5 +1,5 @@
 import i18next from 'i18next';
-import { debounce } from 'lodash';
+import debounce from 'lodash/debounce';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 

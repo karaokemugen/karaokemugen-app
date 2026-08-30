@@ -1,5 +1,5 @@
 import i18next from 'i18next';
-import { merge } from 'lodash';
+import merge from 'lodash/merge';
 import { RefObject, useContext, useEffect, useRef, useState } from 'react';
 import { Trans } from 'react-i18next';
 import { useAsyncMemo } from 'use-async-memo';

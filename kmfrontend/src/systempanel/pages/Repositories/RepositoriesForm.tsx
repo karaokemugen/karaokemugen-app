@@ -9,7 +9,7 @@ import type { TaskItem } from '../../../../../src/lib/types/taskItem';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import FoldersElement from '../../components/FoldersElement';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { debounce } from 'lodash';
+import debounce from 'lodash/debounce';
 import { WS_CMD } from '../../../utils/ws.mjs';
 
 interface RepositoriesFormProps {

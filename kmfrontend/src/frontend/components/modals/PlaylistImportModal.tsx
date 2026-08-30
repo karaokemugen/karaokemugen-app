@@ -10,7 +10,7 @@ import { WS_CMD } from '../../../utils/ws.mjs';
 import { setPlaylistInfo } from '../../../utils/kara';
 import { callModal, displayMessage, secondsTimeSpanToHMS } from '../../../utils/tools';
 import type { OrderParam, PlaylistExport, ServerDBPL } from '../../../../../src/lib/types/playlist';
-import _ from 'lodash';
+import range from 'lodash/range';
 import i18n from '../../../utils/i18n';
 import nanamiThinkPng from '../../../assets/nanami-think.png';
 import nanamiThinkWebP from '../../../assets/nanami-think.webp';
@@ -275,13 +275,13 @@ function PlaylistImportModal(props: IProps) {
 		// We want to show 2 values around current, ellipsis if needed and start and end
 		let numbersToShow: (number | '.')[] = [];
 		const numberOfPages = Math.ceil(sortedAndFilteredPlaylists.length / PAGE_SIZE);
-		const aroundCurrentPage = _.range(page - 2, page + 3);
+		const aroundCurrentPage = range(page - 2, page + 3);
 		if (aroundCurrentPage.includes(2) && aroundCurrentPage.includes(numberOfPages - 1)) {
-			numbersToShow = _.range(1, numberOfPages);
+			numbersToShow = range(1, numberOfPages);
 		} else if (aroundCurrentPage.includes(2)) {
-			numbersToShow = [..._.range(1, Math.max(page + 2, 5) + 1), '.', numberOfPages];
+			numbersToShow = [...range(1, Math.max(page + 2, 5) + 1), '.', numberOfPages];
 		} else if (aroundCurrentPage.includes(numberOfPages - 1)) {
-			numbersToShow = [1, '.', ..._.range(Math.min(page - 2, numberOfPages - 5), numberOfPages + 1)];
+			numbersToShow = [1, '.', ...range(Math.min(page - 2, numberOfPages - 5), numberOfPages + 1)];
 		} else {
 			numbersToShow = [1, '.', ...aroundCurrentPage, '.', numberOfPages];
 		}

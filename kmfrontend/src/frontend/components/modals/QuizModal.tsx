@@ -1,7 +1,7 @@
 import './QuizModal.scss';
 
 import i18next from 'i18next';
-import { merge } from 'lodash';
+import merge from 'lodash/merge';
 import { ChangeEvent, MouseEvent, useContext, useState } from 'react';
 import { useAsyncMemo } from 'use-async-memo';
 

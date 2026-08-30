@@ -1,7 +1,7 @@
 import './Playlist.scss';
 
 import i18next from 'i18next';
-import { debounce } from 'lodash';
+import debounce from 'lodash/debounce';
 import { Fragment, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { DragDropContext, Draggable, DraggableProvided, Droppable, DropResult } from '@hello-pangea/dnd';
 import { ListRange, Virtuoso } from 'react-virtuoso';

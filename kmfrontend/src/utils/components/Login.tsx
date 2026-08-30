@@ -1,7 +1,7 @@
 import './Login.scss';
 
 import i18next from 'i18next';
-import { debounce } from 'lodash';
+import debounce from 'lodash/debounce';
 import { FormEvent, useCallback, useContext, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 

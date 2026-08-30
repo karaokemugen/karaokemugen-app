@@ -1,7 +1,9 @@
 import './QuizPage.scss';
 
 import i18next from 'i18next';
-import { debounce, merge, uniqBy } from 'lodash';
+import debounce from 'lodash/debounce';
+import merge from 'lodash/merge';
+import uniqBy from 'lodash/uniqBy';
 import { RefObject, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Trans } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';

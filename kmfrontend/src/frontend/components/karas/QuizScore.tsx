@@ -1,7 +1,7 @@
 import './QuizScore.scss';
 
 import i18next from 'i18next';
-import { merge } from 'lodash';
+import merge from 'lodash/merge';
 import { useContext, useEffect, useState } from 'react';
 import { useAsyncMemo } from 'use-async-memo';
 
