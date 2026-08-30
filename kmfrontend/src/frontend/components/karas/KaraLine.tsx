@@ -1,7 +1,7 @@
 import './KaraLine.scss';
 
 import i18next from 'i18next';
-import { Key, MouseEvent, useContext, useState } from 'react';
+import { Key, MouseEvent, useContext, useRef, useState } from 'react';
 import { DraggableProvided } from '@hello-pangea/dnd';
 import { toast } from 'react-toastify';
 
@@ -126,68 +126,77 @@ function KaraLine(props: IProps) {
 		}).catch(() => {});
 	};
 
+	const isAddingKara = useRef(false);
+
 	const addKara = async (_, pos?: number) => {
-		let url: WSCmdDefinition<object, { plc: DBPLCInfo } | void>;
-		let data;
-		const oppositePlaylist = getOppositePlaylistInfo(props.side, context);
-		if (oppositePlaylist?.plaid === nonStandardPlaylists.favorites) {
-			if (authData.onlineAvailable !== false) {
-				url = WS_CMD.ADD_FAVORITES;
+		if (isAddingKara.current) return;
+		isAddingKara.current = true;
+		try {
+			let url: WSCmdDefinition<object, { plc: DBPLCInfo } | void>;
+			let data;
+			const oppositePlaylist = getOppositePlaylistInfo(props.side, context);
+			if (oppositePlaylist?.plaid === nonStandardPlaylists.favorites) {
+				if (authData.onlineAvailable !== false) {
+					url = WS_CMD.ADD_FAVORITES;
+					data = {
+						kids: [kara.kid],
+					};
+				} else {
+					displayMessage('warning', i18next.t('ERROR_CODES.FAVORITES_ONLINE_NOINTERNET'), 5000);
+					return;
+				}
+			} else if (isAdmin) {
+				if (oppositePlaylist && !oppositePlaylist.flag_smart) {
+					if (!isNonStandardPlaylist(getPlaylistInfo(props.side, context).plaid) && !pos) {
+						url = WS_CMD.COPY_KARA_TO_PLAYLIST;
+						data = {
+							plaid: oppositePlaylist.plaid,
+							plc_ids: [kara.plcid],
+						};
+					} else {
+						url = WS_CMD.ADD_KARA_TO_PLAYLIST;
+						if (pos) {
+							data = {
+								plaid: oppositePlaylist.plaid,
+								requestedby: authData.username,
+								kids: [kara.kid],
+								pos: pos,
+							};
+						} else {
+							data = {
+								plaid: oppositePlaylist.plaid,
+								requestedby: authData.username,
+								kids: [kara.kid],
+							};
+						}
+					}
+				} else {
+					url = WS_CMD.ADD_CRITERIAS;
+					data = {
+						criterias: [
+							{
+								type: 1001,
+								value: kara.kid,
+								plaid: oppositePlaylist.plaid,
+							},
+						],
+					};
+				}
+			} else {
+				url = WS_CMD.ADD_KARA_TO_PUBLIC_PLAYLIST;
 				data = {
 					kids: [kara.kid],
 				};
-			} else {
-				displayMessage('warning', i18next.t('ERROR_CODES.FAVORITES_ONLINE_NOINTERNET'), 5000);
-				return;
 			}
-		} else if (isAdmin) {
-			if (oppositePlaylist && !oppositePlaylist.flag_smart) {
-				if (!isNonStandardPlaylist(getPlaylistInfo(props.side, context).plaid) && !pos) {
-					url = WS_CMD.COPY_KARA_TO_PLAYLIST;
-					data = {
-						plaid: oppositePlaylist.plaid,
-						plc_ids: [kara.plcid],
-					};
-				} else {
-					url = WS_CMD.ADD_KARA_TO_PLAYLIST;
-					if (pos) {
-						data = {
-							plaid: oppositePlaylist.plaid,
-							requestedby: authData.username,
-							kids: [kara.kid],
-							pos: pos,
-						};
-					} else {
-						data = {
-							plaid: oppositePlaylist.plaid,
-							requestedby: authData.username,
-							kids: [kara.kid],
-						};
-					}
-				}
-			} else {
-				url = WS_CMD.ADD_CRITERIAS;
-				data = {
-					criterias: [
-						{
-							type: 1001,
-							value: kara.kid,
-							plaid: oppositePlaylist.plaid,
-						},
-					],
-				};
+			try {
+				const response = await commandBackend(url, data);
+				PLCCallback(response, context, kara, props.scope);
+			} catch (e: any) {
+				throw new Error(e?.message?.code ? e?.message?.code : e?.message);
 			}
-		} else {
-			url = WS_CMD.ADD_KARA_TO_PUBLIC_PLAYLIST;
-			data = {
-				kids: [kara.kid],
-			};
 		}
-		try {
-			const response = await commandBackend(url, data);
-			PLCCallback(response, context, kara, props.scope);
-		} catch (e: any) {
-			throw new Error(e?.message?.code ? e?.message?.code : e?.message);
+		finally {
+			isAddingKara.current = false;
 		}
 	};
 

@@ -12,6 +12,7 @@ const service = 'Remote';
 
 let errCount = 0;
 let retryReconnectTimer: ReturnType<typeof setTimeout> = null;
+let isRestarting = false;
 
 function setRemoteError(err: any) {
 	setState({ remoteAccess: { err: true, reason: err?.message?.code || err?.reason || err?.message || 'UNKNOWN' } });
@@ -75,9 +76,12 @@ async function stopRemote() {
 
 async function restartRemote() {
 	if (!getConfig().Online.RemoteAccess.Enabled) return;
+	if (isRestarting) return;
+	isRestarting = true;
 	try {
 		logger.debug('Reconnection...', { service });
 		const data = await startRemote();
+		clearTimeout(retryReconnectTimer);
 		logger.info('Remote was RESTARTED', { service, obj: data });
 		setState({ remoteAccess: data });
 		configureHost();
@@ -87,6 +91,8 @@ async function restartRemote() {
 		clearTimeout(retryReconnectTimer);
 		// Retry in 10 seconds
 		retryReconnectTimer = setTimeout(restartRemote, 10_000).unref();
+	} finally {
+		isRestarting = false;
 	}
 }
 
@@ -149,7 +155,10 @@ export async function initRemote() {
 		setState({ remoteAccess: data });
 		configureHost();
 	} catch (err) {
-		setRemoteError(err);
+		setRemoteError(err);		
+		clearTimeout(retryReconnectTimer);
+		// Retry in 10 seconds
+		retryReconnectTimer = setTimeout(restartRemote, 10_000).unref();
 	} finally {
 		profile('initRemote');
 	}

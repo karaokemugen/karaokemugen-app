@@ -1,5 +1,5 @@
 import i18next from 'i18next';
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { DBKara } from '../../../../../src/lib/types/database/kara';
@@ -31,12 +31,17 @@ async function fetchKaras(kid): Promise<IKaraList<DBKara>> {
 }
 
 export default function VersionSelector(props: Props) {
+	const isAddingKara = useRef(false);
+
+	try {
 	const [karas, setKaras] = useState<IKaraList<DBKara>>();
 	const context = useContext(GlobalContext);
 	const navigate = useNavigate();
 	const { kid: id } = useParams();
 
 	const addKara = async (e, kara) => {
+		if (isAddingKara.current) return;
+		isAddingKara.current = true;
 		try {
 			e.stopPropagation();
 			const res = await commandBackend(WS_CMD.ADD_KARA_TO_PUBLIC_PLAYLIST, {
@@ -45,6 +50,8 @@ export default function VersionSelector(props: Props) {
 			PLCCallback(res, context, kara, props.scope);
 		} catch (_) {
 			// already display
+		} finally {
+			isAddingKara.current = false;
 		}
 	};
 
