@@ -6,8 +6,8 @@ import { useEffect, useState } from 'react';
 
 import { supportedFiles } from '../../../../src/lib/utils/constants';
 import { commandBackend } from '../../utils/socket';
-import Title from '../components/Title';
 import { WS_CMD } from '../../utils/ws.mjs';
+import Title from '../components/Title';
 
 export type BackgroundType = 'pause' | 'stop' | 'poll';
 
