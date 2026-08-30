@@ -121,14 +121,21 @@
 	opacity: 1;
 }
 
+.showPlaylistCommands {
+	position: relative;
+}
+
 .showPlaylistCommands:after {
 	content: '';
-	display: inline-block;
-	position: relative;
-	top: 0.75em;
+	display: block;
+	position: absolute;
+	left: 50%;
+	bottom: 0.15em;
+	transform: translateX(-50%);
 	border-color: currentColor transparent transparent;
-	border-width: 5px;
+	border-width: 5px 5px 0;
 	border-style: solid;
+	pointer-events: none;
 }
 
 .danger-hover:hover {
@@ -142,6 +149,7 @@
 
 .plSearch {
 	display: flex;
+	align-items: stretch;
 	flex: 1 1;
 	margin-left: 1em;
 	margin-right: 1em;
@@ -149,10 +157,19 @@
 	border-radius: 4px;
 	background-color: #454545b3;
 	input {
+		flex: 1 1 auto;
+		min-width: 0;
 		font-weight: bold;
 		font-family: Lato, 'Font Awesome 7 Free', sans-serif;
 		border: 1px solid transparent;
 		border-radius: 4px;
+	}
+	> .btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		align-self: stretch;
+		flex: 0 0 auto;
 	}
 }
 
@@ -170,9 +187,11 @@
 
 	.actionDiv {
 		display: flex;
+		align-items: center;
 	}
 	.btn-group {
 		display: flex;
+		align-items: center;
 	}
 
 	@media screen and (max-width: variables.$mugen-breakpoint-large) {
@@ -184,10 +203,13 @@
 		}
 		.plSearch {
 			order: 2;
-			height: 2em;
+			min-height: 2em;
 			flex-basis: 100%;
 			flex-shrink: 0;
 			margin: 1em 0 0;
+			> .btn {
+				height: auto;
+			}
 		}
 	}
 }
