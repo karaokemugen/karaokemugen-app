@@ -29,7 +29,8 @@ let pollEnding = false;
 let clock: Timer;
 
 on('stateUpdated', (state: State) => {
-	if (state.songPoll === false && poll.length > 0) stopPoll();
+	if (poll.length > 0 && (Array.isArray(state) ? state[0] : state).songPoll === false)
+		stopPoll();
 });
 
 async function displayPoll(winner?: number) {
