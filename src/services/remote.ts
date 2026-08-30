@@ -11,6 +11,11 @@ import { getState, setState } from '../utils/state.js';
 const service = 'Remote';
 
 let errCount = 0;
+let retryReconnectTimer: ReturnType<typeof setTimeout> = null;
+
+function setRemoteError(err: any) {
+	setState({ remoteAccess: { err: true, reason: err?.message?.code || err?.reason || err?.message || 'UNKNOWN' } });
+}
 
 async function startRemote(): Promise<RemoteSuccess> {
 	try {
@@ -58,6 +63,7 @@ async function startRemote(): Promise<RemoteSuccess> {
 }
 
 function removeRemote() {
+	clearTimeout(retryReconnectTimer);
 	setState({ remoteAccess: null });
 	configureHost();
 }
@@ -77,6 +83,10 @@ async function restartRemote() {
 		configureHost();
 	} catch (e) {
 		logger.warn('Remote is UNAVAILABLE', { service, obj: e });
+		setRemoteError(e);
+		clearTimeout(retryReconnectTimer);
+		// Retry in 10 seconds
+		retryReconnectTimer = setTimeout(restartRemote, 10_000).unref();
 	}
 }
 
@@ -90,37 +100,35 @@ async function broadcastForward(body) {
 	if (errCount === -1) return;
 	commandKMServer('remote broadcast', {
 		body,
-	})
-		.then(() => {
+	}).then(() => {
 			errCount = 0;
 		})
 		.catch(err => {
 			logger.warn('Failed to remote broadcast', { service, obj: err });
 			if (errCount !== -1) errCount += 1;
 			if (errCount >= 5) {
-				logger.warn('The remote broadcast failed 5 times in a row, restart remote');
+				logger.warn('The remote broadcast failed 5 times in a row, restart remote', {service});
 				errCount = -1;
-				getKMServerSocket().disconnect();
-				setTimeout(() => {
-					getKMServerSocket().connect();
-				}, 2500).unref();
+				restartRemote();
 			}
 		});
 }
 
 export async function destroyRemote() {
-	try {
-		await stopRemote();
-	} catch (err) {
-		logger.error('Cannot stop remote', { service });
-	}
-	// Remove all subscriptions
+	// Remove all subscriptions before stopping remote
 	if (getKMServerSocket()) {
 		getKMServerSocket().offAny(proxy);
 		getKMServerSocket().off('connect', restartRemote);
 		getKMServerSocket().off('disconnect', removeRemote);
 	}
 	getWS().off('broadcast', broadcastForward);
+	clearTimeout(retryReconnectTimer);
+	errCount = 0;
+	try {
+		await stopRemote();
+	} catch (err) {
+		logger.error('Cannot stop remote', { service, obj: err });
+	}
 	logger.info('Remote is STOPPED', { service });
 	setState({ remoteAccess: null });
 	configureHost();
@@ -129,21 +137,19 @@ export async function destroyRemote() {
 export async function initRemote() {
 	try {
 		profile('initRemote');
-		const data = await startRemote();
 		getKMServerSocket().onAny(proxy);
 		// This will be triggered on reconnection, as the first connect is handled by initKMServerCommunication
 		getKMServerSocket().on('connect', restartRemote);
 		getKMServerSocket().on('disconnect', removeRemote);
 		getWS().on('broadcast', broadcastForward);
+		const data = await startRemote();
 		// Strip token from public output to avoid leaks
 		delete data.token;
 		logger.info('Remote is READY', { service, obj: data });
 		setState({ remoteAccess: data });
 		configureHost();
 	} catch (err) {
-		if (err?.message?.code) {
-			setState({ remoteAccess: { err: true, reason: err.message.code } });
-		}
+		setRemoteError(err);
 	} finally {
 		profile('initRemote');
 	}

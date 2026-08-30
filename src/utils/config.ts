@@ -45,7 +45,7 @@ import {
 } from '../services/player.js';
 import { updateAllPlaylistDurations } from '../services/playlist.js';
 import { setSongPoll } from '../services/poll.js';
-import { destroyRemote, initRemote } from '../services/remote.js';
+import { destroyRemote } from '../services/remote.js';
 import { updateSongsLeft } from '../services/user.js';
 import { BinariesConfig } from '../types/binChecker.js';
 import { Config } from '../types/config.js';
@@ -147,7 +147,6 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	if (newConfig.Online.RemoteAccess.Enabled !== oldConfig.Online.RemoteAccess.Enabled && state.ready) {
 		if (newConfig.Online.RemoteAccess.Enabled) {
 			await initKMServerCommunication();
-			initRemote();
 		} else {
 			destroyRemote();
 		}

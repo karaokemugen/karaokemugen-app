@@ -26,6 +26,7 @@ export function connectToKMServer(reset = false) {
 		return new Promise<void>((resolve, reject) => {
 			const conf = getConfig();
 			let timeout = setTimeout(() => {
+				timeout = undefined;
 				reject(new Error('Connection timed out'));
 				socket.disconnect();
 				socket = undefined;
@@ -135,7 +136,9 @@ const socketLatencyCheck$ = (socket: Socket, remoteHost: string, intervalMs = 10
 export async function initKMServerCommunication() {
 	profile('initKMServerComms');
 	if (getConfig().Online.RemoteAccess.Enabled) {
-		await connectToKMServer();
+		try {
+			await connectToKMServer();
+		} catch (err) {	}
 		initRemote();
 	}
 	if (getConfig().Online.RemoteUsers.Enabled) {
@@ -150,11 +153,12 @@ export function getKMServerSocket() {
 
 export function commandKMServer<T = any>(name: string, data: APIData<T>, timeout = 5000): Promise<any> {
 	return new Promise((resolve, reject) => {
-		const nodeTimeout = setTimeout(() => {
-			reject(new Error('Request timed out'));
-		}, timeout);
-		socket.emit(name, data, ack => {
-			clearTimeout(nodeTimeout);
+		if (!socket?.connected) {
+			reject(new Error('Socket is not connected'));
+			return;
+		}
+		socket.timeout(timeout).emit(name, data, (err: Error, ack: any) => {
+			if (err) return reject(new Error('Request timed out'));
 			ack.err ? reject(ack.data) : resolve(ack.data);
 		});
 	});
