@@ -31,13 +31,11 @@ async function fetchKaras(kid): Promise<IKaraList<DBKara>> {
 }
 
 export default function VersionSelector(props: Props) {
-	const isAddingKara = useRef(false);
-
-	try {
 	const [karas, setKaras] = useState<IKaraList<DBKara>>();
 	const context = useContext(GlobalContext);
 	const navigate = useNavigate();
 	const { kid: id } = useParams();
+	const isAddingKara = useRef(false);
 
 	const addKara = async (e, kara) => {
 		if (isAddingKara.current) return;
