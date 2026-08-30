@@ -37,6 +37,7 @@ function DeletePlaylistModal(props: IProps) {
 					plaid: plaidChosen,
 				});
 				await setSettings(context.globalDispatch);
+				setPlaylistInfo(props.side, context, plaidChosen);
 			} else {
 				setPlaylistInfo(
 					props.side,
@@ -45,13 +46,13 @@ function DeletePlaylistModal(props: IProps) {
 						? nonStandardPlaylists.library
 						: context.globalState.settings.data.state.publicPlaid
 				);
-				try {
-					commandBackend(WS_CMD.DELETE_PLAYLIST, {
-						plaid: playlist.plaid,
-					});
-				} catch (_) {
-					// already display
-				}
+			}
+			try {
+				commandBackend(WS_CMD.DELETE_PLAYLIST, {
+					plaid: playlist.plaid,
+				});
+			} catch (_) {
+				// already display
 			}
 			closeModalWithContext();
 		} catch (_) {

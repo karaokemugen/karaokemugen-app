@@ -1700,7 +1700,7 @@ export async function convertToUUIDFormat(repoName: string) {
 						throw err;
 					}
 				}
-				kara.data.songname = defineSongname(kara, tags.content);
+				kara.data.songname = (await defineSongname(kara, tags.content)).songname;
 				kara.data = sortJSON(kara.data);
 				await fs.writeFile(
 					resolve(resolvedPathRepos('Karaokes', repoName)[0], `${kara.data.kid}.kara.json`),

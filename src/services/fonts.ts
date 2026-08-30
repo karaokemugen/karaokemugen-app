@@ -48,5 +48,5 @@ export async function addFont(file: string, repo: string) {
 	const fontPath = resolve(resolvedPathRepos('Fonts', repo)[0], basename(file));
 	const destDir = resolvedPath('Fonts');
 	logger.info(`Copying font ${file}`, { service });
-	await fs.copyFile(fontPath, destDir);
+	await fs.copyFile(fontPath, resolve(destDir, basename(file)));
 }

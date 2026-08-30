@@ -116,7 +116,7 @@ function Playlist(props: IProps) {
 						}
 					}
 				}
-				return oldData;
+				return oldData ? { ...oldData } : oldData;
 			});
 		}
 	};
@@ -165,7 +165,7 @@ function Playlist(props: IProps) {
 						}
 					}
 				}
-				return oldData;
+				return oldData ? { ...oldData } : oldData;
 			});
 		}
 	};

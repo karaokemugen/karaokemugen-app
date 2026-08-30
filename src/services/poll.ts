@@ -29,7 +29,7 @@ let pollEnding = false;
 let clock: Timer;
 
 on('stateUpdated', (state: State) => {
-	if (!state.songPoll === false && poll.length > 0) stopPoll();
+	if (state.songPoll === false && poll.length > 0) stopPoll();
 });
 
 async function displayPoll(winner?: number) {

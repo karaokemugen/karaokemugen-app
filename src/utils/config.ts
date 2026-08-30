@@ -84,7 +84,7 @@ export async function editConfig(part: RecursivePartial<Config>) {
 	try {
 		const config = getConfig();
 		const oldConfig = removeNulls(cloneDeep(config));
-		const newConfig = removeNulls(merge(config, part));
+		const newConfig = removeNulls(merge(cloneDeep(config), part));
 		try {
 			verifyConfig(newConfig);
 		} catch (err) {
@@ -93,7 +93,7 @@ export async function editConfig(part: RecursivePartial<Config>) {
 		}
 		await mergeConfig(newConfig, oldConfig);
 		emitWS('settingsUpdated', part);
-		return config;
+		return getConfig();
 	} catch (err) {
 		sentry.error(err, 'warning');
 		throw err instanceof ErrorKM ? err : new ErrorKM('SETTINGS_UPDATE_ERROR');

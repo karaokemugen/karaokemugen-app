@@ -100,7 +100,7 @@ function UserList() {
 
 	useEffect(() => {
 		refresh();
-	});
+	}, []);
 
 	const refresh = async () => {
 		const res = await commandBackend(WS_CMD.GET_USERS);

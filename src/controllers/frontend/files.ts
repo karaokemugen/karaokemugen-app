@@ -24,7 +24,8 @@ export function filesSocketController(router: SocketIOApp) {
 	router.route(WS_CMD.IMPORT_FILE, async (socket, req) => {
 		await runChecklist(socket, req, 'user', 'closed');
 		try {
-			const extension = req.body.extension ? `.${req.body.extension}` : '';
+			const rawExtension = req.body.extension ? String(req.body.extension).replace(/^\.+/, '') : '';
+			const extension = /^[a-zA-Z0-9]{1,16}$/.test(rawExtension) ? `.${rawExtension}` : '';
 			const filename = `${randomUUID()}${extension}`;
 			const fullPath = resolve(resolvedPath('Temp'), filename);
 			await fs.writeFile(fullPath, req.body.buffer);

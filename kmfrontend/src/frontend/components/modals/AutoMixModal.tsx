@@ -141,7 +141,7 @@ function AutoMixModal(props: IProps) {
 				setYearList(yearList.filter(y => y.value !== value));
 				break;
 			case 'tag':
-				setTagList(tagList.filter(t => !(t.value.tid !== value.tid && t.value.type !== value.type)));
+				setTagList(tagList.filter(t => t.value.tid !== value.tid || t.value.type !== value.type));
 				break;
 		}
 	};

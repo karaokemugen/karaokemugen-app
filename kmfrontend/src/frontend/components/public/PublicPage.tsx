@@ -1,6 +1,6 @@
 import i18next from 'i18next';
 import { merge } from 'lodash';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { DBPLC } from '../../../../../src/lib/types/database/playlist';
@@ -39,9 +39,9 @@ function PublicPage() {
 	const navigate = useNavigate();
 
 	const [isPollActive, setPollActive] = useState(false);
-	const [classicModeModal, setClassicModeModal] = useState(false);
-	const [playerStopping, setPlayerStopping] = useState(false);
-	const [playerStopped, setPlayerStopped] = useState(false);
+	const classicModeModal = useRef(false);
+	const playerStopping = useRef(false);
+	const playerStopped = useRef(false);
 	const [top, setTop] = useState('0px');
 	const [bottom, setBottom] = useState('0px');
 	const [publicVisible, setPublicVisible] = useState(false);
@@ -138,7 +138,7 @@ function PublicPage() {
 	};
 
 	const nextSong = (data: DBPLC) => {
-		if (data && data.flag_visible && !playerStopping) {
+		if (data && data.flag_visible && !playerStopping.current) {
 			if (timer) clearTimeout(timer);
 			timer = setTimeout(() => {
 				displayMessage(
@@ -158,15 +158,19 @@ function PublicPage() {
 			const state = { ...oldState };
 			return merge(state, data);
 		});
-		if (data.stopping !== undefined) setPlayerStopping(data.stopping);
-		if (data.playerStatus === 'stop') setPlayerStopped(true);
-		else if (typeof data.playerStatus === 'string') setPlayerStopped(false);
-		if (playerStopped && data.currentRequester === context.globalState.auth.data.username && !classicModeModal) {
+		if (data.stopping !== undefined) playerStopping.current = data.stopping;
+		if (data.playerStatus === 'stop') playerStopped.current = true;
+		else if (typeof data.playerStatus === 'string') playerStopped.current = false;
+		if (
+			playerStopped.current &&
+			data.currentRequester === context.globalState.auth.data.username &&
+			!classicModeModal.current
+		) {
 			showModal(context.globalDispatch, <ClassicModeModal />);
-			setClassicModeModal(true);
-		} else if (!playerStopped && classicModeModal) {
+			classicModeModal.current = true;
+		} else if (!playerStopped.current && classicModeModal.current) {
 			closeModal(context.globalDispatch);
-			setClassicModeModal(false);
+			classicModeModal.current = false;
 		}
 	};
 

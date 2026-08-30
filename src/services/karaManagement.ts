@@ -144,10 +144,11 @@ export async function removeKara(
 					tagsToDelete.add(tid.split('~')[0]);
 				}
 			}
-			// For each tag we'll have to find out their ocunt. if >1 we remove them from tagsToDelete since they're likely used by another song
+			// For each tag we'll have to find out their count. 
+			// if >1 (deleted kara is deleted and does not count anymore) we remove them from tagsToDelete since they're likely used by another song
 			for (const tid of tagsToDelete.values()) {
 				const karasUsingTag = await getKarasUsingTag(tid);
-				if (karasUsingTag.length > 1) tagsToDelete.delete(tid);
+				if (karasUsingTag.length > 0) tagsToDelete.delete(tid);
 			}
 			if (tagsToDelete.size > 0) {
 				await removeTag(Array.from(tagsToDelete), {

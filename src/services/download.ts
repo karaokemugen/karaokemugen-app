@@ -1,7 +1,7 @@
 import { promise as fastq, queueAsPromised } from 'fastq';
 import { promises as fs } from 'fs';
 import parallel from 'p-map';
-import { resolve } from 'path';
+import { basename, resolve } from 'path';
 import { randomUUID } from 'crypto';
 
 import {
@@ -130,8 +130,9 @@ async function processDownload(download: KaraDownload) {
 		updateDownloaded([download.kid], 'DOWNLOADING');
 		emitWS('KIDUpdated', [{ kid: download.kid, download_status: 'DOWNLOADING' }]);
 		const tempDir = resolvedPath('Temp');
-		const localMedia = resolve(resolvedPathRepos('Medias', download.repository)[0], download.mediafile);
-		const tempMedia = resolve(tempDir, download.mediafile);
+		const mediafile = basename(download.mediafile);
+		const localMedia = resolve(resolvedPathRepos('Medias', download.repository)[0], mediafile);
+		const tempMedia = resolve(tempDir, mediafile);
 		const repo = getRepo(download.repository);
 		const downloadItem = {
 			filename: tempMedia,

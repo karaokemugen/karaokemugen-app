@@ -1213,7 +1213,7 @@ export async function editPLC(plc_ids: number[], params: PLCEditParams, refresh 
 			plsUpdated.add(plc.plaid);
 		}
 		const songsLeftToUpdate: Set<any> = new Set();
-		const PLCsToDeleteFromCurrent = [];
+		const PLCsToDeleteFromCurrent: number[] = [];
 		let currentPlaylist: DBPLCBase[] = [];
 		if (params.flag_accepted === false || params.flag_refused === true) {
 			// If we are cancelling flag_accepted, we'll need to remove songs from the current playlist
@@ -1246,7 +1246,7 @@ export async function editPLC(plc_ids: number[], params: PLCEditParams, refresh 
 				const currentPLC = currentPlaylist.find(
 					curplc => curplc.kid === plc.kid && curplc.username === plc.username
 				);
-				if (currentPLC) PLCsToDeleteFromCurrent.push(plc_ids);
+				if (currentPLC) PLCsToDeleteFromCurrent.push(currentPLC.plcid);
 			}
 			await updatePLCAccepted(plc_ids, params.flag_accepted);
 		}
@@ -1255,13 +1255,13 @@ export async function editPLC(plc_ids: number[], params: PLCEditParams, refresh 
 				const currentPLC = currentPlaylist.find(
 					curplc => curplc.kid === plc.kid && curplc.username === plc.username
 				);
-				if (currentPLC) PLCsToDeleteFromCurrent.push(plc_ids);
+				if (currentPLC) PLCsToDeleteFromCurrent.push(currentPLC.plcid);
 			}
 			params.flag_free = true;
 			await Promise.all([updatePLCAccepted(plc_ids, false), updatePLCRefused(plc_ids, true)]);
 		}
 		if (PLCsToDeleteFromCurrent.length > 0) {
-			removeKaraFromPlaylist(PLCsToDeleteFromCurrent, adminToken).catch(() => {});
+			removeKaraFromPlaylist([...new Set(PLCsToDeleteFromCurrent)], adminToken).catch(() => {});
 		}
 		if (params.flag_refused === false) {
 			await updatePLCRefused(plc_ids, params.flag_refused);

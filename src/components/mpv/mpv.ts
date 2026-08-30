@@ -132,7 +132,10 @@ function needsLock() {
 		const originFunc = descriptor.value;
 		descriptor.value = async function descriptorFunc(...params) {
 			await acquireLock();
-			return originFunc.apply(this, params).then(releaseLock);
+			return originFunc.apply(this, params).then(releaseLock, err => {
+				releaseLock();
+				throw err;
+			});
 		};
 		return descriptor;
 	};

@@ -28,6 +28,7 @@ export function connectToKMServer(reset = false) {
 			let timeout = setTimeout(() => {
 				reject(new Error('Connection timed out'));
 				socket.disconnect();
+				socket = undefined;
 			}, 5000);
 			socket = io(`${conf.Online.RemoteAccess.Secure ? 'https' : 'http'}://${conf.Online.RemoteAccess.Domain}`, {
 				transports: ['websocket'],
