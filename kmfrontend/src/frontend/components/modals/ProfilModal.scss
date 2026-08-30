@@ -36,7 +36,7 @@
 		margin: 0.5em;
 		button {
 			margin-right: 1.5em;
-			> i:first-child {
+			> .svg-inline--fa:first-child {
 				margin-right: 0.25em;
 			}
 		}
@@ -83,7 +83,8 @@
 			text-align: start;
 			display: flex;
 			align-items: center;
-			i {
+			i,
+			.svg-inline--fa {
 				flex-shrink: 0;
 			}
 			&.warning {

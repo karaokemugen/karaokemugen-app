@@ -1,5 +1,14 @@
 import './UsersModal.scss';
 
+import {
+	faBluesky,
+	faDiscord,
+	faInstagram,
+	faMastodon,
+	faTwitch,
+} from '@fortawesome/free-brands-svg-icons';
+import { faArrowLeft, faGlobe, faLink, faPen, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import { useContext, useEffect, useState } from 'react';
 
@@ -71,7 +80,7 @@ function UsersModal(props: IProps) {
 			<div className={`modal-header${props.scope === 'public' ? ' public-modal' : ''}`}>
 				{props.scope === 'public' ? (
 					<button className="closeModal" type="button" onClick={closeModalWithContext}>
-						<i className="fas fa-arrow-left" />
+						<FontAwesomeIcon icon={faArrowLeft} />
 					</button>
 				) : null}
 				<h4 className="modal-title">{i18next.t('USERLIST')}</h4>
@@ -84,7 +93,7 @@ function UsersModal(props: IProps) {
 				) : null}
 				{props.scope === 'admin' ? ( // aka. it's a modal, otherwise it's a page and close button is not needed
 					<button className="closeModal" onClick={closeModalWithContext}>
-						<i className="fas fa-times" />
+						<FontAwesomeIcon icon={faTimes} />
 					</button>
 				) : null}
 			</div>
@@ -104,7 +113,7 @@ function UsersModal(props: IProps) {
 									<div className="userDetails">
 										{userDetails?.url ? (
 											<div>
-												<i className="fas fa-link" />
+												<FontAwesomeIcon icon={faLink} />
 												<a href={userDetails.url} rel="noreferrer noopener">
 													{userDetails.url}
 												</a>
@@ -112,13 +121,13 @@ function UsersModal(props: IProps) {
 										) : null}
 										{userDetails?.bio ? (
 											<div>
-												<i className="fas fa-pen" />
+												<FontAwesomeIcon icon={faPen} />
 												{userDetails.bio}
 											</div>
 										) : null}
 										{userDetails?.location ? (
 											<div>
-												<i className="fas fa-globe" />
+												<FontAwesomeIcon icon={faGlobe} />
 												{getCountryName(
 													userDetails.location,
 													context.globalState.settings.data.user.language
@@ -127,13 +136,13 @@ function UsersModal(props: IProps) {
 										) : null}
 										{userDetails?.social_networks.discord ? (
 											<div>
-												<i className="fab fa-discord" />
+												<FontAwesomeIcon icon={faDiscord} />
 												{userDetails.social_networks.discord}
 											</div>
 										) : null}
 										{userDetails?.social_networks.mastodon ? (
 											<div>
-												<i className="fab fa-mastodon" />
+												<FontAwesomeIcon icon={faMastodon} />
 												<a
 													href={`https://${
 														userDetails.social_networks.mastodon.split('@')[1]
@@ -146,7 +155,7 @@ function UsersModal(props: IProps) {
 										) : null}
 										{userDetails?.social_networks.bluesky ? (
 											<div>
-												<i className="fab fa-bluesky" />
+												<FontAwesomeIcon icon={faBluesky} />
 												<a
 													href={`https://bsky.app/profile/${userDetails.social_networks.bluesky}`}
 													rel="noreferrer noopener"
@@ -157,7 +166,7 @@ function UsersModal(props: IProps) {
 										) : null}
 										{userDetails?.social_networks.instagram ? (
 											<div>
-												<i className="fab fa-instagram" />
+												<FontAwesomeIcon icon={faInstagram} />
 												<a
 													href={`https://instagram.com/${userDetails.social_networks.instagram}`}
 													rel="noreferrer noopener"
@@ -168,7 +177,7 @@ function UsersModal(props: IProps) {
 										) : null}
 										{userDetails?.social_networks.twitch ? (
 											<div>
-												<i className="fab fa-twitch" />
+												<FontAwesomeIcon icon={faTwitch} />
 												<a
 													href={`https://twitch.tv/${userDetails.social_networks.twitch}`}
 													rel="noreferrer noopener"

@@ -93,7 +93,8 @@
 					font-size: medium;
 					color: white;
 					flex-shrink: 0;
-					i {
+					i,
+					.svg-inline--fa {
 						margin-right: 0.3em;
 						font-size: 2em;
 					}
@@ -120,7 +121,8 @@
 						justify-content: flex-start;
 						align-items: center;
 						padding: 0.5em 1em;
-						i {
+						i,
+						.svg-inline--fa {
 							margin-right: 0.3em;
 							font-size: 2em;
 						}
@@ -132,7 +134,8 @@
 						justify-content: flex-start;
 						align-items: center;
 						padding: 0.5em 1em;
-						i {
+						i,
+						.svg-inline--fa {
 							margin-right: 0.3em;
 							font-size: 2em;
 						}
@@ -145,7 +148,8 @@
 						li {
 							padding: 0 1em;
 							margin: 0.5em 0;
-							i {
+							i,
+							.svg-inline--fa {
 								margin-right: 0.5em;
 								min-width: 1.2em;
 								text-align: center;

@@ -1,3 +1,4 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import { ReactNode } from 'react';
 
@@ -90,7 +91,8 @@ export function getTagInLocale(
 	}
 	const user = settings?.user;
 	const tagLang =
-		tagTypes[getTagTypeName(('type_in_kara' in tag && tag.type_in_kara) ? tag.type_in_kara : (tag as DBTag).types[0])].language;
+		tagTypes[getTagTypeName('type_in_kara' in tag && tag.type_in_kara ? tag.type_in_kara : (tag as DBTag).types[0])]
+			.language;
 	if (tagLang === 'user' && user?.language) {
 		return getTagInLanguage(tag, getLanguageIn3B(user.language), 'eng', i18nParam);
 	} else if (tagLang === 'song_name' && user?.main_series_lang && user?.fallback_series_lang) {
@@ -486,7 +488,7 @@ export function computeTagsElements(
 		if (kara[tagData.karajson]?.length > 0) {
 			karaBlockTags.push(
 				<div className={`detailsKaraLine colored ${tagData.color}`} key={tagData.karajson}>
-					<i className={`fas fa-${tagData.icon}`} />
+					<FontAwesomeIcon icon={tagData.icon} />
 					<div>
 						{i18next.t(`KARA.${type}_BY`)}
 						<span key={`${type}${key}`} className="detailsKaraLineContent">

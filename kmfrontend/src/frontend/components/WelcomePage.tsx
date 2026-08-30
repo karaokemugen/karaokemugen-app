@@ -1,6 +1,23 @@
 import '../styles/start/Start.scss';
 import '../styles/start/WelcomePage.scss';
 
+import {
+	faChartLine,
+	faCirclePlay,
+	faCog,
+	faEdit,
+	faGlobe,
+	faHandPointRight,
+	faLaptop,
+	faLayerGroup,
+	faLink,
+	faNetworkWired,
+	faPencilAlt,
+	faQuestionCircle,
+	faSignOutAlt,
+	faUser,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -304,19 +321,19 @@ function WelcomePage() {
 						<ul>
 							<li>
 								<a href="https://mugen.karaokes.moe/contact.html">
-									<i className="fas fa-pencil-alt" />
+									<FontAwesomeIcon icon={faPencilAlt} />
 									{i18next.t('WELCOME_PAGE.CONTACT')}
 								</a>
 							</li>
 							<li>
 								<a href="https://mugen.karaokes.moe/">
-									<i className="fas fa-link" />
+									<FontAwesomeIcon icon={faLink} />
 									{i18next.t('WELCOME_PAGE.SITE')}
 								</a>
 							</li>
 							<li>
 								<a href="#" onClick={toggleProfileModal}>
-									<i className="fas fa-user" />
+									<FontAwesomeIcon icon={faUser} />
 									<span>{context.globalState.settings.data.user.nickname}</span>
 								</a>
 							</li>
@@ -327,7 +344,7 @@ function WelcomePage() {
 									className="logout"
 									onClick={() => logout(context.globalDispatch)}
 								>
-									<i className="fas fa-sign-out-alt" />
+									<FontAwesomeIcon icon={faSignOutAlt} />
 									<span>{i18next.t('LOGOUT')}</span>
 								</a>
 							</li>
@@ -348,7 +365,7 @@ function WelcomePage() {
 								</article>
 								<article title={i18next.t('WELCOME_PAGE.EDIT_SESSION')}>
 									<a href={`/system/sessions/${activeSession?.seid}?route=/welcome`}>
-										<i className="fas fa-edit" />
+										<FontAwesomeIcon icon={faEdit} />
 									</a>
 								</article>
 							</>
@@ -361,40 +378,40 @@ function WelcomePage() {
 						{context?.globalState.settings.data.user?.flag_tutorial_done ? (
 							<article className="tile-manage">
 								<button type="button" onClick={() => navigate('/admin' + window.location.search)}>
-									<i className="fas fa-circle-play" />
+									<FontAwesomeIcon icon={faCirclePlay} />
 									<span>{i18next.t('WELCOME_PAGE.KARAMANAGER')}</span>
 								</button>
 							</article>
 						) : (
 							<article className="tile-tutorial">
 								<button type="button" onClick={() => navigate('/admin' + window.location.search)}>
-									<i className="fas fa-hand-point-right" />
+									<FontAwesomeIcon icon={faHandPointRight} />
 									<span>{i18next.t('WELCOME_PAGE.GETSTARTED')}</span>
 								</button>
 							</article>
 						)}
 						<article className="tile-system">
 							<button type="button" onClick={() => navigate('/system')}>
-								<i className="fas fa-cog" />
+								<FontAwesomeIcon icon={faCog} />
 								<span>{i18next.t('WELCOME_PAGE.ADMINISTRATION')}</span>
 							</button>
 						</article>
 						<article className="tile-system">
 							<button type="button" onClick={() => navigate('/public' + window.location.search)}>
-								<i className="fas fa-user" />
+								<FontAwesomeIcon icon={faUser} />
 								<span>{i18next.t('WELCOME_PAGE.PUBLIC')}</span>
 							</button>
 						</article>
 						<article className="tile-help">
 							<button type="button" onClick={() => window.open('https://docs.karaokes.moe/')}>
-								<i className="fas fa-question-circle" />
+								<FontAwesomeIcon icon={faQuestionCircle} />
 								<span>{i18next.t('WELCOME_PAGE.HELP')}</span>
 							</button>
 						</article>
 						<article className="tile-stats">
 							<blockquote>
 								<label>
-									<i className="fas fa-chart-line" />
+									<FontAwesomeIcon icon={faChartLine} />
 									{i18next.t('WELCOME_PAGE.STATS')}
 								</label>
 								<ul>
@@ -473,7 +490,7 @@ function WelcomePage() {
 						<article className="tile-repositories">
 							<blockquote>
 								<button type="button" onClick={() => navigate('/system/repositories')}>
-									<i className="fas fa-network-wired" />
+									<FontAwesomeIcon icon={faNetworkWired} />
 									{i18next.t('WELCOME_PAGE.REPOSITORY')}
 								</button>
 								<ul>
@@ -484,7 +501,7 @@ function WelcomePage() {
 												className={repository.Enabled ? '' : 'disabled'}
 												onClick={() => navigate(`/system/repositories/${repository.Name}`)}
 											>
-												<i className={`fas ${repository.Online ? ' fa-globe' : 'fa-laptop'}`} />
+												<FontAwesomeIcon icon={repository.Online ? faGlobe : faLaptop} />
 												<span>{repository.Name}</span>
 											</li>
 										);
@@ -493,7 +510,7 @@ function WelcomePage() {
 							</blockquote>
 							<blockquote>
 								<button type="button" onClick={() => navigate('/system/repositories')}>
-									<i className="fas fa-network-wired" />
+									<FontAwesomeIcon icon={faNetworkWired} />
 									{i18next.t('WELCOME_PAGE.COLLECTIONS')}
 								</button>
 								<ul>
@@ -511,7 +528,7 @@ function WelcomePage() {
 												}
 												onClick={() => enableCollection(collection.tid)}
 											>
-												<i className="fas fa-layer-group" />
+												<FontAwesomeIcon icon={faLayerGroup} />
 												<span>
 													{
 														getTagInLocale(

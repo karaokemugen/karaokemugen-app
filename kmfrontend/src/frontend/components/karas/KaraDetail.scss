@@ -23,6 +23,10 @@
 	> * {
 		position: relative;
 		text-shadow: 2px 2px 2px #000000bf;
+
+		.svg-inline--fa {
+			filter: drop-shadow(2px 2px 2px #000000bf);
+		}
 	}
 }
 
@@ -64,6 +68,10 @@
 		}
 		cursor: pointer;
 		text-shadow: 2px 2px 2px #000000bf;
+
+		.svg-inline--fa {
+			filter: drop-shadow(2px 2px 2px #000000bf);
+		}
 	}
 }
 
@@ -86,7 +94,7 @@
 		}
 	}
 
-	.childrens i {
+	.childrens .svg-inline--fa {
 		margin-right: 0.5em;
 		margin-left: 0.5em;
 	}
@@ -101,7 +109,8 @@
 		display: flex;
 		align-items: center;
 
-		i {
+		i,
+		.svg-inline--fa {
 			margin-right: 0.5em;
 		}
 

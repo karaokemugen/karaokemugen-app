@@ -1,5 +1,7 @@
 import './Playlist.scss';
 
+import { faChevronDown, faChevronUp, faPlay } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import debounce from 'lodash/debounce';
 import { Fragment, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
@@ -1255,7 +1257,7 @@ function Playlist(props: IProps) {
 								setGotToPlayingAvoidScroll(false);
 							}}
 						>
-							<i className="fas fa-chevron-up" />
+							<FontAwesomeIcon icon={faChevronUp} />
 						</button>
 						{!isNonStandardPlaylist(playlist?.plaid) ? (
 							<button
@@ -1265,7 +1267,7 @@ function Playlist(props: IProps) {
 								onClick={scrollToPlaying}
 								value="playing"
 							>
-								<i className="fas fa-play" />
+								<FontAwesomeIcon icon={faPlay} />
 							</button>
 						) : null}
 						<button
@@ -1280,7 +1282,7 @@ function Playlist(props: IProps) {
 								}
 							}}
 						>
-							<i className="fas fa-chevron-down" />
+							<FontAwesomeIcon icon={faChevronDown} />
 						</button>
 					</div>
 				) : null}

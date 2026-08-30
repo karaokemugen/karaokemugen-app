@@ -1,3 +1,5 @@
+import { faPlay, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import { useContext } from 'react';
 
@@ -22,7 +24,7 @@ function ClassicModeModal() {
 					<div className="modal-header">
 						<h4 className="modal-title">{i18next.t('MODAL.CLASSIC_MODE.TITLE')}</h4>
 						<button className="closeModal" onClick={() => closeModal(context.globalDispatch)}>
-							<i className="fas fa-times" />
+							<FontAwesomeIcon icon={faTimes} />
 						</button>
 					</div>
 					<div
@@ -39,7 +41,7 @@ function ClassicModeModal() {
 							{i18next.t('MODAL.CLASSIC_MODE.TEXT')}
 						</div>
 						<button className="btn btn-default btn-primary btn-big" type="button" onClick={playSong}>
-							<i className="fas fa-play" />
+							<FontAwesomeIcon icon={faPlay} />
 						</button>
 					</div>
 				</div>

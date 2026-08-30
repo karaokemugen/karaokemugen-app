@@ -1,5 +1,7 @@
 import './About.scss';
 
+import { faHeart } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18n from 'i18next';
 import shuffle from 'lodash/shuffle';
 import { useContext, useEffect, useState } from 'react';
@@ -95,7 +97,7 @@ export default function About() {
 						),
 					}}
 				/>{' '}
-				<i className="fas fa-heart" />
+				<FontAwesomeIcon icon={faHeart} />
 			</p>
 		</div>
 	);

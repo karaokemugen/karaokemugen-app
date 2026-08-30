@@ -1,5 +1,19 @@
 import './QuizPage.scss';
 
+import {
+	faAward,
+	faBan,
+	faBolt,
+	faCheck,
+	faClockFour,
+	faHourglass,
+	faHourglassEnd,
+	faPerson,
+	faPersonRunning,
+	faPersonWalking,
+	faTimes,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import debounce from 'lodash/debounce';
 import merge from 'lodash/merge';
@@ -254,22 +268,22 @@ export default function QuizPage() {
 							<span>
 								{mode === 'guess' && quiz.settings.Answers.QuickAnswer.Enabled && quickGuess > 0 ? (
 									<>
-										<i className="fas fa-person-running" />{' '}
+										<FontAwesomeIcon icon={faPersonRunning} />{' '}
 										{i18next.t('QUIZ.STATES.QUICK_GUESSING', { count: quickGuess })}
 									</>
 								) : mode === 'guess' && timeLeft > 0 ? (
 									<>
-										<i className="fas fa-person-walking" />{' '}
+										<FontAwesomeIcon icon={faPersonWalking} />{' '}
 										{i18next.t('QUIZ.STATES.GUESSING', { count: timeLeft })}
 									</>
 								) : mode === 'answer' ? (
 									<>
-										<i className="fas fa-person" />{' '}
+										<FontAwesomeIcon icon={faPerson} />{' '}
 										{i18next.t('QUIZ.STATES.NEXT_SONG', { count: revealTimer })}
 									</>
 								) : (
 									<>
-										<i className="fas fa-hourglass" /> {i18next.t('QUIZ.STATES.WAITING')}
+										<FontAwesomeIcon icon={faHourglass} /> {i18next.t('QUIZ.STATES.WAITING')}
 									</>
 								)}
 							</span>
@@ -280,11 +294,9 @@ export default function QuizPage() {
 							<>
 								{awardedPoints > 0 ? (
 									<>
-										<i
-											className={
-												awardedPointsDetailed?.quickPoints > 0 ? 'fas fa-bolt' : 'fas fa-award'
-											}
-										></i>{' '}
+										<FontAwesomeIcon
+											icon={awardedPointsDetailed?.quickPoints > 0 ? faBolt : faAward}
+										/>{' '}
 										{i18next.t(
 											awardedPointsDetailed?.quickPoints > 0
 												? 'QUIZ.STATES.NICE_ONE_QUICK'
@@ -296,7 +308,7 @@ export default function QuizPage() {
 									</>
 								) : (
 									<>
-										<i className="fas fa-ban"></i>{' '}
+										<FontAwesomeIcon icon={faBan} />{' '}
 										{i18next.t('QUIZ.STATES.SORRY', { answer: answerSnapshot })}
 									</>
 								)}
@@ -305,23 +317,21 @@ export default function QuizPage() {
 							<>
 								{['OK', 'OK_QUICK'].includes(responseMode) ? (
 									<>
-										<i
-											className={
-												responseMode === 'OK_QUICK' ? 'fas fa-person-running' : 'fas fa-check'
-											}
-										></i>{' '}
+										<FontAwesomeIcon
+											icon={responseMode === 'OK_QUICK' ? faPersonRunning : faCheck}
+										/>{' '}
 										{i18next.t('QUIZ.STATES.REGISTERED', { answer: answerSnapshot })}
 									</>
 								) : null}
 								{responseMode === 'TOO_LATE' ? (
 									<>
-										<i className="fas fa-clock-four"></i>{' '}
+										<FontAwesomeIcon icon={faClockFour} />{' '}
 										{i18next.t('QUIZ.STATES.TOO_LATE', { answer: answerSnapshot })}
 									</>
 								) : null}
 								{responseMode === null ? (
 									<>
-										<i className="fas fa-times"></i> {i18next.t('QUIZ.STATES.NO_ANSWER')}
+										<FontAwesomeIcon icon={faTimes} /> {i18next.t('QUIZ.STATES.NO_ANSWER')}
 									</>
 								) : null}
 							</>
@@ -362,7 +372,7 @@ export default function QuizPage() {
 				) : (
 					<>
 						<div>
-							<i className="fas fa-hourglass-end"></i> {i18next.t('QUIZ.END')}
+							<FontAwesomeIcon icon={faHourglassEnd} /> {i18next.t('QUIZ.END')}
 						</div>
 						<a className="action" href="/public" onClick={quitQuiz}>
 							{i18next.t('QUIZ.QUIT')}
@@ -422,18 +432,17 @@ export default function QuizPage() {
 											{points?.awardedPointsDetailed.typePoints ? (
 												<span>
 													{' '}
-													<i
-														className={`fas fa-${acceptedAnswerToIcon(
-															points.awardedPointsDetailed.type
-														)} fa-sm`}
-													></i>{' '}
+													<FontAwesomeIcon
+														icon={acceptedAnswerToIcon(points.awardedPointsDetailed.type)}
+														className="fa-sm"
+													/>{' '}
 													{points?.awardedPointsDetailed.typePoints}
 												</span>
 											) : null}
 											{points?.awardedPointsDetailed.quickPoints ? (
 												<span>
 													{' '}
-													<i className={`fas fa-bolt fa-sm`}></i>{' '}
+													<FontAwesomeIcon icon={faBolt} className="fa-sm" />{' '}
 													{points?.awardedPointsDetailed.quickPoints}
 												</span>
 											) : null}
@@ -474,7 +483,7 @@ export default function QuizPage() {
 						{quiz.settings.Answers.QuickAnswer.Enabled ? (
 							<>
 								<br />
-								<i className={`fas fa-bolt`}></i>{' '}
+								<FontAwesomeIcon icon={faBolt} />{' '}
 								<Trans
 									t={i18next.t}
 									i18nKey="QUIZ.RULES.QUICK_ANSWER"
@@ -495,7 +504,7 @@ export default function QuizPage() {
 							.filter(([_, { Enabled }]) => Enabled)
 							.map(([possibleAnswerType, { Points }]) => (
 								<li key={possibleAnswerType}>
-									<i className={`fas fa-${acceptedAnswerToIcon(possibleAnswerType)}`}></i>
+									<FontAwesomeIcon icon={acceptedAnswerToIcon(possibleAnswerType)} />
 									{i18next.t(
 										possibleAnswerType === 'title'
 											? 'KARA.TITLE'

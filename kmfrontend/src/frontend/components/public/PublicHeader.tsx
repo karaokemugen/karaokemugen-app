@@ -1,5 +1,18 @@
 import './PublicHeader.scss';
 
+import {
+	faCaretDown,
+	faCaretUp,
+	faGlobe,
+	faHome,
+	faPlayCircle,
+	faSearch,
+	faSignOutAlt,
+	faStar,
+	faUser,
+	faUsers,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -188,7 +201,7 @@ function PublicHeader(props: IProps) {
 							{i18next.t('PUBLIC_HOMEPAGE.QUIZ.POINTS', {
 								count: score.reduce((a, sc) => a + sc.points, 0),
 							})}{' '}
-							<i className={scoresDropDown ? 'fas fa-caret-up' : 'fas fa-caret-down'}></i>
+							<FontAwesomeIcon icon={scoresDropDown ? faCaretUp : faCaretDown} />
 						</div>
 						<div
 							className={`closeHandler${scoresDropDown ? ' active' : ''}`}
@@ -215,7 +228,7 @@ function PublicHeader(props: IProps) {
 						<div className="menu-bar">
 							{props.currentVisible ? (
 								<Link className="green" to="/public/playlist/current">
-									<i className="fas fa-play-circle fa-2x" />
+									<FontAwesomeIcon icon={faPlayCircle} className="fa-2x" />
 									{i18next.t('PUBLIC_HOMEPAGE.NEXT')}
 								</Link>
 							) : null}
@@ -223,13 +236,13 @@ function PublicHeader(props: IProps) {
 							context.globalState.settings.data.state.currentPlaid !==
 								context.globalState.settings.data.state.publicPlaid ? (
 								<Link className="orange" to="/public/playlist/public">
-									<i className="fas fa-globe fa-2x" />
+									<FontAwesomeIcon icon={faGlobe} className="fa-2x" />
 									{i18next.t('PUBLIC_HOMEPAGE.PUBLIC_SUGGESTIONS_SHORT')}
 								</Link>
 							) : null}
 							{context?.globalState.settings.data.config?.Frontend?.Mode !== 0 ? (
 								<Link className="blue" to="/public/search">
-									<i className="fas fa-search fa-2x" />
+									<FontAwesomeIcon icon={faSearch} className="fa-2x" />
 									{i18next.t('PUBLIC_HOMEPAGE.SONG_SEARCH_SHORT')}
 								</Link>
 							) : null}
@@ -278,26 +291,26 @@ function PublicHeader(props: IProps) {
 									{!context.globalState.settings.data.state.quiz.running ? (
 										<div className="link">
 											<a href="/public/favorites" onClick={goToFavorites}>
-												<i className="fas fa-star" /> {i18next.t('VIEW_FAVORITES')}
+												<FontAwesomeIcon icon={faStar} /> {i18next.t('VIEW_FAVORITES')}
 											</a>
 										</div>
 									) : null}
 									<div className="link">
 										<a href="/public/user" onClick={toggleProfileModal}>
-											<i className="fas fa-user" /> {i18next.t('PROFILE')}
+											<FontAwesomeIcon icon={faUser} /> {i18next.t('PROFILE')}
 										</a>
 									</div>
 								</>
 							) : null}
 							<div className="link">
 								<a href="/public/users" onClick={toggleUsersModal}>
-									<i className="fas fa-users" /> {i18next.t('USERLIST')}
+									<FontAwesomeIcon icon={faUsers} /> {i18next.t('USERLIST')}
 								</a>
 							</div>
 							{context?.globalState.auth.data.role === 'admin' ? (
 								<div className="link">
 									<a href="/welcome">
-										<i className="fas fa-home" /> {i18next.t('HOME_BUTTON')}
+										<FontAwesomeIcon icon={faHome} /> {i18next.t('HOME_BUTTON')}
 									</a>
 								</div>
 							) : null}
@@ -309,7 +322,7 @@ function PublicHeader(props: IProps) {
 										logout(context.globalDispatch);
 									}}
 								>
-									<i className="fas fa-sign-out-alt" /> {i18next.t('LOGOUT')}
+									<FontAwesomeIcon icon={faSignOutAlt} /> {i18next.t('LOGOUT')}
 								</a>
 							</div>
 						</div>

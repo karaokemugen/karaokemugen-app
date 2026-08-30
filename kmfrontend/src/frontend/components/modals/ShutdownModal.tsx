@@ -1,5 +1,7 @@
 import './ShutdownModal.scss';
 
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 
 interface IProps {
@@ -22,7 +24,7 @@ function ShutdownModal(props: IProps) {
 				className="closeParent btn btn-action"
 				onClick={props.close}
 			>
-				<i className="fas fa-times" />
+				<FontAwesomeIcon icon={faTimes} />
 			</button>
 		</div>
 	);

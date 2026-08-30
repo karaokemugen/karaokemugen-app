@@ -38,7 +38,7 @@ body:not(.touch) {
 			background-color: variables.$mugen-playlist-dejavu-odd;
 		}
 		.contentDiv {
-			i.fas.dejavu-icon {
+			.dejavu-icon {
 				color: color.scale(variables.$mugen-playlist-dejavu-odd, $lightness: 20%, $saturation: 15%);
 				margin-left: unset;
 				margin-right: 0.25em;
@@ -138,7 +138,7 @@ body:not(.touch) {
 		display: flex;
 		flex-wrap: wrap;
 		flex: 1 1 auto;
-		i.fas.problematic {
+		.problematic {
 			color: gold;
 		}
 	}
@@ -181,7 +181,7 @@ body:not(.touch) {
 			display: flex;
 			font-style: italic;
 			margin-bottom: 0.25em;
-			> i.fas {
+			> .svg-inline--fa {
 				margin-left: 0.375em;
 				line-height: 1.2;
 			}
@@ -279,7 +279,7 @@ body:not(.touch) {
 	text-align: center;
 	font-weight: bold;
 	border-radius: 10%;
-	> i {
+	> .svg-inline--fa {
 		font-size: 88%;
 		margin-right: 0.5em;
 	}

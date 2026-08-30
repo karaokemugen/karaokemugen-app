@@ -1,3 +1,5 @@
+import { faArrowLeft, faChartLine, faClock, faEraser, faSortAlphaDown } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import debounce from 'lodash/debounce';
 import { useContext, useEffect, useMemo, useState } from 'react';
@@ -94,7 +96,7 @@ export default function PublicList(props: Props) {
 		<>
 			<KmAppHeaderDecorator mode="public">
 				<button className="btn" type="button" onClick={() => navigate(-1)}>
-					<i className="fas fa-arrow-left" />
+					<FontAwesomeIcon icon={faArrowLeft} />
 				</button>
 				<div className="plSearch">
 					<input
@@ -118,7 +120,7 @@ export default function PublicList(props: Props) {
 							);
 						}}
 					>
-						<i className="fas fa-eraser" />
+						<FontAwesomeIcon icon={faEraser} />
 					</button>
 				</div>
 				{props.plaid === nonStandardPlaylists.favorites ? (
@@ -131,7 +133,7 @@ export default function PublicList(props: Props) {
 						}
 						title={favoritesSort === 'search' ? i18next.t('VIEW_STANDARD') : i18next.t('VIEW_RECENT')}
 					>
-						<i className={`fas ${favoritesSort === 'search' ? 'fa-sort-alpha-down' : 'fa-clock'}`} />
+						<FontAwesomeIcon icon={favoritesSort === 'search' ? faSortAlphaDown : faClock} />
 					</button>
 				) : null}
 				{props.poll ? (
@@ -139,7 +141,7 @@ export default function PublicList(props: Props) {
 						className="btn btn-default showPoll"
 						onClick={() => showModal(context.globalDispatch, <PollModal />)}
 					>
-						<i className="fas fa-chart-line" />
+						<FontAwesomeIcon icon={faChartLine} />
 					</button>
 				) : null}
 			</KmAppHeaderDecorator>

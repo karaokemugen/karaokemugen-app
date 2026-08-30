@@ -2,6 +2,11 @@
 	"name": "kmfrontend",
 	"private": true,
 	"dependencies": {
+		"@fortawesome/fontawesome-svg-core": "7.3.1",
+		"@fortawesome/free-brands-svg-icons": "7.3.1",
+		"@fortawesome/free-regular-svg-icons": "7.3.1",
+		"@fortawesome/free-solid-svg-icons": "7.3.1",
+		"@fortawesome/react-fontawesome": "3.5.0",
 		"@hello-pangea/dnd": "^18.0.1",
 		"@karaokemugen/i18n-iso-languages": "^4.2.2",
 		"@sentry/react": "^10.70.0",
@@ -34,7 +39,6 @@
 		"uuid": "^14.0.1"
 	},
 	"devDependencies": {
-		"@fortawesome/fontawesome-free": "^7.3.1",
 		"@sentry/vite-plugin": "^5.4.0",
 		"@types/lodash": "^4.17.25",
 		"@types/react": "19.2.18",

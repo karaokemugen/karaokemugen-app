@@ -1,3 +1,6 @@
+import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { PlaylistIcon } from '../../../utils/playlist';
 import i18next from 'i18next';
 import { useContext, useState } from 'react';
 
@@ -14,7 +17,7 @@ import { WS_CMD } from '../../../utils/ws.mjs';
 
 interface IProps {
 	side: 'left' | 'right';
-	playlistList: { value: string; label: string; icons: string[] }[];
+	playlistList: { value: string; label: string; icons: PlaylistIcon[] }[];
 }
 
 function DeletePlaylistModal(props: IProps) {
@@ -108,10 +111,10 @@ function DeletePlaylistModal(props: IProps) {
 							className="btn btn-action btn-primary other"
 							onClick={closeModalWithContext}
 						>
-							<i className="fas fa-times" /> {i18next.t('CANCEL')}
+							<FontAwesomeIcon icon={faTimes} /> {i18next.t('CANCEL')}
 						</button>
 						<button type="button" className="btn btn-action btn-default ok" onClick={deletePlaylist}>
-							<i className="fas fa-check" /> {i18next.t('YES')}
+							<FontAwesomeIcon icon={faCheck} /> {i18next.t('YES')}
 						</button>
 					</div>
 				</div>

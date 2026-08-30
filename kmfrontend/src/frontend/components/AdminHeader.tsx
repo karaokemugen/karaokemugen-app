@@ -1,3 +1,34 @@
+import { faClock as farClock, faQuestionCircle as farQuestionCircle } from '@fortawesome/free-regular-svg-icons';
+import {
+	faArrowUpRightDots,
+	faBan,
+	faBraille,
+	faClosedCaptioning,
+	faCog,
+	faComment,
+	faGauge,
+	faGaugeHigh,
+	faHand,
+	faHandSparkles,
+	faHome,
+	faListUl,
+	faLongArrowAltLeft,
+	faPersonCircleQuestion,
+	faPowerOff,
+	faQuestionCircle,
+	faSignOutAlt,
+	faSlidersH,
+	faStop,
+	faUndoAlt,
+	faUser,
+	faUserGraduate,
+	faUsers,
+	faVolumeDown,
+	faVolumeMute,
+	faVolumeOff,
+	faVolumeUp,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import merge from 'lodash/merge';
 import { createElement, useContext, useEffect, useState } from 'react';
@@ -221,7 +252,7 @@ function AdminHeader(props: IProps) {
 					className="btn btn-dark backPlaylistsButton"
 					onClick={() => navigate('/admin')}
 				>
-					<i className="fas fa-long-arrow-alt-left" />
+					<FontAwesomeIcon icon={faLongArrowAltLeft} />
 				</button>
 			) : null}
 			<div className="dropdown">
@@ -232,7 +263,7 @@ function AdminHeader(props: IProps) {
 					<ul className="dropdown-menu">
 						<li>
 							<a href="/welcome">
-								<i className="fas fa-home" />
+								<FontAwesomeIcon icon={faHome} />
 								&nbsp;{i18next.t('HOME_BUTTON')}
 							</a>
 						</li>
@@ -247,12 +278,12 @@ function AdminHeader(props: IProps) {
 							>
 								{location.pathname.includes('/options') ? (
 									<>
-										<i className="fas fa-list-ul" />
+										<FontAwesomeIcon icon={faListUl} />
 										&nbsp;{i18next.t('CL_PLAYLISTS')}
 									</>
 								) : (
 									<>
-										<i className="fas fa-cog" />
+										<FontAwesomeIcon icon={faCog} />
 										&nbsp;{i18next.t('OPTIONS')}
 									</>
 								)}
@@ -260,27 +291,27 @@ function AdminHeader(props: IProps) {
 						</li>
 						<li>
 							<div onClick={toggleProfileModal}>
-								<i className="fas fa-user" />
+								<FontAwesomeIcon icon={faUser} />
 								&nbsp;{i18next.t('ACCOUNT')}
 							</div>
 						</li>
 						<li>
 							<div onClick={toggleUsersModal}>
-								<i className="fas fa-users" />
+								<FontAwesomeIcon icon={faUsers} />
 								&nbsp;{i18next.t('USERLIST')}
 							</div>
 						</li>
 						{!quizInProgress ? (
 							<li>
 								<div onClick={toggleQuizModal}>
-									<i className="fas fa-person-circle-question" />
+									<FontAwesomeIcon icon={faPersonCircleQuestion} />
 									&nbsp;{i18next.t('QUIZ.START')}
 								</div>
 							</li>
 						) : (
 							<li>
 								<div onClick={toggleStopQuizModal}>
-									<i className="fas fa-person-circle-question" />
+									<FontAwesomeIcon icon={faPersonCircleQuestion} />
 									&nbsp;{i18next.t('QUIZ.STOP')}
 								</div>
 							</li>
@@ -294,21 +325,21 @@ function AdminHeader(props: IProps) {
 									setDropDownMenu(!dropDownMenu);
 								}}
 							>
-								<i className="fas fa-question-circle" />
+								<FontAwesomeIcon icon={faQuestionCircle} />
 								&nbsp;{i18next.t('MODAL.TUTORIAL.TITLE')}
 							</div>
 						</li>
 						<hr></hr>
 						<li>
 							<div onClick={() => logout(context.globalDispatch)}>
-								<i className="fas fa-sign-out-alt" />
+								<FontAwesomeIcon icon={faSignOutAlt} />
 								&nbsp;{i18next.t('LOGOUT')}
 							</div>
 						</li>
 						{props.powerOff ? (
 							<li>
 								<div onClick={props.powerOff}>
-									<i className="fas fa-power-off" />
+									<FontAwesomeIcon icon={faPowerOff} />
 									&nbsp;{i18next.t('SHUTDOWN')}
 								</div>
 							</li>
@@ -320,7 +351,7 @@ function AdminHeader(props: IProps) {
 									setDropDownMenu(!dropDownMenu);
 								}}
 							>
-								<i className="fas fa-comment" />
+								<FontAwesomeIcon icon={faComment} />
 								&nbsp;{i18next.t('PLAYERS_CONTROLS.MESSAGE')}
 							</div>
 						</li>
@@ -333,7 +364,7 @@ function AdminHeader(props: IProps) {
 								data-namecommand={statusPlayer?.showSubs ? 'hideSubs' : 'showSubs'}
 								id="showSubs"
 							>
-								<i className="fas fa-closed-captioning" />
+								<FontAwesomeIcon icon={faClosedCaptioning} />
 								&nbsp;
 								{i18next.t(
 									statusPlayer?.showSubs ? 'PLAYERS_CONTROLS.SUBS.HIDE' : 'PLAYERS_CONTROLS.SUBS.SHOW'
@@ -349,7 +380,7 @@ function AdminHeader(props: IProps) {
 								id="goTo"
 								data-namecommand="goTo"
 							>
-								<i className="fas fa-undo-alt" />
+								<FontAwesomeIcon icon={faUndoAlt} />
 								&nbsp;{i18next.t('PLAYERS_CONTROLS.REWIND')}
 							</div>
 						</li>
@@ -363,13 +394,13 @@ function AdminHeader(props: IProps) {
 								data-namecommand={statusPlayer?.volume === 0 || statusPlayer?.mute ? 'unmute' : 'mute'}
 							>
 								{statusPlayer?.volume === 0 || statusPlayer?.mute ? (
-									<i className="fas fa-volume-mute" />
+									<FontAwesomeIcon icon={faVolumeMute} />
 								) : statusPlayer?.volume > 66 ? (
-									<i className="fas fa-volume-up" />
+									<FontAwesomeIcon icon={faVolumeUp} />
 								) : statusPlayer?.volume > 33 ? (
-									<i className="fas fa-volume-down" />
+									<FontAwesomeIcon icon={faVolumeDown} />
 								) : (
-									<i className="fas fa-volume-off" />
+									<FontAwesomeIcon icon={faVolumeOff} />
 								)}
 								&nbsp;{i18next.t('PLAYERS_CONTROLS.MUTE_UNMUTE')}
 							</div>
@@ -386,7 +417,7 @@ function AdminHeader(props: IProps) {
 									id="stopNow"
 									data-namecommand="stopNow"
 								>
-									<i className="fas fa-stop" />
+									<FontAwesomeIcon icon={faStop} />
 									&nbsp;{i18next.t('PLAYERS_CONTROLS.STOP_NOW')}
 								</div>
 							) : (
@@ -398,7 +429,7 @@ function AdminHeader(props: IProps) {
 									id="stopAfter"
 									data-namecommand="stopAfter"
 								>
-									<i className="fas fa-stop" />
+									<FontAwesomeIcon icon={faStop} />
 									&nbsp;{i18next.t('PLAYERS_CONTROLS.STOP_AFTER')}
 								</div>
 							)}
@@ -414,7 +445,7 @@ function AdminHeader(props: IProps) {
 					title={i18next.t('ADMIN_HEADER.QUIZ_RANKING')}
 					onClick={props.updateQuizRanking}
 				>
-					<i className="fas fa-user-graduate" />
+					<FontAwesomeIcon icon={faUserGraduate} />
 				</button>
 			) : null}
 
@@ -452,9 +483,9 @@ function AdminHeader(props: IProps) {
 				id="speedControl"
 				title={i18next.t('PLAYERS_CONTROLS.SPEED.TITLE')}
 			>
-				{statusPlayer?.speed === 100 && <i className={'icon fa-solid fa-gauge'}></i>}
-				{statusPlayer?.speed > 100 && <i className={'icon fa-solid fa-gauge-high'}></i>}
-				{statusPlayer?.speed < 100 && <i className={'icon fa-solid fa-gauge-high mirrored-horiz'}></i>}
+				{statusPlayer?.speed === 100 && <FontAwesomeIcon icon={faGauge} className="icon" />}
+				{statusPlayer?.speed > 100 && <FontAwesomeIcon icon={faGaugeHigh} className="icon" />}
+				{statusPlayer?.speed < 100 && <FontAwesomeIcon icon={faGaugeHigh} className="icon mirrored-horiz" />}
 				<div className={'buttons-group'}>
 					<button
 						title={i18next.t('PLAYERS_CONTROLS.SPEED.DOWN')}
@@ -496,9 +527,11 @@ function AdminHeader(props: IProps) {
 				id="pitchControl"
 				title={i18next.t('PLAYERS_CONTROLS.PITCH.TITLE')}
 			>
-				{statusPlayer?.pitch === 0 && <i className={'icon fa-solid fa-braille'}></i>}
-				{statusPlayer?.pitch > 0 && <i className={'icon fa-solid fa-arrow-up-right-dots'}></i>}
-				{statusPlayer?.pitch < 0 && <i className={'icon fa-solid fa-arrow-up-right-dots mirrored-vert'}></i>}
+				{statusPlayer?.pitch === 0 && <FontAwesomeIcon icon={faBraille} className="icon" />}
+				{statusPlayer?.pitch > 0 && <FontAwesomeIcon icon={faArrowUpRightDots} className="icon" />}
+				{statusPlayer?.pitch < 0 && (
+					<FontAwesomeIcon icon={faArrowUpRightDots} className="icon mirrored-vert" />
+				)}
 
 				<div className={'buttons-group'}>
 					<button
@@ -541,7 +574,7 @@ function AdminHeader(props: IProps) {
 				className="btn btn-dark messageButton"
 				onClick={adminMessage}
 			>
-				<i className="fas fa-comment" />
+				<FontAwesomeIcon icon={faComment} />
 			</button>
 
 			<div className="btn-tile-group displayModifierButtons" id="displayModifierButtons">
@@ -557,11 +590,15 @@ function AdminHeader(props: IProps) {
 					onClick={props.putPlayerCommando}
 				>
 					<span className="fa-stack">
-						<i className="fas fa-closed-captioning fa-stack-1x" />
-						<i className="fas fa-ban fa-stack-2x" style={{ color: '#943d42', opacity: 0.7 }} />
+						<FontAwesomeIcon icon={faClosedCaptioning} className="fa-stack-1x" />
+						<FontAwesomeIcon
+							icon={faBan}
+							className="fa-stack-2x"
+							style={{ color: '#943d42', opacity: 0.7 }}
+						/>
 					</span>
 					<span className="fa-stack">
-						<i className="fas fa-closed-captioning" />
+						<FontAwesomeIcon icon={faClosedCaptioning} />
 					</span>
 				</button>
 				<button
@@ -575,7 +612,7 @@ function AdminHeader(props: IProps) {
 					className={`btn btn-tile btn-dark ${statusPlayer?.blurVideo ? 'unblurVideo' : 'blurVideo'}`}
 					onClick={props.putPlayerCommando}
 				>
-					<i className={`fas ${statusPlayer?.blurVideo ? 'fa-hand' : 'fa-hand-sparkles'}`} />
+					<FontAwesomeIcon icon={statusPlayer?.blurVideo ? faHand : faHandSparkles} />
 				</button>
 			</div>
 
@@ -586,7 +623,7 @@ function AdminHeader(props: IProps) {
 					title={i18next.t('ADMIN_HEADER.QUICK_ACCESS')}
 					onClick={() => setDropDownSettings(!dropDownSettings)}
 				>
-					<i className="fas fa-sliders-h" />
+					<FontAwesomeIcon icon={faSlidersH} />
 				</button>
 				{dropDownSettings ? (
 					<ul className="dropdown-menu">
@@ -602,13 +639,13 @@ function AdminHeader(props: IProps) {
 									onClick={props.putPlayerCommando}
 								>
 									{statusPlayer?.volume === 0 || statusPlayer?.mute ? (
-										<i className="fas fa-volume-mute" />
+										<FontAwesomeIcon icon={faVolumeMute} />
 									) : statusPlayer?.volume > 66 ? (
-										<i className="fas fa-volume-up" />
+										<FontAwesomeIcon icon={faVolumeUp} />
 									) : statusPlayer?.volume > 33 ? (
-										<i className="fas fa-volume-down" />
+										<FontAwesomeIcon icon={faVolumeDown} />
 									) : (
-										<i className="fas fa-volume-off" />
+										<FontAwesomeIcon icon={faVolumeOff} />
 									)}
 								</button>
 								{statusPlayer ? (
@@ -628,7 +665,7 @@ function AdminHeader(props: IProps) {
 							<label>
 								{i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_SHORT')}
 								&nbsp;
-								<i className="far fa-question-circle" />
+								<FontAwesomeIcon icon={farQuestionCircle} />
 							</label>
 							<RadioButton
 								buttons={[
@@ -655,7 +692,7 @@ function AdminHeader(props: IProps) {
 							<label>
 								{i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_SHORT')}
 								&nbsp;
-								<i className="far fa-question-circle" />
+								<FontAwesomeIcon icon={farQuestionCircle} />
 							</label>
 							<RadioButton
 								buttons={[
@@ -700,7 +737,7 @@ function AdminHeader(props: IProps) {
 								<label>
 									{i18next.t('SETTINGS.INTERFACE.SWITCH_TO_RESTRICTED_AT_TIME')}
 									&nbsp;
-									<i className="far fa-question-circle" />
+									<FontAwesomeIcon icon={farQuestionCircle} />
 								</label>
 								<span className="input-time">
 									<input
@@ -710,7 +747,7 @@ function AdminHeader(props: IProps) {
 										onBlur={event => changeRestrictInterfaceAtTime(event.target.value)}
 										onChange={event => changeRestrictInterfaceAtTime(event.target.value)}
 									></input>
-									<i className="far fa-clock" />
+									<FontAwesomeIcon icon={farClock} />
 								</span>
 							</span>
 						</li>
@@ -719,7 +756,7 @@ function AdminHeader(props: IProps) {
 								<label>
 									{i18next.t('SETTINGS.PLAYER.LIVE_COMMENTS')}
 									&nbsp;
-									<i className="far fa-question-circle" />
+									<FontAwesomeIcon icon={farQuestionCircle} />
 								</label>
 								<RadioButton
 									buttons={[

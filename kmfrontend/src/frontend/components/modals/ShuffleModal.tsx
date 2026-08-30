@@ -1,3 +1,5 @@
+import { faBalanceScale, faLightbulb, faRandom, faThumbsUp, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import { useContext, useState } from 'react';
 
@@ -38,7 +40,7 @@ function ShuffleModal(props: IProps) {
 					<ul className="modal-header">
 						<h4 className="modal-title">{i18next.t('MODAL.SHUFFLE_MODAL.TITLE')}</h4>
 						<button className="closeModal" onClick={closeModalWithContext}>
-							<i className="fas fa-times"></i>
+							<FontAwesomeIcon icon={faTimes} />
 						</button>
 					</ul>
 					<div className="modal-body flex-direction-btns">
@@ -56,7 +58,7 @@ function ShuffleModal(props: IProps) {
 						<div>{i18next.t('MODAL.SHUFFLE_MODAL.LABEL')}</div>
 						<div>
 							<button className="btn btn-default" type="button" onClick={() => shuffle('normal')}>
-								<i className="fas fa-random fa-2x" />
+								<FontAwesomeIcon icon={faRandom} className="fa-2x" />
 								<div className="btn-large-container">
 									<div className="title">{i18next.t('MODAL.SHUFFLE_MODAL.SHUFFLE')}</div>
 									<div className="desc">{i18next.t('MODAL.SHUFFLE_MODAL.SHUFFLE_DESC')}</div>
@@ -65,7 +67,7 @@ function ShuffleModal(props: IProps) {
 						</div>
 						<div>
 							<button className="btn btn-default" type="button" onClick={() => shuffle('smart')}>
-								<i className="fas fa-lightbulb fa-2x" />
+								<FontAwesomeIcon icon={faLightbulb} className="fa-2x" />
 								<div className="btn-large-container">
 									<div className="title">{i18next.t('MODAL.SHUFFLE_MODAL.SMART_SHUFFLE')}</div>
 									<div className="desc">{i18next.t('MODAL.SHUFFLE_MODAL.SMART_SHUFFLE_DESC')}</div>
@@ -74,7 +76,7 @@ function ShuffleModal(props: IProps) {
 						</div>
 						<div>
 							<button className="btn btn-default" type="button" onClick={() => shuffle('balance')}>
-								<i className="fas fa-balance-scale fa-2x" />
+								<FontAwesomeIcon icon={faBalanceScale} className="fa-2x" />
 								<div className="btn-large-container">
 									<div className="title">{i18next.t('MODAL.SHUFFLE_MODAL.BALANCE')}</div>
 									<div className="desc">{i18next.t('MODAL.SHUFFLE_MODAL.BALANCE_DESC')}</div>
@@ -83,7 +85,7 @@ function ShuffleModal(props: IProps) {
 						</div>
 						<div>
 							<button className="btn btn-default" type="button" onClick={() => shuffle('upvotes')}>
-								<i className="fas fa-thumbs-up fa-2x" />
+								<FontAwesomeIcon icon={faThumbsUp} className="fa-2x" />
 								<div className="btn-large-container">
 									<div className="title">{i18next.t('MODAL.SHUFFLE_MODAL.SORTUPVOTES')}</div>
 									<div className="desc">{i18next.t('MODAL.SHUFFLE_MODAL.SORTUPVOTES_DESC')}</div>

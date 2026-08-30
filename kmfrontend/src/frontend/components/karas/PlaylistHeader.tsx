@@ -1,5 +1,24 @@
 import './PlaylistHeader.scss';
 
+import {
+	faCheckSquare as farCheckSquare,
+	faClock as farClock,
+	faSquare as farSquare,
+} from '@fortawesome/free-regular-svg-icons';
+import {
+	faArrowRight,
+	faCog,
+	faEraser,
+	faFilter,
+	faFire,
+	faListOl,
+	faListUl,
+	faSlidersH,
+	faSortAlphaDown,
+	faThumbsUp,
+	faWrench,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import { MouseEvent as MouseEventReact, useContext, useState } from 'react';
 import { Trans } from 'react-i18next';
@@ -169,9 +188,9 @@ function PlaylistHeader(props: IProps) {
 					className="btn btn-default karaLineButton"
 				>
 					{props.selectAllKarasChecked ? (
-						<i className="far fa-check-square" />
+						<FontAwesomeIcon icon={farCheckSquare} />
 					) : (
-						<i className="far fa-square" />
+						<FontAwesomeIcon icon={farSquare} />
 					)}
 				</button>
 				<ActionsButtons
@@ -192,7 +211,7 @@ function PlaylistHeader(props: IProps) {
 					}}
 					className={'btn btn-action showPlaylistCommands karaLineButton' + (karaMenu ? ' btn-primary' : '')}
 				>
-					<i className="fas fa-wrench" />
+					<FontAwesomeIcon icon={faWrench} />
 				</button>
 			</div>
 		</div>
@@ -209,7 +228,7 @@ function PlaylistHeader(props: IProps) {
 							props.onChangeTags(tagType, '');
 						}}
 					>
-						<i className="fas fa-eraser" /> <span>{i18next.t('CLEAR_FILTER')}</span>
+						<FontAwesomeIcon icon={faEraser} /> <span>{i18next.t('CLEAR_FILTER')}</span>
 					</div>
 					<select
 						className="filterElement filterTags"
@@ -246,11 +265,7 @@ function PlaylistHeader(props: IProps) {
 					onClick={() => getKarasList('search')}
 					onKeyDown={() => getKarasList('search')}
 				>
-					<i
-						className={`fas ${
-							!isNonStandardPlaylist(playlist?.plaid) ? 'fa-list-ol' : 'fa-sort-alpha-down'
-						}`}
-					/>{' '}
+					<FontAwesomeIcon icon={!isNonStandardPlaylist(playlist?.plaid) ? faListOl : faSortAlphaDown} />{' '}
 					{i18next.t('VIEW_STANDARD')}
 				</div>
 				{isNonStandardPlaylist(playlist?.plaid) ? (
@@ -260,7 +275,7 @@ function PlaylistHeader(props: IProps) {
 						onClick={() => getKarasList('recent')}
 						onKeyDown={() => getKarasList('recent')}
 					>
-						<i className="far fa-clock" /> {i18next.t('VIEW_RECENT')}
+						<FontAwesomeIcon icon={farClock} /> {i18next.t('VIEW_RECENT')}
 					</div>
 				) : null}
 				{playlist?.plaid === nonStandardPlaylists.library ? (
@@ -270,7 +285,7 @@ function PlaylistHeader(props: IProps) {
 						onClick={() => getKarasList('requested')}
 						onKeyDown={() => getKarasList('requested')}
 					>
-						<i className="fas fa-fire" /> {i18next.t('VIEW_POPULAR')}
+						<FontAwesomeIcon icon={faFire} /> {i18next.t('VIEW_POPULAR')}
 					</div>
 				) : null}
 				{!isNonStandardPlaylist(playlist?.plaid) ? (
@@ -281,7 +296,7 @@ function PlaylistHeader(props: IProps) {
 						onKeyDown={() => getKarasList(undefined, true)}
 						title={i18next.t('VIEW_LIKES_TOOLTIP')}
 					>
-						<i className="fas fa-thumbs-up" /> {i18next.t('VIEW_LIKES')}
+						<FontAwesomeIcon icon={faThumbsUp} /> {i18next.t('VIEW_LIKES')}
 					</div>
 				) : null}
 			</div>
@@ -302,7 +317,7 @@ function PlaylistHeader(props: IProps) {
 								(playlistCommands ? ' btn-primary' : '')
 							}
 						>
-							<i className="fas fa-cog" />
+							<FontAwesomeIcon icon={faCog} />
 						</button>
 					</div>
 					<SelectWithIcon
@@ -330,7 +345,7 @@ function PlaylistHeader(props: IProps) {
 								}
 								onClick={props.toggleSearchMenu}
 							>
-								<i className="fas fa-filter" />
+								<FontAwesomeIcon icon={faFilter} />
 								{activeFilter !== 'search' || activeFilterUUID !== ''
 									? i18next.t('PLAYLIST_HEADER.ACTIVE_FILTER')
 									: null}
@@ -345,7 +360,7 @@ function PlaylistHeader(props: IProps) {
 								className={'btn btn-default' + (props.criteriasOpen ? ' btn-primary' : '')}
 								onClick={props.openCloseCriterias}
 							>
-								<i className={`fas ${props.criteriasOpen ? 'fa-list-ul' : 'fa-sliders-h'}`} />
+								<FontAwesomeIcon icon={props.criteriasOpen ? faListUl : faSlidersH} />
 								{i18next.t(
 									props.criteriasOpen ? 'PLAYLIST_HEADER.SHOW_SONGS' : 'PLAYLIST_HEADER.EDIT_CRITERIA'
 								)}
@@ -368,7 +383,7 @@ function PlaylistHeader(props: IProps) {
 							setFilterValue(context.globalDispatch, '', props.side, playlist?.plaid);
 						}}
 					>
-						<i className="fas fa-eraser" />
+						<FontAwesomeIcon icon={faEraser} />
 					</button>
 				</div>
 				{plCommandsContainer}
@@ -384,7 +399,7 @@ function PlaylistHeader(props: IProps) {
 						);
 					})}
 				</select>
-				<i className="fas fa-arrow-right" />
+				<FontAwesomeIcon icon={faArrowRight} />
 				<select
 					value={oppositePlaylist?.plaid}
 					onChange={e => setOppositePlaylistInfo(props.side, context, e.target.value)}

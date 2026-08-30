@@ -1,6 +1,8 @@
 import '../../styles/start/Start.scss';
 import '../../styles/start/SetupPage.scss';
 
+import { faLink, faPencilAlt } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import { useContext } from 'react';
 import { Navigate, Route, Routes } from 'react-router';
@@ -25,13 +27,13 @@ function SetupPage() {
 						<ul>
 							<li>
 								<a href="https://mugen.karaokes.moe/contact.html">
-									<i className="fas fa-pencil-alt" />
+									<FontAwesomeIcon icon={faPencilAlt} />
 									{i18next.t('WELCOME_PAGE.CONTACT')}
 								</a>
 							</li>
 							<li>
 								<a href="https://mugen.karaokes.moe/">
-									<i className="fas fa-link" />
+									<FontAwesomeIcon icon={faLink} />
 									{i18next.t('WELCOME_PAGE.SITE')}
 								</a>
 							</li>

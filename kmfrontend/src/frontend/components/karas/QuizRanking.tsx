@@ -1,3 +1,5 @@
+import { faBolt, faHourglass, faPerson, faPersonRunning, faPersonWalking } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import merge from 'lodash/merge';
 import { RefObject, useContext, useEffect, useRef, useState } from 'react';
@@ -155,22 +157,22 @@ function QuizRanking() {
 							<span>
 								{mode === 'guess' && quiz.settings.Answers.QuickAnswer.Enabled && quickGuess > 0 ? (
 									<>
-										<i className="fas fa-person-running" />{' '}
+										<FontAwesomeIcon icon={faPersonRunning} />{' '}
 										{i18next.t('QUIZ.STATES.QUICK_GUESSING', { count: quickGuess })}
 									</>
 								) : mode === 'guess' && timeLeft > 0 ? (
 									<>
-										<i className="fas fa-person-walking" />{' '}
+										<FontAwesomeIcon icon={faPersonWalking} />{' '}
 										{i18next.t('QUIZ.STATES.GUESSING', { count: timeLeft })}
 									</>
 								) : mode === 'answer' ? (
 									<>
-										<i className="fas fa-person" />{' '}
+										<FontAwesomeIcon icon={faPerson} />{' '}
 										{i18next.t('QUIZ.STATES.NEXT_SONG', { count: revealTimer })}
 									</>
 								) : (
 									<>
-										<i className="fas fa-hourglass" /> {i18next.t('QUIZ.STATES.WAITING')}
+										<FontAwesomeIcon icon={faHourglass} /> {i18next.t('QUIZ.STATES.WAITING')}
 									</>
 								)}
 							</span>
@@ -204,7 +206,7 @@ function QuizRanking() {
 						{quiz.settings.Answers.QuickAnswer.Enabled ? (
 							<>
 								<br />
-								<i className={`fas fa-bolt`}></i>{' '}
+								<FontAwesomeIcon icon={faBolt} />{' '}
 								<Trans
 									t={i18next.t}
 									i18nKey="QUIZ.RULES.QUICK_ANSWER"
@@ -225,7 +227,7 @@ function QuizRanking() {
 							.filter(([_, { Enabled }]) => Enabled)
 							.map(([possibleAnswerType, { Points }]) => (
 								<li key={possibleAnswerType}>
-									<i className={`fas fa-${acceptedAnswerToIcon(possibleAnswerType)}`}></i>
+									<FontAwesomeIcon icon={acceptedAnswerToIcon(possibleAnswerType)} />
 									{i18next.t(
 										possibleAnswerType === 'title'
 											? 'KARA.TITLE'

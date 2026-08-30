@@ -1,5 +1,17 @@
 import './PlaylistModal.scss';
 
+import {
+	faArrowsTurnToDots,
+	faBan,
+	faBrain,
+	faCheck,
+	faCheckCircle,
+	faEye,
+	faGlobe,
+	faPlayCircle,
+	faTimes,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import { useContext, useEffect, useState } from 'react';
 
@@ -237,7 +249,7 @@ function PlaylistModal(props: IProps) {
 														setContributors(newContributors);
 													}}
 												>
-													<i className="fas fa-times" />
+													<FontAwesomeIcon icon={faTimes} />
 												</button>
 											) : null}
 										</div>
@@ -264,7 +276,7 @@ function PlaylistModal(props: IProps) {
 									toggleCurrent();
 								}}
 							>
-								<i className="fas fa-globe fa-2x" />
+								<FontAwesomeIcon icon={faGlobe} className="fa-2x" />
 								<div className="btn-large-container">
 									<div className="title">{i18next.t('MODAL.PLAYLIST_MODAL.CURRENT')}</div>
 									<div className="desc">{i18next.t('MODAL.PLAYLIST_MODAL.CURRENT_DESC')}</div>
@@ -286,7 +298,7 @@ function PlaylistModal(props: IProps) {
 									togglePublic();
 								}}
 							>
-								<i className="fas fa-play-circle fa-2x" />
+								<FontAwesomeIcon icon={faPlayCircle} className="fa-2x" />
 								<div className="btn-large-container">
 									<div className="title">{i18next.t('MODAL.PLAYLIST_MODAL.PUBLIC')}</div>
 									<div className="desc">{i18next.t('MODAL.PLAYLIST_MODAL.PUBLIC_DESC')}</div>
@@ -308,7 +320,7 @@ function PlaylistModal(props: IProps) {
 									toggleSmart();
 								}}
 							>
-								<i className="fas fa-brain fa-2x" />
+								<FontAwesomeIcon icon={faBrain} className="fa-2x" />
 								<div className="btn-large-container">
 									<div className="title">{i18next.t('MODAL.PLAYLIST_MODAL.SMART')}</div>
 									<div className="desc">{i18next.t('MODAL.PLAYLIST_MODAL.SMART_DESC')}</div>
@@ -330,7 +342,7 @@ function PlaylistModal(props: IProps) {
 									toggleBlacklist();
 								}}
 							>
-								<i className="fas fa-ban fa-2x" />
+								<FontAwesomeIcon icon={faBan} className="fa-2x" />
 								<div className="btn-large-container">
 									<div className="title">{i18next.t('MODAL.PLAYLIST_MODAL.BLACKLIST')}</div>
 									<div className="desc">{i18next.t('MODAL.PLAYLIST_MODAL.BLACKLIST_DESC')}</div>
@@ -352,7 +364,7 @@ function PlaylistModal(props: IProps) {
 									toggleWhitelist();
 								}}
 							>
-								<i className="fas fa-check-circle fa-2x" />
+								<FontAwesomeIcon icon={faCheckCircle} className="fa-2x" />
 								<div className="btn-large-container">
 									<div className="title">{i18next.t('MODAL.PLAYLIST_MODAL.WHITELIST')}</div>
 									<div className="desc">{i18next.t('MODAL.PLAYLIST_MODAL.WHITELIST_DESC')}</div>
@@ -374,7 +386,7 @@ function PlaylistModal(props: IProps) {
 									toggleFallback();
 								}}
 							>
-								<i className="fas fa-arrows-turn-to-dots fa-2x" />
+								<FontAwesomeIcon icon={faArrowsTurnToDots} className="fa-2x" />
 								<div className="btn-large-container">
 									<div className="title">{i18next.t('MODAL.PLAYLIST_MODAL.FALLBACK')}</div>
 									<div className="desc">{i18next.t('MODAL.PLAYLIST_MODAL.FALLBACK_DESC')}</div>
@@ -396,7 +408,7 @@ function PlaylistModal(props: IProps) {
 									setFlagVisible(!flagVisible);
 								}}
 							>
-								<i className="fas fa-eye fa-2x" />
+								<FontAwesomeIcon icon={faEye} className="fa-2x" />
 								<div className="btn-large-container">
 									<div className="title">{i18next.t('MODAL.PLAYLIST_MODAL.VISIBLE')}</div>
 									<div className="desc">{i18next.t('MODAL.PLAYLIST_MODAL.VISIBLE_DESC')}</div>
@@ -413,7 +425,7 @@ function PlaylistModal(props: IProps) {
 									setFlagVisibleOnline(!flagVisibleOnline);
 								}}
 							>
-								<i className="fas fa-eye fa-2x" />
+								<FontAwesomeIcon icon={faEye} className="fa-2x" />
 								<div className="btn-large-container">
 									<div className="title">{i18next.t('MODAL.PLAYLIST_MODAL.VISIBLE_ONLINE')}</div>
 									<div className="desc">{i18next.t('MODAL.PLAYLIST_MODAL.VISIBLE_ONLINE_DESC')}</div>
@@ -432,14 +444,14 @@ function PlaylistModal(props: IProps) {
 							className="btn btn-action btn-primary other"
 							onClick={closeModalWithContext}
 						>
-							<i className="fas fa-times" /> {i18next.t('CANCEL')}
+							<FontAwesomeIcon icon={faTimes} /> {i18next.t('CANCEL')}
 						</button>
 						<button
 							type="button"
 							className="btn btn-action btn-default ok"
 							onClick={props.mode === 'create' ? createPlaylist : editPlaylist}
 						>
-							<i className="fas fa-check" />{' '}
+							<FontAwesomeIcon icon={faCheck} />{' '}
 							{props.mode === 'create'
 								? i18next.t('MODAL.PLAYLIST_MODAL.CREATE')
 								: i18next.t('MODAL.PLAYLIST_MODAL.EDIT')}

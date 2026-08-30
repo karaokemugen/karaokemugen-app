@@ -1,6 +1,8 @@
 import 'react-image-crop/dist/ReactCrop.css';
 import './CropAvatarModal.scss';
 
+import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import { useState } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -116,10 +118,10 @@ function CropAvatarModal(props: IProps) {
 					<div className="modal-footer">
 						<em className="modal-help">{i18next.t('MODAL.CROP_AVATAR_MODAL.HELP')}</em>
 						<button type="button" className="btn btn-action btn-primary other" onClick={closeModal}>
-							<i className="fas fa-times" /> {i18next.t('CANCEL')}
+							<FontAwesomeIcon icon={faTimes} /> {i18next.t('CANCEL')}
 						</button>
 						<button type="button" className="btn btn-action btn-default ok" onClick={saveAvatar}>
-							<i className="fas fa-check" /> {i18next.t('SUBMIT')}
+							<FontAwesomeIcon icon={faCheck} /> {i18next.t('SUBMIT')}
 						</button>
 					</div>
 				</div>

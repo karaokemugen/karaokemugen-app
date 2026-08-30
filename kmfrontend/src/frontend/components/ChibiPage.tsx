@@ -1,3 +1,13 @@
+import {
+	faExternalLinkAlt,
+	faTimes,
+	faVolumeDown,
+	faVolumeMute,
+	faVolumeOff,
+	faVolumeUp,
+	faWindowRestore,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import merge from 'lodash/merge';
 import { useContext, useEffect, useState } from 'react';
@@ -117,7 +127,7 @@ function ChibiPage() {
 						data-namecommand="focusMainWindow"
 						onClick={electronCmd}
 					>
-						<i className="fas fa-external-link-alt" />
+						<FontAwesomeIcon icon={faExternalLinkAlt} />
 					</button>
 					<button
 						className={`btn${
@@ -127,7 +137,7 @@ function ChibiPage() {
 						data-namecommand="setChibiPlayerAlwaysOnTop"
 						onClick={electronCmd}
 					>
-						<i className="fas fa-window-restore" />
+						<FontAwesomeIcon icon={faWindowRestore} />
 					</button>
 					<button
 						className="btn btn-danger"
@@ -135,7 +145,7 @@ function ChibiPage() {
 						data-namecommand="closeChibiPlayer"
 						onClick={electronCmd}
 					>
-						<i className="fas fa-times" />
+						<FontAwesomeIcon icon={faTimes} />
 					</button>
 				</div>
 				<KmAppHeaderDecorator mode="admin">
@@ -154,13 +164,13 @@ function ChibiPage() {
 							onClick={putPlayerCommando}
 						>
 							{statusPlayer?.volume === 0 || statusPlayer?.mute ? (
-								<i className="fas fa-volume-mute" />
+								<FontAwesomeIcon icon={faVolumeMute} />
 							) : statusPlayer?.volume > 66 ? (
-								<i className="fas fa-volume-up" />
+								<FontAwesomeIcon icon={faVolumeUp} />
 							) : statusPlayer?.volume > 33 ? (
-								<i className="fas fa-volume-down" />
+								<FontAwesomeIcon icon={faVolumeDown} />
 							) : (
-								<i className="fas fa-volume-off" />
+								<FontAwesomeIcon icon={faVolumeOff} />
 							)}
 						</button>
 						{statusPlayer ? (

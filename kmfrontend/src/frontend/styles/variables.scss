@@ -73,6 +73,10 @@ $block-border-width: 4px solid;
 // Mixins for drop shadows
 @mixin shadow($color: rgba(0, 0, 0, 0.75)) {
 	text-shadow: 2px 2px 2px $color;
+
+	.svg-inline--fa {
+		filter: drop-shadow(2px 2px 2px $color);
+	}
 }
 
 // Export vars for global usage

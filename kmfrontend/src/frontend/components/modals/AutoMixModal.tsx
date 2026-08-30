@@ -1,5 +1,16 @@
 import './AutoMixModal.scss';
 
+import {
+	faCalendarDays,
+	faCheck,
+	faExclamationTriangle,
+	faPlus,
+	faStar,
+	faThList,
+	faTimes,
+	faTrash,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import { MouseEvent, useContext, useMemo, useState } from 'react';
 
@@ -153,7 +164,7 @@ function AutoMixModal(props: IProps) {
 					<ul className="modal-header">
 						<h4 className="modal-title">{i18next.t('AUTOMIX_MODAL.TITLE')}</h4>
 						<button className="closeModal" onClick={closeModalWithContext}>
-							<i className="fas fa-times" />
+							<FontAwesomeIcon icon={faTimes} />
 						</button>
 					</ul>
 					<div className="modal-body automix">
@@ -213,7 +224,7 @@ function AutoMixModal(props: IProps) {
 								onClick={addCriterion}
 								disabled={search.value === ''}
 							>
-								<i className="fas fa-plus" /> {i18next.t('CRITERIA.ADD')}
+								<FontAwesomeIcon icon={faPlus} /> {i18next.t('CRITERIA.ADD')}
 							</button>
 						</div>
 						{!(
@@ -230,9 +241,9 @@ function AutoMixModal(props: IProps) {
 												className="btn btn-default"
 												onClick={() => deleteCriterion('favorites', el.value)}
 											>
-												<i className="fas fa-trash"></i>
+												<FontAwesomeIcon icon={faTrash} />
 											</button>{' '}
-											<i className="fas fa-star"></i>{' '}
+											<FontAwesomeIcon icon={faStar} />{' '}
 											{i18next.t('AUTOMIX_MODAL.FAVOURITES_OF', { name: el.label })}
 										</li>
 									);
@@ -244,9 +255,9 @@ function AutoMixModal(props: IProps) {
 												className="btn btn-default"
 												onClick={() => deleteCriterion('animelist', el.value)}
 											>
-												<i className="fas fa-trash"></i>
+												<FontAwesomeIcon icon={faTrash} />
 											</button>{' '}
-											<i className="fas fa-th-list"></i>{' '}
+											<FontAwesomeIcon icon={faThList} />{' '}
 											{i18next.t('AUTOMIX_MODAL.ANIMELISTS_OF', { name: el.label })}
 										</li>
 									);
@@ -261,9 +272,9 @@ function AutoMixModal(props: IProps) {
 												className="btn btn-default"
 												onClick={() => deleteCriterion('tag', el.value)}
 											>
-												<i className="fas fa-trash"></i>
+												<FontAwesomeIcon icon={faTrash} />
 											</button>{' '}
-											<i className={'fas fa-' + tagTypes[getTagTypeName(el.value.type)].icon}></i>{' '}
+											<FontAwesomeIcon icon={tagTypes[getTagTypeName(el.value.type)].icon} />{' '}
 											{el.label}
 										</li>
 									);
@@ -275,9 +286,9 @@ function AutoMixModal(props: IProps) {
 												className="btn btn-default"
 												onClick={() => deleteCriterion('year', el.value)}
 											>
-												<i className="fas fa-trash"></i>
+												<FontAwesomeIcon icon={faTrash} />
 											</button>{' '}
-											<i className="fas fa-calendar-days"></i> {el.label}
+											<FontAwesomeIcon icon={faCalendarDays} /> {el.label}
 										</li>
 									);
 								})}
@@ -322,11 +333,11 @@ function AutoMixModal(props: IProps) {
 								tagList.length === 0 &&
 								yearList.length === 0) ? (
 								<>
-									<i className="fas fa-exclamation-triangle" /> {i18next.t('AUTOMIX_MODAL.EMPTY')}
+									<FontAwesomeIcon icon={faExclamationTriangle} /> {i18next.t('AUTOMIX_MODAL.EMPTY')}
 								</>
 							) : (
 								<>
-									<i className="fas fa-check" /> {i18next.t('AUTOMIX_MODAL.MIX')}
+									<FontAwesomeIcon icon={faCheck} /> {i18next.t('AUTOMIX_MODAL.MIX')}
 								</>
 							)}
 						</button>

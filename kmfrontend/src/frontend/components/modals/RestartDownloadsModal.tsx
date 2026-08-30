@@ -1,3 +1,5 @@
+import { faClock, faDownload, faEraser, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import { useContext } from 'react';
 
@@ -31,14 +33,14 @@ function RestartDownloadsModal() {
 					<ul className="modal-header">
 						<h4 className="modal-title">{i18next.t('MODAL.RESTART_DOWNLOADS_MODAL.TITLE')}</h4>
 						<button className="closeModal" onClick={closeModalWithContext}>
-							<i className="fas fa-times"></i>
+							<FontAwesomeIcon icon={faTimes} />
 						</button>
 					</ul>
 					<div className="modal-body flex-direction-btns">
 						<div>{i18next.t('MODAL.RESTART_DOWNLOADS_MODAL.LABEL')}</div>
 						<div>
 							<button className="btn btn-default" type="button" onClick={closeModalWithContext}>
-								<i className="fas fa-clock fa-2x" />
+								<FontAwesomeIcon icon={faClock} className="fa-2x" />
 								<div className="btn-large-container">
 									<div className="title">{i18next.t('MODAL.RESTART_DOWNLOADS_MODAL.LATER')}</div>
 								</div>
@@ -46,7 +48,7 @@ function RestartDownloadsModal() {
 						</div>
 						<div>
 							<button className="btn btn-default" type="button" onClick={deleteQueue}>
-								<i className="fas fa-eraser fa-2x" />
+								<FontAwesomeIcon icon={faEraser} className="fa-2x" />
 								<div className="btn-large-container">
 									<div className="title">{i18next.t('MODAL.RESTART_DOWNLOADS_MODAL.DELETE')}</div>
 								</div>
@@ -54,7 +56,7 @@ function RestartDownloadsModal() {
 						</div>
 						<div>
 							<button className="btn btn-default" type="button" onClick={startQueue}>
-								<i className="fas fa-download fa-2x" />
+								<FontAwesomeIcon icon={faDownload} className="fa-2x" />
 								<div className="btn-large-container">
 									<div className="title">{i18next.t('MODAL.RESTART_DOWNLOADS_MODAL.CONTINUE')}</div>
 								</div>

@@ -1,5 +1,7 @@
 import './PlaylistPage.scss';
 
+import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import { useContext, useEffect, useState } from 'react';
 
@@ -57,7 +59,7 @@ export default function PlaylistPage() {
 				}}
 			/>
 			<h3 className="following">
-				{i18next.t('PUBLIC_HOMEPAGE.NEXT')} <i className="fas fa-chevron-right" />
+				{i18next.t('PUBLIC_HOMEPAGE.NEXT')} <FontAwesomeIcon icon={faChevronRight} />
 			</h3>
 			<ul>
 				{playlist.map(kara => {

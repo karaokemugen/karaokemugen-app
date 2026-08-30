@@ -1,5 +1,37 @@
 import './ProfilModal.scss';
 
+import {
+	faBluesky,
+	faDiscord,
+	faGitlab,
+	faInstagram,
+	faMastodon,
+	faTwitch,
+} from '@fortawesome/free-brands-svg-icons';
+import {
+	faArrowLeft,
+	faArrowsRotate,
+	faChevronLeft,
+	faChevronRight,
+	faDownload,
+	faEnvelope,
+	faExclamationCircle,
+	faExclamationTriangle,
+	faGlobe,
+	faLanguage,
+	faLink,
+	faLock,
+	faMapMarkedAlt,
+	faPen,
+	faPortrait,
+	faRetweet,
+	faStar,
+	faTimes,
+	faTrashAlt,
+	faUpload,
+	faUser,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -333,13 +365,13 @@ function ProfilModal(props: IProps) {
 			<div className={`modal-header${props.scope === 'public' ? ' public-modal' : ''}`}>
 				{props.scope === 'public' ? (
 					<button className="closeModal" type="button" onClick={() => closeModalWithContext()}>
-						<i className="fas fa-arrow-left" />
+						<FontAwesomeIcon icon={faArrowLeft} />
 					</button>
 				) : null}
 				<h4 className="modal-title">{i18next.t('PROFILE')}</h4>
 				{props.scope === 'admin' ? ( // aka. it's a modal, otherwise it's a page and close button is not needed
 					<button className="closeModal" onClick={closeModalWithContext}>
-						<i className="fas fa-times" />
+						<FontAwesomeIcon icon={faTimes} />
 					</button>
 				) : null}
 			</div>
@@ -366,7 +398,7 @@ function ProfilModal(props: IProps) {
 										style={{ display: 'none' }}
 										onChange={importAvatar}
 									/>
-									<i className="fas fa-portrait" />
+									<FontAwesomeIcon icon={faPortrait} />
 									{i18next.t('AVATAR_IMPORT')}
 								</label>
 							) : null}
@@ -376,7 +408,7 @@ function ProfilModal(props: IProps) {
 						<div className="profileData">
 							<div className="profileLine">
 								<div className="profileLabel">
-									<i className="fas fa-user" />
+									<FontAwesomeIcon icon={faUser} />
 									<label htmlFor="nickname">{i18next.t('PROFILE_USERNAME')}</label>
 								</div>
 								<input
@@ -393,7 +425,7 @@ function ProfilModal(props: IProps) {
 							</div>
 							<div className="profileLine">
 								<div className="profileLabel">
-									<i className="fas fa-envelope" />
+									<FontAwesomeIcon icon={faEnvelope} />
 									<label htmlFor="mail">{i18next.t('PROFILE_MAIL')}</label>
 								</div>
 								<input
@@ -409,14 +441,14 @@ function ProfilModal(props: IProps) {
 							{logInfos?.onlineToken && !user.email ? (
 								<div className="profileLine">
 									<div className="profileLabel warning">
-										<i className="fas fa-exclamation-circle" />
+										<FontAwesomeIcon icon={faExclamationCircle} />
 										<div>{i18next.t('MODAL.PROFILE_MODAL.MISSING_EMAIL')}</div>
 									</div>
 								</div>
 							) : null}
 							<div className="profileLine">
 								<div className="profileLabel">
-									<i className="fas fa-link" />
+									<FontAwesomeIcon icon={faLink} />
 									<label htmlFor="url">{i18next.t('PROFILE_URL')}</label>
 								</div>
 								<input
@@ -431,7 +463,7 @@ function ProfilModal(props: IProps) {
 							</div>
 							<div className="profileLine">
 								<div className="profileLabel">
-									<i className="fas fa-pen" />
+									<FontAwesomeIcon icon={faPen} />
 									<label htmlFor="bio">{i18next.t('PROFILE_BIO')}</label>
 								</div>
 								<input
@@ -446,7 +478,7 @@ function ProfilModal(props: IProps) {
 							</div>
 							<div className="profileLine">
 								<div className="profileLabel">
-									<i className="fas fa-map-marked-alt" />
+									<FontAwesomeIcon icon={faMapMarkedAlt} />
 									<label>{i18next.t('MODAL.PROFILE_MODAL.LOCATION')}</label>
 								</div>
 								<Autocomplete
@@ -459,7 +491,7 @@ function ProfilModal(props: IProps) {
 							</div>
 							<div className="profileLine">
 								<div className="profileLabel">
-									<i className="fab fa-discord" />
+									<FontAwesomeIcon icon={faDiscord} />
 									<label>{i18next.t('MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.DISCORD')}</label>
 								</div>
 								<input
@@ -474,7 +506,7 @@ function ProfilModal(props: IProps) {
 							</div>
 							<div className="profileLine">
 								<div className="profileLabel">
-									<i className="fab fa-mastodon" />
+									<FontAwesomeIcon icon={faMastodon} />
 									<label>{i18next.t('MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.MASTODON')}</label>
 								</div>
 								<input
@@ -489,7 +521,7 @@ function ProfilModal(props: IProps) {
 							</div>
 							<div className="profileLine">
 								<div className="profileLabel">
-									<i className="fab fa-bluesky" />
+									<FontAwesomeIcon icon={faBluesky} />
 									<label>{i18next.t('MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.BLUESKY')}</label>
 								</div>
 								<input
@@ -504,7 +536,7 @@ function ProfilModal(props: IProps) {
 							</div>
 							<div className="profileLine">
 								<div className="profileLabel">
-									<i className="fab fa-instagram" />
+									<FontAwesomeIcon icon={faInstagram} />
 									<label>{i18next.t('MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.INSTAGRAM')}</label>
 								</div>
 								<input
@@ -519,7 +551,7 @@ function ProfilModal(props: IProps) {
 							</div>
 							<div className="profileLine">
 								<div className="profileLabel">
-									<i className="fab fa-twitch" />
+									<FontAwesomeIcon icon={faTwitch} />
 									<label>{i18next.t('MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.TWITCH')}</label>
 								</div>
 								<input
@@ -534,7 +566,7 @@ function ProfilModal(props: IProps) {
 							</div>
 							<div className="profileLine">
 								<div className="profileLabel">
-									<i className="fab fa-gitlab" />
+									<FontAwesomeIcon icon={faGitlab} />
 									<label>{i18next.t('MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.GITLAB')}</label>
 								</div>
 								<input
@@ -618,7 +650,7 @@ function ProfilModal(props: IProps) {
 							) : null}
 							<div className="profileLine">
 								<div className="profileLabel">
-									<i className="fas fa-lock" />
+									<FontAwesomeIcon icon={faLock} />
 									<label htmlFor="password">{i18next.t('PROFILE_PASSWORD')}</label>
 								</div>
 								<div className="dualInput">
@@ -646,7 +678,7 @@ function ProfilModal(props: IProps) {
 							</div>
 							<div className="profileLine">
 								<div className="profileLabel">
-									<i className="fas fa-star" />
+									<FontAwesomeIcon icon={faStar} />
 									<label htmlFor="favorites">{i18next.t('PLAYLISTS.FAVORITES')}</label>
 								</div>
 								<label
@@ -654,7 +686,7 @@ function ProfilModal(props: IProps) {
 									title={i18next.t('FAVORITES_IMPORT')}
 									className="btn btn-action btn-default favImport"
 								>
-									<i className="fas fa-download" /> {i18next.t('FAVORITES_IMPORT')}
+									<FontAwesomeIcon icon={faDownload} /> {i18next.t('FAVORITES_IMPORT')}
 								</label>
 								<input
 									id="favImport"
@@ -670,12 +702,12 @@ function ProfilModal(props: IProps) {
 									className="btn btn-action btn-default favExport"
 									onClick={favExport}
 								>
-									<i className="fas fa-upload" /> {i18next.t('FAVORITES_EXPORT')}
+									<FontAwesomeIcon icon={faUpload} /> {i18next.t('FAVORITES_EXPORT')}
 								</button>
 							</div>
 							<div className="profileLine row">
 								<div className="profileLabel">
-									<i className="fas fa-language" />
+									<FontAwesomeIcon icon={faLanguage} />
 									<label htmlFor="language">
 										{i18next.t('MODAL.PROFILE_MODAL.INTERFACE_LANGUAGE')}
 									</label>
@@ -692,7 +724,7 @@ function ProfilModal(props: IProps) {
 							</div>
 							<div className="profileLine row">
 								<div className="profileLabel">
-									<i className="fas fa-globe" />
+									<FontAwesomeIcon icon={faGlobe} />
 									<label>{i18next.t('MODAL.PROFILE_MODAL.MAIN_SONG_NAME_LANG')}</label>
 								</div>
 								<div>
@@ -706,7 +738,7 @@ function ProfilModal(props: IProps) {
 							</div>
 							<div className="profileLine row">
 								<div className="profileLabel">
-									<i className="fas fa-globe" />
+									<FontAwesomeIcon icon={faGlobe} />
 									<label>{i18next.t('MODAL.PROFILE_MODAL.FALLBACK_SONG_NAME_LANG')}</label>
 								</div>
 								<div>
@@ -792,7 +824,7 @@ function ProfilModal(props: IProps) {
 										className="btn btn-action btn-default"
 										onClick={refreshAnimeList}
 									>
-										<i className="fa-solid fa-arrows-rotate" />{' '}
+										<FontAwesomeIcon icon={faArrowsRotate} />{' '}
 										{i18next.t('MODAL.PROFILE_MODAL.REFRESH_ANIME_LIST')}
 									</button>
 								) : null}
@@ -801,9 +833,9 @@ function ProfilModal(props: IProps) {
 									className="btn btn-danger profileDelete"
 									onClick={() => setDangerousActions(!dangerousActions)}
 								>
-									<i className="fas fa-exclamation-triangle" />
+									<FontAwesomeIcon icon={faExclamationTriangle} />
 									{i18next.t('MODAL.PROFILE_MODAL.DANGEROUS_ACTIONS')}
-									<i className={`fas ${dangerousActions ? 'fa-chevron-left' : 'fa-chevron-right'}`} />
+									<FontAwesomeIcon icon={dangerousActions ? faChevronLeft : faChevronRight} />
 								</button>
 								{dangerousActions ? (
 									<div>
@@ -815,7 +847,7 @@ function ProfilModal(props: IProps) {
 													className="btn btn-danger profileDelete"
 													onClick={profileDelete}
 												>
-													<i className="fas fa-retweet" />{' '}
+													<FontAwesomeIcon icon={faRetweet} />{' '}
 													{i18next.t('MODAL.PROFILE_MODAL.ONLINE_DELETE')}
 												</button>
 											) : (
@@ -824,7 +856,7 @@ function ProfilModal(props: IProps) {
 													className="btn btn-primary profileConvert"
 													onClick={profileConvert}
 												>
-													<i className="fas fa-retweet" />{' '}
+													<FontAwesomeIcon icon={faRetweet} />{' '}
 													{i18next.t('MODAL.PROFILE_MODAL.ONLINE_CONVERT')}
 												</button>
 											)
@@ -836,7 +868,7 @@ function ProfilModal(props: IProps) {
 											}`}
 											onClick={deleteAccount}
 										>
-											<i className="fas fa-trash-alt" />{' '}
+											<FontAwesomeIcon icon={faTrashAlt} />{' '}
 											{i18next.t('MODAL.PROFILE_MODAL.LOCAL_DELETE')}
 										</button>
 									</div>

@@ -1,3 +1,13 @@
+import {
+	faBackwardFast,
+	faForward,
+	faForwardFast,
+	faPause,
+	faPlay,
+	faStop,
+	faUndoAlt,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import { useContext, useEffect, useState } from 'react';
 
@@ -70,35 +80,35 @@ function PlayerControls(props: IProps) {
 			props.statusPlayer?.mediaType !== 'song' ||
 			context?.globalState.settings.data.config?.Karaoke.ClassicMode ? (
 				<div className="red" data-namecommand="stopNow" onClick={props.putPlayerCommando}>
-					<i className="fas fa-stop fa-2x" />
+					<FontAwesomeIcon icon={faStop} className="fa-2x" />
 					{is_touch_device() ? '' : i18next.t('PLAYERS_CONTROLS.STOP_NOW_SHORT')}
 				</div>
 			) : (
 				<div className="red" data-namecommand="stopAfter" onClick={props.putPlayerCommando}>
-					<i className="fas fa-stop fa-2x" />
+					<FontAwesomeIcon icon={faStop} className="fa-2x" />
 					{is_touch_device() ? '' : i18next.t('PLAYERS_CONTROLS.STOP_AFTER_SHORT')}
 				</div>
 			)}
 			{(props.statusPlayer?.currentSong as CurrentSong)?.pos !== 1 ? (
 				<div className="white" data-namecommand="prev" onClick={props.putPlayerCommando}>
-					<i className="fas fa-fast-backward fa-2x" />
+					<FontAwesomeIcon icon={faBackwardFast} className="fa-2x" />
 					{is_touch_device() ? '' : i18next.t('PLAYERS_CONTROLS.PREVIOUS_SONG_SHORT')}
 				</div>
 			) : null}
 			{props.statusPlayer?.playerStatus === 'play' ? (
 				<div className="blue" data-namecommand="pause" onClick={play}>
-					<i className="fas fa-pause fa-2x" />
+					<FontAwesomeIcon icon={faPause} className="fa-2x" />
 					{is_touch_device() ? '' : i18next.t('PLAYERS_CONTROLS.PAUSE')}
 				</div>
 			) : (
 				<div className="blue" data-namecommand="play" onClick={play}>
-					<i className="fas fa-play fa-2x" />
+					<FontAwesomeIcon icon={faPlay} className="fa-2x" />
 					{is_touch_device() ? '' : i18next.t('PLAYERS_CONTROLS.PLAY')}
 				</div>
 			)}
 			{(props.statusPlayer?.currentSong as CurrentSong)?.pos !== props.currentPlaylist?.karacount ? (
 				<div data-namecommand="skip" className="white" onClick={props.putPlayerCommando}>
-					<i className="fas fa-fast-forward fa-2x" />
+					<FontAwesomeIcon icon={faForwardFast} className="fa-2x" />
 					{is_touch_device() ? '' : i18next.t('PLAYERS_CONTROLS.NEXT_SONG_SHORT')}
 				</div>
 			) : null}
@@ -114,7 +124,7 @@ function PlayerControls(props: IProps) {
 					className="btn btn-danger stopButton"
 					onClick={props.putPlayerCommando}
 				>
-					<i className="fas fa-stop" />
+					<FontAwesomeIcon icon={faStop} />
 				</button>
 			) : (
 				<button
@@ -123,7 +133,7 @@ function PlayerControls(props: IProps) {
 					className="btn stopButton"
 					onClick={props.putPlayerCommando}
 				>
-					<i className="fas fa-stop" />
+					<FontAwesomeIcon icon={faStop} />
 				</button>
 			)}
 			<button
@@ -133,7 +143,7 @@ function PlayerControls(props: IProps) {
 				onClick={props.putPlayerCommando}
 				disabled={(props.statusPlayer?.currentSong as CurrentSong)?.pos === 1}
 			>
-				<i className="fas fa-fast-backward" />
+				<FontAwesomeIcon icon={faBackwardFast} />
 			</button>
 			{props.statusPlayer?.playerStatus === 'play' ? (
 				<button
@@ -142,7 +152,7 @@ function PlayerControls(props: IProps) {
 					className="btn btn-primary"
 					onClick={play}
 				>
-					<i className="fas fa-pause" />
+					<FontAwesomeIcon icon={faPause} />
 				</button>
 			) : (
 				<button
@@ -151,7 +161,7 @@ function PlayerControls(props: IProps) {
 					className="btn btn-primary"
 					onClick={play}
 				>
-					<i className="fas fa-play" />
+					<FontAwesomeIcon icon={faPlay} />
 				</button>
 			)}
 			<button
@@ -161,7 +171,7 @@ function PlayerControls(props: IProps) {
 				onClick={props.putPlayerCommando}
 				disabled={(props.statusPlayer?.currentSong as CurrentSong)?.pos === props.currentPlaylist?.karacount}
 			>
-				<i className="fas fa-fast-forward" />
+				<FontAwesomeIcon icon={faForwardFast} />
 			</button>
 			{quizInProgress ? (
 				<button
@@ -169,7 +179,7 @@ function PlayerControls(props: IProps) {
 					className={`btn ${gameContinue ? 'btn-primary' : ''}`}
 					onClick={toggleGameContinue}
 				>
-					<i className="fas fa-forward" />
+					<FontAwesomeIcon icon={faForward} />
 				</button>
 			) : (
 				<button
@@ -179,7 +189,7 @@ function PlayerControls(props: IProps) {
 					className="btn btn-danger-low rewindButton"
 					onClick={props.putPlayerCommando}
 				>
-					<i className="fas fa-undo-alt" />
+					<FontAwesomeIcon icon={faUndoAlt} />
 				</button>
 			)}
 		</>

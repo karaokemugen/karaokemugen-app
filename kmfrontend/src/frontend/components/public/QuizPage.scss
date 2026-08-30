@@ -40,7 +40,8 @@ details.rules {
 	}
 	ul > li {
 		margin-left: 0.75ch;
-		i {
+		i,
+		.svg-inline--fa {
 			padding: 0 1ch;
 		}
 	}

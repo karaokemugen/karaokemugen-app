@@ -1,3 +1,5 @@
+import { faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import { ChangeEvent, MouseEvent, useContext, useState } from 'react';
 
@@ -54,7 +56,7 @@ function KaraLineSortAddModal(props: IProps) {
 					<ul className="modal-header">
 						<h4 className="modal-title">{i18next.t('MODAL.KARA_LINE_ADD.TITLE')}</h4>
 						<button className="closeModal" onClick={closeModalWithContext}>
-							<i className="fas fa-times" />
+							<FontAwesomeIcon icon={faTimes} />
 						</button>
 					</ul>
 					<div className="modal-body">
@@ -117,14 +119,14 @@ function KaraLineSortAddModal(props: IProps) {
 					</div>
 					<div className="modal-footer">
 						<button className="btn btn-action btn-primary other" onClick={closeModalWithContext}>
-							<i className="fas fa-times" /> {i18next.t('CANCEL')}
+							<FontAwesomeIcon icon={faTimes} /> {i18next.t('CANCEL')}
 						</button>
 						<button
 							disabled={(Array.isArray(type) && type.length === 0) || !type}
 							className="btn btn-action btn-default ok"
 							onClick={onClick}
 						>
-							<i className="fas fa-plus" /> {i18next.t('ADD')}
+							<FontAwesomeIcon icon={faPlus} /> {i18next.t('ADD')}
 						</button>
 					</div>
 				</div>

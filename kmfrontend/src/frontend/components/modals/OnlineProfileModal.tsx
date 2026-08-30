@@ -1,5 +1,7 @@
 import './OnlineProfileModal.scss';
 
+import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import { useContext, useState } from 'react';
 
@@ -52,7 +54,7 @@ function OnlineProfileModal(props: IProps) {
 								closeModal(context.globalDispatch);
 							}}
 						>
-							<i className="fas fa-times" />
+							<FontAwesomeIcon icon={faTimes} />
 						</button>
 					</div>
 					<div className="modal-body">
@@ -78,7 +80,7 @@ function OnlineProfileModal(props: IProps) {
 							/>
 						</div>
 						<button className="btn btn-default confirm" onClick={onClick}>
-							<i className="fas fa-check" />
+							<FontAwesomeIcon icon={faCheck} />
 						</button>
 					</div>
 				</div>

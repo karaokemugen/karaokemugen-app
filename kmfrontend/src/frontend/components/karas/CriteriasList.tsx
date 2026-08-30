@@ -1,5 +1,7 @@
 import './CriteriasList.scss';
 
+import { faEraser, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import { Fragment, useContext, useEffect, useState } from 'react';
 import { Trans } from 'react-i18next';
@@ -239,7 +241,7 @@ function CriteriasList(props: IProps) {
 						/>
 					)}
 					<button className="btn btn-default btn-action" onClick={addCriteria}>
-						<i className="fas fa-plus" /> {i18next.t('CRITERIA.ADD')}
+						<FontAwesomeIcon icon={faPlus} /> {i18next.t('CRITERIA.ADD')}
 					</button>
 				</div>
 			</div>
@@ -268,7 +270,7 @@ function CriteriasList(props: IProps) {
 											className="btn btn-action deleteCriteria"
 											onClick={() => deleteCriteria(criteria)}
 										>
-											<i className="fas fa-eraser"></i>
+											<FontAwesomeIcon icon={faEraser} />
 										</button>
 									</div>
 									{criteria.type !== 1006 ? (

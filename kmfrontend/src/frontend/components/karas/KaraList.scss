@@ -22,14 +22,18 @@
 			.buttons > .btn {
 				width: 5em;
 				height: 5em;
-				i {
+				i,
+				.svg-inline--fa {
 					font-size: 2.5em;
+				}
+				.svg-inline--fa {
+					filter: drop-shadow(2px 2px 2px #000000bf);
 				}
 			}
 		}
 		.transparent-btn {
 			padding-right: 0.5em;
-			.fas.fa-chevron-right {
+			.fa-chevron-right {
 				transform: rotate(0);
 				transition: transform 150ms ease;
 			}
@@ -62,7 +66,7 @@
 			> * {
 				position: relative;
 			}
-			.fas.fa-chevron-right {
+			.fa-chevron-right {
 				transform: rotate(90deg);
 			}
 			.img-background::before {

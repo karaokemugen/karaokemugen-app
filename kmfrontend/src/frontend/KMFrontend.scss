@@ -19,10 +19,17 @@
 // Fonts
 @use 'styles/fonts/Lato/stylesheet';
 
-// FontAwesome
-@use '@fortawesome/fontawesome-free/css/all.min.css';
-
 @use 'styles/al-icons/css/al-icons.css';
+
+// This font only contains the magnifier icon that is used as placeholder in the search
+// Replacing it with real svg would require design changes
+@font-face {
+	font-family: 'Font Awesome 7 Free';
+	font-style: normal;
+	font-weight: 900;
+	font-display: block;
+	src: url('styles/fonts/fontawesome/fa-search-900.woff2') format('woff2');
+}
 
 // Virtual element to be probed by KmAppWrapperDecorator to workaround URL bar resizing
 // https://developers.google.com/web/updates/2016/12/url-bar-resizing

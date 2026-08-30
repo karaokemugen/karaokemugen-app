@@ -1,5 +1,7 @@
 import './PlayCurrentModal.scss';
 
+import { faPlay, faShuffle, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import { useContext, useEffect, useState } from 'react';
 import { Trans } from 'react-i18next';
@@ -87,7 +89,7 @@ function PlayCurrentModal(props: IProps) {
 							className="btn btn-action btn-primary other"
 							onClick={closeModalWithContext}
 						>
-							<i className="fas fa-times" /> {i18next.t('CANCEL')}
+							<FontAwesomeIcon icon={faTimes} /> {i18next.t('CANCEL')}
 						</button>
 						{props.displayedPlaylist.plaid ? (
 							<button
@@ -95,7 +97,7 @@ function PlayCurrentModal(props: IProps) {
 								className="btn btn-action btn-secondary"
 								onClick={switchPlaylistAndPlay}
 							>
-								<i className="fas fa-shuffle" />
+								<FontAwesomeIcon icon={faShuffle} />
 								&nbsp;
 								<Trans
 									i18nKey="MODAL.PLAY_CURRENT_MODAL.CHANGE_TO_DISPLAYED_AND_PLAY"
@@ -105,7 +107,7 @@ function PlayCurrentModal(props: IProps) {
 							</button>
 						) : null}
 						<button type="button" className="btn btn-action btn-default ok" onClick={playCurrentPlaylist}>
-							<i className="fas fa-play" /> {i18next.t('MODAL.PLAY_CURRENT_MODAL.PLAY_ANYWAY')}
+							<FontAwesomeIcon icon={faPlay} /> {i18next.t('MODAL.PLAY_CURRENT_MODAL.PLAY_ANYWAY')}
 						</button>
 					</div>
 				</div>
