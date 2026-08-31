@@ -144,11 +144,19 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 			displayInfo();
 		}
 	}
-	if (newConfig.Online.RemoteAccess.Enabled !== oldConfig.Online.RemoteAccess.Enabled && state.ready) {
-		if (newConfig.Online.RemoteAccess.Enabled) {
+	if (state.ready) {
+		const oldRemoteSetting = oldConfig.Online.RemoteAccess;
+		const newRemoteSetting = newConfig.Online.RemoteAccess;
+		const serverChanged = newRemoteSetting.Domain !== oldRemoteSetting.Domain || newRemoteSetting.Secure !== oldRemoteSetting.Secure;
+		if (newRemoteSetting.Enabled !== oldRemoteSetting.Enabled) {
+			if (newRemoteSetting.Enabled) {
+				await initKMServerCommunication();
+			} else {
+				destroyRemote();
+			}
+		} else if (newRemoteSetting.Enabled && serverChanged) {
+			await destroyRemote();
 			await initKMServerCommunication();
-		} else {
-			destroyRemote();
 		}
 	}
 	// Change language

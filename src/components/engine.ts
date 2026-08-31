@@ -197,11 +197,9 @@ export async function initEngine() {
 				initPlayer();
 			}
 			if (conf.Player.KeyboardMediaShortcuts) registerShortcuts();
+			initStep(i18next.t('INIT_ONLINEURL'));
+			initKMServerCommunication(); // Retries connection automatically once started, even offline
 			internetCheck().then(internet => {
-				if (internet) {
-					initStep(i18next.t('INIT_ONLINEURL'));
-					initKMServerCommunication();
-				}
 				if (!state.isTest) {
 					if (internet) {
 						updatePlaylistMedias()

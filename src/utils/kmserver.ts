@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { catchError, filter, interval, map, Observable, pairwise, Subscription, switchMap, tap } from 'rxjs';
+import { catchError, EMPTY, filter, interval, map, Observable, pairwise, Subscription, switchMap, tap } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 
 import { APIMessage } from '../lib/services/frontend.js';
@@ -12,31 +12,29 @@ import Sentry from './sentry.js';
 import { subRemoteUsers } from './userPubSub.js';
 
 let socket: Socket;
+let socketURL: string;
 let checkLatencyIntervalSubscription: Subscription;
 
 const service = 'KMServer';
 
 // Create a connection
 export function connectToKMServer(reset = false) {
+	const conf = getConfig();
+	const url = `${conf.Online.RemoteAccess.Secure ? 'https' : 'http'}://${conf.Online.RemoteAccess.Domain}`;
 	// Reset connection if server changes
-	if (reset) socket = undefined;
+	if (reset || (socket && socketURL !== url)) disconnectFromKMServer();
 	if (socket) return;
 	logger.debug('Connecting to KMServer via socket.io', { service });
 	try {
 		return new Promise<void>((resolve, reject) => {
-			const conf = getConfig();
-			let timeout = setTimeout(() => {
-				timeout = undefined;
-				reject(new Error('Connection timed out'));
-				socket.disconnect();
-				socket = undefined;
-			}, 5000);
-			socket = io(`${conf.Online.RemoteAccess.Secure ? 'https' : 'http'}://${conf.Online.RemoteAccess.Domain}`, {
+			let connectErrorLogged = false;
+			socketURL = url;
+			socket = io(url, {
 				transports: ['websocket'],
+				timeout: 5000, // Socket stays alive and retries after timeout
 			});
 			socket.on('connect', () => {
-				clearTimeout(timeout);
-				timeout = undefined;
+				connectErrorLogged = false;
 				if (checkLatencyIntervalSubscription) checkLatencyIntervalSubscription.unsubscribe();
 				checkLatencyIntervalSubscription = socketLatencyCheck$(
 					socket,
@@ -45,11 +43,20 @@ export function connectToKMServer(reset = false) {
 				resolve();
 			});
 			socket.on('connect_error', err => {
-				if (timeout) reject(err);
+				if (!connectErrorLogged) { // Log first error only, more will be logged by reconnect events
+					connectErrorLogged = true;
+					logger.warn(`Cannot reach KMServer: ${err.message}`, { service });
+				}
+				
+				reject(err);
 			});
+			socket.io.on('reconnect_attempt', onReconnectAttempt);
+			socket.io.on('reconnect', onReconnect);
 			socket.on('disconnect', reason => {
 				logger.warn('Connection lost with server,', { service, obj: reason });
 				if (checkLatencyIntervalSubscription) checkLatencyIntervalSubscription.unsubscribe();
+				// socket.io doesn't reconnect by itself when the server closed the connection
+				if (reason === 'io server disconnect') socket.connect();
 			});
 		});
 	} catch (err) {
@@ -57,6 +64,24 @@ export function connectToKMServer(reset = false) {
 		Sentry.error(err, 'warning');
 		// Non fatal.
 	}
+}
+
+function onReconnectAttempt(attempt: number) {
+	if (attempt % 10 === 0) logger.info(`Trying to reconnect (attempt ${attempt})`, { service });
+}
+
+function onReconnect(attempt: number) {
+	logger.info(`Reconnected to KMServer after ${attempt} attempt${attempt === 1 ? '' : 's'}`, { service });
+}
+
+function disconnectFromKMServer() {
+	if (!socket) return;
+	if (checkLatencyIntervalSubscription) checkLatencyIntervalSubscription.unsubscribe();
+	socket.io.off('reconnect_attempt', onReconnectAttempt);
+	socket.io.off('reconnect', onReconnect);
+	socket.removeAllListeners();
+	socket.disconnect();
+	socket = undefined;
 }
 
 const socketLatencyCheck$ = (socket: Socket, remoteHost: string, intervalMs = 10_000) =>
@@ -128,9 +153,7 @@ const socketLatencyCheck$ = (socket: Socket, remoteHost: string, intervalMs = 10
 				);
 			}
 		}),
-		catchError(_error => {
-			return null;
-		})
+		catchError(_error => EMPTY)
 	);
 
 export async function initKMServerCommunication() {
@@ -159,7 +182,7 @@ export function commandKMServer<T = any>(name: string, data: APIData<T>, timeout
 		}
 		socket.timeout(timeout).emit(name, data, (err: Error, ack: any) => {
 			if (err) return reject(new Error('Request timed out'));
-			ack.err ? reject(ack.data) : resolve(ack.data);
+			ack?.err ? reject(ack.data) : resolve(ack?.data);
 		});
 	});
 }
