@@ -28,6 +28,7 @@ import { detectFileType, fileExists } from '../lib/utils/files.js';
 import logger, { profile } from '../lib/utils/logger.js';
 import { emitWS } from '../lib/utils/ws.js';
 import { Config } from '../types/config.js';
+import { UploadedFile } from '../types/files.js';
 import { UserOpts } from '../types/user.js';
 import { defaultGuestNames } from '../utils/constants.js';
 import sentry from '../utils/sentry.js';
@@ -89,8 +90,8 @@ async function checkNicknameExists(nickname: string) {
 /** Edit local user profile */
 export async function editUser(
 	username: string,
-	user: User,
-	avatar: Express.Multer.File,
+	user: Partial<User>,
+	avatar: UploadedFile,
 	role: string,
 	opts: UserOpts = {
 		editRemote: false,
@@ -183,7 +184,7 @@ export function getUsers(params: UserParams = {}): Promise<DBUser[]> {
 }
 
 /** Replace old avatar image by new one sent from editUser or createUser */
-async function replaceAvatar(oldImageFile: string, avatar: Express.Multer.File): Promise<string> {
+async function replaceAvatar(oldImageFile: string, avatar: UploadedFile): Promise<string> {
 	try {
 		const fileType = await detectFileType(avatar.path);
 		if (!imageFileTypes.includes(fileType.toLowerCase())) throw 'Wrong avatar file type';
@@ -444,9 +445,7 @@ async function updateGuestAvatar(user: DBUser, random?: boolean) {
 				mimetype: null,
 				destination: null,
 				filename: null,
-				buffer: null,
 				size: null,
-				stream: null,
 			},
 			'admin',
 			{

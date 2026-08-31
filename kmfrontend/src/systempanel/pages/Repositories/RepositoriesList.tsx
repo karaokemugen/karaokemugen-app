@@ -36,7 +36,7 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 
 	refresh = async () => {
 		const res = await commandBackend(WS_CMD.GET_REPOS);
-		this.setState({ repositories: res });
+		this.setState({ repositories: res as Repository[] });
 	};
 
 	deleteRepository = async (repository: Repository) => {

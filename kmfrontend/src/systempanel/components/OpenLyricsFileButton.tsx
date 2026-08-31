@@ -1,6 +1,7 @@
 import { EditOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import i18next from 'i18next';
+import { JSX } from 'react';
 
 import { DBKara } from '../../../../src/lib/types/database/kara';
 import { commandBackend } from '../../utils/socket';

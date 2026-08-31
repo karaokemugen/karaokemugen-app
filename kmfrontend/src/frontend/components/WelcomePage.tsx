@@ -39,7 +39,7 @@ import { useLocalSearch } from '../../utils/hooks';
 import { commandBackend, getSocket } from '../../utils/socket';
 import { displayMessage, secondsTimeSpanToHMS } from '../../utils/tools';
 import { News } from '../types/news';
-import { RemoteStatusData } from '../types/remote';
+import { RemoteStatusData } from '../../../../src/types/remote';
 import WelcomePageArticle from './WelcomePageArticle';
 import Autocomplete from './generic/Autocomplete';
 import OnlineStatsModal from './modals/OnlineStatsModal';
@@ -114,7 +114,7 @@ function WelcomePage() {
 
 	const updateRemoteData = async () => {
 		try {
-			const data: RemoteStatusData = await commandBackend(WS_CMD.GET_REMOTE_DATA);
+			const data = await commandBackend(WS_CMD.GET_REMOTE_DATA);
 			setRemoteStatus(data);
 		} catch (_) {
 			// already display
@@ -123,7 +123,7 @@ function WelcomePage() {
 
 	const getRepositories = async () => {
 		const res = await commandBackend(WS_CMD.GET_REPOS);
-		setRepositories(res);
+		setRepositories(res.map(r => ({...r, BaseDir: null, MaintainerMode: null })));
 	};
 
 	const getStats = async () => {

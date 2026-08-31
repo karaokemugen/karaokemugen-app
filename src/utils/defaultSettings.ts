@@ -3,14 +3,15 @@
 // this file is overwritten during updates, editing is ill-advised .
 // you can change the default settings by using config.yml to bypass the default values.
 import { app } from 'electron';
-import { z } from 'zod';
 import { existsSync } from 'node:fs';
+import { z } from 'zod';
 
-import { hostnameRegexp } from '../lib/utils/constants.js';
-import { Config, DBConfig } from '../types/config.js';
-import { zArrayOneItem, zBool, zBoolUndefined, zFloat, zInclusion, zInt, zNonEmptyString } from '../lib/utils/validators.js';
-import { Repository } from '../lib/types/repo.js';
 import { zRepository } from '../lib/dao/repo.js';
+import { Repository } from '../lib/types/repo.js';
+import { hostnameRegexp } from '../lib/utils/constants.js';
+import { zArrayOneItem, zBool, zBoolUndefined, zFloat, zInclusion, zInt, zNonEmptyString } from '../lib/utils/validators.js';
+import { Config, DBConfig } from '../types/config.js';
+import { endOfPlaylistActions } from './constants.js';
 
 export const dbConfig: DBConfig = {
 	RestoreNeeded: false,
@@ -312,7 +313,6 @@ export const defaults: Config = {
 export const horizontalPosArray = ['Left', 'Right', 'Center'];
 export const verticalPosArray = ['Top', 'Bottom', 'Center'];
 export const hwdecModes = ['auto-safe', 'no', 'yes'];
-export const endOfPlaylistActions = ['random', 'random_fallback', 'play_fallback', 'repeat', 'none'];
 
 /** Config constraints. */
 export const configConstraints = z

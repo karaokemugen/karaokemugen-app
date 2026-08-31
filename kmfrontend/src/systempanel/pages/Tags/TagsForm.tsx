@@ -80,7 +80,7 @@ function TagForm(props: TagsFormProps) {
 	}, [repositoriesValue]);
 
 	const getRepositories = async () => {
-		const res: Repository[] = await commandBackend(WS_CMD.GET_REPOS);
+		const res = (await commandBackend(WS_CMD.GET_REPOS)) as Repository[];
 		setRepositoriesValue(
 			res
 				.filter(

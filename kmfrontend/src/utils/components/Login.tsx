@@ -14,7 +14,7 @@ import { isElectron } from '../electron';
 import { langSupport } from '../isoLanguages';
 import { commandBackend } from '../socket';
 import { callModal, displayMessage, lastLocation } from '../tools';
-import { WS_CMD } from '../ws';
+import { WS_CMD } from '../ws.mjs';
 
 interface UserApi extends User {
 	role: 'admin' | 'user';

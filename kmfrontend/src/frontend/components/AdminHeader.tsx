@@ -36,6 +36,7 @@ import { createRoot } from 'react-dom/client';
 import { useLocation, useNavigate } from 'react-router';
 
 import dayjs, { Dayjs } from 'dayjs';
+import { DBPL } from '../../../../src/types/database/playlist';
 import { PublicPlayerState } from '../../../../src/types/state';
 import KLogo from '../../assets/Klogo.png';
 import { logout } from '../../store/actions/auth';
@@ -56,8 +57,8 @@ import PlayerControls from './PlayerControls';
 import { WS_CMD } from '../../utils/ws.mjs';
 
 interface IProps {
-	currentPlaylist: PlaylistElem;
-	playlistList: PlaylistElem[];
+	currentPlaylist: DBPL;
+	playlistList: DBPL[];
 	powerOff: (() => void) | undefined;
 	putPlayerCommando: (event: any) => void;
 	updateQuizRanking: () => void;

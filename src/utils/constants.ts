@@ -2,6 +2,7 @@
 
 import { Repository } from '../lib/types/repo.js';
 import { OldJWTToken } from '../lib/types/user.js';
+import { tagTypes } from '../lib/utils/constants.js';
 import { QuizGameConfig } from '../types/config.js';
 
 export const discordClientID = '718211141033263145';
@@ -368,6 +369,8 @@ export const defaultQuizSettings: QuizGameConfig = {
 	PlayerMessage: undefined,
 };
 
+export const quizAcceptedAnswers = [...Object.keys(tagTypes), 'year', 'title'];
+
 export const systemRepo: Repository = {
 	Name: 'System',
 	Online: false,
@@ -377,3 +380,13 @@ export const systemRepo: Repository = {
 	Path: { Medias: null },
 	System: true,
 };
+
+export const playerBackgroundTypes = ['pause', 'stop', 'poll', 'bundled'] as const;
+
+export const endOfPlaylistActions = [
+	'random',
+	'random_fallback',
+	'play_fallback',
+	'repeat',
+	'none',
+] as const;

@@ -5,7 +5,7 @@ import { MouseEvent, useContext, useState } from 'react';
 
 import { closeModal, showModal } from '../../../../store/actions/modal';
 import GlobalContext from '../../../../store/context';
-import type { KaraSortElement } from '../../../../../../src/types/config';
+import type { KaraSortElement } from '../../../../../../src/lib/types/config';
 import { commandBackend } from '../../../../utils/socket';
 import { WS_CMD } from '../../../../utils/ws.mjs';
 import { Trans } from 'react-i18next';

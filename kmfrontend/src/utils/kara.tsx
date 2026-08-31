@@ -402,7 +402,12 @@ export function setOppositePlaylistInfo(side: 'left' | 'right', context: GlobalC
 	}
 }
 
-function getInlineTag(e: DBKaraTag, tagType: number, scope: 'admin' | 'public', i18nParam?: Record<string, string>) {
+function getInlineTag(
+	e: DBKaraTag,
+	tagType: number,
+	scope: 'admin' | 'public',
+	i18nParam?: Record<string, Record<string, string>>
+) {
 	return (
 		<InlineTag
 			key={e.tid}
@@ -420,7 +425,7 @@ export function computeTagsElements(
 	scope: Scope,
 	settings: SettingsStoreData,
 	versions = true,
-	i18nParam?: Record<string, string>
+	i18nParam?: Record<string, Record<string, string>>
 ) {
 	// Tags in the header
 	const karaTags: ReactNode[] = [];

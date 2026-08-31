@@ -20,6 +20,7 @@ import { useAsyncMemo } from 'use-async-memo';
 
 import type { User } from '../../../../../src/lib/types/user';
 import type { QuizGameConfig } from '../../../../../src/types/config';
+import { DBPL } from '../../../../../src/types/database/playlist';
 import type { BlindMode } from '../../../../../src/types/player';
 import type { Game, GameTotalScore } from '../../../../../src/types/quiz';
 import { closeModal } from '../../../store/actions/modal';
@@ -29,8 +30,8 @@ import { getPlaylistIcon } from '../../../utils/playlist';
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 import { displayMessage } from '../../../utils/tools';
-import SelectWithIcon from '../generic/SelectWithIcon';
 import { WS_CMD } from '../../../utils/ws.mjs';
+import SelectWithIcon from '../generic/SelectWithIcon';
 
 type RecursivePartial<T> = {
 	[P in keyof T]?: T[P] extends (infer U)[]
@@ -45,7 +46,7 @@ interface IProps {
 }
 
 interface GameUserTotalScore extends GameTotalScore {
-	nickname: string;
+	nickname?: string;
 }
 
 export default function QuizModal(props: IProps) {
@@ -62,7 +63,7 @@ export default function QuizModal(props: IProps) {
 		}
 	};
 
-	const playlists = useAsyncMemo<PlaylistElem[]>(
+	const playlists = useAsyncMemo<DBPL[]>(
 		async () => {
 			return await commandBackend(WS_CMD.GET_PLAYLISTS);
 		},

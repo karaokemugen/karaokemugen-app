@@ -22,7 +22,7 @@ import 'dayjs/locale/ta';
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { WS_CMD } from '../../utils/ws';
+import { WS_CMD } from '../../utils/ws.mjs';
 
 export async function setSettings(
 	dispatch: Dispatch<SettingsSuccess | SettingsFailure>,
@@ -78,7 +78,13 @@ export async function setSettings(
 			dayjs.locale(langSupport);
 			dispatch({
 				type: Settings.SETTINGS_SUCCESS,
-				payload: { state: res.state, config: res.config, user: {}, favorites: new Set(), version: res.version },
+				payload: {
+					state: res.state,
+					config: res.config,
+					user: {} as User,
+					favorites: new Set(),
+					version: res.version,
+				},
 			});
 		}
 	} catch (error: any) {

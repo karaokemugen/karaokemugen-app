@@ -25,7 +25,6 @@ import { is_touch_device, isNonStandardPlaylist, nonStandardPlaylists } from '..
 import { KaraElement } from '../../types/kara';
 import { WS_CMD } from '../../../utils/ws.mjs';
 import { DBKara } from '../../../../../src/lib/types/database/kara';
-import { WSCmdDefinition } from '../../../../../src/lib/types/frontend';
 
 interface IProps {
 	kara: KaraElement;
@@ -38,7 +37,7 @@ interface IProps {
 
 function KaraMenuModal(props: IProps) {
 	const context = useContext(GlobalContext);
-	const [kara, setKara] = useState(props.kara);
+	const [kara, setKara] = useState<DBKara & Partial<KaraElement>>(props.kara);
 	const [effectFavorite, setEffectFavorite] = useState(false);
 	const [effectBlacklist, setEffectBlacklist] = useState(false);
 	const [effectWhitelist, setEffectWhitelist] = useState(false);
@@ -48,19 +47,11 @@ function KaraMenuModal(props: IProps) {
 
 	const getKaraDetail = async () => {
 		try {
-			let url: WSCmdDefinition<object, DBKara>;
-			let data;
 			const playlist = getPlaylistInfo(props.side, context);
-			if (playlist && isNonStandardPlaylist(playlist.plaid)) {
-				url = WS_CMD.GET_KARA;
-				data = { kid: props.kara.kid };
-			} else {
-				url = WS_CMD.GET_PLC;
-				data = {
-					plc_id: props.kara.plcid,
-				};
-			}
-			const response = await commandBackend(url, data);
+			const response =
+				playlist && isNonStandardPlaylist(playlist.plaid)
+					? await commandBackend(WS_CMD.GET_KARA, { kid: props.kara.kid })
+					: await commandBackend(WS_CMD.GET_PLC, { plc_id: props.kara.plcid });
 			setKara(response);
 			document.getElementById('root').addEventListener('click', handleClick);
 		} catch (_) {

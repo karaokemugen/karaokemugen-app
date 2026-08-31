@@ -2,6 +2,7 @@ import levenshtein from 'damerau-levenshtein';
 import i18next from 'i18next';
 
 import { isShutdownInProgress } from '../components/engine.js';
+import { getFontSize } from '../components/mpv/mpv.js';
 import {
 	dropGame,
 	fillPossibleAnswers,
@@ -17,7 +18,6 @@ import {
 import { DBKara, DBKaraTag } from '../lib/types/database/kara.js';
 import { KaraList } from '../lib/types/kara.js';
 import { getConfig } from '../lib/utils/config.js';
-import { tagTypes } from '../lib/utils/constants.js';
 import { Timer } from '../lib/utils/date.js';
 import { ErrorKM } from '../lib/utils/error.js';
 import logger from '../lib/utils/logger.js';
@@ -35,11 +35,8 @@ import { displayMessage, getPromoMessage, next, sendCommand, stopPlayer } from '
 import { editPlaylist } from './playlist.js';
 import { getTag } from './tag.js';
 import { createUser, editUser, getUser, getUsers } from './user.js';
-import { getFontSize } from '../components/mpv/mpv.js';
 
 const service = 'Quiz';
-
-export const acceptedAnswers = [...Object.keys(tagTypes), 'year', 'title'];
 
 export function checkIfSongIsQuizzable(kara: DBKara) {
 	// Check if the song has at least one answer possible from possible answer types

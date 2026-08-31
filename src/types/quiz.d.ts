@@ -1,9 +1,9 @@
+import { quizAcceptedAnswers } from '../lib/utils/constants.ts';
 import { Timer } from '../lib/utils/date.js';
-import { acceptedAnswers } from '../services/quiz.js';
 import { QuizGameConfig } from './config.js';
 import { CurrentSong } from './playlist.js';
 
-export type QuizAnswers = (typeof acceptedAnswers)[number];
+export type QuizAnswers = (typeof quizAcceptedAnswers)[number];
 
 export interface Game {
 	gamename: string;

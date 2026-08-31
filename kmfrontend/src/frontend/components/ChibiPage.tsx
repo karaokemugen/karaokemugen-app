@@ -13,6 +13,7 @@ import merge from 'lodash/merge';
 import { useContext, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
+import { DBPL } from '../../../../src/types/database/playlist';
 import { PublicPlayerState } from '../../../../src/types/state';
 import nanamiSingPng from '../../assets/nanami-sing.png';
 import nanamiSingWebp from '../../assets/nanami-sing.webp';
@@ -31,7 +32,7 @@ function ChibiPage() {
 	const [searchParams] = useSearchParams();
 
 	const [statusPlayer, setStatusPlayer] = useState<PublicPlayerState>();
-	const [playlistList, setPlaylistList] = useState<PlaylistElem[]>([]);
+	const [playlistList, setPlaylistList] = useState<DBPL[]>([]);
 
 	const getPlaylistList = async () => {
 		const res = await commandBackend(WS_CMD.GET_PLAYLISTS);

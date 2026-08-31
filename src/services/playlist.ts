@@ -46,6 +46,7 @@ import { formatKaraList } from '../lib/services/kara.js';
 import { PLImportConstraints } from '../lib/services/playlist.js';
 import { DBKara, DBKaraBase } from '../lib/types/database/kara.js';
 import { DBPLC, DBPLCBase, PLCInsert } from '../lib/types/database/playlist.js';
+import { KaraList } from '../lib/types/kara.js';
 import { PlaylistExport, PLCEditParams } from '../lib/types/playlist.js';
 import { OldJWTToken, User } from '../lib/types/user.js';
 import { getConfig, resolvedPathRepos } from '../lib/utils/config.js';
@@ -667,7 +668,7 @@ export async function getPlaylistContents(
 	orderByLikes = false,
 	incomingSongs = false,
 	filterByUser?: string
-) {
+): Promise<KaraList<DBPLC>> {
 	try {
 		profile('getPLC');
 		await getPlaylistInfo(plaid, token);
@@ -689,7 +690,7 @@ export async function getPlaylistContents(
 		}
 		profile('getPLC');
 		const count = pl.length > 0 ? pl[0].count : 0;
-		return formatKaraList(pl, from, count);
+		return formatKaraList(pl, from, count) as KaraList<DBPLC>;
 	} catch (err) {
 		logger.error(`Error fetching playlist contents : ${err}`, { service });
 		sentry.error(err);

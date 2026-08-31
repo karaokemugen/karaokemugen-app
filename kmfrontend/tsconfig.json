@@ -5,8 +5,9 @@
 		"sourceRoot": "/",
 		"target": "es2021",
 		"jsx": "react-jsx",
-		"module": "nodenext",
-		"moduleResolution": "nodenext",
+		"module": "esnext",
+		"moduleResolution": "bundler",
+		"rootDir": "..",
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
 		"declaration": false,
@@ -16,8 +17,8 @@
 		"removeComments": true,
 		"strictNullChecks": false,
 		"outDir": "build",
-		"types": [],
-		"lib": ["dom", "es2021"],
+		"types": ["vite/client", "node"],
+		"lib": ["dom", "dom.iterable" ,"es2021"],
 		"allowJs": true,
 		"skipLibCheck": true,
 		"esModuleInterop": true,
@@ -26,7 +27,8 @@
 		"forceConsistentCasingInFileNames": true,
 		"resolveJsonModule": true,
 		"isolatedModules": true,
-		"noEmit": true
+		"noEmit": true,
+		"useUnknownInCatchVariables": false
 	},
 	"exclude": ["dist", "build", "node_modules"],
 	"include": ["src"]

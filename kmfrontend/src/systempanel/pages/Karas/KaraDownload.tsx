@@ -39,7 +39,7 @@ function KaraDownload() {
 	const context = useContext(GlobalContext);
 
 	const [karas, setKaras] = useState<DBKara[]>([]);
-	const [i18n, setI18n] = useState([]);
+	const [i18n, setI18n] = useState<Record<string, Record<string, string>>>({});
 	const [karasCount, setKarasCount] = useState(0);
 	const [karasQueue, setKarasQueue] = useState<DBDownload[]>([]);
 	const [currentPage, setCurrentPage] = useState(parseInt(localStorage.getItem('karaDownloadPage')) || 1);
@@ -84,7 +84,7 @@ function KaraDownload() {
 	}, [direction, currentPage, currentPageSize, downloadStatus]);
 
 	const getRepositories = async () => {
-		const res: Repository[] = await commandBackend(WS_CMD.GET_REPOS);
+		const res = (await commandBackend(WS_CMD.GET_REPOS)) as Repository[];
 		setRepositories(
 			res
 				.filter(r => r.Online)

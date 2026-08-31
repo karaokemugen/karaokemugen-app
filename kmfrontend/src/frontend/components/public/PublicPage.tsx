@@ -4,7 +4,7 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import { Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { DBPLC } from '../../../../../src/lib/types/database/playlist';
-import { DBPLCInfo } from '../../../../../src/types/database/playlist';
+import { DBPL, DBPLCInfo } from '../../../../../src/types/database/playlist';
 import { PublicPlayerState } from '../../../../../src/types/state';
 import nanamiSingingPng from '../../../assets/nanami-sing.png';
 import nanamiSingingWebP from '../../../assets/nanami-sing.webp';
@@ -15,6 +15,7 @@ import GlobalContext from '../../../store/context';
 import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { displayMessage, nonStandardPlaylists, secondsTimeSpanToHMS } from '../../../utils/tools';
+import { WS_CMD } from '../../../utils/ws.mjs';
 import KmAppWrapperDecorator from '../decorators/KmAppWrapperDecorator';
 import KaraDetail from '../karas/KaraDetail';
 import VersionSelector from '../karas/VersionSelector';
@@ -28,7 +29,6 @@ import PublicHeader from './PublicHeader';
 import PublicHomepage from './PublicHomepage';
 import PublicList from './PublicList';
 import QuizPage from './QuizPage';
-import { WS_CMD } from '../../../utils/ws.mjs';
 
 let timer: NodeJS.Timeout;
 
@@ -47,7 +47,7 @@ function PublicPage() {
 	const [publicVisible, setPublicVisible] = useState(false);
 	const [currentVisible, setCurrentVisible] = useState(false);
 	const [statusPlayer, setStatusPlayer] = useState<PublicPlayerState>();
-	const [currentPlaylist, setCurrentPlaylist] = useState<PlaylistElem>();
+	const [currentPlaylist, setCurrentPlaylist] = useState<DBPL>();
 
 	const publicPlaylistUpdated = async (plaid: string) => {
 		if (plaid !== context.globalState.settings.data.state.publicPlaid) {

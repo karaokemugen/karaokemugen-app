@@ -9,20 +9,19 @@ import { win } from '../electron/electron.js';
 import { errorStep, initStep } from '../electron/electronLogger.js';
 import { PathType } from '../lib/types/config.js';
 import { configureLocale, getConfig, resolvedPath, setConfig } from '../lib/utils/config.js';
+import { ErrorKM } from '../lib/utils/error.js';
 import { asyncCheckOrMkdir, fileExists } from '../lib/utils/files.js';
 import logger, { configureLogger, profile } from '../lib/utils/logger.js';
 import { resetNewAccountCode, resetSecurityCode } from '../services/auth.js';
-import { backgroundTypes } from '../services/backgrounds.js';
 import { editRepo, getRepos } from '../services/repo.js';
 import { initConfig } from '../utils/config.js';
-import { logo } from '../utils/constants.js';
+import { logo, playerBackgroundTypes } from '../utils/constants.js';
 import { defaultRepositories } from '../utils/defaultSettings.js';
 import { checkMovedUserDir, updateKaraMoeSecureConfig } from '../utils/hokutoNoCode.js';
 import Sentry from '../utils/sentry.js';
 import { getState, setState } from '../utils/state.js';
 import { parseArgs, setupFromCommandLineArgs } from './args.js';
 import { exit, initEngine } from './engine.js';
-import { ErrorKM } from '../lib/utils/error.js';
 
 const service = 'Init';
 
@@ -139,7 +138,7 @@ async function checkPaths() {
 		checks.push(asyncCheckOrMkdir(resolvedPath('Fonts')));
 		checks.push(asyncCheckOrMkdir(resolvedPath('Logs')));
 		checks.push(asyncCheckOrMkdir(resolvedPath('SSHKeys')));
-		for (const type of backgroundTypes) {
+		for (const type of playerBackgroundTypes) {
 			checks.push(asyncCheckOrMkdir(resolve(resolvedPath('Backgrounds'), type)));
 		}
 		for (const path of Object.keys(getConfig().System.Path)) {

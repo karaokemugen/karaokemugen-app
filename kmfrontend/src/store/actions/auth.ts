@@ -9,7 +9,7 @@ import { PlaylistInfo } from '../types/frontendContext';
 import { SettingsFailure, SettingsSuccess } from '../types/settings';
 import { setPlaylistInfoLeft, setPlaylistInfoRight } from './frontendContext';
 import { setSettings } from './settings';
-import { WS_CMD } from '../../utils/ws';
+import { WS_CMD } from '../../utils/ws.mjs';
 
 export async function login(
 	username: string,

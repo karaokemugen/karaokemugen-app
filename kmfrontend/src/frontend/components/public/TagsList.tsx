@@ -7,6 +7,7 @@ import { ListRange, Virtuoso } from 'react-virtuoso';
 
 import { DBKaraTag, DBYear } from '../../../../../src/lib/types/database/kara';
 import { DBTag } from '../../../../../src/lib/types/database/tag';
+import type { TagTypeNum } from '../../../../../src/lib/types/tag';
 import GlobalContext from '../../../store/context';
 import { useDeferredEffect } from '../../../utils/hooks';
 import { getTagInLocale } from '../../../utils/kara';
@@ -35,7 +36,7 @@ function TagsList() {
 	const getTags = async (from: number) => {
 		try {
 			const response = await commandBackend(WS_CMD.GET_TAGS, {
-				type: [tagType],
+				type: [tagType as TagTypeNum],
 				from,
 				size: chunksize,
 				filter: context.globalState.frontendContext.filterValue1,
@@ -70,10 +71,15 @@ function TagsList() {
 
 	const getYears = async () => {
 		const response = await commandBackend(WS_CMD.GET_YEARS);
-		response.content = response.content.map((val: DBYear) => {
-			return { tid: val.year, name: val.year, type: [0], karacount: [{ type: 0, count: val.karacount }] };
+		setTags({
+			infos: response.infos,
+			content: response.content.map((val: DBYear) => ({
+				tid: val.year,
+				name: val.year,
+				type: [0],
+				karacount: [{ type: 0, count: val.karacount }],
+			})),
 		});
-		setTags(response);
 	};
 
 	const isRowLoaded = index => {
