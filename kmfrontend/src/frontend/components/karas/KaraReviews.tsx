@@ -1,6 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
 
-import { DBPLC } from '../../../../../src/lib/types/database/playlist';
 import { DBPL } from '../../../../../src/types/database/playlist';
 import { closeModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
@@ -48,14 +47,11 @@ export default function KaraReviews(props: Props) {
 				setEnd(true);
 				break;
 			}
-			const res: { content: DBPLC[]; infos: { count: number } } = await commandBackend(
-				WS_CMD.GET_PLAYLIST_CONTENTS,
-				{
-					plaid: playlist.plaid,
-					from: localI * 20,
-					size: 20,
-				}
-			);
+			const res = await commandBackend(WS_CMD.GET_PLAYLIST_CONTENTS, {
+				plaid: playlist.plaid,
+				from: localI * 20,
+				size: 20,
+			});
 			if (res.infos.count === 0) {
 				closeModal(context.globalDispatch);
 				break;

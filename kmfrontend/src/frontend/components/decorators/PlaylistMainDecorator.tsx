@@ -1,7 +1,7 @@
-import { ReactNodeArray } from 'react';
+import { ReactNode } from 'react';
 
 interface IProps {
-	children: ReactNodeArray;
+	children: ReactNode[];
 }
 
 export default function PlaylistMainDecorator(props: IProps) {

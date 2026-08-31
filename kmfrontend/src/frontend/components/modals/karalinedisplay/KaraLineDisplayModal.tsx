@@ -5,7 +5,7 @@ import { MouseEvent, useContext, useState } from 'react';
 
 import { closeModal, showModal } from '../../../../store/actions/modal';
 import GlobalContext from '../../../../store/context';
-import type { KaraLineDisplayElement } from '../../../../../../src/types/config';
+import type { KaraLineDisplayElement } from '../../../../../../src/lib/types/config';
 import { buildKaraTitle } from '../../../../utils/kara';
 import { karaokeExample } from '../../../../utils/karaexample';
 import KaraLineDisplayAddModal from './KaraLineDisplayAddModal';

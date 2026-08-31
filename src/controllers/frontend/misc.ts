@@ -52,9 +52,9 @@ export default function miscController(router: SocketIOApp) {
 		try {
 			const state = getState();
 			if (state.remoteAccess) {
-				return { active: true, info: state.remoteAccess, token: getConfig().Online.RemoteAccess.Token };
+				return { active: true as const, info: state.remoteAccess, token: getConfig().Online.RemoteAccess.Token };
 			}
-			return { active: false };
+			return { active: false as const };
 		} catch (err) {
 			throw { code: 500 };
 		}

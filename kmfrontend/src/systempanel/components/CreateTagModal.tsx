@@ -4,12 +4,13 @@ import i18next from 'i18next';
 import { useRef, useState } from 'react';
 
 import type { DBKaraTag } from '../../../../src/lib/types/database/kara';
+import type { TagTypeNum } from '../../../../src/lib/types/tag';
 import { commandBackend } from '../../utils/socket';
 import { tagTypes } from '../../utils/tagTypes';
 import { WS_CMD } from '../../utils/ws.mjs';
 
 interface CreateTagModalProps {
-	initialTagTypes?: number[];
+	initialTagTypes?: TagTypeNum[];
 	initialName?: string;
 	onClose: () => void;
 	onCreate: (tag: DBKaraTag) => void;
@@ -18,7 +19,7 @@ interface CreateTagModalProps {
 
 export function CreateTagModal(props: CreateTagModalProps) {
 	const [loading, setLoading] = useState(false);
-	const formRef = useRef<FormInstance<{ name: string; types: number[] }>>(undefined);
+	const formRef = useRef<FormInstance<{ name: string; types: TagTypeNum[] }>>(undefined);
 
 	return (
 		<Modal
@@ -45,7 +46,14 @@ export function CreateTagModal(props: CreateTagModalProps) {
 							repository: props.repo,
 							i18n: { eng: tag.name },
 						});
-						props.onCreate(response.message.data);
+						const created = response.message.data;
+						props.onCreate({
+							...created,
+							type_in_kara: created.types[0],
+							i18n: created.i18n,
+							repository: created.repository,
+							priority: created.priority,
+						});
 						props.onClose();
 					} finally {
 						setLoading(false);

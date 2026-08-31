@@ -5,7 +5,7 @@ import { ChangeEvent, MouseEvent, useContext, useState } from 'react';
 
 import { closeModal, showModal } from '../../../../store/actions/modal';
 import GlobalContext from '../../../../store/context';
-import type { KaraSortElement, KaraSortType } from '../../../../../../src/types/config';
+import type { KaraSortElement, KaraSortType } from '../../../../../../src/lib/types/config';
 import { tagTypes } from '../../../../utils/tagTypes';
 import { Trans } from 'react-i18next';
 import KaraLineSortModal from './KaraLineSortModal';

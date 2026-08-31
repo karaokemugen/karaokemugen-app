@@ -13,7 +13,7 @@ import {
 	IndexKaraDetail,
 	PlaylistInfo,
 } from '../types/frontendContext';
-import { WS_CMD } from '../../utils/ws';
+import { WS_CMD } from '../../utils/ws.mjs';
 
 export function setFilterValue(
 	dispatch: Dispatch<FilterValue>,
@@ -37,7 +37,7 @@ export function setBgImage(dispatch: Dispatch<BackgroundImage>, backgroundImg) {
 export async function setPlaylistInfoLeft(dispatch: Dispatch<PlaylistInfo>, plaid?: string) {
 	if (!plaid) {
 		const cookie = localStorage.getItem('mugenPlVal1');
-		const playlistList: PlaylistElem[] = await commandBackend(WS_CMD.GET_PLAYLISTS);
+		const playlistList = await commandBackend(WS_CMD.GET_PLAYLISTS);
 		plaid =
 			cookie !== null &&
 			(isNonStandardPlaylist(cookie) || playlistList.find(playlist => playlist.plaid === cookie)) &&
@@ -58,7 +58,7 @@ export async function setPlaylistInfoLeft(dispatch: Dispatch<PlaylistInfo>, plai
 export async function setPlaylistInfoRight(dispatch: Dispatch<PlaylistInfo>, plaid?: string) {
 	if (!plaid) {
 		const cookie = localStorage.getItem('mugenPlVal2');
-		const playlistList: PlaylistElem[] = await commandBackend(WS_CMD.GET_PLAYLISTS);
+		const playlistList = await commandBackend(WS_CMD.GET_PLAYLISTS);
 		plaid =
 			cookie !== null &&
 			(isNonStandardPlaylist(cookie) || playlistList.find(playlist => playlist.plaid === cookie)) &&

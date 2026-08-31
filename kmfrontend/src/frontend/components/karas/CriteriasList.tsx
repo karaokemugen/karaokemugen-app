@@ -7,6 +7,7 @@ import { Fragment, useContext, useEffect, useState } from 'react';
 import { Trans } from 'react-i18next';
 
 import { Criteria } from '../../../../../src/lib/types/playlist';
+import type { TagTypeNum } from '../../../../../src/lib/types/tag';
 import { DBPL } from '../../../../../src/types/database/playlist';
 import { setSettings } from '../../../store/actions/settings';
 import GlobalContext from '../../../store/context';
@@ -252,7 +253,7 @@ function CriteriasList(props: IProps) {
 				} else if (type > 1000) {
 					typeLabel = i18next.t(`CRITERIA.CRITERIA_TYPE_${type}`);
 				} else {
-					typeLabel = i18next.t(`TAG_TYPES.${getTagTypeName(type)}_other`);
+					typeLabel = i18next.t(`TAG_TYPES.${getTagTypeName(type as TagTypeNum)}_other`);
 				}
 				return (
 					<Fragment key={type}>

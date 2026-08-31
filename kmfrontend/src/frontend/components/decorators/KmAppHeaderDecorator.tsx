@@ -1,7 +1,7 @@
-import { ReactNode, ReactNodeArray } from 'react';
+import { ReactNode } from 'react';
 
 interface IProps {
-	children?: ReactNodeArray | ReactNode;
+	children?: ReactNode[] | ReactNode;
 	mode: string;
 }
 

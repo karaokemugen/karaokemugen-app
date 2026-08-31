@@ -11,7 +11,7 @@ import {
 } from '@ant-design/icons';
 import { Alert, Button, Cascader, Col, Dropdown, Input, Menu, Modal, Row, Table } from 'antd';
 import i18next from 'i18next';
-import { useContext, useEffect, useState } from 'react';
+import { JSX, useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import type { DownloadedStatus } from '../../../../src/lib/types/database/download';
@@ -45,7 +45,7 @@ function KaraList(props: KaraListProps) {
 	const [karasRemoving, setKarasRemoving] = useState<string[]>([]);
 	const [currentPage, setCurrentPage] = useState(parseInt(localStorage.getItem('karaPage')) || 1);
 	const [currentPageSize, setCurrentPageSize] = useState(parseInt(localStorage.getItem('karaPageSize')) || 100);
-	const [i18nTag, setI18nTag] = useState([]);
+	const [i18nTag, setI18nTag] = useState<Record<string, Record<string, string>>>({});
 	const [totalCount, setTotalCount] = useState(0);
 	const [filter, setFilter] = useState(props.tagFilter ? '' : localStorage.getItem('karaFilter') || '');
 	const [tags, setTags] = useState<DBTag[]>([]);

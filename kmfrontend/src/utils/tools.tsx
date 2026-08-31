@@ -21,7 +21,7 @@ import Modal from './components/Modal';
 import { getTagInLocale, getTitleInLocale } from './kara';
 import { commandBackend } from './socket';
 import { DBPLCInfo } from '../../../src/types/database/playlist';
-import { WS_CMD } from './ws';
+import { WS_CMD } from './ws.mjs';
 
 let is_touch = window.outerWidth <= 1023;
 let is_large = window.outerWidth <= 1860;

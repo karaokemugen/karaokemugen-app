@@ -23,6 +23,7 @@ import i18next from 'i18next';
 import { MouseEvent as MouseEventReact, useContext, useState } from 'react';
 import { Trans } from 'react-i18next';
 
+import { DBPL } from '../../../../../src/types/database/playlist';
 import { setFilterValue } from '../../../store/actions/frontendContext';
 import { closeModal, showModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
@@ -46,7 +47,7 @@ import KaraReviews from './KaraReviews';
 
 interface IProps {
 	side: 'left' | 'right';
-	playlistList: PlaylistElem[];
+	playlistList: DBPL[];
 	searchMenuOpen?: boolean;
 	checkedKaras: KaraElement[];
 	selectAllKarasChecked: boolean;
@@ -105,7 +106,7 @@ function PlaylistHeader(props: IProps) {
 		});
 	};
 
-	const getFlagLabel = (playlist: PlaylistElem) => {
+	const getFlagLabel = (playlist: DBPL) => {
 		if (playlist?.flag_public && playlist?.flag_current) return ` (${i18next.t('FLAGS.CURRENT_PUBLIC')})`;
 		if (playlist?.flag_public) return ` (${i18next.t('FLAGS.PUBLIC')})`;
 		if (playlist?.flag_current) return ` (${i18next.t('FLAGS.CURRENT')})`;

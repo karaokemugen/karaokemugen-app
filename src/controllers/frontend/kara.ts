@@ -34,6 +34,7 @@ export default function karaController(router: SocketIOApp) {
 				order: order,
 				direction: req.body?.direction,
 				q: req.body?.q,
+				qType: req.body?.qType,
 				username: req.token.username,
 				random: req.body?.random,
 				blacklist: req.body?.blacklist,

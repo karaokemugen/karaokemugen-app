@@ -3,11 +3,12 @@ import { DependencyList, EffectCallback, useEffect, useMemo, useRef, useState } 
 
 import { DBKaraTag, DBYear } from '../../../src/lib/types/database/kara';
 import { DBTag } from '../../../src/lib/types/database/tag';
+import { TagTypeNum } from '../../../src/lib/types/tag';
 import { AutocompleteOptions } from '../frontend/components/generic/Autocomplete';
 import { GlobalContextInterface } from '../store/context';
 import { getTagInLocale } from './kara';
 import { commandBackend } from './socket';
-import { WS_CMD } from './ws';
+import { WS_CMD } from './ws.mjs';
 
 // Big thanks to https://github.com/thivi/use-non-initial-effect-hook
 // See https://www.thearmchaircritic.org/tech-journal/prevent-useeffects-callback-firing-during-initial-render
@@ -102,14 +103,17 @@ export const useTagSearch = (
 									.map((val: DBYear) => {
 										return {
 											value: val.year,
-											label: val.year,
+											label: val.year.toString(),
 											type: [0],
 											karacount: [{ type: 0, count: val.karacount }],
 										};
 									})
 							);
 						} else if (tType < 999) {
-							const response = await commandBackend(WS_CMD.GET_TAGS, { filter: query, type: [tType] });
+							const response = await commandBackend(WS_CMD.GET_TAGS, {
+								filter: query,
+								type: [tType as TagTypeNum],
+							});
 							setTags(
 								response.content
 									.filter((val: DBTag) => val.karacount !== null)

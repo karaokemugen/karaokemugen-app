@@ -21,7 +21,7 @@ import { html, parse } from 'diff2html';
 import { ColorSchemeType } from 'diff2html/lib/types';
 import DOMPurify from 'dompurify';
 import i18next from 'i18next';
-import { RenderExpandIconProps } from 'rc-table/lib/interface';
+import type { RenderExpandIconProps } from '@rc-component/table/lib/interface';
 import { Dispatch, memo, MouseEvent, useCallback, useEffect, useState } from 'react';
 import { Trans } from 'react-i18next';
 
@@ -48,7 +48,7 @@ interface Repo {
 }
 
 async function getRepos(): Promise<Repo[]> {
-	const repos: Repository[] = await commandBackend(WS_CMD.GET_REPOS);
+	const repos = (await commandBackend(WS_CMD.GET_REPOS)) as Repository[];
 	return Promise.all(
 		repos
 			.filter(repo => repo.Online && repo.MaintainerMode && repo.Enabled && repo.Git?.URL)

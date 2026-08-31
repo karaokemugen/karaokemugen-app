@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import { useContext, useEffect, useState } from 'react';
 
+import { DBPL } from '../../../../src/types/database/playlist';
 import { CurrentSong } from '../../../../src/types/playlist';
 import { PublicPlayerState } from '../../../../src/types/state';
 import { showModal } from '../../store/actions/modal';
@@ -21,7 +22,7 @@ import PlayCurrentModal from './modals/PlayCurrentModal';
 import { WS_CMD } from '../../utils/ws.mjs';
 
 interface IProps {
-	currentPlaylist: PlaylistElem;
+	currentPlaylist: DBPL;
 	statusPlayer: PublicPlayerState;
 	scope: 'admin' | 'public' | 'chibi';
 	putPlayerCommando: (event: any) => void;

@@ -17,6 +17,7 @@ import { Fragment, MouseEvent, ReactNode, useContext, useEffect, useState } from
 import { createPortal } from 'react-dom';
 import { useParams } from 'react-router-dom';
 
+import dayjs from 'dayjs';
 import { ASSLine } from '../../../../../src/lib/types/ass';
 import { DBKara, lastplayed_ago } from '../../../../../src/lib/types/database/kara';
 import { DBPLCInfo } from '../../../../../src/types/database/playlist';
@@ -36,15 +37,13 @@ import {
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { YEARS } from '../../../utils/tagTypes';
 import { is_touch_device, secondsTimeSpanToHMS } from '../../../utils/tools';
+import { WS_CMD } from '../../../utils/ws.mjs';
 import AddKaraButton from '../generic/buttons/AddKaraButton';
 import MakeFavButton from '../generic/buttons/MakeFavButton';
 import ShowVideoButton from '../generic/buttons/ShowVideoButton';
 import UpvoteKaraButton from '../generic/buttons/UpvoteKaraButton';
 import VideoPreview from '../generic/VideoPreview';
 import InlineTag from './InlineTag';
-import dayjs from 'dayjs';
-import { WS_CMD } from '../../../utils/ws.mjs';
-import { WSCmdDefinition } from '../../../../../src/lib/types/frontend';
 
 interface IProps {
 	kid?: string;
@@ -62,7 +61,7 @@ interface IProps {
 
 export default function KaraDetail(props: IProps) {
 	const context = useContext(GlobalContext);
-	const [kara, setKara] = useState<DBPLCInfo>();
+	const [kara, setKara] = useState<DBKara & Partial<DBPLCInfo>>();
 	const [showVideo, setShowVideo] = useState(false);
 	const [lyrics, setLyrics] = useState<ASSLine[]>([]);
 	const [pending, setPending] = useState(false);
@@ -97,16 +96,9 @@ export default function KaraDetail(props: IProps) {
 
 	const getKaraDetail = async (kid?: string) => {
 		try {
-			let url: WSCmdDefinition<object, DBKara>;
-			let data: { plc_id?: number; kid?: string };
-			if (plc_id) {
-				url = WS_CMD.GET_PLC;
-				data = { plc_id: plc_id };
-			} else {
-				url = WS_CMD.GET_KARA;
-				data = { kid: kid ? kid : id };
-			}
-			const karaGet = await commandBackend(url, data);
+			const karaGet = plc_id
+				? await commandBackend(WS_CMD.GET_PLC, { plc_id })
+				: await commandBackend(WS_CMD.GET_KARA, { kid: kid ? kid : id });
 			setKara(karaGet);
 		} catch (_) {
 			closeModalWithContext();

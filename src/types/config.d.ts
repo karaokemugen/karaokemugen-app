@@ -2,7 +2,7 @@ import { KaraLineDisplayElement, KaraSortElement, PathType } from '../lib/types/
 import { PositionX, PositionY } from '../lib/types/index.js';
 import { PlaylistMediaType } from '../lib/types/playlistMedias.js';
 import { Collections, Repository } from '../lib/types/repo.js';
-import { endOfPlaylistActions } from '../utils/defaultSettings.js';
+import { endOfPlaylistActions } from '../utils/constants.js';
 import { MpvHardwareDecodingOptions } from './mpvIPC.js';
 import { SongModifiers } from './player.js';
 

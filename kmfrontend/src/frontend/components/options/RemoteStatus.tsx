@@ -4,7 +4,7 @@ import { useContext, useEffect, useState } from 'react';
 import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 import { callModal } from '../../../utils/tools';
-import { RemoteStatusData } from '../../types/remote';
+import { RemoteStatusData } from '../../../../../src/types/remote';
 import { WS_CMD } from '../../../utils/ws.mjs';
 
 function RemoteStatus() {
@@ -13,7 +13,7 @@ function RemoteStatus() {
 
 	const updateRemoteData = async () => {
 		try {
-			const data: RemoteStatusData = await commandBackend(WS_CMD.GET_REMOTE_DATA);
+			const data = await commandBackend(WS_CMD.GET_REMOTE_DATA);
 			setRemoteStatus(data);
 		} catch (_) {
 			// already display

@@ -30,7 +30,7 @@
     "dropDatabase": "node util/dropDatabase.js",
     "i18next-scanner": "i18next-scanner --config util/i18next-scanner.config.js",
     "watch": "node util/esbuild.js watch",
-    "typecheck": "tsc",
+    "typecheck": "node node_modules/@typescript/native/bin/tsc",
     "electron:start": "electron ."
   },
   "homepage": "https://karaokes.moe",
@@ -161,6 +161,7 @@
     "@types/ssh2-sftp-client": "^9.0.6",
     "@types/tmi.js": "^1.8.6",
     "@types/which": "^3.0.4",
+    "@typescript/native": "npm:typescript@7.0.2",
     "chai": "^6.2.2",
     "corepack": "^0.35.0",
     "electron": "^43.2.0",
@@ -356,5 +357,5 @@
       }
     ]
   },
-  "packageManager": "yarn@4.12.0"
+  "packageManager": "yarn@4.18.0"
 }

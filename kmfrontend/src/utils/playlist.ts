@@ -26,7 +26,7 @@ export const getPlaylistExportFileName = (playlist: DBPL) =>
 export const getFavoritesExportFileName = (username: string) =>
 	`KaraMugen_fav_${username}_${dayjs().format(exportDateFormat)}.kmfavorites`;
 
-export const getPlaylistIcon = (playlist: PlaylistElem, context: GlobalContextInterface): PlaylistIcon[] => {
+export const getPlaylistIcon = (playlist: DBPL, context: GlobalContextInterface): PlaylistIcon[] => {
 	// public & current playlist :  play-circle & globe icons
 	if (playlist?.flag_public && playlist?.flag_current) return [faPlayCircle, faGlobe];
 	// public playlist : globe icon

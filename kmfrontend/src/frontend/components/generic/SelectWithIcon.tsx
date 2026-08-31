@@ -36,7 +36,7 @@ function SelectWithIcon(props: IProps) {
 			? props.list.filter(element => props.value === element.value)[0]
 			: undefined;
 	return (
-		<Wrapper onSelection={props.onChange} className="selectWithIcon">
+		<Wrapper onSelection={(value: unknown) => props.onChange(value as string)} className="selectWithIcon">
 			<Button className="selectWithIcon-trigger">
 				<span className="selectWithIcon-triggerInnards" ref={menuRef}>
 					{select?.icons

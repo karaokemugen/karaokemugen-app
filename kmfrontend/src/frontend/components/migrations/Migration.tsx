@@ -1,4 +1,5 @@
 import i18next from 'i18next';
+import { JSX } from 'react';
 
 import { commandBackend } from '../../../utils/socket';
 import { WS_CMD } from '../../../utils/ws.mjs';

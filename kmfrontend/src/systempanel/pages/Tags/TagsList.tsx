@@ -5,6 +5,7 @@ import { useContext, useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 
 import { DBTag } from '../../../../../src/lib/types/database/tag';
+import type { TagTypeNum } from '../../../../../src/lib/types/tag';
 import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 import { getTagTypeName, tagTypes } from '../../../utils/tagTypes';
@@ -32,7 +33,10 @@ function TagsList() {
 
 	const refresh = async () => {
 		try {
-			const res = await commandBackend(WS_CMD.GET_TAGS, { filter, type: typeTag ? [typeTag] : undefined });
+			const res = await commandBackend(WS_CMD.GET_TAGS, {
+				filter,
+				type: typeTag ? [typeTag as TagTypeNum] : undefined,
+			});
 			setTags(res.content);
 		} catch (_) {
 			//already display

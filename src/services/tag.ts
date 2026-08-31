@@ -68,17 +68,19 @@ export async function getTags(params: TagParams) {
 	}
 }
 
-export async function addTag(tagObj: Tag, opts = { silent: false, refresh: true }): Promise<Tag> {
+export async function addTag(
+	tagInput: Omit<Tag, 'tid'> & { tid?: string },
+	opts = { silent: false, refresh: true }
+): Promise<Tag> {
 	let task: Task;
 	if (!opts.silent) {
 		task = new Task({
 			text: 'CREATING_TAG_IN_PROGRESS',
-			subtext: tagObj.name,
+			subtext: tagInput.name,
 		});
 	}
 	try {
-		tagObj = trimTagData(tagObj);
-		if (!tagObj.tid) tagObj.tid = randomUUID();
+		const tagObj: Tag = trimTagData({ ...tagInput, tid: tagInput.tid || randomUUID() });
 		if (!tagObj.tagfile) tagObj.tagfile = defineTagFilename(tagObj);
 		const tagfile = tagObj.tagfile;
 		await applyTagHooks(tagObj);

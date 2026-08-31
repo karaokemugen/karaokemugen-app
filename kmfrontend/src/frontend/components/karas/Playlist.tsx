@@ -2,27 +2,30 @@ import './Playlist.scss';
 
 import { faChevronDown, faChevronUp, faPlay } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { DragDropContext, Draggable, Droppable, type DraggableProvided, type DropResult } from '@hello-pangea/dnd';
 import i18next from 'i18next';
 import debounce from 'lodash/debounce';
 import {
 	Fragment,
-	lazy,
 	PropsWithChildren,
-	ReactNode,
-	Suspense,
 	useCallback,
 	useContext,
 	useEffect,
 	useMemo,
 	useRef,
-	useState,
+	useState
 } from 'react';
-import { DragDropContext, Draggable, Droppable, type DraggableProvided, type DropResult } from '@hello-pangea/dnd';
 import { ListRange, Virtuoso } from 'react-virtuoso';
 
 import type { DownloadedStatus } from '../../../../../src/lib/types/database/download';
+import { WSCmdDefinition } from '../../../../../src/lib/types/frontend';
+import { KaraList as DBKaraList } from '../../../../../src/lib/types/kara';
+import type { RepositoryManifestV2 } from '../../../../../src/lib/types/repo';
+import type { TagTypeNum } from '../../../../../src/lib/types/tag';
+import { DBPL } from '../../../../../src/types/database/playlist';
 import type { KaraDownloadRequest } from '../../../../../src/types/download';
 import type { PublicPlayerState } from '../../../../../src/types/state';
+import { setIndexKaraDetail } from '../../../store/actions/frontendContext';
 import GlobalContext from '../../../store/context';
 import TasksEvent from '../../../TasksEvent';
 import { useDeferredEffect, useResizeListener } from '../../../utils/hooks';
@@ -37,17 +40,12 @@ import {
 	nonStandardPlaylists,
 	secondsTimeSpanToHMS,
 } from '../../../utils/tools';
+import { WS_CMD } from '../../../utils/ws.mjs';
 import { KaraElement } from '../../types/kara';
 import CriteriasList from './CriteriasList';
 import KaraLine from './KaraLine';
 import PlaylistHeader from './PlaylistHeader';
 import QuizRanking from './QuizRanking';
-import type { TagTypeNum } from '../../../../../src/lib/types/tag';
-import { setIndexKaraDetail } from '../../../store/actions/frontendContext';
-import type { RepositoryManifestV2 } from '../../../../../src/lib/types/repo';
-import { WS_CMD } from '../../../utils/ws.mjs';
-import { KaraList as DBKaraList } from '../../../../../src/lib/types/kara';
-import { WSCmdDefinition } from '../../../../../src/lib/types/frontend';
 
 // Virtuoso's resize observer can this error,
 // which is caught by DnD and aborts dragging.
@@ -67,7 +65,7 @@ interface IProps {
 	scope: 'admin' | 'public';
 	side: 'left' | 'right';
 	searchMenuOpen?: boolean;
-	playlistList?: PlaylistElem[];
+	playlistList?: DBPL[];
 	toggleSearchMenu?: () => void;
 	openKara: (kara: KaraElement, index?: number) => void;
 	searchValue?: string;
@@ -78,7 +76,7 @@ interface IProps {
 interface KaraList {
 	content: KaraElement[];
 	avatars: Record<string, string>;
-	i18n?: Record<string, string>;
+	i18n?: Record<string, Record<string, string>>;
 	infos: {
 		count: number;
 		from: number;
@@ -503,7 +501,7 @@ function Playlist(props: IProps) {
 			param.q = `${searchCriteria ? criterias[searchCriteria] : ''}:${searchValue}`;
 		}
 		try {
-			const karas: KaraList = await commandBackend(url, param);
+			const karas = (await commandBackend(url, param)) as KaraList;
 			// Check if the plaid is still relevant after request
 			if (loadingPlaid !== plaid.current) return;
 
@@ -756,7 +754,6 @@ function Playlist(props: IProps) {
 		displayMessage('info', i18next.t('PL_MULTIPLE_ADDED', { count: response.content.length }));
 		commandBackend(WS_CMD.ADD_KARA_TO_PLAYLIST, {
 			kids: karaList,
-			requestedby: context.globalState.auth.data.username,
 			plaid: getOppositePlaylistInfo(props.side, context).plaid,
 		}).catch(() => {});
 	};
@@ -785,14 +782,12 @@ function Playlist(props: IProps) {
 				if (pos) {
 					dataApi = {
 						plaid: oppositePlaylist.plaid,
-						requestedby: context.globalState.auth.data.username,
 						kids: idsKara,
 						pos: pos,
 					};
 				} else {
 					dataApi = {
 						plaid: oppositePlaylist.plaid,
-						requestedby: context.globalState.auth.data.username,
 						kids: idsKara,
 					};
 				}

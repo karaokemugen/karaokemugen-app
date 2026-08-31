@@ -7,13 +7,13 @@ import { audioFileRegexp, backgroundFileRegexp, supportedFiles } from '../lib/ut
 import { replaceExt } from '../lib/utils/files.js';
 import logger from '../lib/utils/logger.js';
 import { BackgroundList, BackgroundType } from '../types/backgrounds.js';
+import { UploadedFile } from '../types/files.js';
 import Sentry from '../utils/sentry.js';
 import { getState } from '../utils/state.js';
 import { initPlayer, quitmpv } from './player.js';
+import { playerBackgroundTypes } from '../utils/constants.js';
 
 const service = 'Backgrounds';
-
-export const backgroundTypes = ['pause', 'stop', 'poll', 'bundled'] as const;
 
 /** Find a background for the player to use */
 export async function getBackgroundAndMusic(type: BackgroundType = 'stop'): Promise<BackgroundList> {
@@ -62,7 +62,7 @@ export async function getBackgroundFiles(type: BackgroundType = 'pause'): Promis
 
 export async function removeBackgroundFile(type: BackgroundType, file: string) {
 	let restartMpv = false;
-	if (!backgroundTypes.includes(type)) throw { code: 400 };
+	if (!playerBackgroundTypes.includes(type)) throw { code: 400 };
 	if (getState().backgrounds.picture === file || getState().backgrounds.music === file) {
 		restartMpv = true;
 		await quitmpv();
@@ -71,8 +71,8 @@ export async function removeBackgroundFile(type: BackgroundType, file: string) {
 	if (restartMpv) initPlayer().catch();
 }
 
-export async function addBackgroundFile(type: BackgroundType, file: Express.Multer.File) {
-	if (!backgroundTypes.includes(type)) throw { code: 400 };
+export async function addBackgroundFile(type: BackgroundType, file: UploadedFile) {
+	if (!playerBackgroundTypes.includes(type)) throw { code: 400 };
 	await fs.copyFile(
 		resolve(resolvedPath('Temp'), basename(file.filename)),
 		resolve(resolvedPath('Backgrounds'), type, basename(file.originalname))

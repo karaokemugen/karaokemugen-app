@@ -23,7 +23,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
-import { Key, MouseEvent, useContext, useRef, useState } from 'react';
+import { JSX, Key, MouseEvent, useContext, useRef, useState } from 'react';
 import type { DraggableProvided } from '@hello-pangea/dnd';
 import { toast } from 'react-toastify';
 
@@ -67,7 +67,7 @@ interface IProps {
 	kara: KaraElement;
 	side: 'left' | 'right';
 	scope: 'admin' | 'public';
-	i18nTag: Record<string, string>;
+	i18nTag: Record<string, Record<string, string>>;
 	avatar_file: string;
 	indexInPL: number;
 	checkKara: (id: number | string) => void;
@@ -180,14 +180,12 @@ function KaraLine(props: IProps) {
 						if (pos) {
 							data = {
 								plaid: oppositePlaylist.plaid,
-								requestedby: authData.username,
 								kids: [kara.kid],
 								pos: pos,
 							};
 						} else {
 							data = {
 								plaid: oppositePlaylist.plaid,
-								requestedby: authData.username,
 								kids: [kara.kid],
 							};
 						}

@@ -2,7 +2,7 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 
-import type { KaraSortType } from '../../../../../../src/types/config';
+import type { KaraSortType } from '../../../../../../src/lib/types/config';
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd';
 
 interface IProps {

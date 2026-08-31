@@ -29,12 +29,13 @@ import {
 	PLCSearchParams,
 	ServerDBPL,
 } from '../../../src/lib/types/playlist.js';
-import { RemoteFailure, RemoteSuccess } from '../../../src/lib/types/remote.js';
 import { Repository, RepositoryBasic, RepositoryManifestV2 } from '../../../src/lib/types/repo.js';
 import { Tag, TagParams, TagTypeNum } from '../../../src/lib/types/tag.js';
 import { OldJWTToken, OldTokenResponse, Role, User } from '../../../src/lib/types/user.js';
 import { HttpMessage, WSCmdDefinition } from '../../../src/lib/types/frontend.js';
 import { BackgroundList, BackgroundListRequest, BackgroundRequest } from '../../../src/types/backgrounds.js';
+import { UploadedFile } from '../../../src/types/files.js';
+import { RemoteStatusData } from '../../../src/types/remote.js';
 import { Config, QuizGameConfig } from '../../../src/types/config.js';
 import { DBStats } from '../../../src/types/database/database.js';
 import { DBDownload } from '../../../src/types/database/download.js';
@@ -66,7 +67,7 @@ export function defineWSCmd<Body extends object, Response>(value: string): WSCmd
 export const WS_CMD = {
 	// AREA src\controllers\frontend\backgrounds.ts
 	GET_BACKGROUND_FILES: defineWSCmd<BackgroundListRequest, BackgroundList>('getBackgroundFiles'),
-	ADD_BACKGROUND: defineWSCmd<BackgroundRequest<Express.Multer.File>, void>('addBackground'),
+	ADD_BACKGROUND: defineWSCmd<BackgroundRequest<UploadedFile>, void>('addBackground'),
 	REMOVE_BACKGROUND: defineWSCmd<BackgroundRequest<string>, void>('removeBackground'),
 	// AREA src\controllers\frontend\download.ts
 	ADD_DOWNLOADS: defineWSCmd<{ downloads: KaraDownloadRequest[] }, APIMessageType<number>>('addDownloads'),
@@ -114,6 +115,7 @@ export const WS_CMD = {
 			order?: KaraOrderParam | '';
 			direction?: 'desc' | 'asc';
 			q?: string;
+			qType?: 'AND' | 'OR';
 			random?: number;
 			blacklist?: boolean;
 			parentsOnly?: boolean;
@@ -151,9 +153,7 @@ export const WS_CMD = {
 	OPEN_LOG_FILE: defineWSCmd<undefined, void>('openLogFile'),
 	GET_MIGRATIONS_FRONTEND: defineWSCmd<undefined, MigrationsFrontend[]>('getMigrationsFrontend'),
 	SET_MIGRATIONS_FRONTEND: defineWSCmd<{ mig: MigrationsFrontend }, void>('setMigrationsFrontend'),
-	GET_REMOTE_DATA: defineWSCmd<undefined, { active: boolean; info?: RemoteSuccess | RemoteFailure; token?: string }>(
-		'getRemoteData'
-	),
+	GET_REMOTE_DATA: defineWSCmd<undefined, RemoteStatusData>('getRemoteData'),
 	RESET_REMOTE_TOKEN: defineWSCmd<undefined, void>('resetRemoteToken'),
 	SHUTDOWN: defineWSCmd<undefined, void>('shutdown'),
 	GET_SETTINGS: defineWSCmd<undefined, { version: Version; config: Config; state: PublicState }>('getSettings'),
@@ -202,7 +202,7 @@ export const WS_CMD = {
 		Array<DBPLC & { exportSuccessful: boolean }>
 	>('exportPlaylistMedia'),
 	FIND_PLAYING_SONG_IN_PLAYLIST: defineWSCmd<{ plaid: string }, { index: number }>('findPlayingSongInPlaylist'),
-	GET_PLAYLIST_CONTENTS: defineWSCmd<PLCSearchParams & { plaid: string }, KaraList>('getPlaylistContents'),
+	GET_PLAYLIST_CONTENTS: defineWSCmd<PLCSearchParams & { plaid: string }, KaraList<DBPLC>>('getPlaylistContents'),
 	GET_PLAYLIST_CONTENTS_MICRO: defineWSCmd<{ plaid: string; username?: string }, DBPLCBase[]>(
 		'getPlaylistContentsMicro'
 	),
@@ -290,7 +290,7 @@ export const WS_CMD = {
 	PUSH_COMMITS: defineWSCmd<{ repoName: string; commits: Push; ignoreFTP?: boolean }, void>('pushCommits'),
 	// AREA src\controllers\frontend\session.ts
 	GET_SESSIONS: defineWSCmd<undefined, Session[]>('getSessions'),
-	CREATE_SESSION: defineWSCmd<Session, HttpMessage<string>>('createSession'),
+	CREATE_SESSION: defineWSCmd<Pick<Session, 'name'> & Partial<Session>, HttpMessage<string>>('createSession'),
 	MERGE_SESSIONS: defineWSCmd<{ seid1: string; seid2: string }, HttpMessage<{ session: Session }>>('mergeSessions'),
 	EDIT_SESSION: defineWSCmd<Session, HttpMessage<string>>('editSession'),
 	ACTIVATE_SESSION: defineWSCmd<{ seid: string }, HttpMessage<string>>('activateSession'),
@@ -306,7 +306,7 @@ export const WS_CMD = {
 	GET_TAGS: defineWSCmd<TagParams, { infos: { count: number; from: number; to: number }; content: DBTag[] }>(
 		'getTags'
 	),
-	ADD_TAG: defineWSCmd<Tag, HttpMessage<Tag>>('addTag'),
+	ADD_TAG: defineWSCmd<Omit<Tag, 'tid'>, HttpMessage<Tag>>('addTag'),
 	GET_YEARS: defineWSCmd<undefined, YearList>('getYears'),
 	MERGE_TAGS: defineWSCmd<{ tid1: string; tid2: string }, HttpMessage<Tag>>('mergeTags'),
 	DELETE_TAG: defineWSCmd<{ tids: string[] }, HttpMessage<string>>('deleteTag'),
@@ -323,13 +323,15 @@ export const WS_CMD = {
 	CREATE_USER: defineWSCmd<User & { role?: Role }, HttpMessage<string>>('createUser'),
 	GET_USER: defineWSCmd<{ username: string }, DBUser>('getUser'),
 	DELETE_USER: defineWSCmd<{ username: string }, HttpMessage<string>>('deleteUser'),
-	EDIT_USER: defineWSCmd<User & { avatar?: Express.Multer.File }, HttpMessage<string>>('editUser'),
+	EDIT_USER: defineWSCmd<Partial<User> & Pick<User, 'login'> & { avatar?: UploadedFile }, HttpMessage<string>>(
+		'editUser'
+	),
 	RESET_USER_PASSWORD: defineWSCmd<{ username: string; securityCode: number; password: string }, HttpMessage<string>>(
 		'resetUserPassword'
 	),
 	GET_MY_ACCOUNT: defineWSCmd<undefined, DBUser>('getMyAccount'),
 	DELETE_MY_ACCOUNT: defineWSCmd<undefined, HttpMessage<string>>('deleteMyAccount'),
-	EDIT_MY_ACCOUNT: defineWSCmd<User & { avatar?: Express.Multer.File }, HttpMessage<{ onlineToken: any }>>(
+	EDIT_MY_ACCOUNT: defineWSCmd<Partial<User> & { avatar?: UploadedFile }, HttpMessage<{ onlineToken: any }>>(
 		'editMyAccount'
 	),
 	CONVERT_MY_LOCAL_USER_TO_ONLINE: defineWSCmd<{ password: string; instance: string }, HttpMessage<Tokens>>(

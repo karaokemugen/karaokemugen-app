@@ -6,7 +6,7 @@
 
 import './Autocomplete.scss';
 
-import { useEffect, useRef, useState } from 'react';
+import { JSX, useEffect, useRef, useState } from 'react';
 
 export interface AutocompleteOption {
 	label: string;

@@ -1,5 +1,5 @@
 import { User } from '../../../src/lib/types/user';
-import { WS_CMD } from './ws';
+import { WS_CMD } from './ws.mjs';
 import blankAvatar from '../assets/blank.png';
 import { GlobalContextInterface } from '../store/context';
 import { commandBackend, getSocket, isRemote } from './socket';

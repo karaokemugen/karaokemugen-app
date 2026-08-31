@@ -19,6 +19,8 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import ResizeObserver from 'resize-observer-polyfill';
 import { useAsyncMemo } from 'use-async-memo';
 
+import { DBPL } from '../../../../../src/types/database/playlist';
+import { PlayerCommand } from '../../../../../src/types/player';
 import { GameScore } from '../../../../../src/types/quiz';
 import type { PublicPlayerState } from '../../../../../src/types/state';
 import nanamiPNG from '../../../assets/nanami.png';
@@ -29,16 +31,15 @@ import ProfilePicture from '../../../utils/components/ProfilePicture';
 import { useResizeListener } from '../../../utils/hooks';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { displayMessage, secondsTimeSpanToHMS } from '../../../utils/tools';
-import PlayerControls from '../PlayerControls';
 import { WS_CMD } from '../../../utils/ws.mjs';
-import { PlayerCommand } from '../../../../../src/types/player';
+import PlayerControls from '../PlayerControls';
 
 interface IProps {
 	onResize: (top: string) => void;
 	publicVisible: boolean;
 	currentVisible: boolean;
 	statusPlayer: PublicPlayerState;
-	currentPlaylist: PlaylistElem;
+	currentPlaylist: DBPL;
 }
 
 function PublicHeader(props: IProps) {
