@@ -18,6 +18,7 @@ import {
 	Col,
 	Collapse,
 	Divider,
+	Flex,
 	Form,
 	Image,
 	Input,
@@ -28,6 +29,7 @@ import {
 	Row,
 	Select,
 	Space,
+	Spin,
 	Tag,
 	Tooltip,
 	Typography,
@@ -35,7 +37,6 @@ import {
 	UploadFile,
 } from 'antd';
 import { useForm } from 'antd/es/form/Form';
-import { Flex, Spin } from 'antd/lib';
 import { DefaultOptionType, SelectValue } from 'antd/lib/select';
 import { filesize } from 'filesize';
 import i18next from 'i18next';

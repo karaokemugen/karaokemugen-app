@@ -4,8 +4,20 @@ import { faChevronDown, faChevronUp, faPlay } from '@fortawesome/free-solid-svg-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import debounce from 'lodash/debounce';
-import { Fragment, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { DragDropContext, Draggable, DraggableProvided, Droppable, DropResult } from '@hello-pangea/dnd';
+import {
+	Fragment,
+	lazy,
+	PropsWithChildren,
+	ReactNode,
+	Suspense,
+	useCallback,
+	useContext,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from 'react';
+import { DragDropContext, Draggable, Droppable, type DraggableProvided, type DropResult } from '@hello-pangea/dnd';
 import { ListRange, Virtuoso } from 'react-virtuoso';
 
 import type { DownloadedStatus } from '../../../../../src/lib/types/database/download';
@@ -282,7 +294,7 @@ function Playlist(props: IProps) {
 	};
 
 	const Item = useCallback(
-		({ provided, index, isDragging }: { provided: DraggableProvided; index: number; isDragging: boolean }) => {
+		({ provided, index, isDragging }: { provided?: DraggableProvided; index: number; isDragging: boolean }) => {
 			let content: KaraElement;
 			if (data?.content[index]) {
 				content = data.content[index];
@@ -329,7 +341,7 @@ function Playlist(props: IProps) {
 				);
 			} else {
 				return (
-					<div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+					<div ref={provided?.innerRef} {...provided?.draggableProps} {...provided?.dragHandleProps}>
 						<div className="list-group-item">
 							<div className="actionDiv" />
 							<div className="infoDiv" />
@@ -1156,7 +1168,7 @@ function Playlist(props: IProps) {
 			initCall();
 		}
 	}, []);
-
+	
 	useResizeListener(avoidErrorInDnd);
 
 	const playlist = getPlaylistInfo(props.side, context);

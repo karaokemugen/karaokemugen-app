@@ -10,6 +10,7 @@ import {
 } from '@ant-design/icons';
 import { EditOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import { Alert, Button, Dropdown, Layout, Modal, Select, Space, Table, Tag } from 'antd';
+import type { MenuProps } from 'antd';
 import i18next from 'i18next';
 import { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -22,7 +23,6 @@ import Title from '../components/Title';
 import dayjs from 'dayjs';
 import { WS_CMD } from '../../utils/ws.mjs';
 import { getLanguagesInLocaleFromCode } from '../../utils/isoLanguages';
-import { MenuProps } from 'antd/lib';
 import { ChangeStatusInboxModal } from '../components/ChangeStatusInboxModal';
 import { ItemType } from 'antd/es/menu/interface';
 import DOMPurify from 'dompurify';

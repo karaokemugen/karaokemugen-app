@@ -24,7 +24,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import { Key, MouseEvent, useContext, useRef, useState } from 'react';
-import { DraggableProvided } from '@hello-pangea/dnd';
+import type { DraggableProvided } from '@hello-pangea/dnd';
 import { toast } from 'react-toastify';
 
 import { closeModal, showModal } from '../../../store/actions/modal';
@@ -57,7 +57,7 @@ import { WS_CMD } from '../../../utils/ws.mjs';
 import { DBPLCInfo } from '../../../../../src/types/database/playlist';
 import { WSCmdDefinition } from '../../../../../src/lib/types/frontend';
 
-const DragHandle = ({ dragHandleProps }: { dragHandleProps: object }) => (
+const DragHandle = ({ dragHandleProps }: { dragHandleProps?: object }) => (
 	<span {...dragHandleProps} className="dragHandle">
 		<FontAwesomeIcon icon={faEllipsisV} />
 	</span>
@@ -77,7 +77,7 @@ interface IProps {
 	key: Key;
 	openKara: (kara: KaraElement) => void;
 	sortable: boolean;
-	draggable: DraggableProvided;
+	draggable?: DraggableProvided;
 	playingIn?: boolean;
 	plcidToSwap?: number;
 	swapPLCs?: (plcid: number) => void;
@@ -313,7 +313,7 @@ function KaraLine(props: IProps) {
 	const plaid = getPlaylistInfo(props.side, context).plaid;
 	const shouldShowProfile = settings.config.Frontend?.ShowAvatarsOnPlaylist && props.avatar_file;
 	return (
-		<div {...props.draggable.draggableProps} ref={props.draggable.innerRef}>
+		<div {...props.draggable?.draggableProps} ref={props.draggable?.innerRef}>
 			<div
 				className={`list-group-item${kara.flag_playing ? ' currentlyplaying' : ''}${
 					kara.flag_dejavu ? ' dejavu' : ''
@@ -593,7 +593,7 @@ function KaraLine(props: IProps) {
 									</button>
 								) : null}
 							</div>
-							{props.sortable ? <DragHandle dragHandleProps={props.draggable.dragHandleProps} /> : null}
+							{props.sortable ? <DragHandle dragHandleProps={props.draggable?.dragHandleProps} /> : null}
 						</div>
 					</>
 				)}
