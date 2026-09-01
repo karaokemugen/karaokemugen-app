@@ -77,11 +77,14 @@ async function stopRemote() {
 async function restartRemote() {
 	if (!getConfig().Online.RemoteAccess.Enabled) return;
 	if (isRestarting) return;
+	if (!getKMServerSocket()?.connected) return;
 	isRestarting = true;
 	try {
 		logger.debug('Reconnection...', { service });
 		const data = await startRemote();
 		clearTimeout(retryReconnectTimer);
+		// Strip token to avoid leaks
+		delete data.token;
 		logger.info('Remote was RESTARTED', { service, obj: data });
 		setState({ remoteAccess: data });
 		configureHost();
@@ -148,6 +151,11 @@ export async function initRemote() {
 		getKMServerSocket().on('connect', restartRemote);
 		getKMServerSocket().on('disconnect', removeRemote);
 		getWS().on('broadcast', broadcastForward);
+		if (!getKMServerSocket().connected) {
+			// The onConnect listener above will restart the remote automatically on connection
+			setRemoteError(new Error('KMServer socket is not connected'));
+			return;
+		}
 		const data = await startRemote();
 		// Strip token from public output to avoid leaks
 		delete data.token;
