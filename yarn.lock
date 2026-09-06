@@ -7110,28 +7110,28 @@ __metadata:
   linkType: hard
 
 "kfn-to-ass@npm:^1.2.0":
-  version: 1.2.0
-  resolution: "kfn-to-ass@npm:1.2.0"
+  version: 1.2.1
+  resolution: "kfn-to-ass@npm:1.2.1"
   dependencies:
     ass-parser: "npm:^0.2.0"
     ass-stringify: "npm:^0.1.3"
     commander: "npm:^15.0.0"
-    kfn-utils: "npm:^1.0.6"
+    kfn-utils: "npm:^1.0.7"
   bin:
     kfn-to-ass: dist/index.js
-  checksum: 10c0/2ddc3f2b620c6a2c108f6eb65193116ca6671c7d0d1b653d07cd374f6cb0e5323389427f8c8c4e379a62c3570b090d5053c5aed679f42e259d81822684becfd9
+  checksum: 10c0/81c38d3a7c867248e6944e26c3cd0772512420c96ca4b93072bef2f55409c76a3a9a4658b9ee43ec5c4599cae668566a95c9d5cc3497f9b8d6b1cf120bf6b312
   languageName: node
   linkType: hard
 
-"kfn-utils@npm:^1.0.6":
-  version: 1.0.6
-  resolution: "kfn-utils@npm:1.0.6"
+"kfn-utils@npm:^1.0.7":
+  version: 1.0.7
+  resolution: "kfn-utils@npm:1.0.7"
   dependencies:
     commander: "npm:^15.0.0"
     file-type: "npm:^22.0.1"
   bin:
     kfn: dist/index.js
-  checksum: 10c0/c2f70a8ed1f799dccbae0f85d7659e82af3e085d74153b70db30c26bbecebe8764291e6b1eb21a75a5524598027e29372ee1465bcbeb5adad94c6cde54ae32a6
+  checksum: 10c0/c774518e024a35d47a3553cf33a133efb5786d4df30ac65d5618a1338ba23efff58c2f58d9f9de22e1b5001f1500051cfeaa1b94015388da019e58d97fbd6034
   languageName: node
   linkType: hard
 
