@@ -345,7 +345,11 @@
     "files": [
       "dist/*",
       "package.json",
-      "!**/node_modules/**/*"
+      "!**/node_modules/**/*",
+      "node_modules/strtok3/**/*",
+      "node_modules/peek-readable/**/*",
+      "node_modules/token-types/**/*",
+      "node_modules/@tokenizer/**/*"
     ],
     "protocols": [
       {

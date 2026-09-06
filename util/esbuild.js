@@ -53,7 +53,7 @@ console.log('Clearing dist/');
 await rimraf('dist/');
 
 try {
-	await build(buildOptions);
+	await build(buildOptions);	
 } catch (err) {
 	console.error('Build failed:', err);
 	process.exit(1);
