@@ -15,17 +15,18 @@ import { useSearchParams } from 'react-router-dom';
 
 import { DBPL } from '../../../../src/types/database/playlist';
 import { PublicPlayerState } from '../../../../src/types/state';
+import { isOnlyTimepositionPlayerStateUpdate } from '../../utils/state';
 import nanamiSingPng from '../../assets/nanami-sing.png';
 import nanamiSingWebp from '../../assets/nanami-sing.webp';
 import { login } from '../../store/actions/auth';
 import GlobalContext from '../../store/context';
 import { sendIPC } from '../../utils/electron';
 import { commandBackend, getSocket } from '../../utils/socket';
+import { WS_CMD } from '../../utils/ws.mjs';
 import KmAppHeaderDecorator from './decorators/KmAppHeaderDecorator';
 import KmAppWrapperDecorator from './decorators/KmAppWrapperDecorator';
 import ProgressBar from './karas/ProgressBar';
 import PlayerControls from './PlayerControls';
-import { WS_CMD } from '../../utils/ws.mjs';
 
 function ChibiPage() {
 	const context = useContext(GlobalContext);
@@ -40,15 +41,13 @@ function ChibiPage() {
 	};
 
 	const playerUpdate = (data: PublicPlayerState) => {
+		if (isOnlyTimepositionPlayerStateUpdate(data)) return;
 		let val = data.volume;
 		const base = 100;
 		const pow = 0.76;
 		val = val / base;
 		if (!isNaN(val)) data.volume = base * Math.pow(val, 1 / pow);
-		setStatusPlayer(oldState => {
-			const state = { ...oldState };
-			return merge(state, data);
-		});
+		setStatusPlayer(oldState => merge({}, oldState, data));
 	};
 
 	const putPlayerCommando = (event: any) => {

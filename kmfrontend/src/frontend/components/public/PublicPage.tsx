@@ -29,6 +29,7 @@ import PublicHeader from './PublicHeader';
 import PublicHomepage from './PublicHomepage';
 import PublicList from './PublicList';
 import QuizPage from './QuizPage';
+import { isOnlyTimepositionPlayerStateUpdate } from '../../../utils/state';
 
 let timer: NodeJS.Timeout;
 
@@ -154,10 +155,9 @@ function PublicPage() {
 	};
 
 	const playerUpdate = (data: PublicPlayerState) => {
-		setStatusPlayer(oldState => {
-			const state = { ...oldState };
-			return merge(state, data);
-		});
+		if (isOnlyTimepositionPlayerStateUpdate(data))
+			setStatusPlayer(oldState => merge({ ...oldState }, data));
+		
 		if (data.stopping !== undefined) playerStopping.current = data.stopping;
 		if (data.playerStatus === 'stop') playerStopped.current = true;
 		else if (typeof data.playerStatus === 'string') playerStopped.current = false;

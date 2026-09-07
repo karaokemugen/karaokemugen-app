@@ -55,10 +55,6 @@ body:not(.touch) {
 			$saturation: -15%,
 			$alpha: -25%
 		);
-		.playKara {
-			background-color: variables.$mugen-playlist-currently-playing;
-			animation: btn-pulse infinite ease-in-out 1s;
-		}
 		.contentDiv {
 			color: inherit;
 		}
@@ -293,14 +289,3 @@ body:not(.touch) {
 	margin-right: 0.5em;
 }
 
-@keyframes btn-pulse {
-	0% {
-		background-color: color.scale(variables.$mugen-playlist-currently-playing, $lightness: -55%);
-	}
-	50% {
-		background-color: color.scale(variables.$mugen-playlist-currently-playing, $lightness: -65%, $saturation: -5%);
-	}
-	100% {
-		background-color: color.scale(variables.$mugen-playlist-currently-playing, $lightness: -55%);
-	}
-}

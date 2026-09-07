@@ -109,12 +109,6 @@
 		border-radius: 15px;
 		> .progress-bar {
 			height: 100%;
-			transition: width linear 0.5s;
-			&.long {
-				transition:
-					width linear 1s,
-					background-color ease 0.5s;
-			}
 			background-color: white;
 			border-radius: inherit;
 		}
