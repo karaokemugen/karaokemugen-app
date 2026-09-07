@@ -38,6 +38,7 @@ import { useLocation, useNavigate } from 'react-router';
 import dayjs, { Dayjs } from 'dayjs';
 import { DBPL } from '../../../../src/types/database/playlist';
 import { PublicPlayerState } from '../../../../src/types/state';
+import { isOnlyTimepositionPlayerStateUpdate } from '../../utils/state';
 import KLogo from '../../assets/Klogo.png';
 import { logout } from '../../store/actions/auth';
 import { showModal } from '../../store/actions/modal';
@@ -45,6 +46,7 @@ import GlobalContext from '../../store/context';
 import { getPlaylistIcon } from '../../utils/playlist';
 import { commandBackend, getSocket } from '../../utils/socket';
 import { callModal, displayMessage, expand, isNonStandardPlaylist } from '../../utils/tools';
+import { WS_CMD } from '../../utils/ws.mjs';
 import KmAppHeaderDecorator from './decorators/KmAppHeaderDecorator';
 import RadioButton from './generic/RadioButton';
 import SelectWithIcon from './generic/SelectWithIcon';
@@ -54,7 +56,6 @@ import QuizModal from './modals/QuizModal';
 import Tutorial from './modals/Tutorial';
 import UsersModal from './modals/UsersModal';
 import PlayerControls from './PlayerControls';
-import { WS_CMD } from '../../utils/ws.mjs';
 
 interface IProps {
 	currentPlaylist: DBPL;
@@ -82,6 +83,7 @@ function AdminHeader(props: IProps) {
 	};
 
 	const playerUpdate = (data: PublicPlayerState) => {
+		if (isOnlyTimepositionPlayerStateUpdate(data)) return;
 		let val = data.volume;
 		const base = 100;
 		const pow = 0.76;
