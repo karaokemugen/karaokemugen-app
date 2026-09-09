@@ -1,12 +1,13 @@
+import { randomUUID } from 'crypto';
 import { Router } from 'express';
 import { promises as fs } from 'fs';
 import multer from 'multer';
 import { resolve } from 'path';
-import { randomUUID } from 'crypto';
 
 import { WS_CMD } from '../../../kmfrontend/src/utils/ws.mjs';
 import { APIMessage } from '../../lib/services/frontend.js';
 import { resolvedPath } from '../../lib/utils/config.js';
+import { sanitizedFileExtension } from '../../lib/utils/files.js';
 import logger from '../../lib/utils/logger.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
 import { openLyricsFile, showLyricsInFolder, showMediaInFolder } from '../../services/karaManagement.js';
@@ -14,7 +15,13 @@ import { runChecklist } from '../middlewares.js';
 import { requireHTTPAuth, requireValidUser } from '../middlewaresHTTP.js';
 
 export default function filesController(router: Router) {
-	const upload = multer({ dest: resolvedPath('Temp') });
+	const upload = multer({
+		storage: multer.diskStorage({
+			destination: resolvedPath('Temp'),
+			// Keep original extension for media type detection
+			filename: (_req, file, cb) => cb(null, `${randomUUID()}${sanitizedFileExtension(file.originalname)}`),
+		}),
+	});
 	router.route('/importFile').post(requireHTTPAuth, requireValidUser, upload.single('file'), (req, res: any) => {
 		res.status(200).send(JSON.stringify(req.file));
 	});
