@@ -36,10 +36,7 @@ export function connectToKMServer(reset = false) {
 			socket.on('connect', () => {
 				connectErrorLogged = false;
 				if (checkLatencyIntervalSubscription) checkLatencyIntervalSubscription.unsubscribe();
-				checkLatencyIntervalSubscription = socketLatencyCheck$(
-					socket,
-					conf.Online.RemoteAccess.Domain
-				).subscribe();
+				checkLatencyIntervalSubscription = socketLatencyCheck$(socket, url).subscribe();
 				resolve();
 			});
 			socket.on('connect_error', err => {
@@ -114,9 +111,9 @@ const socketLatencyCheck$ = (socket: Socket, remoteHost: string, intervalMs = 10
 		),
 		// Log every higher latency for further log debugging
 		tap(payload => {
-			if (payload.latencyMs > 100)
+			if (payload.latencyMs > 150)
 				logger.info(
-					`Latency to remote is ${payload.latencyMs}ms${payload.socketErrorDetected ? ' (timeout or socket error)' : ''}`,
+					`Latency to remote ${remoteHost} is ${payload.latencyMs}ms${payload.socketErrorDetected ? ' (timeout or socket error)' : ''}`,
 					{ service }
 				);
 		}),
