@@ -16,6 +16,8 @@ function Switch(props: IProps) {
 	const checkbox = useRef<HTMLInputElement>(undefined);
 
 	const onKeyDown = e => {
+		// Trigger only on space bar
+		if (e.key !== ' ' || e.repeat) return;
 		e.preventDefault();
 		checkbox.current.click();
 	};
