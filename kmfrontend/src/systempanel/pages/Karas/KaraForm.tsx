@@ -149,6 +149,9 @@ function KaraForm(props: KaraFormProps) {
 	// Need a ref because state will become stale on unmount
 	const isEncodingMediaRef = useRef(false);
 
+	// Keep track of upload order so even if processing takes longer, the newest upload is always used
+	const mediaUploadSeq = useRef(0);
+
 	useEffect(() => {
 		isEncodingMediaRef.current = isEncodingMedia;
 	}, [isEncodingMedia]);
@@ -676,11 +679,13 @@ function KaraForm(props: KaraFormProps) {
 		const fileList = info.fileList.slice(-1);
 		setMediafile(fileList);
 		if (info.file.status === 'uploading') {
+			mediaUploadSeq.current += 1;
 			form.setFieldsValue({ mediafile: null });
 			setMediaInfo(null);
 			setMediaInfoValidationResults([]);
 		} else if (info.file.status === 'done') {
 			if (isMediaFile(info.file.name)) {
+				const seq = mediaUploadSeq.current;
 				setMediafileIsTouched(true);
 				const processUploadedMediaResult: ProcessUploadedMediaResult = await commandBackend(
 					WS_CMD.PROCESS_UPLOADED_MEDIA,
@@ -691,6 +696,8 @@ function KaraForm(props: KaraFormProps) {
 					false,
 					LOAD_AND_PROCESS_MEDIA_TIMEOUT // Keep this high (~10 minutes), otherwise bigger files will silently timeout
 				);
+				// Skip if another media was uploaded in the meantime
+				if (seq !== mediaUploadSeq.current) return;
 				setMediaInfo(processUploadedMediaResult.mediaInfo);
 				form.setFieldsValue({ mediafile: processUploadedMediaResult.mediaInfo.filename });
 				
@@ -728,8 +735,11 @@ function KaraForm(props: KaraFormProps) {
 				setMediafile([]);
 			}
 		} else if (info.file.status === 'error' || info.file.status === 'removed') {
+			mediaUploadSeq.current += 1;
 			form.setFieldsValue({ mediafile: null });
 			setMediafile([]);
+			setMediaInfo(null);
+			setMediaInfoValidationResults([]);
 		}
 		form.validateFields();
 	};
