@@ -1,8 +1,9 @@
+import { spawn } from 'child_process';
 import { shell } from 'electron';
 import { promises as fs } from 'fs';
 import { copy, ensureDir } from 'fs-extra';
 import i18next from 'i18next';
-import { basename, extname, resolve } from 'path';
+import { basename, dirname, extname, resolve } from 'path';
 
 import { getStoreChecksum, removeKaraInStore } from '../dao/dataStore.js';
 import { deleteKara, insertKara, selectAllKaras, updateKaraParents } from '../dao/kara.js';
@@ -495,6 +496,28 @@ export async function encodeMediaFileToRepoDefaults(
 	}
 }
 
+async function openFileWithDefaultApp(path: string) {
+	// Workaround for an aegisub bug that prevents it to be launched in wayland; Force x11
+	if (process.platform === 'linux' && process.env.WAYLAND_DISPLAY && process.env.DISPLAY) {
+		const child = spawn('xdg-open', [path], {
+			cwd: dirname(path),
+			env: { ...process.env, GDK_BACKEND: 'x11' },
+			detached: true,
+			stdio: 'ignore',
+		});
+		await new Promise<void>((ok, fail) => {
+			child.once('spawn', () => ok());
+			child.once('error', fail);
+		});
+		child.unref();
+		return;
+	}
+
+	// Default open
+	const err = await shell.openPath(path);
+	if (err) throw new Error(err);
+}
+
 export async function openLyricsFile(kid: string) {
 	try {
 		const { lyrics_infos, repository, mediafile } = await getKara(kid, adminToken);
@@ -508,9 +531,9 @@ export async function openLyricsFile(kid: string) {
 				}
 			}
 		}
-		await shell.openPath(lyricsPath);
+		await openFileWithDefaultApp(lyricsPath);
 	} catch (err) {
-		logger.error('Failed to open lyrics file', { service });
+		logger.error(`Failed to open lyrics file: ${err}`, { service, obj: err });
 		sentry.error(err);
 		throw err instanceof ErrorKM ? err : new ErrorKM('LYRICS_FILE_OPEN_ERROR', 500, false);
 	}
