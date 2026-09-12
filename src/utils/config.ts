@@ -144,21 +144,6 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 			displayInfo();
 		}
 	}
-	if (state.ready) {
-		const oldRemoteSetting = oldConfig.Online.RemoteAccess;
-		const newRemoteSetting = newConfig.Online.RemoteAccess;
-		const serverChanged = newRemoteSetting.Domain !== oldRemoteSetting.Domain || newRemoteSetting.Secure !== oldRemoteSetting.Secure;
-		if (newRemoteSetting.Enabled !== oldRemoteSetting.Enabled) {
-			if (newRemoteSetting.Enabled) {
-				await initKMServerCommunication();
-			} else {
-				destroyRemote();
-			}
-		} else if (newRemoteSetting.Enabled && serverChanged) {
-			await destroyRemote();
-			await initKMServerCommunication();
-		}
-	}
 	// Change language
 	if (newConfig.App.Language !== oldConfig.App.Language) {
 		changeLanguage(newConfig.App.Language);
@@ -284,6 +269,22 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	if (oldConfig.Player.KeyboardMediaShortcuts && !config.Player.KeyboardMediaShortcuts) unregisterShortcuts();
 	// Toggling poll
 	if (state.ready) setSongPoll(config.Karaoke.Poll.Enabled);
+	// Toggling remote access
+	if (state.ready) {
+		const oldRemoteSetting = oldConfig.Online.RemoteAccess;
+		const newRemoteSetting = config.Online.RemoteAccess;
+		const serverChanged = newRemoteSetting.Domain !== oldRemoteSetting.Domain || newRemoteSetting.Secure !== oldRemoteSetting.Secure;
+		if (newRemoteSetting.Enabled !== oldRemoteSetting.Enabled) {
+			if (newRemoteSetting.Enabled) {
+				await initKMServerCommunication();
+			} else {
+				destroyRemote();
+			}
+		} else if (newRemoteSetting.Enabled && serverChanged) {
+			await destroyRemote();
+			await initKMServerCommunication();
+		}
+	}
 	// Toggling twitch
 	config.Karaoke.StreamerMode.Twitch.Enabled
 		? initTwitch().catch(err => {
