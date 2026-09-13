@@ -141,6 +141,7 @@ export async function createRemoteUser(user: User) {
 		await HTTP.post(`${conf.RemoteUsers.Secure ? 'https' : 'http'}://${instance}/api/users`, {
 			login,
 			password: user.password,
+			email: user.email
 		});
 		startSub(login, instance);
 	} catch (err) {

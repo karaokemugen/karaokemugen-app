@@ -1,7 +1,12 @@
 {
+	"ACTIONS": {
+		"CONFIRM": "Potwierdź",
+		"LOG_IN": "Zaloguj się",
+		"SIGN_UP": "Zarejestruj się",
+		"CONTINUE": "Kontynuuj"
+	},
 	"VERSION": "Wersja",
 	"NO": "Nie",
-	"CONFIRM": "Potwierdź",
 	"YES": "Tak",
 	"NOT_FOUND_PAGE": {
 		"404_2": "Nie panikuj, możemy ci pomóc.",
@@ -453,7 +458,6 @@
 		"GUEST_CONTINUE": "Kontynuuj jako gość"
 	},
 	"USERNAME": "Nazwa użytkownika",
-	"SIGN_UP": "Zarejestruj się",
 	"PROFILE": "Profil",
 	"PROFILE_USERNAME": "Przydomek (Nick)",
 	"PROFILE_MAIL": "Email",
@@ -740,7 +744,6 @@
 	"PROFILE_PASSWORD": "Hasło",
 	"LOGIN_SLOGAN_ADMIN": "Proszę Zaloguj się.",
 	"PROFILE_BIO": "Biografia",
-	"LOG_IN": "Zaloguj się",
 	"GOTO_BOTTOM": "Przejdź na dół listy odtwarzania",
 	"TOOLTIP_KARA_ALREADY_ADDED": "Ta piosenka jest już obecna na przeciwległej liście odtwarzania.",
 	"QUOTA_TIME": "Pozostały czas",
@@ -1187,24 +1190,19 @@
 	"PL_MULTIPLE_ADDED": "Dodaj {{count}} utworów",
 	"MAKE_ACCOUNT_ADMIN_MESSAGE": "Jeśli chcesz uaktualnić swoje konto do poziomu operatora, wpisz tutaj 6-cyfrowy kod zabezpieczający.",
 	"SETUP_PAGE": {
-		"LOCAL_ACCOUNT": "Lokalny",
-		"ONLINE_ACCOUNT": "Online",
-		"ONLINE_ACCOUNT_DESC": "Konto online umożliwia:",
-		"LOCAL_ACCOUNT_DESC": "Wybrano konto lokalne. Wpisz poniżej nazwę konta i hasło:",
-		"ONLINE_ACCOUNT_INSTANCE_DESC": "Instancja jest serwerem online świadczącym kilka usług dla Karaoke Mugen. Jeśli nie masz pewności, pozostaw domyślną instancję ({{instance}}) lub, jeśli wiesz, co robisz, zmień ją na wybraną instancję.",
-		"CREATE_ONLINE_ACCOUNT": "Chcę założyć nowe konto",
-		"LOGIN_ONLINE_ACCOUNT": "Mam już konto",
-		"CREATE_ONLINE_ACCOUNT_DESC": "Wpisz nazwę konta i hasło, aby je utworzyć.",
-		"SECURITY_CODE_USE": "Ten kod upewnia się, że to naprawdę Ty wykonujesz te czynności. Zmienia się po każdym użyciu.",
-		"CONNECTED_MESSAGE": "Gratulacje, jesteś zalogowany do Karaoke Mugen, {{user}}!",
-		"NEED_ACCOUNT": "Zanim zaczniesz śpiewać, musisz mieć konto, aby korzystać z aplikacji.",
-		"SECURITY_CODE_DESC_CONSOLE": "Wprowadź również 6-cyfrowy kod zabezpieczający, który można znaleźć, szukając \"SECURITY CODE\" w pliku dziennika Karaoke Mugen lub w konsoli.",
 		"TITLE": "Kreator konfiguracji",
-		"WELCOME": "Witamy w Karaoke Mugen!",
-		"ACCOUNT_QUESTION": "Czy chcesz korzystać z konta lokalnego (tylko na komputerze) czy konta online (wymagany dostęp do Internetu)?",
-		"ONLINE_ACCOUNT_SAVE_INFOS": "Utwórz kopię zapasową swoich ulubionych utworów, awatara i informacji o profilu, aby użyć ich w innej aplikacji Karaoke Mugen.",
-		"ONLINE_ACCOUNT_LOST_PASSWORD": "Jeśli podasz adres e-mail, będziesz mógł odzyskać swoje konto, jeśli zapomnisz hasła.",
-		"ONLINE_ACCOUNT_INSTANCE": "Twoje konto online będzie hostowane w instancji {{instance}}"
+		"USER": {
+			"LOCAL_ACCOUNT": "Lokalny",
+			"ONLINE_ACCOUNT": "Online",
+			"ONLINE_ACCOUNT_DESC": "Konto online umożliwia:",
+			"LOCAL_ACCOUNT_DESC": "Wybrano konto lokalne. Wpisz poniżej nazwę konta i hasło:",
+			"CREATE_ONLINE_ACCOUNT": "Chcę założyć nowe konto",
+			"LOGIN_ONLINE_ACCOUNT": "Mam już konto",
+			"SECURITY_CODE_USE": "Ten kod upewnia się, że to naprawdę Ty wykonujesz te czynności. Zmienia się po każdym użyciu.",
+			"SECURITY_CODE_DESC_CONSOLE": "Wprowadź również 6-cyfrowy kod zabezpieczający, który można znaleźć, szukając \"SECURITY CODE\" w pliku dziennika Karaoke Mugen lub w konsoli.",
+			"WELCOME": "Witamy w Karaoke Mugen!",
+			"ONLINE_ACCOUNT_INSTANCE": "Twoje konto online będzie hostowane w instancji {{instance}}"
+		}
 	},
 	"NOTIFICATION": {
 		"OPERATOR": {
@@ -1598,8 +1596,7 @@
 		]
 	},
 	"MIGRATE": {
-		"TITLE": "Migracja",
-		"CONTINUE": "Kontynuuj."
+		"TITLE": "Migracja"
 	},
 	"INBOX": {
 		"TYPES": {
@@ -1763,7 +1760,6 @@
 		"LOGIN": "Nazwa użytkownika",
 		"USER_DELETED_CONFIRM": "Potwierdź usunięcie użytkownika",
 		"DELETE_USER_CONFIRM": "Usuń użytkownika",
-		"LOG_IN": "Zaloguj się",
 		"REPLAY_TUTORIAL": "Ukończony samouczek operatora",
 		"EDIT_ONLINE_ACCOUNT": "Użytkowników online nie można edytować na tej stronie, z wyjątkiem zmiany ich roli w aplikacji Karaoke Mugen. Aby edytować swój własny profil online, zrób to z poziomu interfejsu publicznego lub interfejsu operatora."
 	},

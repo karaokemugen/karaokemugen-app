@@ -1,4 +1,9 @@
 {
+	"ACTIONS": {
+		"CONFIRM": "确认",
+		"LOG_IN": "登录",
+		"SIGN_UP": "注册"
+	},
 	"SHUTDOWN": "关闭Karaoke Mugen",
 	"SELECT_PLACEHOLDER": "选择一个播放列表",
 	"YES": "是",
@@ -245,8 +250,6 @@
 		"MESSAGE": "对个人信息的修改将不会永久保存"
 	},
 	"USERNAME": "用户名",
-	"LOG_IN": "登录",
-	"SIGN_UP": "注册",
 	"PROFILE": "个人信息",
 	"PROFILE_USERNAME": "昵称",
 	"PROFILE_MAIL": "电子邮件",
@@ -307,7 +310,6 @@
 		"ADDED": "添加了 ",
 		"LYRICS": "歌词"
 	},
-	"CONFIRM": "确认",
 	"MODAL": {
 		"PROFILE_MODAL": {
 			"INTERFACE_LANGUAGE": "界面语文",

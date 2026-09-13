@@ -39,9 +39,7 @@ export async function setSettings(
 		dayjs.extend(relativeTime);
 		if (!withoutProfile) {
 			try {
-				if (!res.config.System) {
-					res.config.System = { Repositories: await commandBackend(WS_CMD.GET_REPOS) } as Config['System'];
-				}
+				res.config.System = { Repositories: await commandBackend(WS_CMD.GET_REPOS) } as Config['System'];
 				const user: User = await commandBackend(WS_CMD.GET_MY_ACCOUNT);
 				const favorites = await commandBackend(WS_CMD.GET_FAVORITES_MICRO);
 				const favoritesSet = new Set<string>();

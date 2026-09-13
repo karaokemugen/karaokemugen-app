@@ -109,6 +109,10 @@ export interface Config {
 		RemoteToken?: string; // Remove in KM 10
 		FetchPopularSongs?: boolean;
 		AllowDownloads?: boolean;
+		UplinkServer: {
+			Domain?: string;
+			Secure?: boolean;			
+		}
 	};
 	Frontend: {
 		AllowGuestLogin?: boolean;

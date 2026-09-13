@@ -54,6 +54,8 @@ import { createProblematicSmartPlaylist, updateAllSmartPlaylists } from './smart
 import { sendPayload } from './stats.js';
 import { getTags, integrateTagFile, removeTag } from './tag.js';
 import { getInboxCache } from './inbox.js';
+import { KMServer, KMServerFull } from '../lib/types/database/servers.js';
+import { DBStats } from '../lib/types/database/kara.js';
 
 const service = 'Repo';
 
@@ -118,7 +120,7 @@ export async function addRepo(repo: Repository) {
 		if (repo.Online) {
 			// Testing if repository is reachable
 			try {
-				await getRepoMetadata(repo);				
+				await getRepoMetadata(repo);
 			} catch (err) {
 				logger.error(`Repository ${repo.Name} unreachable`, { service });
 				throw new ErrorKM('REPOSITORY_UNREACHABLE', 404, false);
@@ -398,11 +400,14 @@ async function getLocalRepoLastCommit(repo: Repository): Promise<string | null> 
 }
 
 async function newZipRepo(repo: Repository): Promise<string> {
-	const { FullArchiveURL, SourceArchiveURL, LatestCommit,  } = await getRepoMetadata(repo);
+	const { FullArchiveURL, SourceArchiveURL, LatestCommit } = await getRepoMetadata(repo);
 	try {
 		await downloadAndExtractZip(FullArchiveURL, resolve(getState().dataPath, repo.BaseDir), repo.Name);
 	} catch (err) {
-		logger.warn(`Failed to download and extract from KM Server, trying source archive if it exsits... : ${err}`, { service, obj: err });
+		logger.warn(`Failed to download and extract from KM Server, trying source archive if it exists... : ${err}`, {
+			service,
+			obj: err,
+		});
 		await downloadAndExtractZip(SourceArchiveURL, resolve(getState().dataPath, repo.BaseDir), repo.Name);
 	}
 	await oldFilenameFormatKillSwitch(repo.Name);
@@ -434,7 +439,7 @@ export async function editRepo(
 		if (repo.Online && onlineCheck) {
 			// Testing if repository is reachable
 			try {
-				await getRepoMetadata(repo);				
+				await getRepoMetadata(repo);
 			} catch (err) {
 				throw new ErrorKM('REPOSITORY_UNREACHABLE', 404, false);
 			}
@@ -1109,15 +1114,16 @@ export async function findUnusedMedias(repo: string): Promise<string[]> {
 	}
 }
 
+export async function getRepoStats(repo: Repository) {
+	const ret = await HTTP.get(`${repo.Secure ? 'https' : 'http'}://${repo.Name}/api/karas/stats`);
+	return ret.data as DBStats;
+}
+
 /** Get metadata. Throws if KM Server is not up to date */
 export async function getRepoMetadata(repo: Repository) {
-	try {
-		// Only LastCommit will need to be fetched from KM Server, but we get everything anyways.
-		const ret = await HTTP.get(`${repo.Secure ? 'https' : 'http'}://${repo.Name}/api/karas/repository`);
-		return ret.data as RepositoryManifest;
-	} catch (err) {
-		throw err;
-	}
+	// Only LastCommit will need to be fetched from KM Server, but we get everything anyways.
+	const ret = await HTTP.get(`${repo.Secure ? 'https' : 'http'}://${repo.Name}/api/karas/repository`);
+	return ret.data as RepositoryManifest;
 }
 
 /** Find any unused tags in a repository */
@@ -1254,7 +1260,7 @@ export async function generateCommits(repoName: string) {
 			const commit: Commit = {
 				addedFiles: [],
 				removedFiles: [file],
-				checked: true,				
+				checked: true,
 				message: `🔥 🏷️ Delete ${tag}`,
 			};
 			commits.push(commit);
@@ -1267,9 +1273,9 @@ export async function generateCommits(repoName: string) {
 		}
 		// Added songs
 		const [karas, tags, inboxes] = await Promise.all([
-			getKaras({ ignoreCollections: true }), 
+			getKaras({ ignoreCollections: true }),
 			getTags({}),
-			getInboxCache(repoName)
+			getInboxCache(repoName),
 		]);
 		for (const file of addedSongs) {
 			// We need to find out if some tags have been added or modified and add them to our commit
@@ -1280,12 +1286,12 @@ export async function generateCommits(repoName: string) {
 			}
 			const song = (await defineSongname(formatKaraV4(kara))).songname;
 			let isValidInbox = true;
-			const inbox = inboxes.find(i => i.kid === kara.kid)
+			const inbox = inboxes.find(i => i.kid === kara.kid);
 			if (inbox?.status === 'rejected' || inbox?.status === 'changes_requested') isValidInbox = false;
 			const commit: Commit = {
 				addedFiles: [file],
 				removedFiles: [],
-				checked: isValidInbox,				
+				checked: isValidInbox,
 				message: `🆕 🎤 Add ${song}`,
 			};
 			// Let's check if the kara has been renamed and is actually a modified kara.
@@ -1335,7 +1341,7 @@ export async function generateCommits(repoName: string) {
 			}
 			const song = (await defineSongname(formatKaraV4(kara))).songname;
 			let isValidInbox = true;
-			const inbox = inboxes.find(i => i.kid === kara.kid || i.edited_kid === kara.kid)
+			const inbox = inboxes.find(i => i.kid === kara.kid || i.edited_kid === kara.kid);
 			if (inbox?.status === 'rejected' || inbox?.status === 'changes_requested') isValidInbox = false;
 			const commit: Commit = {
 				addedFiles: [file],
@@ -1488,7 +1494,7 @@ export async function uploadMedia(kid: string) {
 		const repo = getRepo(kara.repository);
 		let server: FTP | SFTP;
 		if (repo.UploadMethod === 'FTP') server = new FTP({ repoName: repo.Name });
-		if (repo.UploadMethod === 'SFTP') server = new SFTP({ repoName: repo.Name, baseDir: repo.SFTP.BaseDir});
+		if (repo.UploadMethod === 'SFTP') server = new SFTP({ repoName: repo.Name, baseDir: repo.SFTP.BaseDir });
 		await server.connect();
 		const path = await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', repo.Name));
 		await server.upload(path[0]);
@@ -1501,7 +1507,7 @@ export async function uploadMedia(kid: string) {
 
 /** Commit and Push all modifications */
 export async function pushCommits(repoName: string, push: Push, ignoreUpload?: boolean) {
-	let server: FTP | SFTP;	
+	let server: FTP | SFTP;
 	try {
 		const repo = getRepo(repoName);
 		const git = await setupGit(repo, true);
@@ -1723,4 +1729,52 @@ export async function convertToUUIDFormat(repoName: string) {
 
 export function statsEnabledRepositories(): Repository[] {
 	return getRepos().filter(r => r.Enabled && r.SendStats && r.Online);
+}
+
+async function fetchServer(server: KMServer): Promise<KMServerFull> {
+	try {
+		await HTTP.head(`https://${server.domain}/`, {
+			timeout: 5000
+		});
+		return {
+			online: true,
+			...server,
+		};
+	} catch (err) {
+		// Something went wrong when fetching data, so we return just the KMServer entry with a Online false property
+		logger.warn(`Unable to fetch data for server ${server.domain} : ${err}`, { service });
+		return {
+			online: false,
+			...server,
+		};
+	}
+}
+
+export async function getServersFromUplink(): Promise<KMServerFull[]> {
+	const uplinkServer = getConfig().Online.UplinkServer;
+	if (!uplinkServer?.Domain) throw new ErrorKM('NO_UPLINK', 503, false);
+	try {
+		const res = await HTTP(
+			`${uplinkServer.Secure ? 'https' : 'http'}://${uplinkServer.Domain}/api/uplink/servers`,
+			{
+				method: 'GET',
+			}
+		);
+		const servers = res.data as KMServer[];
+		const mapper = async (server: KMServer) => {
+			return fetchServer(server);
+		};
+		const serversWithInfo = await parallel(servers, mapper, {
+			stopOnError: false,
+			concurrency: 5,
+		});
+		return serversWithInfo;
+	} catch (err) {
+		logger.error(`Unable to get servers from uplink`, {
+			service,
+			obj: err,
+		});
+		
+		throw new ErrorKM('UPLINK_UNREACHABLE', 503, false);
+	}
 }

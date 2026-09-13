@@ -1,7 +1,12 @@
 {
+	"ACTIONS": {
+		"CONFIRM": "Konfirmasi",
+		"LOG_IN": "Masuk",
+		"SIGN_UP": "Daftar",
+		"CONTINUE": "Lanjut"
+	},
 	"YES": "Ya",
 	"NO": "Tidak",
-	"CONFIRM": "Konfirmasi",
 	"SELECT_PLACEHOLDER": "Pilih sebuah daftar putar",
 	"AND": "dan",
 	"SEARCH": "Cari",
@@ -158,7 +163,6 @@
 		"BACKGROUNDS": "Latar belakan",
 		"MAINTAINER": "Pengelola"
 	},
-	"SIGN_UP": "Daftar",
 	"PROFILE_MAIL": "Surel",
 	"PROFILE_USERNAME": "Nama Panggilan",
 	"PROFILE_URL": "Situs Web",
@@ -450,7 +454,6 @@
 		"NEW_ACCOUNT": "Akun baru",
 		"GUEST_CONTINUE": "Lanjut sebagai tamu"
 	},
-	"LOG_IN": "Masuk",
 	"USERNAME": "Nama Pengguna",
 	"PROFILE_BIO": "Biografi",
 	"PROFILE_PASSWORD": "Kata Sandi",
@@ -726,8 +729,7 @@
 		"CLOSE": "Tutup pemutar chibi"
 	},
 	"MIGRATE": {
-		"TITLE": "Migrasi",
-		"CONTINUE": "Lanjut."
+		"TITLE": "Migrasi"
 	},
 	"BACKGROUNDS_MGMT": {
 		"NEW": "Latar belakang atau musik baru",
@@ -785,24 +787,19 @@
 		"LICENSE": "Dilisensikan MIT."
 	},
 	"SETUP_PAGE": {
-		"ONLINE_ACCOUNT": "Daring",
-		"ONLINE_ACCOUNT_DESC": "Sebuah akun daring memungkinkan kamu untuk:",
-		"LOCAL_ACCOUNT": "Lokal",
 		"TITLE": "Panduan Penyetelan",
-		"WELCOME": "Selamat Datang di Karaoke Mugen!",
-		"NEED_ACCOUNT": "Sebelum kau bisa memulai bernyanyi, kamu akan membutuhkan sebuah akun untuk menggunakan aplikasi.",
-		"ACCOUNT_QUESTION": "Apakah kamu ingin menggunakan akun lokal (hanya di komputer kamu saja) atau akun daring (akses internet diperlukan)?",
-		"ONLINE_ACCOUNT_SAVE_INFOS": "Cadangkan lagu, avatar, dan info profil favorit Anda untuk mendapatkannya kembali dari komputer lain.",
-		"ONLINE_ACCOUNT_LOST_PASSWORD": "Jika kamu memberikan alamat surel, kamu akan bisa memulihkan akun kamu jika kamu lupa kata sandi.",
-		"LOCAL_ACCOUNT_DESC": "Kamu memilih akun lokal. Ketik nama akun dan kata sandi di bawah ini:",
-		"ONLINE_ACCOUNT_INSTANCE": "Akun daring kamu akan dihos di peladen {{instance}}",
-		"CREATE_ONLINE_ACCOUNT": "Saya ingin membuat akun baru",
-		"LOGIN_ONLINE_ACCOUNT": "Saya sudah punya akun",
-		"CREATE_ONLINE_ACCOUNT_DESC": "Ketik nama akun dan kata sandi untuk membuat yang baru.",
-		"ONLINE_ACCOUNT_INSTANCE_DESC": "Peladen adalah layanan daring yang memberikan beberapa layanan terkait Karaoke Mugen. Jika kamu tidak yakin, biarkan peladen baku ({{instance}}), atau jika kamu tahu apa yang kamu lakukan, ubah ke peladen pilihanmu.",
-		"SECURITY_CODE_DESC_CONSOLE": "Mohon untuk memasukkan juga kode keamanan 6 digit yang bisa kamu temukan dengan mencari \"SECURITY CODE\" di berkas log Karaoke Mugen atau di konsol.",
-		"SECURITY_CODE_USE": "Kode ini memastikan bahwa kamu benar-benar yang melakukan tindakan ini. Ini berganti setelah setiap penggunaan.",
-		"CONNECTED_MESSAGE": "Selamat, kamu telah masuk ke Karaoke Mugen, {{user}}!"
+		"USER": {
+			"ONLINE_ACCOUNT": "Daring",
+			"ONLINE_ACCOUNT_DESC": "Sebuah akun daring memungkinkan kamu untuk:",
+			"LOCAL_ACCOUNT": "Lokal",
+			"WELCOME": "Selamat Datang di Karaoke Mugen!",
+			"LOCAL_ACCOUNT_DESC": "Kamu memilih akun lokal. Ketik nama akun dan kata sandi di bawah ini:",
+			"ONLINE_ACCOUNT_INSTANCE": "Akun daring kamu akan dihos di peladen {{instance}}",
+			"CREATE_ONLINE_ACCOUNT": "Saya ingin membuat akun baru",
+			"LOGIN_ONLINE_ACCOUNT": "Saya sudah punya akun",
+			"SECURITY_CODE_DESC_CONSOLE": "Mohon untuk memasukkan juga kode keamanan 6 digit yang bisa kamu temukan dengan mencari \"SECURITY CODE\" di berkas log Karaoke Mugen atau di konsol.",
+			"SECURITY_CODE_USE": "Kode ini memastikan bahwa kamu benar-benar yang melakukan tindakan ini. Ini berganti setelah setiap penggunaan."
+		}
 	},
 	"CONFIG": {
 		"SAVE": "Simpan",
@@ -1431,7 +1428,6 @@
 		"URL": "Situs Web",
 		"EMAIL": "Surel",
 		"DELETE_USER_CONFIRM": "Hapus pengguna",
-		"LOG_IN": "Masuk",
 		"NEW_USER": "Pengguna baru",
 		"REPLAY_TUTORIAL": "Selesai tutorial operator",
 		"EDIT_ONLINE_ACCOUNT": "Pengguna daring tidak bisa disunting dari halaman ini kecuali untuk mengubah peran mereka di aplikasi Karaoke Mugen. Untuk menyunting profil dirimu sendiri secara daring, lakukan dari antarmuka publik atau operator.",

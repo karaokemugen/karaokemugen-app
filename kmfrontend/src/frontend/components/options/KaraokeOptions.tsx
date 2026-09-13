@@ -1105,7 +1105,7 @@ function KaraokeOptions(props: IProps) {
 												defaultValue={config['Karaoke.StreamerMode.Twitch.OAuth']}
 											/>
 											<button className="btn" onClick={parseTwitch}>
-												{i18next.t('LOG_IN')}
+												{i18next.t('ACTIONS.LOG_IN')}
 											</button>
 										</div>
 									</div>

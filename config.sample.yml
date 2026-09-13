@@ -8,7 +8,7 @@ App:
   #InstanceID: uuid here
 Online:
   # Should your instance sends error logs to sentry.io? True/false. Non-existant means the app will ask the user a question if it wants to send errors.
-  #ErrorTracking: false
+  ErrorTracking: false
   # Should we use KM Server's URL shortener? Turns connection URL into https://mugen.re for example
   URL: true
   Updates:
@@ -26,14 +26,14 @@ Online:
     # Remote URL xxxx.mugen.re enabled ?
     Enabled: true
     # Host for your KM Server
-    Domain: 'kara.moe'
+    Domain: 'mugen.re'
     # Remote token for online URL
     #Token: 'uuid_here'
     Secure: true
   RemoteUsers:
     # Should we allow users to register/login accounts ?
     Enabled: true
-    DefaultHost: kara.moe
+    DefaultHost: mugen.re
     Secure: true
   # Timeout (in ms) when calling the KM Server
   Timeout: 2000
@@ -41,6 +41,10 @@ Online:
   FetchPopularSongs: true
   # Disallow ALL video downloads; We'll give you crepes if you keep this to true
   AllowDownloads: true
+  # Uplink Server is where KM will fetch a list of other servers. Ignored if blank
+  UplinkServer: 
+    Domain: mugen.re
+    Secure: true
 Frontend:
   AllowGuestLogin: true
   AllowUserCreation: true
@@ -314,15 +318,13 @@ System:
       OSX: app/bin/patch
       Windows: app/bin/patch.exe
   Repositories:
-    - Name: kara.moe
+    - Name: mugen.re
       Online: true
       Secure: true
       Enabled: true
       Update: true
       Git:
-        URL: https://gitlab.com/karaokemugen/bases/karaokebase.git
-        Username: username
-        Password: pass
+        URL: git@gitlab.com:karaokemugen/bases/mugenre-database.git
         Author: Nanamin
         Email: nanamin@eternity.ln
       FTP:
@@ -337,10 +339,10 @@ System:
       # 'none' = never
       # 'updateOnly' = only when the song has already been downloaded before and it's an update
       # 'all' = always
-      BaseDir: 'repos/kara.moe/git'
+      BaseDir: 'repos/mugen.re/git'
       Path:
         Medias:
-          - repos/kara.moe/medias
+          - repos/mugen.re/medias
     - Name: Local
       Online: false
       Enabled: true

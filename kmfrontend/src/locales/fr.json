@@ -1,4 +1,12 @@
 {
+	"ACTIONS": {
+		"CONFIRM": "Confirmer",
+		"LOG_IN": "Se connecter",
+		"SIGN_UP": "S'inscrire",
+		"SAVE_AND_CONTINUE": "Sauvegarder et continuer",
+		"CONTINUE": "Continuer",
+		"FINISH": "Terminer"
+	},
 	"SELECT_PLACEHOLDER": "Sélectionnez une liste de lecture",
 	"YES": "Oui",
 	"NO": "Non",
@@ -7,7 +15,6 @@
 	"UNKNOWN": "Inconnu",
 	"SEARCH": "Rechercher",
 	"SUBMIT": "Sauvegarder",
-	"CONFIRM": "Confirmer",
 	"CANCEL": "Annuler",
 	"WARNING": "Attention !",
 	"SHOW-HIDE": "Montrer / Cacher",
@@ -274,8 +281,6 @@
 		"ONLINE_ACCOUNT": "Compte en ligne ?"
 	},
 	"USERNAME": "Nom d'utilisateur",
-	"LOG_IN": "Se connecter",
-	"SIGN_UP": "S'inscrire",
 	"PROFILE": "Paramètres",
 	"PROFILE_USERNAME": "Pseudonyme",
 	"PROFILE_MAIL": "Courriel",
@@ -1021,23 +1026,64 @@
 	},
 	"SETUP_PAGE": {
 		"TITLE": "Assistant de démarrage",
-		"WELCOME": "Bienvenue dans Karaoke Mugen !",
-		"NEED_ACCOUNT": "Avant de commencer à chanter, vous avez besoin d'un compte pour utiliser l'application.",
-		"ACCOUNT_QUESTION": "Voulez-vous utiliser un compte local (limité à votre ordinateur) ou un compte en ligne (nécessitant Internet) ?",
-		"LOCAL_ACCOUNT": "Compte local",
-		"ONLINE_ACCOUNT": "Compte en ligne",
-		"ONLINE_ACCOUNT_DESC": "Le compte en ligne permet de :",
-		"ONLINE_ACCOUNT_SAVE_INFOS": "Enregistrer vos favoris, avatar et informations de profil pour les utiliser sur une autre application Karaoke Mugen.",
-		"ONLINE_ACCOUNT_LOST_PASSWORD": "Si vous indiquez votre email, vous pourrez retrouver votre mot de passe perdu.",
-		"LOCAL_ACCOUNT_DESC": "Vous avez choisi un compte local. Indiquez un nom de compte et un mot de passe ci-dessous :",
-		"ONLINE_ACCOUNT_INSTANCE": "Votre compte en ligne sera hébergé sur l'instance {{instance}}",
-		"ONLINE_ACCOUNT_INSTANCE_DESC": "Une instance est un service en ligne proposant de nombreux services à Karaoke Mugen. Si vous n'êtes pas sûr de vous, laissez l'instance à {{instance}}. Sinon changez-le pour l'instance de votre choix.",
-		"CREATE_ONLINE_ACCOUNT": "Je veux créer un compte en ligne",
-		"LOGIN_ONLINE_ACCOUNT": "J'ai déjà un compte en ligne",
-		"CREATE_ONLINE_ACCOUNT_DESC": "Indiquez un nom de compte et un mot de passe pour créer un compte.",
-		"SECURITY_CODE_DESC_CONSOLE": "Indiquez également le code de sécurité (à 6 chiffres) que vous pourrez trouver en cherchant \"SECURITY CODE\" dans le fichier des logs de Karaoke Mugen.",
-		"SECURITY_CODE_USE": "Ce code permet d'être certain que c'est bien vous qui effectuez ces actions. Le code change à chaque utilisation.",
-		"CONNECTED_MESSAGE": "Félicitations, vous voilà connecté sur Karaoke Mugen, {{user}} !"
+		"ONLINE_SERVER" : {
+            "SELECT" : "Sélectionnez une instance en ligne pour votre compte.",
+            "DESCRIPTION" : "Les instances hébergent vos informations, telles que vos identifiants, vos favoris, vos listes de lecture et vos statistiques.",
+			"HINT" : "ASTUCE : Choisissez-en un qui propose des chansons que vous aimez chanter afin de pouvoir les ajouter à vos favoris plus tard !",
+            "LIST" : "Liste des instances Karaoke Mugen connues :",
+            "OTHER" : "Autre",
+            "OTHER_INPUT" : "Saisissez le nom de domaine de votre instance :",
+			"INSTANCE_one" : "{{instance}} ({{songs}} chanson)",
+			"INSTANCE_other" : "{{instance}} ({{songs}} chansons)",
+            "INSTANCE_FORMAT_ERROR" : "Le nom de domaine doit contenir un point.",
+			"OFFLINE" : "Hors ligne pour le moment – essayez de l'ajouter plus tard"
+		},
+		"REPOSITORY" : {
+            "SELECT" : "Veuillez sélectionner votre source principale de chansons",
+            "DESCRIPTION" : "Vous pourrez ajouter ou supprimer des bases de données de chansons ultérieurement depuis le panneau système.",
+			"OWN_SONGS" : "Je possède mes propres chansons",
+            "ONLINE_REPOSITORY" : "Je souhaite utiliser des chansons provenant d'un dépôt en ligne",
+            "LIST" : "Liste des serveurs Karaoke Mugen connus disposant de dépôts de chansons :"
+        },
+		"MEDIA_STORAGE" : {
+            "TITLE" : "Stockage des médias",
+            "DESCRIPTION" : "Les chansons provenant de dépôts en ligne peuvent occuper beaucoup d'espace disque. Souhaitez-vous stocker les médias à un autre emplacement sur votre ordinateur ?",
+            "CHANGE_LATER": "Vous pouvez modifier ce dossier à tout moment."
+        },
+		"REMOTE_ACCESS" : {
+            "TITLE" : "Accès à distance",
+            "DESCRIPTION" : "En activant l'accès à distance, vous permettrez aux utilisateurs d'accéder à votre session Karaoke Mugen via une URL courte et facile à retenir. Sélectionnez une instance Karaoke Mugen pour votre accès à distance.",
+            "DESCRIPTION_GUESTS" : "Les invités pourront uniquement parcourir votre bibliothèque de chansons et demander la lecture de chansons. C'est idéal pour les sessions sur Twitch, en présentiel entre amis ou devant un public lors d'un événement !",
+			"DO_NO_WANT" : "Je ne souhaite pas activer l'accès à distance pour le moment",
+            "EXAMPLE" : "Exemple d'URL : <1>https://abcd.{{instance}}</1>"
+		},
+		"TIMELINE": {
+			"USER_ACCOUNT": "Compte utilisateur",
+			"SONGS": "Chansons",
+			"ONLINE": "En ligne"
+		},
+		"COLLECTIONS" : {
+            "CHOICE" : "Sélection des collections",
+            "CHOICE_DESC_1" : "Les collections de chansons s'adressent à différents publics. Choisissez les collections que vous souhaitez voir apparaître dans votre base de données de karaoké.",
+            "CHOICE_DESC_2" : "Vous pouvez modifier vos collections à tout moment dans le panneau système."
+		},
+		"USER": {
+			"WELCOME": "Bienvenue dans Karaoke Mugen !",
+			"LOCAL_ACCOUNT": "Local",
+			"ONLINE_ACCOUNT": "En ligne",
+			"ONLINE_ACCOUNT_DESC": "Le compte en ligne permet de :",
+			"ONLINE_ACCOUNT_FAVORITES" : "Sauvegardez vos favoris en ligne",
+            "ONLINE_ACCOUNT_PLAYLISTS" : "Importez vos listes de lecture",
+            "ONLINE_ACCOUNT_OTHER_SESSIONS" : "Connectez-vous depuis n'importe quelle autre session de Karaoke Mugen",
+			"LOCAL_ACCOUNT_DESC": "Vous avez choisi un compte local. Indiquez un nom de compte et un mot de passe ci-dessous :",
+			"ONLINE_ACCOUNT_INSTANCE": "Votre compte en ligne sera hébergé sur l'instance {{instance}}",
+			"CREATE_ONLINE_ACCOUNT": "Je veux créer un compte en ligne",
+			"LOGIN_ONLINE_ACCOUNT": "J'ai déjà un compte en ligne",
+			"SECURITY_CODE_DESC_CONSOLE": "Indiquez également le code de sécurité (à 6 chiffres) que vous pourrez trouver en cherchant \"SECURITY CODE\" dans le fichier des logs de Karaoke Mugen.",
+			"SECURITY_CODE_USE": "Ce code permet d'être certain que c'est bien vous qui effectuez ces actions. Le code change à chaque utilisation.",
+			"CHOOSE_ACCOUNT": "Veuillez choisir si vous souhaitez créer un compte utilisateur local ou en ligne. Si vous disposez déjà d'un compte en ligne sur une instance de Karaoke Mugen tel que mugen.re, sélectionnez « En ligne »."
+		},
+		"ENDING": "Merci ! Karaoke Mugen est désormais configuré. Veuillez consulter les paramètres de l'interface opérateur pour configurer le fonctionnement de l'application avant votre première session de karaoké !"
 	},
 	"NOTIFICATION": {
 		"OPERATOR": {
@@ -1061,7 +1107,7 @@
 			"INFO": {
 				"BATCH_EDIT_COMPLETE": "Édition en masse de chansons terminée.",
 				"PLAYER_RESTARTING": "Redémarrage du lecteur vidéo…",
-				"POLL_WINNER": "Le peuple a voté pour une nouvelle chanson !",
+				"POLL_WINNER": "Le peuple a voté pour une nouvelle chanson !",
 				"POLL_STARTING": "Démarrage du sondage",
 				"END_OF_SESSION_NEAR": "La session de karaoké doit se terminer dans {{data}} minutes.",
 				"INTERFACE_SWITCHED_TO_RESTRICTED_PLAYLIST_LENGTH": "L'interface passe en mode Restreint car la longueur de la liste de lecture a atteint la limite définie."
@@ -1348,7 +1394,6 @@
 		"PASSWORD_VALIDATOR_MESSAGE": "Un utilisateur doit avoir un mot de passe",
 		"CHAR_NOT_ALLOWED": "Le caractère '{{char}}' n'est pas autorisé",
 		"DELETE_USER_CONFIRM": "Suppression de l'utilisateur",
-		"LOG_IN": "Connexion",
 		"NEW_USER": "Nouvel utilisateur",
 		"REPLAY_TUTORIAL": "Tutoriel opérateur terminé",
 		"EDIT_ONLINE_ACCOUNT": "Les utilisateurs en ligne ne peuvent pas être édités depuis cette page hormis pour changer leur rôle sur cette instance de Karaoke Mugen. Pour éditer votre propre profil en ligne, faites cela depuis l'interface publique ou opérateur."
@@ -2173,7 +2218,10 @@
 	},
 	"MIGRATE": {
 		"TITLE": "Assistant de migration",
-		"CONTINUE": "Continuer."
+		"DEFAULT_REMOTE": {
+			"TITLE": "Choisissez une instance par défaut",
+			"DESCRIPTION": "Karaoke Mugen propose désormais différente instances pour les fonctionnalités en ligne. Veuillez sélectionner celle que vous souhaitez utiliser."
+		}
 	},
 	"BACKGROUNDS_MGMT": {
 		"EXPL": "Il existe trois catégories de fonds d'écran. Si une catégorie n'a pas de fond associé, un fond d'écran inclus sera utilisé (ceux avec le personnage qui prête son nom à la version de l'application).",

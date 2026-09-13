@@ -16,7 +16,7 @@ import { Link } from 'react-router-dom';
 
 import { DBKara, DBKaraTag } from '../../../../../src/lib/types/database/kara';
 import { DBTag } from '../../../../../src/lib/types/database/tag';
-import { DBStats } from '../../../../../src/types/database/database';
+import { DBStatsApp } from '../../../../../src/types/database/database';
 import { DBDownload } from '../../../../../src/types/database/download';
 import { KaraDownloadRequest } from '../../../../../src/types/download';
 import GlobalContext from '../../../store/context';
@@ -165,7 +165,7 @@ function KaraDownload() {
 
 	const getTotalMediaSize = async () => {
 		try {
-			const res: DBStats = await commandBackend(
+			const res: DBStatsApp = await commandBackend(
 				WS_CMD.GET_STATS,
 				{
 					repoNames: selectedRepositories?.length > 0 ? selectedRepositories : undefined,
@@ -173,7 +173,7 @@ function KaraDownload() {
 				false,
 				300000
 			);
-			setTotalMediaSize(prettyBytes(res.total_media_size));
+			setTotalMediaSize(prettyBytes(res.mediasize));
 		} catch (_) {
 			// already display
 		}

@@ -480,6 +480,7 @@ export async function checkCollections() {
 	})();
 	try {
 		const availableCollections: DBTag[] = [];
+		let defaults;
 		for (const repo of getRepos()) {
 			if (repo.Enabled) {
 				if (repo.Online && internet) {
@@ -495,7 +496,11 @@ export async function checkCollections() {
 						for (const tag of tags.data.content) {
 							if (!availableCollections.find(t => t.tid === tag.tid)) availableCollections.push(tag);
 						}
-						setDefaultCollections(manifest.Manifest);
+						const repoDefaults = await setDefaultCollections(manifest.Manifest);
+						defaults = {
+							...defaults,
+							...repoDefaults
+						}
 					} catch (err) {
 						// Fallback to what the repository has locally
 						const tags = await getTags({ type: [tagTypes.collections] });
@@ -511,7 +516,10 @@ export async function checkCollections() {
 				}
 			}
 		}
-		return availableCollections;
+		return {
+			availableCollections,
+			defaults
+		};
 	} catch (err) {
 		logger.error(`Error getting collections : ${err}`, { service });
 		sentry.error(err);

@@ -37,7 +37,7 @@ import { BackgroundList, BackgroundListRequest, BackgroundRequest } from '../../
 import { UploadedFile } from '../../../src/types/files.js';
 import { RemoteStatusData } from '../../../src/types/remote.js';
 import { Config, QuizGameConfig } from '../../../src/types/config.js';
-import { DBStats } from '../../../src/types/database/database.js';
+import { DBStatsApp } from '../../../src/types/database/database.js';
 import { DBDownload } from '../../../src/types/database/download.js';
 import { MigrationsFrontend } from '../../../src/types/database/migrationsFrontend.js';
 import { DBPL, DBPLCInfo } from '../../../src/types/database/playlist.js';
@@ -59,6 +59,7 @@ import { Commit, DifferentChecksumReport, ImportBaseFile, ModifiedMedia, Push } 
 import { Session, SessionExports } from '../../../src/types/session.js';
 import { PublicPlayerState, PublicState, State, Version } from '../../../src/types/state.js';
 import { SingleToken, Tokens } from '../../../src/types/user.js';
+import { KMServerFull } from '../../../src/lib/types/database/servers.js';
 
 export function defineWSCmd<Body extends object, Response>(value: string): WSCmdDefinition<Body, Response> {
 	return { value, bodyType: {} as Body, responseType: {} as Response };
@@ -148,8 +149,9 @@ export const WS_CMD = {
 	PLAY_KARA: defineWSCmd<{ kid: string }, void>('playKara'),
 	EDIT_KARAS: defineWSCmd<{ plaid: string; action: BatchActions; id: string; type: TagTypeNum }, void>('editKaras'),
 	DELETE_MEDIA_FILES: defineWSCmd<{ files: string[]; repo: string }, void>('deleteMediaFiles'),
-	GET_STATS: defineWSCmd<{ repoNames: string[] }, DBStats>('getStats'),
+	GET_STATS: defineWSCmd<{ repoNames: string[] }, DBStatsApp>('getStats'),
 	// AREA src\controllers\frontend\misc.ts
+	GET_SERVERS_FROM_UPLINK: defineWSCmd<undefined, KMServerFull[]>('getServersFromUplink'),
 	OPEN_LOG_FILE: defineWSCmd<undefined, void>('openLogFile'),
 	GET_MIGRATIONS_FRONTEND: defineWSCmd<undefined, MigrationsFrontend[]>('getMigrationsFrontend'),
 	SET_MIGRATIONS_FRONTEND: defineWSCmd<{ mig: MigrationsFrontend }, void>('setMigrationsFrontend'),
@@ -313,7 +315,10 @@ export const WS_CMD = {
 	GET_TAG: defineWSCmd<{ tid: string }, DBTag>('getTag'),
 	EDIT_TAG: defineWSCmd<Tag & { tid: string }, HttpMessage<string>>('editTag'),
 	COPY_TAG_TO_REPO: defineWSCmd<{ tid: string; repo: string }, HttpMessage<string>>('copyTagToRepo'),
-	GET_COLLECTIONS: defineWSCmd<undefined, DBTag[]>('getCollections'),
+	GET_COLLECTIONS: defineWSCmd<undefined, {
+		availableCollections: DBTag[],
+		defaults: Record<string, boolean>
+	}>('getCollections'),
 	// AREA src\controllers\frontend\test.ts
 	GET_STATE: defineWSCmd<undefined, State>('getState'),
 	GET_FULL_CONFIG: defineWSCmd<undefined, Config>('getFullConfig'),

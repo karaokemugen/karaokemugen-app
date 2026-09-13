@@ -1,4 +1,10 @@
 {
+	"ACTIONS": {
+		"CONFIRM": "Potvrdit",
+		"LOG_IN": "Přihlásit se",
+		"SIGN_UP": "Zaregistrovat se",
+		"CONTINUE": "Pokračovat"
+	},
 	"CANCEL": "Zrušit",
 	"YES": "Ano",
 	"NO": "Ne",
@@ -8,7 +14,6 @@
 	"OR": "nebo",
 	"SEARCH": "Hledat",
 	"SUBMIT": "Uložit",
-	"CONFIRM": "Potvrdit",
 	"WARNING": "Upozornění!",
 	"SHOW-HIDE": "Zobrazit/skrýt",
 	"NOT_FOUND_PAGE": {
@@ -274,8 +279,6 @@
 		"ONLINE_ACCOUNT": "Online účet?"
 	},
 	"USERNAME": "Uživatelské jméno",
-	"LOG_IN": "Přihlásit se",
-	"SIGN_UP": "Zaregistrovat se",
 	"PROFILE": "Profil",
 	"PROFILE_USERNAME": "Přezdívka",
 	"PROFILE_MAIL": "E-mail",
@@ -1021,23 +1024,18 @@
 	},
 	"SETUP_PAGE": {
 		"TITLE": "Průvodce nastavením",
-		"WELCOME": "Vítejte v Karaoke Mugen!",
-		"NEED_ACCOUNT": "Než začnete zpívat, musíte si vytvořit účet pro používání aplikace.",
-		"ACCOUNT_QUESTION": "Chcete použít místní účet (pouze v tomto počítači), nebo online účet (vyžaduje přístup k internetu)?",
-		"LOCAL_ACCOUNT": "Místní",
-		"ONLINE_ACCOUNT": "Online",
-		"ONLINE_ACCOUNT_DESC": "Online účet vám umožní:",
-		"ONLINE_ACCOUNT_SAVE_INFOS": "Zálohovat oblíbené skladby, avatar a údaje profilu pro použití v jiné aplikaci Karaoke Mugen.",
-		"ONLINE_ACCOUNT_LOST_PASSWORD": "Pokud uvedete e-mailovou adresu, budete moci obnovit účet, když zapomenete heslo.",
-		"LOCAL_ACCOUNT_DESC": "Vybrali jste místní účet. Níže zadejte název účtu a heslo:",
-		"ONLINE_ACCOUNT_INSTANCE": "Váš online účet bude hostovaný na instanci {{instance}}",
-		"ONLINE_ACCOUNT_INSTANCE_DESC": "Instance je online server poskytující Karaoke Mugen několik služeb. Pokud si nejste jisti, ponechte výchozí instanci ({{instance}}). Pokud víte, co děláte, změňte ji na instanci podle svého výběru.",
-		"CREATE_ONLINE_ACCOUNT": "Chci vytvořit nový účet",
-		"LOGIN_ONLINE_ACCOUNT": "Účet už mám",
-		"CREATE_ONLINE_ACCOUNT_DESC": "Vytvořte účet zadáním jeho názvu a hesla.",
-		"SECURITY_CODE_DESC_CONSOLE": "Zadejte také šestimístný bezpečnostní kód. Najdete jej vyhledáním textu „SECURITY CODE“ v souboru protokolu Karaoke Mugen nebo v konzoli.",
-		"SECURITY_CODE_USE": "Tento kód ověřuje, že tyto akce skutečně provádíte vy. Po každém použití se změní.",
-		"CONNECTED_MESSAGE": "Gratulujeme, {{user}}, jste přihlášeni do Karaoke Mugen!"
+		"USER": {
+			"WELCOME": "Vítejte v Karaoke Mugen!",
+			"LOCAL_ACCOUNT": "Místní",
+			"ONLINE_ACCOUNT": "Online",
+			"ONLINE_ACCOUNT_DESC": "Online účet vám umožní:",
+			"LOCAL_ACCOUNT_DESC": "Vybrali jste místní účet. Níže zadejte název účtu a heslo:",
+			"ONLINE_ACCOUNT_INSTANCE": "Váš online účet bude hostovaný na instanci {{instance}}",
+			"CREATE_ONLINE_ACCOUNT": "Chci vytvořit nový účet",
+			"LOGIN_ONLINE_ACCOUNT": "Účet už mám",
+			"SECURITY_CODE_DESC_CONSOLE": "Zadejte také šestimístný bezpečnostní kód. Najdete jej vyhledáním textu „SECURITY CODE“ v souboru protokolu Karaoke Mugen nebo v konzoli.",
+			"SECURITY_CODE_USE": "Tento kód ověřuje, že tyto akce skutečně provádíte vy. Po každém použití se změní."
+		}
 	},
 	"NOTIFICATION": {
 		"OPERATOR": {
@@ -1348,7 +1346,6 @@
 		"PASSWORD_VALIDATOR_MESSAGE": "Uživatel musí mít heslo",
 		"CHAR_NOT_ALLOWED": "Znak „{{char}}“ není povolen",
 		"DELETE_USER_CONFIRM": "Smazat uživatele",
-		"LOG_IN": "Přihlásit se",
 		"NEW_USER": "Nový uživatel",
 		"REPLAY_TUTORIAL": "Průvodce pro obsluhu dokončen",
 		"EDIT_ONLINE_ACCOUNT": "Online uživatele nelze na této stránce upravovat s výjimkou změny jejich role v této aplikaci Karaoke Mugen. Vlastní online profil upravte ve veřejném rozhraní nebo rozhraní obsluhy."
@@ -2175,8 +2172,7 @@
 		"CLOSE": "Zavřít chibi přehrávač"
 	},
 	"MIGRATE": {
-		"TITLE": "Migrace",
-		"CONTINUE": "Pokračovat."
+		"TITLE": "Migrace"
 	},
 	"BACKGROUNDS_MGMT": {
 		"EXPL": "Existují tři kategorie pozadí. Pokud některá kategorie nemá žádné pozadí, použije se přibalené (s postavou, podle níž je pojmenována verze aplikace).",

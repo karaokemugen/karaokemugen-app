@@ -25,7 +25,7 @@ import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import type { DBTag } from '../../../../src/lib/types/database/tag';
 import type { DBKaraTag } from '../../../../src/lib/types/database/kara';
-import type { DBStats } from '../../../../src/types/database/database';
+import type { DBStatsApp } from '../../../../src/types/database/database';
 import type { DBDownload } from '../../../../src/types/database/download';
 import type { Feed } from '../../../../src/types/feeds';
 import type { Repository } from '../../../../src/lib/types/repo';
@@ -58,7 +58,7 @@ function WelcomePage() {
 	const [catchphrase, setCatchphrase] = useState('');
 	const [repositories, setRepositories] = useState<Repository[]>([]);
 	const [collections, setCollections] = useState<DBTag[]>([]);
-	const [stats, setStats] = useState<DBStats>();
+	const [stats, setStats] = useState<DBStatsApp>();
 	const [remoteStatus, setRemoteStatus] = useState<RemoteStatusData>();
 	let timeout: NodeJS.Timeout;
 
@@ -281,7 +281,7 @@ function WelcomePage() {
 		}
 	};
 
-	const getCollections = async () => setCollections(await commandBackend(WS_CMD.GET_COLLECTIONS));
+	const getCollections = async () => setCollections((await commandBackend(WS_CMD.GET_COLLECTIONS)).availableCollections);
 
 	useEffect(() => {
 		displayModal();

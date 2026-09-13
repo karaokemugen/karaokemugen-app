@@ -52,18 +52,22 @@ export const defaults: Config = {
 		},
 		RemoteAccess: {
 			Enabled: true,
-			Domain: 'kara.moe',
+			Domain: 'mugen.re',
 			Token: 'Change me',
 			Secure: true,
 		},
 		RemoteUsers: {
 			Enabled: true,
-			DefaultHost: 'kara.moe',
+			DefaultHost: 'mugen.re',
 			Secure: true,
 		},
 		Timeout: 2000,
 		FetchPopularSongs: true,
 		AllowDownloads: true,
+		UplinkServer: {
+			Domain: 'mugen.re',
+			Secure: true
+		}
 	},
 	Frontend: {
 		AllowGuestLogin: true,
@@ -508,25 +512,6 @@ export const configConstraints = z
 	.loose();
 
 export const defaultRepositories: Repository[] = [
-	{
-		Name: 'kara.moe',
-		Online: true,
-		Secure: true,
-		Update: true,
-		Enabled: true,
-		SendStats: true,
-		AutoMediaDownloads: 'updateOnly',
-		MaintainerMode: false,
-		BaseDir: process.platform === 'win32' ? 'repos\\kara.moe\\json' : 'repos/kara.moe/json',
-		Path:
-			process.platform === 'win32'
-				? {
-						Medias: ['repos\\kara.moe\\medias'],
-					}
-				: {
-						Medias: ['repos/kara.moe/medias'],
-					},
-	},
 	{
 		Name: 'My Custom Songs',
 		Online: false,
