@@ -1,23 +1,16 @@
-export interface DBStats {
-	singers: number;
-	songwriters: number;
-	creators: number;
-	authors: number;
-	karas: number;
-	languages: number;
-	usagetime: number;
-	playtime: number;
-	series: number;
-	played: number;
-	playlists: number;
-	duration: number;
-	blacklist: number;
-	whitelist: number;
-	tags: number;
-	total_media_size: number;
-}
+import { DBStats } from "../../lib/types/database/kara.js";
 
 export interface DBSetting {
 	option: string;
 	value: string;
+}
+
+export interface DBStatsApp extends DBStats {
+	usagetime: number;
+	playtime: number;
+	played: number;
+	playlists: number;
+	blacklist: number;
+	whitelist: number;
+	tags: number;
 }

@@ -1,4 +1,7 @@
 {
+	"ACTIONS": {	
+		"CONFIRM": "Bevestigen"
+	},
 	"SELECT_PLACEHOLDER": "Selecteer een afspeellijst",
 	"YES": "Ja",
 	"NO": "Nee",
@@ -7,6 +10,5 @@
 	"OR": "of",
 	"UNKNOWN": "Onbekend",
 	"SEARCH": "Zoeken",
-	"SUBMIT": "Opslaan",
-	"CONFIRM": "Bevestigen"
+	"SUBMIT": "Opslaan"
 }

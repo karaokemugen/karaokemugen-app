@@ -1,4 +1,5 @@
 @use '../variables';
+@use 'sass:color';
 
 .start-page .wrapper.setup {
 	font-weight: 300;
@@ -6,7 +7,7 @@
 	grid-template-columns: 200px auto;
 	grid-template-areas:
 		'logo title aside'
-		'other main main';
+		'timeline main main';
 
 	@media (max-width: variables.$mugen-breakpoint-large) {
 		grid-template-columns: auto 200px;
@@ -27,6 +28,11 @@
 			'main';
 	}
 
+	.timeline {
+		margin-top: 2em;
+		margin-right: 3em;
+	}
+
 	.main {
 		flex-direction: column;
 		max-width: 1000px;
@@ -37,26 +43,61 @@
 			font-size: 1.75em;
 			margin: 0.5em 0;
 		}
+
 		h2 {
 			font-size: 1.5em;
 			margin: 0.5em 0;
 		}
+
 		h3 {
 			font-size: 1.25em;
 			margin: 0.5em 0;
 		}
+
 		p {
 			font-size: 1em;
 			margin: 0.5em 0;
 		}
+
 		ul {
 			margin: 0.5em 0;
 		}
+
 		* {
 			color: inherit;
 		}
+
 		a {
 			cursor: pointer;
+		}
+
+		.bloc-collapse {
+			.collapsible {
+				cursor: pointer;
+				padding: 1.25em;
+				width: 100%;
+				border: none;
+				outline: none;
+				font-size: 15px;
+				display: flex;
+				justify-content: space-between;
+			}
+
+			.content {
+				padding: 0 1em;
+				display: none;
+				overflow: hidden;
+				background-color: color.scale(variables.$mugen-background, $lightness: 5%);
+
+				&.active {
+					display: block;
+				}
+			}
+
+			.stats-input label {
+				margin-left: 0.5em;
+				font-size: large;
+			}
 		}
 
 		.actions {
@@ -64,7 +105,9 @@
 			margin: 0.5em 0;
 			list-style: none;
 			display: flex;
+			gap: 0.25em;
 			flex-direction: row;
+
 			button {
 				cursor: pointer;
 				border: 2px solid white;
@@ -75,13 +118,16 @@
 				background: none;
 				outline: none;
 				transition: background-color 150ms linear;
+
 				&.in {
 					background: #ffffff33;
 				}
+
 				&.on {
 					background: #3c5c00;
 					font-weight: bold;
 				}
+
 				&.off {
 					background: #880500;
 					font-weight: bold;
@@ -121,11 +167,9 @@
 			.input-group {
 				border-left-color: #880500;
 			}
+
 			.actions {
 				justify-content: flex-end;
-				button {
-					background: #880500;
-				}
 			}
 		}
 

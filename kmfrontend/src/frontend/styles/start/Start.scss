@@ -38,17 +38,23 @@
 			flex-direction: row;
 			flex-wrap: wrap;
 
+			&.flex-column {
+				flex-direction: column;
+			}
+
 			margin: 0.5em 0;
 			border-left: variables.$block-border-width white;
 			padding: 0.5em 1em;
 			background: #0000004d;
 
-			> p {
+			>p {
 				width: 100%;
 			}
 
 			.input-control {
+				width: 100%;
 				margin: 1em 0;
+
 				label {
 					font-size: 0.8em;
 					font-weight: normal;
@@ -56,6 +62,7 @@
 					padding: 0;
 					color: #ffffffb3;
 				}
+
 				.input-field {
 					width: 100%;
 					font-size: 1.2em;
@@ -65,8 +72,33 @@
 					padding: 0.2em 0;
 					margin: 0;
 					color: white;
+
 					&:focus {
 						background: none;
+					}
+
+					&.disabled {
+						border: none;
+					}
+				}
+
+				.input-checkbox {
+					display: flex;
+					width: 100%;
+					font-size: 1.2em;
+					padding: 0.2em 0;
+
+					.input-checkbox-switch {
+						margin-top: 0.5em;
+					}
+
+					label {
+						margin: 0.25em;
+					}
+
+					.name {
+						font-weight: bold;
+						font-size: 1em;
 					}
 				}
 			}
@@ -89,6 +121,7 @@
 
 			@media (max-width: variables.$mugen-breakpoint-large) {
 				text-align: center;
+
 				img {
 					max-width: 250px;
 					margin-bottom: 1em;
@@ -98,6 +131,7 @@
 
 		.page-tasks-wrapper {
 			grid-area: tasks;
+
 			@media (max-width: variables.$mugen-breakpoint-large) {
 				position: fixed;
 				z-index: 100;
@@ -111,26 +145,32 @@
 
 			nav {
 				margin-bottom: 1em;
+
 				ul {
 					padding: 0;
 					margin: 0;
 					display: flex;
 					flex-direction: row;
 					justify-content: flex-end;
+
 					@media (max-width: variables.$mugen-breakpoint-large) {
 						justify-content: center;
 						flex-wrap: wrap;
 					}
+
 					list-style: none;
+
 					li {
 						margin-right: 1em;
 						margin-bottom: 0.5em;
 						border-radius: 0.75em;
 						padding: 0.5em;
 						border: 0.1em solid #bbbcbc;
+
 						a {
 							display: flex;
 							text-decoration: none;
+
 							i,
 							.svg-inline--fa {
 								margin-right: 0.5em;
@@ -145,15 +185,18 @@
 				display: flex;
 				flex-direction: row;
 				justify-content: flex-end;
+
 				article {
 					display: flex;
 					flex-direction: row;
 					align-items: center;
 					margin-right: 0.5em;
+
 					label {
 						display: block;
 						padding-right: 0.5em;
 					}
+
 					&:last-child {
 						margin-right: 0;
 					}
@@ -161,6 +204,7 @@
 					.UI-autocomplete {
 						transform-origin: 80% 80%;
 						width: 15rem;
+
 						input {
 							text-align: center;
 						}
@@ -173,6 +217,23 @@
 			grid-area: main;
 			display: flex;
 			height: 100%;
+		}
+
+		.server-list .server-item {
+			margin: 0.25em;
+			padding: 0.5em;
+			display: flex;
+			background: rgba(0, 0, 0, 0.3019607843);
+			gap: 0.5em;
+
+			.domain {
+				font-size: larger;
+			}
+
+			.offline {
+				font-style: italic;
+				color: #ffffffb3;
+			}
 		}
 	}
 }

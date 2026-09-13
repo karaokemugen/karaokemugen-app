@@ -11,6 +11,7 @@ import FoldersElement from '../../components/FoldersElement';
 import { useParams, useSearchParams } from 'react-router-dom';
 import debounce from 'lodash/debounce';
 import { WS_CMD } from '../../../utils/ws.mjs';
+import type { KMServerFull } from '../../../../../src/lib/types/database/servers';
 
 interface RepositoriesFormProps {
 	repository: Repository;
@@ -40,11 +41,21 @@ function RepositoryForm(props: RepositoriesFormProps) {
 	const [sshKey, setSshKey] = useState<string>();
 	const [isSshUrl, setIsSShUrl] = useState(props.repository?.Git?.URL.toLowerCase().startsWith('git@'));
 	const [nameChosen, setNameChosen] = useState(props.repository?.Name != null);
+	const [servers, setServers] = useState<KMServerFull[]>([]);
+
+	const getServersFromUplink = async () => {
+		try {
+			setServers(await commandBackend(WS_CMD.GET_SERVERS_FROM_UPLINK));
+		} catch (_err) {
+			// Uplink unreachable
+			setServers([]);
+		}
+	};
 
 	const getRepositories = async () => {
 		const res: Repository[] = (await commandBackend(WS_CMD.GET_REPOS)) as Repository[];
 		setRepositoriesValue(
-			res.filter(repo => repo.Name !== props.repository.Name && !repo.System).map(repo => repo.Name)
+			res.filter(repo => repo.Name !== props.repository?.Name && !repo.System).map(repo => repo.Name)
 		);
 	};
 
@@ -74,9 +85,8 @@ function RepositoryForm(props: RepositoriesFormProps) {
 	}, [form?.getFieldValue('GitURL')]);
 
 	useEffect(() => {
-		if (props.repository) {
-			getRepositories();
-		}
+		getRepositories();
+		getServersFromUplink();
 		getSocket().on('tasksUpdated', isZipUpdateInProgress);
 		return () => {
 			getSocket().off('tasksUpdated', isZipUpdateInProgress);
@@ -241,17 +251,54 @@ function RepositoryForm(props: RepositoriesFormProps) {
 					]}
 				/>
 			</Form.Item>
+			{onlineMode && servers.length > 0 ? (
+				<>
+					<Divider titlePlacement="start"></Divider>
+					<div style={{ fontSize: 17, marginBottom: '0.5em' }}>{i18next.t('SETUP_PAGE.REPOSITORY.LIST')}</div>
+					<Form.Item labelCol={{ flex: '0 1 300px' }} name="Online">
+						<Radio.Group
+							style={{ display: 'flex', flexDirection: 'column' }}
+							defaultValue={props.repository?.Online}
+							disabled={props.repository?.System}
+							options={servers.map(server => {
+								return {
+									disabled: !server.online,
+									value: server.domain,
+									label: (
+										<>
+											<div style={{ fontSize: 'larger' }}>
+												{i18next.t('SETUP_PAGE.ONLINE_SERVER.INSTANCE', {
+													instance: server.domain,
+													count: server.stats?.karas || '?',
+												})}
+											</div>
+											<div>
+												{server.online
+													? server.manifest?.description
+													: i18next.t('SETUP_PAGE.ONLINE_SERVER.OFFLINE')}
+											</div>
+										</>
+									),
+								};
+							})}
+						/>
+					</Form.Item>
+				</>
+			) : null}
 			{onlineMode === undefined ? null : (
 				<>
 					{name ? (
-						<Form.Item
-							label={i18next.t('REPOSITORIES.ENABLED')}
-							labelCol={{ flex: '0 1 300px' }}
-							valuePropName="checked"
-							name="Enabled"
-						>
-							<Checkbox />
-						</Form.Item>
+						<>
+							<Divider titlePlacement="start"></Divider>
+							<Form.Item
+								label={i18next.t('REPOSITORIES.ENABLED')}
+								labelCol={{ flex: '0 1 300px' }}
+								valuePropName="checked"
+								name="Enabled"
+							>
+								<Checkbox />
+							</Form.Item>
+						</>
 					) : null}
 					<Divider titlePlacement="start"></Divider>
 					{!name ? (

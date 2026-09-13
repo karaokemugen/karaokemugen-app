@@ -28,7 +28,6 @@ const newrepository: Repository = {
 function RepositoriesEdit() {
 	const navigate = useNavigate();
 	const { name } = useParams();
-	const [searchParams] = useSearchParams();
 
 	const [repository, setRepository] = useState<Repository>();
 	const [report, setReport] = useState<DifferentChecksumReport[]>();
@@ -39,8 +38,6 @@ function RepositoriesEdit() {
 			await commandBackend(WS_CMD.ADD_REPO, repository, true);
 			if (importRedirection) {
 				navigate(`/system/karas/import?repository=${repository.Name}`);
-			} else if (searchParams.get('setup')) {
-				navigate('/welcome');
 			} else {
 				navigate('/system/repositories');
 			}

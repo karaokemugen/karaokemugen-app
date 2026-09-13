@@ -388,7 +388,7 @@ function Login() {
 									</button>
 								) : null}
 								<button type="submit" className="btn largeButton submitButton">
-									{i18next.t(activeView === 'signup' ? 'SIGN_UP' : 'LOG_IN')}
+									{i18next.t(activeView === 'signup' ? 'ACTIONS.SIGN_UP' : 'ACTIONS.LOG_IN')}
 								</button>
 							</div>
 						</form>

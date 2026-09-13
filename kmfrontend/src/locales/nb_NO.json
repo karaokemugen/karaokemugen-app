@@ -1,4 +1,8 @@
 {
+	"ACTIONS": {
+		"LOG_IN": "Logg inn",
+		"SIGN_UP": "Registrering"
+	},
 	"CRITERIA": {
 		"DELETE": "Slett dette kriteriet",
 		"ADD_PLACEHOLDER": "Legg til verdi for kriterium",
@@ -99,7 +103,6 @@
 		"GUEST": "Gjest",
 		"NICKNAME": "Kallenavn",
 		"DELETE_USER_CONFIRM": "Slett bruker",
-		"LOG_IN": "Logg inn",
 		"NEW_USER": "Ny bruker",
 		"EMAIL": "E-post",
 		"URL": "Nettside",
@@ -298,8 +301,6 @@
 	"INSTANCE_NAME": "Tjenernavn",
 	"INSTANCE_NAME_SHORT": "Tjener",
 	"LOG_SUCCESS": "Innlogget som {{name}}",
-	"LOG_IN": "Logg inn",
-	"SIGN_UP": "Registrering",
 	"PROFILE": "Profil",
 	"PROFILE_MAIL": "E-post",
 	"PROFILE_PASSWORD": "Passord",

@@ -1,4 +1,10 @@
 {
+	"ACTIONS": {
+		"CONFIRM": "Confirmar",
+		"SIGN_UP": "Registrarse",
+		"LOG_IN": "Iniciar sesión",
+		"CONTINUE": "Continuar"
+	},
 	"OPTIONS": "Opciones",
 	"SHUTDOWN_POPUP": "Conexión perdida con Karaoke Mugen",
 	"VERSION": "Versión",
@@ -15,7 +21,6 @@
 	},
 	"CANCEL": "Cancelar",
 	"SUBMIT": "Guardar",
-	"CONFIRM": "Confirmar",
 	"SEARCH": "Buscar",
 	"AND": "y",
 	"NO": "No",
@@ -418,8 +423,6 @@
 	"PROFILE_MAIL": "Correo electrónico",
 	"PROFILE_USERNAME": "Apodo",
 	"PROFILE": "Perfil",
-	"SIGN_UP": "Registrarse",
-	"LOG_IN": "Iniciar sesión",
 	"USERNAME": "Nombre de usuario",
 	"LOGIN": {
 		"ONLINE_ACCOUNT": "Cuenta online?",
@@ -1205,24 +1208,19 @@
 		"USE_EMBEDDED_LYRICS_CONFIRM": "El archivo multimedia contiene un archivo de letra incrustado. ¿Desea reemplazar la letra actual por la que se encuentra en el archivo multimedia?"
 	},
 	"SETUP_PAGE": {
-		"LOCAL_ACCOUNT_DESC": "Ha elegido una cuenta local. Escriba un nombre de cuenta y una contraseña a continuación:",
-		"ONLINE_ACCOUNT_INSTANCE": "Su cuenta en línea se alojará en la instancia {{instance}}",
-		"CREATE_ONLINE_ACCOUNT": "Quiero crear una cuenta nueva",
-		"NEED_ACCOUNT": "Antes de empezar a cantar, necesitarás una cuenta para utilizar la aplicación.",
-		"ACCOUNT_QUESTION": "¿Desea utilizar una cuenta local (sólo en su ordenador) o una cuenta en línea (requiere acceso a Internet)?",
-		"LOGIN_ONLINE_ACCOUNT": "Ya tengo una cuenta",
-		"SECURITY_CODE_DESC_CONSOLE": "Introduce también el código de seguridad de 6 dígitos que encontrarás buscando \"SECURITY CODE\" en el archivo de registro de Karaoke Mugen o en la consola.",
-		"CREATE_ONLINE_ACCOUNT_DESC": "Introduce un nombre de cuenta y una contraseña para crear una.",
-		"SECURITY_CODE_USE": "Este código asegura que usted es realmente quien realiza estas acciones. Cambia después de cada uso.",
-		"CONNECTED_MESSAGE": "¡Grandioso, has iniciado sesión en Karaoke Mugen, {{user}}!",
 		"TITLE": "Asistente de configuración",
-		"ONLINE_ACCOUNT": "En línea",
-		"WELCOME": "¡Bienvenido a Karaoke Mugen!",
-		"ONLINE_ACCOUNT_INSTANCE_DESC": "Una instancia es un servidor en línea que proporciona varios servicios a Karaoke Mugen. Si no estás seguro, deja la instancia predeterminada ({{instance}}), o si sabes lo que haces, cámbiala por la instancia que prefieras.",
-		"ONLINE_ACCOUNT_DESC": "Una cuenta en línea le permite:",
-		"ONLINE_ACCOUNT_SAVE_INFOS": "Realiza una copia de seguridad de tus canciones favoritas, tu avatar y la información de tu perfil para utilizarlos en otra aplicación de Karaoke Mugen.",
-		"ONLINE_ACCOUNT_LOST_PASSWORD": "Si facilita una dirección de correo electrónico, podrá recuperar su cuenta si olvida la contraseña.",
-		"LOCAL_ACCOUNT": "Local"
+		"USER": {
+			"LOCAL_ACCOUNT_DESC": "Ha elegido una cuenta local. Escriba un nombre de cuenta y una contraseña a continuación:",
+			"ONLINE_ACCOUNT_INSTANCE": "Su cuenta en línea se alojará en la instancia {{instance}}",
+			"CREATE_ONLINE_ACCOUNT": "Quiero crear una cuenta nueva",
+			"LOGIN_ONLINE_ACCOUNT": "Ya tengo una cuenta",
+			"SECURITY_CODE_DESC_CONSOLE": "Introduce también el código de seguridad de 6 dígitos que encontrarás buscando \"SECURITY CODE\" en el archivo de registro de Karaoke Mugen o en la consola.",
+			"SECURITY_CODE_USE": "Este código asegura que usted es realmente quien realiza estas acciones. Cambia después de cada uso.",
+			"ONLINE_ACCOUNT": "En línea",
+			"WELCOME": "¡Bienvenido a Karaoke Mugen!",
+			"ONLINE_ACCOUNT_DESC": "Una cuenta en línea le permite:",
+			"LOCAL_ACCOUNT": "Local"
+		}
 	},
 	"NOTIFICATION": {
 		"OPERATOR": {
@@ -1289,7 +1287,6 @@
 		"URL": "Sitio web",
 		"LAST_LOGIN_AT": "Visto por última vez en",
 		"PASSWORD_VALIDATOR_MESSAGE": "Un usuario debe tener una contraseña",
-		"LOG_IN": "Iniciar sesión",
 		"REPLAY_TUTORIAL": "Tutorial del operador terminado",
 		"USER": "Usuario",
 		"LOGIN": "Nombre de usuario",
@@ -2226,8 +2223,7 @@
 		"ONTOP": "Mostrar encima de otras ventanas"
 	},
 	"MIGRATE": {
-		"TITLE": "Migración",
-		"CONTINUE": "Continuar."
+		"TITLE": "Migración"
 	},
 	"SHOW-HIDE": "Mostrar/Ocultar",
 	"UNKNOWN": "Desconocido",

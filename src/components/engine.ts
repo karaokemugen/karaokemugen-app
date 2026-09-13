@@ -213,7 +213,6 @@ export async function initEngine() {
 				// If we are testing, we're awaiting updateAllGitRepos
 				updateBase(internet).catch();
 			});
-			console.log(state);
 			if (state.isTest && !state.opt.noAutoTest) {
 				runTests();
 			}

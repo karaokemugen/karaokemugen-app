@@ -11,9 +11,10 @@ import { MigrationsFrontend } from '../../../../src/types/database/migrationsFro
 import logo from '../../assets/Logo-final-fond-transparent.png';
 import { commandBackend } from '../../utils/socket';
 import { WS_CMD } from '../../utils/ws.mjs';
+import DefaultRemote from '../components/migrations/DefaultRemote';
 
 export default function MigratePage() {
-	const components = {};
+	const components = { DefaultRemote };
 
 	const navigate = useNavigate();
 

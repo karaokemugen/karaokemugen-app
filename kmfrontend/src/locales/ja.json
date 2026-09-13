@@ -1,4 +1,7 @@
 {
+	"ACTIONS": {
+		"CONFIRM": "確認"
+	},
 	"YES": "はい",
 	"NO": "いいえ",
 	"PASSWORD_MANDATORY": "パスワードが必要",
@@ -409,7 +412,6 @@
 			"TITLE": "ログ"
 		}
 	},
-	"CONFIRM": "確認",
 	"KAROULETTE": {
 		"START": "公共の提案のレビュー",
 		"STATS_one": "{{count}} 処理済み ({{accepted}}/{{refused}})",

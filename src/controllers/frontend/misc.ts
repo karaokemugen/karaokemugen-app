@@ -20,6 +20,7 @@ import { selectLogFile } from '../../utils/logger.js';
 import { dumpPG, restorePG } from '../../utils/postgresql.js';
 import { getPlayerState, getPublicState, getState } from '../../utils/state.js';
 import { runChecklist } from '../middlewares.js';
+import { getServersFromUplink } from '../../services/repo.js';
 
 export default function miscController(router: SocketIOApp) {
 	router.route(WS_CMD.OPEN_LOG_FILE, async (socket, req) => {
@@ -143,6 +144,16 @@ export default function miscController(router: SocketIOApp) {
 		try {
 			await backupConfig();
 			return { code: 200, message: APIMessage('CONFIG_BACKUPED') };
+		} catch (err) {
+			throw { code: err.code || 500, message: APIMessage(err.message) };
+		}
+	});
+
+	router.route(WS_CMD.GET_SERVERS_FROM_UPLINK, async (socket, req) => {
+		await runChecklist(socket, req);
+		try {
+			const servers = await getServersFromUplink();
+			return servers;
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}

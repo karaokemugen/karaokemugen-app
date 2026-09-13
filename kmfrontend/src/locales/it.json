@@ -1,9 +1,14 @@
 {
+	"ACTIONS": {
+		"CONFIRM": "Conferma",
+		"LOG_IN": "Accedi",
+		"SIGN_UP": "Registrati",
+		"CONTINUE": "Continua"
+	},
 	"YES": "Sì",
 	"NO": "No",
 	"AND": "e",
 	"CANCEL": "Annulla",
-	"CONFIRM": "Conferma",
 	"DETAILS": {
 		"YEAR": "Anno",
 		"DURATION": "Durata"
@@ -438,7 +443,6 @@
 		"CRITERIA_TYPE_1008": "Prima del (anno incluso)",
 		"CRITERIA_TYPE_1007": "Dopo il (anno incluso)"
 	},
-	"LOG_IN": "Accedi",
 	"ADMIN_MESSAGE": {
 		"CL_USERS": "Mostra nella schermata utente",
 		"CL_ALL": "Mostra in entrambe",
@@ -512,7 +516,6 @@
 	"QUOTA_TIME": "Tempo rimasto",
 	"TOOLTIP_ADD_SELECT_KARA": "Aggiungi i brani selezionati alla playlist - clicca il tasto destro per inserirlo dopo il brano in riproduzione",
 	"CL_INFORMATIVE_MESSAGE": "Informazione",
-	"SIGN_UP": "Registrati",
 	"TOOLTIP_REFUSE_SELECT_KARA": "Rifiuta brani (libera brani)",
 	"TOOLTIP_ACCEPT_KARA": "Accetta brano (libera brano e copialo in questa lista)",
 	"TOOLTIP_DELETE_FAVS": "Rimuovi brano dai preferiti",
@@ -1580,8 +1583,7 @@
 		"KARAFILETAG_TOOLTIP": "Questa verrà aggiunta nella sezione tipi del nome del file del karaoke"
 	},
 	"MIGRATE": {
-		"TITLE": "Migrazione",
-		"CONTINUE": "Continua."
+		"TITLE": "Migrazione"
 	},
 	"HEADERS": {
 		"DATABASE": {
@@ -1746,7 +1748,6 @@
 	},
 	"USERS": {
 		"EMAIL": "Email",
-		"LOG_IN": "Accedi",
 		"NICKNAME": "Soprannome",
 		"REPLAY_TUTORIAL": "Tutorial operatore completato",
 		"BIO": "Biografia",
@@ -1799,24 +1800,19 @@
 	},
 	"LOADING_SUBTITLE_ELECTRON": "Non dovrebbe volerci molto, prova a riavviare o aggiornare Karaoke Mugen se rimani bloccato qui.",
 	"SETUP_PAGE": {
-		"ONLINE_ACCOUNT_SAVE_INFOS": "Effettuare un backup dei tuoi brani preferiti, il tuo avatar e le informazioni del profilo per utilizzarle in un'altra app Karaoke Mugen.",
-		"ONLINE_ACCOUNT_LOST_PASSWORD": "Se fornisci un indirizzo email, potrai recuperare il tuo account in caso di smarrimento della password.",
-		"SECURITY_CODE_USE": "Questo codice ci assicura che stai effettuando davvero tu queste azioni e cambia dopo ogni utilizzo.",
-		"CREATE_ONLINE_ACCOUNT": "Voglio creare un nuovo account",
-		"ONLINE_ACCOUNT_INSTANCE": "Il tuo account online verrà ospitato dall'istanza {{instance}}",
 		"TITLE": "Configurazione Guidata",
-		"CONNECTED_MESSAGE": "Complimenti, ti sei connesso a Karaoke Mugen, {{user}}!",
-		"ONLINE_ACCOUNT_INSTANCE_DESC": "Un'istanza è un server online che fornisce diversi servizi a Karaoke Mugen. Se non sei sicuro, lascia l'istanza predefinita ({{instance}}), se invece sai quello che fai, scegli l'istanza che preferisci.",
-		"ONLINE_ACCOUNT_DESC": "Un account online ti permette di:",
-		"CREATE_ONLINE_ACCOUNT_DESC": "Inserisci un nome ed una password per creare un account.",
-		"ACCOUNT_QUESTION": "Preferisci utilizzare un account locale (solo sul tuo computer) o un account online (accesso a internet necessario) ?",
-		"ONLINE_ACCOUNT": "Online",
-		"WELCOME": "Benvenuto su Karaoke Mugen!",
-		"NEED_ACCOUNT": "Prima di poter iniziare a cantare, avrai bisogno di un account per utilizzare l'app.",
-		"LOCAL_ACCOUNT_DESC": "Hai scelto un account locale. Inserisci un nome ed una password qui sotto:",
-		"SECURITY_CODE_DESC_CONSOLE": "Si prega di inserire anche il codice di sicurezza di 6 cifre che puoi trovare nella console o nel file di log di Karaoke Mugen cercando \"SECURITY CODE\".",
-		"LOCAL_ACCOUNT": "Locale",
-		"LOGIN_ONLINE_ACCOUNT": "Ho già un account"
+		"USER": {
+			"SECURITY_CODE_USE": "Questo codice ci assicura che stai effettuando davvero tu queste azioni e cambia dopo ogni utilizzo.",
+			"CREATE_ONLINE_ACCOUNT": "Voglio creare un nuovo account",
+			"ONLINE_ACCOUNT_INSTANCE": "Il tuo account online verrà ospitato dall'istanza {{instance}}",
+			"ONLINE_ACCOUNT_DESC": "Un account online ti permette di:",
+			"ONLINE_ACCOUNT": "Online",
+			"WELCOME": "Benvenuto su Karaoke Mugen!",
+			"LOCAL_ACCOUNT_DESC": "Hai scelto un account locale. Inserisci un nome ed una password qui sotto:",
+			"SECURITY_CODE_DESC_CONSOLE": "Si prega di inserire anche il codice di sicurezza di 6 cifre che puoi trovare nella console o nel file di log di Karaoke Mugen cercando \"SECURITY CODE\".",
+			"LOCAL_ACCOUNT": "Locale",
+			"LOGIN_ONLINE_ACCOUNT": "Ho già un account"
+		}
 	},
 	"QUIZ": {
 		"RULES": {

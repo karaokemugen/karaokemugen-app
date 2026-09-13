@@ -1,5 +1,10 @@
 {
-	"CONFIRM": "Bestätigen",
+	"ACTIONS": {
+		"CONFIRM": "Bestätigen",
+		"LOG_IN": "Anmelden",
+		"SIGN_UP": "Registrieren",
+		"CONTINUE": "Weiter"
+	},
 	"NOT_FOUND_PAGE": {
 		"404": "Verloren in Karaoke Mugen?",
 		"404_4": "Zur Startseite",
@@ -185,7 +190,6 @@
 		"FAVORITES": "Favoriten",
 		"ANIME_LIST": "Lieder aus meinen Animes"
 	},
-	"SIGN_UP": "Registrieren",
 	"PROFILE": "Profil",
 	"PROFILE_BIO": "Biografie",
 	"ADMIN_MESSAGE": {
@@ -198,7 +202,6 @@
 		"EMPTY": "Nachricht ist leer",
 		"CL_USERS": "Auf den Bildschirmen der Benutzer anzeigen"
 	},
-	"LOG_IN": "Anmelden",
 	"PROFILE_MAIL": "E-Mail",
 	"KAROULETTE": {
 		"REFUSED_other": "{{count}} abgelehnt",
@@ -1596,24 +1599,19 @@
 	"REMOTE_URL": "URL für Fernzugriff",
 	"LOADING_SUBTITLE_ELECTRON": "Es sollte nicht allzu lange dauern. Versuche, Karaoke Mugen neu zu starten oder zu aktualisieren, wenn du hier nicht weiterkommst.",
 	"SETUP_PAGE": {
-		"ONLINE_ACCOUNT_SAVE_INFOS": "Sichere deine Lieblingslieder, deinen Avatar und deine Profilinformationen, um sie auch auf anderen Veranstaltungen wieder zu verwenden.",
-		"ONLINE_ACCOUNT_LOST_PASSWORD": "Wenn du eine E-Mail-Adresse angibst, kannst du dein Konto wiederherstellen, wenn du dein Passwort vergessen hast.",
-		"SECURITY_CODE_USE": "Dieser Code stellt sicher, dass du wirklich derjenige bist, der diese Aktionen durchführt. Er ändert sich nach jeder Verwendung.",
-		"CREATE_ONLINE_ACCOUNT": "Ich möchte ein neues Konto erstellen",
-		"ONLINE_ACCOUNT_INSTANCE": "Dein Online-Konto wird auf der Instanz {{instance}} gespeichert",
 		"TITLE": "Einrichtungsassistent",
-		"CONNECTED_MESSAGE": "Glückwunsch, du bist bei Karaoke Mugen eingeloggt, {{user}}!",
-		"ONLINE_ACCOUNT_INSTANCE_DESC": "Eine Instanz ist ein Online-Server, der verschiedene Dienste für Karaoke Mugen bereitstellt. Wenn du dir nicht sicher bist, belasse die Standardinstanz ({{instance}}), oder wenn du weißt, was du tust, ändere sie in die Instanz deiner Wahl.",
-		"ONLINE_ACCOUNT_DESC": "Ein Online-Konto ermöglicht es dir:",
-		"CREATE_ONLINE_ACCOUNT_DESC": "Gib einen Kontonamen und ein Passwort ein, um ein Konto zu erstellen.",
-		"ACCOUNT_QUESTION": "Willst du ein lokales Konto (nur auf deinem Computer) oder ein Online-Konto (Internetzugang erforderlich) verwenden?",
-		"ONLINE_ACCOUNT": "Online",
-		"WELCOME": "Willkommen bei Karaoke Mugen!",
-		"NEED_ACCOUNT": "Bevor du anfangen kannst zu singen, brauchst du ein Konto, um die App zu nutzen.",
-		"LOCAL_ACCOUNT_DESC": "Du hast ein lokales Konto gewählt. Gib unten einen Kontonamen und ein Passwort ein:",
-		"SECURITY_CODE_DESC_CONSOLE": "Bitte gib auch den 6-stelligen Sicherheitscode ein, den du findest, indem du in der Karaoke Mugen-Logdatei oder in der Konsole nach \"SECURITY CODE\" suchst.",
-		"LOCAL_ACCOUNT": "Lokal",
-		"LOGIN_ONLINE_ACCOUNT": "Ich habe bereits ein Konto"
+		"USER": {
+			"SECURITY_CODE_USE": "Dieser Code stellt sicher, dass du wirklich derjenige bist, der diese Aktionen durchführt. Er ändert sich nach jeder Verwendung.",
+			"CREATE_ONLINE_ACCOUNT": "Ich möchte ein neues Konto erstellen",
+			"ONLINE_ACCOUNT_INSTANCE": "Dein Online-Konto wird auf der Instanz {{instance}} gespeichert",
+			"ONLINE_ACCOUNT_DESC": "Ein Online-Konto ermöglicht es dir:",
+			"ONLINE_ACCOUNT": "Online",
+			"WELCOME": "Willkommen bei Karaoke Mugen!",
+			"LOCAL_ACCOUNT_DESC": "Du hast ein lokales Konto gewählt. Gib unten einen Kontonamen und ein Passwort ein:",
+			"SECURITY_CODE_DESC_CONSOLE": "Bitte gib auch den 6-stelligen Sicherheitscode ein, den du findest, indem du in der Karaoke Mugen-Logdatei oder in der Konsole nach \"SECURITY CODE\" suchst.",
+			"LOCAL_ACCOUNT": "Lokal",
+			"LOGIN_ONLINE_ACCOUNT": "Ich habe bereits ein Konto"
+		}
 	},
 	"NOTIFICATION": {
 		"OPERATOR": {
@@ -1907,8 +1905,7 @@
 		"KARAFILETAG_TOOLTIP": "Dies wird in der Spalte Typen der Liednamen hinzugefügt"
 	},
 	"MIGRATE": {
-		"TITLE": "Migration",
-		"CONTINUE": "Weiter."
+		"TITLE": "Migration"
 	},
 	"HOME": {
 		"TAGS": {
@@ -1942,7 +1939,6 @@
 	},
 	"USERS": {
 		"EMAIL": "E-Mail",
-		"LOG_IN": "Einloggen",
 		"NICKNAME": "Anzeigename",
 		"REPLAY_TUTORIAL": "Fertiges Operator-Tutorial",
 		"BIO": "Biografie",
