@@ -251,14 +251,13 @@ function RepositoryForm(props: RepositoriesFormProps) {
 					]}
 				/>
 			</Form.Item>
-			{onlineMode && servers.length > 0 ? (
+			{onlineMode && servers.length > 0 && !props.repository?.Name ? (
 				<>
 					<Divider titlePlacement="start"></Divider>
 					<div style={{ fontSize: 17, marginBottom: '0.5em' }}>{i18next.t('SETUP_PAGE.REPOSITORY.LIST')}</div>
 					<Form.Item labelCol={{ flex: '0 1 300px' }} name="Online">
 						<Radio.Group
 							style={{ display: 'flex', flexDirection: 'column' }}
-							defaultValue={props.repository?.Online}
 							disabled={props.repository?.System}
 							options={servers.map(server => {
 								return {
@@ -269,7 +268,8 @@ function RepositoryForm(props: RepositoriesFormProps) {
 											<div style={{ fontSize: 'larger' }}>
 												{i18next.t('SETUP_PAGE.ONLINE_SERVER.INSTANCE', {
 													instance: server.domain,
-													count: server.stats?.karas || '?',
+													count: server.stats?.karas || 0,
+													songs: server.stats?.karas || '?',
 												})}
 											</div>
 											<div>
@@ -281,6 +281,7 @@ function RepositoryForm(props: RepositoriesFormProps) {
 									),
 								};
 							})}
+							onChange={e => form.setFieldValue('Name', e.target.value)}
 						/>
 					</Form.Item>
 				</>
