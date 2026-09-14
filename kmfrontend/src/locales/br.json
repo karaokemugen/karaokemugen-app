@@ -833,5 +833,10 @@
 	"KARAOKE_other": "{{count}} a ganaouennoù",
 	"TOOLTIP_DELETE_SELECT_KARA": "Dilemel ar c'hanaouennoù diuzet",
 	"QUOTA_KARA": "Kanaouennoù a chom",
-	"PL_MULTIPLE_ADDED": "Ouzhpennañ {{count}} a ganaouennoù"
+	"PL_MULTIPLE_ADDED": "Ouzhpennañ {{count}} a ganaouennoù",
+	"MIGRATE": {
+		"DEFAULT_REMOTE": {
+			"TITLE": "Dibab ur servijer dre ziouer"
+		}
+	}
 }
