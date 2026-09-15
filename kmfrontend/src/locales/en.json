@@ -1986,7 +1986,6 @@
 		"REPOSITORY_UNREACHABLE": "Repository unreachable. Did you misspell its name?",
 		"NO_UPLINK": "No uplink server configured",
 		"UPLINK_UNREACHABLE": "Unable to fetch list of known Karaoke Mugen servers",
-		"CANNOT_INSTALL_REPO_AT_WINDOWS_ROOT_DRIVE": "Repository cannot be installed at the root of a Windows drive.",
 		"REFRESH_ANIME_LIST_ERROR": "Error refreshing anime list",
 		"DELETE_PLAYLIST_ERROR_CURRENT": "Unable to delete a current playlist. Make another playlist current first.",
 		"DELETE_PLAYLIST_ERROR_PUBLIC": "Unable to delete a public playlist. Make another playlist public first.",

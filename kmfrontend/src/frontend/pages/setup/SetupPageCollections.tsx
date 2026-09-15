@@ -15,7 +15,7 @@ function SetupPageCollections() {
 
 	const [error, setError] = useState<string>();
 	const [collections, setCollections] = useState<Tag[]>();
-	const [collectionsEnabled, setCollectionsEnabled] = useState<Record<string, boolean>>();
+	const [collectionsEnabled, setCollectionsEnabled] = useState<Record<string, boolean>>({});
 
 	const enableCollection = (tid: string) => {
 		try {

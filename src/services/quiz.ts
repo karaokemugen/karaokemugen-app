@@ -449,13 +449,10 @@ export function continueGameSong() {
 	return gameState.currentSong.continue;
 }
 
-export async function startGame(gamename: string, playlist: string, settings?: QuizGameConfig) {
-	try {
+export async function startGame(gamename: string, plaid: string, settings?: QuizGameConfig) {
+	try {		
 		if (getState().quiz.running === true) {
 			throw new ErrorKM('QUIZZ_ALREADY_IN_PROGRESS', 409, false);
-		}
-		if (!playlist) {
-			throw new ErrorKM('INVALID_DATA', 400, false);
 		}
 		if (settings) {
 			for (const answer of Object.values(settings.Answers.Accepted)) {
@@ -477,7 +474,7 @@ export async function startGame(gamename: string, playlist: string, settings?: Q
 					currentSongNumber: 0,
 					currentTotalDuration: 0,
 					// This presupposes the playlist is already created.
-					playlist,
+					playlist: plaid,
 					KIDsPlayed: [],
 				},
 			});
@@ -497,14 +494,14 @@ export async function startGame(gamename: string, playlist: string, settings?: Q
 				quiz: {
 					...game.state,
 					running: true,
-					playlist,
+					playlist: plaid,
 				},
 			});
 			updateGame(gamename, settings, getState().quiz);
 		}
 		setState({ quiz: { settings, running: true, currentQuizGame: gamename } });
 		emitWS('settingsUpdated', {});
-		await editPlaylist(playlist, {
+		await editPlaylist(plaid, {
 			flag_current: true,
 			flag_visible: false,
 		});

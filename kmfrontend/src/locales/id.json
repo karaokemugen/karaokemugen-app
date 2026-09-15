@@ -1253,7 +1253,6 @@
 		"KARA_EDIT_ERROR_UNMOVABLE_MEDIA": "Tidak bisa menamai ulang media. Apakah berkasnya sibuk di aplikasi lain?",
 		"COLLECTIONS_GET_ERROR": "Galat mengambil koleksi",
 		"REPOSITORY_UNREACHABLE": "Repositori tidak dapat dijangkau. Apakah kamu salah menulis namanya?",
-		"CANNOT_INSTALL_REPO_AT_WINDOWS_ROOT_DRIVE": "Repositori tidak bisa dipasang pada root diska Windows.",
 		"DATABASE_DUMPED_ERROR": "Galat melegokan basis data",
 		"GUESTS_NOT_ALLOWED": "Akun tamu tidak diperbolehkan",
 		"DELETE_PLAYLIST_ERROR_PUBLIC": "Tidak bisa menghapus daftar putar publik. Buat dulu daftar putar publik lain.",

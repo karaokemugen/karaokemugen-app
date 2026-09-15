@@ -2,7 +2,7 @@ import z from 'zod';
 import { WS_CMD } from '../../../kmfrontend/src/utils/ws.mjs';
 import { APIMessage } from '../../lib/services/frontend.js';
 import { Role, User } from '../../lib/types/user.js';
-import { check, zNonEmptyString } from '../../lib/utils/validators.js';
+import { check, zQParam, zRoles } from '../../lib/utils/validators.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
 import { resetSecurityCode } from '../../services/auth.js';
 import { getKaras } from '../../services/kara.js';
@@ -16,6 +16,7 @@ import {
 } from '../../services/userOnline.js';
 import { getState } from '../../utils/state.js';
 import { runChecklist } from '../middlewares.js';
+import { animeListProviders, orderParams, userTypesNum } from '../../lib/utils/constants.js';
 
 export default function userController(router: SocketIOApp) {
 	router.route(WS_CMD.GET_USERS, async (socket, req) => {
@@ -31,6 +32,10 @@ export default function userController(router: SocketIOApp) {
 	router.route(WS_CMD.GET_REMOTE_USERS, async (socket, req) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		try {
+			check(req.body, z.object({
+				instance: z.string(),
+				filter: z.string().optional(),
+			}));
 			return await getRemoteUsers(req.body.filter, req.body.instance
 			);
 		} catch (err) {
@@ -39,48 +44,39 @@ export default function userController(router: SocketIOApp) {
 	});
 	router.route(WS_CMD.CREATE_USER, async (socket, req) => {
 		await runChecklist(socket, req, 'guest', 'limited', { optionalAuth: true });
-		// Validate form data
-		const validationErrors = check(
-			req.body,
-			z.object({
-				login: zNonEmptyString,
-				password: zNonEmptyString,
-				role: z.enum(['user', 'guest', 'admin']).optional(),
-			})
-		);
-		if (!validationErrors) {
-			// No errors detected
-
-			// Sanitize object and only pass valid options (prevent user.type privilege escalation)
+		try {
+			check(req.body,	z.object({
+					login: z.string().min(1),
+					password: z.string().min(8),
+					role: z.enum(['user', 'guest', 'admin']).optional(),
+				})
+			);
+					// Sanitize object and only pass valid options (prevent user.type privilege escalation)
 			const userSanitized: User & { role?: Role } = { ...req.body };
 			if (req.user?.type !== 0) {
 				delete userSanitized.type;
 				delete userSanitized.flag_temporary;
 			}
-
-			try {
-				if (userSanitized.role === 'admin' && req.user) {
-					await createAdminUser(userSanitized, userSanitized.login.includes('@'), req.user);
-				} else {
-					await createUser(userSanitized, {
-						admin: req.token?.role === 'admin',
-						createRemote: userSanitized.login.includes('@'),
-					});
-				}
-				return { code: 200, message: APIMessage('USER_CREATED') };
-			} catch (err) {
-				throw { code: err.code || 500, message: APIMessage(err.message) };
+			if (userSanitized.role === 'admin' && req.user) {
+				await createAdminUser(userSanitized, userSanitized.login.includes('@'), req.user);
+			} else {
+				await createUser(userSanitized, {
+					admin: req.token?.role === 'admin',
+					createRemote: userSanitized.login.includes('@'),
+				});
 			}
-		} else {
-			// Errors detected
-			// Sending BAD REQUEST HTTP code and error object.
-			throw { code: 400, message: validationErrors };
+			return { code: 200, message: APIMessage('USER_CREATED') };
+		} catch (err) {
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 
 	router.route(WS_CMD.GET_USER, async (socket, req) => {
 		await runChecklist(socket, req, 'guest', 'limited', { optionalAuth: true });
 		try {
+			check(req.body, z.object({
+				username: z.string(),
+			}));
 			return await getUser(req.body.username, true, false, req.token?.role || 'guest');
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
@@ -89,6 +85,9 @@ export default function userController(router: SocketIOApp) {
 	router.route(WS_CMD.DELETE_USER, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'closed');
 		try {
+			check(req.body, z.object({
+				username: z.string(),
+			}));
 			await removeUser(req.body.username);
 			return { code: 200, message: APIMessage('USER_DELETED') };
 		} catch (err) {
@@ -98,12 +97,57 @@ export default function userController(router: SocketIOApp) {
 	router.route(WS_CMD.EDIT_USER, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'closed');
 		try {
-			// If we're modifying a online user (@) only editing its type is permitted, so we'll filter that out.
-			const user = req.body.login.includes('@')
-				? { type: req.body.type, flag_tutorial_done: req.body.flag_tutorial_done, login: req.body.login }
-				: req.body;
+			// Route mainly used by system panel.
+			// If we're modifying a online user (@) only editing its type and flag tutorial is permitted, so we'll filter that out.
+			let user;
+			check(req.body, z.object({ login: z.string() }));
+			if (req.body.login.includes('@')) {
+				check(req.body, z.object({
+					type: z.coerce.number().refine(t => userTypesNum.includes(t)).optional(),
+					flag_tutorial_done: z.boolean().optional(),
+					login: z.string(),
+				}));
+				user = { 
+					type: req.body.type, 
+					flag_tutorial_done: req.body.flag_tutorial_done, 
+					login: req.body.login 
+				};
+			} else {
+				check(req.body, z.object({
+					old_login: z.string().optional(),
+					login: z.string().optional(),
+					// FIXME : Embed this in lib as it's the same checks on KM Server			
+					bio: z.string().nullish(),
+					email: z.email().or(z.literal('')).nullish(),
+					url: z.url().or(z.literal('')).nullish(),
+					nickname: z.string().optional(),
+					password: z.string().optional(),
+					location: z.string().nullish(),
+					flag_sendstats: z.coerce.boolean().optional(),
+					flag_public: z.coerce.boolean().optional(),
+					flag_displayfavorites: z.coerce.boolean().optional(),
+					social_networks: z.object({
+						mastodon: z.string().optional(),
+						instagram: z.string().optional(),
+						bluesky: z.string().optional(),
+						discord: z.string().optional(),
+						twitch: z.string().optional(),
+						anilist: z.string().optional(),
+						myanimelist: z.string().optional(),
+						kitsu: z.coerce.number().int().min(1).optional(),
+						gitlab: z.string().optional(),
+					}).loose().nullish(),
+					language: z.string().optional(),
+					anime_list_to_fetch: z.enum(animeListProviders).nullish(),
+					flag_parentsonly: z.coerce.boolean().optional(),
+					flag_contributor_emails: z.coerce.boolean().optional(),
+					roles: zRoles.optional(),
+					type: z.coerce.number().refine(t => userTypesNum.includes(t)).optional(),
+					avatar: z.string().optional(),
+				}));				
+				user = req.body;
+			}
 			const avatar = req.body.login.includes('@') ? null : req.body.avatar;
-
 			await editUser(req.body.old_login || req.body.login, user, avatar, req.token.role, {
 				editRemote: false,
 			});
@@ -115,9 +159,22 @@ export default function userController(router: SocketIOApp) {
 
 	router.route(WS_CMD.RESET_USER_PASSWORD, async (socket, req) => {
 		await runChecklist(socket, req, 'guest', 'closed', { optionalAuth: true });
+		try {
+			check(req.body, z.object({
+				username: z.string(),
+				password: z.string().optional(),
+				securityCode: z.coerce.number().optional(),
+			}));
+		} catch (err) {
+			throw { code: err.code || 500, message: APIMessage(err.message) };
+		}
 		if (!req.body.username.includes('@')) {
 			if (+req.body.securityCode === getState().securityCode) {
 				try {
+					check(req.body, z.object({
+						username: z.string(),
+						password: z.string(),
+					}));
 					await editUser(
 						req.body.username,
 						{
@@ -137,6 +194,9 @@ export default function userController(router: SocketIOApp) {
 			}
 		} else {
 			try {
+				check(req.body, z.object({
+						username: z.string(),				
+				}));
 				await resetRemotePassword(req.body.username);
 				return { code: 200, message: APIMessage('USER_RESETPASSWORD_ONLINE') };
 			} catch (err) {
@@ -168,6 +228,38 @@ export default function userController(router: SocketIOApp) {
 		await runChecklist(socket, req, 'user', 'closed');
 
 		try {
+			check(req.body, z.object({
+				old_login: z.string().optional(),
+				login: z.string().optional(),
+				// FIXME : Embed this in lib as it's the same checks on KM Server			
+				bio: z.string().nullish(),
+				email: z.email().or(z.literal('')).nullish(),
+				url: z.url().or(z.literal('')).nullish(),
+				nickname: z.string().optional(),
+				password: z.string().optional(),
+				location: z.string().nullish(),
+				flag_sendstats: z.coerce.boolean().optional(),
+				flag_public: z.coerce.boolean().optional(),
+				flag_displayfavorites: z.coerce.boolean().optional(),
+				social_networks: z.object({
+					mastodon: z.string().nullish(),
+					instagram: z.string().nullish(),
+					bluesky: z.string().nullish(),
+					discord: z.string().nullish(),
+					twitch: z.string().nullish(),
+					anilist: z.string().nullish(),
+					myanimelist: z.string().nullish(),
+					kitsu: z.union([z.string().nullish(), z.coerce.number().int().min(1).nullish()]),
+					gitlab: z.string().nullish(),
+				}).loose().nullish(),
+				language: z.string().optional(),
+				anime_list_to_fetch: z.enum(animeListProviders).nullish(),
+				flag_parentsonly: z.coerce.boolean().optional(),
+				flag_contributor_emails: z.coerce.boolean().optional(),
+				roles: zRoles.optional(),
+				type: z.number().refine(t => userTypesNum.includes(t)).optional(),
+				avatar: z.string().optional(),
+			}));
 			const response = await editUser(req.token.username, req.body, req.body.avatar || null, req.token.role, {
 				editRemote: req.onlineAuthorization,
 			});
@@ -179,44 +271,27 @@ export default function userController(router: SocketIOApp) {
 
 	router.route(WS_CMD.CONVERT_MY_LOCAL_USER_TO_ONLINE, async (socket, req) => {
 		await runChecklist(socket, req, 'user', 'closed');
-		const validationErrors = check(
-			req.body,
-			z.object({
-				instance: zNonEmptyString,
-				password: zNonEmptyString,
-			})
-		);
-		if (!validationErrors) {
-			// No errors detected
-			try {
-				const tokens = await convertToRemoteUser(req.token, req.body.password, req.body.instance);
-				return { code: 200, message: APIMessage('USER_CONVERTED', tokens) };
-			} catch (err) {
-				throw { code: err.code || 500, message: APIMessage(err.message) };
-			}
-		} else {
-			// Errors detected
-			// Sending BAD REQUEST HTTP code and error object.
-			throw { code: 400, message: validationErrors };
+		try {
+			check(req.body,	z.object({
+				instance: z.string().min(1),
+				password: z.string().min(1),
+			}));
+			const tokens = await convertToRemoteUser(req.token, req.body.password, req.body.instance);
+			return { code: 200, message: APIMessage('USER_CONVERTED', tokens) };
+		} catch (err) {
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 
 	router.route(WS_CMD.CONVERT_MY_ONLINE_USER_TO_LOCAL, async (socket, req) => {
 		await runChecklist(socket, req, 'user', 'closed');
-		const validationErrors = check(req.body, z.object({ password: zNonEmptyString }));
-		if (!validationErrors) {
-			// No errors detected
-			try {
-				const newToken = await removeRemoteUser(req.token, req.body.password);
-				return { code: 200, message: APIMessage('USER_DELETED_ONLINE', newToken) };
-			} catch (err) {
-				throw { code: err.code || 500, message: APIMessage(err.message) };
-			}
-		} else {
-			// Errors detected
-			// Sending BAD REQUEST HTTP code and error object.
-			throw { code: 400, message: validationErrors };
-		}
+		try {
+			check(req.body, z.object({ password: z.string().min(8) }));
+			const newToken = await removeRemoteUser(req.token, req.body.password);
+			return { code: 200, message: APIMessage('USER_DELETED_ONLINE', newToken) };
+		} catch (err) {
+			throw { code: err.code || 500, message: APIMessage(err.message) };
+		}		
 	});
 
 	router.route(WS_CMD.REFRESH_ANIME_LIST, async (socket, req) => {
@@ -243,6 +318,19 @@ export default function userController(router: SocketIOApp) {
 					i18n: undefined,
 				};
 			}
+			// FIXME: This is the same as getKaras so maybe use the same z.object?
+			check(req.body, z.object({ 
+				filter: z.string().optional(),
+				from: z.number().int().min(0).optional(),
+				size: z.number().int().min(1).optional(),
+				order: z.enum(orderParams).optional(),
+				direction: z.enum(['asc', 'desc']).optional(),
+				q: zQParam.optional(),
+				random: z.number().int().min(1).optional(),
+				blacklist: z.boolean().optional(),
+				parentsOnly: z.boolean().optional(),
+				ignoreCollections: z.boolean().optional(),
+			}).optional());
 			return await getKaras({
 				username: req.token.username.toLowerCase(),
 				userAnimeList: req.token.username.toLowerCase(),

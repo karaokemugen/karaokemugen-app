@@ -1,6 +1,7 @@
 import { DBKara } from '../lib/types/database/kara.js';
 import { DBPLCBase } from '../lib/types/database/playlist.js';
 import { AggregatedCriteria } from '../lib/types/playlist.js';
+import { shuffleMethods } from '../utils/constants.ts';
 
 export interface CurrentSong extends DBPLCBase, DBKara {
 	avatar?: string;
@@ -12,7 +13,7 @@ export interface Pos {
 	plc_id_pos: number;
 }
 
-export type ShuffleMethods = 'normal' | 'smart' | 'balance' | 'upvotes';
+export type ShuffleMethods = typeof shuffleMethods[number];
 
 export interface AddKaraParams {
 	kids: string[];

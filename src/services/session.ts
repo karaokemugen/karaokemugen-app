@@ -166,7 +166,7 @@ export async function mergeSessions(seid1: string, seid2: string): Promise<Sessi
 		await Promise.all([removeSession(seid1), removeSession(seid2)]);
 		return session;
 	} catch (err) {
-		logger.error(`Error merging sessions : ${err}`, { service });
+		logger.error(`Error merging sessions`, { err, service });
 		sentry.error(err);
 		throw err instanceof ErrorKM ? err : new ErrorKM('SESSION_MERGE_ERROR');
 	}
@@ -190,7 +190,7 @@ export async function initSession() {
 		setActiveSession(
 			await addSession(
 				i18next.t('NEW_SESSION_NAME', { date: date.toLocaleString(), interpolation: { escapeValue: false } }),
-				date.toISOString()
+				date.toISOString(),
 			)
 		);
 	}

@@ -22,7 +22,7 @@ import { commandBackend, getSocket } from '../../../utils/socket';
 import { WS_CMD } from '../../../utils/ws.mjs';
 import { setPlaylistInfo } from '../../../utils/kara';
 import { callModal, displayMessage, secondsTimeSpanToHMS } from '../../../utils/tools';
-import type { OrderParam, PlaylistExport, ServerDBPL } from '../../../../../src/lib/types/playlist';
+import type { PLOrderParam, PlaylistExport, ServerDBPL } from '../../../../../src/lib/types/playlist';
 import range from 'lodash/range';
 import i18n from '../../../utils/i18n';
 import nanamiThinkPng from '../../../assets/nanami-think.png';
@@ -49,7 +49,7 @@ function PlaylistImportModal(props: IProps) {
 
 	const [playlistImportStatus, setPlaylistImportStatus] = useState<Record<string, ImportStatus>>({});
 
-	const [sortOption, setSortOption] = useState<OrderParam>('az');
+	const [sortOption, setSortOption] = useState<PLOrderParam>('az');
 
 	const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
@@ -445,7 +445,7 @@ function PlaylistImportModal(props: IProps) {
 												'recent',
 												'karacount',
 												'duration',
-											] as OrderParam[]
+											] as PLOrderParam[]
 										).map(so => (
 											<li
 												key={so}

@@ -26,7 +26,7 @@ import { DiffChanges, Repository, RepositoryBasic, RepositoryManifest } from '..
 import { TagFile } from '../lib/types/tag.js';
 import { ASSFileCleanup } from '../lib/utils/ass.js';
 import { getConfig, resolvedPathRepos } from '../lib/utils/config.js';
-import { uuidRegexp } from '../lib/utils/constants.js';
+import { repoAutoMediaDownloadType, repoUploadMethods, uuidRegexp } from '../lib/utils/constants.js';
 import { ErrorKM } from '../lib/utils/error.js';
 import { asyncCheckOrMkdir, listAllFiles, moveAll, relativePath, resolveFileInDirs } from '../lib/utils/files.js';
 import HTTP, { fixedEncodeURIComponent } from '../lib/utils/http.js';
@@ -56,12 +56,51 @@ import { getTags, integrateTagFile, removeTag } from './tag.js';
 import { getInboxCache } from './inbox.js';
 import { KMServer, KMServerFull } from '../lib/types/database/servers.js';
 import { DBStats } from '../lib/types/database/kara.js';
+import z from 'zod';
 
 const service = 'Repo';
 
 const windowsDriveRootRegexp = /^[a-zA-Z]:\\$/;
 
 let updateRunning = false;
+
+export const repoConstraints = z.object({
+	Name: z.string().min(1),
+	BaseDir: z.string(),
+	Enabled: z.boolean().optional(),
+	SendStats: z.boolean().optional(),
+	Update: z.boolean().optional(),
+	Online: z.boolean(),
+	AutoMediaDownloads: z.enum(repoAutoMediaDownloadType).optional(),
+	MaintainerMode: z.boolean().optional(),
+	Path: z.object({
+		Medias: z.array(z.string()),
+	}),
+	Git: z.object({
+		URL: z.string(),
+		Branch: z.string(),
+		Username: z.string().optional(),
+		Password: z.string().optional(),
+		Author: z.string(),
+		Email: z.string(),
+	}).nullish(),
+	UploadMethod: z.enum(repoUploadMethods).optional(),
+	FTP: z.object({
+		Port: z.number().int().optional(),
+		Host: z.string(),
+		Username: z.string(),
+		Password: z.string(),
+		BaseDir: z.string().optional(),
+	}).optional(),
+	SFTP: z.object({
+		Port: z.number().int().optional(),
+		Host: z.string(),
+		Username: z.string().optional(),
+		Password: z.string().optional(),
+		BaseDir: z.string().optional(),
+	}).optional(),
+	Secure: z.boolean().optional(),
+});
 
 /** Get all repositories in database */
 export function getRepos(repoNames?: string[], publicView?: false): Repository[];
@@ -100,8 +139,9 @@ export async function removeRepo(name: string) {
 		if (!repos.find(r => r.Name === name)) throw new ErrorKM('UNKNOWN_REPOSITORY', 404, false);
 		// Forbid people from removing the last repo
 		if (repos.length === 1) throw new ErrorKM('CANNOT_DELETE_LAST_REPOSITORY', 403, false);
-		deleteRepo(name);
-		await generateDB();
+		await deleteRepo(name);
+		// GenerateDB should happen in the background to give user quick feedback
+		generateDB().catch();
 		logger.info(`Removed ${name}`, { service });
 	} catch (err) {
 		logger.error(`Error deleting repos : ${err}`, { service });
@@ -113,9 +153,6 @@ export async function removeRepo(name: string) {
 /** Add a repository. Folders will be created if necessary */
 export async function addRepo(repo: Repository) {
 	try {
-		if (windowsDriveRootRegexp.test(repo.BaseDir)) {
-			throw new ErrorKM('CANNOT_INSTALL_REPO_AT_WINDOWS_ROOT_DRIVE', 400, false);
-		}
 		if (typeof repo.Enabled === 'undefined') repo.Enabled = true;
 		if (repo.Online) {
 			// Testing if repository is reachable
@@ -128,7 +165,7 @@ export async function addRepo(repo: Repository) {
 		}
 		if (repo.MaintainerMode && repo.Git?.URL) await checkGitInstalled();
 		await checkRepoPaths(repo);
-		insertRepo(repo);
+		await insertRepo(repo);
 		// Let's download zip if it's an online repository
 		if (repo.Online && repo.Update) {
 			if (repo.MaintainerMode) {
@@ -252,8 +289,6 @@ export async function deleteMedias(kids?: string[], repo?: string, cleanRarelyUs
 		} else if (repo) {
 			q = `r:${repo}`;
 			errorMsg = cleanRarelyUsed ? 'REPO_DELETE_OLD_MEDIAS_ERROR' : 'REPO_DELETE_ALL_MEDIAS_ERROR';
-		} else {
-			throw new ErrorKM('INVALID_DATA', 400, false);
 		}
 		const karas = await getKaras({
 			q,
@@ -446,7 +481,7 @@ export async function editRepo(
 		}
 		if (repo.MaintainerMode && repo.Git?.URL) await checkGitInstalled();
 		if (repo.Enabled) await checkRepoPaths(repo);
-		updateRepo(repo, name);
+		await updateRepo(repo, name);
 		// Delay repository actions after edit
 		hookEditedRepo(oldRepo, repo, refresh, onlineCheck).catch();
 		logger.info(`Updated ${name}`, { service });

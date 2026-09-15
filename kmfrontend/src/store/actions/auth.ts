@@ -23,7 +23,7 @@ export async function login(
 			username,
 			password,
 			securityCode,
-			name: guestName,
+			name: guestName ? guestName : undefined,
 		});
 
 		// Store data, should be managed in a service and item should be enum and not string

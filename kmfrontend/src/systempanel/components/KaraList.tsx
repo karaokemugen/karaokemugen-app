@@ -93,7 +93,7 @@ function KaraList(props: KaraListProps) {
 			WS_CMD.GET_KARAS,
 			{
 				filter: filter,
-				q: tagFilter,
+				q: tagFilter ? tagFilter : undefined,
 				qType: tagFilterType,
 				from: (currentPage - 1) * currentPageSize,
 				size: currentPageSize,

@@ -492,7 +492,6 @@ function Playlist(props: IProps) {
 
 		if (search === 'incoming') {
 			param.incomingSongs = search === 'incoming';
-			param.order = 'search';
 			param.filterByUser = context.globalState.auth.data.username;
 		} else if (search) {
 			param.order = search === 'search' ? undefined : search;

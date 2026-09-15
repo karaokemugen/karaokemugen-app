@@ -390,3 +390,7 @@ export const endOfPlaylistActions = [
 	'repeat',
 	'none',
 ] as const;
+
+export const shuffleMethods = ['normal', 'smart', 'balance', 'upvotes'];
+
+export const blindMode = ['', 'black', 'blur'];

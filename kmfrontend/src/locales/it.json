@@ -1136,7 +1136,6 @@
 		"MEDIA_DELETE_ERROR": "Errore durante l'eliminazione del file multimediale",
 		"UNKNOWN_CONVERT_ERROR": "Utente sconosciuto",
 		"INBOX_VIEW_ERROR": "Impossibile recuperare i brani dalla posta",
-		"CANNOT_INSTALL_REPO_AT_WINDOWS_ROOT_DRIVE": "L'archivio non può essere installato alla radice di un disco Windows.",
 		"REPO_GIT_STASH_ERROR": "Impossibile effettuare lo Stash dei cambiamenti",
 		"REPO_GIT_PUSH_ERROR": "Impossibile rilasciare i Git Commit",
 		"DOWNLOADS_GET_ERROR": "Errore durante il recupero dei download dalla coda",

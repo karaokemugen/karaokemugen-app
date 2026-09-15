@@ -146,10 +146,10 @@ function KaraDownload() {
 				WS_CMD.GET_KARAS,
 				{
 					filter: filter,
-					q: `${tagFilter}!m:${downloadStatus}`,
+					q: `${tagFilter ? `${tagFilter}!` : ''}m:${downloadStatus}`,
 					from: pfrom,
 					size: psz,
-					order: order,
+					order: order || undefined,
 					direction: direction,
 				},
 				false,

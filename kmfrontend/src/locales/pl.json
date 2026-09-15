@@ -2173,7 +2173,6 @@
 		"REPO_DELETE_OLD_MEDIAS_ERROR": "Błąd podczas usuwania starszych nośników z repozytorium",
 		"LYRICS_FILE_OPEN_ERROR": "Błąd podczas otwierania pliku",
 		"UPLOADED_MEDIA_ERROR": "Błąd podczas przesyłania multimediów",
-		"CANNOT_INSTALL_REPO_AT_WINDOWS_ROOT_DRIVE": "Nie można zainstalować repozytorium w katalogu głównym dysku z systemem Windows.",
 		"REFRESH_ANIME_LIST_ERROR": "Błąd odświeżania listy anime",
 		"SESSION_GET_ERROR": "Błąd podczas pobierania sesji",
 		"QUIZZ_GET_GAME_SCORES_ERROR": "Błąd podczas uzyskiwania wyników gry",

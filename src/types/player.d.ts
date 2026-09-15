@@ -1,7 +1,9 @@
 import { PlaylistMedia, PlaylistMediaType } from '../lib/types/playlistMedias.js';
+import { playerCommand } from '../services/player.ts';
+import { blindMode } from '../utils/constants.ts';
 import { CurrentSong } from './playlist.js';
 
-export type BlindMode = '' | 'black' | 'blur';
+export type BlindMode = typeof blindMode[number];
 
 export interface SongModifiers {
 	Mute?: boolean;
@@ -56,29 +58,4 @@ export interface MpvOptions {
 	monitor: boolean;
 }
 
-export type PlayerCommand =
-	| 'play'
-	| 'stopNow'
-	| 'pause'
-	| 'stopAfter'
-	| 'skip'
-	| 'prev'
-	| 'toggleFullscreen'
-	| 'toggleAlwaysOnTop'
-	| 'toggleBorders'
-	| 'toggleAudioOnlyExperience'
-	| 'setHwDec'
-	| 'mute'
-	| 'unmute'
-	| 'showSubs'
-	| 'hideSubs'
-	| 'seek'
-	| 'goTo'
-	| 'setAudioDevice'
-	| 'setVolume'
-	| 'setAudioDelay'
-	| 'setPitch'
-	| 'setSpeed'
-	| 'setModifiers'
-	| 'blurVideo'
-	| 'unblurVideo';
+export type PlayerCommand = typeof playerCommand[number];

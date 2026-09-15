@@ -93,7 +93,7 @@ export async function autoRemoveSongsFromCurrentPlaylist() {
 	if (conf.Playlist.CurrentPlaylistAutoRemoveSongs === 0) return;
 	const plaid = getState().currentPlaid;
 	const [pl, plInfo] = await Promise.all([
-		getPlaylistContentsMicro(plaid, undefined, adminToken),
+		getPlaylistContentsMicro(plaid, adminToken),
 		getPlaylistInfo(plaid),
 	]);
 	const currentPLCID = plInfo.plcid_playing;
@@ -522,7 +522,7 @@ export async function editPlaylist(plaid: string, playlist: Partial<DBPL>, refre
 				try {
 					validateCriterias(cs, newPL);
 				} catch (err) {
-					// We change the message to say you can't chagne the smart type due to conflicting criterias
+					// We change the message to say you can't change the smart type due to conflicting criterias
 					if (err.code === 409) err.message === 'TYPE_SMART_CHANGE_CONFLICTING_CRITERIAS_ERROR';
 					throw err;
 				}
@@ -643,12 +643,12 @@ export async function updateAllPlaylistDurations() {
 /** Get a tiny amount of data from a PLC
  * After Mini-PL, Micro-PL, we need the PL-C format.
  */
-export async function getPlaylistContentsMicro(plaid: string, username?: string, token?: OldJWTToken) {
+export async function getPlaylistContentsMicro(plaid: string, token?: OldJWTToken) {
 	try {
 		const pl = await getPlaylistInfo(plaid, token);
 		// Playlist isn't visible to user, throw.
 		if (!pl) throw new ErrorKM('UNKNOWN_PLAYLIST', 404, false);
-		return await selectPlaylistContentsMicro(plaid, username);
+		return await selectPlaylistContentsMicro(plaid);
 	} catch (err) {
 		logger.error(`Error fetching playlist micro contents : ${err}`, { service });
 		sentry.error(err);
@@ -1866,13 +1866,13 @@ export async function createAutoMix(params: AutoMixParams, username: string): Pr
 		// If this doesn't give expected results due to async optimizations (for years and/or karas) we should try using Maps or Sets instead of arrays. Or use .push on each element
 		const uniqueList = new Map<string, DBPLC>();
 		let allUsers = [];
-		if (params.filters?.usersFavorites?.includes('*') || params.filters?.usersAnimeList?.includes('*')) {
+		if (params.filters.usersFavorites?.includes('*') || params.filters.usersAnimeList?.includes('*')) {
 			allUsers = await getUsers({ full: true });
 			// Filter all logged in users that are not guests
 			// Guests have no rights! :p
 			allUsers = allUsers.filter(e => e.flag_logged_in === true && e.type < 2).map(e => e.login);
 		}
-		if (params.filters?.usersFavorites) {
+		if (params.filters.usersFavorites) {
 			let users = params.filters.usersFavorites;
 			if (users.includes('*')) {
 				// Remove the joker user, concatenate all users and make it a unique list
@@ -1882,7 +1882,7 @@ export async function createAutoMix(params: AutoMixParams, username: string): Pr
 			favs = shuffle(favs);
 			favs.forEach(f => uniqueList.set(f.kid, f as any));
 		}
-		if (params.filters?.usersAnimeList) {
+		if (params.filters.usersAnimeList) {
 			let users = params.filters.usersAnimeList;
 			if (users.includes('*')) {
 				// Remove the joker user, concatenate all users and make it a unique list
@@ -1897,7 +1897,7 @@ export async function createAutoMix(params: AutoMixParams, username: string): Pr
 			}
 		}
 		let karaTags: DBKara[] = [];
-		if (params.filters?.tags) {
+		if (params.filters.tags) {
 			for (const tagAndType of params.filters.tags) {
 				const tag = `${tagAndType.tid}~${tagAndType.type}`;
 				const karas = await getKaras({
@@ -1910,7 +1910,7 @@ export async function createAutoMix(params: AutoMixParams, username: string): Pr
 			karaTags.forEach(k => uniqueList.set(k.kid, k as any));
 		}
 		let years: DBKara[] = [];
-		if (params.filters?.years) {
+		if (params.filters.years) {
 			for (const year of params.filters.years) {
 				const karas = await getKaras({
 					q: `y:${year}`,

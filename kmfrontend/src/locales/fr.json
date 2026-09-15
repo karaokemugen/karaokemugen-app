@@ -1981,7 +1981,6 @@
 		"UPLOADED_MEDIA_ERROR": "Erreur lors de l'envoi du média",
 		"ENCODE_MEDIA_ERROR": "Erreur lors de l'encodage du média",
 		"REPOSITORY_UNREACHABLE": "Dépôt inaccessible. Avez-vous mal orthographié son nom ?",
-		"CANNOT_INSTALL_REPO_AT_WINDOWS_ROOT_DRIVE": "Le dépôt ne peut pas être installé à la racine d'un lecteur Windows.",
 		"REFRESH_ANIME_LIST_ERROR": "Erreur lors du rafraichissement de la liste d'anime",
 		"DELETE_PLAYLIST_ERROR_CURRENT": "Impossible de supprimer une playlist courante. Définissez une autre playlist courante avant.",
 		"DELETE_PLAYLIST_ERROR_PUBLIC": "Impossible de supprimer une playlist publique. Définissez une autre playlist publique avant.",

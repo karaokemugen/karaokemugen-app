@@ -123,8 +123,8 @@ function KaraForm(props: KaraFormProps) {
 	const [isEncodingMedia, setIsEncodingMedia] = useState(false);
 	const [encodeMediaOptions, setEncodeMediaOptions] = useState<{
 		trim: boolean;
-		fixAspectRatioMode: 'blackbars' | 'blurvideo' | '' | null;
-	}>({ trim: false, fixAspectRatioMode: null });
+		fixAspectRatioMode: 'blackbars' | 'blurvideo' | undefined;
+	}>({ trim: false, fixAspectRatioMode: undefined });
 	const [repositoriesValue, setRepositoriesValue] = useState<string[]>(null);
 	const [repositoryManifest, setRepositoryManifest] = useState<RepositoryManifestV2>();
 	const [repoToCopySong, setRepoToCopySong] = useState<string>(null);
@@ -278,7 +278,7 @@ function KaraForm(props: KaraFormProps) {
 					WS_CMD.ENCODE_MEDIA_FILE_TO_REPO_DEFAULTS,
 					{
 						kid: props.kara?.kid,
-						filename: mediafileIsTouched && mediaInfo?.filename,
+						filename: mediafileIsTouched ? mediaInfo?.filename : undefined,
 						repo: form.getFieldValue('repository'),
 						encodeOptions: encodeMediaOptions,
 					},
@@ -776,7 +776,7 @@ function KaraForm(props: KaraFormProps) {
 					WS_CMD.EMBED_AUDIO_FILE_COVER_ART,
 					{
 						kid: props.kara?.kid,
-						tempFilename: mediafileIsTouched && mediaInfo?.filename,
+						tempFilename: mediafileIsTouched ? mediaInfo?.filename : undefined,
 						coverPictureFilename: info.file.response.filename,
 					},
 					false,
@@ -1130,7 +1130,7 @@ function KaraForm(props: KaraFormProps) {
 													onChange={e =>
 														setEncodeMediaOptions({
 															...encodeMediaOptions,
-															fixAspectRatioMode: e.target.checked ? 'blurvideo' : null,
+															fixAspectRatioMode: e.target.checked ? 'blurvideo' : undefined,
 														})
 													}
 												>
