@@ -95,12 +95,14 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 	};
 
 	mergeCascaderOption = () => {
-		return this.props.sessions.map(session => {
-			return {
-				value: session.seid,
-				label: session.name,
-			};
-		});
+		return this.props.sessions
+			.filter(session => session.seid !== this.props.session.seid)
+			.map(session => {
+				return {
+					value: session.seid,
+					label: session.name,
+				};
+			});
 	};
 
 	mergeCascaderFilter = function (inputValue, path) {

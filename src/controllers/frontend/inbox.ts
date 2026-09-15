@@ -1,5 +1,7 @@
+import z from 'zod';
 import { WS_CMD } from '../../../kmfrontend/src/utils/ws.mjs';
 import { APIMessage } from '../../lib/services/frontend.js';
+import { check } from '../../lib/utils/validators.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
 import {
 	changeInboxStatus,
@@ -10,11 +12,15 @@ import {
 	removeInboxLocally,
 } from '../../services/inbox.js';
 import { runChecklist } from '../middlewares.js';
+import { inboxStatuses } from '../../lib/utils/constants.js';
 
 export default function inboxController(router: SocketIOApp) {
 	router.route(WS_CMD.GET_INBOX, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'closed');
 		try {
+			check(req.body, z.object({ 
+				repoName: z.string(),
+			}));
 			return await getInbox(req.body.repoName, req.onlineAuthorization);
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
@@ -23,6 +29,10 @@ export default function inboxController(router: SocketIOApp) {
 	router.route(WS_CMD.DOWNLOAD_KARA_FROM_INBOX, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'closed');
 		try {
+			check(req.body, z.object({ 
+				inid: z.uuidv4(),
+				repoName: z.string(),
+			}));
 			await downloadKaraFromInbox(req.body.inid, req.body.repoName, req.onlineAuthorization, req.token.username);
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
@@ -31,6 +41,12 @@ export default function inboxController(router: SocketIOApp) {
 	router.route(WS_CMD.CHANGE_INBOX_STATUS, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'closed');
 		try {
+			check(req.body, z.object({ 
+				inid: z.uuidv4(),
+				repoName: z.string(),
+				status: z.enum(inboxStatuses),
+				reason: z.string().optional()
+			}));
 			await changeInboxStatus(
 				req.body.inid,
 				req.body.repoName,
@@ -46,6 +62,10 @@ export default function inboxController(router: SocketIOApp) {
 	router.route(WS_CMD.DELETE_KARA_FROM_INBOX, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'closed');
 		try {
+			check(req.body, z.object({ 
+				inid: z.uuidv4(),
+				repoName: z.string(),
+			}));
 			return await deleteKaraInInbox(req.body.inid, req.body.repoName, req.onlineAuthorization);
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
@@ -54,6 +74,9 @@ export default function inboxController(router: SocketIOApp) {
 	router.route(WS_CMD.DELETE_KARA_INBOX_LOCALLY, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'closed');
 		try {
+			check(req.body, z.object({ 
+				kid: z.uuidv4(),				
+			}));
 			return await removeInboxLocally(req.body.kid);
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
@@ -62,6 +85,10 @@ export default function inboxController(router: SocketIOApp) {
 	router.route(WS_CMD.UNASSIGN_KARA_FROM_INBOX, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'closed');
 		try {
+			check(req.body, z.object({ 
+				inid: z.uuidv4(),
+				repoName: z.string(),
+			}));
 			return await markKaraAsUnassignedInInbox(req.body.inid, req.body.repoName, req.onlineAuthorization);
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };

@@ -1,9 +1,11 @@
 import { WS_CMD } from '../../kmfrontend/src/utils/ws.mjs';
+import z from 'zod';
 import { APIMessage } from '../lib/services/frontend.js';
 import { DBUserBase } from '../lib/types/database/user.js';
 import { getConfig } from '../lib/utils/config.js';
 import { ErrorKM } from '../lib/utils/error.js';
 import logger from '../lib/utils/logger.js';
+import { check } from '../lib/utils/validators.js';
 import { SocketIOApp } from '../lib/utils/ws.js';
 import { checkLogin, resetSecurityCode } from '../services/auth.js';
 import { fetchAndAddFavorites } from '../services/favorites.js';
@@ -17,6 +19,11 @@ const service = 'Auth';
 export default function authController(router: SocketIOApp) {
 	router.route(WS_CMD.LOGIN, async (_, req) => {
 		try {
+			check(req.body, z.object({
+				username: z.string().min(1),
+				password: z.string(),
+				securityCode: z.number().int().optional(),
+			}));
 			let token = await checkLogin(req.body.username, req.body.password, req.body.securityCode);
 			// Admin user - Check if security code is correct
 			if (req.body.securityCode === getState().securityCode) {
@@ -41,7 +48,9 @@ export default function authController(router: SocketIOApp) {
 			}
 			return token;
 		} catch (err) {
-			throw err instanceof ErrorKM ? err : { code: 401, message: APIMessage('LOG_ERROR') };
+			throw err instanceof ErrorKM
+				? { code: err.code, message: APIMessage(err.message) }
+				: { code: 401, message: APIMessage('LOG_ERROR') };
 		}
 	});
 
@@ -50,6 +59,9 @@ export default function authController(router: SocketIOApp) {
 		if (!conf.Frontend.AllowGuestLogin || conf.Frontend.RequireSecurityCodeForNewAccounts)
 			throw { code: 403, message: APIMessage('GUESTS_NOT_ALLOWED') };
 		try {
+			check(req.body, z.object({
+				name: z.string().min(1).optional(),
+			}).optional());
 			let guest: DBUserBase;
 			if (req.body?.name && conf.Frontend.AllowCustomTemporaryGuests) {
 				guest = await createTemporaryGuest(req.body.name);

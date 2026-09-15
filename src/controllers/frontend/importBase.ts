@@ -6,11 +6,17 @@ import { APIData } from '../../lib/types/api.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
 import { findFilesToImport, importBase } from '../../services/importBase.js';
 import { runChecklist } from '../middlewares.js';
+import { check } from '../../lib/utils/validators.js';
+import z from 'zod';
 
 export default function importBaseController(router: SocketIOApp) {
 	router.route(WS_CMD.FIND_FILES_TO_IMPORT, async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
+			check(req.body, z.object({ 
+				dirname: z.string(),
+				template: z.string(),
+			}));
 			return await findFilesToImport(req.body.dirname, req.body.template, true);
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
@@ -19,6 +25,11 @@ export default function importBaseController(router: SocketIOApp) {
 	router.route(WS_CMD.IMPORT_BASE, async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
+			check(req.body, z.object({ 
+				source: z.string(),
+				template: z.string(),
+				repoDest: z.string(),
+			}));
 			importBase(req.body.source, req.body.template, req.body.repoDest);
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };

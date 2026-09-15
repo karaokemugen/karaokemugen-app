@@ -213,15 +213,29 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	}
 	const collectionClauses = [];
 	if (!params.ignoreCollections) {
-		if (collections)
+		if (collections && Object.keys(collections).length > 0) {
 			for (const collection of Object.keys(collections)) {
 				if (collections[collection] === true)
 					collectionClauses.push(`'${collection}~${tagTypes.collections}' = ANY(ak.tid)`);
 			}
+			const collectionsSql = `((${collectionClauses
+				.map(clause => `(${clause})`)
+				.join(
+					' OR '
+				)}) OR jsonb_array_length(jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 16)')) = 0)
+				`;
+			whereClauses.push(collectionsSql);
+		}
 	}
+
+	// q query
+
+	if (yesqlPayload.sql.length > 0) {
+		const qParams = `(${yesqlPayload.sql.join(` ${params.qType || 'AND'} `)})`
+		whereClauses.push(qParams)
+	}
+	
 	const query = sqlgetAllKaras(
-		yesqlPayload.sql,
-		params.qType === 'OR' ? 'OR' : 'AND',
 		whereClauses,
 		groupClauses,
 		orderClauses,
@@ -231,7 +245,6 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		yesqlPayload.additionalFrom,
 		selectRequested,
 		joinClauses,
-		collectionClauses,
 		withCTEs,
 		params.blacklist
 	);
@@ -280,7 +293,7 @@ export async function selectAllKarasMicro(params: KaraParams): Promise<DBKaraBas
 	const collectionClauses = [];
 	if (!params.ignoreCollections) {
 		const collections = getConfig().Karaoke.Collections;
-		if (collections)
+		if (collections && Object.keys(collections).length > 0)
 			for (const collection of Object.keys(collections)) {
 				if (collection) collectionClauses.push(`'${collection}~${tagTypes.collections}' = ANY(ak.tid)`);
 			}

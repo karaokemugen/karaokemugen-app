@@ -1420,7 +1420,6 @@
 		"REPO_COPY_LYRICS_ERROR": "Erro ao copiar letras entre dois repositórios",
 		"SUBFILE_FORMAT_UNKOWN": "Formato de subarquivo desconhecido",
 		"MEDIA_DELETE_ERROR": "Erro ao excluir mídia",
-		"CANNOT_INSTALL_REPO_AT_WINDOWS_ROOT_DRIVE": "O repositório não pode ser instalado na raiz de uma unidade do Windows.",
 		"DELETE_PLAYLIST_ERROR_CURRENT": "Não é possível excluir uma lista de reprodução atual.",
 		"INBOX_DOWNLOAD_ERROR": "Não é possível baixar o karaokê da caixa de entrada",
 		"DOWNLOADS_QUEUED_ALREADY_ADDED_ERROR": "Nenhum download adicionado, todos já estão na fila ou em execução",

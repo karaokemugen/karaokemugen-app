@@ -18,7 +18,6 @@ import {
 	MediaInfoValidationResult,
 	OrderParam as KaraOrderParam,
 	YearList,
-	BatchActions,
 	ProcessUploadedMediaResult,
 } from '../../../src/lib/types/kara.js';
 import { LogLine } from '../../../src/lib/types/logger.js';
@@ -60,6 +59,7 @@ import { Session, SessionExports } from '../../../src/types/session.js';
 import { PublicPlayerState, PublicState, State, Version } from '../../../src/types/state.js';
 import { SingleToken, Tokens } from '../../../src/types/user.js';
 import { KMServerFull } from '../../../src/lib/types/database/servers.js';
+import { BatchActions } from '../../../src/types/kara.js';
 
 export function defineWSCmd<Body extends object, Response>(value: string): WSCmdDefinition<Body, Response> {
 	return { value, bodyType: {} as Body, responseType: {} as Response };
@@ -77,7 +77,7 @@ export const WS_CMD = {
 	DELETE_DOWNLOADS: defineWSCmd<undefined, QueryResult<unknown>>('deleteDownloads'),
 	PAUSE_DOWNLOADS: defineWSCmd<undefined, unknown>('pauseDownloads'),
 	START_DOWNLOAD_QUEUE: defineWSCmd<undefined, APIMessageType<unknown>>('startDownloadQueue'),
-	UPDATE_ALL_MEDIAS: defineWSCmd<{ repoNames: string[]; dryRun?: boolean }, APIMessageType<unknown>>(
+	UPDATE_ALL_MEDIAS: defineWSCmd<{ repoNames?: string[]; dryRun?: boolean }, APIMessageType<unknown>>(
 		'updateAllMedias'
 	),
 	// AREA src\controllers\frontend\favorites.ts
@@ -149,7 +149,7 @@ export const WS_CMD = {
 	PLAY_KARA: defineWSCmd<{ kid: string }, void>('playKara'),
 	EDIT_KARAS: defineWSCmd<{ plaid: string; action: BatchActions; id: string; type: TagTypeNum }, void>('editKaras'),
 	DELETE_MEDIA_FILES: defineWSCmd<{ files: string[]; repo: string }, void>('deleteMediaFiles'),
-	GET_STATS: defineWSCmd<{ repoNames: string[] }, DBStatsApp>('getStats'),
+	GET_STATS: defineWSCmd<{ repoNames?: string[] }, DBStatsApp>('getStats'),
 	// AREA src\controllers\frontend\misc.ts
 	GET_SERVERS_FROM_UPLINK: defineWSCmd<undefined, KMServerFull[]>('getServersFromUplink'),
 	OPEN_LOG_FILE: defineWSCmd<undefined, void>('openLogFile'),
@@ -205,7 +205,7 @@ export const WS_CMD = {
 	>('exportPlaylistMedia'),
 	FIND_PLAYING_SONG_IN_PLAYLIST: defineWSCmd<{ plaid: string }, { index: number }>('findPlayingSongInPlaylist'),
 	GET_PLAYLIST_CONTENTS: defineWSCmd<PLCSearchParams & { plaid: string }, KaraList<DBPLC>>('getPlaylistContents'),
-	GET_PLAYLIST_CONTENTS_MICRO: defineWSCmd<{ plaid: string; username?: string }, DBPLCBase[]>(
+	GET_PLAYLIST_CONTENTS_MICRO: defineWSCmd<{ plaid: string }, DBPLCBase[]>(
 		'getPlaylistContentsMicro'
 	),
 	ADD_KARA_TO_PLAYLIST: defineWSCmd<{ kids: string[]; plaid?: string; pos?: number }, { plc: DBPLCInfo }>(
@@ -242,7 +242,7 @@ export const WS_CMD = {
 	RESET_GAME_SCORES: defineWSCmd<{ gamename: string }, void>('resetGameScores'),
 	CONTINUE_GAME_SONG: defineWSCmd<undefined, boolean>('continueGameSong'),
 	GET_GAMES: defineWSCmd<undefined, Game[]>('getGames'),
-	GET_GAME_SCORE: defineWSCmd<{ gamename: string; login?: string }, GameScore[]>('getGameScore'),
+	GET_GAME_SCORE: defineWSCmd<{ gamename: string }, GameScore[]>('getGameScore'),
 	GET_TOTAL_GAME_SCORE: defineWSCmd<{ gamename: string }, GameTotalScore[]>('getTotalGameScore'),
 	GET_POSSIBLE_ANSWERS: defineWSCmd<{ answer: string }, GamePossibleAnswer[]>('getPossibleAnswers'),
 	SET_ANSWER: defineWSCmd<{ answer: string }, GameAnswerResult>('setAnswer'),
@@ -292,7 +292,7 @@ export const WS_CMD = {
 	PUSH_COMMITS: defineWSCmd<{ repoName: string; commits: Push; ignoreFTP?: boolean }, void>('pushCommits'),
 	// AREA src\controllers\frontend\session.ts
 	GET_SESSIONS: defineWSCmd<undefined, Session[]>('getSessions'),
-	CREATE_SESSION: defineWSCmd<Pick<Session, 'name'> & Partial<Session>, HttpMessage<string>>('createSession'),
+	CREATE_SESSION: defineWSCmd<Pick<Session, 'name'> & Omit<Partial<Session>, 'started_at' | 'ended_at'> & Partial<{started_at: string | Date, ended_at: string | Date}>, HttpMessage<string>>('createSession'),
 	MERGE_SESSIONS: defineWSCmd<{ seid1: string; seid2: string }, HttpMessage<{ session: Session }>>('mergeSessions'),
 	EDIT_SESSION: defineWSCmd<Session, HttpMessage<string>>('editSession'),
 	ACTIVATE_SESSION: defineWSCmd<{ seid: string }, HttpMessage<string>>('activateSession'),

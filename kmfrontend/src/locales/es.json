@@ -1698,7 +1698,6 @@
 		"TAG_CREATE_ERROR": "Error al crear etiqueta",
 		"REPO_GET_FREE_SPACE_ERROR": "Error al obtener el espacio libre para el repositorio",
 		"REPOSITORY_UNREACHABLE": "Repositorio inalcanzable. ¿Has escrito mal su nombre?",
-		"CANNOT_INSTALL_REPO_AT_WINDOWS_ROOT_DRIVE": "El repositorio no puede instalarse en la raíz de una unidad Windows.",
 		"REFRESH_ANIME_LIST_ERROR": "Error al actualizar la lista de animes",
 		"USER_DELETE_ERROR": "Error al eliminar el usuario",
 		"USER_RESETPASSWORD_ERROR": "Error al restablecer la contraseña de usuario",

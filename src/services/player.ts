@@ -389,6 +389,35 @@ export function displayInfo() {
 
 let playerCommandLock = false;
 
+export const playerCommand = [
+	'play',
+	'stopNow',
+	'pause',
+	'stopAfter',
+	'skip',
+	'prev',
+	'toggleFullscreen',
+	'toggleAlwaysOnTop',
+	'toggleBorders',
+	'toggleAudioOnlyExperience',
+	'setHwDec',
+	'mute',
+	'unmute',
+	'showSubs',
+	'hideSubs',
+	'seek',
+	'goTo',
+	'setAudioDevice',
+	'setVolume',
+	'setAudioDelay',
+	'setPitch',
+	'setSpeed',
+	'setModifiers',
+	'blurVideo',
+	'unblurVideo',
+];
+
+
 export async function sendCommand(command: PlayerCommand, options: any) {
 	logger.info(`Received command from API : ${command} (${options})`, { service });
 	if (isShutdownInProgress()) return;
@@ -455,7 +484,7 @@ export async function sendCommand(command: PlayerCommand, options: any) {
 			await setVolumePlayer(options);
 		} else if (command === 'setAudioDelay') {
 			if ((options && isNaN(options)) || options > 5000 || options < -5000)
-				throw "Command setAudioDelay must have a numeric option value between -5'000 and 5'000";
+				throw new ErrorKM('INVALID_DATA', 400, false);
 			await setAudioDelay(options);
 		} else if (command === 'setPitch') {
 			if (isNaN(options)) throw new ErrorKM('INVALID_DATA', 400, false);

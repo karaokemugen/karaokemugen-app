@@ -89,7 +89,7 @@ function ProfilModal(props: IProps) {
 		} else {
 			user[event.target.name] = event.target.value;
 		}
-		setAnimeListToFetch(user.anime_list_to_fetch ? user.anime_list_to_fetch : '');
+		setAnimeListToFetch((user.anime_list_to_fetch ? user.anime_list_to_fetch : '') as AnimeListProvider);
 		setUser(user);
 	};
 
@@ -129,7 +129,7 @@ function ProfilModal(props: IProps) {
 		try {
 			const user = await commandBackend(WS_CMD.GET_MY_ACCOUNT);
 			delete user.password;
-			setAnimeListToFetch(user.anime_list_to_fetch ? user.anime_list_to_fetch : '');
+			setAnimeListToFetch((user.anime_list_to_fetch ? user.anime_list_to_fetch : '') as AnimeListProvider);
 			setUser(user);
 		} catch (_) {
 			logout(context.globalDispatch);
@@ -262,7 +262,7 @@ function ProfilModal(props: IProps) {
 		} else if (!user.social_networks.anilist && !user.social_networks.myanimelist && user.social_networks.kitsu) {
 			user.anime_list_to_fetch = 'kitsu';
 		}
-		setAnimeListToFetch(user.anime_list_to_fetch ? user.anime_list_to_fetch : '');
+		setAnimeListToFetch((user.anime_list_to_fetch ? user.anime_list_to_fetch : '') as AnimeListProvider);
 		setUser(user);
 	};
 
@@ -621,7 +621,7 @@ function ProfilModal(props: IProps) {
 										</div>
 										<input
 											name="social_networks.kitsu"
-											type="text"
+											type="number"
 											placeholder={i18next.t(
 												'MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.KITSU_PLACEHOLDER'
 											)}

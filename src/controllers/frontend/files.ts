@@ -13,6 +13,8 @@ import { SocketIOApp } from '../../lib/utils/ws.js';
 import { openLyricsFile, showLyricsInFolder, showMediaInFolder } from '../../services/karaManagement.js';
 import { runChecklist } from '../middlewares.js';
 import { requireHTTPAuth, requireValidUser } from '../middlewaresHTTP.js';
+import { check } from '../../lib/utils/validators.js';
+import z from 'zod';
 
 export default function filesController(router: Router) {
 	const upload = multer({
@@ -31,6 +33,14 @@ export function filesSocketController(router: SocketIOApp) {
 	router.route(WS_CMD.IMPORT_FILE, async (socket, req) => {
 		await runChecklist(socket, req, 'user', 'closed');
 		try {
+			check(req.body, z.object({
+				extension: z.string().optional(),
+				buffer: z.any(),
+			}));
+		} catch (err) {
+			throw { code: err.code || 500, message: APIMessage(err.message) };
+		}
+		try {
 			const rawExtension = req.body.extension ? String(req.body.extension).replace(/^\.+/, '') : '';
 			const extension = /^[a-zA-Z0-9]{1,16}$/.test(rawExtension) ? `.${rawExtension}` : '';
 			const filename = `${randomUUID()}${extension}`;
@@ -48,6 +58,7 @@ export function filesSocketController(router: SocketIOApp) {
 	router.route(WS_CMD.OPEN_LYRICS_FILE, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'closed');
 		try {
+			check(req.body, z.object({ kid: z.uuidv4() }));
 			return await openLyricsFile(req.body.kid);
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
@@ -57,6 +68,7 @@ export function filesSocketController(router: SocketIOApp) {
 	router.route(WS_CMD.SHOW_LYRICS_IN_FOLDER, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'closed');
 		try {
+			check(req.body, z.object({ kid: z.uuidv4() }));
 			return await showLyricsInFolder(req.body.kid);
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
@@ -66,7 +78,8 @@ export function filesSocketController(router: SocketIOApp) {
 	router.route(WS_CMD.SHOW_MEDIA_IN_FOLDER, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'closed');
 		try {
-			return await showMediaInFolder(req.body.kid);
+			check(req.body, z.object({ kid: z.uuidv4() }));
+			return await showMediaInFolder(req.body.kid);			
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}

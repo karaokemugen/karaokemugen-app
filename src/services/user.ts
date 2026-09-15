@@ -108,8 +108,11 @@ export async function editUser(
 		if (user.nickname) user.nickname = user.nickname.trim();
 		if (user.url) user.url = user.url.trim();
 		user.login = user.login?.trim().toLowerCase();
-		// Banner are not editable through the app
-		if (opts.editRemote) delete user.banner;
+		// Banner and roles are not editable through the app
+		if (opts.editRemote) {
+			delete user.banner;
+			delete user.roles;
+		}
 		const currentUser = await getUser(username, true, true);
 		if (!currentUser) throw new ErrorKM('UNKNOWN_USER', 404, false);
 		if (currentUser.type === 2 && role !== 'admin') throw new ErrorKM('GUESTS_CANNOT_EDIT', 403, false);

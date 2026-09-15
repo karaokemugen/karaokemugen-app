@@ -985,7 +985,6 @@
 		"OPEN_MEDIA_FOLDER_ERROR": "Fehler beim Öffnen des Medienordners",
 		"QUIZZ_GET_TOTAL_GAME_SCORES_ERROR": "Fehler bei der Ermittlung der Gesamtzahl der Spielstände",
 		"INBOX_VIEW_ERROR": "Lieder können nicht aus dem Posteingang abgerufen werden",
-		"CANNOT_INSTALL_REPO_AT_WINDOWS_ROOT_DRIVE": "Das Repository kann nicht im Stammverzeichnis eines Windows-Laufwerks installiert werden.",
 		"USER_CREATE_ERROR_ONLINE_DISABLED": "Das Konto konnte nicht erstellt werden: Der Online-Modus wurde deaktiviert",
 		"DELETE_PLAYLIST_ERROR_WHITELIST": "Du kannst eine Whitelist nicht löschen. Mache zuerst eine andere Wiedergabeliste zur Whitelist.",
 		"SUBFILE_PROCESS_ERROR": "Fehler beim Verarbeiten der Untertiteldatei",

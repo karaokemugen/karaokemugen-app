@@ -57,10 +57,12 @@ function PublicHeader(props: IProps) {
 
 	const score = useAsyncMemo<GameScore[]>(
 		async () => {
-			const score = await commandBackend(WS_CMD.GET_GAME_SCORE, {
-				gamename: context.globalState.settings.data.state.quiz.currentQuizGame,
-				login: context.globalState.auth.data.username,
-			});
+			let score;
+			if (context.globalState.settings.data.state.quiz.currentQuizGame) {
+				score = await commandBackend(WS_CMD.GET_GAME_SCORE, {
+					gamename: context.globalState.settings.data.state.quiz.currentQuizGame,
+				});
+			}
 			return score ? (score as GameScore[]) : [];
 		},
 		[quizMode],

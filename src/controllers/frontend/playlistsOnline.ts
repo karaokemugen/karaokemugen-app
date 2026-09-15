@@ -10,11 +10,18 @@ import {
 	postPlaylistToKMServer,
 } from '../../services/playlistOnline.js';
 import { runChecklist } from '../middlewares.js';
+import { check } from '../../lib/utils/validators.js';
+import z from 'zod';
+import { PLImportConstraints } from '../../lib/services/playlist.js';
 
 export default function playlistsOnlineController(router: SocketIOApp) {
 	router.route(WS_CMD.GET_PLAYLISTS_FROM_KM_SERVER, async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req);
 		try {
+			check(req.body, z.object({
+				filter: z.string().optional(),
+				myPlaylistsOnly: z.boolean().optional(),
+			}));
 			return await getPlaylistsFromKMServer(
 				req.token.username,
 				req.onlineAuthorization,
@@ -28,6 +35,9 @@ export default function playlistsOnlineController(router: SocketIOApp) {
 	router.route(WS_CMD.GET_PLAYLIST_FROM_KM_SERVER, async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req);
 		try {
+			check(req.body, z.object({
+				plaid: z.uuidv4(),
+			}));
 			return await getPlaylistFromKMServer(req.token.username, req.onlineAuthorization, req.body.plaid);
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
@@ -36,6 +46,9 @@ export default function playlistsOnlineController(router: SocketIOApp) {
 	router.route(WS_CMD.POST_PLAYLIST_TO_KM_SERVER, async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req);
 		try {
+			check(req.body, z.object({
+				pl: PLImportConstraints,
+			}));
 			await postPlaylistToKMServer(req.token.username, req.onlineAuthorization, req.body.pl);
 			return {
 				code: 200,

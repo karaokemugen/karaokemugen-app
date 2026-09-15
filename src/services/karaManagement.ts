@@ -20,7 +20,7 @@ import { refreshKarasAfterDBChange, updateTags } from '../lib/services/karaManag
 import { getRepoManifest } from '../lib/services/repo.js';
 import { DBKara, DBKaraTag } from '../lib/types/database/kara.js';
 import { DBTag } from '../lib/types/database/tag.js';
-import { BatchActions, KaraFileV4, KaraTag } from '../lib/types/kara.js';
+import { FixAspectRatioBackgroundMode, KaraFileV4, KaraTag } from '../lib/types/kara.js';
 import { TagTypeNum } from '../lib/types/tag.js';
 import { ASSFileSetMediaFile } from '../lib/utils/ass.js';
 import { resolvedPath, resolvedPathRepos } from '../lib/utils/config.js';
@@ -29,7 +29,7 @@ import { ErrorKM } from '../lib/utils/error.js';
 import { embedCoverImage } from '../lib/utils/ffmpeg.js';
 import { fileExists, resolveFileInDirs } from '../lib/utils/files.js';
 import logger, { profile } from '../lib/utils/logger.js';
-import { encodeMediaToRepoDefault, FixAspectRatioBackgroundMode } from '../lib/utils/mediaInfoValidation.js';
+import { encodeMediaToRepoDefault } from '../lib/utils/mediaInfoValidation.js';
 import { createImagePreviews } from '../lib/utils/previews.js';
 import Task from '../lib/utils/taskManager.js';
 import { emitWS } from '../lib/utils/ws.js';
@@ -42,6 +42,7 @@ import { editKara } from './karaCreation.js';
 import { getRepo, getRepos } from './repo.js';
 import { updateAllSmartPlaylists } from './smartPlaylist.js';
 import { getKarasUsingTag, getTag, removeTag } from './tag.js';
+import { BatchActions } from '../types/kara.js';
 
 const service = 'KaraManager';
 
@@ -230,6 +231,15 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 		throw err instanceof ErrorKM ? err : new ErrorKM('SONG_COPIED_ERROR');
 	}
 }
+
+export const batchActions = [
+	'addTag',
+	'removeTag',
+	'fromDisplayType',
+	'addParent',
+	'removeParent',
+	'copyToRepo'
+];
 
 export async function batchEditKaras(plaid: string, action: BatchActions, id: string, type: TagTypeNum) {
 	// Checks
@@ -431,8 +441,6 @@ export async function deleteMediaFiles(files: string[], repo: string) {
 }
 
 export async function embedAudioFileCoverArt(coverFilename: string, source: { kid?: string; tempFileName?: string }) {
-	if (!source.kid && !source.tempFileName)
-		throw new ErrorKM('Neither kid nor mediaFilename has been received but atleast one needs to be set', 400);
 	const kara = source.kid && (await getKara(source.kid, adminToken));
 	const mediaFilePaths =
 		(source.tempFileName && [resolve(resolvedPath('Temp'), basename(source.tempFileName))]) ||

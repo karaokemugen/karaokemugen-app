@@ -90,7 +90,7 @@ function QueueDownload() {
 				WS_CMD.GET_KARAS,
 				{
 					filter: filter,
-					q: `${tagFilter}!m:DOWNLOADING`,
+					q: `${tagFilter ? `${tagFilter}!` : ''}m:DOWNLOADING`,
 					from: pfrom,
 					size: psz,
 				},

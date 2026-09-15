@@ -1936,7 +1936,6 @@
 		"UPLOADED_MEDIA_ERROR": "Chyba při nahrávání média",
 		"ENCODE_MEDIA_ERROR": "Chyba při kódování média",
 		"REPOSITORY_UNREACHABLE": "Repozitář je nedostupný. Není jeho název napsaný chybně?",
-		"CANNOT_INSTALL_REPO_AT_WINDOWS_ROOT_DRIVE": "Repozitář nelze nainstalovat do kořenového adresáře disku ve Windows.",
 		"REFRESH_ANIME_LIST_ERROR": "Chyba při aktualizaci seznamu anime",
 		"DELETE_PLAYLIST_ERROR_CURRENT": "Aktuální playlist nelze smazat. Nejprve nastavte jiný playlist jako aktuální.",
 		"DELETE_PLAYLIST_ERROR_PUBLIC": "Veřejný playlist nelze smazat. Nejprve nastavte jiný playlist jako veřejný.",

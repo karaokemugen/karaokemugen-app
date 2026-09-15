@@ -480,7 +480,7 @@ export async function checkCollections() {
 	})();
 	try {
 		const availableCollections: DBTag[] = [];
-		let defaults;
+		let defaults: Record<string, boolean> = {};
 		for (const repo of getRepos()) {
 			if (repo.Enabled) {
 				if (repo.Online && internet) {
@@ -500,7 +500,7 @@ export async function checkCollections() {
 						defaults = {
 							...defaults,
 							...repoDefaults
-						}
+						};
 					} catch (err) {
 						// Fallback to what the repository has locally
 						const tags = await getTags({ type: [tagTypes.collections] });

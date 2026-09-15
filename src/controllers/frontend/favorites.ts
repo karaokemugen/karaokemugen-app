@@ -1,7 +1,7 @@
 import z from 'zod';
 import { WS_CMD } from '../../../kmfrontend/src/utils/ws.mjs';
 import { APIMessage } from '../../lib/services/frontend.js';
-import { check, zUUIDArray } from '../../lib/utils/validators.js';
+import { check } from '../../lib/utils/validators.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
 import {
 	addToFavorites,
@@ -12,6 +12,7 @@ import {
 	removeFavorites,
 } from '../../services/favorites.js';
 import { runChecklist } from '../middlewares.js';
+import { orderParams } from '../../lib/utils/constants.js';
 
 export default function favoritesController(router: SocketIOApp) {
 	router.route(WS_CMD.GET_FAVORITES_MICRO, async (socket, req) => {
@@ -20,6 +21,10 @@ export default function favoritesController(router: SocketIOApp) {
 			if (req.token.role === 'guest') {
 				return [];
 			}
+			check(req.body, z.object({
+				from: z.number().int().min(0).optional(),
+				size: z.number().int().min(1).optional()
+			}).optional())
 			return await getFavoritesMicro({
 				username: req.token.username.toLowerCase(),
 				from: +req.body?.from || 0,
@@ -45,6 +50,12 @@ export default function favoritesController(router: SocketIOApp) {
 					i18n: undefined,
 				};
 			}
+			check(req.body, z.object({
+				from: z.number().int().min(0).optional(),
+				size: z.number().int().min(1).optional(),
+				filter: z.string().optional(),
+				order: z.enum(orderParams).optional(),
+			}).optional())
 			return await getFavorites({
 				username: req.token.username.toLowerCase(),
 				favorites: req.token.username.toLowerCase(),
@@ -60,29 +71,23 @@ export default function favoritesController(router: SocketIOApp) {
 	});
 	router.route(WS_CMD.ADD_FAVORITES, async (socket, req) => {
 		await runChecklist(socket, req, 'user', 'limited');
-		const validationErrors = check(req.body, z.object({ kids: zUUIDArray }));
-		if (!validationErrors) {
-			try {
-				return await addToFavorites(req.token.username, req.body?.kids, req.onlineAuthorization);
-			} catch (err) {
-				throw { code: err.code || 500, message: APIMessage(err.message) };
-			}
-		} else {
-			// Errors detected
-			// Sending BAD REQUEST HTTP code and error object.
-			throw { code: 400, message: validationErrors };
-		}
+		try {
+			check(req.body, z.object({
+				kids: z.array(z.uuidv4())
+			}))
+			return await addToFavorites(req.token.username, req.body?.kids, req.onlineAuthorization);
+		} catch (err) {
+			throw { code: err.code || 500, message: APIMessage(err.message) };
+		}		
 	});
 	router.route(WS_CMD.DELETE_FAVORITES, async (socket, req) => {
 		await runChecklist(socket, req, 'user', 'closed');
-		const validationErrors = check(req.body, z.object({ kids: zUUIDArray }));
-		if (!validationErrors) {
-			try {
-				return await removeFavorites(req.token.username, req.body?.kids, req.onlineAuthorization);
-			} catch (err) {
-				throw { code: err.code || 500, message: APIMessage(err.message) };
-			}
-		}
+		try {
+			check(req.body, z.object({ kids: z.array(z.uuidv4()) }));
+			return await removeFavorites(req.token.username, req.body?.kids, req.onlineAuthorization);
+		} catch (err) {
+			throw { code: err.code || 500, message: APIMessage(err.message) };
+		}		
 	});
 	router.route(WS_CMD.EXPORT_FAVORITES, async (socket, req) => {
 		await runChecklist(socket, req, 'user', 'closed');
@@ -94,19 +99,19 @@ export default function favoritesController(router: SocketIOApp) {
 		}
 	});
 	router.route(WS_CMD.IMPORT_FAVORITES, async (socket, req) => {
-		await runChecklist(socket, req, 'user', 'closed');
-		const validationErrors = check(req.body, z.object({ favorites: z.object({}).loose() }));
-		if (!validationErrors) {
-			try {
-				await importFavorites(req.body?.favorites, req.token.username, req.onlineAuthorization);
-				return { code: 200, message: APIMessage('FAVORITES_IMPORTED') };
-			} catch (err) {
-				throw { code: err.code || 500, message: APIMessage(err.message) };
-			}
-		} else {
-			// Errors detected
-			// Sending BAD REQUEST HTTP code and error object.
-			throw { code: 400, message: validationErrors };
-		}
+		await runChecklist(socket, req, 'user', 'closed');		
+		try {
+			check(req.body, z.object({ favorites: z.object({
+				Header: z.object({
+					description: z.literal('Karaoke Mugen Favorites List File'),
+					version: z.number().int().gte(1)
+				}),
+				Favorites: z.array(z.object({ kid: z.uuidv4() }).loose())
+			})}));
+			await importFavorites(req.body?.favorites, req.token.username, req.onlineAuthorization);
+			return { code: 200, message: APIMessage('FAVORITES_IMPORTED') };
+		} catch (err) {
+			throw { code: err.code || 500, message: APIMessage(err.message) };
+		}		
 	});
 }

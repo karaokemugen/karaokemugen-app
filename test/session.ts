@@ -53,7 +53,7 @@ describe('Sessions', () => {
 		const data = await commandBackend(
 			token,
 			'editSession',
-			{ seid: unknownSession, name: newName, ended_at: '2020-08-20 19:30:00' },
+			{ seid: unknownSession, name: newName, ended_at: new Date().toISOString() },
 			true
 		);
 		expect(data.message.code).to.be.equal('UNKNOWN_SESSION');
@@ -63,7 +63,7 @@ describe('Sessions', () => {
 		const data = await commandBackend(token, 'editSession', {
 			seid: createdSession.seid,
 			name: newName,
-			ended_at: '2020-08-20 19:30:00',
+			ended_at: new Date().toISOString(),
 		});
 		expect(data.message.code).to.be.equal('SESSION_EDITED');
 	});

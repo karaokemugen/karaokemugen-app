@@ -99,9 +99,9 @@ function TagForm(props: TagsFormProps) {
 			values.description = Object.values(description).filter(value => value).length > 0 ? description : undefined;
 			values.tid = props.tag?.tid;
 			values.external_database_ids = {
-				anilist: +values.anilistID || null,
-				kitsu: +values.kitsuID || null,
-				myanimelist: +values.malID || null,
+				anilist: +values.anilistID || undefined,
+				kitsu: +values.kitsuID || undefined,
+				myanimelist: +values.malID || undefined,
 			};
 			delete values.malID;
 			delete values.anilistID;

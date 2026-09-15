@@ -6,11 +6,11 @@ import { app } from 'electron';
 import { existsSync } from 'node:fs';
 import { z } from 'zod';
 
-import { zRepository } from '../lib/dao/repo.js';
-import { Repository } from '../lib/types/repo.js';
-import { hostnameRegexp } from '../lib/utils/constants.js';
-import { zArrayOneItem, zBool, zBoolUndefined, zFloat, zInclusion, zInt, zNonEmptyString } from '../lib/utils/validators.js';
+import { hostnameRegexp, karaLineDisplayType, karaLineElement, karaSortType, pathType, playlistMediaTypes, positionX, positionY, styleFontType } from '../lib/utils/constants.js';
 import { Config, DBConfig } from '../types/config.js';
+import { zNonEmptyString } from '../lib/utils/validators.js';
+import { Repository } from '../lib/types/repo.js';
+import { zRepository } from '../lib/dao/repo.js';
 import { endOfPlaylistActions } from './constants.js';
 
 export const dbConfig: DBConfig = {
@@ -314,8 +314,6 @@ export const defaults: Config = {
 	},
 };
 
-export const horizontalPosArray = ['Left', 'Right', 'Center'];
-export const verticalPosArray = ['Top', 'Bottom', 'Center'];
 export const hwdecModes = ['auto-safe', 'no', 'yes'];
 
 /** Config constraints. */
@@ -323,77 +321,136 @@ export const configConstraints = z
 	.object({
 		App: z
 			.object({
-				FirstRun: zBool,
+				FirstRun: z.coerce.boolean(),
+				JwtSecret: zNonEmptyString,
+				InstanceID: z.union([z.literal('Change me'), z.uuidv4()]),
+				Language: z.string().nullish().optional(),
 			})
 			.loose(),
 		Online: z
 			.object({
-				ErrorTracking: zBoolUndefined,
+				Timeout: z.coerce.number().int().min(0),
+				ErrorTracking: z.coerce.boolean().optional(),
+				FetchPopularSongs: z.coerce.boolean().optional(),
+				AllowDownloads: z.coerce.boolean().optional(),
 				RemoteAccess: z
 					.object({
-						Enabled: zBool,
-						Secure: zBool,
+						Enabled: z.coerce.boolean(),
+						Secure: z.coerce.boolean(),
 						Domain: zNonEmptyString.regex(hostnameRegexp),
-					})
-					.loose(),
-				Timeout: zInt({ min: 0 }),
+					}),					
 				RemoteUsers: z
 					.object({
-						Enabled: zBool,
-						DefaultHost: z.string().regex(hostnameRegexp).optional(),
-						Secure: zBool,
+						Enabled: z.coerce.boolean().optional(),
+						DefaultHost: z.string().regex(hostnameRegexp).nullish().optional(),
+						Secure: z.coerce.boolean().optional(),						
 					})
 					.loose(),
-				Discord: z.object({ DisplayActivity: zBool }).loose(),
+				Discord: z.object({ DisplayActivity: z.coerce.boolean().optional()}).loose(),
 				Updates: z
 					.object({
 						Medias: z
 							.object({
-								Jingles: zBool,
-								Outros: zBool,
-								Encores: zBool,
-								Intros: zBool,
+								Jingles: z.coerce.boolean().optional(),
+								Outros: z.coerce.boolean().optional(),
+								Encores: z.coerce.boolean().optional(),
+								Intros: z.coerce.boolean().optional(),
+								Sponsors: z.coerce.boolean().optional(),
 							})
 							.loose(),
-						App: zBool,
+						App: z.coerce.boolean().optional(),
 					})
 					.loose(),
 			})
 			.loose(),
 		Frontend: z
 			.object({
-				Mode: zInt({ min: 0, max: 2 }),
-				ShowAvatarsOnPlaylist: zBool,
+				Mode: z.coerce.number().int().min(0).max(2),
+				ShowAvatarsOnPlaylist: z.coerce.boolean().optional(),
+				AllowGuestLogin: z.coerce.boolean().optional(),
+				AllowCustomTemporaryGuests: z.coerce.boolean().optional(),
+				AllowUserCreation: z.coerce.boolean().optional(),
+				RequireSecurityCodeForNewAccounts: z.coerce.boolean().optional(),
+				PublicPlayerControls: z.coerce.boolean().optional(),
+				WelcomeMessage: z.string().nullish().optional(),
+				Library: z.object({
+					KaraLineDisplay: z.array(
+						z.object({
+							type: z.union([
+								z.enum(karaLineElement),
+								z.array(z.enum(karaLineElement))
+							]),
+							display: z.enum(karaLineDisplayType),
+							style: z.enum(styleFontType).optional(),
+						}).loose(),
+					).optional(),
+					KaraLineSort: z.array(
+						z.union([
+							z.enum(karaSortType),
+							z.array(z.enum(karaSortType))
+						])
+					).optional(),
+				}).loose(),
 			})
 			.loose(),
+		GUI: z.object({
+			ChibiPlayer: z.object({
+				Enabled: z.coerce.boolean().optional(),
+				AlwaysOnTop: z.coerce.boolean().optional(),
+				PositionX: z.coerce.number().int().min(0).optional(),
+				PositionY: z.coerce.number().int().min(0).optional(),
+			}).loose(),
+			ChibiPlaylist: z.object({
+				Enabled: z.coerce.boolean().optional(),
+				Width: z.coerce.number().int().min(0).optional(),
+				Height: z.coerce.number().int().min(0).optional(),
+				PositionX: z.coerce.number().int().min(0).optional(),
+				PositionY: z.coerce.number().int().min(0).optional(),
+			}).loose(),
+			ChibiRanking: z.object({
+				Enabled: z.coerce.boolean().optional(),
+				Width: z.coerce.number().int().min(0).optional(),
+				Height: z.coerce.number().int().min(0).optional(),
+				PositionX: z.coerce.number().int().min(0).optional(),
+				PositionY: z.coerce.number().int().min(0).optional(),
+			}).loose(),
+		}).loose(),
 		Karaoke: z
 			.object({
-				Autoplay: zBool,
-				ClassicMode: zBool,
-				MinutesBeforeEndOfSessionWarning: zInt({ min: 0 }),
+				Collections: z.record(z.uuidv4(), z.coerce.boolean()).optional(),
+				Autoplay: z.coerce.boolean().optional(),
+				AutoBalance: z.coerce.boolean().optional(),
+				ClassicMode: z.coerce.boolean().optional(),
+				MinutesBeforeEndOfSessionWarning: z.coerce.number().int().min(0).optional(),
+				RestrictInterfaceAtTime: z.iso.datetime({offset: true}).nullish().optional(),
 				StreamerMode: z
 					.object({
-						Enabled: zBool,
-						PauseDuration: zInt({ min: 0 }),
-						Twitch: z.object({ Enabled: zBool }).loose(),
+						Enabled: z.coerce.boolean().optional(),
+						PauseDuration: z.coerce.number().int().min(0).optional(),
+						Twitch: z.object({ 
+							Enabled: z.coerce.boolean().optional(),
+							OAuth: z.string().nullish().optional(),
+							Channel: z.string().nullish().optional(),
+						}).loose(),
 					})
 					.loose(),
 				Poll: z
 					.object({
-						Choices: zInt({ min: 1 }),
-						Timeout: zInt({ min: 1 }),
-						Enabled: zBool,
+						Choices: z.coerce.number().int().min(1).optional(),
+						Timeout: z.coerce.number().int().min(1).optional(),
+						Enabled: z.coerce.boolean().optional(),
 					})
 					.loose(),
 				Quota: z
 					.object({
-						Type: zInt({ min: 0, max: 2 }),
-						FreeUpVotes: zBool,
-						FreeAutoTime: zInt({ min: 0 }),
-						FreeUpVotesRequiredMin: zInt({ min: 1 }),
-						FreeUpVotesRequiredPercent: zInt({ min: 1, max: 100 }),
-						Songs: z.number().int(),
-						Time: z.number().int(),
+						Type: z.coerce.number().int().min(0).max(2).optional(),
+						FreeUpVotes: z.coerce.boolean().optional(),
+						FreeAutoTime: z.coerce.number().int().min(0).optional(),
+						FreeUpVotesRequiredMin: z.coerce.number().int().min(1).optional(),
+						FreeUpVotesRequiredPercent: z.coerce.number().int().min(1).max(100).optional(),
+						FreeAcceptedSongs: z.coerce.boolean().optional(),
+						Songs: z.coerce.number().int().min(0).optional(),
+						Time: z.coerce.number().int().min(0).optional(),
 					})
 					.loose(),
 			})
@@ -402,65 +459,101 @@ export const configConstraints = z
 			.object({
 				Display: z
 					.object({
-						Avatar: zBool,
-						Nickname: zBool,
+						Avatar: z.coerce.boolean().optional(),
+						Nickname: z.coerce.boolean().optional(),
+						FontSize: z.coerce.number().int().min(0).optional(),
+						Banner: z.coerce.boolean().optional(),
+						RandomQuotes: z.coerce.boolean().optional(),
+						SongInfo: z.coerce.boolean().optional(),
+						SongInfoLanguage: z.string().nullish().optional(),
+						NextSongInfo: z.object({
+							Enabled: z.coerce.boolean().optional(),
+							PositionX: z.enum(positionX),
+							PositionY: z.enum(positionY),
+						}).loose(),										
 						ConnectionInfo: z
 							.object({
-								Enabled: zBool,
-								QRCode: zBool,
-								Message: z.string(),
+								Enabled: z.coerce.boolean().optional(),
+								QRCode: z.coerce.boolean().optional(),
+								QRCodeDuringSong: z.coerce.boolean().optional(),
+								Host: z.string().nullish().optional(),
+								Message: z.string().nullish().optional(),
 							})
 							.loose(),
 					})
 					.loose(),
-				FullScreen: zBool,
-				Monitor: zBool,
-				StayOnTop: zBool,
-				Screen: zInt({ min: 0 }),
+				FullScreen: z.coerce.boolean().optional(),
+				Monitor: z.coerce.boolean().optional(),
+				StayOnTop: z.coerce.boolean().optional(),
+				Screen: z.coerce.number().int().min(0).optional(),
 				PIP: z
 					.object({
-						PositionX: zInclusion(horizontalPosArray),
-						PositionY: zInclusion(verticalPosArray),
-						Size: zInt({ min: 0, max: 100 }),
+						PositionX: z.enum(positionX).optional(),
+						PositionY: z.enum(positionY).optional(),
+						Size: z.coerce.number().int().min(1).max(100),
 					})
 					.loose(),
-				Volume: zFloat({ min: 0, max: 100 }),
-				AudioDelay: zFloat({ min: -5000, max: 5000 }),
-				HardwareDecoding: zInclusion(hwdecModes),
+				ExtraCommandLine: z.string().nullish().optional(),
+				Borders: z.coerce.boolean().optional(),
+				Volume: z.coerce.number().min(0).max(100).optional(),
+				AudioDelay: z.coerce.number().min(-5000).max(5000).optional(),
+				HardwareDecoding: z.enum(hwdecModes).optional(),
+				KeyboardMediaShortcuts: z.coerce.boolean().optional(),
+				AudioMute: z.coerce.boolean().optional(),
+				LiveComments: z.coerce.boolean().optional(),
+				BlurVideoOnWarningTag: z.coerce.boolean().optional(),
+				AudioOnlyExperience: z.coerce.boolean().optional(),
 			})
 			.loose(),
 		Playlist: z
 			.object({
-				AllowDuplicates: zBool,
-				MaxDejaVuTime: zInt({ min: 1 }),
+				AllowDuplicates: z.coerce.boolean().optional(),
+				AllowPublicCurrentPlaylistItemSwap: z.coerce.boolean().optional(),
+				AllowPublicDuplicates: z.coerce.boolean().optional(),
+				MaxDejaVuTime: z.coerce.number().int().min(1),
 				Medias: z
 					.object({
-						Intros: z.object({ Enabled: zBool }).loose(),
+						Intros: z.object({ Enabled: z.coerce.boolean(), Message: z.string().nullish().optional() }).loose(),
 						Sponsors: z
-							.object({ Enabled: zBool, Interval: zInt({ min: 1 }) })
+							.object({ Enabled: z.coerce.boolean(), Interval: z.coerce.number().int().min(1) })
 							.loose(),
-						Outros: z.object({ Enabled: zBool }).loose(),
-						Encores: z.object({ Enabled: zBool }).loose(),
+						Outros: z.object({ Enabled: z.coerce.boolean(), Message: z.string().nullish().optional() }).loose(),
+						Encores: z.object({ Enabled: z.coerce.boolean(), Message: z.string().nullish().optional() }).loose(),
 						Jingles: z
-							.object({ Enabled: zBool, Interval: zInt({ min: 1 }) })
+							.object({ Enabled: z.coerce.boolean(), Interval: z.coerce.number().int().min(1) })
 							.loose(),
 					})
 					.loose(),
 				MysterySongs: z
 					.object({
-						Hide: zBool,
-						AddedSongVisibilityAdmin: zBool,
-						AddedSongVisibilityPublic: zBool,
-						Labels: zArrayOneItem,
+						Hide: z.coerce.boolean().optional(),
+						AddedSongVisibilityAdmin: z.coerce.boolean().optional(),
+						AddedSongVisibilityPublic: z.coerce.boolean().optional(),
+						Labels: z.array(z.string().nullish()).min(1),
 					})
 					.loose(),
-				EndOfPlaylistAction: zInclusion(endOfPlaylistActions),
-				RandomSongsAfterEndMessage: zBool,
-				CurrentPlaylistAutoRemoveSongs: zInt({ min: 0 }),
+				EndOfPlaylistAction: z.enum(endOfPlaylistActions),
+				RandomSongsAfterEndMessage: z.coerce.boolean(),
+				CurrentPlaylistAutoRemoveSongs: z.coerce.number().int().min(0),
 			})
 			.loose(),
 		System: z
 			.object({
+				SystemRepositoryMaintenance: z.coerce.boolean().optional(),	
+				FrontendPort: z.coerce.number().int().min(1).max(65535),				
+				Database: z.object({
+						RestoreNeeded: z.coerce.boolean().optional(),
+						bundledPostgresBinary: z.coerce.boolean().optional(),
+						database: z.string().nullish(),
+						host: z.string().nullish().optional(),
+						socket: z.string().nullish().optional(),
+						connection: z.enum(['socket', 'tcp']),
+						password: z.string().nullish(),
+						port: z.coerce.number().int().min(1).max(65535).optional(),
+						superuser: z.string().nullish(),
+						superuserPassword: z.string().nullish().optional(),
+						username: z.string().nullish(),
+				}).loose(),
 				Binaries: z
 					.object({
 						Player: z
@@ -484,27 +577,17 @@ export const configConstraints = z
 								OSX: zNonEmptyString,
 							})
 							.loose(),
+						patch: z
+							.object({
+								Linux: zNonEmptyString,
+								Windows: zNonEmptyString,
+								OSX: zNonEmptyString,
+							})
+							.loose(),
 					})
 					.loose(),
-				Path: z
-					.object({
-						Avatars: zNonEmptyString,
-						Backgrounds: zNonEmptyString,
-						Bin: zNonEmptyString,
-						DB: zNonEmptyString,
-						Previews: zNonEmptyString,
-						Import: zNonEmptyString,
-					})
-					.loose(),
-				MediaPath: z
-					.object({
-						Encores: zArrayOneItem,
-						Jingles: zArrayOneItem,
-						Intros: zArrayOneItem,
-						Sponsors: zArrayOneItem,
-						Outros: zArrayOneItem,
-					})
-					.loose(),
+				Path: z.record(z.enum(pathType), z.string().nullish()),
+				MediaPath: z.record(z.enum(playlistMediaTypes), z.array(z.string())),
 				Repositories: z.array(zRepository),
 			})
 			.loose(),
