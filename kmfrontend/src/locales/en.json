@@ -1984,7 +1984,6 @@
 		"UPLOADED_MEDIA_ERROR": "Error when uploading media",
 		"ENCODE_MEDIA_ERROR": "Error when encoding media",
 		"REPOSITORY_UNREACHABLE": "Repository unreachable. Did you misspell its name?",
-		"NO_UPLINK": "No uplink server configured",
 		"UPLINK_UNREACHABLE": "Unable to fetch list of known Karaoke Mugen servers",
 		"REFRESH_ANIME_LIST_ERROR": "Error refreshing anime list",
 		"DELETE_PLAYLIST_ERROR_CURRENT": "Unable to delete a current playlist. Make another playlist current first.",

@@ -1787,7 +1787,7 @@ async function fetchServer(server: KMServer): Promise<KMServerFull> {
 
 export async function getServersFromUplink(): Promise<KMServerFull[]> {
 	const uplinkServer = getConfig().Online.UplinkServer;
-	if (!uplinkServer?.Domain) throw new ErrorKM('NO_UPLINK', 503, false);
+	if (!uplinkServer?.Domain) return [];
 	try {
 		const res = await HTTP(
 			`${uplinkServer.Secure ? 'https' : 'http'}://${uplinkServer.Domain}/api/uplink/servers`,
