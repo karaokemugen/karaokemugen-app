@@ -28,6 +28,7 @@ import { initAddASongMessage, mpv, next, restartPlayer, stopAddASongMessage, sto
 import {
 	editPlaylist,
 	getCurrentSong,
+	getNextSong,
 	getPlaylistContentsMini,
 	getPlaylistInfo,
 	shufflePlaylist,
@@ -192,6 +193,20 @@ export async function playRandomSongAfterPlaylist() {
 	}
 }
 
+async function resumePlaylistOrPlayRandomSong() {
+	let nextSong: DBPLC = null;
+	try {
+		nextSong = await getNextSong();
+	} catch (_err) {
+		// Nothing to resume
+	}
+	if (nextSong) {
+		await next();
+	} else {
+		await playRandomSongAfterPlaylist();
+	}
+}
+
 export async function playCurrentSong(now: boolean) {
 	if (!getState().player.playing || now) {
 		profile('playCurrentSong');
@@ -303,7 +318,7 @@ export async function playerEnding() {
 		}
 		// When random karas are being played
 		if (state.randomPlaying) {
-			await playRandomSongAfterPlaylist();
+			await resumePlaylistOrPlayRandomSong();
 			return;
 		}
 
@@ -354,7 +369,7 @@ export async function playerEnding() {
 		// If Outro, load the background.
 		if (state.player.mediaType === 'Outros') {
 			if (['random', 'random_fallback'].includes(getConfig().Playlist.EndOfPlaylistAction)) {
-				await playRandomSongAfterPlaylist();
+				await resumePlaylistOrPlayRandomSong();
 			} else if (getConfig().Playlist.EndOfPlaylistAction === 'play_fallback') {
 				await editPlaylist(getState().fallbackPlaid, { flag_current: true });
 				setState({ currentPlaid: getState().fallbackPlaid });
