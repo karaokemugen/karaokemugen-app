@@ -3,7 +3,9 @@
 		"CONFIRM": "Konfirmasi",
 		"LOG_IN": "Masuk",
 		"SIGN_UP": "Daftar",
-		"CONTINUE": "Lanjut"
+		"CONTINUE": "Lanjut",
+		"SAVE_AND_CONTINUE": "Simpan dan lanjutkan",
+		"FINISH": "Selesai"
 	},
 	"YES": "Ya",
 	"NO": "Tidak",
@@ -19,9 +21,9 @@
 		"404_3": "Kamu di sini",
 		"404_4": "Pergi ke beranda"
 	},
-	"LOGIN_MANDATORY": "Daftar diwajibkan",
-	"PASSWORD_MANDATORY": "Kata sandi diwajibkan",
-	"SECURITY_CODE_MANDATORY": "Kode keamanan wajib untuk membuat akun operator",
+	"LOGIN_MANDATORY": "Login diperlukan",
+	"PASSWORD_MANDATORY": "Password diperlukan",
+	"SECURITY_CODE_MANDATORY": "Kode keamanan diperlukan untuk membuat akun operator",
 	"PASSWORD_DIFFERENT": "Kata sandi tidak sama",
 	"DETAILS": {
 		"DURATION": "Durasi",
@@ -39,22 +41,26 @@
 	"PLAYLISTS": {
 		"LIBRARY": "Pustaka",
 		"FAVORITES": "Favorit",
-		"ANIME_LIST": "Anime saya"
+		"ANIME_LIST": "Lagu-lagu dari anime favoritku"
 	},
 	"WEBAPPMODE_CLOSED_MESSAGE": "Tampilan ditutup, mohon tunggu.",
 	"INLINE_TAG": {
-		"COUNT_one": "{{count}} karaoke",
-		"COUNT_other": "{{count}} karaoke",
-		"SEARCH": "Karaoke dengan {{tag}}"
+		"COUNT_one": "{{count}} lagu",
+		"COUNT_other": "{{count}} lagu",
+		"SEARCH": "Lagu dengan {{tag}}"
 	},
 	"ADMIN_HEADER": {
-		"QUICK_ACCESS": "Akses cepat"
+		"QUICK_ACCESS": "Akses cepat",
+		"QUIZ_RANKING": "Peringkat kuis",
+		"CURRENT_PLAYLIST": "Playlist saat ini",
+		"PUBLIC_PLAYLIST": "Playlist publik"
 	},
 	"PLAYLIST_HEADER": {
 		"FILTERS": "Filter",
 		"ACTIVE_FILTER": "Filter aktif",
 		"EDIT_CRITERIA": "Sunting kriteria",
-		"SHOW_SONGS": "Tampilkan lagu"
+		"SHOW_SONGS": "Tampilkan lagu",
+		"REFRESH_LIBRARY_BANNER": "Kriteria pustaka telah berubah, silakan <1>segarkan</1> pustaka tersebut."
 	},
 	"ADVANCED": {
 		"PLAYLIST_COMMANDS": "Perintah daftar putar",
@@ -69,10 +75,11 @@
 		"IMPORT": "Impor daftar putar",
 		"SHUFFLE": "Acak/Urut…",
 		"DOWNLOAD_ALL": "Unduh semua",
-		"SELECT_ALL": "Pilih semua elemen yang terlihat"
+		"SELECT_ALL": "Pilih semua lagu yang terlihat",
+		"EXPORT_MEDIA": "Ekspor semua media playlist"
 	},
 	"KAROULETTE": {
-		"PLAYLIST_REMAINING_one": "Waktu tersisa daftar saat ini: {{count}} menit",
+		"PLAYLIST_REMAINING_one": "Sisa waktu daftar saat ini: {{count}} menit",
 		"START": "Ulas saran dari publik",
 		"STATS_one": "{{count}} diproses ({{accepted}}/{{refused}})",
 		"STATS_other": "{{count}} diproses ({{accepted}}/{{refused}})",
@@ -100,39 +107,45 @@
 				"5": "di",
 				"8": "ditulis oleh",
 				"9": "dari kelompok",
-				"10": "dari keluarga",
-				"11": "yang berasal dari",
+				"10": "termasuk dalam",
+				"11": "dari",
 				"4": "dibuat oleh",
 				"6": "ditulis oleh",
 				"7": "yang",
 				"14": "yang",
 				"16": "termasuk dalam koleksi",
 				"15": "dengan peringatan",
-				"17": "dimainkan oleh klub musik"
+				"17": "dari grup musik",
+				"12": "dari genre",
+				"13": "di platform"
 			},
-			"YEAR": "Karaoke dari tahun {{year}} ada di daftar.",
-			"KID": "Karaoke ini ada di daftar.",
+			"YEAR": "Lagu-lagu dari tahun {{year}} ada di dalam daftar.",
+			"KID": "Lagu ini ada di dalam daftar.",
 			"LONGER": "Karaoke yang lebih panjang dari {{time}} detik ada di daftar.",
 			"SHORTER": "Karaoke yang lebih pendek dari {{time}} detik ada di daftar.",
-			"TAG": "Karaoke {{verb}} {{tag}} ada di daftar."
+			"TAG": "Lagu {{verb}} {{tag}} ada di daftar.",
+			"AFTER_YEAR": "Lagu-lagu setelah tahun {{tahun}} ada di dalam daftar.",
+			"BEFORE_YEAR": "Lagu-lagu sebelum tahun {{tahun}} ada di dalam daftar."
 		},
 		"AND": "DAN",
-		"TYPE_SMART": "Jenis daftar putar pintar",
-		"TYPE_SMART_DESC": "Kriteria \"OR\" lebih sesuai untuk daftar hitam. \"AND\" untuk daftar putar klasik",
+		"TYPE_SMART": "Jenis playlist pintar",
+		"TYPE_SMART_DESC": "Tipe \"OR\" lebih cocok untuk daftar hitam (blacklist). \"DAN\" untuk playlist klasik.",
 		"PLAYLIST_DURATION_TYPE_MINUTES": "menit",
 		"PLAYLIST_DURATION_TYPE_SONGS": "lagu",
-		"PLAYLIST_DURATION_ORDER_LESS_RECENT": "kurang terkini",
+		"PLAYLIST_DURATION_ORDER_LESS_RECENT": "terlama",
 		"CRITERIA_DESC": "Pilih dan tambahkan kriteria untuk memasukkan lagu tertentu secara otomatis.",
 		"DELETE": "Hapus kriteria ini",
 		"CRITERIA_TYPE_1001": "Lagu",
 		"CRITERIA_TYPE_1002": "Lebih panjang dari (mm:ss)",
 		"CRITERIA_TYPE_1003": "Lebih pendek dari (mm:ss)",
-		"CRITERIA_TYPE_1006": "Sembunyikan lagu yang tidak tersedia secara luring",
+		"CRITERIA_TYPE_1006": "Sembunyikan lagu yang tidak tersedia secara offline",
 		"ADD_PLACEHOLDER": "Tambahkan nilai ke kriteria",
-		"EXPL": "Daftar putar pintar dibuat dari <1>kriteria</1>, kamu juga bisa menambahkan secara manual karaoke ke daftar ini.",
+		"EXPL": "Smart playlist dibuat dari <1>kriteria</1>, kamu juga bisa menambahkan lagu secara manual ke daftar ini.",
 		"PLAYLIST_DURATION": "",
 		"ADD": "Tambahkan kriteria",
-		"EXPL_OPEN": "Ini adalah kriteria yang digunakan untuk membuat <1>daftar putar</1>, akan diperbarui secara otomatis apabila lagu baru ditambahkan ke basis data."
+		"EXPL_OPEN": "Ini adalah kriteria yang digunakan untuk membuat <1>daftar putar</1>, akan diperbarui secara otomatis apabila lagu baru ditambahkan ke basis data.",
+		"CRITERIA_TYPE_1007": "Setelah (termasuk tahun ini)",
+		"CRITERIA_TYPE_1008": "Sebelum (termasuk tahun tersebut)"
 	},
 	"PROFILE": "Profil",
 	"MENU": {
@@ -193,26 +206,41 @@
 			"AUDIO_DEVICE_TOOLTIP": "PIlih sebuah perangkat keluaran audio. Jika kamu tidak tahu, tinggalkan pada \"Pilih otomatis perangkat\". Ini berguna jika kamu ingin audio pemutar keluaran pada perangkat suara yang berbeda dari perangkat utama kamu.",
 			"MONITOR_NUMBER_TOOLTIP": "Layar di mana Karaoke Mugen akan ditampilkan saat pemulaian",
 			"WINDOWBORDERS": "Aktifkan bingkai pada jendela pemutar",
-			"WINDOWBORDERS_TOOLTIP": "Menonaktifkan mereka tidak akan menonaktifkan mereka untuk monitor, di mana mereka selalu aktif.",
+			"WINDOWBORDERS_TOOLTIP": "Menonaktifkannya tidak akan menonaktifkannya di monitor operator, di mana fitur ini selalu aktif.",
 			"PLAYER_MONITOR": "Jendela kedua (monitor)",
 			"PLAYER_LANGUAGE": "Bahasa pesan dan pemutar",
 			"DISPLAY_RANDOMQUOTES": "Tampilkan kutipan acak",
 			"DISPLAY_RANDOMQUOTES_TOOLTIP": "Kutipan acak ditampilkan di bawah layar pemutar ketika itu berhenti",
 			"DISPLAY_CONNECTION_INFO_HOST": "Paksa nama hos atau IP",
 			"DISPLAY_CONNECTION_INFO_HOST_TOOLTIP": "Jika alamat IP kamu salah terdeteksi oleh Karaoke Mugen, kamu bisa memaksanya di sini.",
-			"DISPLAY_CONNECTION_INFO_MESSAGE": "Pesan yang ditampilkan sebelum URL",
-			"DISPLAY_CONNECTION_INFO_MESSAGE_TOOLTIP": "Sesuaikan pesan sebelum mengakses URL, untuk menyemangati audiens kamu atau memberi mereka arahan. Gunakan $url untuk menunjukkan URL untuk mengakses karaoke Anda. Seperti ini: \"Buka $url!\"",
-			"DISPLAY_CONNECTION_INFO_TOOLTIP": "Adalah \"Pergi ke http://xxx !\"",
-			"DISPLAY_NICKNAME": "Tampilkan nama panggilan di karaoke",
-			"DISPLAY_NICKNAME_TOOLTIP": "Tampilkan di bawah layar saat awal dan akhir lagu",
-			"DISPLAY_AVATAR": "Tampilkan avatar di karaoke",
+			"DISPLAY_CONNECTION_INFO_MESSAGE": "Pesan informasi koneksi",
+			"DISPLAY_CONNECTION_INFO_MESSAGE_TOOLTIP": "Sesuaikan pesan yang ditampilkan di layar, untuk menyemangati penonton atau memberikan informasi lebih lanjut kepada mereka. Gunakan $url untuk menampilkan URL sesi karaoke ini. Contoh: \"Kunjungi $url!\"",
+			"DISPLAY_CONNECTION_INFO_TOOLTIP": "Ini adalah pesan \"Kunjungi http://xxx !\"",
+			"DISPLAY_NICKNAME": "Tampilkan nickname peminta lagu selama pemutaran",
+			"DISPLAY_NICKNAME_TOOLTIP": "Muncul di bagian bawah layar pada awal dan akhir lagu",
+			"DISPLAY_AVATAR": "Tampilkan avatar peminta lagu selama pemutaran",
 			"DISPLAY_SONGINFO": "Tampilkan informasi lagu",
 			"DISPLAY_SONGINFO_TOOLTIP": "Informasi (judul, serial, penyanyi, dll.) ditampilkan saat awal dan akhir lagu, juga saat layar jeda di mode Siar/Klasik. Matikan untuk menyembunyikannya, untuk uji buta contohnya.",
 			"LIVE_COMMENTS": "Komentar langsung",
 			"LIVE_COMMENTS_TOOLTIP": "Pesan percakapan kamu akan ditampilkan di layar (hati-hati, konfigurasikan dengan benar mod otomatis kamu).",
-			"SCREEN_SETTINGS": "Layar"
+			"SCREEN_SETTINGS": "Layar",
+			"FULLSCREEN_ON_STARTUP": "Layar penuh saat memulai",
+			"FULLSCREEN_ON_STARTUP_TOOLTIP": "Selalu mulai player dalam mode layar penuh, terlepas dari status terakhirnya",
+			"VIDEO_SIZE_TOOLTIP": "Ukuran jendela player: {{value}}. Perubahan apa pun akan memicu restart player setelah lagu yang sedang diputar selesai, jika ada lagu yang sedang diputar.",
+			"AUDIO_DELAY": "Delay Audio / Video (dalam ms)",
+			"AUDIO_DELAY_TOOLTIP": "Tambahkan delay pada audio atau video untuk menyinkronkan player pada perangkat pemutaran Anda. Ini berguna ketika menggunakan speaker bluetooth atau monitor nirkabel yang tidak memutar audio dan video secara sinkron",
+			"AUDIO_ONLY_EXPERIENCE": "Hanya audio",
+			"AUDIO_ONLY_EXPERIENCE_TOOLTIP": "Jika diaktifkan, akan menampilkan gambar diam sebagai pengganti video. Perubahan akan berlaku pada lagu berikutnya.",
+			"DISPLAY_FONT_SIZE": "Pengubah ukuran font pesan",
+			"DISPLAY_FONT_SIZE_TOOLTIP": "Pengubah ukuran dari -5 hingga 5. Ini HANYA berlaku untuk pesan di layar (kuis, polling, info lagu, dll.) dan tidak untuk lirik.",
+			"DISPLAY_BANNER": "Tampilkan banner versi Karaoke Mugen",
+			"DISPLAY_BANNER_TOOLTIP": "Banner ini, yang menampilkan versi dan URL Karaoke Mugen, memungkinkan perangkat lunak ini dikenali saat digunakan di depan umum. Dengan begitu, orang-orang bisa melihatnya dan mencobanya sendiri. Mohon berbaik hati dan biarkan opsi ini tetap aktif!",
+			"DISPLAY_CONNECTION_INFO_QRCODE": "Tampilkan QRCode saat player berhenti",
+			"DISPLAY_CONNECTION_INFO_QRCODE_TOOLTIP": "QRCode akan ditampilkan di bagian kanan atas layar jeda dan berhenti.",
+			"DISPLAY_CONNECTION_INFO_QRCODE_DURING_SONG": "Tampilkan QRCode selama lagu diputar",
+			"DISPLAY_CONNECTION_INFO_QRCODE_DURING_SONG_TOOLTIP": "QRCode akan ditampilkan selama lagu diputar di bagian kanan atas layar."
 		},
-		"SYSTEMPANEL_TIP": "Kamu tidak bisa menemukan pilihan yang kamu cari? <2>Beberapa pilihan sekarang ada di <3>bilah sistem</3>.</2>",
+		"SYSTEMPANEL_TIP": "Tidak menemukan opsi yang kamu cari? <2>Beberapa opsi ada di <3>panel sistem</3>.</2>",
 		"KARAOKE": {
 			"QUOTA_TYPE_TWO": "Durasi",
 			"SONGS_BY_USER": "Jumlah lagu per pengguna",
@@ -332,7 +360,9 @@
 			},
 			"PLAYLIST_SETTINGS_TOOLTIP": "Ubah perilaku daftar putar, perbolehkan duplikat, pilih tindakan pada akhir daftar putar.",
 			"PLAYLIST_SETTINGS": "Daftar putar"
-		}
+		},
+		"FILTER_SETTINGS": "Cari pengaturan",
+		"FILTER_SETTINGS_TOOLTIP": "Temukan pengaturan yang kamu butuhkan dengan cepat menggunakan kolom pencarian ini."
 	},
 	"KARA_MENU": {
 		"TRANSFER_SELECT_KARA": "Pindah lagu yang dipilih",
@@ -360,12 +390,12 @@
 		"FREE": "Bebaskan lagu ini dari kuota pengguna",
 		"FREE_SHORT": "Bebas",
 		"FREED": "Bebas!",
-		"SHUFFLE": "Campur lagunya",
-		"SHUFFLED": "Lagu dicampur!"
+		"SHUFFLE": "Acak lagu",
+		"SHUFFLED": "Lagu telah diacak!"
 	},
 	"PUBLIC_HOMEPAGE": {
 		"RESTRICTED_DESCRIPTION": "Karaoke berada di mode terbatas, kamu tidak bisa menambahkan lagu.",
-		"QUOTA_KARA_DESCRIPTION_one": "Kamu hanya bisa menyarankan {{count}} lagu. Kamu akan bisa menyarankan lagu lagi ketika operator telah menerima atau menolak saran kamu atau ketika lagu kamu diputar di layar.",
+		"QUOTA_KARA_DESCRIPTION_one": "Kamu hanya bisa menyarankan {{count}} lagu. Kamu akan bisa menyarankan lagu lagi setelah operator menerima atau menolak saranmu, atau ketika lagumu sudah diputar di layar.",
 		"QUOTA_KARA_DESCRIPTION_other": "Kamu hanya bisa menyarankan {{count}} lagu. Kamu akan bisa menyarankan lagu lagi ketika operator telah menambahkan (atau tidak) saran kamu atau ketika lagu kamu diputar kembali di layar.",
 		"QUOTA_TIME_DESCRIPTION": "Kamu hanya bisa menyarankan {{time}} waktu lagu. Kamu akan bisa menyarankan lagi ketika operator telah menerima atau menolak saran kamu atau ketika lagu kamu diputar di layar.",
 		"HELLO": "Halo {{name}}!",
@@ -375,8 +405,8 @@
 		"SHOW_ALL_LYRICS": "Tampilkan Semua Lirik",
 		"HIDE_LYRICS": "Sembunyikan Lirik",
 		"LYRICS_EXPL": {
-			"LINES": "Lirik lagu saat ini akan ditampilkan di sini.",
-			"CURRENT": "Garis tebal merepresentasikan baris yang sedang dinyanyikan."
+			"LINES": "Lirik lagu yang sedang diputar akan ditampilkan di sini.",
+			"CURRENT": "Baris yang dicetak tebal menunjukkan baris yang sedang dinyanyikan."
 		},
 		"OPEN_POLL": "Pilih untuk lagu berikutnya",
 		"PUBLIC_SUGGESTIONS": "Saran publik",
@@ -386,26 +416,32 @@
 		"SONG_SEARCH_SHORT": "Cari",
 		"EXPLORE": "Jelajah",
 		"OTHERS": "Lain-lain…",
-		"REQUESTED_KARAOKES": "Lagu yang diminta",
+		"REQUESTED_KARAOKES": "Lagu paling banyak diminta",
 		"NEW_KARAOKES": "Lagu baru",
-		"KARA_VERSIONS": "Lagu ini tersedia dalam {{length}} versi, pilih yang kamu mau dan tambahkan ke daftar putar atau favorit kamu.",
+		"KARA_VERSIONS": "Lagu ini tersedia dalam {{length}} versi, pilih versi yang ingin kamu tambahkan.",
 		"GET_LUCKY": "Beruntung",
 		"CURRENT": "Lihat daftar putar saat ini",
-		"ANIME_LIST": "Anime saya"
+		"ANIME_LIST": "Anime Saya",
+		"MY_INCOMING_SONGS": "Lagu-lagu saya yang akan datang",
+		"QUIZ": {
+			"POINTS": "Poin: {{count}}",
+			"ANSWERS_HISTORY": "Riwayat jawaban",
+			"POINTS_TOTAL": "{{count}} poin"
+		}
 	},
 	"ADMIN_MESSAGE": {
 		"ESSENTIAL_MESSAGE": "Pesan penting",
-		"CL_SCREEN": "Tampilkan pada layar pemain",
-		"CL_USERS": "Tampilkan pada layar pengguna",
+		"CL_SCREEN": "Tampilkan di layar player",
+		"CL_USERS": "Tampilkan di layar pengguna",
 		"CL_ALL": "Tampilkan pada dua-duanya",
 		"DURATION": "Durasi (dalam detik)",
 		"MESSAGE": "Pesan",
-		"EMPTY": "Pesannya kosong",
+		"EMPTY": "Pesan kosong",
 		"CONFIRM": "Kirim pesan"
 	},
 	"AUTOMIX_MODAL": {
 		"TITLE": "Buat sebuah Oto-Campur",
-		"DESCRIPTION": "Daftar putar yang dibuat akan diisikan dengan favorit pengguna yang dipilih untuk durasi yang kamu tentukan.",
+		"DESCRIPTION": "AutoMix adalah playlist yang dibuat dengan kriteria dan durasi tertentu. Berbeda dengan smart playlist, daftar ini tidak akan diperbarui secara otomatis. Agar sebuah lagu bisa masuk ke dalam daftar, cukup satu kriteria saja yang cocok.",
 		"DURATION": "Durasi (dalam menit)",
 		"MIX": "Buat Oto-Campur",
 		"EMPTY": "Pilih kriteria dan durasi",
@@ -417,13 +453,16 @@
 			"SONGS": "Jumlah lagu"
 		},
 		"NUMBER_SONGS": "Jumlah lagu",
-		"IS_ADMIN_PLAYER": "Daftar putar ini untuk kuis, jangan tampilkan kepadaku.",
+		"IS_ADMIN_PLAYER": "Playlist ini untuk kuis, jangan tampilkan ke saya.",
 		"CRITERIA": "Campur kriteria",
 		"FAVOURITES_OF": "Favorit {{name}}",
-		"LIMIT": "Batasi daftar hingga…"
+		"LIMIT": "Batasi daftar hingga…",
+		"ANIMELISTS": "Daftar anime dari",
+		"ANIMELISTS_OF": "Daftar anime milik {{name}}",
+		"ALL_LOGGED_USERS": "<Semua pengguna yang login>"
 	},
-	"KARAOKE_one": "{{count}} karaoke",
-	"KARAOKE_other": "{{count}} karaoke",
+	"KARAOKE_one": "{{count}} lagu",
+	"KARAOKE_other": "{{count}} lagu-lagu",
 	"CL_CONGRATS": "Selamat",
 	"CL_ABOUT_TO_ADD": "Kamu akan menambahkan",
 	"CL_ADD_RANDOM_TITLE": "Berapa banyak lagu acak yang ingin kamu tambahkan?",
@@ -431,17 +470,17 @@
 	"CL_EMPTY_LIST": "Daftar kosong?",
 	"CL_PLAYLISTS": "Daftar lagu",
 	"BACK_PLAYLISTS": "Kembali ke daftar lagu",
-	"GOTO_TOP": "Pergi ke awal daftar putar",
+	"GOTO_TOP": "Pergi ke atas playlist",
 	"GOTO_PLAYING": "Pergi ke lagu yang sedang diputar",
 	"GOTO_BOTTOM": "Pergi ke akhir daftar putar",
 	"LOG_SUCCESS": "Masuk sebagai {{name}}",
 	"LOG_OFFLINE": {
 		"TITLE": "Mode Luring",
-		"MESSAGE": "Perubahan ke profilmu tidak akan terdaftar"
+		"MESSAGE": "Perubahan pada profil Anda tidak akan disimpan secara permanen"
 	},
 	"CONFIRM_FAV_IMPORT": "Timpa favorit kamu dengan impor ini?",
-	"FAVORITES_IMPORT": "Impor favorit kamu",
-	"FAVORITES_EXPORT": "Ekspor favorit kamu",
+	"FAVORITES_IMPORT": "Impor favorit",
+	"FAVORITES_EXPORT": "Ekspor favorit",
 	"AVATAR_IMPORT": "Ubah avatar",
 	"ACCOUNT": "Akun saya",
 	"USERLIST": "Pengguna",
@@ -466,7 +505,7 @@
 	"TOOLTIP_DELETE_SELECT_KARA": "Hapus lagu yang dipilih",
 	"TOOLTIP_CLOSEPARENT": "Tutup",
 	"KARA_DETAIL": {
-		"CREATED": "Karaoke dibuat ",
+		"CREATED": "Lagu berhasil dibuat ",
 		"ADDED": "Ditambahkan ",
 		"ADDED_2": "pada ",
 		"ADDED_3": " oleh ",
@@ -478,9 +517,11 @@
 		"TIME_BEFORE_PLAY": "Mengudara pada {{time}} {{date}}",
 		"LYRICS": "Lirik",
 		"SPONSOR": "Sponsor",
-		"MODIFY_KARAOKE": "Sunting karaoke",
-		"PLAYING_IN": "Diputar pada {{time}} {{date}}",
-		"UPVOTE_NUMBER": "Pilih atas"
+		"MODIFY_KARAOKE": "Ubah lagu",
+		"PLAYING_IN": "Diputar dalam {{waktu}} ({{tanggal}})",
+		"UPVOTE_NUMBER": "Pilih atas",
+		"JINGLE_SPONSOR": "Jingle & Sponsor",
+		"JINGLE": "Jingle"
 	},
 	"TOOLTIP_UPVOTE": "Pilih untuk lagu ini",
 	"WELCOME_PAGE": {
@@ -492,9 +533,9 @@
 		"PUBLIC": "TAMPILAN PUBLIK",
 		"REPOSITORY": "REPOSITORI",
 		"STATS": "STATUS",
-		"STATS_KARAS": "Karaoke",
+		"STATS_KARAS": "Lagu-lagu",
 		"STATS_TAGS": "Tanda",
-		"BASE_UPDATE": "Basis data diperbarui",
+		"BASE_UPDATE": "Pembaruan database",
 		"MASTODON_UPDATE": "Berita Karaoke Mugen",
 		"APP_UPDATE": "Versi baru",
 		"ACTIVE_SESSION": "Sesi Aktif: ",
@@ -502,7 +543,8 @@
 		"ADMINISTRATION": "BILAH SISTEM",
 		"COLLECTIONS": "KOLEKSI",
 		"STATS_USAGETIME": "Waktu Penggunaan",
-		"STATS_PLAYTIME": "Waktu putar"
+		"STATS_PLAYTIME": "Waktu putar",
+		"NEWS": "Berita"
 	},
 	"LOGOUT": "Keluar",
 	"QUOTA_TIME": "Waktu tersisa",
@@ -1674,7 +1716,7 @@
 		"NAME": "Nama koleksi",
 		"ENABLED": "Diaktifkan"
 	},
-	"TOOLTIP_KARA_ALREADY_ADDED": "Lagu ini telah ada di daftar putar.",
+	"TOOLTIP_KARA_ALREADY_ADDED": "Lagu ini sudah ada di playlist sebaliknya.",
 	"SHOW-HIDE": "Munculkan/Sembunyikan",
 	"UNKNOWN": "Tidak diketahui",
 	"LANGUAGES": {
@@ -1702,5 +1744,7 @@
 		"BLURVIDEO": {
 			"BLUR": "Buramkan Vidio"
 		}
-	}
+	},
+	"OR": "atau",
+	"CL_DELETE_CRITERIAS_PLAYLIST": "Hapus kriteria '{{tipe}}' yang berisi semua lagu ini:"
 }
