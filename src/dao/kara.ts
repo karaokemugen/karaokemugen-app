@@ -189,7 +189,11 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 			${collectionsParentJoin}
 			WHERE true
 			${params.blacklist ? ' AND fk_kid_parent NOT IN (SELECT * FROM blacklist) ' : ''}
-			${collectionsParentClauses.length > 0 ? ' AND ' : ''}${collectionsParentClauses.join(' OR ')}
+			${
+				collectionsParentClauses.length > 0
+					? ` AND ((${collectionsParentClauses.join(' OR ')}) OR jsonb_array_length(jsonb_path_query_array(ak2.tags, '$[*] ? (@.type_in_kara == 16)')) = 0)`
+					: ''
+			}
 		)`);
 		whereClauses.push(`(ak.pk_kid IN (
 			SELECT kid FROM parents
