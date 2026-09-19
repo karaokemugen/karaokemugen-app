@@ -1373,6 +1373,10 @@ export async function importPlaylist(playlist: PlaylistExport, username: string)
 	});
 	try {
 		logger.debug('Importing playlist', { service, obj: playlist });
+		for (const plc of playlist?.PlaylistContents || []) {
+			// Playlist from kmserver can have null on flag_visible, which causes errors
+			plc.flag_visible = plc.flag_visible ?? true;
+		}
 		const validationErrors = check(playlist, PLImportConstraints);
 		if (validationErrors) {
 			logger.error(`Invalid data from an imported playlist : ${JSON.stringify(validationErrors)}`, { service });
