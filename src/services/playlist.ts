@@ -727,7 +727,9 @@ export async function addKaraToPlaylist(params: AddKaraParams) {
 		throwOnMissingKara: false,
 		visible: true,
 		...params,
+		kids: [...new Set(params.kids)]
 	};
+
 	try {
 		const requester = params.requester.toLowerCase();
 		const conf = getConfig();
