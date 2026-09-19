@@ -8,6 +8,7 @@ import i18next from 'i18next';
 import { resolve } from 'path';
 import { StringDecoder } from 'string_decoder';
 import { tasklist } from 'tasklist';
+import { setTimeout as sleep } from 'timers/promises';
 
 import { errorStep } from '../electron/electronLogger.js';
 import { getConfig, resolvedPath, setConfig } from '../lib/utils/config.js';
@@ -416,12 +417,14 @@ export async function initPG(relaunch = true) {
 	const pgBinDir = resolve(state.appPath, state.binPath.postgres);
 	try {
 		if (state.os === 'linux') {
+			let startupError: Error;
 			const options = ['-D', `${pgDataDir}`];
 			execa(binPath, options, {
 				cwd: pgBinDir,
-				stdio: 'ignore',
+				stdio: ['ignore', 'ignore', 'pipe'],
 				env: determineEnv(),
 			}).catch(async err => {
+				startupError = err;
 				logger.error('Failed to start PostgreSQL', { service, obj: err });
 				// Postgres usually sends its content in non-unicode format under Windows. Go figure.
 				logger.error(`STDOUT from postgres : ${err.stdout}`);
@@ -454,21 +457,20 @@ export async function initPG(relaunch = true) {
 				profile('initPG');
 				throw err;
 			});
-			return await new Promise((PGStarted, PGNotStarted) => {
-				let retries = 0;
-				const detectingPostgres = setInterval(async () => {
-					retries += 1;
-					logger.info(`Checking if PostgreSQL has started up, try ${retries} of 10`, { service });
-					checkPG()
-						.then(() => {
-							clearInterval(detectingPostgres);
-							PGStarted(true);
-						})
-						.catch(err => {
-							if (retries > 10) PGNotStarted(err);
-						});
-				}, 1000);
-			});
+			
+			// PG is not ready immediately after start - wait up to one minute
+			for (let retries = 1; retries <= 60; retries++) {
+				await sleep(1000);
+				if (startupError) throw startupError;
+				logger.info(`Checking if PostgreSQL has started up, try ${retries} of 60`, { service });
+				const ready = await execa(resolve(pgBinDir, 'pg_isready'), ['-q', '-p', `${conf.System.Database.port}`], {
+					cwd: pgBinDir,
+					env: determineEnv(),
+					reject: false,
+				});
+				if (ready.exitCode === 0) return true;
+			}
+			throw new Error('PostgreSQL did not accept connections after 60 seconds');
 		}
 		try {
 			const options = ['-w', '-D', `${pgDataDir}`, 'start'];
