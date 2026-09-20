@@ -200,7 +200,7 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 		const mediaDestDir = resolvedPathRepos('Medias', repoName)[0];
 		await ensureDir(mediaDestDir);
 		tasks.push(copy(mediaFiles[0], resolve(mediaDestDir, kara.mediafile), { overwrite: true }));
-		if (kara.lyrics_infos[0].filename) {
+		if (kara.lyrics_infos[0]?.filename) {
 			const lyricsFiles = await resolveFileInDirs(
 				kara.lyrics_infos[0].filename,
 				resolvedPathRepos('Lyrics', oldRepoName)
