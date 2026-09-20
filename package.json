@@ -1,6 +1,6 @@
 {
   "name": "karaokemugen-app",
-  "version": "10.0.0-next",
+  "version": "10.0.1-next",
   "versionName": "Ubel Ubuesque",
   "description": "Karaoke playlist manager / player",
   "bin": {
