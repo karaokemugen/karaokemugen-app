@@ -123,6 +123,10 @@ export async function getSongInfosForPlayer(kara: DBKara | DBPLC): Promise<{ inf
 			}
 			requestedBy += ` ${i18next.t('REQUESTED_WITH', { names: str.endsWith(', ') ? str.slice(0, -2) : str })}`;
 		}
+	}
+	
+	// Avatar display does not depend on nickname display
+	if (!getState().quiz.running && getConfig().Player.Display.Avatar && 'nickname' in kara) {
 		// Get user avatar
 		let user = await getUser(kara.username);
 		if (!user) {

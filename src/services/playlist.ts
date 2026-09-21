@@ -81,6 +81,7 @@ import {
 	whitelistHook,
 } from './smartPlaylist.js';
 import { getUser, getUsers, updateSongsLeft } from './user.js';
+import { createUserFromRemotePublicProfile } from './userOnline.js';
 import dayjs from 'dayjs';
 import { editConfig } from '../utils/config.js';
 
@@ -1395,14 +1396,14 @@ export async function importPlaylist(playlist: PlaylistExport, username: string)
 			let user = users.get(kara.username);
 			if (!user) {
 				user = await getUser(kara.username);
-				if (!user) {
-					// If user isn't found locally, replacing it with admin user
-					kara.username = kara.username = 'admin';
-					user = await getUser('admin');
-					kara.nickname = user.nickname;
-				}
-				users.set(user.login, user);
+				// Unknown online user: try creating it locally from its public profile
+				if (!user && kara.username.includes('@')) user = await createUserFromRemotePublicProfile(kara.username);
+				// If user isn't found, replacing it with admin user
+				if (!user) user = await getUser('admin');
+				users.set(kara.username, user);
 			}
+			kara.username = user.login;
+			kara.nickname = user.nickname;
 			if (kara.flag_playing === true) {
 				if (flag_playingDetected) {
 					throw new ErrorKM('INVALID_DATA', 400);

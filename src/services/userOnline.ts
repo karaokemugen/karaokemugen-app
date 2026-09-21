@@ -1,6 +1,7 @@
 import FormData from 'form-data';
 import { createReadStream } from 'fs-extra';
-import { resolve } from 'path';
+import { basename, resolve } from 'path';
+import randomstring from 'randomstring';
 import { Stream } from 'stream';
 
 import { OldJWTToken, TokenResponseWithRoles, User } from '../lib/types/user.js';
@@ -114,7 +115,9 @@ export async function getRemoteUsers(filter: string, instance: string): Promise<
 async function getARemoteUser(login: string, instance: string): Promise<User> {
 	try {
 		const conf = getConfig().Online;
-		const user = await HTTP.get(`${conf.RemoteUsers.Secure ? 'https' : 'http'}://${instance}/api/users/${login}`);
+		const user = await HTTP.get(`${conf.RemoteUsers.Secure ? 'https' : 'http'}://${instance}/api/users/${login}`, {
+			timeout: conf.Timeout,
+		});
 		return user.data as User;
 	} catch (err) {
 		if (err.code === 'ENOTFOUND') {
@@ -230,13 +233,45 @@ export async function fetchRemoteAvatar(instance: string, avatarFile: string): P
 	}
 	let avatarPath: string;
 	try {
-		avatarPath = resolve(resolvedPath('Temp'), avatarFile);
+		avatarPath = resolve(resolvedPath('Temp'), basename(avatarFile));
 		await writeStreamToFile(res.data as Stream, avatarPath);
 	} catch (err) {
 		logger.warn(`Could not write remote avatar to local file ${avatarFile}`, { service, obj: err });
 		throw err;
 	}
 	return avatarPath;
+}
+
+/** Create an online user locally without needing to log in. The real password will be set on first login **/ 
+/* Useful to backfill users for example on playlist import */
+export async function createUserFromRemotePublicProfile(username: string): Promise<User> {
+	const [login, instance] = username.split('@');
+	try {
+		if (login === 'admin' || !getConfig().Online.RemoteUsers.Enabled) return null;
+		const remoteUser = await getARemoteUser(login, instance);
+		if (!remoteUser) return null;
+		await createUser(
+			{ login: username, nickname: remoteUser.nickname, password: randomstring.generate(32) },
+			{ createRemote: false, noPasswordCheck: true, skipSecurityCode: true }
+		);
+		startSub(login, instance);
+		let avatar_file = null;
+		if (remoteUser.avatar_file && remoteUser.avatar_file !== 'blank.png') {
+			try {
+				const avatarPath = await fetchRemoteAvatar(instance, remoteUser.avatar_file);
+				if (avatarPath) avatar_file = { path: avatarPath };
+			} catch (err) {
+				logger.warn(`Unable to fetch avatar of online user ${username}`, { service, obj: err });
+			}
+		}
+		if (avatar_file) {
+			await editUser(username, {}, avatar_file, 'admin', { editRemote: false, noPasswordCheck: true });
+		}
+		return await getUser(username);
+	} catch (err) {
+		logger.warn(`Unable to create local user from online user ${username}`, { service, obj: err });
+		return null;
+	}
 }
 
 export const usersFetched = new Set();

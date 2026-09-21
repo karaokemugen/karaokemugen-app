@@ -372,7 +372,11 @@ async function newUserIntegrityChecks(user: User) {
 	if (user.type < 2 && !user.password) throw new ErrorKM('USER_EMPTY_PASSWORD', 400, false);
 	if (user.type === 2 && user.password) throw new ErrorKM('GUEST_WITH_PASSWORD', 400, false);
 	// Check if login already exists.
-	if ((await selectUsers({ singleUser: user.login }))[0] || (await checkNicknameExists(user.login))) {
+	if (
+		(await selectUsers({ singleUser: user.login }))[0] ||
+		(await checkNicknameExists(user.login)) ||
+		(await checkNicknameExists(user.nickname))
+	) {
 		logger.error(`User/nickname ${user.login} already exists, cannot create it`, { service });
 		throw new ErrorKM('USER_ALREADY_EXISTS', 409, false);
 	}
