@@ -197,6 +197,7 @@ export interface Config {
 			Banner?: boolean;
 			RandomQuotes?: boolean;
 			SongInfo?: boolean;
+			SongInfoPermanent?: boolean;
 			SongInfoLanguage?: string;
 			NextSongInfo: {
 				Enabled: boolean;

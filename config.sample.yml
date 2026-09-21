@@ -172,6 +172,8 @@ Player:
     RandomQuotes: true
     # Show song information at the beginning and end of song
     SongInfo: true
+    # Keep song information (and requester avatar) on screen for the whole song instead of only its first and last 8 seconds
+    SongInfoPermanent: false
     # Which language to display song information in
     SongInfoLanguage: qro
     # Show nickname of the person who requested a song

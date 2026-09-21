@@ -226,9 +226,14 @@ export class Player {
 				// Display KM's banner if position reaches halfpoint in the song
 				position <= Math.floor(playerState.currentSong.duration / 2) + 4 &&
 				playerState.mediaType === 'song' &&
-				!getState().songPoll
+				!getState().songPoll &&
+				// Skip when the banner would be empty
+				(conf.Player.Display.ConnectionInfo.Enabled || conf.Player.Display.Banner)
 			) {
 				this.control.displayInfo();
+			} else if (conf.Player.Display.SongInfo && conf.Player.Display.SongInfoPermanent) {
+				// Display song info again if permanently enabled
+				this.control.displaySongInfo(playerState.currentSong.infos);
 			} else {
 				this.control.messages.removeMessage('DI');
 			}

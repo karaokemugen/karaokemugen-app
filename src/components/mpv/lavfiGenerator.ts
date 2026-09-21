@@ -34,7 +34,13 @@ export class lavfiGenerator {
 			const needThirdSplit = shouldDisplayAvatar && shouldDisplayQRcode;
 
 			if (shouldDisplayAvatar) {
-				avatar = this.genLavfiAvatar(song.avatar, song.duration, cropRatio, needThirdSplit);
+				avatar = this.genLavfiAvatar(
+					song.avatar,
+					song.duration,
+					cropRatio,
+					needThirdSplit,
+					getConfig().Player.Display.SongInfoPermanent
+				);
 			}
 
 			if (shouldDisplayQRcode) {
@@ -69,13 +75,19 @@ export class lavfiGenerator {
 		songAvatar: string,
 		songDuration: number,
 		cropRatio: number,
-		needThirdSplit: boolean
+		needThirdSplit: boolean,
+		permanent = false
 	): string {
 		// Checking if ffmpeg's version in mpv is either a semver or a version revision and if it's better or not than the required versions we have.
 		// This is a fix for people using mpvs with ffmpeg < 7.1 or a certain commit version.
 		const scaleAvailable = this.isScaleAvailable();
 
 		const split = `[vid${playerState.currentVideoTrack}]split=${needThirdSplit ? '3[base][v_in1][v_in2]' : '2[base][v_in1]'}`;
+
+		// Avatar is shown either for the whole song, or only during its first and last 8 seconds
+		const avatarX = permanent
+			? 'W-(W*29/300)'
+			: `if(between(t,0,8)+between(t,${songDuration - 8},${songDuration}),W-(W*29/300),NAN)`;
 
 		// Again, lavfi-complex expert @nah comes to the rescue!
 		return [
@@ -89,7 +101,7 @@ export class lavfiGenerator {
 			scaleAvailable
 				? '[avatar][v_in1]scale=w=(rh*.128):h=(rh*.128)[avatar1]'
 				: `[avatar][vid${playerState.currentVideoTrack}]scale2ref=w=(ih*.128):h=(ih*.128)[avatar1][ovrl]`,
-			`[ovrl][avatar1]overlay=x='if(between(t,0,8)+between(t,${songDuration - 8},${songDuration}),W-(W*29/300),NAN)':y=H-(H*29/200)`,
+			`[ovrl][avatar1]overlay=x='${avatarX}':y=H-(H*29/200)`,
 		]
 			.filter(x => !!x)
 			.join(';');

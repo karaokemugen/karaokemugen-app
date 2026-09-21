@@ -189,6 +189,7 @@ export const defaults: Config = {
 			},
 			RandomQuotes: true,
 			SongInfo: true,
+			SongInfoPermanent: false,
 			NextSongInfo: {
 				Enabled: true,
 				PositionX: 'Center',
@@ -465,6 +466,7 @@ export const configConstraints = z
 						Banner: z.coerce.boolean().optional(),
 						RandomQuotes: z.coerce.boolean().optional(),
 						SongInfo: z.coerce.boolean().optional(),
+						SongInfoPermanent: z.coerce.boolean().optional(),
 						SongInfoLanguage: z.string().nullish().optional(),
 						NextSongInfo: z.object({
 							Enabled: z.coerce.boolean().optional(),
