@@ -401,6 +401,8 @@ export class Players {
 
 	comments: CommentHandler;
 
+	private lastMediaFileLoad: { mediaFile: string; options: Record<string, any> };
+
 	isRunning() {
 		for (const player in this.players) {
 			if (this.players[player].isRunning) {
@@ -466,10 +468,18 @@ export class Players {
 				});
 			}
 			const loads = [];
+			const mpvCommand = cmd as MpvCommand;
 			if (onlyOn) {
-				if (mpv) loads.push(this.players[onlyOn].mpv.send(cmd as MpvCommand));
+				if (mpv) loads.push(this.players[onlyOn].mpv.send(mpvCommand));
 				else loads.push(this.players[onlyOn][cmd as string](...args));
 			} else {
+				if (mpv && mpvCommand.command[0] === 'loadfile') {
+					// Cache last options so monitor can be easily resynced
+					this.lastMediaFileLoad = {
+						mediaFile: mpvCommand.command[1],
+						options: mpvCommand.command.find(arg => typeof arg === 'object') || {},
+					};
+				}
 				for (const player in this.players) {
 					if (mpv) loads.push(this.players[player].mpv.send(cmd));
 					else loads.push(this.players[player][cmd](...args));
@@ -481,9 +491,31 @@ export class Players {
 		}
 	}
 
+	async resyncMonitor() {
+		const monitor = this.players?.monitor;
+		if (!monitor || isShutdownInProgress()) return;
+		logger.info('Restarting monitor player', { service });
+		await monitor.recreate(null, true);
+		if (!this.lastMediaFileLoad) return;
+		const options = { ...this.lastMediaFileLoad.options };
+		if (playerState.mediaType === 'song' && playerState.timeposition > 0) {
+			options.start = playerState.timeposition.toString();
+		}
+		await monitor.play(this.lastMediaFileLoad.mediaFile, options);
+		if (playerState.playerStatus === 'pause') {
+			await monitor.mpv.send({ command: ['set_property', 'pause', true] });
+		}
+		
+		const modifiers: SongModifiers = { ...playerState.modifiers };
+		if (playerState.pitch) modifiers.Pitch = playerState.pitch;
+		else if (playerState.speed !== 100) modifiers.Speed = playerState.speed;
+		if (Object.keys(modifiers).length > 0) await this.setModifiers(modifiers);
+	}
+
 	private async playOnPlayers(mediaFile: string, options: Record<string, any>) {
 		try {
 			if (await this.abortExec(true)) return;
+			this.lastMediaFileLoad = { mediaFile, options };
 			const loads = [];
 			for (const player in this.players) {
 				loads.push(this.players[player].play(mediaFile, options));
@@ -696,6 +728,8 @@ export class Players {
 	// Lock
 	@needsLock()
 	async restart() {
+		playerState.border = getConfig().Player.Borders;
+		playerState.onTop = getConfig().Player.StayOnTop;
 		// Check change in monitor setting
 		if (playerState.monitorEnabled !== getConfig().Player.Monitor) {
 			// Determine if we have to destroy the monitor or create it.
@@ -1000,13 +1034,10 @@ export class Players {
 	async resume(): Promise<PlayerState> {
 		logger.debug('Resume event triggered', { service });
 		try {
-			// If one of the players is down, we need to reload the media
-			let restartNeeded: boolean;
-			for (const player in this.players) {
-				if (!this.players[player].isRunning) restartNeeded = true;
-			}
-			if (restartNeeded) {
-				return await this.play(playerState.currentSong);
+			// If the main player is down, we need to reload the media
+			if (!this.players.main.isRunning) {
+				if (!playerState.currentSong) return await this.stop();
+				return await this.play(playerState.currentSong, playerState.modifiers, playerState.timeposition);
 			}
 			playerState._playing = true; // This prevents the play/pause event to be triggered
 			await this.exec({ command: ['set_property', 'pause', false] });
@@ -1070,7 +1101,7 @@ export class Players {
 
 	async setMute(mute: boolean): Promise<PlayerState> {
 		try {
-			await this.exec({ command: ['set_property', 'mute', mute] });
+			await this.exec({ command: ['set_property', 'mute', mute] }, undefined, 'main');
 			// Mute property is observed, so we don't have to handle playerState
 			return playerState;
 		} catch (err) {
@@ -1082,7 +1113,7 @@ export class Players {
 
 	async setAudioDevice(device: string) {
 		try {
-			await this.exec({ command: ['set_property', 'audio-device', device] });
+			await this.exec({ command: ['set_property', 'audio-device', device] }, undefined, 'main');
 		} catch (err) {
 			logger.error('Unable to set volume', { service, obj: err });
 			sentry.error(err);
@@ -1106,8 +1137,12 @@ export class Players {
 	}
 
 	async setBlur(enabled: boolean) {
-		this.setBlurPercentage(enabled ? 90 : 0);
-		if (!playerState.modifiers) playerState.modifiers = { Blind: 'blur' };
+		await this.setBlurPercentage(enabled ? 90 : 0);
+		if (enabled) {
+			if (!playerState.modifiers) playerState.modifiers = { Blind: 'blur' };
+		} else if (playerState.modifiers?.Blind === 'blur') {
+			playerState.modifiers.Blind = '';
+		}
 		emitPlayerState();
 	}
 
@@ -1128,7 +1163,7 @@ export class Players {
 
 	async setVolume(volume: number): Promise<PlayerState> {
 		try {
-			await this.exec({ command: ['set_property', 'volume', volume] });
+			await this.exec({ command: ['set_property', 'volume', volume] }, undefined, 'main');
 			// Volume property is observed, so we don't have to handle playerState
 			return playerState;
 		} catch (err) {
@@ -1140,7 +1175,11 @@ export class Players {
 
 	async setAudioDelay(delayMs = 0) {
 		try {
-			await this.exec({ command: ['set_property', 'audio-delay', (delayMs && delayMs / 1000) || 0] });
+			await this.exec(
+				{ command: ['set_property', 'audio-delay', (delayMs && delayMs / 1000) || 0] },
+				undefined,
+				'main'
+			);
 		} catch (err) {
 			logger.error('Unable to set audio delay', { service, obj: err });
 			sentry.error(err);
@@ -1155,14 +1194,14 @@ export class Players {
 				{ service }
 			);
 
-			if (typeof options.Mute === 'boolean') this.setMute(options.Mute);
-			if (typeof options.NoLyrics === 'boolean') this.setSubs(!options.NoLyrics);
+			if (typeof options.Mute === 'boolean') await this.setMute(options.Mute);
+			if (typeof options.NoLyrics === 'boolean') await this.setSubs(!options.NoLyrics);
 
-			if (options.Blind === 'black') this.setBlind(true);
-			else if (options.Blind === 'blur') this.setBlur(true);
+			if (options.Blind === 'black') await this.setBlind(true);
+			else if (options.Blind === 'blur') await this.setBlur(true);
 			else {
-				this.setBlind(false);
-				this.setBlur(false);
+				await this.setBlind(false);
+				await this.setBlur(false);
 			}
 
 			if (typeof options.Speed === 'number' && typeof options.Pitch === 'number') {
@@ -1173,15 +1212,15 @@ export class Players {
 				await this.exec({ command: ['set_property', 'audio-pitch-correction', 'no'] });
 				await this.exec({ command: ['set_property', 'af', `scaletempo:scale=1/${paramSpeed}`] });
 				await this.exec({ command: ['set_property', 'speed', paramSpeed] });
-				options.Speed = 100; // Reset speed
+				playerState.pitch = options.Pitch;
+				playerState.speed = 100;
 			} else if (typeof options.Speed === 'number') {
 				await this.exec({ command: ['set_property', 'audio-pitch-correction', 'yes'] });
 				await this.exec({ command: ['set_property', 'speed', options.Speed / 100] });
-				options.Pitch = 0; // Reset pitch
+				playerState.speed = options.Speed;
+				playerState.pitch = 0;
 			}
 			if (typeof options.Pitch === 'number' || typeof options.Speed === 'number') {
-				playerState.pitch = options.Pitch || playerState.pitch;
-				playerState.speed = options.Speed || playerState.speed;
 				logger.info(`Set audio modifiers to: pitch ${playerState.pitch}, speed ${playerState.speed}`, {
 					service,
 				});
@@ -1210,7 +1249,7 @@ export class Players {
 
 	async toggleFullscreen(): Promise<void> {
 		try {
-			await this.exec({ command: ['set_property', 'fullscreen', !playerState.fullscreen] });
+			await this.exec({ command: ['set_property', 'fullscreen', !playerState.fullscreen] }, undefined, 'main');
 		} catch (err) {
 			logger.error('Unable to toggle fullscreen', { service, obj: err });
 			sentry.error(err);
@@ -1286,7 +1325,11 @@ export class Players {
 	}
 
 	tickCommentDisplay() {
-		this.exec({ command: ['expand-properties', 'osd-overlay', 2, 'ass-events', this.comments?.getText() || ''] });
+		this.exec({
+			command: ['expand-properties', 'osd-overlay', 2, 'ass-events', this.comments?.getText() || ''],
+		}).catch(err => {
+			logger.warn('Unable to tick comment display', { service, obj: err });
+		});
 	}
 
 	async message(message: string, duration = -1, alignCode = 5, forceType = 'admin') {
