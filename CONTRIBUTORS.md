@@ -11,23 +11,24 @@ Thanks to all the people who have contributed to the Karaoke Mugen desktop app! 
 |  191 | TheMio | 💻 Code |
 |  151 | Mathieu Delestre | 💻 Code |
 |  131 | Benoît Courtine | 💻 Code |
-|  101 | Ismaël Bussière (red5h4d0w) | 💻 Code |
+|  125 | Ismaël Bussière (red5h4d0w) | 💻 Code |
 |   96 | Damien HERBERT (Dragicafit) | 💻 Code |
 |   79 | Kmeuh | 💻 Code |
-|   69 | Soraya Lawr | 🌍 Translation |
-|   59 | Alexis Launay (yorunohikage) | 💻 Code |
+|   76 | Soraya Lawr | 🌍 Translation |
+|   74 | Alexis Launay (yorunohikage) | 💻 Code |
 |   56 | Rinchama | 💻 Code |
 |   40 | Shiki | 🌍 Translation |
 |   27 | Lukino | 💻 Code |
 |   24 | I. Musthafa | 🌍 Translation |
-|   24 | Ismaël Bussière | 💻 Code |
 |   20 | Bibah (Lemarié Julien) | 💻 Code |
 |   18 | Spokeek | 💻 Code |
 |   16 | Zuzia | 🌍 Translation |
 |   14 | Juan Miguel Manalo | 🌍 Translation |
 |   13 | Niklas Paul | 🌍 Translation |
 |   12 | Motaz Ajamal (mirukyu) | 💻 Code |
+|    9 | creptor | 🌍 Translation |
 |    9 | gallegonovato | 🌍 Translation |
+|    9 | Kyle Feng | 🌍 Translation |
 |    8 | Raphael Bellin (Sun seille) | 💻 Code |
 |    8 | bossatossa | 🌍 Translation |
 |    7 | Freekaz | 💻 Code |
@@ -66,6 +67,7 @@ Thanks to all the people who have contributed to the Karaoke Mugen desktop app! 
 |    2 | Rivaldo | 🌍 Translation |
 |    2 | Sean Chang | 🌍 Translation |
 |    2 | tele jake | 🌍 Translation |
+|    2 | Yuzu Project | 🌍 Translation |
 |    1 | Cole Wong | 🌍 Translation |
 |    1 | DragonSkills99 | 🌍 Translation |
 |    1 | Julien BISSON | 💻 Code |
