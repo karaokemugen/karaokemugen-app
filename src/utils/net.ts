@@ -1,7 +1,7 @@
 import { createConnection } from 'net';
 
 const probeHost = '1.1.1.1';
-const probePort = 443;
+const probePort = 443; // Probe same port as km-server connection. Ports like DNS can be blocked by firewall or VPN
 
 function tryConnect(timeout: number): Promise<boolean> {
     return new Promise(resolve => {
