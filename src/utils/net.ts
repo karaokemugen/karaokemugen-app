@@ -1,12 +1,15 @@
 import { createConnection } from 'net';
 
+const probeHost = '1.1.1.1';
+const probePort = 443;
+
 function tryConnect(timeout: number): Promise<boolean> {
     return new Promise(resolve => {
-        const socket = createConnection({ host: '1.1.1.1', port: 53 });
+        const socket = createConnection({ host: probeHost, port: probePort });
         socket.setTimeout(timeout);
         socket.on('connect', () => { socket.destroy(); resolve(true); });
         socket.on('error', () => resolve(false));
-        socket.on('timeout', () => resolve(false));
+        socket.on('timeout', () => { socket.destroy(); resolve(false); });
     });
 }
 
@@ -19,5 +22,7 @@ export async function checkInternet(): Promise<void> {
         if (await tryConnect(timeout)) return;
     }
 
-    throw new Error('No internet');
+    throw new Error(
+        `No internet: failed to reach ${probeHost}:${probePort}`
+    );
 }

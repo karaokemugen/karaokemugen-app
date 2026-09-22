@@ -165,8 +165,7 @@ export async function fetchPopularSongs() {
 			await checkInternet();
 		} catch (err) {
 			logger.warn('Internet not available, cannot init popular songs', { service, obj: err });
-			profile('initPopularSongs');
-			throw err;
+			return;
 		}
 		const repos = conf.System.Repositories.filter(r => r.Enabled && r.Online);
 		for (const repo of repos) {
