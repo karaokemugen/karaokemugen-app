@@ -1123,8 +1123,12 @@ export class Players {
 
 	async setBlurPercentage(blurPercentage: number) {
 		try {
+			const sigma = (blurPercentage / 8).toFixed(2);
+			// Performance optimization: downscale, blur and upscale
+			// A pure gblur on the entire frame is compute-expensive
+			const blurFilter = `lavfi=[split[a][b];[a]scale=iw/8:ih/8:flags=area,gblur=sigma=${sigma}[c];[c][b]scale=w=rw:h=rh:flags=bicubic]`;
 			await this.exec({
-				command: ['set_property', 'vf', blurPercentage > 0 ? `gblur=sigma=${blurPercentage}:steps=3` : ''],
+				command: ['set_property', 'vf', blurPercentage > 0 ? blurFilter : ''],
 			});
 			playerState.blurVideo = blurPercentage > 0;
 			emitPlayerState();
