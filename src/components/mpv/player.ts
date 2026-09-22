@@ -86,6 +86,7 @@ export class Player {
 			`--volume=${+conf.Player.Volume}`,
 			`--audio-delay=${(conf.Player.AudioDelay && +conf.Player.AudioDelay / 1000) || 0}`,
 			'--autoload-files=no',
+			// '--input-default-bindings=no', // This disables mpv's own bindings completely
 			`--config-dir=${resolvedPath('Temp')}`,
 			`--sub-fonts-dir=${resolvedPath('Fonts')}`,
 			`--sub-visibility=${playerState.showSubs ? 'yes' : 'no'}`,
@@ -300,6 +301,13 @@ export class Player {
 						}
 					} else if (message.args[0] === 'subs') {
 						this.control.setSubs(!playerState.showSubs);
+					} else if (message.args[0] === 'fullscreen') {
+						// Route through our own function so even pressing F on the monitor will make the main player fullscren
+						if (message.args[1] !== 'no' || playerState.fullscreen) {
+							await this.control.toggleFullscreen();
+						}
+					} else if (message.args[0] === 'mute') {
+						await this.control.setMute(!playerState.mute);
 					}
 				} catch (err) {
 					this.log.warn('Cannot handle mpv script command');
