@@ -7,12 +7,13 @@ This is a major release. Please read any changelog since the last version you've
 - **[Operators]** The Flathub release now has proper information about Karaoke Mugen
 - **[Operators]** New onboarding setup to allow operators to select which KM Server instance they wish to use for remote URLs, songs, and users. (#1756)
 - **[Operators]** Config switches can be toggled with the space bar now (#1903)
+- **[Operators]** New option to keep song info displayed permanently on the screen during playback
 - **[Operators]** Image previews are now generated in AVIF format for smaller sizes.
 - **[Developers]** Zod is now used to validate inputs on all routes. Better validation means less room for exploits/bugs
 
 ## Changed
 
-- **[Users]** Optimized frontend rendering to make it smoother and take less ressources 
+- **[Users]** Optimized frontend rendering to make it smoother and take less resources 
 - **[Users]** Various optimizations and fixes to the web interfaces
 - **[Users]** Updated Breton, Spanish, English, Chinese and Japanese translations
 - **[Developers]** Upgraded backend and frontend deps
@@ -23,6 +24,9 @@ This is a major release. Please read any changelog since the last version you've
 - **[Operators]** Fixed creation of unknown repository when importing a playlist
 - **[Operators]** Possibly fixed issues with remote connections (#1902)
 - **[Operators]** Fixed playing songs that don't have loudnorm attributes
+- **[Operators]** Fixed postgres startup on some linux installations
+- **[Operators]** Fixed exiting fallback mode and resuming the current playlist when a song was added
+- **[Operators]** Improved stability and restarts of second player (monior)
 - **[Users]** Fixed multiple song add requests
 - **[Users]** Fixed avatar uploads (by fixing the strtok3 error)
 - **[Maintainers]** Fixed add tag errors
