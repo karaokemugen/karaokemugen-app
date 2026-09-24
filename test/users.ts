@@ -69,6 +69,17 @@ describe('Users', () => {
 		});
 	});
 
+	it('Users cannot change the type', async () => {
+		const login = await commandBackend(undefined, 'login', {
+			username: 'BakaToTest',
+			password: 'trololo2020',
+		});
+		const data = await commandBackend(login.token, 'editMyAccount', { type: 0 }, true);
+		expect(data.message.code).to.be.equal('USER_CANNOT_CHANGE_TYPE');
+		const user = await commandBackend(token, 'getUser', { username: 'BakaToTest' });
+		expect(user.type).to.be.equal(1);
+	});
+
 	it('List users AFTER create user', async () => {
 		const data = await commandBackend(token, 'getUsers');
 		expect(data).to.be.an('array');

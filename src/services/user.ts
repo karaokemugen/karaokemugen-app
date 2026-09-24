@@ -116,23 +116,26 @@ export async function editUser(
 		const currentUser = await getUser(username, true, true);
 		if (!currentUser) throw new ErrorKM('UNKNOWN_USER', 404, false);
 		if (currentUser.type === 2 && role !== 'admin') throw new ErrorKM('GUESTS_CANNOT_EDIT', 403, false);
-		const mergedUser = merge(currentUser, user);
-		delete mergedUser.password;
-		if (!mergedUser.social_networks) mergedUser.social_networks = {};
-		if (user.password) {
-			if (!opts.noPasswordCheck && user.password.length < 8) throw new ErrorKM('PASSWORD_TOO_SHORT', 411);
-			const password = await hashPasswordbcrypt(user.password);
-			await updateUserPassword(username, password);
-		}
 		if (user.type != null && +user.type !== currentUser.type && role !== 'admin') {
 			throw new ErrorKM('USER_CANNOT_CHANGE_TYPE', 403, false);
 		}
-		// If we're renaming a user, mergedUser.login is going to be set to something different than username
-		mergedUser.old_login = username;
 		// Check if login already exists.
 		if (user.nickname && currentUser.nickname !== user.nickname && (await checkNicknameExists(user.nickname))) {
 			throw new ErrorKM('NICKNAME_ALREADY_IN_USE', 409, false);
 		}
+		if (user.password && !opts.noPasswordCheck && user.password.length < 8) {
+			throw new ErrorKM('PASSWORD_TOO_SHORT', 411);
+		}
+		// Merge fields after the checks into a new object (so currentUser does not get modified)
+		const mergedUser = merge({}, currentUser, user);
+		delete mergedUser.password;
+		if (!mergedUser.social_networks) mergedUser.social_networks = {};
+		if (user.password) {
+			const password = await hashPasswordbcrypt(user.password);
+			await updateUserPassword(username, password);
+		}
+		// If we're renaming a user, mergedUser.login is going to be set to something different than username
+		mergedUser.old_login = username;
 		if (avatar?.path) {
 			// If a new avatar was sent, it is contained in the avatar object
 			// Let's move it to the avatar user directory and update avatar info in database
