@@ -223,7 +223,7 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 					<Link to={`/system/repositories/${record.Name}`}>
 						<Button type="primary" icon={<EditOutlined />} />
 					</Link>
-					{this.state.repositories.length > 1 ? (
+					{this.state.repositories.length > 1 && !record.System ? (
 						<>
 							<Divider orientation="vertical" />
 							<Button
