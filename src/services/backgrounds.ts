@@ -61,13 +61,17 @@ export async function getBackgroundFiles(type: BackgroundType = 'pause'): Promis
 }
 
 export async function removeBackgroundFile(type: BackgroundType, file: string) {
+	if (!playerBackgroundTypes.includes(type) || type === 'bundled') throw { code: 400 };
+	const fileName = basename(file);
+	if (!backgroundFileRegexp.test(fileName) && !audioFileRegexp.test(fileName)) throw { code: 400 };
+	const resolvedBackgroundFile = resolve(resolvedPath('Backgrounds'), type, fileName);
 	let restartMpv = false;
-	if (!playerBackgroundTypes.includes(type)) throw { code: 400 };
-	if (getState().backgrounds.picture === file || getState().backgrounds.music === file) {
+	const currentBackgrounds = getState().backgrounds;
+	if (currentBackgrounds?.picture === resolvedBackgroundFile || currentBackgrounds?.music === resolvedBackgroundFile) {
 		restartMpv = true;
 		await quitmpv();
 	}
-	await fs.unlink(resolve(resolvedPath('Backgrounds'), type, file));
+	await fs.unlink(resolvedBackgroundFile);
 	if (restartMpv) initPlayer().catch();
 }
 
