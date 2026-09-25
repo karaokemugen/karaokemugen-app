@@ -2,6 +2,7 @@ import z from 'zod';
 import { WS_CMD } from '../../../kmfrontend/src/utils/ws.mjs';
 import { APIMessage } from '../../lib/services/frontend.js';
 import { Role, User } from '../../lib/types/user.js';
+import { animeListProviders, orderParams, userTypesNum } from '../../lib/utils/constants.js';
 import { check, zQParam, zRoles } from '../../lib/utils/validators.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
 import { checkSecurityCode, resetSecurityCode } from '../../services/auth.js';
@@ -14,8 +15,9 @@ import {
 	removeRemoteUser,
 	resetRemotePassword,
 } from '../../services/userOnline.js';
+import { resolveUploadedFileToTempPath } from '../../utils/files.js';
 import { runChecklist } from '../middlewares.js';
-import { animeListProviders, orderParams, userTypesNum } from '../../lib/utils/constants.js';
+
 
 export default function userController(router: SocketIOApp) {
 	router.route(WS_CMD.GET_USERS, async (socket, req) => {
@@ -142,11 +144,12 @@ export default function userController(router: SocketIOApp) {
 					flag_contributor_emails: z.coerce.boolean().optional(),
 					roles: zRoles.optional(),
 					type: z.coerce.number().refine(t => userTypesNum.includes(t)).optional(),
-					avatar: z.string().optional(),
+					avatar: z.object({ path: z.string().min(1) }).loose().optional(),
 				}));				
 				user = req.body;
 			}
-			const avatar = req.body.login.includes('@') ? null : req.body.avatar;
+			const avatar =
+				req.body.login.includes('@') || !req.body.avatar ? null : resolveUploadedFileToTempPath(req.body.avatar);
 			await editUser(req.body.old_login || req.body.login, user, avatar, req.token.role, {
 				editRemote: false,
 			});
@@ -256,9 +259,10 @@ export default function userController(router: SocketIOApp) {
 				flag_contributor_emails: z.coerce.boolean().optional(),
 				roles: zRoles.optional(),
 				type: z.number().refine(t => userTypesNum.includes(t)).optional(),
-				avatar: z.string().optional(),
+				avatar: z.object({ path: z.string().min(1) }).loose().optional(),
 			}));
-			const response = await editUser(req.token.username, req.body, req.body.avatar || null, req.token.role, {
+			const avatar = req.body.avatar ? resolveUploadedFileToTempPath(req.body.avatar) : null;
+			const response = await editUser(req.token.username, req.body, avatar, req.token.role, {
 				editRemote: req.onlineAuthorization,
 			});
 			return { code: 200, message: APIMessage('USER_EDITED', { onlineToken: response.onlineToken }) };
