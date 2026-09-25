@@ -4,7 +4,7 @@ import { APIMessage } from '../../lib/services/frontend.js';
 import { Role, User } from '../../lib/types/user.js';
 import { check, zQParam, zRoles } from '../../lib/utils/validators.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
-import { resetSecurityCode } from '../../services/auth.js';
+import { checkSecurityCode, resetSecurityCode } from '../../services/auth.js';
 import { getKaras } from '../../services/kara.js';
 import { createAdminUser, createUser, editUser, getUser, getUsers, removeUser } from '../../services/user.js';
 import {
@@ -14,7 +14,6 @@ import {
 	removeRemoteUser,
 	resetRemotePassword,
 } from '../../services/userOnline.js';
-import { getState } from '../../utils/state.js';
 import { runChecklist } from '../middlewares.js';
 import { animeListProviders, orderParams, userTypesNum } from '../../lib/utils/constants.js';
 
@@ -163,18 +162,18 @@ export default function userController(router: SocketIOApp) {
 			check(req.body, z.object({
 				username: z.string(),
 				password: z.string().optional(),
-				securityCode: z.coerce.number().optional(),
+				securityCode: z.coerce.number().int().min(0).max(999999).optional(),
 			}));
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 		if (!req.body.username.includes('@')) {
-			if (+req.body.securityCode === getState().securityCode) {
-				try {
-					check(req.body, z.object({
-						username: z.string(),
-						password: z.string(),
-					}));
+			try {
+				check(req.body, z.object({
+					username: z.string(),
+					password: z.string(),
+				}));
+				if (checkSecurityCode(+req.body.securityCode)) {
 					await editUser(
 						req.body.username,
 						{
@@ -186,12 +185,11 @@ export default function userController(router: SocketIOApp) {
 					);
 					resetSecurityCode();
 					return { code: 200, message: APIMessage('USER_RESETPASSWORD_SUCCESS') };
-				} catch (err) {
-					throw { code: err.code || 500, message: APIMessage(err.message) };
 				}
-			} else {
-				throw { code: 403, message: APIMessage('USER_RESETPASSWORD_WRONGSECURITYCODE') };
+			} catch (err) {
+				throw { code: err.code || 500, message: APIMessage(err.message) };
 			}
+			throw { code: 403, message: APIMessage('USER_RESETPASSWORD_WRONGSECURITYCODE') };
 		} else {
 			try {
 				check(req.body, z.object({

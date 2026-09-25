@@ -80,6 +80,34 @@ describe('Users', () => {
 		expect(user.type).to.be.equal(1);
 	});
 
+	it('Lock the security code after too many wrong attempts', async () => {
+		const state = await commandBackend(undefined, 'getState');
+		for (let i = 0; i < 10; i += 1) {
+			const data = await commandBackend(
+				undefined,
+				'resetUserPassword',
+				{
+					username: 'BakaToTest',
+					password: 'trololo2020',
+					securityCode: (state.securityCode + 1 + i) % 1000000,
+				},
+				true
+			);
+			expect(data.code).to.be.equal(403);
+			expect(data.message.code).to.be.equal('USER_RESETPASSWORD_WRONGSECURITYCODE');
+		}
+		// Reset should be blocked with the right code when lock is active
+		const data = await commandBackend(
+			undefined,
+			'resetUserPassword',
+			{ username: 'BakaToTest', password: 'trololo2020', securityCode: state.securityCode },
+			true
+		);
+		expect(data.code).to.be.equal(429);
+		expect(data.message.code).to.be.equal('SECURITY_CODE_LOCKED');
+	});
+
+
 	it('List users AFTER create user', async () => {
 		const data = await commandBackend(token, 'getUsers');
 		expect(data).to.be.an('array');

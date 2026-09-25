@@ -34,7 +34,7 @@ import { defaultGuestNames } from '../utils/constants.js';
 import sentry from '../utils/sentry.js';
 import { getState } from '../utils/state.js';
 import { stopSub } from '../utils/userPubSub.js';
-import { resetNewAccountCode } from './auth.js';
+import { checkSecurityCode, resetNewAccountCode } from './auth.js';
 import { createRemoteUser, editRemoteUser, getUsersFetched } from './userOnline.js';
 
 const service = 'User';
@@ -265,7 +265,7 @@ export async function checkPassword(user: User, password: string): Promise<boole
 
 /** Create ADMIN user only if security code matches */
 export function createAdminUser(user: User, remote: boolean, requester: User) {
-	if (requester.type === 0 || user.securityCode === getState().securityCode) {
+	if (requester.type === 0 || (user.securityCode !== undefined && checkSecurityCode(user.securityCode))) {
 		return createUser(user, { createRemote: remote, admin: true, skipSecurityCode: true });
 	}
 	throw { code: 403, msg: 'UNAUTHORIZED' };
@@ -286,7 +286,7 @@ export async function createUser(
 			throw new ErrorKM('USER_CREATION_DISABLED', 403, false);
 		}
 		if (!opts.admin && !opts.skipSecurityCode && getConfig().Frontend.RequireSecurityCodeForNewAccounts) {
-			if (user.securityCode !== getState().newAccountCode && user.securityCode !== getState().securityCode) {
+			if (!checkSecurityCode(user.securityCode, true)) {
 				throw new ErrorKM('USER_CREATION_WRONG_SECURITY_CODE', 403, false);
 			}
 			resetNewAccountCode();

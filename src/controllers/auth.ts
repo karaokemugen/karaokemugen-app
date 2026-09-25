@@ -7,11 +7,10 @@ import { ErrorKM } from '../lib/utils/error.js';
 import logger from '../lib/utils/logger.js';
 import { check } from '../lib/utils/validators.js';
 import { SocketIOApp } from '../lib/utils/ws.js';
-import { checkLogin, resetSecurityCode } from '../services/auth.js';
+import { checkLogin, checkSecurityCode, resetSecurityCode } from '../services/auth.js';
 import { fetchAndAddFavorites } from '../services/favorites.js';
 import { createTemporaryGuest, editUser, getAvailableGuest, updateLastLoginName } from '../services/user.js';
 import { fetchAndUpdateRemoteUser, remoteCheckAuth } from '../services/userOnline.js';
-import { getState } from '../utils/state.js';
 import { runChecklist } from './middlewares.js';
 
 const service = 'Auth';
@@ -22,11 +21,11 @@ export default function authController(router: SocketIOApp) {
 			check(req.body, z.object({
 				username: z.string().min(1),
 				password: z.string(),
-				securityCode: z.number().int().optional(),
+				securityCode: z.number().int().min(0).max(999999).optional(),
 			}));
 			let token = await checkLogin(req.body.username, req.body.password, req.body.securityCode);
 			// Admin user - Check if security code is correct
-			if (req.body.securityCode === getState().securityCode) {
+			if (req.body.securityCode !== undefined && checkSecurityCode(req.body.securityCode)) {
 				// Reset security code once it's been used
 				resetSecurityCode();
 				// Edit user and change its type to admin

@@ -1821,6 +1821,7 @@
 		"C_BEFORE_YEAR_CONFLICT": "You cannot add a \"Before year\" criteria higher than the \"After year\" criteria.",
 		"C_AFTER_YEAR_CONFLICT": "You cannot add a \"After year\" criteria lower than the \"Before year\" criteria.",
 		"USER_RESETPASSWORD_WRONGSECURITYCODE": "Wrong security code",
+		"SECURITY_CODE_LOCKED": "Too many attempts with wrong security codes. Wait a few minutes before trying again.",
 		"PL_DELETE_SONG_ERROR": "You cannot delete that song",
 		"PL_DELETE_UPVOTED": "You cannot delete your suggestion, it's too late.",
 		"PL_VIEW_SONGS_ERROR": "Error loading the playlist",
