@@ -4,28 +4,59 @@ import { promises as fs } from 'fs';
 import multer from 'multer';
 import { resolve } from 'path';
 
+import z from 'zod';
 import { WS_CMD } from '../../../kmfrontend/src/utils/ws.mjs';
 import { APIMessage } from '../../lib/services/frontend.js';
 import { resolvedPath } from '../../lib/utils/config.js';
+import { userTypes } from '../../lib/utils/constants.js';
 import { sanitizedFileExtension } from '../../lib/utils/files.js';
 import logger from '../../lib/utils/logger.js';
+import { check } from '../../lib/utils/validators.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
 import { openLyricsFile, showLyricsInFolder, showMediaInFolder } from '../../services/karaManagement.js';
 import { runChecklist } from '../middlewares.js';
 import { requireHTTPAuth, requireValidUser } from '../middlewaresHTTP.js';
-import { check } from '../../lib/utils/validators.js';
-import z from 'zod';
+
+const ADMIN_UPLOAD_MAX_SIZE = 45 * 1024 * 1024 * 1024; // 45 GB, upload medias, backgrounds, user avatars, etc.
+const USER_UPLOAD_MAX_SIZE = 10 * 1024 * 1024; // 10 MB, upload user avatar
 
 export default function filesController(router: Router) {
-	const upload = multer({
-		storage: multer.diskStorage({
-			destination: resolvedPath('Temp'),
-			// Keep original extension for media type detection
-			filename: (_req, file, cb) => cb(null, `${randomUUID()}${sanitizedFileExtension(file.originalname)}`),
-		}),
+	const multerStorage = multer.diskStorage({
+		destination: resolvedPath('Temp'),
+		// Keep original extension for media type detection
+		filename: (_req, file, cb) => cb(null, `${randomUUID()}${sanitizedFileExtension(file.originalname)}`),
 	});
-	router.route('/importFile').post(requireHTTPAuth, requireValidUser, upload.single('file'), (req, res: any) => {
-		res.status(200).send(JSON.stringify(req.file));
+	const adminUpload = multer({ 
+		storage: multerStorage, 
+		limits: { fileSize: ADMIN_UPLOAD_MAX_SIZE, files: 1 }
+	}).single('file');
+	const userUpload = multer({
+		storage: multerStorage,
+		limits: { fileSize: USER_UPLOAD_MAX_SIZE, files: 1 }
+	}).single('file');
+
+	router.route('/importFile').post(requireHTTPAuth, requireValidUser, (req: any, res: any) => {
+		if (req.user.type === userTypes.guest) {
+			res.status(403).json(APIMessage('NOT_GUEST'));
+			return;
+		}
+		const upload = req.user.type === userTypes.admin ? adminUpload : userUpload;
+		upload(req, res, (err: any) => {
+			if (err) {
+				if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE') {
+					res.status(413).json(APIMessage('UPLOAD_TOO_LARGE'));
+				} else {
+					logger.error('Unable to receive uploaded file', { service: 'API', obj: err });
+					res.status(400).json(APIMessage('UPLOAD_FAILED'));
+				}
+				return;
+			}
+			if (!req.file) {
+				res.status(400).json(APIMessage('UPLOAD_FAILED'));
+				return;
+			}
+			res.status(200).send(JSON.stringify(req.file));
+		});
 	});
 }
 
