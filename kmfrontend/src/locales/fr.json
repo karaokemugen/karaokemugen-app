@@ -416,7 +416,9 @@
 			"BLUR_VIDEO_ON_WARNING_TAG": "Flouter les vidéos avec un tag warning",
 			"BLUR_VIDEO_ON_WARNING_TAG_TOOLTIP": "Ajoute un floutage aux vidéos qui contiennent un tag de type warning et peuvent donc potentiellement choquer un public. Cela peut entraîner des lenteurs sur les ordinateurs les moins puissants.",
 			"FULLSCREEN_ON_STARTUP": "Plein écran au démarrage",
-			"FULLSCREEN_ON_STARTUP_TOOLTIP": "Lancez toujours le lecteur en plein écran, quel que soit son état précédent"
+			"FULLSCREEN_ON_STARTUP_TOOLTIP": "Lancez toujours le lecteur en plein écran, quel que soit son état précédent",
+			"DISPLAY_SONGINFO_PERMANENT": "Afficher les informations de la chanson sur l'écran pendant toute la chanson",
+			"DISPLAY_SONGINFO_PERMANENT_TOOLTIP": "Les informations sur la chanson et l'avatar du demandeur restent à l'écran pour la chanson complète. (Les informations de connexion et la bannière Karaoke Mugen sont toujours affichées, si elles sont activées)"
 		},
 		"KARAOKE": {
 			"LABEL": "Karaoké",
@@ -2012,7 +2014,8 @@
 		"IMPORT_SONG_ERROR": "Impossible d'importer des chansons",
 		"PL_DO_NOT_MATCH_REPO": "Certaines chansons de la liste de lecture n'existent pas sur le serveur distant",
 		"REMOTE_SERVER_CONNECTION_ERROR": "Impossible de se connecter au serveur distant",
-		"UPLINK_UNREACHABLE": "Impossible de récupérer la liste des instances Karaoke Mugen connues"
+		"UPLINK_UNREACHABLE": "Impossible de récupérer la liste des instances Karaoke Mugen connues",
+		"SECURITY_CODE_LOCKED": "Trop de tentatives de mauvais codes de sécurité. Attendez quelques minutes avant d'essayer à nouveau."
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Ajout de {{data}} téléchargements à la file d'attente",
