@@ -410,7 +410,7 @@
 			"DISPLAY_SONGINFO": "Show song information",
 			"DISPLAY_SONGINFO_TOOLTIP": "Information (title, series/singer, etc.) are displayed at the beginning and end of a song, as well as during pause screens in Stream/Classic modes. Disable to hide these, for blind tests for example.",
 			"DISPLAY_SONGINFO_PERMANENT": "Display song information on screen for the entire song",
-			"DISPLAY_SONGINFO_PERMANENT_TOOLTIP": "Song information and the requester's avatar stay on screen for the full song. (The connection-info and KaraokeMugen banner are still displayed, if enabled)",
+			"DISPLAY_SONGINFO_PERMANENT_TOOLTIP": "Song information and the requester's avatar stay on screen for the full song. (The connection-info and Karaoke Mugen banner are still displayed, if enabled)",
 			"DISPLAY_NEXT_SONGINFO": "Show next song on pause screens",
 			"DISPLAY_NEXT_SONGINFO_TOOLTIP": "If enabled, an announcement showing the next song will appear on screen during karaoke pauses like in the Classic Mode or Stream Mode. This does NOT include the next song announcement at the end of a song.",
 			"NEXT_SONGINFO_POSITION_X": "Horizontal position",
