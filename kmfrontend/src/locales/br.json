@@ -89,7 +89,8 @@
 			"MONITOR_NUMBER": "Skramm al lenner",
 			"DISPLAY_RANDOMQUOTES": "Diskouez an arroudennoù dre zegouezh",
 			"DISPLAY_CONNECTION_INFO_QRCODE": "Diskouez ar c'hod QR pa vez ehanet al lenner",
-			"LIVE_COMMENTS": "Evezhiadennoù war-eeun"
+			"LIVE_COMMENTS": "Evezhiadennoù war-eeun",
+			"DISPLAY_SONGINFO_PERMANENT": "Diskouez titouroù ar ganaouenn war ar skramm a-hed ar ganaouenn"
 		},
 		"INTERFACE": {
 			"DISPLAY_WELCOME_MESSAGE": "Diskouez ur c'hemennadenn degemer",
