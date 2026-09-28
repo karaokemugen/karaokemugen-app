@@ -7289,7 +7289,6 @@ __metadata:
     pretty-bytes: "npm:^7.1.1"
     react: "npm:19.2.8"
     react-aria-menubutton: "npm:^8.0.0"
-    react-audio-player: "npm:^0.17.0"
     react-dom: "npm:19.2.8"
     react-i18next: "npm:^17.0.11"
     react-image-crop: "npm:^11.1.2"
@@ -8408,7 +8407,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
+"prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -8512,18 +8511,6 @@ __metadata:
   peerDependencies:
     react: ^16.3.0 || ^17.0.0 || ^18.0.0
   checksum: 10c0/d647e0ea3af1cbff9a5b82f6ed7e2b33fa404bcc841d0a50b846f5c394438d95e40736d605608f11e19bd851a771b39e07d2a6a1d134d11d69f7e0240a5a0146
-  languageName: node
-  linkType: hard
-
-"react-audio-player@npm:^0.17.0":
-  version: 0.17.0
-  resolution: "react-audio-player@npm:0.17.0"
-  dependencies:
-    prop-types: "npm:^15.7.2"
-  peerDependencies:
-    react: ">=16"
-    react-dom: ">=16"
-  checksum: 10c0/61e8a1dbc5f98d50827976c9b1feae4e53be5b19e5b834a458a574bbcc6e4623fcbf7a63829ef2ef4c6468b83d864c606ce72cb118b0e06a2476e84c1798038d
   languageName: node
   linkType: hard
 
