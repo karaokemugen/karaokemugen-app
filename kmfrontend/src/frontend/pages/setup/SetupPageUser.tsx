@@ -9,6 +9,9 @@ import { langSupport } from '../../../utils/isoLanguages';
 import { commandBackend } from '../../../utils/socket';
 import { displayMessage } from '../../../utils/tools';
 import { WS_CMD } from '../../../utils/ws.mjs';
+import ServersList from './ServersList';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faExclamation } from '@fortawesome/free-solid-svg-icons';
 
 function SetupPageUser() {
 	const context = useContext(GlobalContext);
@@ -19,6 +22,7 @@ function SetupPageUser() {
 	const [login, setLogin] = useState<string>();
 	const [password, setPassword] = useState<string>();
 	const [passwordConfirmation, setPasswordConfirmation] = useState<string>();
+	const [email, setEmail] = useState<string>();
 	const [instance, setInstance] = useState<string>(
 		context?.globalState.settings.data.config?.Online.RemoteUsers.DefaultHost
 	);
@@ -46,7 +50,19 @@ function SetupPageUser() {
 				password: password,
 				role: 'admin',
 				language: langSupport,
+				email: email ? email : undefined,
 			});
+			if (accountType === 'online') {
+				commandBackend(WS_CMD.UPDATE_SETTINGS, {
+					setting: {
+						Online: {
+							RemoteUsers: {
+								DefaultHost: instance,
+							},
+						},
+					},
+				});
+			}
 			setError(undefined);
 			loginCall();
 		} catch (err: any) {
@@ -89,7 +105,7 @@ function SetupPageUser() {
 			});
 			setAuthenticationInformation(context.globalDispatch, infos);
 			setError(undefined);
-			navigate('/setup/stats');
+			navigate('/setup/songs');
 		} catch (err: any) {
 			const error = err?.message?.code ? i18next.t(`ERROR_CODES.${err.message.code}`) : JSON.stringify(err);
 			setError(error);
@@ -105,9 +121,8 @@ function SetupPageUser() {
 		>
 			<section className="step step-1">
 				<div className="intro">
-					<h2>{i18next.t('SETUP_PAGE.WELCOME')}</h2>
-					<p>{i18next.t('SETUP_PAGE.NEED_ACCOUNT')}</p>
-					<p className="account-question">{i18next.t('SETUP_PAGE.ACCOUNT_QUESTION')}</p>
+					<h2>{i18next.t('SETUP_PAGE.USER.WELCOME')}</h2>
+					<p>{i18next.t('SETUP_PAGE.USER.CHOOSE_ACCOUNT')}</p>
 				</div>
 				<ul className="actions">
 					<li>
@@ -116,7 +131,7 @@ function SetupPageUser() {
 							type="button"
 							onClick={() => setAccountType('local')}
 						>
-							{i18next.t('SETUP_PAGE.LOCAL_ACCOUNT')}
+							{i18next.t('SETUP_PAGE.USER.LOCAL_ACCOUNT')}
 						</button>
 					</li>
 					<li>
@@ -125,23 +140,22 @@ function SetupPageUser() {
 							type="button"
 							onClick={() => setAccountType('online')}
 						>
-							{i18next.t('SETUP_PAGE.ONLINE_ACCOUNT')}
+							{i18next.t('SETUP_PAGE.USER.ONLINE_ACCOUNT')}
 						</button>
 					</li>
 				</ul>
-				{accountType !== 'local' ? (
-					<blockquote className="extra">
-						<h3>{i18next.t('SETUP_PAGE.ONLINE_ACCOUNT_DESC')}</h3>
-						<ul>
-							<li>{i18next.t('SETUP_PAGE.ONLINE_ACCOUNT_SAVE_INFOS')}</li>
-							<li>{i18next.t('SETUP_PAGE.ONLINE_ACCOUNT_LOST_PASSWORD')}</li>
-						</ul>
-					</blockquote>
-				) : null}
+				<blockquote className="extra">
+					<h3>{i18next.t('SETUP_PAGE.USER.ONLINE_ACCOUNT_DESC')}</h3>
+					<ul>
+						<li>{i18next.t('SETUP_PAGE.USER.ONLINE_ACCOUNT_FAVORITES')}</li>
+						<li>{i18next.t('SETUP_PAGE.USER.ONLINE_ACCOUNT_PLAYLISTS')}</li>
+						<li>{i18next.t('SETUP_PAGE.USER.ONLINE_ACCOUNT_OTHER_SESSIONS')}</li>
+					</ul>
+				</blockquote>
 			</section>
 			{accountType === 'local' ? (
 				<section className="step step-2 step-local">
-					<p>{i18next.t('SETUP_PAGE.LOCAL_ACCOUNT_DESC')}</p>
+					<p>{i18next.t('SETUP_PAGE.USER.LOCAL_ACCOUNT_DESC')}</p>
 					<div className="input-group">
 						<div className="input-control">
 							<label>{i18next.t('USERNAME')}</label>
@@ -177,14 +191,17 @@ function SetupPageUser() {
 				</section>
 			) : accountType === 'online' ? (
 				<section className="step step-2 step-online">
+					<p>{i18next.t('SETUP_PAGE.ONLINE_SERVER.SELECT')}</p>
+					<p>{i18next.t('SETUP_PAGE.ONLINE_SERVER.DESCRIPTION')}</p>
 					<p>
-						{i18next.t('SETUP_PAGE.ONLINE_ACCOUNT_INSTANCE', {
-							instance: instance,
-						})}
+						<FontAwesomeIcon icon={faExclamation} />
+						{i18next.t('SETUP_PAGE.ONLINE_SERVER.HINT')}
 					</p>
+					<p>{i18next.t('SETUP_PAGE.ONLINE_SERVER.LIST')}</p>
+					<ServersList instance={instance} setInstance={setInstance} typeLabel="users" />
 					<p>
-						{i18next.t('SETUP_PAGE.ONLINE_ACCOUNT_INSTANCE_DESC', {
-							instance: context?.globalState.settings.data.config?.Online.RemoteUsers.DefaultHost,
+						{i18next.t('SETUP_PAGE.USER.ONLINE_ACCOUNT_INSTANCE', {
+							instance: instance,
 						})}
 					</p>
 					<ul className="actions">
@@ -194,7 +211,7 @@ function SetupPageUser() {
 								type="button"
 								onClick={() => setOnlineAction('create')}
 							>
-								{i18next.t('SETUP_PAGE.CREATE_ONLINE_ACCOUNT')}
+								{i18next.t('SETUP_PAGE.USER.CREATE_ONLINE_ACCOUNT')}
 							</button>
 						</li>
 						<li>
@@ -203,116 +220,75 @@ function SetupPageUser() {
 								type="button"
 								onClick={() => setOnlineAction('login')}
 							>
-								{i18next.t('SETUP_PAGE.LOGIN_ONLINE_ACCOUNT')}
+								{i18next.t('SETUP_PAGE.USER.LOGIN_ONLINE_ACCOUNT')}
 							</button>
 						</li>
 					</ul>
-					{onlineAction === 'create' ? (
-						<div>
-							<div className="input-group">
-								<p className="text-danger">{i18next.t('SETUP_PAGE.CREATE_ONLINE_ACCOUNT_DESC')}</p>
-								<div className="input-control">
-									<label>{i18next.t('USERNAME')}</label>
-									<input
-										key="login"
-										className="input-field"
-										type="text"
-										defaultValue={login}
-										required
-										onChange={event => setLogin(event.target.value)}
-									/>
-								</div>
-								<div className="input-control">
-									<label>{i18next.t('INSTANCE_NAME_SHORT')}</label>
-									<input
-										key="instance"
-										className="input-field"
-										type="text"
-										defaultValue={
-											context?.globalState.settings.data.config?.Online.RemoteUsers.DefaultHost
-										}
-										onChange={event => setInstance(event.target.value)}
-									/>
-								</div>
-								<div className="input-control">
-									<label>{i18next.t('PASSWORD')}</label>
-									<input
-										key="password"
-										className="input-field"
-										type="password"
-										required
-										defaultValue={password}
-										onChange={event => setPassword(event.target.value)}
-									/>
-								</div>
-								<div className="input-control">
-									<label>{i18next.t('PASSWORDCONF')}</label>
-									<input
-										key="passwordConfirmation"
-										className="input-field"
-										type="password"
-										required
-										defaultValue={passwordConfirmation}
-										onChange={event => setPasswordConfirmation(event.target.value)}
-									/>
-								</div>
+					{onlineAction ? (
+						<div className="input-group">
+							<div className="input-control">
+								<label>{i18next.t('USERNAME')}</label>
+								<input
+									key="login"
+									className="input-field"
+									type="text"
+									defaultValue={login}
+									required
+									onChange={event => setLogin(event.target.value)}
+								/>
 							</div>
-						</div>
-					) : onlineAction === 'login' ? (
-						<div>
-							<div className="input-group">
-								<div className="input-control">
-									<label>{i18next.t('USERNAME')}</label>
-									<input
-										key="login"
-										className="input-field"
-										type="text"
-										defaultValue={login}
-										required
-										onChange={event => setLogin(event.target.value)}
-									/>
-								</div>
-								<div className="input-control">
-									<label>{i18next.t('INSTANCE_NAME_SHORT')}</label>
-									<input
-										key="instance"
-										className="input-field"
-										type="text"
-										defaultValue={
-											context?.globalState.settings.data.config?.Online.RemoteUsers.DefaultHost
-										}
-										onChange={event => setInstance(event.target.value)}
-									/>
-								</div>
-								<div className="input-control">
-									<label>{i18next.t('PASSWORD')}</label>
-									<input
-										key="password"
-										className="input-field"
-										type="password"
-										required
-										defaultValue={password}
-										onChange={event => setPassword(event.target.value)}
-										onKeyUp={e => {
-											if (e.code === 'Enter') {
-												loginCall();
-											}
-										}}
-									/>
-								</div>
+							<div className="input-control">
+								<label>{i18next.t('INSTANCE_NAME_SHORT')}</label>
+								<div className="input-field disabled">@{instance}</div>
 							</div>
+							<div className="input-control">
+								<label>{i18next.t('PASSWORD')}</label>
+								<input
+									key="password"
+									className="input-field"
+									type="password"
+									required
+									defaultValue={password}
+									onChange={event => setPassword(event.target.value)}
+								/>
+							</div>
+							{onlineAction === 'create' ? (
+								<>
+									<div className="input-control">
+										<label>{i18next.t('PASSWORDCONF')}</label>
+										<input
+											key="passwordConfirmation"
+											className="input-field"
+											type="password"
+											required
+											defaultValue={passwordConfirmation}
+											onChange={event => setPasswordConfirmation(event.target.value)}
+										/>
+									</div>
+									<div className="input-control">
+										<label>{i18next.t('USERS.EMAIL')}</label>
+										<input
+											className="input-field"
+											type="email"
+											required
+											defaultValue={email}
+											onChange={event => setEmail(event.target.value)}
+										/>
+									</div>
+								</>
+							) : null}
 						</div>
 					) : null}
 				</section>
 			) : null}
-			{accountType === 'local' || (accountType === 'online' && onlineAction !== null) ? (
+			{accountType === 'local' || (accountType === 'online' && onlineAction) ? (
 				<section className="step step-3">
 					{!isElectron() ? (
 						<div className="input-group">
 							<p className="intro">
-								{i18next.t('SETUP_PAGE.SECURITY_CODE_DESC_CONSOLE')}
+								{i18next.t('SETUP_PAGE.USER.SECURITY_CODE_DESC_CONSOLE')}
 								<br />
-								<em>{i18next.t('SETUP_PAGE.SECURITY_CODE_USE')}</em>
+								<em>{i18next.t('SETUP_PAGE.USER.SECURITY_CODE_USE')}</em>
 							</p>
 							<div className="input-control">
 								<label>{i18next.t('SECURITY_CODE')}</label>
@@ -330,8 +306,8 @@ function SetupPageUser() {
 						{(accountType === 'local' || onlineAction) && (
 							<button type="submit">
 								{accountType === 'online' && onlineAction === 'login'
-									? i18next.t('LOG_IN')
-									: i18next.t('SIGN_UP')}
+									? i18next.t('ACTIONS.LOG_IN')
+									: i18next.t('ACTIONS.SIGN_UP')}
 							</button>
 						)}
 					</div>

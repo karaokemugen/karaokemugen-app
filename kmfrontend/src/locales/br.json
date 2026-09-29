@@ -1,4 +1,10 @@
 {
+	"ACTIONS": {
+		"CONFIRM": "Kadarnaat",
+		"LOG_IN": "Kevreañ",
+		"SIGN_UP": "Enskrivañ",
+		"CONTINUE": "Kenderc'hel"
+	},
 	"YES": "Ya",
 	"NO": "Ket",
 	"AND": "ha",
@@ -17,7 +23,6 @@
 	},
 	"UNKNOWN": "Dianav",
 	"SUBMIT": "Saveteiñ",
-	"CONFIRM": "Kadarnaat",
 	"SHOW-HIDE": "Diskouez / Kuzhat",
 	"LOGIN_MANDATORY": "Rekis eo an anv implijer",
 	"PASSWORD_MANDATORY": "Rekis eo ar ger-tremen",
@@ -27,11 +32,12 @@
 	"SHUTDOWN_POPUP": "Kollet eo bet kevreadenn gant Karaoke Mugen",
 	"HOME_BUTTON": "Degemer",
 	"SETUP_PAGE": {
-		"WELCOME": "Donemat e Karaoke Mugen !",
-		"ONLINE_ACCOUNT": "Kont enlinenn",
-		"CREATE_ONLINE_ACCOUNT": "Fellout a ra din krouiñ ur gont enlinenn",
-		"LOGIN_ONLINE_ACCOUNT": "Ur gont enlinenn am eus dija",
-		"CONNECTED_MESSAGE": "Gourc'hemennoù, setu kevreet oc'h e Karaoke Mugen, {{user}} !",
+		"USER": {
+			"WELCOME": "Donemat e Karaoke Mugen !",
+			"ONLINE_ACCOUNT": "Kont enlinenn",
+			"CREATE_ONLINE_ACCOUNT": "Fellout a ra din krouiñ ur gont enlinenn",
+			"LOGIN_ONLINE_ACCOUNT": "Ur gont enlinenn am eus dija"
+		},
 		"TITLE": "Skoazeller da gregiñ ganti"
 	},
 	"LOGIN": {
@@ -83,7 +89,8 @@
 			"MONITOR_NUMBER": "Skramm al lenner",
 			"DISPLAY_RANDOMQUOTES": "Diskouez an arroudennoù dre zegouezh",
 			"DISPLAY_CONNECTION_INFO_QRCODE": "Diskouez ar c'hod QR pa vez ehanet al lenner",
-			"LIVE_COMMENTS": "Evezhiadennoù war-eeun"
+			"LIVE_COMMENTS": "Evezhiadennoù war-eeun",
+			"DISPLAY_SONGINFO_PERMANENT": "Diskouez titouroù ar ganaouenn war ar skramm a-hed ar ganaouenn"
 		},
 		"INTERFACE": {
 			"DISPLAY_WELCOME_MESSAGE": "Diskouez ur c'hemennadenn degemer",
@@ -117,7 +124,6 @@
 		"EMAIL": "Postel",
 		"URL": "Lec'hienn web",
 		"DELETE_USER_CONFIRM": "Dilemel an implijer",
-		"LOG_IN": "Kevreañ",
 		"ADMIN": "Oberataer",
 		"REPLAY_TUTORIAL": "Heforzhiadur oberataer echuet"
 	},
@@ -695,9 +701,6 @@
 			"INFO": "Titouroù"
 		}
 	},
-	"MIGRATE": {
-		"CONTINUE": "Kenderc'hel."
-	},
 	"BACKGROUNDS_MGMT": {
 		"CHOOSE_FILE": "Dibab ur restr",
 		"SAVE": "Enrollañ",
@@ -712,7 +715,6 @@
 	},
 	"ABOUT": {
 		"LICENSE": "Dindan aotre MIT.",
-		"CONTRIBUTORS": "Gant tud dispar e oa bet savet pozioù ar c'hanaouennoù, evel <1>{{contributors}}</1> da skouer.",
 		"DESCRIPTION": "Ul lenner karaoke hag un ostilh evit merañ nozvezhioù etre mignoned ha dirak an holl."
 	},
 	"QUIZ": {
@@ -745,7 +747,8 @@
 		"SPEED": {
 			"UP": "Kreskiñ an tizh",
 			"DOWN": "Digreskiñ an tizh",
-			"TITLE": "Cheñch an tizh"
+			"TITLE": "Cheñch an tizh",
+			"RESET": "Distreiñ d'an tizh normal"
 		}
 	},
 	"VIEW_FAVORITES": "Pennrolloù",
@@ -773,8 +776,6 @@
 	"ACCOUNT": "Ma c'hont",
 	"USERLIST": "Implijerien",
 	"USERNAME": "Anv implijer",
-	"LOG_IN": "Kevreañ",
-	"SIGN_UP": "Enskrivañ",
 	"PROFILE": "Profil",
 	"PROFILE_USERNAME": "Lesanv",
 	"PROFILE_MAIL": "Postel",
@@ -833,5 +834,10 @@
 	"KARAOKE_other": "{{count}} a ganaouennoù",
 	"TOOLTIP_DELETE_SELECT_KARA": "Dilemel ar c'hanaouennoù diuzet",
 	"QUOTA_KARA": "Kanaouennoù a chom",
-	"PL_MULTIPLE_ADDED": "Ouzhpennañ {{count}} a ganaouennoù"
+	"PL_MULTIPLE_ADDED": "Ouzhpennañ {{count}} a ganaouennoù",
+	"MIGRATE": {
+		"DEFAULT_REMOTE": {
+			"TITLE": "Dibab ur servijer dre ziouer"
+		}
+	}
 }

@@ -1,7 +1,9 @@
 import './QuizScore.scss';
 
+import { faBolt } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
-import { merge } from 'lodash';
+import merge from 'lodash/merge';
 import { useContext, useEffect, useState } from 'react';
 import { useAsyncMemo } from 'use-async-memo';
 
@@ -113,18 +115,17 @@ function QuizScore() {
 										{points?.awardedPointsDetailed.typePoints ? (
 											<span>
 												{' '}
-												<i
-													className={`fas fa-${acceptedAnswerToIcon(
-														points.awardedPointsDetailed.type
-													)} fa-sm`}
-												></i>{' '}
+												<FontAwesomeIcon
+													icon={acceptedAnswerToIcon(points.awardedPointsDetailed.type)}
+													className="fa-sm"
+												/>{' '}
 												{points?.awardedPointsDetailed.typePoints}
 											</span>
 										) : null}
 										{points?.awardedPointsDetailed.quickPoints ? (
 											<span>
 												{' '}
-												<i className={`fas fa-bolt fa-sm`}></i>{' '}
+												<FontAwesomeIcon icon={faBolt} className="fa-sm" />{' '}
 												{points?.awardedPointsDetailed.quickPoints}
 											</span>
 										) : null}

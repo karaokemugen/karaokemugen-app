@@ -5,21 +5,18 @@ import { getConfig } from '../lib/utils/config.js';
 import { editConfig } from '../utils/config.js';
 import { getState } from '../utils/state.js';
 
-export function insertRepo(repo: Repository) {
+export async function insertRepo(repo: Repository) {
 	const repos = getConfig().System.Repositories;
-	const i = repos.findIndex(r => r.Name === repo.Name);
-	if (i > 0) throw 'Repository with this name already exists';
-	repos.push(repo);
-	editConfig({ System: { Repositories: repos } });
+	if (repos.some(r => r.Name === repo.Name)) throw 'Repository with this name already exists';
+	await editConfig({ System: { Repositories: [...repos, repo] } });
 	// Reset the last commit setting in DB for the repo
 	saveSetting(`commit-${repo.Name}`, null);
 }
 
-export function updateRepo(repo: Repository, name: string) {
+export async function updateRepo(repo: Repository, name: string) {
 	const repos = cloneDeep(getConfig().System.Repositories);
-	if (repo.Name !== name) {
-		const i = repos.findIndex(r => r.Name === repo.Name);
-		if (i > 0) throw 'Repository with this new name already exists';
+	if (repo.Name !== name && repos.some(r => r.Name === repo.Name)) {
+		throw 'Repository with this new name already exists';
 	}
 	const i = repos.findIndex(r => r.Name === name);
 	if (getState().DBReady) {
@@ -29,14 +26,12 @@ export function updateRepo(repo: Repository, name: string) {
 	}
 	if (i < 0) throw 'Repository not found';
 	repos[i] = repo;
-	editConfig({ System: { Repositories: repos } });
+	await editConfig({ System: { Repositories: repos } });
 }
 
-export function deleteRepo(name: string) {
-	const repos = getConfig().System.Repositories;
-	const repoIndex = repos.findIndex(r => r.Name === name);
-	repos[repoIndex] = null;
+export async function deleteRepo(name: string) {
+	const repos = getConfig().System.Repositories.filter(r => r.Name !== name);
 	// Reset the last commit setting in DB for the repo
 	saveSetting(`commit-${name}`, null);
-	editConfig({ System: { Repositories: repos } });
+	await editConfig({ System: { Repositories: repos } });
 }

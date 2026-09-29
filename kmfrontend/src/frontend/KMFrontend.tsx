@@ -12,12 +12,12 @@ import About from './components/About';
 import AdminPage from './components/AdminPage';
 import ChibiPage from './components/ChibiPage';
 import QuizScore from './components/karas/QuizScore';
-import MigratePage from './components/MigratePage';
+import MigratePage from './pages/MigratePage';
 import ShutdownModal from './components/modals/ShutdownModal';
 import NotFoundPage from './components/NotfoundPage';
 import PlaylistPage from './components/PlaylistPage';
 import PublicPage from './components/public/PublicPage';
-import SetupPage from './components/setup/SetupPage';
+import SetupPage from './pages/setup/SetupPage';
 import WelcomePage from './components/WelcomePage';
 import { WS_CMD } from '../utils/ws.mjs';
 

@@ -44,19 +44,26 @@ class Mpv extends EventEmitter {
 
 	private launchMpv() {
 		return new Promise<void>((resolve, reject) => {
-			setTimeout(reject, 10000, new Error('Timeout')); // Set timeout to avoid hangs
 			const command = this.genCommand();
 			const program = spawn(...command, { stdio: ['ignore', 'pipe', 'pipe'], env: defineMPVEnv() });
+			// Set timeout to avoid hangs
+			const timeout = setTimeout(() => {
+				program.kill('SIGINT');
+				reject(new Error('Timeout'));
+			}, 10_000);
 			program.once('error', err => {
+				clearTimeout(timeout);
 				reject(err);
 			});
 			program.once('exit', code => {
+				clearTimeout(timeout);
 				if (code !== 0) reject(new Error(`Mpv process exited with ${code}`));
 				this.destroyConnection(code !== 0);
 			});
 			program.stdout.on('data', data => {
 				const str = data.toString();
 				if (str.match(/Listening to IPC (socket|pipe)/)) {
+					clearTimeout(timeout);
 					program.stdout.removeAllListeners();
 					program.stderr.removeAllListeners();
 					program.stdout.destroy();
@@ -67,6 +74,7 @@ class Mpv extends EventEmitter {
 			program.stderr.on('data', data => {
 				const str = data.toString();
 				if (str.match(/Could not bind IPC (socket|pipe)/)) {
+					clearTimeout(timeout);
 					program.stdout.removeAllListeners();
 					program.stderr.removeAllListeners();
 					program.stdout.destroy();
@@ -185,7 +193,7 @@ class Mpv extends EventEmitter {
 	send(command: MpvCommand) {
 		if (!mpvIsRecentEnough() && command.command[0] === 'loadfile') {
 			// Remove index in loadfile commands of the form loadfile <file> <command> <index> <options>
-			command.command.splice(3, 1);
+			command = { ...command, command: command.command.filter((_arg, i) => i !== 3) };
 		}
 		if (this.isRunning) return this.ishukan(command);
 		throw new Error('MPV is not running');

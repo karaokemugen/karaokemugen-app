@@ -13,7 +13,7 @@ function Ranking() {
 	const context = useContext(GlobalContext);
 
 	const [karas, setKaras] = useState<DBKara[]>([]);
-	const [i18n, setI18n] = useState([]);
+	const [i18n, setI18n] = useState<Record<string, Record<string, string>>>({});
 
 	useEffect(() => {
 		refresh();

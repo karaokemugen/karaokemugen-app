@@ -1,7 +1,7 @@
 import './Login.scss';
 
 import i18next from 'i18next';
-import { debounce } from 'lodash';
+import debounce from 'lodash/debounce';
 import { FormEvent, useCallback, useContext, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
@@ -14,7 +14,7 @@ import { isElectron } from '../electron';
 import { langSupport } from '../isoLanguages';
 import { commandBackend } from '../socket';
 import { callModal, displayMessage, lastLocation } from '../tools';
-import { WS_CMD } from '../ws';
+import { WS_CMD } from '../ws.mjs';
 
 interface UserApi extends User {
 	role: 'admin' | 'user';
@@ -388,7 +388,7 @@ function Login() {
 									</button>
 								) : null}
 								<button type="submit" className="btn largeButton submitButton">
-									{i18next.t(activeView === 'signup' ? 'SIGN_UP' : 'LOG_IN')}
+									{i18next.t(activeView === 'signup' ? 'ACTIONS.SIGN_UP' : 'ACTIONS.LOG_IN')}
 								</button>
 							</div>
 						</form>

@@ -1,5 +1,20 @@
 import './KaraMenuModal.scss';
 
+import {
+	faArrowsTurnToDots,
+	faBan,
+	faCheckCircle,
+	faCheckSquare,
+	faExchangeAlt,
+	faEye,
+	faEyeSlash,
+	faGift,
+	faLevelUpAlt,
+	faLongArrowAltLeft,
+	faLongArrowAltRight,
+	faStar,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import { useContext, useEffect, useState } from 'react';
 
@@ -10,7 +25,6 @@ import { is_touch_device, isNonStandardPlaylist, nonStandardPlaylists } from '..
 import { KaraElement } from '../../types/kara';
 import { WS_CMD } from '../../../utils/ws.mjs';
 import { DBKara } from '../../../../../src/lib/types/database/kara';
-import { WSCmdDefinition } from '../../../../../src/lib/types/frontend';
 
 interface IProps {
 	kara: KaraElement;
@@ -23,7 +37,7 @@ interface IProps {
 
 function KaraMenuModal(props: IProps) {
 	const context = useContext(GlobalContext);
-	const [kara, setKara] = useState(props.kara);
+	const [kara, setKara] = useState<DBKara & Partial<KaraElement>>(props.kara);
 	const [effectFavorite, setEffectFavorite] = useState(false);
 	const [effectBlacklist, setEffectBlacklist] = useState(false);
 	const [effectWhitelist, setEffectWhitelist] = useState(false);
@@ -33,19 +47,11 @@ function KaraMenuModal(props: IProps) {
 
 	const getKaraDetail = async () => {
 		try {
-			let url: WSCmdDefinition<object, DBKara>;
-			let data;
 			const playlist = getPlaylistInfo(props.side, context);
-			if (playlist && isNonStandardPlaylist(playlist.plaid)) {
-				url = WS_CMD.GET_KARA;
-				data = { kid: props.kara.kid };
-			} else {
-				url = WS_CMD.GET_PLC;
-				data = {
-					plc_id: props.kara.plcid,
-				};
-			}
-			const response = await commandBackend(url, data);
+			const response =
+				playlist && isNonStandardPlaylist(playlist.plaid)
+					? await commandBackend(WS_CMD.GET_KARA, { kid: props.kara.kid })
+					: await commandBackend(WS_CMD.GET_PLC, { plc_id: props.kara.plcid });
 			setKara(response);
 			document.getElementById('root').addEventListener('click', handleClick);
 		} catch (_) {
@@ -182,7 +188,7 @@ function KaraMenuModal(props: IProps) {
 							props.closeKaraMenu();
 						}}
 					>
-						<i className={`fas fa-long-arrow-alt-${props.side === 'left' ? 'right' : 'left'}`} />
+						<FontAwesomeIcon icon={props.side === 'left' ? faLongArrowAltRight : faLongArrowAltLeft} />
 						&nbsp;
 						{i18next.t('KARA_MENU.TRANSFER_KARA')}
 					</div>
@@ -196,7 +202,7 @@ function KaraMenuModal(props: IProps) {
 							props.closeKaraMenu();
 						}}
 					>
-						<i className="fas fa-exchange-alt" />
+						<FontAwesomeIcon icon={faExchangeAlt} />
 						&nbsp;
 						{i18next.t('KARA_MENU.TRANSFER_KARA_AFTER_PLAYING')}
 					</div>
@@ -217,7 +223,7 @@ function KaraMenuModal(props: IProps) {
 							}
 						}}
 					>
-						<i className="fas fa-level-up-alt" />
+						<FontAwesomeIcon icon={faLevelUpAlt} />
 						&nbsp;
 						{i18next.t('KARA_MENU.MOVE_KARA')}
 					</div>
@@ -226,12 +232,12 @@ function KaraMenuModal(props: IProps) {
 			{playlist.plaid !== nonStandardPlaylists.favorites ? (
 				<li className="animate-button-container">
 					<div onClick={makeFavorite}>
-						<i className="fas fa-star" />
+						<FontAwesomeIcon icon={faStar} />
 						&nbsp;
 						{kara.flag_favorites ? i18next.t('KARA_MENU.FAV_DEL') : i18next.t('KARA_MENU.FAV')}
 					</div>
 					<div className={`animate-button-success${effectFavorite ? ' activate' : ''}`}>
-						<i className="fas fa-check-square" />
+						<FontAwesomeIcon icon={faCheckSquare} />
 						&nbsp;
 						{kara.flag_favorites
 							? i18next.t('KARA_MENU.FAVORITES_REMOVED')
@@ -242,12 +248,12 @@ function KaraMenuModal(props: IProps) {
 			{(playlist.flag_current || playlist.flag_public) && !kara.flag_free ? (
 				<li className="animate-button-container">
 					<div onClick={freeKara} title={i18next.t('KARA_MENU.FREE')}>
-						<i className="fas fa-gift" />
+						<FontAwesomeIcon icon={faGift} />
 						&nbsp;
 						{i18next.t('KARA_MENU.FREE_SHORT')}
 					</div>
 					<div className={`animate-button-success${effectFree ? ' activate' : ''}`}>
-						<i className="fas fa-check-square" />
+						<FontAwesomeIcon icon={faCheckSquare} />
 						&nbsp;
 						{i18next.t('KARA_MENU.FREED')}
 					</div>
@@ -263,20 +269,20 @@ function KaraMenuModal(props: IProps) {
 					>
 						{kara.flag_visible ? (
 							<>
-								<i className="fas fa-eye-slash" />
+								<FontAwesomeIcon icon={faEyeSlash} />
 								&nbsp;
 								{i18next.t('KARA_MENU.VISIBLE_OFF_SHORT')}
 							</>
 						) : (
 							<>
-								<i className="fas fa-eye" />
+								<FontAwesomeIcon icon={faEye} />
 								&nbsp;
 								{i18next.t('KARA_MENU.VISIBLE_ON_SHORT')}
 							</>
 						)}
 					</div>
 					<div className={`animate-button-success${effectVisibility ? ' activate' : ''}`}>
-						<i className="fas fa-check-square" />
+						<FontAwesomeIcon icon={faCheckSquare} />
 						&nbsp;
 						{kara.flag_visible ? i18next.t('KARA_MENU.HIDDEN') : i18next.t('KARA_MENU.SHOWN')}
 					</div>
@@ -285,12 +291,12 @@ function KaraMenuModal(props: IProps) {
 			{playlist.plaid !== context.globalState.settings.data.state.blacklistPlaid ? (
 				<li className="animate-button-container">
 					<div onClick={addToBlacklist}>
-						<i className="fas fa-ban" />
+						<FontAwesomeIcon icon={faBan} />
 						&nbsp;
 						{i18next.t('KARA_MENU.ADD_BLACKLIST')}
 					</div>
 					<div className={`animate-button-success${effectBlacklist ? ' activate' : ''}`}>
-						<i className="fas fa-check-square" />
+						<FontAwesomeIcon icon={faCheckSquare} />
 						&nbsp;
 						{i18next.t('KARA_MENU.BLACKLISTED')}
 					</div>
@@ -299,12 +305,12 @@ function KaraMenuModal(props: IProps) {
 			{playlist.plaid !== context.globalState.settings.data.state.whitelistPlaid ? (
 				<li className="animate-button-container">
 					<div onClick={addToWhitelist}>
-						<i className="fas fa-check-circle" />
+						<FontAwesomeIcon icon={faCheckCircle} />
 						&nbsp;
 						{i18next.t('KARA_MENU.ADD_WHITELIST')}
 					</div>
 					<div className={`animate-button-success${effectWhitelist ? ' activate' : ''}`}>
-						<i className="fas fa-check-square" />
+						<FontAwesomeIcon icon={faCheckSquare} />
 						&nbsp;
 						{i18next.t('KARA_MENU.WHITELISTED')}
 					</div>
@@ -313,12 +319,12 @@ function KaraMenuModal(props: IProps) {
 			{!isNonStandardPlaylist(playlist.plaid) ? (
 				<li className="animate-button-container">
 					<div onClick={shuffleSongs}>
-						<i className="fas fa-arrows-turn-to-dots" />
+						<FontAwesomeIcon icon={faArrowsTurnToDots} />
 						&nbsp;
 						{i18next.t('KARA_MENU.SHUFFLE')}
 					</div>
 					<div className={`animate-button-success${effectShuffle ? ' activate' : ''}`}>
-						<i className="fas fa-check-square" />
+						<FontAwesomeIcon icon={faCheckSquare} />
 						&nbsp;
 						{i18next.t('KARA_MENU.SHUFFLED')}
 					</div>

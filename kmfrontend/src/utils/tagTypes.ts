@@ -1,8 +1,32 @@
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+import {
+	faBox,
+	faCalendarAlt,
+	faChalkboardTeacher,
+	faChess,
+	faExclamationTriangle,
+	faGaugeHigh,
+	faGlobe,
+	faLaptop,
+	faLayerGroup,
+	faMicrophoneAlt,
+	faMusic,
+	faPeopleGroup,
+	faPhotoVideo,
+	faProjectDiagram,
+	faSignature,
+	faSitemap,
+	faStar,
+	faTag,
+	faTasks,
+	faTv,
+	faUserSecret,
+} from '@fortawesome/free-solid-svg-icons';
 import { TagType, TagTypeNum } from '../../../src/lib/types/tag';
 import { QuizAnswers } from '../../../src/types/quiz';
 
 export interface tagType {
-	icon: string;
+	icon: IconDefinition;
 	type: TagTypeNum;
 	color: string;
 	karajson: TagType;
@@ -32,126 +56,126 @@ export const tagTypesKaraFileV4Order = [
 
 export const tagTypes: Readonly<{ [key: string]: tagType }> = {
 	SONGTYPES: {
-		icon: 'tasks',
+		icon: faTasks,
 		type: 3,
 		color: 'green',
 		karajson: 'songtypes',
 		language: 'user',
 	},
 	SERIES: {
-		icon: 'tv',
+		icon: faTv,
 		type: 1,
 		color: 'green',
 		karajson: 'series',
 		language: 'song_name',
 	},
 	LANGS: {
-		icon: 'globe',
+		icon: faGlobe,
 		type: 5,
 		color: 'black',
 		karajson: 'langs',
 		language: 'user',
 	},
 	SINGERS: {
-		icon: 'microphone-alt',
+		icon: faMicrophoneAlt,
 		type: 2,
 		color: 'orange',
 		karajson: 'singers',
 		language: 'song_name',
 	},
 	SINGERGROUPS: {
-		icon: 'people-group',
+		icon: faPeopleGroup,
 		type: 17,
 		color: 'orange',
 		karajson: 'singergroups',
 		language: 'song_name',
 	},
 	SONGWRITERS: {
-		icon: 'signature',
+		icon: faSignature,
 		type: 8,
 		color: 'orange',
 		karajson: 'songwriters',
 		language: 'song_name',
 	},
 	FAMILIES: {
-		icon: 'photo-video',
+		icon: faPhotoVideo,
 		type: 10,
 		color: 'blue',
 		karajson: 'families',
 		language: 'user',
 	},
 	ORIGINS: {
-		icon: 'project-diagram',
+		icon: faProjectDiagram,
 		type: 11,
 		color: 'blue',
 		karajson: 'origins',
 		language: 'user',
 	},
 	GENRES: {
-		icon: 'chess',
+		icon: faChess,
 		type: 12,
 		color: 'blue',
 		karajson: 'genres',
 		language: 'user',
 	},
 	PLATFORMS: {
-		icon: 'laptop',
+		icon: faLaptop,
 		type: 13,
 		color: 'blue',
 		karajson: 'platforms',
 		language: 'user',
 	},
 	CREATORS: {
-		icon: 'chalkboard-teacher',
+		icon: faChalkboardTeacher,
 		type: 4,
 		color: 'purple',
 		karajson: 'creators',
 		language: 'song_name',
 	},
 	AUTHORS: {
-		icon: 'user-secret',
+		icon: faUserSecret,
 		type: 6,
 		color: 'purple',
 		karajson: 'authors',
 		language: 'song_name',
 	},
 	GROUPS: {
-		icon: 'box',
+		icon: faBox,
 		type: 9,
 		color: 'black',
 		karajson: 'groups',
 		language: 'user',
 	},
 	MISC: {
-		icon: 'tag',
+		icon: faTag,
 		type: 7,
 		color: 'black',
 		karajson: 'misc',
 		language: 'user',
 	},
 	VERSIONS: {
-		icon: 'gauge-high',
+		icon: faGaugeHigh,
 		type: 14,
 		color: 'white',
 		karajson: 'versions',
 		language: 'user',
 	},
 	WARNINGS: {
-		icon: 'exclamation-triangle',
+		icon: faExclamationTriangle,
 		type: 15,
 		color: 'red',
 		karajson: 'warnings',
 		language: 'user',
 	},
 	COLLECTIONS: {
-		icon: 'layer-group',
+		icon: faLayerGroup,
 		type: 16,
 		color: 'white',
 		karajson: 'collections',
 		language: 'user',
 	},
 	FRANCHISES: {
-		icon: 'sitemap',
+		icon: faSitemap,
 		type: 18,
 		color: 'green',
 		karajson: 'franchises',
@@ -162,22 +186,22 @@ export const tagTypes: Readonly<{ [key: string]: tagType }> = {
 Object.freeze(tagTypes);
 
 export const YEARS = {
-	icon: 'calendar-alt',
+	icon: faCalendarAlt,
 	type: 0,
 };
 
 export const FAVORITES = {
-	icon: 'star',
+	icon: faStar,
 	type: 1001,
 };
 
 export const ANIMELISTS = {
-	icon: 'star',
+	icon: faStar,
 	type: 1002,
 };
 
 export const TITLE = {
-	icon: 'music',
+	icon: faMusic,
 	type: 1003,
 };
 

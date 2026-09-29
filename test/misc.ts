@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
 import { uuidRegexp } from '../src/lib/utils/constants.js';
-import { DBStats } from '../src/types/database/database.js';
+import { DBStatsApp } from '../src/types/database/database.js';
 import { allKIDs, commandBackend, getToken, setConfig } from './util/util.js';
 
 describe('Main', () => {
@@ -29,7 +29,7 @@ describe('Main', () => {
 
 	it('Get statistics', async () => {
 		const data = await commandBackend(token, 'getStats');
-		const stats: DBStats = data;
+		const stats: DBStatsApp = data;
 		expect(stats.authors).to.be.a('number').and.at.least(0);
 		expect(stats.creators).to.be.a('number').and.at.least(0);
 		expect(stats.duration).to.be.a('number').and.at.least(0);
@@ -42,7 +42,7 @@ describe('Main', () => {
 		expect(stats.singers).to.be.a('number').and.at.least(0);
 		expect(stats.songwriters).to.be.a('number').and.at.least(0);
 		expect(stats.tags).to.be.a('number').and.at.least(0);
-		expect(stats.total_media_size).to.be.a('number').and.at.least(0);
+		expect(stats.mediasize).to.be.a('number').and.at.least(0);
 	});
 
 	it('Test catchphrases', async () => {

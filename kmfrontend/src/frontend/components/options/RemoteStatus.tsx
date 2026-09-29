@@ -4,17 +4,16 @@ import { useContext, useEffect, useState } from 'react';
 import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 import { callModal } from '../../../utils/tools';
-import { RemoteStatusData } from '../../types/remote';
+import { RemoteStatusData } from '../../../../../src/types/remote';
 import { WS_CMD } from '../../../utils/ws.mjs';
 
 function RemoteStatus() {
 	const context = useContext(GlobalContext);
 	const [remoteStatus, setRemoteStatus] = useState<RemoteStatusData>();
-	let timeout: NodeJS.Timeout;
 
 	const updateRemoteData = async () => {
 		try {
-			const data: RemoteStatusData = await commandBackend(WS_CMD.GET_REMOTE_DATA);
+			const data = await commandBackend(WS_CMD.GET_REMOTE_DATA);
 			setRemoteStatus(data);
 		} catch (_) {
 			// already display
@@ -36,9 +35,9 @@ function RemoteStatus() {
 
 	useEffect(() => {
 		updateRemoteData();
-		timeout = setInterval(updateRemoteData, 500);
+		const interval = setInterval(updateRemoteData, 500);
 		return () => {
-			clearInterval(timeout);
+			clearInterval(interval);
 		};
 	}, []);
 

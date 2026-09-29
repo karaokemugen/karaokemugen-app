@@ -29,8 +29,6 @@ VALUES(
 `;
 
 export const sqlgetAllKaras = (
-	filterClauses: string[],
-	filterType: 'AND' | 'OR',
 	whereClauses: string[],
 	groupClauses: string[],
 	orderClauses: string[],
@@ -40,7 +38,6 @@ export const sqlgetAllKaras = (
 	additionalFrom: string[],
 	selectRequested: string,
 	joinClauses: string[],
-	collectionClauses: string[],
 	withCTE: string[],
 	blacklist: boolean
 ) => `
@@ -109,18 +106,12 @@ LEFT OUTER JOIN favorites AS f ON f.fk_login = :username AND f.fk_kid = ak.pk_ki
 LEFT OUTER JOIN all_karas_sortable AS aks ON aks.fk_kid = ak.pk_kid
 ${joinClauses.join('')}
 ${additionalFrom.join('')}
-WHERE true
-${
-	collectionClauses.length > 0
-		? `AND ((${collectionClauses
-				.map(clause => `(${clause})`)
-				.join(
-					' OR '
-				)}) OR jsonb_array_length(jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 16)')) = 0)`
-		: ''
+
+${whereClauses.length > 0
+	? `WHERE ${whereClauses.join('\n AND \n')}`
+	: ''
 }
-${filterClauses.map(clause => `${filterType} (${clause})`).reduce((a, b) => `${a} ${b}`, '')}
-${whereClauses.length > 0 ? `AND ${whereClauses.join('\nAND ')}` : ''}
+	
 GROUP BY ${groupClauses.length > 0 ? `${groupClauses.join(',\n')},` : ''}
 	ak.pk_kid,
 	pc.fk_kid,

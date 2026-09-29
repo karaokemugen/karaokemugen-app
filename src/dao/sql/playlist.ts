@@ -199,7 +199,7 @@ FROM playing_pos ppos, last_pos pc
 WHERE pk_plaid = :plaid;
 `;
 
-export const sqlgetPlaylistContentsMicro = (login: string) => `
+export const sqlgetPlaylistContentsMicro = () => `
 SELECT pc.fk_kid AS kid,
 	pc.pk_plcid AS plcid,
 	(CASE WHEN pl.fk_plcid_playing = pc.pk_plcid
@@ -225,7 +225,6 @@ INNER JOIN all_karas ak ON pc.fk_kid = ak.pk_kid
 LEFT OUTER JOIN playlist pl ON pl.pk_plaid = pc.fk_plaid
 LEFT OUTER JOIN played AS p ON p.fk_kid = ak.pk_kid
 WHERE pc.fk_plaid = $1
-  ${login ? 'AND pc.fk_login = $2' : ''}
 GROUP BY
 	pc.pk_plcid,
 	pc.pos,

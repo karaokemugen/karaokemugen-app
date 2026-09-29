@@ -1,5 +1,7 @@
 import './ActionsButtons.scss';
 
+import { faCheck, faEraser, faPlus, faStar, faThumbsUp, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import { useContext } from 'react';
 
@@ -52,7 +54,7 @@ function ActionsButtons(props: IProps) {
 					className={`${classValue} ${props.kara?.flag_refused ? 'off' : ''}`}
 					onClick={props.refuseKara}
 				>
-					<i className="fas fa-times" />
+					<FontAwesomeIcon icon={faTimes} />
 				</button>
 			) : null}
 
@@ -64,7 +66,7 @@ function ActionsButtons(props: IProps) {
 					className={`${classValue} ${props.kara?.flag_accepted ? 'on' : ''}`}
 					onClick={props.acceptKara}
 				>
-					<i className="fas fa-check" />
+					<FontAwesomeIcon icon={faCheck} />
 				</button>
 			) : null}
 
@@ -92,7 +94,7 @@ function ActionsButtons(props: IProps) {
 					className={classValue}
 					onClick={props.deleteKara}
 				>
-					<i className="fas fa-eraser" />
+					<FontAwesomeIcon icon={faEraser} />
 				</button>
 			) : null}
 
@@ -102,7 +104,7 @@ function ActionsButtons(props: IProps) {
 					className={classValue + ' yellow'}
 					onClick={props.deleteFavorite}
 				>
-					<i className="fas fa-star" />
+					<FontAwesomeIcon icon={faStar} />
 				</button>
 			) : null}
 
@@ -140,7 +142,7 @@ function ActionsButtons(props: IProps) {
 					onClick={props.addKara}
 					disabled={props?.checkedKaras === 0 || addingIsForbidden}
 				>
-					<i className="fas fa-plus" />
+					<FontAwesomeIcon icon={faPlus} />
 				</button>
 			) : null}
 
@@ -157,7 +159,7 @@ function ActionsButtons(props: IProps) {
 					onClick={props.upvoteKara}
 					disabled={props.kara.my_public_plc_id?.length > 0}
 				>
-					<i className={`fas fa-thumbs-up ${props.kara?.flag_upvoted ? 'currentUpvote' : ''}`} />
+					<FontAwesomeIcon icon={faThumbsUp} className={props.kara?.flag_upvoted ? 'currentUpvote' : ''} />
 					{props.kara?.upvotes > 0 && props.kara?.upvotes}
 				</button>
 			) : null}

@@ -24,8 +24,30 @@ header.menu-container {
 		height: 3em;
 		margin: 0 0.5em;
 
+		// Logo + page title: keep them on one line so the title is vertically
+		// centered and horizontally centered in the space left by the logo.
+		> div:first-child {
+			display: flex;
+			align-items: center;
+			flex: 1 1 auto;
+			min-width: 0;
+		}
+
 		.menu-title {
 			min-height: 19px;
+			font-weight: bold;
+			flex: 1 1 auto;
+			min-width: 0;
+			white-space: nowrap;
+			font-size: 1.5em;
+			text-align: center;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.75);
+
+			@media screen and (max-width: variables.$mugen-breakpoint-small) {
+				font-size: 1.25em;
+			}
 		}
 
 		img {
@@ -55,8 +77,9 @@ header.menu-container {
 				color: unset;
 				text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.75);
 
-				> i {
+				> .svg-inline--fa {
 					margin: 0 1em;
+					filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.75));
 
 					@media screen and (max-width: variables.$mugen-breakpoint-large) {
 						margin: 0 0.5em;
@@ -71,7 +94,7 @@ header.menu-container {
 								color: color.adjust($color, $lightness: 25%, $saturation: 10%, $space: hsl);
 							}
 
-							> i {
+							> .svg-inline--fa {
 								color: color.adjust($color, $lightness: 10%, $saturation: 20%, $space: hsl);
 							}
 						}
@@ -91,6 +114,8 @@ header.menu-container {
 			text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.25);
 			background-color: color.scale(variables.$mugen-topbar-background, $lightness: -30%);
 			padding: 0.5em;
+			// Same breathing room on both sides of the badge.
+			margin: 0 0.5em;
 			border-radius: 8px;
 			height: min-content;
 			z-index: 1000;
@@ -166,7 +191,7 @@ header.menu-container {
 				padding: 0.5em;
 
 				> a {
-					> i {
+					> .svg-inline--fa {
 						margin-right: 0.25em;
 					}
 

@@ -39,7 +39,8 @@
 		@media screen and (max-width: variables.$mugen-breakpoint-large) {
 			width: 100%;
 		}
-		> i {
+		> i,
+		> .svg-inline--fa {
 			margin-right: 0.25em;
 		}
 		flex-shrink: 0;
@@ -63,7 +64,8 @@
 					&.big {
 						color: color.adjust($color, $lightness: 10%, $saturation: 20%, $space: hsl);
 					}
-					> i {
+					> i,
+					> .svg-inline--fa {
 						color: color.adjust($color, $lightness: 10%, $saturation: 20%, $space: hsl);
 					}
 				}

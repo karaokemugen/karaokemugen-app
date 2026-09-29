@@ -3,12 +3,11 @@ import { Alert, Button, Image, Layout, Modal, Select, Table, Typography, Upload 
 import i18next from 'i18next';
 import { basename } from 'path-browserify';
 import { useEffect, useState } from 'react';
-import ReactAudioPlayer from 'react-audio-player';
 
 import { supportedFiles } from '../../../../src/lib/utils/constants';
 import { commandBackend } from '../../utils/socket';
-import Title from '../components/Title';
 import { WS_CMD } from '../../utils/ws.mjs';
+import Title from '../components/Title';
 
 export type BackgroundType = 'pause' | 'stop' | 'poll';
 
@@ -101,9 +100,11 @@ export default function Background() {
 			render: (_text, record) => {
 				if (supportedFiles.audio.some(extension => record.file.endsWith(extension))) {
 					return (
-						<ReactAudioPlayer
+						<audio
 							src={`/backgrounds/${record.type}/${basename(record.file.replace(/\\/g, '/'))}`}
+							title={`/backgrounds/${record.type}/${basename(record.file.replace(/\\/g, '/'))}`}
 							controls
+							preload="metadata"
 						/>
 					);
 				} else {

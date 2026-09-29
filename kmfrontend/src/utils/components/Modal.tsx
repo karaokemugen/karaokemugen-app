@@ -1,5 +1,7 @@
 import './Modal.scss';
 
+import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import { useContext, useEffect, useState } from 'react';
 
@@ -83,11 +85,11 @@ function Modal(props: IProps) {
 					<div className="modal-footer">
 						{props.type === 'confirm' || props.type === 'prompt' ? (
 							<button type="button" className="btn btn-action btn-primary other" onClick={abortModal}>
-								<i className="fas fa-times" /> {i18next.t('NO')}
+								<FontAwesomeIcon icon={faTimes} /> {i18next.t('NO')}
 							</button>
 						) : null}
 						<button type="button" className="btn btn-action btn-default ok" onClick={confirmModal}>
-							<i className="fas fa-check" /> {i18next.t('YES')}
+							<FontAwesomeIcon icon={faCheck} /> {i18next.t('YES')}
 						</button>
 					</div>
 				</div>

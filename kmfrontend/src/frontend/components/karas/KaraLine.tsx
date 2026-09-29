@@ -1,8 +1,30 @@
 import './KaraLine.scss';
 
+import {
+	faCheckSquare as farCheckSquare,
+	faListAlt as farListAlt,
+	faSquare as farSquare,
+} from '@fortawesome/free-regular-svg-icons';
+import {
+	faArrowsTurnRight,
+	faClock,
+	faCloud,
+	faCloudDownloadAlt,
+	faEllipsisV,
+	faExclamationTriangle,
+	faEyeSlash,
+	faHistory,
+	faPlay,
+	faPlayCircle,
+	faRetweet,
+	faThumbsUp,
+	faWrench,
+	faXmark,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
-import { Key, MouseEvent, useContext, useState } from 'react';
-import { DraggableProvided } from '@hello-pangea/dnd';
+import { JSX, Key, MouseEvent, useContext, useRef, useState } from 'react';
+import type { DraggableProvided } from '@hello-pangea/dnd';
 import { toast } from 'react-toastify';
 
 import { closeModal, showModal } from '../../../store/actions/modal';
@@ -35,9 +57,9 @@ import { WS_CMD } from '../../../utils/ws.mjs';
 import { DBPLCInfo } from '../../../../../src/types/database/playlist';
 import { WSCmdDefinition } from '../../../../../src/lib/types/frontend';
 
-const DragHandle = ({ dragHandleProps }: { dragHandleProps: object }) => (
+const DragHandle = ({ dragHandleProps }: { dragHandleProps?: object }) => (
 	<span {...dragHandleProps} className="dragHandle">
-		<i className="fas fa-ellipsis-v" />
+		<FontAwesomeIcon icon={faEllipsisV} />
 	</span>
 );
 
@@ -45,7 +67,7 @@ interface IProps {
 	kara: KaraElement;
 	side: 'left' | 'right';
 	scope: 'admin' | 'public';
-	i18nTag: Record<string, string>;
+	i18nTag: Record<string, Record<string, string>>;
 	avatar_file: string;
 	indexInPL: number;
 	checkKara: (id: number | string) => void;
@@ -55,7 +77,7 @@ interface IProps {
 	key: Key;
 	openKara: (kara: KaraElement) => void;
 	sortable: boolean;
-	draggable: DraggableProvided;
+	draggable?: DraggableProvided;
 	playingIn?: boolean;
 	plcidToSwap?: number;
 	swapPLCs?: (plcid: number) => void;
@@ -126,68 +148,74 @@ function KaraLine(props: IProps) {
 		}).catch(() => {});
 	};
 
+	const isAddingKara = useRef(false);
+
 	const addKara = async (_, pos?: number) => {
-		let url: WSCmdDefinition<object, { plc: DBPLCInfo } | void>;
-		let data;
-		const oppositePlaylist = getOppositePlaylistInfo(props.side, context);
-		if (oppositePlaylist?.plaid === nonStandardPlaylists.favorites) {
-			if (authData.onlineAvailable !== false) {
-				url = WS_CMD.ADD_FAVORITES;
+		if (isAddingKara.current) return;
+		isAddingKara.current = true;
+		try {
+			let url: WSCmdDefinition<object, { plc: DBPLCInfo } | void>;
+			let data;
+			const oppositePlaylist = getOppositePlaylistInfo(props.side, context);
+			if (oppositePlaylist?.plaid === nonStandardPlaylists.favorites) {
+				if (authData.onlineAvailable !== false) {
+					url = WS_CMD.ADD_FAVORITES;
+					data = {
+						kids: [kara.kid],
+					};
+				} else {
+					displayMessage('warning', i18next.t('ERROR_CODES.FAVORITES_ONLINE_NOINTERNET'), 5000);
+					return;
+				}
+			} else if (isAdmin) {
+				if (oppositePlaylist && !oppositePlaylist.flag_smart) {
+					if (!isNonStandardPlaylist(getPlaylistInfo(props.side, context).plaid) && !pos) {
+						url = WS_CMD.COPY_KARA_TO_PLAYLIST;
+						data = {
+							plaid: oppositePlaylist.plaid,
+							plc_ids: [kara.plcid],
+						};
+					} else {
+						url = WS_CMD.ADD_KARA_TO_PLAYLIST;
+						if (pos) {
+							data = {
+								plaid: oppositePlaylist.plaid,
+								kids: [kara.kid],
+								pos: pos,
+							};
+						} else {
+							data = {
+								plaid: oppositePlaylist.plaid,
+								kids: [kara.kid],
+							};
+						}
+					}
+				} else {
+					url = WS_CMD.ADD_CRITERIAS;
+					data = {
+						criterias: [
+							{
+								type: 1001,
+								value: kara.kid,
+								plaid: oppositePlaylist.plaid,
+							},
+						],
+					};
+				}
+			} else {
+				url = WS_CMD.ADD_KARA_TO_PUBLIC_PLAYLIST;
 				data = {
 					kids: [kara.kid],
 				};
-			} else {
-				displayMessage('warning', i18next.t('ERROR_CODES.FAVORITES_ONLINE_NOINTERNET'), 5000);
-				return;
 			}
-		} else if (isAdmin) {
-			if (oppositePlaylist && !oppositePlaylist.flag_smart) {
-				if (!isNonStandardPlaylist(getPlaylistInfo(props.side, context).plaid) && !pos) {
-					url = WS_CMD.COPY_KARA_TO_PLAYLIST;
-					data = {
-						plaid: oppositePlaylist.plaid,
-						plc_ids: [kara.plcid],
-					};
-				} else {
-					url = WS_CMD.ADD_KARA_TO_PLAYLIST;
-					if (pos) {
-						data = {
-							plaid: oppositePlaylist.plaid,
-							requestedby: authData.username,
-							kids: [kara.kid],
-							pos: pos,
-						};
-					} else {
-						data = {
-							plaid: oppositePlaylist.plaid,
-							requestedby: authData.username,
-							kids: [kara.kid],
-						};
-					}
-				}
-			} else {
-				url = WS_CMD.ADD_CRITERIAS;
-				data = {
-					criterias: [
-						{
-							type: 1001,
-							value: kara.kid,
-							plaid: oppositePlaylist.plaid,
-						},
-					],
-				};
+			try {
+				const response = await commandBackend(url, data);
+				PLCCallback(response, context, kara, props.scope);
+			} catch (e: any) {
+				throw new Error(e?.message?.code ? e?.message?.code : e?.message);
 			}
-		} else {
-			url = WS_CMD.ADD_KARA_TO_PUBLIC_PLAYLIST;
-			data = {
-				kids: [kara.kid],
-			};
-		}
-		try {
-			const response = await commandBackend(url, data);
-			PLCCallback(response, context, kara, props.scope);
-		} catch (e: any) {
-			throw new Error(e?.message?.code ? e?.message?.code : e?.message);
+		} finally {
+			isAddingKara.current = false;
 		}
 	};
 
@@ -271,9 +299,9 @@ function KaraLine(props: IProps) {
 	const downloadIcon = () => {
 		// Tags in the header
 		if (kara.download_status === 'MISSING' && isAdmin) {
-			return <i className="fas fa-cloud" title={i18next.t('KARA.MISSING_DOWNLOAD_TOOLTIP')} />;
+			return <FontAwesomeIcon icon={faCloud} aria-label={i18next.t('KARA.MISSING_DOWNLOAD_TOOLTIP')} />;
 		} else if (kara.download_status === 'DOWNLOADING' && isAdmin) {
-			return <i className="fas fa-cloud-download-alt" title={i18next.t('KARA.IN_PROGRESS_DOWNLOAD_TOOLTIP')} />;
+			return <FontAwesomeIcon icon={faCloudDownloadAlt} aria-label={i18next.t('KARA.IN_PROGRESS_DOWNLOAD_TOOLTIP')} />;
 		}
 		return null;
 	};
@@ -283,7 +311,7 @@ function KaraLine(props: IProps) {
 	const plaid = getPlaylistInfo(props.side, context).plaid;
 	const shouldShowProfile = settings.config.Frontend?.ShowAvatarsOnPlaylist && props.avatar_file;
 	return (
-		<div {...props.draggable.draggableProps} ref={props.draggable.innerRef}>
+		<div {...props.draggable?.draggableProps} ref={props.draggable?.innerRef}>
 			<div
 				className={`list-group-item${kara.flag_playing ? ' currentlyplaying' : ''}${
 					kara.flag_dejavu ? ' dejavu' : ''
@@ -316,7 +344,7 @@ function KaraLine(props: IProps) {
 									onClick={playKara}
 									disabled={settings.state.quiz.running}
 								>
-									<i className="fas fa-play" />
+									<FontAwesomeIcon icon={faPlay} />
 								</button>
 							) : null}
 							{isAdmin &&
@@ -330,7 +358,7 @@ function KaraLine(props: IProps) {
 									className="btn btn-action playKara karaLineButton"
 									onClick={editPlayingFlag}
 								>
-									<i className="fas fa-play-circle" />
+									<FontAwesomeIcon icon={faPlayCircle} />
 								</button>
 							) : null}
 							{isAdmin && !isNonStandardPlaylist(plaid) && !kara.flag_visible ? (
@@ -339,7 +367,7 @@ function KaraLine(props: IProps) {
 									className={'btn btn-action btn-primary'}
 									onClick={changeVisibilityKara}
 								>
-									<i className="fas fa-eye-slash"></i>
+									<FontAwesomeIcon icon={faEyeSlash} />
 								</button>
 							) : null}
 						</div>
@@ -352,12 +380,12 @@ function KaraLine(props: IProps) {
 							>
 								{props.plcidToSwap ? (
 									props.plcidToSwap === kara.plcid ? (
-										<i className="fas fa-xmark" />
+										<FontAwesomeIcon icon={faXmark} />
 									) : (
-										<i className="fas fa-arrows-turn-right" />
+										<FontAwesomeIcon icon={faArrowsTurnRight} />
 									)
 								) : (
-									<i className="fas fa-retweet" />
+									<FontAwesomeIcon icon={faRetweet} />
 								)}
 							</button>
 						) : null}
@@ -385,17 +413,19 @@ function KaraLine(props: IProps) {
 											: kara.langs[0].short?.toUpperCase() || kara.langs[0].name.toUpperCase()}
 									</span>
 									{kara.flag_dejavu && !kara.flag_playing ? (
-										<i
-											className="fas fa-history dejavu-icon"
-											title={i18next.t('KARA.DEJAVU_TOOLTIP')}
+										<FontAwesomeIcon
+											icon={faHistory}
+											className="dejavu-icon"
+											aria-label={i18next.t('KARA.DEJAVU_TOOLTIP')}
 										/>
 									) : null}
 									{getTitleInLocale(settings, kara.titles, kara.titles_default_language)}
 									{downloadIcon()}
 									{kara.warnings?.length > 0 ? (
-										<i
-											className="fas fa-exclamation-triangle problematic"
-											title={i18next.t('KARA.PROBLEMATIC_TOOLTIP', {
+										<FontAwesomeIcon
+											icon={faExclamationTriangle}
+											className="problematic"
+											aria-label={i18next.t('KARA.PROBLEMATIC_TOOLTIP', {
 												tags: kara.warnings
 													.map(t => getTagInLocale(settings, t, props.i18nTag).i18n)
 													.join(', '),
@@ -419,7 +449,7 @@ function KaraLine(props: IProps) {
 								</div>
 								{kara.upvotes && isAdmin ? (
 									<div className="upvoteCount">
-										<i className="fas fa-thumbs-up" />
+										<FontAwesomeIcon icon={faThumbsUp} />
 										{kara.upvotes}
 									</div>
 								) : null}{' '}
@@ -430,7 +460,7 @@ function KaraLine(props: IProps) {
 										plaid !== nonStandardPlaylists.favorites &&
 										!isAdmin ? (
 											<>
-												<i className="far fa-fixed-width fa-list-alt" />
+												<FontAwesomeIcon icon={farListAlt} className="fa-fixed-width" />
 												&nbsp;
 												{i18next.t('KARA.VERSION_AVAILABILITY', {
 													count: kara.children.length + 1,
@@ -439,7 +469,7 @@ function KaraLine(props: IProps) {
 										) : (
 											<div className="playingIn">
 												<div>
-													<i className="fas fa-clock" />
+													<FontAwesomeIcon icon={faClock} />
 													{secondsTimeSpanToHMS(kara.duration, 'mm:ss')}
 												</div>
 												{props.playingIn && kara.playing_at ? (
@@ -467,17 +497,19 @@ function KaraLine(props: IProps) {
 							<div className="contentDiv" onClick={() => props.openKara(kara)} tabIndex={1}>
 								<div className="disable-select karaTitle">
 									{kara.flag_dejavu && !kara.flag_playing ? (
-										<i
-											className="fas fa-history dejavu-icon"
-											title={i18next.t('KARA.DEJAVU_TOOLTIP')}
+										<FontAwesomeIcon
+											icon={faHistory}
+											className="dejavu-icon"
+											aria-label={i18next.t('KARA.DEJAVU_TOOLTIP')}
 										/>
 									) : null}
 									{karaTitle}
 									{downloadIcon()}
 									{kara.warnings?.length > 0 ? (
-										<i
-											className="fas fa-exclamation-triangle problematic"
-											title={i18next.t('KARA.PROBLEMATIC_TOOLTIP', {
+										<FontAwesomeIcon
+											icon={faExclamationTriangle}
+											className="problematic"
+											aria-label={i18next.t('KARA.PROBLEMATIC_TOOLTIP', {
 												tags: kara.warnings
 													.map(t => getTagInLocale(settings, t, props.i18nTag).i18n)
 													.join(', '),
@@ -486,7 +518,7 @@ function KaraLine(props: IProps) {
 									) : null}
 									{kara.upvotes ? (
 										<div className="upvoteCount" title={i18next.t('KARA_DETAIL.UPVOTE_NUMBER')}>
-											<i className="fas fa-thumbs-up" />
+											<FontAwesomeIcon icon={faThumbsUp} />
 											{kara.upvotes}
 										</div>
 									) : null}
@@ -494,7 +526,7 @@ function KaraLine(props: IProps) {
 									<div>
 										<div className="playingIn">
 											<div>
-												<i className="fas fa-clock" />
+												<FontAwesomeIcon icon={faClock} />
 												{secondsTimeSpanToHMS(kara.duration, 'mm:ss')}
 											</div>
 											{kara.playing_at ? (
@@ -508,9 +540,9 @@ function KaraLine(props: IProps) {
 						{isAdmin ? (
 							<span className="checkboxKara" onClick={checkKara}>
 								{kara.checked ? (
-									<i className="far fa-check-square"></i>
+									<FontAwesomeIcon icon={farCheckSquare} />
 								) : (
-									<i className="far fa-square"></i>
+									<FontAwesomeIcon icon={farSquare} />
 								)}
 							</span>
 						) : null}
@@ -555,11 +587,11 @@ function KaraLine(props: IProps) {
 											'btn showPlaylistCommands karaLineButton' + (karaMenu ? ' btn-primary' : '')
 										}
 									>
-										<i className="fas fa-wrench" />
+										<FontAwesomeIcon icon={faWrench} />
 									</button>
 								) : null}
 							</div>
-							{props.sortable ? <DragHandle dragHandleProps={props.draggable.dragHandleProps} /> : null}
+							{props.sortable ? <DragHandle dragHandleProps={props.draggable?.dragHandleProps} /> : null}
 						</div>
 					</>
 				)}

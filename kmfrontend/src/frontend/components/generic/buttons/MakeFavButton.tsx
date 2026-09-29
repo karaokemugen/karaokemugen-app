@@ -1,3 +1,5 @@
+import { faStar } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import { useCallback, useContext, useMemo } from 'react';
 
@@ -36,7 +38,7 @@ export default function MakeFavButton(props: Props) {
 			onClick={makeFavorite}
 			className={`makeFav btn btn-action${isFavorite ? ' currentFav' : ''}`}
 		>
-			<i className="fas fa-star" />
+			<FontAwesomeIcon icon={faStar} />
 			<span>{isFavorite ? i18next.t('KARA_MENU.FAV_DEL') : i18next.t('KARA_MENU.FAV')}</span>
 		</button>
 	);

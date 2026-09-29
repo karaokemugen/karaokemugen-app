@@ -1,5 +1,7 @@
 import './InlineTag.scss';
 
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -98,7 +100,7 @@ export default function InlineTag(props: Props) {
 					<p className="tag-stat">{i18next.t('INLINE_TAG.COUNT', { count: count })}</p>
 					<p className="tag-action">
 						<button className="btn" onClick={goToTagSearch}>
-							<i className="fas fa-search" />
+							<FontAwesomeIcon icon={faSearch} />
 							{i18next.t('INLINE_TAG.SEARCH', {
 								tag: getTagInLocale(context.globalState.settings.data, props.tag, props.i18nParam)
 									?.i18n,

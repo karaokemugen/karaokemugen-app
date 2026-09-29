@@ -1,17 +1,16 @@
-import legacy from '@vitejs/plugin-legacy';
+import { sentryVitePlugin } from '@sentry/vite-plugin';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
-import { sentryVitePlugin } from '@sentry/vite-plugin';
 
 export default defineConfig({
 	build: {
-		sourcemap: true,
+		sourcemap: process.env.CI ? 'hidden' : false,
+		target: ['chrome98', 'edge98', 'firefox94', 'safari15.4'],
 	},
 	plugins: [
 		nodePolyfills(), 
-		react(), 
-		legacy(),
+		react(),
 		...(process.env.SENTRY_AUTH_TOKEN && process.env.BUILDVERSION ? [
 			sentryVitePlugin({
 				authToken: process.env.SENTRY_AUTH_TOKEN && process.env.CI_COMMIT_TAG,

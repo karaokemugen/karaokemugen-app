@@ -1,5 +1,7 @@
 import './PollModal.scss';
 
+import { faStar, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import { MouseEvent, useCallback, useContext, useEffect, useRef, useState } from 'react';
 
@@ -80,7 +82,7 @@ function PollModal() {
 								closeModal(context.globalDispatch);
 							}}
 						>
-							<i className="fas fa-times" />
+							<FontAwesomeIcon icon={faTimes} />
 						</button>
 					</div>
 					<div className="modal-body">
@@ -101,7 +103,7 @@ function PollModal() {
 								>
 									<div className="karaTitle">
 										{buildKaraTitle(context.globalState.settings.data, kara, false)}
-										{maxVotes === kara.votes ? <i className="fas fa-star" /> : null}
+										{maxVotes === kara.votes ? <FontAwesomeIcon icon={faStar} /> : null}
 									</div>
 									<div>
 										{i18next.t('MODAL.POLL.VOTES', {

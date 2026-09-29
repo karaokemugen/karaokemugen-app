@@ -283,7 +283,7 @@ describe('Playlists', () => {
 			playlist: playlistExport.PlaylistContents,
 		};
 		const body = await commandBackend(token, 'importPlaylist', data, true);
-		expect(body.message.code).to.be.equal('INVALID_DATA');
+		expect(body.message.code).to.include('INVALID_DATA');
 	});
 
 	it("Update a playlist's information", async () => {

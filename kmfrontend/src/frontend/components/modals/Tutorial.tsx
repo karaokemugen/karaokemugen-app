@@ -1,5 +1,27 @@
 import './Tutorial.scss';
 
+import { faSquare as farSquare } from '@fortawesome/free-regular-svg-icons';
+import {
+	faArrowLeft,
+	faArrowRight,
+	faBan,
+	faBook,
+	faCheck,
+	faCog,
+	faComment,
+	faGlobe,
+	faHistory,
+	faInfoCircle,
+	faListOl,
+	faPencilAlt,
+	faPlay,
+	faPlayCircle,
+	faPlus,
+	faStop,
+	faUndoAlt,
+	faWrench,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import { useState } from 'react';
 import { Trans } from 'react-i18next';
@@ -50,7 +72,10 @@ function Tutorial(props: IProps) {
 				<>
 					<p className="title">{i18next.t('MODAL.TUTORIAL.WELCOME')}</p>
 					<div className="playlists">
-						<Trans i18nKey="MODAL.TUTORIAL.PLAYLIST" components={{ 2: <i className="fas fa-plus" /> }} />
+						<Trans
+							i18nKey="MODAL.TUTORIAL.PLAYLIST"
+							components={{ 2: <FontAwesomeIcon icon={faPlus} /> }}
+						/>
 						<br />
 						<br />
 						<div className="kara-line-image">
@@ -64,9 +89,9 @@ function Tutorial(props: IProps) {
 								<Trans
 									i18nKey="MODAL.TUTORIAL.PLAY_BUTTONS"
 									components={{
-										1: <i className="fas fa-play" />,
+										1: <FontAwesomeIcon icon={faPlay} />,
 										3: !isLargeDevice ? <span /> : <span style={{ display: 'none' }} />,
-										5: <i className="fas fa-play-circle" />,
+										5: <FontAwesomeIcon icon={faPlayCircle} />,
 									}}
 								/>
 							</p>
@@ -74,7 +99,7 @@ function Tutorial(props: IProps) {
 								<Trans
 									i18nKey="MODAL.TUTORIAL.CHECK_CASE"
 									components={{
-										1: <i className="far fa-square" />,
+										1: <FontAwesomeIcon icon={farSquare} />,
 										3: <em />,
 									}}
 								/>
@@ -82,14 +107,14 @@ function Tutorial(props: IProps) {
 								<Trans
 									i18nKey="MODAL.TUTORIAL.ADD_TO_OTHER_PLAYLIST"
 									components={{
-										1: <i className="fas fa-plus" />,
+										1: <FontAwesomeIcon icon={faPlus} />,
 									}}
 								/>
 								<br />
 								<Trans
 									i18nKey="MODAL.TUTORIAL.WRENCH_BUTTON"
 									components={{
-										1: <i className="fas fa-wrench" />,
+										1: <FontAwesomeIcon icon={faWrench} />,
 									}}
 								/>
 							</p>
@@ -98,7 +123,7 @@ function Tutorial(props: IProps) {
 							i18nKey="MODAL.TUTORIAL.KARAOKE_PLAYED"
 							components={{
 								1: <span className="orange" />,
-								2: <i className="fas fa-history" />,
+								2: <FontAwesomeIcon icon={faHistory} />,
 							}}
 						/>
 						<br />
@@ -117,16 +142,16 @@ function Tutorial(props: IProps) {
 				<div className="header-presentation">
 					<ul>
 						<li>
-							<i className="fas fa-cog" /> {i18next.t('MODAL.TUTORIAL.CREATE_PLAYLIST_BUTTON')}
+							<FontAwesomeIcon icon={faCog} /> {i18next.t('MODAL.TUTORIAL.CREATE_PLAYLIST_BUTTON')}
 						</li>
 						<li>
-							<i className="fas fa-list-ol" /> {i18next.t('MODAL.TUTORIAL.SELECT_PLAYLIST_BUTTON')}
+							<FontAwesomeIcon icon={faListOl} /> {i18next.t('MODAL.TUTORIAL.SELECT_PLAYLIST_BUTTON')}
 							<ul className="ul-l1">
 								<li>
-									<i className="fas fa-book" /> {i18next.t('MODAL.TUTORIAL.LIBRARY')}
+									<FontAwesomeIcon icon={faBook} /> {i18next.t('MODAL.TUTORIAL.LIBRARY')}
 								</li>
 								<li>
-									<i className="fas fa-pencil-alt" />{' '}
+									<FontAwesomeIcon icon={faPencilAlt} />{' '}
 									<Trans
 										i18nKey="MODAL.TUTORIAL.PLAYLIST_ATTRIBUTES"
 										components={{
@@ -136,15 +161,15 @@ function Tutorial(props: IProps) {
 									/>
 								</li>
 								<li>
-									<i className="fas fa-play-circle" />{' '}
+									<FontAwesomeIcon icon={faPlayCircle} />{' '}
 									<Trans i18nKey="MODAL.TUTORIAL.CURRENT_DESC" components={{ 1: <strong /> }} />
 								</li>
 								<li>
-									<i className="fas fa-globe" />{' '}
+									<FontAwesomeIcon icon={faGlobe} />{' '}
 									<Trans i18nKey="MODAL.TUTORIAL.PUBLIC_DESC" components={{ 1: <strong /> }} />
 								</li>
 								<li>
-									<i className="fas fa-info-circle" />{' '}
+									<FontAwesomeIcon icon={faInfoCircle} />{' '}
 									<Trans
 										i18nKey="MODAL.TUTORIAL.CURRENT_PUBLIC_DESC"
 										components={{
@@ -154,7 +179,7 @@ function Tutorial(props: IProps) {
 									/>
 								</li>
 								<li>
-									<i className="fas fa-ban" /> {i18next.t('MODAL.TUTORIAL.BLACKLIST_DESC')}
+									<FontAwesomeIcon icon={faBan} /> {i18next.t('MODAL.TUTORIAL.BLACKLIST_DESC')}
 								</li>
 							</ul>
 						</li>
@@ -168,19 +193,19 @@ function Tutorial(props: IProps) {
 					<p>{i18next.t('MODAL.TUTORIAL.PLAYER_BAR')}</p>
 					<ul>
 						<li>
-							<i className="fas fa-play-circle" />
+							<FontAwesomeIcon icon={faPlayCircle} />
 							<Trans i18nKey="MODAL.TUTORIAL.PLAYER_CURRENT_HINT" components={{ 1: <strong /> }} />
 						</li>
 						<li>
-							<i className="fas fa-undo-alt" />
+							<FontAwesomeIcon icon={faUndoAlt} />
 							<Trans i18nKey="MODAL.TUTORIAL.PLAYER_GO_BACK" components={{ 1: <strong /> }} />
 						</li>
 						<li>
-							<i className="fas fa-stop" />
+							<FontAwesomeIcon icon={faStop} />
 							<Trans i18nKey="MODAL.TUTORIAL.PLAYER_STOP" components={{ 1: <strong /> }} />
 						</li>
 						<li>
-							<i className="fas fa-comment" />
+							<FontAwesomeIcon icon={faComment} />
 							{i18next.t('MODAL.TUTORIAL.MESSAGE')}
 						</li>
 						<li>
@@ -192,7 +217,7 @@ function Tutorial(props: IProps) {
 					</ul>
 					<div className="center">
 						<button onClick={nextStep} className="step inline">
-							<i className="fas fa-check" /> {i18next.t('MODAL.TUTORIAL.END')}
+							<FontAwesomeIcon icon={faCheck} /> {i18next.t('MODAL.TUTORIAL.END')}
 						</button>
 					</div>
 				</div>
@@ -208,12 +233,12 @@ function Tutorial(props: IProps) {
 			<div className="steps">
 				{stepIndex > 0 ? (
 					<button onClick={previousStep} className="step back">
-						<i className="fas fa-arrow-left" /> {i18next.t('MODAL.TUTORIAL.BACK')}
+						<FontAwesomeIcon icon={faArrowLeft} /> {i18next.t('MODAL.TUTORIAL.BACK')}
 					</button>
 				) : null}
 				{stepIndex < 2 ? (
 					<button onClick={nextStep} className="step next">
-						{i18next.t('MODAL.TUTORIAL.NEXT')} <i className="fas fa-arrow-right" />
+						{i18next.t('MODAL.TUTORIAL.NEXT')} <FontAwesomeIcon icon={faArrowRight} />
 					</button>
 				) : null}
 			</div>

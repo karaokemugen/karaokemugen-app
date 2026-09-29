@@ -632,6 +632,30 @@ function PlayerOptions(props: IProps) {
 								</div>
 							</div>
 						))}
+
+					{filterValue === undefined ||
+						(sanitizeSettingsSearchValue(i18next.t('SETTINGS.PLAYER.DISPLAY_SONGINFO_PERMANENT')).includes(
+							filterValue
+						) && (
+							<div className="settings-line">
+								<label htmlFor="Player.Display.SongInfoPermanent">
+									<span className="title">
+										{i18next.t('SETTINGS.PLAYER.DISPLAY_SONGINFO_PERMANENT')}
+									</span>
+									<br />
+									<span className="tooltip">
+										{i18next.t('SETTINGS.PLAYER.DISPLAY_SONGINFO_PERMANENT_TOOLTIP')}
+									</span>
+								</label>
+								<div>
+									<Switch
+										idInput="Player.Display.SongInfoPermanent"
+										handleChange={onChange}
+										isChecked={config['Player.Display.SongInfoPermanent']}
+									/>
+								</div>
+							</div>
+						))}
 				</div>
 			) : null}
 

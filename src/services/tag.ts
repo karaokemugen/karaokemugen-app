@@ -68,17 +68,19 @@ export async function getTags(params: TagParams) {
 	}
 }
 
-export async function addTag(tagObj: Tag, opts = { silent: false, refresh: true }): Promise<Tag> {
+export async function addTag(
+	tagInput: Omit<Tag, 'tid'> & { tid?: string },
+	opts = { silent: false, refresh: true }
+): Promise<Tag> {
 	let task: Task;
 	if (!opts.silent) {
 		task = new Task({
 			text: 'CREATING_TAG_IN_PROGRESS',
-			subtext: tagObj.name,
+			subtext: tagInput.name,
 		});
 	}
 	try {
-		tagObj = trimTagData(tagObj);
-		if (!tagObj.tid) tagObj.tid = randomUUID();
+		const tagObj: Tag = trimTagData({ ...tagInput, tid: tagInput.tid || randomUUID() });
 		if (!tagObj.tagfile) tagObj.tagfile = defineTagFilename(tagObj);
 		const tagfile = tagObj.tagfile;
 		await applyTagHooks(tagObj);
@@ -341,15 +343,9 @@ export async function integrateTagFile(file: string, refresh = true): Promise<st
 	if (!tagFileData) return null;
 	try {
 		logger.debug(`Integrating tag ${tagFileData.tid} (${tagFileData.name})`, { service });
-		let tagDBData;
-		try {
-			tagDBData = await getTag(tagFileData.tid);
-		} catch(err) {
-			// This is allowed to fail
-		
-		}
-		if (tagDBData) {
-			if (tagDBData.repository === tagFileData.repository) {
+		const tags = await selectAllTags({ tid: tagFileData.tid });
+		if (tags[0]) {
+			if (tags[0].repository === tagFileData.repository) {
 				// Refresh always disabled for editing tags.
 				await editTag(tagFileData.tid, tagFileData, {
 					silent: true,
@@ -484,6 +480,7 @@ export async function checkCollections() {
 	})();
 	try {
 		const availableCollections: DBTag[] = [];
+		let defaults: Record<string, boolean> = {};
 		for (const repo of getRepos()) {
 			if (repo.Enabled) {
 				if (repo.Online && internet) {
@@ -499,7 +496,11 @@ export async function checkCollections() {
 						for (const tag of tags.data.content) {
 							if (!availableCollections.find(t => t.tid === tag.tid)) availableCollections.push(tag);
 						}
-						setDefaultCollections(manifest.Manifest);
+						const repoDefaults = await setDefaultCollections(manifest.Manifest);
+						defaults = {
+							...defaults,
+							...repoDefaults
+						};
 					} catch (err) {
 						// Fallback to what the repository has locally
 						const tags = await getTags({ type: [tagTypes.collections] });
@@ -515,7 +516,10 @@ export async function checkCollections() {
 				}
 			}
 		}
-		return availableCollections;
+		return {
+			availableCollections,
+			defaults
+		};
 	} catch (err) {
 		logger.error(`Error getting collections : ${err}`, { service });
 		sentry.error(err);

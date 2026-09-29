@@ -4,7 +4,7 @@
 import { dialog } from 'electron';
 import { copy } from 'fs-extra';
 import i18next from 'i18next';
-import { cloneDeep, isEqual, merge } from 'lodash';
+import { cloneDeep, isEqual, mergeWith } from 'lodash';
 import os from 'node:os';
 import { resolve } from 'path';
 import { randomUUID } from 'crypto';
@@ -45,7 +45,7 @@ import {
 } from '../services/player.js';
 import { updateAllPlaylistDurations } from '../services/playlist.js';
 import { setSongPoll } from '../services/poll.js';
-import { destroyRemote, initRemote } from '../services/remote.js';
+import { destroyRemote } from '../services/remote.js';
 import { updateSongsLeft } from '../services/user.js';
 import { BinariesConfig } from '../types/binChecker.js';
 import { Config } from '../types/config.js';
@@ -58,6 +58,7 @@ import sentry from './sentry.js';
 import { getState, setState } from './state.js';
 import { writeStreamFiles } from './streamerFiles.js';
 import { initTwitch, stopTwitch } from './twitch.js';
+import { mergeWithReplaceArray } from '../lib/utils/lodash.js';
 
 const service = 'Config';
 
@@ -84,7 +85,7 @@ export async function editConfig(part: RecursivePartial<Config>) {
 	try {
 		const config = getConfig();
 		const oldConfig = removeNulls(cloneDeep(config));
-		const newConfig = removeNulls(merge(config, part));
+		const newConfig = removeNulls(mergeWith(cloneDeep(config), part, mergeWithReplaceArray));
 		try {
 			verifyConfig(newConfig);
 		} catch (err) {
@@ -93,7 +94,7 @@ export async function editConfig(part: RecursivePartial<Config>) {
 		}
 		await mergeConfig(newConfig, oldConfig);
 		emitWS('settingsUpdated', part);
-		return config;
+		return getConfig();
 	} catch (err) {
 		sentry.error(err, 'warning');
 		throw err instanceof ErrorKM ? err : new ErrorKM('SETTINGS_UPDATE_ERROR');
@@ -142,14 +143,6 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 			(getState().player.mediaType === 'pause' || getState().player.mediaType === 'stop')
 		) {
 			displayInfo();
-		}
-	}
-	if (newConfig.Online.RemoteAccess.Enabled !== oldConfig.Online.RemoteAccess.Enabled && state.ready) {
-		if (newConfig.Online.RemoteAccess.Enabled) {
-			await initKMServerCommunication();
-			initRemote();
-		} else {
-			destroyRemote();
 		}
 	}
 	// Change language
@@ -227,14 +220,14 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 		);
 	}
 	Object.keys(newConfig.System.Repositories).forEach((_, i) => {
-		if (!isEqual(newConfig.System.Repositories[i].BaseDir, oldConfig.System.Repositories[i].BaseDir)) {
+		if (!isEqual(newConfig.System.Repositories[i].BaseDir, oldConfig.System.Repositories[i]?.BaseDir)) {
 			newConfig.System.Repositories[i].BaseDir = relativePath(
 				state.dataPath,
 				resolve(state.dataPath, newConfig.System.Repositories[i].BaseDir)
 			);
 		}
 		for (const path of Object.keys(newConfig.System.Repositories[i].Path)) {
-			if (!isEqual(newConfig.System.Repositories[i].Path[path], oldConfig.System.Repositories[i].Path[path])) {
+			if (!isEqual(newConfig.System.Repositories[i].Path[path], oldConfig.System.Repositories[i]?.Path[path])) {
 				if (Array.isArray(newConfig.System.Repositories[i].Path[path])) {
 					newConfig.System.Repositories[i].Path[path].forEach((_grumble: any, y: number) => {
 						newConfig.System.Repositories[i].Path[path][y] = relativePath(
@@ -253,19 +246,10 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	});
 	for (const path of Object.keys(newConfig.System.Path)) {
 		if (!isEqual(newConfig.System.Path[path], oldConfig.System.Path[path])) {
-			if (Array.isArray(newConfig.System.Path[path])) {
-				newConfig.System.Path[path].forEach((_: any, i: number) => {
-					newConfig.System.Path[path][i] = relativePath(
-						state.dataPath,
-						resolve(state.dataPath, newConfig.System.Path[path][i])
-					);
-				});
-			} else {
-				newConfig.System.Path[path] = relativePath(
-					state.dataPath,
-					resolve(state.dataPath, newConfig.System.Path[path])
-				);
-			}
+			newConfig.System.Path[path] = relativePath(
+				state.dataPath,
+				resolve(state.dataPath, newConfig.System.Path[path])
+			);			
 		}
 	}
 
@@ -277,6 +261,22 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	if (oldConfig.Player.KeyboardMediaShortcuts && !config.Player.KeyboardMediaShortcuts) unregisterShortcuts();
 	// Toggling poll
 	if (state.ready) setSongPoll(config.Karaoke.Poll.Enabled);
+	// Toggling remote access
+	if (state.ready) {
+		const oldRemoteSetting = oldConfig.Online.RemoteAccess;
+		const newRemoteSetting = config.Online.RemoteAccess;
+		const serverChanged = newRemoteSetting.Domain !== oldRemoteSetting.Domain || newRemoteSetting.Secure !== oldRemoteSetting.Secure;
+		if (newRemoteSetting.Enabled !== oldRemoteSetting.Enabled) {
+			if (newRemoteSetting.Enabled) {
+				await initKMServerCommunication();
+			} else {
+				destroyRemote();
+			}
+		} else if (newRemoteSetting.Enabled && serverChanged) {
+			await destroyRemote();
+			await initKMServerCommunication();
+		}
+	}
 	// Toggling twitch
 	config.Karaoke.StreamerMode.Twitch.Enabled
 		? initTwitch().catch(err => {
@@ -326,6 +326,7 @@ export async function initConfig(argv: any) {
 		for (const repo of publicConfig.System.Repositories) {
 			if (repo.MaintainerMode) {
 				if (repo.FTP?.Password) repo.FTP.Password = 'xxxxx';
+				if (repo.SFTP?.Password) repo.SFTP.Password = 'xxxxx';
 				if (repo.Git?.Password) repo.Git.Password = 'xxxxx';
 			}
 		}
@@ -421,6 +422,7 @@ export function getPublicConfig(removeSystem = true, removeInstanceID = true) {
 		if (repo.MaintainerMode) {
 			delete repo.Git?.Password;
 			delete repo.FTP?.Password;
+			delete repo.SFTP?.Password;
 		}
 	}
 	if (removeSystem) delete publicSettings.System;

@@ -1,5 +1,7 @@
+import z from 'zod';
 import { WS_CMD } from '../../../kmfrontend/src/utils/ws.mjs';
 import { APIMessage } from '../../lib/services/frontend.js';
+import { check } from '../../lib/utils/validators.js';
 import { SocketIOApp } from '../../lib/utils/ws.js';
 import {
 	addDownloads,
@@ -16,6 +18,15 @@ export default function downloadController(router: SocketIOApp) {
 	router.route(WS_CMD.ADD_DOWNLOADS, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
+			check(req.body, z.object({
+				downloads: z.array(z.object({
+					mediafile: z.string(),
+					name: z.string(),
+					size: z.number().int().min(0),
+					repository: z.string(),
+					kid: z.uuidv4(),
+				}))
+			}));
 			const numberOfDLs = await addDownloads(req.body.downloads);
 			return APIMessage('DOWNLOADS_QUEUED', numberOfDLs);
 		} catch (err) {
@@ -66,6 +77,10 @@ export default function downloadController(router: SocketIOApp) {
 	});
 	router.route(WS_CMD.UPDATE_ALL_MEDIAS, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
+		check(req.body, z.object({
+			repoNames: z.array(z.string()).optional(),
+			dryRun: z.boolean().optional(),
+		}).optional());
 		await updateAllMedias(req.body?.repoNames, req.body?.dryRun);
 		return APIMessage('UPDATING_MEDIAS_IN_PROGRESS');
 	});

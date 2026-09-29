@@ -1,6 +1,8 @@
 import '../styles/start/Start.scss';
 import '../styles/start/MigratePage.scss';
 
+import { faLink, faPencilAlt } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import { Fragment, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -9,9 +11,10 @@ import { MigrationsFrontend } from '../../../../src/types/database/migrationsFro
 import logo from '../../assets/Logo-final-fond-transparent.png';
 import { commandBackend } from '../../utils/socket';
 import { WS_CMD } from '../../utils/ws.mjs';
+import DefaultRemote from '../components/migrations/DefaultRemote';
 
 export default function MigratePage() {
-	const components = {};
+	const components = { DefaultRemote };
 
 	const navigate = useNavigate();
 
@@ -48,13 +51,13 @@ export default function MigratePage() {
 						<ul>
 							<li>
 								<a href="https://mugen.karaokes.moe/contact.html">
-									<i className="fas fa-pencil-alt" />
+									<FontAwesomeIcon icon={faPencilAlt} />
 									{i18next.t('WELCOME_PAGE.CONTACT')}
 								</a>
 							</li>
 							<li>
 								<a href="https://mugen.karaokes.moe/">
-									<i className="fas fa-link" />
+									<FontAwesomeIcon icon={faLink} />
 									{i18next.t('WELCOME_PAGE.SITE')}
 								</a>
 							</li>

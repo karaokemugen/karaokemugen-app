@@ -1,4 +1,12 @@
 {
+	"ACTIONS": {
+		"CONTINUE": "Continue",
+		"LOG_IN": "Log in",
+		"SIGN_UP": "Sign up",
+		"SAVE_AND_CONTINUE": "Save and continue",
+		"FINISH": "Finish",
+		"CONFIRM": "Confirm"
+	},
 	"SELECT_PLACEHOLDER": "Select a playlist",
 	"YES": "Yes",
 	"NO": "No",
@@ -7,7 +15,6 @@
 	"UNKNOWN": "Unknown",
 	"SEARCH": "Search",
 	"SUBMIT": "Save",
-	"CONFIRM": "Confirm",
 	"CANCEL": "Cancel",
 	"WARNING": "Warning!",
 	"SHOW-HIDE": "Show/Hide",
@@ -274,8 +281,6 @@
 		"ONLINE_ACCOUNT": "Online account?"
 	},
 	"USERNAME": "Username",
-	"LOG_IN": "Log in",
-	"SIGN_UP": "Sign up",
 	"PROFILE": "Profile",
 	"PROFILE_USERNAME": "Nickname",
 	"PROFILE_MAIL": "Email",
@@ -404,6 +409,8 @@
 			"DISPLAY_AVATAR_TOOLTIP": "The song requester's avatar will be displayed at the beginning and the end of the song in the lower right corner of the player's screen.",
 			"DISPLAY_SONGINFO": "Show song information",
 			"DISPLAY_SONGINFO_TOOLTIP": "Information (title, series/singer, etc.) are displayed at the beginning and end of a song, as well as during pause screens in Stream/Classic modes. Disable to hide these, for blind tests for example.",
+			"DISPLAY_SONGINFO_PERMANENT": "Display song information on screen for the entire song",
+			"DISPLAY_SONGINFO_PERMANENT_TOOLTIP": "Song information and the requester's avatar stay on screen for the full song. (The connection-info and Karaoke Mugen banner are still displayed, if enabled)",
 			"DISPLAY_NEXT_SONGINFO": "Show next song on pause screens",
 			"DISPLAY_NEXT_SONGINFO_TOOLTIP": "If enabled, an announcement showing the next song will appear on screen during karaoke pauses like in the Classic Mode or Stream Mode. This does NOT include the next song announcement at the end of a song.",
 			"NEXT_SONGINFO_POSITION_X": "Horizontal position",
@@ -998,7 +1005,7 @@
 				"karacount": "Number of songs",
 				"duration": "Duration",
 				"favorited": "Likes",
-				"username": "Nickname"
+				"username": "Username"
 			},
 			"BY_AUTHOR": "by {{author}}",
 			"AND_CONTRIBUTORS": "(and {{contributors, list}})",
@@ -1021,23 +1028,64 @@
 	},
 	"SETUP_PAGE": {
 		"TITLE": "Setup Wizard",
-		"WELCOME": "Welcome to Karaoke Mugen!",
-		"NEED_ACCOUNT": "Before you can start singing, you'll need an account to use the app.",
-		"ACCOUNT_QUESTION": "Do you want to use a local account (on your computer only) or an online account (Internet access required)?",
-		"LOCAL_ACCOUNT": "Local",
-		"ONLINE_ACCOUNT": "Online",
-		"ONLINE_ACCOUNT_DESC": "An online account allows you to:",
-		"ONLINE_ACCOUNT_SAVE_INFOS": "Backup your favorite songs, avatar and profile info to use them on another Karaoke Mugen App.",
-		"ONLINE_ACCOUNT_LOST_PASSWORD": "If you supply an email address, you'll be able to recover your account if you forget your password.",
-		"LOCAL_ACCOUNT_DESC": "You chose a local account. Type in an account name and a password below:",
-		"ONLINE_ACCOUNT_INSTANCE": "Your online account will be hosted on the {{instance}} instance",
-		"ONLINE_ACCOUNT_INSTANCE_DESC": "An instance is an online server providing several services to Karaoke Mugen. If you're not sure, leave the default instance ({{instance}}), or if you know what you're doing, change it to the instance of your choice.",
-		"CREATE_ONLINE_ACCOUNT": "I want to create a new account",
-		"LOGIN_ONLINE_ACCOUNT": "I already have an account",
-		"CREATE_ONLINE_ACCOUNT_DESC": "Type in an account name and a password to create one.",
-		"SECURITY_CODE_DESC_CONSOLE": "Please also enter the 6-digit security code that you can find by looking for \"SECURITY CODE\" in the Karaoke Mugen log file or in the console.",
-		"SECURITY_CODE_USE": "This code makes sure you're really the one doing these actions. It changes after each use.",
-		"CONNECTED_MESSAGE": "Congratulations, you're logged in to Karaoke Mugen, {{user}}!"
+		"ONLINE_SERVER": {
+			"SELECT": "Select an online server for your account.",
+			"DESCRIPTION": "Servers host your information such as your credentials, favorites, playlists, and statistics.",
+			"HINT": "HINT: You should pick one with songs you enjoy singing so you can favorite them later!",
+			"LIST": "List of known Karaoke Mugen Servers:",
+			"OTHER": "Other",
+			"OTHER_INPUT": "Enter your server's domain name:",
+			"INSTANCE_one": "{{instance}} ({{songs}} song)",
+			"INSTANCE_other": "{{instance}} ({{songs}} songs)",
+			"INSTANCE_FORMAT_ERROR": "The domain name must contain a .",
+			"OFFLINE": "Offline for now - try to add it later"
+		},
+		"REPOSITORY": {
+			"SELECT": "Please select your main source of songs",
+			"DESCRIPTION": "You can add/remove song databases later from the System Panel.",
+			"OWN_SONGS": "I have my own songs",
+			"ONLINE_REPOSITORY": "I want to use songs from an online repository",
+			"LIST": "List of known Karaoke Mugen Servers with song repositories:"
+		},
+		"MEDIA_STORAGE": {
+			"TITLE": "Media storage",
+			"DESCRIPTION": "Songs from online repositories can take up a lot of space. Do you want to store song medias at another location on your computer?",
+			"CHANGE_LATER": "You can change this folder at any time."
+		},
+		"REMOTE_ACCESS": {
+			"TITLE": "Remote Access",
+			"DESCRIPTION": "By enabling remote access, you'll allow users to reach your Karaoke Mugen session with a short, easy to remember URL. Select a Karaoke Mugen Server for your remote access.",
+			"DESCRIPTION_GUESTS": "Guests will only be able to browse your song library and request songs to be played. This is ideal for sessions via Twitch, in real life with friends or with a crowd at an event!",
+			"DO_NO_WANT": "I do not want to enable remote access for now",
+			"EXAMPLE": "Example URL : <1>https://abcd.{{instance}}</1>"
+		},
+		"TIMELINE": {
+			"USER_ACCOUNT": "User account",
+			"SONGS": "Songs",
+			"ONLINE": "Online"
+		},
+		"COLLECTIONS": {
+			"CHOICE": "Collection selection",
+			"CHOICE_DESC_1": "The song collections are intended for different audiences. Choose the collections you want to see in your karaoke database.",
+			"CHOICE_DESC_2": "You can change your collections at any time in the system panel."
+		},
+		"USER": {
+			"WELCOME": "Welcome to Karaoke Mugen!",
+			"LOCAL_ACCOUNT": "Local",
+			"ONLINE_ACCOUNT": "Online",
+			"ONLINE_ACCOUNT_DESC": "An online account allows you to:",
+			"ONLINE_ACCOUNT_FAVORITES": "Backup your favorites online",
+			"ONLINE_ACCOUNT_PLAYLISTS": "Upload your playlists",
+			"ONLINE_ACCOUNT_OTHER_SESSIONS": "Log in from any other Karaoke Mugen session",
+			"LOCAL_ACCOUNT_DESC": "You chose a local account. Type in an account name and a password below:",
+			"ONLINE_ACCOUNT_INSTANCE": "Your online account will be hosted on the {{instance}} instance",
+			"CREATE_ONLINE_ACCOUNT": "I want to create a new account",
+			"LOGIN_ONLINE_ACCOUNT": "I already have an account",
+			"SECURITY_CODE_DESC_CONSOLE": "Please also enter the 6-digit security code that you can find by looking for \"SECURITY CODE\" in the Karaoke Mugen log file or in the console.",
+			"SECURITY_CODE_USE": "This code makes sure you're really the one doing these actions. It changes after each use.",
+			"CHOOSE_ACCOUNT": "Please choose if you want a local or online user account. If you already have an online account on a Karaoke Mugen server like mugen.re, select \"Online\"."
+		},
+		"ENDING": "Thank you! Karaoke Mugen is now configured. Please take a look at the operator interface's settings to configure the app's behavior on your first karaoke session!"
 	},
 	"NOTIFICATION": {
 		"OPERATOR": {
@@ -1120,7 +1168,7 @@
 			"AUDIO_COVER_ART": "Cover art",
 			"WARNINGS": {
 				"LIBAVCODEC_ENCODER": "The audio is encoded with the libavcodec (ffmpeg reference aac) encoder, which can create audible artifacts and is discouraged to utilize. Please use the libfdk_aac encoder for aac or another codec like opus, to get the best possible quality.",
-				"HAS_EMBEDDED_SUBTITLES": "Embedded subtitles in the media file are not recommended and will be removed automatically when saving. Please make the subtitle is correctly applied or uploaded in the 'Lyrics' section.",
+				"HAS_EMBEDDED_SUBTITLES": "Embedded subtitles in the media file are not recommended and will be removed automatically when saving. Please make sure the subtitle is correctly applied or uploaded in the 'Lyrics' section.",
 				"HAS_ATTACHMENTS": "The media file contains embedded attachments (likely fonts), which will be removed when saving."
 			}
 		},
@@ -1221,7 +1269,7 @@
 			"CREATE_PLAYLIST": "First, you need to create a playlist in the operator panel.",
 			"SELECT_PLAYLIST": "Select a playlist:",
 			"SELECT_ACTION": "Select an operation:",
-			"SELECT_REPOSITORY": "Select a repository :",
+			"SELECT_REPOSITORY": "Select a repository:",
 			"SELECT_TAG": "Select a tag:",
 			"SELECT_PARENT": "Select a parent:",
 			"SELECT_TAG_TYPE": "Select a tag type :",
@@ -1348,7 +1396,6 @@
 		"PASSWORD_VALIDATOR_MESSAGE": "A user must have a password",
 		"CHAR_NOT_ALLOWED": "The character '{{char}}' is not allowed",
 		"DELETE_USER_CONFIRM": "Delete user",
-		"LOG_IN": "Log in",
 		"NEW_USER": "New user",
 		"REPLAY_TUTORIAL": "Finished operator tutorial",
 		"EDIT_ONLINE_ACCOUNT": "Online users cannot be edited from this page except to change their role on this Karaoke Mugen app. To edit your own profile online, do this from the public or operator interface."
@@ -1774,6 +1821,7 @@
 		"C_BEFORE_YEAR_CONFLICT": "You cannot add a \"Before year\" criteria higher than the \"After year\" criteria.",
 		"C_AFTER_YEAR_CONFLICT": "You cannot add a \"After year\" criteria lower than the \"Before year\" criteria.",
 		"USER_RESETPASSWORD_WRONGSECURITYCODE": "Wrong security code",
+		"SECURITY_CODE_LOCKED": "Too many attempts with wrong security codes. Wait a few minutes before trying again.",
 		"PL_DELETE_SONG_ERROR": "You cannot delete that song",
 		"PL_DELETE_UPVOTED": "You cannot delete your suggestion, it's too late.",
 		"PL_VIEW_SONGS_ERROR": "Error loading the playlist",
@@ -1939,7 +1987,7 @@
 		"UPLOADED_MEDIA_ERROR": "Error when uploading media",
 		"ENCODE_MEDIA_ERROR": "Error when encoding media",
 		"REPOSITORY_UNREACHABLE": "Repository unreachable. Did you misspell its name?",
-		"CANNOT_INSTALL_REPO_AT_WINDOWS_ROOT_DRIVE": "Repository cannot be installed at the root of a Windows drive.",
+		"UPLINK_UNREACHABLE": "Unable to fetch list of known Karaoke Mugen servers",
 		"REFRESH_ANIME_LIST_ERROR": "Error refreshing anime list",
 		"DELETE_PLAYLIST_ERROR_CURRENT": "Unable to delete a current playlist. Make another playlist current first.",
 		"DELETE_PLAYLIST_ERROR_PUBLIC": "Unable to delete a public playlist. Make another playlist public first.",
@@ -2176,7 +2224,10 @@
 	},
 	"MIGRATE": {
 		"TITLE": "Migration",
-		"CONTINUE": "Continue."
+		"DEFAULT_REMOTE": {
+			"TITLE": "Choose a default server",
+			"DESCRIPTION": "Karaoke Mugen now offers different servers for online features. Please select which ones you wish to use."
+		}
 	},
 	"BACKGROUNDS_MGMT": {
 		"EXPL": "There are 3 categories of backgrounds. If a category doesn't have any background, a bundled one will be used (those with the character that give his name to the app version).",
@@ -2257,7 +2308,6 @@
 	"ABOUT": {
 		"DESCRIPTION": "A karaoke player and a party manager, between friends or in public.",
 		"LICENSE": "MIT-licensed.",
-		"CONTRIBUTORS": "Song lyrics were created by awesome people, like <1>{{contributors}}</1> for example.",
 		"DONATORS": "Thanks to <1>{{donators}}</1> for their donations to Karaoke Mugen"
 	},
 	"QUIZ": {

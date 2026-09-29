@@ -93,7 +93,7 @@ function AdminPage(props: IProps) {
 	};
 
 	const getPlaylistList = async () => {
-		const playlistList: PlaylistElem[] = await commandBackend(WS_CMD.GET_PLAYLISTS);
+		const playlistList = await commandBackend(WS_CMD.GET_PLAYLISTS);
 		let kmStats;
 		try {
 			kmStats = await commandBackend(WS_CMD.GET_STATS);

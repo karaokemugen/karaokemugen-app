@@ -1,3 +1,19 @@
+import {
+	faBolt,
+	faCloudDownloadAlt,
+	faDice,
+	faDownload,
+	faEraser,
+	faFileExport,
+	faPencilAlt,
+	faPlus,
+	faRandom,
+	faShare,
+	faTrash,
+	faUpload,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { PlaylistIcon } from '../../../utils/playlist';
 import i18next from 'i18next';
 import { useContext, useEffect } from 'react';
 
@@ -27,7 +43,7 @@ interface IProps {
 	addAllKaras: () => void;
 	addRandomKaras: () => void;
 	downloadAllMedias: () => void;
-	getListToSelect: () => { value: string; label: string; icons: string[] }[];
+	getListToSelect: () => { value: string; label: string; icons: PlaylistIcon[] }[];
 }
 
 function PlaylistCommandsModal(props: IProps) {
@@ -171,7 +187,7 @@ function PlaylistCommandsModal(props: IProps) {
 			{!isNonStandardPlaylist(playlist?.plaid) ? (
 				<li>
 					<div onClick={openShuffleModal}>
-						<i className="fas fa-random" />
+						<FontAwesomeIcon icon={faRandom} />
 						{i18next.t('ADVANCED.SHUFFLE')}
 					</div>
 				</li>
@@ -186,7 +202,7 @@ function PlaylistCommandsModal(props: IProps) {
 							}}
 							className="danger-hover"
 						>
-							<i className="fas fa-share" />
+							<FontAwesomeIcon icon={faShare} />
 							{i18next.t('ADVANCED.ADD_ALL')}
 						</div>
 					</li>
@@ -198,7 +214,7 @@ function PlaylistCommandsModal(props: IProps) {
 									props.addRandomKaras();
 								}}
 							>
-								<i className="fas fa-dice" />
+								<FontAwesomeIcon icon={faDice} />
 								{i18next.t('ADVANCED.ADD_RANDOM')}
 							</div>
 						</li>
@@ -210,7 +226,7 @@ function PlaylistCommandsModal(props: IProps) {
 			playlist?.plaid === context.globalState.settings.data.state.whitelistPlaid ? (
 				<li>
 					<div onClick={deleteAllKaras} className="danger-hover">
-						<i className="fas fa-eraser" />
+						<FontAwesomeIcon icon={faEraser} />
 						{i18next.t('ADVANCED.EMPTY_LIST')}
 					</div>
 				</li>
@@ -219,13 +235,13 @@ function PlaylistCommandsModal(props: IProps) {
 				<>
 					<li>
 						<div onClick={deletePlaylist} className="danger-hover">
-							<i className="fas fa-trash" />
+							<FontAwesomeIcon icon={faTrash} />
 							{i18next.t('ADVANCED.DELETE')}
 						</div>
 					</li>
 					<li>
 						<div onClick={() => addOrEditPlaylist('edit')}>
-							<i className="fas fa-pencil-alt" />
+							<FontAwesomeIcon icon={faPencilAlt} />
 							{i18next.t('ADVANCED.EDIT')}
 						</div>
 					</li>
@@ -234,7 +250,7 @@ function PlaylistCommandsModal(props: IProps) {
 			{playlist?.plaid !== nonStandardPlaylists.library && playlist?.plaid !== nonStandardPlaylists.animelist ? (
 				<li>
 					<div onClick={openPlaylistExportModal}>
-						<i className="fas fa-upload" />
+						<FontAwesomeIcon icon={faUpload} />
 						{i18next.t(
 							playlist?.plaid === nonStandardPlaylists.favorites ? 'FAVORITES_EXPORT' : 'ADVANCED.EXPORT'
 						)}
@@ -247,7 +263,7 @@ function PlaylistCommandsModal(props: IProps) {
 			exportPlaylistMediaEnabled ? (
 				<li>
 					<div onClick={exportPlaylistMedia}>
-						<i className="fas fa-file-export" />
+						<FontAwesomeIcon icon={faFileExport} />
 						{i18next.t('ADVANCED.EXPORT_MEDIA')}
 					</div>
 				</li>
@@ -260,7 +276,7 @@ function PlaylistCommandsModal(props: IProps) {
 							props.downloadAllMedias();
 						}}
 					>
-						<i className="fas fa-cloud-download-alt" />
+						<FontAwesomeIcon icon={faCloudDownloadAlt} />
 						{i18next.t('ADVANCED.DOWNLOAD_ALL')}
 					</div>
 				</li>
@@ -268,14 +284,14 @@ function PlaylistCommandsModal(props: IProps) {
 			<hr />
 			<li>
 				<div onClick={() => addOrEditPlaylist('create')}>
-					<i className="fas fa-plus" />
+					<FontAwesomeIcon icon={faPlus} />
 					{i18next.t('ADVANCED.ADD')}
 				</div>
 			</li>
 			{!props.criteriasOpen ? (
 				<li>
 					<div onClick={startFavMix}>
-						<i className="fas fa-bolt" />
+						<FontAwesomeIcon icon={faBolt} />
 						{i18next.t('ADVANCED.AUTOMIX')}
 					</div>
 				</li>
@@ -283,7 +299,7 @@ function PlaylistCommandsModal(props: IProps) {
 			<li>
 				<div onClick={openPlaylistImportModal}>
 					<label className="importFile" htmlFor={'import-file' + props.side}>
-						<i className="fas fa-download" />
+						<FontAwesomeIcon icon={faDownload} />
 						{i18next.t('ADVANCED.IMPORT')}
 					</label>
 				</div>

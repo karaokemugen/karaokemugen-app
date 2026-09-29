@@ -4,6 +4,7 @@ import i18next from 'i18next';
 import { useContext, useEffect, useRef, useState } from 'react';
 
 import type { DBKaraTag } from '../../../../../src/lib/types/database/kara';
+import type { TagTypeNum } from '../../../../../src/lib/types/tag';
 import GlobalContext from '../../../store/context';
 import { getTagInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
@@ -12,7 +13,7 @@ import { WS_CMD } from '../../../utils/ws.mjs';
 
 interface AutocompleteTagProps {
 	onChange: (e: unknown[]) => void;
-	tagType?: number;
+	tagType?: TagTypeNum;
 	value?: DBKaraTag[];
 	form?: FormInstance;
 }
@@ -65,7 +66,7 @@ export default function AutocompleteTag(props: AutocompleteTagProps) {
 		if (props.onChange) props.onChange([...value, val]);
 	};
 
-	const getTags = async (filter: string, type: number) => {
+	const getTags = async (filter: string, type: TagTypeNum) => {
 		if (filter === '') {
 			return { data: [] };
 		}

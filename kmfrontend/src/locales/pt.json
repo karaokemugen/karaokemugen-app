@@ -1,8 +1,13 @@
 {
+	"ACTIONS": {
+		"CONFIRM": "confirme",
+		"LOG_IN": "Conecte-se",
+		"SIGN_UP": "Inscrever-se",
+		"CONTINUE": "Continuar"
+	},
 	"SEARCH": "Procurar",
 	"SUBMIT": "Gravar",
 	"CANCEL": "Cancelar",
-	"CONFIRM": "confirme",
 	"NOT_FOUND_PAGE": {
 		"404": "Perdido no Karaoke Mugen?",
 		"404_2": "Não entres em pânico, nós podemos te ajudar.",
@@ -773,24 +778,19 @@
 		}
 	},
 	"SETUP_PAGE": {
-		"LOCAL_ACCOUNT": "Local",
-		"ONLINE_ACCOUNT_INSTANCE": "Sua conta online será hospedada no {{instance}} instância",
-		"CREATE_ONLINE_ACCOUNT": "Quero criar uma nova conta",
-		"CREATE_ONLINE_ACCOUNT_DESC": "Digite um nome de conta e uma senha para criar uma.",
-		"WELCOME": "Bem-vindo ao Karaokê Mugen!",
-		"CONNECTED_MESSAGE": "Parabéns, você está conectado ao Karaokê Mugen, {{user}}!",
-		"ONLINE_ACCOUNT_DESC": "Uma conta online permite que você:",
-		"ONLINE_ACCOUNT_INSTANCE_DESC": "Uma instância é um servidor online que fornece diversos serviços ao Karaokê Mugen. {{instance}}) ou, se você souber o que está fazendo, altere-o para a instância de sua escolha.",
-		"LOCAL_ACCOUNT_DESC": "Você escolheu uma conta local. Digite um nome de conta e uma senha abaixo:",
-		"SECURITY_CODE_DESC_CONSOLE": "Digite também o código de segurança de 6 dígitos que você pode encontrar procurando por \"SECURITY CODE\" no arquivo de log do Karaokê Mugen ou no console.",
-		"SECURITY_CODE_USE": "Este código garante que você é realmente quem está executando essas ações.",
-		"ONLINE_ACCOUNT_SAVE_INFOS": "Faça backup de suas músicas favoritas, avatar e informações de perfil para usá-los em outro aplicativo Karaokê Mugen.",
 		"TITLE": "Assistente de configuração",
-		"NEED_ACCOUNT": "Antes de começar a cantar, você precisará de uma conta para usar o aplicativo.",
-		"ACCOUNT_QUESTION": "Deseja usar uma conta local (apenas no seu computador) ou uma conta online (é necessário acesso à Internet)?",
-		"ONLINE_ACCOUNT": "On-line",
-		"ONLINE_ACCOUNT_LOST_PASSWORD": "Se você fornecer um endereço de e-mail, poderá recuperar sua conta caso esqueça sua senha.",
-		"LOGIN_ONLINE_ACCOUNT": "eu já tenho uma conta"
+		"USER": {
+			"LOCAL_ACCOUNT": "Local",
+			"ONLINE_ACCOUNT_INSTANCE": "Sua conta online será hospedada no {{instance}} instância",
+			"CREATE_ONLINE_ACCOUNT": "Quero criar uma nova conta",
+			"WELCOME": "Bem-vindo ao Karaokê Mugen!",
+			"ONLINE_ACCOUNT_DESC": "Uma conta online permite que você:",
+			"LOCAL_ACCOUNT_DESC": "Você escolheu uma conta local. Digite um nome de conta e uma senha abaixo:",
+			"SECURITY_CODE_DESC_CONSOLE": "Digite também o código de segurança de 6 dígitos que você pode encontrar procurando por \"SECURITY CODE\" no arquivo de log do Karaokê Mugen ou no console.",
+			"SECURITY_CODE_USE": "Este código garante que você é realmente quem está executando essas ações.",
+			"ONLINE_ACCOUNT": "On-line",
+			"LOGIN_ONLINE_ACCOUNT": "eu já tenho uma conta"
+		}
 	},
 	"NOTIFICATION": {
 		"OPERATOR": {
@@ -983,7 +983,6 @@
 		"FILE": "Arquivo"
 	},
 	"USERS": {
-		"LOG_IN": "Conecte-se",
 		"LAST_LOGIN_AT": "Visto pela última vez em",
 		"DELETE_USER_CONFIRM": "Deletar usuário",
 		"BIO": "Biografia",
@@ -1421,7 +1420,6 @@
 		"REPO_COPY_LYRICS_ERROR": "Erro ao copiar letras entre dois repositórios",
 		"SUBFILE_FORMAT_UNKOWN": "Formato de subarquivo desconhecido",
 		"MEDIA_DELETE_ERROR": "Erro ao excluir mídia",
-		"CANNOT_INSTALL_REPO_AT_WINDOWS_ROOT_DRIVE": "O repositório não pode ser instalado na raiz de uma unidade do Windows.",
 		"DELETE_PLAYLIST_ERROR_CURRENT": "Não é possível excluir uma lista de reprodução atual.",
 		"INBOX_DOWNLOAD_ERROR": "Não é possível baixar o karaokê da caixa de entrada",
 		"DOWNLOADS_QUEUED_ALREADY_ADDED_ERROR": "Nenhum download adicionado, todos já estão na fila ou em execução",
@@ -1798,7 +1796,6 @@
 		"GO_BACK": "Voltar",
 		"NEW_ACCOUNT": "Nova conta"
 	},
-	"LOG_IN": "Conecte-se",
 	"TOOLTIP_ADD_SELECT_KARA": "Adicione as músicas selecionadas à lista de reprodução - clique com o botão direito para anexá-la após a música que está sendo reproduzida no momento",
 	"MENU": {
 		"REPOSITORIES": "Coleções e repositórios",
@@ -1977,11 +1974,9 @@
 	},
 	"ABOUT": {
 		"DESCRIPTION": "Jogador de karaokê e organizador de festas, entre amigos ou em público.",
-		"CONTRIBUTORS": "Os karaokês foram criados por pessoas incríveis, como <1>{{contributors}}</1> por exemplo.",
 		"DONATORS": "Graças a <1>{{donators}}</1> por suas doações ao Karaokê Mugen"
 	},
 	"MIGRATE": {
-		"CONTINUE": "Continuar.",
 		"TITLE": "Migração"
 	},
 	"JINGLE_TAGLINES": [
@@ -2024,7 +2019,6 @@
 	"FAVORITES_EXPORT": "Exportar favoritos",
 	"AVATAR_IMPORT": "Mudar Avatar",
 	"ACCOUNT": "Minha conta",
-	"SIGN_UP": "Inscrever-se",
 	"PROFILE": "Perfil",
 	"PROFILE_URL": "Local na rede Internet",
 	"TOOLTIP_DELETE_SELECT_KARA": "Excluir músicas selecionadas",

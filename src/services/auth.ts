@@ -2,6 +2,7 @@ import randomstring from 'randomstring';
 
 import { OldTokenResponse, Role, User } from '../lib/types/user.js';
 import { getConfig } from '../lib/utils/config.js';
+import { ErrorKM } from '../lib/utils/error.js';
 import logger from '../lib/utils/logger.js';
 import { emitWS } from '../lib/utils/ws.js';
 import { getState, setState } from '../utils/state.js';
@@ -10,6 +11,34 @@ import { checkPassword, createJwtToken, getUser, updateLastLoginName } from './u
 import { fetchAndUpdateRemoteUser } from './userOnline.js';
 
 const service = 'Auth';
+
+let securityCodeFailures = 0;
+let securityCodeLockedUntil = 0;
+
+/** Check security code with brute force mitigation */
+export function checkSecurityCode(code: number, checkNewAccountCode = false): boolean {
+	const securityCodeMaxFailures = 10;
+	const securityCodeLockDuration = 5 * 60 * 1000; // 5 minutes
+
+	if (Date.now() < securityCodeLockedUntil) {
+		throw new ErrorKM('SECURITY_CODE_LOCKED', 429, false);
+	}
+	const state = getState();
+	if (code === state.securityCode || (checkNewAccountCode && code === state.newAccountCode)) {
+		securityCodeFailures = 0;
+		return true;
+	}
+	securityCodeFailures += 1;
+	if (securityCodeFailures >= securityCodeMaxFailures) {
+		securityCodeFailures = 0;
+		securityCodeLockedUntil = Date.now() + securityCodeLockDuration;
+		logger.warn(
+			`Security code locked for ${securityCodeLockDuration / 60000} minutes after ${securityCodeMaxFailures} wrong attempts`,
+			{ service }
+		);
+	}
+	return false;
+}
 
 /** Check login and authenticates users */
 export async function checkLogin(

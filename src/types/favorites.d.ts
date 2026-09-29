@@ -17,14 +17,15 @@ export interface AutoMixPlaylistInfo {
 	playlist_name: string;
 }
 
-export type PlaylistLimit = 'duration' | 'songs';
+export const playlistLimit = ['duration', 'songs'];
+export type PlaylistLimit = typeof playlistLimit[number];
 
 export interface FavoritesMicro {
 	kid: string;
 }
 
 export interface AutoMixParams {
-	filters?: {
+	filters: {
 		usersFavorites?: string[];
 		usersAnimeList?: string[];
 		years?: number[];

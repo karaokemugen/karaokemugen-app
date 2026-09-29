@@ -1,10 +1,12 @@
 import 'react-image-crop/dist/ReactCrop.css';
 import './CropAvatarModal.scss';
 
+import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import { useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import ReactCrop, { Crop } from 'react-image-crop';
+import ReactCrop, { centerCrop, PixelCrop } from 'react-image-crop';
 
 import { commandBackend, isRemote } from '../../../utils/socket';
 import { WS_CMD } from '../../../utils/ws.mjs';
@@ -17,13 +19,7 @@ interface IProps {
 function CropAvatarModal(props: IProps) {
 	const [imageRef, setImageRef] = useState<HTMLImageElement>();
 	const [imageSource, setImageSource] = useState<string>();
-	const [crop, setCrop] = useState<Crop>({
-		unit: '%' as const,
-		width: 100,
-		height: 100,
-		x: 0,
-		y: 0,
-	});
+	const [crop, setCrop] = useState<PixelCrop>();
 
 	const reader = new FileReader();
 	reader.addEventListener('load', () => setImageSource(reader.result as string));
@@ -61,8 +57,15 @@ function CropAvatarModal(props: IProps) {
 		});
 	};
 
+	const onImageLoad = (image: HTMLImageElement) => {
+		setImageRef(image);
+		const side = Math.min(image.width, image.height);
+		// Initialize crop, otherwise the image won't be cropped until the user edits the borders
+		setCrop(centerCrop({ unit: 'px', width: side, height: side }, image.width, image.height));
+	};
+
 	const saveAvatar = async () => {
-		if (imageRef && crop.width && crop.height) {
+		if (imageRef && crop?.width && crop?.height) {
 			const croppedImageUrl = await getCroppedImg(imageRef, crop);
 			if (croppedImageUrl) {
 				if (isRemote()) {
@@ -108,7 +111,7 @@ function CropAvatarModal(props: IProps) {
 							<img
 								className="crop-avatar"
 								src={imageSource}
-								onLoad={e => setImageRef(e.currentTarget)}
+								onLoad={e => onImageLoad(e.currentTarget)}
 								alt="avatar"
 							/>
 						</ReactCrop>
@@ -116,10 +119,10 @@ function CropAvatarModal(props: IProps) {
 					<div className="modal-footer">
 						<em className="modal-help">{i18next.t('MODAL.CROP_AVATAR_MODAL.HELP')}</em>
 						<button type="button" className="btn btn-action btn-primary other" onClick={closeModal}>
-							<i className="fas fa-times" /> {i18next.t('CANCEL')}
+							<FontAwesomeIcon icon={faTimes} /> {i18next.t('CANCEL')}
 						</button>
 						<button type="button" className="btn btn-action btn-default ok" onClick={saveAvatar}>
-							<i className="fas fa-check" /> {i18next.t('SUBMIT')}
+							<FontAwesomeIcon icon={faCheck} /> {i18next.t('SUBMIT')}
 						</button>
 					</div>
 				</div>

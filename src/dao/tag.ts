@@ -21,7 +21,9 @@ export async function selectAllTags(params: TagParams): Promise<DBTag[]> {
 	const filterClauses: WhereClause = params.filter
 		? buildTagClauses(params.filter)
 		: { sql: [], params: {}, additionalFrom: [] };
-	const typeClauses = params.type ? ` AND t.types && ARRAY[${params.type.join(',')}]` : '';
+	const types = params.type?.map(Number).filter(t => Number.isInteger(t)) ?? [];
+	if (params.type?.length > 0 && types.length !== params.type.length) throw 'Invalid tag type';
+	const typeClauses = types.length > 0 ? ` AND t.types && ARRAY[${types.join(',')}]` : '';
 	let limitClause = '';
 	let offsetClause = '';
 	const orderClause = '';
@@ -30,17 +32,17 @@ export async function selectAllTags(params: TagParams): Promise<DBTag[]> {
 	let whereClause = '';
 	if (params.from > 0) offsetClause = `OFFSET ${params.from} `;
 	if (params.size > 0) limitClause = `LIMIT ${params.size} `;
-	if (params.type && params.stripEmpty) {
+	if (types.length > 0 && params.stripEmpty) {
 		joinClauses = `LEFT   JOIN LATERAL (
 			SELECT elem->>'count' AS karacounttype
 			FROM   jsonb_array_elements(at.karacount::jsonb) a(elem)
-			WHERE  elem->>'type' = '${params.type}'
+			WHERE  elem->>'type' = '${types.join(',')}'
 			) a ON true
 		 `;
 		stripClause = ' AND karacounttype::int2 > 0';
 	}
 	if (params.duplicates) {
-		const duplicateTypeClause = params.type ? ` AND types && ARRAY[${params.type.join(',')}]` : '';
+		const duplicateTypeClause = types.length > 0 ? ` AND types && ARRAY[${types.join(',')}]` : '';
 		whereClause = ` AND t.name IN (SELECT name FROM tag WHERE true ${duplicateTypeClause} GROUP BY name HAVING COUNT(name) > 1)`;
 	}
 	if (params.tid) {

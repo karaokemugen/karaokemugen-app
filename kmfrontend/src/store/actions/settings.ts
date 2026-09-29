@@ -22,7 +22,7 @@ import 'dayjs/locale/ta';
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { WS_CMD } from '../../utils/ws';
+import { WS_CMD } from '../../utils/ws.mjs';
 
 export async function setSettings(
 	dispatch: Dispatch<SettingsSuccess | SettingsFailure>,
@@ -39,9 +39,7 @@ export async function setSettings(
 		dayjs.extend(relativeTime);
 		if (!withoutProfile) {
 			try {
-				if (!res.config.System) {
-					res.config.System = { Repositories: await commandBackend(WS_CMD.GET_REPOS) } as Config['System'];
-				}
+				res.config.System = { Repositories: await commandBackend(WS_CMD.GET_REPOS) } as Config['System'];
 				const user: User = await commandBackend(WS_CMD.GET_MY_ACCOUNT);
 				const favorites = await commandBackend(WS_CMD.GET_FAVORITES_MICRO);
 				const favoritesSet = new Set<string>();
@@ -78,7 +76,13 @@ export async function setSettings(
 			dayjs.locale(langSupport);
 			dispatch({
 				type: Settings.SETTINGS_SUCCESS,
-				payload: { state: res.state, config: res.config, user: {}, favorites: new Set(), version: res.version },
+				payload: {
+					state: res.state,
+					config: res.config,
+					user: {} as User,
+					favorites: new Set(),
+					version: res.version,
+				},
 			});
 		}
 	} catch (error: any) {

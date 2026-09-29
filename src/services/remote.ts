@@ -11,6 +11,17 @@ import { getState, setState } from '../utils/state.js';
 const service = 'Remote';
 
 let errCount = 0;
+let retryReconnectTimer: ReturnType<typeof setTimeout> = null;
+let isRestarting = false;
+
+function setRemoteError(err: any) {
+	setState({ remoteAccess: { err: true, reason: err?.message?.code || err?.reason || err?.message || 'UNKNOWN' } });
+}
+
+function setRemoteSuccess(data: RemoteSuccess) {
+	setState({ remoteAccess: null }); // Set to null to prevent the object being merged by setState
+	setState({ remoteAccess: data });
+}
 
 async function startRemote(): Promise<RemoteSuccess> {
 	try {
@@ -18,13 +29,17 @@ async function startRemote(): Promise<RemoteSuccess> {
 		if (!remoteToken) {
 			remoteToken = '';
 		}
-		const result = await commandKMServer<RemoteSettings>('remote start', {
-			body: {
-				InstanceID: getConfig().App.InstanceID,
-				version: getState().version.number,
-				token: remoteToken,
+		const result = await commandKMServer<RemoteSettings>(
+			'remote start',
+			{
+				body: {
+					InstanceID: getConfig().App.InstanceID,
+					version: getState().version.number,
+					token: remoteToken,
+				},
 			},
-		});
+			15_000
+		);
 		if (result.err && result.reason === 'INVALID_TOKEN') {
 			// Ask for a new token by deleting the invalid one
 			setConfig({ Online: { RemoteAccess: { Token: null } } });
@@ -33,7 +48,7 @@ async function startRemote(): Promise<RemoteSuccess> {
 		if (result.err) {
 			throw new Error(`Server refused to start remote: ${result.reason}`);
 		} else {
-			setConfig({ Online: { RemoteAccess: { Token: result.token } } });
+			if (result.token !== remoteToken) setConfig({ Online: { RemoteAccess: { Token: result.token } } });
 			errCount = 0;
 			return result;
 		}
@@ -58,6 +73,7 @@ async function startRemote(): Promise<RemoteSuccess> {
 }
 
 function removeRemote() {
+	clearTimeout(retryReconnectTimer);
 	setState({ remoteAccess: null });
 	configureHost();
 }
@@ -69,14 +85,30 @@ async function stopRemote() {
 
 async function restartRemote() {
 	if (!getConfig().Online.RemoteAccess.Enabled) return;
+	if (isRestarting) return;
+	if (!getKMServerSocket()?.connected) return;
+	isRestarting = true;
 	try {
 		logger.debug('Reconnection...', { service });
 		const data = await startRemote();
+		if (!getConfig().Online.RemoteAccess.Enabled) {
+			stopRemote().catch(err => logger.warn('Cannot stop remote', { service, obj: err }));
+			return;
+		}
+		clearTimeout(retryReconnectTimer);
+		// Strip token to avoid leaks
+		delete data.token;
 		logger.info('Remote was RESTARTED', { service, obj: data });
-		setState({ remoteAccess: data });
+		setRemoteSuccess(data);
 		configureHost();
 	} catch (e) {
 		logger.warn('Remote is UNAVAILABLE', { service, obj: e });
+		setRemoteError(e);
+		clearTimeout(retryReconnectTimer);
+		// Retry in 10 seconds
+		retryReconnectTimer = setTimeout(restartRemote, 10_000).unref();
+	} finally {
+		isRestarting = false;
 	}
 }
 
@@ -88,39 +120,47 @@ async function proxy(ev: string, data: APIDataProxied, ack: (res) => void) {
 
 async function broadcastForward(body) {
 	if (errCount === -1) return;
+	if (!getKMServerSocket()?.connected) return;
 	commandKMServer('remote broadcast', {
 		body,
 	})
-		.then(() => {
+		.then(registered => {
+			if (registered === false) {
+				if (errCount !== -1) {
+					logger.warn('Server lost our remote registration, restart remote', { service });
+					errCount = -1;
+					restartRemote();
+				}
+				return;
+			}
 			errCount = 0;
 		})
 		.catch(err => {
 			logger.warn('Failed to remote broadcast', { service, obj: err });
 			if (errCount !== -1) errCount += 1;
 			if (errCount >= 5) {
-				logger.warn('The remote broadcast failed 5 times in a row, restart remote');
+				logger.warn('The remote broadcast failed 5 times in a row, restart remote', {service});
 				errCount = -1;
-				getKMServerSocket().disconnect();
-				setTimeout(() => {
-					getKMServerSocket().connect();
-				}, 2500).unref();
+				restartRemote();
 			}
 		});
 }
 
 export async function destroyRemote() {
-	try {
-		await stopRemote();
-	} catch (err) {
-		logger.error('Cannot stop remote', { service });
-	}
-	// Remove all subscriptions
+	// Remove all subscriptions before stopping remote
 	if (getKMServerSocket()) {
 		getKMServerSocket().offAny(proxy);
 		getKMServerSocket().off('connect', restartRemote);
 		getKMServerSocket().off('disconnect', removeRemote);
 	}
 	getWS().off('broadcast', broadcastForward);
+	clearTimeout(retryReconnectTimer);
+	errCount = 0;
+	try {
+		await stopRemote();
+	} catch (err) {
+		logger.error('Cannot stop remote', { service, obj: err });
+	}
 	logger.info('Remote is STOPPED', { service });
 	setState({ remoteAccess: null });
 	configureHost();
@@ -129,21 +169,31 @@ export async function destroyRemote() {
 export async function initRemote() {
 	try {
 		profile('initRemote');
-		const data = await startRemote();
 		getKMServerSocket().onAny(proxy);
 		// This will be triggered on reconnection, as the first connect is handled by initKMServerCommunication
 		getKMServerSocket().on('connect', restartRemote);
 		getKMServerSocket().on('disconnect', removeRemote);
 		getWS().on('broadcast', broadcastForward);
+		if (!getKMServerSocket().connected) {
+			// The onConnect listener above will restart the remote automatically on connection
+			setRemoteError(new Error('KMServer socket is not connected'));
+			return;
+		}
+		const data = await startRemote();
+		if (!getConfig().Online.RemoteAccess.Enabled) {
+			stopRemote().catch(err => logger.warn('Cannot stop remote', { service, obj: err }));
+			return;
+		}
 		// Strip token from public output to avoid leaks
 		delete data.token;
 		logger.info('Remote is READY', { service, obj: data });
-		setState({ remoteAccess: data });
+		setRemoteSuccess(data);
 		configureHost();
 	} catch (err) {
-		if (err?.message?.code) {
-			setState({ remoteAccess: { err: true, reason: err.message.code } });
-		}
+		setRemoteError(err);		
+		clearTimeout(retryReconnectTimer);
+		// Retry in 10 seconds
+		retryReconnectTimer = setTimeout(restartRemote, 10_000).unref();
 	} finally {
 		profile('initRemote');
 	}

@@ -1,4 +1,9 @@
 {
+	"ACTIONS": {
+		"CONFIRM": "Подтвердить",
+		"LOG_IN": "Войти в систему",
+		"SIGN_UP": "Зарегистрироваться"
+	},
 	"SELECT_PLACEHOLDER": "Выбрать плейлист",
 	"VERSION": "Версия",
 	"YES": "Да",
@@ -30,7 +35,6 @@
 	},
 	"SEARCH": "Поиск",
 	"SUBMIT": "Сохранить",
-	"CONFIRM": "Подтвердить",
 	"CANCEL": "Отменить",
 	"WARNING": "Внимание!",
 	"SHOW-HIDE": "Показать/Скрыть",
@@ -274,8 +278,6 @@
 		"ONLINE_ACCOUNT": "Онлайн аккаунт?"
 	},
 	"USERNAME": "Имя пользователя",
-	"LOG_IN": "Войти в систему",
-	"SIGN_UP": "Зарегистрироваться",
 	"PROFILE": "Профиль",
 	"PROFILE_USERNAME": "Ник",
 	"PROFILE_MAIL": "Электронная почта",
@@ -718,7 +720,9 @@
 	"REMOTE_TOKEN": "Ключ удаленного доступа",
 	"SETUP_PAGE": {
 		"TITLE": "Мастер установки",
-		"WELCOME": "Добро пожаловать в Karaoke Mugen!"
+		"USER": {
+			"WELCOME": "Добро пожаловать в Karaoke Mugen!"
+		}
 	},
 	"ADD": "Добавить",
 	"SEARCH_FILTER": "Фильтр поиска",

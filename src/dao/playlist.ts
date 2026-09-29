@@ -274,12 +274,11 @@ export async function selectPlaylistContents(params: PLCParams): Promise<DBPLC[]
 	return res.rows.map(row => organizeTagsInKara(row));
 }
 
-export async function selectPlaylistContentsMicro(id: string, login?: string): Promise<DBPLCBase[]> {
+export async function selectPlaylistContentsMicro(id: string, ): Promise<DBPLCBase[]> {
 	try {
 		profile('selectPlaylistContentsMicro');
 		const params = [id];
-		if (login) params.push(login);
-		const res = await db().query(sqlgetPlaylistContentsMicro(login), params);
+		const res = await db().query(sqlgetPlaylistContentsMicro(), params);
 		return res.rows;
 	} catch (err) {
 		throw err;
@@ -464,7 +463,7 @@ export async function insertKaraIntoPlaylist(karaList: PLCInsert[]): Promise<DBP
 		kara.added_at || new Date(),
 		kara.pos,
 		kara.flag_free || false,
-		kara.flag_visible || true,
+		kara.flag_visible ?? true,
 		kara.flag_refused || false,
 		kara.flag_accepted || false,
 		kara.criterias,

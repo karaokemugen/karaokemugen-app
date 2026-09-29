@@ -7,13 +7,13 @@ import { audioFileRegexp, backgroundFileRegexp, supportedFiles } from '../lib/ut
 import { replaceExt } from '../lib/utils/files.js';
 import logger from '../lib/utils/logger.js';
 import { BackgroundList, BackgroundType } from '../types/backgrounds.js';
+import { UploadedFile } from '../types/files.js';
 import Sentry from '../utils/sentry.js';
 import { getState } from '../utils/state.js';
 import { initPlayer, quitmpv } from './player.js';
+import { playerBackgroundTypes } from '../utils/constants.js';
 
 const service = 'Backgrounds';
-
-export const backgroundTypes = ['pause', 'stop', 'poll', 'bundled'] as const;
 
 /** Find a background for the player to use */
 export async function getBackgroundAndMusic(type: BackgroundType = 'stop'): Promise<BackgroundList> {
@@ -61,18 +61,22 @@ export async function getBackgroundFiles(type: BackgroundType = 'pause'): Promis
 }
 
 export async function removeBackgroundFile(type: BackgroundType, file: string) {
+	if (!playerBackgroundTypes.includes(type) || type === 'bundled') throw { code: 400 };
+	const fileName = basename(file);
+	if (!backgroundFileRegexp.test(fileName) && !audioFileRegexp.test(fileName)) throw { code: 400 };
+	const resolvedBackgroundFile = resolve(resolvedPath('Backgrounds'), type, fileName);
 	let restartMpv = false;
-	if (!backgroundTypes.includes(type)) throw { code: 400 };
-	if (getState().backgrounds.picture === file || getState().backgrounds.music === file) {
+	const currentBackgrounds = getState().backgrounds;
+	if (currentBackgrounds?.picture === resolvedBackgroundFile || currentBackgrounds?.music === resolvedBackgroundFile) {
 		restartMpv = true;
 		await quitmpv();
 	}
-	await fs.unlink(resolve(resolvedPath('Backgrounds'), type, file));
+	await fs.unlink(resolvedBackgroundFile);
 	if (restartMpv) initPlayer().catch();
 }
 
-export async function addBackgroundFile(type: BackgroundType, file: Express.Multer.File) {
-	if (!backgroundTypes.includes(type)) throw { code: 400 };
+export async function addBackgroundFile(type: BackgroundType, file: UploadedFile) {
+	if (!playerBackgroundTypes.includes(type)) throw { code: 400 };
 	await fs.copyFile(
 		resolve(resolvedPath('Temp'), basename(file.filename)),
 		resolve(resolvedPath('Backgrounds'), type, basename(file.originalname))

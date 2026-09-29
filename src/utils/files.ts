@@ -1,12 +1,13 @@
 import { promises as fs } from 'fs';
-import { isAbsolute, relative, resolve } from 'path';
+import { basename, isAbsolute, relative, resolve } from 'path';
 import { blockDevices, fsSize } from 'systeminformation';
 import { promisify } from 'util';
 import zlib from 'zlib';
 
+import { resolvedPath } from '../lib/utils/config.js';
 import { isMediaFile } from '../lib/utils/files.js';
 import logger from '../lib/utils/logger.js';
-import { KMFileType } from '../types/files.js';
+import { KMFileType, UploadedFile } from '../types/files.js';
 import { getState } from './state.js';
 
 const service = 'Files';
@@ -63,4 +64,8 @@ export async function browseFs(dir: string, onlyMedias: boolean) {
 		drives,
 		fullPath,
 	};
+}
+
+export function resolveUploadedFileToTempPath(avatar: UploadedFile): UploadedFile {
+	return { ...avatar, path: resolve(resolvedPath('Temp'), basename(avatar.path)) };
 }

@@ -1,3 +1,4 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import { ReactNode } from 'react';
 
@@ -90,7 +91,8 @@ export function getTagInLocale(
 	}
 	const user = settings?.user;
 	const tagLang =
-		tagTypes[getTagTypeName(('type_in_kara' in tag && tag.type_in_kara) ? tag.type_in_kara : (tag as DBTag).types[0])].language;
+		tagTypes[getTagTypeName('type_in_kara' in tag && tag.type_in_kara ? tag.type_in_kara : (tag as DBTag).types[0])]
+			.language;
 	if (tagLang === 'user' && user?.language) {
 		return getTagInLanguage(tag, getLanguageIn3B(user.language), 'eng', i18nParam);
 	} else if (tagLang === 'song_name' && user?.main_series_lang && user?.fallback_series_lang) {
@@ -349,7 +351,7 @@ export function getPreviewLink(kara: DBKara, context: GlobalContextInterface) {
 }
 
 export function getPreviewPath(options: { contentid: string; mediasize: number }) {
-	return `/previews/${options.contentid}.${options.mediasize}.25.jpg`;
+	return `/previews/${options.contentid}.${options.mediasize}.25.avif`;
 }
 
 export function getPlaylistInfo(side: 'left' | 'right', context: GlobalContextInterface) {
@@ -400,7 +402,12 @@ export function setOppositePlaylistInfo(side: 'left' | 'right', context: GlobalC
 	}
 }
 
-function getInlineTag(e: DBKaraTag, tagType: number, scope: 'admin' | 'public', i18nParam?: Record<string, string>) {
+function getInlineTag(
+	e: DBKaraTag,
+	tagType: number,
+	scope: 'admin' | 'public',
+	i18nParam?: Record<string, Record<string, string>>
+) {
 	return (
 		<InlineTag
 			key={e.tid}
@@ -418,7 +425,7 @@ export function computeTagsElements(
 	scope: Scope,
 	settings: SettingsStoreData,
 	versions = true,
-	i18nParam?: Record<string, string>
+	i18nParam?: Record<string, Record<string, string>>
 ) {
 	// Tags in the header
 	const karaTags: ReactNode[] = [];
@@ -486,7 +493,7 @@ export function computeTagsElements(
 		if (kara[tagData.karajson]?.length > 0) {
 			karaBlockTags.push(
 				<div className={`detailsKaraLine colored ${tagData.color}`} key={tagData.karajson}>
-					<i className={`fas fa-${tagData.icon}`} />
+					<FontAwesomeIcon icon={tagData.icon} />
 					<div>
 						{i18next.t(`KARA.${type}_BY`)}
 						<span key={`${type}${key}`} className="detailsKaraLineContent">

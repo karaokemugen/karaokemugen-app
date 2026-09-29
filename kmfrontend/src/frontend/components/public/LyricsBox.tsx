@@ -1,5 +1,7 @@
 import './LyricsBox.scss';
 
+import { faArrowDown, faArrowUp } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import { useEffect, useState } from 'react';
 
@@ -95,7 +97,7 @@ function LyricsBox(props: IProps) {
 				tabIndex={0}
 			>
 				{LyricsBox.i18nText(showLyrics)}
-				<i className={showLyrics > 1 ? 'fa fa-arrow-up' : 'fa fa-arrow-down'} />
+				<FontAwesomeIcon icon={showLyrics > 1 ? faArrowUp : faArrowDown} />
 			</div>
 			{showLyrics > 0 ? (
 				lyrics.length > 0 ? (

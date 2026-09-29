@@ -98,7 +98,7 @@ export function ChangeStatusInboxModal(props: ChangeStatusInboxModalProps) {
 				status: i18next.t(`INBOX.STATUS.${props.status?.toUpperCase()}`),
 			})}
 			cancelText={i18next.t('CANCEL')}
-			okText={i18next.t('CONFIRM')}
+			okText={i18next.t('ACTIONS.CONFIRM')}
 			confirmLoading={loading}
 			onCancel={handleCancel}
 			onOk={() => {
