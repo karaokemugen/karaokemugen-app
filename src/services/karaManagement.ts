@@ -1,8 +1,9 @@
+import { spawn } from 'child_process';
 import { shell } from 'electron';
 import { promises as fs } from 'fs';
 import { copy, ensureDir } from 'fs-extra';
 import i18next from 'i18next';
-import { basename, extname, resolve } from 'path';
+import { basename, dirname, extname, resolve } from 'path';
 
 import { getStoreChecksum, removeKaraInStore } from '../dao/dataStore.js';
 import { deleteKara, insertKara, selectAllKaras, updateKaraParents } from '../dao/kara.js';
@@ -19,7 +20,7 @@ import { refreshKarasAfterDBChange, updateTags } from '../lib/services/karaManag
 import { getRepoManifest } from '../lib/services/repo.js';
 import { DBKara, DBKaraTag } from '../lib/types/database/kara.js';
 import { DBTag } from '../lib/types/database/tag.js';
-import { BatchActions, KaraFileV4, KaraTag } from '../lib/types/kara.js';
+import { FixAspectRatioBackgroundMode, KaraFileV4, KaraTag } from '../lib/types/kara.js';
 import { TagTypeNum } from '../lib/types/tag.js';
 import { ASSFileSetMediaFile } from '../lib/utils/ass.js';
 import { resolvedPath, resolvedPathRepos } from '../lib/utils/config.js';
@@ -28,7 +29,7 @@ import { ErrorKM } from '../lib/utils/error.js';
 import { embedCoverImage } from '../lib/utils/ffmpeg.js';
 import { fileExists, resolveFileInDirs } from '../lib/utils/files.js';
 import logger, { profile } from '../lib/utils/logger.js';
-import { encodeMediaToRepoDefault, FixAspectRatioBackgroundMode } from '../lib/utils/mediaInfoValidation.js';
+import { encodeMediaToRepoDefault } from '../lib/utils/mediaInfoValidation.js';
 import { createImagePreviews } from '../lib/utils/previews.js';
 import Task from '../lib/utils/taskManager.js';
 import { emitWS } from '../lib/utils/ws.js';
@@ -41,6 +42,7 @@ import { editKara } from './karaCreation.js';
 import { getRepo, getRepos } from './repo.js';
 import { updateAllSmartPlaylists } from './smartPlaylist.js';
 import { getKarasUsingTag, getTag, removeTag } from './tag.js';
+import { BatchActions } from '../types/kara.js';
 
 const service = 'KaraManager';
 
@@ -144,10 +146,11 @@ export async function removeKara(
 					tagsToDelete.add(tid.split('~')[0]);
 				}
 			}
-			// For each tag we'll have to find out their ocunt. if >1 we remove them from tagsToDelete since they're likely used by another song
+			// For each tag we'll have to find out their count. 
+			// if >1 (deleted kara is deleted and does not count anymore) we remove them from tagsToDelete since they're likely used by another song
 			for (const tid of tagsToDelete.values()) {
 				const karasUsingTag = await getKarasUsingTag(tid);
-				if (karasUsingTag.length > 1) tagsToDelete.delete(tid);
+				if (karasUsingTag.length > 0) tagsToDelete.delete(tid);
 			}
 			if (tagsToDelete.size > 0) {
 				await removeTag(Array.from(tagsToDelete), {
@@ -197,7 +200,7 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 		const mediaDestDir = resolvedPathRepos('Medias', repoName)[0];
 		await ensureDir(mediaDestDir);
 		tasks.push(copy(mediaFiles[0], resolve(mediaDestDir, kara.mediafile), { overwrite: true }));
-		if (kara.lyrics_infos[0].filename) {
+		if (kara.lyrics_infos[0]?.filename) {
 			const lyricsFiles = await resolveFileInDirs(
 				kara.lyrics_infos[0].filename,
 				resolvedPathRepos('Lyrics', oldRepoName)
@@ -228,6 +231,15 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 		throw err instanceof ErrorKM ? err : new ErrorKM('SONG_COPIED_ERROR');
 	}
 }
+
+export const batchActions = [
+	'addTag',
+	'removeTag',
+	'fromDisplayType',
+	'addParent',
+	'removeParent',
+	'copyToRepo'
+];
 
 export async function batchEditKaras(plaid: string, action: BatchActions, id: string, type: TagTypeNum) {
 	// Checks
@@ -429,8 +441,6 @@ export async function deleteMediaFiles(files: string[], repo: string) {
 }
 
 export async function embedAudioFileCoverArt(coverFilename: string, source: { kid?: string; tempFileName?: string }) {
-	if (!source.kid && !source.tempFileName)
-		throw new ErrorKM('Neither kid nor mediaFilename has been received but atleast one needs to be set', 400);
 	const kara = source.kid && (await getKara(source.kid, adminToken));
 	const mediaFilePaths =
 		(source.tempFileName && [resolve(resolvedPath('Temp'), basename(source.tempFileName))]) ||
@@ -494,6 +504,28 @@ export async function encodeMediaFileToRepoDefaults(
 	}
 }
 
+async function openFileWithDefaultApp(path: string) {
+	// Workaround for an aegisub bug that prevents it to be launched in wayland; Force x11
+	if (process.platform === 'linux' && process.env.WAYLAND_DISPLAY && process.env.DISPLAY) {
+		const child = spawn('xdg-open', [path], {
+			cwd: dirname(path),
+			env: { ...process.env, GDK_BACKEND: 'x11' },
+			detached: true,
+			stdio: 'ignore',
+		});
+		await new Promise<void>((ok, fail) => {
+			child.once('spawn', () => ok());
+			child.once('error', fail);
+		});
+		child.unref();
+		return;
+	}
+
+	// Default open
+	const err = await shell.openPath(path);
+	if (err) throw new Error(err);
+}
+
 export async function openLyricsFile(kid: string) {
 	try {
 		const { lyrics_infos, repository, mediafile } = await getKara(kid, adminToken);
@@ -507,9 +539,9 @@ export async function openLyricsFile(kid: string) {
 				}
 			}
 		}
-		await shell.openPath(lyricsPath);
+		await openFileWithDefaultApp(lyricsPath);
 	} catch (err) {
-		logger.error('Failed to open lyrics file', { service });
+		logger.error(`Failed to open lyrics file: ${err}`, { service, obj: err });
 		sentry.error(err);
 		throw err instanceof ErrorKM ? err : new ErrorKM('LYRICS_FILE_OPEN_ERROR', 500, false);
 	}

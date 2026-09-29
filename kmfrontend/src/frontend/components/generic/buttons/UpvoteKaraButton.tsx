@@ -1,3 +1,5 @@
+import { faThumbsUp } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 
 import { DBKara } from '../../../../../../src/lib/types/database/kara';
@@ -27,7 +29,7 @@ export default function UpvoteKaraButton(props: Props) {
 			onClick={upvoteKara}
 			disabled={props.kara.my_public_plc_id?.length > 0}
 		>
-			<i className={`fas fa-thumbs-up ${props.kara?.flag_upvoted ? 'currentUpvote' : ''}`} />
+			<FontAwesomeIcon icon={faThumbsUp} className={props.kara?.flag_upvoted ? 'currentUpvote' : ''} />
 			{props.wide ? i18next.t('TOOLTIP_UPVOTE') : ''}
 		</button>
 	);

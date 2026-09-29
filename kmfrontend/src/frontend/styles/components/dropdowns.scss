@@ -21,8 +21,8 @@
 	text-decoration: none;
 }
 
-.dropdown-menu > li > a i,
-.dropdown-menu > li > div:not(.radiobutton-ui) i {
+.dropdown-menu > li > a .svg-inline--fa,
+.dropdown-menu > li > div:not(.radiobutton-ui) .svg-inline--fa {
 	margin-right: 0.5em;
 }
 .dropdown-menu > li:hover > a,

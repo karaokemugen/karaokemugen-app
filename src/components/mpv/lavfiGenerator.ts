@@ -6,6 +6,9 @@ import { getAvatarResolution } from '../../lib/utils/ffmpeg.js';
 import { CurrentSong } from '../../types/playlist.js';
 import { requiredMPVFFmpegMasterVersion, requiredMPVFFmpegVersion } from '../../utils/constants.js';
 import { playerState } from './mpv.js';
+import logger from '../../lib/utils/logger.js';
+
+const service = "lavfiGenerator";
 
 export class lavfiGenerator {
 	// Define lavfi-complex commands when we need to display stuff on screen or adjust audio volume. And it's... complex.
@@ -31,7 +34,13 @@ export class lavfiGenerator {
 			const needThirdSplit = shouldDisplayAvatar && shouldDisplayQRcode;
 
 			if (shouldDisplayAvatar) {
-				avatar = this.genLavfiAvatar(song.avatar, song.duration, cropRatio, needThirdSplit);
+				avatar = this.genLavfiAvatar(
+					song.avatar,
+					song.duration,
+					cropRatio,
+					needThirdSplit,
+					getConfig().Player.Display.SongInfoPermanent
+				);
 			}
 
 			if (shouldDisplayQRcode) {
@@ -55,7 +64,9 @@ export class lavfiGenerator {
 			const [input_i, input_tp, input_lra, input_thresh, target_offset] = song.loudnorm.split(',');
 			audio = `[aid1]loudnorm=measured_i=${input_i}:measured_tp=${input_tp}:measured_lra=${input_lra}:measured_thresh=${input_thresh}:linear=true:offset=${target_offset}:lra=15:i=-15[ao]`;
 		} else {
-			audio = '';
+			// Karas without loudnorm will make MPV disappear if no fallback is defined
+			audio = '[aid1]loudnorm[ao]';
+			logger.warn(`Song has no loudnorm: ${song.kid}`, { service });
 		}
 		return audio;
 	}
@@ -64,13 +75,19 @@ export class lavfiGenerator {
 		songAvatar: string,
 		songDuration: number,
 		cropRatio: number,
-		needThirdSplit: boolean
+		needThirdSplit: boolean,
+		permanent = false
 	): string {
 		// Checking if ffmpeg's version in mpv is either a semver or a version revision and if it's better or not than the required versions we have.
 		// This is a fix for people using mpvs with ffmpeg < 7.1 or a certain commit version.
 		const scaleAvailable = this.isScaleAvailable();
 
 		const split = `[vid${playerState.currentVideoTrack}]split=${needThirdSplit ? '3[base][v_in1][v_in2]' : '2[base][v_in1]'}`;
+
+		// Avatar is shown either for the whole song, or only during its first and last 8 seconds
+		const avatarX = permanent
+			? 'W-(W*29/300)'
+			: `if(between(t,0,8)+between(t,${songDuration - 8},${songDuration}),W-(W*29/300),NAN)`;
 
 		// Again, lavfi-complex expert @nah comes to the rescue!
 		return [
@@ -84,7 +101,7 @@ export class lavfiGenerator {
 			scaleAvailable
 				? '[avatar][v_in1]scale=w=(rh*.128):h=(rh*.128)[avatar1]'
 				: `[avatar][vid${playerState.currentVideoTrack}]scale2ref=w=(ih*.128):h=(ih*.128)[avatar1][ovrl]`,
-			`[ovrl][avatar1]overlay=x='if(between(t,0,8)+between(t,${songDuration - 8},${songDuration}),W-(W*29/300),NAN)':y=H-(H*29/200)`,
+			`[ovrl][avatar1]overlay=x='${avatarX}':y=H-(H*29/200)`,
 		]
 			.filter(x => !!x)
 			.join(';');

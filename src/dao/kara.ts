@@ -189,7 +189,11 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 			${collectionsParentJoin}
 			WHERE true
 			${params.blacklist ? ' AND fk_kid_parent NOT IN (SELECT * FROM blacklist) ' : ''}
-			${collectionsParentClauses.length > 0 ? ' AND ' : ''}${collectionsParentClauses.join(' OR ')}
+			${
+				collectionsParentClauses.length > 0
+					? ` AND ((${collectionsParentClauses.join(' OR ')}) OR jsonb_array_length(jsonb_path_query_array(ak2.tags, '$[*] ? (@.type_in_kara == 16)')) = 0)`
+					: ''
+			}
 		)`);
 		whereClauses.push(`(ak.pk_kid IN (
 			SELECT kid FROM parents
@@ -197,10 +201,10 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 			SELECT kid FROM children
 		))`);
 	}
-	if (params.userFavorites) {
+	if (params.favorites) {
 		whereClauses.push('uf.fk_login = :username_favs');
 		joinClauses.push(' LEFT OUTER JOIN favorites AS uf ON uf.fk_login = :username_favs AND uf.fk_kid = ak.pk_kid ');
-		yesqlPayload.params.username_favs = params.userFavorites;
+		yesqlPayload.params.username_favs = params.favorites;
 	}
 	if (params.userAnimeList) {
 		withCTEs.push(
@@ -213,15 +217,29 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	}
 	const collectionClauses = [];
 	if (!params.ignoreCollections) {
-		if (collections)
+		if (collections && Object.keys(collections).length > 0) {
 			for (const collection of Object.keys(collections)) {
 				if (collections[collection] === true)
 					collectionClauses.push(`'${collection}~${tagTypes.collections}' = ANY(ak.tid)`);
 			}
+			const collectionsSql = `((${collectionClauses
+				.map(clause => `(${clause})`)
+				.join(
+					' OR '
+				)}) OR jsonb_array_length(jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 16)')) = 0)
+				`;
+			whereClauses.push(collectionsSql);
+		}
 	}
+
+	// q query
+
+	if (yesqlPayload.sql.length > 0) {
+		const qParams = `(${yesqlPayload.sql.join(` ${params.qType || 'AND'} `)})`
+		whereClauses.push(qParams)
+	}
+	
 	const query = sqlgetAllKaras(
-		yesqlPayload.sql,
-		params.qType || 'AND',
 		whereClauses,
 		groupClauses,
 		orderClauses,
@@ -231,7 +249,6 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		yesqlPayload.additionalFrom,
 		selectRequested,
 		joinClauses,
-		collectionClauses,
 		withCTEs,
 		params.blacklist
 	);
@@ -280,7 +297,7 @@ export async function selectAllKarasMicro(params: KaraParams): Promise<DBKaraBas
 	const collectionClauses = [];
 	if (!params.ignoreCollections) {
 		const collections = getConfig().Karaoke.Collections;
-		if (collections)
+		if (collections && Object.keys(collections).length > 0)
 			for (const collection of Object.keys(collections)) {
 				if (collection) collectionClauses.push(`'${collection}~${tagTypes.collections}' = ANY(ak.tid)`);
 			}

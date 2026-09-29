@@ -104,7 +104,8 @@ function ProgressBar() {
 		const element = refBar.current;
 		if (element && data.timeposition !== undefined) {
 			if (length !== 0) {
-				const newWidth = (element.offsetWidth * data.timeposition) / length;
+				// Round width so sub-pixel changes do not cause re-rendering
+				const newWidth = Math.round((element.offsetWidth * data.timeposition) / length);
 				setWidth(newWidth);
 				setTimePosition(data.timeposition);
 			}
@@ -157,7 +158,8 @@ function ProgressBar() {
 				setLength(kara.duration);
 
 				if (element && data.timeposition !== undefined && width === 0) {
-					const newWidth = (element.offsetWidth * data.timeposition) / kara.duration;
+					// Round width so sub-pixel changes do not cause re-rendering
+					const newWidth = Math.round((element.offsetWidth * data.timeposition) / kara.duration);
 					setWidth(newWidth);
 					setTimePosition(data.timeposition);
 				}

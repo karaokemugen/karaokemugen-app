@@ -15,6 +15,7 @@
 	width: max-content;
 	max-width: 95vw;
 	max-height: calc(95vh - var(--top, 0));
+	overflow-y: auto;
 	z-index: 10;
 
 	padding: 1em;
@@ -40,7 +41,8 @@ details.rules {
 	}
 	ul > li {
 		margin-left: 0.75ch;
-		i {
+		i,
+		.svg-inline--fa {
 			padding: 0 1ch;
 		}
 	}

@@ -1,27 +1,39 @@
+import {
+	faExternalLinkAlt,
+	faTimes,
+	faVolumeDown,
+	faVolumeMute,
+	faVolumeOff,
+	faVolumeUp,
+	faWindowRestore,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
-import { merge } from 'lodash';
+import merge from 'lodash/merge';
 import { useContext, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
+import { DBPL } from '../../../../src/types/database/playlist';
 import { PublicPlayerState } from '../../../../src/types/state';
+import { isOnlyTimepositionPlayerStateUpdate } from '../../utils/state';
 import nanamiSingPng from '../../assets/nanami-sing.png';
 import nanamiSingWebp from '../../assets/nanami-sing.webp';
 import { login } from '../../store/actions/auth';
 import GlobalContext from '../../store/context';
 import { sendIPC } from '../../utils/electron';
 import { commandBackend, getSocket } from '../../utils/socket';
+import { WS_CMD } from '../../utils/ws.mjs';
 import KmAppHeaderDecorator from './decorators/KmAppHeaderDecorator';
 import KmAppWrapperDecorator from './decorators/KmAppWrapperDecorator';
 import ProgressBar from './karas/ProgressBar';
 import PlayerControls from './PlayerControls';
-import { WS_CMD } from '../../utils/ws.mjs';
 
 function ChibiPage() {
 	const context = useContext(GlobalContext);
 	const [searchParams] = useSearchParams();
 
 	const [statusPlayer, setStatusPlayer] = useState<PublicPlayerState>();
-	const [playlistList, setPlaylistList] = useState<PlaylistElem[]>([]);
+	const [playlistList, setPlaylistList] = useState<DBPL[]>([]);
 
 	const getPlaylistList = async () => {
 		const res = await commandBackend(WS_CMD.GET_PLAYLISTS);
@@ -29,15 +41,13 @@ function ChibiPage() {
 	};
 
 	const playerUpdate = (data: PublicPlayerState) => {
+		if (isOnlyTimepositionPlayerStateUpdate(data)) return;
 		let val = data.volume;
 		const base = 100;
 		const pow = 0.76;
 		val = val / base;
 		if (!isNaN(val)) data.volume = base * Math.pow(val, 1 / pow);
-		setStatusPlayer(oldState => {
-			const state = { ...oldState };
-			return merge(state, data);
-		});
+		setStatusPlayer(oldState => merge({}, oldState, data));
 	};
 
 	const putPlayerCommando = (event: any) => {
@@ -117,7 +127,7 @@ function ChibiPage() {
 						data-namecommand="focusMainWindow"
 						onClick={electronCmd}
 					>
-						<i className="fas fa-external-link-alt" />
+						<FontAwesomeIcon icon={faExternalLinkAlt} />
 					</button>
 					<button
 						className={`btn${
@@ -127,7 +137,7 @@ function ChibiPage() {
 						data-namecommand="setChibiPlayerAlwaysOnTop"
 						onClick={electronCmd}
 					>
-						<i className="fas fa-window-restore" />
+						<FontAwesomeIcon icon={faWindowRestore} />
 					</button>
 					<button
 						className="btn btn-danger"
@@ -135,7 +145,7 @@ function ChibiPage() {
 						data-namecommand="closeChibiPlayer"
 						onClick={electronCmd}
 					>
-						<i className="fas fa-times" />
+						<FontAwesomeIcon icon={faTimes} />
 					</button>
 				</div>
 				<KmAppHeaderDecorator mode="admin">
@@ -154,13 +164,13 @@ function ChibiPage() {
 							onClick={putPlayerCommando}
 						>
 							{statusPlayer?.volume === 0 || statusPlayer?.mute ? (
-								<i className="fas fa-volume-mute" />
+								<FontAwesomeIcon icon={faVolumeMute} />
 							) : statusPlayer?.volume > 66 ? (
-								<i className="fas fa-volume-up" />
+								<FontAwesomeIcon icon={faVolumeUp} />
 							) : statusPlayer?.volume > 33 ? (
-								<i className="fas fa-volume-down" />
+								<FontAwesomeIcon icon={faVolumeDown} />
 							) : (
-								<i className="fas fa-volume-off" />
+								<FontAwesomeIcon icon={faVolumeOff} />
 							)}
 						</button>
 						{statusPlayer ? (

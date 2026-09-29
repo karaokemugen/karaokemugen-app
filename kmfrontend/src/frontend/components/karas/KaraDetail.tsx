@@ -1,10 +1,23 @@
 import './KaraDetail.scss';
 
+import {
+	faArrowLeft,
+	faBan,
+	faCheck,
+	faClock,
+	faClosedCaptioning,
+	faEdit,
+	faFileDownload,
+	faThumbsUp,
+	faTimes,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import { Fragment, MouseEvent, ReactNode, useContext, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams } from 'react-router-dom';
 
+import dayjs from 'dayjs';
 import { ASSLine } from '../../../../../src/lib/types/ass';
 import { DBKara, lastplayed_ago } from '../../../../../src/lib/types/database/kara';
 import { DBPLCInfo } from '../../../../../src/types/database/playlist';
@@ -24,15 +37,13 @@ import {
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { YEARS } from '../../../utils/tagTypes';
 import { is_touch_device, secondsTimeSpanToHMS } from '../../../utils/tools';
+import { WS_CMD } from '../../../utils/ws.mjs';
 import AddKaraButton from '../generic/buttons/AddKaraButton';
 import MakeFavButton from '../generic/buttons/MakeFavButton';
 import ShowVideoButton from '../generic/buttons/ShowVideoButton';
 import UpvoteKaraButton from '../generic/buttons/UpvoteKaraButton';
 import VideoPreview from '../generic/VideoPreview';
 import InlineTag from './InlineTag';
-import dayjs from 'dayjs';
-import { WS_CMD } from '../../../utils/ws.mjs';
-import { WSCmdDefinition } from '../../../../../src/lib/types/frontend';
 
 interface IProps {
 	kid?: string;
@@ -50,7 +61,7 @@ interface IProps {
 
 export default function KaraDetail(props: IProps) {
 	const context = useContext(GlobalContext);
-	const [kara, setKara] = useState<DBPLCInfo>();
+	const [kara, setKara] = useState<DBKara & Partial<DBPLCInfo>>();
 	const [showVideo, setShowVideo] = useState(false);
 	const [lyrics, setLyrics] = useState<ASSLine[]>([]);
 	const [pending, setPending] = useState(false);
@@ -85,16 +96,9 @@ export default function KaraDetail(props: IProps) {
 
 	const getKaraDetail = async (kid?: string) => {
 		try {
-			let url: WSCmdDefinition<object, DBKara>;
-			let data: { plc_id?: number; kid?: string };
-			if (plc_id) {
-				url = WS_CMD.GET_PLC;
-				data = { plc_id: plc_id };
-			} else {
-				url = WS_CMD.GET_KARA;
-				data = { kid: kid ? kid : id };
-			}
-			const karaGet = await commandBackend(url, data);
+			const karaGet = plc_id
+				? await commandBackend(WS_CMD.GET_PLC, { plc_id })
+				: await commandBackend(WS_CMD.GET_KARA, { kid: kid ? kid : id });
 			setKara(karaGet);
 		} catch (_) {
 			closeModalWithContext();
@@ -246,14 +250,14 @@ export default function KaraDetail(props: IProps) {
 				{props.criteriaLabel ? (
 					<div className="detailsKaraLine">
 						<span>
-							<i className="fas fa-ban" />
+							<FontAwesomeIcon icon={faBan} />
 							{props.criteriaLabel}
 						</span>
 					</div>
 				) : null}
 				<div className="detailsKaraLine timeData">
 					<span>
-						<i className="fas fa-clock" />
+						<FontAwesomeIcon icon={faClock} />
 						{secondsTimeSpanToHMS(kara.duration, 'mm:ss')}
 					</span>
 					<span>
@@ -270,7 +274,7 @@ export default function KaraDetail(props: IProps) {
 				{kara.upvotes && isAdmin ? (
 					<div className="detailsKaraLine">
 						<span title={i18next.t('KARA_DETAIL.UPVOTE_NUMBER')}>
-							<i className="fas fa-thumbs-up" />
+							<FontAwesomeIcon icon={faThumbsUp} />
 							{kara.upvotes}
 						</span>
 					</div>
@@ -318,7 +322,7 @@ export default function KaraDetail(props: IProps) {
 				{karaBlockTags}
 				<div className="detailsKaraLine">
 					<span className="boldDetails">
-						<i className={`fas fa-${YEARS.icon}`} />
+						<FontAwesomeIcon icon={YEARS.icon} />
 						{kara.year}
 					</span>
 				</div>
@@ -340,17 +344,17 @@ export default function KaraDetail(props: IProps) {
 		const downloadVideoButton =
 			kara.download_status !== 'MISSING' ? null : (
 				<button type="button" className="btn btn-action" onClick={downloadMedia}>
-					<i className="fas fa-file-download" />
+					<FontAwesomeIcon icon={faFileDownload} />
 					<span>{i18next.t('KARA_DETAIL.DOWNLOAD_MEDIA')}</span>
 				</button>
 			);
 
-		const modifyKaraokeButton = context.globalState.settings.data.config?.System?.Repositories?.filter(
-			value => value.Name === kara.repository
-		)[0].MaintainerMode ? (
+		const modifyKaraokeButton = context.globalState.settings.data.config?.System?.Repositories?.some(
+			value => (value.Name === kara.repository && value.MaintainerMode) || !value.Online
+		) ? (
 			<a href={`/system/karas/${kara.kid}`}>
 				<button type="button" className="btn btn-action">
-					<i className="fas fa-edit" />
+					<FontAwesomeIcon icon={faEdit} />
 					<span>{i18next.t('KARA_DETAIL.MODIFY_KARAOKE')}</span>
 				</button>
 			</a>
@@ -360,7 +364,7 @@ export default function KaraDetail(props: IProps) {
 			<div className="lyricsKara detailsKaraLine">
 				{lyrics?.length > 0 ? (
 					<div className="boldDetails">
-						<i className="fas fa-closed-captioning" />
+						<FontAwesomeIcon icon={faClosedCaptioning} />
 						{i18next.t('KARA_DETAIL.LYRICS')}
 					</div>
 				) : null}
@@ -382,7 +386,7 @@ export default function KaraDetail(props: IProps) {
 				<div className="modal-header-title">
 					{!isAdmin ? (
 						<button className="transparent-btn" type="button" onClick={props.closeOnPublic}>
-							<i className="fas fa-arrow-left" />
+							<FontAwesomeIcon icon={faArrowLeft} />
 						</button>
 					) : null}
 					<div className="modal-title-block">
@@ -403,7 +407,7 @@ export default function KaraDetail(props: IProps) {
 					</div>
 					{isAdmin ? (
 						<button className="transparent-btn" type="button" onClick={closeModalWithContext}>
-							<i className="fas fa-times" />
+							<FontAwesomeIcon icon={faTimes} />
 						</button>
 					) : null}
 				</div>
@@ -411,7 +415,7 @@ export default function KaraDetail(props: IProps) {
 				{props.karoulette ? (
 					<div className="karoulette">
 						<button className="btn btn-action" disabled={pending} onClick={() => karoulette_submit(false)}>
-							<i className="fas fa-times" />
+							<FontAwesomeIcon icon={faTimes} />
 							{i18next.t('KAROULETTE.REFUSE')}
 						</button>
 						<p>
@@ -426,7 +430,7 @@ export default function KaraDetail(props: IProps) {
 							})}
 						</p>
 						<button className="btn btn-action" disabled={pending} onClick={() => karoulette_submit(true)}>
-							<i className="fas fa-check" />
+							<FontAwesomeIcon icon={faCheck} />
 							{i18next.t('KAROULETTE.ACCEPT')}
 						</button>
 					</div>

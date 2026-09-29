@@ -38,7 +38,7 @@ body:not(.touch) {
 			background-color: variables.$mugen-playlist-dejavu-odd;
 		}
 		.contentDiv {
-			i.fas.dejavu-icon {
+			.dejavu-icon {
 				color: color.scale(variables.$mugen-playlist-dejavu-odd, $lightness: 20%, $saturation: 15%);
 				margin-left: unset;
 				margin-right: 0.25em;
@@ -55,10 +55,6 @@ body:not(.touch) {
 			$saturation: -15%,
 			$alpha: -25%
 		);
-		.playKara {
-			background-color: variables.$mugen-playlist-currently-playing;
-			animation: btn-pulse infinite ease-in-out 1s;
-		}
 		.contentDiv {
 			color: inherit;
 		}
@@ -107,6 +103,10 @@ body:not(.touch) {
 		flex-direction: row;
 		flex: 0 0 auto;
 		align-items: center;
+		.btn-group {
+			display: flex;
+			align-items: center;
+		}
 		&.vertical {
 			flex-wrap: wrap;
 			flex-direction: column;
@@ -134,7 +134,7 @@ body:not(.touch) {
 		display: flex;
 		flex-wrap: wrap;
 		flex: 1 1 auto;
-		i.fas.problematic {
+		.problematic {
 			color: gold;
 		}
 	}
@@ -177,7 +177,7 @@ body:not(.touch) {
 			display: flex;
 			font-style: italic;
 			margin-bottom: 0.25em;
-			> i.fas {
+			> .svg-inline--fa {
 				margin-left: 0.375em;
 				line-height: 1.2;
 			}
@@ -204,6 +204,9 @@ body:not(.touch) {
 		display: flex;
 		flex-direction: row;
 		align-items: center;
+		.playKara {
+			margin-right: 0.5em;
+		}
 	}
 	// Overrides, original tagConteneur in styles/components/tags.scss
 	.tagConteneur {
@@ -237,6 +240,10 @@ body:not(.touch) {
 		.checkboxKara {
 			float: left;
 		}
+		.infoDiv .playKara {
+			margin-right: 0;
+			margin-left: 0.5em;
+		}
 	}
 
 	.upvoteKara:disabled {
@@ -268,7 +275,7 @@ body:not(.touch) {
 	text-align: center;
 	font-weight: bold;
 	border-radius: 10%;
-	> i {
+	> .svg-inline--fa {
 		font-size: 88%;
 		margin-right: 0.5em;
 	}
@@ -282,14 +289,3 @@ body:not(.touch) {
 	margin-right: 0.5em;
 }
 
-@keyframes btn-pulse {
-	0% {
-		background-color: color.scale(variables.$mugen-playlist-currently-playing, $lightness: -55%);
-	}
-	50% {
-		background-color: color.scale(variables.$mugen-playlist-currently-playing, $lightness: -65%, $saturation: -5%);
-	}
-	100% {
-		background-color: color.scale(variables.$mugen-playlist-currently-playing, $lightness: -55%);
-	}
-}

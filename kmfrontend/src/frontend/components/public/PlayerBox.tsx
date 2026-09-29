@@ -1,7 +1,9 @@
 import './PlayerBox.scss';
 
+import { faChevronRight, faStar } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
-import { sample } from 'lodash';
+import sample from 'lodash/sample';
 import { ReactNode, RefObject, useContext, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import ResizeObserver from 'resize-observer-polyfill';
@@ -189,13 +191,10 @@ function PlayerBox(props: IProps) {
 			}
 		}
 
-		if (ref.current) {
-			const newWidth = (ref.current.offsetWidth * data.timeposition) / length + 'px';
-
-			if (data.timeposition && length !== 0) {
-				setWidth(newWidth);
-				setTimePosition(data.timeposition);
-			}
+		if (ref.current && data.timeposition && length !== 0) {
+			const newWidth = Math.round((ref.current.offsetWidth * data.timeposition) / length) + 'px';
+			setWidth(newWidth);
+			setTimePosition(data.timeposition);
 		}
 	};
 
@@ -262,7 +261,7 @@ function PlayerBox(props: IProps) {
 					{props.currentVisible ? (
 						<p className="next" tabIndex={0} onKeyDown={() => navigate('/public/playlist/current')}>
 							{i18next.t('PUBLIC_HOMEPAGE.NEXT')}
-							<i className="fas fa-chevron-right" />
+							<FontAwesomeIcon icon={faChevronRight} />
 						</p>
 					) : null}
 				</div>
@@ -286,7 +285,7 @@ function PlayerBox(props: IProps) {
 			)}
 			{props.mode === 'homepage' && length !== 0 && context.globalState.auth.data.role !== 'guest' ? (
 				<button className="btn favorites" onClick={toggleFavorite}>
-					<i className="fas fa-star" />
+					<FontAwesomeIcon icon={faStar} />
 					{favorites.has(kid) ? i18next.t('KARA_MENU.FAV_DEL') : i18next.t('KARA_MENU.FAV')}
 				</button>
 			) : null}

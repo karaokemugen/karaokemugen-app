@@ -1,5 +1,18 @@
 import './PlaylistImportModal.scss';
 
+import {
+	faArrowDownWideShort,
+	faArrowUpWideShort,
+	faCheckSquare,
+	faCircleDown,
+	faDownload,
+	faFile,
+	faFilter,
+	faRefresh,
+	faSquare,
+	faTimes,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import { useContext, useEffect, useMemo, useState } from 'react';
 
@@ -9,8 +22,8 @@ import { commandBackend, getSocket } from '../../../utils/socket';
 import { WS_CMD } from '../../../utils/ws.mjs';
 import { setPlaylistInfo } from '../../../utils/kara';
 import { callModal, displayMessage, secondsTimeSpanToHMS } from '../../../utils/tools';
-import type { OrderParam, PlaylistExport, ServerDBPL } from '../../../../../src/lib/types/playlist';
-import _ from 'lodash';
+import type { PLOrderParam, PlaylistExport, ServerDBPL } from '../../../../../src/lib/types/playlist';
+import range from 'lodash/range';
 import i18n from '../../../utils/i18n';
 import nanamiThinkPng from '../../../assets/nanami-think.png';
 import nanamiThinkWebP from '../../../assets/nanami-think.webp';
@@ -36,7 +49,7 @@ function PlaylistImportModal(props: IProps) {
 
 	const [playlistImportStatus, setPlaylistImportStatus] = useState<Record<string, ImportStatus>>({});
 
-	const [sortOption, setSortOption] = useState<OrderParam>('az');
+	const [sortOption, setSortOption] = useState<PLOrderParam>('az');
 
 	const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
@@ -238,7 +251,7 @@ function PlaylistImportModal(props: IProps) {
 							AutoMediaDownloads: 'updateOnly',
 							MaintainerMode: false,
 							Git: null,
-							BaseDir: `repos/${repoName}`,
+							BaseDir: `repos/${repoName}/json`,
 							Path: {
 								Medias: [`repos/${repoName}/medias`],
 							},
@@ -275,13 +288,13 @@ function PlaylistImportModal(props: IProps) {
 		// We want to show 2 values around current, ellipsis if needed and start and end
 		let numbersToShow: (number | '.')[] = [];
 		const numberOfPages = Math.ceil(sortedAndFilteredPlaylists.length / PAGE_SIZE);
-		const aroundCurrentPage = _.range(page - 2, page + 3);
+		const aroundCurrentPage = range(page - 2, page + 3);
 		if (aroundCurrentPage.includes(2) && aroundCurrentPage.includes(numberOfPages - 1)) {
-			numbersToShow = _.range(1, numberOfPages);
+			numbersToShow = range(1, numberOfPages);
 		} else if (aroundCurrentPage.includes(2)) {
-			numbersToShow = [..._.range(1, Math.max(page + 2, 5) + 1), '.', numberOfPages];
+			numbersToShow = [...range(1, Math.max(page + 2, 5) + 1), '.', numberOfPages];
 		} else if (aroundCurrentPage.includes(numberOfPages - 1)) {
-			numbersToShow = [1, '.', ..._.range(Math.min(page - 2, numberOfPages - 5), numberOfPages + 1)];
+			numbersToShow = [1, '.', ...range(Math.min(page - 2, numberOfPages - 5), numberOfPages + 1)];
 		} else {
 			numbersToShow = [1, '.', ...aroundCurrentPage, '.', numberOfPages];
 		}
@@ -328,7 +341,7 @@ function PlaylistImportModal(props: IProps) {
 						title={i18n.t('MODAL.PLAYLIST_IMPORT.DOWNLOAD_PLAYLIST')}
 						onClick={() => importRemotePlaylist(pl)}
 					>
-						<i className="fas fa-download" />
+						<FontAwesomeIcon icon={faDownload} />
 					</button>
 				)}
 				{playlistImportStatus[pl.plaid] === 'downloaded' && (
@@ -337,7 +350,7 @@ function PlaylistImportModal(props: IProps) {
 						title={i18n.t('MODAL.PLAYLIST_IMPORT.UPDATE_PLAYLIST')}
 						onClick={() => importRemotePlaylist(pl)}
 					>
-						<i className="fas fa-circle-down" />
+						<FontAwesomeIcon icon={faCircleDown} />
 					</button>
 				)}
 			</div>
@@ -369,7 +382,7 @@ function PlaylistImportModal(props: IProps) {
 					<ul className="modal-header">
 						<h4 className="modal-title">{i18next.t('MODAL.PLAYLIST_IMPORT.TITLE')}</h4>
 						<button className="closeModal" onClick={closeModalWithContext}>
-							<i className="fas fa-times" />
+							<FontAwesomeIcon icon={faTimes} />
 						</button>
 					</ul>
 					<div className="modal-body">
@@ -387,7 +400,7 @@ function PlaylistImportModal(props: IProps) {
 									document.getElementById('playlist-import').click();
 								}}
 							>
-								<i className="fa-solid fa-file" />
+								<FontAwesomeIcon icon={faFile} />
 							</button>
 
 							<input
@@ -404,9 +417,9 @@ function PlaylistImportModal(props: IProps) {
 									onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
 								>
 									{sortOrder === 'asc' ? (
-										<i className={'fa-solid fa-arrow-up-wide-short'} />
+										<FontAwesomeIcon icon={faArrowUpWideShort} />
 									) : (
-										<i className={'fa-solid fa-arrow-down-wide-short'} />
+										<FontAwesomeIcon icon={faArrowDownWideShort} />
 									)}
 								</button>
 								<button
@@ -432,7 +445,7 @@ function PlaylistImportModal(props: IProps) {
 												'recent',
 												'karacount',
 												'duration',
-											] as OrderParam[]
+											] as PLOrderParam[]
 										).map(so => (
 											<li
 												key={so}
@@ -451,10 +464,8 @@ function PlaylistImportModal(props: IProps) {
 										{(['my', 'downloaded'] as ('my' | 'downloaded')[]).map(fo => (
 											<li key={fo} onClick={() => toggleFilterOption(fo)}>
 												<div>
-													<i
-														className={
-															filterOptions[fo] ? 'fas fa-check-square' : 'fas fa-square'
-														}
+													<FontAwesomeIcon
+														icon={filterOptions[fo] ? faCheckSquare : faSquare}
 													/>
 													{i18n.t(`MODAL.PLAYLIST_IMPORT.FILTER_LABELS.${fo}`)}
 												</div>
@@ -471,7 +482,7 @@ function PlaylistImportModal(props: IProps) {
 									}
 									title={i18n.t('MODAL.PLAYLIST_IMPORT.FILTERS')}
 								>
-									<i className="fa-solid fa-filter" />
+									<FontAwesomeIcon icon={faFilter} />
 								</button>
 							</div>
 						</div>
@@ -487,7 +498,7 @@ function PlaylistImportModal(props: IProps) {
 										className="btn btn-action refresh-button"
 										onClick={() => fetchRemoteServerData()}
 									>
-										<i className="fa-solid fa-refresh" />
+										<FontAwesomeIcon icon={faRefresh} />
 									</button>
 								</div>
 								<picture className="nanami-thinking">

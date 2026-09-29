@@ -1,5 +1,7 @@
 import './KaraList.scss';
 
+import { faChevronRight, faClock, faEraser, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { MouseEvent as ReactMouseEvent, useCallback, useContext, useState } from 'react';
 
 import { DBKara } from '../../../../../src/lib/types/database/kara';
@@ -64,7 +66,7 @@ function KaraList({ karas, scope, addKara = false }: KaraListProps) {
 						>
 							<div className="modal-header-title">
 								<button className="transparent-btn">
-									<i className="fas fa-chevron-right" />
+									<FontAwesomeIcon icon={faChevronRight} />
 								</button>
 								<div className="modal-title-block">
 									<h4 className="modal-title">
@@ -91,14 +93,14 @@ function KaraList({ karas, scope, addKara = false }: KaraListProps) {
 								<div className="modal-right">
 									<h6>
 										<span>
-											<i className={`fas fa-${YEARS.icon}`} />
+											<FontAwesomeIcon icon={YEARS.icon} />
 											{kara.year}
 										</span>
 									</h6>
 
 									<h6>
 										<span>
-											<i className="fas fa-clock" />
+											<FontAwesomeIcon icon={faClock} />
 											{secondsTimeSpanToHMS(kara.duration, 'mm:ss')}
 										</span>
 									</h6>
@@ -115,13 +117,13 @@ function KaraList({ karas, scope, addKara = false }: KaraListProps) {
 												}}
 												className="btn btn-danger"
 											>
-												<i className="fas fa-eraser" />
+												<FontAwesomeIcon icon={faEraser} />
 											</button>
 										) : kara?.public_plc_id.length === 0 ||
 										  context.globalState.settings.data.config.Playlist.AllowPublicDuplicates ===
 												'allowed' ? (
 											<button onClick={e => addKara(e, kara)} className="btn">
-												<i className="fas fa-plus" />
+												<FontAwesomeIcon icon={faPlus} />
 											</button>
 										) : context.globalState.settings.data.config.Playlist.AllowPublicDuplicates ===
 										  'upvotes' ? (
@@ -150,14 +152,14 @@ function KaraList({ karas, scope, addKara = false }: KaraListProps) {
 							<VideoPreview kara={kara} show={showVideo && kidOpened === kara.kid} scope={scope} />
 							<div className="detailsKaraLine timeData">
 								<span>
-									<i className="fas fa-clock" />
+									<FontAwesomeIcon icon={faClock} />
 									{secondsTimeSpanToHMS(kara.duration, 'mm:ss')}
 								</span>
 							</div>
 							{karaBlockTags}
 							<div className="detailsKaraLine">
 								<span className="boldDetails">
-									<i className={`fas fa-${YEARS.icon}`} />
+									<FontAwesomeIcon icon={YEARS.icon} />
 									{kara.year}
 								</span>
 							</div>

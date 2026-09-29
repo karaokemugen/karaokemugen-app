@@ -1,7 +1,9 @@
 import './About.scss';
 
+import { faHeart } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18n from 'i18next';
-import { shuffle } from 'lodash';
+import shuffle from 'lodash/shuffle';
 import { useContext, useEffect, useState } from 'react';
 import { Trans } from 'react-i18next';
 import TextTransition, { presets } from 'react-text-transition';
@@ -16,7 +18,6 @@ export default function About() {
 	const [donators, setDonators] = useState<string[]>(['...']);
 	const [allDonators, setAllDonators] = useState(true);
 	const [versions, setVersions] = useState<Record<string, string>>({});
-	const [contributors, setContributors] = useState<string[]>(['...']);
 	const [index, setIndex] = useState(0);
 
 	useEffect(() => {
@@ -28,9 +29,6 @@ export default function About() {
 				)
 			);
 			setDonators(shuffle(donators));
-		});
-		commandBackend(WS_CMD.GET_TAGS, { type: [6] }).then(res => {
-			setContributors(shuffle(res.content.map(c => c.name)));
 		});
 		commandBackend(WS_CMD.GET_ELECTRON_VERSIONS).then(setVersions);
 		const intervalId = setInterval(
@@ -68,22 +66,6 @@ export default function About() {
 					}
 				})}
 			</div>
-			<p className="contributors">
-				<Trans
-					i18nKey="ABOUT.CONTRIBUTORS"
-					values={{ contributors: contributors[index % contributors.length] }}
-					components={{
-						1: (
-							<TextTransition
-								springConfig={presets.slow}
-								className="awesome-person"
-								inline={true}
-								children={''}
-							/>
-						),
-					}}
-				/>
-			</p>
 			<p
 				className="donators"
 				onContextMenu={e => {
@@ -115,7 +97,7 @@ export default function About() {
 						),
 					}}
 				/>{' '}
-				<i className="fas fa-heart" />
+				<FontAwesomeIcon icon={faHeart} />
 			</p>
 		</div>
 	);

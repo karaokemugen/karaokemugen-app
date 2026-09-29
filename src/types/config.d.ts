@@ -2,7 +2,7 @@ import { KaraLineDisplayElement, KaraSortElement, PathType } from '../lib/types/
 import { PositionX, PositionY } from '../lib/types/index.js';
 import { PlaylistMediaType } from '../lib/types/playlistMedias.js';
 import { Collections, Repository } from '../lib/types/repo.js';
-import { endOfPlaylistActions } from '../utils/defaultSettings.js';
+import { endOfPlaylistActions } from '../utils/constants.js';
 import { MpvHardwareDecodingOptions } from './mpvIPC.js';
 import { SongModifiers } from './player.js';
 
@@ -109,6 +109,10 @@ export interface Config {
 		RemoteToken?: string; // Remove in KM 10
 		FetchPopularSongs?: boolean;
 		AllowDownloads?: boolean;
+		UplinkServer: {
+			Domain?: string;
+			Secure?: boolean;			
+		}
 	};
 	Frontend: {
 		AllowGuestLogin?: boolean;
@@ -193,6 +197,7 @@ export interface Config {
 			Banner?: boolean;
 			RandomQuotes?: boolean;
 			SongInfo?: boolean;
+			SongInfoPermanent?: boolean;
 			SongInfoLanguage?: string;
 			NextSongInfo: {
 				Enabled: boolean;

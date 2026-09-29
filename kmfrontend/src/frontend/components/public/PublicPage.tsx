@@ -1,10 +1,10 @@
 import i18next from 'i18next';
-import { merge } from 'lodash';
-import { useContext, useEffect, useState } from 'react';
+import merge from 'lodash/merge';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { DBPLC } from '../../../../../src/lib/types/database/playlist';
-import { DBPLCInfo } from '../../../../../src/types/database/playlist';
+import { DBPL, DBPLCInfo } from '../../../../../src/types/database/playlist';
 import { PublicPlayerState } from '../../../../../src/types/state';
 import nanamiSingingPng from '../../../assets/nanami-sing.png';
 import nanamiSingingWebP from '../../../assets/nanami-sing.webp';
@@ -15,6 +15,7 @@ import GlobalContext from '../../../store/context';
 import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { displayMessage, nonStandardPlaylists, secondsTimeSpanToHMS } from '../../../utils/tools';
+import { WS_CMD } from '../../../utils/ws.mjs';
 import KmAppWrapperDecorator from '../decorators/KmAppWrapperDecorator';
 import KaraDetail from '../karas/KaraDetail';
 import VersionSelector from '../karas/VersionSelector';
@@ -28,7 +29,7 @@ import PublicHeader from './PublicHeader';
 import PublicHomepage from './PublicHomepage';
 import PublicList from './PublicList';
 import QuizPage from './QuizPage';
-import { WS_CMD } from '../../../utils/ws.mjs';
+import { isOnlyTimepositionPlayerStateUpdate } from '../../../utils/state';
 
 let timer: NodeJS.Timeout;
 
@@ -39,15 +40,15 @@ function PublicPage() {
 	const navigate = useNavigate();
 
 	const [isPollActive, setPollActive] = useState(false);
-	const [classicModeModal, setClassicModeModal] = useState(false);
-	const [playerStopping, setPlayerStopping] = useState(false);
-	const [playerStopped, setPlayerStopped] = useState(false);
+	const classicModeModal = useRef(false);
+	const playerStopping = useRef(false);
+	const playerStopped = useRef(false);
 	const [top, setTop] = useState('0px');
 	const [bottom, setBottom] = useState('0px');
 	const [publicVisible, setPublicVisible] = useState(false);
 	const [currentVisible, setCurrentVisible] = useState(false);
 	const [statusPlayer, setStatusPlayer] = useState<PublicPlayerState>();
-	const [currentPlaylist, setCurrentPlaylist] = useState<PlaylistElem>();
+	const [currentPlaylist, setCurrentPlaylist] = useState<DBPL>();
 
 	const publicPlaylistUpdated = async (plaid: string) => {
 		if (plaid !== context.globalState.settings.data.state.publicPlaid) {
@@ -138,7 +139,7 @@ function PublicPage() {
 	};
 
 	const nextSong = (data: DBPLC) => {
-		if (data && data.flag_visible && !playerStopping) {
+		if (data && data.flag_visible && !playerStopping.current) {
 			if (timer) clearTimeout(timer);
 			timer = setTimeout(() => {
 				displayMessage(
@@ -154,19 +155,22 @@ function PublicPage() {
 	};
 
 	const playerUpdate = (data: PublicPlayerState) => {
-		setStatusPlayer(oldState => {
-			const state = { ...oldState };
-			return merge(state, data);
-		});
-		if (data.stopping !== undefined) setPlayerStopping(data.stopping);
-		if (data.playerStatus === 'stop') setPlayerStopped(true);
-		else if (typeof data.playerStatus === 'string') setPlayerStopped(false);
-		if (playerStopped && data.currentRequester === context.globalState.auth.data.username && !classicModeModal) {
+		if (isOnlyTimepositionPlayerStateUpdate(data))
+			setStatusPlayer(oldState => merge({ ...oldState }, data));
+		
+		if (data.stopping !== undefined) playerStopping.current = data.stopping;
+		if (data.playerStatus === 'stop') playerStopped.current = true;
+		else if (typeof data.playerStatus === 'string') playerStopped.current = false;
+		if (
+			playerStopped.current &&
+			data.currentRequester === context.globalState.auth.data.username &&
+			!classicModeModal.current
+		) {
 			showModal(context.globalDispatch, <ClassicModeModal />);
-			setClassicModeModal(true);
-		} else if (!playerStopped && classicModeModal) {
+			classicModeModal.current = true;
+		} else if (!playerStopped.current && classicModeModal.current) {
 			closeModal(context.globalDispatch);
-			setClassicModeModal(false);
+			classicModeModal.current = false;
 		}
 	};
 

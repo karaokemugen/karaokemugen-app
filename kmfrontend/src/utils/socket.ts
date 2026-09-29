@@ -50,24 +50,24 @@ export function commandBackend<T extends WSCmdDefinition<object, any>>(
 	});
 	return new Promise((resolve, reject) => {
 		if (loading) eventEmitter.emitChange('loading', true);
-		const nodeTimeout = setTimeout(() => {
-			addBreadcrumb({
-				level: 'warning',
-				category: 'commandBackend',
-				message: `${name} timeout`,
-				data: bodyWithoutpwd,
-			});
-			const error = new Error();
-			error.message = `${name} timeout`;
-			error.name = 'commandBackend timeout';
-			reject(error);
-		}, timeout);
-		socket.emit(
+		socket.timeout(timeout).emit(
 			name.value,
 			{ authorization, onlineAuthorization, body },
-			({ err, data }: { err: boolean; data: any }) => {
-				clearTimeout(nodeTimeout);
+			(timeoutError: Error | null, { err, data }: { err: boolean; data: any } = {} as any) => {
 				if (loading) eventEmitter.emitChange('loading', false);
+				if (timeoutError) {
+					addBreadcrumb({
+						level: 'warning',
+						category: 'commandBackend',
+						message: `${name} timeout`,
+						data: bodyWithoutpwd,
+					});
+					const error = new Error();
+					error.message = `${name} timeout`;
+					error.name = 'commandBackend timeout';
+					reject(error);
+					return;
+				}
 				if (err) {
 					addBreadcrumb({
 						level: 'warning',

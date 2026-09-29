@@ -1,7 +1,7 @@
 import '../../TasksEvent.scss';
 
 import { Progress } from 'antd';
-import { ProgressType } from 'antd/lib/progress/progress';
+import type { ProgressType } from 'antd/lib/progress/progress';
 import i18next from 'i18next';
 import { useEffect, useState } from 'react';
 

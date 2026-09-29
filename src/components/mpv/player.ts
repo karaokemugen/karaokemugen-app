@@ -28,6 +28,9 @@ import { MpvState } from './mpvState.js';
 export class Player {
 	private readonly log: logger.Logger;
 	private mpvState: MpvState;
+	private isStopping = false;
+	private isStarting: Promise<boolean | void>;
+	private isRecreating: Promise<void>;
 
 	mpv: MpvIPC;
 
@@ -83,9 +86,10 @@ export class Player {
 			`--volume=${+conf.Player.Volume}`,
 			`--audio-delay=${(conf.Player.AudioDelay && +conf.Player.AudioDelay / 1000) || 0}`,
 			'--autoload-files=no',
+			// '--input-default-bindings=no', // This disables mpv's own bindings completely
 			`--config-dir=${resolvedPath('Temp')}`,
 			`--sub-fonts-dir=${resolvedPath('Fonts')}`,
-			'--sub-visibility',
+			`--sub-visibility=${playerState.showSubs ? 'yes' : 'no'}`,
 			isMpvGreaterThan39() ? '--sub-ass-use-video-data=none' : '--sub-ass-vsfilter-aspect-compat=no',
 			'--loop-file=no',
 			`--title=${options.monitor ? '[MONITOR] ' : ''}\${force-media-title} - ${i18n.t('KARAOKE_MUGEN_PLAYER_WINDOW_TITLE')}`,
@@ -102,26 +106,23 @@ export class Player {
 			mpvArgs.push('--mute=yes', '--reset-on-next-file=pause,loop-file,audio-files,aid,sid,mute', '--ao=null');
 		} else {
 			mpvArgs.push('--reset-on-next-file=pause,loop-file,audio-files,aid,sid');
-			if (!conf.Player.Borders) mpvArgs.push('--no-border');
 			if (conf.Player.FullScreenOnStartup || conf.Player.FullScreen) {
 				mpvArgs.push('--fullscreen=yes');
 			}
 			if (conf.Player.AudioMute)
 			    mpvArgs.push('--mute=yes');
+			if (conf.Player.Screen) {
+				mpvArgs.push(`--screen=${conf.Player.Screen}`, `--fs-screen=${conf.Player.Screen}`);
+			}
 		}
 
-		if (conf.Player.Screen) {
-			mpvArgs.push(`--screen=${conf.Player.Screen}`, `--fs-screen=${conf.Player.Screen}`);
-		}
-
-		if (conf.Player.StayOnTop) {
-			mpvArgs.push('--ontop');
-		}
+		if (!playerState.border) mpvArgs.push('--no-border');
+		if (playerState.onTop) mpvArgs.push('--ontop');
 
 		// We want a 16/9
 		const screens = await graphics();
 		// Assume 1080p screen if systeminformation can't find the screen
-		const screen = (conf.Player.Screen
+		const screen = (conf.Player.Screen && !options.monitor
 			? screens.displays[conf.Player.Screen] || screens.displays[0]
 			: screens.displays[0]) || { currentResX: 1920, resolutionX: 1920 };
 		let targetResX = (screen.resolutionX || screen.currentResX) * (conf.Player.PIP.Size / 100);
@@ -160,15 +161,13 @@ export class Player {
 			conf.Player.ExtraCommandLine.split(' ').forEach(e => mpvArgs.push(e));
 		}
 
-		let socket: string;
 		// Name socket file accordingly depending on OS.
 		const random = randomstring.generate({
 			length: 3,
 			charset: 'numeric',
 		});
-		state.os === 'win32'
-			? (socket = `\\\\.\\pipe\\mpvsocket${random}`)
-			: (socket = `/tmp/km-node-mpvsocket${random}`);
+		const socketName = `mpvsocket-${options.monitor ? 'monitor' : 'main'}-${process.pid}-${random}`;
+		const socket = state.os === 'win32' ? `\\\\.\\pipe\\${socketName}` : `/tmp/km-${socketName}`;
 
 		const mpvOptions = {
 			binary: state.binPath.mpv,
@@ -176,7 +175,6 @@ export class Player {
 		};
 
 		this.log.debug(`options:`, { obj: { options: mpvOptions, args: mpvArgs } });
-		console.log({mpvArgs})
 		return [state.binPath.mpv, socket, mpvArgs];
 	}
 
@@ -226,9 +224,14 @@ export class Player {
 				// Display KM's banner if position reaches halfpoint in the song
 				position <= Math.floor(playerState.currentSong.duration / 2) + 4 &&
 				playerState.mediaType === 'song' &&
-				!getState().songPoll
+				!getState().songPoll &&
+				// Skip when the banner would be empty
+				(conf.Player.Display.ConnectionInfo.Enabled || conf.Player.Display.Banner)
 			) {
 				this.control.displayInfo();
+			} else if (conf.Player.Display.SongInfo && conf.Player.Display.SongInfoPermanent) {
+				// Display song info again if permanently enabled
+				this.control.displaySongInfo(playerState.currentSong.infos);
 			} else {
 				this.control.messages.removeMessage('DI');
 			}
@@ -298,6 +301,13 @@ export class Player {
 						}
 					} else if (message.args[0] === 'subs') {
 						this.control.setSubs(!playerState.showSubs);
+					} else if (message.args[0] === 'fullscreen') {
+						// Route through our own function so even pressing F on the monitor will make the main player fullscren
+						if (message.args[1] !== 'no' || playerState.fullscreen) {
+							await this.control.toggleFullscreen();
+						}
+					} else if (message.args[0] === 'mute') {
+						await this.control.setMute(!playerState.mute);
 					}
 				} catch (err) {
 					this.log.warn('Cannot handle mpv script command');
@@ -307,22 +317,38 @@ export class Player {
 		});
 		// Handle manual exits/crashes
 		this.mpv.once('close', () => {
-			this.log.debug('mpv closed (?)');
+			if (this.isStopping) {
+				this.log.debug('mpv closed on request');
+				return;
+			}
+			this.log.warn('mpv closed unexpectedly');
+			if (this.options.monitor) {
+				this.control.resyncMonitor().catch(err => this.log.error('Unable to resync monitor', { obj: err }));
+				return;
+			}
 			// We set the state here to prevent the 'paused' event from triggering (because it will restart mpv at the same time)
 			playerState.playing = false;
 			playerState._playing = false;
 			playerState.playerStatus = 'stop';
-			this.control.exec(
-				{ command: ['set_property', 'pause', true] },
-				null,
-				this.options.monitor ? 'main' : 'monitor'
-			);
-			this.recreate();
+			this.control.exec({ command: ['set_property', 'pause', true] }, null, 'monitor').catch(() => {
+				// Not fatal
+			});
+			this.recreate().catch(() => {});
 			emitPlayerState();
 		});
 	}
 
 	async start() {
+		// Make sure player is started only once at a time
+		if (!this.isStarting) {
+			this.isStarting = this.doStart().finally(() => {
+				this.isStarting = null;
+			});
+		}
+		return this.isStarting;
+	}
+
+	private async doStart() {
 		if (!this.configuration) {
 			await this.init();
 		}
@@ -332,12 +358,14 @@ export class Player {
 			async () => {
 				try {
 					await this.mpv.start();
-					const promises = [];
-					promises.push(this.mpv.observeProperty('pause'));
 					if (!this.options.monitor) {
 						this.mpvState.playbackTime$
 							.pipe(throttleTime(125))
 							.subscribe(time => this.debounceTimePosition(time));
+					}
+					const promises = [];
+					promises.push(this.mpv.observeProperty('pause'));
+					if (!this.options.monitor) {
 						promises.push(this.mpv.observeProperty('eof-reached'));
 						promises.push(this.mpv.observeProperty('mute'));
 						promises.push(this.mpv.observeProperty('volume'));
@@ -372,6 +400,19 @@ export class Player {
 	}
 
 	async recreate(options?: MpvOptions, restart = false) {
+		// Make sure player is recreated only once at a time
+		if (this.isRecreating) {
+			await this.isRecreating;
+			if (restart && !this.isRunning) await this.start();
+			return;
+		}
+		this.isRecreating = this.doRecreate(options, restart).finally(() => {
+			this.isRecreating = null;
+		});
+		return this.isRecreating;
+	}
+
+	private async doRecreate(options?: MpvOptions, restart = false) {
 		try {
 			if (this.isRunning) {
 				try {
@@ -392,12 +433,15 @@ export class Player {
 	}
 
 	async destroy() {
+		this.isStopping = true;
 		try {
 			await this.mpv.stop();
 			return true;
 		} catch (err) {
 			this.log.error('mpvAPI (quit)', { obj: err });
 			throw err;
+		} finally {
+			this.isStopping = false;
 		}
 	}
 

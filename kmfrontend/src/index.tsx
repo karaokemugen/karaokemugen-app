@@ -1,5 +1,6 @@
 import './common.scss';
 import './utils/electron';
+import './utils/fontawesome';
 import './utils/i18n';
 import './utils/isoLanguages';
 import './utils/polyfills';

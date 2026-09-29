@@ -131,16 +131,16 @@ export async function downloadKaraFromInbox(inid: string, repoName: string, toke
 		// Code to integrate kara and download medias
 		let lyricsFile = '';
 		if (kara.lyrics?.file) {
-			lyricsFile = resolve(resolvedPathRepos('Lyrics', repoName)[0], kara.lyrics.file);
+			lyricsFile = resolve(resolvedPathRepos('Lyrics', repoName)[0], basename(kara.lyrics.file));
 			await fs.writeFile(lyricsFile, kara.lyrics.data, 'utf-8');
 		}
 		for (const tag of kara.extra_tags) {
-			const tagFile = resolve(resolvedPathRepos('Tags', repoName)[0], tag.file);
+			const tagFile = resolve(resolvedPathRepos('Tags', repoName)[0], basename(tag.file));
 			await writeTagFile(tag.data.tag, resolvedPathRepos('Tags', tag.data.tag.repository)[0]);
 			// Let's refresh the database when there are new tags.
 			await integrateTagFile(tagFile);
 		}
-		const karaFile = resolve(resolvedPathRepos('Karaokes', repoName)[0], kara.kara.file);
+		const karaFile = resolve(resolvedPathRepos('Karaokes', repoName)[0], basename(kara.kara.file));
 		// Yes, we're actually reordering this in order for karas to be in the right order when written. For some reason Axios sorts JSON responses? Or is it KM Server? Who knows? Where is Carmen San Diego?
 		await writeKara(karaFile, kara.kara.data);
 		saveSetting('baseChecksum', await baseChecksum());
@@ -176,8 +176,8 @@ async function downloadMediaFromInbox(kara: Inbox, repoName: string) {
 	});
 	try {
 		if (kara.mediafile) {
-			const localMedia = resolve(resolvedPathRepos('Medias', repoName)[0], kara.mediafile);
-			const tempMedia = resolve(resolvedPath('Temp'), kara.mediafile);
+			const localMedia = resolve(resolvedPathRepos('Medias', repoName)[0], basename(kara.mediafile));
+			const tempMedia = resolve(resolvedPath('Temp'), basename(kara.mediafile));
 			const repo = getRepo(repoName);
 			const downloadItem = {
 				filename: tempMedia,

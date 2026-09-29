@@ -9,7 +9,7 @@ import { PlaylistInfo } from '../types/frontendContext';
 import { SettingsFailure, SettingsSuccess } from '../types/settings';
 import { setPlaylistInfoLeft, setPlaylistInfoRight } from './frontendContext';
 import { setSettings } from './settings';
-import { WS_CMD } from '../../utils/ws';
+import { WS_CMD } from '../../utils/ws.mjs';
 
 export async function login(
 	username: string,
@@ -23,7 +23,7 @@ export async function login(
 			username,
 			password,
 			securityCode,
-			name: guestName,
+			name: guestName ? guestName : undefined,
 		});
 
 		// Store data, should be managed in a service and item should be enum and not string

@@ -1,6 +1,8 @@
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 
-import type { KaraSortElement } from '../../../../../../src/types/config';
+import type { KaraSortElement } from '../../../../../../src/lib/types/config';
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd';
 
 interface IProps {
@@ -62,7 +64,7 @@ function KaraLineSortModalDndList(props: IProps) {
 												onClick={() => removeElement(index)}
 												title={i18next.t('MODAL.KARA_LINE_DISPLAY.REMOVE')}
 											>
-												<i className="fas fa-times" />
+												<FontAwesomeIcon icon={faTimes} />
 											</button>
 										)}
 									</div>

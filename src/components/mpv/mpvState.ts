@@ -26,11 +26,11 @@ export class MpvState extends EventEmitter implements Disposable {
 	private createObservable<T>(set: Set<Subscriber<T>>, property: string) {
 		return new Observable<T>(sub => {
 			//no await so there's a tiny chance of missing first few events(but most likely there will be other command awaits before any events)
-			if (set.size === 0 && this.mpv.isRunning) this.mpv.observeProperty(property);
+			if (set.size === 0 && this.mpv.isRunning) this.mpv.observeProperty(property)?.catch(() => {});
 			set.add(sub);
 			return () => {
 				set.delete(sub);
-				if (set.size === 0 && this.mpv.isRunning) this.mpv.unobserveProperty(property);
+				if (set.size === 0 && this.mpv.isRunning) this.mpv.unobserveProperty(property)?.catch(() => {});
 			};
 		});
 	}

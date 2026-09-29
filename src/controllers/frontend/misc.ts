@@ -20,6 +20,9 @@ import { selectLogFile } from '../../utils/logger.js';
 import { dumpPG, restorePG } from '../../utils/postgresql.js';
 import { getPlayerState, getPublicState, getState } from '../../utils/state.js';
 import { runChecklist } from '../middlewares.js';
+import { getServersFromUplink } from '../../services/repo.js';
+import { check } from '../../lib/utils/validators.js';
+import z from 'zod';
 
 export default function miscController(router: SocketIOApp) {
 	router.route(WS_CMD.OPEN_LOG_FILE, async (socket, req) => {
@@ -41,9 +44,15 @@ export default function miscController(router: SocketIOApp) {
 	router.route(WS_CMD.SET_MIGRATIONS_FRONTEND, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
+			check(req.body, z.object({
+				mig: z.object({
+					name: z.string(),
+					flag_done: z.boolean(),
+				})
+			}));
 			return await setMigrationsFrontend(req.body.mig);
 		} catch (err) {
-			throw { code: 500 };
+			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
 	});
 
@@ -52,9 +61,9 @@ export default function miscController(router: SocketIOApp) {
 		try {
 			const state = getState();
 			if (state.remoteAccess) {
-				return { active: true, info: state.remoteAccess, token: getConfig().Online.RemoteAccess.Token };
+				return { active: true as const, info: state.remoteAccess, token: getConfig().Online.RemoteAccess.Token };
 			}
-			return { active: false };
+			return { active: false as const };
 		} catch (err) {
 			throw { code: 500 };
 		}
@@ -89,6 +98,10 @@ export default function miscController(router: SocketIOApp) {
 	router.route(WS_CMD.UPDATE_SETTINGS, async (socket, req) => {
 		await runChecklist(socket, req);
 		try {
+			// FIXME : for the brave future heroes that will look at this code, change the check to validate partial config objects instead of any()
+			check(req.body, z.object({
+				setting: z.any(),
+			}));
 			return await editConfig(req.body.setting);
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
@@ -126,6 +139,9 @@ export default function miscController(router: SocketIOApp) {
 	router.route(WS_CMD.GET_LOGS, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
+			check(req.body, z.object({
+				level: z.enum(['info', 'warn', 'error', 'debug']),
+			}));
 			// Align socket
 			enableWSLogging(req.body.level);
 			// remote environments doesn't support rooms... yet
@@ -134,7 +150,7 @@ export default function miscController(router: SocketIOApp) {
 			if ('join' in socket) socket.join('logs');
 			return await readLog(req.body.level);
 		} catch (err) {
-			throw { code: 500, message: APIMessage('ERROR_READING_LOGS') };
+			throw { code: err.code || 500, message: APIMessage(err.code === 400 ? err.message : 'ERROR_READING_LOGS') };
 		}
 	});
 
@@ -143,6 +159,16 @@ export default function miscController(router: SocketIOApp) {
 		try {
 			await backupConfig();
 			return { code: 200, message: APIMessage('CONFIG_BACKUPED') };
+		} catch (err) {
+			throw { code: err.code || 500, message: APIMessage(err.message) };
+		}
+	});
+
+	router.route(WS_CMD.GET_SERVERS_FROM_UPLINK, async (socket, req) => {
+		await runChecklist(socket, req);
+		try {
+			const servers = await getServersFromUplink();
+			return servers;
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
@@ -191,9 +217,13 @@ export default function miscController(router: SocketIOApp) {
 	router.route(WS_CMD.GET_FS, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
+			check(req.body, z.object({
+				path: z.string(),
+				onlyMedias: z.boolean().optional(),
+			}));
 			return await browseFs(req.body.path, req.body.onlyMedias);
 		} catch (err) {
-			throw { code: 500, message: APIMessage('FS_ERROR') };
+			throw { code: err.code || 500, message: APIMessage(err.code === 400 ? err.message : 'FS_ERROR') };
 		}
 	});
 }

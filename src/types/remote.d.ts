@@ -1,4 +1,4 @@
-import { RemoteFailure, RemoteSuccess } from '../../../../src/lib/types/remote';
+import { RemoteFailure, RemoteSuccess } from '../lib/types/remote.js';
 
 interface RemoteStatusInactive {
 	active: false;
@@ -10,4 +10,4 @@ interface RemoteStatusActive {
 	token: string;
 }
 
-type RemoteStatusData = RemoteStatusInactive | RemoteStatusActive;
+export type RemoteStatusData = RemoteStatusInactive | RemoteStatusActive;

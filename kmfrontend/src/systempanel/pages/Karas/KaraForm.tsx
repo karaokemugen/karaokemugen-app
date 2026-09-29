@@ -18,6 +18,7 @@ import {
 	Col,
 	Collapse,
 	Divider,
+	Flex,
 	Form,
 	Image,
 	Input,
@@ -28,6 +29,7 @@ import {
 	Row,
 	Select,
 	Space,
+	Spin,
 	Tag,
 	Tooltip,
 	Typography,
@@ -35,7 +37,6 @@ import {
 	UploadFile,
 } from 'antd';
 import { useForm } from 'antd/es/form/Form';
-import { Flex, Spin } from 'antd/lib';
 import { DefaultOptionType, SelectValue } from 'antd/lib/select';
 import { filesize } from 'filesize';
 import i18next from 'i18next';
@@ -122,8 +123,8 @@ function KaraForm(props: KaraFormProps) {
 	const [isEncodingMedia, setIsEncodingMedia] = useState(false);
 	const [encodeMediaOptions, setEncodeMediaOptions] = useState<{
 		trim: boolean;
-		fixAspectRatioMode: 'blackbars' | 'blurvideo' | '' | null;
-	}>({ trim: false, fixAspectRatioMode: null });
+		fixAspectRatioMode: 'blackbars' | 'blurvideo' | undefined;
+	}>({ trim: false, fixAspectRatioMode: undefined });
 	const [repositoriesValue, setRepositoriesValue] = useState<string[]>(null);
 	const [repositoryManifest, setRepositoryManifest] = useState<RepositoryManifestV2>();
 	const [repoToCopySong, setRepoToCopySong] = useState<string>(null);
@@ -147,6 +148,9 @@ function KaraForm(props: KaraFormProps) {
 
 	// Need a ref because state will become stale on unmount
 	const isEncodingMediaRef = useRef(false);
+
+	// Keep track of upload order so even if processing takes longer, the newest upload is always used
+	const mediaUploadSeq = useRef(0);
 
 	useEffect(() => {
 		isEncodingMediaRef.current = isEncodingMedia;
@@ -274,7 +278,7 @@ function KaraForm(props: KaraFormProps) {
 					WS_CMD.ENCODE_MEDIA_FILE_TO_REPO_DEFAULTS,
 					{
 						kid: props.kara?.kid,
-						filename: mediafileIsTouched && mediaInfo?.filename,
+						filename: mediafileIsTouched ? mediaInfo?.filename : undefined,
 						repo: form.getFieldValue('repository'),
 						encodeOptions: encodeMediaOptions,
 					},
@@ -675,11 +679,13 @@ function KaraForm(props: KaraFormProps) {
 		const fileList = info.fileList.slice(-1);
 		setMediafile(fileList);
 		if (info.file.status === 'uploading') {
+			mediaUploadSeq.current += 1;
 			form.setFieldsValue({ mediafile: null });
 			setMediaInfo(null);
 			setMediaInfoValidationResults([]);
 		} else if (info.file.status === 'done') {
 			if (isMediaFile(info.file.name)) {
+				const seq = mediaUploadSeq.current;
 				setMediafileIsTouched(true);
 				const processUploadedMediaResult: ProcessUploadedMediaResult = await commandBackend(
 					WS_CMD.PROCESS_UPLOADED_MEDIA,
@@ -690,6 +696,8 @@ function KaraForm(props: KaraFormProps) {
 					false,
 					LOAD_AND_PROCESS_MEDIA_TIMEOUT // Keep this high (~10 minutes), otherwise bigger files will silently timeout
 				);
+				// Skip if another media was uploaded in the meantime
+				if (seq !== mediaUploadSeq.current) return;
 				setMediaInfo(processUploadedMediaResult.mediaInfo);
 				form.setFieldsValue({ mediafile: processUploadedMediaResult.mediaInfo.filename });
 				
@@ -727,8 +735,11 @@ function KaraForm(props: KaraFormProps) {
 				setMediafile([]);
 			}
 		} else if (info.file.status === 'error' || info.file.status === 'removed') {
+			mediaUploadSeq.current += 1;
 			form.setFieldsValue({ mediafile: null });
 			setMediafile([]);
+			setMediaInfo(null);
+			setMediaInfoValidationResults([]);
 		}
 		form.validateFields();
 	};
@@ -765,7 +776,7 @@ function KaraForm(props: KaraFormProps) {
 					WS_CMD.EMBED_AUDIO_FILE_COVER_ART,
 					{
 						kid: props.kara?.kid,
-						tempFilename: mediafileIsTouched && mediaInfo?.filename,
+						tempFilename: mediafileIsTouched ? mediaInfo?.filename : undefined,
 						coverPictureFilename: info.file.response.filename,
 					},
 					false,
@@ -1119,7 +1130,7 @@ function KaraForm(props: KaraFormProps) {
 													onChange={e =>
 														setEncodeMediaOptions({
 															...encodeMediaOptions,
-															fixAspectRatioMode: e.target.checked ? 'blurvideo' : null,
+															fixAspectRatioMode: e.target.checked ? 'blurvideo' : undefined,
 														})
 													}
 												>

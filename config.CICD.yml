@@ -10,18 +10,26 @@ System:
     username: karaokemugen_app
     connection: tcp
   Repositories:
-    Name: mugen.re
-    Online: true
-    Secure: true
-    Update: true
-    Enabled: true
-    SendStats: true
-    AutoMediaDownloads: updateOnly
-    MaintainerMode: false
-    BaseDir: repos/mugen.re/json
-    Path:
-      Medias: 
-        - repos/mugen.re/medias
+    - Name: mugen.re
+      Online: true
+      Secure: true
+      Update: true
+      Enabled: true
+      SendStats: true
+      AutoMediaDownloads: updateOnly
+      MaintainerMode: false
+      BaseDir: repos/mugen.re/json
+      Path:
+        Medias: 
+          - repos/mugen.re/medias
+    - Name: My Custom Songs
+      Online: false
+      Enabled: true
+      MaintainerMode: true
+      BaseDir: repos/My Custom Songs/json
+      Path:
+        Medias: 
+          - repos/My Custom Songs/medias
   Binaries:
     Player:
       Linux: mpv

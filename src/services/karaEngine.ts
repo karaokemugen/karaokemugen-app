@@ -28,6 +28,7 @@ import { initAddASongMessage, mpv, next, restartPlayer, stopAddASongMessage, sto
 import {
 	editPlaylist,
 	getCurrentSong,
+	getNextSong,
 	getPlaylistContentsMini,
 	getPlaylistInfo,
 	shufflePlaylist,
@@ -122,6 +123,10 @@ export async function getSongInfosForPlayer(kara: DBKara | DBPLC): Promise<{ inf
 			}
 			requestedBy += ` ${i18next.t('REQUESTED_WITH', { names: str.endsWith(', ') ? str.slice(0, -2) : str })}`;
 		}
+	}
+	
+	// Avatar display does not depend on nickname display
+	if (!getState().quiz.running && getConfig().Player.Display.Avatar && 'nickname' in kara) {
 		// Get user avatar
 		let user = await getUser(kara.username);
 		if (!user) {
@@ -189,6 +194,20 @@ export async function playRandomSongAfterPlaylist() {
 			'operatorNotificationError',
 			APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYER_RANDOM_SONG_AFTER_PLAYLIST', err)
 		);
+	}
+}
+
+async function resumePlaylistOrPlayRandomSong() {
+	let nextSong: DBPLC = null;
+	try {
+		nextSong = await getNextSong();
+	} catch (_err) {
+		// Nothing to resume
+	}
+	if (nextSong) {
+		await next();
+	} else {
+		await playRandomSongAfterPlaylist();
 	}
 }
 
@@ -303,7 +322,7 @@ export async function playerEnding() {
 		}
 		// When random karas are being played
 		if (state.randomPlaying) {
-			await playRandomSongAfterPlaylist();
+			await resumePlaylistOrPlayRandomSong();
 			return;
 		}
 
@@ -354,7 +373,7 @@ export async function playerEnding() {
 		// If Outro, load the background.
 		if (state.player.mediaType === 'Outros') {
 			if (['random', 'random_fallback'].includes(getConfig().Playlist.EndOfPlaylistAction)) {
-				await playRandomSongAfterPlaylist();
+				await resumePlaylistOrPlayRandomSong();
 			} else if (getConfig().Playlist.EndOfPlaylistAction === 'play_fallback') {
 				await editPlaylist(getState().fallbackPlaid, { flag_current: true });
 				setState({ currentPlaid: getState().fallbackPlaid });

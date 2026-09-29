@@ -28,12 +28,13 @@ import { detectFileType, fileExists } from '../lib/utils/files.js';
 import logger, { profile } from '../lib/utils/logger.js';
 import { emitWS } from '../lib/utils/ws.js';
 import { Config } from '../types/config.js';
+import { UploadedFile } from '../types/files.js';
 import { UserOpts } from '../types/user.js';
 import { defaultGuestNames } from '../utils/constants.js';
 import sentry from '../utils/sentry.js';
 import { getState } from '../utils/state.js';
 import { stopSub } from '../utils/userPubSub.js';
-import { resetNewAccountCode } from './auth.js';
+import { checkSecurityCode, resetNewAccountCode } from './auth.js';
 import { createRemoteUser, editRemoteUser, getUsersFetched } from './userOnline.js';
 
 const service = 'User';
@@ -89,8 +90,8 @@ async function checkNicknameExists(nickname: string) {
 /** Edit local user profile */
 export async function editUser(
 	username: string,
-	user: User,
-	avatar: Express.Multer.File,
+	user: Partial<User>,
+	avatar: UploadedFile,
 	role: string,
 	opts: UserOpts = {
 		editRemote: false,
@@ -107,28 +108,34 @@ export async function editUser(
 		if (user.nickname) user.nickname = user.nickname.trim();
 		if (user.url) user.url = user.url.trim();
 		user.login = user.login?.trim().toLowerCase();
-		// Banner are not editable through the app
-		if (opts.editRemote) delete user.banner;
+		// Banner and roles are not editable through the app
+		if (opts.editRemote) {
+			delete user.banner;
+			delete user.roles;
+		}
 		const currentUser = await getUser(username, true, true);
 		if (!currentUser) throw new ErrorKM('UNKNOWN_USER', 404, false);
 		if (currentUser.type === 2 && role !== 'admin') throw new ErrorKM('GUESTS_CANNOT_EDIT', 403, false);
-		const mergedUser = merge(currentUser, user);
-		delete mergedUser.password;
-		if (!mergedUser.social_networks) mergedUser.social_networks = {};
-		if (user.password) {
-			if (!opts.noPasswordCheck && user.password.length < 8) throw new ErrorKM('PASSWORD_TOO_SHORT', 411);
-			const password = await hashPasswordbcrypt(user.password);
-			await updateUserPassword(username, password);
-		}
 		if (user.type != null && +user.type !== currentUser.type && role !== 'admin') {
 			throw new ErrorKM('USER_CANNOT_CHANGE_TYPE', 403, false);
 		}
-		// If we're renaming a user, mergedUser.login is going to be set to something different than username
-		mergedUser.old_login = username;
 		// Check if login already exists.
 		if (user.nickname && currentUser.nickname !== user.nickname && (await checkNicknameExists(user.nickname))) {
 			throw new ErrorKM('NICKNAME_ALREADY_IN_USE', 409, false);
 		}
+		if (user.password && !opts.noPasswordCheck && user.password.length < 8) {
+			throw new ErrorKM('PASSWORD_TOO_SHORT', 411);
+		}
+		// Merge fields after the checks into a new object (so currentUser does not get modified)
+		const mergedUser = merge({}, currentUser, user);
+		delete mergedUser.password;
+		if (!mergedUser.social_networks) mergedUser.social_networks = {};
+		if (user.password) {
+			const password = await hashPasswordbcrypt(user.password);
+			await updateUserPassword(username, password);
+		}
+		// If we're renaming a user, mergedUser.login is going to be set to something different than username
+		mergedUser.old_login = username;
 		if (avatar?.path) {
 			// If a new avatar was sent, it is contained in the avatar object
 			// Let's move it to the avatar user directory and update avatar info in database
@@ -183,7 +190,7 @@ export function getUsers(params: UserParams = {}): Promise<DBUser[]> {
 }
 
 /** Replace old avatar image by new one sent from editUser or createUser */
-async function replaceAvatar(oldImageFile: string, avatar: Express.Multer.File): Promise<string> {
+async function replaceAvatar(oldImageFile: string, avatar: UploadedFile): Promise<string> {
 	try {
 		const fileType = await detectFileType(avatar.path);
 		if (!imageFileTypes.includes(fileType.toLowerCase())) throw 'Wrong avatar file type';
@@ -258,7 +265,7 @@ export async function checkPassword(user: User, password: string): Promise<boole
 
 /** Create ADMIN user only if security code matches */
 export function createAdminUser(user: User, remote: boolean, requester: User) {
-	if (requester.type === 0 || user.securityCode === getState().securityCode) {
+	if (requester.type === 0 || (user.securityCode !== undefined && checkSecurityCode(user.securityCode))) {
 		return createUser(user, { createRemote: remote, admin: true, skipSecurityCode: true });
 	}
 	throw { code: 403, msg: 'UNAUTHORIZED' };
@@ -279,7 +286,7 @@ export async function createUser(
 			throw new ErrorKM('USER_CREATION_DISABLED', 403, false);
 		}
 		if (!opts.admin && !opts.skipSecurityCode && getConfig().Frontend.RequireSecurityCodeForNewAccounts) {
-			if (user.securityCode !== getState().newAccountCode && user.securityCode !== getState().securityCode) {
+			if (!checkSecurityCode(user.securityCode, true)) {
 				throw new ErrorKM('USER_CREATION_WRONG_SECURITY_CODE', 403, false);
 			}
 			resetNewAccountCode();
@@ -368,7 +375,11 @@ async function newUserIntegrityChecks(user: User) {
 	if (user.type < 2 && !user.password) throw new ErrorKM('USER_EMPTY_PASSWORD', 400, false);
 	if (user.type === 2 && user.password) throw new ErrorKM('GUEST_WITH_PASSWORD', 400, false);
 	// Check if login already exists.
-	if ((await selectUsers({ singleUser: user.login }))[0] || (await checkNicknameExists(user.login))) {
+	if (
+		(await selectUsers({ singleUser: user.login }))[0] ||
+		(await checkNicknameExists(user.login)) ||
+		(await checkNicknameExists(user.nickname))
+	) {
 		logger.error(`User/nickname ${user.login} already exists, cannot create it`, { service });
 		throw new ErrorKM('USER_ALREADY_EXISTS', 409, false);
 	}
@@ -444,9 +455,7 @@ async function updateGuestAvatar(user: DBUser, random?: boolean) {
 				mimetype: null,
 				destination: null,
 				filename: null,
-				buffer: null,
 				size: null,
-				stream: null,
 			},
 			'admin',
 			{

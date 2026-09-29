@@ -17,7 +17,7 @@ import Task from '../lib/utils/taskManager.js';
 import { emitWS } from '../lib/utils/ws.js';
 import { getRepos } from '../services/repo.js';
 import { updateAllSmartPlaylists } from '../services/smartPlaylist.js';
-import { DBStats } from '../types/database/database.js';
+import { DBStatsApp } from '../types/database/database.js';
 import { checkDumpExists, initPG, isShutdownPG, restorePG } from '../utils/postgresql.js';
 import sentry from '../utils/sentry.js';
 import { getState, setState } from '../utils/state.js';
@@ -283,7 +283,7 @@ export async function resetUserData() {
 	logger.warn('User data has been reset!', { service });
 }
 
-export async function getStats(selectedRepos?: string[]): Promise<DBStats> {
+export async function getStats(selectedRepos?: string[]): Promise<DBStatsApp> {
 	const collectionClauses = [];
 	const collections = getConfig().Karaoke.Collections;
 	if (collections)
@@ -295,7 +295,7 @@ export async function getStats(selectedRepos?: string[]): Promise<DBStats> {
 	const res = await db().query(sqlGetStats(collectionClauses), [repos]);
 	// Bigints are returned as strings in node-postgres for now. So we'll turn it into a number here.
 	// See this issue : https://github.com/brianc/node-postgres/issues/2398
-	return { ...res.rows[0], total_media_size: +res.rows[0].total_media_size };
+	return { ...res.rows[0], mediasize: +res.rows[0].mediasize };
 }
 
 let generationInProgress = false;

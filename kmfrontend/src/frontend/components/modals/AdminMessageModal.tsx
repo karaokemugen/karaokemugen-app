@@ -1,5 +1,7 @@
 import './AdminMessageModal.scss';
 
+import { faCheck, faExclamationTriangle, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 import { useContext, useEffect, useState } from 'react';
 
@@ -56,7 +58,7 @@ function AdminMessageModal() {
 								closeModal(context.globalDispatch);
 							}}
 						>
-							<i className="fas fa-times" />
+							<FontAwesomeIcon icon={faTimes} />
 						</button>
 					</ul>
 					<div className="modal-body admin-message">
@@ -86,9 +88,9 @@ function AdminMessageModal() {
 						/>
 						<button className="btn btn-default confirm" onClick={onClick}>
 							{message.length === 0 ? (
-								<i className="fas fa-exclamation-triangle" />
+								<FontAwesomeIcon icon={faExclamationTriangle} />
 							) : (
-								<i className="fas fa-check" />
+								<FontAwesomeIcon icon={faCheck} />
 							)}
 							&nbsp;
 							{message.length === 0

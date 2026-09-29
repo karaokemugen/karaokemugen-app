@@ -64,7 +64,7 @@
 	"MENU_GOTO_SYSTEM": "&Bilah sistem",
 	"MENU_OPTIONS": "&Opsi",
 	"MENU_OPTIONS_CHECKFORUPDATES": "&Periksa pembaruan saat aplikasi menyala",
-	"MENU_OPTIONS_OPERATORCONFIG": "&Pengaturan",
+	"MENU_OPTIONS_OPERATORCONFIG": "& Pengaturan Operator",
 	"MENU_OPTIONS_SYSTEMCONFIG_OSX": "Pengaturan sistem…",
 	"MENU_OPTIONS_CHIBIPLAYER": "Tampilkan Pemutar Chibi",
 	"MENU_OPTIONS_CHIBIPLAYLIST": "Perlihatkan daftar putar terpisah",
@@ -94,7 +94,7 @@
 		"NORMAL": [
 			"Kamu bisa menggunakan tombol multimedia di papan ketikmu untuk mengendalikan karaoke!",
 			"Jangan lupa untuk memasang sabuk pengaman sebelum melakukan karaoke. Nyanyilah dengan aman dan hati-hati pengeras suara jatuh!",
-			"Jangan lupa untuk menyinkronkan basis data sewaktu-waktu; kamu mungkin menemukan beberapa lagu karaoke baru!",
+			"Jangan lupa sinkronkan basis data sesekali: kamu mungkin menemukan lagu-lagu baru!",
 			"Karaoke Mugen merupakan 100% proyek kolaboratif dengan sumber terbuka, semuanya dapat berpartisipasi!",
 			"Aku Nanamin, maskot Karaoke Mugen, dan aku dibuat oleh si hebat, Sedeto! http://www.sedeto.fr",
 			"Ada banyak pilihan untuk mengatur karaokemu! Luangkan waktu untuk meninjau semuanya sebelum memulai sebuah sesi!",
@@ -121,7 +121,7 @@
 		],
 		"ERRORS": [
 			"Kunjungi kami di Discord jika kamu butuh bantuan: https://karaokes.moe/discord",
-			"Mohon periksa apakah Karaoke Mugen aktif berjalan di latar belakang.",
+			"Silakan periksa apakah ada aplikasi Karaoke Mugen lain yang sedang berjalan di latar belakang.",
 			"Lihat catatan, alasan dibalik sebuah error mungkin ada didalamnya!",
 			"Tolong jangan panik, semuanya akan baik - baik saja"
 		]
@@ -145,7 +145,9 @@
 			"tidak melakukan apapun",
 			"di sebuah konvensi (didalam pikirannya)",
 			"Mengamati kereta lewat"
-		]
+		],
+		"QUIZ_IN_PROGRESS": "Kuis Musik sedang berlangsung!",
+		"QUIET!": "Diammm...!"
 	},
 	"UNKNOWN_ARTIST": "Artis tidak diketahui",
 	"REPOSITORY_ALREADY_EXISTS": {
@@ -179,7 +181,7 @@
 	"ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE": "TAMBAH SEBUAH LAGU KE DAFTAR PUTAR!",
 	"NEW_SESSION_NAME": "Karaoke pada {{date}}",
 	"FULLSCREEN_TIP": "Pencet F untuk keluar dari layar penuh.",
-	"NO_KARA_PLAYING": "Tidak ada karaoke yang dimainkan",
+	"NO_KARA_PLAYING": "Tidak ada lagu yang sedang diputar",
 	"INTERFACE_OPENED": "Buka",
 	"INTERFACE_RESTRICTED": "Tidak ada saran",
 	"INTERFACE_CLOSED": "Tutup",
@@ -195,7 +197,10 @@
 		},
 		"STAGES": {
 			"resolving": "Menyelesaikan delta",
-			"receiving": "Menerima data"
+			"receiving": "Menerima data",
+			"writing": "Menulis file",
+			"counting": "Menghitung file",
+			"updating": "Memperbarui file"
 		}
 	},
 	"OFFICIAL_WEBSITE": "Situs Web Resmi",
@@ -220,7 +225,7 @@
 		"Menyelaraskan mikrofon",
 		"Menghitung normalisasi gelombang audio",
 		"Mendinginkan minuman",
-		"Mengkalibrasi chrod vokal",
+		"Mengkalibrasi pita suara",
 		"Menemukan kota Karaokum Mugen-la yang hilang",
 		"Komputasi menjawab kehidupan, alam semesta, dan segalanya",
 		"Memulai konvektor waktu",
@@ -231,11 +236,44 @@
 		"Meningkatkan performa musik",
 		"Mengunduh Wikipedia",
 		"Memberi makan kucing",
-		"Mengonfigurasi fins"
+		"Mengonfigurasi fins",
+		"Menyerap kesalahan berpendar",
+		"Menangani serangan hati",
+		"Mengoleskan cokelat",
+		"Memasak pizza",
+		"Memasak burger",
+		"Memanaskan keju raclette",
+		"Memanggang sosis",
+		"Mengiris sosis",
+		"Membersihkan byte kuantik",
+		"Mengurus tetangga",
+		"Memanipulasi barometer",
+		"Mempercepat partikel yang berdendang",
+		"Menambah nanobot di udara"
 	],
 	"MIGRATION": "Migrasi",
 	"QUIZ_RULES": {
-		"SECONDS_other": "{{count}} detik"
+		"SECONDS_other": "{{count}} detik",
+		"TITLE": "ATURAN",
+		"SECONDS_one": "{{count}} detik",
+		"POINTS_one": "{{count}} poin",
+		"POINTS_other": "{{count}} banyak poin",
+		"BONUS_POINTS_one": "{{count}} poin bonus",
+		"BONUS_POINTS_other": "{{count}} poin bonus",
+		"GUESS_TIME": "Tebak lagu yang sedang diputar dalam waktu kurang dari <1>$t(QUIZ_RULES.SECONDS, {\"count\": {{seconds}} })</1>.",
+		"SCORE": "PENILAIAN",
+		"QUICK_ANSWER": "- Jawaban cepat yang benar ( < <1>$t(QUIZ_RULES.SECONDS, {\"count\": {{seconds}} })</1>): <1>$t(QUIZ_RULES.BONUS_POINTS, {\"count\": {{points}} })</1>.",
+		"ACCEPTED_ANSWERS": "Jawaban yang diterima:",
+		"ACCEPTED_ANSWERS_POINTS": "($t(QUIZ_RULES.POINTS, {\"count\": {{points}} }))",
+		"END_GAME": "PERMAINAN BERAKHIR",
+		"MAX_SCORE": "- Ketika seseorang memenangkan <1>$t(QUIZ_RULES.POINTS, {\"count\": {{points}} })</1>",
+		"SONGS_one": "<1>{{count}} lagu</1>",
+		"SONGS_other": "<1>{{count}} lagu</1>",
+		"MAX_SONGS": "- Dalam <1>$t(QUIZ_RULES.SONGS, {\"count\": {{songs}} })</1>",
+		"MINUTES_one": "<1>{{count}} menit</1>",
+		"MINUTES_other": "<1>{{count}} menit</1>",
+		"DURATION": "- Dalam <1>$t(QUIZ_RULES.MINUTES, {\"count\": {{duration}} })</1>",
+		"END_OF_PLAYLIST": "- Ketika playlist mencapai akhirnya"
 	},
 	"LIBRARY": "Pustaka",
 	"TAG_TYPES": {
@@ -255,9 +293,43 @@
 		"VERSIONS": "Versi",
 		"WARNINGS": "Peringatan",
 		"FRANCHISES": "Waralaba",
-		"COLLECTIONS": "Koleksi"
+		"COLLECTIONS": "Koleksi",
+		"FAMILIES": "Konten Video"
 	},
 	"YEAR": "Tahun",
 	"TITLE": "Judul",
-	"UNKNOWN": "Tidak diketahui"
+	"UNKNOWN": "Tidak diketahui",
+	"FALLBACK": "Cadangan",
+	"GO_TO_QUIZ_MODE": "Kunjungi surl untuk bermain!",
+	"MENU_WINDOW_PLAYERMONITOR": "Tampilkan Monitor Pemain",
+	"MENU_HELP_TUTORIAL": "Operator dan Panduan",
+	"MENU_OPTIONS_CHIBIRANKING": "Tampilkan peringkat kuis terpisah",
+	"MENU_OPTIONS_CHIBIRANKING_LINK": "Salin tautan ke peringkat kuis terpisah",
+	"MOVED_USER_DIR_DIALOG": {
+		"TITLE": "Folder pengguna telah dipindahkan!",
+		"DETAIL": "Agar sesuai dengan standar sistem operasi Anda, folder User Data telah dipindahkan. Sebelumnya, lokasinya adalah:\n\n{{oldDir}}\n\nSekarang menjadi:\n\n{{newDir}}\n\nJika Anda seorang streamer, Anda mungkin perlu memperbarui layout OBS Anda agar mengarah ke file teks yang benar di lokasi barunya.",
+		"UNDERSTOOD": "Oke!"
+	},
+	"MOVED_USER_DIR_FLATPAK_DIALOG": {
+		"TITLE": "Pengguna Flatpak!",
+		"DETAIL": "Isi folder pengguna telah dipindahkan, tetapi karena Anda menggunakan versi Flatpak dari Karaoke Mugen, aplikasi tidak dapat menghapus folder lama secara otomatis. Anda perlu menghapusnya sendiri di sini:\n\n{{oldDir}}\n\n(Folder ini seharusnya sudah kosong!)",
+		"UNDERSTOOD": "Oke! Akan aku lakukan sebelum lupa!"
+	},
+	"MOVING_USER_DIR_ERROR_DIALOG": {
+		"TITLE": "Tidak dapat memindahkan folder data Karaoke Mugen",
+		"DETAIL": "Folder data Karaoke Mugen telah dipindahkan. Sebelumnya, lokasinya adalah:\n\n{{oldDir}}\n\nSekarang menjadi:\n\n{{newDir}}\n\nTerjadi kesalahan saat mencoba memindahkan folder tersebut. Anda sebaiknya klik \"Keluar\" dan pindahkan folder tersebut secara manual.\n\nAnda juga bisa klik \"Lanjutkan\". Jika Anda melakukannya, Anda akan memulai dari awal dengan folder data yang baru. Kami menyarankan Anda menghapus folder lama yang ditampilkan di atas setelahnya.",
+		"CONTINUE": "Lanjutkan",
+		"QUIT": "Keluar"
+	},
+	"DATABASE_IN_THE_FUTURE_ERROR": {
+		"TITLE": "Database-nya ada di masa depan, Marty!",
+		"DETAIL": "Database yang coba diakses oleh Karaoke Mugen telah digunakan oleh versi aplikasi yang lebih baru dan tidak kompatibel. Mari kita coba perbaiki itu.\n\nJika Anda klik \"BATALKAN\", aplikasi akan ditutup tanpa melakukan apa pun. Anda sebaiknya menjalankan versi Karaoke Mugen yang lebih baru.\n\nJika Anda klik \"HAPUS semua data\", aplikasi akan MENGHAPUS playlist, pengguna lokal, statistik, dll. dan memulai secara normal.",
+		"DELETE_ALL_DATA": "HAPUS semua data",
+		"CONTINUE_ANYWAY": "Lanjutkan dengan risiko Anda sendiri"
+	},
+	"GOOD_ANSWER": "Jawaban yang bagus",
+	"QUIZ_SCORES": {
+		"SCORES": "SKOR"
+	},
+	"KARAOKE_MUGEN_PLAYER_WINDOW_TITLE": "Karaoke Mugen Player"
 }

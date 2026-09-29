@@ -36,7 +36,7 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 
 	refresh = async () => {
 		const res = await commandBackend(WS_CMD.GET_REPOS);
-		this.setState({ repositories: res });
+		this.setState({ repositories: res as Repository[] });
 	};
 
 	deleteRepository = async (repository: Repository) => {
@@ -223,7 +223,7 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 					<Link to={`/system/repositories/${record.Name}`}>
 						<Button type="primary" icon={<EditOutlined />} />
 					</Link>
-					{this.state.repositories.length > 1 ? (
+					{this.state.repositories.length > 1 && !record.System ? (
 						<>
 							<Divider orientation="vertical" />
 							<Button

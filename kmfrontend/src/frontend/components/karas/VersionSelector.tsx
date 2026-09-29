@@ -1,5 +1,7 @@
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { DBKara } from '../../../../../src/lib/types/database/kara';
@@ -35,8 +37,11 @@ export default function VersionSelector(props: Props) {
 	const context = useContext(GlobalContext);
 	const navigate = useNavigate();
 	const { kid: id } = useParams();
+	const isAddingKara = useRef(false);
 
 	const addKara = async (e, kara) => {
+		if (isAddingKara.current) return;
+		isAddingKara.current = true;
 		try {
 			e.stopPropagation();
 			const res = await commandBackend(WS_CMD.ADD_KARA_TO_PUBLIC_PLAYLIST, {
@@ -45,6 +50,8 @@ export default function VersionSelector(props: Props) {
 			PLCCallback(res, context, kara, props.scope);
 		} catch (_) {
 			// already display
+		} finally {
+			isAddingKara.current = false;
 		}
 	};
 
@@ -81,7 +88,7 @@ export default function VersionSelector(props: Props) {
 				<div className="modal-content">
 					<div className="modal-header public-modal">
 						<button className="closeModal" type="button" onClick={goBack}>
-							<i className="fas fa-arrow-left" />
+							<FontAwesomeIcon icon={faArrowLeft} />
 						</button>
 						<h4 className="modal-title">
 							{getTitleInLocale(

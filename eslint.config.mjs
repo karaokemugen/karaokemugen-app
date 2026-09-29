@@ -3,7 +3,6 @@
 import js from '@eslint/js';
 import ts from 'typescript-eslint';
 import security from 'eslint-plugin-security';
-import prettierConfig from 'eslint-config-prettier';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import globals from 'globals';
 import stylistic from '@stylistic/eslint-plugin';
@@ -11,7 +10,6 @@ import stylistic from '@stylistic/eslint-plugin';
 export default ts.config(
 	js.configs.recommended,
 	security.configs.recommended,
-	prettierConfig,
 	...ts.configs.recommended,
 	{
 		plugins: {
@@ -125,7 +123,6 @@ export default ts.config(
 			},
 			parser: ts.parser,
 			parserOptions: {
-				tsconfigRootDir: __dirname,
 				ecmaVersion: 2020,
 				project: true,
 			},

@@ -16,7 +16,7 @@ import { Link } from 'react-router-dom';
 
 import { DBKara, DBKaraTag } from '../../../../../src/lib/types/database/kara';
 import { DBTag } from '../../../../../src/lib/types/database/tag';
-import { DBStats } from '../../../../../src/types/database/database';
+import { DBStatsApp } from '../../../../../src/types/database/database';
 import { DBDownload } from '../../../../../src/types/database/download';
 import { KaraDownloadRequest } from '../../../../../src/types/download';
 import GlobalContext from '../../../store/context';
@@ -39,7 +39,7 @@ function KaraDownload() {
 	const context = useContext(GlobalContext);
 
 	const [karas, setKaras] = useState<DBKara[]>([]);
-	const [i18n, setI18n] = useState([]);
+	const [i18n, setI18n] = useState<Record<string, Record<string, string>>>({});
 	const [karasCount, setKarasCount] = useState(0);
 	const [karasQueue, setKarasQueue] = useState<DBDownload[]>([]);
 	const [currentPage, setCurrentPage] = useState(parseInt(localStorage.getItem('karaDownloadPage')) || 1);
@@ -84,7 +84,7 @@ function KaraDownload() {
 	}, [direction, currentPage, currentPageSize, downloadStatus]);
 
 	const getRepositories = async () => {
-		const res: Repository[] = await commandBackend(WS_CMD.GET_REPOS);
+		const res = (await commandBackend(WS_CMD.GET_REPOS)) as Repository[];
 		setRepositories(
 			res
 				.filter(r => r.Online)
@@ -146,10 +146,10 @@ function KaraDownload() {
 				WS_CMD.GET_KARAS,
 				{
 					filter: filter,
-					q: `${tagFilter}!m:${downloadStatus}`,
+					q: `${tagFilter ? `${tagFilter}!` : ''}m:${downloadStatus}`,
 					from: pfrom,
 					size: psz,
-					order: order,
+					order: order || undefined,
 					direction: direction,
 				},
 				false,
@@ -165,7 +165,7 @@ function KaraDownload() {
 
 	const getTotalMediaSize = async () => {
 		try {
-			const res: DBStats = await commandBackend(
+			const res: DBStatsApp = await commandBackend(
 				WS_CMD.GET_STATS,
 				{
 					repoNames: selectedRepositories?.length > 0 ? selectedRepositories : undefined,
@@ -173,7 +173,7 @@ function KaraDownload() {
 				false,
 				300000
 			);
-			setTotalMediaSize(prettyBytes(res.total_media_size));
+			setTotalMediaSize(prettyBytes(res.mediasize));
 		} catch (_) {
 			// already display
 		}

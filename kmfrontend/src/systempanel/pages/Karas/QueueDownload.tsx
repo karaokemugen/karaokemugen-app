@@ -27,7 +27,7 @@ function QueueDownload() {
 	const context = useContext(GlobalContext);
 
 	const [karas, setKaras] = useState<DBKara[]>([]);
-	const [i18n, setI18n] = useState([]);
+	const [i18n, setI18n] = useState<Record<string, Record<string, string>>>({});
 	const [karasCount, setKarasCount] = useState(0);
 	const [karasQueue, setKarasQueue] = useState<DBDownload[]>([]);
 	const [currentPage, setCurrentPage] = useState(1);
@@ -90,7 +90,7 @@ function QueueDownload() {
 				WS_CMD.GET_KARAS,
 				{
 					filter: filter,
-					q: `${tagFilter}!m:DOWNLOADING`,
+					q: `${tagFilter ? `${tagFilter}!` : ''}m:DOWNLOADING`,
 					from: pfrom,
 					size: psz,
 				},

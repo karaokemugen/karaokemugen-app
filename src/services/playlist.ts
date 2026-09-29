@@ -46,6 +46,7 @@ import { formatKaraList } from '../lib/services/kara.js';
 import { PLImportConstraints } from '../lib/services/playlist.js';
 import { DBKara, DBKaraBase } from '../lib/types/database/kara.js';
 import { DBPLC, DBPLCBase, PLCInsert } from '../lib/types/database/playlist.js';
+import { KaraList } from '../lib/types/kara.js';
 import { PlaylistExport, PLCEditParams } from '../lib/types/playlist.js';
 import { OldJWTToken, User } from '../lib/types/user.js';
 import { getConfig, resolvedPathRepos } from '../lib/utils/config.js';
@@ -80,6 +81,7 @@ import {
 	whitelistHook,
 } from './smartPlaylist.js';
 import { getUser, getUsers, updateSongsLeft } from './user.js';
+import { createUserFromRemotePublicProfile } from './userOnline.js';
 import dayjs from 'dayjs';
 import { editConfig } from '../utils/config.js';
 
@@ -92,7 +94,7 @@ export async function autoRemoveSongsFromCurrentPlaylist() {
 	if (conf.Playlist.CurrentPlaylistAutoRemoveSongs === 0) return;
 	const plaid = getState().currentPlaid;
 	const [pl, plInfo] = await Promise.all([
-		getPlaylistContentsMicro(plaid, undefined, adminToken),
+		getPlaylistContentsMicro(plaid, adminToken),
 		getPlaylistInfo(plaid),
 	]);
 	const currentPLCID = plInfo.plcid_playing;
@@ -521,7 +523,7 @@ export async function editPlaylist(plaid: string, playlist: Partial<DBPL>, refre
 				try {
 					validateCriterias(cs, newPL);
 				} catch (err) {
-					// We change the message to say you can't chagne the smart type due to conflicting criterias
+					// We change the message to say you can't change the smart type due to conflicting criterias
 					if (err.code === 409) err.message === 'TYPE_SMART_CHANGE_CONFLICTING_CRITERIAS_ERROR';
 					throw err;
 				}
@@ -642,12 +644,12 @@ export async function updateAllPlaylistDurations() {
 /** Get a tiny amount of data from a PLC
  * After Mini-PL, Micro-PL, we need the PL-C format.
  */
-export async function getPlaylistContentsMicro(plaid: string, username?: string, token?: OldJWTToken) {
+export async function getPlaylistContentsMicro(plaid: string, token?: OldJWTToken) {
 	try {
 		const pl = await getPlaylistInfo(plaid, token);
 		// Playlist isn't visible to user, throw.
 		if (!pl) throw new ErrorKM('UNKNOWN_PLAYLIST', 404, false);
-		return await selectPlaylistContentsMicro(plaid, username);
+		return await selectPlaylistContentsMicro(plaid);
 	} catch (err) {
 		logger.error(`Error fetching playlist micro contents : ${err}`, { service });
 		sentry.error(err);
@@ -667,7 +669,7 @@ export async function getPlaylistContents(
 	orderByLikes = false,
 	incomingSongs = false,
 	filterByUser?: string
-) {
+): Promise<KaraList<DBPLC>> {
 	try {
 		profile('getPLC');
 		await getPlaylistInfo(plaid, token);
@@ -689,7 +691,7 @@ export async function getPlaylistContents(
 		}
 		profile('getPLC');
 		const count = pl.length > 0 ? pl[0].count : 0;
-		return formatKaraList(pl, from, count);
+		return formatKaraList(pl, from, count) as KaraList<DBPLC>;
 	} catch (err) {
 		logger.error(`Error fetching playlist contents : ${err}`, { service });
 		sentry.error(err);
@@ -726,7 +728,9 @@ export async function addKaraToPlaylist(params: AddKaraParams) {
 		throwOnMissingKara: false,
 		visible: true,
 		...params,
+		kids: [...new Set(params.kids)]
 	};
+
 	try {
 		const requester = params.requester.toLowerCase();
 		const conf = getConfig();
@@ -1048,6 +1052,7 @@ export async function removeKaraFromPlaylist(
 	profile('deleteKara');
 	// If we get a single song, it's a user deleting it (most probably)
 	try {
+		if (plc_ids.length === 0) return;
 		const usersNeedingUpdate: Set<string> = new Set();
 		const playlistsNeedingUpdate: Set<string> = new Set();
 		const plcsNeedingDelete: any[] = [];
@@ -1212,7 +1217,7 @@ export async function editPLC(plc_ids: number[], params: PLCEditParams, refresh 
 			plsUpdated.add(plc.plaid);
 		}
 		const songsLeftToUpdate: Set<any> = new Set();
-		const PLCsToDeleteFromCurrent = [];
+		const PLCsToDeleteFromCurrent: number[] = [];
 		let currentPlaylist: DBPLCBase[] = [];
 		if (params.flag_accepted === false || params.flag_refused === true) {
 			// If we are cancelling flag_accepted, we'll need to remove songs from the current playlist
@@ -1245,7 +1250,7 @@ export async function editPLC(plc_ids: number[], params: PLCEditParams, refresh 
 				const currentPLC = currentPlaylist.find(
 					curplc => curplc.kid === plc.kid && curplc.username === plc.username
 				);
-				if (currentPLC) PLCsToDeleteFromCurrent.push(plc_ids);
+				if (currentPLC) PLCsToDeleteFromCurrent.push(currentPLC.plcid);
 			}
 			await updatePLCAccepted(plc_ids, params.flag_accepted);
 		}
@@ -1254,13 +1259,13 @@ export async function editPLC(plc_ids: number[], params: PLCEditParams, refresh 
 				const currentPLC = currentPlaylist.find(
 					curplc => curplc.kid === plc.kid && curplc.username === plc.username
 				);
-				if (currentPLC) PLCsToDeleteFromCurrent.push(plc_ids);
+				if (currentPLC) PLCsToDeleteFromCurrent.push(currentPLC.plcid);
 			}
 			params.flag_free = true;
 			await Promise.all([updatePLCAccepted(plc_ids, false), updatePLCRefused(plc_ids, true)]);
 		}
 		if (PLCsToDeleteFromCurrent.length > 0) {
-			removeKaraFromPlaylist(PLCsToDeleteFromCurrent, adminToken).catch(() => {});
+			removeKaraFromPlaylist([...new Set(PLCsToDeleteFromCurrent)], adminToken).catch(() => {});
 		}
 		if (params.flag_refused === false) {
 			await updatePLCRefused(plc_ids, params.flag_refused);
@@ -1369,6 +1374,10 @@ export async function importPlaylist(playlist: PlaylistExport, username: string)
 	});
 	try {
 		logger.debug('Importing playlist', { service, obj: playlist });
+		for (const plc of playlist?.PlaylistContents || []) {
+			// Playlist from kmserver can have null on flag_visible, which causes errors
+			plc.flag_visible = plc.flag_visible ?? true;
+		}
 		const validationErrors = check(playlist, PLImportConstraints);
 		if (validationErrors) {
 			logger.error(`Invalid data from an imported playlist : ${JSON.stringify(validationErrors)}`, { service });
@@ -1387,14 +1396,14 @@ export async function importPlaylist(playlist: PlaylistExport, username: string)
 			let user = users.get(kara.username);
 			if (!user) {
 				user = await getUser(kara.username);
-				if (!user) {
-					// If user isn't found locally, replacing it with admin user
-					kara.username = kara.username = 'admin';
-					user = await getUser('admin');
-					kara.nickname = user.nickname;
-				}
-				users.set(user.login, user);
+				// Unknown online user: try creating it locally from its public profile
+				if (!user && kara.username.includes('@')) user = await createUserFromRemotePublicProfile(kara.username);
+				// If user isn't found, replacing it with admin user
+				if (!user) user = await getUser('admin');
+				users.set(kara.username, user);
 			}
+			kara.username = user.login;
+			kara.nickname = user.nickname;
 			if (kara.flag_playing === true) {
 				if (flag_playingDetected) {
 					throw new ErrorKM('INVALID_DATA', 400);
@@ -1864,13 +1873,13 @@ export async function createAutoMix(params: AutoMixParams, username: string): Pr
 		// If this doesn't give expected results due to async optimizations (for years and/or karas) we should try using Maps or Sets instead of arrays. Or use .push on each element
 		const uniqueList = new Map<string, DBPLC>();
 		let allUsers = [];
-		if (params.filters?.usersFavorites?.includes('*') || params.filters?.usersAnimeList?.includes('*')) {
+		if (params.filters.usersFavorites?.includes('*') || params.filters.usersAnimeList?.includes('*')) {
 			allUsers = await getUsers({ full: true });
 			// Filter all logged in users that are not guests
 			// Guests have no rights! :p
 			allUsers = allUsers.filter(e => e.flag_logged_in === true && e.type < 2).map(e => e.login);
 		}
-		if (params.filters?.usersFavorites) {
+		if (params.filters.usersFavorites) {
 			let users = params.filters.usersFavorites;
 			if (users.includes('*')) {
 				// Remove the joker user, concatenate all users and make it a unique list
@@ -1880,7 +1889,7 @@ export async function createAutoMix(params: AutoMixParams, username: string): Pr
 			favs = shuffle(favs);
 			favs.forEach(f => uniqueList.set(f.kid, f as any));
 		}
-		if (params.filters?.usersAnimeList) {
+		if (params.filters.usersAnimeList) {
 			let users = params.filters.usersAnimeList;
 			if (users.includes('*')) {
 				// Remove the joker user, concatenate all users and make it a unique list
@@ -1895,7 +1904,7 @@ export async function createAutoMix(params: AutoMixParams, username: string): Pr
 			}
 		}
 		let karaTags: DBKara[] = [];
-		if (params.filters?.tags) {
+		if (params.filters.tags) {
 			for (const tagAndType of params.filters.tags) {
 				const tag = `${tagAndType.tid}~${tagAndType.type}`;
 				const karas = await getKaras({
@@ -1908,7 +1917,7 @@ export async function createAutoMix(params: AutoMixParams, username: string): Pr
 			karaTags.forEach(k => uniqueList.set(k.kid, k as any));
 		}
 		let years: DBKara[] = [];
-		if (params.filters?.years) {
+		if (params.filters.years) {
 			for (const year of params.filters.years) {
 				const karas = await getKaras({
 					q: `y:${year}`,

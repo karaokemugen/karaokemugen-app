@@ -1,12 +1,26 @@
 import './QuizModal.scss';
 
+import {
+	faCalendarDays,
+	faCheck,
+	faCopy,
+	faMusic,
+	faPencil,
+	faPersonCircleMinus,
+	faPlayCircle,
+	faTimes,
+	faTrash,
+	faWarning,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
-import { merge } from 'lodash';
+import merge from 'lodash/merge';
 import { ChangeEvent, MouseEvent, useContext, useState } from 'react';
 import { useAsyncMemo } from 'use-async-memo';
 
 import type { User } from '../../../../../src/lib/types/user';
 import type { QuizGameConfig } from '../../../../../src/types/config';
+import { DBPL } from '../../../../../src/types/database/playlist';
 import type { BlindMode } from '../../../../../src/types/player';
 import type { Game, GameTotalScore } from '../../../../../src/types/quiz';
 import { closeModal } from '../../../store/actions/modal';
@@ -16,8 +30,8 @@ import { getPlaylistIcon } from '../../../utils/playlist';
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 import { displayMessage } from '../../../utils/tools';
-import SelectWithIcon from '../generic/SelectWithIcon';
 import { WS_CMD } from '../../../utils/ws.mjs';
+import SelectWithIcon from '../generic/SelectWithIcon';
 
 type RecursivePartial<T> = {
 	[P in keyof T]?: T[P] extends (infer U)[]
@@ -32,7 +46,7 @@ interface IProps {
 }
 
 interface GameUserTotalScore extends GameTotalScore {
-	nickname: string;
+	nickname?: string;
 }
 
 export default function QuizModal(props: IProps) {
@@ -49,7 +63,7 @@ export default function QuizModal(props: IProps) {
 		}
 	};
 
-	const playlists = useAsyncMemo<PlaylistElem[]>(
+	const playlists = useAsyncMemo<DBPL[]>(
 		async () => {
 			return await commandBackend(WS_CMD.GET_PLAYLISTS);
 		},
@@ -205,7 +219,7 @@ export default function QuizModal(props: IProps) {
 					<ul className="modal-header">
 						<h2 className="modal-title">{i18next.t('MODAL.START_QUIZ.TITLE')}</h2>
 						<button className="closeModal" onClick={closeModalWithContext}>
-							<i className="fas fa-times"></i>
+							<FontAwesomeIcon icon={faTimes} />
 						</button>
 					</ul>
 					<div className="modal-body">
@@ -573,7 +587,7 @@ export default function QuizModal(props: IProps) {
 											/>
 										</div>
 										<label className="filterLabel" htmlFor="quiz-accept-title">
-											<i className="fas fa-music" />{' '}
+											<FontAwesomeIcon icon={faMusic} />{' '}
 											{i18next.t(`MODAL.START_QUIZ.ANSWERS.ANSWER_TITLE`)}
 										</label>
 										<input
@@ -627,7 +641,7 @@ export default function QuizModal(props: IProps) {
 													/>
 												</div>
 												<label className="filterLabel" htmlFor={`quiz-accept-${obj.karajson}`}>
-													<i className={`fas fa-${obj.icon}`} />{' '}
+													<FontAwesomeIcon icon={obj.icon} />{' '}
 													{i18next.t(`TAG_TYPES.${key}_other`)}
 												</label>
 												<input
@@ -671,7 +685,7 @@ export default function QuizModal(props: IProps) {
 											/>
 										</div>
 										<label className="filterLabel" htmlFor="quiz-accept-year">
-											<i className="fas fa-calendar-days" /> {i18next.t(`KARA.YEAR`)}
+											<FontAwesomeIcon icon={faCalendarDays} /> {i18next.t(`KARA.YEAR`)}
 										</label>
 										<input
 											className="filterInput"
@@ -809,29 +823,30 @@ export default function QuizModal(props: IProps) {
 					{gameLoaded ? (
 						<div className="btn-group fluid">
 							<button className="btn btn-default" onClick={editGame}>
-								<i className="fas fa-pencil" />{' '}
+								<FontAwesomeIcon icon={faPencil} />{' '}
 								{gameEdition
 									? i18next.t('MODAL.START_QUIZ.BUTTONS.CANCEL_EDIT')
 									: i18next.t('MODAL.START_QUIZ.BUTTONS.EDIT')}
 							</button>
 							<button className="btn btn-success" onClick={copyGame}>
-								<i className="fas fa-copy" /> {i18next.t('MODAL.START_QUIZ.BUTTONS.COPY')}
+								<FontAwesomeIcon icon={faCopy} /> {i18next.t('MODAL.START_QUIZ.BUTTONS.COPY')}
 							</button>
 							<button className="btn btn-danger-low" onClick={resetScores}>
-								<i className="fas fa-person-circle-minus" />{' '}
+								<FontAwesomeIcon icon={faPersonCircleMinus} />{' '}
 								{i18next.t('MODAL.START_QUIZ.BUTTONS.DELETE_SCORES')}
 							</button>
 							<button className="btn btn-danger" onClick={deleteGame}>
-								<i className="fas fa-trash" /> {i18next.t('MODAL.START_QUIZ.BUTTONS.DELETE')}
+								<FontAwesomeIcon icon={faTrash} /> {i18next.t('MODAL.START_QUIZ.BUTTONS.DELETE')}
 							</button>
 							<button className="btn btn-primary" onClick={continueGame}>
 								{gamePlaylist == null ? (
 									<>
-										<i className="fas fa-warning" /> {i18next.t('MODAL.START_QUIZ.EMPTY_PLAYLIST')}
+										<FontAwesomeIcon icon={faWarning} />{' '}
+										{i18next.t('MODAL.START_QUIZ.EMPTY_PLAYLIST')}
 									</>
 								) : (
 									<>
-										<i className="fas fa-play-circle" />{' '}
+										<FontAwesomeIcon icon={faPlayCircle} />{' '}
 										{i18next.t('MODAL.START_QUIZ.BUTTONS.RESUME')}
 									</>
 								)}
@@ -841,15 +856,16 @@ export default function QuizModal(props: IProps) {
 						<button className="btn btn-default confirm" onClick={createGame}>
 							{gameName === '' ? (
 								<>
-									<i className="fas fa-warning" /> {i18next.t('MODAL.START_QUIZ.EMPTY_NAME')}
+									<FontAwesomeIcon icon={faWarning} /> {i18next.t('MODAL.START_QUIZ.EMPTY_NAME')}
 								</>
 							) : gamePlaylist == null ? (
 								<>
-									<i className="fas fa-warning" /> {i18next.t('MODAL.START_QUIZ.EMPTY_PLAYLIST')}
+									<FontAwesomeIcon icon={faWarning} /> {i18next.t('MODAL.START_QUIZ.EMPTY_PLAYLIST')}
 								</>
 							) : (
 								<>
-									<i className="fas fa-check" /> {i18next.t('MODAL.START_QUIZ.BUTTONS.CREATE_START')}
+									<FontAwesomeIcon icon={faCheck} />{' '}
+									{i18next.t('MODAL.START_QUIZ.BUTTONS.CREATE_START')}
 								</>
 							)}
 						</button>

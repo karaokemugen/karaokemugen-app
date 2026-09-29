@@ -15,14 +15,13 @@ import semver from 'semver';
 import { getSettings, saveSetting } from '../lib/dao/database.js';
 import { readRepoManifest, selectRepositoryManifest } from '../lib/dao/repo.js';
 import { readAllKaras } from '../lib/services/generation.js';
-import { Repository } from '../lib/types/repo.js';
 import { getConfig, resolvedPath, resolvedPathRepos, setConfig } from '../lib/utils/config.js';
 import { uuidRegexp } from '../lib/utils/constants.js';
 import { listAllFiles, sanitizeFile } from '../lib/utils/files.js';
 import logger from '../lib/utils/logger.js';
 import Task from '../lib/utils/taskManager.js';
 import { medias } from '../services/playlistMedias.js';
-import { editRepo, getRepo, getRepos } from '../services/repo.js';
+import { editRepo, getRepos } from '../services/repo.js';
 import { resolvedMediaPath } from './config.js';
 import { getState, setState } from './state.js';
 
@@ -242,21 +241,6 @@ export function moveUserDir(newDir: string) {
 			rmdirSync(oldDir);
 		}
 		setState({ movedUserDir: true });
-	}
-}
-
-/** Remove in KM 10.0 */
-export function updateKaraMoeSecureConfig() {
-	let repo: Repository;
-	try {
-		repo = getRepo('kara.moe');
-	} catch (err) {
-		// No repository found. It's daijoubou.
-		return;
-	}
-	if (repo && repo.Secure === undefined) {
-		repo.Secure = true;
-		editRepo('kara.moe', repo, false, false);
 	}
 }
 

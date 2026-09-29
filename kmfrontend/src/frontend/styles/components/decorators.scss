@@ -149,7 +149,8 @@
 					cursor: pointer;
 				}
 
-				i {
+				i,
+				.svg-inline--fa {
 					opacity: 0.8;
 					cursor: default;
 				}
@@ -241,7 +242,8 @@
 
 		&.mobile {
 			z-index: unset;
-			i {
+			i,
+			.svg-inline--fa {
 				margin-left: 1em;
 				margin-right: 1em;
 			}
