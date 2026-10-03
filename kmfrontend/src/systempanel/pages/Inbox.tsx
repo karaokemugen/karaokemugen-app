@@ -55,7 +55,7 @@ export default function Inbox() {
 		if (repoList.length > 0) {
 			try {
 				setLoading(true);
-				const res = await commandBackend(WS_CMD.GET_INBOX, { repoName: instance.Name });
+				const res = await commandBackend(WS_CMD.GET_INBOX, { repoName: instance.Name }, false, 60000);
 				setLoading(false);
 				setInbox(res);
 			} catch (_) {
