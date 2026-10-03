@@ -3,7 +3,9 @@
 		"CONFIRM": "Confirmar",
 		"SIGN_UP": "Registrarse",
 		"LOG_IN": "Iniciar sesión",
-		"CONTINUE": "Continuar"
+		"CONTINUE": "Continuar",
+		"SAVE_AND_CONTINUE": "Guardar y continuar",
+		"FINISH": "Terminar"
 	},
 	"OPTIONS": "Opciones",
 	"SHUTDOWN_POPUP": "Conexión perdida con Karaoke Mugen",
@@ -219,7 +221,9 @@
 			"NEXT_SONGINFO_POSITION_X": "Posición horizontal",
 			"NEXT_SONGINFO_POSITION_Y": "Posición vertical",
 			"BLUR_VIDEO_ON_WARNING_TAG": "Vídeos borrosos con etiquetas de advertencia",
-			"BLUR_VIDEO_ON_WARNING_TAG_TOOLTIP": "Aplica el filtro de desenfoque a los vídeos con una etiqueta de advertencia que puedan ser potencialmente peligrosos. Esto podría provocar interrupciones en ordenadores menos potentes."
+			"BLUR_VIDEO_ON_WARNING_TAG_TOOLTIP": "Aplica el filtro de desenfoque a los vídeos con una etiqueta de advertencia que puedan ser potencialmente peligrosos. Esto podría provocar interrupciones en ordenadores menos potentes.",
+			"DISPLAY_SONGINFO_PERMANENT": "Mostrar la información de la canción en pantalla durante toda la canción",
+			"DISPLAY_SONGINFO_PERMANENT_TOOLTIP": "Mostrar información de la canción y el avatar de quien la solicitó en pantalla durante toda la canción. (incluirá información de conexión y el banner de Karaoke Mugen, si están habilitados)"
 		},
 		"SYSTEMPANEL_TIP": "No encuentras las opciones que buscas? <2>Algunas opciones ahora están en <3>panel de sistema</3>.</2>",
 		"KARAOKE": {
@@ -1219,8 +1223,54 @@
 			"ONLINE_ACCOUNT": "En línea",
 			"WELCOME": "¡Bienvenido a Karaoke Mugen!",
 			"ONLINE_ACCOUNT_DESC": "Una cuenta en línea le permite:",
-			"LOCAL_ACCOUNT": "Local"
-		}
+			"LOCAL_ACCOUNT": "Local",
+			"ONLINE_ACCOUNT_FAVORITES": "Respalda tus favoritas en línea",
+			"ONLINE_ACCOUNT_PLAYLISTS": "Sube tus listas de reproducción",
+			"ONLINE_ACCOUNT_OTHER_SESSIONS": "Inicia sesión desde cualquier otra sesión de Karaoke Mugen",
+			"CHOOSE_ACCOUNT": "Por favor, elige si deseas una cuenta de usuario local o en línea. Si ya tienes una cuenta en línea en un servidor de Karaoke Mugen, como mugen.re, selecciona «En línea»."
+		},
+		"ONLINE_SERVER": {
+			"SELECT": "Selecciona un servidor para tu cuenta.",
+			"DESCRIPTION": "Los servidores alojan tu información, como tus credenciales, favoritos, listas de reproducción y estadísticas.",
+			"HINT": "CONSEJO: ¡Deberías elegir uno con canciones que te gusten para poder marcarlas como favoritas más tarde!",
+			"LIST": "Lista de servidores conocidos de Karaoke Mugen:",
+			"OTHER": "Otros",
+			"OTHER_INPUT": "Ingrese el nombre de dominio de su servidor:",
+			"INSTANCE_one": "{{instance}} (canción: {{songs}})",
+			"INSTANCE_other": "{{instance}} (canciones: {{songs}})",
+			"INSTANCE_FORMAT_ERROR": "El nombre de dominio debe contener un .",
+			"OFFLINE": "Fuera de línea por ahora; intenta añadirlo más tarde"
+		},
+		"REPOSITORY": {
+			"SELECT": "Por favor, seleccione su fuente principal de canciones",
+			"DESCRIPTION": "Puedes añadir o eliminar bases de datos de canciones más adelante desde el Panel del sistema.",
+			"OWN_SONGS": "Tengo mis propias canciones",
+			"ONLINE_REPOSITORY": "Quiero utilizar canciones de un repositorio en línea",
+			"LIST": "Lista de servidores de Karaoke Mugen conocidos con repositorios de canciones:"
+		},
+		"MEDIA_STORAGE": {
+			"TITLE": "Almacenamiento",
+			"DESCRIPTION": "Las canciones de repositorios en línea pueden ocupar mucho espacio. ¿Desea almacenar los archivos de audio de las canciones en otra ubicación de su equipo?",
+			"CHANGE_LATER": "Puedes cambiar esta carpeta en cualquier momento."
+		},
+		"REMOTE_ACCESS": {
+			"TITLE": "Acceso remoto",
+			"DESCRIPTION": "Al habilitar el acceso remoto, permitirás que los usuarios accedan a tu sesión de Karaoke Mugen mediante una URL corta y fácil de recordar. Selecciona un servidor de Karaoke Mugen para tu acceso remoto.",
+			"DESCRIPTION_GUESTS": "Los invitados solo podrán explorar tu biblioteca musical y solicitar canciones para que suenen. ¡Es ideal para sesiones en Twitch, reuniones presenciales con amigos o eventos con público!",
+			"DO_NO_WANT": "No quiero habilitar el acceso remoto por ahora",
+			"EXAMPLE": "URL de ejemplo: <1>https://abcd.{{instance}}</1>"
+		},
+		"TIMELINE": {
+			"USER_ACCOUNT": "Cuenta de usuario",
+			"SONGS": "Canciones",
+			"ONLINE": "En línea"
+		},
+		"COLLECTIONS": {
+			"CHOICE": "Selección de la colección",
+			"CHOICE_DESC_1": "Las colecciones de canciones están dirigidas a diferentes públicos. Selecciona las colecciones que quieras ver en tu base de datos de karaoke.",
+			"CHOICE_DESC_2": "Puedes modificar tus colecciones en cualquier momento desde el panel del sistema."
+		},
+		"ENDING": "¡Gracias! Karaoke Mugen ya está configurado. ¡Consulta la configuración en la interfaz del operador para ajustar el comportamiento de la aplicación para tu primera sesión de karaoke!"
 	},
 	"NOTIFICATION": {
 		"OPERATOR": {
@@ -1501,7 +1551,8 @@
 		"GIT_SEE_DIFF_IN_FILE": "Ver diferencias en el archivo",
 		"GIT_SQUASH_COMMITS": "Forzar cambios",
 		"GIT_SQUASH_MESSAGE": "Mensaje de Commit",
-		"GIT_TOO_MANY_CHANGES": "Parece que estás haciendo {{changes}} cambios. Cuando haces muchos cambios que están relacionados con el mismo tipo de acción, es recomendable agrupar tus commits en uno grande."
+		"GIT_TOO_MANY_CHANGES": "Parece que estás haciendo {{changes}} cambios. Cuando haces muchos cambios que están relacionados con el mismo tipo de acción, es recomendable agrupar tus commits en uno grande.",
+		"DELETE_CONFIRM": "¿Estás seguro de que quieres eliminar el repositorio {{name}}?"
 	},
 	"TAG_TYPES": {
 		"AUTHORS_other": "Autores de karaoke",
@@ -1817,7 +1868,9 @@
 		"IMPORT_SONG_ERROR": "No se pueden importar canciones",
 		"PL_DO_NOT_MATCH_REPO": "Algunas canciones de la lista de reproducción no existen en el servidor remoto",
 		"REMOTE_SERVER_CONNECTION_ERROR": "No se pudo conectar con el servidor remoto",
-		"INSTANCE_NOT_RESPONDING": "La instancia no responde"
+		"INSTANCE_NOT_RESPONDING": "La instancia no responde",
+		"SECURITY_CODE_LOCKED": "Demasiados intentos con códigos de seguridad incorrectos. Espere unos minutos antes de volver a intentarlo.",
+		"UPLINK_UNREACHABLE": "No se ha podido obtener la lista de servidores conocidos de Karaoke Mugen"
 	},
 	"CONFIG": {
 		"PROPERTIES": {
@@ -2222,7 +2275,11 @@
 		"ONTOP": "Mostrar encima de otras ventanas"
 	},
 	"MIGRATE": {
-		"TITLE": "Migración"
+		"TITLE": "Migración",
+		"DEFAULT_REMOTE": {
+			"TITLE": "Seleccione un servidor predeterminado",
+			"DESCRIPTION": "Karaoke Mugen ahora ofrece diferentes servidores para las funciones en línea. Por favor, selecciona cuáles deseas utilizar."
+		}
 	},
 	"SHOW-HIDE": "Mostrar/Ocultar",
 	"UNKNOWN": "Desconocido",
