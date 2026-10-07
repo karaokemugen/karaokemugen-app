@@ -29,6 +29,7 @@ function RepositoryForm(props: RepositoriesFormProps) {
 	const maintainerMode = Form.useWatch('MaintainerMode', form);
 	const secure = Form.useWatch('Secure', form);
 	const update = Form.useWatch('Update', form);
+	const repoName = Form.useWatch('Name', form);
 	let timeout: NodeJS.Timeout;
 
 	const [movingMediaPath, setMovingMediaPath] = useState<string>();
@@ -255,8 +256,9 @@ function RepositoryForm(props: RepositoriesFormProps) {
 				<>
 					<Divider titlePlacement="start"></Divider>
 					<div style={{ fontSize: 17, marginBottom: '0.5em' }}>{i18next.t('SETUP_PAGE.REPOSITORY.LIST')}</div>
-					<Form.Item labelCol={{ flex: '0 1 300px' }} name="Online">
+					<Form.Item labelCol={{ flex: '0 1 300px' }}>
 						<Radio.Group
+							value={repoName}
 							style={{ display: 'flex', flexDirection: 'column' }}
 							disabled={props.repository?.System}
 							options={servers.map(server => {
@@ -281,7 +283,10 @@ function RepositoryForm(props: RepositoriesFormProps) {
 									),
 								};
 							})}
-							onChange={e => form.setFieldValue('Name', e.target.value)}
+							onChange={e => {
+								form.setFieldValue('Name', e.target.value);
+								setDefaultFolders(e.target.value);
+							}}
 						/>
 					</Form.Item>
 				</>

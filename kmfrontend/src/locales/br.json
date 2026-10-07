@@ -491,7 +491,8 @@
 			"USERNAME": "Anv implijer SFTP",
 			"PASSWORD": "Ger-tremen SFTP"
 		},
-		"GIT_CUSTOM_MESSAGE": "Kemennadenn personelaet"
+		"GIT_CUSTOM_MESSAGE": "Kemennadenn personelaet",
+		"DELETE_CONFIRM": "Ha sur oc'h e fell deoc'h dilemel ar c'hlavec'hiad {{name}} ?"
 	},
 	"ERROR_CODES": {
 		"UNKNOWN_REPOSITORY": "Kavlec'hiad dianav",

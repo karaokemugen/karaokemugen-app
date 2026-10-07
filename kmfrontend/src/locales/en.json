@@ -1587,6 +1587,7 @@
 		"PATH_MEDIAS": "Media directory",
 		"PATH_MEDIAS_DESC": "Please indicate where you want the media to be stored. If you plan to have a lot of songs, it should be in a place where you have lots of disk space available.",
 		"NEW_REPOSITORY": "New repository",
+		"DELETE_CONFIRM": "Are you sure you want to delete the repository {{name}}?",
 		"ONLINE": "Remote (Get songs)",
 		"LOCAL": "Local (For your own songs)",
 		"REPOSITORY_TYPE": "Repository type",
