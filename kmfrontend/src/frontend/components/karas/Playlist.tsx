@@ -480,8 +480,8 @@ function Playlist(props: IProps) {
 		}
 
 		param.filter = getFilterValue(props.side);
-		param.from = data?.infos?.from > 0 ? data.infos.from : 0;
-		param.size = data?.infos?.from > 0 && data?.infos?.to > 0 ? data.infos.to - data.infos.from : chunksize;
+		param.from = data?.infos?.from > 0 && data?.infos?.to > 0 && data.infos.to - data.infos.from > 0 ? data.infos.from : 0;
+		param.size = data?.infos?.from > 0 && data?.infos?.to > 0 && data.infos.to - data.infos.from > 0 ? data.infos.to - data.infos.from : chunksize;
 
 		param.blacklist = true;
 		param.parentsOnly =

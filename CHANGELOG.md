@@ -1,3 +1,24 @@
+# [10.0.5] - 2026-10-07
+
+Bugfix release, go go !
+
+## Added
+
+- **[Operators]** Added confirm dialog for deleting repositories
+
+## Changed
+
+- **[Users]** Updated Breton, French,  and Spanish translations
+
+## Fixed
+
+- **[Operators]** Fixed repository form when selecting a repository from a list
+- **[Operators]** Fixed lyrics' version field validation to make it future-proof
+- **[Operators]** Fixed issue with Discourse RSS feeds not appearing on welcome screen (#1908)
+- **[Users]** Fixed login/profile issues due to our new validation overlords (zod)
+- **[Users]** Fixed song queries in some cases (wrong parameters)
+- **[Maintainers]** Updated timeout for inbox fetching
+
 # [10.0.2] - 2026-09-28
 
 This is a major release. Please read any changelog since the last version you've been on.

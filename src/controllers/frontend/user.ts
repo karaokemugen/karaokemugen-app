@@ -1,4 +1,5 @@
 import z from 'zod';
+
 import { WS_CMD } from '../../../kmfrontend/src/utils/ws.mjs';
 import { APIMessage } from '../../lib/services/frontend.js';
 import { Role, User } from '../../lib/types/user.js';
@@ -46,7 +47,7 @@ export default function userController(router: SocketIOApp) {
 	router.route(WS_CMD.CREATE_USER, async (socket, req) => {
 		await runChecklist(socket, req, 'guest', 'limited', { optionalAuth: true });
 		try {
-			check(req.body,	z.object({
+			check(req.body, z.object({
 					login: z.string().min(1),
 					password: z.string().min(8),
 					role: z.enum(['user', 'guest', 'admin']).optional(),
@@ -117,7 +118,7 @@ export default function userController(router: SocketIOApp) {
 				check(req.body, z.object({
 					old_login: z.string().optional(),
 					login: z.string().optional(),
-					// FIXME : Embed this in lib as it's the same checks on KM Server			
+					// FIXME : Embed this in lib as it's the same checks on KM Server
 					bio: z.string().nullish(),
 					email: z.email().or(z.literal('')).nullish(),
 					url: z.url().or(z.literal('')).nullish(),
@@ -128,13 +129,13 @@ export default function userController(router: SocketIOApp) {
 					flag_public: z.coerce.boolean().optional(),
 					flag_displayfavorites: z.coerce.boolean().optional(),
 					social_networks: z.object({
-						mastodon: z.string().optional(),
-						instagram: z.string().optional(),
-						bluesky: z.string().optional(),
-						discord: z.string().optional(),
-						twitch: z.string().optional(),
-						anilist: z.string().optional(),
-						myanimelist: z.string().optional(),
+						mastodon: z.string().nullish(),
+						instagram: z.string().nullish(),
+						bluesky: z.string().nullish(),
+						discord: z.string().nullish(),
+						twitch: z.string().nullish(),
+						anilist: z.string().nullish(),
+						myanimelist: z.string().nullish(),
 						kitsu: z.coerce.number().int().min(1).or(z.literal('')).nullish(),
 						gitlab: z.string().optional(),
 					}).loose().nullish(),
@@ -145,7 +146,7 @@ export default function userController(router: SocketIOApp) {
 					roles: zRoles.optional(),
 					type: z.coerce.number().refine(t => userTypesNum.includes(t)).optional(),
 					avatar: z.object({ path: z.string().min(1) }).loose().optional(),
-				}));				
+				}));
 				user = req.body;
 			}
 			const avatar =
@@ -196,7 +197,7 @@ export default function userController(router: SocketIOApp) {
 		} else {
 			try {
 				check(req.body, z.object({
-						username: z.string(),				
+						username: z.string(),
 				}));
 				await resetRemotePassword(req.body.username);
 				return { code: 200, message: APIMessage('USER_RESETPASSWORD_ONLINE') };
@@ -232,7 +233,7 @@ export default function userController(router: SocketIOApp) {
 			check(req.body, z.object({
 				old_login: z.string().optional(),
 				login: z.string().optional(),
-				// FIXME : Embed this in lib as it's the same checks on KM Server			
+				// FIXME : Embed this in lib as it's the same checks on KM Server
 				bio: z.string().nullish(),
 				email: z.email().or(z.literal('')).nullish(),
 				url: z.url().or(z.literal('')).nullish(),
@@ -274,7 +275,7 @@ export default function userController(router: SocketIOApp) {
 	router.route(WS_CMD.CONVERT_MY_LOCAL_USER_TO_ONLINE, async (socket, req) => {
 		await runChecklist(socket, req, 'user', 'closed');
 		try {
-			check(req.body,	z.object({
+			check(req.body, z.object({
 				instance: z.string().min(1),
 				password: z.string().min(1),
 			}));
@@ -293,7 +294,7 @@ export default function userController(router: SocketIOApp) {
 			return { code: 200, message: APIMessage('USER_DELETED_ONLINE', newToken) };
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
-		}		
+		}
 	});
 
 	router.route(WS_CMD.REFRESH_ANIME_LIST, async (socket, req) => {

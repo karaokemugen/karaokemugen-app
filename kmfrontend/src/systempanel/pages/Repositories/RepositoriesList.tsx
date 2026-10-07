@@ -6,7 +6,7 @@ import {
 	PlusOutlined,
 	QuestionCircleOutlined,
 } from '@ant-design/icons';
-import { Button, Checkbox, Col, Divider, Layout, Row, Table, Tooltip } from 'antd';
+import { Button, Checkbox, Col, Divider, Layout, Modal, Row, Table, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import i18next from 'i18next';
 import { Component } from 'react';
@@ -46,6 +46,19 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 			// already display
 		}
 		this.refresh();
+	};
+
+	confirmDeleteRepository = (repository: Repository) => {
+		Modal.confirm({
+			title: i18next.t('REPOSITORIES.DELETE_CONFIRM', { name: repository.Name }),
+			okText: i18next.t('YES'),
+			cancelText: i18next.t('NO'),
+			okButtonProps: { danger: true },
+			onOk: async close => {
+				await this.deleteRepository(repository);
+				close();
+			},
+		});
 	};
 
 	move = async (index: number, change: number) => {
@@ -230,7 +243,7 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 								type="primary"
 								danger
 								icon={<DeleteOutlined />}
-								onClick={() => this.deleteRepository(record)}
+								onClick={() => this.confirmDeleteRepository(record)}
 							></Button>
 						</>
 					) : null}

@@ -160,27 +160,44 @@ function WelcomePage() {
 			for (const base of repos) {
 				if (base?.body) {
 					base.body = JSON.parse(base.body);
-					if (base.body.feed.entry[0].summary?._text) {
+					if (base.body?.feed?.entry[0].summary?._text) {
 						// Gitlab's feed doesn't report date anymore so we have to calculate it. We name base tags with the previous month as in 'the situation at the end of this month'. So when we have a tagname of 202410, the date it's created is actually 2024-11-01.
-						const date = base.body.feed.entry[0].title._text;
+						const item = base.body.feed.entry[0];
+						const date = item.title._text;
 						const year = date.substring(0, 4);
 						const month = date.substring(4);
 						const dateObj = new Date(`${year}-${month}-01`);
 						const realDate = new Date(dateObj.setMonth(dateObj.getMonth() + 1));
 						news.push({
-							html: base.body.feed.entry[0].summary._text,
+							html: item.summary._text,
 							date,
 							dateStr: dayjs(realDate).format('L LTS'),
 							title:
 								i18next.t('WELCOME_PAGE.BASE_UPDATE') +
 								' : ' +
 								base.body.feed.title._text +
-								(base.body.feed.entry[0].summary._text
-									? ' - ' + base.body.feed.entry[0].summary._text
+								(item.summary._text
+									? ' - ' + item.summary._text
 									: ''),
-							link: (base.body.feed.entry[0].link._attributes.href as string)
+							link: (item.link._attributes.href as string)
 								.replace('tags', 'raw')
 								.concat('/CHANGELOG.md'),
+							type: 'base',
+						});
+					} else if (base.body?.rss?.channel?.item[0].title?._text) {
+						const item = base.body.rss.channel.item[0];
+						news.push({
+							html: '',
+							date:item.pubDate._text, 
+							dateStr: dayjs(item.pubDate._text).format('L LTS'),
+							title:
+								i18next.t('WELCOME_PAGE.BASE_UPDATE') +
+								' : ' +
+								base.body.rss.channel.title._text +
+								(item.title._text
+									? ' - ' + item.title._text
+									: ''),
+							link: item.link._text,
 							type: 'base',
 						});
 					}
