@@ -927,7 +927,7 @@
 				"ANILIST": "AniList",
 				"ANILIST_PLACEHOLDER": "karaokemugen",
 				"KITSU": "Kitsu",
-				"KITSU_PLACEHOLDER": "karaokemugen"
+				"KITSU_PLACEHOLDER": "123456"
 			},
 			"LOCAL_DELETE_WARN": "Ini akan menghapus akun kamu dari aplikasi lokal ini saja. Jika kamu punya akun daring, itu tidak akan dinonaktifkan. Apakah kamu yakin ingin melakukan ini?",
 			"FLAG_DISPLAYFAVORITES": "Bagikan favorit kamu",
