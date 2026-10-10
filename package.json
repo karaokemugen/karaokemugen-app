@@ -1,6 +1,6 @@
 {
   "name": "karaokemugen-app",
-  "version": "10.0.5",
+  "version": "10.0.6",
   "versionName": "Ubel Ubuesque",
   "description": "Karaoke playlist manager / player",
   "bin": {
@@ -8,6 +8,7 @@
   },
   "type": "module",
   "main": "dist/index.mjs",
+  "packageManager": "yarn@4.18.0",
   "scripts": {
     "start": "yarn build && yarn electron:start",
     "qstart": "node util/esbuild.js && yarn electron:start",
@@ -357,6 +358,5 @@
         ]
       }
     ]
-  },
-  "packageManager": "yarn@4.18.0"
+  }  
 }

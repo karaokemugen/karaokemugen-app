@@ -1,3 +1,11 @@
+# [10.0.6] - 2026-10-10
+
+Bugfix release, go go !
+
+## Fixed
+
+- **[Users]** Fixed online account update when kitsu field contains alphanumeric characters
+
 # [10.0.5] - 2026-10-07
 
 Bugfix release, go go !
