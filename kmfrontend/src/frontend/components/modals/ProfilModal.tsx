@@ -621,7 +621,7 @@ function ProfilModal(props: IProps) {
 										</div>
 										<input
 											name="social_networks.kitsu"
-											type="number"
+											type="text"
 											placeholder={i18next.t(
 												'MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.KITSU_PLACEHOLDER'
 											)}
