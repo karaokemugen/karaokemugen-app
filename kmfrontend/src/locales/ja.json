@@ -138,7 +138,8 @@
 	"USERS": {
 		"PASSWORD": "パスワード",
 		"EMAIL": "メール",
-		"NICKNAME": "ニックネーム"
+		"NICKNAME": "ニックネーム",
+		"LOGIN": "ユーザー名"
 	},
 	"INBOX": {
 		"CONTACT_INFOS_MODAL": {
@@ -230,11 +231,23 @@
 		"VERSIONS_other": "バージョン",
 		"LANGS_other": "言語",
 		"CREATORS_one": "作成者",
-		"CREATORS_other": "作成者"
+		"CREATORS_other": "作成者",
+		"PLATFORMS_other": "プラットフォーム",
+		"GENRES_other": "ジャンル",
+		"GENRES_one": "ジャンル",
+		"PLATFORMS_one": "プラットフォーム",
+		"LANGS_one": "言語",
+		"COLLECTIONS_other": "コレクション",
+		"GROUPS_one": "グループ",
+		"GROUPS_other": "グループ",
+		"COLLECTIONS_one": "コレクション",
+		"AUTHORS_one": "カラオケ作成者",
+		"AUTHORS_other": "カラオケ作成者"
 	},
 	"SETTINGS": {
 		"PLAYER": {
-			"AUDIO_ONLY_EXPERIENCE": "音声のみ"
+			"AUDIO_ONLY_EXPERIENCE": "音声のみ",
+			"FULLSCREEN": "全画面表示"
 		},
 		"KARAOKE": {
 			"LABELS_MYSTERY_SONGS_DELETE": "消す",
@@ -259,6 +272,9 @@
 			"WEBAPPMODE_OPEN_SHORT": "開",
 			"WEBAPPMODE_LIMITED": "制限：読み取り専用",
 			"WEBAPPMODE_OPEN": "開（デフォルト）： ユーザーは曲を追加できます"
+		},
+		"PLAYLIST": {
+			"PLAYLIST_SETTINGS": "プレイリスト"
 		}
 	},
 	"LOGS": {
@@ -282,7 +298,7 @@
 		},
 		"VIDEO_PREVIEW": "ビデオプレビュー",
 		"AUTHORS_BY": "カラオケ作成者",
-		"SONGWRITERS_BY": "作曲家",
+		"SONGWRITERS_BY": "作曲者",
 		"SINGERGROUPS_BY": "バンドー",
 		"CREATORS_BY": "作成者",
 		"SINGERS_BY": "歌手",
@@ -343,7 +359,8 @@
 	"MENU": {
 		"KARAS": "曲",
 		"TAGS": "タグ",
-		"HOME": "ダッシュボード"
+		"HOME": "ダッシュボード",
+		"DATABASE": "データベース"
 	},
 	"WELCOME_PAGE": {
 		"STATS_KARAS": "曲",
@@ -410,6 +427,9 @@
 		},
 		"LOGS": {
 			"TITLE": "ログ"
+		},
+		"DATABASE": {
+			"TITLE": "データベース"
 		}
 	},
 	"KAROULETTE": {
@@ -451,6 +471,9 @@
 			"BROWSE": "曲をブラウズ",
 			"CREATE": "曲を作成",
 			"HISTORY": "再生された曲の履歴"
+		},
+		"SYSTEM": {
+			"DATABASE": "データベース"
 		}
 	},
 	"ADMIN_MESSAGE": {
@@ -466,7 +489,8 @@
 	"KARA_DETAIL": {
 		"LYRICS": "歌詞",
 		"SHOW_VIDEO": "ビデオプレビューを表示",
-		"HIDE_VIDEO": "ビデオプレビューを閉じる"
+		"HIDE_VIDEO": "ビデオプレビューを閉じる",
+		"DOWNLOAD_MEDIA": "メディアをダウンロード"
 	},
 	"ADD": "追加",
 	"ACTION": "アクション",
@@ -503,5 +527,6 @@
 	"KARAOKE_other": "{{count}}曲",
 	"KARAOKE_one": "{{count}}曲",
 	"QUOTA_KARA": "残りの曲",
-	"QUOTA_TIME": "残り時間"
+	"QUOTA_TIME": "残り時間",
+	"USERNAME": "ユーザー名"
 }
