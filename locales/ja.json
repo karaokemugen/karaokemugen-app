@@ -11,7 +11,13 @@
 		"WARNINGS": "警告",
 		"SONGWRITERS": "作曲家",
 		"LANGS": "言語",
-		"VERSIONS": "バージョン"
+		"VERSIONS": "バージョン",
+		"GENRES": "ジャンル",
+		"PLATFORMS": "プラットフォーム",
+		"SERIES": "作品",
+		"GROUPS": "グループ",
+		"COLLECTIONS": "コレクション",
+		"AUTHORS": "カラオケ作成者"
 	},
 	"MOVED_USER_DIR_DIALOG": {
 		"UNDERSTOOD": "了解！"
