@@ -3,7 +3,9 @@
 		"CONFIRM": "Potwierdź",
 		"LOG_IN": "Zaloguj się",
 		"SIGN_UP": "Zarejestruj się",
-		"CONTINUE": "Kontynuuj"
+		"CONTINUE": "Kontynuuj",
+		"SAVE_AND_CONTINUE": "Zapisz i kontynuuj",
+		"FINISH": "Koniec"
 	},
 	"VERSION": "Wersja",
 	"NO": "Nie",
@@ -254,7 +256,7 @@
 		"MAINTAINER_MODE": "Tryb opiekuna",
 		"FOLDERS_REQUIRED": "Wymagany jest folder {{name}}.",
 		"MOVE": "Definiowanie priorytetu repozytoriów",
-		"MOVE_TOOLTIP": "Pozwala to określić, które repozytoria mają priorytet podczas tworzenia bazy danych: najwyższe repozytoria będą brane pod uwagę jako pierwsze, jeśli dwa repozytoria mają to samo karaoke",
+		"MOVE_TOOLTIP": "Pozwala to określić, które repozytoria mają pierwszeństwo podczas tworzenia bazy danych: jeśli dany utwór znajduje się w dwóch repozytoriach, w pierwszej kolejności brane pod uwagę będzie to, które ma wyższy priorytet",
 		"MOVING_MEDIA_BUTTON": "Przenoszenie multimediów…",
 		"MOVING_MEDIA_PANEL": "Przenoszenie multimediów",
 		"COMPARE_LYRICS": "Aktualizowanie tekstów między dwoma repozytoriami",
@@ -351,19 +353,21 @@
 		"REPOSITORY_TYPE_DESC": "Najpierw wybierz, czy repozytorium, które chcesz dodać, jest lokalne czy online.",
 		"CONVERT_TO_UUID_BUTTON": "Konwertuj do formatu pliku UUID…",
 		"CONVERT_TO_UUID_PANEL": "Konwertuj do formatu pliku UUID",
-		"CONVERT_TO_UUID_ABOUT_MESSAGE": "Twoje repozytorium może nazywać pliki w starym formacie (sprzed Karaoke Mugen 8.0.56 – styczeń 2025). Jeśli Twoje repozytorium zostało utworzone wcześniej, możesz użyć tego przycisku, aby zmienić nazwy wszystkich plików (metadanych karaoke, tekstów piosenek i multimediów) na format UUID. Pamiętaj, że ta zmiana jest nieodwracalna."
+		"CONVERT_TO_UUID_ABOUT_MESSAGE": "W Twoim repozytorium pliki mogą być nazwane według starszego formatu (sprzed wersji Karaoke Mugen 8.0.56 – styczeń 2025 r.). Jeśli repozytorium zostało utworzone przed tą datą, możesz użyć tego przycisku, aby zmienić nazwy wszystkich plików (metadanych utworów, tekstów piosenek oraz plików multimedialnych) na format UUID. Pamiętaj, że tej operacji nie można cofnąć.",
+		"DELETE_CONFIRM": "Czy na pewno chcesz usunąć repozytorium {{name}}?",
+		"UPLOAD_METHOD": "Metoda przesyłania mediów"
 	},
 	"COLLECTIONS": {
 		"NAME": "Nazwa kolekcji",
 		"ENABLED": "Włączone"
 	},
 	"HOME": {
-		"SYSTEM_DESCRIPTION": "Przeglądaj dzienniki, zmieniaj opcje konfiguracji, twórz kopie zapasowe/przywracaj bazę danych, uruchamiaj ręczne generowanie i zarządzaj sesją karaoke",
-		"KARAS_DESCRIPTION": "Wyświetlanie, edytowanie i tworzenie plików danych karaoke. Możesz także pobierać multimedia i przeglądać żądane, najczęściej odtwarzane i historię karaoke",
+		"SYSTEM_DESCRIPTION": "Przeglądaj dzienniki, zmieniaj opcje konfiguracji, twórz kopie zapasowe/przywracaj bazę danych, wywołuj ręczne generowanie oraz zarządzaj użytkownikami",
+		"KARAS_DESCRIPTION": "Wyświetlaj, edytuj i twórz pliki z danymi utworów",
 		"TAGS_DESCRIPTION": "Wyświetlaj, twórz, edytuj tagi (piosenkarze, autorzy piosenek, twórcy, typy utworów itp.)",
 		"SYSTEM": {
 			"CONFIG": "Edytuj konfigurację",
-			"REPOSITORIES": "Kolekcje i repozytoria karaoke",
+			"REPOSITORIES": "Kolekcje i repozytoria utworów muzycznych",
 			"SESSIONS": "Sesje karaoke",
 			"LOGS": "Logi systemowe",
 			"DATABASE": "Baza danych"
@@ -371,7 +375,7 @@
 		"KARAS": {
 			"DOWNLOAD": "Pobieranie multimediów",
 			"BROWSE": "Przeglądaj utwory",
-			"CREATE": "Tworzenie karaoke",
+			"CREATE": "Stwórz piosenkę",
 			"HISTORY": "Historia odtwarzanych utworów",
 			"MOST_PLAYED": "Najczęściej odtwarzana piosenka w historii"
 		},
@@ -383,14 +387,16 @@
 		"USERS": {
 			"CREATE": "Tworzenie użytkownika",
 			"BROWSE": "Przeglądanie użytkowników"
-		}
+		},
+		"STATS_DESCRIPTION": "Zarządzaj sesjami karaoke, przeglądaj najczęściej zamawiane i odtwarzane utwory oraz uzyskuj dostęp do historii",
+		"MEDIAS_DESCRIPTION": "Pobieraj multimedia i zarządzaj przestrzenią dyskową"
 	},
 	"TASKS": {
 		"FINDING_UNUSED_MEDIAS": "Wyszukiwanie nieużywanych nośników…",
 		"COMPARING_LYRICS_IN_REPOS": "Porównywanie tekstów piosenek między repozytoriami…",
-		"CREATING_SONG": "Tworzenie karaoke…",
+		"CREATING_SONG": "Tworzenie utworu…",
 		"EDITING_KARAS_BATCH_TAGS": "Edytowanie tagów w utworach…",
-		"EDITING_SONG": "Edytowanie karaoke…",
+		"EDITING_SONG": "Edytowanie utworu…",
 		"DATASTORE_UPDATE": "Aktualizacja lokalnego magazynu danych…",
 		"GENERATING_READING": "Odczytywanie danych…",
 		"GENERATING_DATABASE": "Aktualizacja bazy danych…",
@@ -422,7 +428,7 @@
 		"DUMMY_TASK": "Brak bieżących zadań",
 		"PREPARING_CHANGES": "Przygotowanie zmian",
 		"REFRESHING_DATA": "Odświeżanie danych…",
-		"UPLOADING_MEDIA": "Przesyłanie na FTP…",
+		"UPLOADING_MEDIA": "Przesyłanie multimediów…",
 		"UPDATING_LIBRARY_SORT": "Aktualizowanie sortowania biblioteki",
 		"DOWNLOADING_APP_UPDATE": "Pobieranie aktualizacji",
 		"BASE_IMPORT": {
@@ -473,7 +479,7 @@
 	"TOOLTIP_ACCEPT_SELECT_KARA": "Akceptuj utwory (darmowe utwory, i kopiuj do bieżącej listy)",
 	"TOOLTIP_CLOSEPARENT": "Zamknij",
 	"KARA_DETAIL": {
-		"CREATED": "Utworzono karaoke ",
+		"CREATED": "Utwór stworzony ",
 		"ADDED": "Dodane ",
 		"ADDED_3": " przez ",
 		"LAST_PLAYED": "Ostatnio grane w {{date}}",
@@ -511,7 +517,8 @@
 		"KARAMANAGER": "INTERFEJS OPERATORA",
 		"STATS": "STATUS",
 		"MASTODON_UPDATE": "Wiadomości Karaoke Mugen",
-		"COLLECTIONS": "ZBIORY"
+		"COLLECTIONS": "ZBIORY",
+		"NEWS": "Aktualności"
 	},
 	"CHECKED": "Wybrany:",
 	"LOGOUT": "Wyloguj się",
@@ -572,7 +579,19 @@
 			"AUDIO_ONLY_EXPERIENCE": "Tylko dźwięk",
 			"AUDIO_ONLY_EXPERIENCE_TOOLTIP": "Jeśli włączone, pokaże nieruchomy obraz zamiast wideo. Zmiana zostanie wprowadzona w następnym utworze.",
 			"DISPLAY_CONNECTION_INFO_QRCODE_DURING_SONG": "Pokaż kod QR podczas piosenek",
-			"DISPLAY_CONNECTION_INFO_QRCODE_DURING_SONG_TOOLTIP": "Kod QR będzie wyświetlany w prawym górnym rogu ekranu podczas słuchania piosenek."
+			"DISPLAY_CONNECTION_INFO_QRCODE_DURING_SONG_TOOLTIP": "Kod QR będzie wyświetlany w prawym górnym rogu ekranu podczas słuchania piosenek.",
+			"FULLSCREEN_ON_STARTUP": "Pełny ekran przy uruchomieniu",
+			"FULLSCREEN_ON_STARTUP_TOOLTIP": "Zawsze uruchamiaj odtwarzacz w trybie pełnoekranowym, niezależnie od jego ostatniego stanu",
+			"DISPLAY_FONT_SIZE": "Modyfikator rozmiaru czcionki wiadomości",
+			"DISPLAY_FONT_SIZE_TOOLTIP": "Modyfikator rozmiaru w zakresie od -5 do 5. Działa WYŁĄCZNIE w przypadku komunikatów wyświetlanych na ekranie (quizy, ankiety, informacje o utworze itp.) – nie dotyczy tekstów piosenek.",
+			"DISPLAY_BANNER": "Wyświetl baner wersji Karaoke Mugen",
+			"DISPLAY_BANNER_TOOLTIP": "Ten baner, zawierający wersję oraz adres URL oprogramowania Karaoke Mugen, pozwala na jego identyfikację podczas publicznego użytkowania. Dzięki temu inne osoby mogą dowiedzieć się o programie i samodzielnie go wypróbować. Prosimy – pozostaw tę opcję włączoną!",
+			"DISPLAY_SONGINFO_PERMANENT": "Wyświetlaj informacje o utworze na ekranie przez cały czas jego trwania",
+			"DISPLAY_SONGINFO_PERMANENT_TOOLTIP": "Informacje o utworze oraz awatar osoby zgłaszającej pozostają na ekranie przez cały czas trwania utworu. (Informacje o połączeniu oraz baner Karaoke Mugen również pozostają widoczne, o ile zostały włączone)",
+			"DISPLAY_NEXT_SONGINFO": "Wyświetlaj następny utwór na ekranach wstrzymania",
+			"DISPLAY_NEXT_SONGINFO_TOOLTIP": "Jeśli ta opcja jest włączona, podczas przerw w karaoke na ekranie pojawi się informacja o kolejnym utworze – podobnie jak w trybie klasycznym (Classic Mode) lub trybie transmisji (Stream Mode). Nie dotyczy to jednak zapowiedzi kolejnego utworu wyświetlanej po zakończeniu piosenki.",
+			"NEXT_SONGINFO_POSITION_X": "Pozycja pozioma",
+			"NEXT_SONGINFO_POSITION_Y": "Pozycja pionowa"
 		},
 		"KARAOKE": {
 			"QUOTA_SETTINGS": "Ograniczenia",
@@ -732,7 +751,7 @@
 			"KARA_LINE_DISPLAY": "Wyświetlanie części utworu",
 			"KARA_LINE_DISPLAY_TOOLTIP": "Zdefiniuj, które części utworu mają być wyświetlane na listach utworów (tylko operator)",
 			"SET": "Ustawić…",
-			"SWITCH_TO_RESTRICTED_AT_TIME": "Przełącz na Ograniczone w",
+			"SWITCH_TO_RESTRICTED_AT_TIME": "Przełącz na ograniczone w",
 			"SWITCH_TO_RESTRICTED_AT_TIME_TOOLTIP": "Automatycznie przełącz interfejs na ograniczony, gdy długość playlisty osiągnie zdefiniowany czas. Przykład: po ustawieniu na 22:00, playlista nie będzie przyjmować nowych utworów, dopóki nie osiągnie wystarczającej długości, aby trwać do 22:00 lub dłużej."
 		}
 	},
@@ -891,7 +910,7 @@
 			"FALLBACK": "Rezerwowa",
 			"FALLBACK_DESC": "Utwory z tej listy będą odtwarzane po zakończeniu listy odtwarzania, jeśli jest włączona w ustawieniach",
 			"VISIBLE": "Widoczny",
-			"VISIBLE_DESC": "Widoczne dla publiczności",
+			"VISIBLE_DESC": "Widoczne dla gości podczas sesji karaoke",
 			"EDIT_PLAYLIST": "Edytuj {{playlist}}",
 			"CREATE_PLAYLIST": "Utwórz nową listę odtwarzania",
 			"CREATE": "Stwórz",
@@ -906,7 +925,12 @@
 			"CANNOT_CURRENT_PLAYLIST": "Nie możesz mieć żadnej bieżącej listy odtwarzania, zamiast tego edytuj tę, którą chcesz ustawić jako nową bieżącą listę odtwarzania.",
 			"CANNOT_BLACKLIST": "Nie możesz mieć żadnej czarnej listy, zamiast tego edytuj tę, którą chcesz ustawić jako nową czarną listę.",
 			"CANNOT_PUBLIC": "Nie możesz mieć żadnej publicznej listy odtwarzania, zamiast tego edytuj tę, którą chcesz ustawić jako nową publiczną listę odtwarzania.",
-			"NAME_MANDATORY": "Nazwa listy odtwarzania jest wymagana"
+			"NAME_MANDATORY": "Nazwa listy odtwarzania jest wymagana",
+			"DESCRIPTION": "Opis",
+			"VISIBLE_ONLINE": "Widoczność w sieci",
+			"VISIBLE_ONLINE_DESC": "Widoczne dla użytkowników na stronie internetowej repozytorium playlisty",
+			"CONTRIBUTORS": "Autorzy",
+			"DELETE_CONTRIBUTOR": "Usuń współtwórcę z playlisty"
 		},
 		"TUTORIAL": {
 			"BACK": "Wstecz",
@@ -1128,7 +1152,7 @@
 				"karacount": "Liczba piosenek",
 				"duration": "Czas trwania",
 				"favorited": "Polubienia",
-				"username": "Przydomek (Nick)"
+				"username": "Nazwa użytkownika"
 			},
 			"BY_AUTHOR": "przez {{author}}",
 			"AND_CONTRIBUTORS": "(i {{contributors, list}})",
@@ -1149,8 +1173,11 @@
 			"DESCRIPTION_DOES_NOT_EXIST_ON_SERVER": "Ta playlista nie istnieje na serwerze {{serverName}}. Wyeksportowanie tej playlisty na serwer spowoduje utworzenie nowej playlisty."
 		},
 		"CHANGE_STATUS_INBOX": {
-			"TITLE": "Zmień stan skrzynki odbiorczej",
-			"REASON": "Powód"
+			"TITLE": "Zmień status skrzynki odbiorczej na „{{status}}”",
+			"REASON": "Powód",
+			"NAME": "Nazwa utworu: {{name}}",
+			"LANGUAGE_AUTHOR_INBOX": "Język autora skrzynki odbiorczej: {{language}}",
+			"CONFIRM_CLOSING": "Zawartość pola „Powód” zostanie odrzucona. Czy na pewno chcesz zamknąć to okno?"
 		}
 	},
 	"ENCORES_TAGLINES": [
@@ -1201,8 +1228,54 @@
 			"SECURITY_CODE_USE": "Ten kod upewnia się, że to naprawdę Ty wykonujesz te czynności. Zmienia się po każdym użyciu.",
 			"SECURITY_CODE_DESC_CONSOLE": "Wprowadź również 6-cyfrowy kod zabezpieczający, który można znaleźć, szukając \"SECURITY CODE\" w pliku dziennika Karaoke Mugen lub w konsoli.",
 			"WELCOME": "Witamy w Karaoke Mugen!",
-			"ONLINE_ACCOUNT_INSTANCE": "Twoje konto online będzie hostowane w instancji {{instance}}"
-		}
+			"ONLINE_ACCOUNT_INSTANCE": "Twoje konto online będzie hostowane w instancji {{instance}}",
+			"ONLINE_ACCOUNT_FAVORITES": "Utwórz kopię zapasową ulubionych plików online",
+			"ONLINE_ACCOUNT_PLAYLISTS": "Prześlij swoje playlisty",
+			"ONLINE_ACCOUNT_OTHER_SESSIONS": "Zaloguj się z poziomu dowolnej innej sesji Karaoke Mugen",
+			"CHOOSE_ACCOUNT": "Wybierz, czy chcesz założyć konto lokalne, czy konto online. Jeśli masz już konto online na serwerze Karaoke Mugen (takim jak mugen.re), wybierz opcję „Online”."
+		},
+		"ONLINE_SERVER": {
+			"SELECT": "Wybierz serwer online dla swojego konta.",
+			"DESCRIPTION": "Serwery przechowują Twoje dane, takie jak dane logowania, ulubione elementy, playlisty oraz statystyki.",
+			"HINT": "WSKAZÓWKA: Wybierz taki zestaw, w którym znajdują się piosenki, które lubisz śpiewać dzięki temu będziesz mógł później dodać je do ulubionych!",
+			"LIST": "Lista znanych serwerów Karaoke Mugen:",
+			"OTHER": "Inny",
+			"OTHER_INPUT": "Wprowadź nazwę domeny swojego serwera:",
+			"INSTANCE_one": "{{instance}} ({{songs}} utwór)",
+			"INSTANCE_other": "{{instance}} ({{songs}} utworów)",
+			"INSTANCE_FORMAT_ERROR": "Nazwa domeny musi zawierać .",
+			"OFFLINE": "Obecnie niedostępne – spróbuj dodać później"
+		},
+		"REPOSITORY": {
+			"SELECT": "Wybierz główne źródło swoich utworów",
+			"DESCRIPTION": "W późniejszym czasie możesz dodawać lub usuwać bazy danych utworów z poziomu panelu systemowego.",
+			"OWN_SONGS": "Mam własne piosenki",
+			"ONLINE_REPOSITORY": "Chcę korzystać z utworów z internetowego repozytorium",
+			"LIST": "Lista znanych serwerów Karaoke Mugen z repozytoriami utworów:"
+		},
+		"MEDIA_STORAGE": {
+			"TITLE": "Przechowywanie nośników",
+			"DESCRIPTION": "Utwory z repozytoriów internetowych mogą zajmować dużo miejsca. Czy chcesz przechowywać pliki z utworami w innej lokalizacji na swoim komputerze?",
+			"CHANGE_LATER": "W każdej chwili możesz zmienić ten folder."
+		},
+		"REMOTE_ACCESS": {
+			"TITLE": "Dostęp Zdalny",
+			"DESCRIPTION": "Włączenie dostępu zdalnego umożliwi użytkownikom połączenie się z Twoją sesją Karaoke Mugen za pomocą krótkiego, łatwego do zapamiętania adresu URL. Wybierz serwer Karaoke Mugen, który ma obsługiwać dostęp zdalny.",
+			"DESCRIPTION_GUESTS": "Goście będą mogli jedynie przeglądać Twoją bibliotekę utworów i zgłaszać propozycje piosenek do odtworzenia. To idealne rozwiązanie podczas transmisji na Twitchu, spotkań ze znajomymi czy występów przed publicznością na różnego rodzaju wydarzeniach!",
+			"DO_NO_WANT": "Na razie nie chcę włączać dostępu zdalnego",
+			"EXAMPLE": "Przykładowy adres URL: <1>https://abcd.{{instance}}</1>"
+		},
+		"TIMELINE": {
+			"USER_ACCOUNT": "Konto użytkownika",
+			"SONGS": "Piosenki",
+			"ONLINE": "Online"
+		},
+		"COLLECTIONS": {
+			"CHOICE": "Wybór kolekcji",
+			"CHOICE_DESC_1": "Zbiory utworów są przeznaczone dla różnych odbiorców. Wybierz zbiory, które chcesz widzieć w swojej bazie danych karaoke.",
+			"CHOICE_DESC_2": "W każdej chwili możesz zmienić swoje kolekcje w panelu systemowym."
+		},
+		"ENDING": "Dziękujemy! Program Karaoke Mugen został skonfigurowany. Zajrzyj do ustawień interfejsu operatora, aby skonfigurować działanie aplikacji przed pierwszą sesją karaoke!"
 	},
 	"NOTIFICATION": {
 		"OPERATOR": {
@@ -1278,7 +1351,9 @@
 			"AUDIO_CHANNEL_LAYOUT": "Układ kanałów audio",
 			"AUDIO_COVER_ART": "Okładka",
 			"WARNINGS": {
-				"LIBAVCODEC_ENCODER": "Dźwięk jest kodowany za pomocą kodera libavcodec (ffmpeg reference aac), który może tworzyć słyszalne artefakty i nie jest zalecany do używania. Użyj kodera libfdk_aac dla aac lub innego kodeka, takiego jak opus, aby uzyskać najlepszą możliwą jakość."
+				"LIBAVCODEC_ENCODER": "Dźwięk jest kodowany za pomocą kodera libavcodec (ffmpeg reference aac), który może tworzyć słyszalne artefakty i nie jest zalecany do używania. Użyj kodera libfdk_aac dla aac lub innego kodeka, takiego jak opus, aby uzyskać najlepszą możliwą jakość.",
+				"HAS_EMBEDDED_SUBTITLES": "Napisy wbudowane w plik multimedialny nie są zalecane i zostaną automatycznie usunięte podczas zapisywania. Upewnij się, że napisy zostały poprawnie dodane lub przesłane w sekcji „Tekst utworu” (Lyrics).",
+				"HAS_ATTACHMENTS": "Plik multimedialny zawiera osadzone załączniki (prawdopodobnie czcionki), które zostaną usunięte podczas zapisywania."
 			},
 			"OVERALL_BITRATE": "Ogólna przepływność bitów",
 			"VIDEO_RESOLUTION": "Rozdzielczość",
@@ -1289,7 +1364,14 @@
 			"LABEL": "Kodowanie multimediów",
 			"OPTIONS": {
 				"TRIM_MEDIA": "Początek/koniec przycinania",
-				"TRIM_MEDIA_TOOLTIP": "Wykrywanie i usuwanie czarnych ramek oraz wyciszenia na początku i na końcu nośnika"
+				"TRIM_MEDIA_TOOLTIP": "Wykrywanie i usuwanie czarnych ramek oraz wyciszenia na początku i na końcu nośnika",
+				"FIXASPECTRATIO": "Popraw proporcje obrazu",
+				"FIXASPECTRATIO_TOOLTIP": "Zmienia proporcje obrazu wideo. Przykład: konwersja filmów nagranych pionowo na orientację poziomą. Proces kodowania może potrwać dłużej w zależności od wybranego efektu tła",
+				"FIXASPECTRATIO_BACKGROUND": "Tło:",
+				"FIXASPECTRATIO_MODE": {
+					"BLUR_VIDEO": "Rozmyj wideo",
+					"BLACK": "Czarny"
+				}
 			},
 			"TIMING_CHANGE_WARNING": "Wybrane opcje mogą zmienić czas rozpoczęcia i zakończenia nośnika. Sprawdź czas tekstu po zakodowaniu i zapisaniu multimediów."
 		},
@@ -1347,7 +1429,9 @@
 			"SELECT": "Wybierz",
 			"ADD_PARENT": "Dodaj rodzica",
 			"REMOVE_PARENT": "Usuń rodzica",
-			"SELECT_PARENT": "Wybierz rodzica:"
+			"SELECT_PARENT": "Wybierz rodzica:",
+			"COPY_SONGS_TO_REPOSITORY": "Skopiuj utwory do repozytorium",
+			"SELECT_REPOSITORY": "Wybierz repozytorium:"
 		},
 		"MEDIA_IN_PROCESS": "Plik multimedialny jest przetwarzany, poczekaj na powiadomienie o powodzeniu.",
 		"ALIASES_TOOLTIP": "Nazwy krótkie lub alternatywne, używane do wyszukiwania.",
@@ -1380,9 +1464,9 @@
 		"DEJAVU_TOOLTIP": "Ostatnio odtwarzana piosenka",
 		"PROBLEMATIC_TOOLTIP": "Ta piosenka zawiera sceny ({{tags}}), które mogą być problematyczne dla niektórych widzów.",
 		"DELETE_KARA_TITLE": "Zamierzasz usunąć {{count}} wyświetlanych utworów, jesteś pewien?",
-		"UPLOAD_MEDIA_TOOLTIP": "Ponowne przesyłanie multimediów karaoke",
+		"UPLOAD_MEDIA_TOOLTIP": "Ponownie prześlij plik utworu",
 		"SHOW_MEDIA_IN_FOLDER": "Pokaż multimedia w folderze",
-		"PLAY_KARAOKE": "Odtwarzaj karaoke",
+		"PLAY_KARAOKE": "Odtwórz utwór",
 		"IN_PROGRESS_DOWNLOAD_TOOLTIP": "Pobieranie w toku",
 		"PARENTS": "Rodzice",
 		"CHILDRENS": "Dzieci {{parent}}",
@@ -1399,7 +1483,7 @@
 		"REPOSITORY_DOCUMENTATION": "Zobacz zasady {{instance}} tutaj",
 		"PARENTS_TOOLTIP": "Jeśli zdefiniowano rodzica, ta piosenka będzie wyświetlana jako piosenka alternatywna do niej. Wybierz odpowiednie repozytorium przed wypełnieniem go, aby uniknąć dodawania utworów z innych repozytoriów.",
 		"ONLINE_REPOSITORIES": "Niektóre z twoich utworów pochodzą ze zdalnych repozytoriów, tych utworów nie można edytować za pomocą tego interfejsu, aby upewnić się, że repozytoria pozostają zsynchronizowane. Możesz zaznaczyć pole wyboru \"Tryb opiekuna\" w ustawieniach repozytorium, nie będziesz już otrzymywać żadnych aktualizacji, ale będziesz mógł edytować lub usuwać utwory.",
-		"DELETE_MEDIA_TOOLTIP": "Usuń multimedia karaoke",
+		"DELETE_MEDIA_TOOLTIP": "Usuń pliki utworu",
 		"DELETE_ALL_TOOLTIP": "Usuń wszystkie wyświetlane utwory jednocześnie",
 		"SHOW_LYRICS_IN_FOLDER": "Pokaż tekst w folderze",
 		"MISSING_DOWNLOAD_TOOLTIP": "Ta piosenka nie jest pobierana, będziesz potrzebować Internetu, aby ją odtworzyć. Możesz sprawić, by działał w trybie offline, pobierając multimedia.",
@@ -1415,7 +1499,9 @@
 		"SYNCHRONIZE_REPOSITORIES": "Repozytoria do synchronizacji",
 		"SWAP_TOOLTIP": "Zmień kolejność odtwarzania utworów, o które prosiłeś",
 		"SWAP_DESCRIPTION": "Wybierz drugą piosenkę, aby je zamienić",
-		"MISSING_PARENT_SONG": "Brak piosenki nadrzędnej ({{parent}})"
+		"MISSING_PARENT_SONG": "Brak piosenki nadrzędnej ({{parent}})",
+		"EMBEDDED_LYRICS_FOUND": "Znaleziono osadzone teksty utworów",
+		"USE_EMBEDDED_LYRICS_CONFIRM": "Plik multimedialny zawiera osadzony plik z tekstem utworu. Czy zastąpić bieżący tekst tym, który znajduje się w pliku multimedialnym?"
 	},
 	"HEADERS": {
 		"SESSIONS": {
@@ -1425,7 +1511,7 @@
 		"REPOSITORIES": {
 			"TITLE": "Zarządzanie kolekcjami i repozytoriami",
 			"DESCRIPTION_COLLECTION": "Kolekcje piosenek są przeznaczone dla różnych grup odbiorców. Wybierz kolekcje, które chcesz zobaczyć w swojej bazie danych karaoke.",
-			"DESCRIPTION": "Repozytoria są źródłem karaoke. Dodawaj, włączaj lub usuwaj repozytoria z tej strony."
+			"DESCRIPTION": "Repozytoria to źródła utworów. Na tej stronie możesz dodawać, włączać lub usuwać repozytoria."
 		},
 		"SESSIONS_EDIT": {
 			"DESCRIPTION": "Formularz modyfikacji sesji karaoke.",
@@ -1441,7 +1527,7 @@
 		},
 		"KARAOKE_LIST": {
 			"TITLE": "Lista utworów",
-			"DESCRIPTION": "W tym miejscu możesz edytować, dodawać lub usuwać utwory. Zazwyczaj tylko dla opiekunów repozytoriów karaoke."
+			"DESCRIPTION": "Z tego miejsca możesz edytować, dodawać lub usuwać utwory. Funkcja przeznaczona zazwyczaj tylko dla osób zarządzających zbiorem utworów."
 		},
 		"GIT": {
 			"TITLE": "Integracja z Git",
@@ -1452,7 +1538,7 @@
 			"TITLE": "Baza danych"
 		},
 		"UNUSED_FILES": {
-			"DESCRIPTION": "Tutaj możesz wyświetlić listę niepotrzebnych plików (nieużywanych przez żadne karaoke) w swoich repozytoriach.",
+			"DESCRIPTION": "W tym miejscu możesz wyświetlić listę zbędnych plików (niewykorzystywanych przez żaden utwór) znajdujących się w Twoich repozytoriach.",
 			"TITLE": "Nieużywane pliki"
 		},
 		"DOWNLOAD_QUEUE": {
@@ -1460,12 +1546,12 @@
 			"DESCRIPTION": "Zobacz listę bieżących i oczekujących plików do pobrania."
 		},
 		"KARAOKE_EDIT": {
-			"DESCRIPTION": "Formularz modyfikacji karaoke.",
-			"TITLE": "Edytowanie karaoke"
+			"DESCRIPTION": "Formularz modyfikacji utworu.",
+			"TITLE": "Edytuj utwór"
 		},
 		"HISTORY": {
 			"TITLE": "Historia odczytu",
-			"DESCRIPTION": "Wyświetla listę wszystkich karaoke odtwarzanych w aplikacji, w malejącej kolejności chronologicznej."
+			"DESCRIPTION": "Wyświetla listę wszystkich utworów odtworzonych w aplikacji, w porządku chronologicznym od najnowszego do najstarszego."
 		},
 		"MOST_REQUESTED": {
 			"TITLE": "Najczęściej żądane piosenki",
@@ -1497,7 +1583,7 @@
 			"TITLE": "Tworzenie użytkownika"
 		},
 		"INBOX": {
-			"DESCRIPTION": "Jako opiekun tej bazy karaoke, Twoim obowiązkiem jest uczynienie tej listy pustą.",
+			"DESCRIPTION": "Jako osoba utrzymująca tę bazę utworów, masz za zadanie sprawić, by lista ta była pusta.",
 			"TITLE": "Skrzynka odbiorcza dla utworów do zintegrowania"
 		},
 		"STORAGE": {
@@ -1506,7 +1592,7 @@
 		},
 		"DOWNLOAD": {
 			"TITLE": "Menedżer pobierania multimediów",
-			"DESCRIPTION": "Znajdź i pobierz multimedia połączone z karaoke ze skonfigurowanych repozytoriów."
+			"DESCRIPTION": "Wyszukuj i pobieraj materiały multimedialne powiązane z utworami z Twoich skonfigurowanych repozytoriów."
 		},
 		"USER_EDIT": {
 			"DESCRIPTION": "Formularz modyfikacji użytkownika",
@@ -1514,15 +1600,15 @@
 		},
 		"KARATAG_BATCH_EDIT": {
 			"DESCRIPTION": "Tylko dla opiekunów: ta strona pozwala na dodawanie lub usuwanie tagów w kilku utworach jednocześnie.",
-			"TITLE": "Zbiorcze dodawanie/usuwanie tagu"
+			"TITLE": "Masowa edycja utworów"
 		},
 		"USER_LIST": {
 			"TITLE": "Zarządzanie użytkownikami",
 			"DESCRIPTION": "Z tego miejsca możesz tworzyć, usuwać, modyfikować użytkowników, ale także resetować ich hasła lub zmieniać ich uprawnienia."
 		},
 		"KARAOKE_NEW": {
-			"DESCRIPTION": "Ten formularz pozwala na dodanie już istniejącego karaoke do jednego z repozytoriów.",
-			"TITLE": "Dodaj karaoke"
+			"DESCRIPTION": "Ten formularz umożliwia dodanie istniejącego już utworu do jednego z Twoich repozytoriów.",
+			"TITLE": "Dodaj utwór"
 		},
 		"REPOSITORIES_EDIT": {
 			"TITLE": "Edytowanie repozytorium",
@@ -1537,7 +1623,7 @@
 			"TITLE": "Zaawansowana konfiguracja"
 		},
 		"HOME": {
-			"TITLE": "Panel systemowy",
+			"TITLE": "Panel systemu (dashboard)",
 			"DESCRIPTION": "Od tego wszystko się zaczyna. Wybierz swoje działanie."
 		},
 		"LOGS": {
@@ -1596,7 +1682,11 @@
 		]
 	},
 	"MIGRATE": {
-		"TITLE": "Migracja"
+		"TITLE": "Migracja",
+		"DEFAULT_REMOTE": {
+			"TITLE": "Wybierz serwer domyślny",
+			"DESCRIPTION": "Karaoke Mugen oferuje teraz różne serwery do obsługi funkcji online. Wybierz te, z których chcesz korzystać."
+		}
 	},
 	"INBOX": {
 		"TYPES": {
@@ -1696,7 +1786,7 @@
 		"PREVIOUS_KARAOKES": "Poprzednie utwory"
 	},
 	"ABOUT": {
-		"DESCRIPTION": "Graj karaoke i organizuj imprezy, między przyjaciółmi lub publicznie.",
+		"DESCRIPTION": "Odtwarzacz karaoke i narzędzie do obsługi imprez, zarówno w gronie znajomych, jak i publicznie.",
 		"LICENSE": "Licencja MIT.",
 		"DONATORS": "Podziękowania dla <1>{{donators}}</1> za darowizny na rzecz Karaoke Mugen"
 	},
@@ -1708,14 +1798,14 @@
 		"SESSIONS": "Sesje",
 		"REPOSITORIES": "Kolekcje i repozytoria",
 		"LIST": "Lista",
-		"DOWNLOAD_QUEUE": "Kolejka pobierania",
+		"DOWNLOAD_QUEUE": "Kolejka",
 		"RANKING": "Najczęściej żądane",
 		"VIEWCOUNTS": "Najczęściej grane",
 		"TAGS": "Tagi",
 		"DATABASE": "Baza danych",
 		"DUPLICATE": "Duplikaty",
-		"BATCH_EDIT": "Zbiorcza edycja tagów utworów",
-		"STORAGE": "Zarządzanie pamięcią dyskową",
+		"BATCH_EDIT": "Edycja zbiorcza",
+		"STORAGE": "Zarządzanie pamięcią masową",
 		"BACKGROUNDS": "Tła",
 		"INBOX": "Skrzynka odbiorcza",
 		"KARAS": "Piosenki",
@@ -1726,9 +1816,11 @@
 		"NEW": "Nowy",
 		"HISTORY": "Historia",
 		"CONFIGURATION": "Zaawansowana konfiguracja",
-		"DOWNLOAD": "Pobieranie multimediów",
+		"DOWNLOAD": "Pobieranie",
 		"UNUSED_FILES": "Nieużywane pliki",
-		"KARAIMPORT": "Importuj utwory"
+		"KARAIMPORT": "Importuj utwory",
+		"MEDIAS": "Media",
+		"STATS": "Statystyka"
 	},
 	"UNUSED_FILES": {
 		"NAME": "Nazwa",
@@ -1780,7 +1872,7 @@
 	"TAGS": {
 		"NAME_TOOLTIP": "Jest to wewnętrzna nazwa używana do odwoływania się do tagów w bazie danych Karaoke Mugen",
 		"SHORT_NAME": "Skrócona nazwa",
-		"KARAFILETAG": "Opcjonalna nazwa pliku karaoke",
+		"KARAFILETAG": "Opcjonalny znacznik nazwy utworu",
 		"TYPES": "Typy tagów",
 		"TYPES_TOOLTIP": "Jest to typ tagu, dzięki czemu może być on odpowiednio wyszukiwany przez użytkowników",
 		"TYPES_REQUIRED": "Podaj typ",
@@ -1827,7 +1919,7 @@
 		"PRIORITY": "Priorytet wyświetlania",
 		"NAME_REQUIRED": "Proszę podać nazwę",
 		"SHORT_NAME_TOOLTIP": "Jest to krótka nazwa używana w interfejsie operatora podczas wyświetlania tytułów utworów",
-		"KARAFILETAG_TOOLTIP": "Zostanie to dodane w sekcji typów nazw plików karaoke",
+		"KARAFILETAG_TOOLTIP": "Zostanie to dodane w sekcji typów nazw plików utworów",
 		"KITSU_ID_TOOLTIP": "Jeśli jest to anime, podaj jego adres url na kitsu.app",
 		"KITSU_ID": "Kitsu ID/URL",
 		"NOLIVEDOWNLOAD_TOOLTIP": "Utworów z tym tagiem nie będzie można pobrać z serwera Karaoke Mugen",
@@ -1977,10 +2069,10 @@
 		"FAVORITES_IMPORTED_INCOMPATIBLE_VERSION_ERROR": "Błąd podczas importowania ulubionych: niezgodna wersja listy",
 		"FAVORITES_IMPORTED_BAD_DATA_ERROR": "Błąd podczas importowania ulubionych: nieprawidłowe dane w pliku",
 		"FAVORITES_IMPORTED_ERROR": "Błąd podczas importowania ulubionych",
-		"KARA_CREATED_ERROR": "Błąd podczas tworzenia karaoke",
+		"KARA_CREATED_ERROR": "Błąd podczas tworzenia utworu",
 		"KARA_HISTORY_ERROR": "Błąd podczas sortowania utworów według daty odtworzenia",
 		"KARA_EDITED_ERROR": "Błąd podczas edycji utworu",
-		"REPOSITORY_MANIFEST_KARA_METADATA_RULE_VIOLATION_ERROR": "Błąd: Metadane karaoke naruszają regułę z repozytorium. Sprawdź dziennik zdarzeń, aby uzyskać więcej informacji.",
+		"REPOSITORY_MANIFEST_KARA_METADATA_RULE_VIOLATION_ERROR": "Błąd: Metadane utworu naruszają regułę obowiązującą w jego repozytorium. Więcej informacji można znaleźć w dzienniku zdarzeń (Event Log).",
 		"TIME_PARADOX": "Wykryto paradoks czasu! Piosenka nie może być swoim własnym rodzicem!",
 		"PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED": "Ta piosenka została już dodana.",
 		"PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED": "Nie można dodać żadnego utworu, osiągnięto limit",
@@ -2048,13 +2140,13 @@
 		"USER_CREATE_ERROR_ONLINE_DISABLED": "Nie można utworzyć konta: tryb online jest wyłączony",
 		"PL_DELETE_PLAYING_ERROR": "Nie można usunąć aktualnie odtwarzanego utworu",
 		"QUIZZ_STOP_ERROR": "Błąd podczas zatrzymywania quizu",
-		"INBOX_DOWNLOAD_ERROR": "Nie można pobrać karaoke ze skrzynki odbiorczej",
+		"INBOX_DOWNLOAD_ERROR": "Nie można pobrać utworu ze skrzynki odbiorczej",
 		"PL_DELETE_UPVOTED": "Nie możesz usunąć swojej sugestii, jest już za późno.",
 		"CHECK_YOUR_PRIVILEGES": "Nie możesz tego zrobić",
 		"WEBAPPMODE_CLOSED_API_MESSAGE": "API jest w tej chwili wyłączone",
 		"USER_LOGIN_INVALID": "Nieprawidłowa nazwa użytkownika. Używaj tylko znaków alfanumerycznych (._- są również dozwolone)",
 		"QUIZZ_GET_TOTAL_GAME_SCORES_ERROR": "Błąd podczas uzyskiwania łącznych wyników gry",
-		"INBOX_DELETE_ERROR": "Nie można usunąć karaoke ze skrzynki odbiorczej",
+		"INBOX_DELETE_ERROR": "Nie można usunąć utworu ze skrzynki odbiorczej",
 		"DOWNLOADS_QUEUED_ERROR": "Błąd podczas dodawania plików do pobrania do kolejki",
 		"UNKNOWN_REPOSITORY": "Nieznane repozytorium",
 		"FAVORITES_VIEW_ERROR": "Błąd podczas pobierania ulubionych",
@@ -2111,7 +2203,7 @@
 		"TAG_CREATE_ERROR": "Błąd podczas tworzenia tagu",
 		"FAVORITES_EXPORTED_NO_FAVORITES_ERROR": "Błąd, brak ulubionych do zaimportowania",
 		"REPO_GET_UNUSEDTAGS_ERROR": "Błąd podczas pobierania nieużywanych tagów",
-		"KARA_FILE_EXISTS_ERROR": "Błąd podczas zapisywania plików: Karaoke o tej samej nazwie już istnieje. Upewnij się, że nie jest to duplikat, a tagi są ustawione poprawnie.",
+		"KARA_FILE_EXISTS_ERROR": "Błąd podczas zapisywania plików: Utwór o takiej samej nazwie pliku już istnieje. Upewnij się, że nie jest to duplikat oraz że znaczniki (tagi) są poprawnie ustawione.",
 		"FAVORITES_IMPORTED_WRONG_FILETYPE_ERROR": "Błąd podczas importowania ulubionych : nie jest to plik z listą ulubionych",
 		"KARA_EDIT_ERROR_UNMOVABLE_LYRICS": "Nie można zmienić nazwy tekstu. Czy plik jest zajęty w innej aplikacji?",
 		"PL_UPDATE_ERROR": "Błąd podczas aktualizowania informacji o liście odtwarzania",
@@ -2120,7 +2212,7 @@
 		"KARA_RANKING_ERROR": "Błąd podczas sortowania utworów według najbardziej żądanych",
 		"QUIZZ_GET_GAMES_ERROR": "Błąd podczas pobierania gier",
 		"KARA_PLAYED_ERROR": "Błąd podczas sortowania utworów według najczęściej odtwarzanych utworów",
-		"REPOSITORY_MANIFEST_KARA_PARENTS_RULE_VIOLATION_ERROR": "Błąd : Rodzina karaoke narusza regułę ze swojego repozytorium. Sprawdź dziennik zdarzeń, aby uzyskać więcej informacji.",
+		"REPOSITORY_MANIFEST_KARA_PARENTS_RULE_VIOLATION_ERROR": "Błąd: Rodzina utworów narusza regułę obowiązującą w jej repozytorium. Więcej informacji można znaleźć w dzienniku zdarzeń.",
 		"PIME_TARADOX": "Wykryto Caradoks Tzasu ! Rodzic piosenki nie może być również jej własnym dzieckiem!",
 		"LYRICS_VIEW_ERROR": "Błąd podczas pobierania tekstu piosenki",
 		"SONG_COPIED_ERROR": "Błąd podczas kopiowania utworu do innego repozytorium",
@@ -2186,12 +2278,15 @@
 		"IMPORT_NO_TITLE_ERROR": "Nie można zaimportować utworów, w szablonie brakuje tytułu",
 		"IMPORT_SONG_ERROR": "Nie można zaimportować utworów",
 		"PL_DO_NOT_MATCH_REPO": "Niektóre utwory z listy odtwarzania nie znajdują się na serwerze zdalnym",
-		"REMOTE_SERVER_CONNECTION_ERROR": "Nie można połączyć się ze zdalnym serwerem"
+		"REMOTE_SERVER_CONNECTION_ERROR": "Nie można połączyć się ze zdalnym serwerem",
+		"INSTANCE_NOT_RESPONDING": "Pobieraj multimedia i zarządzaj przestrzenią dyskową",
+		"SECURITY_CODE_LOCKED": "Zbyt wiele prób z użyciem błędnych kodów zabezpieczających. Odczekaj kilka minut przed ponowną próbą.",
+		"UPLINK_UNREACHABLE": "Nie udało się pobrać listy znanych serwerów Karaoke Mugen"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Dodano {{data}} pobrań do kolejki",
 		"UPDATING_MEDIAS_IN_PROGRESS": "Trwa aktualizacja multimediów",
-		"KARA_DELETED": "Karaoke usunięte",
+		"KARA_DELETED": "Utwór usunięty",
 		"CONFIG_BACKUPED": "Kopia zapasowa pliku konfiguracyjnego do config.yml.backup",
 		"FILES_VALIDATED": "Pliki zostały pomyślnie zweryfikowane",
 		"DATABASE_DUMPED": "Baza danych zrzucona do karaokemugen.sql",
@@ -2210,9 +2305,9 @@
 		"STOP_AFTER": "Karaoke zatrzyma się na końcu bieżącego utworu. Aby teraz zatrzymać, kliknij przycisk ponownie.",
 		"REPO_OLD_MEDIAS_DELETED": "Usunięto starsze nośniki z repozytorium",
 		"USER_RESETPASSWORD_SUCCESS": "Hasło użytkownika zostało pomyślnie zresetowane",
-		"KARA_CREATED": "Utworzono karaoke",
+		"KARA_CREATED": "Utwór stworzony",
 		"REPO_ALL_MEDIAS_DELETED": "Wszystkie multimedia z repozytorium zostały usunięte",
-		"KARA_EDITED": "Karaoke edytowane",
+		"KARA_EDITED": "Utwór edytowany",
 		"POLL_VOTED": "Głos zarejestrowany",
 		"REPO_CREATED": "Repozytorium zostało pomyślnie dodane",
 		"SESSION_MERGED": "Sesje zostały pomyślnie scalone",
@@ -2266,23 +2361,26 @@
 		"PITCH": {
 			"UP": "Podnieś ton",
 			"RESET": "Resetuj ton",
-			"DOWN": "Obniż ton"
+			"DOWN": "Obniż ton",
+			"TITLE": "Zmień wysokość dźwięku"
 		},
 		"SPEED": {
 			"UP": "Przyśpiesz prędkość",
 			"RESET": "Resetuj do normalnej prędkości",
-			"DOWN": "Zwolnij prędkość"
-		}
+			"DOWN": "Zwolnij prędkość",
+			"TITLE": "Zmień prędkość"
+		},
+		"MESSAGE": "Skieruj przesłanie do opinii publicznej"
 	},
 	"KARAOKE_IMPORT": {
 		"CONFIGURATION": "Konfiguracja",
 		"SOURCE_DIR": "Katalog źródłowy",
 		"SOURCE_DIR_DESC": "Wybierz folder, w którym znajdują się Twoje utwory. Zostaną one skopiowane do docelowego repozytorium.",
-		"SOURCE_DIR_TOOLTIP": "Katalog z materiałami karaoke (wideo/audio) do zaimportowania",
+		"SOURCE_DIR_TOOLTIP": "Katalog z plikami multimedialnymi utworów (wideo/audio) do zaimportowania",
 		"DESTINATION_REPOSITORY": "Repozytorium docelowe",
 		"DESTINATION_REPOSITORY_TOOLTIP": "Repozytorium, do którego będą importowane nowe utwory",
 		"FILENAME_TEMPLATE": "Szablon nazwy pliku",
-		"FILENAME_TEMPLATE_TOOLTIP": "Jeśli Twoje istniejące pliki mają u strukturyzowaną nazwę – na przykład zawierającą tytuł utworu, wykonawcę i rok – możesz podać tutaj odpowiedni format. Rozpoznane pola zostaną automatycznie zapisane jako nowe metadane karaoke.",
+		"FILENAME_TEMPLATE_TOOLTIP": "Jeśli Twoje istniejące pliki mają u strukturyzowaną nazwę – na przykład zawierającą tytuł utworu, wykonawcę i rok – możesz podać tutaj odpowiedni format. Rozpoznane pola zostaną automatycznie zapisane jako nowe metadane utworu.",
 		"FILENAME_TEMPLATE_DESC": "Proszę określić format używanych nazw plików:",
 		"WARNING_IMPORT_TITLE": "PROSZĘ PRZECZYTAĆ",
 		"WARNING_IMPORT": "Karaoke Mugen przeszuka folder źródłowy i spróbuje znaleźć utwory do zaimportowania.",
@@ -2298,5 +2396,9 @@
 	},
 	"WARNING_CODES": {
 		"REMOTE_HIGH_LATENCY_DETECTED": "Twoje połączenie z {{host}} jest wolne, Twoi użytkownicy mogą napotkać problemy"
+	},
+	"PLAYLIST": {
+		"NO_SONG": "Nie znaleziono utworu",
+		"EMPTY": "Playlista jest pusta"
 	}
 }
