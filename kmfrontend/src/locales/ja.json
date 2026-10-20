@@ -20,7 +20,7 @@
 	"INLINE_TAG": {
 		"COUNT_other": "{{count}}カラオケ",
 		"COUNT_one": "{{count}}カラオケ",
-		"SEARCH": "Songs with {{tag}}"
+		"SEARCH": "{{tag}} の曲"
 	},
 	"PLAYLIST_HEADER": {
 		"FILTERS": "フィルター",
@@ -459,7 +459,7 @@
 		"GENERATING_DATABASE": "データベースの更新中…",
 		"GENERATION_DONE": "生成の成功",
 		"MOVING_MEDIAS_REPO": "リポジトリのメディアの移動中…",
-		"CLEANING_REPO": "リポジトリから削除された曲の掃除中…",
+		"CLEANING_REPO": "リポジトリから削除された曲の掃除中",
 		"UPDATING_REPO": "リポジトリから曲を更新中",
 		"UPDATING_PLMEDIAS": "プレイリストメディアの更新中…",
 		"DUMMY_TASK": "進行中のタスクなし"
