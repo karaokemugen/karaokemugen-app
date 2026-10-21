@@ -3,7 +3,7 @@
 	"YES": "はい",
 	"NO": "いいえ",
 	"UNKNOWN": "不明",
-	"MENU_HELP_ABOUT": "カラオケ無限について",
+	"MENU_HELP_ABOUT": "Karaoke Mugenについて",
 	"MENU_HELP_DISCORD": "&Discord",
 	"TAG_TYPES": {
 		"SINGERGROUPS": "バンド",
@@ -17,7 +17,10 @@
 		"SERIES": "作品",
 		"GROUPS": "グループ",
 		"COLLECTIONS": "コレクション",
-		"AUTHORS": "カラオケ作成者"
+		"AUTHORS": "カラオケ作成者",
+		"MISC": "その他",
+		"FRANCHISES": "シリーズ",
+		"CREATORS": "制作元"
 	},
 	"MOVED_USER_DIR_DIALOG": {
 		"UNDERSTOOD": "了解！"
@@ -40,9 +43,9 @@
 		]
 	},
 	"ABOUT": {
-		"TITLE": "カラオケ無限について"
+		"TITLE": "Karaoke Mugenについて"
 	},
-	"TITLE": "タイトル",
+	"TITLE": "曲名",
 	"LIBRARY": "ライブラリ",
 	"MIGRATION_MESSAGES": [
 		"マイクを合わせる中",
@@ -97,7 +100,7 @@
 	"ERROR_UNKNOWN": "未知のエラーが発生しました！詳細はログをご覧ください。",
 	"ERROR_INIT_PG_DATA": "データベースデータの初期化エラー",
 	"MENU_FILE_QUIT": "閉じる",
-	"MENU_FILE_QUIT_OSX": "カラオケ無限を閉じる",
+	"MENU_FILE_QUIT_OSX": "Karaoke Mugenを閉じる",
 	"MENU_FILE_UPDATE": "&更新の検索…",
 	"MENU_VIEW": "&ビュー",
 	"MENU_VIEW_RELOAD": "&リロード",
