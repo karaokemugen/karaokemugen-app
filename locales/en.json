@@ -186,6 +186,10 @@
 		"DELETE_ALL_DATA": "DELETE all data",
 		"CONTINUE_ANYWAY": "Continue at your own risk"
 	},
+	"CONFIG_ERROR": {
+		"TITLE": "Configuration error",
+		"DETAIL": "There was an error in your configuration file, which prevents Karaoke Mugen from starting. When reporting this to developers, please include your config file and log file. Error found: {{err}}"
+	},
 	"REPO_DISABLED": {
 		"TITLE": "Repository disabled",
 		"DETAIL": "The {{repo}} repository has been disabled because one of its folders is unavailable. If any of its folders are on an external drive, make sure it's plugged in and go into System Panel > Repositories to re-enable it."
