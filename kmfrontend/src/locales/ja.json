@@ -1,6 +1,7 @@
 {
 	"ACTIONS": {
-		"CONFIRM": "確認"
+		"CONFIRM": "確認",
+		"SIGN_UP": "新規登録"
 	},
 	"YES": "はい",
 	"NO": "いいえ",
@@ -9,7 +10,7 @@
 	"PASSWORD": "パスワード（最低8文字）",
 	"AND": "と",
 	"DURATION_REMAINING": "残り",
-	"SHUTDOWN_POPUP": "カラオケ無限との接続が切れた",
+	"SHUTDOWN_POPUP": "Karaoke Mugenとの接続が切れた",
 	"PASSWORDCONF": "パスワードの確認",
 	"ADMIN_HEADER": {
 		"PUBLIC_PLAYLIST": "公開プレイリスト",
@@ -18,8 +19,8 @@
 		"CURRENT_PLAYLIST": "現在のプレイリスト"
 	},
 	"INLINE_TAG": {
-		"COUNT_other": "{{count}}カラオケ",
-		"COUNT_one": "{{count}}カラオケ",
+		"COUNT_other": "{{count}}曲",
+		"COUNT_one": "{{count}}曲",
 		"SEARCH": "{{tag}} の曲"
 	},
 	"PLAYLIST_HEADER": {
@@ -27,7 +28,7 @@
 		"ACTIVE_FILTER": "使用中のフィルター",
 		"EDIT_CRITERIA": "基準を編集",
 		"SHOW_SONGS": "曲を表示する",
-		"REFRESH_LIBRARY_BANNER": "ライブラリーの基準が変更されましたので、<1>リフレッシュ</1>してください。"
+		"REFRESH_LIBRARY_BANNER": "ライブラリーの基準が変更されましたので、<1>再読み込み</1>してください。"
 	},
 	"ADVANCED": {
 		"DELETE": "プレイリストを削除する",
@@ -54,7 +55,7 @@
 	"WARNING": "警告！",
 	"SHOW-HIDE": "表示/非表示",
 	"NOT_FOUND_PAGE": {
-		"404": "カラオケ無限で迷子？",
+		"404": "Karaoke Mugenで迷子？",
 		"404_3": "あなたがここにいる",
 		"404_2": "慌てないで、手伝うよ。",
 		"404_4": "ホームページに戻る"
@@ -67,7 +68,7 @@
 		"YEAR": "年"
 	},
 	"VERSION": "バージョン",
-	"SHUTDOWN": "カラオケ無限を閉じる",
+	"SHUTDOWN": "Karaoke Mugenを閉じる",
 	"HOME_BUTTON": "ホーム",
 	"NEW_PASSWORD": "新しいパスワード",
 	"PLAYLISTS": {
@@ -139,7 +140,15 @@
 		"PASSWORD": "パスワード",
 		"EMAIL": "メール",
 		"NICKNAME": "ニックネーム",
-		"LOGIN": "ユーザー名"
+		"LOGIN": "ユーザー名",
+		"USER": "ユーザー",
+		"GUEST": "ゲスト",
+		"AVATAR": "アバター",
+		"BIO": "自己紹介",
+		"URL": "ウェブサイト",
+		"ONLINE": "オンライン",
+		"OFFLINE": "オフライン",
+		"DELETE_USER_CONFIRM": "ユーザーを削除"
 	},
 	"INBOX": {
 		"CONTACT_INFOS_MODAL": {
@@ -171,7 +180,13 @@
 				"MASTODON": "Mastodon",
 				"MASTODON_PLACEHOLDER": "KaraokeMugen@shelter.moe",
 				"TWITCH": "Twitch",
-				"DISCORD_PLACEHOLDER": "Karak#1423"
+				"DISCORD_PLACEHOLDER": "Karak#1423",
+				"TWITCH_PLACEHOLDER": "KaraokeLive",
+				"INSTAGRAM_PLACEHOLDER": "karaokemugen",
+				"MYANIMELIST_PLACEHOLDER": "karaokemugen",
+				"ANILIST_PLACEHOLDER": "karaokemugen",
+				"KITSU_PLACEHOLDER": "karaokemugen",
+				"GITLAB_PLACEHOLDER": "karaokemugen"
 			},
 			"INTERFACE_LANGUAGE": "インターフェイス言語",
 			"MAIN_SONG_NAME_LANG": "曲名表示好み",
@@ -230,8 +245,8 @@
 		"VERSIONS_one": "バージョン",
 		"VERSIONS_other": "バージョン",
 		"LANGS_other": "言語",
-		"CREATORS_one": "作成者",
-		"CREATORS_other": "作成者",
+		"CREATORS_one": "制作元",
+		"CREATORS_other": "制作元",
 		"PLATFORMS_other": "プラットフォーム",
 		"GENRES_other": "ジャンル",
 		"GENRES_one": "ジャンル",
@@ -242,7 +257,11 @@
 		"GROUPS_other": "グループ",
 		"COLLECTIONS_one": "コレクション",
 		"AUTHORS_one": "カラオケ作成者",
-		"AUTHORS_other": "カラオケ作成者"
+		"AUTHORS_other": "カラオケ作成者",
+		"MISC_other": "その他",
+		"MISC_one": "その他",
+		"FRANCHISES_one": "シリーズ",
+		"FRANCHISES_other": "シリーズ"
 	},
 	"SETTINGS": {
 		"PLAYER": {
@@ -299,13 +318,13 @@
 		"VIDEO_PREVIEW": "ビデオプレビュー",
 		"AUTHORS_BY": "カラオケ作成者",
 		"SONGWRITERS_BY": "作曲者",
-		"SINGERGROUPS_BY": "バンドー",
-		"CREATORS_BY": "作成者",
+		"SINGERGROUPS_BY": "バンド名",
+		"CREATORS_BY": "制作元",
 		"SINGERS_BY": "歌手",
 		"SECTIONS": {
 			"FILES": "ファイル",
 			"PARENTS": "親曲",
-			"TITLES": "タイトル",
+			"TITLES": "曲名",
 			"IDENTITY": "身元",
 			"CATEGORIZATION": "分類",
 			"META": "メタデータ"
@@ -316,7 +335,15 @@
 		"AUDIO_COVER": {
 			"UPLOAD": "カバーアートをアップロード"
 		},
-		"ORDER": "曲順"
+		"ORDER": "曲順",
+		"FRANCHISES_TOOLTIP": "作品がシリーズ化されている（ガンダム、マリオ、ゼルダ、ナルトなど）場合は、ここに入力してください。",
+		"SINGERGROUPS_TOOLTIP": "歌手がバンドに所属している場合は、ここに入力してください。プレイヤーと曲リストには、歌手一人ひとりの代わりにバンド名が表示されます。",
+		"REPOSITORY": "リポジトリ",
+		"MEDIA_FILE_INFO": {
+			"FILE_SIZE": "ファイルサイズ"
+		},
+		"ORDER_MEDIA_MEDIASIZE": "メディアサイズ",
+		"TOTAL_MEDIA_SIZE": "合計メディアサイズ:"
 	},
 	"SPONSOR_TAGLINES": [
 		"この番組は・・・"
@@ -349,7 +376,9 @@
 		"CRITERIA_TYPE_1007": "以後（年を含む）",
 		"LABEL": {
 			"TAG_VERBS": {
-				"1": "から"
+				"1": "から",
+				"17": "バンド名",
+				"4": "制作元"
 			},
 			"KID": "この曲はリストにあります."
 		},
@@ -360,7 +389,17 @@
 		"KARAS": "曲",
 		"TAGS": "タグ",
 		"HOME": "ダッシュボード",
-		"DATABASE": "データベース"
+		"DATABASE": "データベース",
+		"USERS": "ユーザー",
+		"SYSTEM": "システム",
+		"LOGS": "ログ",
+		"CONFIGURATION": "詳細設定",
+		"ADVANCED_OPTIONS": "システムの設定",
+		"SESSIONS": "セッション",
+		"MEDIAS": "メディア",
+		"STATS": "統計",
+		"HISTORY": "履歴",
+		"GIT": "Git"
 	},
 	"WELCOME_PAGE": {
 		"STATS_KARAS": "曲",
@@ -370,7 +409,7 @@
 		"ADMINISTRATION": "システム・パネル",
 		"HELP": "オンラインヘルプ",
 		"SITE": "ウェブサイト",
-		"MASTODON_UPDATE": "カラオケ無限のお知らせ",
+		"MASTODON_UPDATE": "Karaoke Mugenのお知らせ",
 		"APP_UPDATE": "新しいバージョン",
 		"BASE_UPDATE": "データベース更新",
 		"STATS_USAGETIME": "使用時間",
@@ -412,7 +451,7 @@
 	},
 	"CONFIG": {
 		"PROPERTIES": {
-			"ONLINE_DISCORD_DISPLAYACTIVITY": "Discordのプロフィールでカラオケ無限の活動を表示する"
+			"ONLINE_DISCORD_DISPLAYACTIVITY": "DiscordのプロフィールでKaraoke Mugenの活動を表示する"
 		}
 	},
 	"CHIBI": {
@@ -430,6 +469,12 @@
 		},
 		"DATABASE": {
 			"TITLE": "データベース"
+		},
+		"TAG_NEW": {
+			"TITLE": "タグを作成"
+		},
+		"USER_NEW": {
+			"TITLE": "ユーザーを作成"
 		}
 	},
 	"KAROULETTE": {
@@ -462,7 +507,11 @@
 		"CLEANING_REPO": "リポジトリから削除された曲の掃除中",
 		"UPDATING_REPO": "リポジトリから曲を更新中",
 		"UPDATING_PLMEDIAS": "プレイリストメディアの更新中…",
-		"DUMMY_TASK": "進行中のタスクなし"
+		"DUMMY_TASK": "進行中のタスクなし",
+		"CREATING_TAG_IN_PROGRESS": "タグを作成中…",
+		"BASE_IMPORT": {
+			"CREATING_METADATA": "メタデータを作成中"
+		}
 	},
 	"USERLIST": "ユーザー一覧",
 	"HOME": {
@@ -474,6 +523,12 @@
 		},
 		"SYSTEM": {
 			"DATABASE": "データベース"
+		},
+		"USERS": {
+			"CREATE": "ユーザーを作成"
+		},
+		"TAGS": {
+			"CREATE": "タグを作成"
 		}
 	},
 	"ADMIN_MESSAGE": {
@@ -497,11 +552,13 @@
 	"SEARCH_FILTER": "検索フィルター",
 	"REFRESH": "更新",
 	"UNUSED_FILES": {
-		"TAGS": "タグ"
+		"TAGS": "タグ",
+		"REPOSITORY": "リポジトリ"
 	},
 	"TAGS": {
 		"NAME": "内部名",
-		"NAME_REQUIRED": "アイテム名を入力してください"
+		"NAME_REQUIRED": "アイテム名を入力してください",
+		"REPOSITORY": "リポジトリ"
 	},
 	"VIEW_FAVORITES": "お気に入り",
 	"VIEW_RECENT": "最新",
@@ -517,7 +574,9 @@
 	},
 	"KARA_PAUSED_WAITING": "曲がまだ再生しない",
 	"SUCCESS_CODES": {
-		"MESSAGE_SENT": "メッセージ送信済み"
+		"MESSAGE_SENT": "メッセージ送信済み",
+		"TAG_CREATED": "タグを正常に作成しました",
+		"USER_CREATED": "ユーザーを正常に作成しました"
 	},
 	"INTRO_TIME": "プレイリストイントロ",
 	"TOOLTIP_ADDKARA": "この曲を追加",
