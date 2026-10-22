@@ -12,6 +12,7 @@ const lazyLocales: Record<string, () => Promise<{ default: ResourceKey }>> = {
 	es: () => import('../locales/es.json'),
 	fr: () => import('../locales/fr.json'),
 	id: () => import('../locales/id.json'),
+	ja: () => import('../locales/ja.json'),
 	it: () => import('../locales/it.json'),
 	pl: () => import('../locales/pl.json'),
 	pt: () => import('../locales/pt.json'),
