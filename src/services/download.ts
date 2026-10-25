@@ -1,8 +1,8 @@
+import { randomUUID } from 'crypto';
 import { promise as fastq, queueAsPromised } from 'fastq';
 import { promises as fs } from 'fs';
 import parallel from 'p-map';
 import { basename, resolve } from 'path';
-import { randomUUID } from 'crypto';
 
 import {
 	initDownloads,
@@ -24,11 +24,11 @@ import { emit, on, once } from '../lib/utils/pubsub.js';
 import Task from '../lib/utils/taskManager.js';
 import { emitWS } from '../lib/utils/ws.js';
 import { KaraDownload, KaraDownloadRequest, MediaDownloadCheck, QueueStatus } from '../types/download.js';
+import { checkInternet } from '../utils/net.js';
 import Sentry from '../utils/sentry.js';
 import { getState } from '../utils/state.js';
 import { getKaras } from './kara.js';
 import { getRepo, getRepoFreeSpace } from './repo.js';
-import { checkInternet } from '../utils/net.js';
 
 const service = 'Downloads';
 
@@ -155,7 +155,7 @@ async function processDownload(download: KaraDownload) {
 		emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.DOWNLOAD', err));
 		updateDownloaded([download.kid], 'MISSING');
 		emitWS('KIDUpdated', [{ kid: download.kid, download_status: 'MISSING' }]);
-		emit('songDownloadFailed', download.kid);
+		emit('songDownloadFailed', { download, err });
 		logger.error(`Failed to process download ${download.mediafile} (${download.uuid})`, { service, obj: err });
 		if (err.code !== 'ETIMEDOUT' && err.code !== 'ECONNRESET') {
 			Sentry.error(err);
@@ -310,15 +310,17 @@ export async function waitForSongsToDownload(kids: string[]): Promise<void> {
 			songs.delete(kid);
 			if (songs.size === 0) resolvePromise();
 		});
-		once('songDownloadFailed', () => {
-			reject(new Error('Failed to download one song'));
+		once('songDownloadFailed', (obj: any) => {
+			logger.error(`Failed to download one song (KID ${ obj.download?.kid } - NAME: ${obj.download?.name }) Error : ${obj.err}`, { service })
+			reject(new ErrorKM('FAILED_TO_DOWNLOAD_SONG', 500, false));
 		});
 		once('downloadQueueDrained', () => {
 			// Just putting it here to error out if the queue is drained and we definitely still have songs left to download. Could be the user who drained the download queue willingly, that idiot.
 			// We wait a little bit just to make sure we're not caught at the same time/before songDownloaded above
 			setTimeout(() => {
 				if (songs.size > 0)
-					reject(new Error('Failed to download all songs, queue emptied before we were done.'));
+					logger.warn('Failed to download all songs, queue emptied before we were done', { service });
+					reject(new ErrorKM('DOWNLOAD_QUEUE_DRAINED_BUT_SONGS_STILL_TO_DOWNLOAD', 410, false));
 			}, 1000);
 		});
 	});
