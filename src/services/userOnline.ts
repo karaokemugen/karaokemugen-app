@@ -209,7 +209,6 @@ export async function editRemoteUser(user: User, token: string, avatar = true) {
 		);
 		return res.data;
 	} catch (err) {
-		sentry.error(err);
 		throw `Remote update failed : ${err}`;
 	} finally {
 		startSub(login, instance);
