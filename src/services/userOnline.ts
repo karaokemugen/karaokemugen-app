@@ -226,7 +226,8 @@ export async function fetchRemoteAvatar(instance: string, avatarFile: string): P
 		});
 	} catch (err) {
 		// If avatar is not present, we can safely assume this is a KM Server issue with a specific user
-		if (err?.code === 404) {
+		if (isAxiosError(err) && err.response?.status === 404) {
+			logger.warn(`Avatar online ${avatarFile} not found`);
 			return;
 		}
 		throw err;
