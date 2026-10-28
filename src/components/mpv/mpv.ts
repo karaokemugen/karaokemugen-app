@@ -40,6 +40,7 @@ import { isShutdownInProgress } from '../engine.js';
 import { lavfiGenerator } from './lavfiGenerator.js';
 import { Player } from './player.js';
 import Timeout = NodeJS.Timeout;
+import { ErrorKM } from '../../lib/utils/error.js';
 
 type PlayerType = 'main' | 'monitor';
 
@@ -536,7 +537,7 @@ export class Players {
 		logger.error('mpvAPI (send)', { service, obj: err });
 		sentry.addErrorInfo('mpvLog', (await this.getmpvLog('main'))?.join('\n'));
 		if (this.players.monitor) sentry.addErrorInfo('mpvLog', (await this.getmpvLog('monitor'))?.join('\n'));
-		throw new Error(JSON.stringify(err));
+		throw new ErrorKM(`Error sending command to MPV`, 500, false);
 	}
 
 	private startBackgroundMusic(tries = 0): void {
