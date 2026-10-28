@@ -67,10 +67,10 @@ let updateRunning = false;
 export const repoConstraints = z.object({
 	Name: z.string().min(1),
 	BaseDir: z.string(),
-	Enabled: z.boolean().optional(),
-	SendStats: z.boolean().optional(),
-	Update: z.boolean().optional(),
-	Online: z.boolean(),
+	Enabled: z.coerce.boolean().optional(),
+	SendStats: z.coerce.boolean().optional(),
+	Update: z.coerce.boolean().optional(),
+	Online: z.coerce.boolean(),
 	AutoMediaDownloads: z.enum(repoAutoMediaDownloadType).optional(),
 	MaintainerMode: z.boolean().optional(),
 	Path: z.object({
@@ -86,20 +86,20 @@ export const repoConstraints = z.object({
 	}).nullish(),
 	UploadMethod: z.enum(repoUploadMethods).optional(),
 	FTP: z.object({
-		Port: z.number().int().optional(),
+		Port: z.coerce.number().int().optional(),
 		Host: z.string(),
 		Username: z.string(),
 		Password: z.string(),
 		BaseDir: z.string().optional(),
 	}).optional(),
 	SFTP: z.object({
-		Port: z.number().int().optional(),
+		Port: z.coerce.number().int().optional(),
 		Host: z.string(),
 		Username: z.string().optional(),
 		Password: z.string().optional(),
 		BaseDir: z.string().optional(),
 	}).optional(),
-	Secure: z.boolean().optional(),
+	Secure: z.coerce.boolean().optional(),
 });
 
 /** Get all repositories in database */
