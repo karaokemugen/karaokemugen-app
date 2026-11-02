@@ -1592,6 +1592,7 @@
 		"REPOSITORY_TYPE": "Type de dépôt",
 		"REPOSITORY_TYPE_DESC": "Tout d'abord, choisissez si le dépôt que vous souhaitez ajouter est local ou en ligne.",
 		"UPDATE": "Mise à jour automatique",
+		"UPDATE_MANUALLY": "Mise à jour manuelle",
 		"UPDATE_TOOLTIP": "Si désactivé, le dépôt ne sera jamais mis à jour par l'application.",
 		"ENABLED": "Actif",
 		"SECURE": "Sécurisé",

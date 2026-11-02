@@ -192,7 +192,7 @@ export default function Git() {
 
 	const updateRepo = useCallback(async (repoName: string) => {
 		setLoading(true);
-		await commandBackend(WS_CMD.UPDATE_REPO, { repoName }, false, 300000).catch(() => null);
+		await commandBackend(WS_CMD.UPDATE_GIT_REPO, { repoName }, false, 300000).catch(() => null);
 		setLoading(false);
 		// Refresh repos
 		getRepos().then(setRepos);
