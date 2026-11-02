@@ -492,7 +492,8 @@
 			"PASSWORD": "Ger-tremen SFTP"
 		},
 		"GIT_CUSTOM_MESSAGE": "Kemennadenn personelaet",
-		"DELETE_CONFIRM": "Ha sur oc'h e fell deoc'h dilemel ar c'hlavec'hiad {{name}} ?"
+		"DELETE_CONFIRM": "Ha sur oc'h e fell deoc'h dilemel ar c'hlavec'hiad {{name}} ?",
+		"UPDATE_MANUALLY": "Hizivaat gant an dorn"
 	},
 	"ERROR_CODES": {
 		"UNKNOWN_REPOSITORY": "Kavlec'hiad dianav",
