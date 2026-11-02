@@ -5,6 +5,7 @@ import { isEqual } from 'lodash';
 import parallel from 'p-map';
 import { basename, dirname, extname, parse, resolve } from 'path';
 import { TopologicalSort } from 'topological-sort';
+import z from 'zod';
 
 import { compareKarasChecksum, generateDB } from '../dao/database.js';
 import { baseChecksum, editKaraInStore, getStoreChecksum, sortKaraStore } from '../dao/dataStore.js';
@@ -19,6 +20,8 @@ import { APIMessage } from '../lib/services/frontend.js';
 import { readAllKaras } from '../lib/services/generation.js';
 import { defineSongname } from '../lib/services/karaCreation.js';
 import { getRepoManifest, readAllRepoManifests } from '../lib/services/repo.js';
+import { DBStats } from '../lib/types/database/kara.js';
+import { KMServer, KMServerFull } from '../lib/types/database/servers.js';
 import { DBTag } from '../lib/types/database/tag.js';
 import { KaraMetaFile } from '../lib/types/downloads.js';
 import { KaraFileV4 } from '../lib/types/kara.js';
@@ -40,23 +43,20 @@ import { Change, Commit, DifferentChecksumReport, ModifiedMedia, Push } from '..
 import { adminToken } from '../utils/constants.js';
 import { getFreeSpace, pathIsContainedInAnother } from '../utils/files.js';
 import FTP from '../utils/ftp.js';
-import SFTP from '../utils/sftp.js';
 import Git, { checkGitInstalled, isGit } from '../utils/git.js';
 import { oldFilenameFormatKillSwitch } from '../utils/hokutoNoCode.js';
 import { applyPatch, cleanFailedPatch, downloadAndExtractZip, writeFullPatchedFiles } from '../utils/patch.js';
 import sentry from '../utils/sentry.js';
+import SFTP from '../utils/sftp.js';
 import { getState } from '../utils/state.js';
 import { updateMedias } from './downloadMedias.js';
 import { addFont, deleteFont, initFonts } from './fonts.js';
+import { getInboxCache } from './inbox.js';
 import { getKara, getKaras } from './kara.js';
 import { createKaraInDB, integrateKaraFile, removeKara } from './karaManagement.js';
 import { createProblematicSmartPlaylist, updateAllSmartPlaylists } from './smartPlaylist.js';
 import { sendPayload } from './stats.js';
 import { getTags, integrateTagFile, removeTag } from './tag.js';
-import { getInboxCache } from './inbox.js';
-import { KMServer, KMServerFull } from '../lib/types/database/servers.js';
-import { DBStats } from '../lib/types/database/kara.js';
-import z from 'zod';
 
 const service = 'Repo';
 
@@ -202,9 +202,15 @@ export async function addRepo(repo: Repository) {
 	}
 }
 
-export async function updateAllRepos() {
+export async function updateAllRepos(repoNames?: string[]) {
 	try {
-		const repos = getRepos().filter(r => r.Online && r.Enabled && r.Update);
+		let repos = [];
+		if (repoNames) {
+			repos = getRepos().filter(r => r.Online && r.Enabled && repoNames.includes(r.Name));
+		} else {
+			repos = getRepos().filter(r => r.Online && r.Enabled && r.Update);
+		}
+		if (repos.length === 0) return;
 		let doGenerate = false;
 		let allReposUpdated = true;
 		logger.info('Updating all repositories', { service });

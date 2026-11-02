@@ -1,5 +1,7 @@
 import z from 'zod';
+
 import { WS_CMD } from '../../../kmfrontend/src/utils/ws.mjs';
+import { karaConstraintsV4 } from '../../lib/dao/karafile.js';
 import { APIMessage } from '../../lib/services/frontend.js';
 import { getRepoManifest } from '../../lib/services/repo.js';
 import { check } from '../../lib/utils/validators.js';
@@ -36,7 +38,6 @@ import {
 import { syncTagsFromRepo } from '../../services/tag.js';
 import { generateSSHKey, getSSHPubKey, removeSSHKey } from '../../utils/ssh.js';
 import { runChecklist } from '../middlewares.js';
-import { karaConstraintsV4 } from '../../lib/dao/karafile.js';
 
 export default function repoController(router: SocketIOApp) {
 	router.route(WS_CMD.GET_SSHPUB_KEY, async (socket, req) => {
@@ -106,7 +107,7 @@ export default function repoController(router: SocketIOApp) {
 		try {
 			check(req.body, z.object({
 				name: z.string(),
-			}));			
+			}));
 			const repo = getRepo(req.body.name);
 			return repo;
 		} catch (err) {
@@ -118,7 +119,7 @@ export default function repoController(router: SocketIOApp) {
 		try {
 			check(req.body, z.object({
 				name: z.string(),
-			}));			
+			}));
 			const manifest = getRepoManifest(req.body.name);
 			if (!manifest) throw { code: 404 };
 			return manifest;
@@ -255,7 +256,7 @@ export default function repoController(router: SocketIOApp) {
 		try {
 			check(req.body, z.object({
 				name: z.string(),
-			}));			
+			}));
 			await deleteMedias(null, req.body.name, true);
 			return { code: 200, message: APIMessage('REPO_OLD_MEDIAS_DELETED') };
 		} catch (err) {
@@ -267,7 +268,7 @@ export default function repoController(router: SocketIOApp) {
 		try {
 			check(req.body, z.object({
 				kids: z.array(z.uuidv4()),
-			}));			
+			}));
 			await deleteMedias(req.body.kids);
 			return { code: 200, message: APIMessage('REPO_MEDIA_DELETED') };
 		} catch (err) {
@@ -294,13 +295,25 @@ export default function repoController(router: SocketIOApp) {
 		}
 	});
 
-	router.route(WS_CMD.UPDATE_REPO, async (socket, req) => {
+	router.route(WS_CMD.UPDATE_GIT_REPO, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			check(req.body, z.object({
 				repoName: z.string(),
 			}));
 			await updateGitRepo(req.body.repoName);
+		} catch (err) {
+			throw { code: err.code || 500, message: APIMessage(err.message) };
+		}
+	});
+
+	router.route(WS_CMD.UPDATE_REPO, async (socket, req) => {
+		await runChecklist(socket, req, 'admin', 'open');
+		try {
+			check(req.body, z.object({
+				repoNames: z.array(z.string()),
+			}));
+			await updateAllRepos(req.body.repoNames);
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
@@ -374,7 +387,7 @@ export default function repoController(router: SocketIOApp) {
 			check(req.body, z.object({
 				repoName: z.string(),
 				stashId: z.string(),
-			}));			
+			}));
 			return await dropStashInRepo(req.body.repoName, req.body.stashId);
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
@@ -386,7 +399,7 @@ export default function repoController(router: SocketIOApp) {
 		try {
 			check(req.body, z.object({
 				repoName: z.string(),
-			}));			
+			}));
 			await resetRepo(req.body.repoName);
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
