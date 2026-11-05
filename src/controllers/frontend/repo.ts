@@ -441,7 +441,7 @@ export default function repoController(router: SocketIOApp) {
 						message: z.string(),
 					})),
 					modifiedMedias: z.array(z.object({
-						new: z.string(),
+						new: z.string().nullish(),
 						old: z.string().nullish(),
 						sizeDifference: z.boolean().nullish(),
 						commit: z.string(),
