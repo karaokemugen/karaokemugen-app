@@ -124,8 +124,8 @@
 			"LONGER": "Karaoke yang lebih panjang dari {{time}} detik ada di daftar.",
 			"SHORTER": "Karaoke yang lebih pendek dari {{time}} detik ada di daftar.",
 			"TAG": "Lagu {{verb}} {{tag}} ada di daftar.",
-			"AFTER_YEAR": "Lagu-lagu setelah tahun {{tahun}} ada di dalam daftar.",
-			"BEFORE_YEAR": "Lagu-lagu sebelum tahun {{tahun}} ada di dalam daftar."
+			"AFTER_YEAR": "Lagu-lagu setelah tahun {{year}} ada di dalam daftar.",
+			"BEFORE_YEAR": "Lagu-lagu sebelum tahun {{year}} ada di dalam daftar."
 		},
 		"AND": "DAN",
 		"TYPE_SMART": "Jenis playlist pintar",
@@ -518,7 +518,7 @@
 		"LYRICS": "Lirik",
 		"SPONSOR": "Sponsor",
 		"MODIFY_KARAOKE": "Ubah lagu",
-		"PLAYING_IN": "Diputar dalam {{waktu}} ({{tanggal}})",
+		"PLAYING_IN": "Diputar dalam {{time}} ({{date}})",
 		"UPVOTE_NUMBER": "Pilih atas",
 		"JINGLE_SPONSOR": "Jingle & Sponsor",
 		"JINGLE": "Jingle"
@@ -1746,5 +1746,5 @@
 		}
 	},
 	"OR": "atau",
-	"CL_DELETE_CRITERIAS_PLAYLIST": "Hapus kriteria '{{tipe}}' yang berisi semua lagu ini:"
+	"CL_DELETE_CRITERIAS_PLAYLIST": "Hapus kriteria '{{type}}' yang berisi semua lagu ini:"
 }

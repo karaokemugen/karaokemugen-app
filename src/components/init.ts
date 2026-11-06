@@ -68,7 +68,15 @@ export async function preInit() {
 	logger.debug(`argv : ${JSON.stringify(process.argv)}`, { service });
 	logger.debug(`Locale : ${state.defaultLocale}`, { service });
 	logger.debug(`OS : ${process.platform}`, { service });
-	await initConfig(argv);
+	try {
+		await initConfig(argv);
+	} catch (err) {
+		await dialog.showMessageBox(win, {
+			title: i18next.t('CONFIG_ERROR.TITLE'),
+			message: process.platform === 'darwin' ? i18next.t('CONFIG_DISABLED.TITLE') : undefined,
+			detail: i18next.t('CONFIG_ERROR.DETAIL', { err }),
+		});
+	}
 	// Set default repositories on First Run only
 	const conf = getConfig();
 	if (conf.System.Repositories.length === 0) {
@@ -204,7 +212,7 @@ async function verifyOpenPort(portConfig: number, firstRun: boolean) {
 			}
 		}
 	} catch (err) {
-		throw new Error('Failed to find a free port to use');
+		throw err;
 	} finally {
 		profile('verifyOpenPort');
 	}

@@ -14,7 +14,14 @@ export async function initFonts() {
 		// We'll treat them in reverse order to respect repository priority. The lowest directories are copied first so any duplicate font is overwritten by higher-priority repos
 		const installedFonts = new Set();
 		for (const dir of fontsDirs) {
-			const files = await fs.readdir(dir);
+			let files = [];
+			try {
+				files = await fs.readdir(dir);
+			} catch (err) {
+				// Folder does not exist, we continue.
+				logger.warn(`Unable to read font folder ${dir} : ${err}`, { service });
+				continue;
+			}
 			for (const file of files) {
 				if (file === '.gitkeep') continue;
 				installedFonts.add(file);

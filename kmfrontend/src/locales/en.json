@@ -1597,6 +1597,7 @@
 		"SECURE_TOOLTIP": "Enable HTTPS access to the repository",
 		"SENDSTATS": "Send statistics",
 		"UPDATE": "Automatic updates",
+		"UPDATE_MANUALLY": "Update manually",
 		"UPDATE_TOOLTIP": "If disabled, the application will not update the repository anymore.",
 		"SENDSTATS_TOOLTIP": "Sessions and played/requested songs",
 		"AUTO_MEDIA_DOWNLOADS": "Automatically download media",

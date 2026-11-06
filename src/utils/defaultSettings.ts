@@ -2,15 +2,16 @@
 
 // this file is overwritten during updates, editing is ill-advised .
 // you can change the default settings by using config.yml to bypass the default values.
-import { app } from 'electron';
 import { existsSync } from 'node:fs';
+
+import { app } from 'electron';
 import { z } from 'zod';
 
-import { hostnameRegexp, karaLineDisplayType, karaLineElement, karaSortType, pathType, playlistMediaTypes, positionX, positionY, styleFontType } from '../lib/utils/constants.js';
-import { Config, DBConfig } from '../types/config.js';
-import { zNonEmptyString } from '../lib/utils/validators.js';
-import { Repository } from '../lib/types/repo.js';
 import { zRepository } from '../lib/dao/repo.js';
+import { Repository } from '../lib/types/repo.js';
+import { hostnameRegexp, karaLineDisplayType, karaLineElement, karaSortType, pathType, playlistMediaTypes, positionX, positionY, styleFontType } from '../lib/utils/constants.js';
+import { zNonEmptyString } from '../lib/utils/validators.js';
+import { Config, DBConfig } from '../types/config.js';
 import { endOfPlaylistActions } from './constants.js';
 
 export const dbConfig: DBConfig = {
@@ -339,12 +340,12 @@ export const configConstraints = z
 						Enabled: z.coerce.boolean(),
 						Secure: z.coerce.boolean(),
 						Domain: zNonEmptyString.regex(hostnameRegexp),
-					}),					
+					}),
 				RemoteUsers: z
 					.object({
 						Enabled: z.coerce.boolean().optional(),
 						DefaultHost: z.string().regex(hostnameRegexp).nullish().optional(),
-						Secure: z.coerce.boolean().optional(),						
+						Secure: z.coerce.boolean().optional(),
 					})
 					.loose(),
 				Discord: z.object({ DisplayActivity: z.coerce.boolean().optional()}).loose(),
@@ -398,22 +399,22 @@ export const configConstraints = z
 			ChibiPlayer: z.object({
 				Enabled: z.coerce.boolean().optional(),
 				AlwaysOnTop: z.coerce.boolean().optional(),
-				PositionX: z.coerce.number().int().min(0).optional(),
-				PositionY: z.coerce.number().int().min(0).optional(),
+				PositionX: z.coerce.number().int().optional(),
+				PositionY: z.coerce.number().int().optional(),
 			}).loose(),
 			ChibiPlaylist: z.object({
 				Enabled: z.coerce.boolean().optional(),
 				Width: z.coerce.number().int().min(0).optional(),
 				Height: z.coerce.number().int().min(0).optional(),
-				PositionX: z.coerce.number().int().min(0).optional(),
-				PositionY: z.coerce.number().int().min(0).optional(),
+				PositionX: z.coerce.number().int().optional(),
+				PositionY: z.coerce.number().int().optional(),
 			}).loose(),
 			ChibiRanking: z.object({
 				Enabled: z.coerce.boolean().optional(),
 				Width: z.coerce.number().int().min(0).optional(),
 				Height: z.coerce.number().int().min(0).optional(),
-				PositionX: z.coerce.number().int().min(0).optional(),
-				PositionY: z.coerce.number().int().min(0).optional(),
+				PositionX: z.coerce.number().int().optional(),
+				PositionY: z.coerce.number().int().optional(),
 			}).loose(),
 		}).loose(),
 		Karaoke: z
@@ -472,7 +473,7 @@ export const configConstraints = z
 							Enabled: z.coerce.boolean().optional(),
 							PositionX: z.enum(positionX),
 							PositionY: z.enum(positionY),
-						}).loose(),										
+						}).loose(),
 						ConnectionInfo: z
 							.object({
 								Enabled: z.coerce.boolean().optional(),
@@ -541,8 +542,8 @@ export const configConstraints = z
 			.loose(),
 		System: z
 			.object({
-				SystemRepositoryMaintenance: z.coerce.boolean().optional(),	
-				FrontendPort: z.coerce.number().int().min(1).max(65535),				
+				SystemRepositoryMaintenance: z.coerce.boolean().optional(),
+				FrontendPort: z.coerce.number().int().min(1).max(65535),
 				Database: z.object({
 						RestoreNeeded: z.coerce.boolean().optional(),
 						bundledPostgresBinary: z.coerce.boolean().optional(),

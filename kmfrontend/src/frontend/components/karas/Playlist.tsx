@@ -46,6 +46,7 @@ import CriteriasList from './CriteriasList';
 import KaraLine from './KaraLine';
 import PlaylistHeader from './PlaylistHeader';
 import QuizRanking from './QuizRanking';
+import { useNavigate } from 'react-router-dom';
 
 // Virtuoso's resize observer can this error,
 // which is caught by DnD and aborts dragging.
@@ -86,6 +87,7 @@ interface KaraList {
 
 function Playlist(props: IProps) {
 	const context = useContext(GlobalContext);
+	const navigate = useNavigate();
 	const refContainer = useRef<HTMLDivElement>(undefined);
 	const [searchValue, setSearchValue] = useState(props.searchValue);
 	const [searchCriteria, setSearchCriteria] = useState<'year' | 'tag'>(props.searchCriteria);
@@ -500,6 +502,10 @@ function Playlist(props: IProps) {
 			param.q = `${searchCriteria ? criterias[searchCriteria] : ''}:${searchValue}`;
 		}
 		try {
+			if (!isAdmin && url === WS_CMD.GET_PLAYLIST_CONTENTS && !param.plaid) {
+				navigate('/public');
+				return;
+			}
 			const karas = (await commandBackend(url, param)) as KaraList;
 			// Check if the plaid is still relevant after request
 			if (loadingPlaid !== plaid.current) return;
@@ -1162,7 +1168,7 @@ function Playlist(props: IProps) {
 			initCall();
 		}
 	}, []);
-	
+
 	useResizeListener(avoidErrorInDnd);
 
 	const playlist = getPlaylistInfo(props.side, context);

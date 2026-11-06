@@ -12,6 +12,7 @@ import plPL from 'antd/es/locale/pl_PL';
 import taIN from 'antd/es/locale/ta_IN';
 import ruRU from 'antd/es/locale/ru_RU';
 import csCZ from 'antd/es/locale/cs_CZ';
+import jaJP from 'antd/es/locale/ja_JP';
 import i18next from 'i18next';
 import { Component } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
@@ -97,6 +98,8 @@ class KMSystem extends Component<unknown, unknown> {
 			locale = ruRU;
 		} else if (navigator.languages[0].includes('cs')) {
 			locale = csCZ;
+		} else if (navigator.languages[0].includes('ja')) {
+			locale = jaJP;
 		}
 		return locale;
 	}

@@ -186,6 +186,10 @@
 		"DELETE_ALL_DATA": "SUPPRIMER toutes les données",
 		"CONTINUE_ANYWAY": "Continuer quand même (risqué !)"
 	},
+	"CONFIG_ERROR": {
+		"TITLE": "Erreur de configuration",
+		"DETAIL": "Votre fichier de configuration est erroné et empêche Karaoke Mugen de se lancer. Merci d'inclure votre fichier de configuration et fichier de log quand vous rapporterez ce problème aux développeurs. Erreur : {{err}}"
+	},
 	"REPO_DISABLED": {
 		"TITLE": "Dépôt désactivé",
 		"DETAIL": "Le dépôt {{repo}} a été désactivé car l'un de ses dossiers est inaccessible. Si toute ou partie de ses fichiers sont sur un support externe, vérifiez qu'il est bien branché et allez dans Panneau Système > Dépôts pour le réactiver."
