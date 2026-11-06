@@ -154,11 +154,11 @@ export async function downloadKaraFromInbox(inid: string, repoName: string, toke
 		}
 
 		checkDownloadStatus([kara.kara.data.data.kid]);
-		markKaraAsDownloadedInInbox(inid, repoName, token, user.social_networks.gitlab);
+		await markKaraAsDownloadedInInbox(inid, repoName, token, user.social_networks.gitlab, kara.gitlab_issue);
 		logger.info(`Song ${basename(kara.kara.file, '.kara.json')} from inbox at ${repoName} downloaded`, {
 			service: 'Inbox',
 		});
-		emitWS('songDownloadedFromInbox', kara);
+		emitWS('songDownloadedFromInbox', { name: kara.name });
 	} catch (err) {
 		logger.error(`Inbox item ${inid} failed to download`, { service, obj: err });
 		Sentry.error(err);
@@ -258,10 +258,9 @@ export async function markKaraAsDownloadedInInbox(
 	inid: string,
 	repoName: string,
 	token: string,
-	gitlabUsername: string
+	gitlabUsername: string,
+	gitlabIssue?: string
 ) {
-	const inbox = await getInbox(repoName, token);
-	const inboxItem = inbox.find(i => i.inid === inid);
 	const repo = getRepo(repoName);
 	try {
 		await HTTP.post(`${repo.Secure ? 'https' : 'http'}://${repoName}/api/inbox/${inid}/downloaded`, null, {
@@ -274,9 +273,9 @@ export async function markKaraAsDownloadedInInbox(
 		Sentry.error(err);
 		return;
 	}
-	if (inboxItem.gitlab_issue && gitlabUsername) {
-		const issueArr = inboxItem.gitlab_issue.split('/');
-		await HTTP.post(
+	if (gitlabIssue && gitlabUsername) {
+		const issueArr = gitlabIssue.split('/');
+		HTTP.post(
 			`${repo.Secure ? 'https' : 'http'}://${repoName}/api/inbox/${inid}/assignToUser`,
 			{
 				gitlabUsername,

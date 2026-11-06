@@ -12,13 +12,13 @@ import { EditOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import { Alert, Button, Dropdown, Layout, Modal, Select, Space, Table, Tag } from 'antd';
 import type { MenuProps } from 'antd';
 import i18next from 'i18next';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { DBInbox, InboxActions, Inbox as LibInbox } from '../../../../src/lib/types/inbox';
 import { User } from '../../../../src/lib/types/user';
 import GlobalContext from '../../store/context';
-import { commandBackend } from '../../utils/socket';
+import { commandBackend, getSocket } from '../../utils/socket';
 import Title from '../components/Title';
 import dayjs from 'dayjs';
 import { WS_CMD } from '../../utils/ws.mjs';
@@ -39,6 +39,7 @@ export default function Inbox() {
 	const [newStatus, setNewStatus] = useState<InboxActions>();
 	const [selectedStatus, setSelectedStatus] = useState<FilterInboxActions[]>(['sent', 'in_review_by_me']);
 	const [loading, setLoading] = useState(false);
+	const lastInboxRequestCommand = useRef(0);
 
 	const repoList = context.globalState.settings.data.config?.System?.Repositories.filter(
 		repo =>
@@ -53,13 +54,16 @@ export default function Inbox() {
 
 	const getInbox = async () => {
 		if (repoList.length > 0) {
+			const request = ++lastInboxRequestCommand.current;
 			try {
 				setLoading(true);
 				const res = await commandBackend(WS_CMD.GET_INBOX, { repoName: instance.Name }, false, 60000);
-				setLoading(false);
-				setInbox(res);
+				if (request === lastInboxRequestCommand.current) {
+					setLoading(false);
+					setInbox(res);
+				}
 			} catch (_) {
-				setLoading(false);
+				if (request === lastInboxRequestCommand.current) setLoading(false);
 			}
 		}
 	};
@@ -70,7 +74,6 @@ export default function Inbox() {
 		} catch (_) {
 			// already display
 		}
-		getInbox();
 	};
 
 	const unassignKaraFromInbox = async (inid: string) => {
@@ -252,6 +255,12 @@ export default function Inbox() {
 
 	useEffect(() => {
 		getInbox();
+		getSocket().on('songDownloadedFromInbox', getInbox);
+		getSocket().on('songDownloadedFromInboxFailed', getInbox);
+		return () => {
+			getSocket().off('songDownloadedFromInbox', getInbox);
+			getSocket().off('songDownloadedFromInboxFailed', getInbox);
+		};
 	}, [instance, repoList.length]);
 
 	const status_filter = ['sent', 'in_review', 'in_review_by_me', 'changes_requested', 'accepted', 'rejected'];
