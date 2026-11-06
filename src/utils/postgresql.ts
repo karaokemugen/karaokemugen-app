@@ -23,6 +23,7 @@ import { decompressGzip } from './files.js';
 import sentry from './sentry.js';
 import { getState } from './state.js';
 import { determineDBTarget } from '../lib/dao/database.js';
+import { ErrorKM } from '../lib/utils/error.js';
 
 const service = 'Postgres';
 
@@ -483,8 +484,8 @@ export async function initPG(relaunch = true) {
 		} catch (err) {
 			logger.error('Failed to start PostgreSQL', { service, obj: err });
 			// Postgres usually sends its content in non-unicode format under Windows. Go figure.
-			logger.error(`STDOUT from postgres : ${err.stdout}`);
-			logger.error(`STDERR from postgres : ${err.stderr}`);
+			logger.error(`STDOUT from postgres : ${err.stdout}`, { service });
+			logger.error(`STDERR from postgres : ${err.stderr}`, { service });
 
 			// First let's try to kill PG if it's already running
 			if (relaunch) {
@@ -511,7 +512,7 @@ export async function initPG(relaunch = true) {
 			}
 			errorStep(i18next.t('ERROR_START_PG'));
 			profile('initPG');
-			throw err;
+			throw new ErrorKM('Unable to start PostgreSQL', 500, true, { err });
 		}
 	} catch (err) {
 		throw err;

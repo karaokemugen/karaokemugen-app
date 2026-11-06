@@ -66,6 +66,7 @@ export default ts.config(
 			'prefer-destructuring': 0,
 			'prefer-promise-reject-errors': 1,
 			'prefer-rest-params': 0,
+			'preserve-caught-error': 0,
 			'require-await': 0,
 			'simple-import-sort/imports': 'warn',
 			'simple-import-sort/exports': 'warn',

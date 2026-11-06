@@ -52,17 +52,6 @@ function SetupPageUser() {
 				language: langSupport,
 				email: email ? email : undefined,
 			});
-			if (accountType === 'online') {
-				commandBackend(WS_CMD.UPDATE_SETTINGS, {
-					setting: {
-						Online: {
-							RemoteUsers: {
-								DefaultHost: instance,
-							},
-						},
-					},
-				});
-			}
 			setError(undefined);
 			loginCall();
 		} catch (err: any) {
@@ -103,6 +92,17 @@ function SetupPageUser() {
 				password: password,
 				securityCode: securityCode,
 			});
+			if (accountType === 'online') {
+				commandBackend(WS_CMD.UPDATE_SETTINGS, {
+					setting: {
+						Online: {
+							RemoteUsers: {
+								DefaultHost: instance,
+							},
+						},
+					},
+				});
+			}
 			setAuthenticationInformation(context.globalDispatch, infos);
 			setError(undefined);
 			navigate('/setup/songs');

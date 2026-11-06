@@ -1,6 +1,7 @@
 import {
 	ArrowDownOutlined,
 	ArrowUpOutlined,
+	CloudDownloadOutlined,
 	DeleteOutlined,
 	EditOutlined,
 	PlusOutlined,
@@ -39,6 +40,10 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 		this.setState({ repositories: res as Repository[] });
 	};
 
+	updateRepository = async (repository: Repository) => {
+		await commandBackend(WS_CMD.UPDATE_REPO, { repoNames: [repository.Name] });
+	};
+
 	deleteRepository = async (repository: Repository) => {
 		try {
 			await commandBackend(WS_CMD.DELETE_REPO, { name: repository.Name });
@@ -74,7 +79,7 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 			this.refresh();
 			if (timer) clearTimeout(timer);
 			timer = setTimeout(() => {
-				commandBackend(WS_CMD.GENERATE_DATABASE, undefined, false, 300000).catch(() => {});
+				commandBackend(WS_CMD.GENERATE_DATABASE, undefined, false, 300000).catch(() => { });
 			}, 5000);
 		} catch (_) {
 			// already display
@@ -84,7 +89,7 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 	updateRepos = async () => {
 		commandBackend(WS_CMD.UPDATE_ALL_REPOS)
 			.then(() => displayMessage('info', i18next.t('DATABASE.UPDATING_REPOS')))
-			.catch(() => {});
+			.catch(() => { });
 	};
 
 	render() {
@@ -217,6 +222,9 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 								onClick={() => this.move(index, -1)}
 							></Button>
 						) : null}
+						{index < this.state.repositories.length - 1 && index > 0 ?
+							<Divider orientation="vertical" /> : null
+						}
 						{index < this.state.repositories.length - 1 ? (
 							<Button
 								type="default"
@@ -233,8 +241,18 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 			key: 'action',
 			render: (_, record: Repository) => (
 				<span>
+					{record.Online && record.Enabled ? (
+						<>
+							<Button
+								title={i18next.t('REPOSITORIES.UPDATE_MANUALLY')}
+								icon={<CloudDownloadOutlined />}
+								onClick={() => this.updateRepository(record)}
+							></Button>
+							<Divider orientation="vertical" />
+						</>
+					) : null}
 					<Link to={`/system/repositories/${record.Name}`}>
-						<Button type="primary" icon={<EditOutlined />} />
+						<Button type="primary" icon={<EditOutlined />} title={i18next.t('HEADERS.REPOSITORIES_EDIT.TITLE')} />
 					</Link>
 					{this.state.repositories.length > 1 && !record.System ? (
 						<>

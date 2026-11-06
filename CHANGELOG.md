@@ -1,3 +1,27 @@
+# [10.0.8] - 2026-11-06
+
+Bugfix release ! 
+
+## Added
+
+- **[Operators]** Repositories can now be manually updated from the repositories page, instead of relying on the "Update all" mechanism. You can now update any online repository wether its auto-update flag is enabled or not.
+- **[Users]** Added japanese translations for the app's UI.
+
+## Changed
+
+- **[Operators]** Updated backend and frontend dependencies to fix security issues
+- **[Users]** Updated breton, indonesian, polish and chinese translations
+
+## Fixed
+
+- **[Operators]** Various errors are now properly catched and forwarded to Sentry for analysis
+- **[Operators]** Better handling of errors when exporting playlist to a folder with all their medias fails
+- **[Operators]** Moved update of remoteUsers after login to avoid weird config issues
+- **[Operators]** Fixed redirect when playlist is unknown
+- **[Operators]** Fixed config validation, it now displays an error  on screen.
+- **[Maintainers]** Fixed commit pushes when there's no new media
+
+
 # [10.0.6] - 2026-10-10
 
 Bugfix release, go go !

@@ -174,5 +174,8 @@
 	"MENU_GOTO_OPERATOR": "Etrefas &oberataer",
 	"KARAOKE_MUGEN_PLAYER_WINDOW_TITLE": "Lenner Karaoke Mugen",
 	"RESTARTING_PLAYER": "OC'H ADLOC'HAÑ AL LENNER…",
-	"LIBRARY": "Sonaoueg"
+	"LIBRARY": "Sonaoueg",
+	"CONFIG_ERROR": {
+		"TITLE": "Fazi kefluniadur"
+	}
 }
