@@ -121,7 +121,7 @@ export default function userController(router: SocketIOApp) {
 					// FIXME : Embed this in lib as it's the same checks on KM Server
 					bio: z.string().nullish(),
 					email: z.email().or(z.literal('')).nullish(),
-					url: z.url().or(z.literal('')).nullish(),
+					url: z.url({ protocol: /^https?$/ }).or(z.literal('')).nullish(),
 					nickname: z.string().optional(),
 					password: z.string().optional(),
 					location: z.string().nullish(),
@@ -236,7 +236,7 @@ export default function userController(router: SocketIOApp) {
 				// FIXME : Embed this in lib as it's the same checks on KM Server
 				bio: z.string().nullish(),
 				email: z.email().or(z.literal('')).nullish(),
-				url: z.url().or(z.literal('')).nullish(),
+				url: z.url({ protocol: /^https?$/ }).or(z.literal('')).nullish(),
 				nickname: z.string().optional(),
 				password: z.string().optional(),
 				location: z.string().nullish(),
