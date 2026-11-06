@@ -1,13 +1,14 @@
 /** Centralized configuration management for Karaoke Mugen. */
 
 // Node modules
+import os from 'node:os';
+
+import { randomUUID } from 'crypto';
 import { dialog } from 'electron';
 import { copy } from 'fs-extra';
 import i18next from 'i18next';
 import { cloneDeep, isEqual, mergeWith } from 'lodash';
-import os from 'node:os';
 import { resolve } from 'path';
-import { randomUUID } from 'crypto';
 
 import { selectUsers } from '../dao/user.js';
 import { applyMenu } from '../electron/electron.js';
@@ -29,6 +30,7 @@ import {
 import { uuidRegexp } from '../lib/utils/constants.js';
 import { ErrorKM } from '../lib/utils/error.js';
 import { fileRequired, relativePath } from '../lib/utils/files.js';
+import { mergeWithReplaceArray } from '../lib/utils/lodash.js';
 // KM Imports
 import logger from '../lib/utils/logger.js';
 import { removeNulls } from '../lib/utils/objectHelpers.js';
@@ -58,7 +60,6 @@ import sentry from './sentry.js';
 import { getState, setState } from './state.js';
 import { writeStreamFiles } from './streamerFiles.js';
 import { initTwitch, stopTwitch } from './twitch.js';
-import { mergeWithReplaceArray } from '../lib/utils/lodash.js';
 
 const service = 'Config';
 
@@ -249,7 +250,7 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 			newConfig.System.Path[path] = relativePath(
 				state.dataPath,
 				resolve(state.dataPath, newConfig.System.Path[path])
-			);			
+			);
 		}
 	}
 
