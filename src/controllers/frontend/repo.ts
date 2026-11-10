@@ -373,7 +373,7 @@ export default function repoController(router: SocketIOApp) {
 		try {
 			check(req.body, z.object({
 				repoName: z.string(),
-				stashId: z.string(),
+				stashId: z.coerce.number().int().min(0),
 			}));
 			return await unstashInRepo(req.body.repoName, req.body.stashId);
 		} catch (err) {
@@ -386,7 +386,7 @@ export default function repoController(router: SocketIOApp) {
 		try {
 			check(req.body, z.object({
 				repoName: z.string(),
-				stashId: z.string(),
+				stashId: z.coerce.number().int().min(0),
 			}));
 			return await dropStashInRepo(req.body.repoName, req.body.stashId);
 		} catch (err) {
