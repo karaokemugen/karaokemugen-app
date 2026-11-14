@@ -856,6 +856,9 @@ export class Players {
 				options['lavfi-complex'] = await lavfiGenerator.genLavfiComplex(song, showVideo);
 			}
 		}
+		
+		// Select track 1 directly instead of letting video go through filter, when video is not in lavfi-complex (avoids extra cpu routing)
+		if (!options['lavfi-complex']?.includes('[vo]')) options.vid = '1';
 		options.start = start.toString();
 		if (config.Player.BlurVideoOnWarningTag === true || playerState.blurVideo === true) {
 			// Set blur if enabled in settings and kara has warning
