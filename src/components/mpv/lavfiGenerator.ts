@@ -27,9 +27,9 @@ export class lavfiGenerator {
 		let avatar: string;
 		let qrCode: string;
 
-		// Disable this for mpvs with ffmpeg version 7.0
+		// Disable video graph for mpvs with ffmpeg version 7.0
 		if (playerState.ffmpegVersion.includes('.') && semver.satisfies(playerState.ffmpegVersion, '7.0.x')) {
-			return '[vid1]null[vo]';
+			return audio;
 		} else {
 			const needThirdSplit = shouldDisplayAvatar && shouldDisplayQRcode;
 

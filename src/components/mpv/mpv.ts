@@ -620,8 +620,10 @@ export class Players {
 	}
 
 	async displayQRCode() {
+		const qrCode = lavfiGenerator.genLavfiQRCode(false);
+		if (!qrCode) return;
 		await this.exec({
-			command: ['set_property', 'lavfi-complex', `${lavfiGenerator.genLavfiQRCode(false)}[vo]`],
+			command: ['set_property', 'lavfi-complex', `${qrCode}[vo]`],
 		});
 	}
 
