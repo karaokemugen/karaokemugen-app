@@ -1795,7 +1795,11 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 			...songInfos,
 		};
 	} catch (err) {
-		logger.error('Error selecting current song to play', { service, obj: err });
+		if (err === 'No karaoke found in playlist object') {
+			logger.debug(err, { service });
+		} else {
+			logger.error('Error selecting current song to play', { service, obj: err });
+		}
 	} finally {
 		profile('getCurrentSong');
 	}
