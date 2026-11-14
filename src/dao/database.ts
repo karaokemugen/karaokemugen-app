@@ -76,6 +76,15 @@ export async function initDB(): Promise<boolean> {
 	await db().query(
 		`GRANT ALL PRIVILEGES ON DATABASE ${conf.System.Database.database} TO ${conf.System.Database.username};`
 	);
+	
+	// Grant permission to set database message language. It's being set on every connection to english
+	await db()
+		.query(`GRANT SET ON PARAMETER lc_messages TO ${conf.System.Database.username};`)
+		.catch(err => {
+			// Not critical
+			logger.debug('Unable to allow the app user to set lc_messages', { service, obj: err });
+		});
+
 	// We need to reconnect to create the extension on our newly created database
 	await connectDB(errorFunction, {
 		bundledPostgres: conf.System.Database.bundledPostgresBinary,
