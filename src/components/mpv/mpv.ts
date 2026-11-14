@@ -331,6 +331,10 @@ export function defineMPVEnv() {
 	if (process.platform === 'linux') {
 		const state = getState();
 		env.LD_LIBRARY_PATH = dirname(state.binPath.mpv);
+
+		// Linux memory optimizations: release or re-use allocated memory instead of requesting more after each media
+		if (!env.MALLOC_ARENA_MAX) env.MALLOC_ARENA_MAX = '2';
+		if (!env.MALLOC_MMAP_THRESHOLD_) env.MALLOC_MMAP_THRESHOLD_ = '131072';
 	}
 	return env;
 }
