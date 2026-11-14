@@ -154,6 +154,9 @@ export class Player {
 
 		if (conf.Player.mpvVideoOutput) {
 			mpvArgs.push(`--vo=${conf.Player.mpvVideoOutput}`);
+		} else if (process.platform === 'linux') {
+			// Use faster gpu renderer instead of mpv's default gpu-next since we don't need advanced HDR handling
+			mpvArgs.push('--vo=gpu,');
 		}
 
 		// Testing if string exists or is not empty
