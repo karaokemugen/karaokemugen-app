@@ -1219,14 +1219,32 @@ export class Players {
 			if (typeof options.Speed === 'number' && typeof options.Pitch === 'number') {
 				throw new Error("Pitch and speed can't currently be set at the same time");
 			}
+
+			// MPV 0.39 and later have native pitch property that keeps audio and video in sync
+			// Legacy parameters for the older versions can cause desync to about 0.3s
+			const mpvVersion = getState().player?.version;
+			const mpvHasNativePitch = !!semver.valid(mpvVersion) && semver.gte(mpvVersion, '0.39.0');
+
 			if (typeof options.Pitch === 'number') {
 				const paramSpeed = 1.0 + options.Pitch / 16.0;
-				await this.exec({ command: ['set_property', 'audio-pitch-correction', 'no'] });
-				await this.exec({ command: ['set_property', 'af', `scaletempo:scale=1/${paramSpeed}`] });
-				await this.exec({ command: ['set_property', 'speed', paramSpeed] });
+				if (mpvHasNativePitch) {
+					await this.exec({ command: ['set_property', 'audio-pitch-correction', 'yes'] });
+					await this.exec({ command: ['set_property', 'speed', 1] });
+					await this.exec({ command: ['set_property', 'pitch', paramSpeed] });
+				} else {
+					// Keep backward compatibility
+					await this.exec({ command: ['set_property', 'audio-pitch-correction', 'no'] });
+					await this.exec({ command: ['set_property', 'af', `scaletempo:scale=1/${paramSpeed}`] });
+					await this.exec({ command: ['set_property', 'speed', paramSpeed] });
+				}
 				playerState.pitch = options.Pitch;
 				playerState.speed = 100;
 			} else if (typeof options.Speed === 'number') {
+				if (mpvHasNativePitch) {
+					await this.exec({ command: ['set_property', 'pitch', 1] });
+				} else if (playerState.pitch) {
+					await this.exec({ command: ['set_property', 'af', ''] });
+				}
 				await this.exec({ command: ['set_property', 'audio-pitch-correction', 'yes'] });
 				await this.exec({ command: ['set_property', 'speed', options.Speed / 100] });
 				playerState.speed = options.Speed;
