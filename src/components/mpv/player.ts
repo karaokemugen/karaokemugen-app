@@ -1,3 +1,4 @@
+import { execa } from 'execa';
 import i18n from 'i18next';
 import retry from 'p-retry';
 import { resolve } from 'path';
@@ -101,6 +102,13 @@ export class Player {
 			'--osd-bar=no',
 			'--osc=no'
 		];
+
+		if (process.platform === 'linux') {
+			// libass picks fontconfig's first "sans-serif" font without checking the language, so a font with the wrong charset could be taken (happens on Fedora 45)
+			// fc-match finds the correct default one on Linux. Windows and macOS are not affected by this issue
+			const font = (await execa('fc-match', ['-f', '%{family[0]}', 'sans-serif'], { reject: false })).stdout?.trim();
+			if (font) mpvArgs.push(`--osd-font=${font}`);
+		}
 
 		if (options.monitor) {
 			mpvArgs.push('--mute=yes', '--reset-on-next-file=pause,loop-file,audio-files,aid,sid,mute', '--ao=null');
