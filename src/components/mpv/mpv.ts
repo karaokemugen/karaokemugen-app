@@ -1357,7 +1357,8 @@ export class Players {
 		return playerState;
 	}
 
-	tickDisplay() {
+	async tickDisplay() {
+		await waitForLockRelease();
 		this.exec({
 			command: ['expand-properties', 'osd-overlay', 1, 'ass-events', this.messages?.getText() || ''],
 		}).catch(err => {
