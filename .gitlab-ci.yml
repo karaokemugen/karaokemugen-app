@@ -207,7 +207,7 @@ pkg_linux_x64:
     - rm -Rf release_linux
     - npm install -g electron-builder
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
-    - wget -qO- http://mugen.karaokes.moe/downloads/$DIST_LINUX_X64 | tar xvz
+    - wget -qO- https://mugen.karaokes.moe/downloads/$DIST_LINUX_X64 | tar xvz
     - echo $SENTRY_DSN >assets/sentry.txt
     - bash util/electronBuilder.sh -l --x64
     - ls -la packages/
@@ -253,7 +253,7 @@ pkg_linux_arm64:
     - rm -Rf release_linux
     - npm install -g electron-builder
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
-    - wget -qO- http://mugen.karaokes.moe/downloads/$DIST_LINUX_ARM64 | tar xvz
+    - wget -qO- https://mugen.karaokes.moe/downloads/$DIST_LINUX_ARM64 | tar xvz
     - echo $SENTRY_DSN >assets/sentry.txt
     - bash util/electronBuilder.sh -l --arm64
     - ls -la packages/
@@ -300,7 +300,7 @@ pkg_win:
   script:
     - rm -Rf release_win
     - npm install -g electron-builder
-    - wget -qO- http://mugen.karaokes.moe/downloads/$DIST_WIN | tar xz
+    - wget -qO- https://mugen.karaokes.moe/downloads/$DIST_WIN | tar xz
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
     - echo $SENTRY_DSN >assets/sentry.txt
     - bash util/electronBuilder.sh -w
@@ -378,7 +378,7 @@ pkg_deploy_mac:
     - rm -Rf release_mac
     - rm -Rf app-mac
     - rm -Rf app/bin
-    - wget -qO- http://mugen.karaokes.moe/downloads/$DIST_MAC | tar xvz
+    - wget -qO- https://mugen.karaokes.moe/downloads/$DIST_MAC | tar xvz
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
     - echo $SENTRY_DSN >assets/sentry.txt
     - security unlock-keychain -p $MACOS_PASSWORD login.keychain
