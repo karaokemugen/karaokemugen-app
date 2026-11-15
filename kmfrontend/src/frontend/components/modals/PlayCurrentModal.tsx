@@ -49,10 +49,14 @@ function PlayCurrentModal(props: IProps) {
 		});
 		const karas: KaraList = await commandBackend(WS_CMD.GET_PLAYLIST_CONTENTS, {
 			plaid: props.currentPlaylist.plaid,
-			from: index,
+			from: Math.max(index, 0), // Can be negative when no song is marked as playing
 			size: 1,
 		});
-		setNextSong(buildKaraTitle(context.globalState.settings.data, karas.content[0], true, karas.i18n) as string);
+		if (karas.content[0]) {
+			setNextSong(
+				buildKaraTitle(context.globalState.settings.data, karas.content[0], true, karas.i18n) as string
+			);
+		}
 	};
 
 	useEffect(() => {
