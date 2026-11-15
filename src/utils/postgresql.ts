@@ -136,8 +136,12 @@ function setPGConfig(config: string, setting: string, value: any): string {
 	return pgConfArr.join('\n');
 }
 
+let latestDumpNumber = 0;
+
 /** Dump postgreSQL database to file */
 export async function dumpPG() {
+	latestDumpNumber++;
+	const dumpNumber = latestDumpNumber; // Tag dumps with progressive number to avoid race conditions
 	const conf = getConfig();
 	const state = getState();
 	if (!conf.System.Database.bundledPostgresBinary) {
@@ -147,12 +151,21 @@ export async function dumpPG() {
 	}
 	logger.info('Dumping database...', { service });
 	const dumpFile = resolve(state.dataPath, 'karaokemugen.sql.gz');
-	const excludeTables = ['kara', 'tag', 'all_karas', 'all_tags', 'kara_relation', 'kara_tag', 'online_requested'].map(
-		t => `--exclude-table-data=${t}`
-	);
+	const tempFile = `${dumpFile}.${dumpNumber}.tmp`; // Rename file after successful completition
+	const excludeTables = [
+		'kara',
+		'tag',
+		'all_karas',
+		'all_karas_sortable',
+		'all_tags',
+		'kara_relation',
+		'kara_tag',
+		'online_requested',
+	].map(t => `--exclude-table-data=${t}`);
 	try {
 		const options = [
 			'--compress=1',
+			'--lock-wait-timeout=15s',
 			...excludeTables,
 			'-c',
 			'-E',
@@ -163,7 +176,7 @@ export async function dumpPG() {
 			'-p',
 			`${conf.System.Database.port}`,
 			'-f',
-			dumpFile,
+			tempFile,
 			conf.System.Database.database,
 		];
 		const binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_dump);
@@ -174,16 +187,26 @@ export async function dumpPG() {
 		});
 		profile('dumpAndCompress');
 
-		if (!(await fileExists(dumpFile))) {
+		if (!(await fileExists(tempFile))) {
 			throw Error('Dump file not created');
 		}
 
-		logger.info('Database dumped to file', { service });
+		if (dumpNumber === latestDumpNumber) {
+			await fs.rename(tempFile, dumpFile);
+			logger.info('Database dumped to file', { service });
+		} else {
+			await fs.unlink(tempFile);
+		}
 	} catch (err) {
 		if (err.stdout) sentry.addErrorInfo('stdout', err.stdout);
 		if (err.stderr) sentry.addErrorInfo('stderr', err.stderr);
-		logger.error('Database dump failed', { service, obj: err });
-		sentry.error(err);
+		await fs.rm(tempFile, { force: true }).catch(() => {});
+		if (/LOCK TABLE|could not obtain lock/.test(err.stderr)) {
+			logger.warn('Database dump skipped, tables are locked', { service });
+		} else {
+			logger.error('Database dump failed', { service, obj: err });
+			sentry.error(err);
+		}
 		throw `Dump failed : ${err}`;
 	}
 }
