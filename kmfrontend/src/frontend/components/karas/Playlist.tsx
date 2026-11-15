@@ -8,6 +8,8 @@ import debounce from 'lodash/debounce';
 import {
 	Fragment,
 	PropsWithChildren,
+	ReactNode,
+	RefObject,
 	useCallback,
 	useContext,
 	useEffect,
@@ -84,6 +86,8 @@ interface KaraList {
 		to: number;
 	};
 }
+
+const callRef = (ref: RefObject<() => ReactNode>) => () => ref.current();
 
 function Playlist(props: IProps) {
 	const context = useContext(GlobalContext);
@@ -356,7 +360,8 @@ function Playlist(props: IProps) {
 
 	const [repoInProgress, setRepoInProgress] = useState(false);
 
-	const noRowsRenderer = useCallback(() => {
+	const noRows = useRef<() => ReactNode>(null);
+	noRows.current = () => { // use a ref so the memoized renderer does not keep old renders
 		const playlistInfo = getPlaylistInfo(props.side, context);
 		return (
 			<>
@@ -400,7 +405,11 @@ function Playlist(props: IProps) {
 				)}
 			</>
 		);
-	}, [getPlaylistInfo(props.side, context)?.plaid, repoInProgress, getFilterValue(props.side)]);
+	};
+	const noRowsRenderer = useMemo(
+		() => callRef(noRows),
+		[getPlaylistInfo(props.side, context)?.plaid, repoInProgress, getFilterValue(props.side)]
+	);
 
 	const playlistContentsUpdatedFromServer = (idPlaylist: string) => {
 		if (getPlaylistInfo(props.side, context)?.plaid === idPlaylist && !stopUpdate) getPlaylist();
