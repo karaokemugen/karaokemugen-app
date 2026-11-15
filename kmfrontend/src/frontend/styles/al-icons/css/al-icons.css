@@ -1,12 +1,6 @@
 @font-face {
 	font-family: 'al-icons';
-	src: url('../font/al-icons.eot?43820742');
-	src:
-		url('../font/al-icons.eot?43820742#iefix') format('embedded-opentype'),
-		url('../font/al-icons.woff2?43820742') format('woff2'),
-		url('../font/al-icons.woff?43820742') format('woff'),
-		url('../font/al-icons.ttf?43820742') format('truetype'),
-		url('../font/al-icons.svg?43820742#al-icons') format('svg');
+	src: url('../font/al-icons.woff2?43820742') format('woff2');
 	font-weight: normal;
 	font-style: normal;
 }
