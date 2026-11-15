@@ -1248,6 +1248,7 @@ export class Players {
 					await this.exec({ command: ['set_property', 'audio-pitch-correction', 'no'] });
 					await this.exec({ command: ['set_property', 'af', `scaletempo:scale=1/${paramSpeed}`] });
 					await this.exec({ command: ['set_property', 'speed', paramSpeed] });
+					logger.warn(`Using old pitch correction (mpv <0.39), expect slight audio / video desync`, { service });
 				}
 				playerState.pitch = options.Pitch;
 				playerState.speed = 100;
@@ -1255,6 +1256,7 @@ export class Players {
 				if (mpvHasNativePitch) {
 					await this.exec({ command: ['set_property', 'pitch', 1] });
 				} else if (playerState.pitch) {
+					logger.info(`Using old pitch correction (mpv <0.39), expect slight audio / video desync`, { service });
 					await this.exec({ command: ['set_property', 'af', ''] });
 				}
 				await this.exec({ command: ['set_property', 'audio-pitch-correction', 'yes'] });
