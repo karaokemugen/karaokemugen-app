@@ -28,7 +28,7 @@ export class lavfiGenerator {
 		let qrCode: string;
 
 		// Disable video graph for mpvs with ffmpeg version 7.0
-		if (playerState.ffmpegVersion.includes('.') && semver.satisfies(playerState.ffmpegVersion, '7.0.x')) {
+		if (playerState.ffmpegVersion.includes('.') && semver.satisfies(semver.coerce(playerState.ffmpegVersion), '7.0.x')) {
 			return audio;
 		} else {
 			const needThirdSplit = shouldDisplayAvatar && shouldDisplayQRcode;
@@ -109,7 +109,7 @@ export class lavfiGenerator {
 
 	public static genLavfiQRCode(needThirdSplit: boolean): string {
 		// Disable this for mpvs with ffmpeg version 7.0
-		if (playerState.ffmpegVersion?.includes('.') && semver.satisfies(playerState.ffmpegVersion, '7.0.x')) return '';
+		if (playerState.ffmpegVersion?.includes('.') && semver.satisfies(semver.coerce(playerState.ffmpegVersion), '7.0.x')) return '';
 
 		let overlay: string;
 		let videoInput: number;
