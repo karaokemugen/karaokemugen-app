@@ -316,6 +316,9 @@
     },
     "productName": "Karaoke Mugen",
     "copyright": "© 2017-2025 Karaoke Mugen Team",
+    "appImage": {
+      "compression": "xz"
+    },
     "extraResources": [
       "migrations/**",
       "locales/*",
@@ -323,7 +326,8 @@
       "kmfrontend/dist/**",
       "initpage/**",
       "build/icon1024.png",
-      "build/electronAboutWindow.css"
+      "build/electronAboutWindow.css",
+      "!assets/**/.git"
     ],
     "extraFiles": [
       "app/bin/**",
