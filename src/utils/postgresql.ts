@@ -381,7 +381,7 @@ export async function checkPG(): Promise<boolean> {
 }
 
 /** Initialize bundled PostgreSQL server and data if necessary */
-export async function initPG(relaunch = true) {
+export async function initPG(relaunch = true, attempt = 1) {
 	profile('initPG');
 	let conf = getConfig();
 	let state = getState();
@@ -412,6 +412,7 @@ export async function initPG(relaunch = true) {
 			logger.info(`Migrating data to PostgreSQL ${versions.bin}... `, { service });
 			// You never know.
 			if (await checkPG()) await stopPG();
+			shutdownInProgress = false; // stopPG sets it to true
 			// we'll need to move the directory to another name just to make sure, and restore a dump after PG has started.
 			const backupPGDir = resolve(state.dataPath, conf.System.Path.DB, `postgres${versions.data}`);
 			// Remove folder before renaming the old one.
@@ -448,21 +449,24 @@ export async function initPG(relaunch = true) {
 				stdio: ['ignore', 'ignore', 'pipe'],
 				env: determineEnv(),
 			}).catch(async err => {
-				startupError = err;
+				if (shutdownInProgress) return;
 				logger.error('Failed to start PostgreSQL', { service, obj: err });
 				// Postgres usually sends its content in non-unicode format under Windows. Go figure.
 				logger.error(`STDOUT from postgres : ${err.stdout}`);
 				logger.error(`STDERR from postgres : ${err.stderr}`);
 
 				// First let's try to kill PG if it's already running
-				if (relaunch) {
+				if (relaunch && attempt < 3) {
 					try {
 						await killPG();
 					} catch (err2) {
 						// It should be fatal, but even if it does abort, let's try to launch again.
 					}
+					// Give the killed process some time
+					await sleep(attempt * 5000);
+					if (shutdownInProgress) return;
 					// Let's try to relaunch. If it returns true this time, return directly. If not continue to try to pinpoint the error message
-					if (await initPG(false)) return;
+					if (await initPG(true, attempt + 1).catch(() => false)) return;
 				}
 				// Still no luck starting PG
 				// We're going to try launching it directly to get THE error and log it.
@@ -479,22 +483,23 @@ export async function initPG(relaunch = true) {
 				}
 				errorStep(i18next.t('ERROR_START_PG'));
 				profile('initPG');
-				throw err;
+				startupError = err;
 			});
 			
-			// PG is not ready immediately after start - wait up to one minute
-			for (let retries = 1; retries <= 60; retries++) {
+			// PG is not ready immediately after start - wait up to one minute, or ten while it says it is starting up (crash recovery)
+			for (let retries = 1, max = 60; retries <= max; retries++) {
 				await sleep(1000);
 				if (startupError) throw startupError;
-				logger.info(`Checking if PostgreSQL has started up, try ${retries} of 60`, { service });
+				logger.info(`Checking if PostgreSQL has started up, try ${retries} of ${max}`, { service });
 				const ready = await execa(resolve(pgBinDir, 'pg_isready'), ['-q', '-p', `${conf.System.Database.port}`], {
 					cwd: pgBinDir,
 					env: determineEnv(),
 					reject: false,
 				});
 				if (ready.exitCode === 0) return true;
+				max = ready.exitCode === 1 ? 600 : 60;
 			}
-			throw new Error('PostgreSQL did not accept connections after 60 seconds');
+			throw new Error('PostgreSQL did not accept connections in time');
 		}
 		try {
 			const options = ['-w', '-D', `${pgDataDir}`, 'start'];
