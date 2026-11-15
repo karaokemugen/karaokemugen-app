@@ -18,6 +18,7 @@ import { PlaylistMediaType } from '../../lib/types/playlistMedias.js';
 import { getConfig, resolvedPath, resolvedPathRepos, setConfig } from '../../lib/utils/config.js';
 import { supportedFiles } from '../../lib/utils/constants.js';
 import { Timer } from '../../lib/utils/date.js';
+import { mediaHasVideoStream } from '../../lib/utils/ffmpeg.js';
 import { fileExists, replaceExt, resolveFileInDirs } from '../../lib/utils/files.js';
 import HTTP, { fixedEncodeURIComponent } from '../../lib/utils/http.js';
 import { convert1LangTo2B } from '../../lib/utils/langs.js';
@@ -771,10 +772,8 @@ export class Players {
 		logger.debug('Play event triggered', { service });
 		await this.ensureRunning();
 		playerState.playing = true;
-		if (getConfig().Player.AudioOnlyExperience) {
-			// In case of audio-only experience we switch video track to 2 (still image)
-			playerState.currentVideoTrack = 2;
-		}
+		// In case of audio-only experience we switch video track to 2 (still image)
+		playerState.currentVideoTrack = getConfig().Player.AudioOnlyExperience ? 2 : 1;
 		profile('mpvPlay');
 		let mediaFile: string;
 		let subFile: string;
@@ -856,15 +855,26 @@ export class Players {
 			options['force-window'] = 'yes';
 			options['image-display-duration'] = 'inf';
 			options.vid = '1';
-			// Redefine the lavfi-complex filter because we're currently running on video track 2 if audio-only experience is enabled
-			if (getConfig().Player.AudioOnlyExperience) {
-				playerState.currentVideoTrack = 1;
-				options['lavfi-complex'] = await lavfiGenerator.genLavfiComplex(song, showVideo);
-			}
+		}
+		
+		// Check whether the media has a video stream or an embedded cover image. 
+		// If there is, the km background image is on track 2, otherwise track 1.
+		let noVideoTrack = id3tags ? !id3tags.image : supportedFiles.audio.some(ext => mediaFile.endsWith(`.${ext}`));
+		if (!id3tags && playerState.currentVideoTrack === 2 && !onlineMedia) {
+			const hasVideo = await mediaHasVideoStream(mediaFile);
+			if (hasVideo !== undefined) noVideoTrack = !hasVideo;
+		}
+		// Redefine the lavfi-complex filter because we're currently running on video track 2 if audio-only experience is enabled
+		if (playerState.currentVideoTrack === 2 && noVideoTrack) {
+			playerState.currentVideoTrack = 1;
+			options['lavfi-complex'] = await lavfiGenerator.genLavfiComplex(song, showVideo);
 		}
 		
 		// Select track 1 directly instead of letting video go through filter, when video is not in lavfi-complex (avoids extra cpu routing)
-		if (!options['lavfi-complex']?.includes('[vo]')) options.vid = '1';
+		if (!options['lavfi-complex']?.includes('[vo]')) {
+			if (playerState.currentVideoTrack === 2) options['lavfi-complex'] += ';[vid2]null[vo]';
+			else options.vid = '1';
+		}
 		options.start = start.toString();
 		if (config.Player.BlurVideoOnWarningTag === true || playerState.blurVideo === true) {
 			// Set blur if enabled in settings and kara has warning
