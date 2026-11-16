@@ -205,6 +205,7 @@ export async function addRepo(repo: Repository) {
 export async function updateAllRepos(repoNames?: string[]) {
 	try {
 		let repos = [];
+		// Unless a repository is mentionned, we update everything that has the Update flag set
 		if (repoNames) {
 			repos = getRepos().filter(r => r.Online && r.Enabled && repoNames.includes(r.Name));
 		} else {
@@ -349,7 +350,7 @@ export async function updateZipRepo(name: string) {
 	if (updateRunning) throw 'An update is already on the way, wait for it to finish.';
 	updateRunning = true;
 	const repo = getRepo(name);
-	if (!repo.Online || repo.MaintainerMode || !repo.Enabled || !repo.Update) {
+	if (!repo.Online || repo.MaintainerMode || !repo.Enabled) {
 		updateRunning = false;
 		throw 'Repository is not online, disabled, is in Maintainer Mode, or updates are disabled!';
 	}
@@ -639,7 +640,7 @@ export async function updateGitRepo(name: string) {
 		}
 		updateRunning = true;
 		const repo = getRepo(name);
-		if (!repo.Online || !repo.Enabled || !repo.MaintainerMode || !repo.Update) {
+		if (!repo.Online || !repo.Enabled || !repo.MaintainerMode) {
 			updateRunning = false;
 			logger.error(
 				`Unable to update repository ${name} : Repo is disabled or not in maintainer mode or not online, or updates are disabled`,

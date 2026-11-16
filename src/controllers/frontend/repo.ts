@@ -32,7 +32,6 @@ import {
 	stashGitRepo,
 	unstashInRepo,
 	updateAllRepos,
-	updateGitRepo,
 	uploadMedia,
 } from '../../services/repo.js';
 import { syncTagsFromRepo } from '../../services/tag.js';
@@ -301,7 +300,7 @@ export default function repoController(router: SocketIOApp) {
 			check(req.body, z.object({
 				repoName: z.string(),
 			}));
-			await updateGitRepo(req.body.repoName);
+			await updateAllRepos([req.body.repoName]);
 		} catch (err) {
 			throw { code: err.code || 500, message: APIMessage(err.message) };
 		}
