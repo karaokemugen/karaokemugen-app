@@ -1,3 +1,4 @@
+import { isAxiosError } from 'axios';
 import { promises as fs } from 'fs';
 import parallel from 'p-map';
 import { resolve } from 'path';
@@ -17,7 +18,6 @@ import { UpdateMediasResult } from '../types/download.js';
 import Sentry from '../utils/sentry.js';
 import { addDownloads } from './download.js';
 import { checkDownloadStatus, checkRepoMediaPaths, getRepo, getRepos } from './repo.js';
-import { isAxiosError } from 'axios';
 
 const service = 'MediasUpdater';
 
@@ -134,7 +134,12 @@ async function downloadMedias(karas: DBMedia[]): Promise<void> {
 	} catch (err) {
 		// If 409ed, no download was added, they're all in the list already and will be downloaded shortly. Hopefully.
 		if (err.code === 409) return;
-		throw err;
+		// If timeout (ECONNABORTED) we don't sentry stuff.
+		let sentry = true;
+		if (isAxiosError(err) && err.code === 'ECONNABORTED') {
+			sentry = false;
+		}
+		throw new ErrorKM('DOWNLOAD_ERROR', 500, sentry);
 	}
 	return new Promise(resolvePromise => {
 		on('downloadQueueDrained', () => {
