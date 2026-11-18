@@ -10,6 +10,7 @@ import { emitWS } from '../lib/utils/ws.js';
 import { initRemote } from '../services/remote.js';
 import Sentry from './sentry.js';
 import { subRemoteUsers } from './userPubSub.js';
+import { ErrorKM } from '../lib/utils/error.js';
 
 let socket: Socket;
 let socketURL: string;
@@ -158,7 +159,9 @@ export async function initKMServerCommunication() {
 	if (getConfig().Online.RemoteAccess.Enabled) {
 		try {
 			await connectToKMServer();
-		} catch (err) {	}
+		} catch (err) {
+			// Do nothing.
+		}
 		initRemote();
 	}
 	if (getConfig().Online.RemoteUsers.Enabled) {
@@ -178,7 +181,7 @@ export function commandKMServer<T = any>(name: string, data: APIData<T>, timeout
 			return;
 		}
 		socket.timeout(timeout).emit(name, data, (err: Error, ack: any) => {
-			if (err) return reject(new Error('Request timed out'));
+			if (err) return reject(new ErrorKM('Request timed out', 500, false));
 			ack?.err ? reject(ack.data) : resolve(ack?.data);
 		});
 	});
