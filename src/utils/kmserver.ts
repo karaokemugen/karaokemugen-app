@@ -5,12 +5,12 @@ import { io, Socket } from 'socket.io-client';
 import { APIMessage } from '../lib/services/frontend.js';
 import { APIData } from '../lib/types/api.js';
 import { getConfig } from '../lib/utils/config.js';
+import { ErrorKM } from '../lib/utils/error.js';
 import logger, { profile } from '../lib/utils/logger.js';
 import { emitWS } from '../lib/utils/ws.js';
 import { initRemote } from '../services/remote.js';
 import Sentry from './sentry.js';
 import { subRemoteUsers } from './userPubSub.js';
-import { ErrorKM } from '../lib/utils/error.js';
 
 let socket: Socket;
 let socketURL: string;

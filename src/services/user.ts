@@ -1,12 +1,11 @@
 import { compare, genSalt, hash } from 'bcryptjs';
-import { createHash } from 'crypto';
+import { createHash, randomUUID } from 'crypto';
 import { promises as fs } from 'fs';
 import { copy } from 'fs-extra';
-import { SignJWT, jwtVerify } from 'jose';
+import { jwtVerify,SignJWT } from 'jose';
 import { deburr, merge, sample } from 'lodash';
 import { resolve } from 'path';
 import randomstring from 'randomstring';
-import { randomUUID } from 'crypto';
 
 import { selectSongCountForUser, selectSongTimeSpentForUser } from '../dao/playlist.js';
 import {
@@ -116,6 +115,7 @@ export async function editUser(
 		const currentUser = await getUser(username, true, true);
 		if (!currentUser) throw new ErrorKM('UNKNOWN_USER', 404, false);
 		if (currentUser.type === 2 && role !== 'admin') throw new ErrorKM('GUESTS_CANNOT_EDIT', 403, false);
+		// eslint-disable-next-line eqeqeq
 		if (user.type != null && +user.type !== currentUser.type && role !== 'admin') {
 			throw new ErrorKM('USER_CANNOT_CHANGE_TYPE', 403, false);
 		}
@@ -420,7 +420,7 @@ export async function removeUser(username: string) {
 
 /** Updates all guest avatars with those present in KM's codebase in the assets folder */
 async function updateGuestAvatar(user: DBUser, random?: boolean) {
-	let bundledAvatarFile = '';
+	let bundledAvatarFile: string;
 	const bundledAvatarAssets = resolve(getState().resourcePath, 'assets/guestAvatars/');
 	if (random) {
 		const dir = await fs.readdir(bundledAvatarAssets);
