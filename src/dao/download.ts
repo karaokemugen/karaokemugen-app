@@ -1,3 +1,5 @@
+import { setTimeout as sleep } from 'timers/promises';
+
 import { db, transaction } from '../lib/dao/database.js';
 import { DownloadedStatus } from '../lib/types/database/download.js';
 import logger from '../lib/utils/logger.js';
@@ -16,7 +18,11 @@ import {
 
 const service = 'DBDownload';
 
+let updateDownloadedInProgress = false;
+
 export async function updateDownloaded(kids: string[], value: DownloadedStatus) {
+	if (updateDownloadedInProgress) await sleep(10000);
+	updateDownloadedInProgress = true;
 	let query = sqlsetDownloaded;
 	let queryAK = sqlsetDownloadedAK;
 	const values: any = [value];
@@ -26,6 +32,7 @@ export async function updateDownloaded(kids: string[], value: DownloadedStatus) 
 		values.push(kids);
 	}
 	await Promise.all([db().query(query, values), db().query(queryAK, values)]);
+	updateDownloadedInProgress = false;
 }
 
 export function insertDownloads(downloads: KaraDownload[]) {
