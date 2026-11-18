@@ -37,13 +37,13 @@ import { generateAdminPassword, initUserSystem } from '../services/user.js';
 import { compareSortableConfigs } from '../utils/config.js';
 import { initDiscordRPC, stopDiscordRPC } from '../utils/discordRPC.js';
 import { initKMServerCommunication } from '../utils/kmserver.js';
+import { checkInternet } from '../utils/net.js';
 import { checkPG, dumpPG, restorePG, stopPG } from '../utils/postgresql.js';
 import sentry from '../utils/sentry.js';
 import { getState, setState } from '../utils/state.js';
 import { writeStreamFiles } from '../utils/streamerFiles.js';
 import { getTwitchClient, initTwitch, stopTwitch } from '../utils/twitch.js';
 import initFrontend from './frontend.js';
-import { checkInternet } from '../utils/net.js';
 
 let usageTime = 0;
 let usageTimeInterval: NodeJS.Timeout;

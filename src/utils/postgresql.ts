@@ -11,9 +11,11 @@ import { tasklist } from 'tasklist';
 import { setTimeout as sleep } from 'timers/promises';
 
 import { errorStep } from '../electron/electronLogger.js';
+import { determineDBTarget } from '../lib/dao/database.js';
 import { getConfig, resolvedPath, setConfig } from '../lib/utils/config.js';
 import { asciiRegexp } from '../lib/utils/constants.js';
 import { downloadFile } from '../lib/utils/downloader.js';
+import { ErrorKM } from '../lib/utils/error.js';
 import { fileExists, smartMove } from '../lib/utils/files.js';
 import logger, { profile } from '../lib/utils/logger.js';
 import { PGVersion } from '../types/database.js';
@@ -22,8 +24,6 @@ import { expectedPGVersion, pgctlRegex } from './constants.js';
 import { decompressGzip } from './files.js';
 import sentry from './sentry.js';
 import { getState } from './state.js';
-import { determineDBTarget } from '../lib/dao/database.js';
-import { ErrorKM } from '../lib/utils/error.js';
 
 const service = 'Postgres';
 

@@ -1,6 +1,6 @@
+import { randomUUID } from 'crypto';
 import { promises as fs } from 'fs';
 import { basename, dirname, resolve } from 'path';
-import { randomUUID } from 'crypto';
 
 import {
 	addTagToStore,
@@ -14,6 +14,7 @@ import {
 import { deleteTag, insertTag, selectAllTags, selectKarasUsingTag, updateKaraTagsTID, updateTag } from '../dao/tag.js';
 import { removeTagInKaras } from '../dao/tagfile.js';
 import { saveSetting } from '../lib/dao/database.js';
+import { applyTagHooks } from '../lib/dao/hook.js';
 import { refreshKarasUpdate } from '../lib/dao/kara.js';
 import { formatKaraV4 } from '../lib/dao/karafile.js';
 import { setDefaultCollections } from '../lib/dao/repo.js';
@@ -32,12 +33,11 @@ import logger, { profile } from '../lib/utils/logger.js';
 import Task from '../lib/utils/taskManager.js';
 import { isUUID } from '../lib/utils/validators.js';
 import { emitWS } from '../lib/utils/ws.js';
+import { checkInternet } from '../utils/net.js';
 import sentry from '../utils/sentry.js';
 import { getKaras } from './kara.js';
 import { editKara } from './karaCreation.js';
 import { getRepoMetadata, getRepos } from './repo.js';
-import { applyTagHooks } from '../lib/dao/hook.js';
-import { checkInternet } from '../utils/net.js';
 
 const service = 'Tag';
 
