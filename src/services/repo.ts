@@ -755,7 +755,7 @@ async function applyChanges(changes: Change[], repo: Repository) {
 		// Like you know, actually downloading the fonts from KMServer or something.
 		if (fontFiles.length > 0 && !repo.MaintainerMode) {
 			logger.warn('Changes include new font(s). Throwing so the .zip is downloaded instead.');
-			throw 'fonts? izok.';
+			throw new ErrorKM('fonts? izok.', 500, false);
 		}
 		const TIDsToDelete = [];
 		const tagFilesToProcess = [];
@@ -779,7 +779,8 @@ async function applyChanges(changes: Change[], repo: Repository) {
 				concurrency: 32,
 			});
 		} catch (err) {
-			throw err;
+			logger.error('Failed to integrate all tags in update', { service });
+			throw new ErrorKM('INVALID_DATA', 400, false);
 		}
 		const KIDsToDelete = [];
 		const KIDsToUpdate = [];
