@@ -1,13 +1,15 @@
 import { cloneDeep } from 'lodash';
+
 import { saveSetting } from '../lib/dao/database.js';
 import { Repository } from '../lib/types/repo.js';
 import { getConfig } from '../lib/utils/config.js';
+import { ErrorKM } from '../lib/utils/error.js';
 import { editConfig } from '../utils/config.js';
 import { getState } from '../utils/state.js';
 
 export async function insertRepo(repo: Repository) {
 	const repos = getConfig().System.Repositories;
-	if (repos.some(r => r.Name === repo.Name)) throw 'Repository with this name already exists';
+	if (repos.some(r => r.Name === repo.Name)) throw new ErrorKM('Repository with this name already exists', 400, false);
 	await editConfig({ System: { Repositories: [...repos, repo] } });
 	// Reset the last commit setting in DB for the repo
 	saveSetting(`commit-${repo.Name}`, null);
