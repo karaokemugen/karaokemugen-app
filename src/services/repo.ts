@@ -746,7 +746,7 @@ export async function updateGitRepo(name: string) {
 }
 
 async function applyChanges(changes: Change[], repo: Repository) {
-	let task: Task;
+	const task = new Task({ text: 'UPDATING_REPO'});
 	try {
 		const tagFiles = changes.filter(f => f.path.endsWith('.tag.json'));
 		const karaFiles = changes.filter(f => f.path.endsWith('.kara.json'));
@@ -758,8 +758,8 @@ async function applyChanges(changes: Change[], repo: Repository) {
 			throw 'fonts? izok.';
 		}
 		const TIDsToDelete = [];
-		task = new Task({ text: 'UPDATING_REPO', total: karaFiles.length + tagFiles.length });
 		const tagFilesToProcess = [];
+		task.update({total: karaFiles.length + tagFiles.length}); 
 		for (const match of tagFiles) {
 			if (match.type === 'new') {
 				tagFilesToProcess.push(resolve(resolvedPathRepos('Tags', repo.Name)[0], basename(match.path)));
