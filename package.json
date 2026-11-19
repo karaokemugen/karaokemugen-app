@@ -12,7 +12,7 @@
   "scripts": {
     "start": "yarn build && yarn electron:start",
     "qstart": "node util/esbuild.js && yarn electron:start",
-    "startHeadless": "yarn build && electron --no-sandbox . --cli",
+    "startHeadless": "yarn build && electron --no-sandbox --ozone-platform=headless . --cli",
     "test": "yarn build && electron . --test",
     "testCI": "yarn build && electron --no-sandbox --ozone-platform=headless . --test --cli",
     "manualTest": "mocha",
