@@ -116,7 +116,7 @@ export default function AutocompleteTag(props: AutocompleteTagProps) {
 		<div>
 			{value.map((tag: DBKaraTag) => (
 				<Tag
-					style={{ marginBottom: '8px' }}
+					style={{ marginBottom: '8px', whiteSpace: 'pre-wrap' }}
 					key={tag.tid || tag.name}
 					closable={true}
 					title={tag.aliases?.join(', ')}
