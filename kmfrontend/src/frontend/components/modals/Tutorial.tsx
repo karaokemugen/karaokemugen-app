@@ -193,7 +193,17 @@ function Tutorial(props: IProps) {
 					<p>{i18next.t('MODAL.TUTORIAL.PLAYER_BAR')}</p>
 					<ul>
 						<li>
-							<FontAwesomeIcon icon={faPlayCircle} />
+							<span className="klogo">
+								<img src={KLogo} alt="Karaoke Mugen logo" />
+							</span>
+							{i18next.t('MODAL.TUTORIAL.K_MENU')}
+						</li>
+						<li>
+							<FontAwesomeIcon icon={faStop} />
+							<Trans i18nKey="MODAL.TUTORIAL.PLAYER_STOP" components={{ 1: <strong /> }} />
+						</li>
+						<li>
+							<FontAwesomeIcon icon={faPlay} />
 							<Trans i18nKey="MODAL.TUTORIAL.PLAYER_CURRENT_HINT" components={{ 1: <strong /> }} />
 						</li>
 						<li>
@@ -201,25 +211,10 @@ function Tutorial(props: IProps) {
 							<Trans i18nKey="MODAL.TUTORIAL.PLAYER_GO_BACK" components={{ 1: <strong /> }} />
 						</li>
 						<li>
-							<FontAwesomeIcon icon={faStop} />
-							<Trans i18nKey="MODAL.TUTORIAL.PLAYER_STOP" components={{ 1: <strong /> }} />
-						</li>
-						<li>
 							<FontAwesomeIcon icon={faComment} />
 							{i18next.t('MODAL.TUTORIAL.MESSAGE')}
 						</li>
-						<li>
-							<span className="klogo">
-								<img src={KLogo} alt="Karaoke Mugen logo" />
-							</span>
-							{i18next.t('MODAL.TUTORIAL.K_MENU')}
-						</li>
 					</ul>
-					<div className="center">
-						<button onClick={nextStep} className="step inline">
-							<FontAwesomeIcon icon={faCheck} /> {i18next.t('MODAL.TUTORIAL.END')}
-						</button>
-					</div>
 				</div>
 			);
 			break;
@@ -231,16 +226,20 @@ function Tutorial(props: IProps) {
 			<div className={`dimmer${stepIndex > 0 ? ' transparent' : ''}${stepIndex === 2 ? ' player-bar' : ''}`} />
 			{slide}
 			<div className="steps">
-				{stepIndex > 0 ? (
-					<button onClick={previousStep} className="step back">
-						<FontAwesomeIcon icon={faArrowLeft} /> {i18next.t('MODAL.TUTORIAL.BACK')}
-					</button>
-				) : null}
-				{stepIndex < 2 ? (
-					<button onClick={nextStep} className="step next">
-						{i18next.t('MODAL.TUTORIAL.NEXT')} <FontAwesomeIcon icon={faArrowRight} />
-					</button>
-				) : null}
+				<button onClick={previousStep} className="step back" disabled={stepIndex <= 0}>
+					<FontAwesomeIcon icon={faArrowLeft} /> {i18next.t('MODAL.TUTORIAL.BACK')}
+				</button>
+				<button onClick={nextStep} className="step next">
+					{stepIndex < 2 ? (
+						<>
+							{i18next.t('MODAL.TUTORIAL.NEXT')} <FontAwesomeIcon icon={faArrowRight} />
+						</>
+					) : (
+						<>
+							<FontAwesomeIcon icon={faCheck} /> {i18next.t('MODAL.TUTORIAL.END')}
+						</>
+					)}
+				</button>
 			</div>
 		</div>
 	);

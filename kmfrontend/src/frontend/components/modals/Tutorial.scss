@@ -33,7 +33,7 @@
 
 	.steps {
 		display: flex;
-		flex-direction: column;
+		justify-content: center;
 		width: 25%;
 		margin: 0 37.5%;
 		position: absolute;
@@ -60,9 +60,9 @@
 		@media screen and (max-height: variables.$mugen-height-small) {
 			margin: 0 10%;
 		}
-		&.inline {
-			padding: 0.5em;
-			font-size: 1.25em;
+		&[disabled] {
+			opacity: 0.5;
+			cursor: default;
 		}
 	}
 
@@ -158,11 +158,6 @@
 		@media screen and (max-width: variables.$mugen-breakpoint-larger) {
 			margin: 0 0.75%;
 			width: 99%;
-		}
-
-		.center {
-			display: flex;
-			justify-content: center;
 		}
 	}
 }
