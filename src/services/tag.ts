@@ -93,7 +93,7 @@ export async function addTag(
 		saveSetting('baseChecksum', getStoreChecksum());
 
 		if (opts.refresh) {
-			await updateTagSearchVector();
+			await updateTagSearchVector([tagObj.tid]);
 			refreshTags();
 		}
 		// Re-add tagfile since it's been removed by writeTagFile
@@ -154,6 +154,7 @@ export async function mergeTags(tid1: string, tid2: string) {
 					: { ...tag1.external_database_ids, ...tag2.external_database_ids },
 		};
 		await editTag(tag1.tid, tagObj, { silent: true, refresh: false, repoCheck: false, writeFile: true });
+		await updateTagSearchVector([tagObj.tid]);
 		const tagFile = await resolveFileInDirs(tag1.tagfile, resolvedPathRepos('Tags', tag1.repository));
 		await editTagInStore(tagFile[0]);
 		sortTagsStore();
@@ -260,7 +261,7 @@ export async function editTag(
 					}
 				}
 			}
-			await updateTagSearchVector();
+			await updateTagSearchVector([tid]);
 			const karasData = karasToUpdate.map(k => formatKaraV4(k).data);
 			await refreshKarasAfterDBChange('UPDATE', karasData);
 			refreshTags();
