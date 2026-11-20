@@ -84,7 +84,9 @@ function ProgressBar() {
 		if (futurTimeSec) {
 			setFutureTime(context.globalDispatch, secondsTimeSpanToHMS(Math.round(futurTimeSec), 'mm:ss'));
 			const futurTimeElem = document.getElementById('futurTime');
-			if (futurTimeElem) futurTimeElem.style.left = `${e.clientX}px`;
+			// Keep the tooltip inside the window
+			if (futurTimeElem)
+				futurTimeElem.style.left = `${Math.min(e.clientX, document.documentElement.clientWidth - futurTimeElem.offsetWidth)}px`;
 		}
 	};
 
