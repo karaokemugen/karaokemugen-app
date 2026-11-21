@@ -94,7 +94,7 @@ export async function editConfig(part: RecursivePartial<Config>) {
 			throw new ErrorKM('INVALID_CONFIG', 400, false);
 		}
 		await mergeConfig(newConfig, oldConfig);
-		emitWS('settingsUpdated', part);
+		emitWS('settingsUpdated');
 		return getConfig();
 	} catch (err) {
 		sentry.error(err, 'warning');
@@ -420,11 +420,9 @@ export function getPublicConfig(removeSystem = true, removeInstanceID = true) {
 	delete publicSettings.App.JwtSecret;
 	delete publicSettings.System.Database;
 	for (const repo of publicSettings.System.Repositories) {
-		if (repo.MaintainerMode) {
-			delete repo.Git?.Password;
-			delete repo.FTP?.Password;
-			delete repo.SFTP?.Password;
-		}
+		delete repo.Git?.Password;
+		delete repo.FTP?.Password;
+		delete repo.SFTP?.Password;
 	}
 	if (removeSystem) delete publicSettings.System;
 	else delete publicSettings.System.Binaries;
