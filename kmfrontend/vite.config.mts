@@ -9,7 +9,9 @@ export default defineConfig({
 		target: ['chrome98', 'edge98', 'firefox94', 'safari15.4'],
 	},
 	plugins: [
-		nodePolyfills(), 
+		nodePolyfills({
+			globals: { process: false, global: true, Buffer: true },
+		}),
 		react(),
 		...(process.env.SENTRY_AUTH_TOKEN && process.env.BUILDVERSION ? [
 			sentryVitePlugin({
