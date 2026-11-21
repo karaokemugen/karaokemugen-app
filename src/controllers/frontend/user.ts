@@ -153,6 +153,7 @@ export default function userController(router: SocketIOApp) {
 				req.body.login.includes('@') || !req.body.avatar ? null : resolveUploadedFileToTempPath(req.body.avatar);
 			await editUser(req.body.old_login || req.body.login, user, avatar, req.token.role, {
 				editRemote: false,
+				renameUser: !req.body.login.includes('@'), // This admin route allows renames
 			});
 			return { code: 200, message: APIMessage('USER_EDITED') };
 		} catch (err) {

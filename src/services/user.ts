@@ -107,6 +107,7 @@ export async function editUser(
 		if (user.nickname) user.nickname = user.nickname.trim();
 		if (user.url) user.url = user.url.trim();
 		user.login = user.login?.trim().toLowerCase();
+		if (!opts.renameUser) user.login = username; // Only rename when requested
 		// Banner and roles are not editable through the app
 		if (opts.editRemote) {
 			delete user.banner;
