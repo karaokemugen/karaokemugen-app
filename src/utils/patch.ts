@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { execa } from 'execa';
 import { createWriteStream, promises as fs } from 'fs';
 import { move, remove } from 'fs-extra';
@@ -12,6 +13,7 @@ import { getFilesRecursively } from '../lib/utils/files.js';
 import logger from '../lib/utils/logger.js';
 import { computeFileChanges } from '../lib/utils/patch.js';
 import Task from '../lib/utils/taskManager.js';
+import { pathIsContainedInAnother } from './files.js';
 import { getState } from './state.js';
 
 const service = 'Patch';
@@ -31,6 +33,9 @@ async function extractZip(path: string, outDir: string, task: Task): Promise<str
 			total,
 		});
 		const destPath = resolve(outDir, entry.path);
+		if (destPath !== outDir && !pathIsContainedInAnother(destPath, outDir)) {
+			throw new Error(`Zip archive entry "${entry.path}" points outside of the extraction directory`);
+		}
 		if (isDir) {
 			await fs.mkdir(destPath, { recursive: true });
 		} else {
@@ -44,7 +49,7 @@ async function extractZip(path: string, outDir: string, task: Task): Promise<str
 			});
 		}
 	}
-	return firstDir;	
+	return firstDir;
 }
 
 export async function downloadAndExtractZip(zipURL: string, outDir: string, repo: string) {
@@ -52,23 +57,27 @@ export async function downloadAndExtractZip(zipURL: string, outDir: string, repo
 		text: 'DOWNLOADING_ZIP',
 		data: repo,
 	});
+	let extractDir: string;
 	try {
 		logger.debug(`Downloading ${repo} archive`, { service });
 		const target = resolve(resolvedPath('Temp'), `base-${repo}.zip`);
 		await downloadFile({ filename: target, url: zipURL }, task, `${repo} zip:`);
 		logger.debug(`Extracting ${repo} archive to ${outDir}`, { service });
-		const tempDir = resolvedPath('Temp');
+		extractDir = resolve(resolvedPath('Temp'), `base-${repo}-${randomUUID()}`);
+		await fs.mkdir(extractDir, { recursive: true });
 		task.update({
 			text: 'EXTRACTING_ZIP',
 			data: repo,
 		});
-		const dir = await extractZip(target, tempDir, task);
+		const dir = await extractZip(target, extractDir, task);
+		if (!dir) throw new Error('Archive does not contain a top-level directory');
 		await remove(outDir);
-		await move(resolve(tempDir, dir), outDir);
+		await move(resolve(extractDir, dir), outDir);
 	} catch (err) {
 		logger.error(`Unable to download and extract ${repo} zip (${zipURL})`, { service, obj: err });
 		throw err;
 	} finally {
+		if (extractDir) await remove(extractDir).catch(() => {});
 		task.end();
 	}
 }
@@ -83,6 +92,9 @@ export async function writeFullPatchedFiles(fullFiles: DiffChanges[], repo: Repo
 	const changes = [];
 	for (const change of fullFiles) {
 		const file = resolve(path, change.path);
+		if (!pathIsContainedInAnother(file, path)) {
+			throw new Error(`Change "${change.path}" points outside of the repository directory`);
+		}
 		if (change.type === 'delete') {
 			filePromises.push(
 				fs.unlink(file).catch(err => {

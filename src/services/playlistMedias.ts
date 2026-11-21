@@ -3,6 +3,7 @@ import { remove } from 'fs-extra';
 import { cloneDeep, sample } from 'lodash';
 import { basename, resolve } from 'path';
 import prettyBytes from 'pretty-bytes';
+import z from 'zod';
 
 import { PlaylistMedia, PlaylistMediaFile, PlaylistMedias, PlaylistMediaType } from '../lib/types/playlistMedias.js';
 import { getConfig } from '../lib/utils/config.js';
@@ -11,6 +12,7 @@ import { asyncCheckOrMkdir, isMediaFile } from '../lib/utils/files.js';
 import HTTP, { fixedEncodeURIComponent } from '../lib/utils/http.js';
 import logger from '../lib/utils/logger.js';
 import Task from '../lib/utils/taskManager.js';
+import { check, zNonEmptyString } from '../lib/utils/validators.js';
 import { editConfig, resolvedMediaPath } from '../utils/config.js';
 import { getRepo, getRepos } from './repo.js';
 
@@ -55,6 +57,14 @@ async function listRemoteMedias(type: PlaylistMediaType, repoName: string): Prom
 	try {
 		const repo = getRepo(repoName);
 		const res = await HTTP.get(`${repo.Secure ? 'https' : 'http'}://${repo.Name}/api/playlistMedias/${type}`);
+		check(res.data, z.array(
+			z.object({
+				basename: zNonEmptyString.refine(name => basename(name) === name && name !== '.' && name !== '..', {
+					message: 'must be a plain file name',
+				}),
+				size: z.coerce.number().int().min(0),
+			}).loose()
+		));
 		return res.data as PlaylistMediaFile[];
 	} catch (err) {
 		logger.warn(`Unable to fetch ${repoName} playlist medias ${type} list : ${err}`, { service, obj: err });

@@ -10,7 +10,9 @@ import z from 'zod';
 import { compareKarasChecksum, generateDB } from '../dao/database.js';
 import { baseChecksum, editKaraInStore, getStoreChecksum, sortKaraStore } from '../dao/dataStore.js';
 import { updateDownloaded } from '../dao/download.js';
+import { selectAllKaras } from '../dao/kara.js';
 import { deleteRepo, insertRepo, updateRepo } from '../dao/repo.js';
+import { selectAllTags } from '../dao/tag.js';
 import { getSettings, refreshAll, saveSetting } from '../lib/dao/database.js';
 import { initHooks } from '../lib/dao/hook.js';
 import { refreshKaras } from '../lib/dao/kara.js';
@@ -853,12 +855,24 @@ async function applyChanges(changes: Change[], repo: Repository) {
 			task.update({ value: task.item.value + 1, subtext: basename(kara.file) });
 		}
 		const deletePromises = [];
-		if (KIDsToDelete.length > 0)
-			deletePromises.push(removeKara(KIDsToDelete, false, { media: true, kara: false }, true));
-		if (TIDsToDelete.length > 0) {
+		const repoKIDsToDelete = (
+			KIDsToDelete.length > 0
+				? await selectAllKaras({ q: `k:${KIDsToDelete.join(',')}`, ignoreCollections: true, blacklist: false })
+				: []
+		)
+			.filter(k => k.repository === repo.Name)
+			.map(k => k.kid);
+		const repoTIDsToDelete = [];
+		for (const tid of TIDsToDelete) {
+			const tag = (await selectAllTags({ tid }))[0];
+			if (tag?.repository === repo.Name) repoTIDsToDelete.push(tid);
+		}
+		if (repoKIDsToDelete.length > 0)
+			deletePromises.push(removeKara(repoKIDsToDelete, false, { media: true, kara: false }, true));
+		if (repoTIDsToDelete.length > 0) {
 			// Let's not remove tags in karas : it's already done anyway
 			deletePromises.push(
-				removeTag(TIDsToDelete, { refresh: false, removeTagInKaras: false, deleteFile: false })
+				removeTag(repoTIDsToDelete, { refresh: false, removeTagInKaras: false, deleteFile: false })
 			);
 		}
 		await Promise.all(deletePromises);
