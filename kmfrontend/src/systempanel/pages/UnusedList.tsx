@@ -25,7 +25,7 @@ function UnusedList() {
 		} else if (type === 'tags') {
 			getTags();
 		}
-	}, [type]);
+	}, [type, repository]);
 
 	const refresh = async () => {
 		const res = await commandBackend(WS_CMD.GET_REPOS);
@@ -167,6 +167,7 @@ function UnusedList() {
 							<Select
 								style={{ width: 150 }}
 								defaultValue={repository}
+								onChange={setRepository}
 								options={repositories.map(repo => {
 									return { value: repo, label: repo };
 								})}
