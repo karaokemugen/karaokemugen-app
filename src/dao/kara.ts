@@ -235,7 +235,7 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	// q query
 
 	if (yesqlPayload.sql.length > 0) {
-		const qParams = `(${yesqlPayload.sql.join(` ${params.qType || 'AND'} `)})`
+		const qParams = `(${yesqlPayload.sql.join(` ${params.qType === 'OR' ? 'OR' : 'AND'} `)})`
 		whereClauses.push(qParams)
 	}
 	
