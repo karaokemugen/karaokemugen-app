@@ -155,7 +155,7 @@ function PublicPage() {
 	};
 
 	const playerUpdate = (data: PublicPlayerState) => {
-		if (isOnlyTimepositionPlayerStateUpdate(data))
+		if (!isOnlyTimepositionPlayerStateUpdate(data))
 			setStatusPlayer(oldState => merge({ ...oldState }, data));
 		
 		if (data.stopping !== undefined) playerStopping.current = data.stopping;
