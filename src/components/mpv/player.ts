@@ -88,7 +88,7 @@ export class Player {
 			`--audio-delay=${(conf.Player.AudioDelay && +conf.Player.AudioDelay / 1000) || 0}`,
 			'--autoload-files=no',
 			// '--input-default-bindings=no', // This disables mpv's own bindings completely
-			`--config-dir=${resolvedPath('Temp')}`,
+			`--config-dir=${resolve(resolvedPath('Temp'), 'mpv')}`,
 			`--sub-fonts-dir=${resolvedPath('Fonts')}`,
 			`--sub-visibility=${playerState.showSubs ? 'yes' : 'no'}`,
 			isMpvGreaterThan39() ? '--sub-ass-use-video-data=none' : '--sub-ass-vsfilter-aspect-compat=no',

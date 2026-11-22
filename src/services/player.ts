@@ -525,7 +525,7 @@ export async function initPlayer() {
 		profile('copyBackgrounds');
 		const state = getState();
 		// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel
-		const tempInput = resolve(resolvedPath('Temp'), 'input.conf');
+		const tempInput = resolve(resolvedPath('Temp'), 'mpv', 'input.conf');
 		logger.debug(`Copying input.conf to ${tempInput}`, { service });
 		await copy(resolve(state.resourcePath, 'assets/input.conf'), tempInput);
 
