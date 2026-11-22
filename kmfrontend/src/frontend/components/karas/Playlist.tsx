@@ -721,7 +721,7 @@ function Playlist(props: IProps) {
 				const randomKaras = await commandBackend(getPlaylistUrl(), {
 					filter: getFilterValue(props.side),
 					plaid: getPlaylistInfo(props.side, context)?.plaid,
-					random: nbOfRandoms,
+					random: Number(nbOfRandoms),
 					...getSearchTagForAddAll(),
 				});
 				if (randomKaras.content.length > 0) {
