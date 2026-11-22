@@ -702,8 +702,8 @@ export async function getPlaylistContents(
 /** Get song information from a particular PLC */
 export async function getKaraFromPlaylist(plc_id: number, token: OldJWTToken) {
 	try {
-		const kara = await getPLCInfo(plc_id, token.role === 'user', token.username.toLowerCase());
-		if (!kara) throw new ErrorKM('UNKNOWN_PLAYLIST_ITEM', 404, false);
+		const kara = await getPLCInfo(plc_id, token.role !== 'admin', token.username.toLowerCase());
+		if (!kara?.plcid) throw new ErrorKM('UNKNOWN_PLAYLIST_ITEM', 404, false);
 		return kara;
 	} catch (err) {
 		logger.error(`Error getting PLC ${plc_id} : ${err}`, { service });
@@ -898,7 +898,7 @@ export async function addKaraToPlaylist(params: AddKaraParams) {
 		profile('addKaraToPL-updateCountAndSongsLeft');
 		await Promise.all([updatePlaylistKaraCount(params.plaid), updateSongsLeft(user.login, params.plaid)]);
 		profile('addKaraToPL-updateCountAndSongsLeft');
-		const plc = await getPLCInfo(PLCsInserted[0].plcid, true, requester);
+		const plc = await getPLCInfo(PLCsInserted[0].plcid, false, requester);
 		if (params.plaid === state.currentPlaid) {
 			checkMediaAndDownload(karas);
 			writeStreamFiles('next_song_name_and_requester');
