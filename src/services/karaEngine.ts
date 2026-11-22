@@ -457,6 +457,7 @@ export async function playerEnding() {
 			if (conf.Playlist.Medias.Outros.Enabled && !state.randomPlaying) {
 				try {
 					await mpv.playMedia('Outros');
+					return;
 				} catch (err) {
 					logger.error('Unable to play outro file', { service, obj: err });
 					emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYER_PLMEDIA', err));					
