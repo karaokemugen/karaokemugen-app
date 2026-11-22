@@ -463,7 +463,7 @@ export const configConstraints = z
 					.object({
 						Avatar: z.coerce.boolean().optional(),
 						Nickname: z.coerce.boolean().optional(),
-						FontSize: z.coerce.number().int().min(0).optional(),
+						FontSize: z.coerce.number().int().min(-5).optional(),
 						Banner: z.coerce.boolean().optional(),
 						RandomQuotes: z.coerce.boolean().optional(),
 						SongInfo: z.coerce.boolean().optional(),

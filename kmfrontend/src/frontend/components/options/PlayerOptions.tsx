@@ -64,7 +64,7 @@ function PlayerOptions(props: IProps) {
 			value = false;
 		}
 		config[e.target.id] = value;
-		if (e.target.type !== 'number' || Number(e.target.value)) props.onChange(e);
+		if (e.target.type !== 'number' || e.target.value !== '') props.onChange(e);
 	};
 
 	useEffect(() => {
