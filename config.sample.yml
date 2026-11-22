@@ -146,11 +146,11 @@ Karaoke:
     # Minutes before a song is automatically freed
     FreeAutoTime: 60
     # Can songs be freed by users?
-    FreeUpVote: true
+    FreeUpVotes: true
     # How many votes are required at minimum to free a song
-    FreeUpVoteRequiredMin: 3
+    FreeUpVotesRequiredMin: 3
     # How many percent of the connected users are required to free a song
-    FreeUpVoteRequiredPercent: 33
+    FreeUpVotesRequiredPercent: 33
     # Free songs once accepted by an operator from the public playlist
     FreeAcceptedSongs: true
     # Number of songs per user

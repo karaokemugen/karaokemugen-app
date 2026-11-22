@@ -269,7 +269,7 @@ function KaraokeOptions(props: IProps) {
 							filterValue
 						) && (
 							<div className="settings-line">
-								<label htmlFor="Karaoke.Quota.FreeUpVote">
+								<label htmlFor="Karaoke.Quota.FreeUpVotes">
 									<span className="title">{i18next.t('SETTINGS.KARAOKE.FREE_UPVOTES')}</span>
 									<br />
 									<span className="tooltip">
@@ -278,15 +278,15 @@ function KaraokeOptions(props: IProps) {
 								</label>
 								<div>
 									<Switch
-										idInput="Karaoke.Quota.FreeUpVote"
+										idInput="Karaoke.Quota.FreeUpVotes"
 										handleChange={onChange}
-										isChecked={config['Karaoke.Quota.FreeUpVote']}
+										isChecked={config['Karaoke.Quota.FreeUpVotes']}
 									/>
 								</div>
 							</div>
 						))}
 
-					{config['Karaoke.Quota.FreeUpVote'] ? (
+					{config['Karaoke.Quota.FreeUpVotes'] ? (
 						<div id="freeUpvotesSettings" className="settingsGroupPanel">
 							{filterValue === undefined ||
 								(sanitizeSettingsSearchValue(
@@ -562,7 +562,7 @@ function KaraokeOptions(props: IProps) {
 							i18next.t('SETTINGS.KARAOKE.MINUTES_BEFORE_SESSION_ENDS_WARNING')
 						).includes(filterValue) && (
 							<div className="settings-line">
-								<label htmlFor="Karaoke.MinutesBeforeSessionEndsWarning">
+								<label htmlFor="Karaoke.MinutesBeforeEndOfSessionWarning">
 									<span className="title">
 										{i18next.t('SETTINGS.KARAOKE.MINUTES_BEFORE_SESSION_ENDS_WARNING')}
 									</span>
@@ -575,10 +575,10 @@ function KaraokeOptions(props: IProps) {
 									<input
 										type="number"
 										data-exclude="true"
-										id="Karaoke.MinutesBeforeSessionEndsWarning"
+										id="Karaoke.MinutesBeforeEndOfSessionWarning"
 										placeholder="15"
 										onChange={onChange}
-										defaultValue={config['Karaoke.MinutesBeforeSessionEndsWarning']}
+										defaultValue={config['Karaoke.MinutesBeforeEndOfSessionWarning']}
 									/>
 								</div>
 							</div>
