@@ -374,6 +374,7 @@ export async function removeRemoteUser(token: OldJWTToken, password: string): Pr
 		}
 		// Renaming user locally
 		onlineUser.login = username;
+		onlineUser.password = password;
 		await editUser(token.username, onlineUser, null, 'admin', {
 			editRemote: false,
 			renameUser: true,
