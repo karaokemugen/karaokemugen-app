@@ -364,7 +364,7 @@ async function translateCriterias(cList: Criteria[], lang: string): Promise<Crit
 				const tag = await getTag(cList[i].value).catch(() => {});
 				tag ? (cList[i].value_i18n = tag.i18n[langObj['2B']] || tag.i18n.eng || tag.name) : (cList[i] = null);
 			}
-			if (cList[i].type === 1001) {
+			if (cList[i]?.type === 1001) {
 				// We have a kara ID, let's get the kara itself and append it to the value
 				const kara = await getKara(cList[i].value, adminToken, lang);
 				// If it doesn't exist anymore, remove the entry with null.
