@@ -54,6 +54,8 @@ export default function authController(router: SocketIOApp) {
 	});
 
 	router.route(WS_CMD.LOGIN_GUEST, async (_, req) => {
+		// Guest logins must only work through this route
+		// With the old way of checking account type + empty password in any login, the option "require security code" can be circumvented
 		const conf = getConfig();
 		if (!conf.Frontend.AllowGuestLogin || conf.Frontend.RequireSecurityCodeForNewAccounts)
 			throw { code: 403, message: APIMessage('GUESTS_NOT_ALLOWED') };
@@ -68,7 +70,7 @@ export default function authController(router: SocketIOApp) {
 				guest = await getAvailableGuest();
 			}
 			if (guest) {
-				const token = await checkLogin(guest.login, null);
+				const token = await checkLogin(guest.login, null, undefined, true);
 				updateLastLoginName(guest.login);
 				return token;
 			}

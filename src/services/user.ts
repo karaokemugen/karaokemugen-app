@@ -255,9 +255,9 @@ export async function hashPasswordbcrypt(password: string): Promise<string> {
 	return hash(password, await genSalt(10));
 }
 
-/** Check if password matches or if user type is 2 (guest) and password in database is empty. */
+/** Check if password matches */
 export async function checkPassword(user: User, password: string): Promise<boolean> {
-	if ((await compare(password, user.password)) || (user.type === 2 && !user.password)) {
+	if (await compare(password, user.password)) {
 		return true;
 	}
 	delete user.password;

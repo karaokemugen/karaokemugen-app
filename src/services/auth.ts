@@ -44,7 +44,8 @@ export function checkSecurityCode(code: number, checkNewAccountCode = false): bo
 export async function checkLogin(
 	username: string,
 	password: string,
-	newAccountSecurityCode?: number
+	newAccountSecurityCode?: number,
+	guest = false
 ): Promise<OldTokenResponse> {
 	if (username) username = decodeURI(username.trim());
 	const conf = getConfig();
@@ -71,7 +72,7 @@ export async function checkLogin(
 	user = await getUser(username, true, true);
 	if (!user) throw false;
 	if (user.type < 2 && !(await checkPassword(user, password))) throw false;
-	if (user.type === 2 && !getConfig().Frontend.AllowGuestLogin) throw false;
+	if (user.type === 2 && (!guest || !getConfig().Frontend.AllowGuestLogin)) throw false;
 	const role = getRole(user);
 	updateLastLoginName(username);
 	return {
