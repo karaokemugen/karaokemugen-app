@@ -29,8 +29,7 @@ export async function addUpvote(plc_id: number, username: string) {
 
 		await insertUpvote(plc_id, username);
 		plc.upvotes += 1;
-		if (!getConfig().Karaoke.Quota.FreeUpVotes) return;
-		tryToFreeKara(plc_id, plc.upvotes, plc.username, getState().publicPlaid);
+		if (getConfig().Karaoke.Quota.FreeUpVotes) tryToFreeKara(plc_id, plc.upvotes, plc.username, getState().publicPlaid);
 		if (plc.plaid === getState().publicPlaid) {
 			emitWS('KIDUpdated', [{ kid: plc.kid, flag_upvoted: true, username }]);
 		}
