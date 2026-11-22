@@ -98,7 +98,7 @@ function KaraokeOptions(props: IProps) {
 		}
 		if (e.target.type === 'number' && !value) value = e.target.placeHolder || e.target.min || 0;
 		config[e.target.id] = value;
-		if (e.target.type !== 'number' || !isNaN(Number(e.target.value))) props.onChange(e);
+		if (e.target.type !== 'number' || (e.target.value !== '' && !isNaN(Number(e.target.value)))) props.onChange(e);
 	};
 
 	const foldOptions = e => {
