@@ -146,6 +146,8 @@ export async function editUser(
 			} catch (err) {
 				// Non-fatal
 				logger.warn('Cannot replace avatar', { service, obj: err });
+				// Reset avatar to current one, since the user-provided param could be any path
+				mergedUser.avatar_file = currentUser.avatar_file;
 			}
 		} else {
 			mergedUser.avatar_file = currentUser.avatar_file;
