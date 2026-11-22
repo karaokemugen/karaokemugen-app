@@ -828,20 +828,21 @@ function Playlist(props: IProps) {
 			}
 			setData(data);
 			setSelectAllKarasChecked(false);
+			return true;
 		} catch (_) {
 			// error already display
 		}
 	};
 
-	const transferCheckedKaras = () => {
-		addCheckedKaras();
-		deleteCheckedKaras();
+	const transferCheckedKaras = async () => {
+		// The add unchecks the songs, and they are only removed once it worked
+		const listKara = data?.content.filter(a => a?.checked);
+		if (await addCheckedKaras()) deleteCheckedKaras(null, listKara);
 	};
 
-	const deleteCheckedKaras = async () => {
+	const deleteCheckedKaras = async (_? /* first param is react event */, listKara = data?.content.filter(a => a?.checked) || []) => {
 		let url: WSCmdDefinition<object, void>;
 		let dataApi;
-		const listKara = data?.content.filter(a => a.checked) || [];
 		if (listKara.length === 0) {
 			displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
 			return;
