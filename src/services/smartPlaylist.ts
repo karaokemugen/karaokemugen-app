@@ -294,7 +294,8 @@ export function validateCriterias(criterias: Criteria[], pl: DBPL) {
 	// Placed to true to check for multiples occurrences of the same type
 	const duplicateC = new Set();
 	for (const c of criterias) {
-		if (c.type < 0 || c.type > 1008 || c.type === 1000) {
+		c.type = +c.type;
+		if (!Number.isInteger(c.type) || c.type < 0 || c.type > 1008 || c.type === 1000) {
 			logger.error(`Incorrect criteria type : ${c.type}`, { service });
 			throw new ErrorKM('INVALID_DATA', 400, false);
 		}
