@@ -266,7 +266,7 @@ export default function repoController(router: SocketIOApp) {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			check(req.body, z.object({
-				kids: z.array(z.uuidv4()),
+				kids: z.array(z.uuidv4()).min(1),
 			}));
 			await deleteMedias(req.body.kids);
 			return { code: 200, message: APIMessage('REPO_MEDIA_DELETED') };

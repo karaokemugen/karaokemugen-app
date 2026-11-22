@@ -190,7 +190,7 @@ export default function karaController(router: SocketIOApp) {
 	router.route(WS_CMD.DELETE_KARAS, async (socket, req) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
-			check(req.body, z.object({ kids: z.array(z.uuidv4()) }));
+			check(req.body, z.object({ kids: z.array(z.uuidv4()).min(1) }));
 			await removeKara(req.body.kids);
 			return { code: 200, message: APIMessage('KARA_DELETED') };
 		} catch (err) {

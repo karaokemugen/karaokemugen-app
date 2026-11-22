@@ -73,6 +73,8 @@ export async function removeKara(
 	withTags = false
 ) {
 	try {
+		// An empty list would select and delete the whole library
+		if (!kids || kids.length === 0) throw new ErrorKM('UNKNOWN_SONG', 404, false);
 		const parents: Family[] = [];
 		const karas = await selectAllKaras({
 			q: `k:${kids.join(',')}`,

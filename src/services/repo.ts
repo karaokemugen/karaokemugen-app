@@ -298,6 +298,9 @@ export async function deleteMedias(kids?: string[], repo?: string, cleanRarelyUs
 		} else if (repo) {
 			q = `r:${repo}`;
 			errorMsg = cleanRarelyUsed ? 'REPO_DELETE_OLD_MEDIAS_ERROR' : 'REPO_DELETE_ALL_MEDIAS_ERROR';
+		} else {
+			// Without any criteria the query would select the whole library
+			throw new ErrorKM('MEDIA_DELETE_ERROR', 400, false);
 		}
 		const karas = await getKaras({
 			q,
@@ -767,7 +770,7 @@ async function applyChanges(changes: Change[], repo: Repository) {
 				tagFilesToProcess.push(resolve(resolvedPathRepos('Tags', repo.Name)[0], basename(match.path)));
 			} else {
 				// Delete.
-				TIDsToDelete.push(match.uid);
+				if (match.uid) TIDsToDelete.push(match.uid);
 				task.update({ value: task.item.value + 1, subtext: match.path });
 			}
 		}
@@ -795,7 +798,7 @@ async function applyChanges(changes: Change[], repo: Repository) {
 				);
 			} else {
 				// Delete.
-				KIDsToDelete.push(match.uid);
+				if (match.uid) KIDsToDelete.push(match.uid);
 				task.update({ value: task.item.value + 1, subtext: match.path });
 			}
 		}
