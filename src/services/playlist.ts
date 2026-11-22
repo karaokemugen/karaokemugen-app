@@ -373,7 +373,7 @@ export async function swapPLCs(plcid1: number, plcid2: number, token: OldJWTToke
 	const plcs = await getPLCInfoMini([plcid1, plcid2]);
 	if (
 		token.role !== 'admin' &&
-		(plcs[0].username !== token.username || plcs[1].username !== token.username || plcs[0].plaid !== plcs[1].plaid)
+		(plcs.some(plc => plc.username !== token.username || plc.flag_playing) || plcs[0].plaid !== plcs[1].plaid)
 	)
 		throw new ErrorKM('PLC_SWAP_FORBIDDEN', 403);
 	if (plcs[0].plcid === plcid1) {
