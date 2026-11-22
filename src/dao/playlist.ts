@@ -237,7 +237,7 @@ export async function selectPlaylistContents(params: PLCParams): Promise<DBPLC[]
 		whereClause = ` AND pc.fk_kid NOT IN (
 			SELECT pc.fk_kid
 			FROM playlist_content pc
-			WHERE pc.fk_plaid = ${getState().publicPlaid}
+			WHERE pc.fk_plaid = :public_plaid
 		)`;
 		orderClause = 'RANDOM()';
 	}
