@@ -332,6 +332,15 @@ export async function initConfig(argv: any) {
 			}
 		}
 		logger.debug('Loaded configuration', { service, obj: publicConfig });
+		
+		// Migrate old stats consent to repo setting
+		if ((getConfig().Online as any).Stats === false) {
+			setConfig({
+				Online: { Stats: null },
+				System: { Repositories: getConfig().System.Repositories.map(r => ({ ...r, SendStats: false })) },
+			} as any);
+		}
+		
 		await checkBinaries(getConfig());
 		emit('configReady');
 		configureHost();

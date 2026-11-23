@@ -156,7 +156,7 @@ export async function initEngine() {
 			initDownloader();
 			initSession();
 			if (conf.Karaoke.StreamerMode.Twitch.Enabled) initTwitch();
-			if (statsEnabledRepositories.length > 0) initStats(false);
+			if (!state.isTest && statsEnabledRepositories().length > 0) initStats(false);
 			initStep(i18next.t('INIT_LAST'), true);
 			enableWSLogging(state.opt.debug ? 'debug' : 'info');
 			// Easter egg

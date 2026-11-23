@@ -88,7 +88,7 @@ async function buildPayload() {
 		instance: await buildInstanceStats(),
 		viewcounts: await selectPlayed(),
 		requests: await selectRequests(),
-		sessions: await getSessions(),
+		sessions: (await getSessions()).filter(s => !s.private),
 	};
 }
 
