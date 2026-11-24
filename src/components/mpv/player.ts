@@ -87,6 +87,7 @@ export class Player {
 			`--volume=${+conf.Player.Volume}`,
 			`--audio-delay=${(conf.Player.AudioDelay && +conf.Player.AudioDelay / 1000) || 0}`,
 			'--autoload-files=no',
+			'--tls-verify=no', // TLS verification is enabled by default (since 0.42) and breaks media streaming on distros where no CA store is found
 			// '--input-default-bindings=no', // This disables mpv's own bindings completely
 			`--config-dir=${resolve(resolvedPath('Temp'), 'mpv')}`,
 			`--sub-fonts-dir=${resolvedPath('Fonts')}`,
