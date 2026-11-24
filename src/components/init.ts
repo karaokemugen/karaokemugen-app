@@ -17,7 +17,7 @@ import { editRepo, getRepos } from '../services/repo.js';
 import { initConfig } from '../utils/config.js';
 import { logo, playerBackgroundTypes } from '../utils/constants.js';
 import { defaultRepositories } from '../utils/defaultSettings.js';
-import { checkMovedUserDir } from '../utils/hokutoNoCode.js';
+import { checkMovedUserDir, migrateStatsConsent } from '../utils/hokutoNoCode.js';
 import Sentry from '../utils/sentry.js';
 import { getState, setState } from '../utils/state.js';
 import { parseArgs, setupFromCommandLineArgs } from './args.js';
@@ -70,6 +70,7 @@ export async function preInit() {
 	logger.debug(`OS : ${process.platform}`, { service });
 	try {
 		await initConfig(argv);
+		migrateStatsConsent();
 	} catch (err) {
 		await dialog.showMessageBox(win, {
 			title: i18next.t('CONFIG_ERROR.TITLE'),

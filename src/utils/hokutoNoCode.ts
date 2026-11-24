@@ -265,3 +265,14 @@ export async function setDefaultUploadMethodForMaintainers() {
 		editRepo(respository.Name, respository, false, false);
 	}
 }
+
+/** Remove in KM 11.0 */
+export function migrateStatsConsent() {
+	// Migrate old stats consent to repo setting
+	if ((getConfig().Online as any).Stats === false) {
+		setConfig({
+			Online: { Stats: null },
+			System: { Repositories: getConfig().System.Repositories.map(r => ({ ...r, SendStats: false })) },
+		} as any);
+	}
+}

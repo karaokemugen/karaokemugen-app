@@ -1,5 +1,5 @@
 // Node modules
-import { app, autoUpdater as nativeUpdater, BrowserWindow, shell } from 'electron';
+import { app, BrowserWindow, autoUpdater as nativeUpdater, shell } from 'electron';
 import { execa } from 'execa';
 import i18next from 'i18next';
 
@@ -30,9 +30,9 @@ import { initPlayer, quitmpv } from '../services/player.js';
 import { initPlaylistSystem, stopPlaylistSystem } from '../services/playlist.js';
 import { buildAllMediasList, updatePlaylistMedias } from '../services/playlistMedias.js';
 import { stopGame } from '../services/quiz.js';
-import { checkDownloadStatus, statsEnabledRepositories, updateAllRepos } from '../services/repo.js';
+import { checkDownloadStatus, updateAllRepos } from '../services/repo.js';
 import { initSession, stopSessionSystem } from '../services/session.js';
-import { initStats, stopStatsSystem } from '../services/stats.js';
+import { stopStatsSystem } from '../services/stats.js';
 import { generateAdminPassword, initUserSystem } from '../services/user.js';
 import { compareSortableConfigs } from '../utils/config.js';
 import { initDiscordRPC, stopDiscordRPC } from '../utils/discordRPC.js';
@@ -156,7 +156,7 @@ export async function initEngine() {
 			initDownloader();
 			initSession();
 			if (conf.Karaoke.StreamerMode.Twitch.Enabled) initTwitch();
-			if (!state.isTest && statsEnabledRepositories().length > 0) initStats(false);
+			// if (!state.isTest && statsEnabledRepositories().length > 0) initStats(false); // Temporarily disabled
 			initStep(i18next.t('INIT_LAST'), true);
 			enableWSLogging(state.opt.debug ? 'debug' : 'info');
 			// Easter egg
