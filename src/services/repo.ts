@@ -638,12 +638,12 @@ export async function resetRepo(name: string) {
 }
 
 export async function updateGitRepo(name: string) {
+	if (updateRunning) {
+		logger.error(`Unable to update repository ${name} : update already in progress`, { service });
+		throw new ErrorKM('UPDATE_REPO_ALREADY_IN_PROGRESS', 409, false);
+	}
+	updateRunning = true;
 	try {
-		if (updateRunning) {
-			logger.error(`Unable to update repository ${name} : update already in progress`, { service });
-			throw new ErrorKM('UPDATE_REPO_ALREADY_IN_PROGRESS', 409, false);
-		}
-		updateRunning = true;
 		const repo = getRepo(name);
 		if (!repo.Online || !repo.Enabled || !repo.MaintainerMode) {
 			updateRunning = false;
