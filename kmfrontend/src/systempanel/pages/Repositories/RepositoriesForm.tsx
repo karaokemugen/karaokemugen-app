@@ -187,11 +187,11 @@ function RepositoryForm(props: RepositoriesFormProps) {
 		debouncedSearch(nextValue);
 	};
 
-	const NameInput = props => (
+	const NameInput = inputProps => (
 		<div>
 			{onlineMode ? <span>http{secure ? 's' : null}://</span> : null}
 			<Input
-				{...props}
+				{...inputProps}
 				style={{ width: '90%' }}
 				placeholder={i18next.t('REPOSITORIES.NAME')}
 				onChange={handleNameChange}
