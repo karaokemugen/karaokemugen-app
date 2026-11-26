@@ -113,7 +113,7 @@ export default function Inbox() {
 
 	const getContactInformations = async (text: string) => {
 		const userDetails: User = await fetch(
-			`http${instance.Secure && 's'}://${instance.Name}/api/users/${encodeURIComponent(text.replace(`@${instance.Name}`, ''))}?forcePublic=true`,
+			`http${instance.Secure ? 's' : ''}://${instance.Name}/api/users/${encodeURIComponent(text.replace(`@${instance.Name}`, ''))}?forcePublic=true`,
 			{
 				headers: {
 					authorization: localStorage.getItem('kmOnlineToken'),
@@ -128,7 +128,7 @@ export default function Inbox() {
 						<label>{i18next.t('INBOX.CONTACT_INFOS_MODAL.USERNAME')}</label>
 						{userDetails.flag_public ? (
 							<a
-								href={`http${instance.Secure && 's'}://${instance.Name}/user/${userDetails.login}`}
+								href={`http${instance.Secure ? 's' : ''}://${instance.Name}/user/${userDetails.login}`}
 								rel="noreferrer noopener"
 							>
 								{userDetails.login}

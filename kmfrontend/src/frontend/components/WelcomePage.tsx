@@ -467,7 +467,7 @@ function WelcomePage() {
 													<a
 														href={`http${
 															context.globalState.settings.data.config.Online.RemoteAccess
-																.Secure && 's'
+																.Secure ? 's' : ''
 														}://${remoteStatus.info.host}`}
 													>
 														{remoteStatus.info.host}

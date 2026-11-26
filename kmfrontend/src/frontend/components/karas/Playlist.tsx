@@ -1064,13 +1064,13 @@ function Playlist(props: IProps) {
 					);
 					newRepos.push({
 						name: value.Name,
-						url: `http${value.Secure && 's'}://${value.Name}/`,
+						url: `http${value.Secure ? 's' : ''}://${value.Name}/`,
 						suggestUrl: manifest.suggestURL,
 					});
 				} else {
 					newRepos.push({
 						name: value.Name,
-						url: `http${value.Secure && 's'}://${value.Name}/`,
+						url: `http${value.Secure ? 's' : ''}://${value.Name}/`,
 					});
 				}
 			}

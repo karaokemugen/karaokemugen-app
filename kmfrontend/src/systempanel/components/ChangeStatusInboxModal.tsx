@@ -50,7 +50,7 @@ export function ChangeStatusInboxModal(props: ChangeStatusInboxModalProps) {
 	const fetchContactInformations = async () => {
 		if (props.inbox.contact?.endsWith(`@${props.instance.Name}`)) {
 			const userDetails: User = await fetch(
-				`http${props.instance.Secure && 's'}://${props.instance.Name}/api/users/${encodeURIComponent(props.inbox.contact?.replace(`@${props.instance.Name}`, ''))}?forcePublic=true`,
+				`http${props.instance.Secure ? 's' : ''}://${props.instance.Name}/api/users/${encodeURIComponent(props.inbox.contact?.replace(`@${props.instance.Name}`, ''))}?forcePublic=true`,
 				{
 					headers: {
 						authorization: localStorage.getItem('kmOnlineToken'),
