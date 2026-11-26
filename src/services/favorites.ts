@@ -151,6 +151,7 @@ export async function exportFavorites(username: string): Promise<FavExport> {
 		username = username.toLowerCase();
 		const favs = await getFavorites({
 			favorites: username,
+			ignoreCollections: true,
 		});
 		if (favs.content.length === 0) throw new ErrorKM('FAVORITES_EXPORTED_NO_FAVORITES_ERROR', 404, false);
 		return {
@@ -189,7 +190,7 @@ export async function importFavorites(
 	if (favs.Header.description !== 'Karaoke Mugen Favorites List File') {
 		throw new ErrorKM('FAVORITES_IMPORTED_WRONG_FILETYPE_ERROR', 400, false);
 	}
-	if (!Array.isArray(favs.Favorites || favs.Favorites.some(f => !uuidRegexp.test(f.kid)))) {
+	if (!Array.isArray(favs.Favorites) || favs.Favorites.some(f => !uuidRegexp.test(f.kid))) {
 		throw new ErrorKM('FAVORITES_IMPORTED_BAD_DATA_ERROR', 400, false);
 	}
 	try {
@@ -197,7 +198,7 @@ export async function importFavorites(
 			await truncateFavorites(username);
 		}
 		const favorites = favs.Favorites.map(f => f.kid);
-		const userFavorites = await getFavorites({ favorites: username });
+		const userFavorites = await getFavorites({ favorites: username, ignoreCollections: true });
 		// Removing favorites already added
 		const mappedUserFavorites = userFavorites.content.map(uf => uf.kid);
 		const favoritesToAdd = favorites.filter(f => !mappedUserFavorites.includes(f));
