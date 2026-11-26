@@ -143,7 +143,7 @@ function KaraList(props: KaraListProps) {
 		let t = '';
 		if (value && value[1]) t = 't:' + value[1] + '~' + value[0];
 		setTagFilter(t);
-		setCurrentPage(0);
+		setCurrentPage(1); // Pages start at 1
 		localStorage.setItem('karaPage', '1');
 		localStorage.setItem('karaTagFilter', t);
 		localStorage.setItem('karaTagFilterValue', value ? JSON.stringify(value) : null);
