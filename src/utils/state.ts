@@ -70,6 +70,8 @@ export function getPlayerState(): PublicPlayerState {
 	const conf = getConfig();
 	return {
 		...state.player,
+		currentSong: state.player.currentSong && 
+			{ ...state.player.currentSong, avatar: undefined }, // Avatar is an absolute path that would leak
 		currentSessionID: state.currentSessionID,
 		currentRequester: state.currentRequester,
 		stopping: state.stopping,
@@ -120,6 +122,7 @@ function emitPlayerState(part: RecursivePartial<State>) {
 				break;
 		}
 	}
+	if (toEmit.currentSong) toEmit.currentSong = { ...toEmit.currentSong, avatar: undefined };
 	if (Object.keys(toEmit).length !== 0) {
 		emitWS('playerStatus', toEmit);
 	}

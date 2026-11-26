@@ -1,6 +1,7 @@
+import { randomUUID } from 'crypto';
 import FormData from 'form-data';
 import { createReadStream } from 'fs-extra';
-import { basename, resolve } from 'path';
+import { resolve } from 'path';
 import randomstring from 'randomstring';
 import { Stream } from 'stream';
 
@@ -233,7 +234,7 @@ export async function fetchRemoteAvatar(instance: string, avatarFile: string): P
 	}
 	let avatarPath: string;
 	try {
-		avatarPath = resolve(resolvedPath('Temp'), basename(avatarFile));
+		avatarPath = resolve(resolvedPath('Temp'), randomUUID());
 		await writeStreamToFile(res.data as Stream, avatarPath);
 	} catch (err) {
 		logger.warn(`Could not write remote avatar to local file ${avatarFile}`, { service, obj: err });
