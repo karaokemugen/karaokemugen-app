@@ -78,7 +78,7 @@ export async function updateUser(user: User): Promise<User> {
 			anime_list_ids: user.anime_list_ids,
 		})
 	);
-	if (!ret) {
+	if (!ret.rows[0]) {
 		throw new Error('PostgreSQL did not return updated user, the where condition failed.');
 	} else {
 		return ret.rows[0];

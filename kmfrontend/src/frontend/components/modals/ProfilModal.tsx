@@ -297,7 +297,7 @@ function ProfilModal(props: IProps) {
 				.join(', ')
 				.toUpperCase();
 			const songtypeText = sortAndHideTags(data?.songtypes)
-				.map(e => (e.short ? +e.short : e.name))
+				.map(e => (e.short ? e.short : e.name))
 				.join(' ');
 			const songorderText = data?.songorder > 0 ? ' ' + data.songorder : '';
 			const versions = sortAndHideTags(data?.versions).map(

@@ -137,7 +137,7 @@ function PlayerBox(props: IProps) {
 						kara.singergroups
 							.slice(0, 3)
 							.map(e => e.name)
-							.join(', ') + (kara.singers.length > 3 ? '...' : '');
+							.join(', ') + (kara.singergroups.length > 3 ? '...' : '');
 				} else if (kara.singers) {
 					serieText =
 						kara.singers
@@ -146,7 +146,7 @@ function PlayerBox(props: IProps) {
 							.join(', ') + (kara.singers.length > 3 ? '...' : '');
 				}
 				const songtypeText = sortAndHideTags(kara.songtypes, 'public')
-					.map(e => (e.short ? +e.short : e.name))
+					.map(e => (e.short ? e.short : e.name))
 					.join(' ');
 				const songorderText = kara.songorder > 0 ? ' ' + kara.songorder : '';
 				const karaVersions = (() => {

@@ -83,7 +83,7 @@ export default function PlaylistPage() {
 								.join(', ') + (kara.singers.length > 3 ? '...' : '');
 					}
 					const songtypeText = sortAndHideTags(kara.songtypes, 'public')
-						.map(e => (e.short ? +e.short : e.name))
+						.map(e => (e.short ? e.short : e.name))
 						.join(' ');
 					const songorderText = kara.songorder > 0 ? ' ' + kara.songorder : '';
 					const karaVersions = (() => {

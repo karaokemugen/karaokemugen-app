@@ -120,7 +120,7 @@ export function getTitleInLocale(
 }
 
 export function sortTagByPriority(a: DBKaraTag, b: DBKaraTag) {
-	return a.priority < b.priority ? 1 : a.name.localeCompare(b.name);
+	return a.priority < b.priority ? 1 : a.priority > b.priority ? -1 : a.name.localeCompare(b.name);
 }
 
 /**
@@ -310,6 +310,7 @@ export function formatLyrics(lyrics: ASSLine[]) {
 		fixedLyrics.sort((el1, el2) => {
 			return el1.start - el2.start;
 		});
+		lyrics = fixedLyrics;
 	}
 	// Compute karaoke timings for public LyricsBox
 	const mappedLyrics: ASSLine[] = [];

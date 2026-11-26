@@ -95,7 +95,7 @@ export function secondsTimeSpanToHMS(s: number, format: '24h' | 'dhm' | 'ms' | '
 		s -= d * 3600 * 24;
 	}
 	const h = Math.floor(s / 3600);
-	if (format !== 'ms') {
+	if (format !== 'ms' && format !== 'mm:ss') {
 		s -= h * 3600;
 	}
 	const m = Math.floor(s / 60);
