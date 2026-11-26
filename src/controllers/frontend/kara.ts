@@ -41,6 +41,7 @@ export default function karaController(router: SocketIOApp) {
 			}).optional());
 			return await getKaras({
 				...req.body,
+				ignoreCollections: req.token.role === 'admin' && req.body?.ignoreCollections,
 				lang: req.langs,
 				username: req.token.username,				
 			});

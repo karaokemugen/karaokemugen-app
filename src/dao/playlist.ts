@@ -386,7 +386,7 @@ export async function selectKarasFromCriterias(
 	const collectionClauses = [];
 	if (collections)
 		for (const collection of Object.keys(collections)) {
-			if (collection) collectionClauses.push(`'${collection}~${tagTypes.collections}' = ANY(ak.tid)`);
+			if (collections[collection] === true) collectionClauses.push(`'${collection}~${tagTypes.collections}' = ANY(ak.tid)`);
 		}
 	if (smartPlaylistType === 'UNION') {
 		for (const c of criterias) {

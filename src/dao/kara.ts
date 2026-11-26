@@ -299,7 +299,7 @@ export async function selectAllKarasMicro(params: KaraParams): Promise<DBKaraBas
 		const collections = getConfig().Karaoke.Collections;
 		if (collections && Object.keys(collections).length > 0)
 			for (const collection of Object.keys(collections)) {
-				if (collection) collectionClauses.push(`'${collection}~${tagTypes.collections}' = ANY(ak.tid)`);
+				if (collections[collection] === true) collectionClauses.push(`'${collection}~${tagTypes.collections}' = ANY(ak.tid)`);
 			}
 	}
 	const query = sqlgetAllKarasMicro(yesqlPayload.sql, yesqlPayload.additionalFrom, collectionClauses);
