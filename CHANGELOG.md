@@ -1,3 +1,78 @@
+# [10.0.12] - 2026-11-27
+
+Bugfix release
+
+## Added
+
+- [Operators] Added a button to manually update a repository (#1905)
+
+## Changed
+
+- [Users] Include songs of disabled repositories when exporting favorites
+- [Users] Application has been made lighter due to various optimizations
+- [Operators] AppImage is now better compressed (with xz)
+- [Operators] Unify tutorial buttons and reorder items related to top bar (#1832)
+- [Operators] Bottom buttons are now centered properly
+- [Operators] Renaming of users is now only done when explicitelyr equested
+- [Operators] Disabled mpv TLS verification when streaming media
+- [Operators] Allow font sizes to go from -5 for the on-screen display (this does not affect lyrics)
+- [Operators] Hardened validation against online repositories
+- [Operators] Stop broadcasting config changes via Websocket on settings updates
+- [Operators] Database dumps are better handled
+- [Operators] Pitch is now handled directly by mpv instead of libavfi
+- [Operators] Default output for video player is set to 'gpu' on Linux
+- [Operators] Optimized memory usage by video player on Linux
+- [Operators] Empty current playlist should not display an error anymore
+- [Developers] Removed sentry uploads on various user-triggered errors
+- [Developers] Upgraded backend and frontend deps
+- [Developers] Various updates to CI for faster/lighter runs
+
+## Fixed
+
+- [Users] Default OSD font is better handled on Linux systems
+- [Users] Do not let users swap songs that are currently playing
+- [Users] User password is now correctly saved when converting an online account to a local one
+- [Users] Using random filenames for avatar downloads should fix issues when fetching them
+- [Users] Current avatar is now kept if setting a new one fails
+- [Users] Fixed inverted player state on the public page
+- [Operators] Fixed several input validation errors
+- [Operators] Fixed memory leak when playlist is being redrawn
+- [Operators] Fixed loudnorm graph for ffmpeg 7
+- [Operators] Improved recovery when database system fails to start
+- [Operators] Fixed current playlist dialog when no song is played
+- [Operators] Fixed potential deadlocks on updateDownloadedMedias
+- [Operators] Fixed player banner sometimes not appearing on startup due to race condition
+- [Operators] Fixed audio-only playback when no layer is added to display (avatar, qr code, etc.)
+- [Operators] Wrap tag label if needed
+- [Operators] Fixed updating tags search vector when updating tags to prevent database deadlocks (#1916)
+- [Operators] Fixed time tooltip from overflowing from the window when hovering on the timeline
+- [Operators] Fixed frontend crash when hovering over the timeline for too long
+- [Operators] Fixed zooming title in timeline
+- [Operators] Fixed localhost links including port in Electron navigation
+- [Operators] Fixed session played and requested stats multiplying each other
+- [Operators] Fixed playlist visibility check when getting kara by index from playlist and include guest sin validation
+- [Operators] Fixed adding random songs from playlist
+- [Operators] Allow guest logins only through dedicated route
+- [Operators] Fixed AND and OR query parameter in q query
+- [Operators] Fixed mpv config being taken over by downloading of temp files
+- [Operators] Fixed frontend parameter type when adding random songs
+- [Operators] Fixed criteria type for playlists not always being a number
+- [Operators] Song transfers deletes old entries only after they have been successfully added to the target playlist
+- [Operators] Fixed empty numbers being saved as text
+- [Operators] Song lists are now refreshed after an upvote also when freeing via upvotes is disabled
+- [Operators] Fixed wrong setting names in frontend and sample config
+- [Operators] Fixed outros always being skipped
+- [Operators] Fixed criteria list when a tag is missing
+- [Operators] Fixed repository filter in the unused files page
+- [Operators] Fixed stats upload and consent management
+- [Operators] Fixed accidental delete of the whole library when no KID is sent to the delete API
+- [Operators] Fix URL composition without SSL
+- [Operators] Properly ignore songs if disabled collections
+- [Operators] Keep update lock when requesting to update a repository that's already being updated
+- [Operators] Fixed song list when selecting a tag filter
+- [Maintainers] Fixed hiding of modify button on detail page
+- [Maintainers] Fixed song download from inbox not refreshing the web interface correctly
+
 # [10.0.8] - 2026-11-06
 
 Bugfix release ! 
